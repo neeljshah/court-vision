@@ -1,0 +1,126 @@
+{
+  "generated_at": "2026-07-24T22:22:14.535045+00:00",
+  "descriptive_only": true,
+  "edge_claimed": false,
+  "headline": "Structural fatigue, rest, and clutch momentum effects in the NBA are confirmed -- and some independently replicated -- while the individual game-to-game hot/cold carryover shapes (a player's own B2B dip, foul-trouble shifts, rest-differential margin) come back null.",
+  "method": "Our own preregistered NBA tests, surfaced verbatim from the committed forward-claim scoreboard. A verdict is a leak-free accuracy/effect finding vs an internal baseline -- never a betting edge. A NULL is not 'streaks do not exist'; it is 'this shape carried no measurable signal past the baseline'.",
+  "source_artifact": "scripts/platformkit/analytics_showcase/out/fwd_claim_scoreboard.json",
+  "groups": [
+    {
+      "key": "real",
+      "title": "Momentum-shaped effects that ARE real",
+      "summary": "Structural fatigue, rest, and clutch effects are confirmed -- some independently replicated -- these are real momentum-shaped dynamics, just not the individual hot-hand kind.",
+      "claims": [
+        {
+          "hypothesis": "b2b_rest_penalty",
+          "verdict": "CONFIRMED_LOCAL",
+          "n": 7192,
+          "effect": -1.955,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "reading": "Playing on a back-to-back measurably drags down scoring output."
+        },
+        {
+          "hypothesis": "three_in_four_fatigue",
+          "verdict": "CONFIRMED_LOCAL",
+          "n": 7222,
+          "effect": -1.213,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "reading": "Three games in four nights compounds the fatigue drag further."
+        },
+        {
+          "hypothesis": "clutch_lineup_shortening",
+          "verdict": "CONFIRMED_LOCAL",
+          "n": 1052,
+          "effect": -6.3384,
+          "corpus": "player_boxscores_2024_25_2025_26+stints_2024_25+zone_onoff_2024_25",
+          "reading": "Coaches measurably shorten rotations in clutch minutes."
+        },
+        {
+          "hypothesis": "clutch_usage_compression",
+          "verdict": "CONFIRMED_LOCAL",
+          "n": 8164,
+          "effect": 0.5031,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "reading": "Usage concentrates onto fewer players when the game is on the line."
+        },
+        {
+          "hypothesis": "timeout_interrupts_opponent_run__h1",
+          "verdict": "CONFIRMED_LOCAL",
+          "n": 1357,
+          "effect": -0.7314,
+          "corpus": "pbp_p1_json_timeout_windows (1289 games w/ timeout samples, split-half by date)",
+          "reading": "Calling a timeout measurably interrupts an opponent's scoring run."
+        },
+        {
+          "hypothesis": "timeout_interrupts_opponent_run_replication_2022_23",
+          "verdict": "REPLICATED",
+          "n": 2544,
+          "effect": null,
+          "corpus": "replication_wave1_second_corpus",
+          "reading": "The timeout-breaks-a-run effect replicates independently on the 2022-23 corpus."
+        },
+        {
+          "hypothesis": "lineup_continuity_streak_vs_point_diff__2024-25",
+          "verdict": "CONFIRMED_LOCAL",
+          "n": 2460,
+          "effect": 0.0788,
+          "corpus": "stints_2023_24+2024_25",
+          "reading": "How long a lineup has stayed together (continuity) measurably relates to point differential."
+        }
+      ]
+    },
+    {
+      "key": "null",
+      "title": "The hot/cold carryover shapes that came back null",
+      "summary": "The individual game-to-game 'streak' shapes -- a player's own B2B scoring, foul trouble shifting his efficiency or usage, rest differential, or B2B interacting with starter minutes -- carry no measurable signal past our baseline. NULL here means 'no signal past baseline,' not 'streaks are impossible.'",
+      "claims": [
+        {
+          "hypothesis": "player_b2b_scoring_dip",
+          "verdict": "NULL_LOCAL",
+          "n": 65103,
+          "effect": -0.0053,
+          "corpus": "player_boxscores_2024_25_2025_26",
+          "reading": "A player's own scoring shows no detectable dip on a back-to-back beyond the team-level rest penalty already captured elsewhere."
+        },
+        {
+          "hypothesis": "rest_differential_margin__h1",
+          "verdict": "NULL_LOCAL",
+          "n": 1798,
+          "effect": -0.018,
+          "corpus": "player_boxscores_team_game_frame_7222_teamgames (split-half by date)",
+          "reading": "The rest-day differential between two teams shows no detectable margin effect."
+        },
+        {
+          "hypothesis": "foul_trouble_efficiency_shift__h1",
+          "verdict": "NULL_LOCAL",
+          "n": 5972,
+          "effect": -0.09861,
+          "corpus": "player_boxscores+pbp_p1_json (1289 games, split-half by date)",
+          "reading": "Being in foul trouble shows no detectable shift in a player's scoring efficiency."
+        },
+        {
+          "hypothesis": "foul_trouble_usage_shift__h1",
+          "verdict": "NULL_LOCAL",
+          "n": 5972,
+          "effect": 0.00712,
+          "corpus": "player_boxscores+pbp_p1_json (1289 games, split-half by date)",
+          "reading": "Foul trouble likewise shows no detectable shift in a player's usage rate."
+        },
+        {
+          "hypothesis": "b2b_x_margin_starter_minutes__h1",
+          "verdict": "NULL_LOCAL",
+          "n": 3596,
+          "effect": -0.0372,
+          "corpus": "player_boxscores_team_game_frame_7192_teamgames_nonnull_rest (split-half by date)",
+          "reading": "The interaction of back-to-back rest with point margin shows no detectable effect on starter minutes."
+        }
+      ]
+    }
+  ],
+  "confounds": [
+    "a gate NULL means 'no measurable value past our baseline', NOT 'this never happens';",
+    "effects are raw directional effects on the stated metric, not opponent/venue-adjusted;",
+    "corpora and seasons differ per claim; each row shows its own corpus;",
+    "CONFIRMED/REPLICATED are descriptive accuracy findings, never a dollar-edge claim."
+  ]
+}

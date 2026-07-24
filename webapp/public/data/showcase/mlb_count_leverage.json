@@ -4,7 +4,7 @@
  "label": "DESCRIPTIVE_ONLY",
  "caveat": "DESCRIPTIVE_ONLY count-leverage showcase over the local 2025 statcast pull: pitch-type mix and per-pitch outcome PROXIES (type S/B/X share, in-zone share) by count-leverage class. `type`==S conflates called+swinging+foul (no per-pitch swing/take in this corpus). Not a predictor; no edge/ROI/$ claim.",
  "source": "data/cache/statcast/statcast_fuller__2025.parquet",
- "as_of": "2026-07-24T22:03:55.462615+00:00",
+ "as_of": "2026-07-24T22:22:09.598608+00:00",
  "n_pitches_total": 693037,
  "n_pitches_valid_count": 693037,
  "floors": {

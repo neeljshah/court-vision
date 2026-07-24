@@ -1,11 +1,11 @@
 {
  "generated_from": "scripts/platformkit/analytics_showcase/out",
- "module_count": 66,
+ "module_count": 67,
  "atlas_card_count": 1549,
  "checks_green": {
   "green": true,
-  "pass": 85,
-  "total": 85
+  "pass": 86,
+  "total": 86
  },
  "edge_claimed": false,
  "modules": [
@@ -61,7 +61,7 @@
    "chart_path": "docs/img/brier_skill_scores.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:03:12.528233+00:00",
+   "as_of": "2026-07-24T22:21:26.985690+00:00",
    "evidence_page": null
   },
   {
@@ -215,7 +215,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:03:19.508223+00:00",
+   "as_of": "2026-07-24T22:21:33.955451+00:00",
    "evidence_page": null
   },
   {
@@ -369,7 +369,7 @@
    "chart_path": "docs/img/mlb_count_leverage.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:03:55.462615+00:00",
+   "as_of": "2026-07-24T22:22:09.598608+00:00",
    "evidence_page": null
   },
   {
@@ -436,6 +436,17 @@
    "status": "ok",
    "edge_claimed": false,
    "as_of": null,
+   "evidence_page": null
+  },
+  {
+   "id": "nba_momentum_tested",
+   "title": "Nba Momentum Tested",
+   "one_line": "Structural fatigue, rest, and clutch momentum effects in the NBA are confirmed -- and some independently replicated -- while the individual game-to-game hot/cold carryover shapes (a player's own B2B dip, foul-trouble shifts, rest-differe...",
+   "out_path": "scripts/platformkit/analytics_showcase/out/nba_momentum_tested.json",
+   "chart_path": null,
+   "status": "ok",
+   "edge_claimed": false,
+   "as_of": "2026-07-24T22:22:14.535045+00:00",
    "evidence_page": null
   },
   {
@@ -512,7 +523,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:04:05.285552+00:00",
+   "as_of": "2026-07-24T22:22:19.472959+00:00",
    "evidence_page": null
   },
   {
@@ -534,7 +545,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:04:05.811155+00:00",
+   "as_of": "2026-07-24T22:22:19.998770+00:00",
    "evidence_page": null
   },
   {
@@ -545,7 +556,7 @@
    "chart_path": "docs/img/pitch_sequencing.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:04:06.605644+00:00",
+   "as_of": "2026-07-24T22:22:20.812007+00:00",
    "evidence_page": null
   },
   {
@@ -666,7 +677,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:04:15.234359+00:00",
+   "as_of": "2026-07-24T22:22:29.314638+00:00",
    "evidence_page": null
   },
   {
@@ -710,7 +721,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-24T22:04:17.046758+00:00",
+   "as_of": "2026-07-24T22:22:31.156482+00:00",
    "evidence_page": null
   },
   {

@@ -48,6 +48,12 @@ const FINDINGS: Array<{ href: string; title: string; blurb: string }> = [
     blurb:
       "Momentum is real point-to-point (n=456,383, confirmed) but dies at the game grain; two tiebreak myths come back null; altitude and travel effects are confirmed, altitude replicated across two disjoint year slices.",
   },
+  {
+    href: "/analytics/findings/nba-momentum",
+    title: "NBA momentum, tested",
+    blurb:
+      "The honest split: structural fatigue, rest, and clutch effects are confirmed and some replicated, while the individual hot/cold carryover shapes -- even a player's own B2B dip at n=65,103 -- come back null.",
+  },
 ];
 
 const h1: CSSProperties = {
