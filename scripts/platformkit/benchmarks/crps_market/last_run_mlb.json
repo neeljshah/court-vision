@@ -1,0 +1,23 @@
+{
+  "sport": "mlb",
+  "market": "total_runs",
+  "edge_claimed": false,
+  "n_line_history_games": 474,
+  "n_joined_game_pk": 391,
+  "n_scored": 300,
+  "n_skipped_no_pa_or_lineup": 0,
+  "n_skipped_market_fit": 0,
+  "n_multi_line_games": 101,
+  "n_single_line_fallback_games": 199,
+  "model_crps_mean": 2.9331,
+  "market_crps_mean": 2.8808,
+  "paired_delta_mean": -0.0523,
+  "paired_delta_95ci": [
+    -0.1657,
+    0.0482
+  ],
+  "model_80pct_interval_coverage": 0.75,
+  "market_80pct_interval_coverage": 0.81,
+  "verdict": "UNDERPOWERED",
+  "honest_note": "CRPS/coverage sharpness only, no dollar edge. Single-line games use a climatology-sigma Gaussian fallback (labeled n_single_line_fallback_games); multi-line games fit both mu and sigma from market prices alone."
+}

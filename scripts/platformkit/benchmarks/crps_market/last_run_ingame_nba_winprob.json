@@ -1,0 +1,67 @@
+{
+  "sport": "nba",
+  "edge_claimed": false,
+  "n_games_considered": 5,
+  "n_ticker_parse_fail": 0,
+  "n_model_dispatch_fail": 0,
+  "n_checkpoints_scored": 20,
+  "checkpoints": {
+    "end_q1": {
+      "n": 5,
+      "model_brier_mean": 0.2083,
+      "market_brier_mean": 0.2296,
+      "model_logloss_mean": 0.5957,
+      "market_logloss_mean": 0.7307,
+      "paired_delta_mean": 0.0213,
+      "paired_delta_95ci": [
+        -0.15553373,
+        0.2164157412500004
+      ],
+      "verdict": "UNDERPOWERED",
+      "provisional": false
+    },
+    "halftime": {
+      "n": 5,
+      "model_brier_mean": 0.2008,
+      "market_brier_mean": 0.2387,
+      "model_logloss_mean": 0.6143,
+      "market_logloss_mean": 0.8051,
+      "paired_delta_mean": 0.038,
+      "paired_delta_95ci": [
+        -0.06325839,
+        0.13918423400000007
+      ],
+      "verdict": "UNDERPOWERED",
+      "provisional": false
+    },
+    "end_q3": {
+      "n": 5,
+      "model_brier_mean": 0.1521,
+      "market_brier_mean": 0.2079,
+      "model_logloss_mean": 0.452,
+      "market_logloss_mean": 0.7104,
+      "paired_delta_mean": 0.0558,
+      "paired_delta_95ci": [
+        -0.006413274000000016,
+        0.16329633300000002
+      ],
+      "verdict": "UNDERPOWERED",
+      "provisional": false
+    },
+    "q4_under5": {
+      "n": 5,
+      "model_brier_mean": 0.1028,
+      "market_brier_mean": 0.1304,
+      "model_logloss_mean": 0.2971,
+      "market_logloss_mean": 0.3569,
+      "paired_delta_mean": 0.0276,
+      "paired_delta_95ci": [
+        -0.007515263999999992,
+        0.09180188000000011
+      ],
+      "verdict": "UNDERPOWERED",
+      "provisional": false
+    }
+  },
+  "honest_note": "Win-probability Brier/log-loss calibration only, never a $/ROI claim. MODEL = winprob_dispatch.dispatch('nba', ...) over predict_matchup.py (sanctioned resolver, no src/ import). MARKET = Polymarket in-play moneyline, same tick as the score state it's paired with (no separate as-of join needed -- nba_checkpoints_full.parquet already fuses them). Checkpoints are the last observed tick at-or-before each elapsed-minute anchor (end_q1=12min/halftime=24min/end_q3=36min/q4_under5=43min), never a later one -- leak-free by construction. Verdicts are PROVISIONAL -- single capture-window corpus, needs independent-corpus replication before any durable claim."
+}

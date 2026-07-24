@@ -1,0 +1,176 @@
+{
+  "sport": "mlb",
+  "edge_claimed": false,
+  "n_game_files": 178,
+  "n_join_fail": 4,
+  "n_lineup_fail": 0,
+  "checkpoints": {
+    "home_margin|end_inning_3": {
+      "n": 20,
+      "model_crps_mean": 2.3943,
+      "market_crps_mean": 2.8443,
+      "market_crps_discretized_mean": 2.8333,
+      "paired_delta_mean": 0.4499,
+      "paired_delta_discretized_mean": 0.439,
+      "paired_delta_95ci": [
+        -0.020569384058188415,
+        1.0687464621667424
+      ],
+      "shape_control_verdict": "UNDERPOWERED",
+      "verdict": "UNDERPOWERED",
+      "provisional": false,
+      "n_multi_line": 15
+    },
+    "home_margin|end_inning_5": {
+      "n": 26,
+      "model_crps_mean": 1.6806,
+      "market_crps_mean": 2.536,
+      "market_crps_discretized_mean": 2.5237,
+      "paired_delta_mean": 0.8555,
+      "paired_delta_discretized_mean": 0.8432,
+      "paired_delta_95ci": [
+        0.32594001284687374,
+        1.488773471523803
+      ],
+      "shape_control_verdict": "UNDERPOWERED",
+      "verdict": "UNDERPOWERED",
+      "provisional": false,
+      "n_multi_line": 22
+    },
+    "home_margin|end_inning_6": {
+      "n": 22,
+      "model_crps_mean": 1.4476,
+      "market_crps_mean": 2.4059,
+      "market_crps_discretized_mean": 2.4072,
+      "paired_delta_mean": 0.9583,
+      "paired_delta_discretized_mean": 0.9596,
+      "paired_delta_95ci": [
+        0.2408788621981401,
+        1.8046151457494153
+      ],
+      "shape_control_verdict": "UNDERPOWERED",
+      "verdict": "UNDERPOWERED",
+      "provisional": false,
+      "n_multi_line": 20
+    },
+    "home_margin|end_inning_7": {
+      "n": 21,
+      "model_crps_mean": 1.3449,
+      "market_crps_mean": 2.4109,
+      "market_crps_discretized_mean": 2.3883,
+      "paired_delta_mean": 1.066,
+      "paired_delta_discretized_mean": 1.0434,
+      "paired_delta_95ci": [
+        0.2656424426666572,
+        1.9601757169298957
+      ],
+      "shape_control_verdict": "UNDERPOWERED",
+      "verdict": "UNDERPOWERED",
+      "provisional": false,
+      "n_multi_line": 17
+    },
+    "home_margin|end_inning_8": {
+      "n": 21,
+      "model_crps_mean": 0.4873,
+      "market_crps_mean": 2.2813,
+      "market_crps_discretized_mean": 2.265,
+      "paired_delta_mean": 1.794,
+      "paired_delta_discretized_mean": 1.7777,
+      "paired_delta_95ci": [
+        0.8720949949082061,
+        3.0589789365143907
+      ],
+      "shape_control_verdict": "UNDERPOWERED",
+      "verdict": "UNDERPOWERED",
+      "provisional": false,
+      "n_multi_line": 8
+    },
+    "total_runs|end_inning_3": {
+      "n": 49,
+      "model_crps_mean": 2.5416,
+      "market_crps_mean": 2.6307,
+      "market_crps_discretized_mean": 2.6316,
+      "paired_delta_mean": 0.0891,
+      "paired_delta_discretized_mean": 0.09,
+      "paired_delta_95ci": [
+        -0.3031783173062472,
+        0.5063543617299131
+      ],
+      "shape_control_verdict": "UNDERPOWERED",
+      "verdict": "UNDERPOWERED",
+      "provisional": false,
+      "n_multi_line": 48
+    },
+    "total_runs|end_inning_5": {
+      "n": 54,
+      "model_crps_mean": 1.734,
+      "market_crps_mean": 1.9944,
+      "market_crps_discretized_mean": 1.9841,
+      "paired_delta_mean": 0.2604,
+      "paired_delta_discretized_mean": 0.2502,
+      "paired_delta_95ci": [
+        -0.052614231788668975,
+        0.5751412231831872
+      ],
+      "shape_control_verdict": "UNDERPOWERED",
+      "verdict": "UNDERPOWERED",
+      "provisional": false,
+      "n_multi_line": 53
+    },
+    "total_runs|end_inning_6": {
+      "n": 54,
+      "model_crps_mean": 1.3103,
+      "market_crps_mean": 1.9495,
+      "market_crps_discretized_mean": 1.9322,
+      "paired_delta_mean": 0.6392,
+      "paired_delta_discretized_mean": 0.6218,
+      "paired_delta_95ci": [
+        0.31739428723201235,
+        0.9632194949072426
+      ],
+      "shape_control_verdict": "MODEL_SHARPER",
+      "verdict": "MODEL_SHARPER_PROVISIONAL",
+      "provisional": true,
+      "n_multi_line": 54
+    },
+    "total_runs|end_inning_7": {
+      "n": 55,
+      "model_crps_mean": 1.0273,
+      "market_crps_mean": 1.76,
+      "market_crps_discretized_mean": 1.7696,
+      "paired_delta_mean": 0.7327,
+      "paired_delta_discretized_mean": 0.7423,
+      "paired_delta_95ci": [
+        0.4130762214262852,
+        1.0809591352514807
+      ],
+      "shape_control_verdict": "MODEL_SHARPER",
+      "verdict": "MODEL_SHARPER_PROVISIONAL",
+      "provisional": true,
+      "n_multi_line": 53
+    },
+    "total_runs|end_inning_8": {
+      "n": 49,
+      "model_crps_mean": 0.5117,
+      "market_crps_mean": 1.9318,
+      "market_crps_discretized_mean": 1.9284,
+      "paired_delta_mean": 1.4201,
+      "paired_delta_discretized_mean": 1.4167,
+      "paired_delta_95ci": [
+        0.9658843906709079,
+        1.8976610619874428
+      ],
+      "shape_control_verdict": "MODEL_SHARPER",
+      "verdict": "MODEL_SHARPER_PROVISIONAL",
+      "provisional": true,
+      "n_multi_line": 36
+    }
+  },
+  "other_sports_joinable": {
+    "soccer_intl": "NOT_TESTABLE -- ingame_grade_joined state-timeline exists but no soccer conditional-distribution engine (no game_sim analogue) to condition on it",
+    "wnba": "NOT_TESTABLE -- in-play total market exists (59 events) but no wall-clock live-state timeline captured to anchor a checkpoint",
+    "kbo": "NOT_TESTABLE -- same gap as wnba (213 total events, no state timeline)",
+    "nba/tennis": "NOT_TESTABLE -- in-play total market_type does not exist"
+  },
+  "honest_note": "Distributional CRPS sharpness only, never a $/ROI claim. Checkpoints are end-of-inning 3/5/6/7/8; model conditions on the game's own Statcast score as-of that inning (leak-free); market points are the last in-play tick at-or-before the checkpoint (<=10min stale, never after)."
+}
