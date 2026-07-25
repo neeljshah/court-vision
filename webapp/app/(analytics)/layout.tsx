@@ -106,7 +106,7 @@ export default function AnalyticsRootLayout({ children }: { children: ReactNode 
         <a href="#analytics-main" className="a-skip">Skip to content</a>
         <nav className="a-nav" aria-label="Analytics">
           <div className="wrap a-navrow">
-            <Link href="/analytics" className="a-lockup" aria-label="CourtVision Analytics home">
+            <Link href="/analytics" className="a-lockup" aria-label="CourtVision Analytics home" prefetch={false}>
               <span className="a-mark" aria-hidden="true">
                 <span>&#9650;</span>
               </span>
@@ -117,7 +117,15 @@ export default function AnalyticsRootLayout({ children }: { children: ReactNode 
             </Link>
             <div className="navlinks">
               {PILLARS.map((p) => (
-                <Link key={p.href} href={p.href} data-nav={p.href}>
+                // suppressHydrationWarning: CHROME_JS marks the active pillar by
+                // adding class="active" BEFORE React hydrates, so React would
+                // otherwise see an "extra attributes from the server: class"
+                // mismatch on whichever pillar matches the current route and bail
+                // the whole layout Suspense boundary to client rendering (the
+                // home/forecaster/browse hydration errors). prefetch={false}: on a
+                // static export the RSC prefetch payload does not exist, so every
+                // prefetch is a wasted 404 with no benefit.
+                <Link key={p.href} href={p.href} data-nav={p.href} prefetch={false} suppressHydrationWarning>
                   {p.label}
                 </Link>
               ))}
@@ -159,14 +167,14 @@ export default function AnalyticsRootLayout({ children }: { children: ReactNode 
                 needs the six pillars here to jump on without scrolling back up. */}
             <nav className="a-foot-links a-foot-pillars" aria-label="Sections">
               {PILLARS.map((p) => (
-                <Link key={p.href} href={p.href}>
+                <Link key={p.href} href={p.href} prefetch={false}>
                   {p.label}
                 </Link>
               ))}
             </nav>
             <nav className="a-foot-links" aria-label="Secondary">
               {FOOT_LINKS.map((l) => (
-                <Link key={l.href} href={l.href}>
+                <Link key={l.href} href={l.href} prefetch={false}>
                   {l.label}
                 </Link>
               ))}

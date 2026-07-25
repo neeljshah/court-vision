@@ -135,7 +135,13 @@ export default function AnalyticsHome() {
 
   return (
     <div className="a-home wrap">
-      <style>{CSS}</style>
+      {/* dangerouslySetInnerHTML, not a text child: the CSS contains single
+          quotes (font-feature-settings: 'tnum'), which React escapes to &#x27;
+          when serializing a <style> text child on the server but not when
+          hydrating on the client -- a spurious "Text content did not match"
+          that bailed this page's hydration. Injecting the raw string avoids
+          the escaping on both sides. */}
+      <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
       <section className="a-hero">
         <div>

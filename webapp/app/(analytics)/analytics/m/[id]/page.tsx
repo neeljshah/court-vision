@@ -332,7 +332,7 @@ export default function ModulePage({ params }: { params: { id: string } }) {
 
       <ScoutQuestions questions={questions} />
 
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .mv-crumbs{font-size:13px;color:var(--ink-3);padding:22px 0 6px}
         .mv-crumbs a{color:var(--ink-3)}
         .mv-banner{display:inline-flex;align-items:center;gap:8px;background:var(--paper-tint);
@@ -383,7 +383,7 @@ export default function ModulePage({ params }: { params: { id: string } }) {
         .mv-links{display:flex;flex-direction:column;gap:9px;font-size:14px}
         .mv-links a{color:var(--accent)}
         @media(max-width:820px){.mv-grid{grid-template-columns:minmax(0,1fr)}.mv-head{flex-wrap:wrap}}
-      `}</style>
+      ` }} />
     </div>
   );
 }

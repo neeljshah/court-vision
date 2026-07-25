@@ -75,7 +75,10 @@ function Motif() {
 export function Bento({ cells }: { cells: BentoCell[] }) {
   return (
     <>
-      <style>{CSS}</style>
+      {/* dangerouslySetInnerHTML: the CSS uses quotes (content:"") that React
+          escapes in a <style> text child on the server but not on the client,
+          producing a spurious hydration text mismatch. Inject raw instead. */}
+      <style dangerouslySetInnerHTML={{ __html: CSS }} />
       <div className="a-bento">
         {cells.map((c) => (
           <div key={c.href + c.title} className={`a-cell w-${c.weight}`}>

@@ -289,7 +289,7 @@ export function NovelStatPanel({ stat }: { stat: NovelStat }) {
         <div>edge_claimed: false &middot; descriptive_only</div>
       </div>
 
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .np{margin-top:28px;border:1px solid var(--rule-strong);border-top:3px solid var(--signal);
           border-radius:var(--radius-card);padding:22px 24px;max-width:680px;background:var(--paper-raised)}
         .np-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
@@ -328,7 +328,7 @@ export function NovelStatPanel({ stat }: { stat: NovelStat }) {
         .np-reasons li{font-size:13.5px;line-height:1.5;color:var(--ink-2);margin-top:4px}
         .np-receipt{margin-top:20px;padding-top:14px;border-top:1px solid var(--rule);
           font-size:11px;color:var(--ink-3);line-height:1.7;word-break:break-all}
-      `}</style>
+      ` }} />
     </section>
   );
 }

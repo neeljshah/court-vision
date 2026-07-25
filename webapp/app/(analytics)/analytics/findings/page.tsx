@@ -154,7 +154,9 @@ export default function FindingsIndexPage() {
 
       <div style={{ display: "grid", gap: 16, marginTop: 32, gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", maxWidth: 900 }}>
         {FINDINGS.map((f) => (
-          <Link key={f.href} href={`${BP}${f.href}`} style={card}>
+          // prefetch={false}: static export has no RSC prefetch payload, so the
+          // default hover/viewport prefetch only 404s -- disable it on these cards.
+          <Link key={f.href} href={`${BP}${f.href}`} style={card} prefetch={false}>
             <div className="serif" style={{ fontWeight: 500, fontSize: 21, color: "var(--ink)", marginBottom: 8 }}>
               {f.title}
             </div>
