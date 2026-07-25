@@ -66,6 +66,9 @@ export function CommandPalette() {
     return all.filter((r) => r.type === "page" || r.type === "finding");
   }, []);
 
+  // loadState is a dependency: the records are lazy-fetched AFTER the palette
+  // opens, so this must re-run when they arrive (idle->loading->ready) or an
+  // empty query renders defaults() against an empty map -> a spurious "No results".
   useEffect(() => {
     if (!query.trim()) {
       setResults(open ? defaults() : []);
@@ -78,7 +81,7 @@ export function CommandPalette() {
       .map((h) => recordsRef.current.get(String(h.id)))
       .filter((r): r is Rec => Boolean(r));
     setResults(recs);
-  }, [query, open, defaults]);
+  }, [query, open, defaults, loadState]);
 
   const openPalette = useCallback(() => {
     setOpen(true);
