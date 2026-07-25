@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-07-25T01:18:06.326969+00:00",
+  "generated_at": "2026-07-25T11:12:18.726200+00:00",
   "descriptive_only": true,
   "counts": {
     "entity": 1549,
-    "module": 69,
-    "finding": 10,
+    "module": 74,
+    "finding": 17,
     "page": 9,
-    "total": 1637
+    "total": 1649
   },
   "records": [
     {
@@ -17073,6 +17073,14 @@
       "keywords": []
     },
     {
+      "id": "module:bookmaker_accuracy",
+      "title": "Bookmaker Accuracy",
+      "subtitle": "Analytic",
+      "href": "/analytics/m/bookmaker_accuracy",
+      "type": "module",
+      "keywords": []
+    },
+    {
       "id": "module:box_value_index",
       "title": "Box Value Index",
       "subtitle": "Analytic",
@@ -17249,6 +17257,14 @@
       "keywords": []
     },
     {
+      "id": "module:lineup_synergy",
+      "title": "Lineup Synergy",
+      "subtitle": "Analytic",
+      "href": "/analytics/m/lineup_synergy",
+      "type": "module",
+      "keywords": []
+    },
+    {
       "id": "module:market_convergence",
       "title": "Market Convergence",
       "subtitle": "Analytic",
@@ -17261,6 +17277,14 @@
       "title": "Market Disagreement Profile",
       "subtitle": "Analytic",
       "href": "/analytics/m/market_disagreement_profile",
+      "type": "module",
+      "keywords": []
+    },
+    {
+      "id": "module:market_favorite_longshot",
+      "title": "Market Favorite Longshot",
+      "subtitle": "Analytic",
+      "href": "/analytics/m/market_favorite_longshot",
       "type": "module",
       "keywords": []
     },
@@ -17505,6 +17529,14 @@
       "keywords": []
     },
     {
+      "id": "module:rim_deterrence",
+      "title": "Rim Deterrence",
+      "subtitle": "Analytic",
+      "href": "/analytics/m/rim_deterrence",
+      "type": "module",
+      "keywords": []
+    },
+    {
       "id": "module:schedule_density",
       "title": "Schedule Density",
       "subtitle": "Analytic",
@@ -17525,6 +17557,14 @@
       "title": "Soccer Form Stability",
       "subtitle": "Analytic",
       "href": "/analytics/m/soccer_form_stability",
+      "type": "module",
+      "keywords": []
+    },
+    {
+      "id": "module:soccer_home_advantage",
+      "title": "Soccer Home Advantage",
+      "subtitle": "Analytic",
+      "href": "/analytics/m/soccer_home_advantage",
       "type": "module",
       "keywords": []
     },
@@ -17669,6 +17709,62 @@
       "title": "Reliability diagrams",
       "subtitle": "Findings",
       "href": "/analytics/findings/reliability",
+      "type": "finding",
+      "keywords": []
+    },
+    {
+      "id": "finding:the_life_of_a_forecast",
+      "title": "The life of a forecast",
+      "subtitle": "Findings",
+      "href": "/analytics/findings/forecast-life",
+      "type": "finding",
+      "keywords": []
+    },
+    {
+      "id": "finding:soccer_home_advantage",
+      "title": "Soccer home advantage",
+      "subtitle": "Findings",
+      "href": "/analytics/findings/soccer-home-advantage",
+      "type": "finding",
+      "keywords": []
+    },
+    {
+      "id": "finding:bookmaker_accuracy",
+      "title": "Bookmaker accuracy",
+      "subtitle": "Findings",
+      "href": "/analytics/findings/bookmaker-accuracy",
+      "type": "finding",
+      "keywords": []
+    },
+    {
+      "id": "finding:rim_deterrence",
+      "title": "Rim deterrence",
+      "subtitle": "Findings",
+      "href": "/analytics/findings/rim-deterrence",
+      "type": "finding",
+      "keywords": []
+    },
+    {
+      "id": "finding:league_parity",
+      "title": "League parity",
+      "subtitle": "Findings",
+      "href": "/analytics/findings/league-parity",
+      "type": "finding",
+      "keywords": []
+    },
+    {
+      "id": "finding:lineup_synergy",
+      "title": "Lineup synergy",
+      "subtitle": "Findings",
+      "href": "/analytics/findings/lineup-synergy",
+      "type": "finding",
+      "keywords": []
+    },
+    {
+      "id": "finding:favorite_longshot_bias",
+      "title": "Favorite-longshot bias",
+      "subtitle": "Findings",
+      "href": "/analytics/findings/favorite-longshot",
       "type": "finding",
       "keywords": []
     },

@@ -47,6 +47,13 @@ FINDINGS = [
     ("The fourth-quarter shift", "/analytics/findings/q4-shift"),
     ("Shrinkage", "/analytics/findings/shrinkage"),
     ("Reliability diagrams", "/analytics/findings/reliability"),
+    ("The life of a forecast", "/analytics/findings/forecast-life"),
+    ("Soccer home advantage", "/analytics/findings/soccer-home-advantage"),
+    ("Bookmaker accuracy", "/analytics/findings/bookmaker-accuracy"),
+    ("Rim deterrence", "/analytics/findings/rim-deterrence"),
+    ("League parity", "/analytics/findings/league-parity"),
+    ("Lineup synergy", "/analytics/findings/lineup-synergy"),
+    ("Favorite-longshot bias", "/analytics/findings/favorite-longshot"),
     ("Findings hub", "/analytics/findings"),
 ]
 
@@ -213,6 +220,24 @@ def check():
         if r["type"] == "entity":
             segments = [s for s in r["href"].split("/") if s]
             assert len(segments) == 4, f"entity href not 4 segments: {r['href']}"
+
+    # Guard against a real bug that shipped: a new findings/<slug>/page.tsx added
+    # without a matching FINDINGS entry -> the page is unreachable from Cmd+K and
+    # absent from the sitemap (which is derived from this index). Every findings
+    # page dir on disk MUST have a finding record. webapp/ is committed source, so
+    # this stays clone-safe.
+    findings_dir = os.path.join(
+        ROOT, "webapp", "app", "(analytics)", "analytics", "findings")
+    if os.path.isdir(findings_dir):
+        hrefs = {r["href"] for r in records}
+        for name in sorted(os.listdir(findings_dir)):
+            sub = os.path.join(findings_dir, name)
+            if os.path.isdir(sub) and os.path.exists(os.path.join(sub, "page.tsx")):
+                want = f"/analytics/findings/{name}"
+                assert want in hrefs, (
+                    f"findings page {want} has no search record -- add it to "
+                    f"FINDINGS in search_records.py (else it is missing from "
+                    f"Cmd+K and the sitemap)")
 
     print("OK")
 
