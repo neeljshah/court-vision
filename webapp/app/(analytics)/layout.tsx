@@ -8,6 +8,8 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { analyticsFontVars } from "@/lib/analytics/fonts";
+import { CommandPalette } from "@/components/analytics/CommandPalette";
+import { PaletteTrigger } from "@/components/analytics/PaletteTrigger";
 
 // Static-export builds serve at basePath /court-vision; next/font + <Link> auto-
 // prefix, but the metadata icon URLs do NOT (same landmine as the terminal layout).
@@ -119,6 +121,7 @@ export default function AnalyticsRootLayout({ children }: { children: ReactNode 
                 </Link>
               ))}
             </div>
+            <PaletteTrigger />
             <button id="a-theme-toggle" className="a-theme" type="button" aria-label="Toggle light or dark theme">
               <svg className="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                 <circle cx="12" cy="12" r="4" />
@@ -178,6 +181,7 @@ export default function AnalyticsRootLayout({ children }: { children: ReactNode 
 
         {/* eslint-disable-next-line react/no-danger */}
         <script dangerouslySetInnerHTML={{ __html: CHROME_JS }} />
+        <CommandPalette />
       </body>
     </html>
   );
