@@ -12,11 +12,13 @@ import Link from "next/link";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
 import { ReliabilityDiagram } from "@/components/analytics/charts/ReliabilityDiagram";
+import { findingMeta } from "@/lib/analytics/og";
 
 export const metadata: Metadata = {
   title: "Reliability Diagrams",
   description:
     "Descriptive-only exhibit (edge_claimed: false): calibration reliability diagrams and the Murphy Brier decomposition, per sport, model vs market. The model trails the market on Brier; the gap is resolution (information), not reliability (calibration).",
+  ...findingMeta("reliability"),
 };
 
 type Bin = { bin_lo: number; bin_hi: number; n: number; mean_p: number; mean_y: number };

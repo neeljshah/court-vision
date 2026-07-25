@@ -8,11 +8,13 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
+import { findingMeta } from "@/lib/analytics/og";
 
 export const metadata: Metadata = {
   title: "Verdict Flips",
   description:
     "Descriptive-only exhibit (edge_claimed: false): the claim families that changed their verdict as more data arrived, and how long each retracted claim survived before it was caught.",
+  ...findingMeta("verdict-flips"),
 };
 
 type Step = { verdict: string; status: string; corpus: string; n: number; effect: number | string; run_ts: string | null };

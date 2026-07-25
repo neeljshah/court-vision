@@ -10,11 +10,13 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
+import { findingMeta } from "@/lib/analytics/og";
 
 export const metadata: Metadata = {
   title: "Shrinkage",
   description:
     "Descriptive-only exhibit (edge_claimed: false): empirical-Bayes shrinkage on MLB Statcast rate leaderboards for a fixed 2022-2023 slice -- small-sample leaders regress toward the group mean.",
+  ...findingMeta("shrinkage"),
 };
 
 type Row = { name: string; n: number; raw_rate: number; shrunk_rate: number };

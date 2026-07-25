@@ -12,11 +12,13 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
+import { findingMeta } from "@/lib/analytics/og";
 
 export const metadata: Metadata = {
   title: "The Retraction Story",
   description:
     "Six retracted headline numbers, each paired with its honest, calibration-only replacement. Cites docs/JOB_EVIDENCE_PACKET.md.",
+  ...findingMeta("retraction"),
 };
 
 const PACKET_ASOF = "2026-07-23";

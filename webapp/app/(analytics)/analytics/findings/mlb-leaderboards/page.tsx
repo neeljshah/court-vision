@@ -10,11 +10,13 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
+import { findingMeta } from "@/lib/analytics/og";
 
 export const metadata: Metadata = {
   title: "MLB Leaderboards",
   description:
     "Descriptive-only exhibit (edge_claimed: false): MLB Statcast-derived catcher, umpire, and platoon leaderboards for a fixed 2022-2023 slice, shown beside two honest nulls -- an unstable park-factor read and a REJECTed umpire-totals gate.",
+  ...findingMeta("mlb-leaderboards"),
 };
 
 type NamedRate = { name: string; n_ooz_called: number; ooz_strike_rate: number };

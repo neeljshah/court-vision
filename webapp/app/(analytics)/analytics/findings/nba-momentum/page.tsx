@@ -9,11 +9,13 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
+import { findingMeta } from "@/lib/analytics/og";
 
 export const metadata: Metadata = {
   title: "NBA Momentum, Tested",
   description:
     "Descriptive-only exhibit (edge_claimed: false): confirmed NBA fatigue/rest/clutch effects vs null individual hot-cold carryover shapes.",
+  ...findingMeta("nba-momentum"),
 };
 
 type Claim = {

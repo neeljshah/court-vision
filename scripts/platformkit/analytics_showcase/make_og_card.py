@@ -20,7 +20,23 @@ import sys
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-OUT_PNG = os.path.join(ROOT, "webapp", "public", "brand", "og-analytics.png")
+BRAND = os.path.join(ROOT, "webapp", "public", "brand")
+OUT_PNG = os.path.join(BRAND, "og-analytics.png")
+
+# Per-findings share cards: (route slug, two-line headline). The flagship findings
+# pages are the most-shared content, so each gets a card carrying its own headline
+# instead of the generic default -- a distinct, compelling embed per shared link.
+FINDINGS = [
+    ("retraction", ["The six numbers", "we took back."]),
+    ("effective-sample-size", ["How independent", "is our data, really?"]),
+    ("verdict-flips", ["When we", "changed our mind."]),
+    ("mlb-leaderboards", ["Leaderboards, with", "the nulls attached."]),
+    ("tennis", ["Tennis: where", "momentum has a limit."]),
+    ("nba-momentum", ["NBA momentum,", "tested honestly."]),
+    ("q4-shift", ["The fourth-quarter", "shift, un-refused."]),
+    ("shrinkage", ["When the leaderboard", "regresses to the mean."]),
+    ("reliability", ["Are our", "probabilities honest?"]),
+]
 
 W, H = 1200, 630
 PAPER = (250, 246, 238)   # --paper  #FAF6EE
@@ -46,7 +62,8 @@ def _tracked(draw, xy, text, font, fill, spacing):
     return x
 
 
-def build():
+def _card(head_lines, tag_lines, kicker):
+    """Draw one 1200x630 card. kicker sits beside the lockup (e.g. 'FINDINGS')."""
     img = Image.new("RGB", (W, H), PAPER)
     d = ImageDraw.Draw(img)
 
@@ -55,29 +72,33 @@ def build():
     d.rectangle([12, 12, W - 13, 18], fill=ACCENT)  # top accent bar
 
     m = 72
-    # --- lockup row: filled triangle mark + CourtVision + ANALYTICS ---
+    # --- lockup row: filled triangle mark + CourtVision + ANALYTICS (+ kicker) ---
     ty = 70
-    tri = [(m, ty + 30), (m + 30, ty + 30), (m + 15, ty)]
-    d.polygon(tri, fill=ACCENT)
+    d.polygon([(m, ty + 30), (m + 30, ty + 30), (m + 15, ty)], fill=ACCENT)
     name_f = _font("georgiab.ttf", 40)
     x = m + 48
     d.text((x, ty - 6), "CourtVision", font=name_f, fill=INK)
     x += d.textlength("CourtVision", font=name_f) + 16
     kick_f = _font("georgia.ttf", 22)
-    _tracked(d, (x, ty + 6), "ANALYTICS", kick_f, INK3, 3)
+    x = _tracked(d, (x, ty + 6), "ANALYTICS", kick_f, INK3, 3)
+    if kicker:
+        x += 14
+        d.text((x, ty + 6), "/", font=kick_f, fill=RULE)
+        _tracked(d, (x + 16, ty + 6), kicker, kick_f, ACCENT, 3)
 
-    # --- headline ---
-    head_f = _font("georgiab.ttf", 78)
-    d.text((m, 210), "Every number", font=head_f, fill=INK)
-    d.text((m, 300), "wears its receipt.", font=head_f, fill=INK)
+    # --- headline (two lines) ---
+    head_f = _font("georgiab.ttf", 72)
+    d.text((m, 214), head_lines[0], font=head_f, fill=INK)
+    d.text((m, 298), head_lines[1] if len(head_lines) > 1 else "", font=head_f, fill=INK)
 
     # accent rule under the headline
-    d.rectangle([m, 415, m + 120, 419], fill=ACCENT)
+    d.rectangle([m, 410, m + 120, 414], fill=ACCENT)
 
     # --- tagline (two lines) ---
     tag_f = _font("georgia.ttf", 30)
-    d.text((m, 445), "Honestly-measured sports analytics across", font=tag_f, fill=INK2)
-    d.text((m, 486), "basketball, baseball, soccer, and tennis.", font=tag_f, fill=INK2)
+    d.text((m, 442), tag_lines[0], font=tag_f, fill=INK2)
+    if len(tag_lines) > 1:
+        d.text((m, 483), tag_lines[1], font=tag_f, fill=INK2)
 
     # --- footer: url + honest rail ---
     foot_f = _font("georgia.ttf", 23)
@@ -85,21 +106,36 @@ def build():
     rail = "No dollar edge is claimed."
     rw = d.textlength(rail, font=foot_f)
     d.text((W - m - rw, 552), rail, font=foot_f, fill=INK3)
+    return img
 
-    os.makedirs(os.path.dirname(OUT_PNG), exist_ok=True)
-    img.save(OUT_PNG, "PNG")
+
+def build():
+    os.makedirs(BRAND, exist_ok=True)
+    default = _card(
+        ["Every number", "wears its receipt."],
+        ["Honestly-measured sports analytics across", "basketball, baseball, soccer, and tennis."],
+        "",
+    )
+    default.save(OUT_PNG, "PNG")
     print("wrote %s (%dx%d)" % (OUT_PNG, W, H))
+    for slug, head in FINDINGS:
+        card = _card(head, ["A CourtVision Analytics finding -- measured, receipted,", "and published with its confounds and nulls in plain sight."], "FINDINGS")
+        p = os.path.join(BRAND, "og-finding-%s.png" % slug)
+        card.save(p, "PNG")
+        print("wrote %s" % os.path.basename(p))
 
 
 def check():
-    assert os.path.exists(OUT_PNG), "og-analytics.png not built"
-    im = Image.open(OUT_PNG)
-    assert im.size == (W, H), "expected 1200x630, got %s" % (im.size,)
-    assert im.mode == "RGB"
-    # top-left should be paper-ish (inside the frame), not black -> card actually drew
-    px = im.getpixel((40, 300))
-    assert abs(px[0] - PAPER[0]) < 20, "background not paper-colored: %s" % (px,)
-    print("OK")
+    paths = [OUT_PNG] + [os.path.join(BRAND, "og-finding-%s.png" % s) for s, _ in FINDINGS]
+    for p in paths:
+        assert os.path.exists(p), "%s not built" % os.path.basename(p)
+        im = Image.open(p)
+        assert im.size == (W, H), "%s: expected 1200x630, got %s" % (os.path.basename(p), im.size)
+        assert im.mode == "RGB"
+        px = im.getpixel((40, 300))
+        assert abs(px[0] - PAPER[0]) < 20, "%s: background not paper: %s" % (os.path.basename(p), px)
+    assert len(paths) == 10, "expected 1 default + 9 findings cards"
+    print("OK (%d cards)" % len(paths))
 
 
 if __name__ == "__main__":
