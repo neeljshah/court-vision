@@ -1,0 +1,135 @@
+{
+  "status": "ok",
+  "generated_at": "2026-07-25T04:34:37.481061+00:00",
+  "descriptive_only": true,
+  "edge_claimed": false,
+  "headline": "The betting market is well-calibrated: MLB moneyline is essentially efficient, tennis shows only a mild favorite-longshot bias.",
+  "method": "Proportional devig of the two-way closing price -> implied probability; favorite = max(q, 1-q); bucketed by favorite implied probability, each bucket reports n, mean implied, realized favorite win-rate, the gap, and a 95% Wilson interval -- each row is one independent match/game.",
+  "grades": "the market, not our model",
+  "sports": {
+    "tennis": {
+      "book": "Pinnacle (close)",
+      "market": "match winner",
+      "n_total": 33713,
+      "buckets": [
+        {
+          "lo": 0.5,
+          "hi": 0.6,
+          "n": 9664,
+          "impl": 0.5532,
+          "real": 0.5506,
+          "gap": -0.0026,
+          "wilson_lo": 0.5407,
+          "wilson_hi": 0.5605
+        },
+        {
+          "lo": 0.6,
+          "hi": 0.7,
+          "n": 9744,
+          "impl": 0.6483,
+          "real": 0.6495,
+          "gap": 0.0013,
+          "wilson_lo": 0.64,
+          "wilson_hi": 0.6589
+        },
+        {
+          "lo": 0.7,
+          "hi": 0.8,
+          "n": 7570,
+          "impl": 0.7474,
+          "real": 0.7563,
+          "gap": 0.0089,
+          "wilson_lo": 0.7465,
+          "wilson_hi": 0.7658
+        },
+        {
+          "lo": 0.8,
+          "hi": 0.9,
+          "n": 4885,
+          "impl": 0.8452,
+          "real": 0.8583,
+          "gap": 0.0131,
+          "wilson_lo": 0.8483,
+          "wilson_hi": 0.8678
+        },
+        {
+          "lo": 0.9,
+          "hi": 1.001,
+          "n": 1850,
+          "impl": 0.9321,
+          "real": 0.9497,
+          "gap": 0.0176,
+          "wilson_lo": 0.9388,
+          "wilson_hi": 0.9588
+        }
+      ],
+      "verdict": "mild monotone favorite-longshot bias"
+    },
+    "mlb": {
+      "book": "closing line",
+      "market": "moneyline",
+      "n_total": 27983,
+      "buckets": [
+        {
+          "lo": 0.5,
+          "hi": 0.55,
+          "n": 10685,
+          "impl": 0.5226,
+          "real": 0.5258,
+          "gap": 0.0032,
+          "wilson_lo": 0.5163,
+          "wilson_hi": 0.5352
+        },
+        {
+          "lo": 0.55,
+          "hi": 0.6,
+          "n": 8497,
+          "impl": 0.5731,
+          "real": 0.5786,
+          "gap": 0.0055,
+          "wilson_lo": 0.568,
+          "wilson_hi": 0.589
+        },
+        {
+          "lo": 0.6,
+          "hi": 0.65,
+          "n": 5800,
+          "impl": 0.6233,
+          "real": 0.6155,
+          "gap": -0.0078,
+          "wilson_lo": 0.6029,
+          "wilson_hi": 0.628
+        },
+        {
+          "lo": 0.65,
+          "hi": 0.8,
+          "n": 2994,
+          "impl": 0.687,
+          "real": 0.7031,
+          "gap": 0.0161,
+          "wilson_lo": 0.6865,
+          "wilson_hi": 0.7192
+        }
+      ],
+      "verdict": "essentially efficient -- no systematic bias"
+    }
+  },
+  "observation_window": {
+    "note": "committed odds corpora (decade-plus per sport), not a rolling cache; pregame closing prices"
+  },
+  "confounds": [
+    "proportional devig shifts absolute probability levels vs. other devig methods",
+    "closing snapshot only, not a continuous feed",
+    "each row is one independent match/game, so binomial Wilson CIs are valid here -- unlike in-game ticks, which are dependent within an event",
+    "favorite is defined by closing price, not by any external ranking",
+    "bucket boundaries are declared upfront, not tuned to the data",
+    "this grades the market's own calibration, not our model -- nothing here is a claim about beating it"
+  ],
+  "receipt": {
+    "source_parquets": [
+      "data/domains/tennis/odds.parquet",
+      "data/domains/mlb/odds.parquet",
+      "data/domains/mlb/games.parquet"
+    ]
+  }
+}

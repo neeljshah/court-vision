@@ -1,11 +1,11 @@
 {
  "generated_from": "scripts/platformkit/analytics_showcase/out",
- "module_count": 73,
+ "module_count": 74,
  "atlas_card_count": 1549,
  "checks_green": {
   "green": true,
-  "pass": 95,
-  "total": 95
+  "pass": 96,
+  "total": 96
  },
  "edge_claimed": false,
  "modules": [
@@ -72,7 +72,7 @@
    "chart_path": "docs/img/brier_skill_scores.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:26:48.936831+00:00",
+   "as_of": "2026-07-25T04:34:43.456609+00:00",
    "evidence_page": null
   },
   {
@@ -226,7 +226,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:26:55.837205+00:00",
+   "as_of": "2026-07-25T04:34:49.614869+00:00",
    "evidence_page": null
   },
   {
@@ -329,6 +329,17 @@
    "evidence_page": "docs/evidence/market-disagreement.md"
   },
   {
+   "id": "market_favorite_longshot",
+   "title": "Market Favorite Longshot",
+   "one_line": "The betting market is well-calibrated: MLB moneyline is essentially efficient, tennis shows only a mild favorite-longshot bias.",
+   "out_path": "scripts/platformkit/analytics_showcase/out/market_favorite_longshot.json",
+   "chart_path": null,
+   "status": "ok",
+   "edge_claimed": false,
+   "as_of": "2026-07-25T04:34:37.481061+00:00",
+   "evidence_page": null
+  },
+  {
    "id": "market_overreaction",
    "title": "Market Overreaction",
    "one_line": "",
@@ -391,7 +402,7 @@
    "chart_path": "docs/img/mlb_count_leverage.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:27:32.053907+00:00",
+   "as_of": "2026-07-25T04:35:24.623383+00:00",
    "evidence_page": null
   },
   {
@@ -479,7 +490,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:27:37.074151+00:00",
+   "as_of": "2026-07-25T04:35:29.362952+00:00",
    "evidence_page": null
   },
   {
@@ -567,7 +578,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:27:41.782726+00:00",
+   "as_of": "2026-07-25T04:35:33.799270+00:00",
    "evidence_page": null
   },
   {
@@ -589,7 +600,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:27:42.267408+00:00",
+   "as_of": "2026-07-25T04:35:34.256429+00:00",
    "evidence_page": null
   },
   {
@@ -600,7 +611,7 @@
    "chart_path": "docs/img/pitch_sequencing.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:27:43.016676+00:00",
+   "as_of": "2026-07-25T04:35:34.956477+00:00",
    "evidence_page": null
   },
   {
@@ -743,7 +754,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:27:51.216183+00:00",
+   "as_of": "2026-07-25T04:35:42.946543+00:00",
    "evidence_page": null
   },
   {
@@ -787,7 +798,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:27:53.025570+00:00",
+   "as_of": "2026-07-25T04:35:44.589673+00:00",
    "evidence_page": null
   },
   {

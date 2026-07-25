@@ -42,6 +42,7 @@ FINDINGS = [
     ("rim-deterrence", ["Who bends", "the shot chart."]),
     ("league-parity", ["How competitive", "is each season?"]),
     ("lineup-synergy", ["Greater than", "the sum of parts."]),
+    ("favorite-longshot", ["Is the market", "calibrated?"]),
 ]
 
 W, H = 1200, 630

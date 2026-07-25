@@ -161,6 +161,18 @@ def v_lineup_synergy(d):
     assert len(d["top"][0]["members"]) == 5, "lineup_synergy.top[0].members must have 5 entries"
 
 
+def v_market_favorite_longshot(d):
+    _req(d, ["sports"], "market_favorite_longshot")
+    _is(d, "sports", dict, "market_favorite_longshot")
+    _req(d["sports"], ["tennis", "mlb"], "market_favorite_longshot.sports")
+    tennis = d["sports"]["tennis"]
+    _req(tennis, ["buckets"], "market_favorite_longshot.sports.tennis")
+    _is(tennis, "buckets", list, "market_favorite_longshot.sports.tennis")
+    assert tennis["buckets"], "market_favorite_longshot.sports.tennis.buckets is empty"
+    _req(tennis["buckets"][0], ["real", "wilson_lo"], "market_favorite_longshot.sports.tennis.buckets[0]")
+    assert "mlb" in d["sports"], "market_favorite_longshot.sports missing mlb"
+
+
 def v_search_records(d):
     _req(d, ["records", "counts"], "search_records")
     _is(d, "records", list, "search_records")
@@ -189,6 +201,7 @@ VALIDATORS = {
     "rim_deterrence.json": v_rim_deterrence,
     "league_parity_index.json": v_league_parity_index,
     "lineup_synergy.json": v_lineup_synergy,
+    "market_favorite_longshot.json": v_market_favorite_longshot,
     "search_records.json": v_search_records,
 }
 

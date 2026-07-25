@@ -108,6 +108,12 @@ const FINDINGS: Array<{ href: string; title: string; blurb: string }> = [
     blurb:
       "A five-man lineup-synergy ledger: the Grizzlies' Jackson-Morant-Bane-Edey-Wells five topped 2024-25 at +24.32 net-per-48 above expected -- published beside the single-season and small-minutes confounds.",
   },
+  {
+    href: "/analytics/findings/favorite-longshot",
+    title: "Is the market calibrated?",
+    blurb:
+      "A favorite-longshot bias audit that grades the MARKET, not our model: tennis shows a mild, monotone bias favoring favorites (gap grows from -0.0026 to +0.0176 across five buckets), while MLB moneyline is essentially efficient.",
+  },
 ];
 
 const h1: CSSProperties = {
