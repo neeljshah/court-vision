@@ -1,0 +1,91 @@
+# webapp QA gate -- the honesty + regression guard for the analytics site.
+#
+# This does NOT block the Deploy demo workflow (it runs independently on the same
+# push); it is the signal that a change broke a hard invariant. The hard gates are
+# the ones a human has been checking by hand on every ship:
+#   * typecheck               -- the build's type contract
+#   * the honesty grep        -- the crown jewel: fails if a RETRACTED figure
+#                                (+18.38 / 78.11 / 54.57 / 8.94 / +54%) appears in
+#                                shipped HTML OUTSIDE the pages that frame it as a
+#                                retraction. 0.119 is deliberately NOT grepped: it
+#                                collides with legitimate descriptive stats (tennis
+#                                rates), so a numeric grep cannot tell the retracted
+#                                endQ3 value from an honest one.
+#   * page-count tripwire      -- guards against a template refactor silently
+#                                deleting thousands of exported pages.
+# lint and test are reported but non-blocking: the repo carries known pre-existing
+# lint warnings and ~16 terminal-app test failures unrelated to the analytics site;
+# making them hard gates would fail red on day one and train everyone to ignore it.
+name: webapp QA
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - "webapp/**"
+  pull_request:
+    paths:
+      - "webapp/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: webapp
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: webapp/package-lock.json
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Typecheck (hard gate)
+        run: npm run typecheck
+
+      - name: Lint (report-only)
+        run: npm run lint || echo "::warning::lint reported issues (non-blocking)"
+
+      - name: Unit tests (report-only)
+        run: npm run test || echo "::warning::vitest reported failures (non-blocking; known pre-existing)"
+
+      - name: Static export (snapshot data mode)
+        env:
+          NEXT_PUBLIC_DATA_MODE: snapshot
+          NEXT_PUBLIC_BASE_PATH: /court-vision
+        run: npm run build
+
+      - name: Honesty gate -- no retracted figures outside retraction framing (hard gate)
+        run: |
+          # Legit retraction / limitations surfaces where these numbers MUST appear,
+          # struck through and labelled. Anywhere else is a regression.
+          ALLOW='findings/retraction|evidence/retraction-story|methodology/'
+          # Each retracted figure is bounded by non-digits so 8.94 does not match
+          # 18.945 etc; +54% is matched literally.
+          HITS=$(grep -rElE '([^0-9])(18\.38|78\.11|54\.57|8\.94)([^0-9])|\+54%' out --include='*.html' \
+                 | grep -vE "$ALLOW" || true)
+          if [ -n "$HITS" ]; then
+            echo "::error::Honesty gate FAILED -- a retracted figure appears outside retraction framing:"
+            echo "$HITS"
+            exit 1
+          fi
+          echo "Honesty gate GREEN: no retracted figures leaked into shipped HTML."
+
+      - name: Page-count tripwire (hard gate)
+        run: |
+          N=$(find out -name '*.html' | wc -l)
+          echo "Exported HTML pages: $N"
+          if [ "$N" -lt 3200 ]; then
+            echo "::error::Page-count tripwire FAILED -- only $N pages (< 3200). A template refactor may have dropped routes."
+            exit 1
+          fi
+          echo "Page-count tripwire GREEN ($N >= 3200)."
