@@ -40,6 +40,7 @@ FINDINGS = [
     ("soccer-home-advantage", ["Home advantage,", "and why it grew."]),
     ("bookmaker-accuracy", ["We graded", "the bookmakers."]),
     ("rim-deterrence", ["Who bends", "the shot chart."]),
+    ("league-parity", ["How competitive", "is each season?"]),
 ]
 
 W, H = 1200, 630

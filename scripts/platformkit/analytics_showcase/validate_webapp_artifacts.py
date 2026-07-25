@@ -144,6 +144,15 @@ def v_rim_deterrence(d):
     _req(d["seasons"][0]["leaders"][0], ["player_name", "delta"], "rim_deterrence.seasons[0].leaders[0]")
 
 
+def v_league_parity_index(d):
+    _req(d, ["seasons", "extremes_descriptive"], "league_parity_index")
+    _is(d, "seasons", list, "league_parity_index")
+    assert d["seasons"], "league_parity_index.seasons is empty"
+    _req(d["seasons"][0], ["season", "win_share_gini"], "league_parity_index.seasons[0]")
+    _req(d["extremes_descriptive"], ["most_balanced_season", "least_balanced_season"],
+         "league_parity_index.extremes_descriptive")
+
+
 def v_search_records(d):
     _req(d, ["records", "counts"], "search_records")
     _is(d, "records", list, "search_records")
@@ -170,6 +179,7 @@ VALIDATORS = {
     "soccer_home_advantage.json": v_soccer_home_advantage,
     "bookmaker_accuracy.json": v_bookmaker_accuracy,
     "rim_deterrence.json": v_rim_deterrence,
+    "league_parity_index.json": v_league_parity_index,
     "search_records.json": v_search_records,
 }
 

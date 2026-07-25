@@ -96,6 +96,12 @@ const FINDINGS: Array<{ href: string; title: string; blurb: string }> = [
     blurb:
       "A transparent on/off rim-deterrence leaderboard from real NBA zone splits: Wembanyama (-0.0618) and Gobert (-0.0632) top their seasons, matching the eye test -- published beside the roster confound it can't remove.",
   },
+  {
+    href: "/analytics/findings/league-parity",
+    title: "How competitive is each season?",
+    blurb:
+      "A 3-season parity ledger: win-share Gini rose from 0.177 (2023-24) to 0.2004 (2025-26), published beside the partial-season and playoff-pooling caveats that keep it a description, not a trend.",
+  },
 ];
 
 const h1: CSSProperties = {
