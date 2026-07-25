@@ -90,6 +90,12 @@ const FINDINGS: Array<{ href: string; title: string; blurb: string }> = [
     blurb:
       "Proportional-devig Brier on shared-game subsets: Pinnacle is barely the sharpest book on tennis match-winner (0.1975 vs Bet365's 0.1980), while on soccer over/under 2.5 goals the books are a statistical dead heat.",
   },
+  {
+    href: "/analytics/findings/rim-deterrence",
+    title: "Who bends the shot chart",
+    blurb:
+      "A transparent on/off rim-deterrence leaderboard from real NBA zone splits: Wembanyama (-0.0618) and Gobert (-0.0632) top their seasons, matching the eye test -- published beside the roster confound it can't remove.",
+  },
 ];
 
 const h1: CSSProperties = {

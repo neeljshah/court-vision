@@ -39,6 +39,7 @@ FINDINGS = [
     ("forecast-life", ["The life", "of a forecast."]),
     ("soccer-home-advantage", ["Home advantage,", "and why it grew."]),
     ("bookmaker-accuracy", ["We graded", "the bookmakers."]),
+    ("rim-deterrence", ["Who bends", "the shot chart."]),
 ]
 
 W, H = 1200, 630

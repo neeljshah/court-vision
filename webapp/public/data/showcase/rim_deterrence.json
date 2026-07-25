@@ -1,0 +1,313 @@
+{
+ "status": "ok",
+ "generated_at": "2026-07-25T04:12:47.517923+00:00",
+ "descriptive_only": true,
+ "edge_claimed": false,
+ "headline": "Who makes opponents stop attacking the rim: a transparent on/off rim-deterrence leaderboard -- and the eye test agrees.",
+ "method": "On/off split from the real NBA zone shot-mix cache: for each player, compare the opponent's share of field-goal attempts taken at the rim while the player is on court vs off court, floored at 500 on-court minutes, ranked ascending by the on-minus-off delta.",
+ "metric_definition": "rim frequency deterrence delta = rim_share_allowed_on - rim_share_allowed_off; negative means the opponent attacks the rim less often with the player on the floor.",
+ "seasons": [
+  {
+   "season": "2025-26",
+   "n_qualified": 370,
+   "min_on_floor": 500,
+   "leaders": [
+    {
+     "rank": 1,
+     "player_name": "Victor Wembanyama",
+     "min_on": 2489.0,
+     "rim_share_allowed_on": 0.25,
+     "rim_share_allowed_off": 0.3118,
+     "delta": -0.0618,
+     "rim_efg_delta": -0.0287
+    },
+    {
+     "rank": 2,
+     "player_name": "Grant Williams",
+     "min_on": 625.4,
+     "rim_share_allowed_on": 0.2611,
+     "rim_share_allowed_off": 0.3206,
+     "delta": -0.0595,
+     "rim_efg_delta": -0.0192
+    },
+    {
+     "rank": 3,
+     "player_name": "Dorian Finney-Smith",
+     "min_on": 620.3,
+     "rim_share_allowed_on": 0.2498,
+     "rim_share_allowed_off": 0.3043,
+     "delta": -0.0545,
+     "rim_efg_delta": 0.042
+    },
+    {
+     "rank": 4,
+     "player_name": "Jaren Jackson Jr.",
+     "min_on": 1384.2,
+     "rim_share_allowed_on": 0.2484,
+     "rim_share_allowed_off": 0.2997,
+     "delta": -0.0513,
+     "rim_efg_delta": -0.0454
+    },
+    {
+     "rank": 5,
+     "player_name": "Tyrese Martin",
+     "min_on": 696.0,
+     "rim_share_allowed_on": 0.2732,
+     "rim_share_allowed_off": 0.3234,
+     "delta": -0.0502,
+     "rim_efg_delta": 0.0224
+    },
+    {
+     "rank": 6,
+     "player_name": "Cedric Coward",
+     "min_on": 1524.6,
+     "rim_share_allowed_on": 0.2644,
+     "rim_share_allowed_off": 0.3136,
+     "delta": -0.0492,
+     "rim_efg_delta": -0.0974
+    },
+    {
+     "rank": 7,
+     "player_name": "Drew Eubanks",
+     "min_on": 552.3,
+     "rim_share_allowed_on": 0.2643,
+     "rim_share_allowed_off": 0.3116,
+     "delta": -0.0473,
+     "rim_efg_delta": -0.087
+    },
+    {
+     "rank": 8,
+     "player_name": "Kyshawn George",
+     "min_on": 1390.8,
+     "rim_share_allowed_on": 0.2674,
+     "rim_share_allowed_off": 0.3134,
+     "delta": -0.046,
+     "rim_efg_delta": -0.0133
+    },
+    {
+     "rank": 9,
+     "player_name": "Rudy Gobert",
+     "min_on": 2357.3,
+     "rim_share_allowed_on": 0.3047,
+     "rim_share_allowed_off": 0.3485,
+     "delta": -0.0438,
+     "rim_efg_delta": -0.0414
+    },
+    {
+     "rank": 10,
+     "player_name": "Donovan Clingan",
+     "min_on": 2015.3,
+     "rim_share_allowed_on": 0.2522,
+     "rim_share_allowed_off": 0.2947,
+     "delta": -0.0425,
+     "rim_efg_delta": -0.0168
+    },
+    {
+     "rank": 11,
+     "player_name": "Daniel Gafford",
+     "min_on": 1139.1,
+     "rim_share_allowed_on": 0.2614,
+     "rim_share_allowed_off": 0.3006,
+     "delta": -0.0392,
+     "rim_efg_delta": 0.0368
+    },
+    {
+     "rank": 12,
+     "player_name": "OG Anunoby",
+     "min_on": 2685.7,
+     "rim_share_allowed_on": 0.2865,
+     "rim_share_allowed_off": 0.3248,
+     "delta": -0.0383,
+     "rim_efg_delta": -0.013
+    },
+    {
+     "rank": 13,
+     "player_name": "Steven Adams",
+     "min_on": 730.5,
+     "rim_share_allowed_on": 0.2445,
+     "rim_share_allowed_off": 0.2825,
+     "delta": -0.038,
+     "rim_efg_delta": 0.0631
+    },
+    {
+     "rank": 14,
+     "player_name": "Lauri Markkanen",
+     "min_on": 1442.6,
+     "rim_share_allowed_on": 0.2377,
+     "rim_share_allowed_off": 0.275,
+     "delta": -0.0373,
+     "rim_efg_delta": -0.1157
+    },
+    {
+     "rank": 15,
+     "player_name": "Marcus Smart",
+     "min_on": 1768.0,
+     "rim_share_allowed_on": 0.2802,
+     "rim_share_allowed_off": 0.3163,
+     "delta": -0.0361,
+     "rim_efg_delta": 0.0072
+    }
+   ]
+  },
+  {
+   "season": "2024-25",
+   "n_qualified": 387,
+   "min_on_floor": 500,
+   "leaders": [
+    {
+     "rank": 1,
+     "player_name": "Rudy Gobert",
+     "min_on": 2388.5,
+     "rim_share_allowed_on": 0.2785,
+     "rim_share_allowed_off": 0.3417,
+     "delta": -0.0632,
+     "rim_efg_delta": -0.0636
+    },
+    {
+     "rank": 2,
+     "player_name": "Zach Collins",
+     "min_on": 552.0,
+     "rim_share_allowed_on": 0.2591,
+     "rim_share_allowed_off": 0.3184,
+     "delta": -0.0593,
+     "rim_efg_delta": -0.0686
+    },
+    {
+     "rank": 3,
+     "player_name": "Bogdan Bogdanovi\u0107",
+     "min_on": 597.9,
+     "rim_share_allowed_on": 0.2665,
+     "rim_share_allowed_off": 0.3256,
+     "delta": -0.0591,
+     "rim_efg_delta": -0.0361
+    },
+    {
+     "rank": 4,
+     "player_name": "Victor Wembanyama",
+     "min_on": 1527.2,
+     "rim_share_allowed_on": 0.2734,
+     "rim_share_allowed_off": 0.3275,
+     "delta": -0.0541,
+     "rim_efg_delta": -0.0299
+    },
+    {
+     "rank": 5,
+     "player_name": "Joel Embiid",
+     "min_on": 574.3,
+     "rim_share_allowed_on": 0.23,
+     "rim_share_allowed_off": 0.2826,
+     "delta": -0.0526,
+     "rim_efg_delta": -0.0307
+    },
+    {
+     "rank": 6,
+     "player_name": "Ivica Zubac",
+     "min_on": 2624.4,
+     "rim_share_allowed_on": 0.2624,
+     "rim_share_allowed_off": 0.3139,
+     "delta": -0.0515,
+     "rim_efg_delta": -0.0058
+    },
+    {
+     "rank": 7,
+     "player_name": "OG Anunoby",
+     "min_on": 2705.8,
+     "rim_share_allowed_on": 0.2788,
+     "rim_share_allowed_off": 0.3235,
+     "delta": -0.0447,
+     "rim_efg_delta": -0.0108
+    },
+    {
+     "rank": 8,
+     "player_name": "Steven Adams",
+     "min_on": 795.5,
+     "rim_share_allowed_on": 0.2478,
+     "rim_share_allowed_off": 0.2922,
+     "delta": -0.0444,
+     "rim_efg_delta": -0.0232
+    },
+    {
+     "rank": 9,
+     "player_name": "Jaylin Williams",
+     "min_on": 784.1,
+     "rim_share_allowed_on": 0.2131,
+     "rim_share_allowed_off": 0.2571,
+     "delta": -0.044,
+     "rim_efg_delta": 0.0113
+    },
+    {
+     "rank": 10,
+     "player_name": "Quinten Post",
+     "min_on": 685.7,
+     "rim_share_allowed_on": 0.2566,
+     "rim_share_allowed_off": 0.3005,
+     "delta": -0.0439,
+     "rim_efg_delta": -0.0774
+    },
+    {
+     "rank": 11,
+     "player_name": "Josh Hart",
+     "min_on": 2896.8,
+     "rim_share_allowed_on": 0.2841,
+     "rim_share_allowed_off": 0.3276,
+     "delta": -0.0435,
+     "rim_efg_delta": 0.058
+    },
+    {
+     "rank": 12,
+     "player_name": "Jonas Valan\u010di\u016bnas",
+     "min_on": 541.4,
+     "rim_share_allowed_on": 0.2516,
+     "rim_share_allowed_off": 0.2916,
+     "delta": -0.04,
+     "rim_efg_delta": -0.0206
+    },
+    {
+     "rank": 13,
+     "player_name": "Draymond Green",
+     "min_on": 1983.3,
+     "rim_share_allowed_on": 0.2444,
+     "rim_share_allowed_off": 0.2837,
+     "delta": -0.0393,
+     "rim_efg_delta": -0.0106
+    },
+    {
+     "rank": 14,
+     "player_name": "Nikola Joki\u0107",
+     "min_on": 2570.9,
+     "rim_share_allowed_on": 0.2587,
+     "rim_share_allowed_off": 0.2971,
+     "delta": -0.0384,
+     "rim_efg_delta": 0.0639
+    },
+    {
+     "rank": 15,
+     "player_name": "Georges Niang",
+     "min_on": 1053.3,
+     "rim_share_allowed_on": 0.2557,
+     "rim_share_allowed_off": 0.2937,
+     "delta": -0.038,
+     "rim_efg_delta": 0.0057
+    }
+   ]
+  }
+ ],
+ "observation_window": {
+  "seasons": [
+   "2025-26",
+   "2024-25"
+  ],
+  "note": "complete NBA seasons from the local stint/zone-onoff cache"
+ },
+ "confounds": [
+  "roster confound: teammates and defensive scheme are bundled into the on-court delta -- this is descriptive on-court association, not isolated individual causation",
+  "opponent-raw: no shot-quality or opponent-strength model",
+  "min_on >= 500 floor applied -- on/off is noisy for small on-court samples, so bench players below the floor are excluded"
+ ],
+ "receipt": {
+  "source_parquets": [
+   "data/cache/team_system/lineups/zone_onoff_2025_26.parquet",
+   "data/cache/team_system/lineups/zone_onoff_2024_25.parquet"
+  ]
+ }
+}

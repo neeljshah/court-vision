@@ -1,11 +1,11 @@
 {
   "generated_from": "scripts/platformkit/analytics_showcase/out",
-  "module_count": 71,
+  "module_count": 72,
   "atlas_card_count": 1549,
   "checks_green": {
     "green": true,
-    "pass": 93,
-    "total": 93
+    "pass": 94,
+    "total": 94
   },
   "edge_claimed": false,
   "modules": [
@@ -72,7 +72,7 @@
       "chart_path": "docs/img/brier_skill_scores.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-25T04:05:41.989938+00:00",
+      "as_of": "2026-07-25T04:13:43.474593+00:00",
       "evidence_page": null
     },
     {
@@ -226,7 +226,7 @@
       "chart_path": null,
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-25T04:05:48.149076+00:00",
+      "as_of": "2026-07-25T04:13:49.794809+00:00",
       "evidence_page": null
     },
     {
@@ -380,7 +380,7 @@
       "chart_path": "docs/img/mlb_count_leverage.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-25T04:06:23.346182+00:00",
+      "as_of": "2026-07-25T04:14:24.433508+00:00",
       "evidence_page": null
     },
     {
@@ -468,7 +468,7 @@
       "chart_path": null,
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-25T04:06:28.123533+00:00",
+      "as_of": "2026-07-25T04:14:29.173730+00:00",
       "evidence_page": null
     },
     {
@@ -556,7 +556,7 @@
       "chart_path": null,
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-25T04:06:32.544393+00:00",
+      "as_of": "2026-07-25T04:14:33.648700+00:00",
       "evidence_page": null
     },
     {
@@ -578,7 +578,7 @@
       "chart_path": null,
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-25T04:06:33.001963+00:00",
+      "as_of": "2026-07-25T04:14:34.110541+00:00",
       "evidence_page": null
     },
     {
@@ -589,7 +589,7 @@
       "chart_path": "docs/img/pitch_sequencing.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-25T04:06:33.709965+00:00",
+      "as_of": "2026-07-25T04:14:34.814380+00:00",
       "evidence_page": null
     },
     {
@@ -645,6 +645,17 @@
       "status": "partial",
       "edge_claimed": false,
       "as_of": null,
+      "evidence_page": null
+    },
+    {
+      "id": "rim_deterrence",
+      "title": "Rim Deterrence",
+      "one_line": "Who makes opponents stop attacking the rim: a transparent on/off rim-deterrence leaderboard -- and the eye test agrees.",
+      "out_path": "scripts/platformkit/analytics_showcase/out/rim_deterrence.json",
+      "chart_path": null,
+      "status": "ok",
+      "edge_claimed": false,
+      "as_of": "2026-07-25T04:12:47.517923+00:00",
       "evidence_page": null
     },
     {
@@ -721,7 +732,7 @@
       "chart_path": null,
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-25T04:06:41.627968+00:00",
+      "as_of": "2026-07-25T04:14:42.768578+00:00",
       "evidence_page": null
     },
     {
@@ -765,7 +776,7 @@
       "chart_path": null,
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-25T04:06:43.267345+00:00",
+      "as_of": "2026-07-25T04:14:44.418032+00:00",
       "evidence_page": null
     },
     {

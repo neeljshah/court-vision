@@ -135,6 +135,15 @@ def v_bookmaker_accuracy(d):
         _req(block["books"][0], ["book", "brier", "n"], "bookmaker_accuracy.sports.%s.books[0]" % sport)
 
 
+def v_rim_deterrence(d):
+    _req(d, ["seasons"], "rim_deterrence")
+    _is(d, "seasons", list, "rim_deterrence")
+    assert d["seasons"], "rim_deterrence.seasons is empty"
+    _req(d["seasons"][0], ["season", "n_qualified", "leaders"], "rim_deterrence.seasons[0]")
+    assert d["seasons"][0]["leaders"], "rim_deterrence.seasons[0].leaders is empty"
+    _req(d["seasons"][0]["leaders"][0], ["player_name", "delta"], "rim_deterrence.seasons[0].leaders[0]")
+
+
 def v_search_records(d):
     _req(d, ["records", "counts"], "search_records")
     _is(d, "records", list, "search_records")
@@ -160,6 +169,7 @@ VALIDATORS = {
     "info_arrival_curve.json": v_info_arrival,
     "soccer_home_advantage.json": v_soccer_home_advantage,
     "bookmaker_accuracy.json": v_bookmaker_accuracy,
+    "rim_deterrence.json": v_rim_deterrence,
     "search_records.json": v_search_records,
 }
 
