@@ -37,6 +37,7 @@ FINDINGS = [
     ("shrinkage", ["When the leaderboard", "regresses to the mean."]),
     ("reliability", ["Are our", "probabilities honest?"]),
     ("forecast-life", ["The life", "of a forecast."]),
+    ("soccer-home-advantage", ["Home advantage,", "and why it grew."]),
 ]
 
 W, H = 1200, 630

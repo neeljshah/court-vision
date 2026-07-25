@@ -1,11 +1,11 @@
 {
   "generated_from": "scripts/platformkit/analytics_showcase/out",
-  "module_count": 69,
+  "module_count": 70,
   "atlas_card_count": 1549,
   "checks_green": {
     "green": true,
-    "pass": 88,
-    "total": 88
+    "pass": 92,
+    "total": 92
   },
   "edge_claimed": false,
   "modules": [
@@ -61,7 +61,7 @@
       "chart_path": "docs/img/brier_skill_scores.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T23:05:21.384450+00:00",
+      "as_of": "2026-07-25T03:54:09.601856+00:00",
       "evidence_page": null
     },
     {
@@ -215,7 +215,7 @@
       "chart_path": null,
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T23:05:28.385205+00:00",
+      "as_of": "2026-07-25T03:54:19.293695+00:00",
       "evidence_page": null
     },
     {
@@ -347,7 +347,7 @@
       "chart_path": "docs/img/micro_absorption.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24",
+      "as_of": "2026-07-25",
       "evidence_page": "docs/evidence/true-intelligence.md"
     },
     {
@@ -369,7 +369,7 @@
       "chart_path": "docs/img/mlb_count_leverage.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T23:06:04.180569+00:00",
+      "as_of": "2026-07-25T03:55:01.269442+00:00",
       "evidence_page": null
     },
     {
@@ -457,7 +457,7 @@
       "chart_path": null,
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T23:06:09.593372+00:00",
+      "as_of": "2026-07-25T03:55:06.570153+00:00",
       "evidence_page": null
     },
     {
@@ -479,7 +479,7 @@
       "chart_path": "docs/img/novel_line_half_life.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24",
+      "as_of": "2026-07-25",
       "evidence_page": null
     },
     {
@@ -545,7 +545,7 @@
       "chart_path": null,
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T23:06:14.807107+00:00",
+      "as_of": "2026-07-25T03:55:11.474318+00:00",
       "evidence_page": null
     },
     {
@@ -567,7 +567,7 @@
       "chart_path": null,
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T23:06:15.343551+00:00",
+      "as_of": "2026-07-25T03:55:11.993200+00:00",
       "evidence_page": null
     },
     {
@@ -578,7 +578,7 @@
       "chart_path": "docs/img/pitch_sequencing.png",
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T23:06:16.158677+00:00",
+      "as_of": "2026-07-25T03:55:12.823756+00:00",
       "evidence_page": null
     },
     {
@@ -670,6 +670,17 @@
       "evidence_page": null
     },
     {
+      "id": "soccer_home_advantage",
+      "title": "Soccer Home Advantage",
+      "one_line": "Home advantage is real; the true-home/neutral gap grew not because true-home rose (it is flat) but because neutral-venue advantage collapsed over time.",
+      "out_path": "scripts/platformkit/analytics_showcase/out/soccer_home_advantage.json",
+      "chart_path": null,
+      "status": "ok",
+      "edge_claimed": false,
+      "as_of": "2026-07-25T03:52:27.217372+00:00",
+      "evidence_page": null
+    },
+    {
       "id": "statcast_showcase",
       "title": "Statcast Showcase",
       "one_line": "",
@@ -699,7 +710,7 @@
       "chart_path": null,
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T23:06:24.817896+00:00",
+      "as_of": "2026-07-25T03:55:21.518996+00:00",
       "evidence_page": null
     },
     {
@@ -743,7 +754,7 @@
       "chart_path": null,
       "status": "ok",
       "edge_claimed": false,
-      "as_of": "2026-07-24T23:06:26.659525+00:00",
+      "as_of": "2026-07-25T03:55:23.429909+00:00",
       "evidence_page": null
     },
     {

@@ -78,6 +78,12 @@ const FINDINGS: Array<{ href: string; title: string; blurb: string }> = [
     blurb:
       "How a market absorbs information, twice: pre-game line half-life per sport, then in-game Brier checkpoints where the market stays ahead of our model at every point measured. Descriptive only, same honest gap as reliability.",
   },
+  {
+    href: "/analytics/findings/soccer-home-advantage",
+    title: "Home advantage, decomposed",
+    blurb:
+      "49,425 international matches split on the real neutral-site flag: the true-home/neutral goal-diff gap grew from 0.22 to 0.50 not because true-home advantage rose (flat) but because the neutral-venue edge collapsed over time.",
+  },
 ];
 
 const h1: CSSProperties = {

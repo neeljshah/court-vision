@@ -1,0 +1,101 @@
+{
+  "status": "ok",
+  "generated_at": "2026-07-25T03:52:27.217372+00:00",
+  "descriptive_only": true,
+  "edge_claimed": false,
+  "headline": "Home advantage is real; the true-home/neutral gap grew not because true-home rose (it is flat) but because neutral-venue advantage collapsed over time.",
+  "method": "Venue-control decomposition: matches are split on the real `neutral` flag into true-home (neutral=False) vs neutral-site (neutral=True), then goal difference and win/draw/away rates are compared within era and tournament type. The neutral split is the natural control -- not a random assignment.",
+  "source_parquet": "data/domains/soccer_intl/results.parquet",
+  "observation_window": {
+    "first_date": "1872-11-30",
+    "last_date": "2026-06-16",
+    "n_matches_played": 49425,
+    "note": "the full committed international-results corpus (~150 years, 1872-2026), not a rolling cache"
+  },
+  "venue": {
+    "true_home": {
+      "n": 36350,
+      "home_win_rate": 0.5074,
+      "draw_rate": 0.2286,
+      "away_win_rate": 0.264,
+      "goal_diff": 0.6744
+    },
+    "neutral": {
+      "n": 13075,
+      "home_win_rate": 0.4418,
+      "draw_rate": 0.2242,
+      "away_win_rate": 0.3339,
+      "goal_diff": 0.3007
+    }
+  },
+  "hfa_effect": {
+    "goal_diff": 0.3737,
+    "home_win_rate": 0.0656
+  },
+  "by_era": [
+    {
+      "era": "pre-2000",
+      "true_home_goal_diff": 0.6743,
+      "neutral_goal_diff": 0.4556,
+      "effect_goal_diff": 0.2187,
+      "n_true_home": 18235,
+      "n_neutral": 5827
+    },
+    {
+      "era": "2000+",
+      "true_home_goal_diff": 0.6745,
+      "neutral_goal_diff": 0.176,
+      "effect_goal_diff": 0.4985,
+      "n_true_home": 18115,
+      "n_neutral": 7248
+    }
+  ],
+  "by_tournament_type": [
+    {
+      "bucket": "Friendlies",
+      "n": 18388,
+      "true_home_n": 15724,
+      "true_home_goal_diff": 0.5648,
+      "neutral_n": 2664,
+      "neutral_goal_diff": 0.1779,
+      "effect_goal_diff": 0.3869
+    },
+    {
+      "bucket": "Qualifiers",
+      "n": 15928,
+      "true_home_n": 14264,
+      "true_home_goal_diff": 0.7592,
+      "neutral_n": 1664,
+      "neutral_goal_diff": 0.1358,
+      "effect_goal_diff": 0.6234
+    },
+    {
+      "bucket": "Finals & continental",
+      "n": 15109,
+      "true_home_n": 6362,
+      "true_home_goal_diff": 0.7553,
+      "neutral_n": 8747,
+      "neutral_goal_diff": 0.3694,
+      "effect_goal_diff": 0.3859
+    }
+  ],
+  "travel_leg": {
+    "testable": false,
+    "note": "results.parquet carries city/country strings but no coordinates; a travel-distance residual leg is NOT_TESTABLE from committed data and is deliberately not estimated."
+  },
+  "confounds": [
+    "neutral games are non-random (concentrate in tournament finals -- 8747 of 13075)",
+    "crowd is never directly observed (NOT_TESTABLE)",
+    "no strength-of-schedule / team-quality adjustment (opponent-raw)",
+    "draws included in win-rate base"
+  ],
+  "receipt": {
+    "committed_ledger": "scripts/platformkit/analytics_showcase/out/mechanism_ledger_export.json",
+    "mechanisms": [
+      "home_advantage_neutral_vs_true_goal_diff",
+      "home_advantage_neutral_vs_true_win_rate",
+      "home_advantage_neutral_split_half_by_era"
+    ],
+    "verdict": "CONFIRMED_LOCAL"
+  }
+}

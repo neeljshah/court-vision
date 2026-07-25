@@ -111,6 +111,18 @@ def v_info_arrival(d):
     _req(any_cp, ["n", "model_brier", "market_brier"], "info_arrival_curve.checkpoints.mlb[*]")
 
 
+def v_soccer_home_advantage(d):
+    _req(d, ["venue", "by_era", "by_tournament_type", "observation_window"], "soccer_home_advantage")
+    _req(d["venue"], ["true_home", "neutral"], "soccer_home_advantage.venue")
+    assert "goal_diff" in d["venue"]["true_home"], "soccer_home_advantage.venue.true_home missing goal_diff"
+    assert "goal_diff" in d["venue"]["neutral"], "soccer_home_advantage.venue.neutral missing goal_diff"
+    _is(d, "by_era", list, "soccer_home_advantage")
+    assert d["by_era"], "soccer_home_advantage.by_era is empty"
+    _is(d, "by_tournament_type", list, "soccer_home_advantage")
+    assert d["by_tournament_type"], "soccer_home_advantage.by_tournament_type is empty"
+    assert "n_matches_played" in d["observation_window"], "soccer_home_advantage.observation_window missing n_matches_played"
+
+
 def v_search_records(d):
     _req(d, ["records", "counts"], "search_records")
     _is(d, "records", list, "search_records")
@@ -134,6 +146,7 @@ VALIDATORS = {
     "murphy_decomposition.json": v_murphy,
     "novel_line_half_life.json": v_line_half_life,
     "info_arrival_curve.json": v_info_arrival,
+    "soccer_home_advantage.json": v_soccer_home_advantage,
     "search_records.json": v_search_records,
 }
 
