@@ -36,6 +36,7 @@ FINDINGS = [
     ("q4-shift", ["The fourth-quarter", "shift, un-refused."]),
     ("shrinkage", ["When the leaderboard", "regresses to the mean."]),
     ("reliability", ["Are our", "probabilities honest?"]),
+    ("forecast-life", ["The life", "of a forecast."]),
 ]
 
 W, H = 1200, 630
@@ -134,7 +135,7 @@ def check():
         assert im.mode == "RGB"
         px = im.getpixel((40, 300))
         assert abs(px[0] - PAPER[0]) < 20, "%s: background not paper: %s" % (os.path.basename(p), px)
-    assert len(paths) == 10, "expected 1 default + 9 findings cards"
+    assert len(paths) == 1 + len(FINDINGS), "expected 1 default + %d findings cards" % len(FINDINGS)
     print("OK (%d cards)" % len(paths))
 
 

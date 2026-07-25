@@ -95,6 +95,22 @@ def v_murphy(d):
     _req(d["sports"]["mlb"], ["model_prob", "market_prob"], "murphy_decomposition.sports.mlb")
 
 
+def v_line_half_life(d):
+    _req(d, ["results", "headline"], "novel_line_half_life")
+    _is(d, "results", list, "novel_line_half_life")
+    assert d["results"], "novel_line_half_life.results empty"
+    _req(d["results"][0], ["sport", "half_life_hours", "cumulative_fraction_by_boundary_h",
+                           "n_move_pairs", "observation_window"], "novel_line_half_life.results[0]")
+
+
+def v_info_arrival(d):
+    _req(d, ["checkpoints"], "info_arrival_curve")
+    _is(d, "checkpoints", dict, "info_arrival_curve")
+    assert "mlb" in d["checkpoints"], "info_arrival_curve.checkpoints missing mlb"
+    any_cp = next(iter(d["checkpoints"]["mlb"].values()))
+    _req(any_cp, ["n", "model_brier", "market_brier"], "info_arrival_curve.checkpoints.mlb[*]")
+
+
 def v_search_records(d):
     _req(d, ["records", "counts"], "search_records")
     _is(d, "records", list, "search_records")
@@ -116,6 +132,8 @@ VALIDATORS = {
     "nba_q4_shift.json": v_q4_shift,
     "mlb_shrinkage.json": v_shrinkage,
     "murphy_decomposition.json": v_murphy,
+    "novel_line_half_life.json": v_line_half_life,
+    "info_arrival_curve.json": v_info_arrival,
     "search_records.json": v_search_records,
 }
 

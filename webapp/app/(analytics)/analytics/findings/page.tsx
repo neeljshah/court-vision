@@ -72,6 +72,12 @@ const FINDINGS: Array<{ href: string; title: string; blurb: string }> = [
     blurb:
       "Calibration reliability diagrams and the Murphy Brier decomposition: our model's Brier trails the market's (0.2377 vs 0.2067 in MLB), and the gap is resolution -- information we don't have -- not miscalibration. We match or trail the close; we never claim to beat it.",
   },
+  {
+    href: "/analytics/findings/forecast-life",
+    title: "The life of a forecast",
+    blurb:
+      "How a market absorbs information, twice: pre-game line half-life per sport, then in-game Brier checkpoints where the market stays ahead of our model at every point measured. Descriptive only, same honest gap as reliability.",
+  },
 ];
 
 const h1: CSSProperties = {
