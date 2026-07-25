@@ -41,6 +41,7 @@ FINDINGS = [
     ("bookmaker-accuracy", ["We graded", "the bookmakers."]),
     ("rim-deterrence", ["Who bends", "the shot chart."]),
     ("league-parity", ["How competitive", "is each season?"]),
+    ("lineup-synergy", ["Greater than", "the sum of parts."]),
 ]
 
 W, H = 1200, 630

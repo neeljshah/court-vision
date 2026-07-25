@@ -102,6 +102,12 @@ const FINDINGS: Array<{ href: string; title: string; blurb: string }> = [
     blurb:
       "A 3-season parity ledger: win-share Gini rose from 0.177 (2023-24) to 0.2004 (2025-26), published beside the partial-season and playoff-pooling caveats that keep it a description, not a trend.",
   },
+  {
+    href: "/analytics/findings/lineup-synergy",
+    title: "Greater than the sum of their parts",
+    blurb:
+      "A five-man lineup-synergy ledger: the Grizzlies' Jackson-Morant-Bane-Edey-Wells five topped 2024-25 at +24.32 net-per-48 above expected -- published beside the single-season and small-minutes confounds.",
+  },
 ];
 
 const h1: CSSProperties = {

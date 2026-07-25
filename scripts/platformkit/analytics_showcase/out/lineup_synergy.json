@@ -1,0 +1,401 @@
+{
+  "status": "ok",
+  "generated_at": "2026-07-25T04:25:58.801043+00:00",
+  "descriptive_only": true,
+  "edge_claimed": false,
+  "headline": "Greater than the sum of their parts: which five-man lineups beat what their individual on/off numbers predict -- the Grizzlies' Jackson-Morant-Bane-Edey-Wells five topped 2024-25 at +24.32 net per 48 above expected.",
+  "method": "For every five-man lineup where all five members individually qualified for on/off (qualifies==True in the real stint cache), compare the lineup's observed net rating per 48 to an 'expected' net rating built by summing the five members' individual on/off contributions, then rank by the residual.",
+  "metric_definition": "synergy_residual = net_per48 - expected_net_per48; positive means the five-man unit outperforms the sum of its individual parts, negative means it underperforms.",
+  "season": "2024-25",
+  "n_qualified": 102,
+  "min_floor_note": "on-court minutes range 101.6-940.0 across the 102 qualified lineups -- the low end is a small sample; do not over-read a ~100-minute lineup",
+  "top": [
+    {
+      "rank": 1,
+      "members": [
+        "Jaren Jackson Jr.",
+        "Ja Morant",
+        "Desmond Bane",
+        "Zach Edey",
+        "Jaylen Wells"
+      ],
+      "team_id": 1610612763,
+      "n_games": 25,
+      "min": 221.8,
+      "net_per48": 29.87,
+      "expected_net_per48": 5.55,
+      "synergy_residual": 24.32
+    },
+    {
+      "rank": 2,
+      "members": [
+        "Russell Westbrook",
+        "Aaron Gordon",
+        "Nikola Joki\u0107",
+        "Michael Porter Jr.",
+        "Christian Braun"
+      ],
+      "team_id": 1610612743,
+      "n_games": 24,
+      "min": 128.4,
+      "net_per48": 27.3,
+      "expected_net_per48": 6.62,
+      "synergy_residual": 20.67
+    },
+    {
+      "rank": 3,
+      "members": [
+        "Mike Conley",
+        "Rudy Gobert",
+        "Naz Reid",
+        "Anthony Edwards",
+        "Jaden McDaniels"
+      ],
+      "team_id": 1610612750,
+      "n_games": 26,
+      "min": 114.1,
+      "net_per48": 26.08,
+      "expected_net_per48": 5.8,
+      "synergy_residual": 20.29
+    },
+    {
+      "rank": 4,
+      "members": [
+        "Kyrie Irving",
+        "Klay Thompson",
+        "P.J. Washington",
+        "Luka Don\u010di\u0107",
+        "Dereck Lively II"
+      ],
+      "team_id": 1610612742,
+      "n_games": 14,
+      "min": 118.7,
+      "net_per48": 23.45,
+      "expected_net_per48": 4.17,
+      "synergy_residual": 19.28
+    },
+    {
+      "rank": 5,
+      "members": [
+        "Dennis Schr\u00f6der",
+        "Dorian Finney-Smith",
+        "Nic Claxton",
+        "Cameron Johnson",
+        "Cam Thomas"
+      ],
+      "team_id": 1610612751,
+      "n_games": 9,
+      "min": 105.8,
+      "net_per48": 14.51,
+      "expected_net_per48": -3.8,
+      "synergy_residual": 18.32
+    },
+    {
+      "rank": 6,
+      "members": [
+        "Mike Conley",
+        "Rudy Gobert",
+        "Donte DiVincenzo",
+        "Nickeil Alexander-Walker",
+        "Naz Reid"
+      ],
+      "team_id": 1610612750,
+      "n_games": 29,
+      "min": 123.0,
+      "net_per48": 24.59,
+      "expected_net_per48": 6.43,
+      "synergy_residual": 18.16
+    },
+    {
+      "rank": 7,
+      "members": [
+        "Brook Lopez",
+        "Damian Lillard",
+        "Bobby Portis",
+        "Gary Trent Jr.",
+        "AJ Green"
+      ],
+      "team_id": 1610612749,
+      "n_games": 16,
+      "min": 121.1,
+      "net_per48": 21.0,
+      "expected_net_per48": 3.04,
+      "synergy_residual": 17.97
+    },
+    {
+      "rank": 8,
+      "members": [
+        "LeBron James",
+        "Dorian Finney-Smith",
+        "Luka Don\u010di\u0107",
+        "Rui Hachimura",
+        "Austin Reaves"
+      ],
+      "team_id": 1610612747,
+      "n_games": 13,
+      "min": 107.8,
+      "net_per48": 22.7,
+      "expected_net_per48": 5.16,
+      "synergy_residual": 17.55
+    },
+    {
+      "rank": 9,
+      "members": [
+        "DeMar DeRozan",
+        "Domantas Sabonis",
+        "Malik Monk",
+        "Keegan Murray",
+        "Keon Ellis"
+      ],
+      "team_id": 1610612758,
+      "n_games": 38,
+      "min": 200.9,
+      "net_per48": 19.36,
+      "expected_net_per48": 2.15,
+      "synergy_residual": 17.2
+    },
+    {
+      "rank": 10,
+      "members": [
+        "Chris Paul",
+        "Harrison Barnes",
+        "Devin Vassell",
+        "Jeremy Sochan",
+        "Victor Wembanyama"
+      ],
+      "team_id": 1610612759,
+      "n_games": 12,
+      "min": 135.9,
+      "net_per48": 15.54,
+      "expected_net_per48": -1.56,
+      "synergy_residual": 17.11
+    },
+    {
+      "rank": 11,
+      "members": [
+        "Clint Capela",
+        "Trae Young",
+        "De'Andre Hunter",
+        "Jalen Johnson",
+        "Dyson Daniels"
+      ],
+      "team_id": 1610612737,
+      "n_games": 16,
+      "min": 104.5,
+      "net_per48": 15.62,
+      "expected_net_per48": -0.8,
+      "synergy_residual": 16.42
+    },
+    {
+      "rank": 12,
+      "members": [
+        "James Harden",
+        "Kawhi Leonard",
+        "Norman Powell",
+        "Ivica Zubac",
+        "Derrick Jones Jr."
+      ],
+      "team_id": 1610612746,
+      "n_games": 20,
+      "min": 192.7,
+      "net_per48": 24.16,
+      "expected_net_per48": 8.39,
+      "synergy_residual": 15.77
+    },
+    {
+      "rank": 13,
+      "members": [
+        "Lauri Markkanen",
+        "John Collins",
+        "Collin Sexton",
+        "Walker Kessler",
+        "Keyonte George"
+      ],
+      "team_id": 1610612762,
+      "n_games": 14,
+      "min": 196.2,
+      "net_per48": 7.83,
+      "expected_net_per48": -7.04,
+      "synergy_residual": 14.86
+    },
+    {
+      "rank": 14,
+      "members": [
+        "Dillon Brooks",
+        "Jalen Green",
+        "Alperen Sengun",
+        "Tari Eason",
+        "Amen Thompson"
+      ],
+      "team_id": 1610612745,
+      "n_games": 20,
+      "min": 148.6,
+      "net_per48": 20.03,
+      "expected_net_per48": 5.21,
+      "synergy_residual": 14.82
+    },
+    {
+      "rank": 15,
+      "members": [
+        "Chris Paul",
+        "Harrison Barnes",
+        "Julian Champagnie",
+        "Victor Wembanyama",
+        "Stephon Castle"
+      ],
+      "team_id": 1610612759,
+      "n_games": 21,
+      "min": 176.7,
+      "net_per48": 11.95,
+      "expected_net_per48": -1.18,
+      "synergy_residual": 13.13
+    }
+  ],
+  "bottom": [
+    {
+      "rank": 1,
+      "members": [
+        "Jerami Grant",
+        "Anfernee Simons",
+        "Deandre Ayton",
+        "Shaedon Sharpe",
+        "Toumani Camara"
+      ],
+      "team_id": 1610612757,
+      "n_games": 13,
+      "min": 136.9,
+      "net_per48": -30.86,
+      "expected_net_per48": -4.59,
+      "synergy_residual": -26.27
+    },
+    {
+      "rank": 2,
+      "members": [
+        "Kyle Kuzma",
+        "Jordan Poole",
+        "Bilal Coulibaly",
+        "Alex Sarr",
+        "Bub Carrington"
+      ],
+      "team_id": 1610612764,
+      "n_games": 17,
+      "min": 207.8,
+      "net_per48": -34.66,
+      "expected_net_per48": -15.79,
+      "synergy_residual": -18.86
+    },
+    {
+      "rank": 3,
+      "members": [
+        "D'Angelo Russell",
+        "Nic Claxton",
+        "Cameron Johnson",
+        "Ziaire Williams",
+        "Keon Johnson"
+      ],
+      "team_id": 1610612751,
+      "n_games": 9,
+      "min": 104.1,
+      "net_per48": -24.9,
+      "expected_net_per48": -8.09,
+      "synergy_residual": -16.81
+    },
+    {
+      "rank": 4,
+      "members": [
+        "Terry Rozier",
+        "Bam Adebayo",
+        "Haywood Highsmith",
+        "Tyler Herro",
+        "Jaime Jaquez Jr."
+      ],
+      "team_id": 1610612748,
+      "n_games": 15,
+      "min": 119.7,
+      "net_per48": -17.24,
+      "expected_net_per48": -1.17,
+      "synergy_residual": -16.07
+    },
+    {
+      "rank": 5,
+      "members": [
+        "Fred VanVleet",
+        "Dillon Brooks",
+        "Jalen Green",
+        "Alperen Sengun",
+        "Amen Thompson"
+      ],
+      "team_id": 1610612745,
+      "n_games": 27,
+      "min": 323.2,
+      "net_per48": -9.51,
+      "expected_net_per48": 5.23,
+      "synergy_residual": -14.74
+    },
+    {
+      "rank": 6,
+      "members": [
+        "James Harden",
+        "Norman Powell",
+        "Ivica Zubac",
+        "Derrick Jones Jr.",
+        "Terance Mann"
+      ],
+      "team_id": 1610612746,
+      "n_games": 13,
+      "min": 169.1,
+      "net_per48": -9.65,
+      "expected_net_per48": 5.01,
+      "synergy_residual": -14.66
+    },
+    {
+      "rank": 7,
+      "members": [
+        "OG Anunoby",
+        "Josh Hart",
+        "Mikal Bridges",
+        "Jalen Brunson",
+        "Precious Achiuwa"
+      ],
+      "team_id": 1610612752,
+      "n_games": 22,
+      "min": 123.5,
+      "net_per48": -11.27,
+      "expected_net_per48": 3.16,
+      "synergy_residual": -14.43
+    },
+    {
+      "rank": 8,
+      "members": [
+        "Kevin Durant",
+        "Bradley Beal",
+        "Jusuf Nurki\u0107",
+        "Tyus Jones",
+        "Devin Booker"
+      ],
+      "team_id": 1610612756,
+      "n_games": 12,
+      "min": 119.3,
+      "net_per48": -18.11,
+      "expected_net_per48": -4.06,
+      "synergy_residual": -14.05
+    }
+  ],
+  "observation_window": {
+    "season": "2024-25",
+    "note": "single season from the local stint cache; ~100+ on-court-minute floor, noisy"
+  },
+  "confounds": [
+    "single season: only 2024-25 has this stint cache -- no cross-season replication is possible yet",
+    "small minutes: the floor is roughly 100 on-court minutes for some lineups, which is noisy and wide-uncertainty -- do not over-read a ~100-minute lineup",
+    "the 'expected' baseline itself rests on each member's on/off split, which is roster-confounded (teammates and role are bundled into it)",
+    "descriptive association, not proof of causal chemistry",
+    "opponent-raw: no opponent-strength adjustment"
+  ],
+  "receipt": {
+    "source_parquets": [
+      "data/cache/team_system/lineups/lineup_synergy_2024_25.parquet",
+      "data/cache/team_system/lineups/on_off_2024_25.parquet"
+    ]
+  }
+}

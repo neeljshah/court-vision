@@ -1,11 +1,11 @@
 {
  "generated_from": "scripts/platformkit/analytics_showcase/out",
- "module_count": 72,
+ "module_count": 73,
  "atlas_card_count": 1549,
  "checks_green": {
   "green": true,
-  "pass": 94,
-  "total": 94
+  "pass": 95,
+  "total": 95
  },
  "edge_claimed": false,
  "modules": [
@@ -72,7 +72,7 @@
    "chart_path": "docs/img/brier_skill_scores.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:21:05.401788+00:00",
+   "as_of": "2026-07-25T04:26:48.936831+00:00",
    "evidence_page": null
   },
   {
@@ -226,7 +226,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:21:11.538728+00:00",
+   "as_of": "2026-07-25T04:26:55.837205+00:00",
    "evidence_page": null
   },
   {
@@ -293,6 +293,17 @@
    "status": "ok",
    "edge_claimed": false,
    "as_of": null,
+   "evidence_page": null
+  },
+  {
+   "id": "lineup_synergy",
+   "title": "Lineup Synergy",
+   "one_line": "Greater than the sum of their parts: which five-man lineups beat what their individual on/off numbers predict -- the Grizzlies' Jackson-Morant-Bane-Edey-Wells five topped 2024-25 at +24.32 net per 48 above expected.",
+   "out_path": "scripts/platformkit/analytics_showcase/out/lineup_synergy.json",
+   "chart_path": null,
+   "status": "ok",
+   "edge_claimed": false,
+   "as_of": "2026-07-25T04:25:58.801043+00:00",
    "evidence_page": null
   },
   {
@@ -380,7 +391,7 @@
    "chart_path": "docs/img/mlb_count_leverage.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:21:46.247856+00:00",
+   "as_of": "2026-07-25T04:27:32.053907+00:00",
    "evidence_page": null
   },
   {
@@ -468,7 +479,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:21:51.018695+00:00",
+   "as_of": "2026-07-25T04:27:37.074151+00:00",
    "evidence_page": null
   },
   {
@@ -556,7 +567,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:21:55.453764+00:00",
+   "as_of": "2026-07-25T04:27:41.782726+00:00",
    "evidence_page": null
   },
   {
@@ -578,7 +589,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:21:55.915402+00:00",
+   "as_of": "2026-07-25T04:27:42.267408+00:00",
    "evidence_page": null
   },
   {
@@ -589,7 +600,7 @@
    "chart_path": "docs/img/pitch_sequencing.png",
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:21:56.618969+00:00",
+   "as_of": "2026-07-25T04:27:43.016676+00:00",
    "evidence_page": null
   },
   {
@@ -732,7 +743,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:22:04.600751+00:00",
+   "as_of": "2026-07-25T04:27:51.216183+00:00",
    "evidence_page": null
   },
   {
@@ -776,7 +787,7 @@
    "chart_path": null,
    "status": "ok",
    "edge_claimed": false,
-   "as_of": "2026-07-25T04:22:06.244714+00:00",
+   "as_of": "2026-07-25T04:27:53.025570+00:00",
    "evidence_page": null
   },
   {

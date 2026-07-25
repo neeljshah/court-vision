@@ -153,6 +153,14 @@ def v_league_parity_index(d):
          "league_parity_index.extremes_descriptive")
 
 
+def v_lineup_synergy(d):
+    _req(d, ["top", "bottom", "n_qualified"], "lineup_synergy")
+    _is(d, "top", list, "lineup_synergy")
+    assert d["top"], "lineup_synergy.top is empty"
+    _req(d["top"][0], ["synergy_residual", "members"], "lineup_synergy.top[0]")
+    assert len(d["top"][0]["members"]) == 5, "lineup_synergy.top[0].members must have 5 entries"
+
+
 def v_search_records(d):
     _req(d, ["records", "counts"], "search_records")
     _is(d, "records", list, "search_records")
@@ -180,6 +188,7 @@ VALIDATORS = {
     "bookmaker_accuracy.json": v_bookmaker_accuracy,
     "rim_deterrence.json": v_rim_deterrence,
     "league_parity_index.json": v_league_parity_index,
+    "lineup_synergy.json": v_lineup_synergy,
     "search_records.json": v_search_records,
 }
 
