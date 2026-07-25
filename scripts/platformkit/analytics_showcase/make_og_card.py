@@ -38,6 +38,7 @@ FINDINGS = [
     ("reliability", ["Are our", "probabilities honest?"]),
     ("forecast-life", ["The life", "of a forecast."]),
     ("soccer-home-advantage", ["Home advantage,", "and why it grew."]),
+    ("bookmaker-accuracy", ["We graded", "the bookmakers."]),
 ]
 
 W, H = 1200, 630

@@ -84,6 +84,12 @@ const FINDINGS: Array<{ href: string; title: string; blurb: string }> = [
     blurb:
       "49,425 international matches split on the real neutral-site flag: the true-home/neutral goal-diff gap grew from 0.22 to 0.50 not because true-home advantage rose (flat) but because the neutral-venue edge collapsed over time.",
   },
+  {
+    href: "/analytics/findings/bookmaker-accuracy",
+    title: "We graded the bookmakers",
+    blurb:
+      "Proportional-devig Brier on shared-game subsets: Pinnacle is barely the sharpest book on tennis match-winner (0.1975 vs Bet365's 0.1980), while on soccer over/under 2.5 goals the books are a statistical dead heat.",
+  },
 ];
 
 const h1: CSSProperties = {

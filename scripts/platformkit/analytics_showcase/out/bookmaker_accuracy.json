@@ -1,0 +1,81 @@
+{
+  "status": "ok",
+  "generated_at": "2026-07-25T04:01:46.909067+00:00",
+  "descriptive_only": true,
+  "edge_claimed": false,
+  "headline": "We graded the bookmakers on their own devigged accuracy: Pinnacle is barely sharpest on tennis match-winner (0.1975 vs Bet365's 0.1980), but on soccer over/under the books are a statistical dead heat -- no public book is meaningfully beatable by another on these markets.",
+  "method": "Proportional devig (implied prob of side A = (1/a)/((1/a)+(1/b)) for decimal odds a,b), scored by Brier score against the realized outcome, on the shared-game subset every compared book quoted.",
+  "sports": {
+    "tennis": {
+      "market": "match winner",
+      "outcome": "eventual winner",
+      "n_shared": 33664,
+      "books": [
+        {
+          "book": "Pinnacle",
+          "brier": 0.1975,
+          "n": 33664
+        },
+        {
+          "book": "MarketAvg",
+          "brier": 0.1977,
+          "n": 33664
+        },
+        {
+          "book": "Bet365",
+          "brier": 0.198,
+          "n": 33664
+        }
+      ]
+    },
+    "soccer": {
+      "market": "over/under 2.5 goals",
+      "outcome": "target_over25",
+      "n_shared": 15112,
+      "books": [
+        {
+          "book": "Pinnacle",
+          "brier": 0.2395,
+          "n": 15112
+        },
+        {
+          "book": "MarketAvg",
+          "brier": 0.2395,
+          "n": 15112
+        },
+        {
+          "book": "Bet365",
+          "brier": 0.2396,
+          "n": 15112
+        }
+      ]
+    }
+  },
+  "observation_window": {
+    "tennis": {
+      "source_parquet": "data/domains/tennis/odds.parquet",
+      "n_rows_before_shared": 33952,
+      "note": "committed odds corpora (decade-plus per sport), not a rolling cache"
+    },
+    "soccer": {
+      "source_parquet": "data/domains/soccer/odds.parquet",
+      "n_rows_before_shared": 16322,
+      "note": "committed odds corpora (decade-plus per sport), not a rolling cache"
+    }
+  },
+  "confounds": [
+    "accuracy is not the same as price leadership -- a book can be sharp yet never post first",
+    "snapshot-timed closes, not a continuous feed",
+    "proportional devig is one method among several -- it shifts absolute Brier levels, not the book ordering",
+    "each book graded only on the shared-game subset all compared books quoted",
+    "tennis Brier is winner-side only (the loser side is the complement by construction)",
+    "soccer draws fold into the two-way over/under market as a non-goal outcome, not a separate line"
+  ],
+  "receipt": {
+    "source_parquets": [
+      "data/domains/tennis/odds.parquet",
+      "data/domains/soccer/odds.parquet",
+      "data/domains/soccer/matches.parquet"
+    ]
+  }
+}

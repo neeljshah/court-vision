@@ -123,6 +123,18 @@ def v_soccer_home_advantage(d):
     assert "n_matches_played" in d["observation_window"], "soccer_home_advantage.observation_window missing n_matches_played"
 
 
+def v_bookmaker_accuracy(d):
+    _req(d, ["sports", "observation_window", "confounds"], "bookmaker_accuracy")
+    _is(d, "sports", dict, "bookmaker_accuracy")
+    _req(d["sports"], ["tennis", "soccer"], "bookmaker_accuracy.sports")
+    for sport in ("tennis", "soccer"):
+        block = d["sports"][sport]
+        _req(block, ["books", "n_shared"], "bookmaker_accuracy.sports.%s" % sport)
+        _is(block, "books", list, "bookmaker_accuracy.sports.%s" % sport)
+        assert block["books"], "bookmaker_accuracy.sports.%s.books is empty" % sport
+        _req(block["books"][0], ["book", "brier", "n"], "bookmaker_accuracy.sports.%s.books[0]" % sport)
+
+
 def v_search_records(d):
     _req(d, ["records", "counts"], "search_records")
     _is(d, "records", list, "search_records")
@@ -147,6 +159,7 @@ VALIDATORS = {
     "novel_line_half_life.json": v_line_half_life,
     "info_arrival_curve.json": v_info_arrival,
     "soccer_home_advantage.json": v_soccer_home_advantage,
+    "bookmaker_accuracy.json": v_bookmaker_accuracy,
     "search_records.json": v_search_records,
 }
 
