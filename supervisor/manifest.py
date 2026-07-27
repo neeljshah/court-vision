@@ -180,12 +180,22 @@ def topo_order(specs: List[ProcSpec]) -> List[ProcSpec]:
 # inside manifest() to avoid an import cycle (stack_specs imports ProcSpec etc.
 # from here).
 # --------------------------------------------------------------------------- #
-def manifest(profile: str = "default") -> List[ProcSpec]:
+def manifest(
+    profile: str = "default",
+    services: Optional[List[str]] = None,
+) -> List[ProcSpec]:
     """Ordered, DAG-validated ProcSpec list for *profile*.
 
     Profiles:
       "default" -- the full stack (with the Next.js UI).
       "backend" -- the same stack MINUS the UI node process (headless servers).
+      "paper"   -- headless like "backend", and normally paired with a
+                   *services* allowlist (see config/boot/paper.json).
+
+    *services*, when given, is a NAME ALLOWLIST: only those ProcSpecs survive.
+    An unknown name, or a kept spec whose depends_on names a DROPPED spec, is a
+    CONFIG error and raises ValueError -- silently stripping the edge would boot
+    a dependent without its dependency (e.g. m1_paper without m1_api_paper).
 
     An unknown profile falls back to "default" (never crashes). The returned
     list is topologically ordered; a cyclic config raises :class:`CycleError`.
@@ -194,11 +204,29 @@ def manifest(profile: str = "default") -> List[ProcSpec]:
 
     specs = base_specs()
     prof = (profile or "default").strip().lower()
-    if prof == "backend":
+    if prof in ("backend", "paper"):
         specs = [s for s in specs if s.kind != "node"]
         # drop the UI from any depends_on edge so the DAG stays well-formed.
         specs = [
             replace(s, depends_on=[d for d in s.depends_on if d != "m1_ui"])
             for s in specs
         ]
+    if services:
+        keep = list(dict.fromkeys(services))  # de-dupe, keep order
+        known = {s.name for s in specs}
+        unknown = [n for n in keep if n not in known]
+        if unknown:
+            raise ValueError(
+                "boot profile services names unknown spec(s): %s"
+                % ", ".join(sorted(unknown))
+            )
+        kept = set(keep)
+        specs = [s for s in specs if s.name in kept]
+        for s in specs:
+            missing = [d for d in s.depends_on if d not in kept]
+            if missing:
+                raise ValueError(
+                    "boot profile services keeps %r but drops its depends_on: %s"
+                    % (s.name, ", ".join(missing))
+                )
     return topo_order(specs)

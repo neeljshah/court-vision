@@ -6,6 +6,7 @@ A boot profile is a tiny JSON document that selects + tunes a manifest:
       "profile": "backend",          # which manifest() profile to build
       "include_ui": false,           # convenience alias (false => "backend")
       "log_dir": "logs",
+      "services": ["m1_producer"],   # optional ProcSpec NAME allowlist
       "global_env": {"NBA_AI_SUPERVISED": "1"}
     }
 
@@ -24,7 +25,7 @@ import json
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 from supervisor.manifest import ProcSpec, manifest
 
@@ -33,7 +34,7 @@ logger = logging.getLogger("supervisor.config")
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 _BOOT_DIR = _REPO_ROOT / "config" / "boot"
 
-_KNOWN_PROFILES = ("default", "backend")
+_KNOWN_PROFILES = ("default", "backend", "paper")
 _DEFAULT_LOG_DIR = "logs"
 
 
@@ -54,10 +55,11 @@ class BootProfile:
     log_dir: str = _DEFAULT_LOG_DIR
     global_env: Dict[str, str] = field(default_factory=dict)
     source: str = "fallback-missing"
+    services: Tuple[str, ...] = ()
 
     def specs(self) -> List[ProcSpec]:
         """The ordered, DAG-validated ProcSpec list for this profile."""
-        return manifest(self.profile)
+        return manifest(self.profile, services=list(self.services) or None)
 
 
 def _safe_default(name: str, source: str) -> BootProfile:
@@ -89,9 +91,16 @@ def _coerce(name: str, data: Dict[str, Any]) -> BootProfile:
             except Exception:  # noqa: BLE001 -- skip an unstringable entry
                 continue
 
+    # services: optional NAME ALLOWLIST (see manifest()). A non-list, or a list
+    # with no usable strings, means "no allowlist" -> the whole profile.
+    raw_services = data.get("services", [])
+    services: List[str] = []
+    if isinstance(raw_services, list):
+        services = [str(v).strip() for v in raw_services if str(v).strip()]
+
     return BootProfile(
         name=name, profile=profile, log_dir=log_dir.strip(),
-        global_env=global_env, source="file",
+        global_env=global_env, source="file", services=tuple(services),
     )
 
 

@@ -131,6 +131,8 @@ def test_default_manifest_is_acyclic_and_ordered():
         # m44 -- hourly exec-evidence time series (append-only CLV/gate/
         # latency/prop-calibration vintages to exec_evidence_series.jsonl)
         "m44_exec_evidence",
+        # m45 -- NBA/MLB news-facts snapshotter (6h ESPN news feed)
+        "m45_news_facts",
     }
     _assert_topo(specs)
     # producer precedes the Auto-API which precedes the boards API which precedes UI.
@@ -376,3 +378,31 @@ def test_load_profile_non_object_falls_back(tmp_path):
     prof = load_profile("arr", boot_dir=tmp_path)
     assert prof.source == "fallback-garbage"
     assert prof.profile == "default"
+
+
+# --------------------------------------------------------------------------- #
+# The "paper" profile: a ProcSpec NAME ALLOWLIST (config/boot/paper.json), so the
+# headless paper node boots ~16 processes instead of the full 48.
+# --------------------------------------------------------------------------- #
+def test_paper_profile_allowlists_and_stays_ordered():
+    from supervisor.config import profile_path
+
+    names = json.loads(profile_path("paper").read_text(encoding="utf-8"))["services"]
+    specs = manifest("paper", services=names)
+    assert [s.name for s in specs] != []
+    assert {s.name for s in specs} == set(names)
+    assert all(s.kind != "node" for s in specs)      # headless, like "backend"
+    _assert_topo(specs)                              # deps still precede dependents
+
+
+def test_paper_profile_rejects_unknown_and_orphaned_names():
+    # a typo in the allowlist is a CONFIG error, not a silently smaller stack
+    with pytest.raises(ValueError):
+        manifest("paper", services=["m1_producer", "m1_typo"])
+    # keeping a dependent while dropping its dependency must NOT silently boot it
+    with pytest.raises(ValueError):
+        manifest("paper", services=["m1_paper"])
+
+
+def test_no_services_key_means_whole_profile():
+    assert len(manifest("backend", services=None)) == len(manifest("backend"))

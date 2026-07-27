@@ -1,0 +1,37 @@
+{
+  "_comment": "PAPER boot profile -- the headless Kalshi paper-trading NODE (the laptop). Same UI-less shape as 'backend', PLUS a services allowlist so 14 processes boot instead of the full 48 (the full stack committed 36.4 GB on a 15 GB box on 2026-07-16). Every name below is a ProcSpec in supervisor/stack_specs.py; supervisor.manifest raises if a name is unknown or if a kept spec depends_on a dropped one. Editing this list is the ONLY knob -- no code change needed to add or remove a service.",
+  "profile": "paper",
+  "include_ui": false,
+  "log_dir": "logs",
+  "services": [
+    "m1_producer",
+    "m1_api_paper",
+    "m1_paper",
+    "m1_bankroll",
+    "m2_inplay",
+    "m2_inplay_capture",
+    "m12_pm_paper_tick",
+    "m17_kalshi_scan",
+    "m18_pm_close_capture",
+    "m20_ingame_clv_verdict",
+    "m27_ingame_paper_settle",
+    "m33_http_wedge_reaper",
+    "m43_settle_sweep",
+    "m44_exec_evidence"
+  ],
+  "_services_notes": {
+    "the only depends_on chain": "m1_producer -> m1_api_paper -> m1_paper. Every other entry is an independent branch (verified against stack_specs.py).",
+    "m1_producer": "REQUIRED -- the Kalshi placer's model side reads data/frontend/predict_service/<sport>/latest.json, which only the scheduler writes.",
+    "m1_api_paper": "not functionally required by the Kalshi path (the store is read from disk, not over :8099), but m1_paper depends_on it in stack_specs.py (human-gated), and it is light. Kept.",
+    "m33_http_wedge_reaper": "kept deliberately -- its TARGETS list is exactly m1_api_paper:8099, guarding the known auto_loop HTTP wedge.",
+    "m2_inplay": "kept as the Kalshi in-play tick CORPUS (~37 MB). Nothing in the bet/settle/CLV path reads it; drop it if the node ever needs the headroom.",
+    "dropped for a Kalshi-only node": "m1_line_daemon (sportsbook line scraping; auto_loop already calls line_snapshot_daemon.poll_once itself each cycle, and the Kalshi close path reads Kalshi settles + ingame_grade ticks, never line_history) and m16_prop_close_capture (only captures OPEN in-game PROP two-ways -- nothing to capture once props are starved below).",
+    "also dropped": "m1_ui + m1_api_boards (frontend), m14_brain_rebuild (heavy, vault-only), m4_selfimprove, m8_ci_cadence, m38_autoloop, m10_best_bets_compute, and every brain/atlas/gate job."
+  },
+  "global_env": {
+    "NBA_AI_SUPERVISED": "1",
+    "CV_PROP_MAX": "0",
+    "CV_WC_PROP_MAX": "0"
+  },
+  "_global_env_notes": "CV_PROP_MAX / CV_WC_PROP_MAX = 0 starve the sportsbook-priced pregame PROP channel (auto_loop.py:58,65) -- the documented losing channel and not a Kalshi market. Paper only; no flag is flipped ON, no real money, no $ edge claimed."
+}

@@ -9,20 +9,20 @@
         data\frontend\ops\supervisor_status.json
     so the UI (and the ops doctor runbook) can always see what is up.
 
-    Start order (managed by the supervisor, dependency-ordered):
-      (1) m1_producer      -- predict_service._boot_producer_runner
-      (2) m1_api_paper     -- predict_service.app :8099
-      (3) m1_api_boards    -- scripts.platformkit.frontend.serve :8098
-      (4) m1_ui            -- court-visions npm run dev :3000  (skipped with -NoUI)
-      (5) m1_paper         -- pm_trading.auto_loop --forever
-      (6) m1_line_daemon   -- odds_provider.line_snapshot_daemon
-      (7) m6_ingame_loop   -- ingame.live_loop
+    Start order is managed by the supervisor (dependency-ordered) and comes from
+    supervisor\stack_specs.py.  DO NOT hand-maintain a roster here -- it drifted
+    ~40 services out of date once already.  For the authoritative list run:
+        .\boot.ps1 -DryRun            (default: 49 procs incl. the UI)
+        .\boot.ps1 -NoUI    -DryRun   (backend: 48 procs, no UI)
+        .\boot.ps1 -Paper   -DryRun   (paper node: 16 procs, allowlisted)
 
-    Boot profiles: config\boot\default.json (full) / backend.json (headless).
+    Boot profiles: config\boot\default.json (full) / backend.json (headless) /
+    paper.json (headless paper NODE -- a services allowlist, ~16 procs not 48).
     Dependency graph + readiness probes live in supervisor\manifest.py.
 
     -DryRun           : print preflight + supervisor plan; no processes started.
     -NoUI             : boot the headless "backend" profile (no Next.js, port 3000).
+    -Paper            : boot the headless "paper" profile (allowlisted paper node).
     -StrictGovernance : ABORT boot if governance preflight exits non-zero.
                         Default: paper stack still boots; stack is marked NOT
                         real-money-eligible for the session.
@@ -54,6 +54,7 @@ param(
     [Parameter(ParameterSetName = "Launch")] [switch]$DryRun,
     [Parameter(ParameterSetName = "Launch")] [int]$Interval = 1200,
     [Parameter(ParameterSetName = "Launch")] [switch]$NoUI,
+    [Parameter(ParameterSetName = "Launch")] [switch]$Paper,
     [Parameter(ParameterSetName = "Launch")] [switch]$StrictGovernance,
     [Parameter(ParameterSetName = "Stop")]   [switch]$Stop
 )
@@ -64,11 +65,22 @@ $PY     = "C:\Users\neelj\anaconda3\envs\basketball_ai\python.exe"
 $LOGDIR = Join-Path $ROOT "logs"
 New-Item -ItemType Directory -Force -Path $LOGDIR | Out-Null
 
-# Profile selection: -NoUI -> headless "backend" (no npm/port-3000 child).
-$PROFILE_NAME = if ($NoUI) { "backend" } else { "default" }
+# Profile selection: -NoUI -> headless "backend" (no npm/port-3000 child);
+# -Paper -> the headless paper NODE (config\boot\paper.json services allowlist).
+$PROFILE_NAME = if ($Paper) { "paper" } elseif ($NoUI) { "backend" } else { "default" }
 
-# Match pattern used by -Stop to find supervisor + every child.
-$STOP_PATTERN = "-m supervisor\b|supervisor\.supervisor|predict_service\._boot_producer_runner|predict_service\.produce|predict_service\.scheduler|predict_service\.app|frontend\.serve|platformkit\.frontend\.serve|pm_trading\.auto_loop|line_snapshot_daemon|ingame\.live_loop|odds_provider\.inplay_runner|improve\.selfimprove_runner|ingame\.ingame_refresh_runner_svc|autonomy\.autonomy_monitor_runner|progress\.ci_cadence_runner|ingame\.inplay_capture_runner|paper\.bankroll_daemon|bestbets\.bestbets_compute_runner|ingame\.ingame_pred_tick_runner|pm_trading\.pm_paper_tick_runner|props\.props_pred_tick_runner|platformkit\.brain_rebuild_runner|next-server|next start|next/dist/bin/next"
+# Match pattern used by -Stop to find supervisor + every child. BUILT FROM THE
+# MANIFEST, not hand-maintained: the previous hardcoded list covered 22 of the 49
+# specs, so -Stop silently ORPHANED every daemon added after it was written
+# (verified 2026-07-27: 8 children survived a -Stop). "default" is the superset of
+# every profile, so this pattern stops a paper/backend stack too. If python cannot
+# be reached for any reason we fall back to the old literal list rather than
+# leaving -Stop with no pattern at all.
+$STOP_PATTERN = & $PY -c "from supervisor.manifest import manifest; import re; mods=sorted({s.module for s in manifest('default') if s.module}); print('|'.join([r'-m supervisor\b','supervisor\.supervisor']+[re.escape(m) for m in mods]+['next-server','next start','next/dist/bin/next']))" 2>$null
+if (-not $STOP_PATTERN) {
+    Write-Output "WARN: could not derive stop pattern from the manifest; using the legacy literal list."
+    $STOP_PATTERN = "-m supervisor\b|supervisor\.supervisor|predict_service\.|platformkit\.|next-server|next start|next/dist/bin/next"
+}
 $STOP_PORTS   = @(8098, 8099, 3000)
 
 # --------------------------------------------------------------------------- #
@@ -309,28 +321,11 @@ Write-Output "  m9_supervisor  PID=$($svProc.Id)"
 Write-Output ""
 Write-Output "The supervisor now owns the stack (boots + restarts every child)."
 Write-Output ""
+# Roster printed from the MANIFEST, not a hand-maintained list -- the old
+# hardcoded 7-9 line roster had drifted ~40 services out of date.
 Write-Output "Processes it will start (profile: $PROFILE_NAME):"
-if ($PROFILE_NAME -eq "backend") {
-    Write-Output "  [1] m1_producer       -- predict_service._boot_producer_runner"
-    Write-Output "  [2] m1_api_paper      -- predict_service.app                  :8099"
-    Write-Output "  [3] m1_api_boards     -- scripts.platformkit.frontend.serve    :8098"
-    Write-Output "  [4] m1_paper          -- pm_trading.auto_loop --forever"
-    Write-Output "  [5] m1_line_daemon    -- odds_provider.line_snapshot_daemon"
-    Write-Output "  [6] m6_ingame_loop    -- ingame.live_loop"
-    Write-Output "  [7] m2_inplay         -- odds_provider.inplay_runner          (P2)"
-    Write-Output "  [8] m4_selfimprove    -- improve.selfimprove_runner           (P4)"
-    Write-Output "  (m1_ui SKIPPED -- headless backend profile)"
-} else {
-    Write-Output "  [1] m1_producer       -- predict_service._boot_producer_runner"
-    Write-Output "  [2] m1_api_paper      -- predict_service.app                  :8099"
-    Write-Output "  [3] m1_api_boards     -- scripts.platformkit.frontend.serve    :8098"
-    Write-Output "  [4] m1_ui             -- court-visions npm run dev             :3000"
-    Write-Output "  [5] m1_paper          -- pm_trading.auto_loop --forever"
-    Write-Output "  [6] m1_line_daemon    -- odds_provider.line_snapshot_daemon"
-    Write-Output "  [7] m6_ingame_loop    -- ingame.live_loop"
-    Write-Output "  [8] m2_inplay         -- odds_provider.inplay_runner          (P2)"
-    Write-Output "  [9] m4_selfimprove    -- improve.selfimprove_runner           (P4)"
-}
+& $PY -u -m supervisor --dry-run --profile $PROFILE_NAME 2>&1 |
+    Select-String -Pattern '^\s+\[\d+\]' | ForEach-Object { $_.Line }
 Write-Output ""
 Write-Output "HONEST: paper-only; no dollar-edge claimed; CLV is the yardstick."
 Write-Output "Stop: .\boot.ps1 -Stop  |  Plan: .\boot.ps1 -DryRun  |  Strict: .\boot.ps1 -StrictGovernance"
