@@ -15,6 +15,23 @@ dollar edge -- an honest `NO_DATA` is a correct answer, not a failure. See
 
 ---
 
+## 0. Fastest path -- remote connector (no clone, no install)
+
+When the hosted endpoint is live, you can skip everything below: add it to
+claude.ai as a **custom connector** (Settings > Connectors > Add custom
+connector) using the URL published on the site's Ask page:
+
+```
+https://<current-tunnel-host>.trycloudflare.com/mcp
+```
+
+Same nine tools, same fail-closed envelopes, served over the MCP
+streamable-HTTP transport (`scripts/platformkit/mcp_server/http_server.py`).
+The URL rotates per hosting session -- if it does not respond, fall back to
+the local install below or ask for a fresh link.
+
+---
+
 ## 1. Clone + Python env
 
 ```bash

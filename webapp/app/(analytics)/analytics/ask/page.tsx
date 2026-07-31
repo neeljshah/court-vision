@@ -57,7 +57,11 @@ const MCP_CONFIG = `{
 
 # 9 tools: ask, scouting_report, matchup_preview, comparables,
 # win_probability, injury_report, analytics_receipts, run_burst,
-# system_health`;
+# system_health
+
+# No-install option: when the hosted endpoint is live, add it on
+# claude.ai as a custom connector instead (Settings > Connectors):
+#   https://<current-tunnel-host>.trycloudflare.com/mcp`;
 
 const h1S: CSSProperties = {
   fontFamily: "var(--font-display)",
@@ -200,7 +204,7 @@ export default function AskPage() {
             </p>
             <ol style={{ listStyle: "none", margin: "14px 0 0", padding: 0 }}>
               {[
-                "Install the CourtVision MCP server in Claude.",
+                "Install the CourtVision MCP server in Claude -- or add the hosted connector URL on claude.ai, zero install.",
                 "Add the connector config on the right.",
                 "Ask in plain language -- 9 typed tools resolve it.",
               ].map((s, i) => (

@@ -547,3 +547,9 @@ scripts/ingame/grade_ingame_vs_vegas.py
 config/strategy_d.yaml.iter18_proposed
 scripts/int116_output.txt
 scripts/coordination_log.md
+
+# local-only working junk (2026-07-31)
+scratchpad/
+scratchpad_*.txt
+webapp/.next_corrupt_*/
+*.DISABLED-*

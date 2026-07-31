@@ -79,15 +79,34 @@ def _resolve_via_powershell(host: str) -> str | None:
     normal getaddrinfo() path for random subdomains (seen on this box's
     NordLynx setup: PowerShell's own resolver still gets a real A record).
     """
+    # The VPN resolver sometimes NXDOMAINs brand-new tunnel subdomains outright,
+    # so after the system path fails, ask Cloudflare's 1.1.1.1 directly.
+    for server_arg in ("", " -Server 1.1.1.1"):
+        try:
+            out = subprocess.check_output(
+                ["powershell", "-NoProfile", "-Command",
+                 f"(Resolve-DnsName {host} -Type A{server_arg} -ErrorAction Stop | Select-Object -First 1).IPAddress"],
+                text=True, timeout=10, stderr=subprocess.DEVNULL,
+            ).strip()
+            if out:
+                return out
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError):
+            continue
+    # Last resort: DNS-over-HTTPS straight to the literal IP 1.1.1.1 -- immune
+    # to the VPN's port-53 interception (which NXDOMAINs fresh tunnel names
+    # even when told to ask 1.1.1.1 directly).
     try:
-        out = subprocess.check_output(
-            ["powershell", "-NoProfile", "-Command",
-             f"(Resolve-DnsName {host} -Type A -ErrorAction Stop | Select-Object -First 1).IPAddress"],
-            text=True, timeout=10, stderr=subprocess.DEVNULL,
-        ).strip()
-        return out or None
-    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError):
-        return None
+        req = urllib.request.Request(
+            f"https://1.1.1.1/dns-query?name={host}&type=A",
+            headers={"accept": "application/dns-json"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            answers = json.loads(resp.read()).get("Answer") or []
+        for a in answers:
+            if a.get("type") == 1 and a.get("data"):
+                return a["data"]
+    except (urllib.error.URLError, OSError, TimeoutError, json.JSONDecodeError):
+        pass
+    return None
 
 
 def probe_url(url: str, path: str = "/paper", timeout: float = 3.0) -> tuple[bool, int | None]:

@@ -2,7 +2,7 @@
  "edge_claimed": false,
  "descriptive_only": true,
  "method": "pregame per-series consecutive-snapshot |devigged_prob| movement, bucketed by minutes-to-commence, from own scraped line_history",
- "as_of": "2026-07-24",
+ "as_of": "2026-07-25",
  "source": "data/cache/line_history/<sport>/*.jsonl",
  "min_moves_floor": 20,
  "observation_window": {

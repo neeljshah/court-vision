@@ -8,7 +8,7 @@
   "source_artifacts": [
     "scripts/platformkit/analytics_showcase/out/micro_absorption.json"
   ],
-  "as_of": "2026-07-24",
+  "as_of": "2026-07-25",
   "observation_window": {
     "start": "2026-06-18",
     "end": "2026-07-17",
