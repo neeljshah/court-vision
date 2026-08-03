@@ -1,5 +1,16 @@
 
-# CourtVision -- a receipt-cited multi-sport analytics product, on top of a calibrated prediction engine
+# CourtVision -- calibrated multi-sport forecasting: computer vision, walk-forward validation, and a receipt-cited analytics product
+
+**Two measured results, each against a stated baseline.** Conditioning a win-probability
+forecaster on the realized mid-game state cuts Brier from **0.209 to 0.159 (NBA)** and
+**0.241 to 0.126 (MLB)** -- leak-free, out-of-sample, on real corpora. The NBA player-prop
+stack scores **PTS MAE 4.83 / REB 1.92 / AST 1.39 / FG3M 0.89** on a 20,354-row chronological
+holdout, scored through the production inference path and re-measured by
+`scripts/verify_production_mae.py`, which exits nonzero if any stat drifts more than 0.02.
+
+*Both are calibration and sharpness, not a dollar edge -- a live book sees the same realized
+state and scores the same. Provenance for every number in this README:
+[docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md).*
 
 [![proof-harness](https://github.com/neeljshah/court-vision/actions/workflows/proof.yml/badge.svg)](https://github.com/neeljshah/court-vision/actions/workflows/proof.yml)
 *The badge re-runs every analytics module's own `--check` self-verification (`check_all.py`)
@@ -16,9 +27,10 @@ An editorial analytics publication for five sports where **every number on the p
 artifact path it was read from**. Nothing is hand-typed, nothing is asserted, and a null result is
 printed as a finding rather than hidden. What is actually there:
 
-- **54 analytics modules and 1,549 entity atlas cards**, rendered as 1,618 static pages -- the
+- **74 analytics modules and 1,549 entity atlas cards**, rendered as 1,618 static pages -- the
   module catalog, per-entity cards, explainers, and the forecaster
-  (`analytics_showcase/out/site_manifest.json`: `module_count: 54`, `atlas_card_count: 1549`).
+  (`scripts/platformkit/analytics_showcase/out/site_manifest.json`: `module_count: 74`,
+  `atlas_card_count: 1549`).
 - **6 novel stats, each gated against prior art before it is allowed a name**
   (`novel_stats_index.json`): Line Half-Life (`NOVEL_PACKAGING`), Live-Clock Fraction
   (`INCREMENTAL_NOVEL`), Overreaction Harvest Gap (`NOVEL_SELF_CRITICAL_CROSS`, published as an
@@ -32,8 +44,10 @@ printed as a finding rather than hidden. What is actually there:
 - **A self-grading claim ledger.** 259 claim families tracked forward: **121 verified, 99 null,
   28 not-testable, 7 retracted, 4 provisional** across 287 ledger rows, with 5 families flagged as
   having flipped verdict (`fwd_claim_scoreboard.json`). The mechanism ledger reads the same way --
-  **130 confirmed / 126 null / 31 not-testable of 287** (`mechanism_ledger_export.json`). Roughly
-  1.1 nulls per confirmation is the point: a system that only ever confirmed would not be credible.
+  **130 confirmed / 126 null / 31 not-testable of 287** (`mechanism_ledger_export.json`).
+  **121 verified findings survived 259 tracked claim families**, each carrying its artifact path
+  and its verdict. Publishing the 99 nulls and the 7 retractions alongside them is the credential:
+  a ledger that only ever confirmed would be a marketing document, not a measurement.
 
 ---
 
@@ -42,8 +56,9 @@ printed as a finding rather than hidden. What is actually there:
 Conditioning on the realized game state is the one calibration result that clears every honesty
 rail: Brier drops sharply and leak-free, out-of-sample, on real corpora -- **NBA 0.209 -> 0.159,
 MLB 0.241 -> 0.126** (`edge_claimed: false`). The end-of-Q3 projection heads add a leak-clean
-**~26% MAE lift over a naive carry-forward baseline** (quoted alone, never paired with the
-separate endQ3 win-probability Brier, which carries its own Q4 leak). A live book sees the same
+**~26% MAE lift over a naive carry-forward baseline**. (The separate endQ3 *win-probability*
+figure is a known Q4 leak and is retracted -- it appears only in
+[docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md), never as a live result.) A live book sees the same
 realized state, so this is forecaster *quality*, not a dollar edge. Full proof and framing:
 [docs/INGAME_PROOF.md](docs/INGAME_PROOF.md).
 
@@ -57,17 +72,32 @@ The publication is a read-out of one calibrated prediction engine. It is *wide*:
 soccer, the World Cup, and tennis, every one speaking the same `predict / to_jd / predict_live`
 interface, every market (moneyline, totals, spreads, 1X2, BTTS, correct-score, player props,
 alt-line ladders, same-game-parlays) priced off one calibrated anchor. It is *deep*: under each
-team number sits a per-player projected distribution, a ~190-feature prop stack, 44 player/team
-"atlases", playstyle archetypes, and a coherent possession-level Monte-Carlo simulator. And it is
-*honest*: pregame it tracks the devigged closing line within sampling noise on team-strength
-markets and never beats it; in-game, conditioning on the realized state makes its own Brier much
-lower, while the distributional tests against the in-game market stay UNDERPOWERED / PROVISIONAL.
+team number sits a per-player projected distribution, a ~190-feature prop stack across 23 feature
+blocks -- each block annotated with the walk-forward result that kept or killed it -- 44
+player/team "atlases", playstyle archetypes, and a possession-level Monte-Carlo simulator whose
+teammate correlation *emerges* at rho ~= -0.10, matching realized, replacing a prior simulator's
+hand-tuned +0.65. And it is
+*honest*: pregame it **matches the Shin-devigged closing line within sampling noise on
+team-strength markets across six independent corpora** (NBA/MLB moneyline, soccer O/U-2.5) --
+the honest ceiling against an efficient market, and it never beats it. On totals and ATP it
+trails, and the gap is freshness (injury / lineup / weather / park / starting pitcher) the
+market sees and a public-data model cannot. In-game, conditioning on the realized state makes
+its own Brier much lower, while the distributional tests against the in-game market stay
+UNDERPOWERED / PROVISIONAL.
 **No dollar edge, ROI, or "beat the close" is ever claimed** -- candidates are tiered by evidence
 and proven only by forward closing-line value (CLV).
 
 Built by **[Neel Shah](https://github.com/neeljshah)** -- solo human architect and director of an
 agentic build pipeline. Engineering judgment, ship/reject decisions, and the validation methodology
-are mine. Open to **ML / data / quant / founding-engineer** roles ->
+are mine; the commit author on most of the history is the build harness identity (`GSD Executor`),
+which is exactly what an agent-directed pipeline looks like from the outside --
+[docs/BUILT_WITH_CLAUDE.md](docs/BUILT_WITH_CLAUDE.md) is the full account, and the runtime
+prediction path contains no LLM at all.
+
+Open to **ML / data / quant / founding-engineer** roles. US citizen, no sponsorship needed,
+available anywhere in the US or fully remote.
+[Resume (PDF)](docs/assets/NeelShahResume.pdf) -
+[Portfolio](https://neelshahportfolio.netlify.app) -
 [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
 
 ---
@@ -218,8 +248,9 @@ Per-sport breakdown: [docs/SPORTS_COVERAGE.md](docs/SPORTS_COVERAGE.md).
   prices the *entire* alt-line ladder ("over 0.5 / 1.5 / 2.5 ... shots", "10 vs 30 points") and
   the joint structure behind a same-game parlay, not just one line.
 - **A ~190-feature NBA prop stack** (rolling form, opponent defense, pace, rest/B2B, shot-zone
-  tendencies, on/off, synergy play-type PPP, referee tendencies, schedule hardship, ...), with
-  23 feature blocks each annotated with the leak-free walk-forward result that killed or kept it.
+  tendencies, on/off, synergy play-type PPP, referee tendencies, schedule hardship, ...): 10 wired
+  feature blocks plus 7 candidate blocks, each candidate carrying its recorded leak-free
+  walk-forward SHIP/REJECT verdict (`docs/models/feature-inventory.md`).
 - **44 "atlases"** (28 player + 16 team: usage role, pace fit, matchup splits, vs-scheme splits,
   rest/B2B splits, spacing gravity, clutch shape, foul-drawing, ...) -- a deep descriptive +
   correlation asset.
@@ -294,9 +325,12 @@ push and where to stop:
   correlation sizing, CLV computation, walk-forward leak guards), and one living edge-ledger of
   every candidate's evidence tier.
 
-Honest scope: the descriptive/atlas intelligence is a scouting + correlation asset and a
-predict-time input the funnel is still wiring in -- measured point-accuracy lift on the served
-model is ~0 today and is reported as such. See [docs/INTELLIGENCE.md](docs/INTELLIGENCE.md).
+The scale under it is real and countable: a **291,625-pair player-vs-player matchup matrix** built
+from 2,214 raw per-game tracking files across three seasons
+(`data/cache/coverage_faced_allseasons.parquet`), feeding the 44 player/team atlases. Honest scope:
+the descriptive/atlas intelligence is a scouting + correlation asset and a predict-time input the
+funnel is still wiring in -- measured point-accuracy lift on the served model is ~0 today and is
+reported as such. See [docs/INTELLIGENCE.md](docs/INTELLIGENCE.md).
 
 ---
 
@@ -501,10 +535,20 @@ Opus orchestrator + parallel Sonnet/Opus executors under hard ship gates (this c
 the ~100-file intelligence corpus, was built by that pipeline under human direction). The runtime
 is **Claude-free** -- classical models + a deterministic self-improve loop, no LLM on the
 prediction path. **The build harness itself is live**: an autonomous probe-plan-spawn-gate-merge
-loop (`scripts/platform_harness/`) is 63.9% through its current backlog (53/83 tasks) with zero
-human required to click "continue." Full account:
+loop (`scripts/platform_harness/`) has planned, executed, gated, and merged **53 backlog tasks
+autonomously** (of 83 queued) with zero human required to click "continue." Full account:
 [docs/BUILT_WITH_CLAUDE.md](docs/BUILT_WITH_CLAUDE.md) -
 [docs/PLATFORM_HARNESS.md](docs/PLATFORM_HARNESS.md).
+
+---
+
+## Licensing, stated plainly
+
+This repository's own code is proprietary (see [LICENSE](LICENSE)) and is published as a
+portfolio and evaluation piece. It is **not** copyleft-clean: the detection stack depends on
+Ultralytics YOLO (AGPL-3.0), so a closed-source commercial derivative would need that
+dependency replaced or an Ultralytics commercial license. Saying so is cheaper than being
+asked.
 
 ---
 

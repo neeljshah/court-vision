@@ -7,3 +7,13 @@ This repository and all associated source code, models, documentation, and asset
 No part of this project may be copied, modified, distributed, published, sublicensed, or used in any form, in whole or in part, without prior written permission from the copyright holder.
 
 This project is provided as a portfolio and demonstration piece only. Access to this repository does not grant any license for public, commercial, or production use.
+
+Third-party components
+
+This repository's own source is proprietary as stated above. It is not, and is not claimed
+to be, free of copyleft dependencies. In particular the detection/pose stack depends on
+Ultralytics YOLO (requirements.txt: ultralytics==8.4.53), which is licensed AGPL-3.0.
+Any redistribution or network-service deployment of a derivative that links Ultralytics
+carries AGPL-3.0 obligations. Nothing here should be read as a representation that this
+tree is clean for closed-source commercial use. Model weights, datasets, and third-party
+APIs each carry their own terms.
