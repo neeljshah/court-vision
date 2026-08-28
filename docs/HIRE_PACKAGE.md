@@ -1,9 +1,9 @@
 # Hire Package -- Neel Shah
 
-> **A self-taught systems engineer who builds end-to-end CV -> ML -> full-stack -> agentic
+> **A systems engineer (B.S. Data Science, University of Iowa, expected May 2027) who builds end-to-end CV -> ML -> full-stack -> agentic
 > systems, and builds the validation harnesses that prove what is real and reject what is not --
 > including catching his own inflated numbers.** Solo human architect / director of an agentic
-> build pipeline. No CS degree; the work and the self-audit trail are the credential.
+> build pipeline. B.S. Data Science, University of Iowa, expected May 2027; the work and the self-audit trail are the credential.
 >
 > One-line: *I built a 4-sport calibrated forecasting platform AND the leak-free harnesses that
 > prove it matches efficient closing lines, measure a real in-game-conditioning calibration gain,
