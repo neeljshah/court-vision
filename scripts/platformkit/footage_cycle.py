@@ -16,6 +16,7 @@ from typing import Any
 import pandas as pd
 
 from scripts.platformkit.io_atomic import append_jsonl_atomic, write_json_atomic
+from scripts.platformkit.provenance import record_provenance
 from scripts.platformkit.tracking_harness import evaluate
 
 DATA_DIR = Path("data")
@@ -43,7 +44,7 @@ def download_item(item: dict[str, str], destination: Path) -> Path:
     if item.get("format") == "direct":
         urllib.request.urlretrieve(item["url"], destination)
         return destination
-    command = ["yt-dlp", "--merge-output-format", "mp4", "-o", str(destination)]
+    command = ["yt-dlp", "-o", str(destination)]
     if COOKIES_PATH.is_file():
         command.extend(["--cookies", str(COOKIES_PATH)])
     command.extend(["-f", item["format"], item["url"]])
@@ -84,6 +85,18 @@ def track_item(item: dict[str, str], video: Path) -> Path:
     raise ValueError("Unsupported sport: %s" % sport)
 
 
+def _adapter_module(item: dict[str, str]) -> str:
+    """Return the adapter identity recorded for a queue item."""
+    if item.get("adapter_module"):
+        return item["adapter_module"]
+    sport = item["sport"].lower()
+    if sport in SPORT_ADAPTERS:
+        return "domains.%s.tracking.adapter" % sport
+    if sport in {"basketball", "wnba"}:
+        return "scripts.run_clip"
+    return "unknown"
+
+
 def score_item(item: dict[str, str], tracking_csv: Path) -> dict[str, Any]:
     """Evaluate tracking quality and persist the report and cycle ledger row."""
     sport = "basketball" if item["sport"].lower() == "wnba" else item["sport"].lower()
@@ -105,6 +118,10 @@ def _run_item(item: dict[str, str]) -> dict[str, Any]:
             result.update(status="download_failed", error=str(exc))
             return result
         try:
+            record_provenance(
+                item["game_id"], item["sport"], item["url"], video,
+                _adapter_module(item),
+            )
             with TRACKING_LOCK:
                 tracking_csv = track_item(item, video)
             result.update(score_item(item, tracking_csv))
@@ -113,10 +130,6 @@ def _run_item(item: dict[str, str]) -> dict[str, Any]:
             result.update(status="failed", error=str(exc))
             return result
     finally:
-        # yt-dlp appends container/format suffixes (.mkv, .fNNN.mp4, .temp,
-        # .part) -- sweep every artifact sharing the destination stem.
-        for leftover in video.parent.glob(video.stem + "*"):
-            leftover.unlink(missing_ok=True)
         video.unlink(missing_ok=True)
 
 
