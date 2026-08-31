@@ -24,6 +24,7 @@ from scripts.platformkit import (
     tracking_features,
     tracking_load_state,
     wp_diag_oos,
+    reforecast_refit,
 )
 
 
@@ -159,6 +160,10 @@ def run_loop(
             if fingerprint != _load_last_fingerprint(state_path):
                 for name, stage in stages:
                     _run_stage(name, stage)
+                _run_stage(
+                    "reforecast_refit",
+                    lambda: reforecast_refit.replay_and_refit("retrain_%d" % passes),
+                )
                 _append_ledger(reports_dir, fingerprint)
                 _write_state(state_path, fingerprint)
         if max_passes is None or passes < max_passes:
