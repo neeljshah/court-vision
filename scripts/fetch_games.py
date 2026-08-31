@@ -197,7 +197,7 @@ def _build_base_cmd() -> list:
         # Force H.264 (avc1) — opencv-python's bundled ffmpeg cannot decode AV1
         # on Linux without libdav1d, and RunPod containers block NVDEC av1_cuvid.
         # Every fallback explicitly rejects av01/vp9 so we never redownload-transcode.
-        "--format", "bestvideo[height<=720][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[height<=720][vcodec!*=av01][vcodec!*=vp9][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][vcodec!*=av01][vcodec!*=vp9][ext=mp4]/best[height<=720][vcodec!*=av01][vcodec!*=vp9]",
+        "--format", "bestvideo[height<=1080][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[height<=720][vcodec!*=av01][vcodec!*=vp9][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][vcodec!*=av01][vcodec!*=vp9][ext=mp4]/best[height<=720][vcodec!*=av01][vcodec!*=vp9]",
         "--merge-output-format", "mp4",
         "--quiet",
         "--no-warnings",
@@ -275,7 +275,7 @@ def _download_video_yt(vid_id: str, out_path: Path, base_cmd: list,
         start_sec = 60
         for i, part in enumerate(dl_cmd):
             if part == "--format":
-                dl_cmd[i + 1] = "best[height<=720][vcodec^=avc1]/best[height<=720]/best"
+                dl_cmd[i + 1] = "best[height<=1080][vcodec^=avc1]/best[height<=720][vcodec^=avc1]/best[height<=720]"
                 break
         dl_cmd += [
             "--download-sections", f"*{start_sec}-{start_sec + segment_seconds}",
@@ -285,7 +285,7 @@ def _download_video_yt(vid_id: str, out_path: Path, base_cmd: list,
         for i, part in enumerate(dl_cmd):
             if part == "--format":
                 dl_cmd[i + 1] = (
-                    "bestvideo[height<=720][vcodec^=avc1]+bestaudio/bestvideo[height<=720]+bestaudio/best[height<=720]/best"
+                    "bestvideo[height<=1080][vcodec^=avc1]+bestaudio/bestvideo[height<=720]+bestaudio/best[height<=720]"
                 )
                 break
     dl_cmd.append(f"https://www.youtube.com/watch?v={vid_id}")

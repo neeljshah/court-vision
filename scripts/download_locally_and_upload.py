@@ -61,7 +61,7 @@ SSH_KEY         = Path("C:/Users/neelj/.ssh/id_rsa")
 
 # yt-dlp format: H.264 mp4 ≤720p, never AV1/VP9 (OpenCV can't decode them)
 YT_FORMAT = (
-    "bestvideo[height<=720][vcodec^=avc1]+bestaudio[ext=m4a]"
+    "bestvideo[height<=1080][vcodec^=avc1]+bestaudio[ext=m4a]"
     "/bestvideo[height<=720][vcodec!*=av01][vcodec!*=vp9][ext=mp4]+bestaudio[ext=m4a]"
     "/best[height<=720][vcodec!*=av01][vcodec!*=vp9][ext=mp4]"
     "/best[height<=720]"
