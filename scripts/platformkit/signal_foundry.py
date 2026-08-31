@@ -168,11 +168,20 @@ def evaluate_signal(matrix: pd.DataFrame, target: str, spec: SignalSpec,
 def combine_pool(matrix: pd.DataFrame, target: str, pool_specs: Sequence[SignalSpec],
                  folds: Sequence[tuple[np.ndarray, np.ndarray]]) -> dict[str, object]:
     """Compare an ElasticNet plus HistGB pool against Ridge base, then rank interactions."""
-    signals = [_signal(matrix, item) for item in pool_specs]
+    signals = []
+    for item in pool_specs:
+        try:
+            signals.append(_signal(matrix, item))
+        except ValueError as error:
+            if not str(error).startswith("Signal has no numeric values:"):
+                raise
     work = matrix.copy()
     for value in signals: work[value.name] = value
     base = _base_columns(work, target, [value.name for value in signals])
     pool = [value.name for value in signals]
+    usable = _design(work, [*base, *pool]).notna().any(axis=0)
+    base = [name for name in base if usable.get(name, False)] or ["__intercept__"]
+    pool = [name for name in pool if usable.get(name, False)]
     base_errors, pool_errors = [], []
     for train_i, test_i in folds:
         train_i = _embargo(work, np.asarray(train_i)); test_i = np.asarray(test_i)
@@ -188,7 +197,8 @@ def combine_pool(matrix: pd.DataFrame, target: str, pool_specs: Sequence[SignalS
     pairs = []
     for left in range(len(pool)):
         for right in range(left + 1, len(pool)):
-            score = abs(float(np.corrcoef(work[pool[left]].fillna(0) * work[pool[right]].fillna(0), work[target])[0, 1]))
+            correlation = float(np.corrcoef(work[pool[left]].fillna(0) * work[pool[right]].fillna(0), work[target])[0, 1])
+            score = abs(correlation) if np.isfinite(correlation) else 0.0
             pairs.append({"pair": [pool[left], pool[right]], "score": score})
     pairs.sort(key=lambda item: item["score"], reverse=True)
     candidates = pairs[:10]
@@ -196,8 +206,8 @@ def combine_pool(matrix: pd.DataFrame, target: str, pool_specs: Sequence[SignalS
         import shap
         full_x, _ = _impute(_design(work, [*base, *pool]), _design(work, [*base, *pool]))
         full_model = HistGradientBoostingRegressor(max_iter=150, random_state=0).fit(full_x, work[target])
-        values = shap.TreeExplainer(full_model).shap_interaction_values(full_x.iloc[: min(200, len(full_x))])
-        strength = np.abs(values).mean(axis=0)
+        values = np.asarray(shap.TreeExplainer(full_model).shap_interaction_values(full_x.iloc[: min(200, len(full_x))]))
+        strength = np.nan_to_num(np.abs(values).mean(axis=0), nan=0.0, posinf=0.0, neginf=0.0)
         names = list(full_x.columns); ranked = []
         for left in range(len(names)):
             for right in range(left + 1, len(names)):

@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
 from scripts.platformkit.ingame_replay_scoreboard import discover_store, load_ticks
+from scripts.platformkit.brier_decomposition import decompose
 
 _REPO = Path(__file__).resolve().parents[2]
 _DEFAULT_CACHE = Path(r"C:\Users\neelj\nba-ai-system\data\cache")
@@ -147,6 +148,9 @@ def diagnose(ticks: List[Dict[str, Any]]) -> Dict[str, Any]:
         sports[_sport(tick)].append(tick)
     return {"sports": {sport: {"tick_count": len(group),
                                 "walk_forward_isotonic": walk_forward_isotonic(group),
+                                "murphy_decomposition": decompose(
+                                    (tick["model_prob"] for tick in group),
+                                    (tick["outcome"] for tick in group)),
                                 "phase_reliability": phase_reliability(group)}
                        for sport, group in sorted(sports.items())}}
 
@@ -160,6 +164,9 @@ def render(report: Dict[str, Any]) -> str:
     for sport, section in report["sports"].items():
         iso = section["walk_forward_isotonic"]
         lines.extend(["SPORT: %s TICKS: %d" % (sport, section["tick_count"]), iso["note"],
+                      "MURPHY: BRIER=%s REL=%s RES=%s UNC=%s" % tuple(
+                          _number(section["murphy_decomposition"][key])
+                          for key in ("brier", "reliability", "resolution", "uncertainty")),
                       "FOLD | TRAIN_MAX | TEST_MIN | N | BEFORE | AFTER | DELTA | STATUS"])
         for fold in iso["folds"]:
             lines.append("%d | %s | %s | %d | %s | %s | %s | %s" %
