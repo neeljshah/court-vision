@@ -7,7 +7,7 @@ from __future__ import annotations
 import cv2
 import numpy as np
 
-from domains.baseball.tracking.adapter import BaseballAdapter, MOUND_TO_PLATE_FEET
+from domains.baseball.tracking.adapter import BaseballAdapter, MOUND_TO_PLATE_FEET, PitchGeometry
 
 
 MOUND = np.array((640.0, 360.0), dtype=np.float32)
@@ -60,3 +60,42 @@ def test_mock_detector_projects_pitcher_and_batter_ids() -> None:
          (geometry.plate[1] - 590.0) / geometry.pixels_per_foot),
         atol=1.0,
     )
+
+
+def test_process_video_stabilizes_jittered_pitch_view_projection(monkeypatch) -> None:
+    scales = [4.0 + (0.8 if index % 2 else -0.8) for index in range(40)]
+    geometries = iter([
+        PitchGeometry(
+            np.array((640.0, 600.0 - scale * MOUND_TO_PLATE_FEET), dtype=np.float32),
+            PLATE.copy(),
+            scale,
+        )
+        for scale in scales
+    ])
+
+    class FakeCapture:
+        def __init__(self) -> None:
+            self.index = 0
+
+        def isOpened(self) -> bool:
+            return True
+
+        def read(self):
+            if self.index == len(scales):
+                return False, None
+            self.index += 1
+            return True, np.zeros((2, 2, 3), dtype=np.uint8)
+
+        def release(self) -> None:
+            pass
+
+    monkeypatch.setattr(cv2, "VideoCapture", lambda path: FakeCapture())
+    adapter = BaseballAdapter(detector=lambda frame: [
+        [610, 300, 650, 410], [620, 480, 660, 590],
+    ])
+    monkeypatch.setattr(adapter, "detect_pitch_geometry", lambda frame: next(geometries))
+
+    rows = adapter.process_video("synthetic.mp4")
+    pitcher = rows.loc[rows["track_id"] == 1, "y"].to_numpy()
+    assert len(pitcher) >= 10
+    assert np.percentile(np.abs(np.diff(pitcher)), 95) < 10.0

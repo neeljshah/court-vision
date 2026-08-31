@@ -17,6 +17,8 @@ import cv2
 import numpy as np
 import pandas as pd
 
+from domains.baseball.tracking.stability import ScaleStabilizer, stabilize_rows
+
 
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
 MOUND_TO_PLATE_FEET = 60.5
@@ -176,6 +178,10 @@ class BaseballAdapter:
         if not capture.isOpened():
             raise FileNotFoundError("Could not open video: %s" % path)
         rows: list[dict[str, object]] = []
+        calibrations: list[dict[str, object]] = []
+        stabilizer = ScaleStabilizer()
+        segment_id = 0
+        in_pitch_view = False
         source_frame = processed = 0
         try:
             while max_frames is None or processed < max_frames:
@@ -185,14 +191,40 @@ class BaseballAdapter:
                 if source_frame % stride == 0:
                     self._geometry = self.detect_pitch_geometry(frame)
                     if self._geometry is not None:
+                        if not in_pitch_view:
+                            segment_id += 1
+                            stabilizer.reset(segment_id)
+                            in_pitch_view = True
+                        calibrations.append({
+                            "frame": source_frame,
+                            "segment_id": segment_id,
+                            "pixels_per_foot": self._geometry.pixels_per_foot,
+                            "plate_centerline": float(self._geometry.plate[0]),
+                        })
                         for track_id, point in self.detect_players(frame, self._geometry):
                             rows.append({"frame": source_frame, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1])})
                         self.detect_ball_stub(frame, self._geometry)
+                    else:
+                        in_pitch_view = False
                     processed += 1
                 source_frame += 1
         finally:
             capture.release()
-        self.last_output = pd.DataFrame(rows, columns=SCHEMA)
+        stable_calibrations = stabilize_rows(calibrations, stabilizer)
+        calibration_by_frame = {row["frame"]: row for row in stable_calibrations}
+        raw_calibration_by_frame = {row["frame"]: row for row in calibrations}
+        stabilized_rows: list[dict[str, object]] = []
+        for row in rows:
+            calibration = calibration_by_frame.get(row["frame"])
+            if calibration is None:
+                continue
+            raw = raw_calibration_by_frame[row["frame"]]
+            scale = float(calibration["pixels_per_foot"])
+            raw_scale = float(raw["pixels_per_foot"])
+            x = (float(row["x"]) * raw_scale + float(raw["plate_centerline"])
+                 - float(calibration["plate_centerline"])) / scale
+            stabilized_rows.append({**row, "x": x, "y": float(row["y"]) * raw_scale / scale})
+        self.last_output = pd.DataFrame(stabilized_rows, columns=SCHEMA)
         return self.last_output
 
     def write_csv(self, path: Union[str, Path], rows: Optional[pd.DataFrame] = None) -> None:
