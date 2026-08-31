@@ -113,6 +113,10 @@ def _run_item(item: dict[str, str]) -> dict[str, Any]:
             result.update(status="failed", error=str(exc))
             return result
     finally:
+        # yt-dlp appends container/format suffixes (.mkv, .fNNN.mp4, .temp,
+        # .part) -- sweep every artifact sharing the destination stem.
+        for leftover in video.parent.glob(video.stem + "*"):
+            leftover.unlink(missing_ok=True)
         video.unlink(missing_ok=True)
 
 
