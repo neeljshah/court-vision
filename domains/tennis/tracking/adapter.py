@@ -1,0 +1,259 @@
+"""Fixed-camera tennis broadcast tracking in normalized court feet.
+
+The first CV adapter intentionally tracks players only.  Ball tracking is a
+named empty stub until a validated TrackNet integration is available.
+"""
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Callable, Optional, Sequence, Union
+
+import cv2
+import numpy as np
+import pandas as pd
+
+
+SCHEMA = ("frame", "track_id", "cls", "x", "y")
+COURT_FEET = np.float32(((0, 0), (78, 0), (0, 36), (78, 36)))
+Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
+
+
+def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
+    """Write player tracking rows in the normalized platform schema."""
+    missing = [column for column in SCHEMA if column not in rows.columns]
+    if missing:
+        raise ValueError("Tracking rows missing columns: %s" % ", ".join(missing))
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    rows.loc[:, SCHEMA].to_csv(path, index=False)
+
+
+class TennisAdapter:
+    """Track two tennis players from a fixed behind-baseline broadcast feed."""
+
+    def __init__(
+        self,
+        detector: Optional[Detector] = None,
+        corner_stability_px: float = 5.0,
+    ) -> None:
+        self.detector = detector if detector is not None else self._load_yolo_detector()
+        self.corner_stability_px = corner_stability_px
+        self._corners: Optional[np.ndarray] = None
+        self._homography: Optional[np.ndarray] = None
+        self._centroids: dict[int, np.ndarray] = {}
+        self.last_output = pd.DataFrame(columns=SCHEMA)
+
+    @staticmethod
+    def _load_yolo_detector() -> Detector:
+        try:
+            from ultralytics import YOLO
+        except ImportError as exc:
+            raise ImportError(
+                "TennisAdapter requires ultralytics. Install it with "
+                "`pip install ultralytics` or pass a detector for testing."
+            ) from exc
+
+        model = YOLO("yolov8n.pt")
+
+        def detect(frame: np.ndarray) -> Sequence[Sequence[float]]:
+            result = model(frame, classes=[0], verbose=False)[0]
+            if result.boxes is None:
+                return []
+            return result.boxes.xyxy.cpu().numpy().tolist()
+
+        return detect
+
+    @staticmethod
+    def _line_position(line: np.ndarray, horizontal: bool, shape: tuple[int, int]) -> float:
+        x1, y1, x2, y2 = line
+        height, width = shape
+        if horizontal:
+            if abs(x2 - x1) < 1e-6:
+                return float((y1 + y2) / 2.0)
+            return float(y1 + (width / 2.0 - x1) * (y2 - y1) / (x2 - x1))
+        if abs(y2 - y1) < 1e-6:
+            return float((x1 + x2) / 2.0)
+        return float(x1 + (height / 2.0 - y1) * (x2 - x1) / (y2 - y1))
+
+    @staticmethod
+    def _cluster_lines(
+        lines: list[np.ndarray], horizontal: bool, shape: tuple[int, int]
+    ) -> list[list[np.ndarray]]:
+        ordered = sorted(
+            lines, key=lambda line: TennisAdapter._line_position(line, horizontal, shape)
+        )
+        clusters: list[list[np.ndarray]] = []
+        for line in ordered:
+            if not clusters:
+                clusters.append([line])
+                continue
+            position = TennisAdapter._line_position(line, horizontal, shape)
+            previous = np.mean([
+                TennisAdapter._line_position(item, horizontal, shape)
+                for item in clusters[-1]
+            ])
+            if abs(position - previous) <= 12.0:
+                clusters[-1].append(line)
+            else:
+                clusters.append([line])
+        return clusters
+
+    @staticmethod
+    def _fit_line(lines: list[np.ndarray]) -> np.ndarray:
+        points = np.asarray(
+            [[line[0], line[1]] for line in lines] + [[line[2], line[3]] for line in lines],
+            dtype=np.float32,
+        )
+        vx, vy, x0, y0 = cv2.fitLine(points, cv2.DIST_L2, 0, 0.01, 0.01).reshape(-1)
+        return np.array((x0 - 10000 * vx, y0 - 10000 * vy, x0 + 10000 * vx, y0 + 10000 * vy))
+
+    @staticmethod
+    def _intersection(first: np.ndarray, second: np.ndarray) -> Optional[np.ndarray]:
+        a = np.cross(
+            np.array((first[0], first[1], 1.0)), np.array((first[2], first[3], 1.0))
+        )
+        b = np.cross(
+            np.array((second[0], second[1], 1.0)), np.array((second[2], second[3], 1.0))
+        )
+        point = np.cross(a, b)
+        if abs(point[2]) < 1e-8:
+            return None
+        return np.float32(point[:2] / point[2])
+
+    def detect_court_corners(self, frame: np.ndarray) -> Optional[np.ndarray]:
+        """Return near-left, near-right, far-left, far-right doubles corners."""
+        height, width = frame.shape[:2]
+        bright = cv2.inRange(frame, np.array((200, 200, 200)), np.array((255, 255, 255)))
+        lines = cv2.HoughLinesP(
+            bright, 1, np.pi / 180.0, threshold=45,
+            minLineLength=max(40, width // 12), maxLineGap=20,
+        )
+        if lines is None:
+            return None
+        horizontal: list[np.ndarray] = []
+        vertical: list[np.ndarray] = []
+        for raw_line in lines[:, 0, :]:
+            line = raw_line.astype(float)
+            dx, dy = abs(line[2] - line[0]), abs(line[3] - line[1])
+            if dx >= 1.5 * dy:
+                horizontal.append(line)
+            elif dy > dx:
+                vertical.append(line)
+        if len(horizontal) < 2 or len(vertical) < 2:
+            return None
+        horizontal_clusters = self._cluster_lines(horizontal, True, (height, width))
+        vertical_clusters = self._cluster_lines(vertical, False, (height, width))
+        if len(horizontal_clusters) < 2 or len(vertical_clusters) < 2:
+            return None
+        far = self._fit_line(horizontal_clusters[0])
+        near = self._fit_line(horizontal_clusters[-1])
+        left = self._fit_line(vertical_clusters[0])
+        right = self._fit_line(vertical_clusters[-1])
+        corners = [
+            self._intersection(near, left), self._intersection(near, right),
+            self._intersection(far, left), self._intersection(far, right),
+        ]
+        if any(point is None for point in corners):
+            return None
+        result = np.asarray(corners, dtype=np.float32)
+        if np.any(result[:, 0] < -5) or np.any(result[:, 0] > width + 5):
+            return None
+        if np.any(result[:, 1] < -5) or np.any(result[:, 1] > height + 5):
+            return None
+        return result
+
+    @staticmethod
+    def homography_from_corners(corners: np.ndarray) -> np.ndarray:
+        """Map ordered image doubles-court corners to a 78 by 36 foot plane."""
+        homography, _ = cv2.findHomography(np.asarray(corners, dtype=np.float32), COURT_FEET)
+        if homography is None:
+            raise ValueError("Could not calculate court homography")
+        return homography
+
+    @staticmethod
+    def _project(point: tuple[float, float], homography: np.ndarray) -> np.ndarray:
+        projected = cv2.perspectiveTransform(
+            np.float32([[point]]), homography
+        )
+        return projected[0, 0]
+
+    def _stable_homography(self, frame: np.ndarray) -> Optional[np.ndarray]:
+        corners = self.detect_court_corners(frame)
+        if corners is None:
+            return self._homography
+        if self._corners is not None:
+            drift = np.linalg.norm(corners - self._corners, axis=1).max()
+            if drift <= self.corner_stability_px:
+                return self._homography
+        self._corners = corners
+        self._homography = self.homography_from_corners(corners)
+        return self._homography
+
+    def _track_ids(self, candidates: list[tuple[np.ndarray, np.ndarray]]) -> list[tuple[int, np.ndarray]]:
+        centers = [candidate[0] for candidate in candidates]
+        if set(self._centroids) != {1, 2}:
+            order = sorted(range(2), key=lambda index: (-centers[index][1], centers[index][0]))
+        else:
+            direct = np.linalg.norm(centers[0] - self._centroids[1]) + np.linalg.norm(centers[1] - self._centroids[2])
+            crossed = np.linalg.norm(centers[1] - self._centroids[1]) + np.linalg.norm(centers[0] - self._centroids[2])
+            order = [0, 1] if direct <= crossed else [1, 0]
+        tracked = [(track_id, candidates[index][1]) for track_id, index in enumerate(order, start=1)]
+        self._centroids = {track_id: centers[index] for track_id, index in enumerate(order, start=1)}
+        return tracked
+
+    def detect_players(self, frame: np.ndarray, homography: np.ndarray) -> list[tuple[int, np.ndarray]]:
+        """Return two player ids and their court-foot locations, when visible."""
+        per_half: dict[int, tuple[float, np.ndarray, np.ndarray]] = {}
+        for box in self.detector(frame):
+            x1, y1, x2, y2 = map(float, box[:4])
+            if x2 <= x1 or y2 <= y1:
+                continue
+            foot = self._project(((x1 + x2) / 2.0, y2), homography)
+            if not (-5 <= foot[0] <= 83 and -5 <= foot[1] <= 41):
+                continue
+            half = 0 if foot[1] < 18.0 else 1
+            area = (x2 - x1) * (y2 - y1)
+            center = np.array(((x1 + x2) / 2.0, (y1 + y2) / 2.0))
+            if half not in per_half or area > per_half[half][0]:
+                per_half[half] = (area, center, foot)
+        if set(per_half) != {0, 1}:
+            return []
+        return self._track_ids([(per_half[0][1], per_half[0][2]), (per_half[1][1], per_half[1][2])])
+
+    @staticmethod
+    def detect_ball_stub(frame: np.ndarray, homography: np.ndarray) -> list[tuple[int, np.ndarray]]:
+        """Return no ball rows. TODO: integrate a validated TrackNet detector."""
+        del frame, homography
+        return []
+
+    def process_video(
+        self, path: Union[str, Path], max_frames: Optional[int] = None, stride: int = 1
+    ) -> pd.DataFrame:
+        """Process a headless video stream into normalized player-tracking rows."""
+        if stride < 1:
+            raise ValueError("stride must be at least 1")
+        capture = cv2.VideoCapture(str(path))
+        if not capture.isOpened():
+            raise FileNotFoundError("Could not open video: %s" % path)
+        rows: list[dict[str, object]] = []
+        source_frame = processed = 0
+        try:
+            while max_frames is None or processed < max_frames:
+                ok, frame = capture.read()
+                if not ok:
+                    break
+                if source_frame % stride == 0:
+                    homography = self._stable_homography(frame)
+                    if homography is not None:
+                        for track_id, point in self.detect_players(frame, homography):
+                            rows.append({"frame": source_frame, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1])})
+                        self.detect_ball_stub(frame, homography)
+                    processed += 1
+                source_frame += 1
+        finally:
+            capture.release()
+        self.last_output = pd.DataFrame(rows, columns=SCHEMA)
+        return self.last_output
+
+    def write_csv(self, path: Union[str, Path], rows: Optional[pd.DataFrame] = None) -> None:
+        """Write the most recent output, or supplied rows, in normalized schema."""
+        write_csv(self.last_output if rows is None else rows, path)
