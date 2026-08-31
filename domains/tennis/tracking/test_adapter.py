@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 
 from domains.tennis.tracking.adapter import TennisAdapter
+from domains.tennis.tracking.segmenter import detect_cut, small_gray
 
 
 COURT = np.float32(((120, 650), (1160, 650), (430, 120), (850, 120)))
@@ -64,6 +65,60 @@ def test_temporal_calibration_limits_noisy_corner_projection_jitter() -> None:
             projected.append(adapter._project((640.0, 375.0), homography))
     jumps = np.linalg.norm(np.diff(np.asarray(projected), axis=0), axis=1)
     assert np.percentile(jumps, 95) < 8.0
+
+
+def test_scene_cut_resets_homography_smoothing(monkeypatch) -> None:
+    first_court = COURT.copy()
+    second_court = np.float32(((180, 640), (1100, 610), (340, 100), (950, 150)))
+    first_frames = [np.full((720, 1280, 3), (30, 100, 30), dtype=np.uint8) for _ in range(12)]
+    second_frames = [np.full((720, 1280, 3), (220, 180, 180), dtype=np.uint8) for _ in range(12)]
+    frames = first_frames + second_frames
+    assert detect_cut(small_gray(first_frames[-1]), small_gray(second_frames[0]))
+
+    class FakeCapture:
+        def __init__(self, stream: list[np.ndarray]) -> None:
+            self._stream = iter(stream)
+
+        def isOpened(self) -> bool:
+            return True
+
+        def read(self) -> tuple[bool, np.ndarray | None]:
+            try:
+                return True, next(self._stream)
+            except StopIteration:
+                return False, None
+
+        def release(self) -> None:
+            pass
+
+    monkeypatch.setattr(
+        "domains.tennis.tracking.adapter.cv2.VideoCapture",
+        lambda path: FakeCapture(frames),
+    )
+    adapter = TennisAdapter(detector=lambda frame: [])
+    adapter.detect_court_corners = lambda frame: (
+        first_court if frame[0, 0, 0] < 100 else second_court
+    )
+    seen: list[tuple[str, np.ndarray]] = []
+
+    def record_projection(frame: np.ndarray, homography: np.ndarray) -> list[tuple[int, np.ndarray]]:
+        segment = "first" if frame[0, 0, 0] < 100 else "second"
+        seen.append((segment, adapter._project((640.0, 375.0), homography)))
+        return []
+
+    adapter.detect_players = record_projection
+    adapter.process_video("synthetic.avi")
+
+    expected_second = adapter._project(
+        (640.0, 375.0), adapter.homography_from_corners(second_court)
+    )
+    first_points = np.asarray([point for segment, point in seen if segment == "first"])
+    second_points = np.asarray([point for segment, point in seen if segment == "second"])
+    assert len(first_points) > 0
+    assert np.allclose(second_points, expected_second, atol=0.5)
+    for points in (first_points, second_points):
+        jumps = np.linalg.norm(np.diff(points, axis=0), axis=1)
+        assert np.percentile(jumps, 95) < 8.0
 
 
 def test_write_csv_uses_normalized_schema(tmp_path) -> None:

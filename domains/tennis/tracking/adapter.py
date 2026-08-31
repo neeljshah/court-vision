@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 
 from scripts.platformkit.calibration.keypoint_calib import TemporalCalibrator
+from domains.tennis.tracking.segmenter import detect_cut, small_gray
 
 
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
@@ -43,6 +44,8 @@ class TennisAdapter:
         self._homography: Optional[np.ndarray] = None
         self._calibrator = TemporalCalibrator("tennis", drift_threshold=8.0)
         self._calibration_updates = 0
+        self._lost_corner_frames = 0
+        self._force_homography_recompute = False
         self._centroids: dict[int, np.ndarray] = {}
         self.last_output = pd.DataFrame(columns=SCHEMA)
 
@@ -189,10 +192,23 @@ class TennisAdapter:
         previous = cv2.perspectiveTransform(probes.reshape(1, -1, 2), self._homography)[0]
         return bool(np.max(np.linalg.norm(current - previous, axis=1)) <= 8.0)
 
+    def _reset_temporal_calibration(self) -> None:
+        """Drop camera-specific calibration history after a cut or prolonged loss."""
+        self._corners = None
+        self._homography = None
+        self._calibrator = TemporalCalibrator("tennis", drift_threshold=8.0)
+        self._calibration_updates = 0
+        self._lost_corner_frames = 0
+        self._force_homography_recompute = True
+
     def _stable_homography(self, frame: np.ndarray) -> Optional[np.ndarray]:
         corners = self.detect_court_corners(frame)
         if corners is None:
+            self._lost_corner_frames += 1
+            if self._lost_corner_frames > 30:
+                self._reset_temporal_calibration()
             return self._homography
+        self._lost_corner_frames = 0
         detections = {
             name: (float(point[0]), float(point[1]), 1.0)
             for name, point in zip(
@@ -203,10 +219,11 @@ class TennisAdapter:
         if result.homography is None or result.recompute or not self._in_tolerance(result.homography, frame.shape[:2]):
             return self._homography
         self._calibration_updates += 1
-        if self._calibration_updates < 9:
+        if self._calibration_updates < 9 and not self._force_homography_recompute:
             return None
         self._corners = corners
         self._homography = result.homography
+        self._force_homography_recompute = False
         return self._homography
 
     def _track_ids(self, candidates: list[tuple[np.ndarray, np.ndarray]]) -> list[tuple[int, np.ndarray]]:
@@ -257,11 +274,16 @@ class TennisAdapter:
             raise FileNotFoundError("Could not open video: %s" % path)
         rows: list[dict[str, object]] = []
         source_frame = processed = 0
+        previous_gray_small: Optional[np.ndarray] = None
         try:
             while max_frames is None or processed < max_frames:
                 ok, frame = capture.read()
                 if not ok:
                     break
+                current_gray_small = small_gray(frame)
+                if previous_gray_small is not None and detect_cut(previous_gray_small, current_gray_small):
+                    self._reset_temporal_calibration()
+                previous_gray_small = current_gray_small
                 if source_frame % stride == 0:
                     homography = self._stable_homography(frame)
                     if homography is not None:
