@@ -71,6 +71,7 @@ Non-negotiable. A PreToolUse hook enforces some of these for Claude; for you the
 5. **ASCII only on stdout** (cp1252 console). No unicode arrows or box-drawing in prints.
 6. **Work in your own git worktree** when a Claude session may be active in the main tree (`git worktree add ../nba-codex-wt`). Two agents in one tree has caused a logged data-loss incident.
 7. **Never write `data/registry/`; never flip a feature flag ON.**
+8. **Test imports use the full package path** (`from scripts.platformkit.x import ...`), never bare module names -- bare imports pass in your sandbox but fail in the main tree.
 
 ---
 
