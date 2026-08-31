@@ -1,11 +1,4 @@
-"""Sport-blind per-game tracking quality harness.
-
-The contract every sport adapter must satisfy (MULTISPORT_TRACKING_PROGRAM.md):
-feed it a normalized tracking table, get a QualityReport with pass/fail vs
-that sport's thresholds. No sport-specific logic lives here.
-
-Normalized schema (one row per detection, court/field coordinates):
-    frame:int, track_id:int, cls:str ('player'|'ball'|...), x:float, y:float
+"""Evaluate canonical tracking rows with versioned, sport-specific thresholds.
 
 Run: python scripts/platformkit/tracking_harness.py <tracking.csv> <sport>
 """
@@ -13,92 +6,151 @@ from __future__ import annotations
 
 import json
 import sys
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
+from typing import Mapping
 
 import pandas as pd
 
-# Per-sport thresholds. Field bounds in the sport's court/field units.
-# ponytail: flat dict, tune per sport as real games flow through.
-SPORTS: dict = {
-    # basketball thresholds calibrated on first real 720p60 game 2026-08-31
-    # (broadcast crops mean ~7 tracked players typical; det_per_frame avg 8.05)
-    "basketball": {"bounds": (0, 94, 0, 50), "min_players": 6,
-                   "ball_valid_min": 0.30, "coverage_min": 0.60,
-                   "oob_max": 0.05, "jump_p95_max": 6.0},
-    # tennis bounds = PLAY AREA not court paint: players legitimately stand
-    # behind the baseline (first real match measured 42% outside the 78x36
-    # rectangle, 2026-08-31) -- run-off margins per ITF guidance ~21ft back/12ft side.
-    "tennis":     {"bounds": (-21, 99, -12, 48), "min_players": 2,
+DEFAULT_CONFIG_VERSION = "2026-09-01-v1"
+_BASKETBALL = {"bounds": (0, 94, 0, 50), "min_players": 6,
+               "ball_valid_min": 0.30, "coverage_min": 0.60,
+               "oob_max": 0.05, "jump_p95_max": 6.0}
+_BASEBALL = {"bounds": (-30, 30, 0, 60), "min_players": 2,
+             "ball_valid_min": 0.10, "coverage_min": 0.70,
+             "oob_max": 0.10, "jump_p95_max": 10.0}
+
+# A report carries both this version and its input sport label, even when an
+# adapter implementation is shared by related competitions.
+CONFIG_VERSIONS: dict[str, dict[str, dict]] = {
+    DEFAULT_CONFIG_VERSION: {
+        "basketball": dict(_BASKETBALL),
+        "wnba": dict(_BASKETBALL),
+        "tennis": {"bounds": (-21, 99, -12, 48), "min_players": 2,
                    "ball_valid_min": 0.20, "coverage_min": 0.90,
                    "oob_max": 0.08, "jump_p95_max": 8.0},
-    "soccer":     {"bounds": (0, 105, 0, 68), "min_players": 14,
+        "soccer": {"bounds": (0, 105, 0, 68), "min_players": 14,
                    "ball_valid_min": 0.20, "coverage_min": 0.85,
                    "oob_max": 0.05, "jump_p95_max": 8.0},
-    "baseball":   {"bounds": (-30, 30, 0, 60), "min_players": 2,  # pitch-view
-                   "ball_valid_min": 0.10, "coverage_min": 0.70,
-                   "oob_max": 0.10, "jump_p95_max": 10.0},
+        "baseball": dict(_BASEBALL),
+        "npb": dict(_BASEBALL),
+        "kbo": dict(_BASEBALL),
+        "football": {"bounds": (0, 120, 0, 53.333), "min_players": 14,
+                     "ball_valid_min": 0.20, "coverage_min": 0.85,
+                     "oob_max": 0.05, "jump_p95_max": 8.0},
+    }
 }
+# Backward-compatible view of the current threshold map.
+SPORTS = CONFIG_VERSIONS[DEFAULT_CONFIG_VERSION]
 
 
 @dataclass
 class QualityReport:
     sport: str
+    config_version: str
     n_frames: int
-    coverage_pct: float          # frames with >= min_players player tracks
+    n_unique_games: int
+    n_duplicate_frame_track_rows: int
+    ball_rows: int
+    coverage_pct: float
     det_per_frame: float
-    median_track_len: float      # continuity proxy (frames per track_id)
-    ball_valid_pct: float        # frames with an in-bounds ball point
-    jump_p95: float              # p95 per-track frame-to-frame move (units)
-    oob_pct: float               # points outside field bounds
+    median_track_len: float
+    ball_valid_pct: float
+    jump_p95: float
+    oob_pct: float
+    source_resolution: str | None
+    source_frame_rate: float | None
+    self_consistency_only: bool
     passed: bool
-    failures: list
+    failures: list[str]
 
     def to_json(self) -> str:
         return json.dumps(asdict(self), indent=2)
 
 
-def evaluate(df: pd.DataFrame, sport: str) -> QualityReport:
-    cfg = SPORTS[sport]
-    x0, x1, y0, y1 = cfg["bounds"]
-    n_frames = int(df["frame"].nunique())
-    if n_frames == 0:
-        return QualityReport(sport, 0, 0, 0, 0, 0, 0, 0, False, ["empty"])
+def _source_fields(metadata: Mapping[str, object] | None) -> tuple[str | None, float | None]:
+    if not metadata:
+        return None, None
+    resolution = metadata.get("resolution")
+    frame_rate = metadata.get("frame_rate")
+    return (str(resolution) if resolution is not None else None,
+            float(frame_rate) if frame_rate is not None else None)
 
+
+def _failed_report(sport: str, config_version: str, failure: str,
+                   metadata: Mapping[str, object] | None = None) -> QualityReport:
+    resolution, frame_rate = _source_fields(metadata)
+    return QualityReport(sport, config_version, 0, 0, 0, 0, 0.0, 0.0, 0.0,
+                         0.0, 0.0, 0.0, resolution, frame_rate, True, False,
+                         [failure])
+
+
+def evaluate(df: pd.DataFrame, sport: str,
+             config_version: str = DEFAULT_CONFIG_VERSION,
+             source_metadata: Mapping[str, object] | None = None) -> QualityReport:
+    """Return self-consistency health metrics for one canonical tracking table."""
+    configs = CONFIG_VERSIONS.get(config_version)
+    if configs is None:
+        return _failed_report(sport, config_version,
+                              "unknown config version {}".format(config_version),
+                              source_metadata)
+    cfg = configs.get(sport)
+    if cfg is None:
+        return _failed_report(sport, config_version,
+                              "unknown sport {}".format(sport), source_metadata)
+
+    resolution, frame_rate = _source_fields(source_metadata)
+    n_frames = int(df["frame"].nunique())
+    n_unique_games = (int(df["game_id"].dropna().nunique()) if "game_id" in df
+                      else int(n_frames > 0))
+    duplicate_keys = ["frame", "track_id"]
+    if "game_id" in df:
+        duplicate_keys.insert(0, "game_id")
+    duplicates = int(df.duplicated(duplicate_keys).sum())
+    ball_rows = int((df["cls"] == "ball").sum())
+    if n_frames == 0:
+        report = _failed_report(sport, config_version, "empty", source_metadata)
+        report.n_duplicate_frame_track_rows = duplicates
+        report.ball_rows = ball_rows
+        return report
+
+    x0, x1, y0, y1 = cfg["bounds"]
     players = df[df["cls"] == "player"]
     per_frame = players.groupby("frame")["track_id"].nunique()
     coverage = float((per_frame >= cfg["min_players"]).sum() / n_frames)
     det_per_frame = float(len(df) / n_frames)
-    track_len = float(players.groupby("track_id")["frame"].count().median()
-                      ) if len(players) else 0.0
-
-    # bounds apply to players; adapters emit a ball row IFF they have a
-    # valid ball fix, so ball validity = frames with any ball row.
+    track_len = (float(players.groupby("track_id")["frame"].count().median())
+                 if len(players) else 0.0)
     oob = (~players["x"].between(x0, x1)) | (~players["y"].between(y0, y1))
     oob_pct = float(oob.mean()) if len(players) else 1.0
     ball_valid = float(df[df["cls"] == "ball"]["frame"].nunique() / n_frames)
-
-    d = players.sort_values(["track_id", "frame"]).groupby("track_id")
-    jump = ((d["x"].diff() ** 2 + d["y"].diff() ** 2) ** 0.5).dropna()
+    grouped = players.sort_values(["track_id", "frame"]).groupby("track_id")
+    jump = ((grouped["x"].diff() ** 2 + grouped["y"].diff() ** 2) ** 0.5).dropna()
     jump_p95 = float(jump.quantile(0.95)) if len(jump) else 0.0
 
-    failures = []
-    if coverage < cfg["coverage_min"]:
-        failures.append(f"coverage {coverage:.2f} < {cfg['coverage_min']}")
-    if ball_valid < cfg["ball_valid_min"]:
-        failures.append(f"ball_valid {ball_valid:.2f} < {cfg['ball_valid_min']}")
-    if oob_pct > cfg["oob_max"]:
-        failures.append(f"oob {oob_pct:.2f} > {cfg['oob_max']}")
-    if jump_p95 > cfg["jump_p95_max"]:
-        failures.append(f"jump_p95 {jump_p95:.1f} > {cfg['jump_p95_max']}")
+    failures: list[str] = []
+    if duplicates:
+        failures.append("duplicate frame-track rows {}".format(duplicates))
+    for name, value, threshold, operator in (
+        ("coverage", coverage, cfg["coverage_min"], "min"),
+        ("ball_valid", ball_valid, cfg["ball_valid_min"], "min"),
+        ("oob", oob_pct, cfg["oob_max"], "max"),
+        ("jump_p95", jump_p95, cfg["jump_p95_max"], "max"),
+    ):
+        invalid = value < threshold if operator == "min" else value > threshold
+        if invalid:
+            sign = "<" if operator == "min" else ">"
+            failures.append("{} {:.2f} {} {:.2f}".format(name, value, sign, threshold))
 
-    return QualityReport(sport, n_frames, round(coverage, 4),
-                         round(det_per_frame, 2), track_len,
-                         round(ball_valid, 4), round(jump_p95, 2),
-                         round(oob_pct, 4), not failures, failures)
+    return QualityReport(sport, config_version, n_frames, n_unique_games,
+                         duplicates, ball_rows, round(coverage, 4),
+                         round(det_per_frame, 2), track_len, round(ball_valid, 4),
+                         round(jump_p95, 2), round(oob_pct, 4), resolution,
+                         frame_rate, True, not failures, failures)
 
 
 if __name__ == "__main__":
-    path, sport = sys.argv[1], sys.argv[2]
-    rep = evaluate(pd.read_csv(path), sport)
-    sys.stdout.write(rep.to_json() + "\n")
-    sys.exit(0 if rep.passed else 1)
+    path, sport, *version = sys.argv[1:]
+    report = evaluate(pd.read_csv(path), sport,
+                      version[0] if version else DEFAULT_CONFIG_VERSION)
+    sys.stdout.write(report.to_json() + "\n")
+    sys.exit(0 if report.passed else 1)
