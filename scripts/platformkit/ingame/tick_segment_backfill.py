@@ -46,7 +46,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_GRADE_DIR = _REPO_ROOT / "data" / "cache" / "ingame_grade" / "soccer_intl"
 DEFAULT_SIDECAR_PATH = _REPO_ROOT / "data" / "domains" / "soccer_intl" / "tick_segment_backfill.json"
 
-_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0"
+_UA = "curl/8.0"  # plain UA: ESPN 403s browser UAs from datacenter IPs (2026-08-31)
 _TIMEOUT = 12
 _SCOREBOARD_URL = ("https://site.api.espn.com/apis/site/v2/sports/soccer/"
                     "fifa.world/scoreboard?dates={date}")

@@ -63,7 +63,7 @@ logger = logging.getLogger(__name__)
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 _CACHE_DIR = _REPO_ROOT / "data" / "domains" / "mlb" / "game_pk_bridge"
 
-_UA = "CourtVision-research/1.0 (contact: neeljshah22@gmail.com)"
+_UA = "curl/8.0"  # plain UA: ESPN 403s non-tool UAs from datacenter IPs (2026-08-31)
 _SCHEDULE_URL = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={date}"
 _ESPN_SCOREBOARD_URL = (
     "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates={yyyymmdd}"

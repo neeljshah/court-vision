@@ -26,7 +26,7 @@ import json
 import urllib.request
 from typing import Callable, Dict, List, Optional, Tuple
 
-_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+_UA = "curl/8.0"  # plain UA: ESPN 403s browser UAs from datacenter IPs (2026-08-31)
 
 # per-sport ESPN path + frac_elapsed denominator semantics
 _SPORTS: Dict[str, Dict] = {

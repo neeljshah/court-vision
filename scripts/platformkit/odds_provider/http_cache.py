@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_TTL_SECONDS = 60.0  # live odds move fast; a short TTL is plenty.
 _CACHE_DIR = Path(os.environ.get("ODDS_PROVIDER_CACHE_DIR",
                                  str(Path.home() / ".cache" / "courtvision_odds")))
-_UA = "Mozilla/5.0 (CourtVision odds_provider; honest public-API client)"
+_UA = "curl/8.0"  # plain UA: ESPN 403s Mozilla-prefixed UAs from datacenter IPs (2026-08-31)
 
 # Retry tuning: a few attempts with exponential backoff + jitter, capped so a flaky
 # venue recovers from a transient blip without hammering the source or stalling the
