@@ -1,42 +1,64 @@
-# Multi-Sport Tracking Evidence
+<!-- GENERATED: scripts/platformkit/evidence_page.py -->
 
-First-day evidence from the multi-sport tracking program (2026-08-31). Every
-game below ran through a real sport adapter on an RTX 3090 and was scored by a
-shared, sport-blind quality harness
-([tracking_harness.py](../../../scripts/platformkit/tracking_harness.py)) —
-pass/fail against per-sport thresholds, never eyeballed. Demos are rendered
-**purely from our tracking coordinates** (no broadcast imagery).
+# Multi-sport evidence
 
-## Demo
+| Sport | Games | Pass rate | Coverage median | Det/frame median | Track median | Ball valid median | Jump p95 median | OOB median |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 
-Real US Open match, players tracked to court coordinates via court-line
-homography ([adapter](../../../domains/tennis/tracking/adapter.py)):
+## Honest limitations
 
-![Tennis tracking demo](../demos/tennis_demo.gif)
+- No failing metrics were reported.
 
-## Day-1 scoreboard (11 real games, 6 leagues)
+## Models
 
-| League | Games scored | Best result | Known gap (tracked honestly) |
-|---|---|---|---|
-| WNBA | 2 | **PASS** — ball 85.9%, coverage 80.2% (1080p) | low-bitrate game failed coverage |
-| NBA | 1 | ball 62.6% at 720p60 (vs ~30% on legacy 360p corpus) | 1080p source search open |
-| Tennis | 2+ | players clean on all metrics | ball detector pending (stub emits nothing rather than fake data) |
-| Soccer | 1 | first run complete | homography stability below threshold — fix in progress |
-| NPB | 1 | pitch-view classifier + coverage passed first try | scale stability below threshold |
-| KBO | 1 | pitch-view classifier + coverage passed first try | scale stability below threshold |
+Walk-forward/calibration reports are recorded below when present.
 
-The headline: ball-tracking validity scales with source resolution
-(~30% at 360p, ~63% at 720p60, 86–93% at 1080p) — measured, not assumed.
+### nfl_game_model
 
-## Method, in one paragraph
+| Metric | Value |
+| --- | ---: |
+| disclaimer | Evaluation only; no betting edge or ROI is claimed. |
 
-Footage in → sport adapter (detection, homography to court/field coordinates,
-identity tracking) → normalized tracking table → harness QualityReport
-(coverage, continuity, ball validity, temporal stability, bounds) → external
-cross-check against official box scores where available. Failures are recorded
-verbatim in the report ledger; a sport ships only after 10 games clear its
-thresholds. No wagering-performance claims are made from any of this; see
-[JOB_EVIDENCE_PACKET](../../JOB_EVIDENCE_PACKET.md) for claim discipline.
+### teacher_student_points
 
-*Auto-generated pages with per-game reports will replace this summary as the
-corpus grows.*
+| Metric | Value |
+| --- | ---: |
+| coverage_pct | 100 |
+| diagnosis.matched_pairs | 957 |
+| diagnosis.misses.count | 230 |
+| diagnosis.misses.game_never_in_tracking | 0 |
+| diagnosis.misses.person_never_in_tracking | 15 |
+| diagnosis.misses.person_present_different_game | 215 |
+| diagnosis.pair_coverage_pct | 80.62 |
+| diagnosis.target_pairs | 1187 |
+| diagnosis.tracking_pairs | 2.57e+04 |
+| pooled.coverage_pct | 100 |
+| pooled.delta | None |
+| pooled.mae_base | 6.609 |
+| pooled.mae_track | None |
+| pooled.verdict | INVALID (features) |
+| rows_evaluated | 779 |
+| rows_total | 779 |
+
+### wp_oos_20260831T205014Z
+
+| Metric | Value |
+| --- | ---: |
+| generated_at | 20260831T205014Z |
+| sports.KXMLBGAME.tick_count | 1.58e+05 |
+| sports.KXMLBGAME.walk_forward_isotonic.fold_count | 5 |
+| sports.KXMLBGAME.walk_forward_isotonic.note | ONLY OOS DELTAS COUNT; no isotonic model is scored on its fit ticks. |
+| sports.KXMLBGAME.walk_forward_isotonic.pooled.brier_after | 0.2281 |
+| sports.KXMLBGAME.walk_forward_isotonic.pooled.brier_before | 0.2363 |
+| sports.KXMLBGAME.walk_forward_isotonic.pooled.delta | 0.008243 |
+| sports.KXMLBGAME.walk_forward_isotonic.pooled.test_ticks | 1.342e+05 |
+| sports.KXWCGAME.tick_count | 6649 |
+| sports.KXWCGAME.walk_forward_isotonic.fold_count | 5 |
+| sports.KXWCGAME.walk_forward_isotonic.note | ONLY OOS DELTAS COUNT; no isotonic model is scored on its fit ticks. |
+| sports.KXWCGAME.walk_forward_isotonic.pooled.brier_after | 0.2226 |
+| sports.KXWCGAME.walk_forward_isotonic.pooled.brier_before | 0.3084 |
+| sports.KXWCGAME.walk_forward_isotonic.pooled.delta | 0.0858 |
+| sports.KXWCGAME.walk_forward_isotonic.pooled.test_ticks | 4963 |
+| store | C:\Users\neelj\nba-ai-system\data\cache\ingame_grade_joined |
+
+No betting edge or ROI is claimed; these are calibration and model-evaluation records only.
