@@ -57,6 +57,19 @@ def test_mock_detector_projects_players_and_tracks_ids() -> None:
     assert np.allclose(points[2], (80, 52), atol=0.5)
 
 
+def test_temporal_calibration_limits_noisy_corner_projection_jitter() -> None:
+    adapter = SoccerAdapter(detector=lambda frame: [])
+    rng = np.random.default_rng(7)
+    projected = []
+    for index in range(45):
+        noise = np.zeros_like(PITCH) if index < 9 else rng.normal(0, 100, PITCH.shape)
+        homography = adapter._stable_homography(PITCH + noise)
+        if homography is not None:
+            projected.append(adapter._project((640.0, 375.0), homography))
+    jumps = np.linalg.norm(np.diff(np.asarray(projected), axis=0), axis=1)
+    assert np.percentile(jumps, 95) < 8.0
+
+
 def test_write_csv_uses_normalized_schema(tmp_path) -> None:
     adapter = SoccerAdapter(detector=lambda frame: [])
     adapter.last_output = pd.DataFrame([[4, 1, "player", 20.0, 6.0]], columns=("frame", "track_id", "cls", "x", "y"))

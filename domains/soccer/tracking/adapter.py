@@ -8,6 +8,8 @@ import cv2
 import numpy as np
 import pandas as pd
 
+from scripts.platformkit.calibration.keypoint_calib import TemporalCalibrator
+
 
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
 PITCH_METRES = np.float32(((0, 0), (105, 0), (0, 68), (105, 68)))
@@ -31,6 +33,9 @@ class SoccerAdapter:
         self.retirement_frames = retirement_frames
         self._tracks: dict[int, tuple[np.ndarray, int]] = {}
         self._next_track_id = 1
+        self._homography: Optional[np.ndarray] = None
+        self._calibrator = TemporalCalibrator("soccer", drift_threshold=8.0)
+        self._calibration_updates = 0
         self.last_output = pd.DataFrame(columns=SCHEMA)
 
     @staticmethod
@@ -197,6 +202,32 @@ class SoccerAdapter:
         """Age tracks for a frame that cannot safely be projected."""
         self._assign_tracks([])
 
+    def _stable_homography(
+        self, corners: np.ndarray, shape: tuple[int, int] = (720, 1280)
+    ) -> Optional[np.ndarray]:
+        detections = {
+            name: (float(point[0]), float(point[1]), 1.0)
+            for name, point in zip(
+                ("pitch_bl", "pitch_br", "pitch_tl", "pitch_tr"), corners)
+        }
+        result = self._calibrator.update(detections)
+        if result.homography is None or result.recompute or not self._in_tolerance(result.homography, shape):
+            return self._homography
+        self._calibration_updates += 1
+        if self._calibration_updates < 9:
+            return None
+        self._homography = result.homography
+        return self._homography
+
+    def _in_tolerance(self, homography: np.ndarray, shape: tuple[int, int]) -> bool:
+        if self._homography is None:
+            return True
+        height, width = shape
+        probes = np.float32(((0, 0), (width / 2, height / 2), (width, height)))
+        current = cv2.perspectiveTransform(probes.reshape(1, -1, 2), homography)[0]
+        previous = cv2.perspectiveTransform(probes.reshape(1, -1, 2), self._homography)[0]
+        return bool(np.max(np.linalg.norm(current - previous, axis=1)) <= 8.0)
+
     def detect_players(self, frame: np.ndarray, homography: np.ndarray) -> list[tuple[int, np.ndarray]]:
         """Project YOLO person detections and retain nearest-centroid identities."""
         candidates: list[tuple[np.ndarray, np.ndarray]] = []
@@ -238,10 +269,13 @@ class SoccerAdapter:
                     if corners is None:
                         self.mark_frame_lost()
                     else:
-                        homography = self.homography_from_corners(corners)
-                        for track_id, point in self.detect_players(frame, homography):
-                            rows.append({"frame": source_frame, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1])})
-                        self.detect_ball_stub(frame, homography)
+                        homography = self._stable_homography(corners, frame.shape[:2])
+                        if homography is not None:
+                            for track_id, point in self.detect_players(frame, homography):
+                                rows.append({"frame": source_frame, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1])})
+                            self.detect_ball_stub(frame, homography)
+                        else:
+                            self.mark_frame_lost()
                     processed += 1
                 source_frame += 1
         finally:

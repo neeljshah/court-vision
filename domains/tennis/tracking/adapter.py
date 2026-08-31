@@ -12,6 +12,8 @@ import cv2
 import numpy as np
 import pandas as pd
 
+from scripts.platformkit.calibration.keypoint_calib import TemporalCalibrator
+
 
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
 COURT_FEET = np.float32(((0, 0), (78, 0), (0, 36), (78, 36)))
@@ -39,6 +41,8 @@ class TennisAdapter:
         self.corner_stability_px = corner_stability_px
         self._corners: Optional[np.ndarray] = None
         self._homography: Optional[np.ndarray] = None
+        self._calibrator = TemporalCalibrator("tennis", drift_threshold=8.0)
+        self._calibration_updates = 0
         self._centroids: dict[int, np.ndarray] = {}
         self.last_output = pd.DataFrame(columns=SCHEMA)
 
@@ -176,16 +180,33 @@ class TennisAdapter:
         )
         return projected[0, 0]
 
+    def _in_tolerance(self, homography: np.ndarray, shape: tuple[int, int]) -> bool:
+        if self._homography is None:
+            return True
+        height, width = shape
+        probes = np.float32(((0, 0), (width / 2, height / 2), (width, height)))
+        current = cv2.perspectiveTransform(probes.reshape(1, -1, 2), homography)[0]
+        previous = cv2.perspectiveTransform(probes.reshape(1, -1, 2), self._homography)[0]
+        return bool(np.max(np.linalg.norm(current - previous, axis=1)) <= 8.0)
+
     def _stable_homography(self, frame: np.ndarray) -> Optional[np.ndarray]:
         corners = self.detect_court_corners(frame)
         if corners is None:
             return self._homography
-        if self._corners is not None:
-            drift = np.linalg.norm(corners - self._corners, axis=1).max()
-            if drift <= self.corner_stability_px:
-                return self._homography
+        detections = {
+            name: (float(point[0]), float(point[1]), 1.0)
+            for name, point in zip(
+                ("doubles_bl", "doubles_br", "doubles_tl", "doubles_tr"), corners
+            )
+        }
+        result = self._calibrator.update(detections)
+        if result.homography is None or result.recompute or not self._in_tolerance(result.homography, frame.shape[:2]):
+            return self._homography
+        self._calibration_updates += 1
+        if self._calibration_updates < 9:
+            return None
         self._corners = corners
-        self._homography = self.homography_from_corners(corners)
+        self._homography = result.homography
         return self._homography
 
     def _track_ids(self, candidates: list[tuple[np.ndarray, np.ndarray]]) -> list[tuple[int, np.ndarray]]:
