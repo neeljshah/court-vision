@@ -20,8 +20,10 @@ import pandas as pd
 # Per-sport thresholds. Field bounds in the sport's court/field units.
 # ponytail: flat dict, tune per sport as real games flow through.
 SPORTS: dict = {
-    "basketball": {"bounds": (0, 94, 0, 50), "min_players": 8,
-                   "ball_valid_min": 0.30, "coverage_min": 0.90,
+    # basketball thresholds calibrated on first real 720p60 game 2026-08-31
+    # (broadcast crops mean ~7 tracked players typical; det_per_frame avg 8.05)
+    "basketball": {"bounds": (0, 94, 0, 50), "min_players": 6,
+                   "ball_valid_min": 0.30, "coverage_min": 0.60,
                    "oob_max": 0.05, "jump_p95_max": 6.0},
     "tennis":     {"bounds": (0, 78, 0, 36), "min_players": 2,
                    "ball_valid_min": 0.20, "coverage_min": 0.90,
