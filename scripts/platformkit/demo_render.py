@@ -104,7 +104,12 @@ def render_csv(
     if out_path is None and gif_path is None:
         raise ValueError("Specify --out and/or --gif")
 
-    data = pd.read_csv(csv_path)
+    data = pd.read_csv(csv_path, low_memory=False)
+    aliases = {"player_id": "track_id", "ft_x": "x", "ft_y": "y"}
+    data = data.rename(columns={k: v for k, v in aliases.items()
+                                if k in data.columns and v not in data.columns})
+    if "cls" not in data.columns:
+        data = data.assign(cls="player")
     required = {"frame", "track_id", "cls", "x", "y"}
     missing = required.difference(data.columns)
     if missing:
