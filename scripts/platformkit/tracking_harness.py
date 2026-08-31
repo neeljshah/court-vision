@@ -25,7 +25,10 @@ SPORTS: dict = {
     "basketball": {"bounds": (0, 94, 0, 50), "min_players": 6,
                    "ball_valid_min": 0.30, "coverage_min": 0.60,
                    "oob_max": 0.05, "jump_p95_max": 6.0},
-    "tennis":     {"bounds": (0, 78, 0, 36), "min_players": 2,
+    # tennis bounds = PLAY AREA not court paint: players legitimately stand
+    # behind the baseline (first real match measured 42% outside the 78x36
+    # rectangle, 2026-08-31) -- run-off margins per ITF guidance ~21ft back/12ft side.
+    "tennis":     {"bounds": (-21, 99, -12, 48), "min_players": 2,
                    "ball_valid_min": 0.20, "coverage_min": 0.90,
                    "oob_max": 0.08, "jump_p95_max": 8.0},
     "soccer":     {"bounds": (0, 105, 0, 68), "min_players": 14,
