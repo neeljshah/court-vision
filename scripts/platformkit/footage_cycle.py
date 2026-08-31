@@ -43,7 +43,7 @@ def download_item(item: dict[str, str], destination: Path) -> Path:
     if item.get("format") == "direct":
         urllib.request.urlretrieve(item["url"], destination)
         return destination
-    command = ["yt-dlp", "-o", str(destination)]
+    command = ["yt-dlp", "--merge-output-format", "mp4", "-o", str(destination)]
     if COOKIES_PATH.is_file():
         command.extend(["--cookies", str(COOKIES_PATH)])
     command.extend(["-f", item["format"], item["url"]])
