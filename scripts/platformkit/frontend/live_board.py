@@ -67,8 +67,17 @@ def _http_json(url: str) -> Dict[str, Any]:
     """Default keyless GET (urllib + browser UA + timeout). Returns {} on any error."""
     try:
         req = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
-        with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:  # nosec - GET only
-            return json.loads(resp.read().decode("utf-8"))
+        try:
+            with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:  # nosec - GET only
+                return json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as http_exc:
+            if http_exc.code != 403:
+                raise
+            # Datacenter IPs (RunPod) get 403 on browser UAs but 200 on plain
+            # ones -- verified 2026-08-31. Retry once with a plain UA.
+            req = urllib.request.Request(url, headers={"User-Agent": "curl/8.0"})
+            with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:  # nosec - GET only
+                return json.loads(resp.read().decode("utf-8"))
     except Exception as exc:  # pragma: no cover - network guard
         logger.warning("ESPN scoreboard GET failed %s: %s", url, exc)
         return {}

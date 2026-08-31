@@ -66,11 +66,11 @@ def evaluate(df: pd.DataFrame, sport: str) -> QualityReport:
     track_len = float(players.groupby("track_id")["frame"].count().median()
                       ) if len(players) else 0.0
 
-    oob = ~df["x"].between(x0, x1) | ~df["y"].between(y0, y1)
-    oob_pct = float(oob.mean())
-
-    ball = df[(df["cls"] == "ball") & ~oob]
-    ball_valid = float(ball["frame"].nunique() / n_frames)
+    # bounds apply to players; adapters emit a ball row IFF they have a
+    # valid ball fix, so ball validity = frames with any ball row.
+    oob = (~players["x"].between(x0, x1)) | (~players["y"].between(y0, y1))
+    oob_pct = float(oob.mean()) if len(players) else 1.0
+    ball_valid = float(df[df["cls"] == "ball"]["frame"].nunique() / n_frames)
 
     d = players.sort_values(["track_id", "frame"]).groupby("track_id")
     jump = ((d["x"].diff() ** 2 + d["y"].diff() ** 2) ** 0.5).dropna()
