@@ -87,7 +87,13 @@ def render_overlay(
         raise ValueError(f"Unsupported sport: {sport}")
     if start_frame < 0 or max_seconds <= 0 or stride <= 0:
         raise ValueError("start-frame, max-seconds, and stride must be positive")
-    data = pd.read_csv(csv_path)
+    data = pd.read_csv(csv_path, low_memory=False)
+    # accept raw NBA/WNBA pipeline schema (player_id/ft_x/ft_y)
+    aliases = {"player_id": "track_id", "ft_x": "x", "ft_y": "y"}
+    data = data.rename(columns={k: v for k, v in aliases.items()
+                                if k in data.columns and v not in data.columns})
+    if "cls" not in data.columns:
+        data = data.assign(cls="player")
     required = {"frame", "track_id", "cls", "x", "y"}
     missing = required.difference(data.columns)
     if missing:
