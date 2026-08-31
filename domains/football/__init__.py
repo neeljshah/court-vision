@@ -1,0 +1,1 @@
+"""American-football domain adapters."""
