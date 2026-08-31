@@ -38,26 +38,42 @@ Walk-forward/calibration reports are recorded below when present.
 | --- | ---: |
 | disclaimer | Evaluation only; no betting edge or ROI is claimed. |
 
-### teacher_student_points
+### teacher_student_minutes
 
 | Metric | Value |
 | --- | ---: |
 | coverage_pct | 100 |
-| diagnosis.matched_pairs | 957 |
-| diagnosis.misses.count | 230 |
-| diagnosis.misses.game_never_in_tracking | 0 |
-| diagnosis.misses.person_never_in_tracking | 15 |
-| diagnosis.misses.person_present_different_game | 215 |
-| diagnosis.pair_coverage_pct | 80.62 |
-| diagnosis.target_pairs | 1187 |
-| diagnosis.tracking_pairs | 2.57e+04 |
+| diagnosis.embeddings.matched_pairs | 2.57e+04 |
+| diagnosis.embeddings.misses.count | 0 |
+| diagnosis.embeddings.misses.game_never_in_tracking | 0 |
+| diagnosis.embeddings.misses.person_never_in_tracking | 0 |
+| diagnosis.embeddings.misses.person_present_different_game | 0 |
+| diagnosis.embeddings.pair_coverage_pct | 100 |
+| diagnosis.embeddings.target_pairs | 2.57e+04 |
+| diagnosis.embeddings.tracking_pairs | 2.57e+04 |
+| diagnosis.load.matched_pairs | 2.57e+04 |
+| diagnosis.load.misses.count | 0 |
+| diagnosis.load.misses.game_never_in_tracking | 0 |
+| diagnosis.load.misses.person_never_in_tracking | 0 |
+| diagnosis.load.misses.person_present_different_game | 0 |
+| diagnosis.load.pair_coverage_pct | 100 |
+| diagnosis.load.target_pairs | 2.57e+04 |
+| diagnosis.load.tracking_pairs | 2.57e+04 |
+| diagnosis.tracking.matched_pairs | 2.57e+04 |
+| diagnosis.tracking.misses.count | 0 |
+| diagnosis.tracking.misses.game_never_in_tracking | 0 |
+| diagnosis.tracking.misses.person_never_in_tracking | 0 |
+| diagnosis.tracking.misses.person_present_different_game | 0 |
+| diagnosis.tracking.pair_coverage_pct | 100 |
+| diagnosis.tracking.target_pairs | 2.57e+04 |
+| diagnosis.tracking.tracking_pairs | 2.57e+04 |
 | pooled.coverage_pct | 100 |
-| pooled.delta | None |
-| pooled.mae_base | 6.609 |
-| pooled.mae_track | None |
-| pooled.verdict | INVALID (features) |
-| rows_evaluated | 779 |
-| rows_total | 779 |
+| pooled.delta | -0.08198 |
+| pooled.mae_base | 5.963 |
+| pooled.mae_track | 5.881 |
+| pooled.verdict | IMPROVED |
+| rows_evaluated | 2.57e+04 |
+| rows_total | 2.57e+04 |
 
 ### wp_oos_20260831T205014Z
 
