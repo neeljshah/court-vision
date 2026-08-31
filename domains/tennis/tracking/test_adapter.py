@@ -24,6 +24,62 @@ def _court_image() -> np.ndarray:
     return image
 
 
+class _FakeCapture:
+    def __init__(self, frames: list[np.ndarray]) -> None:
+        self._frames = iter(frames)
+
+    def isOpened(self) -> bool:
+        return True
+
+    def read(self) -> tuple[bool, np.ndarray | None]:
+        try:
+            return True, next(self._frames)
+        except StopIteration:
+            return False, None
+
+    def release(self) -> None:
+        pass
+
+
+def _ball_sequence(with_dot: bool) -> list[np.ndarray]:
+    frames = []
+    for index in range(14):
+        frame = _court_image()
+        if with_dot:
+            cv2.circle(frame, (560 + index * 3, 260), 2, (255, 255, 255), thickness=-1)
+        frames.append(frame)
+    return frames
+
+
+def test_process_video_appends_rectified_ball_rows(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "domains.tennis.tracking.adapter.cv2.VideoCapture",
+        lambda path: _FakeCapture(_ball_sequence(with_dot=True)),
+    )
+    adapter = TennisAdapter(detector=lambda frame: [])
+    adapter.detect_court_corners = lambda frame: COURT
+
+    output = adapter.process_video("synthetic.avi")
+
+    balls = output.loc[output.cls == "ball"]
+    assert not balls.empty
+    assert balls.x.between(0.0, 78.0).all()
+    assert balls.y.between(0.0, 36.0).all()
+
+
+def test_process_video_keeps_no_ball_rows_when_motion_is_absent(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "domains.tennis.tracking.adapter.cv2.VideoCapture",
+        lambda path: _FakeCapture(_ball_sequence(with_dot=False)),
+    )
+    adapter = TennisAdapter(detector=lambda frame: [])
+    adapter.detect_court_corners = lambda frame: COURT
+
+    output = adapter.process_video("synthetic.avi")
+
+    assert output.loc[output.cls == "ball"].empty
+
+
 def test_synthetic_corners_and_homography() -> None:
     adapter = TennisAdapter(detector=lambda frame: [])
     corners = adapter.detect_court_corners(_court_image())

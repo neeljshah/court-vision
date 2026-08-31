@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 
 from scripts.platformkit.calibration.keypoint_calib import TemporalCalibrator
+from domains.tennis.tracking.ball import MotionDiffDetector, ball_rows, rectify_track
 from domains.tennis.tracking.segmenter import detect_cut, small_gray
 
 
@@ -257,22 +258,19 @@ class TennisAdapter:
             return []
         return self._track_ids([(per_half[0][1], per_half[0][2]), (per_half[1][1], per_half[1][2])])
 
-    @staticmethod
-    def detect_ball_stub(frame: np.ndarray, homography: np.ndarray) -> list[tuple[int, np.ndarray]]:
-        """Return no ball rows. TODO: integrate a validated TrackNet detector."""
-        del frame, homography
-        return []
-
     def process_video(
         self, path: Union[str, Path], max_frames: Optional[int] = None, stride: int = 1
     ) -> pd.DataFrame:
-        """Process a headless video stream into normalized player-tracking rows."""
+        """Process a headless video stream into normalized player and ball rows."""
         if stride < 1:
             raise ValueError("stride must be at least 1")
         capture = cv2.VideoCapture(str(path))
         if not capture.isOpened():
             raise FileNotFoundError("Could not open video: %s" % path)
         rows: list[dict[str, object]] = []
+        ball_detector = MotionDiffDetector()
+        ball_points: list[Optional[tuple[float, float, float]]] = []
+        ball_frames: list[tuple[int, np.ndarray]] = []
         source_frame = processed = 0
         previous_gray_small: Optional[np.ndarray] = None
         try:
@@ -289,11 +287,18 @@ class TennisAdapter:
                     if homography is not None:
                         for track_id, point in self.detect_players(frame, homography):
                             rows.append({"frame": source_frame, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1])})
-                        self.detect_ball_stub(frame, homography)
+                        ball_points.append(ball_detector.detect(frame))
+                        ball_frames.append((source_frame, homography))
                     processed += 1
                 source_frame += 1
         finally:
             capture.release()
+        for point, (frame, homography) in zip(rectify_track(ball_points), ball_frames):
+            balls = ball_rows((point,), homography)
+            if not balls.empty:
+                ball = balls.iloc[0].to_dict()
+                ball["frame"] = frame
+                rows.append(ball)
         self.last_output = pd.DataFrame(rows, columns=SCHEMA)
         return self.last_output
 
