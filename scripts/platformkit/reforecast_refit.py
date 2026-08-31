@@ -90,16 +90,16 @@ def _safe_tag(version_tag: str) -> str:
 
 def _fit_artifact(rows: Sequence[Dict[str, Any]], sport: str, version_tag: str,
                   output_dir: Path) -> tuple[Path, Dict[str, Any]]:
-    from sklearn.isotonic import IsotonicRegression
+    from scripts.platformkit.serving_calibration import ServingCalibrator
 
     raw = [float(row["model_prob"]) for row in rows]
     reforecast = [float(row["reforecast_prob"]) for row in rows]
     outcomes = [float(row["outcome"]) for row in rows]
-    model = IsotonicRegression(out_of_bounds="clip")
-    model.fit(reforecast, outcomes)
-    x_values = [float(value) for value in model.X_thresholds_]
-    y_values = [float(value) for value in model.y_thresholds_]
-    calibrated = [float(value) for value in model.predict(reforecast)]
+    calibrator = ServingCalibrator()
+    calibrator.fit(reforecast, outcomes)
+    x_values = calibrator.x_thresholds
+    y_values = calibrator.y_thresholds
+    calibrated = calibrator.apply(reforecast)
     verification = {
         "raw": {"brier": _brier(raw, outcomes), "murphy": _murphy(raw, outcomes)},
         "reforecast_calibrated": {
@@ -120,8 +120,11 @@ def _fit_artifact(rows: Sequence[Dict[str, Any]], sport: str, version_tag: str,
     }
     output_dir.mkdir(parents=True, exist_ok=True)
     path = output_dir / ("serving_isotonic_%s_%s.json" % (sport, _safe_tag(version_tag)))
+    calibrator.save(path)
+    persisted = json.loads(path.read_text(encoding="ascii"))
+    persisted.update(artifact)
     temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="ascii")
+    temporary.write_text(json.dumps(persisted, indent=2, sort_keys=True) + "\n", encoding="ascii")
     temporary.replace(path)
     return path, verification
 

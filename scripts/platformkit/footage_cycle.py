@@ -15,6 +15,11 @@ from typing import Any
 
 import pandas as pd
 
+try:
+    from scripts.platformkit.wnba_preflight import preflight as _wnba_preflight
+except Exception:  # pragma: no cover
+    _wnba_preflight = None
+
 from scripts.platformkit.io_atomic import append_jsonl_atomic, write_json_atomic
 from scripts.platformkit.provenance import record_provenance
 from scripts.platformkit.demo_render import render_csv
@@ -140,6 +145,11 @@ def _run_item(item: dict[str, str]) -> dict[str, Any]:
                 _adapter_module(item),
             )
             with TRACKING_LOCK:
+                if item.get("sport") == "wnba" and _wnba_preflight is not None:
+                    try:
+                        result["preflight"] = _wnba_preflight(str(video)).get("verdict", "NA")
+                    except Exception:  # pragma: no cover
+                        result["preflight"] = "preflight_error"
                 tracking_csv = track_item(item, video)
             result.update(score_item(item, tracking_csv))
             return result

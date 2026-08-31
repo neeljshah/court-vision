@@ -23,6 +23,14 @@ from domains.baseball.tracking.stability import ScaleStabilizer, stabilize_rows
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
 MOUND_TO_PLATE_FEET = 60.5
 Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
+_CENTER_CROP_FRACTION = 0.70
+_DEFAULT_EXCLUDE_REGIONS = (
+    (0.00, 0.00, 0.20, 0.20),
+    (0.80, 0.00, 1.00, 0.20),
+    (0.00, 0.80, 0.20, 1.00),
+    (0.80, 0.80, 1.00, 1.00),
+    (0.00, 0.88, 1.00, 1.00),
+)
 
 
 @dataclass(frozen=True)
@@ -71,10 +79,21 @@ class BaseballAdapter:
         return detect
 
     @staticmethod
-    def _dirt_blobs(frame: np.ndarray) -> list[tuple[float, np.ndarray]]:
-        """Return area and centroids for sufficiently large brown/tan blobs."""
+    def _dirt_blobs(
+        frame: np.ndarray,
+        exclude_regions: Optional[Sequence[tuple[float, float, float, float]]] = _DEFAULT_EXCLUDE_REGIONS,
+    ) -> list[tuple[float, np.ndarray]]:
+        """Return area and centroids for sufficiently large brown/tan blobs.
+
+        Regions are normalized ``(left, top, right, bottom)`` rectangles.
+        """
         height, width = frame.shape[:2]
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        masked = frame.copy()
+        for left, top, right, bottom in exclude_regions or ():
+            x1, x2 = sorted((int(left * width), int(right * width)))
+            y1, y2 = sorted((int(top * height), int(bottom * height)))
+            masked[max(0, y1):min(height, y2), max(0, x1):min(width, x2)] = 0
+        hsv = cv2.cvtColor(masked, cv2.COLOR_BGR2HSV)
         dirt = cv2.inRange(hsv, np.array((5, 35, 35)), np.array((32, 255, 255)))
         dirt = cv2.morphologyEx(dirt, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
         count, _, stats, centers = cv2.connectedComponentsWithStats(dirt)
@@ -83,7 +102,20 @@ class BaseballAdapter:
             (float(stats[index, cv2.CC_STAT_AREA]), centers[index].astype(np.float32))
             for index in range(1, count)
             if stats[index, cv2.CC_STAT_AREA] >= minimum_area
+            and stats[index, cv2.CC_STAT_AREA] / max(
+                1, stats[index, cv2.CC_STAT_WIDTH] * stats[index, cv2.CC_STAT_HEIGHT]
+            ) >= 0.35
         ]
+
+    @staticmethod
+    def _center_crop(frame: np.ndarray) -> tuple[np.ndarray, int, int]:
+        """Return the central 70 percent of a frame and its image offset."""
+        height, width = frame.shape[:2]
+        crop_width = int(width * _CENTER_CROP_FRACTION)
+        crop_height = int(height * _CENTER_CROP_FRACTION)
+        x0 = (width - crop_width) // 2
+        y0 = (height - crop_height) // 2
+        return frame[y0:y0 + crop_height, x0:x0 + crop_width], x0, y0
 
     @staticmethod
     def _dominant_green(frame: np.ndarray) -> bool:
@@ -93,10 +125,14 @@ class BaseballAdapter:
 
     def detect_pitch_geometry(self, frame: np.ndarray) -> Optional[PitchGeometry]:
         """Find mound and plate dirt anchors when the frame is a pitch view."""
-        if not self._dominant_green(frame):
+        roi, x_offset, y_offset = self._center_crop(frame)
+        if not self._dominant_green(roi):
             return None
         height, width = frame.shape[:2]
-        blobs = self._dirt_blobs(frame)
+        blobs = [
+            (area, center + np.array((x_offset, y_offset), dtype=np.float32))
+            for area, center in self._dirt_blobs(roi, exclude_regions=())
+        ]
         mound = [
             center for _, center in blobs
             if 0.30 * width <= center[0] <= 0.70 * width

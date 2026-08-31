@@ -31,6 +31,28 @@ def test_synthetic_pitch_view_and_scale() -> None:
     assert abs(scale - np.linalg.norm(MOUND - PLATE) / MOUND_TO_PLATE_FEET) < scale * 0.10
 
 
+def test_abs_overlay_does_not_change_pitch_view_scale() -> None:
+    adapter = BaseballAdapter(detector=lambda frame: [])
+    frame = _pitch_view()
+    baseline = adapter.calibrate_scale(frame)
+    dirt = (70, 135, 190)
+    cv2.rectangle(frame, (550, 500), (730, 552), dirt, 6)
+
+    assert adapter.is_pitch_view(frame)
+    scale = adapter.calibrate_scale(frame)
+    assert scale is not None and baseline is not None
+    assert abs(scale - baseline) < baseline * 0.01
+
+
+def test_corner_scorebug_is_excluded_from_dirt_detection() -> None:
+    adapter = BaseballAdapter(detector=lambda frame: [])
+    frame = _pitch_view()
+    cv2.rectangle(frame, (0, 0), (180, 90), (70, 135, 190), -1)
+
+    assert len(adapter._dirt_blobs(frame)) == 2
+    assert adapter.is_pitch_view(frame)
+
+
 def test_all_green_frame_is_not_pitch_view() -> None:
     frame = np.full((720, 1280, 3), (45, 130, 45), dtype=np.uint8)
     assert not BaseballAdapter(detector=lambda frame: []).is_pitch_view(frame)
