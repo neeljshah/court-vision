@@ -52,11 +52,25 @@ These appear in the repo only as artifacts the validation harnesses caught. Full
 - Models → `data/models/` (most are gitignored; whitelist in `.gitignore`)
 - Logs / vault → `vault/` (gitignored)
 - Headless video only (`--no-show`); never `cv2.imshow`
-- Tests: `python -m pytest tests/ -q`
+- **Tests: PER-FILE ONLY** -- `python -m pytest tests/path/test_one.py -q`. A full `pytest tests/` FREEZES this machine. Never run it.
 - **Critical invariant:** `_VRAM_FLUSH_INTERVAL` in `src/pipeline/unified_pipeline.py` **must be 3000, not 100**. Setting it to 100 OOMs the GPU.
 - Never run: `run.py`, `loop_processor.py` (legacy entry points)
 
 Task → primary file routing: [CLAUDE.md § Task → Files](CLAUDE.md).
+
+---
+
+## Hard rules for external agents (Codex, Cursor, Aider)
+
+Non-negotiable. A PreToolUse hook enforces some of these for Claude; for you they are on the honor system -- violating them breaks running services or leaks private data to the public origin.
+
+1. **Human-gated trees -- do NOT edit:** `src/`, `kernel/`, `api/`, `scripts/team_system/`, `intel/`. Build new work in `scripts/platformkit/` or `domains/<sport>/`. If a gated-path change seems necessary, write a PROPOSED diff under `docs/research/organization-sprint/` instead.
+2. **Never commit `data/` or `vault/`** (gitignored, private). Never `git add -A` / `git add .` / `git commit -a` -- always a targeted explicit path list. Never force-push.
+3. **Per-file tests only** -- running the whole test tree at once freezes the box (see Tests line above).
+4. **No edge/ROI claims** -- never print the retracted numbers above as current. Calibration wins only.
+5. **ASCII only on stdout** (cp1252 console). No unicode arrows or box-drawing in prints.
+6. **Work in your own git worktree** when a Claude session may be active in the main tree (`git worktree add ../nba-codex-wt`). Two agents in one tree has caused a logged data-loss incident.
+7. **Never write `data/registry/`; never flip a feature flag ON.**
 
 ---
 
