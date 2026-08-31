@@ -80,7 +80,7 @@ download_one() {
     return 0
   fi
   echo "  DL   $GAME_ID ($MATCHUP)..."
-  yt-dlp -f 'best[height<=720]/best' \
+  yt-dlp -f 'best[height<=1080]/best[height<=720]' \
     "https://www.youtube.com/watch?v=$YT_ID" \
     -o "$OUT" --no-part -q 2>&1
   if [ -f "$OUT" ] && [ "$(stat -c%s "$OUT" 2>/dev/null || echo 0)" -gt 100000000 ]; then
