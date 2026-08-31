@@ -152,6 +152,11 @@ def _run_item(item: dict[str, str]) -> dict[str, Any]:
 
 def run_queue(items: list[dict[str, str]], workers: int = 3) -> list[dict[str, Any]]:
     """Run queued downloads concurrently while serializing GPU tracking work."""
+    if workers <= 1:
+        # LOCKSTEP: download->track->score->delete per item before the next
+        # download starts. Prevents the staging pileup that maxed the volume
+        # twice on 2026-08-31 (downloads outpace tracking ~4:1).
+        return [_run_item(item) for item in items]
     with ThreadPoolExecutor(max_workers=workers) as pool:
         futures = [pool.submit(_run_item, item) for item in items]
         return [future.result() for future in as_completed(futures)]
