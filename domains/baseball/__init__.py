@@ -1,0 +1,1 @@
+"""Baseball domain adapters."""
