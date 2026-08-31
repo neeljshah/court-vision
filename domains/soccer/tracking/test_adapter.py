@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 
 from domains.soccer.tracking.adapter import SoccerAdapter
+from scripts.platformkit.calibration.keypoint_calib import solve_homography
 
 
 PITCH = np.float32(((100, 650), (1180, 650), (100, 100), (1180, 100)))
@@ -25,6 +26,25 @@ def _pitch_image() -> np.ndarray:
     return image
 
 
+def _degraded_broadcast_like_pitch() -> np.ndarray:
+    height, width = 720, 1280
+    illumination = np.linspace(0.55, 1.2, width, dtype=np.float32)[None, :]
+    image = np.empty((height, width, 3), dtype=np.uint8)
+    image[:, :, 0] = np.clip(28 * illumination, 0, 255)
+    image[:, :, 1] = np.clip(145 * illumination, 0, 255)
+    image[:, :, 2] = np.clip(30 * illumination, 0, 255)
+    segments = (
+        ((100, 650), (480, 650)), ((590, 650), (1180, 650)),
+        ((100, 100), (500, 100)), ((620, 100), (1180, 100)),
+        ((100, 170), (100, 650)), ((1180, 100), (1180, 570)),
+        ((640, 130), (640, 340)), ((640, 430), (640, 620)),
+    )
+    for start, end in segments:
+        cv2.line(image, start, end, (255, 255, 255), 5)
+    noise = np.random.default_rng(22).normal(0, 9, image.shape).astype(np.int16)
+    return np.clip(image.astype(np.int16) + noise, 0, 255).astype(np.uint8)
+
+
 def test_synthetic_markings_and_homography() -> None:
     image = _pitch_image()
     adapter = SoccerAdapter(detector=lambda frame: [])
@@ -37,6 +57,17 @@ def test_synthetic_markings_and_homography() -> None:
     homography = adapter.homography_from_corners(corners)
     mapped = cv2.perspectiveTransform(PITCH.reshape(1, -1, 2), homography)[0]
     assert np.max(np.abs(mapped - np.float32(((0, 0), (105, 0), (0, 68), (105, 68))))) < 1.0
+
+
+def test_degraded_partial_broadcast_lines_recover_homography() -> None:
+    adapter = SoccerAdapter(detector=lambda frame: [])
+    detections = adapter._landmark_detections(_degraded_broadcast_like_pitch())
+    assert len(detections) >= 4
+    homography = solve_homography(detections, "soccer")
+    assert homography is not None
+    recovered = cv2.perspectiveTransform(PITCH.reshape(1, -1, 2), homography)[0]
+    error = np.linalg.norm(recovered - np.float32(((0, 0), (105, 0), (0, 68), (105, 68))), axis=1)
+    assert float(np.max(error)) < 2.0
 
 
 def test_mock_detector_projects_players_and_tracks_ids() -> None:
