@@ -11,6 +11,7 @@ from scripts.platformkit.calibration.keypoint_calib import (
     project_points,
     solve_homography,
 )
+from domains.soccer.tracking.segmenter import is_pitch_view
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
 PITCH_METRES = np.float32(((0, 0), (105, 0), (0, 68), (105, 68)))
 Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
@@ -265,7 +266,7 @@ class SoccerAdapter:
         del frame, homography
         return []
 
-    def process_video(self, path: Union[str, Path], max_frames: Optional[int] = None, stride: int = 1) -> pd.DataFrame:
+    def process_video(self, path: Union[str, Path], max_frames: Optional[int] = None, stride: int = 1, skip_non_pitch: bool = True) -> pd.DataFrame:
         """Process a headless stream, emitting rows only for validated pitch frames."""
         if stride < 1:
             raise ValueError("stride must be at least 1")
@@ -280,6 +281,11 @@ class SoccerAdapter:
                 if not ok:
                     break
                 if source_frame % stride == 0:
+                    if skip_non_pitch and not is_pitch_view(frame):
+                        self.mark_frame_lost()
+                        processed += 1
+                        source_frame += 1
+                        continue
                     homography = self._stable_homography(self._landmark_detections(frame), frame.shape[:2])
                     if homography is None:
                         self.mark_frame_lost()

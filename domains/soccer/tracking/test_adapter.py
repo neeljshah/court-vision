@@ -107,3 +107,19 @@ def test_write_csv_uses_normalized_schema(tmp_path) -> None:
     output = tmp_path / "tracking.csv"
     adapter.write_csv(output)
     assert list(pd.read_csv(output).columns) == ["frame", "track_id", "cls", "x", "y"]
+
+
+def test_process_video_skips_non_pitch_frames(tmp_path) -> None:
+    path = tmp_path / "views.avi"
+    writer = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*"MJPG"), 25, (128, 72))
+    pitch = np.full((72, 128, 3), (40, 140, 40), dtype=np.uint8)
+    crowd = np.full((72, 128, 3), (50, 50, 120), dtype=np.uint8)
+    for frame in (pitch, crowd, pitch):
+        writer.write(frame)
+    writer.release()
+    adapter = SoccerAdapter(detector=lambda frame: [])
+    calls: list[int] = []
+    adapter._landmark_detections = lambda frame: calls.append(1) or {}
+    adapter._stable_homography = lambda detections, shape: None
+    adapter.process_video(path)
+    assert len(calls) == 2
