@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -29,6 +30,11 @@ from pathlib import Path
 
 STAGE = Path("data/footage_bridge")
 REPORTS = Path("data/tracking_reports")
+# A watchdog cannot use pgrep to tell whether this is alive: any command line
+# mentioning the daemon (including the watchdog's own check, or an operator's
+# ssh diagnostic) self-matches, so the check reports "up" precisely because it
+# ran. The daemon publishes its pid instead and the watchdog uses kill -0.
+PID_FILE = Path("/workspace/track_daemon.pid")
 LEDGER = Path("data/tracking/track_daemon_ledger.jsonl")
 TRACKING = Path("data/tracking")
 # Matches footage_bridge: a real tracked game has thousands of rows, and a
@@ -215,6 +221,10 @@ def main(argv: list) -> int:
     args = parser.parse_args(argv[1:])
 
     STAGE.mkdir(parents=True, exist_ok=True)
+    try:
+        PID_FILE.write_text(str(os.getpid()), encoding="utf-8")
+    except OSError as exc:
+        print("could not publish pid: %s" % exc, flush=True)
     active: dict = {}
     while True:
         tick(active, args.workers)
