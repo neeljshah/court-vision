@@ -138,7 +138,7 @@ def test_contaminated_yard_line_family_is_rejected(monkeypatch) -> None:
                         lambda image: [np.array((1.0, 0.0, -float(x))) for x in range(30)])
 
     assert adapter.homography_from_yard_lines(_field()) is None
-    assert adapter.last_fit_stats["reject"] == "independent_scale_unavailable"
+    assert adapter.last_fit_stats["reject"] == "family_size"
 
 
 def test_held_homography_is_reused_while_a_fresh_fit_agrees() -> None:
