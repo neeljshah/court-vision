@@ -48,9 +48,21 @@ def test_live_game_passes_liveness_gate():
 
 def test_oob_and_teleport_fail():
     df = _good_game()
-    df.loc[df["cls"] == "player", "x"] = 500.0
+    players = df["cls"] == "player"
+    df.loc[players, "x"] += df.loc[players, "frame"] * 10.0
     report = evaluate(df, "basketball")
     assert not report.passed and any("oob" in failure for failure in report.failures)
+    assert any("median_step_distance" in failure for failure in report.failures)
+
+
+def test_step_held_game_fails_liveness_gate():
+    df = _good_game()
+    players = df["cls"] == "player"
+    df.loc[players, "x"] = (10.0 + df.loc[players, "track_id"] * 5
+                              + (df.loc[players, "frame"] // 20))
+    report = evaluate(df, "basketball")
+    assert not report.passed and report.liveness_verdict == "SUSPECT"
+    assert any("zero_step_share" in failure for failure in report.failures)
 
 
 def test_ball_stub_without_rows_fails_nonzero_threshold():

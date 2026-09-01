@@ -11,7 +11,7 @@ from typing import Mapping
 
 import pandas as pd
 
-from scripts.platformkit.liveness_metrics import compute_liveness_metrics, thresholds_for
+from scripts.platformkit.liveness_metrics import compute_liveness_metrics, liveness_failures
 from scripts.platformkit.tracking_schema import (
     identify_tracking_schema,
     normalize_tracking_frame,
@@ -40,8 +40,10 @@ CONFIG_VERSIONS: dict[str, dict[str, dict]] = {
         "baseball": dict(_BASEBALL),
         "npb": dict(_BASEBALL),
         "kbo": dict(_BASEBALL),
-        "football": {"bounds": (0, 120, 0, 53.333), "min_players": 14,
-                     "ball_valid_min": 0.20, "coverage_min": 0.85,
+        # FootballAdapter emits only pre-snap rows in an offset-relative
+        # 360-by-160-foot field plane and deliberately has no ball detector.
+        "football": {"bounds": (0, 360, 0, 160), "min_players": 14,
+                     "ball_valid_min": 0.0, "coverage_min": 0.85,
                      "oob_max": 0.05, "jump_p95_max": 8.0},
     }
 }
@@ -149,7 +151,6 @@ def evaluate(df: pd.DataFrame, sport: str,
     jump = ((grouped["x"].diff() ** 2 + grouped["y"].diff() ** 2) ** 0.5).dropna()
     jump_p95 = float(jump.quantile(0.95)) if len(jump) else 0.0
     liveness = compute_liveness_metrics(df, sport)
-    zero_step_max = thresholds_for(sport)["zero_step_share_max"]
 
     failures: list[str] = []
     if duplicates:
@@ -169,9 +170,7 @@ def evaluate(df: pd.DataFrame, sport: str,
         ))
     if liveness.verdict == "FROZEN":
         failures.append("liveness verdict FROZEN")
-    if liveness.zero_step_share > zero_step_max:
-        failures.append("zero_step_share {:.2f} > {:.2f}".format(
-            liveness.zero_step_share, zero_step_max))
+    failures.extend(liveness_failures(liveness, sport))
 
     return QualityReport(sport, config_version, n_frames, n_unique_games,
                          duplicates, ball_rows, round(coverage, 4),
