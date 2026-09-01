@@ -225,6 +225,40 @@ def tick(active: dict, workers: int) -> None:
               flush=True)
 
 
+def reap_orphans() -> int:
+    """Kill tracking jobs left behind by a previous daemon. Returns the count.
+
+    When a daemon dies its children are re-parented to init and keep running,
+    unowned. A fresh daemon then re-claims the same staged videos, so TWO
+    processes write one CSV. This happened twice tonight and had to be cleaned
+    up by hand both times, once at 46 jobs against a 24 cap.
+
+    adapter_run and run_clip are only ever daemon children, so a parent of 1
+    means orphaned -- no live daemon owns it.
+    """
+    try:
+        listing = subprocess.run(["ps", "-eo", "ppid,pid,args"],
+                                 capture_output=True, text=True, timeout=60).stdout
+    except (OSError, subprocess.SubprocessError):
+        return 0
+    killed = 0
+    for line in listing.splitlines():
+        fields = line.split(None, 2)
+        if len(fields) < 3 or fields[0] != "1":
+            continue
+        if "adapter_run" not in fields[2] and "run_clip" not in fields[2]:
+            continue
+        try:
+            os.kill(int(fields[1]), 9)
+            killed += 1
+        except (OSError, ValueError):
+            pass
+    if killed:
+        print("reaped %d orphaned tracking jobs from a previous daemon" % killed,
+              flush=True)
+    return killed
+
+
 def main(argv: list) -> int:
     parser = argparse.ArgumentParser()
     # 10, not 24. MEASURED over 210 jobs at 23-way concurrency: p50 972s,
@@ -238,6 +272,7 @@ def main(argv: list) -> int:
     args = parser.parse_args(argv[1:])
 
     STAGE.mkdir(parents=True, exist_ok=True)
+    reap_orphans()
     try:
         PID_FILE.write_text(str(os.getpid()), encoding="utf-8")
     except OSError as exc:

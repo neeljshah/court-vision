@@ -300,3 +300,30 @@ def test_a_report_newer_than_the_output_is_used(tmp_path, monkeypatch):
     os.utime(report, (10_000, 10_000))
 
     assert track_daemon.verdict("tennis", "g2")["passed"] is True
+
+
+def test_orphans_from_a_dead_daemon_are_reaped(monkeypatch):
+    """Orphans keep running unowned and a fresh daemon re-claims the same
+    staged video, so two processes write one CSV. Cleaned up by hand twice."""
+    listing = (
+        "  PPID    PID COMMAND\n"
+        "     1  111 python -m scripts.platformkit.adapter_run tennis /v/a.mp4 a\n"
+        "  9999  222 python -m scripts.platformkit.adapter_run soccer /v/b.mp4 b\n"
+        "     1  333 python scripts/run_clip.py --video /v/c.mp4 --game-id c\n"
+        "     1  444 python -u -m scripts.platformkit.retrain_loop\n")
+    killed = []
+    monkeypatch.setattr(track_daemon.subprocess, "run",
+                        lambda *a, **k: subprocess.CompletedProcess(a, 0, listing, ""))
+    monkeypatch.setattr(track_daemon.os, "kill", lambda pid, sig: killed.append(pid))
+
+    assert track_daemon.reap_orphans() == 2
+    assert sorted(killed) == [111, 333]  # not 222 (owned) and not 444 (unrelated)
+
+
+def test_reaping_never_raises_when_ps_is_unavailable(monkeypatch):
+    def boom(*a, **k):
+        raise OSError("no ps")
+
+    monkeypatch.setattr(track_daemon.subprocess, "run", boom)
+
+    assert track_daemon.reap_orphans() == 0
