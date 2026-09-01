@@ -99,6 +99,7 @@ def run_combo_search(frame: pd.DataFrame, features: Sequence[str], *, ledger_pat
     # explicit pre-prediction availability time, so a future-dated value fails there.
     states = [{"game_id": str(r.game_id), "home": str(getattr(r, "home", "h" + str(i))),
                "away": str(getattr(r, "away", "a" + str(i))), "state_ts": r.date.isoformat(),
+               "features": {name: float(x_raw[i, j]) for j, name in enumerate(features)},
                "feature_avail": {name: (r.date - timedelta(seconds=1)).isoformat() for name in features},
                "outcome": int(r.outcome), "devig_close_prob": float(r.close_prob), "index": i}
               for i, r in enumerate(df.itertuples(index=False))]
