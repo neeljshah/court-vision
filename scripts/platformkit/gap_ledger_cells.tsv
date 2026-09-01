@@ -1,0 +1,31 @@
+> Declarative gap ledger. One row per (sport x question x regime).
+> benchmark_kind: close | baseline | published | null | none
+>   close     = devigged market close (the market prices this question)
+>   baseline  = a strong public/reference baseline we score against
+>   published = a metric reported in a specific paper, cited in `benchmark`
+>   null      = a precisely specified null model
+>   none      = NO benchmark defined yet -> cannot be scored, this is a design gap
+> harness: repo-relative path that produces the number. Blank = not measured yet.
+> Status is DERIVED by gap_ledger.py, never stored here. Edit this file by hand.
+sport	question	regime	benchmark_kind	benchmark	harness	note
+NBA	moneyline	pregame	close	devigged close	scripts/platformkit/proof_nba/ml_accuracy.py	MOV-aware Elo; MATCH band
+NBA	total	pregame	close	devigged close	scripts/platformkit/proof_nba/asof_box_accuracy.py	trails by freshness
+NBA	win prob	ingame	close	live line	scripts/platformkit/benchmarks/crps_market/ingame_nba_winprob.py	proven frontier
+NBA	news prior	ingame	close	live line	scripts/platformkit/benchmarks/crps_market/ingame_nba_newsprior.py	prior conditioning
+MLB	moneyline	pregame	close	devigged close	scripts/platformkit/proof_mlb/beat_the_close_ml.py	SP-blindness deficit
+MLB	total	pregame	close	devigged close	scripts/platformkit/proof_mlb/beat_the_close_total.py	park/weather/SP gap
+MLB	win prob	ingame	close	live line	scripts/platformkit/benchmarks/crps_market/ingame_mlb.py	half-inning grid
+Soccer	over/under 2.5	pregame	close	devigged Pinnacle close	scripts/platformkit/proof_soccer/beat_the_close_ou.py	MATCH band, W133
+Soccer	win prob	ingame	close	live line	scripts/platformkit/benchmarks/crps_market/ingame_soccer.py	minute timeline
+Tennis ATP	match win	pregame	close	devigged Pinnacle close	scripts/platformkit/proof_tennis/beat_the_close_ml.py	closes very efficient
+Tennis WTA	match win	pregame	close	devigged Pinnacle close		temperature recal T=1.36 exists; no market row yet
+Soccer	1X2	pregame	none	no 1X2 closing odds in corpus (W149)		BLOCKED: needs a price source before it is scoreable
+NBA	player props PTS	pregame	close	devigged prop close		no platformkit harness; props live in human-gated src/
+NBA	player props AST	pregame	close	devigged prop close		ROI edge RETRACTED 07-21 (packet); measure CALIBRATION only, never ROI
+NBA	player props	ingame	close	live prop line		unmeasured
+NBA	possession value	pregame	none			needs benchmark: VAEP-style action value has no market
+NBA	fatigue effect	ingame	none			needs benchmark: candidate = specified null on rest-adjusted baseline
+NBA	matchup effect	pregame	none			291K-row matchup DB exists; no scoring benchmark defined
+NBA	lineup synergy	pregame	baseline	additive-player null	scripts/platformkit/analytics_showcase/lineup_synergy.py	showcase output, not gated
+NFL	all	all	none			SPORT ABSENT: public tracking data exists via Big Data Bowl
+NHL	all	all	none			SPORT ABSENT
