@@ -1,0 +1,32 @@
+{
+  "sampled_frames": 118,
+  "field_view_frames": 74,
+  "candidate_crops": 444,
+  "max_candidates_per_frame": 6,
+  "variant_valid_reads": {
+    "raw": 47,
+    "gray_otsu": 55,
+    "upscale_3x": 49,
+    "gray_otsu_upscale_3x": 34
+  },
+  "variant_valid_rate": {
+    "raw": 0.10585585585585586,
+    "gray_otsu": 0.12387387387387387,
+    "upscale_3x": 0.11036036036036036,
+    "gray_otsu_upscale_3x": 0.07657657657657657
+  },
+  "winner": "gray_otsu",
+  "winning_valid_read_distribution": {
+    "0": 41,
+    "2": 14,
+    "1": 15,
+    "3": 4
+  },
+  "frames_two_different_valid_numerals": 13,
+  "gate": {
+    "minimum_crops": 40,
+    "minimum_field_views": 60,
+    "minimum_distinct_frames": 30,
+    "pass": false
+  }
+}
