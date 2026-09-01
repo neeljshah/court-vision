@@ -64,17 +64,36 @@ def _field(value: Any, *names: str) -> Any:
 
 
 def strength_atlas(args: Dict[str, Any], root: Path = _ROOT) -> Dict[str, Any]:
-    """Truth source: market_strength_atlas.json written by analytics_showcase."""
+    """Truth source: market_strength_atlas.json written by analytics_showcase.
+
+    The writer nests ratings per sport under "sports": {sport: {top_5, bottom_5,
+    eval_scores.mean_absolute_tracking_error}} -- there are no top-level
+    top_ratings/bottom_ratings/tracking_mae keys. Reshape per-sport here instead
+    of reading absent top-level keys (which silently produced ok+null).
+    """
     loaded = _load(root, (_ATLAS,))
     if loaded is None:
         return _no_data("strength_atlas", _ATLAS, "artifact absent or unreadable")
     path, rel, value = loaded
+    sports = value.get("sports") if isinstance(value, dict) else None
+    if not isinstance(sports, dict) or not sports:
+        return _no_data("strength_atlas", rel, "artifact has no per-sport 'sports' data")
+    top_ratings = {s: v["top_5"] for s, v in sports.items() if isinstance(v, dict) and v.get("top_5")}
+    bottom_ratings = {s: v["bottom_5"] for s, v in sports.items() if isinstance(v, dict) and v.get("bottom_5")}
+    tracking_mae = {
+        s: v["eval_scores"]["mean_absolute_tracking_error"]
+        for s, v in sports.items()
+        if isinstance(v, dict) and isinstance(v.get("eval_scores"), dict)
+        and "mean_absolute_tracking_error" in v["eval_scores"]
+    }
+    if not top_ratings and not bottom_ratings and not tracking_mae:
+        return _no_data("strength_atlas", rel, "no sport had ratings or tracking-MAE fields")
     return {"status": "ok", "category": "strength_atlas", "source_artifact": rel,
             "as_of": _as_of(path, value),
-            "top_ratings": _field(value, "top_ratings", "top"),
-            "bottom_ratings": _field(value, "bottom_ratings", "bottom"),
-            "tracking_mae": _field(value, "tracking_mae", "mae"),
-            "DESCRIPTIVE_ONLY": _field(value, "DESCRIPTIVE_ONLY")}
+            "top_ratings": top_ratings or None,
+            "bottom_ratings": bottom_ratings or None,
+            "tracking_mae": tracking_mae or None,
+            "DESCRIPTIVE_ONLY": _field(value, "label", "DESCRIPTIVE_ONLY", "descriptive_only")}
 
 
 def mechanism_exposure(args: Dict[str, Any], root: Path = _ROOT) -> Dict[str, Any]:

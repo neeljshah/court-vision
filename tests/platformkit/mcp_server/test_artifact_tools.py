@@ -14,13 +14,30 @@ def _write(root: Path, rel: str, value: object) -> None:
 
 
 def test_strength_atlas_returns_artifact_and_descriptive_flag(tmp_path):
+    # Real writer shape (scripts/platformkit/analytics_showcase/market_strength_atlas.py):
+    # per-sport nesting under "sports", not top-level top/bottom/tracking_mae keys.
     _write(tmp_path, "scripts/platformkit/analytics_showcase/out/market_strength_atlas.json",
-           {"as_of": "2026-09-01", "top": ["A"], "bottom": ["B"],
-            "tracking_mae": 1.2, "DESCRIPTIVE_ONLY": True})
+           {"as_of": "2026-09-01", "label": "DESCRIPTIVE_ONLY",
+            "sports": {"basketball_nba": {
+                "top_5": [{"team": "OKC", "rating": 1728.1}],
+                "bottom_5": [{"team": "WAS", "rating": 1274.3}],
+                "eval_scores": {"mean_absolute_tracking_error": 0.0917}}}})
     env = tools.strength_atlas({}, tmp_path)
     assert env["status"] == "ok"
-    assert env["DESCRIPTIVE_ONLY"] is True
-    assert env["tracking_mae"] == 1.2
+    assert env["DESCRIPTIVE_ONLY"] == "DESCRIPTIVE_ONLY"
+    assert env["tracking_mae"] == {"basketball_nba": 0.0917}
+    assert env["top_ratings"]["basketball_nba"][0]["team"] == "OKC"
+    assert env["bottom_ratings"]["basketball_nba"][0]["team"] == "WAS"
+
+
+def test_strength_atlas_fails_closed_when_sports_data_absent(tmp_path):
+    # Artifact present and parseable but missing the required per-sport payload
+    # must never come back status=ok with null fields (the bug this guards).
+    _write(tmp_path, "scripts/platformkit/analytics_showcase/out/market_strength_atlas.json",
+           {"as_of": "2026-09-01", "label": "DESCRIPTIVE_ONLY"})
+    env = tools.strength_atlas({}, tmp_path)
+    assert env["status"] == "no_data"
+    assert "top_ratings" not in env and "note" in env
 
 
 def test_mechanism_exposure_filters_game_and_preserves_ledger_fields(tmp_path):
