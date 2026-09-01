@@ -1,0 +1,9 @@
+{
+  "calibration": "full_field_homography_unvalidated",
+  "classification": "confirmed_game_source_not_pitch_geometry_gate",
+  "decoded_frames": 300,
+  "non_play": 0,
+  "note": "no positional accuracy is claimed",
+  "solved": 0,
+  "unsolved": 300
+}
