@@ -100,12 +100,38 @@ def test_shared_adapters_retain_distinct_sport_labels():
 
 def test_all_sports_have_complete_configs():
     keys = {"bounds", "min_players", "ball_valid_min", "coverage_min",
-            "oob_max", "jump_p95_max"}
+            "oob_max", "jump_p95_max", "min_median_track_len"}
     expected = {"basketball", "wnba", "tennis", "soccer", "baseball", "npb", "kbo",
                 "football"}
     assert expected <= set(SPORTS)
     for sport, config in SPORTS.items():
         assert keys <= set(config), sport
+
+
+def test_singleton_tracks_cannot_pass_any_sport():
+    coordinate_spaces = {
+        "basketball": "court_feet", "soccer": "pitch_metres",
+        "football": "court_feet", "tennis": "court_feet", "baseball": "court_feet",
+    }
+    for sport in coordinate_spaces:
+        x0, x1, y0, y1 = SPORTS[sport]["bounds"]
+        rows = []
+        for frame in range(300):
+            for player in range(SPORTS[sport]["min_players"]):
+                rows.append({"frame": frame, "track_id": frame * 1000 + player,
+                             "cls": "player", "x": (x0 + x1) / 2,
+                             "y": (y0 + y1) / 2})
+            rows.append({"frame": frame, "track_id": frame * 1000 + 999,
+                         "cls": "ball", "x": (x0 + x1) / 2, "y": (y0 + y1) / 2})
+        df = pd.DataFrame(rows)
+        df["coordinate_space"] = coordinate_spaces[sport]
+        df["observation"] = "observed"
+        df["calibration"] = "homography"
+
+        report = evaluate(df, sport)
+        assert not report.passed
+        assert any("median_track_len" in failure or "jump_p95" in failure
+                   for failure in report.failures)
 
 
 def test_empty_input_fails():

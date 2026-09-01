@@ -31,6 +31,11 @@ def test_moving_tracks_are_live():
     assert metrics.verdict == "LIVE"
 
 
+def test_uncalibrated_soccer_tracks_are_not_live():
+    metrics = compute_liveness_metrics(_frame(moving=True), "soccer")
+    assert metrics.verdict == "UNCALIBRATED"
+
+
 def test_step_held_tracks_are_detected():
     rows = []
     for frame in range(100):

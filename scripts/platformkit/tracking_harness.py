@@ -21,10 +21,12 @@ from scripts.platformkit.tracking_schema import (
 DEFAULT_CONFIG_VERSION = "2026-09-01-v1"
 _BASKETBALL = {"bounds": (0, 94, 0, 50), "min_players": 6,
                "ball_valid_min": 0.30, "coverage_min": 0.60,
-               "oob_max": 0.05, "jump_p95_max": 6.0}
+               "oob_max": 0.05, "jump_p95_max": 6.0,
+               "min_median_track_len": 3.0}
 _BASEBALL = {"bounds": (-30, 30, 0, 60), "min_players": 2,
              "ball_valid_min": 0.10, "coverage_min": 0.70,
-             "oob_max": 0.10, "jump_p95_max": 10.0}
+             "oob_max": 0.10, "jump_p95_max": 10.0,
+             "min_median_track_len": 3.0}
 
 # A report carries both this version and its input sport label, even when an
 # adapter implementation is shared by related competitions.
@@ -34,10 +36,12 @@ CONFIG_VERSIONS: dict[str, dict[str, dict]] = {
         "wnba": dict(_BASKETBALL),
         "tennis": {"bounds": (-21, 99, -12, 48), "min_players": 2,
                    "ball_valid_min": 0.20, "coverage_min": 0.90,
-                   "oob_max": 0.08, "jump_p95_max": 8.0},
+                   "oob_max": 0.08, "jump_p95_max": 8.0,
+                   "min_median_track_len": 3.0},
         "soccer": {"bounds": (0, 105, 0, 68), "min_players": 14,
                    "ball_valid_min": 0.20, "coverage_min": 0.85,
-                   "oob_max": 0.05, "jump_p95_max": 8.0},
+                   "oob_max": 0.05, "jump_p95_max": 8.0,
+                   "min_median_track_len": 3.0},
         "baseball": dict(_BASEBALL),
         "npb": dict(_BASEBALL),
         "kbo": dict(_BASEBALL),
@@ -45,7 +49,8 @@ CONFIG_VERSIONS: dict[str, dict[str, dict]] = {
         # 360-by-160-foot field plane and deliberately has no ball detector.
         "football": {"bounds": (0, 360, 0, 160), "min_players": 14,
                      "ball_valid_min": 0.0, "coverage_min": 0.85,
-                     "oob_max": 0.05, "jump_p95_max": 8.0},
+                     "oob_max": 0.05, "jump_p95_max": 8.0,
+                     "min_median_track_len": 3.0},
     }
 }
 # Backward-compatible view of the current threshold map.
@@ -164,6 +169,7 @@ def evaluate(df: pd.DataFrame, sport: str,
         failures.append("duplicate frame-track rows {}".format(duplicates))
     for name, value, threshold, operator in (
         ("coverage", coverage, cfg["coverage_min"], "min"),
+        ("median_track_len", track_len, cfg["min_median_track_len"], "min"),
         ("oob", oob_pct, cfg["oob_max"], "max"),
         ("jump_p95", jump_p95, cfg["jump_p95_max"], "max"),
     ):
@@ -171,6 +177,8 @@ def evaluate(df: pd.DataFrame, sport: str,
         if invalid:
             sign = "<" if operator == "min" else ">"
             failures.append("{} {:.2f} {} {:.2f}".format(name, value, sign, threshold))
+    if len(players) and not len(jump):
+        failures.append("jump_p95 unmeasurable: no track with >=2 observations")
     if ball_valid is not None and ball_valid < cfg["ball_valid_min"]:
         failures.append("ball_valid {:.2f} < {:.2f}".format(
             ball_valid, cfg["ball_valid_min"]
