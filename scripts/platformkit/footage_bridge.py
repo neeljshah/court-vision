@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 import time
@@ -34,6 +35,11 @@ REMOTE_STAGE = POD_ROOT + "/data/footage_bridge"
 LOCAL_STAGE = Path("data/videos/bridge")
 COOKIES = Path("data/videos/youtube_cookies.txt")
 LEDGER = Path("data/tracking/footage_bridge_ledger.jsonl")
+# yt-dlp writes per-stream files like game.f137.mp4 (video-only) and
+# game.f299.mp4 (audio-only) before merging them. If the merge fails these
+# survive, and picking the largest would ship a video-only or audio-only
+# stream to the tracker as if it were the game.
+_FORMAT_PART = re.compile(r"\.f\d{2,4}\.")
 # A real tracked game has thousands of rows. Anything under this is a failed
 # detection pass wearing a successful exit code.
 MIN_TRACKING_ROWS = 500
@@ -122,7 +128,7 @@ def _resolve_download(destination: Path):
     produced = sorted(
         (path for path in destination.parent.glob(destination.stem + "*")
          if path.is_file() and not path.name.endswith((".part", ".ytdl"))
-         and "-Frag" not in path.name),
+         and "-Frag" not in path.name and not _FORMAT_PART.search(path.name)),
         key=lambda path: path.stat().st_size, reverse=True)
     return produced[0] if produced else None
 

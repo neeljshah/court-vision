@@ -249,3 +249,18 @@ def test_output_flag_is_immediately_followed_by_its_filename(monkeypatch, tmp_pa
     # -f must carry a real selector, never a flag
     if "-f" in command:
         assert not command[command.index("-f") + 1].startswith("-")
+
+
+def test_resolver_never_returns_an_unmerged_stream(monkeypatch, tmp_path):
+    """game.f137.mp4 is video-only; shipping it as the game is silent corruption."""
+    monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
+    monkeypatch.setattr(footage_bridge, "COOKIES", tmp_path / "absent.txt")
+    # video-only stream is the LARGEST file present, so size alone would pick it
+    (tmp_path / "g.f137.mp4").write_bytes(b"x" * 5000)
+    (tmp_path / "g.f299.mp4").write_bytes(b"x" * 3000)
+
+    assert footage_bridge._resolve_download(tmp_path / "g.mp4") is None
+
+    (tmp_path / "g.mkv").write_bytes(b"x" * 100)
+    resolved = footage_bridge._resolve_download(tmp_path / "g.mp4")
+    assert resolved is not None and resolved.name == "g.mkv"
