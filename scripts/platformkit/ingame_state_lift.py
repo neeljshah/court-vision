@@ -57,7 +57,11 @@ def _optional_feature_frame(ticks: List[Dict[str, Any]]) -> Optional[pd.DataFram
                     if callable(getattr(module, name, None))), None)
     if builder is None:
         return None
-    frame = builder(ticks)
+    payload = ticks
+    if not isinstance(payload, pd.DataFrame):
+        # loaders return a list of tick dicts; the feature builder wants a frame
+        payload = pd.DataFrame(list(payload))
+    frame = builder(payload)
     return frame if isinstance(frame, pd.DataFrame) else pd.DataFrame(frame)
 
 
