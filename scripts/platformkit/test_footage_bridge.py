@@ -224,3 +224,28 @@ def test_first_download_attempt_does_not_use_cookies(monkeypatch, tmp_path):
         {"game_id": "g", "url": "https://www.youtube.com/watch?v=abc"})
 
     assert "--cookies" not in commands[0]
+
+
+def test_output_flag_is_immediately_followed_by_its_filename(monkeypatch, tmp_path):
+    """Splicing -f between -o and its value made yt-dlp treat "-f" as the name."""
+    commands = []
+    monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
+    monkeypatch.setattr(footage_bridge, "COOKIES", tmp_path / "absent.txt")
+
+    def fake_run(command, **kwargs):
+        commands.append(command)
+        (tmp_path / "g.mp4").write_bytes(b"video")
+        return subprocess.CompletedProcess(command, 0)
+
+    monkeypatch.setattr(footage_bridge.subprocess, "run", fake_run)
+
+    footage_bridge.download_local(
+        {"game_id": "g", "url": "https://www.youtube.com/watch?v=abc"})
+
+    command = commands[0]
+    output_at = command.index("-o")
+    assert command[output_at + 1].endswith("g.mp4")
+    assert command[-1] == "https://www.youtube.com/watch?v=abc"
+    # -f must carry a real selector, never a flag
+    if "-f" in command:
+        assert not command[command.index("-f") + 1].startswith("-")

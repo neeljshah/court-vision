@@ -144,14 +144,19 @@ def download_local(item: dict) -> Path:
     # DASH (137+251). The residential IP is not bot-blocked, so cookies are only
     # a fallback for the occasional video that demands them.
     for rung, use_cookies in [(r, c) for c in (False, True) for r in rungs]:
+        # Build positionally rather than splicing into the list. Inserting at
+        # command[-2:-2] once landed "-f <rung>" BETWEEN "-o" and its filename,
+        # so yt-dlp took "-f" as the output template and failed every YouTube
+        # item with "Fixed output name but more than one file to download".
         command = ["yt-dlp", "--merge-output-format", "mp4", "--no-part",
-                   "--no-playlist", "-o", str(destination), item["url"]]
-        if rung is not None:
-            command[-2:-2] = ["-f", rung]
+                   "--no-playlist"]
         if use_cookies and COOKIES.is_file():
-            command[1:1] = ["--cookies", str(COOKIES)]
+            command += ["--cookies", str(COOKIES)]
         elif use_cookies:
             continue  # no cookie file, so the cookie pass is not a real retry
+        if rung is not None:
+            command += ["-f", rung]
+        command += ["-o", str(destination), item["url"]]
         try:
             subprocess.run(command, check=True, timeout=7200,
                            capture_output=True, text=True)
