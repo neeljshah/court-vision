@@ -392,6 +392,34 @@ def _ts_by_game(ticks: List[Dict[str, Any]]) -> Dict[str, str]:
     return out
 
 
+def _src_ts_by_game(ticks: List[Dict[str, Any]]) -> Dict[str, str]:
+    """Explicit venue quote clocks only; no capture-clock fallback."""
+    out: Dict[str, str] = {}
+    for t in ticks:
+        if not isinstance(t, dict) or t.get("market_type") not in (None, "moneyline"):
+            continue
+        gid, value = str(t.get("game_id") or ""), t.get("src_ts")
+        if gid and isinstance(value, str) and value and gid not in out:
+            out[gid] = value
+    return out
+
+
+def _gumbo_event_ts(state: Dict[str, Any]) -> Optional[str]:
+    """Latest MLB metaData.timeStamp from the GUMBO sidecar for this resolved game."""
+    game_pk = state.get("game_pk")
+    if game_pk is None:
+        return None
+    path = _REPO_ROOT / "data" / "domains" / "mlb" / "gumbo_live" / ("%s.jsonl" % game_pk)
+    try:
+        import json
+        last = next((json.loads(line) for line in reversed(path.read_text(encoding="utf-8").splitlines())
+                     if line.strip()), {})
+        value = last.get("ts") if isinstance(last, dict) else None
+        return value if isinstance(value, str) and value else None
+    except (OSError, ValueError):
+        return None
+
+
 def _cached_live_states(sport: str, cache: Optional[Dict[str, List[Dict[str, Any]]]]
                         ) -> Optional[List[Dict[str, Any]]]:
     """Lazily fetch+memoize _ls.live_states(sport) ONCE per sport per poll_once cycle.
@@ -641,6 +669,7 @@ def poll_once(*, sports: Optional[List[str]] = None,
         ticks_list = list(ticks) if ticks else []
         legs_by_game = _yes_pair(ticks_list)
         ts_by_game = _ts_by_game(ticks_list)
+        src_ts_by_game = _src_ts_by_game(ticks_list)
         # DEEP enrichment: MLB gets the base-out resolver, KBO (capture-only, wave
         # kbo-alias-wire-soak) gets the relay state-row bridge; other sports pass through.
         sport_deep_fn = deep_state_fn if str(sport).lower() == "mlb" else (
@@ -651,7 +680,8 @@ def poll_once(*, sports: Optional[List[str]] = None,
         for gid, legs in legs_by_game.items():
             row = _process_game(sport, gid, legs, ls_fn, md_fn, pos_map,
                                 grade_dir, ledger_path, nowdt, sport_deep_fn,
-                                ts_by_game.get(gid, batch_ts), live_states_cache)
+                                ts_by_game.get(gid, batch_ts), src_ts_by_game.get(gid),
+                                live_states_cache)
             games_seen.append(row)
             if row.get("paired"):
                 n_live += 1
@@ -750,6 +780,7 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
                   nowdt: datetime,
                   deep_state_fn: Optional[Callable[[str], Dict[str, Any]]] = None,
                   signal_ts: Optional[str] = None,
+                  src_ts: Optional[str] = None,
                   live_states_cache: Optional[Dict[str, List[Dict[str, Any]]]] = None
                   ) -> Dict[str, Any]:
     """Capture + paper-decide ONE live game's tick. Per-game guarded: never raises.
@@ -824,6 +855,9 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
         pair = _fold_draw_into_field(pair, legs)  # 3-way (soccer) -> 2-way home-vs-field
         tick = _build_tick(state, model_p, pair)
         tick["signal_ts"] = signal_ts
+        state_src = (state.get("gumbo_event_ts") or _gumbo_event_ts(state)) if str(sport).lower() == "mlb" else (
+            state.get("fotmob_update_ts") if str(sport).lower() in ("soccer", "soccer_intl") else None)
+        tick["src_ts"] = state_src if isinstance(state_src, str) and state_src else src_ts
         pkey = "%s/%s" % (sport, gid)
         # ENRICHMENT MEASUREMENT ONLY (LANE 1), computed BEFORE on_tick (LANE 3
         # persistence): a lookup exception can never sink a tick or change on_tick's

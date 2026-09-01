@@ -62,6 +62,7 @@ from scripts.platformkit.ingame import inplay_breaker as _breaker
 from scripts.platformkit.ingame import inplay_edge_signal as _sig
 from scripts.platformkit.ingame import live_grade as _lg
 from scripts.platformkit.ingame import paper_ingame as _paper
+from scripts.platformkit.ingame import quote_freshness as _freshness
 from scripts.platformkit.pm_trading import policy as _policy
 
 logger = logging.getLogger(__name__)
@@ -230,7 +231,9 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
                 live_state_fn=lambda s, g: _state_summary_fn(tick),
                 model_fn=lambda st: mp,
                 market_fetch_fn=lambda s, g: dp,
-                out_dir=grade_dir, extra={**(extra or {}), "claim_tags": claim_tags})
+                out_dir=grade_dir, src_ts=tick.get("src_ts"),
+                extra={**(extra or {}), "claim_tags": claim_tags,
+                       "venue": tick.get("venue", "kalshi")})
             decision["captured"] = cap.get("status") == "captured"
 
         # 2b. SUPPRESSION (queue item 8a, conservative withhold -- mechanism only, currently
@@ -309,14 +312,20 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
         # off preserves the legacy flat-0.0 stake exactly (no behavior change if disabled).
         stake = (_sizing.stake_for(ev["tier"], "moneyline")
                 if _sizing.tier_sizing_enabled() else 0.0)
+        order_time = nowdt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        state_age = _freshness.state_age_sec(order_time, [{"src_ts": tick.get("src_ts")}])
+        stale_state = (state_age is not None and
+                       state_age > _freshness.state_age_ceiling_sec(sport))
         placement = _paper.record_ingame_bet(
             sport, game_id, MARKET, bet_side, float(dec_odds),
             model_prob=bet_mp, stake=stake, path=ledger_path,  # units, never $
             signal_ts=tick.get("signal_ts"), exec_gate=gr["exec_gate"],
-            exec_depth=gr["exec_depth"])
+            exec_depth=gr["exec_depth"], state_age_sec=state_age,
+            suppressed_reason="stale_state" if stale_state else None)
         decision.update({
-            "action": "bet", "side": bet_side, "units": units, "placement": placement,
-            "position": {"status": "open", "side": bet_side, "tier": ev["tier"],
+            "action": "no_bet" if stale_state else "bet", "side": bet_side, "units": units, "placement": placement,
+            "reason": "stale_state" if stale_state else decision["reason"],
+            "position": None if stale_state else {"status": "open", "side": bet_side, "tier": ev["tier"],
                          "model_prob": bet_mp, "devigged_price": ev.get("bet_devigged_price", dp),
                          "edge_key": placement.get("edge_key"), "opened_ts": _now_iso()},
         })

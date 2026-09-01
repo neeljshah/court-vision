@@ -51,6 +51,7 @@ DEFAULT_GRADE_DIR = _REPO_ROOT / "data" / "cache" / "ingame_grade"
 
 # The side both numbers are aligned to (see ALIGNMENT in the module docstring).
 PAIR_SIDE = "home"
+CAPTURE_SCHEMA_VERSION = 2
 
 # Injectable callback signatures (all default to the real chains, but every test path
 # and the live smoke inject stubs so NO network is required for the tested code):
@@ -127,7 +128,8 @@ def capture_pair_once(sport: str, game_id: str, *,
                       model_fn: ModelFn,
                       market_fetch_fn: MarketFetchFn,
                       out_dir: Optional[Path] = None,
-                      extra: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+                      extra: Optional[Dict[str, Any]] = None,
+                      src_ts: Optional[str] = None) -> Dict[str, Any]:
     """Capture ONE paired (model_prob, market_prob) tick for a live game and persist it.
 
     Flow: live_state_fn(sport, game_id) -> state; model_fn(state) -> model P(home win);
@@ -168,7 +170,8 @@ def capture_pair_once(sport: str, game_id: str, *,
         row = {
             "sport": str(sport).lower(), "game_id": str(game_id), "ts": _iso(nowdt),
             "market_prob": market_p, "model_prob": model_p, "side": PAIR_SIDE,
-            "state_summary": _state_summary(state),
+            "state_summary": _state_summary(state), "src_ts": src_ts,
+            "capture_schema_version": CAPTURE_SCHEMA_VERSION,
         }
         if isinstance(extra, dict):
             # ADDITIVE ONLY: a colliding key is DROPPED (never overwrites core keys).
@@ -297,4 +300,4 @@ def grade_game(path: str, *, eps: float = ic.EPS_DEFAULT,
     return out
 
 
-__all__ = ["DEFAULT_GRADE_DIR", "PAIR_SIDE", "capture_pair_once", "grade_game"]
+__all__ = ["DEFAULT_GRADE_DIR", "PAIR_SIDE", "CAPTURE_SCHEMA_VERSION", "capture_pair_once", "grade_game"]

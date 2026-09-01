@@ -35,9 +35,14 @@ Per-file test:
 """
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Sequence
 
 _EPS = 1e-9
+
+# Pre-registered 2026-09-01: venue-clock state-age ceilings for paper suppression.
+STATE_AGE_CEILING_SEC = {"mlb": 5.0}
+SLOW_STATE_AGE_CEILING_SEC = 120.0
 
 
 def _as_prob(value: Any) -> Optional[float]:
@@ -46,6 +51,33 @@ def _as_prob(value: Any) -> Optional[float]:
         return float(value)
     except (TypeError, ValueError):
         return None
+
+
+def _parse_ts(value: Any) -> Optional[datetime]:
+    if not isinstance(value, str):
+        return None
+    try:
+        dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+    except ValueError:
+        return None
+
+
+def state_age_sec(order_time: Any, rows: Sequence[Dict[str, Any]]) -> Optional[float]:
+    """Age of the freshest source clock behind an order; None is an honest absence."""
+    order_dt = _parse_ts(order_time) if isinstance(order_time, str) else order_time
+    if not isinstance(order_dt, datetime):
+        return None
+    if order_dt.tzinfo is None:
+        order_dt = order_dt.replace(tzinfo=timezone.utc)
+    sources = [_parse_ts(r.get("src_ts")) for r in rows if isinstance(r, dict)]
+    freshest = max((s for s in sources if s is not None), default=None)
+    return None if freshest is None else round((order_dt - freshest).total_seconds(), 3)
+
+
+def state_age_ceiling_sec(sport: str) -> float:
+    """The registered source-clock ceiling for a sport (not a quote-price heuristic)."""
+    return STATE_AGE_CEILING_SEC.get(str(sport).lower(), SLOW_STATE_AGE_CEILING_SEC)
 
 
 def freshness_mask(rows: Sequence[Dict[str, Any]], *,
@@ -118,4 +150,6 @@ def longest_stale_run(rows: Sequence[Dict[str, Any]], *,
 
 __all__ = [
     "freshness_mask", "filter_fresh", "freshness_share", "longest_stale_run",
+    "state_age_sec", "state_age_ceiling_sec", "STATE_AGE_CEILING_SEC",
+    "SLOW_STATE_AGE_CEILING_SEC",
 ]

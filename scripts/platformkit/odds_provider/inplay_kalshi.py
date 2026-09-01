@@ -144,6 +144,9 @@ def _tick_from_market(sport: str, market: Dict[str, Any], ts: str,
         return None
     game_id = str(market.get("event_ticker") or ticker).strip()
     bid, ask = best_bid_ask(market)
+    quote_ts = next((market.get(k) for k in ("updated_time", "last_updated_time",
+                                              "last_price_time", "timestamp")
+                     if market.get(k)), None)
     return {
         "sport": sport,
         "game_id": game_id,
@@ -154,6 +157,7 @@ def _tick_from_market(sport: str, market: Dict[str, Any], ts: str,
         "prob": prob,
         "line": _line_from_market(market) if market_type != "moneyline" else None,
         "ts": ts,
+        "src_ts": quote_ts,
         "phase": PHASE,
         "best_bid": bid,
         "best_ask": ask,

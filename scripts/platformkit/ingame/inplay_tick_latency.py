@@ -90,7 +90,7 @@ def _percentile(sorted_vals: List[float], pct: float) -> Optional[float]:
     return round(sorted_vals[idx], 2)
 
 
-_VENUE_TS_KEYS = ("venue_ts", "exchange_ts", "market_ts", "server_ts")
+_VENUE_TS_KEYS = ("src_ts", "venue_ts")  # venue_ts retained only for legacy corpora/tests
 
 
 def _venue_ts_field(row: Dict[str, Any]) -> Optional[str]:
@@ -131,7 +131,7 @@ def measure_sport(sport: str, grade_dir: Optional[Path] = None,
                 schema_has_venue_ts = True
                 vt = _parse_ts(r.get(vfield))
                 if vt is not None and t is not None:
-                    lag_samples.append(abs((t - vt).total_seconds()))
+                    lag_samples.append((t - vt).total_seconds())
         times.sort()
         for a, b in zip(times, times[1:]):
             gap = (b - a).total_seconds()
@@ -167,14 +167,16 @@ def measure_sport(sport: str, grade_dir: Optional[Path] = None,
         "min_ticks_sport": MIN_TICKS_SPORT,
         "verdict": verdict,
         "schema_has_venue_ts": schema_has_venue_ts,
-        "capture_lag_vs_venue_sec_p50": (round(sorted(lag_samples)[len(lag_samples) // 2], 2)
-                                         if lag_samples else None),
+        "src_ts_coverage_pct": round(100.0 * len(lag_samples) / n_ticks_total, 2) if n_ticks_total else None,
+        "lag_p50_sec": _percentile(sorted(lag_samples), 0.50),
+        "lag_p90_sec": _percentile(sorted(lag_samples), 0.90),
+        "capture_lag_vs_venue_sec_p50": _percentile(sorted(lag_samples), 0.50),
         "capture_lag_note": (
-            "tick payload carries no venue/exchange timestamp field (only our own "
+            "tick payload carries no source timestamp field (only our own "
             "capture 'ts') -- capture-cycle lag vs venue time is NOT_AVAILABLE, "
             "reported honestly rather than fabricated"
             if not schema_has_venue_ts else
-            "lag computed from a venue timestamp field present in this payload"
+            "lag computed as capture ts minus explicit source src_ts"
         ),
     }
 

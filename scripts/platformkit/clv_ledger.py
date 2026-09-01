@@ -444,6 +444,8 @@ def load_ledger(path: Optional[Path] = None) -> List[Dict[str, Any]]:
                 continue  # tolerate a partial trailing write, never crash
             if _is_synthetic_row(row):
                 continue  # read-time filter: synthetic/malformed rows never reach consumers
+            if row.get("suppressed_reason") == "stale_state":
+                continue  # source-clock stale orders are excluded from every CLV consumer
             out.append(row)
     return out
 

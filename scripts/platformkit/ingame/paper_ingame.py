@@ -139,6 +139,8 @@ def record_ingame_bet(
     signal_ts: Optional[str] = None,
     exec_gate: Optional[Dict[str, Any]] = None,
     exec_depth: Optional[Dict[str, Any]] = None,
+    state_age_sec: Optional[float] = None,
+    suppressed_reason: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Record one in-game paper edge to the CLV ledger with channel='paper_ingame'.
 
@@ -176,7 +178,7 @@ def record_ingame_bet(
     try:
         return _record_inner(sport, game_id, market, side, taken_decimal,
                              model_prob, stake, taken_book, ts, key, target,
-                             signal_ts, exec_gate, exec_depth)
+                             signal_ts, exec_gate, exec_depth, state_age_sec, suppressed_reason)
     except Exception as exc:  # noqa: BLE001 - must never raise
         logger.warning("record_ingame_bet failed game=%s key=%s: %s",
                        game_id, key, exc)
@@ -189,9 +191,11 @@ def _record_inner(sport: str, game_id: str, market: str, side: str,
                   taken_decimal: float, model_prob: Optional[float],
                   stake: float, taken_book: str,
                   ts: str, key: str, target: Path,
-                  signal_ts: Optional[str] = None,
-                  exec_gate: Optional[Dict[str, Any]] = None,
-                  exec_depth: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+                   signal_ts: Optional[str] = None,
+                   exec_gate: Optional[Dict[str, Any]] = None,
+                   exec_depth: Optional[Dict[str, Any]] = None,
+                   state_age_sec: Optional[float] = None,
+                   suppressed_reason: Optional[str] = None) -> Dict[str, Any]:
     # Write-guard: reject malformed / synthetic rows before touching the ledger.
     # Returns a structured no-op identical in shape to the idempotency path so
     # callers need no special handling.  Never raises.
@@ -231,7 +235,7 @@ def _record_inner(sport: str, game_id: str, market: str, side: str,
         "taken_decimal": dec,
         "model_prob": (float(model_prob) if model_prob is not None else None),
         "stake": float(stake),
-        "status": "open",
+        "status": "suppressed" if suppressed_reason else "open",
         "executed": False,         # binding invariant: never a real bet
         "channel": CHANNEL_PAPER_INGAME,
         "edge_key": key,           # idempotency handle
@@ -239,6 +243,8 @@ def _record_inner(sport: str, game_id: str, market: str, side: str,
         "placement_latency_ms": _latency_ms(signal_ts, ts),
         "exec_gate": exec_gate,
         "exec_depth": exec_depth,
+        "state_age_sec": state_age_sec,
+        "suppressed_reason": suppressed_reason,
     }
     try:
         from scripts.platformkit.clv_ledger_io import append_row as _io_append
