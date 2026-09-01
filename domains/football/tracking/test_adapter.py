@@ -52,3 +52,44 @@ def test_mocked_detector_projects_and_tracks_players() -> None:
     assert [row[0] for row in rows] == [1, 2]
     assert abs(abs(rows[1][1][0] - rows[0][1][0]) - 15.0) <= 1.5
     assert 0.0 <= rows[0][1][1] <= 160.0
+
+
+def test_out_of_field_projection_is_not_emitted() -> None:
+    adapter = FootballAdapter(detector=lambda image: [[0, 0, 10, 20]])
+    homography = np.array(((1.0, 0.0, 400.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)))
+
+    assert adapter._track_players(adapter._detect(_field()), homography) == []
+
+
+def test_scene_cut_clears_carried_geometry_and_identity_state() -> None:
+    first = _field()
+    second = np.full_like(first, (0, 0, 255))
+    adapter = FootballAdapter(detector=lambda image: [], scene_cut_threshold=0.20)
+    adapter._homography = np.eye(3)
+    adapter._h_params.append(np.ones(8))
+    adapter._centroids[7] = np.array((100.0, 100.0))
+
+    assert adapter.is_scene_cut(first, second)
+    adapter._reset_segment()
+    assert adapter._homography is None
+    assert not adapter._h_params and not adapter._centroids
+
+
+def test_scene_score_keeps_identical_view_below_cut_threshold() -> None:
+    frame = _field()
+    adapter = FootballAdapter(detector=lambda image: [])
+
+    assert adapter.scene_cut_score(frame, frame) == 0.0
+    assert not adapter.is_scene_cut(frame, frame)
+
+
+def test_degenerate_homography_normalization_is_rejected(monkeypatch) -> None:
+    frame = _field()
+    adapter = FootballAdapter(detector=lambda image: [])
+    monkeypatch.setattr(adapter, "detect_yard_line_family", lambda image: [
+        np.array((1.0, 0.0, -10.0)), np.array((1.0, 0.0, -20.0)),
+    ])
+    monkeypatch.setattr(adapter, "_line_groups", lambda image: [])
+    monkeypatch.setattr(cv2, "findHomography", lambda *_args: (np.zeros((3, 3)), None))
+
+    assert adapter.homography_from_yard_lines(frame) is None

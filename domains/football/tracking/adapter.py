@@ -24,6 +24,7 @@ from scripts.platformkit.calibration.keypoint_calib import TemporalCalibrator
 
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
 FIELD_WIDTH_FT = 160.0
+FIELD_LENGTH_FT = 360.0
 YARD_LINE_SPACING_FT = 15.0
 Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
 
@@ -40,14 +41,37 @@ def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
 class FootballAdapter:
     """Estimate an offset-relative field plane and pre-snap player formations."""
 
-    def __init__(self, detector: Optional[Detector] = None, motion_threshold: float = 3.0) -> None:
+    def __init__(self, detector: Optional[Detector] = None, motion_threshold: float = 3.0,
+                 scene_cut_threshold: float = 0.55) -> None:
         self.detector = detector
         self.motion_threshold = motion_threshold
+        self.scene_cut_threshold = scene_cut_threshold
         self._homography: Optional[np.ndarray] = None
         self._h_params: list[np.ndarray] = []
         self._centroids: dict[int, np.ndarray] = {}
         self._next_track_id = 1
+        self.scene_cuts_detected = 0
         self.last_output = pd.DataFrame(columns=SCHEMA)
+
+    def _reset_segment(self) -> None:
+        """Forget geometry and identities at a discontinuous camera cut."""
+        self._homography = None
+        self._h_params.clear()
+        self._centroids.clear()
+
+    @staticmethod
+    def scene_cut_score(previous: np.ndarray, current: np.ndarray) -> float:
+        """Return histogram distance between consecutive camera views."""
+        def histogram(frame: np.ndarray) -> np.ndarray:
+            hsv = cv2.cvtColor(cv2.resize(frame, (160, 90)), cv2.COLOR_BGR2HSV)
+            value = cv2.calcHist([hsv], [0, 1], None, [16, 16], [0, 180, 0, 256])
+            return cv2.normalize(value, value).flatten()
+        return float(cv2.compareHist(histogram(previous), histogram(current),
+                                     cv2.HISTCMP_BHATTACHARYYA))
+
+    def is_scene_cut(self, previous: np.ndarray, current: np.ndarray) -> bool:
+        """True when a view change invalidates carried homography and identity."""
+        return self.scene_cut_score(previous, current) >= self.scene_cut_threshold
 
     @staticmethod
     def _load_yolo_detector() -> Detector:
@@ -166,7 +190,10 @@ class FootballAdapter:
         if len(pixels) < 4:
             return None
         homography, _ = cv2.findHomography(np.float32(pixels), np.float32(field), cv2.RANSAC, 3.0)
-        return None if homography is None else homography / homography[2, 2]
+        if homography is None or abs(float(homography[2, 2])) < 1e-8:
+            return None
+        normalized = homography / homography[2, 2]
+        return normalized if np.isfinite(normalized).all() else None
 
     def _stable_homography(self, frame: np.ndarray) -> Optional[np.ndarray]:
         raw = self.homography_from_yard_lines(frame)
@@ -196,6 +223,9 @@ class FootballAdapter:
             x1, y1, x2, y2 = map(float, box[:4])
             center = np.array(((x1 + x2) / 2, (y1 + y2) / 2))
             foot = cv2.perspectiveTransform(np.float32([[[center[0], y2]]]), homography)[0, 0]
+            if not (np.isfinite(foot).all() and 0.0 <= foot[0] <= FIELD_LENGTH_FT
+                    and 0.0 <= foot[1] <= FIELD_WIDTH_FT):
+                continue
             choices = [(np.linalg.norm(center - self._centroids[item]), item) for item in unused]
             track_id = min(choices)[1] if choices else self._next_track_id
             if not choices:
@@ -219,6 +249,7 @@ class FootballAdapter:
         if not capture.isOpened():
             raise FileNotFoundError("Could not open video: %s" % path)
         rows: list[dict[str, object]] = []
+        self.scene_cuts_detected = 0
         previous: Optional[np.ndarray] = None
         frame_index = processed = 0
         try:
@@ -227,9 +258,14 @@ class FootballAdapter:
                 if not ok:
                     break
                 if frame_index % stride == 0:
+                    if previous is not None and self.is_scene_cut(previous, frame):
+                        self._reset_segment()
+                        self.scene_cuts_detected += 1
+                        previous = None
                     homography, boxes = self._stable_homography(frame), self._detect(frame)
                     if previous is not None and homography is not None and self.is_pre_snap(previous, frame, boxes):
-                        for track_id, point in self._track_players(boxes, homography):
+                        players = self._track_players(boxes, homography)
+                        for track_id, point in players if len(players) >= 14 else ():
                             rows.append({"frame": frame_index, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1])})
                     previous = frame
                     processed += 1
