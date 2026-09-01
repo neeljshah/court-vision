@@ -35,6 +35,7 @@ Outputs (written to data/)
 """
 
 import argparse
+import csv
 import json
 import os
 import sys
@@ -218,6 +219,30 @@ def _fmt_size(path: str) -> str:
     return f"({kb:.1f} KB)"
 
 
+def _tracking_output_summary(path: str) -> tuple[int, int, int, int]:
+    """Return player-row count and frame extent without loading the whole CSV."""
+    rows = 0
+    frames: set[int] = set()
+    first_frame = -1
+    last_frame = -1
+    try:
+        with open(path, newline="", encoding="utf-8") as handle:
+            for row in csv.DictReader(handle):
+                try:
+                    frame = int(float(row.get("frame", "")))
+                except (TypeError, ValueError):
+                    continue
+                rows += 1
+                frames.add(frame)
+                if first_frame < 0 or frame < first_frame:
+                    first_frame = frame
+                if frame > last_frame:
+                    last_frame = frame
+    except OSError:
+        return 0, 0, -1, -1
+    return rows, len(frames), first_frame, last_frame
+
+
 def main():
     ap = argparse.ArgumentParser(
         description="NBA AI -- full data extraction pipeline for a single clip"
@@ -358,6 +383,16 @@ def main():
         print("       Possible causes: gameplay not detected, homography mismatch,")
         print("       or all frames filtered as dead-ball.  Skipping Stage 2.")
         sys.exit(3)  # exit 3 = empty tracking; run_phase_g treats 3 as soft failure
+    tracking_rows, tracking_frames, first_frame, last_frame = _tracking_output_summary(
+        tracking_csv
+    )
+    if not tracking_rows or tracking_frames < 2:
+        print("\n[WARN] tracking_data.csv is not a usable multi-frame observation corpus.")
+        print("       rows=%d frames=%d span=%d..%d" % (
+            tracking_rows, tracking_frames, first_frame, last_frame
+        ))
+        print("       Stage 1 is treated as empty; skipping post-processing.")
+        sys.exit(3)
 
     # -- Stage 2: NBA enrichment (optional) -----------------------------------
     enriched = {}
