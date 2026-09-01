@@ -170,3 +170,16 @@ def test_sport_scoped_out_paths_never_clobber_the_nba_artifacts() -> None:
     prereg, out = foundry.out_paths("mlb")
     assert prereg != foundry.PREREG_JSON and out != foundry.OUT_JSON
     assert out.name == "mechanism_wiring_mlb.json"
+
+
+def test_dry_run_refuses_to_overwrite_a_charged_artifact(monkeypatch, tmp_path: Path) -> None:
+    charged = tmp_path / "mechanism_wiring.json"
+    charged.write_text('{"rows": [{"k_cum": 4}]}', encoding="ascii")
+    monkeypatch.setattr(foundry, "out_paths", lambda sport: (tmp_path / "p.json", charged))
+    try:
+        foundry.main(["--sport", "mlb", "--dry-run"])
+    except SystemExit as error:
+        assert "refusing to overwrite charged results" in str(error)
+    else:  # pragma: no cover - the guard must fire
+        raise AssertionError("dry run overwrote a charged artifact")
+    assert charged.read_text(encoding="ascii") == '{"rows": [{"k_cum": 4}]}'

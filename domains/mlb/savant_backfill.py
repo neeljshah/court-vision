@@ -5,33 +5,30 @@ as acquire_statcast_sample/acquire_statcast_fuller (no new source) -- widens _KE
 further and adds NEW seasons via a SEPARATE cache namespace (raw_days_savant/) so it
 never clobbers statcast_fuller__2022/2023 or the SP-fatigue sample.
 
-NEW columns vs statcast_fuller: on_1b, on_2b, on_3b (base-runner state, MLBAM ids of
-the runner or NaN), launch_angle, description (the per-PITCH result code: ball,
-called_strike, swinging_strike, foul, hit_into_play, ... -- distinct from the
-already-present 'des', which is prose), bb_type (ground_ball/line_drive/fly_ball/
-popup, needed for "contact type").
+NEW columns vs statcast_fuller: on_1b/on_2b/on_3b (base-runner MLBAM ids or NaN),
+launch_angle, description (per-PITCH result code, distinct from prose 'des'),
+bb_type. PRIORITY (run_priority): 2024 full season; 2022/2023 refresh; 2025.
+DAY LIST comes from the corpus's own schedule (probables.parquet) -- no off-days
+in the list, so a fetch failure is unambiguous.
 
-PRIORITY (see run_priority): (a) 2024 full season -- independent-season replication
-target for the 3 provisional MLB survivors: platoon x pitch-type, count-leverage x
-mix, velo-band x TTO; (b) 2022/2023 column refresh (same widened _KEEP, separate
-namespace); (c) 2025.
+POLITENESS (binding): 1 day/request, _DELAY_S=3.0s, per-day checkpointed +
+idempotent (raw_days_savant/day__<date>.parquet), STOPS after 3 consecutive
+failures, reports FAILED_CONSECUTIVE honestly.
 
-DAY LIST comes from the corpus's OWN schedule (data/domains/mlb/probables.parquet,
-game_date filtered to the season) -- no guessed calendar bounds, no off-days in the
-list, so a fetch failure is unambiguous (not a legitimate day-off).
+--called-pitches mode (FRAMING_DATA_ACQ_2026-09-01): separate <=100MB-budgeted,
+date-sliced, resumable pull of taken-pitch rows into raw_days_called_pitches/.
+Does NOT produce command_target_dev_x_ft/command_target_height_ft -- not in
+Statcast, ever; see the memo for why this mode still ships.
 
-POLITENESS (binding): 1 day/request, _DELAY_S=3.0s between requests, per-day
-checkpointed + idempotent (raw_days_savant/day__<date>.parquet), STOPS after 3
-consecutive request failures (does not hammer) and reports FAILED_CONSECUTIVE
-honestly rather than proxy-shopping.
-
-WRITES ONLY data/cache/statcast/. NEVER data/registry/, no sentinel, no flag, no
-$/edge. ASCII-only; <=300 LOC. Per-file test in test_savant_backfill.py.
+WRITES ONLY data/cache/statcast/. NEVER data/registry/, no sentinel/flag/$-edge.
+ASCII-only. Per-file test in test_savant_backfill.py.
 CLI: python -m domains.mlb.savant_backfill --season 2024 --max-seconds 900
+     python -m domains.mlb.savant_backfill --called-pitches --season 2024
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import io
 import json
 import logging
@@ -112,21 +109,28 @@ def _day_csv_savant(day: str, timeout: int = 90) -> Optional[pd.DataFrame]:
 
 
 def _fetch_new_days(days: List[str], raw_dir: Path, delay_s: float,
-                    max_seconds: Optional[float]) -> Dict[str, object]:
-    """FETCH step: walks `days` not already cached, stops on wall-clock budget OR
-    _MAX_CONSECUTIVE_FAILURES in a row (politeness stop-rule) -- whichever first."""
+                    max_seconds: Optional[float], fetch_fn=None,
+                    max_bytes: Optional[float] = None) -> Dict[str, object]:
+    """Walks `days` not cached; stops on wall-clock budget, byte budget (cache
+    bytes on disk; used by --called-pitches), or _MAX_CONSECUTIVE_FAILURES --
+    whichever first. `fetch_fn` defaults to `_day_csv_savant`."""
+    fetch = fetch_fn or _day_csv_savant
     fetched: List[str] = []
     consecutive_failures = 0
     stopped_reason = None
     t0 = time.monotonic()
+    total_bytes = sum(fp.stat().st_size for fp in raw_dir.glob("day__*.parquet"))
     for day in days:
         fp = raw_dir / f"day__{day}.parquet"
         if fp.exists():
             continue
+        if max_bytes is not None and total_bytes >= max_bytes:
+            stopped_reason = "byte_budget"
+            break
         if max_seconds is not None and (time.monotonic() - t0) > max_seconds:
             stopped_reason = "max_seconds"
             break
-        df = _day_csv_savant(day)
+        df = fetch(day)
         if df is None:
             consecutive_failures += 1
             log.warning("consecutive_failures=%d after day %s", consecutive_failures, day)
@@ -142,11 +146,13 @@ def _fetch_new_days(days: List[str], raw_dir: Path, delay_s: float,
         tmp = fp.with_suffix(".tmp.parquet")
         df.to_parquet(tmp, index=False)
         tmp.replace(fp)
+        total_bytes += fp.stat().st_size
         fetched.append(day)
         log.info("fetched %s rows=%d", day, len(df))
         time.sleep(delay_s)
     return {"fetched_days": fetched, "stopped_reason": stopped_reason,
-            "consecutive_failures_at_stop": consecutive_failures}
+            "consecutive_failures_at_stop": consecutive_failures,
+            "total_bytes": total_bytes}
 
 
 def _materialize(days: List[str], raw_dir: Path) -> List[pd.DataFrame]:
@@ -168,6 +174,55 @@ def _coverage(df: pd.DataFrame) -> Dict[str, Dict[str, object]]:
             nn = float(df[col].notna().mean()) if len(df) else 0.0
             rep[col] = {"obtained": True, "coverage_pct": round(nn * 100.0, 2), "unlocks": unlocks}
     return rep
+
+
+# --called-pitches mode: does NOT produce command_target_dev_x_ft /
+# command_target_height_ft (not in Statcast, ever) -- see the memo.
+_TAKEN_DESCRIPTIONS = {"ball", "called_strike", "blocked_ball"}
+_CALLED_PITCH_BUDGET_BYTES = 100_000_000  # <=100MB cap
+
+
+def _day_csv_called_pitches(day: str, timeout: int = 90) -> Optional[pd.DataFrame]:
+    """`_day_csv_savant`, row-filtered to taken pitches (None stays None)."""
+    df = _day_csv_savant(day, timeout=timeout)
+    if df is None or df.empty or "description" not in df.columns:
+        return df
+    return df[df["description"].isin(_TAKEN_DESCRIPTIONS)].reset_index(drop=True)
+
+
+def run_called_pitches(days: List[str], max_seconds: Optional[float] = None,
+                       max_bytes: float = _CALLED_PITCH_BUDGET_BYTES,
+                       cache_dir: Optional[Path] = None) -> Dict[str, object]:
+    """Byte-budgeted (<=100MB default), date-sliced, idempotent taken-pitch pull.
+    Writes called_pitches__<first>_<last>.parquet + a manifest (rows/bytes/date
+    range/sha256) to data/cache/statcast/ (never data/registry/)."""
+    cdir = Path(cache_dir) if cache_dir else _CACHE
+    raw_dir = cdir / "raw_days_called_pitches"
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    fetch = _fetch_new_days(days, raw_dir, _DELAY_S, max_seconds,
+                            fetch_fn=_day_csv_called_pitches, max_bytes=max_bytes)
+    parts = _materialize(days, raw_dir)
+    df = pd.concat(parts, ignore_index=True) if parts else pd.DataFrame()
+    manifest: Dict[str, object] = {
+        "corpus_id": "called_pitches_v1",
+        "as_of": datetime.now(timezone.utc).isoformat(),
+        "rows": int(len(df)), "days_requested": len(days),
+        "days_fetched_this_run": len(fetch["fetched_days"]),
+        "stopped_reason": fetch["stopped_reason"],
+        "byte_budget": max_bytes, "bytes_on_disk_cache": fetch["total_bytes"],
+    }
+    if not df.empty:
+        out_fp = cdir / f"called_pitches__{days[0]}_{days[-1]}.parquet"
+        df.to_parquet(out_fp, index=False)
+        manifest["parquet"] = str(out_fp)
+        manifest["bytes_output_file"] = out_fp.stat().st_size
+        manifest["sha256"] = hashlib.sha256(out_fp.read_bytes()).hexdigest()
+        manifest["date_range"] = [str(df["game_date"].min()), str(df["game_date"].max())]
+    manifest_fp = cdir / "called_pitches_manifest.json"
+    with open(manifest_fp, "w", encoding="ascii", errors="replace") as f:
+        json.dump(manifest, f, indent=2, default=str)
+    manifest["manifest_path"] = str(manifest_fp)
+    return manifest
 
 
 def run_season(season: int, max_seconds: Optional[float] = None,
@@ -234,8 +289,15 @@ def _main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--max-seconds", type=float, default=600.0)
     ap.add_argument("--priority", default="2024,2022,2023,2025",
                     help="comma-separated season order when --season is omitted")
+    ap.add_argument("--called-pitches", action="store_true",
+                    help="byte-budgeted (<=100MB) taken-pitch-only acquisition mode")
+    ap.add_argument("--max-bytes", type=float, default=_CALLED_PITCH_BUDGET_BYTES)
     a = ap.parse_args(argv)
-    if a.season:
+    if a.called_pitches:
+        season = a.season or int(a.priority.split(",")[0])
+        res = run_called_pitches(_season_days(season), max_seconds=a.max_seconds,
+                                 max_bytes=a.max_bytes)
+    elif a.season:
         res = run_season(a.season, max_seconds=a.max_seconds)
     else:
         seasons = [int(s) for s in a.priority.split(",") if s.strip()]
@@ -248,6 +310,7 @@ if __name__ == "__main__":
     raise SystemExit(_main())
 
 
-__all__ = ["run_season", "run_priority", "_day_csv_savant", "_season_days",
-           "_coverage", "_KEEP", "_NEW_COLS", "_CACHE", "_RAW_DIR", "_REPO",
-           "_DELAY_S", "_MAX_CONSECUTIVE_FAILURES"]
+__all__ = ["run_season", "run_priority", "run_called_pitches", "_day_csv_savant",
+           "_day_csv_called_pitches", "_season_days", "_coverage", "_KEEP",
+           "_NEW_COLS", "_TAKEN_DESCRIPTIONS", "_CALLED_PITCH_BUDGET_BYTES",
+           "_CACHE", "_RAW_DIR", "_REPO", "_DELAY_S", "_MAX_CONSECUTIVE_FAILURES"]

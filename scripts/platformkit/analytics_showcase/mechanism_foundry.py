@@ -152,6 +152,10 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     prereg_path, out_path = out_paths(args.sport)
+    # ponytail: a dry run must never erase results someone already paid trials
+    # for; the charged marker is the per-row k_cum the ledger charge wrote.
+    if args.dry_run and out_path.exists() and '"k_cum"' in out_path.read_text(encoding="ascii"):
+        raise SystemExit("refusing to overwrite charged results with a dry run: %s" % out_path)
     rows = prereg_rows(args.sport)
     prereg_path.write_text(json.dumps(rows, indent=2, ensure_ascii=True), encoding="ascii")
     print("prereg written before any trial:", prereg_path)

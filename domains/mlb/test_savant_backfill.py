@@ -97,6 +97,75 @@ def test_keep_is_strict_superset_of_fuller_keep():
         assert c in sb._KEEP
 
 
+# --called-pitches mode (FRAMING_DATA_ACQ_2026-09-01) -----------------------
+
+def test_called_pitches_filters_to_taken_only(monkeypatch):
+    def _fake_day(day, timeout=90):
+        return pd.DataFrame({"game_date": [day] * 3,
+                             "description": ["ball", "swinging_strike", "called_strike"]})
+    monkeypatch.setattr(sb, "_day_csv_savant", _fake_day)
+    out = sb._day_csv_called_pitches("2024-05-01")
+    assert list(out["description"]) == ["ball", "called_strike"]
+
+
+def test_called_pitches_respects_byte_budget(tmp_path, monkeypatch):
+    """A byte budget already met by pre-existing cached days stops the fetch
+    loop before it makes a single new request (byte cap is honored)."""
+    raw_dir = tmp_path / "raw_days_called_pitches"
+    raw_dir.mkdir()
+    planted = raw_dir / "day__2024-05-01.parquet"
+    _planted_day_df().to_parquet(planted, index=False)
+    calls = []
+
+    def _fake(day, timeout=90):
+        calls.append(day)
+        return _planted_day_df()
+
+    monkeypatch.setattr(sb, "_day_csv_called_pitches", _fake)
+    res = sb.run_called_pitches(["2024-05-01", "2024-05-02", "2024-05-03"],
+                                max_bytes=planted.stat().st_size, cache_dir=tmp_path)
+    assert calls == []  # budget already met -- no new request attempted
+    assert res["stopped_reason"] == "byte_budget"
+
+
+def test_called_pitches_idempotent_resume_and_manifest(tmp_path, monkeypatch):
+    """Re-running with the same days does not refetch (idempotent), and the
+    first run produces a manifest with rows/bytes/date range/sha256."""
+    def _fake(day, timeout=90):
+        return _planted_day_df()
+
+    monkeypatch.setattr(sb, "_day_csv_called_pitches", _fake)
+    days = ["2024-05-01", "2024-05-02"]
+    res1 = sb.run_called_pitches(days, max_bytes=10_000_000, cache_dir=tmp_path)
+    assert res1["days_fetched_this_run"] == 2
+    assert "sha256" in res1 and "manifest_path" in res1
+    assert Path(res1["manifest_path"]).exists()
+
+    calls_second = []
+
+    def _fake2(day, timeout=90):
+        calls_second.append(day)
+        return _planted_day_df()
+
+    monkeypatch.setattr(sb, "_day_csv_called_pitches", _fake2)
+    res2 = sb.run_called_pitches(days, max_bytes=10_000_000, cache_dir=tmp_path)
+    assert calls_second == []  # both days already cached
+    assert res2["days_fetched_this_run"] == 0
+
+
+def test_called_pitches_date_slice_excludes_uncached_extra_day(tmp_path, monkeypatch):
+    """A cached day outside the requested date slice must not leak into output."""
+    raw_dir = tmp_path / "raw_days_called_pitches"
+    raw_dir.mkdir()
+    extra = _planted_day_df().copy()
+    extra["game_date"] = "2024-06-15"
+    extra.to_parquet(raw_dir / "day__2024-06-15.parquet", index=False)
+
+    monkeypatch.setattr(sb, "_day_csv_called_pitches", lambda day, timeout=90: _planted_day_df())
+    res = sb.run_called_pitches(["2024-05-01"], max_bytes=10_000_000, cache_dir=tmp_path)
+    assert res["date_range"] == ["2024-05-01", "2024-05-01"]
+
+
 if __name__ == "__main__":
     import pytest
     sys.exit(pytest.main([__file__, "-q"]))
