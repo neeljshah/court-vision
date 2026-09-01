@@ -1,0 +1,607 @@
+{
+  "label": "DESCRIPTIVE_ONLY",
+  "descriptive_only": true,
+  "edge_claimed": false,
+  "as_of": "latest accepted game date per sport",
+  "method": "Devig two-sided closing moneylines, fit ratings to close probability, select K/HFA on first half, then freeze for second-half walk-forward scoring.",
+  "rating_update": "R_home += K*(p_close-p_model); R_away -= K*(p_close-p_model); no result enters rating updates.",
+  "uncertainty": "EXPLORATORY: team band is rolling standard deviation of its last ten absolute close-tracking residuals.",
+  "sports": {
+    "basketball_nba": {
+      "as_of": "2026-05-23",
+      "n_train": 734,
+      "n_eval": 582,
+      "chosen_k": 32,
+      "chosen_hfa": 40,
+      "training_rating_spread": 372.844,
+      "latest_ratings": {
+        "top_5": [
+          {
+            "team": "OKC",
+            "rating": 1728.092,
+            "uncertainty_band_exploratory": 0.0288
+          },
+          {
+            "team": "SAS",
+            "rating": 1667.51,
+            "uncertainty_band_exploratory": 0.0267
+          },
+          {
+            "team": "DET",
+            "rating": 1626.763,
+            "uncertainty_band_exploratory": 0.0287
+          },
+          {
+            "team": "BOS",
+            "rating": 1621.862,
+            "uncertainty_band_exploratory": 0.1325
+          },
+          {
+            "team": "DEN",
+            "rating": 1617.648,
+            "uncertainty_band_exploratory": 0.0627
+          }
+        ],
+        "bottom_5": [
+          {
+            "team": "WAS",
+            "rating": 1274.262,
+            "uncertainty_band_exploratory": 0.0463
+          },
+          {
+            "team": "BKN",
+            "rating": 1305.513,
+            "uncertainty_band_exploratory": 0.0567
+          },
+          {
+            "team": "SAC",
+            "rating": 1317.875,
+            "uncertainty_band_exploratory": 0.0389
+          },
+          {
+            "team": "UTA",
+            "rating": 1321.763,
+            "uncertainty_band_exploratory": 0.0333
+          },
+          {
+            "team": "MEM",
+            "rating": 1333.495,
+            "uncertainty_band_exploratory": 0.0472
+          }
+        ]
+      },
+      "top_5": [
+        {
+          "team": "OKC",
+          "rating": 1728.092,
+          "uncertainty_band_exploratory": 0.0288
+        },
+        {
+          "team": "SAS",
+          "rating": 1667.51,
+          "uncertainty_band_exploratory": 0.0267
+        },
+        {
+          "team": "DET",
+          "rating": 1626.763,
+          "uncertainty_band_exploratory": 0.0287
+        },
+        {
+          "team": "BOS",
+          "rating": 1621.862,
+          "uncertainty_band_exploratory": 0.1325
+        },
+        {
+          "team": "DEN",
+          "rating": 1617.648,
+          "uncertainty_band_exploratory": 0.0627
+        }
+      ],
+      "bottom_5": [
+        {
+          "team": "WAS",
+          "rating": 1274.262,
+          "uncertainty_band_exploratory": 0.0463
+        },
+        {
+          "team": "BKN",
+          "rating": 1305.513,
+          "uncertainty_band_exploratory": 0.0567
+        },
+        {
+          "team": "SAC",
+          "rating": 1317.875,
+          "uncertainty_band_exploratory": 0.0389
+        },
+        {
+          "team": "UTA",
+          "rating": 1321.763,
+          "uncertainty_band_exploratory": 0.0333
+        },
+        {
+          "team": "MEM",
+          "rating": 1333.495,
+          "uncertainty_band_exploratory": 0.0472
+        }
+      ],
+      "eval_scores": {
+        "mean_absolute_tracking_error": 0.091729,
+        "probability_distribution": {
+          "p_model": {
+            "mean": 0.557517,
+            "p10": 0.32964,
+            "p90": 0.774071
+          },
+          "p_close": {
+            "mean": 0.559121,
+            "p10": 0.200422,
+            "p90": 0.857944
+          }
+        },
+        "outcome_join": "NONE",
+        "outcome_note": "Existing showcase joins are incompatible with this two-sided home-moneyline grain; tracking-to-close only."
+      },
+      "cross_book_context": "SKIPPED: no cheap schema-stable multi-book join was used.",
+      "verdict": "Descriptive close-tracking summary only; no outcome or edge inference is made.",
+      "status": "ok",
+      "source": "data/domains/basketball_nba/odds.parquet",
+      "source_columns": [
+        "date",
+        "home_team",
+        "away_team",
+        "home_ml",
+        "away_ml",
+        "total",
+        "spread"
+      ],
+      "moneyline_sample": [
+        {
+          "home_ml": -240.0,
+          "away_ml": 200.0,
+          "home_ml_format": "american",
+          "away_ml_format": "american"
+        },
+        {
+          "home_ml": 130.0,
+          "away_ml": -150.0,
+          "home_ml_format": "american",
+          "away_ml_format": "american"
+        },
+        {
+          "home_ml": 160.0,
+          "away_ml": -190.0,
+          "home_ml_format": "american",
+          "away_ml_format": "american"
+        },
+        {
+          "home_ml": -170.0,
+          "away_ml": 145.0,
+          "home_ml_format": "american",
+          "away_ml_format": "american"
+        },
+        {
+          "home_ml": -170.0,
+          "away_ml": 145.0,
+          "home_ml_format": "american",
+          "away_ml_format": "american"
+        }
+      ]
+    },
+    "mlb": {
+      "as_of": "2021-11-02",
+      "n_train": 14228,
+      "n_eval": 13776,
+      "chosen_k": 32,
+      "chosen_hfa": 40,
+      "training_rating_spread": 145.516,
+      "latest_ratings": {
+        "top_5": [
+          {
+            "team": "LAD",
+            "rating": 1613.074,
+            "uncertainty_band_exploratory": 0.0286
+          },
+          {
+            "team": "LOS",
+            "rating": 1592.11,
+            "uncertainty_band_exploratory": 0.026
+          },
+          {
+            "team": "NYY",
+            "rating": 1559.219,
+            "uncertainty_band_exploratory": 0.0258
+          },
+          {
+            "team": "SFO",
+            "rating": 1558.649,
+            "uncertainty_band_exploratory": 0.0265
+          },
+          {
+            "team": "TOR",
+            "rating": 1556.387,
+            "uncertainty_band_exploratory": 0.0263
+          }
+        ],
+        "bottom_5": [
+          {
+            "team": "BAL",
+            "rating": 1398.301,
+            "uncertainty_band_exploratory": 0.0293
+          },
+          {
+            "team": "PIT",
+            "rating": 1411.649,
+            "uncertainty_band_exploratory": 0.0217
+          },
+          {
+            "team": "TEX",
+            "rating": 1420.502,
+            "uncertainty_band_exploratory": 0.0276
+          },
+          {
+            "team": "DET",
+            "rating": 1434.117,
+            "uncertainty_band_exploratory": 0.014
+          },
+          {
+            "team": "ARI",
+            "rating": 1438.679,
+            "uncertainty_band_exploratory": 0.0182
+          }
+        ]
+      },
+      "top_5": [
+        {
+          "team": "LAD",
+          "rating": 1613.074,
+          "uncertainty_band_exploratory": 0.0286
+        },
+        {
+          "team": "LOS",
+          "rating": 1592.11,
+          "uncertainty_band_exploratory": 0.026
+        },
+        {
+          "team": "NYY",
+          "rating": 1559.219,
+          "uncertainty_band_exploratory": 0.0258
+        },
+        {
+          "team": "SFO",
+          "rating": 1558.649,
+          "uncertainty_band_exploratory": 0.0265
+        },
+        {
+          "team": "TOR",
+          "rating": 1556.387,
+          "uncertainty_band_exploratory": 0.0263
+        }
+      ],
+      "bottom_5": [
+        {
+          "team": "BAL",
+          "rating": 1398.301,
+          "uncertainty_band_exploratory": 0.0293
+        },
+        {
+          "team": "PIT",
+          "rating": 1411.649,
+          "uncertainty_band_exploratory": 0.0217
+        },
+        {
+          "team": "TEX",
+          "rating": 1420.502,
+          "uncertainty_band_exploratory": 0.0276
+        },
+        {
+          "team": "DET",
+          "rating": 1434.117,
+          "uncertainty_band_exploratory": 0.014
+        },
+        {
+          "team": "ARI",
+          "rating": 1438.679,
+          "uncertainty_band_exploratory": 0.0182
+        }
+      ],
+      "eval_scores": {
+        "mean_absolute_tracking_error": 0.046311,
+        "probability_distribution": {
+          "p_model": {
+            "mean": 0.555837,
+            "p10": 0.444862,
+            "p90": 0.665295
+          },
+          "p_close": {
+            "mean": 0.533882,
+            "p10": 0.398773,
+            "p90": 0.655939
+          }
+        },
+        "outcome_join": "NONE",
+        "outcome_note": "Existing showcase joins are incompatible with this two-sided home-moneyline grain; tracking-to-close only."
+      },
+      "cross_book_context": "SKIPPED: no cheap schema-stable multi-book join was used.",
+      "verdict": "Descriptive close-tracking summary only; no outcome or edge inference is made.",
+      "status": "ok",
+      "source": "data/domains/mlb/odds.parquet",
+      "source_columns": [
+        "event_id",
+        "date",
+        "season",
+        "ml_open_home_am",
+        "ml_open_away_am",
+        "ml_close_home_am",
+        "ml_close_away_am",
+        "dec_open_home",
+        "dec_open_away",
+        "dec_close_home",
+        "dec_close_away",
+        "book",
+        "runline",
+        "runline_odds",
+        "openou",
+        "openou_odds",
+        "closeou",
+        "closeou_odds"
+      ],
+      "moneyline_sample": [
+        {
+          "home_ml": -117.0,
+          "away_ml": -103.0,
+          "home_ml_format": "american",
+          "away_ml_format": "american"
+        },
+        {
+          "home_ml": -186.0,
+          "away_ml": 166.0,
+          "home_ml_format": "american",
+          "away_ml_format": "american"
+        },
+        {
+          "home_ml": -125.0,
+          "away_ml": 105.0,
+          "home_ml_format": "american",
+          "away_ml_format": "american"
+        },
+        {
+          "home_ml": 123.0,
+          "away_ml": -143.0,
+          "home_ml_format": "american",
+          "away_ml_format": "american"
+        },
+        {
+          "home_ml": -142.0,
+          "away_ml": 122.0,
+          "home_ml_format": "american",
+          "away_ml_format": "american"
+        }
+      ]
+    },
+    "soccer": {
+      "status": "skipped",
+      "as_of": null,
+      "note": "Soccer source has over/under prices only; no two-sided match-result market is available.",
+      "source_columns": [
+        "event_id",
+        "div",
+        "date",
+        "ou_open_over",
+        "ou_open_under",
+        "ou_close_over",
+        "ou_close_under",
+        "book_open",
+        "book_close",
+        "p_over",
+        "p_under",
+        "pc_over",
+        "pc_under",
+        "avg_over",
+        "avg_under",
+        "avgc_over",
+        "avgc_under",
+        "b365_over",
+        "b365_under",
+        "b365c_over",
+        "b365c_under",
+        "max_over",
+        "max_under",
+        "maxc_over",
+        "maxc_under"
+      ],
+      "verdict": "SKIPPED: no unambiguous two-sided market mapping is available."
+    },
+    "tennis": {
+      "as_of": "2025-11-16",
+      "n_train": 16901,
+      "n_eval": 16812,
+      "chosen_k": 32,
+      "chosen_hfa": 0,
+      "training_rating_spread": 603.258,
+      "latest_ratings": {
+        "top_5": [
+          {
+            "team": "player_206173",
+            "rating": 2017.34,
+            "uncertainty_band_exploratory": 0.036
+          },
+          {
+            "team": "player_207989",
+            "rating": 1970.748,
+            "uncertainty_band_exploratory": 0.0506
+          },
+          {
+            "team": "player_104925",
+            "rating": 1892.571,
+            "uncertainty_band_exploratory": 0.0515
+          },
+          {
+            "team": "player_216347",
+            "rating": 1883.092,
+            "uncertainty_band_exploratory": 0.0333
+          },
+          {
+            "team": "player_103819",
+            "rating": 1857.399,
+            "uncertainty_band_exploratory": 0.0523
+          }
+        ],
+        "bottom_5": [
+          {
+            "team": "player_104291",
+            "rating": 1370.11,
+            "uncertainty_band_exploratory": 0.0399
+          },
+          {
+            "team": "player_201516",
+            "rating": 1378.401,
+            "uncertainty_band_exploratory": 0.0697
+          },
+          {
+            "team": "player_104890",
+            "rating": 1379.321,
+            "uncertainty_band_exploratory": 0.0
+          },
+          {
+            "team": "player_105952",
+            "rating": 1383.144,
+            "uncertainty_band_exploratory": 0.0774
+          },
+          {
+            "team": "player_103607",
+            "rating": 1389.309,
+            "uncertainty_band_exploratory": 0.0
+          }
+        ]
+      },
+      "top_5": [
+        {
+          "team": "player_206173",
+          "rating": 2017.34,
+          "uncertainty_band_exploratory": 0.036
+        },
+        {
+          "team": "player_207989",
+          "rating": 1970.748,
+          "uncertainty_band_exploratory": 0.0506
+        },
+        {
+          "team": "player_104925",
+          "rating": 1892.571,
+          "uncertainty_band_exploratory": 0.0515
+        },
+        {
+          "team": "player_216347",
+          "rating": 1883.092,
+          "uncertainty_band_exploratory": 0.0333
+        },
+        {
+          "team": "player_103819",
+          "rating": 1857.399,
+          "uncertainty_band_exploratory": 0.0523
+        }
+      ],
+      "bottom_5": [
+        {
+          "team": "player_104291",
+          "rating": 1370.11,
+          "uncertainty_band_exploratory": 0.0399
+        },
+        {
+          "team": "player_201516",
+          "rating": 1378.401,
+          "uncertainty_band_exploratory": 0.0697
+        },
+        {
+          "team": "player_104890",
+          "rating": 1379.321,
+          "uncertainty_band_exploratory": 0.0
+        },
+        {
+          "team": "player_105952",
+          "rating": 1383.144,
+          "uncertainty_band_exploratory": 0.0774
+        },
+        {
+          "team": "player_103607",
+          "rating": 1389.309,
+          "uncertainty_band_exploratory": 0.0
+        }
+      ],
+      "eval_scores": {
+        "mean_absolute_tracking_error": 0.093573,
+        "probability_distribution": {
+          "p_model": {
+            "mean": 0.508869,
+            "p10": 0.280209,
+            "p90": 0.738146
+          },
+          "p_close": {
+            "mean": 0.492597,
+            "p10": 0.202322,
+            "p90": 0.791878
+          }
+        },
+        "outcome_join": "NONE",
+        "outcome_note": "Existing showcase joins are incompatible with this two-sided home-moneyline grain; tracking-to-close only."
+      },
+      "cross_book_context": "SKIPPED: no cheap schema-stable multi-book join was used.",
+      "verdict": "Descriptive close-tracking summary only; no outcome or edge inference is made.",
+      "status": "ok",
+      "source": "data/domains/tennis/odds.parquet",
+      "source_columns": [
+        "event_id",
+        "date_td",
+        "tour",
+        "tournament_td",
+        "round_td",
+        "comment",
+        "b365w",
+        "b365l",
+        "psw",
+        "psl",
+        "maxw",
+        "maxl",
+        "avgw",
+        "avgl",
+        "b365_p1",
+        "b365_p2",
+        "ps_p1",
+        "ps_p2"
+      ],
+      "moneyline_sample": [
+        {
+          "home_ml": 1.5299999713897705,
+          "away_ml": 2.6700000762939453,
+          "home_ml_format": "decimal",
+          "away_ml_format": "decimal"
+        },
+        {
+          "home_ml": 1.2300000190734863,
+          "away_ml": 4.670000076293945,
+          "home_ml_format": "decimal",
+          "away_ml_format": "decimal"
+        },
+        {
+          "home_ml": 1.340000033378601,
+          "away_ml": 3.5,
+          "home_ml_format": "decimal",
+          "away_ml_format": "decimal"
+        },
+        {
+          "home_ml": 2.369999885559082,
+          "away_ml": 1.649999976158142,
+          "home_ml_format": "decimal",
+          "away_ml_format": "decimal"
+        },
+        {
+          "home_ml": 1.5299999713897705,
+          "away_ml": 2.6500000953674316,
+          "home_ml_format": "decimal",
+          "away_ml_format": "decimal"
+        }
+      ]
+    }
+  },
+  "generated_at": "2026-09-01T21:38:36.020876+00:00"
+}
