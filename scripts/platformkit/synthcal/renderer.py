@@ -130,3 +130,20 @@ def render_soccer_samples(output_dir, count=12, seed=20260901):
         if not _cv2.imwrite(str(path), sample.image):
             raise RuntimeError("Could not write %s" % path)
     return samples
+
+
+def render_basketball_samples(output_dir, count=12, seed=20260901):
+    """Write deterministic CPU-only basketball samples as PNG evidence frames."""
+    from pathlib import Path as _Path
+    import cv2 as _cv2
+    from scripts.platformkit.synthcal.basketball_sampler import sample_basketball_frame
+    if count <= 0:
+        raise ValueError("count must be positive")
+    output = _Path(output_dir)
+    output.mkdir(parents=True, exist_ok=True)
+    samples = [sample_basketball_frame(seed + index) for index in range(count)]
+    for index, sample in enumerate(samples):
+        path = output / ("basketball_synthcal_%02d.png" % index)
+        if not _cv2.imwrite(str(path), sample.image):
+            raise RuntimeError("Could not write %s" % path)
+    return samples
