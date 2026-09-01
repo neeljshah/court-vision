@@ -18,6 +18,7 @@ import numpy as np
 import pandas as pd
 
 from domains.baseball.tracking.stability import ScaleStabilizer, stabilize_rows
+from domains.baseball.tracking.command_meter import MotionStableDetector, command_series, glove_target
 
 
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
@@ -205,9 +206,15 @@ class BaseballAdapter:
         return []
 
     def process_video(
-        self, path: Union[str, Path], max_frames: Optional[int] = None, stride: int = 1
-    ) -> pd.DataFrame:
-        """Process a headless video, emitting only calibrated pitch-view player rows."""
+        self, path: Union[str, Path], max_frames: Optional[int] = None, stride: int = 1,
+        compute_command: bool = False,
+    ) -> Union[pd.DataFrame, tuple[pd.DataFrame, dict[str, object]]]:
+        """Process calibrated pitch views; opt-in command metadata never alters rows.
+
+        When ``compute_command`` is true, return ``(rows, metadata)``.  The
+        command meter is deliberately fail-quiet until a validated pitch
+        crossing detector is available, so its series may be empty.
+        """
         if stride < 1:
             raise ValueError("stride must be at least 1")
         capture = cv2.VideoCapture(str(path))
@@ -215,10 +222,26 @@ class BaseballAdapter:
             raise FileNotFoundError("Could not open video: %s" % path)
         rows: list[dict[str, object]] = []
         calibrations: list[dict[str, object]] = []
+        command_events: list[dict[str, object]] = []
+        pitch_frames: list[np.ndarray] = []
+        pitch_scales: list[float] = []
         stabilizer = ScaleStabilizer()
         segment_id = 0
         in_pitch_view = False
         source_frame = processed = 0
+
+        def close_pitch_segment() -> None:
+            if not compute_command or not pitch_frames:
+                return
+            target = glove_target(pitch_frames, MotionStableDetector())
+            command_events.append({
+                "inning": None,
+                "target_px": None if target is None else target[:2],
+                # Ball tracking is intentionally not fabricated from plate geometry.
+                "crossing_px": None,
+                "scale_px_per_ft": float(np.median(pitch_scales)) if pitch_scales else None,
+            })
+
         try:
             while max_frames is None or processed < max_frames:
                 ok, frame = capture.read()
@@ -237,15 +260,24 @@ class BaseballAdapter:
                             "pixels_per_foot": self._geometry.pixels_per_foot,
                             "plate_centerline": float(self._geometry.plate[0]),
                         })
+                        if compute_command:
+                            pitch_frames.append(frame.copy())
+                            pitch_scales.append(self._geometry.pixels_per_foot)
                         for track_id, point in self.detect_players(frame, self._geometry):
                             rows.append({"frame": source_frame, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1])})
                         self.detect_ball_stub(frame, self._geometry)
                     else:
+                        if in_pitch_view:
+                            close_pitch_segment()
+                            pitch_frames.clear()
+                            pitch_scales.clear()
                         in_pitch_view = False
                     processed += 1
                 source_frame += 1
         finally:
             capture.release()
+        if in_pitch_view:
+            close_pitch_segment()
         stable_calibrations = stabilize_rows(calibrations, stabilizer)
         calibration_by_frame = {row["frame"]: row for row in stable_calibrations}
         raw_calibration_by_frame = {row["frame"]: row for row in calibrations}
@@ -261,7 +293,18 @@ class BaseballAdapter:
                  - float(calibration["plate_centerline"])) / scale
             stabilized_rows.append({**row, "x": x, "y": float(row["y"]) * raw_scale / scale})
         self.last_output = pd.DataFrame(stabilized_rows, columns=SCHEMA)
-        return self.last_output
+        if not compute_command:
+            return self.last_output
+        metadata: dict[str, object] = {
+            "frames_processed": processed,
+            "pitch_view_frames": len(calibrations),
+            "pitch_segments": len(command_events),
+            "calibrations": stable_calibrations,
+            "raw_calibrations": calibrations,
+            "command_events": command_events,
+            "command_series": command_series(command_events),
+        }
+        return self.last_output, metadata
 
     def write_csv(self, path: Union[str, Path], rows: Optional[pd.DataFrame] = None) -> None:
         """Write the most recent output, or supplied rows, in normalized schema."""

@@ -121,3 +121,34 @@ def test_process_video_stabilizes_jittered_pitch_view_projection(monkeypatch) ->
     pitcher = rows.loc[rows["track_id"] == 1, "y"].to_numpy()
     assert len(pitcher) >= 10
     assert np.percentile(np.abs(np.diff(pitcher)), 95) < 10.0
+
+
+def test_process_video_command_flag_returns_metadata_without_row_schema_change(monkeypatch) -> None:
+    frames = iter([np.zeros((2, 2, 3), dtype=np.uint8) for _ in range(3)])
+
+    class FakeCapture:
+        def isOpened(self) -> bool:
+            return True
+
+        def read(self):
+            try:
+                return True, next(frames)
+            except StopIteration:
+                return False, None
+
+        def release(self) -> None:
+            pass
+
+    geometry = PitchGeometry(MOUND.copy(), PLATE.copy(), 4.0)
+    monkeypatch.setattr(cv2, "VideoCapture", lambda path: FakeCapture())
+    adapter = BaseballAdapter(detector=lambda frame: [])
+    monkeypatch.setattr(adapter, "detect_pitch_geometry", lambda frame: geometry)
+
+    rows, metadata = adapter.process_video("synthetic.mp4", compute_command=True)
+
+    assert list(rows.columns) == ["frame", "track_id", "cls", "x", "y"]
+    assert metadata["pitch_view_frames"] == 3
+    assert metadata["pitch_segments"] == 1
+    assert list(metadata["command_series"].columns) == [
+        "pitch", "inning", "miss_ft", "horizontal_ft", "vertical_ft", "inning_median_ft",
+    ]
