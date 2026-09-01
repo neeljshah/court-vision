@@ -1,0 +1,163 @@
+"""Track everything the footage bridge stages on the pod, many games at once.
+
+Why this exists: the pod has 256 cores, 1TB of RAM and a 3090, but the bridge
+ran tracking INLINE inside each download worker (download -> scp -> track ->
+next). Concurrency was therefore capped at the lane count, and because all
+lanes start by downloading it sat at ONE tracking process with the GPU at 11%.
+
+A single adapter run is video-decode bound: about one core and ~350 MiB of
+VRAM. Nothing about this box justifies running one at a time. This daemon is
+the consumer half of the split -- workers now only download and upload.
+
+The upload race is closed by naming, not by guessing: the bridge scp's to
+<sport>__<game_id>.mp4.part and renames atomically, so any file this daemon
+sees with a plain .mp4 suffix is complete. Never add size-stability polling
+here; that is the heuristic that once handed a half-transferred video to the
+tracker.
+
+Run on the pod:
+    python -m scripts.platformkit.track_daemon --workers 12 --forever
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+STAGE = Path("data/footage_bridge")
+LEDGER = Path("data/tracking/track_daemon_ledger.jsonl")
+TRACKING = Path("data/tracking")
+# Matches footage_bridge: a real tracked game has thousands of rows, and a
+# non-empty CSV is not evidence of anything.
+MIN_TRACKING_ROWS = 500
+SPORT_ADAPTER = {"tennis": "tennis", "soccer": "soccer", "npb": "baseball",
+                 "kbo": "baseball", "mlb": "baseball", "baseball": "baseball"}
+# These go through run_clip.py, which the adapter registry does not cover.
+CLIP_SPORTS = {"wnba", "basketball", "ncaa_basketball", "nba"}
+
+
+def parse_name(path: Path) -> tuple:
+    """Split <sport>__<game_id>.mp4. Returns (sport, game_id) or (None, None)."""
+    stem = path.stem
+    if "__" not in stem:
+        return None, None
+    sport, _, game_id = stem.partition("__")
+    if not sport or not game_id:
+        return None, None
+    return sport, game_id
+
+
+def tracking_rows(game_id: str) -> int:
+    """Row count of a tracked game, excluding the header. 0 when absent."""
+    csv_path = TRACKING / game_id / "tracking_data.csv"
+    try:
+        with csv_path.open("r", encoding="utf-8", errors="replace") as handle:
+            return max(0, sum(1 for _ in handle) - 1)
+    except OSError:
+        return 0
+
+
+def build_command(sport: str, video: Path, game_id: str) -> list:
+    """The tracking command for a sport. Mirrors footage_bridge's routing."""
+    if sport in CLIP_SPORTS:
+        return [sys.executable, "scripts/run_clip.py", "--video", str(video),
+                "--game-id", game_id, "--no-show", "--frames", "18000"]
+    adapter = SPORT_ADAPTER.get(sport, sport)
+    return [sys.executable, "-m", "scripts.platformkit.adapter_run",
+            adapter, str(video), game_id]
+
+
+def claimable(active: dict) -> list:
+    """Complete staged videos not already being tracked.
+
+    `.part` files are in-flight uploads and are invisible to glob('*.mp4'),
+    which is the whole point of the atomic-rename protocol.
+    """
+    ready = []
+    for path in sorted(STAGE.glob("*.mp4")):
+        if path.name in active:
+            continue
+        sport, game_id = parse_name(path)
+        if sport is None:
+            continue
+        ready.append((path, sport, game_id))
+    return ready
+
+
+def _record(entry: dict) -> None:
+    LEDGER.parent.mkdir(parents=True, exist_ok=True)
+    with LEDGER.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(entry) + "\n")
+
+
+def _finish(name: str, job: dict) -> None:
+    """Grade one finished job, record it, and always reclaim the disk."""
+    rows = tracking_rows(job["game_id"])
+    status = "tracked" if rows >= MIN_TRACKING_ROWS else "thin"
+    entry = {"game_id": job["game_id"], "sport": job["sport"],
+             "status": status, "rows": rows,
+             "seconds": int(time.time() - job["started"])}
+    if status == "thin":
+        # Without the tail, every failure looks identical in the ledger.
+        try:
+            output = job["log"].read_text(encoding="utf-8", errors="replace")
+            entry["tail"] = output[-300:].replace("\n", " ")
+        except OSError:
+            entry["tail"] = "no log"
+    _record(entry)
+    print("%s %s %s rows=%d" % (job["game_id"], job["sport"], status, rows),
+          flush=True)
+    for leftover in (job["video"], job["log"]):
+        try:
+            leftover.unlink(missing_ok=True)
+        except OSError as exc:
+            print("cleanup failed %s: %s" % (leftover, exc), flush=True)
+
+
+def tick(active: dict, workers: int) -> None:
+    """Reap finished jobs, then fill free slots. One pass, never blocking."""
+    for name in [n for n, job in active.items() if job["proc"].poll() is not None]:
+        _finish(name, active.pop(name))
+    for path, sport, game_id in claimable(active):
+        if len(active) >= workers:
+            break
+        if tracking_rows(game_id) >= MIN_TRACKING_ROWS:
+            print("%s already tracked, dropping stage copy" % game_id, flush=True)
+            path.unlink(missing_ok=True)
+            continue
+        log_path = path.with_suffix(".log")
+        try:
+            handle = log_path.open("w", encoding="utf-8")
+            proc = subprocess.Popen(build_command(sport, path, game_id),
+                                    stdout=handle, stderr=subprocess.STDOUT)
+        except OSError as exc:
+            print("launch failed %s: %s" % (game_id, exc), flush=True)
+            continue
+        active[path.name] = {"proc": proc, "video": path, "log": log_path,
+                             "sport": sport, "game_id": game_id,
+                             "started": time.time()}
+        print("tracking %s (%s), %d active" % (game_id, sport, len(active)),
+              flush=True)
+
+
+def main(argv: list) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--workers", type=int, default=12)
+    parser.add_argument("--forever", action="store_true")
+    parser.add_argument("--interval", type=int, default=20)
+    args = parser.parse_args(argv[1:])
+
+    STAGE.mkdir(parents=True, exist_ok=True)
+    active: dict = {}
+    while True:
+        tick(active, args.workers)
+        if not args.forever and not active:
+            return 0
+        time.sleep(args.interval)
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))

@@ -59,8 +59,12 @@ def untracked_count(queue_path: Path, known: dict) -> int:
 def spawn(lane: str, queues: list, per_lane: int) -> subprocess.Popen:
     """Start one bridge worker for a lane, logging to its own file."""
     LOG_DIR.mkdir(parents=True, exist_ok=True)
+    # --decouple: the worker uploads and moves on; scripts.platformkit.track_daemon
+    # tracks on the pod. Tracking inline here capped pod concurrency at the lane
+    # count and in practice held it at one process on a 256-core box.
     command = [sys.executable, "-m", "scripts.platformkit.footage_bridge",
-               "--limit", str(per_lane), "--forever", "--sleep", "45"]
+               "--limit", str(per_lane), "--forever", "--sleep", "45",
+               "--decouple"]
     for queue in queues:
         command += ["--queue", str(DATA_DIR / queue)]
     handle = (LOG_DIR / ("bridge_%s.log" % lane)).open("a", encoding="utf-8")

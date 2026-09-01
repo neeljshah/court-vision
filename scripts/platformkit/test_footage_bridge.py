@@ -280,3 +280,68 @@ def test_keeps_exactly_one_reference_clip_per_sport(monkeypatch, tmp_path):
     # Only one per sport: the second is not kept, so the caller deletes it.
     assert footage_bridge.keep_reference(second, "tennis") is False
     assert second.is_file()
+
+
+def test_staged_upload_renames_atomically_so_the_daemon_sees_no_partial(
+        monkeypatch, tmp_path):
+    """scp writes .part; only the rename publishes it. A direct scp lets the
+    daemon pick up a half-transferred video -- the race that once fed the
+    tracker a truncated file."""
+    calls = []
+    monkeypatch.setattr(footage_bridge.subprocess, "run",
+                        lambda cmd, **k: calls.append(cmd)
+                        or subprocess.CompletedProcess(cmd, 0, "", ""))
+    monkeypatch.setattr(footage_bridge, "_ssh",
+                        lambda cmd, **k: calls.append(cmd)
+                        or subprocess.CompletedProcess(cmd, 0, "", ""))
+
+    status = footage_bridge.push_staged(
+        tmp_path / "t.mp4", {"game_id": "t9", "sport": "tennis"})
+
+    scp = [c for c in calls if isinstance(c, list) and c[0] == "scp"][0]
+    assert scp[-1].endswith("/tennis__t9.mp4.part")
+    assert any(isinstance(c, str) and c.startswith("mv ") for c in calls)
+    assert status == "staged"
+
+
+def test_failed_rename_does_not_report_success_or_leave_a_part_file(
+        monkeypatch, tmp_path):
+    removed = []
+
+    def fake_ssh(cmd, **kwargs):
+        if cmd.startswith("mv "):
+            return subprocess.CompletedProcess(cmd, 1, "", "no space left")
+        removed.append(cmd)
+        return subprocess.CompletedProcess(cmd, 0, "", "")
+
+    monkeypatch.setattr(footage_bridge.subprocess, "run",
+                        lambda cmd, **k: subprocess.CompletedProcess(cmd, 0, "", ""))
+    monkeypatch.setattr(footage_bridge, "_ssh", fake_ssh)
+
+    try:
+        footage_bridge.push_staged(tmp_path / "t.mp4",
+                                   {"game_id": "t9", "sport": "tennis"})
+        raise AssertionError("a failed rename must not report staged")
+    except RuntimeError as exc:
+        assert "no space left" in str(exc)
+    assert any(c.startswith("rm -f") and c.endswith(".part") for c in removed)
+
+
+def test_decoupled_queue_keeps_a_reference_clip(monkeypatch, tmp_path):
+    """Reference retention keyed on 'tracked'; decoupled runs return 'staged',
+    so every reference clip would have been deleted instead of kept."""
+    queue = tmp_path / "footage_queue_tennis.json"
+    queue.write_text(json.dumps([{"game_id": "t1", "sport": "tennis",
+                                  "url": "u"}]), encoding="utf-8")
+    kept = []
+    monkeypatch.setattr(footage_bridge, "tracked_row_counts", lambda: {})
+    monkeypatch.setattr(footage_bridge, "download_local",
+                        lambda item: tmp_path / "t1.mp4")
+    monkeypatch.setattr(footage_bridge, "push_staged", lambda l, i: "staged")
+    monkeypatch.setattr(footage_bridge, "keep_reference",
+                        lambda l, s: kept.append(s) or True)
+    monkeypatch.setattr(footage_bridge, "_record", lambda e: None)
+
+    footage_bridge.run_queue(queue, limit=1, decouple=True)
+
+    assert kept == ["tennis"]

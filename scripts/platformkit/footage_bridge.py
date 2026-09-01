@@ -215,6 +215,30 @@ def push_and_track(local: Path, item: dict) -> str:
     return "thin rows=%d %s" % (rows, tail)
 
 
+def push_staged(local: Path, item: dict) -> str:
+    """Upload only; the pod-side track_daemon does the tracking.
+
+    Tracking used to run inline here, which capped pod concurrency at the lane
+    count and in practice held it at one process on a 256-core box. The worker
+    now returns as soon as the video is on the pod and goes back to downloading.
+
+    The file is scp'd to <name>.mp4.part and renamed atomically, so the daemon
+    never sees a partial upload. Do not "simplify" this to a direct scp.
+    """
+    game_id, sport = item["game_id"], item["sport"]
+    remote = "%s/%s__%s%s" % (REMOTE_STAGE, sport, game_id, local.suffix)
+    _ssh("mkdir -p %s" % REMOTE_STAGE, timeout=120)
+    subprocess.run(["scp", "-o", "StrictHostKeyChecking=no", "-P", "40048",
+                    str(local), "%s:%s.part" % (POD_HOST, remote)],
+                   check=True, timeout=7200, capture_output=True, text=True)
+    moved = _ssh("mv %s.part %s" % (remote, remote), timeout=300)
+    if moved.returncode != 0:
+        _ssh("rm -f %s.part" % remote, timeout=300)
+        raise RuntimeError("stage rename failed: %s"
+                           % (moved.stderr or "")[-160:])
+    return "staged"
+
+
 def grade(game_id: str, sport: str) -> str:
     """Score a tracked game with the harness and write its report on the pod.
 
@@ -264,8 +288,12 @@ def _record(entry: dict) -> None:
         handle.write(json.dumps(entry) + "\n")
 
 
-def run_queue(queue_path: Path, limit: int) -> int:
-    """Process up to `limit` untracked items. Returns how many were newly tracked."""
+def run_queue(queue_path: Path, limit: int, decouple: bool = False) -> int:
+    """Process up to `limit` untracked items. Returns how many advanced.
+
+    With decouple=True the worker only uploads and the pod-side track_daemon
+    tracks; that is the mode that actually uses the pod.
+    """
     try:
         items = json.loads(queue_path.read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
@@ -282,19 +310,20 @@ def run_queue(queue_path: Path, limit: int) -> int:
         local = None
         try:
             local = download_local(item)
-            status = push_and_track(local, item)
+            push = push_staged if decouple else push_and_track
+            status = push(local, item)
         except Exception as exc:  # one bad item must never stop the run
             status = "failed: %s" % str(exc)[:200]
         finally:
             if local is not None:
-                if not (status.startswith("tracked")
+                if not (status.startswith(("tracked", "staged"))
                         and keep_reference(local, item.get("sport", "unknown"))):
                     for leftover in LOCAL_STAGE.glob(local.stem + "*"):
                         leftover.unlink(missing_ok=True)
         print("%s %s %s" % (game_id, item.get("sport"), status), flush=True)
         _record({"game_id": game_id, "sport": item.get("sport"), "status": status})
         done += 1
-        tracked += int(status.startswith("tracked"))
+        tracked += int(status.startswith(("tracked", "staged")))
     return tracked
 
 
@@ -307,6 +336,8 @@ def main() -> int:
     parser.add_argument("--forever", action="store_true",
                         help="keep cycling; the pod must never idle")
     parser.add_argument("--sleep", type=int, default=120, help="pause between passes")
+    parser.add_argument("--decouple", action="store_true",
+                        help="upload only; track_daemon tracks on the pod")
     args = parser.parse_args()
     queues = list(args.queue)
     if args.all or not queues:
@@ -317,7 +348,7 @@ def main() -> int:
     while True:
         for queue_path in queues:
             try:
-                run_queue(queue_path, args.limit)
+                run_queue(queue_path, args.limit, args.decouple)
             except Exception as exc:  # a bad queue must never end the night
                 print("queue pass failed %s: %s" % (queue_path, exc), flush=True)
         if not args.forever:
