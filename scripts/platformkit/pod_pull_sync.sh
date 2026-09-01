@@ -39,7 +39,15 @@ pull_once() {
     if ! scp -P $PORT -q -r "$POD:$SRC/data/tracking_reports/." "$DST/data/tracking_reports/"; then
         echo "pod_pull_sync: WARN tracking_reports pull failed" >&2
     fi
-    scp -P $PORT -q "$POD:$SRC/data/tracking/footage_bridge_ledger.jsonl" "$DST/data/tracking/" 2>/dev/null
+    # track_daemon_ledger carries the HARNESS VERDICT per game (passed +
+    # failures), not just row counts -- it is the only record of whether a
+    # tracked game is actually usable, and night_report's headline reads it.
+    if ! scp -P $PORT -q "$POD:$SRC/data/tracking/track_daemon_ledger.jsonl" "$DST/data/tracking/"; then
+        echo "pod_pull_sync: WARN track_daemon_ledger pull failed" >&2
+    fi
+    # NOT pulled: footage_bridge_ledger.jsonl. Downloads run on THIS box now, so
+    # the local copy is the producer (1200+ rows) and the pod has none. Copying
+    # the pod's version back would overwrite the real history with nothing.
     echo "pod_pull_sync: pass complete $(date -u +%H:%M:%SZ)"
 }
 
