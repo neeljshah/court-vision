@@ -174,11 +174,18 @@ def _finish(name: str, job: dict, timed_out: bool = False) -> None:
     status = "timeout" if timed_out else (
         "tracked" if rows >= MIN_TRACKING_ROWS else "thin")
     graded = verdict(job["sport"], job["game_id"]) if rows else {}
+    # finished_at, because without it the ledger cannot be read. Diagnosing this
+    # file meant guessing whether a "timeout at 2707s" predated the current
+    # 3600s budget, and a stale entry is indistinguishable from a fresh one.
+    # An append-only log whose rows carry no time is a log you have to date by
+    # inference.
+    finished = time.time()
     entry = {"game_id": job["game_id"], "sport": job["sport"],
              "status": status, "rows": rows,
              "passed": graded.get("passed"),
              "failures": (graded.get("failures") or [])[:4],
-             "seconds": int(time.time() - job["started"])}
+             "seconds": int(finished - job["started"]),
+             "finished_at": int(finished)}
     if status == "thin":
         # Without the tail, every failure looks identical in the ledger.
         try:

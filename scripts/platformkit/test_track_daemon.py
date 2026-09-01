@@ -344,3 +344,24 @@ def test_reaping_never_raises_when_ps_is_unavailable(monkeypatch):
     monkeypatch.setattr(track_daemon.subprocess, "run", boom)
 
     assert track_daemon.reap_orphans() == 0
+
+
+def test_every_ledger_entry_is_dated(tmp_path, monkeypatch):
+    """An undated append-only log has to be dated by inference, and inference
+    is wrong: a "timeout at 2707s" read as current was actually written under
+    an older, shorter budget."""
+    stage = _stage(tmp_path, monkeypatch)
+    monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
+    video = stage / "tennis__t1.mp4"
+    video.write_bytes(b"x")
+    log = stage / "tennis__t1.log"
+    log.write_text("ok", encoding="utf-8")
+
+    active = {"tennis__t1.mp4": {"proc": FakeProc(), "video": video, "log": log,
+                                 "sport": "tennis", "game_id": "t1",
+                                 "started": time.time() - 5}}
+    track_daemon.tick(active, workers=4)
+
+    entry = json.loads(track_daemon.LEDGER.read_text(encoding="utf-8").strip())
+    assert entry["finished_at"] >= entry["seconds"]
+    assert abs(entry["finished_at"] - time.time()) < 60
