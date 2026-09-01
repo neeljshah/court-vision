@@ -88,7 +88,7 @@ def _feature_matrix(ticks: List[Dict[str, Any]], features: pd.DataFrame) -> Tupl
     base = pd.DataFrame(ticks)
     base["_index"] = np.arange(len(base))
     joined = base.merge(features[["game", "timestamp"] + state_columns], how="left",
-                        on=["game", "timestamp"], sort=False, validate="one_to_one")
+                        on=["game", "timestamp"], sort=False, validate="many_to_one")  # ticks repeat within a second
     joined = joined.sort_values("_index").reset_index(drop=True)
     for column in state_columns + ["model_prob"]:
         joined[column] = pd.to_numeric(joined[column], errors="coerce")
