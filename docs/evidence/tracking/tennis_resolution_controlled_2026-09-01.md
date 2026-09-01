@@ -122,3 +122,35 @@ correspondences instead of four point anchors: better lines feeding a fit that
 never touches segment endpoints. Neither has yet been measured against the
 held-out landmark error of 5.280 ft median / 21.847 ft p95 that is the current
 baseline; that measurement is the next step, not a claim made here.
+
+---
+
+# The 5.28 ft is PURE HOMOGRAPHY error -- pose cannot fix it
+
+Worth stating explicitly because it reorders the work. The held-out measurement
+in `scripts/platformkit/tennis_resolution_anchor_ab.py` does this:
+
+    homography = findHomography(4 court anchors -> their court coordinates)
+    predicted  = project(opposite_service_t, homography)
+    error      = || predicted - (60.0, 18.0) ||
+
+It projects a COURT LANDMARK and compares it to that landmark's surveyed
+coordinate. No player, no bounding box, no ground point enters it anywhere.
+
+So the 5.28 ft median / 21.85 ft p95 is the error of the HOMOGRAPHY ITSELF.
+
+Consequence for prioritisation: a better ground point -- an ankle keypoint from
+pose estimation instead of a bounding-box bottom-centre -- addresses a DIFFERENT
+error that stacks ON TOP of this one. It cannot reduce 5.28 ft, and adopting
+pose to attack that number would be attacking the wrong term. The ground-point
+error is plausibly worth inches to a foot; it only becomes material once the
+homography is sub-foot.
+
+Pose remains genuinely interesting for other reasons -- a partly occluded player
+still exposes some keypoints, which is exactly the occlusion problem that breaks
+basketball's closed-contour paint extraction, and keypoints are a richer re-id
+signal than a box. Those are separate justifications and should be measured on
+their own terms, not folded into the calibration number.
+
+ORDER OF WORK, from this: fix the homography first (line detection and
+line-correspondence fitting), then revisit the ground point.
