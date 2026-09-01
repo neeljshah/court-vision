@@ -19,3 +19,13 @@ def test_image_space_sports_are_known_adapters():
 def test_adapter_run_passes_the_flag():
     source = open("scripts/platformkit/adapter_run.py", encoding="utf-8").read()
     assert 'options["image_space"] = True' in source
+
+
+def test_adapter_run_has_a_bounded_frame_override_for_real_clip_measurements():
+    source = open("scripts/platformkit/adapter_run.py", encoding="utf-8").read()
+    assert 'parser.add_argument("--max-frames", type=int, default=30000)' in source
+
+
+def test_adapter_run_maps_probed_dimensions_to_harness_resolution_metadata():
+    source = open("scripts/platformkit/adapter_run.py", encoding="utf-8").read()
+    assert 'metadata["resolution"] = "{}x{}".format(width, height)' in source

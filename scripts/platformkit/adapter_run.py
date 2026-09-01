@@ -22,6 +22,8 @@ from __future__ import annotations
 import os
 import sys
 import traceback
+import json
+import argparse
 
 ADAPTERS = {
     "tennis": ("domains.tennis.tracking.adapter", "TennisAdapter"),
@@ -44,11 +46,25 @@ PLAYER_ONLY = {"baseball", "soccer"}
 IMAGE_SPACE = {"baseball", "football", "soccer"}
 
 
+def _source_metadata(video: str) -> dict:
+    """Read source metadata before adapters consume the clip."""
+    from scripts.platformkit.tracking_media_inventory import probe_media
+    from pathlib import Path
+    metadata = probe_media(Path(video))
+    width, height = metadata.get("width"), metadata.get("height")
+    if width is not None and height is not None:
+        metadata["resolution"] = "{}x{}".format(width, height)
+    return metadata
+
+
 def main(argv: list) -> int:
-    if len(argv) < 4:
-        print("usage: adapter_run.py <sport> <video> <game_id>")
-        return 2
-    sport, video, game_id = argv[1], argv[2], argv[3]
+    parser = argparse.ArgumentParser(description="Track one video with a sport adapter.")
+    parser.add_argument("sport")
+    parser.add_argument("video")
+    parser.add_argument("game_id")
+    parser.add_argument("--max-frames", type=int, default=30000)
+    args = parser.parse_args(argv[1:])
+    sport, video, game_id = args.sport, args.video, args.game_id
     if sport not in ADAPTERS:
         print("unknown sport: %s (known: %s)" % (sport, ", ".join(sorted(ADAPTERS))))
         return 2
@@ -62,7 +78,11 @@ def main(argv: list) -> int:
         module_name, class_name = ADAPTERS[sport]
         module = importlib.import_module(module_name)
         adapter = getattr(module, class_name)()
-        options = {"max_frames": 30000, "stride": 3}
+        from scripts.platformkit.tracking_timebase import sampling_plan, timebase_metrics
+
+        metadata = _source_metadata(video)
+        plan = sampling_plan(metadata.get("frame_rate"))
+        options = {"max_frames": args.max_frames, "stride": plan.stride}
         if sport in PLAYER_ONLY:
             options["player_only"] = True
         if sport in IMAGE_SPACE:
@@ -76,11 +96,14 @@ def main(argv: list) -> int:
 
         from scripts.platformkit.tracking_harness import evaluate
 
-        report = evaluate(pd.read_csv(output_path), sport)
+        report = evaluate(pd.read_csv(output_path), sport, source_metadata=metadata)
         report_dir = os.path.join("data", "tracking_reports", sport)
         os.makedirs(report_dir, exist_ok=True)
         with open(os.path.join(report_dir, "%s.json" % game_id), "w") as handle:
-            handle.write(report.to_json())
+            payload = json.loads(report.to_json())
+            payload["sampling"] = plan.to_dict()
+            payload["timebase_metrics"] = timebase_metrics(payload, plan)
+            handle.write(json.dumps(payload, indent=2) + "\n")
         print("%s rows=%d passed=%s failures=%s"
               % (game_id, len(frame), report.passed, report.failures))
         return 0
