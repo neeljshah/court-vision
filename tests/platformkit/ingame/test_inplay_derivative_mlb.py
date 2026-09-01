@@ -324,3 +324,39 @@ def test_settle_open_bets_no_final_match_is_pending(tmp_path):
                                       finals_fn=lambda s: [])
     assert summary["n_settled"] == 0
     assert summary["n_pending"] == 2
+
+
+def test_settle_open_bets_default_ledger_blocked_without_writer_identity(monkeypatch):
+    """THIRD unguarded writer (settle_open_bets on the SHARED default ledger):
+    a non-sanctioned host must be refused before touching clv_ledger.DEFAULT_LEDGER,
+    and never even reads finals_fn. An injected ledger_path is never gated
+    (covered by test_settle_open_bets_end_to_end above, which always passes one)."""
+    monkeypatch.setattr(settle._writer, "default_ledger_write_allowed", lambda: False)
+
+    def _boom(*a, **k):
+        raise AssertionError("finals fetched despite non-writer guard")
+
+    summary = settle.settle_open_bets(finals_fn=_boom)
+    assert summary == {"n_settled": 0, "n_pending": 0, "reason": "not_ledger_writer"}
+
+
+def test_settle_open_bets_default_ledger_allowed_for_sanctioned_writer(tmp_path, monkeypatch):
+    """Owner (sanctioned writer) proceeds: patch DEFAULT_LEDGER to a tmp file so this
+    stays isolated from the real shared ledger while still exercising the ledger_path=
+    None branch that the guard sits in front of."""
+    from scripts.platformkit import clv_ledger as clv_mod
+    ledger_path = tmp_path / "ledger.jsonl"
+    grade_dir = tmp_path / "grade"
+    deriv.poll_once(fetch_fn=_fetch_stub, state_fn=_state_stub, surface_fn=_surface_stub,
+                    grade_dir=grade_dir, ledger_path=ledger_path,
+                    heartbeat_path=tmp_path / "hb.json")
+    monkeypatch.setattr(settle._writer, "default_ledger_write_allowed", lambda: True)
+    monkeypatch.setattr(clv_mod, "DEFAULT_LEDGER", ledger_path)
+
+    def _finals_stub(sport):
+        return [{"sport": "mlb", "game_id": "espn123", "home": "New York Yankees",
+                 "away": "Boston Red Sox", "home_score": 6, "away_score": 3}]
+
+    summary = settle.settle_open_bets(grade_dir=grade_dir, finals_fn=_finals_stub)
+    assert summary["n_settled"] == 2
+    assert "reason" not in summary

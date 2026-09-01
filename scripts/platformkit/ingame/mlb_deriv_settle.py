@@ -33,6 +33,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
+from scripts.platformkit.execution import writer_identity as _writer
 from scripts.platformkit.ingame import live_grade as _lg
 from scripts.platformkit.ingame import mlb_deriv_align as _align
 
@@ -112,6 +113,13 @@ def settle_open_bets(*, ledger_path: Optional[Path] = None,
     game is FINAL. Idempotent (skips an edge_key already settled). Never raises."""
     from scripts.platformkit import clv_ledger as _clv
     from scripts.platformkit.grade_paper_one import _unit_result
+
+    # ONE-WRITER (execution.writer_identity): only the sanctioned pod paper node
+    # may append settlements to the SHARED default ledger. An explicitly injected
+    # ledger_path (tests/scratch) is never gated. Mirrors inplay_daytrader.py:256.
+    if ledger_path is None and not _writer.default_ledger_write_allowed():
+        logger.info("mlb_deriv_settle skipped: not_ledger_writer")
+        return {"n_settled": 0, "n_pending": 0, "reason": "not_ledger_writer"}
 
     fin_fn = finals_fn or _default_finals
     target = Path(ledger_path) if ledger_path is not None else _clv.DEFAULT_LEDGER
