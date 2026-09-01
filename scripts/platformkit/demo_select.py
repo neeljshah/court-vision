@@ -108,9 +108,12 @@ def precompute_wide_flags(
         raise ValueError("sample_stride must be positive")
     flags: dict[int, bool] = {}
     for frame_index in range(frame_count):
+        if frame_index % sample_stride:
+            if not capture.grab():
+                break
+            continue
         ok, frame = capture.read()
         if not ok:
             break
-        if frame_index % sample_stride == 0:
-            flags[frame_index] = bool(is_wide(frame))
+        flags[frame_index] = bool(is_wide(frame))
     return flags

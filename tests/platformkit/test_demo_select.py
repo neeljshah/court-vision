@@ -29,13 +29,19 @@ def test_precompute_decodes_once_at_coarse_stride() -> None:
     class Capture:
         def __init__(self) -> None:
             self.reads = 0
+            self.grabs = 0
 
         def read(self) -> tuple[bool, np.ndarray]:
             frame = np.full((1, 1, 3), self.reads, dtype=np.uint8)
             self.reads += 1
             return True, frame
 
+        def grab(self) -> bool:
+            self.grabs += 1
+            return True
+
     capture = Capture()
     flags = precompute_wide_flags(capture, 10, lambda frame: bool(frame[0, 0, 0] % 2), 3)  # type: ignore[arg-type]
-    assert capture.reads == 10
+    assert capture.reads == 4
+    assert capture.grabs == 6
     assert flags == {0: False, 3: True, 6: False, 9: True}
