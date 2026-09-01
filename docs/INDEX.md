@@ -179,6 +179,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [operations/](operations/data-pipeline.md) -- data-pipeline, deployment, full-game-production, RunPod runbooks, backfill
 
 ### Computer-vision lineage (origin, not the headline)
+- [TRACKING](TRACKING.md) -- multi-sport tracking status, coordinate contract, demo evidence (2026-09-01)
 - [CV_TRACKING](CV_TRACKING.md) -- the broadcast-video CV pipeline internals
 - [tracking_pipeline](tracking_pipeline.md) -- the tracking orchestrator
 
