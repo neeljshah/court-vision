@@ -6,13 +6,16 @@ import json
 import math
 from collections import defaultdict
 from datetime import datetime, timezone
+import os
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
 from scripts.platformkit.ingame_replay_scoreboard import discover_store, load_ticks
 
 _REPO = Path(__file__).resolve().parents[2]
-_DEFAULT_CACHE = Path(r"C:\Users\neelj\nba-ai-system\data\cache")
+_DEFAULT_CACHE = Path(os.environ.get(
+    "NBA_CACHE_ROOT",
+    os.path.join(os.environ.get("NBA_DATA_ROOT", "data"), "cache")))
 
 
 def _brier(pairs: Iterable[tuple[float, float]]) -> Optional[float]:

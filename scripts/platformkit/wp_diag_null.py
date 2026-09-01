@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 from collections import defaultdict
+import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
 
@@ -12,7 +13,9 @@ import numpy as np
 from scripts.platformkit.ingame_replay_scoreboard import discover_store, load_ticks
 
 _REPO = Path(__file__).resolve().parents[2]
-_DEFAULT_CACHE = Path(r"C:\Users\neelj\nba-ai-system\data\cache")
+_DEFAULT_CACHE = Path(os.environ.get(
+    "NBA_CACHE_ROOT",
+    os.path.join(os.environ.get("NBA_DATA_ROOT", "data"), "cache")))
 _QUANTILES = ("50", "75", "90", "95")
 _STATS = ("p50", "p75", "p90", "p95", "p_loser_peak_ge_0_8", "p_loser_peak_ge_0_9")
 

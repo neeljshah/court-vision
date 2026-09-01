@@ -11,6 +11,7 @@ import json
 import random
 from collections import defaultdict
 from datetime import datetime, timezone
+import os
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Set, Tuple
 
@@ -25,7 +26,9 @@ from scripts.platformkit.market_lag_study import load_records
 from scripts.platformkit.wp_diag_oos import _game_dates, load_ticks
 
 _REPO = Path(__file__).resolve().parents[2]
-_DEFAULT_CACHE = Path(r"C:\Users\neelj\nba-ai-system\data\cache")
+_DEFAULT_CACHE = Path(os.environ.get(
+    "NBA_CACHE_ROOT",
+    os.path.join(os.environ.get("NBA_DATA_ROOT", "data"), "cache")))
 _BOOTSTRAP_SEED = 20260831
 _PRIOR = {"model_brier": 0.234, "market_brier": 0.187, "delta_market_minus_model": -0.047}
 

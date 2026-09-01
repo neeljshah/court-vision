@@ -4,13 +4,16 @@ from __future__ import annotations
 import argparse
 import json
 from collections import defaultdict
+import os
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 from scripts.platformkit.ingame_replay_scoreboard import discover_store
 from scripts.platformkit.wp_diag_series import load_records
 
-_DEFAULT_CACHE = Path(r"C:\Users\neelj\nba-ai-system\data\cache")
+_DEFAULT_CACHE = Path(os.environ.get(
+    "NBA_CACHE_ROOT",
+    os.path.join(os.environ.get("NBA_DATA_ROOT", "data"), "cache")))
 _OutcomeLoader = Callable[[Dict[str, Any]], Optional[float]]
 
 

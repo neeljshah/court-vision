@@ -6,6 +6,7 @@ import csv
 import json
 from collections import defaultdict
 from datetime import datetime, timezone
+import os
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
@@ -13,7 +14,9 @@ from scripts.platformkit.ingame_replay_scoreboard import discover_store, load_ti
 from scripts.platformkit.wp_diag_oos import _folds, _game_dates, walk_forward_isotonic
 
 _REPO = Path(__file__).resolve().parents[2]
-_DEFAULT_CACHE = Path(r"C:\Users\neelj\nba-ai-system\data\cache")
+_DEFAULT_CACHE = Path(os.environ.get(
+    "NBA_CACHE_ROOT",
+    os.path.join(os.environ.get("NBA_DATA_ROOT", "data"), "cache")))
 _QUANTILES = (0.0, 0.25, 0.5, 0.75, 0.9, 1.0)
 
 
