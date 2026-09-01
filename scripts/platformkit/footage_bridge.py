@@ -287,7 +287,14 @@ def download_local(item: dict) -> Path:
         if rung is not None:
             command += ["-f", rung]
         if use_section is not None:
-            command += ["--download-sections", use_section] + SECTION_CLIENT
+            command += ["--download-sections", use_section]
+            # The web player client exposes ONLY itag 18 (640x360). With cookies
+            # the tv client serves the HLS 720p/1080p rungs, so forcing the web
+            # client here silently re-created the 360p defect on every section
+            # retry (found by the v3 coach-depth audit; measured 5.0%->18.7%
+            # five-line-gate gain at 720p rides on NOT doing this).
+            if not (use_cookies and COOKIES.is_file()):
+                command += SECTION_CLIENT
         command += ["-o", str(destination), item["url"]]
         try:
             subprocess.run(command, check=True, timeout=7200,
