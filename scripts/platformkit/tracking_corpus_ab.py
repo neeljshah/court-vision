@@ -17,6 +17,7 @@ from typing import Any, Mapping
 import pandas as pd
 
 from scripts.platformkit.adapter_run import ADAPTERS
+from scripts.platformkit.footage_content_gate import is_quarantined
 from scripts.platformkit.tracking_harness import evaluate
 from scripts.platformkit.tracking_quality_scan import scan
 
@@ -33,9 +34,14 @@ def _game_id(clip: Path) -> str:
 
 
 def corpus_clips(corpus: Path, sport: str, limit: int) -> tuple[list[Path], int]:
-    """Return stable sport clips and the number excluded by the explicit cap."""
+    """Return stable sport clips and the number excluded by the explicit cap.
+
+    Quarantined clips (moved to footage_quarantine, or carrying an in-place
+    sport_verified=false sidecar) are skipped -- see corpus_mislabel_2026-09-01.
+    """
     clips = sorted(path for path in corpus.glob("{}__*".format(sport))
-                   if path.is_file() and path.suffix.lower() in VIDEO_SUFFIXES)
+                   if path.is_file() and path.suffix.lower() in VIDEO_SUFFIXES
+                   and not is_quarantined(path))
     return clips[:limit], max(0, len(clips) - limit)
 
 

@@ -146,21 +146,60 @@ def screen_fail_open(video: Path, sport: str) -> GateVerdict:
         )
 
 
-def quarantine(video: Path, verdict: GateVerdict,
-               destination: Path = QUARANTINE_DIR) -> Path:
-    """Move a rejected clip and write an adjacent, reversible JSON reason."""
-    if verdict.decision != "reject":
-        raise ValueError("only rejected clips may be quarantined")
+def _quarantine_file(video: Path, reason: str, payload: dict,
+                     destination: Path) -> Path:
+    """Shared move + sidecar write for both gate-driven and manual quarantines."""
     destination.mkdir(parents=True, exist_ok=True)
     target = destination / video.name
     if target.exists():
         target = destination / (video.stem + ".duplicate" + video.suffix)
     shutil.move(str(video), str(target))
     target.with_suffix(target.suffix + ".json").write_text(
-        json.dumps({"reason": verdict.reason, "metrics": asdict(verdict.metrics)}, indent=2) + "\n",
+        json.dumps({"reason": reason, "quarantine_reason": reason,
+                    "sport_verified": False, **payload}, indent=2) + "\n",
         encoding="utf-8",
     )
     return target
+
+
+def quarantine(video: Path, verdict: GateVerdict,
+               destination: Path = QUARANTINE_DIR) -> Path:
+    """Move a rejected clip and write an adjacent, reversible JSON reason."""
+    if verdict.decision != "reject":
+        raise ValueError("only rejected clips may be quarantined")
+    return _quarantine_file(video, verdict.reason,
+                            {"metrics": asdict(verdict.metrics)}, destination)
+
+
+def quarantine_manual(video: Path, reason: str,
+                      destination: Path = QUARANTINE_DIR) -> Path:
+    """Quarantine a clip confirmed bad by human/agent review, not the color gate.
+
+    The automatic surface-color gate only catches "no playing surface at all";
+    it misses wrong-sport footage that still shows a real green field (a video-
+    game replay, a different field sport). Use this once a rendered-frame check
+    has confirmed the mislabel.
+    """
+    return _quarantine_file(video, reason, {"metrics": None}, destination)
+
+
+def is_quarantined(video: Path) -> bool:
+    """True when a clip is flagged bad: inside QUARANTINE_DIR, or carrying a
+    sport_verified=false sidecar in place. Enumeration consumers
+    (tracking_corpus_ab.corpus_clips, footage_census) call this so a flagged
+    clip is skipped whether or not it has physically been moved yet.
+    """
+    try:
+        if QUARANTINE_DIR.resolve() in video.resolve().parents:
+            return True
+    except OSError:
+        pass
+    sidecar = video.with_suffix(video.suffix + ".json")
+    try:
+        payload = json.loads(sidecar.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    return payload.get("sport_verified", True) is False
 
 
 def summary(verdicts: Iterable[GateVerdict]) -> dict[str, int]:

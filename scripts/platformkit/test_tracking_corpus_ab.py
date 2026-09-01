@@ -1,4 +1,16 @@
-from scripts.platformkit.tracking_corpus_ab import baseline_diff, render_table
+from scripts.platformkit.tracking_corpus_ab import baseline_diff, corpus_clips, render_table
+
+
+def test_corpus_clips_skips_quarantined_sidecar(tmp_path):
+    (tmp_path / "football__good.mp4").write_bytes(b"v")
+    bad = tmp_path / "football__bad.mp4"
+    bad.write_bytes(b"v")
+    bad.with_suffix(".mp4.json").write_text('{"sport_verified": false}')
+
+    clips, capped = corpus_clips(tmp_path, "football", limit=10)
+
+    assert [c.name for c in clips] == ["football__good.mp4"]
+    assert capped == 0
 
 
 def test_diff_names_per_game_regressions():
