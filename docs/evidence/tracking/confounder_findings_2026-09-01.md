@@ -102,3 +102,28 @@ A licensing blocker is a procurement problem, not a physics one, and it can be
 removed by a licensed model or by labelling our own pilot set. Soccer therefore
 stays at S0 with a fail-closed court path and a declared image_px corpus of
 867,044 rows across 71,460 frame ids.
+
+## The football QUEUE is contaminated at source, not just the staged corpus
+
+Three independent samples now say the football lane is not football:
+
+1. A corpus audit classified 12 football-labelled clips as college soccer or
+   volleyball. I verified four by rendering frames: women's college soccer,
+   Marymount vs California soccer, KANSAS vs PITT VOLLEYBALL on ESPN2, and
+   Portland vs Wake Forest soccer.
+2. The football agent independently found only 2 of 11 readable staged clips
+   are genuine American football.
+3. Fetching a fresh high-resolution clip straight from the FOOTBALL QUEUE
+   (`football_lsYEcWf4Zbg`) produced "NFL PLAYERS: SECOND ACTS" -- three people
+   in armchairs in a studio. It was discarded rather than uploaded.
+
+Point 3 is the important one: the defect is in the QUEUE, not only in what was
+downloaded earlier. `queue_expander` accepts an id on
+`duration >= MIN_DURATION_SECONDS` alone and requests only id and duration, so a
+long studio programme is indistinguishable from a game. The football queue needs
+rebuilding from validated sources before any football measurement is meaningful.
+
+Note also that the new `footage_content_gate` screens by playing-surface
+fraction and therefore CANNOT separate soccer from American football -- both are
+green fields. It would have caught the talk show but not the twelve mislane
+clips. A sport-specific discriminator is still needed.
