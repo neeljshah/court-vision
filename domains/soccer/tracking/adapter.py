@@ -14,6 +14,11 @@ from scripts.platformkit.calibration.keypoint_calib import (
 from domains.soccer.tracking.segmenter import is_pitch_view
 from domains.soccer.tracking.pressing import aggregate_pressing, pressure_index
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
+# The preserved-corpus schema.  Every image-space row self-declares that its
+# x/y are source pixels, that the position was observed rather than filled in,
+# and that no calibration produced it, so tracking_schema fails the table closed
+# on coordinate_space and it can never be scored as a pitch-metre game.
+IMAGE_SCHEMA = SCHEMA + ("coordinate_space", "observation", "calibration")
 PITCH_METRES = np.float32(((0, 0), (105, 0), (0, 68), (105, 68)))
 # Deliberately WIDER than the harness soccer bound (0..105, 0..68): players
 # legitimately stand off the playing surface (throw-ins beyond the touchline,
@@ -34,12 +39,18 @@ class BallTrackingUnavailableError(RuntimeError):
 
 
 def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
-    """Write tracking rows in the shared platform schema."""
-    missing = [column for column in SCHEMA if column not in rows.columns]
+    """Write tracking rows in the shared platform schema.
+
+    A table that declares a coordinate space must carry the whole provenance
+    triple; provenance that can be dropped one column at a time is provenance
+    that gets dropped.
+    """
+    columns = IMAGE_SCHEMA if "coordinate_space" in rows.columns else SCHEMA
+    missing = [column for column in columns if column not in rows.columns]
     if missing:
         raise ValueError("Tracking rows missing columns: %s" % ", ".join(missing))
     Path(path).parent.mkdir(parents=True, exist_ok=True)
-    rows.loc[:, SCHEMA].to_csv(path, index=False)
+    rows.loc[:, columns].to_csv(path, index=False)
 
 
 class SoccerAdapter:
@@ -310,6 +321,23 @@ class SoccerAdapter:
         ids = self._assign_tracks([candidate[0] for candidate in candidates])
         return list(zip(ids, [candidate[1] for candidate in candidates]))
 
+    def detect_players_image_space(self, frame: np.ndarray) -> list[tuple[int, np.ndarray]]:
+        """Return every person detection as bottom-centre SOURCE PIXELS.
+
+        No projection and no bounds filter.  Pixel space has no surface bound
+        for a filter to sit on, and PITCH_ACCEPT is a pitch-metre window that
+        must never be reused here.  Detections include spectators and bench, so
+        this is a detection count, not a player count -- see roi in metadata.
+        """
+        candidates = [
+            (np.array(((box[0] + box[2]) / 2, (box[1] + box[3]) / 2)),
+             np.array(((box[0] + box[2]) / 2, box[3])))
+            for box in (list(map(float, raw[:4])) for raw in self.detector(frame))
+            if box[2] > box[0] and box[3] > box[1]
+        ]
+        ids = self._assign_tracks([candidate[0] for candidate in candidates])
+        return list(zip(ids, [candidate[1] for candidate in candidates]))
+
     def process_video(
         self,
         path: Union[str, Path],
@@ -318,12 +346,20 @@ class SoccerAdapter:
         skip_non_pitch: bool = True,
         compute_pressing: bool = True,
         player_only: bool = False,
+        image_space: bool = False,
     ) -> pd.DataFrame:
         """Process a headless stream, emitting rows only for validated pitch frames.
 
         Callers must opt into player-only output: this adapter runs YOLO person
         class 0 only and has no soccer-ball detector, so it cannot satisfy a
         ball-tracking contract.
+
+        ``image_space=True`` preserves the detection corpus instead: every
+        person box on a pitch-view frame becomes a row of SOURCE PIXELS with
+        explicit provenance.  No homography is fitted or reused, no position is
+        interpolated, and pressing is not computed -- a pixel distance is not a
+        metre.  The court path is unchanged and still emits nothing until a
+        frame earns its own validated homography.
         """
         if stride < 1:
             raise ValueError("stride must be at least 1")
@@ -354,6 +390,17 @@ class SoccerAdapter:
                         continue
                     if pitch_view:
                         pitch_frames.append(source_frame)
+                    if image_space:
+                        for track_id, point in self.detect_players_image_space(frame):
+                            rows.append({"frame": source_frame, "track_id": track_id,
+                                         "cls": "player", "x": float(point[0]),
+                                         "y": float(point[1]),
+                                         "coordinate_space": "image_px",
+                                         "observation": "observed",
+                                         "calibration": "none"})
+                        processed += 1
+                        source_frame += 1
+                        continue
                     homography = self._stable_homography(self._landmark_detections(frame), frame.shape[:2])
                     if homography is None:
                         self.mark_frame_lost()
@@ -365,13 +412,16 @@ class SoccerAdapter:
                 source_frame += 1
         finally:
             capture.release()
-        self.last_output = pd.DataFrame(rows, columns=SCHEMA)
+        self.last_output = pd.DataFrame(rows, columns=IMAGE_SCHEMA if image_space else SCHEMA)
         self.last_metadata = {
             "processed_frames": processed,
             "pitch_view_frames": pitch_frames,
             "accepted_homography_frames": accepted_homography_frames,
         }
-        if compute_pressing:
+        if image_space:
+            # roi is the whole frame: crowd and bench detections are included.
+            self.last_metadata.update({"coordinate_space": "image_px", "roi": "full_frame"})
+        if compute_pressing and not image_space:
             index = pressure_index(self.last_output, ball_proxy=True)
             self.last_metadata["pressing_proxy"] = {
                 "per_frame": index,

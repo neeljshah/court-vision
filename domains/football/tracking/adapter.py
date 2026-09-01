@@ -8,8 +8,11 @@ emits only low-motion, pre-snap formation frames; ball rows are a named stub.
 
 Yard-line coordinates are offset-relative until an OCR integration identifies
 the painted yard number: the first ordered detected five-yard line is x=0 and
-each following line is x=15 feet, held fixed for a segment. y=0 and y=160 are
-the two DETECTED cross-field boundary lines; frames without them are dropped.
+each following line is x=15 feet, held fixed for a segment. That ordinal
+labelling is only true when the family really is consecutive equally spaced
+lines, so field_gates.pencil_is_uniform tests it with a fit-free cross-ratio
+before the fit runs. y=0 and y=160 are the two DETECTED cross-field boundary
+lines; frames without them are dropped.
 """
 from __future__ import annotations
 
@@ -19,6 +22,10 @@ from typing import Callable, Optional, Sequence, Union
 import cv2
 import numpy as np
 import pandas as pd
+
+from domains.football.tracking.field_gates import (MIN_FIELD_VIEW_GREEN,
+                                                   field_view_fraction,
+                                                   pencil_is_uniform)
 
 
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
@@ -36,8 +43,13 @@ SANITY_LIMIT_FT = 5.0 * FIELD_LENGTH_FT
 MAX_YARD_LINES = int(FIELD_LENGTH_FT / YARD_LINE_SPACING_FT) + 1
 # Four correspondences determine a homography exactly, so their reprojection
 # residual is zero whatever they mean. The fit must be over-determined before
-# MAX_FIT_RMSE_FT can discriminate at all: three yard lines, six points.
-MIN_CORRESPONDENCES = 6
+# MAX_FIT_RMSE_FT can discriminate at all. Six points (three yard lines) is far
+# too close to that minimum: the only frame accepted in a measured 600-frame run
+# of a real SEC broadcast had exactly six, reported rmse 0.572 ft, and was a
+# false positive whose three "yard lines" differed by about 60 degrees. Four
+# yard lines, eight points, is also the minimum the cross-ratio gate can test.
+MIN_CORRESPONDENCES = 8
+MIN_YARD_LINES = 4
 MIN_INLIER_FRACTION = 0.8
 MAX_FIT_RMSE_FT = 3.0
 # The sideline pair carries the whole 160 ft cross-field scale. Below this a
@@ -205,10 +217,15 @@ class FootballAdapter:
             stats["reject"] = reason
             return None
 
+        stats["green_frac"] = green = field_view_fraction(frame)
+        if green < MIN_FIELD_VIEW_GREEN:
+            return fail("not_field_view")
         yard_lines = self.detect_yard_line_family(frame)
         stats["n_yard"] = len(yard_lines)
-        if not 3 <= len(yard_lines) <= MAX_YARD_LINES:
+        if not MIN_YARD_LINES <= len(yard_lines) <= MAX_YARD_LINES:
             return fail("family_size")
+        if not pencil_is_uniform(yard_lines, frame.shape):
+            return fail("family_not_uniform")
         bounds = self._sideline_pair(frame, yard_lines)
         if bounds is None:
             return fail("no_sidelines")

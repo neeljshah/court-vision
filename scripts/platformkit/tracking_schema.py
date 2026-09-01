@@ -21,6 +21,14 @@ NBA_PRODUCTION_COLUMNS = frozenset(
     {"frame", "timestamp", "player_id", "team", "x_position", "y_position"}
 )
 
+# Optional self-declaration of what x/y actually are.  Absent means the legacy
+# contract above governs: x/y are already the sport's declared native surface
+# unit.  Present means the producer states it, and only a surface space is
+# scorable -- image pixels are a preserved corpus, never a scorable game.
+COORDINATE_SPACE_COLUMN = "coordinate_space"
+COURT_SPACES = frozenset({"court_feet", "pitch_metres"})
+IMAGE_SPACE = "image_px"
+
 
 @dataclass(frozen=True)
 class TrackingSchema:
@@ -45,11 +53,43 @@ _NBA_NO_TRANSFORM = (
 )
 
 
+_NON_COURT_SPACE = (
+    "rows declare non-court coordinate_space {}; a preserved detection corpus "
+    "is never a scorable game"
+)
+
+
 CANONICAL_COORDINATE_CONTRACT = {
     "columns": ("cls", "frame", "track_id", "x", "y"),
     "basketball": {"unit": "feet", "bounds": (0.0, 94.0, 0.0, 50.0)},
     "rule": "x/y must already be a declared sport-surface coordinate system",
+    "coordinate_space": {
+        "column": COORDINATE_SPACE_COLUMN,
+        "scorable": tuple(sorted(COURT_SPACES)),
+        "corpus_only": (IMAGE_SPACE,),
+        "absent": "legacy rows; the declared-native rule above governs",
+        "rule": "any other value, including null, fails closed",
+    },
 }
+
+
+def _reject_non_court_space(df: pd.DataFrame) -> None:
+    """Fail closed on any declared coordinate space that is not a surface.
+
+    Magnitude-independent by design: rescaling pixels into the sport bounds
+    makes the harness bound checks pass, which is exactly how image-affine
+    ft_x/ft_y were once read as court feet.  The declaration decides, not the
+    numbers.
+    """
+    if COORDINATE_SPACE_COLUMN not in df.columns:
+        return
+    declared = {"(null)" if pd.isna(value) else str(value)
+                for value in df[COORDINATE_SPACE_COLUMN].unique()}
+    offending = sorted(declared - COURT_SPACES)
+    if offending:
+        raise CoordinateTransformUnavailable(
+            _NON_COURT_SPACE.format(", ".join(offending))
+        )
 
 
 def identify_tracking_schema(df: pd.DataFrame) -> TrackingSchema:
@@ -73,6 +113,8 @@ def normalize_tracking_frame(df: pd.DataFrame,
     """Return canonical coordinates or reject a source with no valid transform.
 
     Declared transforms:
+    - any schema declaring a non-surface ``coordinate_space``: fails closed
+      before schema identification, whatever the magnitude of x/y.
     - normalized schema: identity; domain adapters project detections before CSV.
     - NBA production schema: requires a persisted court-calibration sidecar
       resolved from ``source``.  Without one -- the state of every game in the
@@ -85,6 +127,7 @@ def normalize_tracking_frame(df: pd.DataFrame,
             ``court_calibration.json`` sidecar.  When omitted, the NBA
             production branch always fails closed.
     """
+    _reject_non_court_space(df)
     schema = identify_tracking_schema(df)
     if schema is _NORMALIZED:
         return df

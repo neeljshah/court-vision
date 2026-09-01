@@ -14,13 +14,24 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from scripts.platformkit.tracking_schema import (
+    COORDINATE_SPACE_COLUMN,
+    COURT_SPACES,
+)
+
 
 CANONICAL_SPORTS = frozenset({
     "basketball", "wnba", "tennis", "soccer", "baseball", "npb", "kbo",
     "football",
 })
 REQUIRED_COLUMNS = ("frame", "track_id", "cls", "x", "y")
-ALIASES = {"player_id": "track_id", "ft_x": "x", "ft_y": "y"}
+# Carried through rather than projected away: dropping a provenance column is
+# how image pixels stop looking like image pixels.
+CARRIED_COLUMNS = (COORDINATE_SPACE_COLUMN, "observation", "calibration")
+# ft_x/ft_y are deliberately NOT aliases of x/y.  tracking_schema documents them
+# as an affine image scaling, not a court homography, so renaming them into the
+# canonical surface columns launders pixels into feet.
+ALIASES = {"player_id": "track_id"}
 
 
 @dataclass(frozen=True)
@@ -104,7 +115,14 @@ def normalize_tracking_table(
     if missing:
         errors.append("missing required columns: " + ", ".join(missing))
     if not missing:
-        normalized = normalized.loc[:, REQUIRED_COLUMNS].copy()
+        carried = [column for column in CARRIED_COLUMNS if column in normalized.columns]
+        normalized = normalized.loc[:, list(REQUIRED_COLUMNS) + carried].copy()
+        if COORDINATE_SPACE_COLUMN in carried:
+            declared = {"(null)" if pd.isna(value) else str(value)
+                        for value in normalized[COORDINATE_SPACE_COLUMN].unique()}
+            offending = sorted(declared - COURT_SPACES)
+            if offending:
+                errors.append("non-court coordinate_space: " + ", ".join(offending))
         player_rows = normalized["cls"].astype(str).str.lower().eq("player")
         if player_rows.any():
             numeric = normalized.loc[player_rows, ["x", "y"]].apply(

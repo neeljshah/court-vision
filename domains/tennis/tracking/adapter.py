@@ -148,6 +148,20 @@ class TennisAdapter:
         vertical_clusters = self._cluster_lines(vertical, False, (height, width))
         if len(horizontal_clusters) < 2 or len(vertical_clusters) < 2:
             return None
+        # MEASURED DEFECT (tennis.mp4, US Open broadcast): horizontal_clusters[0] is the
+        # topmost bright horizontal line ANYWHERE in the frame, which here is a stand
+        # railing at image row 15.7, not the far doubles baseline at row 87.4.  The
+        # 78-foot length axis is therefore fitted against the wrong line and comes out
+        # compressed to 0.567 of true feet (n=480 person boxes); a player at the far
+        # baseline reads x = 40.4 instead of 78, and 38 of 208 such boxes fall on the
+        # near side of the 39-foot net split in detect_players below.  The width axis is
+        # unaffected (median error 0.68 ft).  Receipt + reference quad:
+        # scripts/platformkit/tennis_metric_probe.py.  Not fixed here: the true far
+        # baseline is absent from this frame's bright-line clusters entirely, so no
+        # choice among them is correct -- three candidate selectors were measured and
+        # none discriminated.  Fixing it needs a real court-line model (the tennis
+        # landmarks in calibration/keypoint_calib.py are the intended home), not a
+        # different index.  Until then treat tennis x as ordinal, not feet.
         far = self._fit_line(horizontal_clusters[0])
         near = self._fit_line(horizontal_clusters[-1])
         left = self._fit_line(vertical_clusters[0])

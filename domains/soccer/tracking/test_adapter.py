@@ -7,6 +7,7 @@ from __future__ import annotations
 import cv2
 import numpy as np
 import pandas as pd
+import pytest
 
 from domains.soccer.tracking.adapter import (
     PITCH_ACCEPT,
@@ -17,7 +18,7 @@ from scripts.platformkit.calibration.keypoint_calib import (
     CANONICAL_LANDMARKS,
     solve_homography,
 )
-from scripts.platformkit.tracking_harness import SPORTS
+from scripts.platformkit.tracking_harness import SPORTS, evaluate
 
 
 # Six landmarks exactly consistent with one ground-truth view.  The two penalty
@@ -213,3 +214,39 @@ def test_process_video_pressing_metadata_preserves_row_schema(tmp_path) -> None:
     assert adapter.last_metadata["pressing_proxy"]["frame_ids"] == [0, 1]
     adapter.process_video(path, skip_non_pitch=False, compute_pressing=False, player_only=True)
     assert "pressing_proxy" not in adapter.last_metadata
+
+
+def test_image_space_emits_every_detection_with_provenance_and_fails_closed(tmp_path) -> None:
+    """Boxes far outside the pitch bounds survive: pixel space has no bound."""
+    path = tmp_path / "image_space.avi"
+    writer = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*"MJPG"), 25, (128, 72))
+    for _ in range(2):
+        writer.write(np.zeros((72, 128, 3), dtype=np.uint8))
+    writer.release()
+    adapter = SoccerAdapter(detector=lambda frame: [[10, 20, 30, 60], [900, 40, 940, 700]])
+    adapter._landmark_detections = lambda frame: {}
+    adapter._stable_homography = lambda detections, shape: None
+    rows = adapter.process_video(path, skip_non_pitch=False, compute_pressing=True,
+                                 player_only=True, image_space=True)
+    assert len(rows) == 4
+    assert rows["x"].tolist() == [20.0, 920.0, 20.0, 920.0]
+    assert rows["y"].tolist() == [60.0, 700.0, 60.0, 700.0]
+    assert set(rows["coordinate_space"]) == {"image_px"}
+    assert set(rows["observation"]) == {"observed"}
+    assert set(rows["calibration"]) == {"none"}
+    assert adapter.last_metadata["roi"] == "full_frame"
+    assert adapter.last_metadata["accepted_homography_frames"] == []
+    assert "pressing_proxy" not in adapter.last_metadata
+    report = evaluate(rows, "soccer")
+    assert not report.passed
+    assert [f.split(":")[0] for f in report.failures] == ["coordinate_contract"]
+
+
+def test_write_csv_refuses_to_drop_half_the_provenance(tmp_path) -> None:
+    adapter = SoccerAdapter(detector=lambda frame: [])
+    adapter.last_output = pd.DataFrame(
+        [[4, 1, "player", 20.0, 6.0, "image_px"]],
+        columns=("frame", "track_id", "cls", "x", "y", "coordinate_space"),
+    )
+    with pytest.raises(ValueError, match="observation, calibration"):
+        adapter.write_csv(tmp_path / "partial.csv")

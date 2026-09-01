@@ -12,8 +12,8 @@ def _aliased_rows():
         "frame": [1, 1, 2],
         "player_id": [10, 11, 10],
         "cls": ["player", "player", "ball"],
-        "ft_x": [10.0, 12.0, 11.0],
-        "ft_y": [5.0, 5.0, 6.0],
+        "x": [10.0, 12.0, 11.0],
+        "y": [5.0, 5.0, 6.0],
     })
 
 
@@ -43,7 +43,7 @@ def test_unknown_sport_missing_columns_and_unknown_alias_reject():
     _, unknown_sport = normalize_tracking_table(_aliased_rows(), "cricket")
     _, unknown_alias = normalize_tracking_table(
         pd.DataFrame({"frame_id": [1], "player_id": [1], "cls": ["player"],
-                      "ft_x": [1.0], "ft_y": [2.0]}), "soccer"
+                      "x": [1.0], "y": [2.0]}), "soccer"
     )
     assert unknown_sport.status == "REJECT"
     assert unknown_alias.status == "REJECT"
@@ -52,10 +52,10 @@ def test_unknown_sport_missing_columns_and_unknown_alias_reject():
 
 def test_nonfinite_player_coordinates_reject_but_ball_rows_do_not():
     player = _aliased_rows()
-    player.loc[0, "ft_x"] = np.inf
+    player.loc[0, "x"] = np.inf
     _, player_report = normalize_tracking_table(player, "football")
     ball = _aliased_rows()
-    ball.loc[2, "ft_x"] = np.nan
+    ball.loc[2, "x"] = np.nan
     _, ball_report = normalize_tracking_table(ball, "football")
     assert player_report.status == "REJECT"
     assert "non-finite player coordinates" in player_report.errors
@@ -68,3 +68,28 @@ def test_empty_or_absent_input_is_data_pending(tmp_path):
     _, missing_report = normalize_tracking_table(tmp_path / "missing.parquet", "tennis")
     assert empty_report.status == "DATA_PENDING"
     assert missing_report.status == "DATA_PENDING"
+
+
+def test_ft_x_is_not_laundered_into_canonical_x():
+    """ft_x/ft_y are image-affine values; renaming them into x/y is the defect."""
+    _, report = normalize_tracking_table(
+        pd.DataFrame({"frame": [1], "player_id": [1], "cls": ["player"],
+                      "ft_x": [10.0], "ft_y": [5.0]}), "basketball"
+    )
+    assert report.status == "REJECT"
+    assert "missing required columns: x, y" in report.errors
+
+
+def test_image_space_rows_reject_and_keep_their_provenance():
+    normalized, report = normalize_tracking_table(
+        pd.DataFrame({"frame": [1, 1], "track_id": [1, 2], "cls": ["player"] * 2,
+                      "x": [10.0, 12.0], "y": [5.0, 6.0],
+                      "coordinate_space": ["image_px"] * 2,
+                      "observation": ["observed"] * 2,
+                      "calibration": ["none"] * 2}), "soccer"
+    )
+    assert report.status == "REJECT"
+    assert "non-court coordinate_space: image_px" in report.errors
+    assert list(normalized.columns) == ["frame", "track_id", "cls", "x", "y",
+                                        "coordinate_space", "observation",
+                                        "calibration"]
