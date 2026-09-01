@@ -178,8 +178,10 @@ class BaseballAdapter:
                 return
             target = glove_target(pitch_frames, MotionStableDetector())
             command_events.append({
+                "segment_id": segment_id,
                 "inning": None,
                 "target_px": None if target is None else target[:2],
+                "target_confidence": None if target is None else target[2],
                 # Ball tracking is intentionally not fabricated from plate geometry.
                 "crossing_px": None,
                 "scale_px_per_ft": float(np.median(pitch_scales)) if pitch_scales else None,

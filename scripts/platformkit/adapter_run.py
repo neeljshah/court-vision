@@ -43,7 +43,8 @@ PLAYER_ONLY = {"baseball", "soccer"}
 #           "accepted" frames it used to report were a stale cached homography.
 # Add a sport here only once its adapter supports image_space=True AND its
 # calibration failure is MEASURED, not assumed.
-IMAGE_SPACE = {"baseball", "soccer"}
+IMAGE_SPACE = {"baseball", "football", "soccer"}
+TEACHER_META = {"baseball"}
 
 
 def _source_metadata(video: str) -> dict:
@@ -87,12 +88,19 @@ def main(argv: list) -> int:
             options["player_only"] = True
         if sport in IMAGE_SPACE:
             options["image_space"] = True
-        frame = adapter.process_video(video, **options)
+        if sport in TEACHER_META:
+            options["compute_command"] = True
+            frame, teacher_metadata = adapter.process_video(video, **options)
+        else:
+            frame = adapter.process_video(video, **options)
 
         output_dir = os.path.join("data", "tracking", game_id)
         os.makedirs(output_dir, exist_ok=True)
         output_path = os.path.join(output_dir, "tracking_data.csv")
         module.write_csv(frame, output_path)
+        if sport in TEACHER_META:
+            from scripts.platformkit.tracking.teacher_emit import write_teacher_meta
+            write_teacher_meta(teacher_metadata, game_id, sport, output_dir)
 
         from scripts.platformkit.tracking_harness import evaluate
 

@@ -1,5 +1,5 @@
 """Adapter_run must actually request the image-space path, or it is inert."""
-from scripts.platformkit.adapter_run import IMAGE_SPACE, PLAYER_ONLY, ADAPTERS
+from scripts.platformkit.adapter_run import ADAPTERS, IMAGE_SPACE, PLAYER_ONLY, TEACHER_META
 
 
 def test_soccer_is_asked_for_image_space():
@@ -19,6 +19,13 @@ def test_image_space_sports_are_known_adapters():
 def test_adapter_run_passes_the_flag():
     source = open("scripts/platformkit/adapter_run.py", encoding="utf-8").read()
     assert 'options["image_space"] = True' in source
+
+
+def test_baseball_requests_and_persists_teacher_metadata():
+    source = open("scripts/platformkit/adapter_run.py", encoding="utf-8").read()
+    assert TEACHER_META == {"baseball"}
+    assert 'options["compute_command"] = True' in source
+    assert "write_teacher_meta(teacher_metadata, game_id, sport, output_dir)" in source
 
 
 def test_adapter_run_has_a_bounded_frame_override_for_real_clip_measurements():
