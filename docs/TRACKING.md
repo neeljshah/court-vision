@@ -31,7 +31,7 @@ producers were fixed or made to fail closed.
 
 | Sport | Calibration | Output | Harness | Notes |
 |---|---|---|---|---|
-| **tennis** | real 4-pt homography, validated sub-foot against known court lines | `court_feet` | **PASS** (coverage 0.976, oob 0.0, jump_p95 2.33) | first game ever to pass; one reference game, one budget — a milestone, not a general certification |
+| **tennis** | real 4-pt homography; classical registration measured to a 5.28 ft median held-out floor | `court_feet` | **RETRACTED, no pass** (the recorded coverage 0.976 was 99.3% carried-over calibration -- 4 fresh solves propagated over 600 frames; honest coverage 0.0067; see docs/evidence/SESSION_2026-09-01_INDEX.md) | fresh-solve-only adapter + per-frame manifest now enforced; 0 harness passes stand across all sports -- the honest number |
 | **football (american)** | yard-line fit solves ~0/200 frames (sidelines out of broadcast frame) | `image_px`, preserved | rejected by contract (correct) | stable identities: 27 tracks, median length 2301 frames |
 | **soccer** | landmark framework in place; current detector under-constrains the fit | `image_px`, preserved | rejected by contract (correct) | identity churn is the defect: 660 tracks, median length 102 |
 | **baseball (MLB/KBO/NPB)** | field homography measured **impossible** from broadcast (FOV p50 42 ft vs 90 ft infield; 0/24 frames contain both 1B and 3B) | `image_px`, preserved | rejected by contract (correct) | re-detection, not tracking: median track length ~35 frames |
