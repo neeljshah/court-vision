@@ -1,6 +1,7 @@
 """Regression coverage for eval-gate leak failures, including python -O."""
 from __future__ import annotations
 
+import pathlib
 import subprocess
 import sys
 
@@ -83,7 +84,8 @@ def test_leak_guard_survives_optimized_python():
         "validate_golden([s] * 90)"
     )
     result = subprocess.run(
-        [sys.executable, "-O", "-c", code], capture_output=True, text=True, check=False
+        [sys.executable, "-O", "-c", code], capture_output=True, text=True,
+        check=False, cwd=str(pathlib.Path(__file__).resolve().parents[3]),
     )
     assert result.returncode != 0
     assert "LEAK" in result.stderr

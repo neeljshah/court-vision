@@ -1,17 +1,19 @@
 """Per-file tests for the eval-gate pure core (blueprint N1).
 
-Runs standalone (`python test_eval_core.py`) OR under pytest. numpy + stdlib only.
+Runs under pytest. numpy + stdlib only.
 Proves the math + the leak guard + the cluster-robust DM behavior the gate relies on.
 """
 from __future__ import annotations
+from math import atan, pi
 import numpy as np
+import pytest
 
-from scoring import (
+from scripts.platformkit.eval_gate.scoring import (
     brier, log_loss, brier_skill_score, ece, resolution, sharpness,
     crps_gaussian, crps_ensemble, pinball_loss,
 )
-from dm_test import diebold_mariano
-from schema import validate_golden
+from scripts.platformkit.eval_gate.dm_test import diebold_mariano
+from scripts.platformkit.eval_gate.schema import validate_golden
 
 
 def test_brier_known_values():
@@ -65,6 +67,33 @@ def test_dm_cluster_se_wider_than_naive():
     assert clustered.n_clusters == 20 and naive.n_clusters == len(d)
 
 
+def test_dm_rejects_cluster_length_mismatch():
+    with pytest.raises(ValueError, match=r"cluster_ids length \(2\).*d length \(3\)"):
+        diebold_mariano([0.1, 0.2, 0.3], ["g1", "g2"])
+
+
+def test_dm_rejects_single_cluster():
+    with pytest.raises(ValueError, match=r"at least 2 clusters.*got 1"):
+        diebold_mariano([0.1, -0.1, 0.2], ["g1", "g1", "g1"])
+
+
+def test_dm_uses_student_t_p_value():
+    # Two one-observation clusters yield dm=1. With G-1=1, the Student-t
+    # reference is Cauchy: two-tailed p = 1 - 2 * atan(1) / pi = 0.5.
+    result = diebold_mariano([0.0, 2.0], ["g1", "g2"])
+    expected = 1.0 - 2.0 * atan(1.0) / pi
+    assert abs(result.dm_stat - 1.0) < 1e-12
+    assert abs(result.p_value - expected) < 1e-12
+
+
+def test_dm_happy_path_keeps_result_shape():
+    result = diebold_mariano([0.0, 2.0, 1.0, 3.0], ["g1", "g1", "g2", "g2"])
+    assert result.n == 4
+    assert result.n_clusters == 2
+    assert result.mean_diff == 1.5
+    assert 0.0 <= result.p_value <= 1.0
+
+
 def _valid_golden(n=90):
     regimes = ["pregame", "q4", "blowout", "foul_trouble", "q1", "q2", "q3"]
     states = []
@@ -73,7 +102,7 @@ def _valid_golden(n=90):
             "game_id": f"g{i}", "season": "2023-24", "sport": "nba",
             "regime": regimes[i % len(regimes)],
             "game_date": "2024-01-15", "state_ts": "2024-01-15T19:30:00",
-            "features": {"x": 0.5}, "feature_avail": {"x": "2024-01-14"},
+            "features": {"x": 0.5}, "feature_avail": {"x": "2024-01-14T00:00:00"},
             "devig_close_prob": 0.55, "truth_wp": 0.55, "outcome": i % 2,
         })
     return states
@@ -85,7 +114,7 @@ def test_validate_golden_passes_on_valid_set():
 
 def test_validate_golden_fires_on_leak():
     bad = _valid_golden(90)
-    bad[0]["feature_avail"]["x"] = "2024-01-16"   # AFTER state_ts -> leak
+    bad[0]["feature_avail"]["x"] = "2024-01-16T00:00:00"   # AFTER state_ts -> leak
     try:
         validate_golden(bad)
         raise SystemExit("FAIL: leak not caught")
