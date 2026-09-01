@@ -87,3 +87,38 @@ is 6.8% of court length. The p95 is the harder problem: one frame in twenty is
 wrong by more than half a service box. Classical Hough registration on this
 footage does not reach a usable accuracy, and this is now measured rather than
 suspected.
+
+---
+
+# The line DETECTOR is worth 4x, and it is a one-import change
+
+Both anchor variants failed, so the remaining suspect is the thing feeding them:
+`cv2.HoughLinesP` over a brightness mask. OpenCV ships two alternatives that are
+BSD-licensed and therefore clean for a sellable product. Run through the SAME
+clustering and the SAME cross-ratio test, so detection is the only variable
+(200 frames of 1080p-sourced tennis, every 5th frame):
+
+| detector | 5 clusters | valid cross ratio | 1-2 clusters |
+|---|---:|---:|---:|
+| HoughLinesP (shipped) | 17 (0.085) |  3 (0.015) | 12 (0.060) |
+| LSD                   | 27 (0.135) | 12 (0.060) | 12 (0.060) |
+| FLD                   | 12 (0.060) | 11 (0.055) | 16 (0.080) |
+
+The column that matters is the middle one: frames whose five detected clusters
+are actually the court's five length-running lines. LSD delivers 4x as many as
+Hough, and FLD 3.7x despite finding FEWER five-cluster frames -- meaning its
+five are far more often the right five, which is exactly the failure mode the
+funnel exposed (Hough reaches five clusters and then fails the cross ratio at
+p50 1.478 against a 1.1667 target).
+
+Two secondary benefits, both real:
+ - LSD and FLD consume GRAYSCALE directly. The brightness mask disappears, and
+   with it the threshold that a sweep already showed could not be improved
+   (the shipped 200 beat 120/140/160/172/185).
+ - Both are in OpenCV 4.11 as shipped here. No new dependency, no new licence.
+
+This composes with, rather than replaces, fitting the homography to LINE
+correspondences instead of four point anchors: better lines feeding a fit that
+never touches segment endpoints. Neither has yet been measured against the
+held-out landmark error of 5.280 ft median / 21.847 ft p95 that is the current
+baseline; that measurement is the next step, not a claim made here.
