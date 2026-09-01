@@ -58,9 +58,11 @@ class SoccerAdapter(SoccerGeometryMixin):
                 nearest, self._next_track_id = self._next_track_id, self._next_track_id + 1
             else:
                 available.remove(nearest)
-            self._tracks[nearest] = (center, 0); ids.append(nearest)
+            self._tracks[nearest] = (center, 0)
+            ids.append(nearest)
         for track_id in list(available):
-            center, lost = self._tracks[track_id]; self._tracks[track_id] = (center, lost + 1)
+            center, lost = self._tracks[track_id]
+            self._tracks[track_id] = (center, lost + 1)
             if lost + 1 >= self.retirement_frames: del self._tracks[track_id]
         return ids
 
@@ -99,11 +101,16 @@ class SoccerAdapter(SoccerGeometryMixin):
                 if source_frame % stride == 0:
                     pitch_view = is_pitch_view(frame)
                     if skip_non_pitch and not pitch_view:
-                        self.mark_frame_lost(); processed += 1; source_frame += 1; continue
+                        self.mark_frame_lost()
+                        processed += 1
+                        source_frame += 1
+                        continue
                     if pitch_view: pitch_frames.append(source_frame)
                     if image_space:
                         for track_id, point in self.detect_players_image_space(frame): rows.append({"frame": source_frame, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1])})
-                        processed += 1; source_frame += 1; continue
+                        processed += 1
+                        source_frame += 1
+                        continue
                     homography = self._stable_homography(self._landmark_detections(frame), frame.shape[:2])
                     if homography is None: self.mark_frame_lost()
                     else:

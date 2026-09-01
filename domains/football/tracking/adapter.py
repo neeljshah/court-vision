@@ -16,7 +16,8 @@ def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
     """Write normalized tracking rows."""
     missing = [column for column in SCHEMA if column not in rows.columns]
     if missing: raise ValueError("Tracking rows missing columns: %s" % ", ".join(missing))
-    Path(path).parent.mkdir(parents=True, exist_ok=True); rows.loc[:, output_columns(SCHEMA, rows)].to_csv(path, index=False)
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    rows.loc[:, output_columns(SCHEMA, rows)].to_csv(path, index=False)
 
 class FootballAdapter(FootballGeometryMixin):
     """Estimate an offset-relative field plane and pre-snap player formations."""
@@ -26,7 +27,8 @@ class FootballAdapter(FootballGeometryMixin):
         self.scene_cuts_detected, self.last_output = 0, pd.DataFrame(columns=SCHEMA)
     def _reset_segment(self) -> None:
         """Forget geometry and identities at a discontinuous camera cut."""
-        self._homography = None; self._centroids.clear()
+        self._homography = None
+        self._centroids.clear()
     @staticmethod
     def scene_cut_score(previous: np.ndarray, current: np.ndarray) -> float:
         """Return histogram distance between consecutive camera views."""
@@ -54,11 +56,16 @@ class FootballAdapter(FootballGeometryMixin):
     def _track_players(self, boxes: Sequence[Sequence[float]], homography: np.ndarray) -> list[tuple[int, np.ndarray]]:
         result, unused = [], set(self._centroids)
         for box in boxes:
-            x1, y1, x2, y2 = map(float, box[:4]); center = np.array(((x1 + x2) / 2, (y1 + y2) / 2)); foot = cv2.perspectiveTransform(np.float32([[[center[0], y2]]]), homography)[0, 0]
+            x1, y1, x2, y2 = map(float, box[:4])
+            center = np.array(((x1 + x2) / 2, (y1 + y2) / 2))
+            foot = cv2.perspectiveTransform(np.float32([[[center[0], y2]]]), homography)[0, 0]
             if not (np.isfinite(foot).all() and abs(float(foot[0])) <= SANITY_LIMIT_FT and abs(float(foot[1])) <= SANITY_LIMIT_FT): continue
-            choices = [(np.linalg.norm(center - self._centroids[item]), item) for item in unused]; track_id = min(choices)[1] if choices else self._next_track_id
+            choices = [(np.linalg.norm(center - self._centroids[item]), item) for item in unused]
+            track_id = min(choices)[1] if choices else self._next_track_id
             if not choices: self._next_track_id += 1
-            unused.discard(track_id); self._centroids[track_id] = center; result.append((track_id, foot))
+            unused.discard(track_id)
+            self._centroids[track_id] = center
+            result.append((track_id, foot))
         return result
     def detect_players_image_space(self, frame: np.ndarray) -> list[tuple[int, np.ndarray]]:
         """Return observed person bottom-centres as source pixels, unprojected."""
@@ -67,7 +74,8 @@ class FootballAdapter(FootballGeometryMixin):
         if stride < 1: raise ValueError("stride must be at least 1")
         capture = cv2.VideoCapture(str(path))
         if not capture.isOpened(): raise FileNotFoundError("Could not open video: %s" % path)
-        rows, previous, frame_index, processed = [], None, 0, 0; self.scene_cuts_detected = 0
+        rows, previous, frame_index, processed = [], None, 0, 0
+        self.scene_cuts_detected = 0
         try:
             while max_frames is None or processed < max_frames:
                 ok, frame = capture.read()
@@ -75,8 +83,12 @@ class FootballAdapter(FootballGeometryMixin):
                 if frame_index % stride == 0:
                     if image_space:
                         for track_id, point in self.detect_players_image_space(frame): rows.append({"frame": frame_index, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1])})
-                        processed += 1; frame_index += 1; continue
-                    if previous is not None and self.is_scene_cut(previous, frame): self._reset_segment(); self.scene_cuts_detected += 1; previous = None
+                        processed += 1
+                        frame_index += 1
+                        continue
+                    if previous is not None and self.is_scene_cut(previous, frame): self._reset_segment()
+                    self.scene_cuts_detected += 1
+                    previous = None
                     homography, boxes = self._stable_homography(frame), self._detect(frame)
                     if previous is not None and homography is not None and self.is_pre_snap(previous, frame, boxes):
                         players = self._track_players(boxes, homography)
