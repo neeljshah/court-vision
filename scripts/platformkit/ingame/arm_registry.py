@@ -69,7 +69,7 @@ def verdict(delta_brier: Optional[float], n_eff: Optional[float], corpora: int,
     """Apply the ship-to-shadow gate without changing any runtime flag."""
     if None in (delta_brier, n_eff, null_shuffle_z) or n_eff <= 0 or corpora < 2:
         return "INSUFFICIENT"
-    if delta_brier > MEASURED_DELTA_BRIER_LOCK - MINIMUM_DELTA_BRIER_IMPROVEMENT:
+    if delta_brier < MEASURED_DELTA_BRIER_LOCK + MINIMUM_DELTA_BRIER_IMPROVEMENT:
         return "BEHIND"
     if abs(null_shuffle_z) >= 1.0 or not market_guard_ok:
         return "BEHIND"

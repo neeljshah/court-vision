@@ -16,6 +16,7 @@ def test_registry_never_promotes_and_gate_has_exact_verdicts():
     spec = ArmSpec("blend", lambda row: .6, _n, enabled=True)
     row = {"schedule_context": 1, "market_micro": 1, "market_coherence": 1}
     assert run_shadow(spec, row, [{}]).prediction is None
-    assert verdict(-.039, 268, 2, .0, True) == "SHIP_TO_SHADOW"
+    assert verdict(-.030, 268, 2, .0, True) == "SHIP_TO_SHADOW"
     assert verdict(-.034, 268, 2, .0, True) == "BEHIND"
+    assert verdict(-.039, 268, 2, .0, True) == "BEHIND"
     assert verdict(None, None, 0, None, False) == "INSUFFICIENT"
