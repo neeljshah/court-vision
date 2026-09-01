@@ -70,3 +70,35 @@ and the plausible-sounding inference from that comment is wrong.
 Even at the best threshold only 3.3% of frames yield a valid cross ratio, which
 points back at cluster SELECTION: the five clusters found are usually not the
 five court lines.
+
+## Soccer calibration: the learned path is blocked by WEIGHT LICENSING, not capability
+
+Surveyed 2026-09-01 for a sellable product (ultralytics/AGPL is already being
+removed from the serving path for the same reason):
+
+| path | code licence | pretrained weights |
+|---|---|---|
+| TVCalib (MM4SPA/tvcalib) | MIT | `train_59.pt` has NO STATED WEIGHT LICENCE |
+| SoccerNet baseline (SoccerNet/sn-calibration) | - | checkpoint has no stated terms |
+| Sportlight (NikolasEnt/soccernet-calibration-sportlight) | - | no licensed inference checkpoint published |
+
+Nothing was downloaded or vendored. An MIT SOURCE licence does not carry the
+weights; those are a separate artifact and here they are unlicensed.
+
+### S-STAGE CORRECTION
+
+This is NOT an S4 impossibility proof and soccer must not be recorded as S4.
+The distinction matters and the report itself states it correctly:
+
+- BASEBALL's full-field homography is genuinely impossible on this corpus. It is
+  a PHYSICAL measurement: broadcast centre-field FOV p50 is ~42 ft against a
+  90 ft infield, and 0 of 24 sampled frames contained two bases. No algorithm
+  can solve from a view that never holds two known points.
+- SOCCER calibration is demonstrably POSSIBLE -- the SoccerNet camera
+  calibration challenge exists and public models achieve it. What is blocked is
+  our access to a LICENCE-CLEAN pretrained model, on the three paths surveyed.
+
+A licensing blocker is a procurement problem, not a physics one, and it can be
+removed by a licensed model or by labelling our own pilot set. Soccer therefore
+stays at S0 with a fail-closed court path and a declared image_px corpus of
+867,044 rows across 71,460 frame ids.
