@@ -21,6 +21,14 @@ PURGE_HOURS = 48
 EMBARGO_DAYS = 3
 
 
+class LeakError(AssertionError):
+    """Assertion-compatible failure for every eval-gate leak contract violation."""
+
+    def __init__(self, message: str) -> None:
+        text = str(message)
+        super().__init__(text if "LEAK" in text else f"LEAK: {text}")
+
+
 def _teams(s: dict) -> set:
     return {s["home"], s["away"]}
 
@@ -35,11 +43,30 @@ def _same_matchup(a: dict, b: dict) -> bool:
 
 def assert_vintage(s: dict) -> None:
     """LEAK GUARD: every feature must be known strictly before the prediction time."""
-    for f, avail in s.get("feature_avail", {}).items():
-        assert avail < s["state_ts"], (
-            f"LEAK: feature {f} availability {avail} >= state_ts {s['state_ts']} "
-            f"in {s.get('game_id')}"
-        )
+    features = s.get("features", {})
+    availability = s.get("feature_avail", {})
+    if not availability:
+        raise LeakError(f"empty feature_avail in {s.get('game_id')}")
+    if set(features) != set(availability):
+        raise LeakError(f"feature_avail keys do not match features in {s.get('game_id')}")
+    try:
+        state_ts = datetime.fromisoformat(s["state_ts"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise LeakError(f"unparseable state_ts {s.get('state_ts')} in {s.get('game_id')}") from exc
+    for f, avail in availability.items():
+        if not isinstance(avail, str) or len(avail) == 10:
+            raise LeakError(f"date-only or unparseable availability {avail} for feature {f}")
+        try:
+            avail_ts = datetime.fromisoformat(avail)
+        except (TypeError, ValueError) as exc:
+            raise LeakError(f"unparseable availability {avail} for feature {f}") from exc
+        if (avail_ts.tzinfo is None) != (state_ts.tzinfo is None):
+            raise LeakError(f"mixed naive/aware timestamps for feature {f} in {s.get('game_id')}")
+        if not avail_ts < state_ts:
+            raise LeakError(
+                f"feature {f} availability {avail} >= state_ts {s['state_ts']} "
+                f"in {s.get('game_id')}"
+            )
 
 
 @dataclass
@@ -69,8 +96,13 @@ def walk_forward(states: List[dict],
                 continue                                  # purge same-team back-to-back
             train.append(s)
         assert_vintage(test)                              # defense in depth (schema also checks)
-        p = predict_fn(train, test, select_inside)
-        assert 0.0 <= p <= 1.0, f"predict_fn returned {p} out of [0,1]"
+        test_view = {
+            k: v for k, v in test.items()
+            if k not in ("outcome", "devig_close_prob", "truth_wp")
+        }
+        p = predict_fn(train, test_view, select_inside)
+        if not 0.0 <= p <= 1.0:
+            raise ValueError(f"predict_fn returned {p} out of [0,1]")
         records.append({
             "game_id": test["game_id"], "ts": test["state_ts"],
             "p_model": float(p), "p_close": test.get("devig_close_prob"),

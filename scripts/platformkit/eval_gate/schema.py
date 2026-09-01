@@ -9,6 +9,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, List
 
+if __package__:
+    from .walkforward import LeakError, assert_vintage
+else:
+    from walkforward import LeakError, assert_vintage
+
 GOLDEN_SCHEMA_VERSION = 1
 
 REQUIRED = (
@@ -37,23 +42,29 @@ class GameState:
 
 def validate_golden(states: List[dict]) -> None:
     """Raise AssertionError on any leak, malformed field, dup, or coverage gap."""
-    assert 90 <= len(states) <= 120, f"golden set size {len(states)} out of [90,120]"
+    if not 90 <= len(states) <= 120:
+        raise LeakError(f"golden set size {len(states)} out of [90,120]")
     seen = set()
     for s in states:
         for k in REQUIRED:
-            assert k in s, f"missing field {k} in state {s.get('game_id')}"
-        assert s["outcome"] in (0, 1), f"bad outcome in {s['game_id']}"
-        assert 0.0 <= s["devig_close_prob"] <= 1.0, f"bad devig_close_prob in {s['game_id']}"
-        assert 0.0 <= s["truth_wp"] <= 1.0, f"bad truth_wp in {s['game_id']}"
-        # LEAK GUARD: every feature must be known strictly before the prediction time
-        for f, avail in s["feature_avail"].items():
-            assert avail < s["state_ts"], (
-                f"LEAK: feature {f} availability {avail} >= state_ts "
-                f"{s['state_ts']} in {s['game_id']}"
-            )
+            if k not in s:
+                raise LeakError(f"missing field {k} in state {s.get('game_id')}")
+        if s["outcome"] not in (0, 1):
+            raise LeakError(f"bad outcome in {s['game_id']}")
+        if not 0.0 <= s["devig_close_prob"] <= 1.0:
+            raise LeakError(f"bad devig_close_prob in {s['game_id']}")
+        if not 0.0 <= s["truth_wp"] <= 1.0:
+            raise LeakError(f"bad truth_wp in {s['game_id']}")
+        if not s["feature_avail"]:
+            raise LeakError(f"empty feature_avail in {s['game_id']}")
+        if set(s["features"]) != set(s["feature_avail"]):
+            raise LeakError(f"feature_avail keys do not match features in {s['game_id']}")
+        assert_vintage(s)
         key = (s["game_id"], s["state_ts"])
-        assert key not in seen, f"duplicate state {key}"
+        if key in seen:
+            raise LeakError(f"duplicate state {key}")
         seen.add(key)
     regimes = {s["regime"] for s in states}
     for r in REQUIRED_REGIMES:
-        assert r in regimes, f"coverage gap: regime {r} missing"
+        if r not in regimes:
+            raise LeakError(f"coverage gap: regime {r} missing")

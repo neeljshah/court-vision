@@ -5,11 +5,13 @@ from walkforward import walk_forward, assert_vintage
 
 def _s(game_id, ts, home, away, **kw):
     base = {"game_id": game_id, "state_ts": ts, "home": home, "away": away,
+            "features": {"x": 1.0},
             "feature_avail": {"x": ts[:10] + "T00:00:00"}, "devig_close_prob": 0.5,
             "outcome": 0}
     base.update(kw)
     # ensure feature is known strictly before state_ts (day-before midnight < same-day game)
-    base["feature_avail"] = {"x": (ts[:8] + "01T00:00:00")}
+    # and keep features/feature_avail key parity (leak-contract hardening 2026-09-01)
+    base["feature_avail"] = {k: (ts[:8] + "01T00:00:00") for k in base["features"]}
     return base
 
 
