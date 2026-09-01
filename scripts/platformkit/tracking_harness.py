@@ -11,6 +11,8 @@ from typing import Mapping
 
 import pandas as pd
 
+from scripts.platformkit.liveness_metrics import compute_liveness_metrics, thresholds_for
+
 DEFAULT_CONFIG_VERSION = "2026-09-01-v1"
 _BASKETBALL = {"bounds": (0, 94, 0, 50), "min_players": 6,
                "ball_valid_min": 0.30, "coverage_min": 0.60,
@@ -57,6 +59,11 @@ class QualityReport:
     ball_valid_pct: float
     jump_p95: float
     oob_pct: float
+    zero_step_share: float
+    median_step_distance: float
+    distinct_position_ratio: float
+    stationary_track_share: float
+    liveness_verdict: str
     source_resolution: str | None
     source_frame_rate: float | None
     self_consistency_only: bool
@@ -79,9 +86,15 @@ def _source_fields(metadata: Mapping[str, object] | None) -> tuple[str | None, f
 def _failed_report(sport: str, config_version: str, failure: str,
                    metadata: Mapping[str, object] | None = None) -> QualityReport:
     resolution, frame_rate = _source_fields(metadata)
-    return QualityReport(sport, config_version, 0, 0, 0, 0, 0.0, 0.0, 0.0,
-                         0.0, 0.0, 0.0, resolution, frame_rate, True, False,
-                         [failure])
+    return QualityReport(
+        sport=sport, config_version=config_version, n_frames=0, n_unique_games=0,
+        n_duplicate_frame_track_rows=0, ball_rows=0, coverage_pct=0.0,
+        det_per_frame=0.0, median_track_len=0.0, ball_valid_pct=0.0,
+        jump_p95=0.0, oob_pct=0.0, zero_step_share=0.0,
+        median_step_distance=0.0, distinct_position_ratio=0.0,
+        stationary_track_share=0.0, liveness_verdict="SUSPECT",
+        source_resolution=resolution, source_frame_rate=frame_rate,
+        self_consistency_only=True, passed=False, failures=[failure])
 
 
 def evaluate(df: pd.DataFrame, sport: str,
@@ -126,6 +139,8 @@ def evaluate(df: pd.DataFrame, sport: str,
     grouped = players.sort_values(["track_id", "frame"]).groupby("track_id")
     jump = ((grouped["x"].diff() ** 2 + grouped["y"].diff() ** 2) ** 0.5).dropna()
     jump_p95 = float(jump.quantile(0.95)) if len(jump) else 0.0
+    liveness = compute_liveness_metrics(df, sport)
+    zero_step_max = thresholds_for(sport)["zero_step_share_max"]
 
     failures: list[str] = []
     if duplicates:
@@ -140,11 +155,21 @@ def evaluate(df: pd.DataFrame, sport: str,
         if invalid:
             sign = "<" if operator == "min" else ">"
             failures.append("{} {:.2f} {} {:.2f}".format(name, value, sign, threshold))
+    if liveness.verdict == "FROZEN":
+        failures.append("liveness verdict FROZEN")
+    if liveness.zero_step_share > zero_step_max:
+        failures.append("zero_step_share {:.2f} > {:.2f}".format(
+            liveness.zero_step_share, zero_step_max))
 
     return QualityReport(sport, config_version, n_frames, n_unique_games,
                          duplicates, ball_rows, round(coverage, 4),
                          round(det_per_frame, 2), track_len, round(ball_valid, 4),
-                         round(jump_p95, 2), round(oob_pct, 4), resolution,
+                         round(jump_p95, 2), round(oob_pct, 4),
+                         round(liveness.zero_step_share, 4),
+                         round(liveness.median_step_distance, 4),
+                         round(liveness.distinct_position_ratio, 4),
+                         round(liveness.stationary_track_share, 4),
+                         liveness.verdict, resolution,
                          frame_rate, True, not failures, failures)
 
 

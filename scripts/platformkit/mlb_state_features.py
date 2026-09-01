@@ -12,11 +12,12 @@ import math
 import re
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, Dict, List, Optional, TypedDict
+from typing import Any, Dict, List, Literal, Optional, TypedDict
 
 import pandas as pd
 
-from scripts.platformkit.wp_diag_series import candidate_dirs, load_records
+from scripts.platformkit.ingame_replay_scoreboard import candidate_dirs
+from scripts.platformkit.wp_diag_series import load_records
 
 _REPO = Path(__file__).resolve().parents[2]
 _DEFAULT_CACHE = _REPO / "data" / "cache"
@@ -25,6 +26,7 @@ _FEATURE_COLUMNS = ["score_diff", "inning_progress", "leverage_proxy", "run_expe
                     "balls", "strikes", "pitch_count", "times_through_order",
                     "batters_faced_continuous", "pitch_tempo_seconds",
                     "score_change_recency", *_BASE_OUT_COLUMNS]
+ParseQuality = Literal["full", "partial", "none"]
 _PA_PITCHES = 4.0
 
 
@@ -40,6 +42,9 @@ class State(TypedDict):
     strikes: Optional[int]
     pitch_count: Optional[float]
     times_through_order: Optional[float]
+
+
+_STATE_FIELDS = tuple(State.__annotations__)
 
 
 def _number(value: Any) -> Optional[float]:
@@ -100,8 +105,23 @@ def _timestamp_series(ticks: pd.DataFrame) -> pd.Series:
     return parsed
 
 
-def _state_value(value: Optional[float], default: float = 0.0) -> float:
+def _state_value(value: Optional[float], default: float = math.nan) -> float:
     return default if value is None else float(value)
+
+
+def _parse_quality(state: State) -> ParseQuality:
+    """Classify whether a state has all, some, or none of its fields."""
+    present = sum(value is not None for value in state.values())
+    if present == len(_STATE_FIELDS):
+        return "full"
+    return "partial" if present else "none"
+
+
+def drop_unparsed(frame: pd.DataFrame) -> pd.DataFrame:
+    """Return only rows whose state parser recovered at least one field."""
+    if "parse_quality" not in frame.columns:
+        raise ValueError("state feature frame requires parse_quality")
+    return frame.loc[frame["parse_quality"].ne("none")].copy()
 
 
 def game_state_features(ticks_df: pd.DataFrame) -> pd.DataFrame:
@@ -110,6 +130,8 @@ def game_state_features(ticks_df: pd.DataFrame) -> pd.DataFrame:
     if result.empty:
         for column in _FEATURE_COLUMNS:
             result[column] = pd.Series(dtype="float64")
+        result["state_parsed"] = pd.Series(dtype="bool")
+        result["parse_quality"] = pd.Series(dtype="object")
         return result
     timestamps = _timestamp_series(result)
     games = result["game"] if "game" in result else pd.Series("single_game", index=result.index)
@@ -119,34 +141,51 @@ def game_state_features(ticks_df: pd.DataFrame) -> pd.DataFrame:
     prior_score: Dict[str, tuple[float, float]] = {}
     last_score_tick: Dict[str, int] = {}
     game_ticks: Dict[str, int] = defaultdict(int)
-    rows: List[Dict[str, float]] = []
+    rows: List[Dict[str, Any]] = []
     for index, (game_value, summary, stamp) in enumerate(zip(games, summaries, timestamps)):
         game, state = str(game_value), parse_state(summary)
-        home, away = _state_value(state["home_score"]), _state_value(state["away_score"])
-        inning = int(_state_value(state["inning"]))
-        half = state["half"] or "top"
-        outs, base = int(_state_value(state["outs"])), int(_state_value(state["base_state"]))
-        progress = float(inning) + (0.5 if half == "bottom" else 0.0)
-        key = (game, inning, half)
-        prior = last_tick.get(key)
-        if prior is not None:
-            tempo_values[key].append(max(0.0, (stamp - prior).total_seconds()))
-        last_tick[key] = stamp
-        score = (home, away)
-        if game not in prior_score or score != prior_score[game]:
-            last_score_tick[game] = game_ticks[game]
-        prior_score[game] = score
-        base_out = min(7, max(0, base)) * 3 + min(2, max(0, outs))
-        row = {"score_diff": home - away, "inning_progress": progress,
-               "leverage_proxy": abs(home - away) / max(0.5, 9.0 - progress),
-               "run_expectancy": _state_value(state["run_expectancy"]),
-               "balls": _state_value(state["balls"]), "strikes": _state_value(state["strikes"]),
-               "pitch_count": _state_value(state["pitch_count"]),
-               "times_through_order": _state_value(state["times_through_order"]),
-               "batters_faced_continuous": _state_value(state["pitch_count"]) / _PA_PITCHES,
-               "pitch_tempo_seconds": float(pd.Series(tempo_values[key]).median()) if tempo_values[key] else 0.0,
-               "score_change_recency": float(game_ticks[game] - last_score_tick[game])}
-        row.update({column: float(int(position == base_out))
+        quality = _parse_quality(state)
+        row: Dict[str, Any] = {"state_parsed": quality != "none", "parse_quality": quality}
+        if quality == "none":
+            row.update({column: math.nan for column in _FEATURE_COLUMNS})
+            rows.append(row)
+            game_ticks[game] += 1
+            continue
+
+        home, away = state["home_score"], state["away_score"]
+        inning, half = state["inning"], state["half"]
+        progress = (float(inning) + (0.5 if half == "bottom" else 0.0)
+                    if inning is not None and half in {"top", "bottom"} else math.nan)
+        key = (game, inning, half) if progress == progress else None
+        if key is not None:
+            prior = last_tick.get(key)
+            if prior is not None:
+                tempo_values[key].append(max(0.0, (stamp - prior).total_seconds()))
+            last_tick[key] = stamp
+        score = (home, away) if home is not None and away is not None else None
+        if score is not None:
+            if game not in prior_score or score != prior_score[game]:
+                last_score_tick[game] = game_ticks[game]
+            prior_score[game] = score
+        score_diff = home - away if score is not None else math.nan
+        leverage = (abs(score_diff) / max(0.5, 9.0 - progress)
+                    if score_diff == score_diff and progress == progress else math.nan)
+        pitch_count = _state_value(state["pitch_count"])
+        row.update({"score_diff": score_diff, "inning_progress": progress,
+                    "leverage_proxy": leverage,
+                    "run_expectancy": _state_value(state["run_expectancy"]),
+                    "balls": _state_value(state["balls"]), "strikes": _state_value(state["strikes"]),
+                    "pitch_count": pitch_count,
+                    "times_through_order": _state_value(state["times_through_order"]),
+                    "batters_faced_continuous": pitch_count / _PA_PITCHES,
+                    "pitch_tempo_seconds": (float(pd.Series(tempo_values[key]).median())
+                                             if key is not None and tempo_values[key] else 0.0),
+                    "score_change_recency": (float(game_ticks[game] - last_score_tick[game])
+                                              if game in last_score_tick and score is not None else math.nan)})
+        base, outs = state["base_state"], state["outs"]
+        base_out = (min(7, max(0, base)) * 3 + min(2, max(0, outs))
+                    if base is not None and outs is not None else None)
+        row.update({column: (float(int(position == base_out)) if base_out is not None else math.nan)
                     for position, column in enumerate(_BASE_OUT_COLUMNS)})
         rows.append(row)
         game_ticks[game] += 1
@@ -172,10 +211,26 @@ def load_mlb_ticks(cache_root: Path) -> pd.DataFrame:
 def coverage_summary(ticks: pd.DataFrame, features: pd.DataFrame) -> str:
     """Render an ASCII-only state coverage summary."""
     present = int(ticks.get("state_summary", pd.Series(dtype=object)).notna().sum())
-    parsed = sum(parse_state(value)["inning"] is not None for value in ticks.get("state_summary", []))
-    return "\n".join(["MLB STATE FEATURES", "TICKS: %d" % len(ticks),
-                        "STATE_SUMMARY_PRESENT: %d" % present, "STATE_PARSED: %d" % parsed,
-                        "FEATURE_ROWS: %d" % len(features), "BASE_OUT_ONE_HOT_COLUMNS: 24"])
+    qualities = features.get("parse_quality", pd.Series(dtype=object))
+    counts = {quality: int((qualities == quality).sum()) for quality in ("full", "partial", "none")}
+    total = len(features)
+    if "game" in features:
+        none_by_game = features.assign(_is_none=qualities.eq("none")).groupby("game")["_is_none"].all()
+        none_games = int(none_by_game.sum())
+    else:
+        none_games = 0
+    lines = ["MLB STATE FEATURES", "TICKS: %d" % len(ticks),
+             "STATE_SUMMARY_PRESENT: %d" % present,
+             "STATE_PARSED: %d" % (counts["full"] + counts["partial"]),
+             "FEATURE_ROWS: %d" % total, "BASE_OUT_ONE_HOT_COLUMNS: 24",
+             "FABRICATION CENSUS", "PARSE_QUALITY_FULL_ROWS: %d" % counts["full"],
+             "PARSE_QUALITY_FULL_SHARE: %.6f" % (counts["full"] / total if total else 0.0),
+             "PARSE_QUALITY_PARTIAL_ROWS: %d" % counts["partial"],
+             "PARSE_QUALITY_PARTIAL_SHARE: %.6f" % (counts["partial"] / total if total else 0.0),
+             "PARSE_QUALITY_NONE_ROWS: %d" % counts["none"],
+             "PARSE_QUALITY_NONE_SHARE: %.6f" % (counts["none"] / total if total else 0.0),
+             "GAMES_100_PCT_UNPARSEABLE: %d" % none_games]
+    return "\n".join(lines)
 
 
 def main(argv: Optional[List[str]] = None) -> int:

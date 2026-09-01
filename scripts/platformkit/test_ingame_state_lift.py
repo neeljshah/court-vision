@@ -27,7 +27,8 @@ def _ticks(signal: bool) -> tuple[list[dict[str, object]], pd.DataFrame]:
                               "state_summary": score, "raw": {"sport": "mlb"}})
                 features.append({"game": game, "timestamp": timestamp,
                                  "score_state": (1.0 if outcome else -1.0) if signal
-                                 else float(tick_number % 7)})
+                                 else float(tick_number % 7),
+                                 "state_parsed": True, "parse_quality": "full"})
     return ticks, pd.DataFrame(features)
 
 
@@ -53,3 +54,18 @@ def test_noise_state_is_no_change() -> None:
 def test_shuffled_dates_fail_prior_only_assertion() -> None:
     with pytest.raises(AssertionError, match="date ordering"):
         ingame_state_lift._assert_prior_dates(["2026-01-03"], ["2026-01-02"])
+
+
+def test_unparseable_rows_and_games_are_excluded_before_modeling() -> None:
+    ticks, features = _ticks(signal=False)
+    excluded_game = ticks[0]["game"]
+    excluded = features["game"].eq(excluded_game)
+    features.loc[excluded, "state_parsed"] = False
+    features.loc[excluded, "parse_quality"] = "none"
+
+    report = ingame_state_lift.evaluate(ticks, features, bootstrap_iterations=5)
+
+    assert report["excluded_unparsed_rows"] == 12
+    assert report["excluded_unparsed_games"] == 1
+    assert report["folds"][0]["train_games"] == 9
+    assert report["slices"]["all_ticks"]["metrics"]["n_ticks"] < len(ticks)

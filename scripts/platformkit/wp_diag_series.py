@@ -6,17 +6,14 @@ import json
 import math
 from collections import defaultdict
 from datetime import datetime, timezone
-import os
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
-from scripts.platformkit.ingame_replay_scoreboard import (_OUTCOME_KEYS, _normalise, _value,
-                                                          candidate_dirs)
+from scripts.platformkit.ingame_replay_scoreboard import _OUTCOME_KEYS, _normalise, _value
+from scripts.platformkit.tick_dedupe import load_ticks_deduped
 
 _REPO = Path(__file__).resolve().parents[2]
-_DEFAULT_CACHE = Path(os.environ.get(
-    "NBA_CACHE_ROOT",
-    os.path.join(os.environ.get("NBA_DATA_ROOT", "data"), "cache")))
+_DEFAULT_CACHE = Path(r"C:\Users\neelj\nba-ai-system\data\cache")
 _TOKENS = ("prob", "price", "mid", "blend")
 _PREFIX_SPORTS = {"KXWCGAME": "soccer_wc", "KXMLBGAME": "mlb", "KXNBAGAME": "nba",
                   "KXNFLGAME": "nfl", "KXNCAABGAME": "ncaab", "KXNCAAWGAME": "ncaaw"}
@@ -45,7 +42,7 @@ def _date(value: str) -> Optional[str]:
 
 
 def load_records(store: Path) -> List[Dict[str, Any]]:
-    """Load the same settled records accepted by the replay-scoreboard normalizer."""
+    """Load raw-series fixture records without applying the CLI store guard."""
     records: List[Dict[str, Any]] = []
     for path in sorted(store.rglob("*.jsonl"), key=lambda item: str(item).lower()):
         try:
@@ -55,10 +52,7 @@ def load_records(store: Path) -> List[Dict[str, Any]]:
                         raw = json.loads(line)
                     except json.JSONDecodeError:
                         continue
-                    if not isinstance(raw, dict):
-                        continue
-                    tick = _normalise(raw)
-                    if tick is not None:
+                    if isinstance(raw, dict) and (tick := _normalise(raw)) is not None:
                         records.append({"raw": raw, **tick,
                                         "outcome": float(_value(raw, _OUTCOME_KEYS))})
         except OSError:
@@ -155,19 +149,16 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--cache-root", type=Path, default=_DEFAULT_CACHE)
     parser.add_argument("--output-dir", type=Path, default=_REPO / "data" / "ab_reports")
     args = parser.parse_args(argv)
-    stores, records = [], []
-    for store in candidate_dirs(args.cache_root):
-        loaded = load_records(store)
-        if loaded:
-            stores.append(store)
-            records.extend(loaded)
-    if not stores:
+    records, dedupe = load_ticks_deduped(args.cache_root)
+    print("DEDUPE: RAW=%d DEDUPED=%d DUPLICATE_PCT=%.2f STORES=%s" %
+          (dedupe["raw_count"], dedupe["deduped_count"], dedupe["duplicate_pct"],
+           ", ".join(dedupe["stores_seen"]) or "NONE"))
+    if not records:
         print("NO PARSEABLE TICK STORE")
         return 0
     report = audit(records)
-    print("STORES: " + ", ".join(str(store) for store in stores))
     print(render(report))
-    print("REPORT: %s" % write_report(report, stores, args.output_dir))
+    print("REPORT: %s" % write_report(report, [args.cache_root], args.output_dir))
     return 0
 
 

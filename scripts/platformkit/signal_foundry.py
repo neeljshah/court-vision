@@ -1,9 +1,9 @@
 """Offline, leak-safe screening for proposed prediction signals.
 
-Grades are pre-registered: STRONG needs positive lift, z >= adjusted 3.0
-threshold, and split-half sign agreement; WEAK needs positive lift and z >= 2;
-FLAT is within 0.01 MAE; everything else is REJECT.  This is evidence tooling,
-not a production-signal or betting-edge claim.
+Grades are pre-registered: STRONG needs positive lift, z >= the deflated
+threshold, and split-half sign agreement; WEAK needs positive lift and z >=
+the same deflated threshold; FLAT is within 0.01 MAE; everything else is
+REJECT. This is evidence tooling, not a production-signal or betting-edge claim.
 """
 from __future__ import annotations
 
@@ -23,6 +23,7 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.preprocessing import StandardScaler
 
 from scripts.platformkit.novel_metric_lift import CANDIDATE_METRICS, pivot_player_metrics
+from scripts.platformkit.leak_boundary import assert_no_same_game_columns, embargo_indices
 from scripts.platformkit.teacher_student_ab import BASE_FEATURES, LOAD_FEATURES, build_features, expanding_folds
 
 
@@ -30,7 +31,10 @@ EMBARGO_BLOCKS = 1
 PERMUTATIONS = 50
 FLAT_LIFT = 0.01
 REGISTRY: dict[str, "SignalSpec"] = {}
-LEDGER_PATH = Path(os.environ.get("SIGNAL_FOUNDRY_LEDGER", "data/ab_reports/foundry_ledger.jsonl"))
+# Invariant: trial history always uses this import-resolved path. LEDGER_PATH
+# remains a compatibility alias, but rebinding it cannot reset the counter.
+_LEDGER_PATH = Path(os.environ.get("SIGNAL_FOUNDRY_LEDGER", "data/ab_reports/foundry_ledger.jsonl")).resolve()
+LEDGER_PATH = _LEDGER_PATH
 
 
 @dataclass(frozen=True)
@@ -77,6 +81,7 @@ def _signal(frame: pd.DataFrame, spec: SignalSpec) -> pd.Series:
 def _base_columns(frame: pd.DataFrame, target: str, excluded: Iterable[str]) -> list[str]:
     skip = {target, "gameId", "personId", "playerId", _date_column(frame), *excluded}
     names = [name for name in frame if name not in skip and pd.api.types.is_numeric_dtype(frame[name])]
+    assert_no_same_game_columns(names)
     return names or ["__intercept__"]
 
 
@@ -92,30 +97,32 @@ def _impute(train: pd.DataFrame, test: pd.DataFrame) -> tuple[pd.DataFrame, pd.D
     return train.fillna(medians), test.fillna(medians)
 
 
-def _embargo(frame: pd.DataFrame, train_index: np.ndarray) -> np.ndarray:
-    dates = pd.to_datetime(frame.iloc[train_index][_date_column(frame)], errors="raise")
-    blocks = np.sort(dates.drop_duplicates().to_numpy())
-    if len(blocks) <= EMBARGO_BLOCKS:
+def _embargo(frame: pd.DataFrame, train_index: np.ndarray, test_index: np.ndarray) -> np.ndarray:
+    safe = embargo_indices(frame[_date_column(frame)], frame.iloc[test_index][_date_column(frame)], EMBARGO_BLOCKS)
+    result = np.intersect1d(train_index, safe, assume_unique=True)
+    if not len(result):
         raise ValueError("Train window too short after embargo")
-    keep = blocks[:-EMBARGO_BLOCKS]
-    return train_index[np.asarray(dates.isin(keep))]
+    return result
 
 
 def _lift(frame: pd.DataFrame, target: str, base: Sequence[str], signal: pd.Series,
           folds: Sequence[tuple[np.ndarray, np.ndarray]], shuffled: bool = False, seed: int = 0) -> tuple[float, list[float]]:
+    """Measure lift; shuffled nulls permute the signal independently within each fold."""
     actual, augmented, fold_lifts = [], [], []
     rng = np.random.default_rng(seed)
     work = frame.copy()
     work[signal.name] = signal
     for train_i, test_i in folds:
-        train_i = _embargo(work, np.asarray(train_i))
         test_i = np.asarray(test_i)
-        train_y = pd.to_numeric(work.iloc[train_i][target], errors="raise").to_numpy()
+        train_i = _embargo(work, np.asarray(train_i), test_i)
+        train, test = work.iloc[train_i].copy(), work.iloc[test_i].copy()
         if shuffled:
-            train_y = rng.permutation(train_y)
-        test_y = pd.to_numeric(work.iloc[test_i][target], errors="raise").to_numpy()
-        bx_train, bx_test = _impute(_design(work.iloc[train_i], base), _design(work.iloc[test_i], base))
-        sx_train, sx_test = _impute(_design(work.iloc[train_i], [*base, signal.name]), _design(work.iloc[test_i], [*base, signal.name]))
+            train[signal.name] = rng.permutation(train[signal.name].to_numpy())
+            test[signal.name] = rng.permutation(test[signal.name].to_numpy())
+        train_y = pd.to_numeric(train[target], errors="raise").to_numpy()
+        test_y = pd.to_numeric(test[target], errors="raise").to_numpy()
+        bx_train, bx_test = _impute(_design(train, base), _design(test, base))
+        sx_train, sx_test = _impute(_design(train, [*base, signal.name]), _design(test, [*base, signal.name]))
         b_model = Ridge(alpha=1.0).fit(StandardScaler().fit_transform(bx_train), train_y)
         b_pred = b_model.predict(StandardScaler().fit(bx_train).transform(bx_test))
         scaler = StandardScaler().fit(sx_train)
@@ -126,17 +133,17 @@ def _lift(frame: pd.DataFrame, target: str, base: Sequence[str], signal: pd.Seri
 
 
 def _trials() -> int:
-    if not LEDGER_PATH.exists():
+    if not _LEDGER_PATH.exists():
         return 0
-    return sum(1 for line in LEDGER_PATH.read_text(encoding="utf-8").splitlines() if line.strip())
+    return sum(1 for line in _LEDGER_PATH.read_text(encoding="utf-8").splitlines() if line.strip())
 
 
 def _append(spec: SignalSpec, grade: str, lift: float, z: float) -> dict[str, object]:
     count = _trials() + 1
     item = {"ts": datetime.now(timezone.utc).isoformat(), "signal": spec.name, "sport": spec.sport,
             "n_trials_total": count, "grade": grade, "lift": lift, "z": z}
-    LEDGER_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with LEDGER_PATH.open("a", encoding="utf-8") as handle:
+    _LEDGER_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with _LEDGER_PATH.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(item, allow_nan=False) + "\n")
     return item
 
@@ -156,7 +163,7 @@ def evaluate_signal(matrix: pd.DataFrame, target: str, spec: SignalSpec,
     stable = bool(midpoint and np.sign(np.mean(fold_lifts[:midpoint])) == np.sign(np.mean(fold_lifts[midpoint:])) and lift > 0)
     significance = report_significance(z, _trials() + 1)
     grade = "STRONG" if lift > FLAT_LIFT and stable and significance["significant"] else (
-        "WEAK" if lift > FLAT_LIFT and z >= 2.0 else "FLAT" if abs(lift) <= FLAT_LIFT else "REJECT")
+        "WEAK" if lift > FLAT_LIFT and z >= significance["threshold"] else "FLAT" if abs(lift) <= FLAT_LIFT else "REJECT")
     ledger = _append(spec, grade, lift, z)
     print("{0} grade={1} lift={2:.4f} z={3:.3f} threshold={4:.3f} trials={5}".format(
         spec.name, grade, lift, z, significance["threshold"], significance["n_trials"]
@@ -184,7 +191,7 @@ def combine_pool(matrix: pd.DataFrame, target: str, pool_specs: Sequence[SignalS
     pool = [name for name in pool if usable.get(name, False)]
     base_errors, pool_errors = [], []
     for train_i, test_i in folds:
-        train_i = _embargo(work, np.asarray(train_i)); test_i = np.asarray(test_i)
+        test_i = np.asarray(test_i); train_i = _embargo(work, np.asarray(train_i), test_i)
         bx_train, bx_test = _impute(_design(work.iloc[train_i], base), _design(work.iloc[test_i], base))
         px_train, px_test = _impute(_design(work.iloc[train_i], [*base, *pool]), _design(work.iloc[test_i], [*base, *pool]))
         y_train, y_test = work.iloc[train_i][target], work.iloc[test_i][target]

@@ -24,6 +24,7 @@ from sklearn.metrics import mean_absolute_error
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from scripts.platformkit.tracking_features import _game_key
+from scripts.platformkit.leak_boundary import embargo_indices
 
 
 BASE_FEATURES = ("minutes_expanding", "minutes_l5")
@@ -31,6 +32,7 @@ LOAD_FEATURES = (
     "cum_distance_7d", "cum_distance_14d", "minutes_7d", "days_rest",
     "speed_decline_ratio", "b2b",
 )
+EMBARGO_BLOCKS = 1
 
 
 def _minutes_value(value: object) -> float:
@@ -165,6 +167,8 @@ def evaluate_ab(frame: pd.DataFrame, tracking_columns: Sequence[str], folds: int
     track_errors: list[float] = []
     features_valid = True
     for number, (train_index, test_index) in enumerate(expanding_folds(frame, folds), start=1):
+        safe = embargo_indices(frame["gameDate"], frame.iloc[test_index]["gameDate"], EMBARGO_BLOCKS)
+        train_index = np.intersect1d(train_index, safe, assume_unique=True)
         y_train = frame.iloc[train_index]["minutes"]
         y_test = frame.iloc[test_index]["minutes"]
         base_train, base_test = _median_impute_train_test(

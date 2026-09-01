@@ -11,7 +11,6 @@ import json
 import random
 from collections import defaultdict
 from datetime import datetime, timezone
-import os
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Set, Tuple
 
@@ -20,17 +19,16 @@ import pandas as pd
 from sklearn.ensemble import HistGradientBoostingClassifier
 
 from scripts.platformkit.brier_decomposition import decompose
-from scripts.platformkit.ingame_replay_scoreboard import discover_store
+from scripts.platformkit.ingame_replay_scoreboard import discover_store, load_ticks
 from scripts.platformkit.lag_window_calibration import _classify_game
 from scripts.platformkit.market_lag_study import load_records
-from scripts.platformkit.wp_diag_oos import _game_dates, load_ticks
+from scripts.platformkit.wp_diag_oos import _game_dates
 
 _REPO = Path(__file__).resolve().parents[2]
-_DEFAULT_CACHE = Path(os.environ.get(
-    "NBA_CACHE_ROOT",
-    os.path.join(os.environ.get("NBA_DATA_ROOT", "data"), "cache")))
+_DEFAULT_CACHE = Path(r"C:\Users\neelj\nba-ai-system\data\cache")
 _BOOTSTRAP_SEED = 20260831
 _PRIOR = {"model_brier": 0.234, "market_brier": 0.187, "delta_market_minus_model": -0.047}
+_FEATURE_METADATA = {"state_parsed", "parse_quality"}
 
 
 def _load_enriched_ticks(store: Path) -> List[Dict[str, Any]]:
@@ -45,32 +43,19 @@ def _load_enriched_ticks(store: Path) -> List[Dict[str, Any]]:
     return ticks
 
 
-def _optional_feature_frame(ticks: Any) -> Optional[pd.DataFrame]:
-    """Return the prebuilt in-game state features, joined to tick labels.
-
-    The tick loader drops ``state_summary``, so features cannot be rebuilt from
-    its output. ``mlb_state_features`` writes a parquet that already carries the
-    parsed state columns alongside game/timestamp/model_prob/market_prob/outcome
-    -- read that artifact when present (built pod-side by the retrain loop).
-    """
-    root = os.environ.get("NBA_DATA_ROOT", "data")
-    path = Path(root) / "ab_reports" / "mlb_state_features.parquet"
-    if not path.is_file():
+def _optional_feature_frame(ticks: List[Dict[str, Any]]) -> Optional[pd.DataFrame]:
+    """Call the independently delivered state-feature adapter when available."""
+    try:
+        module = importlib.import_module("scripts.platformkit.mlb_state_features")
+    except ImportError:
         return None
-    frame = pd.read_parquet(path)
-    if frame.empty:
+    builder = next((getattr(module, name, None) for name in
+                    ("build_feature_frame", "state_feature_frame", "build_features")
+                    if callable(getattr(module, name, None))), None)
+    if builder is None:
         return None
-    # keep join keys + state features only. market_prob/model_prob/outcome are
-    # evaluation-only and come from the tick loader; state_summary is raw text.
-    drop = [name for name in ("market_prob", "model_prob", "outcome", "state_summary")
-            if name in frame.columns]
-    frame = frame.drop(columns=drop)
-    # the store can emit several ticks sharing a (game, timestamp) second; keep
-    # the last observation of that second so the join key is unique.
-    keys = [name for name in ("game", "timestamp") if name in frame.columns]
-    if keys:
-        frame = frame.drop_duplicates(subset=keys, keep="last")
-    return frame
+    frame = builder(ticks)
+    return frame if isinstance(frame, pd.DataFrame) else pd.DataFrame(frame)
 
 
 def _feature_matrix(ticks: List[Dict[str, Any]], features: pd.DataFrame) -> Tuple[pd.DataFrame, List[str]]:
@@ -80,7 +65,8 @@ def _feature_matrix(ticks: List[Dict[str, Any]], features: pd.DataFrame) -> Tupl
     prohibited = [str(column) for column in features.columns if "market" in str(column).lower()]
     assert not prohibited, "market_prob is evaluation-only, never an ARM B feature"
     state_columns = [str(column) for column in features.columns
-                     if column not in required and str(column) not in {"outcome", "model_prob"}]
+                     if column not in required and str(column) not in {"outcome", "model_prob"}
+                     and str(column) not in _FEATURE_METADATA]
     if not state_columns:
         raise ValueError("state feature frame has no usable state columns")
     if features.duplicated(["game", "timestamp"]).any():
@@ -88,7 +74,7 @@ def _feature_matrix(ticks: List[Dict[str, Any]], features: pd.DataFrame) -> Tupl
     base = pd.DataFrame(ticks)
     base["_index"] = np.arange(len(base))
     joined = base.merge(features[["game", "timestamp"] + state_columns], how="left",
-                        on=["game", "timestamp"], sort=False, validate="many_to_one")  # ticks repeat within a second
+                        on=["game", "timestamp"], sort=False, validate="one_to_one")
     joined = joined.sort_values("_index").reset_index(drop=True)
     for column in state_columns + ["model_prob"]:
         joined[column] = pd.to_numeric(joined[column], errors="coerce")
@@ -199,11 +185,22 @@ def evaluate(ticks: List[Dict[str, Any]], features: pd.DataFrame, bootstrap_iter
               if tick.get("market_prob") is not None]
     for tick in usable:
         tick.setdefault("raw", {})
-    joined, state_columns = _feature_matrix(usable, features)
+    state_module = importlib.import_module("scripts.platformkit.mlb_state_features")
+    feature_frame = features.copy()
+    if "parse_quality" not in feature_frame.columns:
+        feature_frame["parse_quality"] = "full"
+    unparsed = feature_frame[feature_frame["parse_quality"].eq("none")]
+    unparsed_keys = {(row.game, row.timestamp) for row in unparsed.itertuples(index=False)}
+    excluded_ticks = [tick for tick in usable if (tick["game"], tick["timestamp"]) in unparsed_keys]
+    usable = [tick for tick in usable if (tick["game"], tick["timestamp"]) not in unparsed_keys]
+    feature_frame = state_module.drop_unparsed(feature_frame)
+    joined, state_columns = _feature_matrix(usable, feature_frame)
     scored, folds = _walk_forward(joined, state_columns, _game_dates(usable))
     in_window = _window_ids(usable)
     slices = {"all_ticks": scored, "in_window_ticks": scored[scored["_row_id"].isin(in_window)]}
     report: Dict[str, Any] = {"status": "OK", "prior_measured_baseline": _PRIOR,
+                              "excluded_unparsed_rows": len(excluded_ticks),
+                              "excluded_unparsed_games": len({tick["game"] for tick in excluded_ticks}),
                               "state_features": state_columns, "folds": folds, "slices": {}}
     for name, rows in slices.items():
         metrics = _metrics(rows)
@@ -218,7 +215,9 @@ def _number(value: Optional[float]) -> str:
 
 
 def render(report: Dict[str, Any]) -> str:
-    lines = ["PRIOR BASELINE: model=0.234000 market=0.187000 delta=-0.047000",
+    lines = ["EXCLUDED UNPARSED: %d ROWS, %d GAMES" %
+             (report.get("excluded_unparsed_rows", 0), report.get("excluded_unparsed_games", 0)),
+             "PRIOR BASELINE: model=0.234000 market=0.187000 delta=-0.047000",
              "SLICE | N | ARM_A | ARM_B | MARKET | B_DELTA | B_CI90 | VERDICT"]
     for name, section in report.get("slices", {}).items():
         metrics = section["metrics"]

@@ -7,17 +7,13 @@ import math
 import re
 from collections import defaultdict
 from datetime import datetime, timezone
-import os
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
-from scripts.platformkit.ingame_replay_scoreboard import (_OUTCOME_KEYS, _normalise,
-                                                          _value, candidate_dirs)
+from scripts.platformkit.tick_dedupe import load_ticks_deduped
 
 _REPO = Path(__file__).resolve().parents[2]
-_DEFAULT_CACHE = Path(os.environ.get(
-    "NBA_CACHE_ROOT",
-    os.path.join(os.environ.get("NBA_DATA_ROOT", "data"), "cache")))
+_DEFAULT_CACHE = Path(r"C:\Users\neelj\nba-ai-system\data\cache")
 _PREFIX_SPORTS = {"KXWCGAME": "soccer_wc", "KXMLBGAME": "mlb", "KXNBAGAME": "nba",
                   "KXNFLGAME": "nfl", "KXNCAABGAME": "ncaab", "KXNCAAWGAME": "ncaaw"}
 _HORIZON = 10
@@ -65,24 +61,7 @@ def _seconds(later: str, earlier: str) -> Optional[float]:
 
 def load_records(store: Path) -> List[Dict[str, Any]]:
     """Load settled normalized ticks while preserving each source score state."""
-    rows: List[Dict[str, Any]] = []
-    for path in sorted(store.rglob("*.jsonl"), key=lambda item: str(item).lower()):
-        try:
-            with path.open(encoding="utf-8") as handle:
-                for line in handle:
-                    try:
-                        raw = json.loads(line)
-                    except json.JSONDecodeError:
-                        continue
-                    if not isinstance(raw, dict):
-                        continue
-                    tick = _normalise(raw)
-                    if tick is not None:
-                        rows.append({**tick, "outcome": float(_value(raw, _OUTCOME_KEYS)),
-                                     "state_summary": raw.get("state_summary"), "raw": raw})
-        except OSError:
-            continue
-    return rows
+    return load_ticks_deduped(store)[0]
 
 
 def _quantile(values: Iterable[float], q: float) -> Optional[float]:
@@ -178,17 +157,14 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--cache-root", type=Path, default=_DEFAULT_CACHE)
     parser.add_argument("--output", type=Path, default=_REPO / "data" / "ab_reports" / "market_lag_study.json")
     args = parser.parse_args(argv)
-    stores, records = [], []
-    for store in candidate_dirs(args.cache_root):
-        loaded = load_records(store)
-        if loaded:
-            stores.append(store)
-            records.extend(loaded)
-    report = {"generated_at": datetime.now(timezone.utc).isoformat(), "stores": [str(path) for path in stores],
-              **analyze(records)}
+    records, dedupe = load_ticks_deduped(args.cache_root)
+    print("DEDUPE: RAW=%d DEDUPED=%d DUPLICATE_PCT=%.2f STORES=%s" %
+          (dedupe["raw_count"], dedupe["deduped_count"], dedupe["duplicate_pct"],
+           ", ".join(dedupe["stores_seen"]) or "NONE"))
+    report = {"generated_at": datetime.now(timezone.utc).isoformat(), "stores": dedupe["stores_seen"],
+              "dedupe": dedupe, **analyze(records)}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print("STORES: " + (", ".join(str(path) for path in stores) or "NONE"))
     print(render(report))
     print("REPORT: %s" % args.output)
     return 0

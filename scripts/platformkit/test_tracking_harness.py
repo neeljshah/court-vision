@@ -28,6 +28,20 @@ def test_good_game_has_versioned_provenance_aware_report():
     assert report.ball_rows == 100 and report.ball_valid_pct == 1.0
     assert report.source_resolution == "1280x720" and report.source_frame_rate == 60.0
     assert report.self_consistency_only is True
+    assert report.liveness_verdict == "LIVE" and report.zero_step_share == 0.0
+
+
+def test_frozen_game_fails_liveness_gate():
+    df = _good_game()
+    df.loc[df["cls"] == "player", ["x", "y"]] = (20.0, 25.0)
+    report = evaluate(df, "basketball")
+    assert not report.passed and report.liveness_verdict == "FROZEN"
+    assert any("liveness verdict FROZEN" == failure for failure in report.failures)
+
+
+def test_live_game_passes_liveness_gate():
+    report = evaluate(_good_game(), "basketball")
+    assert report.passed and report.liveness_verdict == "LIVE"
 
 
 def test_oob_and_teleport_fail():

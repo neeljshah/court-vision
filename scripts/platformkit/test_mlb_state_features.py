@@ -1,7 +1,8 @@
 """Synthetic, leak-free checks for MLB in-game state features."""
 import pandas as pd
 
-from scripts.platformkit.mlb_state_features import game_state_features, parse_state
+from scripts.platformkit.mlb_state_features import (coverage_summary, drop_unparsed,
+                                                     game_state_features, parse_state)
 
 
 def _summary(home=0, away=0, inning=1, half="top", outs=0, base=0, count="0-1", pitch=2, tto=1):
@@ -41,3 +42,28 @@ def test_pitch_count_and_tto_remain_continuous_not_binned():
     assert features["times_through_order"].tolist() == [1.25, 1.35]
     assert features["batters_faced_continuous"].tolist() == [5.875, 6.125]
     assert not any("tto_" in column or "pitch_count_" in column for column in features.columns)
+
+
+def test_unparseable_ticks_are_nan_and_census_is_exact():
+    ticks = pd.DataFrame({"game": ["G1", "G1", "G2", "G2", "G3"],
+                          "timestamp": ["2026-08-01T12:00:00Z", "2026-08-01T12:00:10Z",
+                                        "2026-08-01T12:00:20Z", "2026-08-01T12:00:30Z",
+                                        "2026-08-01T12:00:40Z"],
+                          "state_summary": [_summary(), "not a state", {"home_score": 2},
+                                             "not a state", None]})
+    features = game_state_features(ticks)
+
+    assert features["parse_quality"].tolist() == ["full", "none", "partial", "none", "none"]
+    assert features["state_parsed"].tolist() == [True, False, True, False, False]
+    assert pd.isna(features.loc[1, "score_diff"])
+    assert pd.isna(features.loc[1, "base_out_0"])
+    assert len(drop_unparsed(features)) == 2
+
+    census = coverage_summary(ticks, features)
+    assert "PARSE_QUALITY_FULL_ROWS: 1" in census
+    assert "PARSE_QUALITY_FULL_SHARE: 0.200000" in census
+    assert "PARSE_QUALITY_PARTIAL_ROWS: 1" in census
+    assert "PARSE_QUALITY_PARTIAL_SHARE: 0.200000" in census
+    assert "PARSE_QUALITY_NONE_ROWS: 3" in census
+    assert "PARSE_QUALITY_NONE_SHARE: 0.600000" in census
+    assert "GAMES_100_PCT_UNPARSEABLE: 1" in census

@@ -6,17 +6,14 @@ import json
 import random
 from collections import defaultdict
 from datetime import datetime, timezone
-import os
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
-from scripts.platformkit.ingame_replay_scoreboard import candidate_dirs
-from scripts.platformkit.market_lag_study import _event, load_records
+from scripts.platformkit.market_lag_study import _event
+from scripts.platformkit.tick_dedupe import load_ticks_deduped
 
 _REPO = Path(__file__).resolve().parents[2]
-_DEFAULT_CACHE = Path(os.environ.get(
-    "NBA_CACHE_ROOT",
-    os.path.join(os.environ.get("NBA_DATA_ROOT", "data"), "cache")))
+_DEFAULT_CACHE = Path(r"C:\Users\neelj\nba-ai-system\data\cache")
 _WINDOW_SECONDS = 180.0
 _BOOTSTRAP_ITERS = 500
 _BOOTSTRAP_SEED = 20260831
@@ -146,17 +143,14 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--output", type=Path,
                         default=_REPO / "data" / "ab_reports" / "lag_window_calibration.json")
     args = parser.parse_args(argv)
-    stores, records = [], []
-    for store in candidate_dirs(args.cache_root):
-        loaded = load_records(store)
-        if loaded:
-            stores.append(store)
-            records.extend(loaded)
-    report = {"generated_at": datetime.now(timezone.utc).isoformat(), "stores": [str(path) for path in stores],
-              **analyze(records)}
+    records, dedupe = load_ticks_deduped(args.cache_root)
+    print("DEDUPE: RAW=%d DEDUPED=%d DUPLICATE_PCT=%.2f STORES=%s" %
+          (dedupe["raw_count"], dedupe["deduped_count"], dedupe["duplicate_pct"],
+           ", ".join(dedupe["stores_seen"]) or "NONE"))
+    report = {"generated_at": datetime.now(timezone.utc).isoformat(), "stores": dedupe["stores_seen"],
+              "dedupe": dedupe, **analyze(records)}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print("STORES: " + (", ".join(str(path) for path in stores) or "NONE"))
     print(render(report))
     print("REPORT: %s" % args.output)
     return 0

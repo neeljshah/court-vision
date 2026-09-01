@@ -104,8 +104,8 @@ def _word_boundary_hit(text: str, keyword: str) -> bool:
 
 
 def is_edge_language(text: str) -> str | None:
-    """Returns the matched forbidden token, or None. Checked BEFORE
-    classification so an edge-flavored question never reaches a resolver."""
+    """Returns the matched forbidden token, or None. Checked before
+    classification and category dispatch so it never reaches a resolver."""
     low = text.lower()
     for tok in RETRACTED_NUMBERS:
         if tok in low:
@@ -975,6 +975,14 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
     """The one function every consumer (human, CLI, or an LLM following
     docs/AI_CONSUMER_CONTRACT.md) calls. Never improvises past a registered
     resolver; an unclassified or unregistered category is NOT_SUPPORTED."""
+    # This guard precedes both compound handling and explicit-category
+    # dispatch: callers may choose a category, never bypass edge refusal.
+    if is_edge_language(query):
+        meta = RESOLVERS["edge_language"]
+        return {"status": "refused", "category": "edge_language", "query": query,
+                "source_artifact": meta["source_artifact"],
+                "note": "edge/ROI/retracted-number language is out of scope for this engine -- "
+                        "see .claude/rules/no-edge-claims.md"}
     if category is None:
         parts = _split_compound(query)
         if parts is not None:

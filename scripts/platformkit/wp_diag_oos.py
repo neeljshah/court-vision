@@ -6,17 +6,14 @@ import json
 import math
 from collections import defaultdict
 from datetime import datetime, timezone
-import os
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
-from scripts.platformkit.ingame_replay_scoreboard import discover_store, load_ticks
 from scripts.platformkit.brier_decomposition import decompose
+from scripts.platformkit.tick_dedupe import load_ticks_deduped
 
 _REPO = Path(__file__).resolve().parents[2]
-_DEFAULT_CACHE = Path(os.environ.get(
-    "NBA_CACHE_ROOT",
-    os.path.join(os.environ.get("NBA_DATA_ROOT", "data"), "cache")))
+_DEFAULT_CACHE = Path(r"C:\Users\neelj\nba-ai-system\data\cache")
 _Z_95 = 1.959963984540054
 
 
@@ -196,12 +193,16 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--cache-root", type=Path, default=_DEFAULT_CACHE)
     parser.add_argument("--output-dir", type=Path, default=_REPO / "data" / "ab_reports")
     args = parser.parse_args(argv)
-    store = discover_store(args.cache_root)
-    if store is None:
+    ticks, dedupe = load_ticks_deduped(args.cache_root)
+    print("DEDUPE: RAW=%d DEDUPED=%d DUPLICATE_PCT=%.2f STORES=%s" %
+          (dedupe["raw_count"], dedupe["deduped_count"], dedupe["duplicate_pct"],
+           ", ".join(dedupe["stores_seen"]) or "NONE"))
+    if not ticks:
         print("NO PARSEABLE TICK STORE")
         return 0
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    report = {"generated_at": stamp, "store": str(store), **diagnose(load_ticks(store))}
+    report = {"generated_at": stamp, "stores": dedupe["stores_seen"], "dedupe": dedupe,
+              **diagnose(ticks)}
     args.output_dir.mkdir(parents=True, exist_ok=True)
     path = args.output_dir / ("wp_oos_%s.json" % stamp)
     path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")

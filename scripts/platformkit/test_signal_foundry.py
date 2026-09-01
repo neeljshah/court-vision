@@ -24,7 +24,7 @@ def _folds(frame: pd.DataFrame) -> list[tuple[np.ndarray, np.ndarray]]:
 
 
 def test_planted_signal_beats_noise_and_deflation_rises(tmp_path, monkeypatch) -> None:
-    monkeypatch.setattr(foundry, "LEDGER_PATH", tmp_path / "foundry.jsonl")
+    monkeypatch.setattr(foundry, "_LEDGER_PATH", (tmp_path / "foundry.jsonl").resolve())
     frame = _frame(); folds = _folds(frame)
     true = foundry.evaluate_signal(frame, "target", foundry.SignalSpec("true", "nba", "row", "none", "true"), folds)
     noise = foundry.evaluate_signal(frame, "target", foundry.SignalSpec("noise", "nba", "row", "none", "noise"), folds)

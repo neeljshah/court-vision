@@ -23,10 +23,12 @@ from scripts.platformkit.teacher_student_ab import (
     BASE_FEATURES, LOAD_FEATURES, _asof_columns, _matrix,
     _median_impute_train_test, build_features, expanding_folds,
 )
+from scripts.platformkit.leak_boundary import embargo_indices
 
 
 ALPHAS = (0.1, 1.0, 10.0)
 VERDICT_TOLERANCE = 0.05
+EMBARGO_BLOCKS = 1
 UPPER_BOUND_CAVEAT = (
     "UPPER-BOUND ONLY: four novel metrics are static full-season values; "
     "replace them with as-of values before any production use."
@@ -107,6 +109,8 @@ def evaluate_ensemble(frame: pd.DataFrame, weak_columns: Sequence[str], folds: i
     reports: list[dict[str, object]] = []
     columns = [*base_columns, *weak_columns]
     for number, (train_index, test_index) in enumerate(expanding_folds(frame, folds), 1):
+        safe = embargo_indices(frame["gameDate"], frame.iloc[test_index]["gameDate"], EMBARGO_BLOCKS)
+        train_index = np.intersect1d(train_index, safe, assume_unique=True)
         train, test = frame.iloc[train_index], frame.iloc[test_index]
         base_train, base_test = _median_impute_train_test(_matrix(train, base_columns), _matrix(test, base_columns))
         ensemble_train, ensemble_test = _median_impute_train_test(_matrix(train, columns), _matrix(test, columns))

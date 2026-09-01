@@ -25,6 +25,7 @@ from scripts.platformkit.teacher_student_ab import (
     build_features,
     expanding_folds,
 )
+from scripts.platformkit.leak_boundary import embargo_indices
 
 
 CANDIDATE_METRICS = (
@@ -34,6 +35,7 @@ CANDIDATE_METRICS = (
     "b2b_speed_drop",
 )
 SCREEN_MARGIN = 0.20
+EMBARGO_BLOCKS = 1
 UPPER_BOUND_CAVEAT = (
     "UPPER-BOUND ONLY: candidate metrics are full-season static estimates; "
     "an as-of version is required before any production claim."
@@ -88,6 +90,8 @@ def evaluate_lift(frame: pd.DataFrame, candidate_columns: Sequence[str], folds: 
     candidate_errors: list[float] = []
     fold_reports: list[dict[str, object]] = []
     for number, (train_index, test_index) in enumerate(expanding_folds(frame, folds), start=1):
+        safe = embargo_indices(frame["gameDate"], frame.iloc[test_index]["gameDate"], EMBARGO_BLOCKS)
+        train_index = np.intersect1d(train_index, safe, assume_unique=True)
         train, test = frame.iloc[train_index], frame.iloc[test_index]
         y_train, y_test = train["minutes"], test["minutes"]
         base_train, base_test = _median_impute_train_test(_matrix(train, base_columns), _matrix(test, base_columns))
