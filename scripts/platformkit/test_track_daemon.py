@@ -429,3 +429,37 @@ def test_the_retained_corpus_is_not_reclaimed_as_staged_work(tmp_path, monkeypat
     (track_daemon.CORPUS / "soccer__s2.mp4").write_bytes(b"x")
 
     assert track_daemon.claimable({}) == []
+
+
+def test_the_basketball_path_gets_the_budget_its_checkpoints_need():
+    """run_clip output is quantized: unified_pipeline checkpoints every 2000
+    frames and never flushes the residual, so a job is worth nothing until it
+    crosses frame 2000 and ~2700 rows once it does. Measured on four concurrent
+    NCAA jobs, the slowest crossed at ~3610s -- ten seconds past a 3600s
+    deadline, losing everything. A light adapter has no such cliff."""
+    assert track_daemon.job_timeout("ncaa_basketball") > 3610
+    assert track_daemon.job_timeout("wnba") == track_daemon.CLIP_JOB_TIMEOUT_SECONDS
+    assert track_daemon.job_timeout("tennis") == track_daemon.JOB_TIMEOUT_SECONDS
+    assert track_daemon.job_timeout("baseball") == track_daemon.JOB_TIMEOUT_SECONDS
+
+
+def test_a_slow_basketball_job_is_not_killed_at_the_adapter_deadline(tmp_path, monkeypatch):
+    """The regression this guards: a run_clip job killed at 3600s while still
+    short of its first durable checkpoint reports success and writes four rows."""
+    stage = _stage(tmp_path, monkeypatch)
+    monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
+    video = stage / "wnba__w9.mp4"
+    video.write_bytes(b"x")
+    log = stage / "wnba__w9.log"
+    log.write_text("Frame 1999...", encoding="utf-8")
+
+    killed = []
+    proc = FakeProc(done=False)
+    proc.kill = lambda: killed.append(True)
+    active = {"wnba__w9.mp4": {"proc": proc, "video": video, "log": log,
+                               "sport": "wnba", "game_id": "w9",
+                               "started": time.time() - 3700}}
+    track_daemon.tick(active, workers=4)
+
+    assert not killed, "3700s is past the adapter deadline but inside the clip budget"
+    assert "wnba__w9.mp4" in active

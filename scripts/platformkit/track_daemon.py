@@ -52,6 +52,22 @@ MIN_TRACKING_ROWS = 500
 # jammed the stage against the bridge's backlog cap. A slot freed after 45
 # minutes is worth far more than one game tracked in five hours.
 JOB_TIMEOUT_SECONDS = 3600
+# The basketball path needs its own budget because its output is QUANTIZED.
+# unified_pipeline checkpoints tracking_data.csv every _CHECKPOINT_INTERVAL
+# (2000) frames and never flushes the residual, so a run_clip job is worth
+# nothing at all until it crosses frame 2000 and worth ~2700 rows the moment it
+# does. Killing one at frame 1999 yields the four rows from the frame-0
+# checkpoint -- which is exactly the "completes, reports success, writes only
+# frame 0" signature seen across 28 basketball jobs.
+# MEASURED on the pod, four concurrent NCAA jobs at 2185s elapsed:
+#   IB-_u4gW3ds   frame 2109  0.97 f/s  -> crossed 2000 at ~2062s, 2709 rows
+#   tiUvyvWOCxo   frame 1794  0.82 f/s  -> crosses at ~2439s
+#   sRtHQbywiTE   frame 1704  0.78 f/s  -> crosses at ~2564s
+#   zqBCKovJCQU   frame 1209  0.55 f/s  -> crosses at ~3610s
+# The slowest misses a 3600s deadline by ten seconds and loses everything. That
+# is a cliff, not a budget. 5400s clears the measured spread with margin; a slot
+# held 50% longer to return 2700 rows beats one freed on time to return four.
+CLIP_JOB_TIMEOUT_SECONDS = 5400
 SPORT_ADAPTER = {"tennis": "tennis", "soccer": "soccer", "npb": "baseball",
                  "kbo": "baseball", "mlb": "baseball", "baseball": "baseball"}
 # These go through run_clip.py, which the adapter registry does not cover.
@@ -100,6 +116,11 @@ def build_command(sport: str, video: Path, game_id: str) -> list:
     adapter = SPORT_ADAPTER.get(sport, sport)
     return [sys.executable, "-m", "scripts.platformkit.adapter_run",
             adapter, str(video), game_id]
+
+
+def job_timeout(sport: str) -> int:
+    """Seconds this sport's job may hold a slot before it is killed."""
+    return CLIP_JOB_TIMEOUT_SECONDS if sport in CLIP_SPORTS else JOB_TIMEOUT_SECONDS
 
 
 def claimable(active: dict) -> list:
@@ -239,9 +260,9 @@ def tick(active: dict, workers: int) -> None:
     for name, job in list(active.items()):
         if job["proc"].poll() is not None:
             _finish(name, active.pop(name))
-        elif time.time() - job["started"] > JOB_TIMEOUT_SECONDS:
+        elif time.time() - job["started"] > job_timeout(job["sport"]):
             print("%s exceeded %ds -- killing to free the slot"
-                  % (job["game_id"], JOB_TIMEOUT_SECONDS), flush=True)
+                  % (job["game_id"], job_timeout(job["sport"])), flush=True)
             try:
                 job["proc"].kill()
             except OSError as exc:
