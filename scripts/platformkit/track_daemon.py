@@ -44,6 +44,9 @@ TRACKING = Path("data/tracking")
 # Matches footage_bridge: a real tracked game has thousands of rows, and a
 # non-empty CSV is not evidence of anything.
 MIN_TRACKING_ROWS = 500
+# A completed upload is not automatically a video. Smallest real staged game
+# measured 29.3 MB; this floor is two orders of magnitude below that.
+MIN_VIDEO_BYTES = 1_000_000
 # No single game may hold a worker slot forever. Sport adapters finish in 1-4
 # minutes (that was BEFORE concurrency was raised); the basketball path
 # (scripts/run_clip.py) is the full production
@@ -135,6 +138,25 @@ def claimable(active: dict) -> list:
             continue
         sport, game_id = parse_name(path)
         if sport is None:
+            continue
+        # Atomic rename proves the upload COMPLETED, not that it carries a
+        # video. A 262-byte tennis__tennis_10.mp4 sat in the stage being
+        # claimed, failing, and being re-claimed; it also read as "the corpus
+        # has a tennis clip" to a sport agent that then could not measure
+        # anything. The smallest real staged game measured 29.3 MB, so 1 MB is
+        # far below any true positive.
+        try:
+            if path.stat().st_size < MIN_VIDEO_BYTES:
+                _record({"game_id": game_id, "sport": sport, "status": "corrupt",
+                         "rows": 0, "passed": None,
+                         "failures": ["staged file is %d bytes, not a video"
+                                      % path.stat().st_size],
+                         "seconds": 0, "finished_at": int(time.time())})
+                print("%s is %d bytes -- not a video, dropping"
+                      % (game_id, path.stat().st_size), flush=True)
+                path.unlink(missing_ok=True)
+                continue
+        except OSError:
             continue
         ready.append((path, sport, game_id))
     return ready

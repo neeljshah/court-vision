@@ -14,6 +14,11 @@ from pathlib import Path
 from scripts.platformkit import track_daemon
 
 
+# claimable() drops anything too small to be a video, so fixtures that
+# stand in for a staged game have to clear that floor.
+_VIDEO = b"x" * (track_daemon.MIN_VIDEO_BYTES + 1)
+
+
 class FakeProc:
     def __init__(self, done=True):
         self._done = done
@@ -36,7 +41,7 @@ def test_partial_uploads_are_invisible(tmp_path, monkeypatch):
     """A .part file is an in-flight scp; tracking it ships a truncated video."""
     stage = _stage(tmp_path, monkeypatch)
     (stage / "tennis__t1.mp4.part").write_bytes(b"half")
-    (stage / "tennis__t2.mp4").write_bytes(b"whole")
+    (stage / "tennis__t2.mp4").write_bytes(_VIDEO)
 
     ready = track_daemon.claimable({})
 
@@ -46,14 +51,14 @@ def test_partial_uploads_are_invisible(tmp_path, monkeypatch):
 def test_unparseable_names_are_skipped_not_guessed(tmp_path, monkeypatch):
     """Legacy uploads have no sport prefix; guessing the sport tracks it wrong."""
     stage = _stage(tmp_path, monkeypatch)
-    (stage / "mlb_2026-08-30_0f36e8cc.mp4").write_bytes(b"x")
+    (stage / "mlb_2026-08-30_0f36e8cc.mp4").write_bytes(_VIDEO)
 
     assert track_daemon.claimable({}) == []
 
 
 def test_active_jobs_are_not_launched_twice(tmp_path, monkeypatch):
     stage = _stage(tmp_path, monkeypatch)
-    (stage / "soccer__s1.mp4").write_bytes(b"x")
+    (stage / "soccer__s1.mp4").write_bytes(_VIDEO)
 
     assert track_daemon.claimable({"soccer__s1.mp4": {}}) == []
 
@@ -61,7 +66,7 @@ def test_active_jobs_are_not_launched_twice(tmp_path, monkeypatch):
 def test_worker_cap_is_respected(tmp_path, monkeypatch):
     stage = _stage(tmp_path, monkeypatch)
     for i in range(5):
-        (stage / ("tennis__g%d.mp4" % i)).write_bytes(b"x")
+        (stage / ("tennis__g%d.mp4" % i)).write_bytes(_VIDEO)
     launched = []
     monkeypatch.setattr(track_daemon.subprocess, "Popen",
                         lambda *a, **k: launched.append(a) or FakeProc(done=False))
@@ -76,7 +81,7 @@ def test_finished_job_is_graded_and_video_deleted(tmp_path, monkeypatch):
     """The pod filled twice; a tracked video must never survive its run."""
     stage = _stage(tmp_path, monkeypatch)
     video = stage / "tennis__g1.mp4"
-    video.write_bytes(b"x")
+    video.write_bytes(_VIDEO)
     log = stage / "tennis__g1.log"
     log.write_text("done", encoding="utf-8")
     csv_dir = track_daemon.TRACKING / "g1"
@@ -98,7 +103,7 @@ def test_thin_output_is_recorded_as_thin_with_a_tail(tmp_path, monkeypatch):
     """A 103-row CSV is non-empty and useless; it must not read as success."""
     stage = _stage(tmp_path, monkeypatch)
     video = stage / "kbo__k1.mp4"
-    video.write_bytes(b"x")
+    video.write_bytes(_VIDEO)
     log = stage / "kbo__k1.log"
     log.write_text("Traceback: no frames decoded", encoding="utf-8")
     csv_dir = track_daemon.TRACKING / "k1"
@@ -119,7 +124,7 @@ def _tracked_game(tmp_path, monkeypatch, game_id, passed):
     stage = _stage(tmp_path, monkeypatch)
     monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
     video = stage / ("tennis__%s.mp4" % game_id)
-    video.write_bytes(b"x")
+    video.write_bytes(_VIDEO)
     csv_dir = track_daemon.TRACKING / game_id
     csv_dir.mkdir(parents=True)
     (csv_dir / "tracking_data.csv").write_text(
@@ -194,7 +199,7 @@ def test_ledger_carries_the_harness_verdict_not_just_row_count(tmp_path, monkeyp
     stage = _stage(tmp_path, monkeypatch)
     monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
     video = stage / "baseball__b1.mp4"
-    video.write_bytes(b"x")
+    video.write_bytes(_VIDEO)
     log = stage / "baseball__b1.log"
     log.write_text("ok", encoding="utf-8")
     csv_dir = track_daemon.TRACKING / "b1"
@@ -259,7 +264,7 @@ def test_a_job_that_never_finishes_is_killed_to_free_its_slot(tmp_path, monkeypa
     stage = _stage(tmp_path, monkeypatch)
     monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
     video = stage / "wnba__w1.mp4"
-    video.write_bytes(b"x")
+    video.write_bytes(_VIDEO)
     log = stage / "wnba__w1.log"
     log.write_text("slow", encoding="utf-8")
     proc = SlowProc()
@@ -280,7 +285,7 @@ def test_a_timed_out_job_is_not_counted_as_tracked(tmp_path, monkeypatch):
     stage = _stage(tmp_path, monkeypatch)
     monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
     video = stage / "wnba__w2.mp4"
-    video.write_bytes(b"x")
+    video.write_bytes(_VIDEO)
     log = stage / "wnba__w2.log"
     log.write_text("partial", encoding="utf-8")
     csv_dir = track_daemon.TRACKING / "w2"
@@ -301,7 +306,7 @@ def test_a_timed_out_job_is_not_counted_as_tracked(tmp_path, monkeypatch):
 def test_a_job_inside_its_budget_is_left_alone(tmp_path, monkeypatch):
     stage = _stage(tmp_path, monkeypatch)
     video = stage / "tennis__t7.mp4"
-    video.write_bytes(b"x")
+    video.write_bytes(_VIDEO)
     proc = SlowProc()
     active = {"tennis__t7.mp4": {"proc": proc, "video": video,
                                  "log": stage / "tennis__t7.log",
@@ -385,7 +390,7 @@ def test_every_ledger_entry_is_dated(tmp_path, monkeypatch):
     stage = _stage(tmp_path, monkeypatch)
     monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
     video = stage / "tennis__t1.mp4"
-    video.write_bytes(b"x")
+    video.write_bytes(_VIDEO)
     log = stage / "tennis__t1.log"
     log.write_text("ok", encoding="utf-8")
 
@@ -406,7 +411,7 @@ def test_a_tracked_video_is_retained_not_destroyed(tmp_path, monkeypatch):
     stage = _stage(tmp_path, monkeypatch)
     monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
     video = stage / "soccer__s1.mp4"
-    video.write_bytes(b"video-bytes")
+    video.write_bytes(_VIDEO)
     log = stage / "soccer__s1.log"
     log.write_text("ok", encoding="utf-8")
 
@@ -418,7 +423,7 @@ def test_a_tracked_video_is_retained_not_destroyed(tmp_path, monkeypatch):
     assert not video.exists(), "the stage must be reclaimed"
     assert not log.exists()
     retained = track_daemon.CORPUS / "soccer__s1.mp4"
-    assert retained.read_bytes() == b"video-bytes"
+    assert retained.read_bytes() == _VIDEO
 
 
 def test_the_retained_corpus_is_not_reclaimed_as_staged_work(tmp_path, monkeypatch):
@@ -449,7 +454,7 @@ def test_a_slow_basketball_job_is_not_killed_at_the_adapter_deadline(tmp_path, m
     stage = _stage(tmp_path, monkeypatch)
     monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
     video = stage / "wnba__w9.mp4"
-    video.write_bytes(b"x")
+    video.write_bytes(_VIDEO)
     log = stage / "wnba__w9.log"
     log.write_text("Frame 1999...", encoding="utf-8")
 
@@ -463,3 +468,21 @@ def test_a_slow_basketball_job_is_not_killed_at_the_adapter_deadline(tmp_path, m
 
     assert not killed, "3700s is past the adapter deadline but inside the clip budget"
     assert "wnba__w9.mp4" in active
+
+
+def test_a_completed_upload_that_is_not_a_video_is_dropped(tmp_path, monkeypatch):
+    """Atomic rename proves the upload finished, not that it holds a video. A
+    262-byte tennis__tennis_10.mp4 was claimed, failed, re-claimed, and also
+    read to a sport agent as "the corpus has a tennis clip"."""
+    stage = _stage(tmp_path, monkeypatch)
+    tiny = stage / "tennis__t10.mp4"
+    tiny.write_bytes(b"x" * 262)
+    real = stage / "tennis__t11.mp4"
+    real.write_bytes(b"x" * (2 * track_daemon.MIN_VIDEO_BYTES))
+
+    ready = track_daemon.claimable({})
+
+    assert [g for _, _, g in ready] == ["t11"]
+    assert not tiny.exists(), "a non-video must not sit in the stage being re-claimed"
+    entry = json.loads(track_daemon.LEDGER.read_text(encoding="utf-8").strip())
+    assert entry["status"] == "corrupt" and "262 bytes" in entry["failures"][0]
