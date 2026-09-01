@@ -4,10 +4,12 @@ Run: python -m pytest domains/football/tracking/test_field_gates.py -q
 """
 from __future__ import annotations
 
+import cv2
 import numpy as np
 
+from domains.football.tracking.adapter import FootballAdapter
 from domains.football.tracking.field_gates import (MIN_FIELD_VIEW_GREEN,
-                                                   field_view_fraction,
+                                                   field_roi_mask, field_view_fraction,
                                                    pencil_is_uniform,
                                                    pencil_positions)
 
@@ -58,3 +60,23 @@ def test_field_view_fraction_separates_grass_from_a_studio_frame() -> None:
 
     assert field_view_fraction(grass) > MIN_FIELD_VIEW_GREEN
     assert field_view_fraction(studio) < MIN_FIELD_VIEW_GREEN
+
+
+def test_field_roi_excludes_a_bright_graphics_bar_from_the_yard_family() -> None:
+    """A long white overlay must not outvote faint painted field lines."""
+    frame = np.zeros((360, 640, 3), dtype=np.uint8)
+    frame[70:, :] = (45, 145, 45)
+    # The top bar supplies more, brighter, parallel line edges than the field.
+    frame[:58, :] = (245, 245, 245)
+    for y in (8, 20, 32, 44):
+        cv2.line(frame, (0, y), (639, y), (0, 0, 0), 2)
+    # Four faint field markings are deliberately less contrasty than the bar.
+    for x in (120, 230, 340, 450):
+        cv2.line(frame, (x, 82), (x, 350), (205, 205, 205), 2)
+
+    mask = field_roi_mask(frame)
+    family = FootballAdapter().detect_yard_line_family(frame)
+
+    assert not mask[20, 320]
+    assert len(family) >= 4
+    assert all(abs(float(line[0])) > abs(float(line[1])) for line in family)

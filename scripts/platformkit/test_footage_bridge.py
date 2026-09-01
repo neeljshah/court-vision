@@ -333,6 +333,22 @@ def test_staged_upload_renames_atomically_so_the_daemon_sees_no_partial(
     assert status == "staged"
 
 
+def test_requested_1080p_is_ffprobe_checked_before_staging(monkeypatch, tmp_path):
+    """A format label is not proof: the measured upload must be exactly 1080p."""
+    clip = tmp_path / "wrong.mp4"
+    clip.write_bytes(b"video")
+    monkeypatch.setattr(footage_bridge, "video_height", lambda path: 720)
+    monkeypatch.setattr(footage_bridge, "_ssh", lambda *args, **kwargs:
+                        (_ for _ in ()).throw(AssertionError("must not stage")))
+
+    try:
+        footage_bridge.push_staged(clip, {"game_id": "g1080", "sport": "football",
+                                           "required_height": 1080})
+        raise AssertionError("a silent 720p downgrade must not stage")
+    except RuntimeError as exc:
+        assert "required 1080p but ffprobe measured 720p" in str(exc)
+
+
 def test_failed_rename_does_not_report_success_or_leave_a_part_file(
         monkeypatch, tmp_path):
     removed = []

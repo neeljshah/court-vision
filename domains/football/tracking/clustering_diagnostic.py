@@ -12,9 +12,10 @@ import cv2
 import numpy as np
 
 from domains.football.tracking.adapter import FootballAdapter
-from domains.football.tracking.field_gates import (CROSS_RATIO_TOLERANCE, MIN_FIELD_VIEW_GREEN,
-                                                    YARD_PENCIL_CROSS_RATIO, field_view_fraction,
-                                                    pencil_is_uniform, pencil_positions)
+from domains.football.tracking.field_gates import (CROSS_RATIO_TOLERANCE,
+    FIELD_ROI_MIN_SEGMENT_SUPPORT, MIN_FIELD_VIEW_GREEN, YARD_PENCIL_CROSS_RATIO,
+    field_roi_mask, field_view_fraction, pencil_is_uniform, pencil_positions,
+    segment_field_support)
 
 LINE_ANGLE_GROUP_DEGREES = 8.0
 
@@ -27,14 +28,22 @@ def _angle_delta(first: float, second: float) -> float:
     return abs(((first - second + np.pi / 2) % np.pi) - np.pi / 2)
 
 
-def _segments(frame: np.ndarray) -> list[np.ndarray]:
-    found = cv2.createLineSegmentDetector().detect(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))[0]
-    return [] if found is None else [item.astype(float) for item in found[:, 0, :]]
+def _segments(frame: np.ndarray, use_field_roi: bool) -> list[np.ndarray]:
+    grayscale = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    roi = field_roi_mask(frame) if use_field_roi else None
+    source = cv2.bitwise_and(grayscale, grayscale, mask=roi) if roi is not None else grayscale
+    found = cv2.createLineSegmentDetector().detect(source)[0]
+    raw = [] if found is None else [item.astype(float) for item in found[:, 0, :]]
+    if roi is None:
+        return raw
+    return [item for item in raw
+            if segment_field_support(item, roi) >= FIELD_ROI_MIN_SEGMENT_SUPPORT]
 
 
-def trace_frame(frame: np.ndarray, adapter: FootballAdapter) -> tuple[dict, list[np.ndarray]]:
+def trace_frame(frame: np.ndarray, adapter: FootballAdapter,
+                use_field_roi: bool) -> tuple[dict, list[np.ndarray]]:
     """Return every geometry-filter denominator and the final candidate segments."""
-    raw = _segments(frame)
+    raw = _segments(frame, use_field_roi)
     minimum = max(30.0, frame.shape[1] / 12.0)
     length = [item for item in raw if np.hypot(item[2] - item[0], item[3] - item[1]) >= minimum]
     groups: list[list[np.ndarray]] = []
@@ -60,6 +69,7 @@ def trace_frame(frame: np.ndarray, adapter: FootballAdapter) -> tuple[dict, list
     hist, edges = np.histogram(np.degrees([_angle(item) for item in length]), bins=np.arange(0, 190, 10))
     trace = {
         "shape": [int(frame.shape[1]), int(frame.shape[0])],
+        "field_roi": use_field_roi,
         "lsd_raw": len(raw), "length_min_px": minimum, "after_length": len(length),
         "angle_window_deg": LINE_ANGLE_GROUP_DEGREES, "angle_groups": [len(group) for group in groups],
         "winning_group_segments": len(winning), "winning_angle_deg": None if direction is None else np.degrees(direction),
@@ -85,7 +95,8 @@ def _overlay(frame: np.ndarray, segments: list[np.ndarray], trace: dict) -> np.n
     return image
 
 
-def measure(video: Path, output: Path, positions: int, trace_frames: int) -> dict:
+def measure(video: Path, output: Path, positions: int, trace_frames: int,
+            use_field_roi: bool = True) -> dict:
     capture = cv2.VideoCapture(str(video))
     if not capture.isOpened():
         raise ValueError("could not open %s" % video)
@@ -104,11 +115,11 @@ def measure(video: Path, output: Path, positions: int, trace_frames: int) -> dic
             if field_view_fraction(frame) < MIN_FIELD_VIEW_GREEN:
                 continue
             result["field_view"] += 1
-            trace, surviving = trace_frame(frame, adapter)
-            result["line_detection"] += int(trace["lsd_raw"] > 0)
+            trace, surviving = trace_frame(frame, adapter, use_field_roi)
+            result["line_detection"] += int(bool(surviving))
             result["yard_line_family"] += int(trace["pencil_uniform"])
             from domains.football.tracking.scale_source_probe import _numeral_count
-            result["numerals"] += _numeral_count(frame, adapter.detect_yard_line_family(frame))
+            result["numerals"] += _numeral_count(frame, adapter.family_from_segments(surviving))
             if len(result["traces"]) < trace_frames:
                 trace["frame_index"] = int(index)
                 result["traces"].append(trace)
@@ -125,8 +136,10 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--positions", type=int, default=120)
     parser.add_argument("--trace-frames", type=int, default=10)
+    parser.add_argument("--no-field-roi", action="store_true")
     args = parser.parse_args(argv[1:])
-    result = measure(args.video, args.output, args.positions, args.trace_frames)
+    result = measure(args.video, args.output, args.positions, args.trace_frames,
+                     use_field_roi=not args.no_field_roi)
     print("sampled=%d field_view=%d line_detection=%d yard_line_family=%d numerals=%d traces=%d" %
           (result["sampled"], result["field_view"], result["line_detection"], result["yard_line_family"],
            result["numerals"], len(result["traces"])))
