@@ -75,7 +75,7 @@ def _degraded_broadcast_like_pitch() -> np.ndarray:
 
 def test_synthetic_markings_do_not_ordinally_name_pitch_corners() -> None:
     image = _pitch_image()
-    adapter = SoccerAdapter(detector=lambda frame: [])
+    adapter = SoccerAdapter(detector=lambda frame: [], calibration_stride=1)
     markings = adapter.detect_pitch_markings(image)
     assert markings["halfway_x"] is not None
     assert abs(markings["halfway_x"] - 640) < 5.0
@@ -182,12 +182,29 @@ def test_process_video_skips_non_pitch_frames(tmp_path) -> None:
     for frame in (pitch, crowd, pitch):
         writer.write(frame)
     writer.release()
-    adapter = SoccerAdapter(detector=lambda frame: [])
+    adapter = SoccerAdapter(detector=lambda frame: [], calibration_stride=1)
     calls: list[int] = []
     adapter._landmark_detections = lambda frame: calls.append(1) or {}
     adapter._stable_homography = lambda detections, shape: None
     adapter.process_video(path, player_only=True)
     assert len(calls) == 2
+
+
+def test_calibration_keyframes_never_emit_a_carried_homography(tmp_path) -> None:
+    path = tmp_path / "keyframes.avi"
+    writer = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*"MJPG"), 25, (128, 72))
+    for _ in range(4):
+        writer.write(np.zeros((72, 128, 3), dtype=np.uint8))
+    writer.release()
+    adapter = SoccerAdapter(detector=lambda frame: [], calibration_stride=2)
+    adapter._landmark_detections = lambda frame: {}
+    adapter._stable_homography = lambda detections, shape: np.eye(3, dtype=np.float32)
+    adapter.detect_players = lambda frame, homography: [(1, np.array((50.0, 34.0)))]
+    rows = adapter.process_video(path, skip_non_pitch=False, compute_pressing=False,
+                                 player_only=True)
+    assert rows["frame"].tolist() == [0, 2]
+    assert adapter.last_metadata["calibration_keyframes"] == [0, 2]
+    assert adapter.last_metadata["accepted_homography_frames"] == [0, 2]
 
 
 def test_process_video_pressing_metadata_preserves_row_schema(tmp_path) -> None:
@@ -196,7 +213,7 @@ def test_process_video_pressing_metadata_preserves_row_schema(tmp_path) -> None:
     for _ in range(2):
         writer.write(np.zeros((72, 128, 3), dtype=np.uint8))
     writer.release()
-    adapter = SoccerAdapter(detector=lambda frame: [])
+    adapter = SoccerAdapter(detector=lambda frame: [], calibration_stride=1)
     adapter._landmark_detections = lambda frame: {}
     adapter._stable_homography = lambda detections, shape: np.eye(3, dtype=np.float32)
     adapter.detect_players = lambda frame, homography: [

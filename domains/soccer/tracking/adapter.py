@@ -30,9 +30,13 @@ def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
 
 class SoccerAdapter(SoccerGeometryMixin):
     """Track broadcast-view players only when the current pitch is calibrated."""
-    def __init__(self, detector: Optional[Detector] = None, retirement_frames: int = 30) -> None:
+    def __init__(self, detector: Optional[Detector] = None, retirement_frames: int = 30,
+                 calibration_stride: int = 10) -> None:
+        if calibration_stride < 1:
+            raise ValueError("calibration_stride must be at least 1")
         self.detector = detector if detector is not None else self._load_yolo_detector()
         self.retirement_frames, self._tracks, self._next_track_id = retirement_frames, {}, 1
+        self.calibration_stride = calibration_stride
         self._homography: Optional[np.ndarray] = None
         self._keypoint_provider = SoccerKeypointProvider()
         self._calibrator = TemporalCalibrator("soccer", provider=self._keypoint_provider, drift_threshold=8.0)
@@ -96,6 +100,7 @@ class SoccerAdapter(SoccerGeometryMixin):
         capture = cv2.VideoCapture(str(path))
         if not capture.isOpened(): raise FileNotFoundError("Could not open video: %s" % path)
         rows, source_frame, processed, pitch_frames, accepted_homography_frames = [], 0, 0, [], []
+        calibration_keyframes: list[int] = []
         try:
             while max_frames is None or processed < max_frames:
                 ok, frame = capture.read()
@@ -113,6 +118,14 @@ class SoccerAdapter(SoccerGeometryMixin):
                         processed += 1
                         source_frame += 1
                         continue
+                    if source_frame % self.calibration_stride:
+                        # No cached transform is emitted as a fresh solve.  The
+                        # next keyframe must independently pass held-out checks.
+                        self.mark_frame_lost()
+                        processed += 1
+                        source_frame += 1
+                        continue
+                    calibration_keyframes.append(source_frame)
                     homography = self._stable_homography(self._landmark_detections(frame), frame.shape[:2])
                     if homography is None: self.mark_frame_lost()
                     else:
@@ -125,7 +138,9 @@ class SoccerAdapter(SoccerGeometryMixin):
         self.last_output = pd.DataFrame(rows, columns=SCHEMA)
         if image_space: self.last_output = stamp_image_space_rows(self.last_output)
         elif accepted_homography_frames: self.last_output = stamp_court_space_rows(self.last_output, "soccer")
-        self.last_metadata = {"processed_frames": processed, "pitch_view_frames": pitch_frames, "accepted_homography_frames": accepted_homography_frames}
+        self.last_metadata = {"processed_frames": processed, "pitch_view_frames": pitch_frames,
+                              "calibration_keyframes": calibration_keyframes,
+                              "accepted_homography_frames": accepted_homography_frames}
         if image_space: self.last_metadata.update({"coordinate_space": "image_px", "roi": "full_frame"})
         if compute_pressing and not image_space:
             index = pressure_index(self.last_output, ball_proxy=True)
