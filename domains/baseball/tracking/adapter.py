@@ -33,7 +33,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Callable, Optional, Sequence, Union
+from typing import Callable, Collection, Optional, Sequence, Union
 
 import cv2
 import numpy as np
@@ -132,14 +132,16 @@ class BaseballAdapter:
                 seen += 1
         return seen
 
-    def detect_players_image_space(self, frame: np.ndarray) -> list[tuple[int, np.ndarray]]:
+    def detect_players_image_space(
+        self, frame: np.ndarray, *, cut: bool = False,
+    ) -> list[tuple[int, np.ndarray]]:
         """Return observed person bottom-centres as source pixels, unprojected."""
-        return self._identity.step(self.detector(frame))
+        return self._identity.step(self.detector(frame), cut=cut)
 
     def process_video(
         self, path: Union[str, Path], max_frames: Optional[int] = None, stride: int = 1,
         compute_command: bool = False, player_only: bool = False,
-        image_space: bool = False,
+        image_space: bool = False, cut_frames: Optional[Collection[int]] = None,
     ) -> Union[pd.DataFrame, tuple[pd.DataFrame, dict[str, object]]]:
         """Detect pitch views and return calibrated or explicitly pixel-space rows.
 
@@ -169,6 +171,7 @@ class BaseballAdapter:
         in_pitch_view = False
         source_frame = processed = players_seen = occluded_frames = 0
         previous_gray: Optional[np.ndarray] = None
+        verified_cuts = frozenset(cut_frames) if cut_frames is not None else None
 
         def close_pitch_segment() -> None:
             if not compute_command or not pitch_frames:
@@ -188,11 +191,12 @@ class BaseballAdapter:
                 if not ok:
                     break
                 if source_frame % stride == 0:
-                    current_gray = small_gray(frame)
-                    cut = previous_gray is not None and detect_cut(previous_gray, current_gray)
-                    previous_gray = current_gray
-                    if cut:
-                        self._identity.reset_for_cut()
+                    if verified_cuts is None:
+                        current_gray = small_gray(frame)
+                        cut = previous_gray is not None and detect_cut(previous_gray, current_gray)
+                        previous_gray = current_gray
+                    else:
+                        cut = source_frame in verified_cuts
                     self._geometry = None if cut else self.detect_pitch_geometry(frame)
                     if image_space:
                         # Emit detections on EVERY processed frame, not only
@@ -202,7 +206,7 @@ class BaseballAdapter:
                         # 300-frame run emitted 0 rows. Preserving detections is
                         # the whole point of this path, and it must not depend
                         # on the calibration it exists to work without.
-                        for track_id, point in self.detect_players_image_space(frame):
+                        for track_id, point in self.detect_players_image_space(frame, cut=cut):
                             rows.append({"frame": source_frame, "track_id": track_id,
                                          "cls": "player", "x": float(point[0]),
                                          "y": float(point[1]),

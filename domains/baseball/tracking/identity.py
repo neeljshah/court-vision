@@ -63,13 +63,19 @@ class BaseballIdentityTracker:
         """End all active identities at a verified broadcast cut."""
         self._tracks.clear()
 
-    def step(self, raw_boxes: Sequence[Sequence[float]]) -> list[tuple[int, np.ndarray]]:
+    def step(
+        self, raw_boxes: Sequence[Sequence[float]], *, cut: bool = False,
+    ) -> list[tuple[int, np.ndarray]]:
         """Return IDs and bottom-centre observations for this decoded frame.
 
         Active tracks compete globally by distance to their velocity-predicted
         centroids. Box area only orders truly unmatched cold starts, and never
-        affects association between an existing identity and a detection.
+        affects association between an existing identity and a detection. A
+        verified cut is consumed before association, so a TransNet boundary
+        cannot reuse an identity from the preceding camera view.
         """
+        if cut:
+            self.reset_for_cut()
         boxes = _boxes(raw_boxes)
         matches, unmatched_tracks, unmatched_boxes = self._associate(boxes)
         output: list[tuple[int, np.ndarray]] = []

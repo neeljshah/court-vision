@@ -191,3 +191,15 @@ def test_image_space_emits_on_frames_without_pitch_geometry():
     assert players, "detections must survive when calibration is unavailable"
     _, point = players[0]
     assert point[1] == 60.0, "bottom-centre pixel, unprojected"
+
+
+def test_verified_cut_frames_reach_identity_consumption(monkeypatch) -> None:
+    frames = [_pitch_view() for _ in range(3)]
+    monkeypatch.setattr(cv2, "VideoCapture", lambda path: _FakeCapture(frames))
+    adapter = BaseballAdapter(detector=lambda frame: [[600, 500, 660, 604]])
+
+    rows = adapter.process_video(
+        "synthetic.mp4", image_space=True, player_only=True, cut_frames={1},
+    )
+
+    assert rows["track_id"].tolist() == [1, 2, 2]

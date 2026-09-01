@@ -24,5 +24,4 @@ def test_global_continuity_assignment_beats_detection_order_and_area():
 def test_cut_ends_identity_instead_of_reusing_it_across_camera_views():
     tracker = BaseballIdentityTracker()
     tracker.step([_box(100)])
-    tracker.reset_for_cut()
-    assert [track_id for track_id, point in tracker.step([_box(100)])] == [2]
+    assert [track_id for track_id, point in tracker.step([_box(100)], cut=True)] == [2]
