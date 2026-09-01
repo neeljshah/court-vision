@@ -11,6 +11,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from scripts.platformkit.analytics_showcase import mechanism_wiring
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 OUT_JSON = Path(__file__).parent / "out" / "mechanism_exposure.json"
 SPORTS = ("basketball_nba", "mlb", "soccer", "tennis")
@@ -97,9 +99,16 @@ def _trigger_evidence(home: dict, away: dict) -> dict[str, dict]:
     }
 
 
-def game_sheets(schedule: pd.DataFrame, mechanisms: list[dict]) -> list[dict]:
-    """Emit NBA sheets using only schedule facts dated no later than each game."""
+def game_sheets(schedule: pd.DataFrame, mechanisms: list[dict],
+                column_exposures: dict[tuple, list[dict]] | None = None) -> list[dict]:
+    """Emit NBA sheets using only schedule facts dated no later than each game.
+
+    ``column_exposures`` carries the as-of-column trigger evidence keyed by
+    (date, home_team, away_team); those mechanisms are wired by declared column,
+    the schedule triggers below by declared schedule condition.
+    """
     by_slug = {row["slug"]: row for row in mechanisms}
+    column_exposures = column_exposures or {}
     sheets = []
     for game in schedule.itertuples(index=False):
         home, away = _team_flags(schedule, game.home_team, game.date), _team_flags(schedule, game.away_team, game.date)
@@ -115,6 +124,13 @@ def game_sheets(schedule: pd.DataFrame, mechanisms: list[dict]) -> list[dict]:
                         row = by_slug[slug]
                         exposures.append({"mechanism": row["mechanism"], "ledger_status": row["ledger_status"],
                                           "ledger_quote": row["ledger_quote"], "trigger_evidence": evidence[trigger]})
+        key = (game.date.strftime("%Y-%m-%d"), game.home_team, game.away_team)
+        seen = {row["mechanism"] for row in exposures}
+        for hit in column_exposures.get(key, []):
+            row = by_slug.get(hit["slug"])
+            if row is not None and row["mechanism"] not in seen:
+                exposures.append({"mechanism": row["mechanism"], "ledger_status": row["ledger_status"],
+                                  "trigger_evidence": hit["trigger_evidence"]})
         sheets.append({"game_id": game.game_id, "date": game.date.strftime("%Y-%m-%d"),
                        "home_team": game.home_team, "away_team": game.away_team, "exposures": exposures})
     return sheets
@@ -122,12 +138,19 @@ def game_sheets(schedule: pd.DataFrame, mechanisms: list[dict]) -> list[dict]:
 
 def sport_rollup(mechanisms: list[dict], sheets: list[dict] | None = None) -> dict:
     """Report wiring coverage without concealing non-wired confirmed sections."""
-    wired_slugs = {slug for spec in TRIGGER_REGISTRY.values() for slug in spec["slugs"]}
-    wired = [row for row in mechanisms if row["slug"] in wired_slugs]
-    not_wired = [row["mechanism"] for row in mechanisms if row["slug"] not in wired_slugs]
+    schedule_slugs = {slug for spec in TRIGGER_REGISTRY.values() for slug in spec["slugs"]}
+    column_slugs = set(mechanism_wiring.TESTABLE)
+    declared = set(mechanism_wiring.WIRING)
+    wired = [row for row in mechanisms if row["slug"] in schedule_slugs or row["slug"] in declared]
+    not_wired = [row["mechanism"] for row in mechanisms
+                 if row["slug"] not in schedule_slugs and row["slug"] not in declared]
     sheets = sheets or []
     live = sum(bool(sheet["exposures"]) for sheet in sheets)
     return {"confirmed_total": len(mechanisms), "wired": len(wired), "not_wired": not_wired,
+            "wired_by_schedule_trigger": sum(row["slug"] in schedule_slugs for row in mechanisms),
+            "wired_by_asof_column": sum(row["slug"] in column_slugs for row in mechanisms),
+            "wired_not_testable": sum(row["slug"] in declared and row["slug"] not in column_slugs
+                                      for row in mechanisms),
             "pct_games_with_live_mechanism": round(100.0 * live / len(sheets), 3) if sheets else 0.0}
 
 
@@ -143,7 +166,10 @@ def build(root: Path = REPO_ROOT) -> dict:
         assert low and high and max(low, high) <= 2 * min(low, high), (
             f"{sport}: mechanisms confirmed={low}, ledger confirmed={high}; mismatch exceeds 2x")
     schedule = load_schedule(root / "data" / "domains" / "basketball_nba" / "odds.parquet")
-    sheets = game_sheets(schedule, confirmed["basketball_nba"])
+    index = mechanism_wiring.matchup_index(root)
+    by_game = mechanism_wiring.column_exposures(sorted(set(index.values())), root)
+    sheets = game_sheets(schedule, confirmed["basketball_nba"],
+                         {key: by_game[game] for key, game in index.items() if by_game.get(game)})
     examples = sorted(sheets, key=lambda row: (not bool(row["exposures"]), row["date"], row["game_id"]))[:3]
     return {"label": "DESCRIPTIVE_ONLY", "edge_claimed": False,
             "as_of": schedule.date.max().strftime("%Y-%m-%d"), "generated_at": datetime.now(timezone.utc).isoformat(),
