@@ -64,7 +64,13 @@ def _optional_feature_frame(ticks: Any) -> Optional[pd.DataFrame]:
     # evaluation-only and come from the tick loader; state_summary is raw text.
     drop = [name for name in ("market_prob", "model_prob", "outcome", "state_summary")
             if name in frame.columns]
-    return frame.drop(columns=drop)
+    frame = frame.drop(columns=drop)
+    # the store can emit several ticks sharing a (game, timestamp) second; keep
+    # the last observation of that second so the join key is unique.
+    keys = [name for name in ("game", "timestamp") if name in frame.columns]
+    if keys:
+        frame = frame.drop_duplicates(subset=keys, keep="last")
+    return frame
 
 
 def _feature_matrix(ticks: List[Dict[str, Any]], features: pd.DataFrame) -> Tuple[pd.DataFrame, List[str]]:
