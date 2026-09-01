@@ -91,6 +91,24 @@ def tracked_row_counts() -> dict:
     return counts
 
 
+def _error_tail(stderr: str, stdout: str = "") -> str:
+    """Extract the line that actually says what went wrong.
+
+    yt-dlp opens stderr with a Python-version deprecation warning. Naively
+    keeping the last N characters returned that warning for every failure and
+    hid the real cause, which made every lane failure look identical.
+    """
+    text = (stderr or "") + "\n" + (stdout or "")
+    errors = [line.strip() for line in text.splitlines()
+              if "ERROR" in line or "Unsupported" in line or "Unable" in line]
+    if errors:
+        return errors[-1][:220]
+    meaningful = [line.strip() for line in text.splitlines()
+                  if line.strip() and "Deprecated Feature" not in line
+                  and "update to Python" not in line]
+    return (meaningful[-1][:220] if meaningful else "no diagnostic output")
+
+
 def _is_direct_media(url: str) -> bool:
     """True for a plain media file URL rather than a site yt-dlp must extract."""
     path = str(url or "").split("?")[0].lower()
@@ -121,18 +139,24 @@ def download_local(item: dict) -> Path:
     else:
         rungs = ([item["format"]] + FORMAT_RUNGS) if item.get("format") else FORMAT_RUNGS
     last_error = "no attempt made"
-    for rung in rungs:
+    # Cookies LAST, not first. With cookies yt-dlp picks the tv client and gets
+    # HLS (format 96, ~1100 fragments, very slow); without them it gets clean
+    # DASH (137+251). The residential IP is not bot-blocked, so cookies are only
+    # a fallback for the occasional video that demands them.
+    for rung, use_cookies in [(r, c) for c in (False, True) for r in rungs]:
         command = ["yt-dlp", "--merge-output-format", "mp4", "--no-part",
                    "--no-playlist", "-o", str(destination), item["url"]]
         if rung is not None:
             command[-2:-2] = ["-f", rung]
-        if COOKIES.is_file():
+        if use_cookies and COOKIES.is_file():
             command[1:1] = ["--cookies", str(COOKIES)]
+        elif use_cookies:
+            continue  # no cookie file, so the cookie pass is not a real retry
         try:
             subprocess.run(command, check=True, timeout=7200,
                            capture_output=True, text=True)
         except subprocess.CalledProcessError as exc:
-            last_error = (exc.stderr or "")[-200:].replace("\n", " ")
+            last_error = _error_tail(exc.stderr, exc.stdout)
             continue
         except subprocess.TimeoutExpired:
             last_error = "yt-dlp timeout"

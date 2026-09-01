@@ -185,3 +185,42 @@ def test_youtube_url_still_uses_the_format_ladder(monkeypatch, tmp_path):
         {"game_id": "yt_01", "url": "https://www.youtube.com/watch?v=ChxXA-7uyHk"})
 
     assert "-f" in commands[0]
+
+
+def test_error_tail_skips_the_deprecation_banner():
+    """yt-dlp leads with a Python deprecation warning; the real cause is later."""
+    stderr = ("Deprecated Feature: Support for Python version 3.10 has been "
+              "deprecated. Please update to Python 3.11 or above\n"
+              "[youtube] abc: Downloading webpage\n"
+              "ERROR: [youtube] abc: Video unavailable\n")
+
+    assert footage_bridge._error_tail(stderr) == "ERROR: [youtube] abc: Video unavailable"
+
+
+def test_error_tail_falls_back_to_last_meaningful_line():
+    stderr = ("Deprecated Feature: Support for Python version 3.10 has been deprecated.\n"
+              "Please update to Python 3.11 or above\n"
+              "something actually broke\n")
+
+    assert footage_bridge._error_tail(stderr) == "something actually broke"
+
+
+def test_first_download_attempt_does_not_use_cookies(monkeypatch, tmp_path):
+    """Cookies make yt-dlp pick the slow HLS tv client; try clean DASH first."""
+    commands = []
+    cookies = tmp_path / "cookies.txt"
+    cookies.write_text("# Netscape HTTP Cookie File\n", encoding="utf-8")
+    monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
+    monkeypatch.setattr(footage_bridge, "COOKIES", cookies)
+
+    def fake_run(command, **kwargs):
+        commands.append(command)
+        (tmp_path / "g.mp4").write_bytes(b"video")
+        return subprocess.CompletedProcess(command, 0)
+
+    monkeypatch.setattr(footage_bridge.subprocess, "run", fake_run)
+
+    footage_bridge.download_local(
+        {"game_id": "g", "url": "https://www.youtube.com/watch?v=abc"})
+
+    assert "--cookies" not in commands[0]
