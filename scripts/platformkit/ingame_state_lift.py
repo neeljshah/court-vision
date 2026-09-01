@@ -60,7 +60,11 @@ def _optional_feature_frame(ticks: Any) -> Optional[pd.DataFrame]:
     frame = pd.read_parquet(path)
     if frame.empty:
         return None
-    return frame
+    # keep join keys + state features only. market_prob/model_prob/outcome are
+    # evaluation-only and come from the tick loader; state_summary is raw text.
+    drop = [name for name in ("market_prob", "model_prob", "outcome", "state_summary")
+            if name in frame.columns]
+    return frame.drop(columns=drop)
 
 
 def _feature_matrix(ticks: List[Dict[str, Any]], features: pd.DataFrame) -> Tuple[pd.DataFrame, List[str]]:
