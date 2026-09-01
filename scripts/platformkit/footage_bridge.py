@@ -35,6 +35,11 @@ REMOTE_STAGE = POD_ROOT + "/data/footage_bridge"
 LOCAL_STAGE = Path("data/videos/bridge")
 COOKIES = Path("data/videos/youtube_cookies.txt")
 LEDGER = Path("data/tracking/footage_bridge_ledger.jsonl")
+# ONE reference clip per sport is kept permanently so tracking work can be
+# re-measured. Deleting every copy is right for disk, but it left the
+# homography investigation unable to produce a before/after because no footage
+# survived. Gitignored under data/, capped at one file per sport.
+REFERENCE_DIR = Path("data/videos/reference")
 # yt-dlp writes per-stream files like game.f137.mp4 (video-only) and
 # game.f299.mp4 (audio-only) before merging them. If the merge fails these
 # survive, and picking the largest would ship a video-only or audio-only
@@ -235,6 +240,24 @@ def grade(game_id: str, sport: str) -> str:
     return "ungraded:" + (result.stderr or "")[-90:].replace("\n", " ")
 
 
+def keep_reference(local: Path, sport: str) -> bool:
+    """Retain ONE clip per sport for re-measurement; return True if kept.
+
+    Everything else is still deleted from both disks. Without this, no footage
+    survives a run and tracking changes cannot be measured before/after.
+    """
+    try:
+        REFERENCE_DIR.mkdir(parents=True, exist_ok=True)
+        if any(REFERENCE_DIR.glob(sport + ".*")):
+            return False
+        local.replace(REFERENCE_DIR / (sport + local.suffix))
+        print("kept reference clip for %s" % sport, flush=True)
+        return True
+    except OSError as exc:
+        print("reference keep failed for %s: %s" % (sport, exc), flush=True)
+        return False
+
+
 def _record(entry: dict) -> None:
     LEDGER.parent.mkdir(parents=True, exist_ok=True)
     with LEDGER.open("a", encoding="utf-8") as handle:
@@ -264,8 +287,10 @@ def run_queue(queue_path: Path, limit: int) -> int:
             status = "failed: %s" % str(exc)[:200]
         finally:
             if local is not None:
-                for leftover in LOCAL_STAGE.glob(local.stem + "*"):
-                    leftover.unlink(missing_ok=True)
+                if not (status.startswith("tracked")
+                        and keep_reference(local, item.get("sport", "unknown"))):
+                    for leftover in LOCAL_STAGE.glob(local.stem + "*"):
+                        leftover.unlink(missing_ok=True)
         print("%s %s %s" % (game_id, item.get("sport"), status), flush=True)
         _record({"game_id": game_id, "sport": item.get("sport"), "status": status})
         done += 1

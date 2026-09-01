@@ -67,6 +67,7 @@ def test_process_video_appends_rectified_ball_rows(monkeypatch) -> None:
     assert not balls.empty
     assert balls.x.between(0.0, 78.0).all()
     assert balls.y.between(0.0, 36.0).all()
+    assert set(output.calibration_provenance) == {"solved"}
 
 
 def test_process_video_returns_rally_metadata_only_when_requested(monkeypatch) -> None:
@@ -79,7 +80,7 @@ def test_process_video_returns_rally_metadata_only_when_requested(monkeypatch) -
 
     rows, metadata = adapter.process_video("synthetic.avi", compute_features=True)
 
-    assert list(rows.columns) == ["frame", "track_id", "cls", "x", "y"]
+    assert list(rows.columns) == ["frame", "track_id", "cls", "x", "y", "calibration_provenance"]
     assert metadata == adapter.last_metadata
     assert set(metadata["rally_features"]) >= {"n_rallies", "players"}
 
@@ -140,6 +141,18 @@ def test_temporal_calibration_limits_noisy_corner_projection_jitter() -> None:
     assert np.percentile(jumps, 95) < 8.0
 
 
+def test_lost_corners_mark_reused_homography_propagated() -> None:
+    adapter = TennisAdapter(detector=lambda frame: [])
+    frame = _court_image()
+    adapter.detect_court_corners = lambda _: COURT
+    for _ in range(8):
+        adapter._stable_homography(frame)
+    assert adapter._stable_homography(frame) is not None
+    adapter.detect_court_corners = lambda _: None
+    assert adapter._stable_homography(frame) is not None
+    assert adapter._calibration_provenance == "propagated"
+
+
 def test_scene_cut_resets_homography_smoothing(monkeypatch) -> None:
     first_court = COURT.copy()
     second_court = np.float32(((180, 640), (1100, 610), (340, 100), (950, 150)))
@@ -197,11 +210,11 @@ def test_scene_cut_resets_homography_smoothing(monkeypatch) -> None:
 def test_write_csv_uses_normalized_schema(tmp_path) -> None:
     adapter = TennisAdapter(detector=lambda frame: [])
     adapter.last_output = pd.DataFrame(
-        [[4, 1, "player", 20.0, 6.0]], columns=("frame", "track_id", "cls", "x", "y")
+        [[4, 1, "player", 20.0, 6.0, "solved"]], columns=("frame", "track_id", "cls", "x", "y", "calibration_provenance")
     )
     output = tmp_path / "tracking.csv"
     adapter.write_csv(output)
-    assert list(pd.read_csv(output).columns) == ["frame", "track_id", "cls", "x", "y"]
+    assert list(pd.read_csv(output).columns) == ["frame", "track_id", "cls", "x", "y", "calibration_provenance"]
 
 
 def test_yolo_detector_receives_configured_imgsz_and_conf(monkeypatch, capsys) -> None:

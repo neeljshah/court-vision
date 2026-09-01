@@ -9,9 +9,8 @@ from scripts.platformkit.calibration.keypoint_calib import TemporalCalibrator
 from domains.tennis.tracking.ball import MotionDiffDetector, ball_rows, rectify_track
 from domains.tennis.tracking.rally_features import match_aggregates
 from domains.tennis.tracking.segmenter import detect_cut, small_gray
-SCHEMA = ("frame", "track_id", "cls", "x", "y")
-COURT_FEET = np.float32(((0, 0), (78, 0), (0, 36), (78, 36)))
-Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
+SCHEMA = ("frame", "track_id", "cls", "x", "y", "calibration_provenance")
+COURT_FEET = np.float32(((0, 0), (78, 0), (0, 36), (78, 36))); Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
 def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
     """Write player tracking rows in the normalized platform schema."""
     missing = [column for column in SCHEMA if column not in rows.columns]
@@ -35,25 +34,22 @@ class TennisAdapter:
         self.tracker_conf = float(conf if tracker_conf is None else tracker_conf)
         if not 0.0 <= self.tracker_conf <= 1.0:
             raise ValueError("tracker_conf must be in [0, 1]")
-        self.detector = detector if detector is not None else self._load_yolo_detector(
-            self.imgsz, self.conf
-        )
+        self.detector = detector if detector is not None else self._load_yolo_detector(self.imgsz, self.conf)
         self.corner_stability_px = corner_stability_px
         self._corners = self._homography = None
+        self._calibration_provenance = "unavailable"
         self._calibrator = TemporalCalibrator("tennis", drift_threshold=8.0)
         self._calibration_updates = self._lost_corner_frames = 0
         self._force_homography_recompute = False
         self._centroids: dict[int, np.ndarray] = {}
         self.last_output, self.last_metadata = pd.DataFrame(columns=SCHEMA), {}
+
     @staticmethod
     def _load_yolo_detector(imgsz: int, conf: float) -> Detector:
         try:
             from ultralytics import YOLO
         except ImportError as exc:
-            raise ImportError(
-                "TennisAdapter requires ultralytics. Install it with "
-                "`pip install ultralytics` or pass a detector for testing."
-            ) from exc
+            raise ImportError("TennisAdapter requires ultralytics; install it or pass a detector.") from exc
         model = YOLO("yolov8n.pt")
         emitted = False
         def detect(frame: np.ndarray) -> Sequence[Sequence[float]]:
@@ -64,8 +60,7 @@ class TennisAdapter:
             result = model(frame, classes=[0], imgsz=imgsz, conf=conf, verbose=False)[0]
             if result.boxes is None:
                 return []
-            return [box + [float(score)] for box, score in zip(
-                result.boxes.xyxy.cpu().numpy().tolist(), result.boxes.conf.cpu().numpy().tolist())]
+            return [box + [float(score)] for box, score in zip(result.boxes.xyxy.cpu().numpy().tolist(), result.boxes.conf.cpu().numpy().tolist())]
         return detect
     @staticmethod
     def _line_position(line: np.ndarray, horizontal: bool, shape: tuple[int, int]) -> float:
@@ -188,12 +183,14 @@ class TennisAdapter:
         self._calibrator = TemporalCalibrator("tennis", drift_threshold=8.0)
         self._calibration_updates = self._lost_corner_frames = 0
         self._force_homography_recompute = True
+
     def _stable_homography(self, frame: np.ndarray) -> Optional[np.ndarray]:
         corners = self.detect_court_corners(frame)
         if corners is None:
             self._lost_corner_frames += 1
             if self._lost_corner_frames > 30:
                 self._reset_temporal_calibration()
+            self._calibration_provenance = "propagated" if self._homography is not None else "unavailable"
             return self._homography
         self._lost_corner_frames = 0
         detections = {
@@ -204,14 +201,17 @@ class TennisAdapter:
         }
         result = self._calibrator.update(detections)
         if result.homography is None or result.recompute or not self._in_tolerance(result.homography, frame.shape[:2]):
+            self._calibration_provenance = "propagated" if self._homography is not None else "unavailable"
             return self._homography
         self._calibration_updates += 1
         if self._calibration_updates < 9 and not self._force_homography_recompute:
             return None
         self._corners = corners
         self._homography = result.homography
+        self._calibration_provenance = "solved"
         self._force_homography_recompute = False
         return self._homography
+
     def _track_ids(self, candidates: list[tuple[np.ndarray, np.ndarray]]) -> list[tuple[int, np.ndarray]]:
         centers = [candidate[0] for candidate in candidates]
         if set(self._centroids) != {1, 2}:
@@ -275,18 +275,19 @@ class TennisAdapter:
                     homography = self._stable_homography(frame)
                     if homography is not None:
                         for track_id, point in self.detect_players(frame, homography):
-                            rows.append({"frame": source_frame, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1])})
+                            rows.append({"frame": source_frame, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1]), "calibration_provenance": self._calibration_provenance})
                         ball_points.append(ball_detector.detect(frame))
-                        ball_frames.append((source_frame, homography))
+                        ball_frames.append((source_frame, homography, self._calibration_provenance))
                     processed += 1
                 source_frame += 1
         finally:
             capture.release()
-        for point, (frame, homography) in zip(rectify_track(ball_points), ball_frames):
+        for point, (frame, homography, provenance) in zip(rectify_track(ball_points), ball_frames):
             balls = ball_rows((point,), homography)
             if not balls.empty:
                 ball = balls.iloc[0].to_dict()
                 ball["frame"] = frame
+                ball["calibration_provenance"] = provenance
                 rows.append(ball)
         self.last_output = pd.DataFrame(rows, columns=SCHEMA)
         self.last_metadata = {}

@@ -264,3 +264,19 @@ def test_resolver_never_returns_an_unmerged_stream(monkeypatch, tmp_path):
     (tmp_path / "g.mkv").write_bytes(b"x" * 100)
     resolved = footage_bridge._resolve_download(tmp_path / "g.mp4")
     assert resolved is not None and resolved.name == "g.mkv"
+
+
+def test_keeps_exactly_one_reference_clip_per_sport(monkeypatch, tmp_path):
+    """Deleting every copy left tracking work unable to re-measure anything."""
+    monkeypatch.setattr(footage_bridge, "REFERENCE_DIR", tmp_path / "reference")
+    first = tmp_path / "tennis_01.mp4"
+    first.write_bytes(b"video")
+
+    assert footage_bridge.keep_reference(first, "tennis") is True
+    assert (tmp_path / "reference" / "tennis.mp4").is_file()
+
+    second = tmp_path / "tennis_02.mp4"
+    second.write_bytes(b"video")
+    # Only one per sport: the second is not kept, so the caller deletes it.
+    assert footage_bridge.keep_reference(second, "tennis") is False
+    assert second.is_file()
