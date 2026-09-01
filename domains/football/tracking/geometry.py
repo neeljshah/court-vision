@@ -17,6 +17,7 @@ FIELD_LENGTH_FT = 360.0
 # Source: https://operations.nfl.com/rules-officiating/2026-nfl-rulebook
 NFL_HASH_ROW_SEPARATION_FT = 18.5
 NCAA_HASH_ROW_SEPARATION_FT = 40.0
+NFL_FIELD_NUMERAL_HEIGHT_FT = 6.0
 # NFL Football Operations: yard lines are painted at five-yard intervals.
 # Source: https://operations.nfl.com/football-101/terms-glossary/glossary-terms-list/yard-lines/
 YARD_LINE_SPACING_FT = 15.0  # 5 yd * 3 ft.
@@ -48,6 +49,27 @@ def field_spec(field_level: str) -> FootballFieldSpec:
         return FIELD_SPECS[field_level.lower()]
     except (AttributeError, KeyError) as exc:
         raise ValueError("field_level must be one of: %s" % ", ".join(FIELD_SPECS)) from exc
+
+
+def nfl_numeral_scale_error_pct(homography: np.ndarray, bbox: tuple[float, float, float, float],
+                                field_level: str) -> Optional[float]:
+    """Return a measured NFL numeral-height error, never infer the field level.
+
+    ``homography`` maps image pixels to field feet and ``bbox`` is an already
+    resolved painted field numeral.  The caller supplies ``field_level`` so a
+    visually similar grid cannot silently become NFL-calibrated.
+    """
+    if field_level.lower() != "nfl":
+        return None
+    x, y, width, height = bbox
+    if width <= 0.0 or height <= 0.0:
+        return None
+    points = np.float32([[[x + width / 2.0, y]], [[x + width / 2.0, y + height]]])
+    projected = cv2.perspectiveTransform(points, np.asarray(homography, dtype=float))[:, 0, :]
+    observed_height = float(np.linalg.norm(projected[1] - projected[0]))
+    if not np.isfinite(observed_height) or observed_height <= 0.0:
+        return None
+    return abs(observed_height / NFL_FIELD_NUMERAL_HEIGHT_FT - 1.0) * 100.0
 
 
 class FootballGeometryMixin:

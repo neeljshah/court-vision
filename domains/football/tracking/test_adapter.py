@@ -11,7 +11,9 @@ import pandas as pd
 from domains.football.tracking.adapter import (SANITY_LIMIT_FT, YARD_LINE_SPACING_FT,
                                                FootballAdapter)
 from domains.football.tracking.geometry import (NCAA_HASH_ROW_SEPARATION_FT,
-                                                NFL_HASH_ROW_SEPARATION_FT, field_spec)
+                                                NFL_FIELD_NUMERAL_HEIGHT_FT,
+                                                NFL_HASH_ROW_SEPARATION_FT, field_spec,
+                                                nfl_numeral_scale_error_pct)
 from domains.football.tracking.absolute_anchor import AbsoluteYardAnchor
 from scripts.platformkit.tracking_harness import evaluate
 
@@ -67,6 +69,13 @@ def test_hash_row_dimensions_are_named_not_inferred() -> None:
     assert field_spec("nfl").hash_row_separation_ft == 18.5
     assert field_spec("ncaa").hash_row_separation_ft == 40.0
     assert FootballAdapter().field_level is None
+
+
+def test_nfl_numeral_scale_check_requires_explicit_nfl_and_measures_height() -> None:
+    homography = np.eye(3)
+    bbox = (20.0, 30.0, 8.0, NFL_FIELD_NUMERAL_HEIGHT_FT)
+    assert nfl_numeral_scale_error_pct(homography, bbox, "nfl") == 0.0
+    assert nfl_numeral_scale_error_pct(homography, bbox, "ncaa") is None
 
 
 def test_pre_snap_classifier_separates_still_and_moving_frames() -> None:
