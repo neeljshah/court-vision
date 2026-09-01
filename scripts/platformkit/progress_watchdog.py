@@ -11,17 +11,50 @@ from typing import Any, Callable, Sequence
 
 from scripts.platformkit import pod_supervisor, queue_expander
 
+# Matches footage_bridge.MIN_TRACKING_ROWS: below this a game is not tracked.
+MIN_USABLE_ROWS = 500
+
+
+def _usable_tracked(tracking: Path) -> int:
+    """Count games with REAL output, not merely a non-empty file.
+
+    A 103-row CSV starting at frame 3813 is non-empty and useless. Counting it
+    as tracked is how the corpus looked twice as healthy as it was.
+    """
+    if not tracking.is_dir():
+        return 0
+    usable = 0
+    for path in tracking.glob("*/tracking_data.csv"):
+        try:
+            with path.open("r", encoding="utf-8", errors="ignore") as handle:
+                for index, _ in enumerate(handle, start=1):
+                    if index > MIN_USABLE_ROWS:
+                        usable += 1
+                        break
+        except OSError:
+            continue
+    return usable
+
 
 def snapshot(root: Path) -> dict[str, object]:
     """Return a compact, output-focused view of footage processing progress."""
     data = root / "data"
     tracking = data / "tracking"
-    ledger = tracking / "footage_cycle_ledger.jsonl"
-    footage = data / "footage"
+    # Both producers: footage_cycle writes the first, the local->pod bridge the
+    # second. Watching only one reported zero all night once the bridge took over.
+    ledgers = [tracking / "footage_cycle_ledger.jsonl",
+               tracking / "footage_bridge_ledger.jsonl"]
+    # The bridge stages into footage_bridge/; footage/ is the older cycle path.
+    footage_dirs = [data / "footage", data / "footage_bridge"]
     reports = data / "ab_reports"
-    tracked = sum(1 for _ in tracking.glob("*/tracking_data.csv")) if tracking.is_dir() else 0
-    ledger_lines = len(ledger.read_text(encoding="utf-8").splitlines()) if ledger.is_file() else 0
-    staged_bytes = sum(path.stat().st_size for path in footage.rglob("*") if path.is_file()) if footage.is_dir() else 0
+    tracked = _usable_tracked(tracking)
+    ledger_lines = sum(
+        len(path.read_text(encoding="utf-8").splitlines())
+        for path in ledgers if path.is_file())
+    staged_bytes = sum(
+        path.stat().st_size
+        for directory in footage_dirs if directory.is_dir()
+        for path in directory.rglob("*") if path.is_file())
     report_files = [path for path in reports.rglob("*") if path.is_file()] if reports.is_dir() else []
     newest_report_age_s = None
     if report_files:

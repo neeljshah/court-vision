@@ -17,9 +17,13 @@
 # ponytail: scp -r whole dirs, no rsync on this box; fine at current sizes --
 # switch to rsync --delete if ingame_grade grows past a few hundred MB.
 set -u
-POD="root@157.157.221.29"
-PORT=19942
-SRC="/workspace/court-vision"
+# Live pod as of 2026-09-01. The previous values (157.157.221.29:19942,
+# /workspace/court-vision) pointed at a decommissioned pod, and because every
+# scp below sends errors to /dev/null the script reported success while
+# pulling nothing at all.
+POD="root@213.192.2.83"
+PORT=40048
+SRC="/workspace/nba-ai-system"
 DST="/c/Users/neelj/nba-ai-system"
 
 pull_once() {
@@ -29,6 +33,13 @@ pull_once() {
     scp -P $PORT -q -r "$POD:$SRC/data/frontend/ops" "$DST/data/frontend/" 2>/dev/null
     scp -P $PORT -q -r "$POD:$SRC/data/cache/benchmarks" "$DST/data/cache/" 2>/dev/null
     scp -P $PORT -q -r "$POD:$SRC/data/cache/ingame_grade" "$DST/data/cache/" 2>/dev/null
+    # Tracking reports and the bridge ledger: without these the tracking corpus
+    # produced on the pod never reaches the box where the A/B harnesses run.
+    mkdir -p "$DST/data/tracking_reports"
+    if ! scp -P $PORT -q -r "$POD:$SRC/data/tracking_reports/." "$DST/data/tracking_reports/"; then
+        echo "pod_pull_sync: WARN tracking_reports pull failed" >&2
+    fi
+    scp -P $PORT -q "$POD:$SRC/data/tracking/footage_bridge_ledger.jsonl" "$DST/data/tracking/" 2>/dev/null
     echo "pod_pull_sync: pass complete $(date -u +%H:%M:%SZ)"
 }
 

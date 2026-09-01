@@ -69,3 +69,23 @@ def test_empty_queue_invokes_expander(monkeypatch, tmp_path: Path) -> None:
     watchdog.cycle()
     assert watchdog.cycle() == "STALL"
     assert calls == [("kbo", progress_watchdog.queue_expander.SOURCES["kbo"])]
+
+
+def test_snapshot_counts_only_usable_games_and_both_ledgers(tmp_path):
+    """Thin CSVs are not tracked games, and both ledger producers are read."""
+    tracking = tmp_path / "data" / "tracking"
+    (tracking / "real_game").mkdir(parents=True)
+    (tracking / "thin_game").mkdir(parents=True)
+    header = "frame,track_id,cls,x,y\n"
+    (tracking / "real_game" / "tracking_data.csv").write_text(
+        header + "".join("%d,1,player,1,1\n" % i for i in range(900)), encoding="utf-8")
+    (tracking / "thin_game" / "tracking_data.csv").write_text(
+        header + "".join("%d,1,player,1,1\n" % i for i in range(103)), encoding="utf-8")
+    (tracking / "footage_cycle_ledger.jsonl").write_text('{"a":1}\n', encoding="utf-8")
+    (tracking / "footage_bridge_ledger.jsonl").write_text('{"b":2}\n{"c":3}\n',
+                                                          encoding="utf-8")
+
+    snap = progress_watchdog.snapshot(tmp_path)
+
+    assert snap["tracked_games"] == 1, "the 103-row game must not count as tracked"
+    assert snap["ledger_lines"] == 3, "both ledger producers must be counted"
