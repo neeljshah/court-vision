@@ -34,6 +34,13 @@ TRACKING = Path("data/tracking")
 # Matches footage_bridge: a real tracked game has thousands of rows, and a
 # non-empty CSV is not evidence of anything.
 MIN_TRACKING_ROWS = 500
+# No single game may hold a worker slot forever. Sport adapters finish in 1-4
+# minutes; the basketball path (scripts/run_clip.py) is the full production
+# pipeline and was measured at 18216 seconds -- 5.06 HOURS -- still running.
+# Two of those pinned two slots while 22 wnba/ncaa games queued behind them and
+# jammed the stage against the bridge's backlog cap. A slot freed after 45
+# minutes is worth far more than one game tracked in five hours.
+JOB_TIMEOUT_SECONDS = 2700
 SPORT_ADAPTER = {"tennis": "tennis", "soccer": "soccer", "npb": "baseball",
                  "kbo": "baseball", "mlb": "baseball", "baseball": "baseball"}
 # These go through run_clip.py, which the adapter registry does not cover.
@@ -64,8 +71,14 @@ def tracking_rows(game_id: str) -> int:
 def build_command(sport: str, video: Path, game_id: str) -> list:
     """The tracking command for a sport. Mirrors footage_bridge's routing."""
     if sport in CLIP_SPORTS:
+        # 3000, not 18000. run_clip.py is the full production pipeline, not a
+        # light adapter, and at this concurrency an 18000-frame job was measured
+        # still running after 18216 seconds (5.06 hours). Every such job would
+        # now simply hit JOB_TIMEOUT_SECONDS and yield NOTHING, burning a slot
+        # for 45 minutes each. A shorter clip that actually finishes is worth
+        # more than a long one that never does.
         return [sys.executable, "scripts/run_clip.py", "--video", str(video),
-                "--game-id", game_id, "--no-show", "--frames", "18000"]
+                "--game-id", game_id, "--no-show", "--frames", "3000"]
     adapter = SPORT_ADAPTER.get(sport, sport)
     return [sys.executable, "-m", "scripts.platformkit.adapter_run",
             adapter, str(video), game_id]
@@ -125,10 +138,16 @@ def _record(entry: dict) -> None:
         handle.write(json.dumps(entry) + "\n")
 
 
-def _finish(name: str, job: dict) -> None:
-    """Grade one finished job, record it, and always reclaim the disk."""
+def _finish(name: str, job: dict, timed_out: bool = False) -> None:
+    """Grade one finished job, record it, and always reclaim the disk.
+
+    A timed-out job is recorded as "timeout" even when its partial CSV happens
+    to clear the row bar: half a game is not a tracked game, and calling it one
+    would put untrustworthy partial output into the usable corpus.
+    """
     rows = tracking_rows(job["game_id"])
-    status = "tracked" if rows >= MIN_TRACKING_ROWS else "thin"
+    status = "timeout" if timed_out else (
+        "tracked" if rows >= MIN_TRACKING_ROWS else "thin")
     graded = verdict(job["sport"], job["game_id"]) if rows else {}
     entry = {"game_id": job["game_id"], "sport": job["sport"],
              "status": status, "rows": rows,
@@ -155,8 +174,17 @@ def _finish(name: str, job: dict) -> None:
 
 def tick(active: dict, workers: int) -> None:
     """Reap finished jobs, then fill free slots. One pass, never blocking."""
-    for name in [n for n, job in active.items() if job["proc"].poll() is not None]:
-        _finish(name, active.pop(name))
+    for name, job in list(active.items()):
+        if job["proc"].poll() is not None:
+            _finish(name, active.pop(name))
+        elif time.time() - job["started"] > JOB_TIMEOUT_SECONDS:
+            print("%s exceeded %ds -- killing to free the slot"
+                  % (job["game_id"], JOB_TIMEOUT_SECONDS), flush=True)
+            try:
+                job["proc"].kill()
+            except OSError as exc:
+                print("kill failed %s: %s" % (job["game_id"], exc), flush=True)
+            _finish(name, active.pop(name), timed_out=True)
     for path, sport, game_id in claimable(active):
         if len(active) >= workers:
             break

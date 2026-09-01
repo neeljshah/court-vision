@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import time
 import sys
 
 from scripts.platformkit import track_daemon
@@ -188,3 +189,76 @@ def test_clip_sports_are_graded_as_basketball(tmp_path, monkeypatch):
                       encoding="utf-8")
 
     assert track_daemon.verdict("wnba", "w1")["passed"] is True
+
+
+class SlowProc:
+    """A job that never exits, like the 5-hour run_clip that pinned a slot."""
+    def __init__(self):
+        self.killed = False
+
+    def poll(self):
+        return None
+
+    def kill(self):
+        self.killed = True
+
+
+def test_a_job_that_never_finishes_is_killed_to_free_its_slot(tmp_path, monkeypatch):
+    """run_clip.py was measured at 18216s (5.06h) still running. Two of those
+    pinned two slots while 22 games queued behind them and jammed the stage."""
+    stage = _stage(tmp_path, monkeypatch)
+    monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
+    video = stage / "wnba__w1.mp4"
+    video.write_bytes(b"x")
+    log = stage / "wnba__w1.log"
+    log.write_text("slow", encoding="utf-8")
+    proc = SlowProc()
+    active = {"wnba__w1.mp4": {"proc": proc, "video": video, "log": log,
+                               "sport": "wnba", "game_id": "w1",
+                               "started": time.time() - 99999}}
+
+    track_daemon.tick(active, workers=4)
+
+    assert proc.killed is True
+    assert not active
+    entry = json.loads(track_daemon.LEDGER.read_text(encoding="utf-8").strip())
+    assert entry["status"] == "timeout"
+
+
+def test_a_timed_out_job_is_not_counted_as_tracked(tmp_path, monkeypatch):
+    """Half a game is not a tracked game, even when the partial CSV is large."""
+    stage = _stage(tmp_path, monkeypatch)
+    monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
+    video = stage / "wnba__w2.mp4"
+    video.write_bytes(b"x")
+    log = stage / "wnba__w2.log"
+    log.write_text("partial", encoding="utf-8")
+    csv_dir = track_daemon.TRACKING / "w2"
+    csv_dir.mkdir(parents=True)
+    (csv_dir / "tracking_data.csv").write_text("h\n" + "r\n" * 8000,
+                                               encoding="utf-8")
+    active = {"wnba__w2.mp4": {"proc": SlowProc(), "video": video, "log": log,
+                               "sport": "wnba", "game_id": "w2",
+                               "started": time.time() - 99999}}
+
+    track_daemon.tick(active, workers=4)
+
+    entry = json.loads(track_daemon.LEDGER.read_text(encoding="utf-8").strip())
+    assert entry["rows"] == 8000
+    assert entry["status"] == "timeout"
+
+
+def test_a_job_inside_its_budget_is_left_alone(tmp_path, monkeypatch):
+    stage = _stage(tmp_path, monkeypatch)
+    video = stage / "tennis__t7.mp4"
+    video.write_bytes(b"x")
+    proc = SlowProc()
+    active = {"tennis__t7.mp4": {"proc": proc, "video": video,
+                                 "log": stage / "tennis__t7.log",
+                                 "sport": "tennis", "game_id": "t7",
+                                 "started": time.time() - 10}}
+
+    track_daemon.tick(active, workers=4)
+
+    assert proc.killed is False
+    assert "tennis__t7.mp4" in active
