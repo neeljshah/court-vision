@@ -27,11 +27,62 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from scripts.platformkit import clv_ledger as _clv
+from scripts.platformkit.execution import venue_fees as _vf
 
 logger = logging.getLogger(__name__)
 
 # Sports that can draw in regulation (real push). NBA/MLB cannot -> equal final = void.
 _CAN_DRAW = ("soccer", "soccer_intl")
+
+# Maker-channel rows graded GROSS because the fee could be neither read nor
+# recomputed (legacy row, pre-fee-stamp, no venue field). Surfaced, never silent.
+_GROSS_LEGACY_ROWS = 0
+
+
+def gross_legacy_rows() -> int:
+    """How many fee-expected rows this process graded GROSS (fee unresolvable)."""
+    return _GROSS_LEGACY_ROWS
+
+
+def _resolve_fee_units(bet: Dict[str, Any]) -> tuple:
+    """(fee_units, fee_source) for one fill row. A fee only ever SUBTRACTS.
+
+    Precedence: the fee recorded AT FILL TIME (top-level or exec_gate
+    ``maker_fee_units`` -- it saw the then-current schedule) > a venue_fees
+    recompute for a legacy maker row that still names its venue > GROSS with
+    the row COUNTED in gross_legacy_rows() (never silently). Non-maker rows
+    (plain pregame paper) legitimately carry no venue fee -> (0.0, "no_fee").
+    """
+    fee = bet.get("maker_fee_units")
+    gate = bet.get("exec_gate")
+    if fee is None and isinstance(gate, dict):
+        fee = gate.get("maker_fee_units")
+    if fee is not None:
+        try:
+            return abs(float(fee)), "recorded"  # abs: never credited back into EV
+        except (TypeError, ValueError):
+            pass  # unparseable stamp -> fall through to the legacy paths
+    is_maker = (str(bet.get("taken_book", "")).strip().lower() == "paper_ingame_maker"
+                or (isinstance(gate, dict)
+                    and str(gate.get("execution_mode", "")).strip().lower() == "maker_only"))
+    if not is_maker:
+        return 0.0, "no_fee"
+    venue = str(bet.get("venue") or "").strip().lower()
+    if venue == "kalshi":
+        try:
+            price = 1.0 / float(bet["taken_decimal"])
+            size = float(bet.get("stake_units", 1.0) or 1.0)
+            return _vf.fee_kalshi_maker(size, price), "venue_fees"
+        except (TypeError, ValueError, ZeroDivisionError, KeyError):
+            pass
+    elif venue == "polymarket":
+        return 0.0, "venue_fees"  # makers are never charged (venue_fees schedule)
+    global _GROSS_LEGACY_ROWS
+    _GROSS_LEGACY_ROWS += 1
+    logger.warning("grade_one: maker row %r graded GROSS of fees (no recorded "
+                   "maker_fee_units, venue %r unresolvable)",
+                   bet.get("edge_key") or bet.get("bet_id"), bet.get("venue"))
+    return 0.0, "gross_legacy"
 
 
 def _outcome(sport: str, side: str, home_score: int, away_score: int) -> Optional[str]:
@@ -52,16 +103,21 @@ def _outcome(sport: str, side: str, home_score: int, away_score: int) -> Optiona
 
 
 def _unit_result(outcome: Optional[str], taken_decimal: float,
-                 stake_units: float) -> Optional[float]:
+                 stake_units: float, fee_units: float = 0.0) -> Optional[float]:
     """UNITS won/lost at the taken price (NOT dollars). Push -> 0.0; void -> None.
 
-    win -> +(decimal-1)*stake_units; loss -> -stake_units; push -> 0.0. A pure unit
+    win -> +(decimal-1)*stake_units - fee; loss -> -stake_units - fee; push -> 0.0.
+    *fee_units* is the entry-side venue fee charged at fill (0.0 = no fee); it is
+    taken as a magnitude and SUBTRACTED on win AND loss (charged regardless of
+    outcome), so a fee can only ever reduce a recorded result, never inflate it.
+    Push/void leave 0.0/None (the venue refunds the market). A pure unit
     count -- NO bankroll, NO money -- so history shows a unit record, never dollars.
     """
+    fee = abs(float(fee_units or 0.0))
     if outcome == "win":
-        return round((float(taken_decimal) - 1.0) * float(stake_units), 6)
+        return round((float(taken_decimal) - 1.0) * float(stake_units) - fee, 6)
     if outcome == "loss":
-        return round(-float(stake_units), 6)
+        return round(-float(stake_units) - fee, 6)
     if outcome == "push":
         return 0.0
     return None  # void / undecided -> no unit result
@@ -188,12 +244,19 @@ def grade_one(
         settled["void_reason"] = "equal_final_score_for_non_draw_sport"
     settled["home_score"] = hs
     settled["away_score"] = as_
-    # UNITS ONLY -- never a dollar pnl. None for void/undecided.
-    settled["unit_result"] = _unit_result(outcome, taken_decimal, stake_units)
+    # UNITS ONLY -- never a dollar pnl. None for void/undecided. NET of the
+    # entry-side venue fee (R2b): recorded at fill > venue_fees recompute >
+    # gross + counted (see _resolve_fee_units). Fees only ever reduce results.
+    fee_units, fee_source = _resolve_fee_units(bet)
+    settled["fee_units"] = round(fee_units, 6)
+    settled["fee_source"] = fee_source
+    settled["unit_result"] = _unit_result(outcome, taken_decimal, stake_units,
+                                          fee_units=fee_units)
     settled["executed"] = False
     settled["settle_key"] = _settle_key(bet)
     settled["bet_id"] = bet.get("bet_id") or _clv.bet_id(bet)
     return settled
 
 
-__all__ = ["grade_one", "_outcome", "_unit_result", "_settle_key"]
+__all__ = ["grade_one", "_outcome", "_unit_result", "_settle_key",
+           "gross_legacy_rows"]
