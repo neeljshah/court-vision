@@ -120,3 +120,29 @@ def test_row_counts_parsed_from_one_batched_probe(monkeypatch):
 
     assert counts == {"kbo_01": 9000, "kbo_02": 103}
     assert len(calls) == 1
+
+
+def test_grade_writes_report_and_maps_wnba_to_basketball(monkeypatch):
+    """The run_clip path never graded itself; the bridge must grade every game."""
+    sent = []
+
+    def fake_ssh(command, timeout=7200):
+        sent.append(command)
+        return subprocess.CompletedProcess(command, 0, stdout="passed\n", stderr="")
+
+    monkeypatch.setattr(footage_bridge, "_ssh", fake_ssh)
+
+    verdict = footage_bridge.grade("wnba_01", "wnba")
+
+    assert verdict == "passed"
+    # The harness has no "wnba" sport profile; it must be graded as basketball.
+    assert "'basketball'" in sent[0]
+    assert "data/tracking_reports/basketball" in sent[0]
+
+
+def test_grade_reports_when_it_cannot_grade(monkeypatch):
+    monkeypatch.setattr(footage_bridge, "_ssh", lambda command, timeout=7200:
+                        subprocess.CompletedProcess(command, 1, stdout="",
+                                                    stderr="boom"))
+
+    assert footage_bridge.grade("kbo_01", "kbo").startswith("ungraded:")

@@ -154,11 +154,36 @@ def push_and_track(local: Path, item: dict) -> str:
         _ssh("rm -f %s" % remote, timeout=300)
     rows = tracking_rows(game_id)
     if rows >= MIN_TRACKING_ROWS:
-        return "tracked rows=%d" % rows
+        return "tracked rows=%d %s" % (rows, grade(game_id, sport))
     tail = ""
     if result is not None:
         tail = ((result.stdout or "") + (result.stderr or ""))[-160:].replace("\n", " ")
     return "thin rows=%d %s" % (rows, tail)
+
+
+def grade(game_id: str, sport: str) -> str:
+    """Score a tracked game with the harness and write its report on the pod.
+
+    The adapter path grades itself, but the basketball/WNBA path goes through
+    run_clip.py which does not, so those games were tracked and never graded.
+    About fifteen readers of data/tracking_reports/ had no producer for them.
+    """
+    adapter = SPORT_ADAPTER.get(sport, sport)
+    harness_sport = "basketball" if adapter in ("wnba", "basketball") else adapter
+    script = (
+        "import json, os, pandas as pd;"
+        "from scripts.platformkit.tracking_harness import evaluate;"
+        "r = evaluate(pd.read_csv('data/tracking/%s/tracking_data.csv'), '%s');"
+        "os.makedirs('data/tracking_reports/%s', exist_ok=True);"
+        "open('data/tracking_reports/%s/%s.json','w').write(r.to_json());"
+        "print('passed' if r.passed else 'FAILED:' + ';'.join(r.failures)[:120])"
+        % (game_id, harness_sport, harness_sport, harness_sport, game_id))
+    result = _ssh("cd %s && PYTHONPATH=%s python -c \"%s\""
+                  % (POD_ROOT, POD_ROOT, script), timeout=900)
+    verdict = (result.stdout or "").strip().splitlines()
+    if verdict:
+        return verdict[-1]
+    return "ungraded:" + (result.stderr or "")[-90:].replace("\n", " ")
 
 
 def _record(entry: dict) -> None:
