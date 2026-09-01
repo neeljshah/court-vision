@@ -15,8 +15,23 @@ from domains.soccer.tracking.segmenter import is_pitch_view
 from domains.soccer.tracking.pressing import aggregate_pressing, pressure_index
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
 PITCH_METRES = np.float32(((0, 0), (105, 0), (0, 68), (105, 68)))
+# Deliberately WIDER than the harness soccer bound (0..105, 0..68): players
+# legitimately stand off the playing surface (throw-ins beyond the touchline,
+# keepers behind the goal line).  An accept window equal to the harness bound
+# makes oob_pct a structural 0.0 that can never fail, which is what this was.
+PITCH_ACCEPT = (-5.0, 110.0, -5.0, 73.0)
+# A 4-point homography is exactly determined, so its own reprojection error is
+# identically 0 and evidences nothing.  Five named landmarks let every one of
+# them be predicted by a fit that excluded it.
+MIN_LANDMARKS = 5
+MAX_HELDOUT_ERROR_M = 2.0
 Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
 Detections = dict[str, tuple[float, float, float]]
+
+
+class BallTrackingUnavailableError(RuntimeError):
+    """Raised when a caller requests unsupported soccer ball tracking."""
+
 
 def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
     """Write tracking rows in the shared platform schema."""
@@ -153,6 +168,21 @@ class SoccerAdapter:
         return horizontal, vertical
 
     def _landmark_detections(self, frame: np.ndarray) -> Detections:
+        """Label the outermost visible line clusters as the pitch boundary.
+
+        ponytail: this is the known ceiling and the reason soccer now emits
+        nothing.  Nothing ties the outermost DETECTED lines to the touchline and
+        goal line -- in a broadcast view they are usually the halfway line and
+        the 18-yard box -- so the same physical lines get a different canonical
+        identity every frame.  Measured on data/videos/reference/soccer.mp4:
+        consecutive candidate homographies disagree by a median 378 m on a 105 m
+        pitch, and only 4.6 percent agree within the adapter's own 8 m
+        tolerance.  Only four unevidenced names are ever produced, which is
+        below MIN_LANDMARKS, so _validated_homography rejects every frame.
+        Upgrade path: emit landmarks whose identity is independently evidenced
+        (center circle, halfway line, and penalty-box corners verified by the
+        16.5 x 40.32 m box aspect ratio) -- all already in CANONICAL_LANDMARKS.
+        """
         height, width = frame.shape[:2]
         horizontal, vertical = self.detect_pitch_lines(frame)
         horizontal_clusters = self._cluster_lines(horizontal, True, (height, width))
@@ -208,17 +238,34 @@ class SoccerAdapter:
     def _stable_homography(self, detections: Union[Detections, np.ndarray], shape: tuple[int, int] = (720, 1280)) -> Optional[np.ndarray]:
         if isinstance(detections, np.ndarray):
             detections = {name: (float(point[0]), float(point[1]), 1.0) for name, point in zip(("pitch_bl", "pitch_br", "pitch_tl", "pitch_tr"), detections)}
-        raw = solve_homography(detections, "soccer", min_conf=0.5)
-        if raw is None or self._reprojection_error(raw, detections) > 2.0:
+        if self._validated_homography(detections) is None:
             return None
         result = self._calibrator.update(detections)
         if result.homography is None or result.recompute or not self._in_tolerance(result.homography, shape):
-            return self._homography
+            return None
         self._calibration_updates += 1
         if self._calibration_updates < 9:
             return None
         self._homography = result.homography
         return self._homography
+
+    def _validated_homography(self, detections: Detections) -> Optional[np.ndarray]:
+        """Fit only when landmarks held out of the fit confirm it.
+
+        Leave-one-out is the whole point: scoring a fit on the same four points
+        that determined it always returns zero and can never reject anything.
+        """
+        names = [name for name in CANONICAL_LANDMARKS["soccer"] if name in detections]
+        if len(names) < MIN_LANDMARKS:
+            return None
+        for held in names:
+            subset = {name: detections[name] for name in names if name != held}
+            partial = solve_homography(subset, "soccer", min_conf=0.5)
+            if partial is None:
+                return None
+            if self._reprojection_error(partial, {held: detections[held]}) > MAX_HELDOUT_ERROR_M:
+                return None
+        return solve_homography(detections, "soccer", min_conf=0.5)
 
     def _in_tolerance(self, homography: np.ndarray, shape: tuple[int, int]) -> bool:
         if self._homography is None:
@@ -257,16 +304,11 @@ class SoccerAdapter:
             x1, y1, x2, y2 = map(float, box[:4])
             if x2 > x1 and y2 > y1:
                 point = self._project(((x1 + x2) / 2, y2), homography)
-                if 0 <= point[0] <= 105 and 0 <= point[1] <= 68:
+                low_x, high_x, low_y, high_y = PITCH_ACCEPT
+                if low_x <= point[0] <= high_x and low_y <= point[1] <= high_y:
                     candidates.append((np.array(((x1 + x2) / 2, (y1 + y2) / 2)), point))
         ids = self._assign_tracks([candidate[0] for candidate in candidates])
         return list(zip(ids, [candidate[1] for candidate in candidates]))
-
-    @staticmethod
-    def detect_ball_stub(frame: np.ndarray, homography: np.ndarray) -> list[tuple[int, np.ndarray]]:
-        """Return no ball rows until a validated soccer-ball detector is added."""
-        del frame, homography
-        return []
 
     def process_video(
         self,
@@ -275,10 +317,22 @@ class SoccerAdapter:
         stride: int = 1,
         skip_non_pitch: bool = True,
         compute_pressing: bool = True,
+        player_only: bool = False,
     ) -> pd.DataFrame:
-        """Process a headless stream, emitting rows only for validated pitch frames."""
+        """Process a headless stream, emitting rows only for validated pitch frames.
+
+        Callers must opt into player-only output: this adapter runs YOLO person
+        class 0 only and has no soccer-ball detector, so it cannot satisfy a
+        ball-tracking contract.
+        """
         if stride < 1:
             raise ValueError("stride must be at least 1")
+        if not player_only:
+            raise BallTrackingUnavailableError(
+                "Soccer ball tracking is unavailable: this adapter runs YOLO "
+                "person class 0 only and has no validated ball detector. Use "
+                "player_only=True for player-only output."
+            )
         capture = cv2.VideoCapture(str(path))
         if not capture.isOpened():
             raise FileNotFoundError("Could not open video: %s" % path)
@@ -307,7 +361,6 @@ class SoccerAdapter:
                         accepted_homography_frames.append(source_frame)
                         for track_id, point in self.detect_players(frame, homography):
                             rows.append({"frame": source_frame, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1])})
-                        self.detect_ball_stub(frame, homography)
                     processed += 1
                 source_frame += 1
         finally:

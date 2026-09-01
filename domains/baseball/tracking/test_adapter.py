@@ -1,4 +1,9 @@
-"""Synthetic tests for the center-field baseball tracking adapter.
+"""Synthetic tests for the baseball pitch-view adapter.
+
+The synthetic pitch view mirrors the MEASURED broadcast layout (2026-09-01, two
+corpora): the pitcher's mound images BELOW the home-plate/base-path dirt band,
+is bounded by live grass on both sides, and its horizontal chord is the known
+18 feet.  The old adapter assumed the opposite ordering.
 
 Run: python -m pytest domains/baseball/tracking/test_adapter.py -q
 """
@@ -9,155 +14,118 @@ import numpy as np
 import pytest
 
 from domains.baseball.tracking.adapter import (
-    BallTrackingUnavailableError, BaseballAdapter, MOUND_TO_PLATE_FEET, PitchGeometry,
+    BallTrackingUnavailableError, BaseballAdapter, PitchGeometry,
 )
+from domains.baseball.tracking.field_mask import MOUND_DIAMETER_FEET
 
-
-MOUND = np.array((640.0, 360.0), dtype=np.float32)
-PLATE = np.array((640.0, 600.0), dtype=np.float32)
+GRASS = (45, 130, 45)
+DIRT = (70, 76, 120)          # measured park dirt: BGR ~ (75, 76, 120), hue 1
+MOUND_CENTER = (506, 604)
+MOUND_HALF_WIDTH = 456
+INFIELD_BAND_ROWS = (300, 450)
 
 
 def _pitch_view() -> np.ndarray:
-    image = np.full((720, 1280, 3), (45, 130, 45), dtype=np.uint8)
-    dirt = (70, 135, 190)
-    cv2.ellipse(image, tuple(MOUND.astype(int)), (55, 28), 0, 0, 360, dirt, -1)
-    cv2.ellipse(image, tuple(PLATE.astype(int)), (70, 36), 0, 0, 360, dirt, -1)
+    """Green field, a full-width infield dirt band, and a grass-bounded mound."""
+    image = np.full((720, 1280, 3), GRASS, dtype=np.uint8)
+    top, bottom = INFIELD_BAND_ROWS
+    cv2.rectangle(image, (0, top), (1280, bottom), DIRT, -1)
+    cv2.ellipse(image, MOUND_CENTER, (MOUND_HALF_WIDTH, 55), 0, 0, 360, DIRT, -1)
     return image
 
 
-def test_synthetic_pitch_view_and_scale() -> None:
+def _geometry(scale: float = 50.0) -> PitchGeometry:
+    return PitchGeometry(np.array(MOUND_CENTER, dtype=np.float32),
+                         scale * MOUND_DIAMETER_FEET, scale, True)
+
+
+class _FakeCapture:
+    def __init__(self, frames):
+        self._frames = list(frames)
+
+    def isOpened(self) -> bool:
+        return True
+
+    def read(self):
+        return (True, self._frames.pop(0)) if self._frames else (False, None)
+
+    def release(self) -> None:
+        pass
+
+
+def test_pitch_view_scale_comes_from_the_known_mound_chord() -> None:
     adapter = BaseballAdapter(detector=lambda frame: [])
-    frame = _pitch_view()
-    assert adapter.is_pitch_view(frame)
-    scale = adapter.calibrate_scale(frame)
-    assert scale is not None
-    assert abs(scale - np.linalg.norm(MOUND - PLATE) / MOUND_TO_PLATE_FEET) < scale * 0.10
+    geometry = adapter.detect_pitch_geometry(_pitch_view())
+
+    assert geometry is not None
+    assert abs(geometry.mound_chord_px - 2 * MOUND_HALF_WIDTH) <= 6
+    assert abs(geometry.pixels_per_foot
+               - geometry.mound_chord_px / MOUND_DIAMETER_FEET) < 1e-6
 
 
-def test_abs_overlay_does_not_change_pitch_view_scale() -> None:
+def test_mound_is_found_below_the_infield_band_not_above_it() -> None:
+    """Regression for the label inversion: the mound images BELOW home plate."""
     adapter = BaseballAdapter(detector=lambda frame: [])
-    frame = _pitch_view()
-    baseline = adapter.calibrate_scale(frame)
-    dirt = (70, 135, 190)
-    cv2.rectangle(frame, (550, 500), (730, 552), dirt, 6)
+    geometry = adapter.detect_pitch_geometry(_pitch_view())
 
-    assert adapter.is_pitch_view(frame)
-    scale = adapter.calibrate_scale(frame)
-    assert scale is not None and baseline is not None
-    assert abs(scale - baseline) < baseline * 0.01
+    assert geometry is not None
+    assert geometry.mound[1] > INFIELD_BAND_ROWS[1]
+    assert abs(float(geometry.mound[0]) - MOUND_CENTER[0]) <= 6
 
 
-def test_corner_scorebug_is_excluded_from_dirt_detection() -> None:
-    adapter = BaseballAdapter(detector=lambda frame: [])
-    frame = _pitch_view()
-    cv2.rectangle(frame, (0, 0), (180, 90), (70, 135, 190), -1)
-
-    assert len(adapter._dirt_blobs(frame)) == 2
-    assert adapter.is_pitch_view(frame)
-
-
-def test_all_green_frame_is_not_pitch_view() -> None:
-    frame = np.full((720, 1280, 3), (45, 130, 45), dtype=np.uint8)
+def test_all_green_frame_is_not_a_pitch_view() -> None:
+    frame = np.full((720, 1280, 3), GRASS, dtype=np.uint8)
     assert not BaseballAdapter(detector=lambda frame: []).is_pitch_view(frame)
 
 
-def test_mock_detector_projects_pitcher_and_batter_ids() -> None:
-    frame = _pitch_view()
-    adapter = BaseballAdapter(detector=lambda frame: [
-        [610, 260, 650, 370],
-        [620, 480, 660, 590],
-        [100, 100, 130, 130],
-    ])
-    geometry = adapter.detect_pitch_geometry(frame)
-    assert geometry is not None
-    players = adapter.detect_players(frame, geometry)
-    assert [track_id for track_id, _ in players] == [1, 2]
-    points = {track_id: point for track_id, point in players}
-    assert np.allclose(
-        points[1],
-        ((630.0 - geometry.plate[0]) / geometry.pixels_per_foot,
-         (geometry.plate[1] - 370.0) / geometry.pixels_per_foot),
-        atol=1.0,
-    )
-    assert np.allclose(
-        points[2],
-        ((640.0 - geometry.plate[0]) / geometry.pixels_per_foot,
-         (geometry.plate[1] - 590.0) / geometry.pixels_per_foot),
-        atol=1.0,
-    )
+def test_outfield_wide_shot_is_rejected() -> None:
+    """Measured false positive: warning-track dirt running off the frame edge."""
+    frame = np.full((720, 1280, 3), GRASS, dtype=np.uint8)
+    cv2.rectangle(frame, (0, 560), (1280, 640), DIRT, -1)
+
+    assert not BaseballAdapter(detector=lambda frame: []).is_pitch_view(frame)
 
 
-def test_process_video_stabilizes_jittered_pitch_view_projection(monkeypatch) -> None:
-    scales = [4.0 + (0.8 if index % 2 else -0.8) for index in range(40)]
-    geometries = iter([
-        PitchGeometry(
-            np.array((640.0, 600.0 - scale * MOUND_TO_PLATE_FEET), dtype=np.float32),
-            PLATE.copy(),
-            scale,
-        )
-        for scale in scales
-    ])
+def test_single_fielder_close_up_is_rejected() -> None:
+    """Measured false positive: an isolated dirt patch far too small to be a mound."""
+    frame = np.full((720, 1280, 3), GRASS, dtype=np.uint8)
+    cv2.rectangle(frame, (0, 300), (1280, 380), DIRT, -1)
+    cv2.ellipse(frame, (620, 560), (90, 40), 0, 0, 360, DIRT, -1)
 
-    class FakeCapture:
-        def __init__(self) -> None:
-            self.index = 0
-
-        def isOpened(self) -> bool:
-            return True
-
-        def read(self):
-            if self.index == len(scales):
-                return False, None
-            self.index += 1
-            return True, np.zeros((2, 2, 3), dtype=np.uint8)
-
-        def release(self) -> None:
-            pass
-
-    monkeypatch.setattr(cv2, "VideoCapture", lambda path: FakeCapture())
-    adapter = BaseballAdapter(detector=lambda frame: [
-        [610, 300, 650, 410], [620, 480, 660, 590],
-    ])
-    monkeypatch.setattr(adapter, "detect_pitch_geometry", lambda frame: next(geometries))
-
-    rows = adapter.process_video("synthetic.mp4", player_only=True)
-    pitcher = rows.loc[rows["track_id"] == 1, "y"].to_numpy()
-    assert len(pitcher) >= 10
-    assert np.percentile(np.abs(np.diff(pitcher)), 95) < 10.0
+    assert not BaseballAdapter(detector=lambda frame: []).is_pitch_view(frame)
 
 
-def test_process_video_command_flag_returns_metadata_without_row_schema_change(monkeypatch) -> None:
-    frames = iter([np.zeros((2, 2, 3), dtype=np.uint8) for _ in range(3)])
+def test_replay_dissolve_is_rejected() -> None:
+    """Measured false positive: a washed-out dissolve loses the dominant green."""
+    dissolved = cv2.addWeighted(_pitch_view(), 0.35,
+                                np.full((720, 1280, 3), 210, dtype=np.uint8), 0.65, 0)
 
-    class FakeCapture:
-        def isOpened(self) -> bool:
-            return True
+    assert not BaseballAdapter(detector=lambda frame: []).is_pitch_view(dissolved)
 
-        def read(self):
-            try:
-                return True, next(frames)
-            except StopIteration:
-                return False, None
 
-        def release(self) -> None:
-            pass
+def test_mound_without_an_infield_band_above_it_is_rejected() -> None:
+    frame = np.full((720, 1280, 3), GRASS, dtype=np.uint8)
+    cv2.ellipse(frame, MOUND_CENTER, (MOUND_HALF_WIDTH, 55), 0, 0, 360, DIRT, -1)
 
-    geometry = PitchGeometry(MOUND.copy(), PLATE.copy(), 4.0)
-    monkeypatch.setattr(cv2, "VideoCapture", lambda path: FakeCapture())
-    adapter = BaseballAdapter(detector=lambda frame: [])
-    monkeypatch.setattr(adapter, "detect_pitch_geometry", lambda frame: geometry)
+    assert not BaseballAdapter(detector=lambda frame: []).is_pitch_view(frame)
+
+
+def test_process_video_emits_no_coordinate_rows(monkeypatch) -> None:
+    monkeypatch.setattr(cv2, "VideoCapture",
+                        lambda path: _FakeCapture([_pitch_view() for _ in range(5)]))
+    adapter = BaseballAdapter(detector=lambda frame: [[600, 500, 660, 604]])
 
     rows, metadata = adapter.process_video(
-        "synthetic.mp4", compute_command=True, player_only=True,
-    )
+        "synthetic.mp4", compute_command=True, player_only=True)
 
     assert list(rows.columns) == ["frame", "track_id", "cls", "x", "y"]
-    assert metadata["pitch_view_frames"] == 3
-    assert metadata["pitch_segments"] == 1
-    assert list(metadata["command_series"].columns) == [
-        "pitch", "inning", "miss_ft", "horizontal_ft", "vertical_ft", "inning_median_ft",
-    ]
-    assert metadata["ball_tracking"] == "unsupported"
+    assert rows.empty
+    assert metadata["coordinate_calibration"] == "unavailable"
+    assert "no validated ground-plane homography" in \
+        str(metadata["coordinate_calibration_reason"]).lower()
+    # The refusal is a calibration limit, not a detection failure.
+    assert metadata["pitch_view_frames"] == 5
+    assert metadata["players_detected_but_unplaced"] > 0
 
 
 def test_process_video_fails_closed_when_ball_tracking_is_requested() -> None:
@@ -168,26 +136,15 @@ def test_process_video_fails_closed_when_ball_tracking_is_requested() -> None:
 
 
 def test_process_video_splits_pitch_segments_at_scene_cuts(monkeypatch) -> None:
-    frames = [np.full((72, 128, 3), (45, 130, 45), dtype=np.uint8) for _ in range(12)]
+    frames = [np.full((72, 128, 3), GRASS, dtype=np.uint8) for _ in range(12)]
     frames.append(np.full((72, 128, 3), (180, 40, 20), dtype=np.uint8))
-    frames.extend(np.full((72, 128, 3), (45, 130, 45), dtype=np.uint8) for _ in range(12))
+    frames.extend(np.full((72, 128, 3), GRASS, dtype=np.uint8) for _ in range(12))
+    monkeypatch.setattr(cv2, "VideoCapture", lambda path: _FakeCapture(frames))
+    adapter = BaseballAdapter(detector=lambda frame: [])
+    monkeypatch.setattr(adapter, "detect_pitch_geometry", lambda frame: _geometry())
 
-    class FakeCapture:
-        def isOpened(self) -> bool:
-            return True
-
-        def read(self):
-            return (True, frames.pop(0)) if frames else (False, None)
-
-        def release(self) -> None:
-            pass
-
-    geometry = PitchGeometry(MOUND.copy(), PLATE.copy(), 4.0)
-    monkeypatch.setattr(cv2, "VideoCapture", lambda path: FakeCapture())
-    adapter = BaseballAdapter(detector=lambda frame: [[610, 300, 650, 410], [620, 480, 660, 590]])
-    monkeypatch.setattr(adapter, "detect_pitch_geometry", lambda frame: geometry)
-
-    _, metadata = adapter.process_video("synthetic.mp4", compute_command=True, player_only=True)
+    _, metadata = adapter.process_video(
+        "synthetic.mp4", compute_command=True, player_only=True)
 
     raw = metadata["raw_calibrations"]
     assert {row["segment_id"] for row in raw} == {1, 2}

@@ -105,7 +105,7 @@ def test_synthetic_corners_and_homography() -> None:
     assert np.max(np.abs(corners - COURT)) < 5.0
     homography = adapter.homography_from_corners(corners)
     mapped = cv2.perspectiveTransform(COURT.reshape(1, -1, 2), homography)[0]
-    expected = np.float32(((0, 0), (78, 0), (0, 36), (78, 36)))
+    expected = np.float32(((0, 0), (0, 36), (78, 0), (78, 36)))
     assert np.max(np.abs(mapped - expected)) < 0.5
 
 

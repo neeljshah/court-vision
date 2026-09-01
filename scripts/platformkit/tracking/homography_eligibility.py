@@ -85,7 +85,7 @@ def _corners(frame: np.ndarray, config: LineConfig) -> tuple[Optional[np.ndarray
             or np.any(corners[:, 1] < -5) or np.any(corners[:, 1] > height + 5)):
         return None, FrameDiagnosis(-1, "unavailable", "camera_angle_outside_range", len(horizontal), len(vertical), blur, None)
     homography = TennisAdapter.homography_from_corners(corners)
-    expected = np.float32(((0, 0), (78, 0), (0, 36), (78, 36)))
+    expected = np.float32(((0, 0), (0, 36), (78, 0), (78, 36)))
     actual = cv2.perspectiveTransform(corners.reshape(1, -1, 2), homography)[0]
     error = float(np.linalg.norm(actual - expected, axis=1).mean())
     if not np.isfinite(error) or error > config.reprojection_max:

@@ -9,6 +9,12 @@ it only ever requested COCO class 0 (person) and stubbed ball rows -- ball_valid
 was guaranteed 0.00. Baseball therefore runs with player_only=True: real
 pitcher/batter tracking, and honestly no ball, rather than fabricated ball rows.
 
+Soccer note: same situation, now made explicit. The soccer adapter also runs
+person class 0 only; its ball path was a stub returning [] whose return value
+was discarded, so ball_valid was likewise guaranteed 0.00. It now requires the
+same player_only=True opt-in. Its ball_valid_min gate is left where it is and
+keeps failing, because that failure is true.
+
 Run: python -m scripts.platformkit.adapter_run <sport> <video> <game_id>
 """
 from __future__ import annotations
@@ -25,7 +31,7 @@ ADAPTERS = {
 }
 # Sports whose adapter must be asked for player-only tracking rather than
 # raising, because it cannot honestly produce ball positions.
-PLAYER_ONLY = {"baseball"}
+PLAYER_ONLY = {"baseball", "soccer"}
 
 
 def main(argv: list) -> int:

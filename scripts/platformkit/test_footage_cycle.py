@@ -117,3 +117,15 @@ def test_nba_production_columns_are_not_laundered_into_court_coordinates():
 
     assert "track_id" in normalized, "player_id -> track_id is still correct"
     assert "x" not in normalized and "y" not in normalized
+
+
+def test_player_only_sports_are_opted_in_here_too():
+    """adapter_run opts baseball and soccer into player-only tracking. This
+    caller duplicated nothing and so raised BallTrackingUnavailableError for
+    soccer the moment soccer joined that set."""
+    from scripts.platformkit.adapter_run import PLAYER_ONLY
+
+    source = open("scripts/platformkit/footage_cycle.py", encoding="utf-8").read()
+
+    assert "PLAYER_ONLY" in source, "must reuse adapter_run's set, not hardcode"
+    assert {"baseball", "soccer"} <= PLAYER_ONLY

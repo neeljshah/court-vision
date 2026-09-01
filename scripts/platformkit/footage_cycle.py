@@ -123,8 +123,17 @@ def track_item(item: dict[str, str], video: Path) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
     if sport in SPORT_ADAPTERS:
         module = importlib.import_module("domains.%s.tracking.adapter" % sport)
+        # Sports whose adapter cannot honestly produce ball positions must be
+        # asked for player-only tracking or they raise. adapter_run owns that
+        # set; duplicating it here is how this caller silently broke when
+        # soccer was added to it.
+        from scripts.platformkit.adapter_run import PLAYER_ONLY
+
+        options = {"max_frames": 30000, "stride": 3}
+        if sport in PLAYER_ONLY:
+            options["player_only"] = True
         rows = getattr(module, SPORT_ADAPTERS[sport])().process_video(
-            video, max_frames=30000, stride=3)
+            video, **options)
         module.write_csv(rows, output)
         return output
     if sport in {"basketball", "wnba"}:

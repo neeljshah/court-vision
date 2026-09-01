@@ -10,7 +10,15 @@ from domains.tennis.tracking.ball import MotionDiffDetector, ball_rows, rectify_
 from domains.tennis.tracking.rally_features import match_aggregates
 from domains.tennis.tracking.segmenter import detect_cut, small_gray
 SCHEMA = ("frame", "track_id", "cls", "x", "y", "calibration_provenance")
-COURT_FEET = np.float32(((0, 0), (78, 0), (0, 36), (78, 36))); Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
+# Corner order is (near-left, near-right, far-left, far-right), so x is the 78-foot
+# length (0 = near baseline) and y the 36-foot width. Putting the 36-foot-wide baseline
+# on the 78-unit axis squashes length into 36. The landmark names below must agree.
+COURT_FEET = np.float32(((0, 0), (0, 36), (78, 0), (78, 36))); Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
+# Pre-fix this read (-5..83, -5..41) in the swapped plane's mixed units; in true feet
+# that is the region below (~11 ft behind each baseline, ~2.3 ft outside each sideline).
+# Left at the same PHYSICAL region on purpose: widening it to ITF run-off was measured
+# and rejected -- it buys 645 more two-player frames whose 0.1 s steps imply 80 mph.
+ACCEPT_FEET = (-10.83, 88.83, -2.31, 38.31)
 def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
     """Write player tracking rows in the normalized platform schema."""
     missing = [column for column in SCHEMA if column not in rows.columns]
@@ -196,7 +204,7 @@ class TennisAdapter:
         detections = {
             name: (float(point[0]), float(point[1]), 1.0)
             for name, point in zip(
-                ("doubles_bl", "doubles_br", "doubles_tl", "doubles_tr"), corners
+                ("doubles_bl", "doubles_tl", "doubles_br", "doubles_tr"), corners
             )
         }
         result = self._calibrator.update(detections)
@@ -233,9 +241,9 @@ class TennisAdapter:
             if x2 <= x1 or y2 <= y1:
                 continue
             foot = self._project(((x1 + x2) / 2.0, y2), homography)
-            if not (-5 <= foot[0] <= 83 and -5 <= foot[1] <= 41):
+            if not (ACCEPT_FEET[0] <= foot[0] <= ACCEPT_FEET[1] and ACCEPT_FEET[2] <= foot[1] <= ACCEPT_FEET[3]):
                 continue
-            half = 0 if foot[1] < 18.0 else 1
+            half = 0 if foot[0] < 39.0 else 1
             area = (x2 - x1) * (y2 - y1)
             center = np.array(((x1 + x2) / 2.0, (y1 + y2) / 2.0))
             if half not in per_half or area > per_half[half][0]:

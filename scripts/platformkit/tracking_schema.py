@@ -38,6 +38,13 @@ class CoordinateTransformUnavailable(ValueError):
     """Raised when a recognized producer lacks an evidenced court transform."""
 
 
+_NBA_NO_TRANSFORM = (
+    "NBA production tracking uses image pixels in x_position/y_position; "
+    "x_norm/y_norm and ft_x/ft_y are image-affine values, and no persisted "
+    "per-frame homography or equivalent court anchor is available"
+)
+
+
 CANONICAL_COORDINATE_CONTRACT = {
     "columns": ("cls", "frame", "track_id", "x", "y"),
     "basketball": {"unit": "feet", "bounds": (0.0, 94.0, 0.0, 50.0)},
@@ -61,18 +68,37 @@ def identify_tracking_schema(df: pd.DataFrame) -> TrackingSchema:
     )
 
 
-def normalize_tracking_frame(df: pd.DataFrame) -> pd.DataFrame:
+def normalize_tracking_frame(df: pd.DataFrame,
+                             source: str | None = None) -> pd.DataFrame:
     """Return canonical coordinates or reject a source with no valid transform.
 
     Declared transforms:
     - normalized schema: identity; domain adapters project detections before CSV.
-    - NBA production schema: unavailable; persisted values are image-space only.
+    - NBA production schema: requires a persisted court-calibration sidecar
+      resolved from ``source``.  Without one -- the state of every game in the
+      corpus today -- this fails closed, because the persisted values are
+      image-space only.
+
+    Args:
+        df: A recognized tracking table.
+        source: Optional game id, game directory, or CSV path used to locate a
+            ``court_calibration.json`` sidecar.  When omitted, the NBA
+            production branch always fails closed.
     """
     schema = identify_tracking_schema(df)
     if schema is _NORMALIZED:
         return df
-    raise CoordinateTransformUnavailable(
-        "NBA production tracking uses image pixels in x_position/y_position; "
-        "x_norm/y_norm and ft_x/ft_y are image-affine values, and no persisted "
-        "per-frame homography or equivalent court anchor is available"
+    if source is None:
+        raise CoordinateTransformUnavailable(_NBA_NO_TRANSFORM)
+    # Deferred import: court_transform imports this module's exception type.
+    from scripts.platformkit.court_transform import (
+        load_court_calibration,
+        to_court_feet,
     )
+    out = to_court_feet(df, load_court_calibration(source))
+    # player_id is the track identity and every production row is a player
+    # detection; the ball rides in ball_x2d/ball_y2d columns, which is why this
+    # schema declares ball telemetry unavailable.
+    out["track_id"] = out["player_id"]
+    out["cls"] = "player"
+    return out

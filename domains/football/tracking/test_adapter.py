@@ -7,7 +7,8 @@ from __future__ import annotations
 import cv2
 import numpy as np
 
-from domains.football.tracking.adapter import FootballAdapter
+from domains.football.tracking.adapter import (SANITY_LIMIT_FT, YARD_LINE_SPACING_FT,
+                                               FootballAdapter)
 
 
 def _field() -> np.ndarray:
@@ -54,9 +55,21 @@ def test_mocked_detector_projects_and_tracks_players() -> None:
     assert 0.0 <= rows[0][1][1] <= 160.0
 
 
-def test_out_of_field_projection_is_not_emitted() -> None:
+def test_off_field_projection_is_emitted_so_the_harness_can_count_it() -> None:
+    """A 400 ft x is off a 360 ft field but is real output, not a blowup.
+
+    Dropping it here would make the harness oob_pct tautologically zero.
+    """
     adapter = FootballAdapter(detector=lambda image: [[0, 0, 10, 20]])
     homography = np.array(((1.0, 0.0, 400.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)))
+
+    rows = adapter._track_players(adapter._detect(_field()), homography)
+    assert len(rows) == 1 and rows[0][1][0] > 360.0
+
+
+def test_numerical_blowup_projection_is_dropped() -> None:
+    adapter = FootballAdapter(detector=lambda image: [[0, 0, 10, 20]])
+    homography = np.array(((1.0, 0.0, 10 * SANITY_LIMIT_FT), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)))
 
     assert adapter._track_players(adapter._detect(_field()), homography) == []
 
@@ -66,13 +79,12 @@ def test_scene_cut_clears_carried_geometry_and_identity_state() -> None:
     second = np.full_like(first, (0, 0, 255))
     adapter = FootballAdapter(detector=lambda image: [], scene_cut_threshold=0.20)
     adapter._homography = np.eye(3)
-    adapter._h_params.append(np.ones(8))
     adapter._centroids[7] = np.array((100.0, 100.0))
 
     assert adapter.is_scene_cut(first, second)
     adapter._reset_segment()
     assert adapter._homography is None
-    assert not adapter._h_params and not adapter._centroids
+    assert not adapter._centroids
 
 
 def test_scene_score_keeps_identical_view_below_cut_threshold() -> None:
@@ -93,3 +105,36 @@ def test_degenerate_homography_normalization_is_rejected(monkeypatch) -> None:
     monkeypatch.setattr(cv2, "findHomography", lambda *_args: (np.zeros((3, 3)), None))
 
     assert adapter.homography_from_yard_lines(frame) is None
+
+
+def test_contaminated_yard_line_family_is_rejected(monkeypatch) -> None:
+    adapter = FootballAdapter(detector=lambda image: [])
+    monkeypatch.setattr(adapter, "detect_yard_line_family",
+                        lambda image: [np.array((1.0, 0.0, -float(x))) for x in range(30)])
+
+    assert adapter.homography_from_yard_lines(_field()) is None
+    assert adapter.last_fit_stats["reject"] == "family_size"
+
+
+def test_held_homography_is_reused_while_a_fresh_fit_agrees() -> None:
+    frame = _field()
+    adapter = FootballAdapter(detector=lambda image: [])
+
+    assert adapter._stable_homography(frame) is None, "first fit only anchors the segment"
+    held = adapter._homography
+    assert held is not None
+    assert adapter._stable_homography(frame) is held
+
+
+def test_disagreeing_fit_starts_a_new_segment_instead_of_sliding_the_origin(monkeypatch) -> None:
+    frame = _field()
+    adapter = FootballAdapter(detector=lambda image: [])
+    adapter._stable_homography(frame)
+    assert adapter._stable_homography(frame) is not None
+    adapter._centroids[7] = np.array((10.0, 10.0))
+    reindexed = adapter._homography.copy()
+    reindexed[0, 2] += YARD_LINE_SPACING_FT
+    monkeypatch.setattr(adapter, "homography_from_yard_lines", lambda image: reindexed)
+
+    assert adapter._stable_homography(frame) is None
+    assert not adapter._centroids
