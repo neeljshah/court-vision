@@ -91,6 +91,12 @@ def tracked_row_counts() -> dict:
     return counts
 
 
+def _is_direct_media(url: str) -> bool:
+    """True for a plain media file URL rather than a site yt-dlp must extract."""
+    path = str(url or "").split("?")[0].lower()
+    return path.endswith((".mp4", ".m4v", ".mov", ".mkv", ".webm", ".ts"))
+
+
 def _resolve_download(destination: Path):
     """Find what yt-dlp actually wrote; it falls back to .mkv/.webm on merge failure."""
     if destination.exists():
@@ -107,11 +113,19 @@ def download_local(item: dict) -> Path:
     """Download one item to the local stage, returning the merged file."""
     LOCAL_STAGE.mkdir(parents=True, exist_ok=True)
     destination = LOCAL_STAGE / (item["game_id"] + ".mp4")
-    rungs = ([item["format"]] + FORMAT_RUNGS) if item.get("format") else FORMAT_RUNGS
+    # A direct CDN file (MLB's mlb-cuts-diamond mp4s) has no formats to select.
+    # Forcing "bv*+ba" at it makes yt-dlp fail with a generic-extractor error,
+    # which silently killed the ONE lane that is never bot-blocked.
+    if _is_direct_media(item["url"]):
+        rungs = [None]
+    else:
+        rungs = ([item["format"]] + FORMAT_RUNGS) if item.get("format") else FORMAT_RUNGS
     last_error = "no attempt made"
     for rung in rungs:
         command = ["yt-dlp", "--merge-output-format", "mp4", "--no-part",
-                   "--no-playlist", "-f", rung, "-o", str(destination), item["url"]]
+                   "--no-playlist", "-o", str(destination), item["url"]]
+        if rung is not None:
+            command[-2:-2] = ["-f", rung]
         if COOKIES.is_file():
             command[1:1] = ["--cookies", str(COOKIES)]
         try:

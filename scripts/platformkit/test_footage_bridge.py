@@ -146,3 +146,42 @@ def test_grade_reports_when_it_cannot_grade(monkeypatch):
                                                     stderr="boom"))
 
     assert footage_bridge.grade("kbo_01", "kbo").startswith("ungraded:")
+
+
+def test_direct_cdn_url_skips_youtube_format_selectors(monkeypatch, tmp_path):
+    """MLB's CDN mp4s have no formats; -f bv*+ba makes yt-dlp fail outright."""
+    commands = []
+    monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
+    monkeypatch.setattr(footage_bridge, "COOKIES", tmp_path / "absent.txt")
+
+    def fake_run(command, **kwargs):
+        commands.append(command)
+        (tmp_path / "mlb_01.mp4").write_bytes(b"video")
+        return subprocess.CompletedProcess(command, 0)
+
+    monkeypatch.setattr(footage_bridge.subprocess, "run", fake_run)
+
+    footage_bridge.download_local({
+        "game_id": "mlb_01",
+        "url": "https://mlb-cuts-diamond.mlb.com/FORGE/x-asset_1280x720_59_4000K.mp4"})
+
+    assert len(commands) == 1
+    assert "-f" not in commands[0]
+
+
+def test_youtube_url_still_uses_the_format_ladder(monkeypatch, tmp_path):
+    commands = []
+    monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
+    monkeypatch.setattr(footage_bridge, "COOKIES", tmp_path / "absent.txt")
+
+    def fake_run(command, **kwargs):
+        commands.append(command)
+        (tmp_path / "yt_01.mp4").write_bytes(b"video")
+        return subprocess.CompletedProcess(command, 0)
+
+    monkeypatch.setattr(footage_bridge.subprocess, "run", fake_run)
+
+    footage_bridge.download_local(
+        {"game_id": "yt_01", "url": "https://www.youtube.com/watch?v=ChxXA-7uyHk"})
+
+    assert "-f" in commands[0]
