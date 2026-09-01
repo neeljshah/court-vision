@@ -43,7 +43,7 @@ PLAYER_ONLY = {"baseball", "soccer"}
 #           "accepted" frames it used to report were a stale cached homography.
 # Add a sport here only once its adapter supports image_space=True AND its
 # calibration failure is MEASURED, not assumed.
-IMAGE_SPACE = {"baseball", "football", "soccer"}
+IMAGE_SPACE = {"baseball", "soccer"}
 
 
 def _source_metadata(video: str) -> dict:

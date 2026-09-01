@@ -113,10 +113,9 @@ class FootballAdapter(FootballGeometryMixin):
                         # say so.
                         for track_id, point in players:
                             rows.append({"frame": frame_index, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1]), "coordinate_space": "court_feet", "observation": OBSERVED, "calibration": HOMOGRAPHY})
-                    elif homography is None:
-                        # An unanchored grid is useful teacher data in pixels, not feet.
-                        for track_id, point in self.detect_players_image_space(frame):
-                            rows.append({"frame": frame_index, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1]), "coordinate_space": IMAGE_COORDINATE_SPACE, "observation": OBSERVED, "calibration": NO_CALIBRATION})
+                    # Calibration failures intentionally emit no row in this mode.
+                    # The image-space branch above is a separate preserved corpus;
+                    # mixing it with court_feet makes the whole file unscorable.
                     previous, processed = frame, processed + 1
                 frame_index += 1
         finally: capture.release()
