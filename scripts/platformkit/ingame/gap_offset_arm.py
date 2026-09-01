@@ -11,6 +11,7 @@ import importlib
 import math
 import random
 from collections import defaultdict
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
@@ -49,7 +50,32 @@ def zero_capacity_prob(model_prob: Iterable[float]) -> np.ndarray:
     return _sigmoid(_logit(model_prob))
 
 
-def _state_features(ticks: List[Dict[str, Any]]) -> Optional[pd.DataFrame]:
+def _trip_number_features(ticks: List[Dict[str, Any]]) -> pd.DataFrame:
+    """Derive capped batter trips from ordered GUMBO batter changes, as-of each tick."""
+    rows: List[Dict[str, Any]] = []
+    games: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+    for tick in ticks:
+        games[str(tick["game"])].append(tick)
+    for game, group in games.items():
+        appearances: Dict[str, int] = defaultdict(int)
+        prior_batter: Optional[str] = None
+        for tick in sorted(group, key=lambda row: str(row["timestamp"])):
+            raw = tick.get("raw") if isinstance(tick.get("raw"), dict) else {}
+            batter_id = raw.get("batter_id", tick.get("batter_id"))
+            trip = math.nan
+            if batter_id is not None:
+                batter = str(batter_id)
+                if batter != prior_batter:
+                    trip = float(min(4, appearances[batter] + 1))
+                    appearances[batter] += 1
+                    prior_batter = batter
+                else:
+                    trip = float(min(4, appearances[batter]))
+            rows.append({"game": game, "timestamp": tick["timestamp"], "trip_number": trip})
+    return pd.DataFrame(rows, columns=["game", "timestamp", "trip_number"])
+
+
+def _state_features(ticks: List[Dict[str, Any]], include_trip_number: bool = False) -> Optional[pd.DataFrame]:
     """Build the existing declared state block, excluding all evaluation fields."""
     try:
         module = importlib.import_module("scripts.platformkit.mlb_state_features")
@@ -60,7 +86,11 @@ def _state_features(ticks: List[Dict[str, Any]]) -> Optional[pd.DataFrame]:
     if not callable(builder) or not isinstance(columns, list):
         return None
     frame = builder(pd.DataFrame(ticks).sort_values("timestamp", kind="stable").reset_index(drop=True))
-    return frame[["game", "timestamp"] + columns].copy()
+    result = frame[["game", "timestamp"] + columns].copy()
+    if include_trip_number:
+        trip = _trip_number_features(ticks)
+        result = result.merge(trip, on=["game", "timestamp"], how="left", validate="one_to_one")
+    return result
 
 
 def _feature_values(train: pd.DataFrame, other: pd.DataFrame, columns: Sequence[str]) -> Tuple[pd.DataFrame, pd.DataFrame]:
@@ -169,23 +199,39 @@ def _verdict(metrics: Optional[Dict[str, float]], ci: Dict[str, List[float]]) ->
     return "INCONCLUSIVE"
 
 
+@dataclass(frozen=True)
+class GapOffsetArm:
+    """Fixed-offset residual arm with an opt-in GUMBO trip-number state feature."""
+
+    include_trip_number: bool = False
+
+    def evaluate(self, ticks: List[Dict[str, Any]], features: pd.DataFrame,
+                 bootstrap_iterations: int = 300, max_estimators: int = 300) -> Dict[str, Any]:
+        """Evaluate using game-disjoint, strictly prior-date folds."""
+        usable = [dict(tick, _row_id=tick.get("_row_id", index)) for index, tick in enumerate(ticks)
+                  if all(tick.get(key) is not None for key in ("model_prob", "market_prob", "outcome"))]
+        for tick in usable:
+            tick.setdefault("raw", {})
+        feature_frame = features
+        if self.include_trip_number:
+            trip = _trip_number_features(usable)
+            feature_frame = features.merge(trip, on=["game", "timestamp"], how="left", validate="one_to_one")
+        joined, columns = _feature_matrix(usable, feature_frame)
+        assert "model_prob" not in columns
+        assert not any("market" in column.lower() for column in columns)
+        scored, folds = _walk_forward(joined, columns, _game_dates(usable), max_estimators)
+        window_ids = _window_ids(usable)
+        report: Dict[str, Any] = {"status": "OK", "state_features": list(columns), "folds": folds, "slices": {}}
+        for name, rows in {"all_ticks": scored, "in_window_ticks": scored[scored._row_id.isin(window_ids)]}.items():
+            metrics, ci = _metrics(rows), _bootstrap(rows, bootstrap_iterations)
+            report["slices"][name] = {"metrics": metrics, "bootstrap_ci_90": ci, "verdict": _verdict(metrics, ci)}
+        return report
+
+
 def evaluate(ticks: List[Dict[str, Any]], features: pd.DataFrame, bootstrap_iterations: int = 300,
-             max_estimators: int = 300) -> Dict[str, Any]:
-    """Evaluate the fixed-offset residual arm with game-disjoint splits."""
-    usable = [dict(tick, _row_id=tick.get("_row_id", index)) for index, tick in enumerate(ticks)
-              if all(tick.get(key) is not None for key in ("model_prob", "market_prob", "outcome"))]
-    for tick in usable:
-        tick.setdefault("raw", {})
-    joined, columns = _feature_matrix(usable, features)
-    assert "model_prob" not in columns
-    assert not any("market" in column.lower() for column in columns)
-    scored, folds = _walk_forward(joined, columns, _game_dates(usable), max_estimators)
-    window_ids = _window_ids(usable)
-    report: Dict[str, Any] = {"status": "OK", "state_features": list(columns), "folds": folds, "slices": {}}
-    for name, rows in {"all_ticks": scored, "in_window_ticks": scored[scored._row_id.isin(window_ids)]}.items():
-        metrics, ci = _metrics(rows), _bootstrap(rows, bootstrap_iterations)
-        report["slices"][name] = {"metrics": metrics, "bootstrap_ci_90": ci, "verdict": _verdict(metrics, ci)}
-    return report
+             max_estimators: int = 300, include_trip_number: bool = False) -> Dict[str, Any]:
+    """Compatibility entry point; trip-number capacity remains disabled by default."""
+    return GapOffsetArm(include_trip_number).evaluate(ticks, features, bootstrap_iterations, max_estimators)
 
 
 def render(report: Dict[str, Any]) -> str:

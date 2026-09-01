@@ -47,3 +47,23 @@ def test_offset_arm_excludes_prior_and_market_and_reports_games() -> None:
 def test_logit_offset_round_trips_probabilities() -> None:
     probability = np.array([0.1, 0.5, 0.9])
     assert np.allclose(gap_offset_arm.zero_capacity_prob(probability), probability)
+
+
+def test_trip_number_counts_batter_appearances_before_each_tick() -> None:
+    ticks = []
+    for trip in range(4):
+        for batter in range(9):
+            ticks.append({"game": "G", "timestamp": "2026-02-01T12:%02d:00Z" % len(ticks),
+                          "raw": {"batter_id": batter}})
+            ticks.append({"game": "G", "timestamp": "2026-02-01T12:%02d:30Z" % len(ticks),
+                          "raw": {"batter_id": batter}})
+    frame = gap_offset_arm._trip_number_features(ticks)
+    assert frame.trip_number.tolist()[::2] == [1.0] * 9 + [2.0] * 9 + [3.0] * 9 + [4.0] * 9
+    assert frame.trip_number.tolist()[1::2] == frame.trip_number.tolist()[::2]
+
+
+def test_trip_number_flag_off_is_bit_identical() -> None:
+    ticks, features = _fixture()
+    baseline = gap_offset_arm.evaluate(ticks, features, bootstrap_iterations=10, max_estimators=0)
+    disabled = gap_offset_arm.GapOffsetArm().evaluate(ticks, features, bootstrap_iterations=10, max_estimators=0)
+    assert baseline == disabled
