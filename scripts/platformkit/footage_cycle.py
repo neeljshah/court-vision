@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import importlib
 import json
+import logging
 import subprocess
 import sys
 import threading
@@ -31,7 +32,9 @@ TRACKING_DIR = DATA_DIR / "tracking"
 LEDGER_PATH = TRACKING_DIR / "footage_cycle_ledger.jsonl"
 DEMO_DIR = Path("docs/evidence/demos")
 COOKIES_PATH = Path("cookies.txt")
+MAX_ITEM_SECONDS = 2400
 TRACKING_LOCK = threading.Lock()
+LOGGER = logging.getLogger(__name__)
 SPORT_ADAPTERS = {
     "tennis": "TennisAdapter",
     "soccer": "SoccerAdapter",
@@ -54,20 +57,32 @@ def download_item(item: dict[str, str], destination: Path) -> Path:
     command = ["yt-dlp", "-o", str(destination)]
     if COOKIES_PATH.is_file():
         command.extend(["--cookies", str(COOKIES_PATH)])
-    command.extend(["-f", item["format"], item["url"]])
-    subprocess.run(command, check=True)
-    if destination.exists():
-        return destination
-    # yt-dlp falls back to .mkv (and other containers) when the selected
-    # streams cannot be merged into mp4 -- the tracker then looks for a file
-    # that does not exist and the GPU sits idle. Resolve the real artifact.
-    produced = sorted(
-        (path for path in destination.parent.glob(destination.name + "*")
-         if path.is_file() and not path.name.endswith(".part")),
-        key=lambda path: path.stat().st_size, reverse=True)
-    if not produced:
-        raise FileNotFoundError("yt-dlp produced no file for %s" % destination.name)
-    return produced[0]
+    attempts = [
+        ("default", ["-f", item["format"]]),
+        # Standard yt-dlp workaround for YouTube bot-checks.
+        ("android_web_safari", ["--extractor-args", "youtube:player_client=android,web_safari",
+                                "-f", item["format"]]),
+        ("tv", ["--extractor-args", "youtube:player_client=tv", "-f", item["format"]]),
+        ("720p_mp4", ["--format-sort", "res,ext:mp4", "-f", "b[height<=720]"]),
+    ]
+    last_error = ""
+    for rung, arguments in attempts:
+        LOGGER.info("yt-dlp download rung=%s game_id=%s", rung, item.get("game_id", "unknown"))
+        try:
+            subprocess.run(
+                command + arguments + [item["url"]],
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=MAX_ITEM_SECONDS,
+            )
+            return destination
+        except subprocess.TimeoutExpired as exc:
+            last_error = str(getattr(exc, "stderr", "") or exc)
+        except subprocess.CalledProcessError as exc:
+            last_error = str(exc.stderr or exc)
+    tail = last_error[-1000:].strip() or "no stderr captured"
+    raise RuntimeError("yt-dlp failed after retry ladder; last stderr: %s" % tail)
 
 
 def _normalize_tracking(frame: pd.DataFrame) -> pd.DataFrame:

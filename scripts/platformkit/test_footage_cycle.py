@@ -1,7 +1,57 @@
 """Focused tests for the footage download, tracking, score, and cleanup cycle."""
+import logging
+import subprocess
 from pathlib import Path
 
 from scripts.platformkit import footage_cycle
+
+
+def test_download_retries_youtube_ladder_and_records_rung(monkeypatch, tmp_path, caplog):
+    calls = []
+    caplog.set_level(logging.INFO, logger=footage_cycle.__name__)
+
+    def fake_run(command, **kwargs):
+        calls.append((command, kwargs))
+        if len(calls) < 3:
+            raise subprocess.CalledProcessError(1, command, stderr="bot check")
+        return subprocess.CompletedProcess(command, 0)
+
+    monkeypatch.setattr(footage_cycle.subprocess, "run", fake_run)
+    destination = tmp_path / "game.mp4"
+
+    result = footage_cycle.download_item(
+        {"game_id": "game", "url": "https://youtube.example/watch?v=1", "format": "best"},
+        destination,
+    )
+
+    assert result == destination
+    assert len(calls) == 3
+    assert "youtube:player_client=android,web_safari" in calls[1][0]
+    assert "youtube:player_client=tv" in calls[2][0]
+    assert all(call[1]["timeout"] == footage_cycle.MAX_ITEM_SECONDS for call in calls)
+    assert "rung=tv" in caplog.text
+
+
+def test_download_all_rungs_fail_includes_stderr_tail(monkeypatch, tmp_path):
+    calls = []
+
+    def fake_run(command, **kwargs):
+        calls.append((command, kwargs))
+        raise subprocess.CalledProcessError(1, command, stderr="meaningful final yt-dlp error")
+
+    monkeypatch.setattr(footage_cycle.subprocess, "run", fake_run)
+
+    try:
+        footage_cycle.download_item(
+            {"game_id": "game", "url": "https://youtube.example/watch?v=1", "format": "best"},
+            tmp_path / "game.mp4",
+        )
+    except RuntimeError as exc:
+        assert "meaningful final yt-dlp error" in str(exc)
+    else:
+        raise AssertionError("Expected retry ladder to fail")
+    assert len(calls) == 4
+    assert calls[-1][0][-3:] == ["-f", "b[height<=720]", "https://youtube.example/watch?v=1"]
 
 
 def test_queue_statuses_and_video_cleanup(monkeypatch, tmp_path):
