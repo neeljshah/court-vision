@@ -6,7 +6,6 @@ import cv2
 import numpy as np
 import pandas as pd
 from scripts.platformkit.calibration.keypoint_calib import TemporalCalibrator
-from domains.tennis.tracking.geometry import TennisGeometryMixin
 from domains.tennis.tracking.ball import MotionDiffDetector, ball_rows, rectify_track
 from domains.tennis.tracking.rally_features import match_aggregates
 from domains.tennis.tracking.segmenter import detect_cut, small_gray
@@ -15,21 +14,23 @@ from scripts.platformkit.coordinate_provenance import (stamp_court_space_rows,
 SCHEMA = ("frame", "track_id", "cls", "x", "y", "calibration_provenance")
 # Court x is the 78-foot length; y is the 36-foot width.
 COURT_FEET = np.float32(((0, 0), (0, 36), (78, 0), (78, 36))); Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
-# Same physical acceptance region as before the corrected court-axis mapping.
-ACCEPT_FEET = (-10.83, 88.83, -2.31, 38.31)
+# Cross ratio of the five length-running court lines at y = 0, 4.5, 18, 31.5,
+# 36: (18*31.5)/(13.5*36). A projective invariant of a real court, so it is what
+# says five bright vertical clusters ARE the court and not replay architecture.
+CROSS_RATIO = 567.0 / 486.0
+# Anchors: both near doubles corners, the far-left doubles corner (top endpoint
+# of the left doubles sideline) and the near service T (bottom endpoint of the
+# centre service line). Measured stable on this framing; the far baseline is
+# only ~172 grey and does not survive the 200 bright threshold.
+ANCHOR_FEET = np.float32(((0, 0), (0, 36), (78, 0), (18, 18)))
 def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
     """Write player tracking rows in the normalized platform schema."""
     write_tracking_csv(rows, path, SCHEMA)
-class TennisAdapter(TennisGeometryMixin):
+class TennisAdapter:
     """Track two tennis players from a fixed behind-baseline broadcast feed."""
-    def __init__(
-        self,
-        detector: Optional[Detector] = None,
-        corner_stability_px: float = 5.0,
-        imgsz: int = 640,
-        conf: float = 0.25,
-        tracker_conf: Optional[float] = None,
-    ) -> None:
+    def __init__(self, detector: Optional[Detector] = None, corner_stability_px: float = 5.0,
+                 imgsz: int = 640, conf: float = 0.25,
+                 tracker_conf: Optional[float] = None) -> None:
         if imgsz <= 0 or not 0.0 <= conf <= 1.0:
             raise ValueError("imgsz must be positive and conf must be in [0, 1]")
         self.imgsz, self.conf = int(imgsz), float(conf)
@@ -45,7 +46,6 @@ class TennisAdapter(TennisGeometryMixin):
         self._force_homography_recompute = False
         self._centroids: dict[int, np.ndarray] = {}
         self.last_output, self.last_metadata = pd.DataFrame(columns=SCHEMA), {}
-
     @staticmethod
     def _load_yolo_detector(imgsz: int, conf: float) -> Detector:
         try:
@@ -64,67 +64,53 @@ class TennisAdapter(TennisGeometryMixin):
                 return []
             return [box + [float(score)] for box, score in zip(result.boxes.xyxy.cpu().numpy().tolist(), result.boxes.conf.cpu().numpy().tolist())]
         return detect
+
     @staticmethod
     def _line_position(line: np.ndarray, horizontal: bool, shape: tuple[int, int]) -> float:
         x1, y1, x2, y2 = line
         height, width = shape
         if horizontal:
-            if abs(x2 - x1) < 1e-6:
-                return float((y1 + y2) / 2.0)
-            return float(y1 + (width / 2.0 - x1) * (y2 - y1) / (x2 - x1))
-        if abs(y2 - y1) < 1e-6:
-            return float((x1 + x2) / 2.0)
-        return float(x1 + (height / 2.0 - y1) * (x2 - x1) / (y2 - y1))
+            return float((y1 + y2) / 2.0) if abs(x2 - x1) < 1e-6 else float(y1 + (width / 2.0 - x1) * (y2 - y1) / (x2 - x1))
+        return float((x1 + x2) / 2.0) if abs(y2 - y1) < 1e-6 else float(x1 + (height / 2.0 - y1) * (x2 - x1) / (y2 - y1))
     @staticmethod
-    def _cluster_lines(
-        lines: list[np.ndarray], horizontal: bool, shape: tuple[int, int]
-    ) -> list[list[np.ndarray]]:
-        ordered = sorted(
-            lines, key=lambda line: TennisAdapter._line_position(line, horizontal, shape)
-        )
+    def _cluster_lines(lines: list[np.ndarray], horizontal: bool,
+                       shape: tuple[int, int]) -> list[list[np.ndarray]]:
         clusters: list[list[np.ndarray]] = []
-        for line in ordered:
-            if not clusters:
-                clusters.append([line])
-                continue
+        for line in sorted(lines, key=lambda item: TennisAdapter._line_position(item, horizontal, shape)):
             position = TennisAdapter._line_position(line, horizontal, shape)
-            previous = np.mean([
-                TennisAdapter._line_position(item, horizontal, shape)
-                for item in clusters[-1]
-            ])
-            if abs(position - previous) <= 12.0:
+            previous = np.mean([TennisAdapter._line_position(item, horizontal, shape) for item in clusters[-1]]) if clusters else None
+            if previous is not None and abs(position - previous) <= 12.0:
                 clusters[-1].append(line)
             else:
                 clusters.append([line])
         return clusters
     @staticmethod
     def _fit_line(lines: list[np.ndarray]) -> np.ndarray:
-        points = np.asarray(
-            [[line[0], line[1]] for line in lines] + [[line[2], line[3]] for line in lines],
-            dtype=np.float32,
-        )
+        points = np.asarray([[line[0], line[1]] for line in lines] + [[line[2], line[3]] for line in lines], dtype=np.float32)
         vx, vy, x0, y0 = cv2.fitLine(points, cv2.DIST_L2, 0, 0.01, 0.01).reshape(-1)
         return np.array((x0 - 10000 * vx, y0 - 10000 * vy, x0 + 10000 * vx, y0 + 10000 * vy))
     @staticmethod
+    def _point_at_row(line: np.ndarray, row: float) -> np.ndarray:
+        x1, y1, x2, y2 = line
+        return (np.float32((x1, row)) if abs(y2 - y1) < 1e-9
+                else np.float32((x1 + (row - y1) * (x2 - x1) / (y2 - y1), row)))
+    @staticmethod
+    def _endpoint_rows(cluster: list[np.ndarray]) -> tuple[float, float]:
+        """Topmost and bottommost image row the cluster's bright pixels reach."""
+        rows = [line[1] for line in cluster] + [line[3] for line in cluster]
+        return float(min(rows)), float(max(rows))
+    @staticmethod
     def _intersection(first: np.ndarray, second: np.ndarray) -> Optional[np.ndarray]:
-        a = np.cross(
-            np.array((first[0], first[1], 1.0)), np.array((first[2], first[3], 1.0))
-        )
-        b = np.cross(
-            np.array((second[0], second[1], 1.0)), np.array((second[2], second[3], 1.0))
-        )
+        a = np.cross(np.array((first[0], first[1], 1.0)), np.array((first[2], first[3], 1.0)))
+        b = np.cross(np.array((second[0], second[1], 1.0)), np.array((second[2], second[3], 1.0)))
         point = np.cross(a, b)
-        if abs(point[2]) < 1e-8:
-            return None
-        return np.float32(point[:2] / point[2])
+        return None if abs(point[2]) < 1e-8 else np.float32(point[:2] / point[2])
     def detect_court_corners(self, frame: np.ndarray) -> Optional[np.ndarray]:
         """Return near-left, near-right, far-left, far-right doubles corners."""
         height, width = frame.shape[:2]
         bright = cv2.inRange(frame, np.array((200, 200, 200)), np.array((255, 255, 255)))
-        lines = cv2.HoughLinesP(
-            bright, 1, np.pi / 180.0, threshold=45,
-            minLineLength=max(40, width // 12), maxLineGap=20,
-        )
+        lines = cv2.HoughLinesP(bright, 1, np.pi / 180.0, threshold=45,
+                                minLineLength=max(40, width // 12), maxLineGap=20)
         if lines is None:
             return None
         horizontal: list[np.ndarray] = []
@@ -140,23 +126,45 @@ class TennisAdapter(TennisGeometryMixin):
             return None
         horizontal_clusters = self._cluster_lines(horizontal, True, (height, width))
         vertical_clusters = self._cluster_lines(vertical, False, (height, width))
-        if len(horizontal_clusters) < 2 or len(vertical_clusters) < 2:
+        # A tennis court has exactly five length-running lines; requiring five in
+        # the court's own cross ratio rejects replay and close-up framings. The
+        # old code took the topmost horizontal cluster as the far baseline with
+        # no court check, and on main-camera frames that cluster is the
+        # broadcast wordmark or a sponsor banner, never a court line.
+        if not horizontal_clusters or len(vertical_clusters) != 5:
             return None
-        # Known limitation: the far baseline can be absent from bright-line clusters; treat tennis x as ordinal, not feet.
-        far = self._fit_line(horizontal_clusters[0])
+        across = [self._line_position(self._fit_line(cluster), False, (height, width))
+                  for cluster in vertical_clusters]
+        denominator = (across[2] - across[1]) * (across[4] - across[0])
+        if abs(denominator) < 1e-6 or abs(
+                (across[2] - across[0]) * (across[4] - across[1]) / denominator - CROSS_RATIO) > 0.05:
+            return None
         near = self._fit_line(horizontal_clusters[-1])
         left = self._fit_line(vertical_clusters[0])
         right = self._fit_line(vertical_clusters[-1])
-        corners = [
-            self._intersection(near, left), self._intersection(near, right),
-            self._intersection(far, left), self._intersection(far, right),
-        ]
-        if any(point is None for point in corners):
+        centre = self._fit_line(vertical_clusters[2])
+        far_left = self._point_at_row(left, self._endpoint_rows(vertical_clusters[0])[0])
+        service_t = self._point_at_row(centre, self._endpoint_rows(vertical_clusters[2])[1])
+        near_left, near_right = self._intersection(near, left), self._intersection(near, right)
+        # The camera sits behind the near baseline, so depth decreases up the
+        # frame: far baseline, then service T, then near baseline.
+        if near_left is None or near_right is None or not far_left[1] < service_t[1] < near_left[1]:
             return None
-        result = np.asarray(corners, dtype=np.float32)
-        if np.any(result[:, 0] < -5) or np.any(result[:, 0] > width + 5):
+        anchors = np.float32((near_left, near_right, far_left, service_t))
+        to_image, _ = cv2.findHomography(ANCHOR_FEET, anchors)
+        if to_image is None:
             return None
-        if np.any(result[:, 1] < -5) or np.any(result[:, 1] > height + 5):
+        far_right = self._project((78.0, 36.0), to_image)
+        result = np.asarray((near_left, near_right, far_left, far_right), dtype=np.float32)
+        # A camera behind the near baseline sees both baselines near-parallel, so
+        # the far edge cannot be steeply skewed against the court's image depth.
+        # Rejects a replay frame whose five verticals happened to land in the
+        # court's cross ratio (skew 0.62 there, <= 0.09 on every main-camera
+        # frame) and then propagated a wrecked homography over 40 frames.
+        depth = float(result[0][1] - result[2][1])
+        if depth <= 0.0 or abs(result[2][1] - result[3][1]) > 0.25 * depth:
+            return None
+        if np.any(result[:, 0] < -5) or np.any(result[:, 0] > width + 5) or np.any(result[:, 1] < -5) or np.any(result[:, 1] > height + 5):
             return None
         return result
     @staticmethod
@@ -183,7 +191,6 @@ class TennisAdapter(TennisGeometryMixin):
         self._calibrator = TemporalCalibrator("tennis", drift_threshold=8.0)
         self._calibration_updates = self._lost_corner_frames = 0
         self._force_homography_recompute = True
-
     def _stable_homography(self, frame: np.ndarray) -> Optional[np.ndarray]:
         corners = self.detect_court_corners(frame)
         if corners is None:
@@ -193,12 +200,8 @@ class TennisAdapter(TennisGeometryMixin):
             self._calibration_provenance = "propagated" if self._homography is not None else "unavailable"
             return self._homography
         self._lost_corner_frames = 0
-        detections = {
-            name: (float(point[0]), float(point[1]), 1.0)
-            for name, point in zip(
-                ("doubles_bl", "doubles_tl", "doubles_br", "doubles_tr"), corners
-            )
-        }
+        detections = {name: (float(point[0]), float(point[1]), 1.0) for name, point
+                      in zip(("doubles_bl", "doubles_tl", "doubles_br", "doubles_tr"), corners)}
         result = self._calibrator.update(detections)
         if result.homography is None or result.recompute or not self._in_tolerance(result.homography, frame.shape[:2]):
             self._calibration_provenance = "propagated" if self._homography is not None else "unavailable"
@@ -206,8 +209,7 @@ class TennisAdapter(TennisGeometryMixin):
         self._calibration_updates += 1
         if self._calibration_updates < 9 and not self._force_homography_recompute:
             return None
-        self._corners = corners
-        self._homography = result.homography
+        self._corners, self._homography = corners, result.homography
         self._calibration_provenance = "solved"
         self._force_homography_recompute = False
         return self._homography
@@ -233,8 +235,9 @@ class TennisAdapter(TennisGeometryMixin):
             if x2 <= x1 or y2 <= y1:
                 continue
             foot = self._project(((x1 + x2) / 2.0, y2), homography)
-            if not (ACCEPT_FEET[0] <= foot[0] <= ACCEPT_FEET[1] and ACCEPT_FEET[2] <= foot[1] <= ACCEPT_FEET[3]):
-                continue
+            # No court-region acceptance filter: the old ACCEPT_FEET window sat
+            # strictly inside the harness bounds, so oob read 0.0000 whatever the
+            # coordinates were. Where a detection lands is the harness's question.
             half = 0 if foot[0] < 39.0 else 1
             area = (x2 - x1) * (y2 - y1)
             center = np.array(((x1 + x2) / 2.0, (y1 + y2) / 2.0))
@@ -243,21 +246,16 @@ class TennisAdapter(TennisGeometryMixin):
         if set(per_half) != {0, 1}:
             return []
         return self._track_ids([(per_half[0][1], per_half[0][2]), (per_half[1][1], per_half[1][2])])
-    def process_video(
-        self,
-        path: Union[str, Path],
-        max_frames: Optional[int] = None,
-        stride: int = 1,
-        compute_features: bool = False,
-    ) -> Union[pd.DataFrame, tuple[pd.DataFrame, dict[str, object]]]:
+    def process_video(self, path: Union[str, Path], max_frames: Optional[int] = None,
+                      stride: int = 1, compute_features: bool = False
+                      ) -> Union[pd.DataFrame, tuple[pd.DataFrame, dict[str, object]]]:
         """Process video into rows, optionally returning descriptive rally metadata."""
         if stride < 1:
             raise ValueError("stride must be at least 1")
         capture = cv2.VideoCapture(str(path))
         if not capture.isOpened():
             raise FileNotFoundError("Could not open video: %s" % path)
-        rows: list[dict[str, object]] = []
-        ball_detector = MotionDiffDetector()
+        rows: list[dict[str, object]] = []; ball_detector = MotionDiffDetector()
         ball_points: list[Optional[tuple[float, float, float]]] = []
         ball_frames: list[tuple[int, np.ndarray]] = []
         source_frame = processed = 0
@@ -286,20 +284,17 @@ class TennisAdapter(TennisGeometryMixin):
             balls = ball_rows((point,), homography)
             if not balls.empty:
                 ball = balls.iloc[0].to_dict()
-                ball["frame"] = frame
-                ball["calibration_provenance"] = provenance
+                ball["frame"], ball["calibration_provenance"] = frame, provenance
                 rows.append(ball)
-        # Declare the coordinate space. Scoring is strict about undeclared
-        # tables because an omitted declaration is exactly how pixels were
-        # laundered into court units elsewhere in this system; legitimate court
-        # output has to say what it is rather than rely on being assumed.
+        # Declare the coordinate space: an omitted declaration is exactly how
+        # pixels were laundered into court units elsewhere in this system.
         self.last_output = stamp_court_space_rows(
             pd.DataFrame(rows, columns=SCHEMA), "tennis")
         self.last_metadata = {}
-        if compute_features:
-            self.last_metadata = {"rally_features": match_aggregates(self.last_output)}
-            return self.last_output, self.last_metadata
-        return self.last_output
+        if not compute_features:
+            return self.last_output
+        self.last_metadata = {"rally_features": match_aggregates(self.last_output)}
+        return self.last_output, self.last_metadata
     def write_csv(self, path: Union[str, Path], rows: Optional[pd.DataFrame] = None) -> None:
         """Write the most recent output, or supplied rows, in normalized schema."""
         write_csv(self.last_output if rows is None else rows, path)

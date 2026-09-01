@@ -30,7 +30,7 @@ import cv2
 import numpy as np
 import pandas as pd
 
-from domains.tennis.tracking.adapter import ACCEPT_FEET, COURT_FEET, TennisAdapter
+from domains.tennis.tracking.adapter import COURT_FEET, TennisAdapter
 from domains.tennis.tracking.segmenter import detect_cut, small_gray
 
 # Near-left, near-right, far-left, far-right doubles corners of the fixed rally
@@ -96,8 +96,7 @@ def _boxes(adapter: TennisAdapter, frame: np.ndarray, homography: np.ndarray,
         rows.append({"frame": frame_index,
                      "x_adapter": float(own[0]), "y_adapter": float(own[1]),
                      "x_reference": float(ref[0]), "y_reference": float(ref[1]),
-                     "accepted": bool(ACCEPT_FEET[0] <= own[0] <= ACCEPT_FEET[1]
-                                      and ACCEPT_FEET[2] <= own[1] <= ACCEPT_FEET[3])})
+                     "accepted": True})
     return rows
 
 

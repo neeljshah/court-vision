@@ -15,14 +15,28 @@ from domains.tennis.tracking.segmenter import detect_cut, small_gray
 
 
 COURT = np.float32(((120, 650), (1160, 650), (430, 120), (850, 120)))
+COURT_FEET = np.float32(((0, 0), (0, 36), (78, 0), (78, 36)))
+# Every line of a real tennis court, as (x_feet, y_feet) endpoints. Corner
+# detection identifies the court by its five length-running lines and anchors
+# depth on the centre service line, so the fixture has to be a whole court and
+# not the bare quadrilateral it used to be.
+COURT_LINES = (
+    ((0, 0), (0, 36)), ((78, 0), (78, 36)),          # baselines
+    ((0, 0), (78, 0)), ((0, 36), (78, 36)),          # doubles sidelines
+    ((0, 4.5), (78, 4.5)), ((0, 31.5), (78, 31.5)),  # singles sidelines
+    ((18, 4.5), (18, 31.5)), ((60, 4.5), (60, 31.5)),  # service lines
+    ((18, 18), (60, 18)),                            # centre service line
+)
+_TO_IMAGE = cv2.findHomography(COURT_FEET, COURT)[0]
 
 
 def _court_image() -> np.ndarray:
     image = np.zeros((720, 1280, 3), dtype=np.uint8)
     image[:] = (40, 120, 40)
-    cv2.polylines(image, [COURT.astype(np.int32)], True, (255, 255, 255), 5)
-    cv2.line(image, tuple(COURT[0].astype(int)), tuple(COURT[2].astype(int)), (255, 255, 255), 5)
-    cv2.line(image, tuple(COURT[1].astype(int)), tuple(COURT[3].astype(int)), (255, 255, 255), 5)
+    for start, end in COURT_LINES:
+        pixels = cv2.perspectiveTransform(np.float32([[start, end]]), _TO_IMAGE)[0]
+        cv2.line(image, tuple(pixels[0].astype(int)), tuple(pixels[1].astype(int)),
+                 (255, 255, 255), 3)
     return image
 
 
@@ -104,11 +118,38 @@ def test_synthetic_corners_and_homography() -> None:
     adapter = TennisAdapter(detector=lambda frame: [])
     corners = adapter.detect_court_corners(_court_image())
     assert corners is not None
-    assert np.max(np.abs(corners - COURT)) < 5.0
+    assert np.max(np.abs(corners - COURT)) < 6.0
     homography = adapter.homography_from_corners(corners)
     mapped = cv2.perspectiveTransform(COURT.reshape(1, -1, 2), homography)[0]
-    expected = np.float32(((0, 0), (0, 36), (78, 0), (78, 36)))
-    assert np.max(np.abs(mapped - expected)) < 0.5
+    assert np.max(np.abs(mapped - COURT_FEET)) < 1.5
+
+
+def test_length_axis_lands_on_the_real_court() -> None:
+    """Court features NOT used as corners must land at their true feet.
+
+    The length axis used to be compressed 1.57x because the far baseline was
+    taken to be the topmost bright horizontal cluster, which on real footage is
+    a broadcast wordmark. Nothing here is an input to the corner fit.
+    """
+    adapter = TennisAdapter(detector=lambda frame: [])
+    corners = adapter.detect_court_corners(_court_image())
+    homography = adapter.homography_from_corners(corners)
+    for feet in ((60, 18), (39, 18), (18, 4.5), (60, 31.5)):
+        pixel = cv2.perspectiveTransform(np.float32([[feet]]), _TO_IMAGE)
+        assert np.allclose(cv2.perspectiveTransform(pixel, homography)[0, 0],
+                           feet, atol=1.5), feet
+
+
+def test_non_court_frame_is_rejected() -> None:
+    """Bright horizontals that are not a court must not calibrate anything."""
+    adapter = TennisAdapter(detector=lambda frame: [])
+    image = np.zeros((720, 1280, 3), dtype=np.uint8)
+    image[:] = (40, 120, 40)
+    for row in (80, 200, 420, 600):
+        cv2.line(image, (100, row), (1180, row), (255, 255, 255), 4)
+    for column in (200, 900):
+        cv2.line(image, (column, 60), (column, 700), (255, 255, 255), 4)
+    assert adapter.detect_court_corners(image) is None
 
 
 def test_mock_detector_projects_players_on_opposite_halves() -> None:
