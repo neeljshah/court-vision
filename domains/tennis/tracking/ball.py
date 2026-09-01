@@ -75,6 +75,117 @@ class MotionDiffDetector:
         return (best[0], best[1], confidence)
 
 
+class TrackNetV3Detector:
+    """Run the licensed TrackNetV3 checkpoint without an ultralytics dependency.
+
+    The checkpoint was trained for shuttlecocks, so this is deliberately a
+    zero-shot candidate generator, not an asserted tennis-ball model.  It
+    accepts a contiguous, independently selected sequence of broadcast frames
+    and returns one optional pixel point per input frame.
+    """
+
+    _SIZE = (512, 288)
+
+    def __init__(self, checkpoint: Union[str, Path], device: str = "cuda") -> None:
+        try:
+            import torch
+            from torch import nn
+        except ImportError as exc:  # pragma: no cover - deployment dependency
+            raise RuntimeError("TrackNetV3 requires torch") from exc
+        self._torch = torch
+        self._device = torch.device(device if device != "cuda" or torch.cuda.is_available()
+                                    else "cpu")
+        payload = torch.load(str(checkpoint), map_location=self._device,
+                             weights_only=False)
+        params = payload["param_dict"]
+        self._seq_len = int(params["seq_len"])
+        if params["bg_mode"] != "concat":
+            raise ValueError("Only the published concat TrackNetV3 checkpoint is supported")
+
+        class ConvBlock(nn.Module):
+            def __init__(self, in_dim: int, out_dim: int) -> None:
+                super().__init__()
+                self.conv = nn.Conv2d(in_dim, out_dim, 3, padding="same", bias=False)
+                self.bn = nn.BatchNorm2d(out_dim)
+                self.relu = nn.ReLU()
+
+            def forward(self, value):  # type: ignore[no-untyped-def]
+                return self.relu(self.bn(self.conv(value)))
+
+        class Double(nn.Module):
+            def __init__(self, in_dim: int, out_dim: int) -> None:
+                super().__init__()
+                self.conv_1 = ConvBlock(in_dim, out_dim)
+                self.conv_2 = ConvBlock(out_dim, out_dim)
+
+            def forward(self, value):  # type: ignore[no-untyped-def]
+                return self.conv_2(self.conv_1(value))
+
+        class Triple(nn.Module):
+            def __init__(self, in_dim: int, out_dim: int) -> None:
+                super().__init__()
+                self.conv_1 = ConvBlock(in_dim, out_dim)
+                self.conv_2 = ConvBlock(out_dim, out_dim)
+                self.conv_3 = ConvBlock(out_dim, out_dim)
+
+            def forward(self, value):  # type: ignore[no-untyped-def]
+                return self.conv_3(self.conv_2(self.conv_1(value)))
+
+        class TrackNet(nn.Module):
+            def __init__(self, in_dim: int, out_dim: int) -> None:
+                super().__init__()
+                self.down_block_1, self.down_block_2 = Double(in_dim, 64), Double(64, 128)
+                self.down_block_3, self.bottleneck = Triple(128, 256), Triple(256, 512)
+                self.up_block_1 = Triple(768, 256)
+                self.up_block_2, self.up_block_3 = Double(384, 128), Double(192, 64)
+                self.predictor = nn.Conv2d(64, out_dim, 1)
+
+            def forward(self, value):  # type: ignore[no-untyped-def]
+                first = self.down_block_1(value)
+                second = self.down_block_2(nn.functional.max_pool2d(first, 2))
+                third = self.down_block_3(nn.functional.max_pool2d(second, 2))
+                value = self.bottleneck(nn.functional.max_pool2d(third, 2))
+                value = self.up_block_1(torch.cat((nn.functional.interpolate(value, scale_factor=2), third), 1))
+                value = self.up_block_2(torch.cat((nn.functional.interpolate(value, scale_factor=2), second), 1))
+                value = self.up_block_3(torch.cat((nn.functional.interpolate(value, scale_factor=2), first), 1))
+                return torch.sigmoid(self.predictor(value))
+
+        self._model = TrackNet((self._seq_len + 1) * 3, self._seq_len).to(self._device)
+        self._model.load_state_dict(payload["model"])
+        self._model.eval()
+
+    def detect_sequence(self, frames: Sequence[np.ndarray]) -> RectifiedTrack:
+        """Return TrackNetV3 detections for contiguous frames, padded at the tail."""
+        if not frames:
+            return []
+        prepared = [cv2.resize(frame, self._SIZE, interpolation=cv2.INTER_AREA) for frame in frames]
+        background = np.median(np.stack(prepared), axis=0).astype(np.uint8)
+        output: RectifiedTrack = [None] * len(prepared)
+        for start in range(0, len(prepared), self._seq_len):
+            chunk = prepared[start:start + self._seq_len]
+            valid = len(chunk)
+            chunk.extend([chunk[-1]] * (self._seq_len - valid))
+            rgb = [cv2.cvtColor(image, cv2.COLOR_BGR2RGB) for image in chunk]
+            tensor = np.concatenate(rgb + [cv2.cvtColor(background, cv2.COLOR_BGR2RGB)], axis=2)
+            tensor = self._torch.from_numpy(tensor.transpose(2, 0, 1)).unsqueeze(0).float() / 255.0
+            with self._torch.no_grad():
+                heatmaps = self._model(tensor.to(self._device))[0].cpu().numpy()
+            for offset, heatmap in enumerate(heatmaps[:valid]):
+                mask = (heatmap > 0.5).astype(np.uint8) * 255
+                contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+                if not contours:
+                    continue
+                contour = max(contours, key=cv2.contourArea)
+                x, y, width, height = cv2.boundingRect(contour)
+                original = frames[start + offset]
+                scale_x = original.shape[1] / self._SIZE[0]
+                scale_y = original.shape[0] / self._SIZE[1]
+                output[start + offset] = ((x + width / 2) * scale_x,
+                                          (y + height / 2) * scale_y,
+                                          float(heatmap.max()))
+        return output
+
+
 def rectify_track(points: Sequence[Optional[BallPoint]]) -> RectifiedTrack:
     """Reject impossible jumps, fill short gaps, and remove isolated sightings."""
     cleaned: RectifiedTrack = [None] * len(points)
