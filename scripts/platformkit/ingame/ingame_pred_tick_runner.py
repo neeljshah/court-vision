@@ -141,6 +141,11 @@ def _compose_game(game_id: str, now: float) -> Dict[str, Any]:
         compose_clv == "INSUFFICIENT_DATA" or clv == "INSUFFICIENT_DATA") else clv
     for k in _BAD_KEYS:
         doc.pop(k, None)
+    try:
+        from scripts.platformkit.ingame.aci_stream_shim import apply_to_document
+        doc = apply_to_document(doc, "nba")
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("ACI serve shim skipped: %s", exc)
     return doc
 
 
@@ -191,6 +196,11 @@ def tick(*, now: float,
     _ids_fn = game_ids_fn or _live_game_ids
     _compose = compose_fn or _compose_game
     _out = out_path_fn or _output_path
+    try:
+        from scripts.platformkit.ingame.aci_stream_shim import update_stream
+        update_stream("nba")
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("ACI stream update skipped: %s", exc)
 
     try:
         game_ids = _ids_fn()
