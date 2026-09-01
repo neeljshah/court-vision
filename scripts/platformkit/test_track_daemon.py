@@ -134,3 +134,57 @@ def test_basketball_routes_to_run_clip_not_the_adapter_registry(tmp_path):
 
     assert "scripts/run_clip.py" in command
     assert track_daemon.build_command("kbo", tmp_path / "v.mp4", "k1")[-3] == "baseball"
+
+
+def test_ledger_carries_the_harness_verdict_not_just_row_count(tmp_path, monkeypatch):
+    """A fat row count is not quality. Baseball can emit 4000+ rows whose
+    coordinates are untrustworthy; by row count alone that is indistinguishable
+    from a good tennis game."""
+    stage = _stage(tmp_path, monkeypatch)
+    monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
+    video = stage / "baseball__b1.mp4"
+    video.write_bytes(b"x")
+    log = stage / "baseball__b1.log"
+    log.write_text("ok", encoding="utf-8")
+    csv_dir = track_daemon.TRACKING / "b1"
+    csv_dir.mkdir(parents=True)
+    (csv_dir / "tracking_data.csv").write_text(
+        "h\n" + "row\n" * 4043, encoding="utf-8")
+    report = track_daemon.REPORTS / "baseball" / "b1.json"
+    report.parent.mkdir(parents=True)
+    report.write_text(json.dumps({"passed": False,
+                                  "failures": ["oob 0.6542 > 0.10"]}),
+                      encoding="utf-8")
+
+    active = {"baseball__b1.mp4": {"proc": FakeProc(), "video": video, "log": log,
+                                   "sport": "baseball", "game_id": "b1",
+                                   "started": 0.0}}
+    track_daemon.tick(active, workers=4)
+
+    entry = json.loads(track_daemon.LEDGER.read_text(encoding="utf-8").strip())
+    assert entry["rows"] == 4043 and entry["status"] == "tracked"
+    assert entry["passed"] is False
+    assert "oob" in entry["failures"][0]
+
+
+def test_grading_failure_never_kills_the_daemon(tmp_path, monkeypatch):
+    """An unreadable CSV must not take down every other running job."""
+    _stage(tmp_path, monkeypatch)
+    monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
+
+    result = track_daemon.verdict("tennis", "missing_game")
+
+    assert result["passed"] is None
+    assert result["failures"][0].startswith("ungraded")
+
+
+def test_clip_sports_are_graded_as_basketball(tmp_path, monkeypatch):
+    """run_clip.py writes no report, so wnba games went entirely ungraded."""
+    _stage(tmp_path, monkeypatch)
+    monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
+    report = tmp_path / "reports" / "basketball" / "w1.json"
+    report.parent.mkdir(parents=True)
+    report.write_text(json.dumps({"passed": True, "failures": []}),
+                      encoding="utf-8")
+
+    assert track_daemon.verdict("wnba", "w1")["passed"] is True

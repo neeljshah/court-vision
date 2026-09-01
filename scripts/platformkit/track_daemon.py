@@ -28,6 +28,7 @@ import time
 from pathlib import Path
 
 STAGE = Path("data/footage_bridge")
+REPORTS = Path("data/tracking_reports")
 LEDGER = Path("data/tracking/track_daemon_ledger.jsonl")
 TRACKING = Path("data/tracking")
 # Matches footage_bridge: a real tracked game has thousands of rows, and a
@@ -87,6 +88,37 @@ def claimable(active: dict) -> list:
     return ready
 
 
+def verdict(sport: str, game_id: str) -> dict:
+    """Harness verdict for a finished game: {"passed": bool, "failures": [...]}.
+
+    Row count alone is NOT quality. The baseball adapter can now emit 4000+ rows
+    whose coordinates are untrustworthy (oob 0.65), which by row count is
+    indistinguishable from a good 38,000-row tennis game. The ledger has to
+    carry the verdict or "tracked" silently comes to mean "big".
+
+    adapter_run writes this report itself; run_clip.py does not, so the
+    basketball family is graded here instead of going unscored.
+    """
+    harness_sport = "basketball" if sport in CLIP_SPORTS else SPORT_ADAPTER.get(sport, sport)
+    report_path = REPORTS / harness_sport / ("%s.json" % game_id)
+    try:
+        return json.loads(report_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        pass
+    try:
+        import pandas as pd
+
+        from scripts.platformkit.tracking_harness import evaluate
+
+        report = evaluate(pd.read_csv(TRACKING / game_id / "tracking_data.csv"),
+                          harness_sport)
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(report.to_json(), encoding="utf-8")
+        return json.loads(report.to_json())
+    except Exception as exc:  # grading must never kill the daemon
+        return {"passed": None, "failures": ["ungraded: %s" % str(exc)[:120]]}
+
+
 def _record(entry: dict) -> None:
     LEDGER.parent.mkdir(parents=True, exist_ok=True)
     with LEDGER.open("a", encoding="utf-8") as handle:
@@ -97,8 +129,11 @@ def _finish(name: str, job: dict) -> None:
     """Grade one finished job, record it, and always reclaim the disk."""
     rows = tracking_rows(job["game_id"])
     status = "tracked" if rows >= MIN_TRACKING_ROWS else "thin"
+    graded = verdict(job["sport"], job["game_id"]) if rows else {}
     entry = {"game_id": job["game_id"], "sport": job["sport"],
              "status": status, "rows": rows,
+             "passed": graded.get("passed"),
+             "failures": (graded.get("failures") or [])[:4],
              "seconds": int(time.time() - job["started"])}
     if status == "thin":
         # Without the tail, every failure looks identical in the ledger.
@@ -108,8 +143,9 @@ def _finish(name: str, job: dict) -> None:
         except OSError:
             entry["tail"] = "no log"
     _record(entry)
-    print("%s %s %s rows=%d" % (job["game_id"], job["sport"], status, rows),
-          flush=True)
+    print("%s %s %s rows=%d passed=%s %s"
+          % (job["game_id"], job["sport"], status, rows, entry["passed"],
+             ";".join(entry["failures"])[:90]), flush=True)
     for leftover in (job["video"], job["log"]):
         try:
             leftover.unlink(missing_ok=True)

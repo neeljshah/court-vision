@@ -10,8 +10,8 @@ import numpy as np
 import pandas as pd
 
 from domains.baseball.tracking.command_meter import MotionStableDetector, command_series, glove_target
+from domains.baseball.tracking.scale_anchor import anchor_calibrations
 from domains.baseball.tracking.segmenter import detect_cut, small_gray
-from domains.baseball.tracking.stability import ScaleStabilizer, stabilize_rows
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
 MOUND_TO_PLATE_FEET = 60.5
 Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
@@ -130,7 +130,8 @@ class BaseballAdapter:
         mound_point = min(mound, key=lambda point: abs(point[0] - center_x) + abs(point[1] - height * 0.50))
         plate_point = min(plate, key=lambda point: abs(point[0] - center_x) + abs(point[1] - height * 0.78))
         distance = float(np.linalg.norm(mound_point - plate_point))
-        if plate_point[1] <= mound_point[1] or distance < 20.0:
+        # ponytail: 20px was resolution-blind; good anchors measure 0.24-0.44 of frame height apart.
+        if plate_point[1] <= mound_point[1] or distance < 0.18 * height:
             return None
         return PitchGeometry(mound_point, plate_point, distance / MOUND_TO_PLATE_FEET)
     def is_pitch_view(self, frame: np.ndarray) -> bool:
@@ -153,25 +154,30 @@ class BaseballAdapter:
         self, frame: np.ndarray, geometry: PitchGeometry
     ) -> list[tuple[int, np.ndarray]]:
         """Return nearest visible pitcher (1) and batter (2) feet points."""
+        # ponytail: gate in image space scaled by the mound-plate span -- the scalar
+        # pixels_per_foot is only valid along the foreshortened pitching axis, so a
+        # plate-relative-feet window rejected ~90% of genuine on-field players.
+        span = float(np.linalg.norm(geometry.mound - geometry.plate))
+        top, bottom = geometry.mound[1] - 0.6 * span, geometry.plate[1] + 0.4 * span
         candidates: list[tuple[np.ndarray, np.ndarray]] = []
         for box in self.detector(frame):
             x1, y1, x2, y2 = map(float, box[:4])
             if x2 <= x1 or y2 <= y1:
                 continue
             foot = np.array(((x1 + x2) / 2.0, y2), dtype=np.float32)
-            point = self._project(foot, geometry)
-            if -30.0 <= point[0] <= 30.0 and 0.0 <= point[1] <= 60.0:
-                candidates.append((foot, point))
-        if len(candidates) < 2:
+            if top <= foot[1] <= bottom and abs(foot[0] - geometry.plate[0]) <= 1.5 * span:
+                candidates.append((foot, self._project(foot, geometry)))
+        if not candidates:
             return []
         def nearest(anchor: np.ndarray, excluded: Optional[int] = None) -> Optional[int]:
             choices = [index for index in range(len(candidates)) if index != excluded]
             return min(choices, key=lambda index: np.linalg.norm(candidates[index][0] - anchor)) if choices else None
         pitcher = nearest(geometry.mound)
         batter = nearest(geometry.plate, pitcher)
-        if pitcher is None or batter is None:
-            return []
-        return [(1, candidates[pitcher][1]), (2, candidates[batter][1])]
+        tracked = [(1, candidates[pitcher][1])]
+        if batter is not None:
+            tracked.append((2, candidates[batter][1]))
+        return tracked
     def process_video(
         self, path: Union[str, Path], max_frames: Optional[int] = None, stride: int = 1,
         compute_command: bool = False, player_only: bool = False,
@@ -252,14 +258,16 @@ class BaseballAdapter:
             capture.release()
         if in_pitch_view:
             close_pitch_segment()
-        stable_calibrations = stabilize_rows(calibrations, ScaleStabilizer())
+        # ponytail: reuse scale_anchor (built, tested, never wired in). The EMA gate
+        # it replaces demanded <5% scale spread over a 10-frame warm-up, but the raw
+        # anchor scale spreads >100% per segment, so it silently dropped ~89% of rows.
+        stable_calibrations = (
+            anchor_calibrations(calibrations, calibrations)[0] if calibrations else [])
         calibration_by_frame = {row["frame"]: row for row in stable_calibrations}
         raw_calibration_by_frame = {row["frame"]: row for row in calibrations}
         stabilized_rows: list[dict[str, object]] = []
         for row in rows:
-            calibration = calibration_by_frame.get(row["frame"])
-            if calibration is None:
-                continue
+            calibration = calibration_by_frame[row["frame"]]
             raw = raw_calibration_by_frame[row["frame"]]
             scale = float(calibration["pixels_per_foot"])
             raw_scale = float(raw["pixels_per_foot"])
