@@ -73,6 +73,11 @@ class PaperMakerAdapter:
 
     def quote(self, sport: str, game_id: str, side: str, fair_prob: Any, *,
               units: Dict[str, Any], tick: Dict[str, Any], now: datetime) -> Dict[str, Any]:
+        if _market_suspended(tick):
+            # entry-side kickoff/void: a tick a real venue has already pulled
+            # must never seed a FRESH resting quote (advance() only covers the
+            # fill side, one tick too late).
+            return {"status": "rejected", "reason": "suspended_at_entry"}
         price = _quote_price(fair_prob)
         if price is None:
             return {"status": "rejected", "reason": "bad_quote_price"}

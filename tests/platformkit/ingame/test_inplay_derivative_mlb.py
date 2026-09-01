@@ -258,6 +258,25 @@ def test_poll_once_divergence_suppresses_placement_but_still_captures(tmp_path, 
     assert hb["skip_by_reason"].get("divergence_stale_quote", 0) >= 1
 
 
+def test_default_ledger_blocked_without_writer_identity(tmp_path, monkeypatch):
+    """One-writer guard binds here too: with ledger_path=None an unsanctioned host
+    must still capture but never append the SHARED default ledger."""
+    monkeypatch.setattr(deriv._writer, "default_ledger_write_allowed", lambda: False)
+
+    def _boom(*a, **k):
+        raise AssertionError("shared-ledger write attempted by non-writer")
+
+    monkeypatch.setattr(deriv._paper, "record_ingame_bet", _boom)
+    monkeypatch.setattr(settle, "settle_open_bets",
+                        lambda **k: {"n_settled": 0, "n_pending": 0})
+    hb = deriv.poll_once(fetch_fn=_fetch_stub, state_fn=_state_stub,
+                         surface_fn=_surface_stub, grade_dir=tmp_path / "grade",
+                         ledger_path=None, heartbeat_path=tmp_path / "hb.json")
+    assert hb["n_captured"] == 2
+    assert hb["n_bets"] == 0
+    assert hb["skip_by_reason"].get("not_ledger_writer") == 2
+
+
 # --------------------------------------------------------------------------------------- #
 # mlb_deriv_settle.settle_open_bets -- end-to-end settle off an injected finals feed      #
 # --------------------------------------------------------------------------------------- #

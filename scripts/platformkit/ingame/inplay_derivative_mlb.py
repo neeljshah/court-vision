@@ -59,6 +59,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
+from scripts.platformkit.execution import writer_identity as _writer
 from scripts.platformkit.ingame import inplay_breaker as _breaker
 from scripts.platformkit.ingame import inplay_edge_signal as _sig
 from scripts.platformkit.ingame import live_grade as _lg
@@ -252,6 +253,12 @@ def poll_once(*, fetch_fn: Optional[FetchFn] = None,
             gr = _exec_gate.evaluate_placement(ev, tick, ticker=tick.get("ticker"), now=nowdt)
             if gr["suppress"]:
                 _skip(gr["reason"] or "exec_gate")
+                continue
+            if ledger_path is None and not _writer.default_ledger_write_allowed():
+                # ONE-WRITER (execution.writer_identity): only the sanctioned pod
+                # paper node appends the SHARED default ledger; injected paths
+                # (tests/scratch) are never gated. Mirrors inplay_daytrader:256.
+                _skip("not_ledger_writer")
                 continue
             market_label = _align.market_key(
                 aligned["market_type"], aligned["line"],

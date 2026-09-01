@@ -117,6 +117,27 @@ def test_suspension_cancels_resting_quote(tmp_path):
     assert not ledger.exists()
 
 
+def test_suspended_tick_blocks_entry_quote(tmp_path):
+    # entry-side R5c: a FIRST tick already suspended must never submit a quote.
+    now = datetime(2026, 9, 1, tzinfo=timezone.utc)
+    ledger, grade = tmp_path / "ledger.jsonl", tmp_path / "grade"
+    d = dt.on_tick("mlb", "401860100", _tick(market_status="suspended"), now=now,
+                   ledger_path=ledger, grade_dir=grade,
+                   maker_adapter=PaperMakerAdapter())
+    assert d["action"] == "no_bet"
+    assert d["reason"] == "suspended_at_entry"
+    assert not ledger.exists()
+
+
+def test_suspended_entry_rejected_directly():
+    adapter = PaperMakerAdapter()
+    now = datetime(2026, 9, 1, tzinfo=timezone.utc)
+    q = adapter.quote("mlb", "401860100", "home", 0.65, units={},
+                      tick={"ticker": "KXTEST", "tick_p50_sec": 10.0,
+                            "market_status": "suspended"}, now=now)
+    assert q == {"status": "rejected", "reason": "suspended_at_entry"}
+
+
 def test_market_status_suspension_cancels_directly():
     adapter = PaperMakerAdapter()
     now = datetime(2026, 9, 1, tzinfo=timezone.utc)
