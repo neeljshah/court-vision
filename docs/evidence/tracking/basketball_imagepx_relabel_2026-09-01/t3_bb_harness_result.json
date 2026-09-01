@@ -1,0 +1,244 @@
+[
+  {
+    "game": "ncaa_basketball_IB-_u4gW3ds",
+    "sport": "basketball",
+    "before": {
+      "rows": 3061,
+      "emitted_frames": 578,
+      "rung": "no_court_calibration_sidecar",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: no court calibration sidecar at /workspace/nba-ai-system/data/tracking/ncaa_basketball_IB-_u4gW3ds/tracking_data.csv.pre_relabel/court_calibration.json; NBA production x_position/y_position are map_2d pixels and ft_x/ft_y are an image-affine rescale, so no court anchor is available"
+      ]
+    },
+    "after": {
+      "rows": 3061,
+      "emitted_frames": 578,
+      "rung": "declared_image_px",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: rows declare coordinate_space image_px not accepted for sport basketball; a preserved detection corpus is never a scorable game"
+      ]
+    }
+  },
+  {
+    "game": "ncaa_basketball_sRtHQbywiTE",
+    "sport": "basketball",
+    "before": {
+      "rows": 2234,
+      "emitted_frames": 745,
+      "rung": "no_court_calibration_sidecar",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: no court calibration sidecar at /workspace/nba-ai-system/data/tracking/ncaa_basketball_sRtHQbywiTE/tracking_data.csv.pre_relabel/court_calibration.json; NBA production x_position/y_position are map_2d pixels and ft_x/ft_y are an image-affine rescale, so no court anchor is available"
+      ]
+    },
+    "after": {
+      "rows": 2234,
+      "emitted_frames": 745,
+      "rung": "declared_image_px",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: rows declare coordinate_space image_px not accepted for sport basketball; a preserved detection corpus is never a scorable game"
+      ]
+    }
+  },
+  {
+    "game": "ncaa_basketball_tiUvyvWOCxo",
+    "sport": "basketball",
+    "before": {
+      "rows": 4424,
+      "emitted_frames": 978,
+      "rung": "no_court_calibration_sidecar",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: no court calibration sidecar at /workspace/nba-ai-system/data/tracking/ncaa_basketball_tiUvyvWOCxo/tracking_data.csv.pre_relabel/court_calibration.json; NBA production x_position/y_position are map_2d pixels and ft_x/ft_y are an image-affine rescale, so no court anchor is available"
+      ]
+    },
+    "after": {
+      "rows": 4424,
+      "emitted_frames": 978,
+      "rung": "declared_image_px",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: rows declare coordinate_space image_px not accepted for sport basketball; a preserved detection corpus is never a scorable game"
+      ]
+    }
+  },
+  {
+    "game": "ncaa_basketball_zqBCKovJCQU",
+    "sport": "basketball",
+    "before": {
+      "rows": 5303,
+      "emitted_frames": 999,
+      "rung": "no_court_calibration_sidecar",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: no court calibration sidecar at /workspace/nba-ai-system/data/tracking/ncaa_basketball_zqBCKovJCQU/tracking_data.csv.pre_relabel/court_calibration.json; NBA production x_position/y_position are map_2d pixels and ft_x/ft_y are an image-affine rescale, so no court anchor is available"
+      ]
+    },
+    "after": {
+      "rows": 5303,
+      "emitted_frames": 999,
+      "rung": "declared_image_px",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: rows declare coordinate_space image_px not accepted for sport basketball; a preserved detection corpus is never a scorable game"
+      ]
+    }
+  },
+  {
+    "game": "wnba_01",
+    "sport": "wnba",
+    "before": {
+      "rows": 4855,
+      "emitted_frames": 999,
+      "rung": "no_court_calibration_sidecar",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: no court calibration sidecar at /workspace/nba-ai-system/data/tracking/wnba_01/tracking_data.csv.pre_relabel/court_calibration.json; NBA production x_position/y_position are map_2d pixels and ft_x/ft_y are an image-affine rescale, so no court anchor is available"
+      ]
+    },
+    "after": {
+      "rows": 4855,
+      "emitted_frames": 999,
+      "rung": "declared_image_px",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: rows declare coordinate_space image_px not accepted for sport wnba; a preserved detection corpus is never a scorable game"
+      ]
+    }
+  },
+  {
+    "game": "wnba_02",
+    "sport": "wnba",
+    "before": {
+      "rows": 5342,
+      "emitted_frames": 1000,
+      "rung": "no_court_calibration_sidecar",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: no court calibration sidecar at /workspace/nba-ai-system/data/tracking/wnba_02/tracking_data.csv.pre_relabel/court_calibration.json; NBA production x_position/y_position are map_2d pixels and ft_x/ft_y are an image-affine rescale, so no court anchor is available"
+      ]
+    },
+    "after": {
+      "rows": 5342,
+      "emitted_frames": 1000,
+      "rung": "declared_image_px",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: rows declare coordinate_space image_px not accepted for sport wnba; a preserved detection corpus is never a scorable game"
+      ]
+    }
+  },
+  {
+    "game": "wnba_03",
+    "sport": "wnba",
+    "before": {
+      "rows": 2380,
+      "emitted_frames": 971,
+      "rung": "no_court_calibration_sidecar",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: no court calibration sidecar at /workspace/nba-ai-system/data/tracking/wnba_03/tracking_data.csv.pre_relabel/court_calibration.json; NBA production x_position/y_position are map_2d pixels and ft_x/ft_y are an image-affine rescale, so no court anchor is available"
+      ]
+    },
+    "after": {
+      "rows": 2380,
+      "emitted_frames": 971,
+      "rung": "declared_image_px",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: rows declare coordinate_space image_px not accepted for sport wnba; a preserved detection corpus is never a scorable game"
+      ]
+    }
+  },
+  {
+    "game": "wnba_04",
+    "sport": "wnba",
+    "before": {
+      "rows": 4906,
+      "emitted_frames": 997,
+      "rung": "no_court_calibration_sidecar",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: no court calibration sidecar at /workspace/nba-ai-system/data/tracking/wnba_04/tracking_data.csv.pre_relabel/court_calibration.json; NBA production x_position/y_position are map_2d pixels and ft_x/ft_y are an image-affine rescale, so no court anchor is available"
+      ]
+    },
+    "after": {
+      "rows": 4906,
+      "emitted_frames": 997,
+      "rung": "declared_image_px",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: rows declare coordinate_space image_px not accepted for sport wnba; a preserved detection corpus is never a scorable game"
+      ]
+    }
+  },
+  {
+    "game": "wnba_05",
+    "sport": "wnba",
+    "before": {
+      "rows": 2230,
+      "emitted_frames": 547,
+      "rung": "no_court_calibration_sidecar",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: no court calibration sidecar at /workspace/nba-ai-system/data/tracking/wnba_05/tracking_data.csv.pre_relabel/court_calibration.json; NBA production x_position/y_position are map_2d pixels and ft_x/ft_y are an image-affine rescale, so no court anchor is available"
+      ]
+    },
+    "after": {
+      "rows": 2230,
+      "emitted_frames": 547,
+      "rung": "declared_image_px",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: rows declare coordinate_space image_px not accepted for sport wnba; a preserved detection corpus is never a scorable game"
+      ]
+    }
+  },
+  {
+    "game": "wnba_kangps_g1",
+    "sport": "wnba",
+    "before": {
+      "rows": 38424,
+      "emitted_frames": 5730,
+      "rung": "no_court_calibration_sidecar",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: no court calibration sidecar at /workspace/nba-ai-system/data/tracking/wnba_kangps_g1/tracking_data.csv.pre_relabel/court_calibration.json; NBA production x_position/y_position are map_2d pixels and ft_x/ft_y are an image-affine rescale, so no court anchor is available"
+      ]
+    },
+    "after": {
+      "rows": 38424,
+      "emitted_frames": 5730,
+      "rung": "declared_image_px",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: rows declare coordinate_space image_px not accepted for sport wnba; a preserved detection corpus is never a scorable game"
+      ]
+    }
+  },
+  {
+    "game": "wnba_kangps_g2",
+    "sport": "wnba",
+    "before": {
+      "rows": 29850,
+      "emitted_frames": 5987,
+      "rung": "no_court_calibration_sidecar",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: no court calibration sidecar at /workspace/nba-ai-system/data/tracking/wnba_kangps_g2/tracking_data.csv.pre_relabel/court_calibration.json; NBA production x_position/y_position are map_2d pixels and ft_x/ft_y are an image-affine rescale, so no court anchor is available"
+      ]
+    },
+    "after": {
+      "rows": 29850,
+      "emitted_frames": 5987,
+      "rung": "declared_image_px",
+      "verdict": "FAIL",
+      "failures": [
+        "coordinate_contract: rows declare coordinate_space image_px not accepted for sport wnba; a preserved detection corpus is never a scorable game"
+      ]
+    }
+  }
+]

@@ -1,0 +1,110 @@
+[
+  {
+    "width": 640,
+    "height": 360,
+    "n_rows": 3061,
+    "n_inside": 0,
+    "inside_share": 0.0,
+    "max_x": 3396.0,
+    "max_y": 1350.0,
+    "verdict": "FAIL",
+    "game": "ncaa_basketball_IB-_u4gW3ds",
+    "video": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4"
+  },
+  {
+    "width": 1280,
+    "height": 720,
+    "n_rows": 2234,
+    "n_inside": 1809,
+    "inside_share": 0.8098,
+    "max_x": 461.0,
+    "max_y": 1480.0,
+    "verdict": "FAIL",
+    "game": "ncaa_basketball_sRtHQbywiTE",
+    "video": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4"
+  },
+  {
+    "width": 1280,
+    "height": 720,
+    "n_rows": 4424,
+    "n_inside": 920,
+    "inside_share": 0.208,
+    "max_x": 1465.0,
+    "max_y": 1710.0,
+    "verdict": "FAIL",
+    "game": "ncaa_basketball_tiUvyvWOCxo",
+    "video": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4"
+  },
+  {
+    "width": 1920,
+    "height": 1080,
+    "n_rows": 5303,
+    "n_inside": 2571,
+    "inside_share": 0.4848,
+    "max_x": 3171.0,
+    "max_y": 1239.0,
+    "verdict": "FAIL",
+    "game": "ncaa_basketball_zqBCKovJCQU",
+    "video": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4"
+  },
+  {
+    "width": 1280,
+    "height": 720,
+    "n_rows": 4855,
+    "n_inside": 2118,
+    "inside_share": 0.4363,
+    "max_x": 1632.0,
+    "max_y": 1527.0,
+    "verdict": "FAIL",
+    "game": "wnba_01",
+    "video": "wnba__wnba_01.mp4"
+  },
+  {
+    "width": 1280,
+    "height": 720,
+    "n_rows": 5342,
+    "n_inside": 96,
+    "inside_share": 0.018,
+    "max_x": 3386.0,
+    "max_y": 1667.0,
+    "verdict": "FAIL",
+    "game": "wnba_02",
+    "video": "wnba__wnba_02.mp4"
+  },
+  {
+    "game": "wnba_03",
+    "status": "no_footage"
+  },
+  {
+    "width": 1280,
+    "height": 720,
+    "n_rows": 4906,
+    "n_inside": 0,
+    "inside_share": 0.0,
+    "max_x": 3384.0,
+    "max_y": 1699.0,
+    "verdict": "FAIL",
+    "game": "wnba_04",
+    "video": "wnba__wnba_04.mp4"
+  },
+  {
+    "width": 1280,
+    "height": 720,
+    "n_rows": 2230,
+    "n_inside": 0,
+    "inside_share": 0.0,
+    "max_x": 1695.0,
+    "max_y": 1710.0,
+    "verdict": "FAIL",
+    "game": "wnba_05",
+    "video": "wnba__wnba_05.mp4"
+  },
+  {
+    "game": "wnba_kangps_g1",
+    "status": "no_footage"
+  },
+  {
+    "game": "wnba_kangps_g2",
+    "status": "no_footage"
+  }
+]
