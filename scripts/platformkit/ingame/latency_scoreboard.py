@@ -49,3 +49,22 @@ def render(rows: List[Dict[str, Any]]) -> str:
         "{sport} {venue} {tick_p50} {tick_p90} {lag_p50} {lag_p90} {ticks_per_live_hour} {src_ts_coverage_pct} {event_reactive} {slow_state}".format(**r)
         for r in rows])
 
+
+
+def event_reactive_supported(sport: str, grade_dir: Path = None) -> bool:
+    """MEASURED-latency eligibility for an event-reactive entry. FAIL-CLOSED: an
+    unmeasured, slow, or low-coverage feed never supports reacting to events.
+    Same gates the scoreboard rows use (lag_p90 <= EVENT_REACTIVE_LAG_P90_SEC and
+    src_ts coverage >= EVENT_REACTIVE_COVERAGE_PCT). Never raises.
+
+    ponytail: re-measures the corpus per call; add a per-sport cache if a caller
+    ever sets event_reactive on a hot tick path."""
+    try:
+        m = latency.measure_sport(sport, grade_dir=grade_dir)
+        lag90 = m.get("lag_p90_sec")
+        cov = m.get("src_ts_coverage_pct")
+        return bool(lag90 is not None and cov is not None
+                    and float(lag90) <= EVENT_REACTIVE_LAG_P90_SEC
+                    and float(cov) >= EVENT_REACTIVE_COVERAGE_PCT)
+    except Exception:  # noqa: BLE001 -- eligibility check must never sink a tick
+        return False

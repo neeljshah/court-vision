@@ -64,3 +64,22 @@ def test_other_channels_ignored(tmp_path):
              "ts": "2026-07-19T01:00:00+00:00"} for _ in range(9)]
     p = _ledger(tmp_path, rows)
     assert ib._load_channel_rows(p) == []
+
+
+def test_taker_series_rows_never_blend_into_maker_pool(tmp_path):
+    # READ-TIME CLV-series separation: a future taker row must not pollute the
+    # maker series' breaker statistics; untagged legacy rows stay maker.
+    rows = [
+        {"channel": "paper_ingame", "market": "win_home", "clv_pct": 2.0,
+         "taken_book": "paper_ingame_maker", "ts": "2026-07-19T01:00:00+00:00"},
+        {"channel": "paper_ingame", "market": "win_home", "clv_pct": -50.0,
+         "taken_book": "paper_ingame_taker", "ts": "2026-07-19T02:00:00+00:00"},
+        {"channel": "paper_ingame", "market": "win_home", "clv_pct": 2.0,
+         "ts": "2026-07-19T03:00:00+00:00"},  # legacy untagged -> maker
+    ]
+    p = _ledger(tmp_path, rows)
+    loaded = ib._load_channel_rows(p)
+    assert len(loaded) == 2
+    assert all(r.get("taken_book") != "paper_ingame_taker" for r in loaded)
+    taker = ib._load_channel_rows(p, series="paper_ingame_taker")
+    assert len(taker) == 1 and taker[0]["clv_pct"] == -50.0

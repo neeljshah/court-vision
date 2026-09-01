@@ -27,9 +27,23 @@ logger = logging.getLogger(__name__)
 
 CHANNEL = "paper_ingame"
 
+# READ-TIME CLV-series separation: the maker series this channel writes today.
+# Any future taker fallback must write a DIFFERENT series tag and gets its own
+# pool -- it can never silently blend into the maker statistics here.
+MAKER_SERIES = "paper_ingame_maker"
 
-def _load_channel_rows(ledger_path: Optional[Path]) -> List[Dict[str, Any]]:
-    """The ledger's paper_ingame rows (never raises; [] on any problem).
+
+def _row_series(row: Dict[str, Any]) -> str:
+    """The CLV series a ledger row belongs to. Untagged legacy rows predate any
+    taker path, so by construction they are the maker series."""
+    gate = row.get("exec_gate") if isinstance(row.get("exec_gate"), dict) else {}
+    return str(row.get("clv_series") or gate.get("clv_series")
+               or row.get("taken_book") or MAKER_SERIES)
+
+
+def _load_channel_rows(ledger_path: Optional[Path],
+                       series: str = MAKER_SERIES) -> List[Dict[str, Any]]:
+    """The ledger's paper_ingame rows for ONE CLV series (never raises; [] on any problem).
 
     ponytail: full-ledger scan per ENTER tick, O(total ledger). Fine while the
     shared jsonl is small (in-game bets are rare); switch to a tail-read or
@@ -48,7 +62,8 @@ def _load_channel_rows(ledger_path: Optional[Path]) -> List[Dict[str, Any]]:
                     row = json.loads(line)
                 except ValueError:
                     continue
-                if isinstance(row, dict) and row.get("channel") == CHANNEL:
+                if (isinstance(row, dict) and row.get("channel") == CHANNEL
+                        and _row_series(row) == series):
                     rows.append(row)
         return rows
     except Exception as exc:  # noqa: BLE001 -- fail-open, never sink a tick
@@ -57,15 +72,16 @@ def _load_channel_rows(ledger_path: Optional[Path]) -> List[Dict[str, Any]]:
 
 
 def allow(market: str, now: datetime,
-          ledger_path: Optional[Path] = None) -> Dict[str, Any]:
-    """One-more-placement verdict for the in-play channel. FAIL-OPEN."""
+          ledger_path: Optional[Path] = None,
+          series: str = MAKER_SERIES) -> Dict[str, Any]:
+    """One-more-placement verdict for the in-play channel (per CLV series). FAIL-OPEN."""
     try:
         from scripts.platformkit.execution.circuit_breaker import allow_placement
-        rows = _load_channel_rows(ledger_path)
+        rows = _load_channel_rows(ledger_path, series=series)
         return allow_placement(rows, market, now.isoformat())
     except Exception as exc:  # noqa: BLE001 -- a broken breaker never blocks measurement
         logger.warning("inplay_breaker failed open: %s", exc)
         return {"allowed": True, "state": "ERROR_FAIL_OPEN", "reason": "breaker_error"}
 
 
-__all__ = ["CHANNEL", "allow"]
+__all__ = ["CHANNEL", "MAKER_SERIES", "allow"]

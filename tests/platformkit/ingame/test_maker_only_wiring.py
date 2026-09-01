@@ -70,3 +70,96 @@ def test_maker_fee_is_applied_before_tier_threshold(monkeypatch):
     assert ev["ev"] < 0.0
     assert ev["action"] == "no_bet"
     assert ev["reason"] == "below_floor"
+
+
+def _iso(dt_):
+    return dt_.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def test_stale_state_blocks_entry(tmp_path):
+    # Wiring proof for the entry-side gate: mlb ceiling = 5s, src_ts 10s old.
+    now = datetime(2026, 9, 1, tzinfo=timezone.utc)
+    ledger, grade = tmp_path / "ledger.jsonl", tmp_path / "grade"
+    stale = _tick(src_ts=_iso(now - timedelta(seconds=10)))
+    d = dt.on_tick("mlb", "401860100", stale, now=now, ledger_path=ledger,
+                   grade_dir=grade, maker_adapter=PaperMakerAdapter())
+    assert d["action"] == "no_bet"
+    assert d["reason"] == "stale_state"
+    assert d["position"] is None
+    assert not ledger.exists()
+
+
+def test_stale_state_blocks_fill_then_fresh_tick_fills(tmp_path):
+    # The FILL decision itself must honor the same freshness ceiling as entry.
+    now, ledger, grade, first = _start(tmp_path)
+    stale_cross = _tick(0.60, src_ts=_iso(now - timedelta(seconds=10)))
+    held = dt.on_tick("mlb", "401860100", stale_cross, now=now + timedelta(seconds=1),
+                      position=first["position"], ledger_path=ledger, grade_dir=grade)
+    assert held["action"] == "resting"
+    assert held["reason"] == "maker_stale_state"
+    assert not ledger.exists()
+    filled = dt.on_tick("mlb", "401860100", _tick(0.60), now=now + timedelta(seconds=2),
+                        position=held["position"], ledger_path=ledger, grade_dir=grade)
+    assert filled["action"] == "bet"
+    assert ledger.exists()
+
+
+def test_suspension_cancels_resting_quote(tmp_path):
+    # kickoff/void: a crossing price during a terminal/suspended game state must
+    # CANCEL the resting order, never record a retroactive fill.
+    now, ledger, grade, first = _start(tmp_path)
+    suspended = _tick(0.60, state={"status": "final"})
+    d = dt.on_tick("mlb", "401860100", suspended, now=now + timedelta(seconds=1),
+                   position=first["position"], ledger_path=ledger, grade_dir=grade)
+    assert d["action"] == "no_bet"
+    assert d["reason"] == "maker_cancelled_suspended"
+    assert d["position"] is None
+    assert not ledger.exists()
+
+
+def test_market_status_suspension_cancels_directly():
+    adapter = PaperMakerAdapter()
+    now = datetime(2026, 9, 1, tzinfo=timezone.utc)
+    q = adapter.quote("mlb", "401860100", "home", 0.65, units={},
+                      tick={"ticker": "KXTEST", "tick_p50_sec": 10.0}, now=now)
+    assert q["status"] == "resting"
+    ev2 = adapter.advance({"maker_quote": q, "status": "resting"},
+                          {"yes_home_prob": 0.60, "market_status": "suspended"},
+                          now=now + timedelta(seconds=1))
+    assert ev2["status"] == "cancelled_suspended"
+
+
+def test_default_ledger_blocked_without_writer_identity(tmp_path, monkeypatch):
+    # One-writer guard: an unsanctioned host must never append the SHARED ledger.
+    from scripts.platformkit.execution import writer_identity as wi
+    from scripts.platformkit.ingame import paper_ingame as pi
+    now, ledger, grade, first = _start(tmp_path)
+    monkeypatch.setattr(wi, "default_ledger_write_allowed", lambda: False)
+
+    def _boom(*a, **k):
+        raise AssertionError("shared-ledger write attempted by non-writer")
+
+    monkeypatch.setattr(pi, "record_ingame_bet", _boom)
+    d = dt.on_tick("mlb", "401860100", _tick(0.60), now=now + timedelta(seconds=1),
+                   position=first["position"], ledger_path=None, grade_dir=grade)
+    assert d["action"] == "no_bet"
+    assert d["reason"] == "not_ledger_writer"
+    assert d["position"] is None
+
+
+def test_event_reactive_entry_gated_by_measured_latency(tmp_path, monkeypatch):
+    now = datetime(2026, 9, 1, tzinfo=timezone.utc)
+    ledger, grade = tmp_path / "ledger.jsonl", tmp_path / "grade"
+    monkeypatch.setattr(dt._latsb, "event_reactive_supported",
+                        lambda sport, grade_dir=None: False)
+    d = dt.on_tick("mlb", "401860100", _tick(event_reactive=True), now=now,
+                   ledger_path=ledger, grade_dir=grade,
+                   maker_adapter=PaperMakerAdapter())
+    assert d["action"] == "no_bet"
+    assert d["reason"] == "event_reactive_not_supported"
+    monkeypatch.setattr(dt._latsb, "event_reactive_supported",
+                        lambda sport, grade_dir=None: True)
+    d2 = dt.on_tick("mlb", "401860100", _tick(event_reactive=True), now=now,
+                    ledger_path=ledger, grade_dir=grade,
+                    maker_adapter=PaperMakerAdapter())
+    assert d2["action"] == "resting"
