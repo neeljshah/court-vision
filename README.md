@@ -1,104 +1,48 @@
 
-# CourtVision -- calibrated multi-sport forecasting: computer vision, walk-forward validation, and a receipt-cited analytics product
+# CourtVision -- quant-reader evidence for calibrated multi-sport forecasting
 
-**Two measured results, each against a stated baseline.** Conditioning a win-probability
-forecaster on the realized mid-game state cuts Brier from **0.209 to 0.159 (NBA)** and
-**0.241 to 0.126 (MLB)** -- leak-free, out-of-sample, on real corpora. The NBA player-prop
-stack scores **PTS MAE 4.83 / REB 1.92 / AST 1.39 / FG3M 0.89** on a 20,354-row chronological
-holdout, scored through the production inference path and re-measured by
-`scripts/verify_production_mae.py`, which exits nonzero if any stat drifts more than 0.02.
+CourtVision is an NBA-origin computer-vision, forecasting, and decision-research system. The
+central result is deliberately unglamorous: against real closing lines, the market is efficient.
+The pregame model matches the Shin-devigged close within noise on team-strength markets across six
+independent corpora; it is a calibration result, not an edge claim. Measured in-game conditioning
+is the lane: conditioning on realized game state improves the forecaster, while the market has that
+same state too.
 
-*Both are calibration and sharpness, not a dollar edge -- a live book sees the same realized
-state and scores the same. Provenance for every number in this README:
-[docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md).*
+## What holds up
 
-[![proof-harness](https://github.com/neeljshah/court-vision/actions/workflows/proof.yml/badge.svg)](https://github.com/neeljshah/court-vision/actions/workflows/proof.yml)
-*The badge re-runs every analytics module's own `--check` self-verification (`check_all.py`)
-on a bare clone -- committed-artifact verification only, no private data; it proves the receipts
-re-verify, not that any claim beats a market. Latest committed run: **77/77 PASS**
-(`scripts/platformkit/analytics_showcase/out/check_all_report.json`). Reproduce it yourself:
-[REPRODUCE.md](REPRODUCE.md).*
+All figures in this opening are from the audited
+[Job Evidence Packet](docs/JOB_EVIDENCE_PACKET.md).
 
-## Start here: CourtVision Analytics -- the Reading Room
+| Measurement | Leak-free result | Scope and interpretation |
+|---|---:|---|
+| NBA player props | PTS MAE 4.83; REB 1.92; AST 1.39; FG3M 0.89 | Production-model chronological holdout: 20,354 player-game rows, scored through the production inference path. |
+| Win probability | 0.709 accuracy; 0.193 Brier | Three-fold walk-forward measurement. |
+| In-game conditioning | NBA Brier 0.209 to 0.159; MLB 0.241 to 0.126 | Real-corpus out-of-sample conditioning result. It measures forecast quality, not a tradable advantage. |
+| Pregame market comparison | Matches the devigged close within noise | Team-strength markets across six independent corpora; the documented outcome is market efficiency. |
 
-**Live: [neeljshah.github.io/court-vision/analytics](https://neeljshah.github.io/court-vision/analytics)**
+## Credible rigor: the result includes the rejects
 
-An editorial analytics publication for five sports where **every number on the page carries the
-artifact path it was read from**. Nothing is hand-typed, nothing is asserted, and a null result is
-printed as a finding rather than hidden. What is actually there:
+| Check | What the record says | Why it matters |
+|---|---|---|
+| Same-night red-team hardening | 0/200 null ships; echo attackers blocked | A green-looking result is not accepted until adversarial controls fail to reproduce it. |
+| Multiplicity correction | 0/85 candidate signals survive; the complete set is published as the honest graveyard | Discovery volume does not become evidence by repetition. |
+| Self-falsification | Two impossibility claims were falsified by our own adversarial checks | The evidence trail records both counterexamples and retractions rather than preserving a convenient theory. |
 
-- **74 analytics modules and 1,549 entity atlas cards**, rendered as 1,618 static pages -- the
-  module catalog, per-entity cards, explainers, and the forecaster
-  (`scripts/platformkit/analytics_showcase/out/site_manifest.json`: `module_count: 74`,
-  `atlas_card_count: 1549`).
-- **6 novel stats, each gated against prior art before it is allowed a name**
-  (`novel_stats_index.json`): Line Half-Life (`NOVEL_PACKAGING`), Live-Clock Fraction
-  (`INCREMENTAL_NOVEL`), Overreaction Harvest Gap (`NOVEL_SELF_CRITICAL_CROSS`, published as an
-  **honest null**), plus Load-Bearing Index, Market Foresight Premium, and Schedule Fatigue Tax
-  (`INCREMENTAL`). Every card ships its formula, its source artifacts, and `edge_claimed: false`.
-- **Scout, the on-page AI, in three honest tiers.** (1) Scout notes attached to each module;
-  (2) Ask Scout -- a 236-entry precomputed corpus (`webapp/public/data/ask/corpus.json`) that
-  answers from receipts and returns a visible NO_DATA when it has none, rather than improvising;
-  (3) connect your own Claude to the MCP server for the live tools. No LLM sits on the page, and
-  no question leaves your machine.
-- **A self-grading claim ledger.** 259 claim families tracked forward: **121 verified, 99 null,
-  28 not-testable, 7 retracted, 4 provisional** across 287 ledger rows, with 5 families flagged as
-  having flipped verdict (`fwd_claim_scoreboard.json`). The mechanism ledger reads the same way --
-  **130 confirmed / 126 null / 31 not-testable of 287** (`mechanism_ledger_export.json`).
-  **121 verified findings survived 259 tracked claim families**, each carrying its artifact path
-  and its verdict. Publishing the 99 nulls and the 7 retractions alongside them is the credential:
-  a ledger that only ever confirmed would be a marketing document, not a measurement.
+## Demos
 
----
+[Demo evidence](docs/evidence/demo/) is the stable entry point for rendered clips. Rendering is in
+progress; the index is intentionally ready for additional clips as they land and records what is
+currently available.
 
-### The measured win the product is built around: in-game conditioning
+## Evidence navigation
 
-Conditioning on the realized game state is the one calibration result that clears every honesty
-rail: Brier drops sharply and leak-free, out-of-sample, on real corpora -- **NBA 0.209 -> 0.159,
-MLB 0.241 -> 0.126** (`edge_claimed: false`). The end-of-Q3 projection heads add a leak-clean
-**~26% MAE lift over a naive carry-forward baseline**. (The separate endQ3 *win-probability*
-figure is a known Q4 leak and is retracted -- it appears only in
-[docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md), never as a live result.) A live book sees the same
-realized state, so this is forecaster *quality*, not a dollar edge. Full proof and framing:
-[docs/INGAME_PROOF.md](docs/INGAME_PROOF.md).
-
-![NBA in-game win-prob Brier, model vs market by checkpoint (n=1593; market sharper at end_q1 -- losses shown, that is the point)](docs/img/nba_ingame_brier_vs_market.png)
-
----
-
-## The engine underneath
-
-The publication is a read-out of one calibrated prediction engine. It is *wide*: NBA, MLB, club
-soccer, the World Cup, and tennis, every one speaking the same `predict / to_jd / predict_live`
-interface, every market (moneyline, totals, spreads, 1X2, BTTS, correct-score, player props,
-alt-line ladders, same-game-parlays) priced off one calibrated anchor. It is *deep*: under each
-team number sits a per-player projected distribution, a ~190-feature prop stack across 23 feature
-blocks -- each block annotated with the walk-forward result that kept or killed it -- 44
-player/team "atlases", playstyle archetypes, and a possession-level Monte-Carlo simulator whose
-teammate correlation *emerges* at rho ~= -0.10, matching realized, replacing a prior simulator's
-hand-tuned +0.65. And it is
-*honest*: pregame it **matches the Shin-devigged closing line within sampling noise on
-team-strength markets across six independent corpora** (NBA/MLB moneyline, soccer O/U-2.5) --
-the honest ceiling against an efficient market, and it never beats it. On totals and ATP it
-trails, and the gap is freshness (injury / lineup / weather / park / starting pitcher) the
-market sees and a public-data model cannot. In-game, conditioning on the realized state makes
-its own Brier much lower, while the distributional tests against the in-game market stay
-UNDERPOWERED / PROVISIONAL.
-**No dollar edge, ROI, or "beat the close" is ever claimed** -- candidates are tiered by evidence
-and proven only by forward closing-line value (CLV).
-
-Built by **[Neel Shah](https://github.com/neeljshah)** -- solo human architect and director of an
-agentic build pipeline. Engineering judgment, ship/reject decisions, and the validation methodology
-are mine; the commit author on most of the history is the build harness identity (`GSD Executor`),
-which is exactly what an agent-directed pipeline looks like from the outside --
-[docs/BUILT_WITH_CLAUDE.md](docs/BUILT_WITH_CLAUDE.md) is the full account, and the runtime
-prediction path contains no LLM at all.
-
-Open to **ML / data / quant / founding-engineer** roles. US citizen, no sponsorship needed,
-available anywhere in the US or fully remote.
-[Resume (PDF)](docs/assets/NeelShahResume.pdf) -
-[Portfolio](https://neelshahportfolio.netlify.app) -
-[neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
+| Read | Contents |
+|---|---|
+| [Public evidence](docs/PUBLIC_EVIDENCE.md) | Public, reproducible evidence and reviewer guidance. |
+| [Intelligence manifest](docs/INTELLIGENCE.md) | The derived artifacts between tracking and models. |
+| [Job Evidence Packet](docs/JOB_EVIDENCE_PACKET.md) | Audited source of truth, including limitations and retractions. |
+| [Tracking evidence](docs/evidence/tracking/) | Includes the [soccer S4 counterexample](docs/evidence/tracking/soccer_s4_packet_2026-09-01.md) and [baseball retraction](docs/evidence/tracking/baseball_s4_packet_2026-09-01.md): we falsify our own claims. |
+| [Calibration evidence](docs/evidence/calibration/) | Public calibration receipts and their interpretation. |
 
 ---
 
