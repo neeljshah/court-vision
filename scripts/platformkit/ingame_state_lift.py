@@ -61,7 +61,15 @@ def _optional_feature_frame(ticks: List[Dict[str, Any]]) -> Optional[pd.DataFram
     if not isinstance(payload, pd.DataFrame):
         # loaders return a list of tick dicts; the feature builder wants a frame
         payload = pd.DataFrame(list(payload))
-    frame = builder(payload)
+    # the builder guards per-game monotone timestamps; the loader interleaves
+    # games, so apply it per game group and reassemble.
+    if "game_id" in payload.columns:
+        parts = []
+        for _, group in payload.sort_values(["game_id", "ts"]).groupby("game_id", sort=False):
+            parts.append(builder(group.reset_index(drop=True)))
+        frame = pd.concat(parts, ignore_index=True) if parts else payload.iloc[0:0]
+    else:
+        frame = builder(payload.sort_values("ts").reset_index(drop=True))
     return frame if isinstance(frame, pd.DataFrame) else pd.DataFrame(frame)
 
 
