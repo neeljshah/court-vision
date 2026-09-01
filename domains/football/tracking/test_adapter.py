@@ -179,13 +179,29 @@ def test_image_space_rows_are_observed_and_fail_coordinate_contract(monkeypatch,
     assert any(failure.startswith("coordinate_contract:") for failure in report.failures)
 
 
-def test_default_path_preserves_unanchored_observations_as_pixels(monkeypatch) -> None:
+def test_default_path_never_mixes_unanchored_pixels_into_court_output(monkeypatch) -> None:
     monkeypatch.setattr(cv2, "VideoCapture", lambda path: _FakeCapture([_field(), _field()]))
     adapter = FootballAdapter(detector=lambda frame: [[90, 150, 100, 180]])
     rows = adapter.process_video("synthetic.mp4")
-    assert len(rows) == 2
-    assert set(rows["coordinate_space"]) == {"image_px"}
-    assert set(rows["calibration"]) == {"none"}
+    assert rows.empty
+
+
+def test_line_homography_lands_a_held_out_intersection_at_its_named_coordinate() -> None:
+    """A fresh line solve maps a non-fit yard/hash intersection in field feet."""
+    image_to_court = np.array(((0.18, 0.03, -20.0), (0.01, 0.22, -30.0),
+                               (0.0001, 0.0002, 1.0)))
+    court_to_image = np.linalg.inv(image_to_court)
+    court_lines = [np.array((1.0, 0.0, -value)) for value in (105.0, 120.0, 135.0)]
+    court_lines += [np.array((0.0, 1.0, -60.0)), np.array((0.0, 1.0, -100.0))]
+    image_lines = [np.linalg.inv(image_to_court).T @ line for line in court_lines]
+    solved = FootballAdapter.line_homography(court_lines[:2] + court_lines[3:],
+                                             image_lines[:2] + image_lines[3:])
+    assert solved is not None
+    held_court = np.array((135.0, 100.0, 1.0))
+    held_image = court_to_image @ held_court
+    held_image /= held_image[2]
+    projected = cv2.perspectiveTransform(np.float32([[held_image[:2]]]), solved)[0, 0]
+    assert np.linalg.norm(projected - held_court[:2]) < 1e-3
 
 
 def test_a_thin_pre_snap_frame_is_still_emitted_so_coverage_can_fail() -> None:
