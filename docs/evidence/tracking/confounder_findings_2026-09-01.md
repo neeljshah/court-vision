@@ -1,0 +1,72 @@
+# Measurement confounders found 2026-09-01
+
+Three defects were already known to corrupt this program's numbers (carried-over
+calibration inflating coverage 150x, 640x360 ingest, and a corpus that is 50.9%
+not-the-sport). A systematic hunt for MORE of that class found the following.
+Each entry says plainly whether it was measured or inferred.
+
+## CONFIRMED BY MY OWN CHECK -- the harness has no time base
+
+`scripts/platformkit/tracking_harness.py` references `frame_rate` at lines 76,
+89, 91, 96, 105, 131 and 193 -- every one of them RECORDS it into the report.
+No gate ever uses it. `scripts/platformkit/liveness_metrics.py` contains zero
+references to fps at all. Meanwhile `scripts/platformkit/adapter_run.py:65`
+applies a fixed `{"max_frames": 30000, "stride": 3}` to every clip.
+
+Corpus frame rates measured across retained clips: 25/1, 2997/100 (29.97),
+30/1, 30000/1001, and 60000/1001 (59.94).
+
+So the interval between two sampled frames is 0.120s at 25fps and 0.050s at
+59.94fps -- a 2.4x difference -- while `jump_p95` is a per-step distance in feet
+compared against a FIXED threshold (8.0 ft for tennis, 6.0 basketball, 10.0
+baseball). A tracker of identical quality produces jump_p95 values that differ
+by 2.4x purely from the source frame rate, and the gate does not adjust.
+`median_step_distance`, `zero_step_share` and `stationary_track_share` share the
+defect.
+
+Consequence: per-step metrics are not comparable across clips, and are not
+comparable across sports at all. Threshold tuning against them has been tuning
+against a moving time base.
+
+## MEASURED BY THE HUNT, NOT INDEPENDENTLY RE-RUN
+
+- The permanently retained reference clips under `data/videos/reference/`, kept
+  specifically so tracking can be re-measured, contain no baseball: `kbo.mp4` is
+  a studio talk show in 8 of 8 sampled frames and `mlb.mp4` is a webcam podcast
+  in 8 of 8. `npb.mp4` is real game footage but carries a StreamYard watermark.
+  Any baseball before/after measured against those two measured a talk show.
+- Up to 87% of decoded frames in some retained clips are byte-identical repeats
+  (ffmpeg mpdecimate: kbo t=300 kept 117 of ~900). A perfect tracker on
+  87%-duplicate frames produces 87% zero steps, which the liveness check reads
+  as a frozen tracker. The recorded "held-position defect, zero-step 0.8658"
+  should be re-examined against duplicate share before it is treated as a
+  tracker property.
+- American football broadcasts render on-field virtual graphics (first-down
+  line, line of scrimmage, down-and-distance arrows). White text inside those
+  graphics passes the football white-line mask (S<=100, V>=150 inside dilated
+  grass), adding high-confidence false line segments on exactly the pre-snap
+  frames the adapter keeps.
+
+## REFUTED BY MEASUREMENT -- lowering the tennis bright threshold does not help
+
+A comment in `domains/tennis/tracking/adapter.py` records that a far baseline
+"is only ~172 grey and does not survive the 200 bright threshold", which implies
+the mask threshold sits above its signal. Swept on 300 frames of controlled 720p
+footage, counting frames that reach the five-cluster gate and frames whose cross
+ratio is then valid:
+
+    thresh    5clust      xratio_ok   1-2clust
+    120     34 (0.113)    7 (0.023)   52 (0.173)
+    140     23 (0.077)    4 (0.013)   14 (0.047)
+    160     19 (0.063)    4 (0.013)   24 (0.080)
+    172     29 (0.097)    3 (0.010)   33 (0.110)
+    185     31 (0.103)    7 (0.023)   35 (0.117)
+    200     44 (0.147)   10 (0.033)   32 (0.107)
+
+The SHIPPED value of 200 is the best of the six. Lowering the threshold admits
+noise faster than it admits court lines. Threshold tuning is not the tennis fix,
+and the plausible-sounding inference from that comment is wrong.
+
+Even at the best threshold only 3.3% of frames yield a valid cross ratio, which
+points back at cluster SELECTION: the five clusters found are usually not the
+five court lines.
