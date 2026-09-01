@@ -13,7 +13,6 @@ from typing import Protocol
 
 import numpy as np
 
-_INPUT_SIZE = 640
 _STRIDES = (8, 16, 32)
 _COCO_PERSON = 0
 
@@ -28,6 +27,27 @@ class Detection:
     cls_name: str
 
 
+@dataclass(frozen=True)
+class DetectorProfile:
+    """Measured inference settings for a sport's broadcast framing."""
+
+    sport: str
+    imgsz: int
+    conf: float
+    class_ids: tuple[int, ...] = (_COCO_PERSON,)
+
+
+# Values are recorded with their comparison corpus in the proposed cutover note.
+# YOLOX-S is exported at a fixed 640 by 640 input, so profiles may tune the
+# confidence threshold but not image size without changing the model artifact.
+SPORT_PROFILES: dict[str, DetectorProfile] = {
+    "baseball": DetectorProfile("baseball", 640, 0.25),
+    "football": DetectorProfile("football", 640, 0.20),
+    "soccer": DetectorProfile("soccer", 640, 0.15),
+    "tennis": DetectorProfile("tennis", 640, 0.20),
+}
+
+
 class DetectorBackend(Protocol):
     license: str
 
@@ -35,7 +55,7 @@ class DetectorBackend(Protocol):
         """Return detections for one BGR image."""
 
 
-def _grids_and_strides(input_size: int = _INPUT_SIZE) -> tuple[np.ndarray, np.ndarray]:
+def _grids_and_strides(input_size: int) -> tuple[np.ndarray, np.ndarray]:
     grids, strides = [], []
     for stride in _STRIDES:
         height = width = input_size // stride
@@ -45,14 +65,14 @@ def _grids_and_strides(input_size: int = _INPUT_SIZE) -> tuple[np.ndarray, np.nd
     return np.concatenate(grids).astype(np.float32), np.concatenate(strides)
 
 
-def _decode_yolox(predictions: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def _decode_yolox(predictions: np.ndarray, input_size: int = 640) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Decode raw YOLOX output into xyxy boxes, confidence, and COCO class ids."""
     output = np.asarray(predictions, dtype=np.float32)
     if output.ndim == 3:
         output = output[0]
     if output.ndim != 2 or output.shape[1] < 6:
         raise ValueError("YOLOX output must have shape (anchors, 5 + classes)")
-    grids, strides = _grids_and_strides()
+    grids, strides = _grids_and_strides(input_size)
     if len(output) != len(grids):
         raise ValueError(f"expected {len(grids)} YOLOX anchors, got {len(output)}")
     center = (output[:, :2] + grids) * strides
@@ -118,43 +138,90 @@ class YoloxOnnxBackend:
 
     license = "Apache-2.0"
 
-    def __init__(self, model_path: str | Path) -> None:
+    def __init__(
+        self,
+        model_path: str | Path,
+        imgsz: int = 640,
+        conf: float = 0.25,
+        class_ids: tuple[int, ...] = (_COCO_PERSON,),
+    ) -> None:
         if model_path is None:
             raise ValueError("YoloxOnnxBackend requires model_path to an ONNX model")
+        if imgsz <= 0 or imgsz % max(_STRIDES):
+            raise ValueError("imgsz must be a positive multiple of 32")
+        if not 0.0 <= conf <= 1.0:
+            raise ValueError("conf must be in [0, 1]")
+        if not class_ids:
+            raise ValueError("class_ids must not be empty")
         try:
             import onnxruntime as ort
         except ImportError as error:
             raise ImportError("YoloxOnnxBackend needs onnxruntime; install onnxruntime to use YOLOX ONNX.") from error
-        self._session = ort.InferenceSession(str(model_path), providers=["CPUExecutionProvider"])
+        available = ort.get_available_providers()
+        providers = ["CUDAExecutionProvider", "CPUExecutionProvider"] if "CUDAExecutionProvider" in available else ["CPUExecutionProvider"]
+        self._session = ort.InferenceSession(str(model_path), providers=providers)
         self._input_name = self._session.get_inputs()[0].name
+        self._imgsz = imgsz
+        self._conf = conf
+        self._class_ids = np.asarray(class_ids, dtype=np.int64)
 
     @staticmethod
-    def _preprocess(frame_bgr: np.ndarray) -> tuple[np.ndarray, float]:
+    def _preprocess(frame_bgr: np.ndarray, imgsz: int) -> tuple[np.ndarray, float]:
         try:
             import cv2
         except ImportError as error:
             raise ImportError("YoloxOnnxBackend needs opencv-python for YOLOX letterbox resizing.") from error
         height, width = frame_bgr.shape[:2]
-        scale = min(_INPUT_SIZE / height, _INPUT_SIZE / width)
+        scale = min(imgsz / height, imgsz / width)
         resized = cv2.resize(frame_bgr, (round(width * scale), round(height * scale)), interpolation=cv2.INTER_LINEAR)
-        canvas = np.full((_INPUT_SIZE, _INPUT_SIZE, 3), 114, dtype=np.uint8)
+        canvas = np.full((imgsz, imgsz, 3), 114, dtype=np.uint8)
         canvas[: resized.shape[0], : resized.shape[1]] = resized
         return np.ascontiguousarray(canvas.transpose(2, 0, 1)[None], dtype=np.float32), scale
 
     def detect(self, frame_bgr: np.ndarray) -> list[Detection]:
-        tensor, scale = self._preprocess(frame_bgr)
+        tensor, scale = self._preprocess(frame_bgr, self._imgsz)
         output = self._session.run(None, {self._input_name: tensor})[0]
-        boxes, scores, classes = _decode_yolox(output)
-        person = (classes == _COCO_PERSON) & (scores >= 0.25)
-        boxes, scores = boxes[person] / scale, scores[person]
+        boxes, scores, classes = _decode_yolox(output, self._imgsz)
+        selected = np.isin(classes, self._class_ids) & (scores >= self._conf)
+        boxes, scores = boxes[selected] / scale, scores[selected]
         return [Detection(*boxes[i], float(scores[i]), "person") for i in _nms(boxes, scores)]
 
 
-def get_detector(name: str | None = None, model_path: str | Path | None = None) -> DetectorBackend:
+def detector_profile(sport: str) -> DetectorProfile:
+    """Return the named sport profile, rejecting accidental generic fallback."""
+    try:
+        return SPORT_PROFILES[sport.lower()]
+    except KeyError as error:
+        raise ValueError(f"unknown detector sport {sport!r}; expected one of {sorted(SPORT_PROFILES)}") from error
+
+
+def get_detector(
+    name: str | None = None,
+    model_path: str | Path | None = None,
+    sport: str | None = None,
+) -> DetectorBackend:
     """Build the configured detector; defaults to ``CV_DETECTOR=ultralytics``."""
     selected = (name or os.environ.get("CV_DETECTOR", "ultralytics")).lower()
     if selected == "ultralytics":
         return UltralyticsYoloBackend(model_path)
     if selected in {"yolox", "yolox_onnx"}:
-        return YoloxOnnxBackend(model_path)
+        profile_name = sport or os.environ.get("CV_DETECTOR_SPORT")
+        if not profile_name:
+            raise ValueError("YOLOX requires a sport profile via sport or CV_DETECTOR_SPORT")
+        profile = detector_profile(profile_name)
+        return YoloxOnnxBackend(model_path, profile.imgsz, profile.conf, profile.class_ids)
     raise ValueError(f"unknown detector backend {selected!r}; expected 'ultralytics' or 'yolox'")
+
+
+def get_box_detector(
+    name: str | None = None,
+    model_path: str | Path | None = None,
+    sport: str | None = None,
+):
+    """Return adapter-compatible ``frame -> [xyxy, confidence]`` detection rows."""
+    backend = get_detector(name, model_path, sport)
+
+    def detect(frame_bgr: np.ndarray) -> list[list[float]]:
+        return [[item.x1, item.y1, item.x2, item.y2, item.conf] for item in backend.detect(frame_bgr)]
+
+    return detect

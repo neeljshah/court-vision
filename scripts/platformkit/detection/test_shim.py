@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from scripts.platformkit.detection.shim import _decode_yolox, _nms, get_detector
+from scripts.platformkit.detection.shim import _decode_yolox, _nms, detector_profile, get_detector
 
 
 def test_yolox_grid_decode_known_cell() -> None:
@@ -22,3 +22,17 @@ def test_nms_removes_overlapping_boxes() -> None:
 def test_factory_rejects_unknown_backend() -> None:
     with pytest.raises(ValueError, match="unknown detector backend"):
         get_detector("not-a-detector")
+
+
+def test_profiles_are_named_and_do_not_silently_fallback() -> None:
+    profile = detector_profile("soccer")
+    assert profile.imgsz == 640
+    assert profile.conf == pytest.approx(0.15)
+    assert profile.class_ids == (0,)
+    with pytest.raises(ValueError, match="unknown detector sport"):
+        detector_profile("basketball")
+
+
+def test_yolox_requires_a_named_sport_profile() -> None:
+    with pytest.raises(ValueError, match="requires a sport profile"):
+        get_detector("yolox", "model.onnx")
