@@ -48,26 +48,22 @@ Per-file test:
 from __future__ import annotations
 
 import logging
-import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 from scripts.platformkit.claims import condition_tagger as _tagger
 from scripts.platformkit.execution import ingame_exec_gate as _exec_gate
-from scripts.platformkit.execution import sizing as _sizing
 from scripts.platformkit.execution.paper_maker import PaperMakerAdapter
-from scripts.platformkit.execution.thresholds import ORDER_MODE
 from scripts.platformkit.execution import writer_identity as _writer
 from scripts.platformkit.ingame import ingame_clv_per_segment as _clvseg
 from scripts.platformkit.ingame import latency_scoreboard as _latsb
 from scripts.platformkit.ingame import ingame_segment_trust_multi as _trust_multi
-from scripts.platformkit.ingame import inplay_breaker as _breaker
 from scripts.platformkit.ingame import inplay_edge_signal as _sig
 from scripts.platformkit.ingame import live_grade as _lg
-from scripts.platformkit.ingame import paper_ingame as _paper
-from scripts.platformkit.ingame import quote_freshness as _freshness
-from scripts.platformkit.pm_trading import policy as _policy
+from scripts.platformkit.ingame.inplay_daytrader_gates import MARKET, apply_late_gates, grade
+from scripts.platformkit.ingame.inplay_daytrader_maker import (
+    enter_new_position, handle_maker_event)
 
 logger = logging.getLogger(__name__)
 
@@ -81,37 +77,10 @@ logger = logging.getLogger(__name__)
 LiveTick = Dict[str, Any]
 StateFn = Callable[[LiveTick], Optional[Dict[str, Any]]]
 
-MARKET = "win_home"  # one anchor moneyline market per game (HOME side)
-
-# PAPER-DECISION venue allowlist: Kalshi-only for now. Gates ENTER/RE-ENTER ONLY --
-# capture_pair_once's grade series stays venue-agnostic (unaffected). Override via env
-# CV_PAPER_VENUES (comma-separated) or on_tick(paper_venues=..., tests only). A tick
-# with no "venue" field defaults to "kalshi" (today's only wired price source; see
-# inplay_capture_loop._default_inplay_fetch), not to a silent block.
-DEFAULT_PAPER_VENUES = ("kalshi",)
+# MARKET / DEFAULT_PAPER_VENUES / the venue-allowlist + late suppression-gate chain now
+# live in inplay_daytrader_gates.py (split out under the <=300 LOC rail; pure move, zero
+# behavior change -- see that module's docstring).
 _PAPER_MAKER = PaperMakerAdapter()
-
-
-def _paper_venue_allowlist() -> frozenset:
-    """DEFAULT_PAPER_VENUES, overridable via CV_PAPER_VENUES (comma-separated). Never raises."""
-    raw = os.environ.get("CV_PAPER_VENUES", "")
-    if not raw.strip():
-        return frozenset(v.lower() for v in DEFAULT_PAPER_VENUES)
-    return frozenset(v.strip().lower() for v in raw.split(",") if v.strip())
-
-
-def _venue_allowed(tick: LiveTick, paper_venues: Optional[Any]) -> bool:
-    """True iff this tick's venue (default 'kalshi' -- see DEFAULT_PAPER_VENUES docstring)
-    is in the effective allowlist (*paper_venues* override, else CV_PAPER_VENUES env,
-    else DEFAULT_PAPER_VENUES)."""
-    venue = str(tick.get("venue", "kalshi")).strip().lower()
-    allowed = (frozenset(str(v).strip().lower() for v in paper_venues)
-              if paper_venues is not None else _paper_venue_allowlist())
-    return venue in allowed
-
-
-def _now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def _state_summary_fn(tick: LiveTick) -> Dict[str, Any]:
@@ -248,52 +217,10 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
 
         # A submitted maker quote is an honest paper fill only when THIS later
         # captured tick crossed it. The paper ledger is never touched at submit.
+        # (ledger-row building + maker lifecycle branch -> inplay_daytrader_maker.py)
         if maker_event is not None:
-            if maker_event["status"] == "filled":
-                # ONE-WRITER (execution.writer_identity): only the sanctioned pod
-                # paper node may append the SHARED default ledger. An explicitly
-                # injected ledger_path (tests/scratch) is never gated.
-                if ledger_path is None and not _writer.default_ledger_write_allowed():
-                    decision.update({"action": "no_bet", "reason": "not_ledger_writer",
-                                     "position": None})
-                    return decision
-                quote, order = maker_event["quote"], maker_event["order"]
-                audit = {**(position.get("exec_gate") or {}),
-                         "execution_mode": "maker_only",
-                         "clv_series": "paper_ingame_maker",
-                         "maker_fee_units": quote["maker_fee_units"],
-                         "order_lifecycle": list(order.history),
-                         "order_state": order.state.value,
-                         "order_id": order.order_id}
-                fill_prob = order.avg_fill_price_cents / 100.0
-                placement = _paper.record_ingame_bet(
-                    sport, game_id, MARKET, position["side"], 1.0 / fill_prob,
-                    model_prob=position["model_prob"], stake=position["stake"],
-                    taken_book="paper_ingame_maker", path=ledger_path,
-                    signal_ts=tick.get("signal_ts"), exec_gate=audit,
-                    exec_depth=position.get("exec_depth"))
-                decision.update({"action": "bet", "side": position["side"],
-                                 "units": quote["units"], "placement": placement,
-                                 "reason": "maker_fill_cross",
-                                 "position": {"status": "open", "side": position["side"],
-                                              "tier": position["tier"],
-                                              "model_prob": position["model_prob"],
-                                              "edge_key": placement.get("edge_key"),
-                                              "opened_ts": _now_iso()}})
-                return decision
-            if maker_event["status"] == "expired":
-                decision.update({"action": "no_bet", "reason": "maker_ttl_expired",
-                                 "position": None})
-                return decision
-            if maker_event["status"] == "cancelled_suspended":
-                # kickoff/void (paper_maker._market_suspended): the resting order
-                # was cancelled, never filled retroactively. Ledger untouched.
-                decision.update({"action": "no_bet", "reason": "maker_cancelled_suspended",
-                                 "position": None})
-                return decision
-            decision.update({"action": "resting",
-                             "reason": "maker_" + str(maker_event.get("reason", "resting"))})
-            return decision
+            return handle_maker_event(maker_event, decision, position, tick,
+                                       sport, game_id, MARKET, ledger_path)
 
         # 2b. SUPPRESSION (queue item 8a, conservative withhold -- mechanism only, currently
         # INERT: _SANCTIONED_ADVERSE_SEGMENTS is empty pending human authorization, see that
@@ -308,33 +235,11 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
             decision["reason"] = "segment_adverse_suppressed"
             return decision  # no_bet: captured above already ran; suppress the marginal entry
 
-        # 2b2. EVENT-REACTIVE ELIGIBILITY: an entry the caller declares event-reactive
-        # (tick["event_reactive"] truthy) is allowed only where the MEASURED venue
-        # latency supports it (latency_scoreboard: lag_p90<=5s AND src_ts
-        # coverage>=95% -- MLB yes, broadcast-tier NBA/soccer/tennis no). FAIL-CLOSED:
-        # an unmeasured/slow feed never supports it. Suppress-only, never adds a bet.
-        if (ev["action"] == "bet" and bool(tick.get("event_reactive"))
-                and not _latsb.event_reactive_supported(sport)):
-            decision["reason"] = "event_reactive_not_supported"
+        # 2b2-2d. event-reactive / venue-allowlist / median-CLV-breaker suppression chain
+        # -> inplay_daytrader_gates.apply_late_gates (suppress-only, fail-open; see that
+        # function's docstring for the full per-gate rationale).
+        if apply_late_gates(ev, tick, sport, nowdt, paper_venues, ledger_path, decision):
             return decision
-
-        # 2c. PAPER VENUE ALLOWLIST (binding: Kalshi-only paper decisions for now -- see
-        # DEFAULT_PAPER_VENUES). Capture above already ran regardless -- this only ever
-        # turns a would-be "bet" into "no_bet"; it never manufactures a bet.
-        if ev["action"] == "bet" and not _venue_allowed(tick, paper_venues):
-            decision["reason"] = "venue_not_allowed:%s" % str(tick.get("venue", "kalshi")).strip().lower()
-            return decision
-
-        # 2d. MEDIAN-CLV BREAKER (suppress-only, fail-open): a negative rolling
-        # median CLV on graded paper_ingame rows CAPS placements per day
-        # (execution.circuit_breaker, pre-registered 2026-07-15). Capture above
-        # already ran; this can only turn a would-be bet into no_bet.
-        if ev["action"] == "bet":
-            br = _breaker.allow(MARKET, nowdt, ledger_path)
-            decision["breaker"] = {k: br.get(k) for k in ("state", "placed_today", "reason")}
-            if not br.get("allowed", True):
-                decision["reason"] = "breaker_capped"
-                return decision
 
         # 3. enter / hold / exit.
         if ev["action"] != "bet":
@@ -354,57 +259,10 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
                 return decision
             decision["reason"] = "edge_flipped_reenter"  # observable: a flip-side re-entry
 
-        # ENTER: size (UNITS only) then paper-place (idempotent, executed=False).
-        # Bet the side the (now two-sided) signal chose -- may be AWAY, not just home --
-        # using THAT side's model prob + obtainable decimal. The grade pair captured above
-        # stays home-aligned; only the placed bet's side/odds/prob reflect the chosen leg.
-        bet_side = ev.get("side", _sig.SIDE)
-        bet_mp = ev.get("bet_model_prob", mp)
-        dec_odds = ev.get("obtainable_decimal")
-
-        # Expected-CLV + drift + max-spread placement gate (execution.ingame_exec_gate):
-        # SUPPRESS-ONLY, never loosens the edge/liquidity/freshness gates already passed
-        # above. Also builds the placement-time depth stamp (LEVER 1) threaded below.
-        gr = _exec_gate.evaluate_placement(ev, tick, ticker=tick.get("ticker"), now=nowdt)
-        decision["exec_gate"] = gr["exec_gate"]
-        if gr["suppress"]:
-            decision["reason"] = gr["reason"]
-            logger.info("on_tick(%s/%s) suppressed reason=%s exec_gate=%s",
-                        sport, game_id, gr["reason"], gr["exec_gate"])
-            return decision
-
-        units = _policy.stake_units(ev=ev["ev"], model_prob=bet_mp,
-                                    taken_decimal=dec_odds, tier=ev["tier"],
-                                    clv_is_proxy=ev["clv_is_proxy"])
-        # LEVER 2 (tier-based sizing, team markets only, pre-registered 2026-07-15):
-        # this channel trades only the anchor moneyline market (MARKET). CV_TIER_SIZING
-        # off preserves the legacy flat-0.0 stake exactly (no behavior change if disabled).
-        stake = (_sizing.stake_for(ev["tier"], "moneyline")
-                if _sizing.tier_sizing_enabled() else 0.0)
-        order_time = nowdt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        state_age = _freshness.state_age_sec(order_time, [{"src_ts": tick.get("src_ts")}])
-        stale_state = (state_age is not None and
-                       state_age > _freshness.state_age_ceiling_sec(sport))
-        if stale_state:
-            decision.update({"action": "no_bet", "reason": "stale_state",
-                             "state_age_sec": state_age, "position": None})
-            return decision
-        if ORDER_MODE != "maker_only":
-            decision["reason"] = "unsupported_order_mode"
-            return decision
-        quote = maker.quote(sport, game_id, bet_side, bet_mp, units=units,
-                            tick=tick, now=nowdt)
-        if quote.get("status") != "resting":
-            decision["reason"] = quote.get("reason", "maker_quote_rejected")
-            return decision
-        decision.update({
-            "action": "resting", "side": bet_side, "units": units, "placement": quote,
-            "reason": "maker_quote_submitted",
-            "position": {"status": "resting", "side": bet_side, "tier": ev["tier"],
-                         "model_prob": bet_mp, "stake": stake, "exec_gate": gr["exec_gate"],
-                         "exec_depth": gr["exec_depth"], "maker_quote": quote,
-                         "opened_ts": _now_iso()},
-        })
+        # ENTER: size (UNITS only) then paper-place (idempotent, executed=False) ->
+        # inplay_daytrader_maker.enter_new_position (exec-gate + sizing + freshness +
+        # maker-quote submission, verbatim logic, split out under the LOC rail).
+        return enter_new_position(ev, tick, sport, game_id, nowdt, maker, mp, decision)
     except Exception as exc:  # noqa: BLE001 -- one bad tick must never sink the loop
         logger.warning("on_tick(%s/%s) failed: %s", sport, game_id, exc)
         decision["reason"] = "error: %s" % type(exc).__name__
@@ -436,20 +294,6 @@ def run_series(sport: str, game_id: str, ticks: List[LiveTick], *,
         "position": pos,
         "units": "probability", "edge_claimed": False,
     }
-
-
-def grade(sport: Optional[str] = None, *,
-          grade_dir: Optional[Path] = None,
-          min_games: int = 5) -> Dict[str, Any]:
-    """Grade the captured day-trader series via the EXISTING clustered aggregate grader.
-
-    Pure pass-through to inplay_aggregate_grade.aggregate_grade -- the leak-free,
-    two-arm, game-clustered CLV-vs-true-close pool (BEAT needs n>=5 games + >=40 ticks +
-    BOTH arms). A single game/tick -> INSUFFICIENT_DATA. UNITS / probability only; never a
-    $ figure; edge_claimed=False. Imported lazily so this module's import is network-free.
-    """
-    from scripts.platformkit.ingame import inplay_aggregate_grade as _agg
-    return _agg.aggregate_grade(grade_dir, sport=sport, min_games=min_games)
 
 
 __all__ = ["MARKET", "on_tick", "run_series", "grade"]
