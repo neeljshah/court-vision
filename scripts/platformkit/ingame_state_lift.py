@@ -45,32 +45,22 @@ def _load_enriched_ticks(store: Path) -> List[Dict[str, Any]]:
     return ticks
 
 
-def _optional_feature_frame(ticks: List[Dict[str, Any]]) -> Optional[pd.DataFrame]:
-    """Call the independently delivered state-feature adapter when available."""
-    try:
-        module = importlib.import_module("scripts.platformkit.mlb_state_features")
-    except ImportError:
+def _optional_feature_frame(ticks: Any) -> Optional[pd.DataFrame]:
+    """Return the prebuilt in-game state features, joined to tick labels.
+
+    The tick loader drops ``state_summary``, so features cannot be rebuilt from
+    its output. ``mlb_state_features`` writes a parquet that already carries the
+    parsed state columns alongside game/timestamp/model_prob/market_prob/outcome
+    -- read that artifact when present (built pod-side by the retrain loop).
+    """
+    root = os.environ.get("NBA_DATA_ROOT", "data")
+    path = Path(root) / "ab_reports" / "mlb_state_features.parquet"
+    if not path.is_file():
         return None
-    builder = next((getattr(module, name, None) for name in
-                    ("build_feature_frame", "state_feature_frame", "build_features",
-                     "game_state_features")
-                    if callable(getattr(module, name, None))), None)
-    if builder is None:
+    frame = pd.read_parquet(path)
+    if frame.empty:
         return None
-    payload = ticks
-    if not isinstance(payload, pd.DataFrame):
-        # loaders return a list of tick dicts; the feature builder wants a frame
-        payload = pd.DataFrame(list(payload))
-    # the builder guards per-game monotone timestamps; the loader interleaves
-    # games, so apply it per game group and reassemble.
-    if "game_id" in payload.columns:
-        parts = []
-        for _, group in payload.sort_values(["game_id", "ts"]).groupby("game_id", sort=False):
-            parts.append(builder(group.reset_index(drop=True)))
-        frame = pd.concat(parts, ignore_index=True) if parts else payload.iloc[0:0]
-    else:
-        frame = builder(payload.sort_values("ts").reset_index(drop=True))
-    return frame if isinstance(frame, pd.DataFrame) else pd.DataFrame(frame)
+    return frame
 
 
 def _feature_matrix(ticks: List[Dict[str, Any]], features: pd.DataFrame) -> Tuple[pd.DataFrame, List[str]]:
