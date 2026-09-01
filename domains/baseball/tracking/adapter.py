@@ -45,6 +45,7 @@ from domains.baseball.tracking.field_mask import (
 )
 from domains.baseball.tracking.scale_anchor import anchor_calibrations
 from domains.baseball.tracking.segmenter import detect_cut, small_gray
+from scripts.platformkit.coordinate_provenance import IMAGE_SCHEMA, write_tracking_csv
 
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
 MOUND_TO_PLATE_FEET = 60.5
@@ -81,11 +82,7 @@ class PitchGeometry:
 
 def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
     """Write rows in the normalized platform tracking schema."""
-    missing = [column for column in SCHEMA if column not in rows.columns]
-    if missing:
-        raise ValueError("Tracking rows missing columns: %s" % ", ".join(missing))
-    Path(path).parent.mkdir(parents=True, exist_ok=True)
-    rows.loc[:, SCHEMA].to_csv(path, index=False)
+    write_tracking_csv(rows, path, SCHEMA)
 
 
 class BaseballAdapter:
@@ -94,6 +91,8 @@ class BaseballAdapter:
     def __init__(self, detector: Optional[Detector] = None) -> None:
         self.detector = detector if detector is not None else self._load_yolo_detector()
         self._geometry: Optional[PitchGeometry] = None
+        self._centroids: dict[int, np.ndarray] = {}
+        self._next_track_id = 1
         self.last_output = pd.DataFrame(columns=SCHEMA)
 
     @staticmethod
@@ -183,11 +182,29 @@ class BaseballAdapter:
                 seen += 1
         return seen
 
+    def detect_players_image_space(self, frame: np.ndarray) -> list[tuple[int, np.ndarray]]:
+        """Return observed person bottom-centres as source pixels, unprojected."""
+        result, unused = [], set(self._centroids)
+        for raw in self.detector(frame):
+            x1, y1, x2, y2 = map(float, raw[:4])
+            if x2 <= x1 or y2 <= y1:
+                continue
+            center = np.array(((x1 + x2) / 2, (y1 + y2) / 2))
+            choices = [(np.linalg.norm(center - self._centroids[item]), item) for item in unused]
+            track_id = min(choices)[1] if choices else self._next_track_id
+            if not choices:
+                self._next_track_id += 1
+            unused.discard(track_id)
+            self._centroids[track_id] = center
+            result.append((track_id, np.array((center[0], y2))))
+        return result
+
     def process_video(
         self, path: Union[str, Path], max_frames: Optional[int] = None, stride: int = 1,
         compute_command: bool = False, player_only: bool = False,
+        image_space: bool = False,
     ) -> Union[pd.DataFrame, tuple[pd.DataFrame, dict[str, object]]]:
-        """Detect pitch views and return an EMPTY row table; see module docstring.
+        """Detect pitch views and return calibrated or explicitly pixel-space rows.
 
         Ball tracking fails closed because there is no ball detector.  Player
         coordinates now fail closed one rung up: there is no validated
@@ -206,6 +223,7 @@ class BaseballAdapter:
         capture = cv2.VideoCapture(str(path))
         if not capture.isOpened():
             raise FileNotFoundError("Could not open video: %s" % path)
+        rows: list[dict[str, object]] = []
         calibrations: list[dict[str, object]] = []
         command_events: list[dict[str, object]] = []
         pitch_frames: list[np.ndarray] = []
@@ -236,6 +254,8 @@ class BaseballAdapter:
                     current_gray = small_gray(frame)
                     cut = previous_gray is not None and detect_cut(previous_gray, current_gray)
                     previous_gray = current_gray
+                    if cut:
+                        self._centroids.clear()
                     self._geometry = None if cut else self.detect_pitch_geometry(frame)
                     if self._geometry is not None:
                         if not in_pitch_view:
@@ -251,7 +271,13 @@ class BaseballAdapter:
                         if compute_command:
                             pitch_frames.append(frame.copy())
                             pitch_scales.append(self._geometry.pixels_per_foot)
-                        players_seen += self.count_players(frame, self._geometry)
+                        players = self.detect_players_image_space(frame) if image_space else []
+                        players_seen += len(players) if image_space else self.count_players(frame, self._geometry)
+                        for track_id, point in players:
+                            rows.append({"frame": source_frame, "track_id": track_id,
+                                         "cls": "player", "x": float(point[0]),
+                                         "y": float(point[1]), "coordinate_space": "image_px",
+                                         "observation": "observed", "calibration": "none"})
                     else:
                         if in_pitch_view:
                             close_pitch_segment()
@@ -265,7 +291,7 @@ class BaseballAdapter:
         if in_pitch_view:
             close_pitch_segment()
 
-        self.last_output = pd.DataFrame(columns=SCHEMA)
+        self.last_output = pd.DataFrame(rows, columns=IMAGE_SCHEMA if image_space else SCHEMA)
         if not compute_command:
             return self.last_output
         anchored = anchor_calibrations(calibrations, calibrations)[0] if calibrations else []

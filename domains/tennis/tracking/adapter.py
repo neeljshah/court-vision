@@ -6,27 +6,21 @@ import cv2
 import numpy as np
 import pandas as pd
 from scripts.platformkit.calibration.keypoint_calib import TemporalCalibrator
+from domains.tennis.tracking.geometry import TennisGeometryMixin
 from domains.tennis.tracking.ball import MotionDiffDetector, ball_rows, rectify_track
 from domains.tennis.tracking.rally_features import match_aggregates
 from domains.tennis.tracking.segmenter import detect_cut, small_gray
 SCHEMA = ("frame", "track_id", "cls", "x", "y", "calibration_provenance")
-# Corner order is (near-left, near-right, far-left, far-right), so x is the 78-foot
-# length (0 = near baseline) and y the 36-foot width. Putting the 36-foot-wide baseline
-# on the 78-unit axis squashes length into 36. The landmark names below must agree.
+# Court x is the 78-foot length; y is the 36-foot width.
 COURT_FEET = np.float32(((0, 0), (0, 36), (78, 0), (78, 36))); Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
-# Pre-fix this read (-5..83, -5..41) in the swapped plane's mixed units; in true feet
-# that is the region below (~11 ft behind each baseline, ~2.3 ft outside each sideline).
-# Left at the same PHYSICAL region on purpose: widening it to ITF run-off was measured
-# and rejected -- it buys 645 more two-player frames whose 0.1 s steps imply 80 mph.
+# Same physical acceptance region as before the corrected court-axis mapping.
 ACCEPT_FEET = (-10.83, 88.83, -2.31, 38.31)
 def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
     """Write player tracking rows in the normalized platform schema."""
     missing = [column for column in SCHEMA if column not in rows.columns]
-    if missing:
-        raise ValueError("Tracking rows missing columns: %s" % ", ".join(missing))
-    Path(path).parent.mkdir(parents=True, exist_ok=True)
-    rows.loc[:, SCHEMA].to_csv(path, index=False)
-class TennisAdapter:
+    if missing: raise ValueError("Tracking rows missing columns: %s" % ", ".join(missing))
+    Path(path).parent.mkdir(parents=True, exist_ok=True); rows.loc[:, SCHEMA].to_csv(path, index=False)
+class TennisAdapter(TennisGeometryMixin):
     """Track two tennis players from a fixed behind-baseline broadcast feed."""
     def __init__(
         self,
@@ -148,20 +142,7 @@ class TennisAdapter:
         vertical_clusters = self._cluster_lines(vertical, False, (height, width))
         if len(horizontal_clusters) < 2 or len(vertical_clusters) < 2:
             return None
-        # MEASURED DEFECT (tennis.mp4, US Open broadcast): horizontal_clusters[0] is the
-        # topmost bright horizontal line ANYWHERE in the frame, which here is a stand
-        # railing at image row 15.7, not the far doubles baseline at row 87.4.  The
-        # 78-foot length axis is therefore fitted against the wrong line and comes out
-        # compressed to 0.567 of true feet (n=480 person boxes); a player at the far
-        # baseline reads x = 40.4 instead of 78, and 38 of 208 such boxes fall on the
-        # near side of the 39-foot net split in detect_players below.  The width axis is
-        # unaffected (median error 0.68 ft).  Receipt + reference quad:
-        # scripts/platformkit/tennis_metric_probe.py.  Not fixed here: the true far
-        # baseline is absent from this frame's bright-line clusters entirely, so no
-        # choice among them is correct -- three candidate selectors were measured and
-        # none discriminated.  Fixing it needs a real court-line model (the tennis
-        # landmarks in calibration/keypoint_calib.py are the intended home), not a
-        # different index.  Until then treat tennis x as ordinal, not feet.
+        # Known limitation: the far baseline can be absent from bright-line clusters; treat tennis x as ordinal, not feet.
         far = self._fit_line(horizontal_clusters[0])
         near = self._fit_line(horizontal_clusters[-1])
         left = self._fit_line(vertical_clusters[0])
@@ -187,10 +168,7 @@ class TennisAdapter:
         return homography
     @staticmethod
     def _project(point: tuple[float, float], homography: np.ndarray) -> np.ndarray:
-        projected = cv2.perspectiveTransform(
-            np.float32([[point]]), homography
-        )
-        return projected[0, 0]
+        return cv2.perspectiveTransform(np.float32([[point]]), homography)[0, 0]
     def _in_tolerance(self, homography: np.ndarray, shape: tuple[int, int]) -> bool:
         if self._homography is None:
             return True

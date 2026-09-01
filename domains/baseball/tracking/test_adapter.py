@@ -11,12 +11,14 @@ from __future__ import annotations
 
 import cv2
 import numpy as np
+import pandas as pd
 import pytest
 
 from domains.baseball.tracking.adapter import (
     BallTrackingUnavailableError, BaseballAdapter, PitchGeometry,
 )
 from domains.baseball.tracking.field_mask import MOUND_DIAMETER_FEET
+from scripts.platformkit.tracking_harness import evaluate
 
 GRASS = (45, 130, 45)
 DIRT = (70, 76, 120)          # measured park dirt: BGR ~ (75, 76, 120), hue 1
@@ -126,6 +128,26 @@ def test_process_video_emits_no_coordinate_rows(monkeypatch) -> None:
     # The refusal is a calibration limit, not a detection failure.
     assert metadata["pitch_view_frames"] == 5
     assert metadata["players_detected_but_unplaced"] > 0
+
+
+def test_image_space_rows_are_observed_and_fail_coordinate_contract(monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr(cv2, "VideoCapture",
+                        lambda path: _FakeCapture([_pitch_view() for _ in range(5)]))
+    adapter = BaseballAdapter(detector=lambda frame: [[600, 500, 660, 604]])
+
+    rows = adapter.process_video("synthetic.mp4", image_space=True, player_only=True)
+    output = tmp_path / "image_rows.csv"
+    adapter.write_csv(output, rows)
+    saved = pd.read_csv(output)
+    report = evaluate(saved, "baseball")
+
+    assert len(rows) == 5
+    assert list(rows.columns) == ["frame", "track_id", "cls", "x", "y",
+                                  "coordinate_space", "observation", "calibration"]
+    assert set(rows["coordinate_space"]) == {"image_px"}
+    assert list(saved.columns) == list(rows.columns)
+    assert not report.passed
+    assert any(failure.startswith("coordinate_contract:") for failure in report.failures)
 
 
 def test_process_video_fails_closed_when_ball_tracking_is_requested() -> None:

@@ -8,6 +8,10 @@ def test_soccer_is_asked_for_image_space():
     assert "soccer" in IMAGE_SPACE
 
 
+def test_uncalibratable_broadcast_sports_are_asked_for_image_space():
+    assert {"baseball", "football"} <= IMAGE_SPACE
+
+
 def test_image_space_sports_are_known_adapters():
     assert IMAGE_SPACE <= set(ADAPTERS) | PLAYER_ONLY
 

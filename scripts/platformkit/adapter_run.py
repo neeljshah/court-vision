@@ -40,10 +40,8 @@ PLAYER_ONLY = {"baseball", "soccer"}
 #   soccer: 0 accepted homographies over 200 reference frames; the 131-of-132
 #           "accepted" frames it used to report were a stale cached homography.
 # Add a sport here only once its adapter supports image_space=True AND its
-# calibration failure is MEASURED, not assumed. football and baseball qualify on
-# evidence (0/200 validated fits; infield geometrically out of frame) but their
-# adapters do not implement the flag yet.
-IMAGE_SPACE = {"soccer"}
+# calibration failure is MEASURED, not assumed.
+IMAGE_SPACE = {"baseball", "football", "soccer"}
 
 
 def main(argv: list) -> int:

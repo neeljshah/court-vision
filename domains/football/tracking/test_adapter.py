@@ -6,9 +6,11 @@ from __future__ import annotations
 
 import cv2
 import numpy as np
+import pandas as pd
 
 from domains.football.tracking.adapter import (SANITY_LIMIT_FT, YARD_LINE_SPACING_FT,
                                                FootballAdapter)
+from scripts.platformkit.tracking_harness import evaluate
 
 
 def _field() -> np.ndarray:
@@ -19,6 +21,20 @@ def _field() -> np.ndarray:
     cv2.line(image, (60, 40), (660, 40), (255, 255, 255), 3)
     cv2.line(image, (60, 319), (660, 319), (255, 255, 255), 3)
     return image
+
+
+class _FakeCapture:
+    def __init__(self, frames):
+        self._frames = list(frames)
+
+    def isOpened(self) -> bool:
+        return True
+
+    def read(self):
+        return (True, self._frames.pop(0)) if self._frames else (False, None)
+
+    def release(self) -> None:
+        pass
 
 
 def test_yard_line_family_maps_spacing_to_fifteen_feet() -> None:
@@ -138,3 +154,25 @@ def test_disagreeing_fit_starts_a_new_segment_instead_of_sliding_the_origin(monk
 
     assert adapter._stable_homography(frame) is None
     assert not adapter._centroids
+
+
+def test_image_space_rows_are_observed_and_fail_coordinate_contract(monkeypatch, tmp_path) -> None:
+    """Pixels are training observations, never football field coordinates."""
+    monkeypatch.setattr(cv2, "VideoCapture", lambda path: _FakeCapture([_field(), _field()]))
+    adapter = FootballAdapter(detector=lambda frame: [[90, 150, 100, 180]])
+    monkeypatch.setattr(adapter, "homography_from_yard_lines",
+                        lambda frame: (_ for _ in ()).throw(AssertionError("must not calibrate")))
+
+    rows = adapter.process_video("synthetic.mp4", image_space=True)
+    output = tmp_path / "image_rows.csv"
+    adapter.write_csv(output, rows)
+    saved = pd.read_csv(output)
+    report = evaluate(saved, "football")
+
+    assert len(rows) == 2
+    assert list(rows.columns) == ["frame", "track_id", "cls", "x", "y",
+                                  "coordinate_space", "observation", "calibration"]
+    assert set(rows["coordinate_space"]) == {"image_px"}
+    assert list(saved.columns) == list(rows.columns)
+    assert not report.passed
+    assert any(failure.startswith("coordinate_contract:") for failure in report.failures)
