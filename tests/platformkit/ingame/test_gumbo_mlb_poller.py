@@ -313,3 +313,77 @@ def test_default_date_is_baseball_date_not_utc(monkeypatch):
     from datetime import datetime, timedelta, timezone
     expect = (datetime.now(timezone.utc) - timedelta(hours=10)).strftime("%Y-%m-%d")
     assert expect in seen["url"]
+
+
+# ---------------------------------------------------------------------------
+# S1e-CADENCE (2026-09-01): deadline pacing. The pre-fix loop slept a FULL cadence
+# and THEN ran the pass, so the per-game period was cadence + pass_duration (the
+# measured p50 15s against a 10s cadence). These prove the period is now
+# max(cadence, pass_duration) with no pile-up and no accumulated drift.
+# ---------------------------------------------------------------------------
+
+def _costly_fetch(clock, cost, n_games=3):
+    """fetch_fn that charges `cost` seconds of wall time to the fake clock per call."""
+    def fetch(url):
+        clock.t += cost
+        if "schedule" in url:
+            payload = _schedule_payload(game_pk=111)
+            for extra in range(1, n_games):
+                g = json.loads(json.dumps(payload["dates"][0]["games"][0]))
+                g["gamePk"] = 111 + extra
+                payload["dates"][0]["games"].append(g)
+            return payload
+        game_pk = int(url.split("/game/")[1].split("/")[0])
+        return _bootstrap_payload(game_pk=game_pk)
+    return fetch
+
+
+def test_run_live_window_holds_target_cadence_when_fetch_is_faster(tmp_path):
+    c = _clock()
+    rep = M.run_live_window(60.0, date_str="2026-07-04", out_dir=tmp_path / "g",
+                            state_file=tmp_path / "s.json",
+                            fetch_fn=_costly_fetch(c, 0.4), sleep_fn=c.sleep, clock=c,
+                            cadence_sec=5.0)
+    # pass costs 0.4 (schedule) + 3*0.4 (games) + 2*0.25 (pace) = 2.1s < 5s cadence
+    assert rep["passes"] >= 8
+    assert abs(rep["achieved_cadence_sec"] - 5.0) < 1e-6, "achieved cadence == target"
+    assert abs(rep["pass_latency_sec"] - 2.1) < 1e-6, "wall latency recorded per tick"
+    # pre-fix this would have been 5.0 + 2.1 = 7.1s per period
+    assert rep["achieved_cadence_sec"] < 5.0 + rep["pass_latency_sec"]
+
+
+def test_run_live_window_degrades_without_pileup_when_fetch_exceeds_cadence(tmp_path):
+    c = _clock()
+    rep = M.run_live_window(120.0, date_str="2026-07-04", out_dir=tmp_path / "g",
+                            state_file=tmp_path / "s.json",
+                            fetch_fn=_costly_fetch(c, 3.0), sleep_fn=c.sleep, clock=c,
+                            cadence_sec=5.0)
+    # pass costs 3 + 3*3 + 0.5 = 12.5s, well over the 5s target
+    assert rep["pass_latency_sec"] > 5.0
+    assert abs(rep["achieved_cadence_sec"] - rep["pass_latency_sec"]) < 1e-6, \
+        "period degrades to the pass duration, not pass + cadence (no pile-up)"
+    assert c.slept[1:] == [] or max(c.slept[1:]) <= 5.0, "no queued-up sleeps"
+    assert rep["passes"] * rep["achieved_cadence_sec"] <= 120.0 + rep["pass_latency_sec"], \
+        "no drift debt: the window is never overrun by accumulated deadlines"
+
+
+def test_run_once_pace_defaults_to_quarter_second_and_env_recovers_prior_behavior(monkeypatch):
+    monkeypatch.delenv("CV_GUMBO_PACE_SEC", raising=False)
+    assert M.live_pace_sec() == 0.25
+    monkeypatch.setenv("CV_GUMBO_PACE_SEC", "1.0")
+    assert M.live_pace_sec() == 1.0, "prior 1.0s behavior recoverable without a code edit"
+    monkeypatch.setenv("CV_GUMBO_PACE_SEC", "not-a-number")
+    assert M.live_pace_sec() == 0.25, "garbage env degrades to the default, never raises"
+
+
+def test_run_once_uses_env_pace_between_games(tmp_path, monkeypatch):
+    monkeypatch.setenv("CV_GUMBO_PACE_SEC", "0.25")
+    c = _clock()
+    rep = M.run_once(date_str="2026-07-04", out_dir=tmp_path / "g",
+                     state_file=tmp_path / "s.json",
+                     fetch_fn=_costly_fetch(c, 0.0), sleep_fn=c.sleep)
+    assert rep["n_live_games"] == 3 and rep["n_rows_written"] == 3
+    assert c.slept == [0.25, 0.25], "one pace sleep between each pair of games"
+    assert M.run_once(date_str="2026-07-04", out_dir=tmp_path / "g2",
+                      state_file=tmp_path / "s2.json", fetch_fn=_costly_fetch(c, 0.0),
+                      sleep_fn=_FakeClock().sleep, pace_sec=1.0)["n_rows_written"] == 3

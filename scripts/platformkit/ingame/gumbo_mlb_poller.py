@@ -8,26 +8,20 @@ data/domains/mlb/gumbo_live/<gamePk>.jsonl.
 LIVE CADENCE (latency-audit fix, 2026-07-07): while >=1 game is live, run_live_window()
 fast-polls at CV_GUMBO_LIVE_SEC (default 10s, hard floor 5s) using diffPatch deltas, with
 exponential backoff (cap 60s) on all-error passes. Idle behavior is unchanged (the m37
-runner's 30s tick). Each row now also carries `captured_at` (our poll receive time, ISO
-UTC) alongside `ts` (MLB's own metaData.timeStamp event wall-clock) -- additive key only,
-existing schema/keys byte-identical. One shared HTTP session (keep-alive) for all fetches.
+runner's 30s tick). Each row also carries `captured_at` (our poll receive time, ISO UTC)
+alongside `ts` (MLB's metaData.timeStamp event wall-clock). One shared keep-alive session.
 
-Disk growth at 10s live cadence: ~4-5x today's 104-247 rows/game -> ~400-1,200 rows/game,
-~350 bytes/row => <=0.5 MB/game, ~3-7 MB/day on a full 15-game slate. sidecar_retention's
-gumbo_live policy (30d active + 1 GiB byte budget) absorbs this >5x growth with ~150x
-headroom -- existing rotation handles it, no policy change needed.
+DEADLINE PACING (2026-09-01): run_live_window sleeps only the RESIDUAL to the next
+deadline, so a per-game period is max(cadence, pass_duration) instead of the old
+cadence + pass_duration (that additive penalty was the measured p50 15s vs the 10s
+cadence). Inter-game pace defaults to 0.25s (CV_GUMBO_PACE_SEC=1.0 restores the old 1.0s).
+Disk growth is absorbed by sidecar_retention's gumbo_live policy (30d + 1 GiB budget).
 
-STANDALONE (per this wave's binding invariant): does NOT touch inplay_capture_loop.py or
-any shared runner. Bounded via --once (one pass over all live games, then exit) -- there is
-no unbounded default loop entrypoint here; --once is the only mode this module implements.
-
-Politeness: plain urllib + a descriptive User-Agent (statsapi.mlb.com verified keyless, no
-auth/stealth needed); ~1s pacing between per-game requests; short timeouts; every game's
-fetch is error-isolated (one bad game/network blip never stops the others or crashes the
-pass).
-
-Sidecar state file data/domains/mlb/gumbo_live/_poller_state.json remembers each gamePk's
-last timeStamp + a copy of the last full snapshot (for diffPatch application) across runs.
+STANDALONE: does NOT touch inplay_capture_loop.py or any shared runner. Bounded via
+--once (one pass over all live games, then exit); no unbounded loop entrypoint here.
+Politeness: descriptive User-Agent (statsapi.mlb.com is keyless), short timeouts, every
+game's fetch error-isolated. Sidecar state data/domains/mlb/gumbo_live/_poller_state.json
+remembers each gamePk's last timeStamp + last full snapshot for diffPatch application.
 
 Per-file test:
   cd /c/Users/neelj/nba-ai-system && python -m pytest \
@@ -71,6 +65,17 @@ def live_cadence_sec() -> float:
     except ValueError:
         v = 10.0
     return max(5.0, v)
+
+
+def live_pace_sec() -> float:
+    """Inter-game politeness pace from CV_GUMBO_PACE_SEC (default 0.25s as of 2026-09-01;
+    export CV_GUMBO_PACE_SEC=1.0 to recover the previous 1.0s behavior). statsapi is
+    keyless and the diffPatch deltas are tiny, so 0.25s stays polite."""
+    try:
+        v = float(os.environ.get("CV_GUMBO_PACE_SEC", "") or 0.25)
+    except ValueError:
+        v = 0.25
+    return max(0.0, v)
 
 
 def _http_get_json(url: str, timeout: float = 15.0) -> Optional[Any]:
@@ -182,11 +187,13 @@ def run_once(date_str: Optional[str] = None,
              state_file: Path = DEFAULT_STATE_FILE,
              fetch_fn: FetchFn = _http_get_json,
              sleep_fn: Callable[[float], None] = time.sleep,
-             pace_sec: float = 1.0) -> Dict[str, Any]:
+             pace_sec: Optional[float] = None) -> Dict[str, Any]:
     """One bounded pass: list live games, poll each once, append a tick row per success.
 
     Returns a report dict {n_live_games, n_rows_written, game_pks, errors}. Error-isolated
-    per game (one bad game never stops the pass). ~pace_sec between games (politeness)."""
+    per game (one bad game never stops the pass). ~pace_sec between games (politeness;
+    None -> live_pace_sec(), the CV_GUMBO_PACE_SEC default of 0.25s)."""
+    pace = live_pace_sec() if pace_sec is None else max(0.0, float(pace_sec))
     games = list_live_game_pks(date_str, fetch_fn=fetch_fn)
     poller_state = _load_poller_state(state_file)
     report: Dict[str, Any] = {"n_live_games": len(games), "n_rows_written": 0,
@@ -197,7 +204,7 @@ def run_once(date_str: Optional[str] = None,
         if gp is None:
             continue
         if i > 0:
-            sleep_fn(pace_sec)
+            sleep_fn(pace)
         try:
             tick = poll_one_game(gp, poller_state, fetch_fn=fetch_fn)
         except Exception as exc:  # noqa: BLE001 -- one bad game must never kill the pass
@@ -240,16 +247,24 @@ def run_live_window(window_sec: float,
     passes = 0
     rows = 0
     fails = 0
+    starts: List[float] = []
+    latencies: List[float] = []
+    next_at = start + cad  # called right after a run_once pass -> wait one period first
     while True:
-        wait = min(cad * (2 ** fails), 60.0)
+        step = min(cad * (2 ** fails), 60.0)
+        wait = max(0.0, next_at - clock())
         remaining = window_sec - (clock() - start)
         if remaining < wait + 1.0:
             if remaining > 0:
                 sleep_fn(remaining)
             break
-        sleep_fn(wait)
+        if wait > 0:
+            sleep_fn(wait)
+        t0 = clock()
+        starts.append(t0)
         report = run_once(date_str=date_str, out_dir=out_dir, state_file=state_file,
                           fetch_fn=fetch_fn, sleep_fn=sleep_fn)
+        latencies.append(clock() - t0)
         passes += 1
         rows += report["n_rows_written"]
         if report["n_live_games"] <= 0:
@@ -258,8 +273,16 @@ def run_live_window(window_sec: float,
                 sleep_fn(remaining)
             break
         fails = 0 if report["n_rows_written"] > 0 else fails + 1
+        # Deadline pacing: the next pass is due one period after THIS pass started, so a
+        # slow pass eats its own wait instead of adding to it. A pass that overruns the
+        # period starts the next immediately -- no pile-up, no accumulated drift debt.
+        next_at = max(t0 + min(cad * (2 ** fails), 60.0), clock())
+    gaps = [b - a for a, b in zip(starts, starts[1:])]
     return {"passes": passes, "rows_written": rows,
-            "window_sec": window_sec, "cadence_sec": cad}
+            "window_sec": window_sec, "cadence_sec": cad,
+            "pace_sec": live_pace_sec(),
+            "achieved_cadence_sec": round(sum(gaps) / len(gaps), 3) if gaps else None,
+            "pass_latency_sec": round(sum(latencies) / len(latencies), 3) if latencies else None}
 
 
 if __name__ == "__main__":  # pragma: no cover -- CLI smoke, not exercised by tests
@@ -269,6 +292,8 @@ if __name__ == "__main__":  # pragma: no cover -- CLI smoke, not exercised by te
     parser.add_argument("--once", action="store_true", required=True,
                          help="process one bounded pass over today's live games and exit")
     parser.add_argument("--date", default=None, help="YYYY-MM-DD (default: today UTC)")
+    parser.add_argument("--pace-sec", type=float, default=None,
+                         help="inter-game pace seconds (default CV_GUMBO_PACE_SEC or 0.25)")
     args = parser.parse_args()
-    rep = run_once(date_str=args.date)
+    rep = run_once(date_str=args.date, pace_sec=args.pace_sec)
     print(json.dumps(rep, indent=2))

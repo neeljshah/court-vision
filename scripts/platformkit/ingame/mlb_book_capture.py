@@ -197,15 +197,40 @@ def capture_once(*, client: Optional[GovernedClient] = None, date_str: Optional[
             "cadence_sec": state["cadence_sec"], "n_429": n_429}
 
 
-def run_pod_capture(*, stop: Callable[[], bool], sleep: Callable[[float], None] = time.sleep) -> None:
-    """POD-only loop. It refuses to start unless the POD owns the live archive."""
+def run_pod_capture(*, stop: Callable[[], bool], sleep: Callable[[float], None] = time.sleep,
+                    clock: Callable[[], float] = time.monotonic,
+                    output: Optional[Path] = None) -> Dict[str, Any]:
+    """POD-only loop. It refuses to start unless the POD owns the live archive.
+
+    DEADLINE PACING (2026-09-01): each tick sleeps only the RESIDUAL between its own
+    start and start+period, so the achieved period is max(period, pass_duration) rather
+    than period + pass_duration.  A pass that overruns its period simply starts the next
+    one immediately -- no pile-up and no accumulated drift debt, because every deadline
+    is anchored on that tick's own start, not on a running counter.
+    Each tick appends ONE additive ``record_type='cadence'`` row to the SAME archive
+    file (no second metrics file) carrying the measured wall latency and the achieved
+    start-to-start cadence; that row is this loop's only liveness evidence when a slate
+    yields zero snapshots.  Returns the last tick's cadence row."""
     if not live_archive_enabled():
         raise RuntimeError("live MLB archive requires CV_CAPTURE_POD=1 and CV_MLB_BOOK_ARCHIVE_LIVE=1")
-    client, state = GovernedClient(), {}
+    client: Any = GovernedClient()
+    state: Dict[str, Any] = {}
+    prev_start: Optional[float] = None
+    beat: Dict[str, Any] = {}
     while not stop():
-        capture_once(client=client, state=state)
-        delay = state.get("cadence_sec", TARGET_CADENCE_SEC) if state.get("n_live_games") else IDLE_CHECK_SEC
-        sleep(float(delay))
+        started = clock()
+        result = capture_once(client=client, state=state, output=output)
+        period = float(state.get("cadence_sec", TARGET_CADENCE_SEC)) if state.get("n_live_games") else IDLE_CHECK_SEC
+        beat = {"record_type": "cadence", "capture_ts": _iso(),
+                "tick_latency_sec": round(clock() - started, 3),
+                "achieved_cadence_sec": None if prev_start is None else round(started - prev_start, 3),
+                "target_cadence_sec": period,
+                "n_live_games": int(state.get("n_live_games") or 0),
+                "n_snapshot_rows": sum(1 for r in result["rows"] if r.get("record_type") == "snapshot")}
+        _append(Path(result["path"]), beat)
+        prev_start = started
+        sleep(max(0.0, started + period - clock()))
+    return beat
 
 
 __all__ = ["GovernedClient", "TARGET_CADENCE_SEC", "PRE_REGISTERED_UNIT", "archive_path",
