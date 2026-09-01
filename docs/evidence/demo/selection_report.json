@@ -1,0 +1,94 @@
+{
+  "ncaa_basketball": {
+    "coordinate_space": "image_px",
+    "distinct_tracks": 0,
+    "end_frame": 27494,
+    "fps": 29.97002997002997,
+    "local_60_bytes": 12416433,
+    "player_rows": 0,
+    "rows_per_frame": 0.0,
+    "sample_stride_frames": 15,
+    "short_bytes": 3342335,
+    "start_frame": 27045,
+    "start_seconds": 902.4015,
+    "stills": [
+      "ncaa_basketball_t3.png",
+      "ncaa_basketball_t8.png",
+      "ncaa_basketball_t13.png"
+    ],
+    "tracking": "data/tracking/ncaa_basketball_zqBCKovJCQU/tracking_data.csv",
+    "video": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+    "wide_fraction": 0.8666666666666667,
+    "wide_frames": 26,
+    "wide_minimum_met": true
+  },
+  "npb": {
+    "coordinate_space": "image_px",
+    "distinct_tracks": 59,
+    "end_frame": 22754,
+    "fps": 29.97002997002997,
+    "local_60_bytes": 8731263,
+    "player_rows": 774,
+    "rows_per_frame": 1.72,
+    "sample_stride_frames": 15,
+    "short_bytes": 2467876,
+    "start_frame": 22305,
+    "start_seconds": 744.2435,
+    "stills": [
+      "npb_t3.png",
+      "npb_t8.png",
+      "npb_t13.png"
+    ],
+    "tracking": "data/tracking/npb_3PwJwWdTMek/tracking_data.csv",
+    "video": "npb__npb_3PwJwWdTMek.mp4",
+    "wide_fraction": 0.7,
+    "wide_frames": 21,
+    "wide_minimum_met": true
+  },
+  "soccer": {
+    "coordinate_space": "image_px",
+    "distinct_tracks": 48,
+    "end_frame": 5219,
+    "fps": 30.0,
+    "local_60_bytes": 10583574,
+    "player_rows": 1987,
+    "rows_per_frame": 4.415555555555556,
+    "sample_stride_frames": 15,
+    "short_bytes": 2194687,
+    "start_frame": 4770,
+    "start_seconds": 159.0,
+    "stills": [
+      "soccer_t3.png",
+      "soccer_t8.png",
+      "soccer_t13.png"
+    ],
+    "tracking": "data/tracking/soccer_cKXZysISV4w/tracking_data.csv",
+    "video": "soccer__soccer_cKXZysISV4w.mp4",
+    "wide_fraction": 0.8666666666666667,
+    "wide_frames": 26,
+    "wide_minimum_met": true
+  },
+  "tennis": {
+    "coordinate_space": "court_feet",
+    "distinct_tracks": 2,
+    "end_frame": 20174,
+    "fps": 25.0,
+    "local_60_bytes": 8361202,
+    "player_rows": 26,
+    "rows_per_frame": 0.06933333333333333,
+    "sample_stride_frames": 12,
+    "short_bytes": 1559007,
+    "start_frame": 19800,
+    "start_seconds": 792.0,
+    "stills": [
+      "tennis_t3.png",
+      "tennis_t8.png",
+      "tennis_t13.png"
+    ],
+    "tracking": "data/tracking/tennis_3x3eEWCZmWQ/tracking_data.csv",
+    "video": "tennis__tennis_3x3eEWCZmWQ.mp4",
+    "wide_fraction": 0.9375,
+    "wide_frames": 30,
+    "wide_minimum_met": true
+  }
+}

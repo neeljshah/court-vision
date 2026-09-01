@@ -43,3 +43,24 @@ No field-line detection, yard-line calibration, field coordinates, player identi
 > back: row-density window selection favored close-up/crowd segments where
 > detectors over-fire. Review frames for all five are committed. A wide-shot-
 > gated re-selection replaces the held clips before they publish.
+
+## Wide-gated rerender (2026-09-01)
+
+The four held clips were replaced after a single sequential, coarse-stride
+wide-view-proxy pass per source. Window scoring then uses only the cached flags;
+it does not rescan footage for each candidate. The full measured record is
+[`selection_report.json`](selection_report.json). The proxy is deliberately not
+a claim that every rendered frame is a game-wide camera view: the t=3, 8, and
+13 stills show ordinary broadcast cutaways inside some accepted windows.
+
+| Clip | Source frames | Cached wide fraction | Observed track stats |
+| --- | --- | --- | --- |
+| tennis | 19800-20174 | 93.75% | 2 IDs; 26 player rows (0.0693/frame) |
+| npb | 22305-22754 | 70.00% | 59 IDs; 774 player rows (1.7200/frame) |
+| ncaa_basketball | 27045-27494 | 86.67% | 0 IDs; 0 player rows |
+| soccer | 4770-5219 | 86.67% | 48 IDs; 1,987 player rows (4.4156/frame) |
+
+The NCAA source CSV has no observed rows at its wide-gated selected window;
+the resulting clip intentionally contains no fabricated overlay. NPB clears
+the 70% proxy threshold exactly, but its review stills still demonstrate why
+the caption says "wide-view proxy" rather than claiming an all-wide sequence.
