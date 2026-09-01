@@ -5,6 +5,7 @@ Each test locks a landmine that has actually bitten this pipeline.
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import time
 import sys
@@ -262,3 +263,40 @@ def test_a_job_inside_its_budget_is_left_alone(tmp_path, monkeypatch):
 
     assert proc.killed is False
     assert "tennis__t7.mp4" in active
+
+
+def test_a_report_older_than_the_tracking_output_is_not_trusted(tmp_path, monkeypatch):
+    """A re-tracked game keeps its old report when adapter_run fails to rewrite
+    it. That returned an hour-stale verdict of 'empty' for a game that had just
+    produced 18736 rows."""
+    _stage(tmp_path, monkeypatch)
+    monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
+    csv_dir = track_daemon.TRACKING / "g1"
+    csv_dir.mkdir(parents=True)
+    csv = csv_dir / "tracking_data.csv"
+    csv.write_text("h\n" + "r\n" * 900, encoding="utf-8")
+    report = track_daemon.REPORTS / "tennis" / "g1.json"
+    report.parent.mkdir(parents=True)
+    report.write_text(json.dumps({"passed": True, "failures": []}), encoding="utf-8")
+    os.utime(report, (1, 1))          # report is ancient
+    os.utime(csv, (10_000, 10_000))   # tracking output is new
+
+    result = track_daemon.verdict("tennis", "g1")
+
+    assert result.get("passed") is not True, "stale report must not be trusted"
+
+
+def test_a_report_newer_than_the_output_is_used(tmp_path, monkeypatch):
+    _stage(tmp_path, monkeypatch)
+    monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
+    csv_dir = track_daemon.TRACKING / "g2"
+    csv_dir.mkdir(parents=True)
+    csv = csv_dir / "tracking_data.csv"
+    csv.write_text("h\nr\n", encoding="utf-8")
+    report = track_daemon.REPORTS / "tennis" / "g2.json"
+    report.parent.mkdir(parents=True)
+    report.write_text(json.dumps({"passed": True, "failures": []}), encoding="utf-8")
+    os.utime(csv, (1, 1))
+    os.utime(report, (10_000, 10_000))
+
+    assert track_daemon.verdict("tennis", "g2")["passed"] is True

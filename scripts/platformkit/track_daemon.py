@@ -121,8 +121,19 @@ def verdict(sport: str, game_id: str) -> dict:
     """
     harness_sport = "basketball" if sport in CLIP_SPORTS else SPORT_ADAPTER.get(sport, sport)
     report_path = REPORTS / harness_sport / ("%s.json" % game_id)
+    csv_path = TRACKING / game_id / "tracking_data.csv"
+    # Only trust a report NEWER than the tracking output it claims to describe.
+    # A re-tracked game keeps its old report when adapter_run fails to rewrite
+    # it, and this returned an hour-stale verdict of "empty" for a game that had
+    # just produced 18,736 rows -- corrupting the one signal the ledger carries.
     try:
-        return json.loads(report_path.read_text(encoding="utf-8"))
+        report_mtime = report_path.stat().st_mtime
+        try:
+            fresh = report_mtime >= csv_path.stat().st_mtime
+        except OSError:
+            fresh = True  # no tracking output to be stale against
+        if fresh:
+            return json.loads(report_path.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         pass
     try:
