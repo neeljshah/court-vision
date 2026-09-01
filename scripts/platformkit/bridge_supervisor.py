@@ -32,12 +32,18 @@ LANES = [
     ("soccer", ["footage_queue_soccer.json"]),
     ("football", ["footage_queue_football.json"]),
     ("mlb", ["footage_queue_mlb.json"]),
+    ("nhl", ["footage_queue_nhl.json"]),
+    ("ncaa_basketball", ["footage_queue_ncaa_basketball.json"]),
+    ("cricket", ["footage_queue_cricket.json"]),
+    ("handball", ["footage_queue_handball.json"]),
+    ("volleyball", ["footage_queue_volleyball.json"]),
 ]
 REFILL_THRESHOLD = 6
 POLL_SECONDS = 90
 # Sports queue_expander.SOURCES can actually discover full games for. Its
 # MIN_DURATION_SECONDS floors already reject clips and highlight reels.
-REFILLABLE = ("tennis", "wnba", "npb", "kbo", "soccer")
+REFILLABLE = ("tennis", "wnba", "npb", "kbo", "soccer", "football", "mlb",
+              "nhl", "ncaa_basketball", "cricket", "handball", "volleyball")
 
 
 def untracked_count(queue_path: Path, known: dict) -> int:

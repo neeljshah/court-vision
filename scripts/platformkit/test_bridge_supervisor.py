@@ -48,7 +48,8 @@ def test_refill_reports_sports_it_cannot_refill(monkeypatch, capsys):
     monkeypatch.setattr(bridge_supervisor.subprocess, "run",
                         lambda *a, **k: called.append(a))
 
-    bridge_supervisor.refill("football")
+    # football IS refillable now; use a sport with no expander source.
+    bridge_supervisor.refill("lacrosse")
 
     assert not called
     assert "no expander source" in capsys.readouterr().out

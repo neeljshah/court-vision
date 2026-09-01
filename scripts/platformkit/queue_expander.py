@@ -25,25 +25,92 @@ def is_video_id(value: str) -> bool:
 
 
 FORMAT = "bv*[height>=1080][vcodec^=avc1]+ba/b[height<=720]"
+SOURCE_SCAN_LIMIT = 100
 DATA_DIR = Path("data")
 TRACKING_DIR = DATA_DIR / "tracking"
 COOKIES_FILE = DATA_DIR / "videos" / "youtube_cookies.txt"
 
-# Channels use their playlist tabs so yt-dlp can discover newly published full games.
+# Sources are channel/video tabs or playlists that return video ids from yt-dlp.
 SOURCES: dict[str, tuple[str, ...]] = {
     "tennis": (
-        "https://www.youtube.com/@usopen/playlists",
-        "https://www.youtube.com/@rolandgarros/playlists",
-        "https://www.youtube.com/@Wimbledon/playlists",
-        "https://www.youtube.com/@AustralianOpenTV/playlists",
-        "https://www.youtube.com/@WTA/playlists",
+        "https://www.youtube.com/@Wimbledon",
+        "https://www.youtube.com/@WTA/videos",
+        "https://www.youtube.com/@AustralianOpen",
+        "https://www.youtube.com/channel/UCXbboag48Qlr78zzz6SkzkQ",
     ),
-    "wnba": ("https://www.youtube.com/channel/UCyxylYlXhJgXC3llr8MFFdg",),
-    "npb": ("https://www.youtube.com/playlist?list=PL_oduM_8vk9KkN1wAaw4xLTOtYTt78Qhu",),
-    "kbo": ("https://www.youtube.com/channel/UCoVz66yWHzVsXAFG8WhJK9g",),
-    "soccer": ("https://www.youtube.com/playlist?list=PLCGIzmTE4d0jq6wHT2TvSspZ_HLiIx4_y",),
+    "wnba": (
+        "https://www.youtube.com/channel/UCyxylYlXhJgXC3llr8MFFdg",
+        "https://www.youtube.com/channel/UCuf89_9rUWA57uhOo4RVBJQ",
+        "https://www.youtube.com/channel/UCENzOltnQs6-YrP9YB0Dj2A",
+    ),
+    "npb": (
+        "https://www.youtube.com/playlist?list=PL_oduM_8vk9KkN1wAaw4xLTOtYTt78Qhu",
+        "https://www.youtube.com/channel/UCzXRQAqRTc5t3BJ98MAT9eA",
+    ),
+    "kbo": (
+        "https://www.youtube.com/channel/UCoVz66yWHzVsXAFG8WhJK9g",
+        "https://www.youtube.com/channel/UCuVEzujV3dz-TMPLRu8xftA",
+        "https://www.youtube.com/channel/UCpQFL32AhVo1KP_dOH_jVGw",
+    ),
+    "soccer": (
+        "https://www.youtube.com/playlist?list=PLCGIzmTE4d0jq6wHT2TvSspZ_HLiIx4_y",
+        "https://www.youtube.com/channel/UC14UlmYlSNiQCBe9Eookf_A",
+        "https://www.youtube.com/channel/UCChcWqwYXCEs657MQ00qVWA",
+    ),
+    "football": (
+        "https://www.youtube.com/channel/UCDVYQ4Zhbm3S2dlz7P1GBDg",
+        "https://www.youtube.com/channel/UC60q_WUDde_NK-ze3frvtiA",
+        "https://www.youtube.com/channel/UC0hy7TcR1gGD8nQBqrF2FaA",
+        "https://www.youtube.com/channel/UCLnfOCTbfqMy_3ah8OmTHEQ",
+    ),
+    "mlb": (
+        "https://www.youtube.com/channel/UCoLrcjPV5PbUrUyXq5mjc_A",
+        "https://www.youtube.com/channel/UCbQ07z3YBi8RUc6nBxJhg2Q",
+        "https://www.youtube.com/channel/UCO5KCH3BmO44_hAoG0o0CEQ",
+    ),
+    "nhl": (
+        "https://www.youtube.com/channel/UCqFMzb-4AUf6WAIbl132QKA",
+        "https://www.youtube.com/channel/UCVhibwHk4WKw4leUt6JfRLg",
+        "https://www.youtube.com/channel/UCXu8ydY_RcF0LetIBpJwbQQ",
+    ),
+    "ncaa_basketball": (
+        "https://www.youtube.com/channel/UCKjEtnnXEHsXE9IvCb92V7g",
+        "https://www.youtube.com/channel/UC0hy7TcR1gGD8nQBqrF2FaA",
+    ),
+    "cricket": (
+        "https://www.youtube.com/channel/UCz1D0n02BR3t51KuBOPmfTQ",
+        "https://www.youtube.com/channel/UC2MHTOXktfTK26aDKyQs3cQ",
+        "https://www.youtube.com/channel/UCt2JXOLNxqry7B_4rRZME3Q",
+        "https://www.youtube.com/channel/UCv5-1Ypl3Adf4uGaR_H0mlg",
+    ),
+    "handball": (
+        "https://www.youtube.com/channel/UCTl3QQTvqHFjurroKxexy2Q",
+        "https://www.youtube.com/channel/UCxw1sC_Ksoa1vguE53HCSIg",
+    ),
+    "volleyball": (
+        "https://www.youtube.com/channel/UCYbbpwosQ0a2d3ygPpruJ1w",
+        "https://www.youtube.com/channel/UCNMg6XDhRZI2QzL4pWOvP_w",
+        "https://www.youtube.com/channel/UC0hy7TcR1gGD8nQBqrF2FaA",
+    ),
 }
-MIN_DURATION_SECONDS = {"tennis": 3600, "wnba": 4500, "npb": 4500, "kbo": 4500, "soccer": 5000}
+# football deliberately accepts highlights and extended highlights (explicit
+# user decision 2026-08-31): full NFL/NCAA games are scarce on YouTube while
+# extended highlights carry many clean broadcast-angle snaps. Every other
+# sport keeps a full-game floor.
+MIN_DURATION_SECONDS = {
+    "tennis": 3600,
+    "wnba": 4500,
+    "npb": 4500,
+    "kbo": 4500,
+    "soccer": 5000,
+    "football": 300,
+    "mlb": 7200,
+    "nhl": 3600,
+    "ncaa_basketball": 3600,
+    "cricket": 6000,
+    "handball": 3600,
+    "volleyball": 3000,
+}
 
 
 def _queue_path(sport: str) -> Path:
@@ -60,7 +127,8 @@ def _load_queue(path: Path) -> list[dict[str, str]]:
 
 
 def _yt_dlp(url: str, field: str) -> list[str]:
-    command = ["yt-dlp", "--flat-playlist", "--print", field]
+    command = ["yt-dlp", "--flat-playlist", "--playlist-end", str(SOURCE_SCAN_LIMIT),
+               "--print", field]
     if COOKIES_FILE.is_file():
         command.extend(["--cookies", str(COOKIES_FILE)])
     command.append(url)
@@ -87,6 +155,13 @@ def _existing_ids(items: Iterable[dict[str, str]]) -> set[str]:
     return ids
 
 
+def _valid_football_item(item: dict[str, str]) -> bool:
+    """Reject legacy football queue placeholders before they can idle a runner."""
+    url = item.get("url", "")
+    video_id = url.split("v=", 1)[1].split("&", 1)[0] if "v=" in url else ""
+    return item.get("sport") == "football" and is_video_id(video_id)
+
+
 def _write_atomic(path: Path, items: list[dict[str, str]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile(
@@ -108,6 +183,8 @@ def expand_queue(
 
     queue_path = _queue_path(sport)
     items = _load_queue(queue_path)
+    if sport == "football":
+        items = [item for item in items if _valid_football_item(item)]
     pending = [item for item in items if not (TRACKING_DIR / item["game_id"]).is_dir()]
     known_ids = _existing_ids(items)
     for url in channel_or_playlist_urls:
@@ -124,7 +201,7 @@ def expand_queue(
                 continue
             if (TRACKING_DIR / game_id).is_dir():
                 continue
-            if duration is not None and duration < MIN_DURATION_SECONDS[sport]:
+            if duration is None or duration < MIN_DURATION_SECONDS[sport]:
                 continue
             item = {
                 "sport": sport,
