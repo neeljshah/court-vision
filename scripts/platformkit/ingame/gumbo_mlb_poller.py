@@ -251,7 +251,6 @@ def run_live_window(window_sec: float,
     latencies: List[float] = []
     next_at = start + cad  # called right after a run_once pass -> wait one period first
     while True:
-        step = min(cad * (2 ** fails), 60.0)
         wait = max(0.0, next_at - clock())
         remaining = window_sec - (clock() - start)
         if remaining < wait + 1.0:
