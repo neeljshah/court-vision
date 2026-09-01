@@ -6,8 +6,11 @@ from __future__ import annotations
 
 import cv2
 import numpy as np
+import pytest
 
-from domains.baseball.tracking.adapter import BaseballAdapter, MOUND_TO_PLATE_FEET, PitchGeometry
+from domains.baseball.tracking.adapter import (
+    BallTrackingUnavailableError, BaseballAdapter, MOUND_TO_PLATE_FEET, PitchGeometry,
+)
 
 
 MOUND = np.array((640.0, 360.0), dtype=np.float32)
@@ -117,7 +120,7 @@ def test_process_video_stabilizes_jittered_pitch_view_projection(monkeypatch) ->
     ])
     monkeypatch.setattr(adapter, "detect_pitch_geometry", lambda frame: next(geometries))
 
-    rows = adapter.process_video("synthetic.mp4")
+    rows = adapter.process_video("synthetic.mp4", player_only=True)
     pitcher = rows.loc[rows["track_id"] == 1, "y"].to_numpy()
     assert len(pitcher) >= 10
     assert np.percentile(np.abs(np.diff(pitcher)), 95) < 10.0
@@ -144,7 +147,9 @@ def test_process_video_command_flag_returns_metadata_without_row_schema_change(m
     adapter = BaseballAdapter(detector=lambda frame: [])
     monkeypatch.setattr(adapter, "detect_pitch_geometry", lambda frame: geometry)
 
-    rows, metadata = adapter.process_video("synthetic.mp4", compute_command=True)
+    rows, metadata = adapter.process_video(
+        "synthetic.mp4", compute_command=True, player_only=True,
+    )
 
     assert list(rows.columns) == ["frame", "track_id", "cls", "x", "y"]
     assert metadata["pitch_view_frames"] == 3
@@ -152,3 +157,38 @@ def test_process_video_command_flag_returns_metadata_without_row_schema_change(m
     assert list(metadata["command_series"].columns) == [
         "pitch", "inning", "miss_ft", "horizontal_ft", "vertical_ft", "inning_median_ft",
     ]
+    assert metadata["ball_tracking"] == "unsupported"
+
+
+def test_process_video_fails_closed_when_ball_tracking_is_requested() -> None:
+    adapter = BaseballAdapter(detector=lambda frame: [])
+
+    with pytest.raises(BallTrackingUnavailableError, match="no validated fast-ball detector"):
+        adapter.process_video("unused.mp4")
+
+
+def test_process_video_splits_pitch_segments_at_scene_cuts(monkeypatch) -> None:
+    frames = [np.full((72, 128, 3), (45, 130, 45), dtype=np.uint8) for _ in range(12)]
+    frames.append(np.full((72, 128, 3), (180, 40, 20), dtype=np.uint8))
+    frames.extend(np.full((72, 128, 3), (45, 130, 45), dtype=np.uint8) for _ in range(12))
+
+    class FakeCapture:
+        def isOpened(self) -> bool:
+            return True
+
+        def read(self):
+            return (True, frames.pop(0)) if frames else (False, None)
+
+        def release(self) -> None:
+            pass
+
+    geometry = PitchGeometry(MOUND.copy(), PLATE.copy(), 4.0)
+    monkeypatch.setattr(cv2, "VideoCapture", lambda path: FakeCapture())
+    adapter = BaseballAdapter(detector=lambda frame: [[610, 300, 650, 410], [620, 480, 660, 590]])
+    monkeypatch.setattr(adapter, "detect_pitch_geometry", lambda frame: geometry)
+
+    _, metadata = adapter.process_video("synthetic.mp4", compute_command=True, player_only=True)
+
+    raw = metadata["raw_calibrations"]
+    assert {row["segment_id"] for row in raw} == {1, 2}
+    assert {12, 13}.isdisjoint({row["frame"] for row in raw})

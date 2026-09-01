@@ -1,12 +1,4 @@
-"""Center-field baseball pitch-view tracking in plate-relative feet.
-
-This adapter only emits rows for a calibrated center-field pitch view.  It uses
-the visible mound and plate dirt areas to make a local affine projection, not a
-full-field homography: a broadcast pitch camera does not reliably show enough
-fixed, coplanar field landmarks for an honest full-field calibration.  Therefore
-full-field tracking is explicitly out of scope, as is ball tracking until a
-validated fast-ball detector is available.
-"""
+"""Player-only, center-field baseball pitch-view tracking in plate-relative feet."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -17,10 +9,9 @@ import cv2
 import numpy as np
 import pandas as pd
 
-from domains.baseball.tracking.stability import ScaleStabilizer, stabilize_rows
 from domains.baseball.tracking.command_meter import MotionStableDetector, command_series, glove_target
-
-
+from domains.baseball.tracking.segmenter import detect_cut, small_gray
+from domains.baseball.tracking.stability import ScaleStabilizer, stabilize_rows
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
 MOUND_TO_PLATE_FEET = 60.5
 Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
@@ -32,17 +23,14 @@ _DEFAULT_EXCLUDE_REGIONS = (
     (0.80, 0.80, 1.00, 1.00),
     (0.00, 0.88, 1.00, 1.00),
 )
-
-
+class BallTrackingUnavailableError(RuntimeError):
+    """Raised when a caller requests unsupported baseball ball tracking."""
 @dataclass(frozen=True)
 class PitchGeometry:
     """Image anchors and scale recovered from one center-field pitch frame."""
-
     mound: np.ndarray
     plate: np.ndarray
     pixels_per_foot: float
-
-
 def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
     """Write rows in the normalized platform tracking schema."""
     missing = [column for column in SCHEMA if column not in rows.columns]
@@ -50,16 +38,12 @@ def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
         raise ValueError("Tracking rows missing columns: %s" % ", ".join(missing))
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     rows.loc[:, SCHEMA].to_csv(path, index=False)
-
-
 class BaseballAdapter:
     """Track pitcher and batter only in calibrated center-field pitch views."""
-
     def __init__(self, detector: Optional[Detector] = None) -> None:
         self.detector = detector if detector is not None else self._load_yolo_detector()
         self._geometry: Optional[PitchGeometry] = None
         self.last_output = pd.DataFrame(columns=SCHEMA)
-
     @staticmethod
     def _load_yolo_detector() -> Detector:
         try:
@@ -78,7 +62,6 @@ class BaseballAdapter:
             return result.boxes.xyxy.cpu().numpy().tolist()
 
         return detect
-
     @staticmethod
     def _dirt_blobs(
         frame: np.ndarray,
@@ -107,7 +90,6 @@ class BaseballAdapter:
                 1, stats[index, cv2.CC_STAT_WIDTH] * stats[index, cv2.CC_STAT_HEIGHT]
             ) >= 0.35
         ]
-
     @staticmethod
     def _center_crop(frame: np.ndarray) -> tuple[np.ndarray, int, int]:
         """Return the central 70 percent of a frame and its image offset."""
@@ -117,13 +99,11 @@ class BaseballAdapter:
         x0 = (width - crop_width) // 2
         y0 = (height - crop_height) // 2
         return frame[y0:y0 + crop_height, x0:x0 + crop_width], x0, y0
-
     @staticmethod
     def _dominant_green(frame: np.ndarray) -> bool:
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         green = cv2.inRange(hsv, np.array((35, 35, 25)), np.array((95, 255, 255)))
         return float(np.count_nonzero(green)) / green.size >= 0.35
-
     def detect_pitch_geometry(self, frame: np.ndarray) -> Optional[PitchGeometry]:
         """Find mound and plate dirt anchors when the frame is a pitch view."""
         roi, x_offset, y_offset = self._center_crop(frame)
@@ -153,16 +133,13 @@ class BaseballAdapter:
         if plate_point[1] <= mound_point[1] or distance < 20.0:
             return None
         return PitchGeometry(mound_point, plate_point, distance / MOUND_TO_PLATE_FEET)
-
     def is_pitch_view(self, frame: np.ndarray) -> bool:
         """Return whether the frame has the required green field, mound, and plate geometry."""
         return self.detect_pitch_geometry(frame) is not None
-
     def calibrate_scale(self, frame: np.ndarray) -> Optional[float]:
         """Return the pitch-view linear scale in pixels per foot, when calibratable."""
         geometry = self.detect_pitch_geometry(frame)
         return None if geometry is None else geometry.pixels_per_foot
-
     @staticmethod
     def _project(foot: np.ndarray, geometry: PitchGeometry) -> np.ndarray:
         """Project an image feet point to plate-relative horizontal and moundward feet."""
@@ -172,7 +149,6 @@ class BaseballAdapter:
              (geometry.plate[1] - foot[1]) / scale),
             dtype=np.float32,
         )
-
     def detect_players(
         self, frame: np.ndarray, geometry: PitchGeometry
     ) -> list[tuple[int, np.ndarray]]:
@@ -188,35 +164,34 @@ class BaseballAdapter:
                 candidates.append((foot, point))
         if len(candidates) < 2:
             return []
-
         def nearest(anchor: np.ndarray, excluded: Optional[int] = None) -> Optional[int]:
             choices = [index for index in range(len(candidates)) if index != excluded]
             return min(choices, key=lambda index: np.linalg.norm(candidates[index][0] - anchor)) if choices else None
-
         pitcher = nearest(geometry.mound)
         batter = nearest(geometry.plate, pitcher)
         if pitcher is None or batter is None:
             return []
         return [(1, candidates[pitcher][1]), (2, candidates[batter][1])]
-
-    @staticmethod
-    def detect_ball_stub(frame: np.ndarray, geometry: PitchGeometry) -> list[tuple[int, np.ndarray]]:
-        """Return no ball rows. TODO: integrate a validated fast-ball detector."""
-        del frame, geometry
-        return []
-
     def process_video(
         self, path: Union[str, Path], max_frames: Optional[int] = None, stride: int = 1,
-        compute_command: bool = False,
+        compute_command: bool = False, player_only: bool = False,
     ) -> Union[pd.DataFrame, tuple[pd.DataFrame, dict[str, object]]]:
         """Process calibrated pitch views; opt-in command metadata never alters rows.
 
         When ``compute_command`` is true, return ``(rows, metadata)``.  The
         command meter is deliberately fail-quiet until a validated pitch
-        crossing detector is available, so its series may be empty.
+        crossing detector is available, so its series may be empty. Callers
+        must explicitly opt into player-only output: this adapter has no ball
+        detector and cannot satisfy a ball-tracking contract.
         """
         if stride < 1:
             raise ValueError("stride must be at least 1")
+        if not player_only:
+            raise BallTrackingUnavailableError(
+                "Baseball ball tracking is unavailable: this adapter runs YOLO "
+                "person class 0 only and has no validated fast-ball detector. "
+                "Use player_only=True only for pitcher/batter tracking."
+            )
         capture = cv2.VideoCapture(str(path))
         if not capture.isOpened():
             raise FileNotFoundError("Could not open video: %s" % path)
@@ -225,11 +200,10 @@ class BaseballAdapter:
         command_events: list[dict[str, object]] = []
         pitch_frames: list[np.ndarray] = []
         pitch_scales: list[float] = []
-        stabilizer = ScaleStabilizer()
         segment_id = 0
         in_pitch_view = False
         source_frame = processed = 0
-
+        previous_gray: Optional[np.ndarray] = None
         def close_pitch_segment() -> None:
             if not compute_command or not pitch_frames:
                 return
@@ -241,18 +215,19 @@ class BaseballAdapter:
                 "crossing_px": None,
                 "scale_px_per_ft": float(np.median(pitch_scales)) if pitch_scales else None,
             })
-
         try:
             while max_frames is None or processed < max_frames:
                 ok, frame = capture.read()
                 if not ok:
                     break
                 if source_frame % stride == 0:
-                    self._geometry = self.detect_pitch_geometry(frame)
+                    current_gray = small_gray(frame)
+                    cut = previous_gray is not None and detect_cut(previous_gray, current_gray)
+                    previous_gray = current_gray
+                    self._geometry = None if cut else self.detect_pitch_geometry(frame)
                     if self._geometry is not None:
                         if not in_pitch_view:
                             segment_id += 1
-                            stabilizer.reset(segment_id)
                             in_pitch_view = True
                         calibrations.append({
                             "frame": source_frame,
@@ -265,7 +240,6 @@ class BaseballAdapter:
                             pitch_scales.append(self._geometry.pixels_per_foot)
                         for track_id, point in self.detect_players(frame, self._geometry):
                             rows.append({"frame": source_frame, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1])})
-                        self.detect_ball_stub(frame, self._geometry)
                     else:
                         if in_pitch_view:
                             close_pitch_segment()
@@ -278,7 +252,7 @@ class BaseballAdapter:
             capture.release()
         if in_pitch_view:
             close_pitch_segment()
-        stable_calibrations = stabilize_rows(calibrations, stabilizer)
+        stable_calibrations = stabilize_rows(calibrations, ScaleStabilizer())
         calibration_by_frame = {row["frame"]: row for row in stable_calibrations}
         raw_calibration_by_frame = {row["frame"]: row for row in calibrations}
         stabilized_rows: list[dict[str, object]] = []
@@ -303,6 +277,7 @@ class BaseballAdapter:
             "raw_calibrations": calibrations,
             "command_events": command_events,
             "command_series": command_series(command_events),
+            "ball_tracking": "unsupported",
         }
         return self.last_output, metadata
 

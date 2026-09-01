@@ -12,6 +12,10 @@ from typing import Mapping
 import pandas as pd
 
 from scripts.platformkit.liveness_metrics import compute_liveness_metrics, thresholds_for
+from scripts.platformkit.tracking_schema import (
+    identify_tracking_schema,
+    normalize_tracking_frame,
+)
 
 DEFAULT_CONFIG_VERSION = "2026-09-01-v1"
 _BASKETBALL = {"bounds": (0, 94, 0, 50), "min_players": 6,
@@ -56,7 +60,8 @@ class QualityReport:
     coverage_pct: float
     det_per_frame: float
     median_track_len: float
-    ball_valid_pct: float
+    ball_valid_pct: float | None
+    ball_valid_applicable: bool
     jump_p95: float
     oob_pct: float
     zero_step_share: float
@@ -90,6 +95,7 @@ def _failed_report(sport: str, config_version: str, failure: str,
         sport=sport, config_version=config_version, n_frames=0, n_unique_games=0,
         n_duplicate_frame_track_rows=0, ball_rows=0, coverage_pct=0.0,
         det_per_frame=0.0, median_track_len=0.0, ball_valid_pct=0.0,
+        ball_valid_applicable=True,
         jump_p95=0.0, oob_pct=0.0, zero_step_share=0.0,
         median_step_distance=0.0, distinct_position_ratio=0.0,
         stationary_track_share=0.0, liveness_verdict="SUSPECT",
@@ -100,7 +106,7 @@ def _failed_report(sport: str, config_version: str, failure: str,
 def evaluate(df: pd.DataFrame, sport: str,
              config_version: str = DEFAULT_CONFIG_VERSION,
              source_metadata: Mapping[str, object] | None = None) -> QualityReport:
-    """Return self-consistency health metrics for one canonical tracking table."""
+    """Return self-consistency health metrics for a recognized tracking table."""
     configs = CONFIG_VERSIONS.get(config_version)
     if configs is None:
         return _failed_report(sport, config_version,
@@ -111,6 +117,8 @@ def evaluate(df: pd.DataFrame, sport: str,
         return _failed_report(sport, config_version,
                               "unknown sport {}".format(sport), source_metadata)
 
+    schema = identify_tracking_schema(df)
+    df = normalize_tracking_frame(df)
     resolution, frame_rate = _source_fields(source_metadata)
     n_frames = int(df["frame"].nunique())
     n_unique_games = (int(df["game_id"].dropna().nunique()) if "game_id" in df
@@ -135,7 +143,8 @@ def evaluate(df: pd.DataFrame, sport: str,
                  if len(players) else 0.0)
     oob = (~players["x"].between(x0, x1)) | (~players["y"].between(y0, y1))
     oob_pct = float(oob.mean()) if len(players) else 1.0
-    ball_valid = float(df[df["cls"] == "ball"]["frame"].nunique() / n_frames)
+    ball_valid = (float(df[df["cls"] == "ball"]["frame"].nunique() / n_frames)
+                  if schema.ball_telemetry_available else None)
     grouped = players.sort_values(["track_id", "frame"]).groupby("track_id")
     jump = ((grouped["x"].diff() ** 2 + grouped["y"].diff() ** 2) ** 0.5).dropna()
     jump_p95 = float(jump.quantile(0.95)) if len(jump) else 0.0
@@ -147,7 +156,6 @@ def evaluate(df: pd.DataFrame, sport: str,
         failures.append("duplicate frame-track rows {}".format(duplicates))
     for name, value, threshold, operator in (
         ("coverage", coverage, cfg["coverage_min"], "min"),
-        ("ball_valid", ball_valid, cfg["ball_valid_min"], "min"),
         ("oob", oob_pct, cfg["oob_max"], "max"),
         ("jump_p95", jump_p95, cfg["jump_p95_max"], "max"),
     ):
@@ -155,6 +163,10 @@ def evaluate(df: pd.DataFrame, sport: str,
         if invalid:
             sign = "<" if operator == "min" else ">"
             failures.append("{} {:.2f} {} {:.2f}".format(name, value, sign, threshold))
+    if ball_valid is not None and ball_valid < cfg["ball_valid_min"]:
+        failures.append("ball_valid {:.2f} < {:.2f}".format(
+            ball_valid, cfg["ball_valid_min"]
+        ))
     if liveness.verdict == "FROZEN":
         failures.append("liveness verdict FROZEN")
     if liveness.zero_step_share > zero_step_max:
@@ -163,7 +175,9 @@ def evaluate(df: pd.DataFrame, sport: str,
 
     return QualityReport(sport, config_version, n_frames, n_unique_games,
                          duplicates, ball_rows, round(coverage, 4),
-                         round(det_per_frame, 2), track_len, round(ball_valid, 4),
+                         round(det_per_frame, 2), track_len,
+                         round(ball_valid, 4) if ball_valid is not None else None,
+                         schema.ball_telemetry_available,
                          round(jump_p95, 2), round(oob_pct, 4),
                          round(liveness.zero_step_share, 4),
                          round(liveness.median_step_distance, 4),
