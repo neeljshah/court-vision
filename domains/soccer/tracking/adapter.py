@@ -8,8 +8,9 @@ import pandas as pd
 from domains.soccer.tracking.geometry import SoccerGeometryMixin
 from domains.soccer.tracking.pressing import aggregate_pressing, pressure_index
 from domains.soccer.tracking.segmenter import is_pitch_view
+from domains.soccer.tracking.keypoints import SoccerKeypointProvider
 from scripts.platformkit.calibration.keypoint_calib import TemporalCalibrator
-from scripts.platformkit.coordinate_provenance import output_columns, stamp_image_space_rows
+from scripts.platformkit.coordinate_provenance import output_columns, stamp_court_space_rows, stamp_image_space_rows
 
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
 PITCH_ACCEPT = (-5.0, 110.0, -5.0, 73.0)
@@ -33,7 +34,8 @@ class SoccerAdapter(SoccerGeometryMixin):
         self.detector = detector if detector is not None else self._load_yolo_detector()
         self.retirement_frames, self._tracks, self._next_track_id = retirement_frames, {}, 1
         self._homography: Optional[np.ndarray] = None
-        self._calibrator = TemporalCalibrator("soccer", drift_threshold=8.0)
+        self._keypoint_provider = SoccerKeypointProvider()
+        self._calibrator = TemporalCalibrator("soccer", provider=self._keypoint_provider, drift_threshold=8.0)
         self._calibration_updates = 0
         self.last_output = pd.DataFrame(columns=SCHEMA)
         self.last_metadata: dict[str, object] = {}
@@ -122,6 +124,7 @@ class SoccerAdapter(SoccerGeometryMixin):
             capture.release()
         self.last_output = pd.DataFrame(rows, columns=SCHEMA)
         if image_space: self.last_output = stamp_image_space_rows(self.last_output)
+        elif accepted_homography_frames: self.last_output = stamp_court_space_rows(self.last_output, "soccer")
         self.last_metadata = {"processed_frames": processed, "pitch_view_frames": pitch_frames, "accepted_homography_frames": accepted_homography_frames}
         if image_space: self.last_metadata.update({"coordinate_space": "image_px", "roi": "full_frame"})
         if compute_pressing and not image_space:

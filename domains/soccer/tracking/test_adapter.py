@@ -73,29 +73,23 @@ def _degraded_broadcast_like_pitch() -> np.ndarray:
     return np.clip(image.astype(np.int16) + noise, 0, 255).astype(np.uint8)
 
 
-def test_synthetic_markings_and_homography() -> None:
+def test_synthetic_markings_do_not_ordinally_name_pitch_corners() -> None:
     image = _pitch_image()
     adapter = SoccerAdapter(detector=lambda frame: [])
     markings = adapter.detect_pitch_markings(image)
     assert markings["halfway_x"] is not None
     assert abs(markings["halfway_x"] - 640) < 5.0
-    assert markings["center_circle"] is not None
-    corners = adapter.detect_pitch_corners(image)
-    assert corners is not None
-    homography = adapter.homography_from_corners(corners)
-    mapped = cv2.perspectiveTransform(PITCH.reshape(1, -1, 2), homography)[0]
-    assert np.max(np.abs(mapped - np.float32(((0, 0), (105, 0), (0, 68), (105, 68))))) < 1.0
+    assert adapter.detect_pitch_corners(image) is None
+    assert not {"pitch_bl", "pitch_br", "pitch_tl", "pitch_tr"}.intersection(
+        adapter._landmark_detections(image)
+    )
 
 
-def test_degraded_partial_broadcast_lines_recover_homography() -> None:
+def test_degraded_partial_broadcast_lines_are_not_relabelled_as_pitch_corners() -> None:
     adapter = SoccerAdapter(detector=lambda frame: [])
     detections = adapter._landmark_detections(_degraded_broadcast_like_pitch())
-    assert len(detections) >= 4
-    homography = solve_homography(detections, "soccer")
-    assert homography is not None
-    recovered = cv2.perspectiveTransform(PITCH.reshape(1, -1, 2), homography)[0]
-    error = np.linalg.norm(recovered - np.float32(((0, 0), (105, 0), (0, 68), (105, 68))), axis=1)
-    assert float(np.max(error)) < 2.0
+    assert not {"pitch_bl", "pitch_br", "pitch_tl", "pitch_tr"}.intersection(detections)
+    assert solve_homography(detections, "soccer") is None
 
 
 def test_mock_detector_projects_players_and_tracks_ids() -> None:
@@ -209,7 +203,10 @@ def test_process_video_pressing_metadata_preserves_row_schema(tmp_path) -> None:
         (1, np.array((50.0, 34.0))), (2, np.array((54.0, 34.0))),
     ]
     rows = adapter.process_video(path, skip_non_pitch=False, compute_pressing=True, player_only=True)
-    assert list(rows.columns) == ["frame", "track_id", "cls", "x", "y"]
+    assert list(rows.columns) == [
+        "frame", "track_id", "cls", "x", "y", "coordinate_space",
+        "observation", "calibration",
+    ]
     assert "pressing_proxy" in adapter.last_metadata
     assert adapter.last_metadata["pressing_proxy"]["frame_ids"] == [0, 1]
     adapter.process_video(path, skip_non_pitch=False, compute_pressing=False, player_only=True)
@@ -240,6 +237,21 @@ def test_image_space_emits_every_detection_with_provenance_and_fails_closed(tmp_
     report = evaluate(rows, "soccer")
     assert not report.passed
     assert [f.split(":")[0] for f in report.failures] == ["coordinate_contract"]
+
+
+def test_validated_court_output_is_stamped_with_homography_provenance(tmp_path) -> None:
+    path = tmp_path / "court.avi"
+    writer = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*"MJPG"), 25, (128, 72))
+    writer.write(np.zeros((72, 128, 3), dtype=np.uint8))
+    writer.release()
+    adapter = SoccerAdapter(detector=lambda frame: [])
+    adapter._stable_homography = lambda detections, shape: np.eye(3, dtype=np.float32)
+    adapter.detect_players = lambda frame, homography: [(1, np.array((50.0, 34.0)))]
+    rows = adapter.process_video(path, skip_non_pitch=False, compute_pressing=False,
+                                 player_only=True)
+    assert set(rows["coordinate_space"]) == {"pitch_metres"}
+    assert set(rows["observation"]) == {"observed"}
+    assert set(rows["calibration"]) == {"homography"}
 
 
 def test_write_csv_refuses_to_drop_half_the_provenance(tmp_path) -> None:

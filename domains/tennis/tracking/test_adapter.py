@@ -184,7 +184,7 @@ def test_temporal_calibration_limits_noisy_corner_projection_jitter() -> None:
     assert np.percentile(jumps, 95) < 8.0
 
 
-def test_lost_corners_mark_reused_homography_propagated() -> None:
+def test_lost_corners_emit_no_stale_court_homography() -> None:
     adapter = TennisAdapter(detector=lambda frame: [])
     frame = _court_image()
     adapter.detect_court_corners = lambda _: COURT
@@ -192,8 +192,8 @@ def test_lost_corners_mark_reused_homography_propagated() -> None:
         adapter._stable_homography(frame)
     assert adapter._stable_homography(frame) is not None
     adapter.detect_court_corners = lambda _: None
-    assert adapter._stable_homography(frame) is not None
-    assert adapter._calibration_provenance == "propagated"
+    assert adapter._stable_homography(frame) is None
+    assert adapter._calibration_provenance == "unavailable"
 
 
 def test_scene_cut_resets_homography_smoothing(monkeypatch) -> None:

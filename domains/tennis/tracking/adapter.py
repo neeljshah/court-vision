@@ -195,18 +195,19 @@ class TennisAdapter:
             self._lost_corner_frames += 1
             if self._lost_corner_frames > 30:
                 self._reset_temporal_calibration()
-            self._calibration_provenance = "propagated" if self._homography is not None else "unavailable"
-            return self._homography
+            # A court-foot row needs a solve from this frame.  Carrying the
+            # previous matrix through a close-up or replay made stale geometry
+            # look like a contemporaneous calibration.
+            self._calibration_provenance = "unavailable"
+            return None
         self._lost_corner_frames = 0
         detections = {name: (float(point[0]), float(point[1]), 1.0) for name, point
                       in zip(("doubles_bl", "doubles_tl", "doubles_br", "doubles_tr"), corners)}
         result = self._calibrator.update(detections)
         if result.homography is None or result.recompute or not self._in_tolerance(result.homography, frame.shape[:2]):
-            self._calibration_provenance = "propagated" if self._homography is not None else "unavailable"
-            return self._homography
-        self._calibration_updates += 1
-        if self._calibration_updates < 9 and not self._force_homography_recompute:
+            self._calibration_provenance = "unavailable"
             return None
+        self._calibration_updates += 1
         self._corners, self._homography = corners, result.homography
         self._calibration_provenance = "solved"
         self._force_homography_recompute = False

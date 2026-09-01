@@ -6,6 +6,7 @@ from typing import Optional, Union
 import cv2
 import numpy as np
 
+from domains.soccer.tracking.keypoints import SoccerKeypointProvider
 from scripts.platformkit.calibration.keypoint_calib import CANONICAL_LANDMARKS, project_points, solve_homography
 
 
@@ -107,21 +108,7 @@ class SoccerGeometryMixin:
         return horizontal, vertical
 
     def _landmark_detections(self, frame: np.ndarray) -> Detections:
-        height, width = frame.shape[:2]
-        horizontal, vertical = self.detect_pitch_lines(frame)
-        horizontal_clusters = self._cluster_lines(horizontal, True, (height, width))
-        vertical_clusters = self._cluster_lines(vertical, False, (height, width))
-        if len(horizontal_clusters) < 2 or len(vertical_clusters) < 2:
-            return {}
-        near, far = self._fit_line(horizontal_clusters[-1]), self._fit_line(horizontal_clusters[0])
-        left, right = self._fit_line(vertical_clusters[0]), self._fit_line(vertical_clusters[-1])
-        points = [self._intersection(near, left), self._intersection(near, right), self._intersection(far, left), self._intersection(far, right)]
-        if any(point is None for point in points):
-            return {}
-        corners = np.asarray(points, dtype=np.float32)
-        if np.any(corners[:, 0] < -width * 0.25) or np.any(corners[:, 0] > width * 1.25) or np.any(corners[:, 1] < -height * 0.25) or np.any(corners[:, 1] > height * 1.25):
-            return {}
-        return {name: (float(point[0]), float(point[1]), 1.0) for name, point in zip(("pitch_bl", "pitch_br", "pitch_tl", "pitch_tr"), corners)}
+        return self._keypoint_provider.detect(frame)
 
     def detect_pitch_markings(self, frame: np.ndarray) -> dict[str, object]:
         """Expose line families and optional center-circle diagnostics."""
@@ -129,13 +116,14 @@ class SoccerGeometryMixin:
         horizontal, vertical = self.detect_pitch_lines(frame)
         clusters = self._cluster_lines(vertical, False, (height, width))
         halfway_x = None if len(clusters) < 3 else min((self._line_position(cluster[0], False, (height, width)) for cluster in clusters), key=lambda value: abs(value - width / 2))
-        circles = cv2.HoughCircles(self._white_pitch_mask(frame), cv2.HOUGH_GRADIENT, 1.2, max(40, height // 5), param1=80, param2=14, minRadius=max(15, height // 30), maxRadius=height // 3)
-        return {"horizontal": horizontal, "vertical": vertical, "halfway_x": halfway_x, "center_circle": None if circles is None else tuple(map(float, circles[0, 0]))}
+        diagnostics = self._keypoint_provider.diagnostics(frame)
+        return {"horizontal": horizontal, "vertical": vertical, "halfway_x": halfway_x,
+                "center_circle": diagnostics["center_circle"],
+                "raw_circle": diagnostics["raw_circle"]}
 
     def detect_pitch_corners(self, frame: np.ndarray) -> Optional[np.ndarray]:
-        """Return near-left, near-right, far-left, far-right pitch corners."""
-        detections = self._landmark_detections(frame)
-        return None if len(detections) < 4 else np.float32([detections[name][:2] for name in ("pitch_bl", "pitch_br", "pitch_tl", "pitch_tr")])
+        """Return nothing until semantic corner-arc identification is implemented."""
+        return None
 
     @staticmethod
     def homography_from_corners(corners: np.ndarray) -> np.ndarray:
