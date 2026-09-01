@@ -116,3 +116,57 @@ def test_no_edge_or_roi_language_in_the_declared_reasons() -> None:
     banned = ("roi", "profit", "edge over", "bankroll", "+ev")
     text = " ".join(row.get("reason", "") for row in wiring.WIRING.values()).lower()
     assert not [word for word in banned if word in text]
+
+
+# --- per-sport wiring (MLB and any future sport declared in WIRING_BY_SPORT) ---
+
+MLB_LEDGER = LEDGER.parent.parent.parent / "mlb" / "knowledge" / "mechanisms.md"
+FWER_LEDGER = Path(__file__).resolve().parents[3] / "data" / "cache" / "eval_gate" / "backtest_fwer.jsonl"
+
+
+def test_every_confirmed_mlb_mechanism_has_a_declared_wiring_row() -> None:
+    slugs = [row["slug"] for row in parse_mechanisms(MLB_LEDGER)]
+    assert slugs, "MLB mechanism ledger parsed empty"
+    assert wiring.rollup(slugs, "mlb")["not_wired"] == []
+
+
+def test_no_duplicate_slugs_within_or_across_declared_sports() -> None:
+    seen: dict[str, str] = {}
+    for sport, rows in wiring.WIRING_BY_SPORT.items():
+        for slug in rows:
+            assert slug not in seen, "slug %s declared for both %s and %s" % (slug, seen.get(slug), sport)
+            seen[slug] = sport
+
+
+def test_every_declared_source_path_exists_or_the_row_is_not_testable() -> None:
+    for sport, rows in wiring.WIRING_BY_SPORT.items():
+        for slug, row in rows.items():
+            if row["expr"]:
+                assert (wiring.REPO_ROOT / row["source"]).exists(), "%s: %s" % (sport, row["source"])
+            else:
+                assert len(row["reason"]) > 30, "%s: %s" % (sport, slug)
+
+
+def test_dry_run_appends_nothing_to_the_shared_fwer_ledger() -> None:
+    before = (FWER_LEDGER.stat().st_mtime_ns, len(FWER_LEDGER.read_text(encoding="ascii").splitlines()))
+    result = foundry.build(foundry.prereg_rows("mlb"), run_trials=False, sport="mlb")
+    after = (FWER_LEDGER.stat().st_mtime_ns, len(FWER_LEDGER.read_text(encoding="ascii").splitlines()))
+    assert before == after, "dry run touched the shared cumulative-K ledger"
+    assert result["counts"]["queued_for_charged_run"] == sum(
+        1 for row in result["rows"] if row["verdict"] == "PENDING")
+
+
+def test_mlb_rows_are_all_declared_and_carry_a_verdict() -> None:
+    result = foundry.build(foundry.prereg_rows("mlb"), run_trials=False, sport="mlb")
+    assert result["counts"]["mechanisms"] == len(wiring.WIRING_BY_SPORT["mlb"])
+    assert result["corpus"]["sport"] == "mlb"
+    for row in result["rows"]:
+        assert all(field in row for field in REQUIRED), row["mechanism_id"]
+        assert row["verdict"] in ("NOT_TESTABLE", "PENDING")
+
+
+def test_sport_scoped_out_paths_never_clobber_the_nba_artifacts() -> None:
+    assert foundry.out_paths("basketball_nba") == (foundry.PREREG_JSON, foundry.OUT_JSON)
+    prereg, out = foundry.out_paths("mlb")
+    assert prereg != foundry.PREREG_JSON and out != foundry.OUT_JSON
+    assert out.name == "mechanism_wiring_mlb.json"

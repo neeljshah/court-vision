@@ -136,11 +136,14 @@ def game_sheets(schedule: pd.DataFrame, mechanisms: list[dict],
     return sheets
 
 
-def sport_rollup(mechanisms: list[dict], sheets: list[dict] | None = None) -> dict:
+def sport_rollup(mechanisms: list[dict], sheets: list[dict] | None = None,
+                 sport: str = "basketball_nba") -> dict:
     """Report wiring coverage without concealing non-wired confirmed sections."""
-    schedule_slugs = {slug for spec in TRIGGER_REGISTRY.values() for slug in spec["slugs"]}
-    column_slugs = set(mechanism_wiring.TESTABLE)
-    declared = set(mechanism_wiring.WIRING)
+    # The schedule registry is NBA-only; other sports are wired by declared row.
+    schedule_slugs = ({slug for spec in TRIGGER_REGISTRY.values() for slug in spec["slugs"]}
+                      if sport == "basketball_nba" else set())
+    column_slugs = set(mechanism_wiring.TESTABLE_BY_SPORT.get(sport, ()))
+    declared = set(mechanism_wiring.WIRING_BY_SPORT.get(sport, {}))
     wired = [row for row in mechanisms if row["slug"] in schedule_slugs or row["slug"] in declared]
     not_wired = [row["mechanism"] for row in mechanisms
                  if row["slug"] not in schedule_slugs and row["slug"] not in declared]
@@ -177,7 +180,8 @@ def build(root: Path = REPO_ROOT) -> dict:
             "source": "domains/<sport>/knowledge/mechanisms.md + data/domains/basketball_nba/odds.parquet",
             "ledger_cross_check": {sport: {"parsed_confirmed": len(confirmed[sport]),
                                              "ledger_confirmed": ledger_counts[sport]} for sport in SPORTS},
-            "per_sport": {sport: sport_rollup(confirmed[sport], sheets if sport == "basketball_nba" else []) for sport in SPORTS},
+            "per_sport": {sport: sport_rollup(confirmed[sport], sheets if sport == "basketball_nba" else [],
+                                              sport) for sport in SPORTS},
             "example_game_sheets": examples, "game_sheets": sheets}
 
 

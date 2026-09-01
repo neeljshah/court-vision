@@ -1,0 +1,178 @@
+[
+  {
+    "mechanism_id": "platoon_pitcher_hand_x_batter_stand_x_pitch_type",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "the claim is a PA-grain pitcher-hand x batter-stand x pitch-type interaction; the only persisted platoon artifact is data/domains/mlb/platoon_split_index.parquet (394 batter rows at season='2022_2023' grain) -- a season-final aggregate outside the frozen corpus window",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "count_leverage_ahead_behind_x_pitch_mix",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "count state and pitch mix are pitch-grain quantities recomputed in memory by domains/mlb/pitch_engine/selection.py over statcast; no game-grain as-of column is persisted and local statcast starts at 2022, after the frozen corpus ends",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "base_out_state_x_contact_type_gb_fb",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "base-out state x batted-ball type is a PA-grain run-value quantity; the only base-out corpus on disk is data/cache/ingame/mlb_atbat_states__2022/2023.parquet, disjoint from the frozen 2010-2021 corpus, and no game-grain as-of column encodes it",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "edge_zone_widening_in_two_strike_counts",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "edge-zone (Statcast zone 11-14) rate by count is a pitch-grain quantity recomputed by domains/mlb/knowledge/validate_count_zone.py; no persisted as-of column exists and no local pitch corpus predates 2022",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "two_strike_chase_rate_rise",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "swing-and-out-of-zone rate at two strikes is the same pitch-grain quantity as the edge-zone row, with the same absence: recomputed in memory, never persisted as a game-grain as-of column",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "first_pitch_strike_suppresses_walk_rate",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "the conditioning and the outcome are both within-PA (first-pitch strike -> walk); the frozen corpus scores pregame home-win only and no as-of column encodes first-pitch strike rate",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "contact_quality_persistence_split_half",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "split-half repeatability of mean launch_speed is a batter-level property of the statcast corpus (2022+); it is not a game-grain as-of team column and cannot be evaluated on the 2010-2021 frozen corpus",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "ground_ball_double_play_suppression",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "the claim conditions on batted-ball type inside a force state; no game-grain as-of column encodes it, and realized double plays exist locally only in data/domains/mlb/espn_boxscores.parquet (2 rows)",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "times_through_order_decay_raw_velo_independent",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "times-through-order is a PA-grain axis; the nearest persisted as-of starter quantity in the frozen window is sp_first6_diff_ew (data/cache/combo/gate_corpus_mlb.parquet, 87.63% of era_2010_2021 rows), a first-six-innings run differential with no TTO axis -- a different quantity, not this mechanism's ingredient",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "walk_economy_baserunner_inflation",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "run expectancy per walk by base state is a PA-grain quantity built in memory by domains/mlb/re24_table.py; no as-of column persists it and the outcome is run expectancy, not the corpus home-win label",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "big_inning_generation_run_clustering",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "home_big_inning_share / away_big_inning_share exist only in data/domains/mlb/postmortem.parquet, a REALIZED post-game artifact; asof_inning.parquet persists early/late scoring RATES as-of and carries no leadoff-gating or run-clustering column",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "pitch_count_efficiency_and_starter_durability",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "pitches per PA is a pitch-grain quantity; the persisted as-of pitch-count column sp_prior_pitch_count_diff_asof lives only in carryover_asof__2023.parquet and carryover_asof__2024.parquet (seasons 2023-2024), disjoint from the frozen 2010-2021 corpus",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "high_leverage_strand_prevention",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "strand rate under RISP is a reliever-grain quantity; data/domains/mlb/bullpen_relief_chains.parquet (2022-2026) carries rest-day and appearance counts only, no strand column, and its window does not intersect the frozen corpus",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "spin_rate_deception_independent_of_velocity",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "release spin rate is a pitch-grain statcast column (data/cache/statcast/savant_full__2023..2026.parquet); no persisted game-grain as-of team column carries it and the corpus window predates local statcast",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "launch_angle_sweet_spot_consistency",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "sweet-spot rate is a batter-level repeatability property of the statcast corpus (2022+); no game-grain as-of column persists it and the outcome is a batter skill, not the corpus home-win label",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "called_strike_rate_dispersion_exceeds_binomial_noise",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "the claim is a dispersion property of REALIZED per-game called-strike rates, not a pregame predictor (same status as the NBA whistle-tightness row); no as-of column exists and no local pitch corpus predates 2022",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "umpire_called_strike_zone_size_varies_by_count_state_compassionate_umpire",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "the axis is the pitch count state; umpire identity is persisted only in umpire_assignments.parquet (248 rows, 2026-07-09..2026-07-16) and umpire_zone_index.parquet (102 umpire rows, season='2022_2023'), neither of which joins the frozen 2010-2021 corpus",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "catcher_framing_multi_season_trend_decline_curve_proxy_no_local_age_column",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "catcher_framing_index.parquet holds 113 catcher rows at season='2022_2023' grain and no game-grain catcher assignment column exists; the trend is a multi-season aggregate outside the frozen corpus window",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "mid_inning_pitching_change_interrupts_the_batting_team_s_scoring_rate_raw_pre_post_gap_same_design_family_as_the_confirmed_nba_47_timeout_interrupt_row",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "the trigger is an in-game mid-inning pitcher change with pre/post PA windows; the frozen corpus scores pregame home-win only and no as-of column encodes pitching changes",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "pinch_hitter_substitutions_skew_toward_securing_the_platoon_opposite_hand_advantage_against_the_current_pitcher",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "the trigger is an in-game substitution observed at PA grain; no as-of column encodes substitutions and the outcome is the substitute's hand matchup, not the corpus home-win label",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "per_game_2_strike_putaway_whiff_rate_disperses_beyond_binomial_noise_identity_free_mirrors_39",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "identity-free dispersion of REALIZED per-game putaway-whiff rates, the same design as the called-strike dispersion row: a property of realized rates, not a pregame predictor, and no as-of column exists",
+    "as_of": null
+  },
+  {
+    "mechanism_id": "automatic_runner_zombie_runner_extra_inning_home_away_scoring_rate_parity_check_rule_era_aware",
+    "trigger": null,
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "reason": "the trigger is an inning==10 automatic-runner half-inning state under a rule era starting in 2020; the frozen corpus holds no in-game states and the outcome is a half-inning scoring rate, not the corpus home-win label",
+    "as_of": null
+  }
+]

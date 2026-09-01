@@ -12,6 +12,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from scripts.platformkit.analytics_showcase import mechanism_wiring_mlb
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DOMAIN = "data/domains/basketball_nba"
 GAMES = DOMAIN + "/games.parquet"
@@ -110,7 +112,17 @@ WIRING: dict[str, dict] = dict([
        "no as-of streak column is persisted at game grain"),
 ])
 
-TESTABLE = tuple(slug for slug, row in WIRING.items() if row["expr"])
+# Per-sport wiring. Only basketball_nba currently declares trigger columns; the
+# other sports' rows are NOT_TESTABLE, so the corpus machinery below (which reads
+# the NBA game_id-keyed parquets) stays deliberately single-sport until a sport
+# other than NBA actually has a testable row to run.
+WIRING_BY_SPORT: dict[str, dict[str, dict]] = {
+    "basketball_nba": WIRING,
+    "mlb": mechanism_wiring_mlb.WIRING,
+}
+TESTABLE_BY_SPORT = {sport: tuple(slug for slug, row in rows.items() if row["expr"])
+                     for sport, rows in WIRING_BY_SPORT.items()}
+TESTABLE = TESTABLE_BY_SPORT["basketball_nba"]
 _CACHE: dict[str, dict[str, float]] = {}
 
 
@@ -178,8 +190,9 @@ def column_exposures(game_ids: list[str], root: Path = REPO_ROOT) -> dict[str, l
     return out
 
 
-def rollup(slugs: list[str]) -> dict:
+def rollup(slugs: list[str], sport: str = "basketball_nba") -> dict:
     """Split a mechanism list into wired-with-trigger / wired-NOT_TESTABLE / unwired."""
-    return {"wired_trigger": [s for s in slugs if WIRING.get(s, {}).get("expr")],
-            "wired_not_testable": [s for s in slugs if s in WIRING and not WIRING[s]["expr"]],
-            "not_wired": [s for s in slugs if s not in WIRING]}
+    rows = WIRING_BY_SPORT.get(sport, {})
+    return {"wired_trigger": [s for s in slugs if rows.get(s, {}).get("expr")],
+            "wired_not_testable": [s for s in slugs if s in rows and not rows[s]["expr"]],
+            "not_wired": [s for s in slugs if s not in rows]}
