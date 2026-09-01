@@ -5,6 +5,10 @@ divergence need to be, at a given price, for a TAKER order to be +EV after
 real transaction costs? This is measurement infrastructure only -- it changes
 no behavior and places no orders.
 
+FEE SCHEDULES LIVE IN execution/venue_fees.py (the ONE canonical, cited fee
+module, re-verified 2026-09-01) -- the Kalshi/Polymarket functions below are
+thin wrappers over it so the two files' schedules can never drift again.
+
 PROVENANCE (web-verified 2026-07-02, cross-checked 2+ independent sources each;
 RE-VERIFY against the official Kalshi fee schedule PDF + Polymarket docs before
 Phase 8.2 ever runs for real money -- fee schedules change):
@@ -13,7 +17,8 @@ Phase 8.2 ever runs for real money -- fee schedules change):
       fee = ceil_to_cent(0.07 * P * (1 - P))
   Maker fee is 0.25x the taker formula:
       fee = ceil_to_cent(0.0175 * P * (1 - P))
-  Max fee lands at P=0.50: 1.75c/contract taker, 0.44c/contract maker. This is
+  Max fee lands at P=0.50: 1.75c/contract taker (bills 2c after the cent
+  ceiling), 0.44c/contract maker (bills 1c after the cent ceiling). This is
   the STANDARD schedule; some Kalshi market categories are reported to carry
   different fee schedules for special events. We have NO confirmed evidence
   this applies to the sports series this system trades (KXMLBGAME/KXWCGAME),
@@ -22,12 +27,13 @@ Phase 8.2 ever runs for real money -- fee schedules change):
   region plus half-spread, which is consistent with this formula (2 * 1.75c =
   3.5c) -- treated here as a cross-check, not a separate source of truth.
 
-  POLYMARKET: taker fee = 0.75% of trade notional, SPORTS category specifically
-  (March 2026 rate update; other categories are higher -- crypto 1.80%,
-  politics 1.00%). Maker orders are free (no maker fee). On-chain/relayer gas
-  is ~$0.003-0.005/trade and paid by the relayer, not the trader per-fill --
-  modeled here as a named, overridable constant defaulting near 0, never
-  silently hardcoded away.
+  POLYMARKET: the March-2026 flat 0.75%-of-notional Sports rate is SUPERSEDED
+  (July 2026 update, confirmed 2026-09-01 against docs.polymarket.com/trading/
+  fees -- see venue_fees.py): taker fee = shares * 0.05 * P * (1 - P), a
+  PARABOLIC formula like Kalshi's, where shares are $1-payout shares. Maker
+  orders are free. On-chain/relayer gas is ~$0.003-0.005/trade and paid by the
+  relayer, not the trader per-fill -- modeled here as a named, overridable
+  constant defaulting near 0, never silently hardcoded away.
 
   DFS PICK'EM (Underdog / PrizePicks) payout multipliers (both platforms
   independently converged on close numbers for their "must hit every leg"
@@ -51,61 +57,62 @@ raises on malformed input -- returns None/NaN-safe defaults instead.
 """
 from __future__ import annotations
 
-import math
 from typing import Optional
 
+from scripts.platformkit.execution import venue_fees as _vf
+
+
+def _mode(side: object) -> str:
+    """Legacy side -> venue_fees mode. Anything not "maker" falls through to
+    "taker" -- the CONSERVATIVE (higher-fee) tier -- because this module's
+    contract is never-raises; venue_fees itself fails closed on junk modes."""
+    return "maker" if str(side).strip().lower() == "maker" else "taker"
+
+
 # ---------------------------------------------------------------------------
-# Kalshi
+# Kalshi -- thin wrapper over execution.venue_fees (the canonical schedule)
 # ---------------------------------------------------------------------------
-
-_KALSHI_TAKER_COEF = 0.07
-_KALSHI_MAKER_COEF = 0.0175  # 0.25x taker, per the fee schedule's stated ratio
-
-
-def _ceil_to_cent(dollars: float) -> float:
-    """Round UP to the nearest whole cent (Kalshi fees are ceil'd, not rounded)."""
-    return math.ceil(round(dollars * 100.0, 6)) / 100.0
-
 
 def kalshi_fee_per_contract(price: float, side: str = "taker") -> float:
     """Kalshi fee in DOLLARS for one $1-notional contract at *price* (0.01-0.99).
 
-    side: "taker" (0.07 coef) or "maker" (0.0175 coef, i.e. 0.25x taker).
-    Never raises: out-of-range/invalid price clamps into [0.01, 0.99] first.
+    Delegates to execution.venue_fees (the ONE canonical schedule); this
+    wrapper only preserves cost_model's legacy input contract. side: "taker"
+    or "maker". Never raises: out-of-range/invalid price clamps into
+    [0.01, 0.99] first (venue_fees would raise ValueError instead).
     """
     try:
-        p = float(price)
+        p = min(max(float(price), 0.01), 0.99)
     except (TypeError, ValueError):
         return 0.0
-    p = min(max(p, 0.01), 0.99)
-    coef = _KALSHI_MAKER_COEF if str(side).lower() == "maker" else _KALSHI_TAKER_COEF
-    return _ceil_to_cent(coef * p * (1.0 - p))
+    if _mode(side) == "maker":
+        return _vf.fee_kalshi_maker(1.0, p)
+    return _vf.fee_kalshi_taker(1.0, p)
 
 
 # ---------------------------------------------------------------------------
-# Polymarket
+# Polymarket -- thin wrapper over execution.venue_fees (the canonical schedule)
 # ---------------------------------------------------------------------------
 
-_POLYMARKET_SPORTS_TAKER_PCT = 0.0075  # 0.75% of notional, Sports category
-_POLYMARKET_MAKER_PCT = 0.0  # maker orders are free
 # Relayer gas is paid by the relayer, not the trader, per-fill -- modeled as an
 # overridable constant near 0 rather than silently assumed away.
 POLYMARKET_GAS_PER_TRADE = 0.004  # dollars; midpoint of the observed $0.003-0.005 band
 
 
 def polymarket_fee(notional: float, side: str = "taker",
-                    include_gas: bool = False) -> float:
-    """Polymarket fee in DOLLARS for a trade of *notional* dollars (Sports category).
+                    include_gas: bool = False, *, price: float) -> float:
+    """Polymarket Sports-category fee in DOLLARS via venue_fees.fee_polymarket.
 
-    Maker orders are free. Gas is excluded by default (paid by the relayer);
-    pass include_gas=True to add the named constant for a conservative estimate.
+    SIGNATURE CHANGE 2026-09-01: the superseded flat 0.75%-of-dollar-notional
+    formula is gone. The cited schedule is parabolic in price, so *price*
+    (share probability in [0, 1]) is REQUIRED, and *notional* is now a count
+    of $1-payout shares (venue_fees' convention), NOT dollars of notional.
+    Maker orders are free. A numerically valid price outside [0, 1] raises
+    ValueError (a cents-vs-dollars unit error -- a silent $0 fee would inflate
+    EV); unparseable notional/price still returns 0.0. Gas is excluded by
+    default (paid by the relayer); include_gas=True adds the named constant.
     """
-    try:
-        notion = float(notional)
-    except (TypeError, ValueError):
-        return 0.0
-    pct = _POLYMARKET_MAKER_PCT if str(side).lower() == "maker" else _POLYMARKET_SPORTS_TAKER_PCT
-    fee = abs(notion) * pct
+    fee = _vf.fee_polymarket(_mode(side), notional, price)
     if include_gas:
         fee += POLYMARKET_GAS_PER_TRADE
     return fee
@@ -114,11 +121,6 @@ def polymarket_fee(notional: float, side: str = "taker",
 # ---------------------------------------------------------------------------
 # breakeven_edge_prob -- venue-agnostic entry point
 # ---------------------------------------------------------------------------
-
-_VENUE_FEE_FN = {
-    "kalshi": kalshi_fee_per_contract,
-}
-
 
 def breakeven_edge_prob(venue: str, price: float, size: float = 1.0,
                          side: str = "taker") -> Optional[float]:
@@ -132,9 +134,9 @@ def breakeven_edge_prob(venue: str, price: float, size: float = 1.0,
     hold-to-settlement, per NOW.md's round-trip framing).
 
     size is contracts (Kalshi, fee is PER-CONTRACT so breakeven PROBABILITY is
-    size-INVARIANT -- confirmed below in the monotonicity test) or notional
-    dollars (Polymarket, fee is a PERCENTAGE of notional so likewise
-    size-invariant in probability terms).
+    size-INVARIANT -- confirmed below in the monotonicity test) or $1-payout
+    shares (Polymarket, fee is LINEAR in shares so likewise size-invariant in
+    probability terms).
 
     Returns None for an unrecognized venue (never raises, never guesses).
     """
@@ -153,10 +155,13 @@ def breakeven_edge_prob(venue: str, price: float, size: float = 1.0,
         # the breakeven PROBABILITY (cost / $1 notional) does not depend on size.
         return round(round_trip, 6)
     if v == "polymarket":
-        notional = 1.0  # probability terms: normalize to $1 notional per unit
-        fee = polymarket_fee(notional, side=side, include_gas=False)
-        fee_out = polymarket_fee(notional, side=side, include_gas=False)
-        return round(fee + fee_out, 6)
+        # Per $1-payout share; the parabolic schedule makes the fee depend on
+        # price now: entry at p, exit at the opposite side's price 1-p (same
+        # convention as the Kalshi branch; P*(1-P) is symmetric so both legs
+        # cost the same).
+        fee_in = polymarket_fee(1.0, side=side, include_gas=False, price=p)
+        fee_out = polymarket_fee(1.0, side=side, include_gas=False, price=1.0 - p)
+        return round(fee_in + fee_out, 6)
     return None
 
 

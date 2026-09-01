@@ -6,6 +6,8 @@ from __future__ import annotations
 
 import math
 
+import pytest
+
 from scripts.platformkit.econ import cost_model as C
 
 
@@ -54,25 +56,41 @@ def test_kalshi_fee_invalid_input_never_raises():
 # Polymarket
 # ---------------------------------------------------------------------------
 
-def test_polymarket_taker_fee_075_pct_of_notional():
-    fee = C.polymarket_fee(100.0, side="taker")
-    assert math.isclose(fee, 0.75, rel_tol=1e-9)
+def test_polymarket_taker_fee_matches_cited_parabolic_schedule():
+    # docs.polymarket.com/trading/fees worked example (2026-09-01 schedule,
+    # via venue_fees): 100 shares @ P=0.50 -> 100 * 0.05 * 0.50 * 0.50 = $1.25
+    fee = C.polymarket_fee(100.0, side="taker", price=0.50)
+    assert math.isclose(fee, 1.25, rel_tol=1e-9)
+
+
+def test_polymarket_taker_fee_away_from_midprice():
+    # 100 shares @ P=0.10 -> 100 * 0.05 * 0.10 * 0.90 = $0.45
+    fee = C.polymarket_fee(100.0, side="taker", price=0.10)
+    assert math.isclose(fee, 0.45, rel_tol=1e-9)
 
 
 def test_polymarket_maker_fee_is_zero():
-    fee = C.polymarket_fee(100.0, side="maker")
+    # "Makers are never charged fees. Only takers pay."
+    fee = C.polymarket_fee(100.0, side="maker", price=0.50)
     assert fee == 0.0
 
 
 def test_polymarket_gas_included_only_when_requested():
-    fee_no_gas = C.polymarket_fee(10.0, side="taker", include_gas=False)
-    fee_gas = C.polymarket_fee(10.0, side="taker", include_gas=True)
+    fee_no_gas = C.polymarket_fee(10.0, side="taker", include_gas=False, price=0.50)
+    fee_gas = C.polymarket_fee(10.0, side="taker", include_gas=True, price=0.50)
     assert fee_gas > fee_no_gas
     assert math.isclose(fee_gas - fee_no_gas, C.POLYMARKET_GAS_PER_TRADE)
 
 
 def test_polymarket_fee_invalid_input_never_raises():
-    assert C.polymarket_fee(None) == 0.0
+    assert C.polymarket_fee(None, price=0.50) == 0.0
+
+
+def test_polymarket_fee_out_of_range_price_raises_unit_error():
+    # Cents passed where a probability belongs is a unit error; a silent $0
+    # fee would inflate EV (venue_fees defect #4) -- must raise, never zero.
+    with pytest.raises(ValueError):
+        C.polymarket_fee(100.0, side="taker", price=50)
 
 
 # ---------------------------------------------------------------------------
@@ -112,6 +130,19 @@ def test_breakeven_invalid_price_returns_none():
     assert C.breakeven_edge_prob("kalshi", 0.0) is None
     assert C.breakeven_edge_prob("kalshi", 1.0) is None
     assert C.breakeven_edge_prob("kalshi", None) is None
+
+
+def test_breakeven_kalshi_golden_at_midprice():
+    # entry @0.50: ceil_to_cent(0.07 * 0.50 * 0.50) = ceil($0.0175) = $0.02;
+    # exit @ 1-0.50 = 0.50: another $0.02 -> 0.04 prob-units per $1 contract.
+    assert C.breakeven_edge_prob("kalshi", 0.50, side="taker") == 0.04
+
+
+def test_breakeven_polymarket_golden_at_midprice():
+    # per share each way: 0.05 * 0.50 * 0.50 = $0.0125 -> round trip 0.025
+    # (superseded flat schedule said 2 * 0.0075 = 0.015 -- it undercharged here).
+    be = C.breakeven_edge_prob("polymarket", 0.50, side="taker")
+    assert math.isclose(be, 0.025, rel_tol=1e-9)
 
 
 def test_breakeven_kalshi_maker_cheaper_than_taker():
