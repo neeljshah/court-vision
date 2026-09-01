@@ -101,7 +101,8 @@ def render(video: Path, tracking: Path, output: Path, sport: str, quality: str,
     native_fps = capture.get(cv2.CAP_PROP_FPS) or 30.0
     width, height = int(capture.get(cv2.CAP_PROP_FRAME_WIDTH)), int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
     every = max(1, round(native_fps / output_fps))
-    total = min(int(seconds * output_fps), 20 * output_fps)
+    # Repo-embedded clips stay short; local evidence renders may run to 90s.
+    total = min(int(seconds * output_fps), 90 * output_fps)
     output.parent.mkdir(parents=True, exist_ok=True)
     descriptor, temporary_name = tempfile.mkstemp(suffix=".mp4")
     os.close(descriptor)
