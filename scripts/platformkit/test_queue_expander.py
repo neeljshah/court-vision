@@ -54,12 +54,52 @@ def test_football_expansion_removes_legacy_placeholder_entries(tmp_path, monkeyp
 
     def fake_run(command, **_kwargs):
         field = command[command.index("--print") + 1]
-        return SimpleNamespace(stdout="newAAAAAA00\n" if field == "id" else "6000\n")
+        return SimpleNamespace(stdout=("newAAAAAA00\t6000\tFull Game Replay Football\n"
+                                      if field.startswith("%(id)") else ""))
 
     monkeypatch.setattr(queue_expander.subprocess, "run", fake_run)
+    monkeypatch.setattr(queue_expander, "_verify_football_candidate", lambda _: True)
     entries = queue_expander.expand_queue("football", ["https://example.test/list"], 1)
 
     assert [entry["game_id"] for entry in entries] == ["football_newAAAAAA00"]
+
+
+def test_football_expansion_requires_metadata_and_visual_verification(tmp_path, monkeypatch) -> None:
+    data_dir = tmp_path / "data"
+    monkeypatch.setattr(queue_expander, "DATA_DIR", data_dir)
+    monkeypatch.setattr(queue_expander, "TRACKING_DIR", data_dir / "tracking")
+    records = [
+        ("studioAAAAA", 6000.0, "NFL Players Second Acts"),
+        ("soccerAAAAA", 6000.0, "Full Game Replay Football"),
+        ("validAAAAAA", 6000.0, "Full Game Replay Football"),
+    ]
+    monkeypatch.setattr(queue_expander, "_football_candidates", lambda _: records)
+    checked = []
+    monkeypatch.setattr(queue_expander, "_verify_football_candidate",
+                        lambda video_id: checked.append(video_id) or video_id == "validAAAAAA")
+
+    entries = queue_expander.expand_queue("football", ["https://example.test/list"], 3)
+
+    assert [entry["game_id"] for entry in entries] == ["football_validAAAAAA"]
+    assert checked == ["soccerAAAAA", "validAAAAAA"]
+
+
+def test_football_probe_uses_a_small_section_and_web_client(monkeypatch):
+    commands = []
+
+    def fake_run(command, **_kwargs):
+        commands.append(command)
+        return SimpleNamespace(stdout="")
+
+    monkeypatch.setattr(queue_expander.subprocess, "run", fake_run)
+    monkeypatch.setattr(queue_expander.football_content_gate, "screen",
+                        lambda _path: SimpleNamespace(decision="accept"))
+
+    assert queue_expander._verify_football_candidate("validAAAAAA") is True
+    command = commands[0]
+    assert "--download-sections" in command
+    assert command[command.index("--download-sections") + 1] == "*00:10:00-00:10:12"
+    assert "youtube:player_client=web" in command
 
 
 def test_expand_queue_dedupes_filters_caps_and_writes_atomically(

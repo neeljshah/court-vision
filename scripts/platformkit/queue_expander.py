@@ -11,6 +11,8 @@ from itertools import zip_longest
 from pathlib import Path
 from typing import Iterable
 
+from scripts.platformkit import football_content_gate
+
 
 _VIDEO_ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
 
@@ -144,6 +146,46 @@ def _yt_dlp(url: str, field: str) -> list[str]:
     return [line.strip() for line in result.stdout.splitlines()]
 
 
+def _football_metadata(title: str) -> bool:
+    """Keep only replay-like football titles before fetching a sample."""
+    text = title.lower()
+    return ("football" in text and any(phrase in text for phrase in (
+        "full game", "game replay", "condensed game")))
+
+
+def _verify_football_candidate(video_id: str) -> bool:
+    """Download a 12-second low-res sample and require positive field evidence."""
+    url = "https://www.youtube.com/watch?v=%s" % video_id
+    with tempfile.TemporaryDirectory(prefix="football_queue_") as directory:
+        output = Path(directory) / "sample.mp4"
+        command = [
+            "yt-dlp", "--no-playlist", "--no-part", "--download-sections",
+            "*00:10:00-00:10:12", "--extractor-args",
+            "youtube:player_client=web", "-f", "worst[height<=360]/worst",
+            "-o", str(output), url,
+        ]
+        if COOKIES_FILE.is_file():
+            command[1:1] = ["--cookies", str(COOKIES_FILE)]
+        try:
+            subprocess.run(command, check=True, capture_output=True, text=True,
+                           timeout=180)
+        except (OSError, subprocess.SubprocessError):
+            return False
+        return football_content_gate.screen(output).decision == "accept"
+
+
+def _football_candidates(url: str) -> list[tuple[str, float | None, str]]:
+    """Return title-bearing candidate records, not unrelated parallel lists."""
+    records = _yt_dlp(url, "%(id)s\t%(duration)s\t%(title)s")
+    candidates: list[tuple[str, float | None, str]] = []
+    for record in records:
+        video_id, separator, rest = record.partition("\t")
+        duration_text, separator, title = rest.partition("\t") if separator else ("", "", "")
+        if separator:
+            candidates.append((video_id, _duration(duration_text), title))
+    return candidates
+
+
 def _duration(value: str) -> float | None:
     try:
         return float(value)
@@ -196,13 +238,13 @@ def expand_queue(
     pending = [item for item in items if not (TRACKING_DIR / item["game_id"]).is_dir()]
     known_ids = _existing_ids(items)
     for url in channel_or_playlist_urls:
-        video_ids = _yt_dlp(url, "id")
-        durations = _yt_dlp(url, "duration")
-        for video_id, duration_text in zip_longest(video_ids, durations, fillvalue=""):
+        candidates = (_football_candidates(url) if sport == "football" else
+                      [(video_id, _duration(duration_text), "") for video_id, duration_text
+                       in zip_longest(_yt_dlp(url, "id"), _yt_dlp(url, "duration"), fillvalue="")])
+        for video_id, duration, title in candidates:
             if not is_video_id(video_id):
                 continue  # skips playlist/channel ids from --flat-playlist
             game_id = "%s_%s" % (sport, video_id)
-            duration = _duration(duration_text)
             if len(pending) >= target_pending:
                 break
             if video_id in known_ids or game_id in known_ids:
@@ -210,6 +252,9 @@ def expand_queue(
             if (TRACKING_DIR / game_id).is_dir():
                 continue
             if duration is None or duration < MIN_DURATION_SECONDS[sport]:
+                continue
+            if sport == "football" and (not _football_metadata(title)
+                                         or not _verify_football_candidate(video_id)):
                 continue
             item = {
                 "sport": sport,
