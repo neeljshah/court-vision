@@ -31,7 +31,6 @@ is a fabrication, so no player rows are emitted at all.  See
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Optional, Sequence, Union
 
@@ -40,17 +39,17 @@ import numpy as np
 import pandas as pd
 
 from domains.baseball.tracking.command_meter import MotionStableDetector, command_series, glove_target
-from domains.baseball.tracking.field_mask import (
-    MIN_CHORD_FRACTION, MOUND_DIAMETER_FEET, infield_band_present, mound_chord,
+from domains.baseball.tracking.field_mask import MIN_CHORD_FRACTION, MOUND_DIAMETER_FEET
+from domains.baseball.tracking.geometry import (
+    PitchGeometry,
+    detect_pitch_geometry as _detect_pitch_geometry,
 )
 from domains.baseball.tracking.scale_anchor import anchor_calibrations
 from domains.baseball.tracking.segmenter import detect_cut, small_gray
 from scripts.platformkit.coordinate_provenance import IMAGE_SCHEMA, write_tracking_csv
 
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
-MOUND_TO_PLATE_FEET = 60.5
 Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
-_CENTER_CROP_FRACTION = 0.70
 COORDINATE_CALIBRATION_REASON = (
     "No validated ground-plane homography for baseball. Measured lateral field of "
     "view at the mound row is 26.9-42.3 ft (p95 66.2 ft), but seeing both 1B and "
@@ -64,20 +63,6 @@ COORDINATE_CALIBRATION_REASON = (
 
 class BallTrackingUnavailableError(RuntimeError):
     """Raised when a caller requests unsupported baseball ball tracking."""
-
-
-@dataclass(frozen=True)
-class PitchGeometry:
-    """What one pitch frame actually evidences: the mound, and lateral scale.
-
-    ``pixels_per_foot`` is the LATERAL scale at ``mound``'s image row, taken from
-    the mound's known 18-foot chord.  It is not valid along the depth axis and is
-    deliberately not used to project anything into feet.
-    """
-    mound: np.ndarray
-    mound_chord_px: float
-    pixels_per_foot: float
-    near_edge_occluded: bool
 
 
 def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
@@ -114,21 +99,6 @@ class BaseballAdapter:
 
         return detect
 
-    @staticmethod
-    def _center_crop(frame: np.ndarray) -> np.ndarray:
-        """Return the central 70 percent of a frame."""
-        height, width = frame.shape[:2]
-        crop_width = int(width * _CENTER_CROP_FRACTION)
-        crop_height = int(height * _CENTER_CROP_FRACTION)
-        x0, y0 = (width - crop_width) // 2, (height - crop_height) // 2
-        return frame[y0:y0 + crop_height, x0:x0 + crop_width]
-
-    @staticmethod
-    def _dominant_green(frame: np.ndarray) -> bool:
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        green = cv2.inRange(hsv, np.array((35, 35, 25)), np.array((95, 255, 255)))
-        return float(np.count_nonzero(green)) / green.size >= 0.35
-
     def detect_pitch_geometry(
         self, frame: np.ndarray, min_chord_fraction: float = MIN_CHORD_FRACTION,
     ) -> Optional[PitchGeometry]:
@@ -145,16 +115,7 @@ class BaseballAdapter:
         pitch view if one exists.  Dirt-coloured clothing on grass passes the
         chord test alone; the infield-band test is what rejects it.
         """
-        if not self._dominant_green(self._center_crop(frame)):
-            return None
-        chord = mound_chord(frame, min_chord_fraction)
-        if chord is None:
-            return None
-        if not infield_band_present(frame, chord.row):
-            return None
-        mound = np.array((chord.center_x, float(chord.row)), dtype=np.float32)
-        return PitchGeometry(mound, chord.width, chord.pixels_per_foot_lateral,
-                             chord.near_edge_occluded)
+        return _detect_pitch_geometry(frame, min_chord_fraction)
 
     def is_pitch_view(self, frame: np.ndarray) -> bool:
         """Return whether the frame shows green field, a bounded mound, and infield dirt."""

@@ -109,7 +109,8 @@ def _failed_report(sport: str, config_version: str, failure: str,
 def evaluate(df: pd.DataFrame, sport: str,
              config_version: str = DEFAULT_CONFIG_VERSION,
              source_metadata: Mapping[str, object] | None = None,
-             source: str | None = None) -> QualityReport:
+             source: str | None = None,
+             allow_legacy_undeclared: bool = False) -> QualityReport:
     """Return self-consistency health metrics for a recognized tracking table."""
     configs = CONFIG_VERSIONS.get(config_version)
     if configs is None:
@@ -123,7 +124,7 @@ def evaluate(df: pd.DataFrame, sport: str,
 
     try:
         schema = identify_tracking_schema(df)
-        df = normalize_tracking_frame(df, source)
+        df = normalize_tracking_frame(df, source, sport, allow_legacy_undeclared)
     except CoordinateTransformUnavailable as exc:
         return _failed_report(sport, config_version, "coordinate_contract: {}".format(exc),
                               source_metadata)

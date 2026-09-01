@@ -13,7 +13,7 @@ from scripts.platformkit.tracking_schema import (
 )
 
 
-def _good_game(n_frames=100, n_players=10):
+def _good_game(n_frames=100, n_players=10, coordinate_space="court_feet"):
     rows = []
     for frame in range(n_frames):
         for player_id in range(n_players):
@@ -21,7 +21,10 @@ def _good_game(n_frames=100, n_players=10):
                          "x": 10.0 + player_id * 5 + frame * 0.02, "y": 25.0})
         rows.append({"frame": frame, "track_id": 99, "cls": "ball",
                      "x": 47.0, "y": 25.0})
-    return pd.DataFrame(rows)
+    game = pd.DataFrame(rows)
+    if coordinate_space is not None:
+        game["coordinate_space"] = coordinate_space
+    return game
 
 
 def test_good_game_has_versioned_provenance_aware_report():
@@ -106,7 +109,7 @@ def test_all_sports_have_complete_configs():
 
 
 def test_empty_input_fails():
-    report = evaluate(pd.DataFrame(columns=["frame", "track_id", "cls", "x", "y"]),
+    report = evaluate(pd.DataFrame(columns=["frame", "track_id", "cls", "x", "y", "coordinate_space"]),
                       "tennis")
     assert not report.passed and report.n_unique_games == 0
 
@@ -126,7 +129,25 @@ def test_nba_production_rows_fail_closed_without_persisted_homography():
 
 def test_normalized_frame_is_passed_through_unchanged():
     normalized = _good_game()
-    assert normalize_tracking_frame(normalized) is normalized
+    assert normalize_tracking_frame(normalized, sport="basketball") is normalized
+
+
+def test_undeclared_in_bounds_pixels_fail_unless_audited_legacy_mode_is_explicit():
+    pixels_laundered_into_bounds = _good_game(coordinate_space=None)
+    report = evaluate(pixels_laundered_into_bounds, "basketball")
+
+    assert not report.passed
+    assert report.failures[0].startswith("coordinate_contract: rows omit coordinate_space")
+    legacy = evaluate(pixels_laundered_into_bounds, "basketball",
+                      allow_legacy_undeclared=True)
+    assert legacy.passed, legacy.failures
+
+
+def test_coordinate_space_must_match_the_scored_sport():
+    report = evaluate(_good_game(coordinate_space="pitch_metres"), "basketball")
+
+    assert not report.passed
+    assert report.failures[0].startswith("coordinate_contract: rows declare coordinate_space")
 
 
 def test_unrecognized_tracking_schema_fails_closed():

@@ -80,7 +80,9 @@ def test_process_video_returns_rally_metadata_only_when_requested(monkeypatch) -
 
     rows, metadata = adapter.process_video("synthetic.avi", compute_features=True)
 
-    assert list(rows.columns) == ["frame", "track_id", "cls", "x", "y", "calibration_provenance"]
+    assert list(rows.columns) == ["frame", "track_id", "cls", "x", "y",
+                                  "calibration_provenance", "coordinate_space",
+                                  "observation", "calibration"]
     assert metadata == adapter.last_metadata
     assert set(metadata["rally_features"]) >= {"n_rallies", "players"}
 

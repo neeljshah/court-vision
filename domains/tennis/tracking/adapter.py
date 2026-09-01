@@ -10,6 +10,8 @@ from domains.tennis.tracking.geometry import TennisGeometryMixin
 from domains.tennis.tracking.ball import MotionDiffDetector, ball_rows, rectify_track
 from domains.tennis.tracking.rally_features import match_aggregates
 from domains.tennis.tracking.segmenter import detect_cut, small_gray
+from scripts.platformkit.coordinate_provenance import (stamp_court_space_rows,
+                                                       write_tracking_csv)
 SCHEMA = ("frame", "track_id", "cls", "x", "y", "calibration_provenance")
 # Court x is the 78-foot length; y is the 36-foot width.
 COURT_FEET = np.float32(((0, 0), (0, 36), (78, 0), (78, 36))); Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
@@ -17,9 +19,7 @@ COURT_FEET = np.float32(((0, 0), (0, 36), (78, 0), (78, 36))); Detector = Callab
 ACCEPT_FEET = (-10.83, 88.83, -2.31, 38.31)
 def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
     """Write player tracking rows in the normalized platform schema."""
-    missing = [column for column in SCHEMA if column not in rows.columns]
-    if missing: raise ValueError("Tracking rows missing columns: %s" % ", ".join(missing))
-    Path(path).parent.mkdir(parents=True, exist_ok=True); rows.loc[:, SCHEMA].to_csv(path, index=False)
+    write_tracking_csv(rows, path, SCHEMA)
 class TennisAdapter(TennisGeometryMixin):
     """Track two tennis players from a fixed behind-baseline broadcast feed."""
     def __init__(
@@ -289,7 +289,12 @@ class TennisAdapter(TennisGeometryMixin):
                 ball["frame"] = frame
                 ball["calibration_provenance"] = provenance
                 rows.append(ball)
-        self.last_output = pd.DataFrame(rows, columns=SCHEMA)
+        # Declare the coordinate space. Scoring is strict about undeclared
+        # tables because an omitted declaration is exactly how pixels were
+        # laundered into court units elsewhere in this system; legitimate court
+        # output has to say what it is rather than rely on being assumed.
+        self.last_output = stamp_court_space_rows(
+            pd.DataFrame(rows, columns=SCHEMA), "tennis")
         self.last_metadata = {}
         if compute_features:
             self.last_metadata = {"rally_features": match_aggregates(self.last_output)}

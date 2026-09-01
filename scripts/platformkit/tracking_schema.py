@@ -9,6 +9,14 @@ The NBA production writer emits image pixels in ``x_position/y_position`` and
 image fractions in ``x_norm/y_norm``.  Its ``ft_x/ft_y`` are an affine image
 scaling, not a court homography.  No per-frame image-to-court transform is
 persisted, so this source must fail closed until one is supplied.
+
+New scoring requires ``coordinate_space``: a numeric range cannot distinguish
+court coordinates from pixels rescaled into that range. Historical court CSVs
+without provenance remain readable only through the explicit
+``allow_legacy_undeclared`` compatibility switch. That keeps an audited legacy
+corpus usable without letting a new producer omit its declaration by accident.
+Remove the switch only after the corpus is backfilled with recorded provenance
+and every writer has emitted the full columns for one retention cycle.
 """
 from __future__ import annotations
 
@@ -16,17 +24,17 @@ from dataclasses import dataclass
 
 import pandas as pd
 
+from scripts.platformkit.coordinate_provenance import SPORT_COORDINATE_SPACES
+
 NORMALIZED_COLUMNS = frozenset({"cls", "frame", "track_id", "x", "y"})
 NBA_PRODUCTION_COLUMNS = frozenset(
     {"frame", "timestamp", "player_id", "team", "x_position", "y_position"}
 )
 
-# Optional self-declaration of what x/y actually are.  Absent means the legacy
-# contract above governs: x/y are already the sport's declared native surface
-# unit.  Present means the producer states it, and only a surface space is
-# scorable -- image pixels are a preserved corpus, never a scorable game.
+# A declaration identifies what x/y are. Image pixels are a preserved corpus,
+# never a scorable game.
 COORDINATE_SPACE_COLUMN = "coordinate_space"
-COURT_SPACES = frozenset({"court_feet", "pitch_metres"})
+COURT_SPACES = frozenset().union(*SPORT_COORDINATE_SPACES.values())
 IMAGE_SPACE = "image_px"
 
 
@@ -53,9 +61,9 @@ _NBA_NO_TRANSFORM = (
 )
 
 
-_NON_COURT_SPACE = (
-    "rows declare non-court coordinate_space {}; a preserved detection corpus "
-    "is never a scorable game"
+_UNDECLARED_SPACE = (
+    "rows omit coordinate_space; coordinate declarations are required for scoring "
+    "unless allow_legacy_undeclared=True is used for an audited historical corpus"
 )
 
 
@@ -67,14 +75,15 @@ CANONICAL_COORDINATE_CONTRACT = {
         "column": COORDINATE_SPACE_COLUMN,
         "scorable": tuple(sorted(COURT_SPACES)),
         "corpus_only": (IMAGE_SPACE,),
-        "absent": "legacy rows; the declared-native rule above governs",
+        "absent": "fails unless explicit audited legacy compatibility is requested",
         "rule": "any other value, including null, fails closed",
     },
 }
 
 
-def _reject_non_court_space(df: pd.DataFrame) -> None:
-    """Fail closed on any declared coordinate space that is not a surface.
+def _validate_coordinate_space(df: pd.DataFrame, sport: str | None,
+                               allow_legacy_undeclared: bool) -> None:
+    """Fail closed unless a declared surface space belongs to this sport.
 
     Magnitude-independent by design: rescaling pixels into the sport bounds
     makes the harness bound checks pass, which is exactly how image-affine
@@ -82,13 +91,19 @@ def _reject_non_court_space(df: pd.DataFrame) -> None:
     numbers.
     """
     if COORDINATE_SPACE_COLUMN not in df.columns:
+        if not allow_legacy_undeclared:
+            raise CoordinateTransformUnavailable(_UNDECLARED_SPACE)
         return
     declared = {"(null)" if pd.isna(value) else str(value)
                 for value in df[COORDINATE_SPACE_COLUMN].unique()}
-    offending = sorted(declared - COURT_SPACES)
+    accepted = SPORT_COORDINATE_SPACES.get(sport, frozenset())
+    offending = sorted(declared - accepted)
     if offending:
         raise CoordinateTransformUnavailable(
-            _NON_COURT_SPACE.format(", ".join(offending))
+            "rows declare coordinate_space {} not accepted for sport {}; "
+            "a preserved detection corpus is never a scorable game".format(
+                ", ".join(offending), sport or "(unspecified)"
+            )
         )
 
 
@@ -109,12 +124,14 @@ def identify_tracking_schema(df: pd.DataFrame) -> TrackingSchema:
 
 
 def normalize_tracking_frame(df: pd.DataFrame,
-                             source: str | None = None) -> pd.DataFrame:
+                             source: str | None = None,
+                             sport: str | None = None,
+                             allow_legacy_undeclared: bool = False) -> pd.DataFrame:
     """Return canonical coordinates or reject a source with no valid transform.
 
-    Declared transforms:
-    - any schema declaring a non-surface ``coordinate_space``: fails closed
-      before schema identification, whatever the magnitude of x/y.
+    Coordinate contract:
+    - normalized rows require a coordinate space accepted for ``sport``. An
+      undeclared historical corpus requires the explicit compatibility switch.
     - normalized schema: identity; domain adapters project detections before CSV.
     - NBA production schema: requires a persisted court-calibration sidecar
       resolved from ``source``.  Without one -- the state of every game in the
@@ -126,10 +143,13 @@ def normalize_tracking_frame(df: pd.DataFrame,
         source: Optional game id, game directory, or CSV path used to locate a
             ``court_calibration.json`` sidecar.  When omitted, the NBA
             production branch always fails closed.
+        sport: Sport whose declared coordinate space is being scored.
+        allow_legacy_undeclared: Permit only an audited historical corpus that
+            predates coordinate provenance.
     """
-    _reject_non_court_space(df)
     schema = identify_tracking_schema(df)
     if schema is _NORMALIZED:
+        _validate_coordinate_space(df, sport, allow_legacy_undeclared)
         return df
     if source is None:
         raise CoordinateTransformUnavailable(_NBA_NO_TRANSFORM)
