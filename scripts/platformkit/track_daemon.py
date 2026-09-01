@@ -29,6 +29,10 @@ import time
 from pathlib import Path
 
 STAGE = Path("data/footage_bridge")
+# Where a tracked video goes instead of being deleted. Re-staging one game is
+# then `cp data/footage_corpus/<sport>__<game>.mp4 data/footage_bridge/`, which
+# is the whole cost of re-measuring a fix against the corpus it targets.
+CORPUS = Path("data/footage_corpus")
 REPORTS = Path("data/tracking_reports")
 # A watchdog cannot use pgrep to tell whether this is alive: any command line
 # mentioning the daemon (including the watchdog's own check, or an operator's
@@ -197,11 +201,37 @@ def _finish(name: str, job: dict, timed_out: bool = False) -> None:
     print("%s %s %s rows=%d passed=%s %s"
           % (job["game_id"], job["sport"], status, rows, entry["passed"],
              ";".join(entry["failures"])[:90]), flush=True)
-    for leftover in (job["video"], job["log"]):
+    _retain(job["video"])
+    try:
+        job["log"].unlink(missing_ok=True)
+    except OSError as exc:
+        print("cleanup failed %s: %s" % (job["log"], exc), flush=True)
+
+
+def _retain(video: Path) -> None:
+    """Move a finished video out of the stage into the retained corpus.
+
+    This used to delete it, and deletion is what made a 0%-pass corpus
+    unrecoverable: 133 games were tracked once, graded failed, and had their
+    source footage destroyed, so no later fix could ever be measured against
+    the footage it was written for -- re-running a game meant re-downloading it
+    over an 88.6 Mbps upload ceiling.
+    Staged videos average 67 MB (16-minute section downloads) against 334 TB
+    free on /workspace. Deleting the source to reclaim 0.02% of a disk, while
+    nothing passes, is a false economy.
+    CORPUS must not be inside STAGE: claimable() globs STAGE for *.mp4, so a
+    retained file left there would be re-claimed forever.
+    """
+    try:
+        CORPUS.mkdir(parents=True, exist_ok=True)
+        video.replace(CORPUS / video.name)
+    except OSError as exc:
+        # Never leave it in the stage on failure -- claimable() would loop on it.
+        print("retain failed %s: %s -- deleting" % (video, exc), flush=True)
         try:
-            leftover.unlink(missing_ok=True)
-        except OSError as exc:
-            print("cleanup failed %s: %s" % (leftover, exc), flush=True)
+            video.unlink(missing_ok=True)
+        except OSError as unlink_exc:
+            print("cleanup failed %s: %s" % (video, unlink_exc), flush=True)
 
 
 def tick(active: dict, workers: int) -> None:
@@ -220,8 +250,22 @@ def tick(active: dict, workers: int) -> None:
     for path, sport, game_id in claimable(active):
         if len(active) >= workers:
             break
-        if tracking_rows(game_id) >= MIN_TRACKING_ROWS:
-            print("%s already tracked, dropping stage copy" % game_id, flush=True)
+        # "Already tracked" has to mean already tracked SUCCESSFULLY. Judged by
+        # row count alone, a soccer game with 52,491 rows and passed=false was
+        # indistinguishable from a good one, so the daemon deleted its staged
+        # copy and refused to run it again -- forever. Across 133 tracked games
+        # and zero passes, that meant a calibration fix could never be proven on
+        # the corpus it was written for: only brand-new downloads would ever
+        # exercise new code.
+        # Re-staging a failed game is a deliberate act (an operator after a
+        # deploy, or the supervisor). The daemon's job is to honour it, not veto
+        # it. Churn is bounded on the other side: the supervisor still decides
+        # what to stage by row count, so a game that can never pass is not
+        # re-queued in a loop.
+        if tracking_rows(game_id) >= MIN_TRACKING_ROWS \
+                and verdict(sport, game_id).get("passed"):
+            print("%s already tracked and passing, dropping stage copy"
+                  % game_id, flush=True)
             path.unlink(missing_ok=True)
             continue
         log_path = path.with_suffix(".log")

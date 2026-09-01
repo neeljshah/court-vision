@@ -26,6 +26,7 @@ def _stage(tmp_path, monkeypatch):
     stage = tmp_path / "footage_bridge"
     stage.mkdir()
     monkeypatch.setattr(track_daemon, "STAGE", stage)
+    monkeypatch.setattr(track_daemon, "CORPUS", tmp_path / "footage_corpus")
     monkeypatch.setattr(track_daemon, "TRACKING", tmp_path / "tracking")
     monkeypatch.setattr(track_daemon, "LEDGER", tmp_path / "ledger.jsonl")
     return stage
@@ -113,15 +114,28 @@ def test_thin_output_is_recorded_as_thin_with_a_tail(tmp_path, monkeypatch):
     assert entry["status"] == "thin" and "no frames decoded" in entry["tail"]
 
 
-def test_already_tracked_game_is_dropped_without_retracking(tmp_path, monkeypatch):
-    """Re-tracking a done game burns a GPU slot the queue needs."""
+def _tracked_game(tmp_path, monkeypatch, game_id, passed):
+    """Stage a game that already has output and a recorded harness verdict."""
     stage = _stage(tmp_path, monkeypatch)
-    video = stage / "tennis__g9.mp4"
+    monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
+    video = stage / ("tennis__%s.mp4" % game_id)
     video.write_bytes(b"x")
-    csv_dir = track_daemon.TRACKING / "g9"
+    csv_dir = track_daemon.TRACKING / game_id
     csv_dir.mkdir(parents=True)
     (csv_dir / "tracking_data.csv").write_text(
         "h\n" + "row\n" * 5000, encoding="utf-8")
+    report = track_daemon.REPORTS / "tennis" / ("%s.json" % game_id)
+    report.parent.mkdir(parents=True, exist_ok=True)
+    report.write_text(
+        json.dumps({"passed": passed,
+                    "failures": [] if passed else ["oob 0.59 > 0.08"]}),
+        encoding="utf-8")
+    return video
+
+
+def test_already_tracked_game_is_dropped_without_retracking(tmp_path, monkeypatch):
+    """Re-tracking a done and PASSING game burns a GPU slot the queue needs."""
+    video = _tracked_game(tmp_path, monkeypatch, "g9", passed=True)
     monkeypatch.setattr(track_daemon.subprocess, "Popen",
                         lambda *a, **k: (_ for _ in ()).throw(
                             AssertionError("must not re-track")))
@@ -129,6 +143,24 @@ def test_already_tracked_game_is_dropped_without_retracking(tmp_path, monkeypatc
     track_daemon.tick({}, workers=4)
 
     assert not video.exists()
+
+
+def test_a_restaged_failing_game_is_retracked_not_dropped(tmp_path, monkeypatch):
+    """Row count is not success. A soccer game with 52,491 rows and
+    passed=false was dropped as "already tracked" and its staged copy deleted,
+    so a calibration fix could never be proven against the corpus it was
+    written for -- only brand-new downloads ever exercised new code.
+    Re-staging a FAILED game is a deliberate act; the daemon must honour it."""
+    video = _tracked_game(tmp_path, monkeypatch, "g8", passed=False)
+    launched = []
+    monkeypatch.setattr(
+        track_daemon.subprocess, "Popen",
+        lambda *a, **k: (launched.append(a), FakeProc(done=False))[1])
+
+    track_daemon.tick({}, workers=4)
+
+    assert launched, "a failing game must be re-tracked when it is re-staged"
+    assert video.exists()
 
 
 def test_basketball_routes_to_run_clip_not_the_adapter_registry(tmp_path):
@@ -365,3 +397,35 @@ def test_every_ledger_entry_is_dated(tmp_path, monkeypatch):
     entry = json.loads(track_daemon.LEDGER.read_text(encoding="utf-8").strip())
     assert entry["finished_at"] >= entry["seconds"]
     assert abs(entry["finished_at"] - time.time()) < 60
+
+
+def test_a_tracked_video_is_retained_not_destroyed(tmp_path, monkeypatch):
+    """Deleting source footage after one attempt is what made a 0%-pass corpus
+    unrecoverable: re-measuring a fix meant re-downloading over an 88.6 Mbps
+    ceiling. 67 MB a game against 334 TB free is not a reason to destroy it."""
+    stage = _stage(tmp_path, monkeypatch)
+    monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
+    video = stage / "soccer__s1.mp4"
+    video.write_bytes(b"video-bytes")
+    log = stage / "soccer__s1.log"
+    log.write_text("ok", encoding="utf-8")
+
+    active = {"soccer__s1.mp4": {"proc": FakeProc(), "video": video, "log": log,
+                                 "sport": "soccer", "game_id": "s1",
+                                 "started": time.time()}}
+    track_daemon.tick(active, workers=4)
+
+    assert not video.exists(), "the stage must be reclaimed"
+    assert not log.exists()
+    retained = track_daemon.CORPUS / "soccer__s1.mp4"
+    assert retained.read_bytes() == b"video-bytes"
+
+
+def test_the_retained_corpus_is_not_reclaimed_as_staged_work(tmp_path, monkeypatch):
+    """CORPUS inside STAGE would make claimable() re-claim every retained game
+    forever. They must be separate directories."""
+    _stage(tmp_path, monkeypatch)
+    track_daemon.CORPUS.mkdir(parents=True)
+    (track_daemon.CORPUS / "soccer__s2.mp4").write_bytes(b"x")
+
+    assert track_daemon.claimable({}) == []
