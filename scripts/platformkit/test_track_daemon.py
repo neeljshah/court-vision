@@ -9,6 +9,7 @@ import os
 import subprocess
 import time
 import sys
+from pathlib import Path
 
 from scripts.platformkit import track_daemon
 
@@ -136,6 +137,22 @@ def test_basketball_routes_to_run_clip_not_the_adapter_registry(tmp_path):
 
     assert "scripts/run_clip.py" in command
     assert track_daemon.build_command("kbo", tmp_path / "v.mp4", "k1")[-3] == "baseball"
+
+
+def test_clip_command_writes_where_tracking_rows_reads(tmp_path):
+    """run_clip defaults data_dir to <repo>/data, so an omitted --data-dir sent
+    every basketball job's rows to data/tracking_data.csv -- a path
+    tracking_rows() never reads, and one file for all concurrent jobs to
+    clobber. Four completed 3000-frame runs were graded "thin rows=0"."""
+    command = track_daemon.build_command("ncaa_basketball", tmp_path / "v.mp4", "n1")
+
+    assert "--data-dir" in command
+    written = Path(command[command.index("--data-dir") + 1])
+    read = track_daemon.TRACKING / "n1"
+    assert written == read, "%s != %s" % (written, read)
+    # Two concurrent games must not share one destination.
+    other = track_daemon.build_command("wnba", tmp_path / "v.mp4", "w2")
+    assert other[other.index("--data-dir") + 1] != command[command.index("--data-dir") + 1]
 
 
 def test_ledger_carries_the_harness_verdict_not_just_row_count(tmp_path, monkeypatch):

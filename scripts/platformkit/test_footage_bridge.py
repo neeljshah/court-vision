@@ -34,6 +34,32 @@ def test_thin_tracking_output_is_not_reported_as_tracked(monkeypatch, tmp_path):
     assert any(c.startswith("rm -f") for c in commands)
 
 
+def test_basketball_track_command_writes_where_tracking_rows_reads(monkeypatch, tmp_path):
+    """Same defect track_daemon had: run_clip defaults data_dir to <repo>/data,
+    so without --data-dir a successful run wrote data/tracking_data.csv while
+    tracking_rows() probed data/tracking/<game_id>/tracking_data.csv and read 0.
+    18000 frames was also measured still running after 5.06 hours."""
+    commands: list[str] = []
+
+    def fake_ssh(command, timeout=7200):
+        commands.append(command)
+        if command.startswith("wc -l"):
+            return subprocess.CompletedProcess(command, 0, stdout="0", stderr="")
+        return subprocess.CompletedProcess(command, 0, stdout="done", stderr="")
+
+    monkeypatch.setattr(footage_bridge, "_ssh", fake_ssh)
+    monkeypatch.setattr(footage_bridge.subprocess, "run",
+                        lambda *a, **k: subprocess.CompletedProcess(a, 0, "", ""))
+
+    footage_bridge.push_and_track(tmp_path / "wnba_01.mp4",
+                                  {"game_id": "wnba_01", "sport": "wnba"})
+
+    track = [c for c in commands if "run_clip.py" in c]
+    assert len(track) == 1, commands
+    assert "--data-dir data/tracking/wnba_01" in track[0]
+    assert "--frames 18000" not in track[0]
+
+
 def test_remote_copy_deleted_even_when_tracking_raises(monkeypatch, tmp_path):
     removed: list[str] = []
 

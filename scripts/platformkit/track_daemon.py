@@ -84,8 +84,15 @@ def build_command(sport: str, video: Path, game_id: str) -> list:
         # now simply hit JOB_TIMEOUT_SECONDS and yield NOTHING, burning a slot
         # for 45 minutes each. A shorter clip that actually finishes is worth
         # more than a long one that never does.
+        # --data-dir is not optional. Without it run_clip defaults data_dir to
+        # <repo>/data (scripts/run_clip.py:302) and writes data/tracking_data.csv
+        # -- a path tracking_rows() never reads. Four completed 3000-frame jobs
+        # were graded "thin rows=0" while their own logs printed run_clip's
+        # success summary, and all four wrote the SAME repo-root file at once.
+        # footage_cycle.py:142 has always passed it; this caller just omitted it.
         return [sys.executable, "scripts/run_clip.py", "--video", str(video),
-                "--game-id", game_id, "--no-show", "--frames", "3000"]
+                "--game-id", game_id, "--no-show", "--frames", "3000",
+                "--data-dir", str(TRACKING / game_id)]
     adapter = SPORT_ADAPTER.get(sport, sport)
     return [sys.executable, "-m", "scripts.platformkit.adapter_run",
             adapter, str(video), game_id]

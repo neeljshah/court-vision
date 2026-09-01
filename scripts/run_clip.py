@@ -1,5 +1,5 @@
 """
-run_clip.py — Full data-extraction pipeline for a 5-minute basketball clip.
+run_clip.py -- Full data-extraction pipeline for a 5-minute basketball clip.
 
 Runs every stage end-to-end and prints a summary of all output files.
 
@@ -7,7 +7,7 @@ Usage
 -----
     conda activate basketball_ai
 
-    # Basic — just tracking data
+    # Basic -- just tracking data
     python run_clip.py --video path/to/clip.mp4
 
     # With NBA enrichment (adds made/missed labels + possession outcomes)
@@ -75,13 +75,13 @@ except ImportError:
 
 MIN_CLIP_SECONDS = 60  # clips under this are too short for meaningful analytics
 _PREFLIGHT_FRAMES = 10   # number of evenly-spaced frames to sample
-_PREFLIGHT_MIN_PERSONS = 3  # median person count below this → reject video
+_PREFLIGHT_MIN_PERSONS = 3  # median person count below this -> reject video
 
 
 def _ensure_decodable_video(video_path: str) -> str:
     """Transcode AV1 videos to H.264 so opencv-python's bundled ffmpeg can read them.
 
-    opencv-python ships its own libavcodec built without libdav1d → cap.read()
+    opencv-python ships its own libavcodec built without libdav1d -> cap.read()
     returns False on every AV1 frame. System ffmpeg (apt install ffmpeg) has
     libdav1d + av1_cuvid + h264_nvenc, so we transcode once to a cache dir and
     return the cached path. Subsequent runs hit the cache.
@@ -95,13 +95,13 @@ def _ensure_decodable_video(video_path: str) -> str:
             text=True,
         ).strip()
     except (FileNotFoundError, subprocess.CalledProcessError):
-        # ffprobe unavailable — fall back to cv2 read test
+        # ffprobe unavailable -- fall back to cv2 read test
         cap = cv2.VideoCapture(video_path)
         ok, _ = cap.read()
         cap.release()
         if ok:
             return video_path
-        # Can't read first frame — likely AV1 without hw decoder.
+        # Can't read first frame -- likely AV1 without hw decoder.
         # Try PyAV probe as last resort.
         try:
             import av
@@ -112,7 +112,7 @@ def _ensure_decodable_video(video_path: str) -> str:
                 return video_path
             # Fall through to transcode
         except Exception:
-            print(f"[transcode] Cannot read video and cannot probe codec — skipping")
+            print(f"[transcode] Cannot read video and cannot probe codec -- skipping")
             return video_path
     if codec != "av1":
         return video_path
@@ -125,11 +125,11 @@ def _ensure_decodable_video(video_path: str) -> str:
         print(f"[transcode] using cached H.264: {out_path}")
         return out_path
 
-    print(f"[transcode] {codec} → h264 (CPU libdav1d/libx264): {video_path}")
+    print(f"[transcode] {codec} -> h264 (CPU libdav1d/libx264): {video_path}")
     tmp_path = out_path + ".tmp.mp4"
     # RunPod containers typically do not expose NVDEC/NVENC (av1_cuvid + h264_nvenc
     # fail with "unsupported device") even though CUDA compute works. Use pure CPU.
-    # ~2.5× realtime on this pod (~8–12 min per 20-min broadcast), multi-threaded.
+    # ~2.5x realtime on this pod (~8-12 min per 20-min broadcast), multi-threaded.
     cpu_cmd = [
         "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
         "-c:v", "libdav1d",
@@ -140,10 +140,10 @@ def _ensure_decodable_video(video_path: str) -> str:
     ]
     rc = subprocess.call(cpu_cmd)
     if rc != 0 or not os.path.exists(tmp_path):
-        print(f"[transcode] FAILED rc={rc} — returning original path, pipeline will fail cleanly")
+        print(f"[transcode] FAILED rc={rc} -- returning original path, pipeline will fail cleanly")
         return video_path
     os.rename(tmp_path, out_path)
-    print(f"[transcode] done → {out_path} ({os.path.getsize(out_path)/1e6:.0f} MB)")
+    print(f"[transcode] done -> {out_path} ({os.path.getsize(out_path)/1e6:.0f} MB)")
     return out_path
 
 
@@ -158,19 +158,19 @@ def _preflight_check(video_path: str, yolo_weight=None):
         from ultralytics import YOLO as _YOLO
         _model_path = yolo_weight or os.path.join(PROJECT_DIR, "yolov8n.pt")
         if not os.path.exists(_model_path):
-            # Can't run preflight without model — skip and proceed
-            print("[preflight] YOLO model not found — skipping preflight check")
+            # Can't run preflight without model -- skip and proceed
+            print("[preflight] YOLO model not found -- skipping preflight check")
             return True, 0.0
         _model = _YOLO(_model_path)
     except ImportError:
-        print("[preflight] ultralytics not available — skipping preflight check")
+        print("[preflight] ultralytics not available -- skipping preflight check")
         return True, 0.0
 
     cap = cv2.VideoCapture(video_path)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     if total_frames <= 0:
         cap.release()
-        return True, 0.0  # can't read — let Stage 1 handle it
+        return True, 0.0  # can't read -- let Stage 1 handle it
 
     # Quick decodability check: if first frame can't be read, video codec
     # is unsupported (e.g. AV1 without hw decoder). Fail fast.
@@ -178,7 +178,7 @@ def _preflight_check(video_path: str, yolo_weight=None):
     _test_ok, _ = cap.read()
     if not _test_ok:
         cap.release()
-        print("[preflight] FAIL — cannot decode first frame (likely AV1 without hw decoder)")
+        print("[preflight] FAIL -- cannot decode first frame (likely AV1 without hw decoder)")
         return False, 0.0
 
     sample_indices = [int(total_frames * i / (_PREFLIGHT_FRAMES - 1))
@@ -220,7 +220,7 @@ def _fmt_size(path: str) -> str:
 
 def main():
     ap = argparse.ArgumentParser(
-        description="NBA AI — full data extraction pipeline for a single clip"
+        description="NBA AI -- full data extraction pipeline for a single clip"
     )
     ap.add_argument("--video",    required=True,
                     help="Path to input video (.mp4)")
@@ -243,7 +243,7 @@ def main():
                          "Overrides --period.")
     ap.add_argument("--start",    type=float, default=0.0,
                     help="Seconds elapsed in the period when the clip starts. "
-                         "e.g. clip starts at 8:30 left in Q1 → --start 210")
+                         "e.g. clip starts at 8:30 left in Q1 -> --start 210")
     ap.add_argument("--data-dir", default=None,
                     help="Output directory for CSV files (default: data/). "
                          "run_phase_g.py passes data/tracking/<game_id>/ here.")
@@ -259,7 +259,7 @@ def main():
         print(f"Error: video not found at {args.video}")
         sys.exit(1)
 
-    # AV1 → H.264 shim (transcodes once, caches under data/videos/full_games_h264/)
+    # AV1 -> H.264 shim (transcodes once, caches under data/videos/full_games_h264/)
     args.video = _ensure_decodable_video(args.video)
 
     cap_check = cv2.VideoCapture(args.video)
@@ -277,13 +277,13 @@ def main():
         # Exit with non-zero so automated pipelines can detect short clips.
         sys.exit(2)
 
-    # ── Preflight: verify broadcast content ───────────────────────────────────
-    # Skip preflight in Phase G batch mode — videos are already quarantined by
+    # -- Preflight: verify broadcast content -----------------------------------
+    # Skip preflight in Phase G batch mode -- videos are already quarantined by
     # bootstrap_pod.sh, and loading a separate YOLO model per worker wastes
     # ~500 MB GPU each during the simultaneous-init window.
     _skip_preflight = os.environ.get("COURTV_NO_OCR", "0") == "1"
     if _skip_preflight:
-        print("[preflight] Skipped (batch mode — COURTV_NO_OCR=1)")
+        print("[preflight] Skipped (batch mode -- COURTV_NO_OCR=1)")
         _preflight_ok, _preflight_median = True, 10.0
     else:
         print("[preflight] Sampling 10 frames for person detection...")
@@ -293,20 +293,20 @@ def main():
             f"\n[PREFLIGHT FAIL] Median person count = {_preflight_median:.0f} "
             f"(threshold: {_PREFLIGHT_MIN_PERSONS})\n"
             "Video appears to be non-broadcast footage (app UI, overlays, no court).\n"
-            "This is a YOLO detection check — if the video is a real broadcast,\n"
+            "This is a YOLO detection check -- if the video is a real broadcast,\n"
             "re-download from a different source and retry.\n"
         )
         sys.exit(4)
-    print(f"[preflight] OK — median persons/frame = {_preflight_median:.1f}")
+    print(f"[preflight] OK -- median persons/frame = {_preflight_median:.1f}")
 
     data_dir = args.data_dir if args.data_dir else os.path.join(PROJECT_DIR, "data")
     os.makedirs(data_dir, exist_ok=True)
     t0 = time.time()
 
-    # ── Stage 1: Tracking ─────────────────────────────────────────────────────
+    # -- Stage 1: Tracking -----------------------------------------------------
     if args.skip_tracking:
         print("\n" + "=" * 60)
-        print(" Stage 1 / 3 — Tracking SKIPPED (--skip-tracking)")
+        print(" Stage 1 / 3 -- Tracking SKIPPED (--skip-tracking)")
         print("=" * 60)
         _td = os.path.join(data_dir, "tracking_data.csv")
         if not os.path.exists(_td):
@@ -319,7 +319,7 @@ def main():
         print(f" Using existing tracking_data.csv  fps={fps:.1f}")
     else:
         print("\n" + "=" * 60)
-        print(" Stage 1 / 3 — Tracking")
+        print(" Stage 1 / 3 -- Tracking")
         print("=" * 60)
         print(f" Video : {args.video}")
 
@@ -340,7 +340,7 @@ def main():
         print(f" Track stability  : {results['stability']:.3f}")
         print(f" Est. ID switches : {results['id_switches']}")
 
-    # ── Free GPU memory after tracking — Stage 2+3 are CPU-only ─────────────
+    # -- Free GPU memory after tracking -- Stage 2+3 are CPU-only -------------
     try:
         del pipeline
         import gc; gc.collect()
@@ -351,19 +351,19 @@ def main():
     except Exception:
         pass
 
-    # ── Stage 2: NBA enrichment (optional — runs BEFORE features) ──────────
+    # -- Stage 2: NBA enrichment (optional -- runs BEFORE features) ----------
     tracking_csv = os.path.join(data_dir, "tracking_data.csv")
     if not os.path.exists(tracking_csv):
-        print("\n[WARN] tracking_data.csv not written — Stage 1 produced 0 rows.")
+        print("\n[WARN] tracking_data.csv not written -- Stage 1 produced 0 rows.")
         print("       Possible causes: gameplay not detected, homography mismatch,")
         print("       or all frames filtered as dead-ball.  Skipping Stage 2.")
         sys.exit(3)  # exit 3 = empty tracking; run_phase_g treats 3 as soft failure
 
-    # ── Stage 2: NBA enrichment (optional) ───────────────────────────────────
+    # -- Stage 2: NBA enrichment (optional) -----------------------------------
     enriched = {}
     if args.game_id:
         print("\n" + "=" * 60)
-        print(" Stage 2 / 3 — NBA API Enrichment")
+        print(" Stage 2 / 3 -- NBA API Enrichment")
         print("=" * 60)
         try:
             from src.data.nba_enricher import enrich
@@ -388,13 +388,13 @@ def main():
             enriched = enrich(**enrich_kwargs)
         except Exception as e:
             print(f"  NBA enrichment failed: {e}")
-            print("  (Tracking data is still complete — enrichment is optional)")
+            print("  (Tracking data is still complete -- enrichment is optional)")
     else:
-        print("\n Stage 2 / 3 — NBA Enrichment skipped (no --game-id)")
+        print("\n Stage 2 / 3 -- NBA Enrichment skipped (no --game-id)")
         print("  Run later: python -m src.data.nba_enricher "
               "--game-id <ID> --period <P> --start <secs>")
 
-    # ── Team abbrev backfill (skip-tracking path) ──────────────────────────────
+    # -- Team abbrev backfill (skip-tracking path) ------------------------------
     # When --skip-tracking is used, pipeline.run() never fires _resolve_team_names
     # or _backfill_team_abbrev, leaving team_abbrev all NaN in tracking_data.csv.
     # Fix: resolve team names from NBA API and backfill here.
@@ -471,17 +471,17 @@ def main():
                         _json.dump(_color_map, _f, indent=2)
                     print(f"  [team_abbrev] backfill applied: {_color_map}")
                 else:
-                    print("  [team_abbrev] no color labels found — skipped")
+                    print("  [team_abbrev] no color labels found -- skipped")
         except Exception as _e:
             print(f"  [team_abbrev] backfill failed: {_e}")
 
-    # ── OCR identity annotation pass ──────────────────────────────────────────
+    # -- OCR identity annotation pass ------------------------------------------
     if _HAS_IDENTITY and args.game_id:
         db_url = os.environ.get("DATABASE_URL")
         clip_id = str(uuid.uuid4())
 
         print("\n" + "=" * 60)
-        print(" Stage 4 / 4 — OCR Identity Annotation")
+        print(" Stage 4 / 4 -- OCR Identity Annotation")
         print("=" * 60)
         print("[run_clip] Running OCR annotation pass...")
         buf = JerseyVotingBuffer()
@@ -523,15 +523,15 @@ def main():
             )
             print(f"[run_clip] Updated {rows_updated} tracking_frames rows with player_id")
         elif not db_url:
-            print("[run_clip] DATABASE_URL not set — skipping identity persistence")
+            print("[run_clip] DATABASE_URL not set -- skipping identity persistence")
         else:
             print("[run_clip] No confirmed jersey identities in this clip")
-    # ── end OCR annotation pass ───────────────────────────────────────────────
+    # -- end OCR annotation pass -----------------------------------------------
 
-    # ── Stage 3: Feature engineering (AFTER enrichment so features include enrichment cols)
+    # -- Stage 3: Feature engineering (AFTER enrichment so features include enrichment cols)
     if not args.skip_features:
         print("\n" + "=" * 60)
-        print(" Stage 3 / 3 — Feature Engineering")
+        print(" Stage 3 / 3 -- Feature Engineering")
         print("=" * 60)
         features_df = run_features(
             input_path=tracking_csv,
@@ -541,7 +541,26 @@ def main():
         print("\n[SKIP] Feature Engineering (--skip-features)")
         features_df = None
 
-    # ── Summary ───────────────────────────────────────────────────────────────
+    # -- Coordinate provenance -------------------------------------------------
+    # x_position/y_position are image pixels, and ft_x/ft_y are that same image
+    # fraction affinely rescaled (measured: max|ft_x - 94*x_norm| = 0.0092, i.e.
+    # rounding) -- NOT a homography, even though a per-clip one is solved in
+    # memory and discarded. Stamp what the persisted numbers actually are so the
+    # table is self-describing instead of silently undeclared. Runs after Stage 3
+    # so no src/ consumer ever sees the extra columns.
+    try:
+        import pandas as _pd
+        from scripts.platformkit.coordinate_provenance import (
+            PROVENANCE_COLUMNS, stamp_image_space_rows)
+        _rows = _pd.read_csv(tracking_csv, encoding="utf-8")
+        if not set(PROVENANCE_COLUMNS) <= set(_rows.columns):
+            stamp_image_space_rows(_rows).to_csv(tracking_csv, index=False,
+                                                 encoding="utf-8")
+            print("  [provenance] tracking_data.csv declared image_px/observed/none")
+    except Exception as _e:
+        print(f"  [provenance] stamp skipped: {_e}")
+
+    # -- Summary ---------------------------------------------------------------
     elapsed = time.time() - t0
     print("\n" + "=" * 60)
     print(" Output Summary")
@@ -568,7 +587,7 @@ def main():
             tag = _fmt_rows(path)
         else:
             tag = _fmt_size(path)
-        exists = "✓" if os.path.exists(path) else "✗"
+        exists = "OK" if os.path.exists(path) else "X"
         print(f"  {exists}  {fname:<30}  {tag:<12}  {desc}")
 
     # ML readiness
@@ -584,10 +603,10 @@ def main():
     if args.game_id:
         poss_path = os.path.join(data_dir, "possessions_enriched.csv")
         print(f"  possessions   : {_fmt_rows(poss_path)} labeled rows "
-              f"(team / result / score_diff) — train your model here")
+              f"(team / result / score_diff) -- train your model here")
         shot_path = os.path.join(data_dir, "shot_log_enriched.csv")
         print(f"  shot_log      : {_fmt_rows(shot_path)} labeled rows "
-              f"(zone / quality / made) — shot-quality model target")
+              f"(zone / quality / made) -- shot-quality model target")
     else:
         print("  Run with --game-id to add outcome labels for ML training.")
 

@@ -277,3 +277,43 @@ def test_yolo_detector_receives_configured_imgsz_and_conf(monkeypatch, capsys) -
     assert detector(np.zeros((4, 4, 3), dtype=np.uint8)) == [[1, 2, 3, 4, 0.8]]
     assert calls == [{"classes": [0], "imgsz": 1280, "conf": 0.15, "verbose": False}]
     assert "TENNIS_INFERENCE imgsz=1280 conf=0.150" in capsys.readouterr().out
+
+
+def test_far_half_ranking_follows_the_moving_player_not_a_larger_fixture() -> None:
+    """Courtside furniture out-sizes the far player, and used to out-rank it.
+
+    The camera sits behind the near baseline, so anything nearer it projects
+    larger. Ranking each half by pixel box area handed 70 of 251 far-half
+    selections on the reference clip to three fixed courtside sites (the umpire
+    chair among them); ranking by continuity with the previous frame does not.
+    """
+    image = _court_image()
+    base = TennisAdapter(detector=lambda frame: [])
+    homography = base.homography_from_corners(COURT)
+    inverse = np.linalg.inv(homography)
+
+    def box_for(x: float, y: float, half_width: float = 20.0,
+                height: float = 80.0) -> list[float]:
+        pixel = cv2.perspectiveTransform(np.float32([[[x, y]]]), inverse)[0, 0]
+        return [pixel[0] - half_width, pixel[1] - height,
+                pixel[0] + half_width, pixel[1]]
+
+    def area(box: list[float]) -> float:
+        return (box[2] - box[0]) * (box[3] - box[1])
+
+    fixture = box_for(70.0, 44.0, half_width=40.0, height=160.0)
+    boxes: list[list[float]] = []
+    adapter = TennisAdapter(detector=lambda frame: boxes)
+    far_track = []
+    for step in range(4):
+        near, far = box_for(20.0 + step, 6.0), box_for(58.0 + step, 30.0)
+        assert area(fixture) > area(far)
+        boxes = [near, far] if step == 0 else [near, far, fixture]
+        players = adapter.detect_players(image, homography)
+        assert len(players) == 2, step
+        far_track.append(max(float(point[0]) for _, point in players))
+    assert np.allclose(far_track, [58.0, 59.0, 60.0, 61.0], atol=0.5), far_track
+    # A reset must drop the centroid prior too: after a cut the previous frame
+    # belongs to a different camera, and continuity would chase it.
+    adapter._reset_temporal_calibration()
+    assert adapter._centroids == {}

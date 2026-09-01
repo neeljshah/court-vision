@@ -42,8 +42,7 @@ class TennisAdapter:
         self._corners = self._homography = None
         self._calibration_provenance = "unavailable"
         self._calibrator = TemporalCalibrator("tennis", drift_threshold=8.0)
-        self._calibration_updates = self._lost_corner_frames = 0
-        self._force_homography_recompute = False
+        self._calibration_updates = self._lost_corner_frames = 0; self._force_homography_recompute = False
         self._centroids: dict[int, np.ndarray] = {}
         self.last_output, self.last_metadata = pd.DataFrame(columns=SCHEMA), {}
     @staticmethod
@@ -187,10 +186,9 @@ class TennisAdapter:
         return bool(np.max(np.linalg.norm(current - previous, axis=1)) <= 8.0)
     def _reset_temporal_calibration(self) -> None:
         """Drop camera-specific calibration history after a cut or prolonged loss."""
-        self._corners = self._homography = None
+        self._corners = self._homography = None; self._centroids = {}
         self._calibrator = TemporalCalibrator("tennis", drift_threshold=8.0)
-        self._calibration_updates = self._lost_corner_frames = 0
-        self._force_homography_recompute = True
+        self._calibration_updates = self._lost_corner_frames = 0; self._force_homography_recompute = True
     def _stable_homography(self, frame: np.ndarray) -> Optional[np.ndarray]:
         corners = self.detect_court_corners(frame)
         if corners is None:
@@ -213,7 +211,6 @@ class TennisAdapter:
         self._calibration_provenance = "solved"
         self._force_homography_recompute = False
         return self._homography
-
     def _track_ids(self, candidates: list[tuple[np.ndarray, np.ndarray]]) -> list[tuple[int, np.ndarray]]:
         centers = [candidate[0] for candidate in candidates]
         if set(self._centroids) != {1, 2}:
@@ -235,14 +232,17 @@ class TennisAdapter:
             if x2 <= x1 or y2 <= y1:
                 continue
             foot = self._project(((x1 + x2) / 2.0, y2), homography)
-            # No court-region acceptance filter: the old ACCEPT_FEET window sat
-            # strictly inside the harness bounds, so oob read 0.0000 whatever the
-            # coordinates were. Where a detection lands is the harness's question.
+            # No court-region acceptance filter: the old ACCEPT_FEET window sat strictly
+            # inside the harness bounds, so oob read 0.0000 whatever the coordinates were.
             half = 0 if foot[0] < 39.0 else 1
-            area = (x2 - x1) * (y2 - y1)
             center = np.array(((x1 + x2) / 2.0, (y1 + y2) / 2.0))
-            if half not in per_half or area > per_half[half][0]:
-                per_half[half] = (area, center, foot)
+            # Rank by continuity, not pixel box area: the camera sits behind the near
+            # baseline, so far-half furniture out-sizes the far player and won 70 of 251
+            # far-half selections. ponytail: cold start still falls back to area (70/251
+            # on furniture); measured alternatives are no better, so no knob is shipped.
+            key = -min(np.linalg.norm(center - prior) for prior in self._centroids.values()) if self._centroids else (x2 - x1) * (y2 - y1)
+            if half not in per_half or key > per_half[half][0]:
+                per_half[half] = (key, center, foot)
         if set(per_half) != {0, 1}:
             return []
         return self._track_ids([(per_half[0][1], per_half[0][2]), (per_half[1][1], per_half[1][2])])

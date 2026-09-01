@@ -313,9 +313,13 @@ def push_and_track(local: Path, item: dict) -> str:
                        check=True, timeout=7200, capture_output=True, text=True)
         adapter = SPORT_ADAPTER.get(sport, sport)
         if adapter in ("wnba", "basketball"):
+            # Same defect as track_daemon had: without --data-dir run_clip writes
+            # <repo>/data/tracking_data.csv, which tracking_rows() (above) never
+            # reads, so a successful run reads back as rows=0. 3000, not 18000 --
+            # an 18000-frame job was measured still running after 5.06 hours.
             track = ("cd %s && PYTHONPATH=%s python scripts/run_clip.py --video %s "
-                     "--game-id %s --no-show --frames 18000"
-                     % (POD_ROOT, POD_ROOT, remote, game_id))
+                     "--game-id %s --no-show --frames 3000 --data-dir data/tracking/%s"
+                     % (POD_ROOT, POD_ROOT, remote, game_id, game_id))
         else:
             track = ("cd %s && PYTHONPATH=%s python adapter_run.py %s %s %s"
                      % (POD_ROOT, POD_ROOT, adapter, remote, game_id))
