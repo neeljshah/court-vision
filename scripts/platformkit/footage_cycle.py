@@ -56,7 +56,18 @@ def download_item(item: dict[str, str], destination: Path) -> Path:
         command.extend(["--cookies", str(COOKIES_PATH)])
     command.extend(["-f", item["format"], item["url"]])
     subprocess.run(command, check=True)
-    return destination
+    if destination.exists():
+        return destination
+    # yt-dlp falls back to .mkv (and other containers) when the selected
+    # streams cannot be merged into mp4 -- the tracker then looks for a file
+    # that does not exist and the GPU sits idle. Resolve the real artifact.
+    produced = sorted(
+        (path for path in destination.parent.glob(destination.name + "*")
+         if path.is_file() and not path.name.endswith(".part")),
+        key=lambda path: path.stat().st_size, reverse=True)
+    if not produced:
+        raise FileNotFoundError("yt-dlp produced no file for %s" % destination.name)
+    return produced[0]
 
 
 def _normalize_tracking(frame: pd.DataFrame) -> pd.DataFrame:
