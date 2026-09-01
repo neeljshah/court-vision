@@ -230,6 +230,11 @@ class OrderExecutor:
         order.filled_qty = int(st.get("filled", order.filled_qty))
         order.avg_fill_price_cents = float(st.get("avg", order.avg_fill_price_cents))
 
+    def refresh(self, order: ExecOrder) -> ExecOrder:
+        """Synchronize one resting mock order after a captured paper tick."""
+        self._sync_fill_state(order)
+        return order
+
     def execute(self, order: ExecOrder, *, timeout_s: float = 0.0,
                 poll_interval_s: float = 1.0) -> ExecOrder:
         """Full pass: submit, poll until filled or deadline, cancel remainder.

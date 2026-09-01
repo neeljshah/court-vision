@@ -29,8 +29,12 @@ INGAME_MAX_SPREAD_BP: float = 800.0
 # market .035, divergence .229). Declared cap, never fitted on outcomes.
 INGAME_MAX_DIVERGENCE: float = 0.15
 
+# Paper execution default. This is intentionally not a live-order feature flag.
+ORDER_MODE: str = "maker_only"
+
 __all__ = [
     "PROP_EXPECTED_CLV_MIN_PCT", "INGAME_EXPECTED_CLV_MIN_PCT",
     "INGAME_MAX_DRIFT_PCT", "BREAKER_WINDOW_DAYS", "BREAKER_CAPPED_MAX_PER_DAY",
     "INGAME_MAX_SPREAD_BP", "INGAME_MAX_DIVERGENCE",
+    "ORDER_MODE",
 ]

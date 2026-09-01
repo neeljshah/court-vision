@@ -42,6 +42,7 @@ from __future__ import annotations
 from typing import Any, Dict, Optional
 
 from scripts.platformkit import odds_shop as _shop
+from scripts.platformkit.econ.cost_model import kalshi_fee_per_contract
 
 try:  # package import (normal runtime)
     from scripts.platformkit.pm_trading import policy as _policy
@@ -167,13 +168,20 @@ def evaluate(*, model_prob: Any,
         side, ev, bet_mp, bet_fair, dec = "away", ev_away, 1.0 - mp, away_fair, dec_away
     else:
         side, ev, bet_mp, bet_fair, dec = "home", ev_home, mp, devig_p, dec_home
+    # The paper day-trader quotes at the selected model fair probability. Apply
+    # the verified maker curve before its existing tier threshold is consumed.
+    # The value is deliberately named units: no currency amount is exposed.
+    maker_fee_units = kalshi_fee_per_contract(bet_mp, "maker")
+    net_ev = ev - maker_fee_units
     out["side"] = side
-    out["ev"] = ev
+    out["gross_ev"] = ev
+    out["maker_fee_units"] = maker_fee_units
+    out["ev"] = net_ev
     out["obtainable_decimal"] = dec
     out["bet_model_prob"] = bet_mp
     out["bet_devigged_price"] = bet_fair
 
-    tier = _tier(ev=ev, model_prob=bet_mp, market_prob=bet_fair, clv_is_proxy=clv_is_proxy)
+    tier = _tier(ev=net_ev, model_prob=bet_mp, market_prob=bet_fair, clv_is_proxy=clv_is_proxy)
     # RELAXED in-game floor (opt-in via min_ev): when the pre-registered policy floor is not
     # cleared but the EV still beats an explicit lower floor, assign the marginal tier "C".
     # This is a LOWER-CONFIDENCE, honestly-graded paper bet (CLV will tell the truth) -- it is
@@ -181,7 +189,7 @@ def evaluate(*, model_prob: Any,
     relaxed = False
     if tier is None and min_ev is not None:
         try:
-            if ev >= float(min_ev) and ev > 0.0:
+            if net_ev >= float(min_ev) and net_ev > 0.0:
                 tier, relaxed = "C", True
         except (TypeError, ValueError):
             pass

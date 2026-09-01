@@ -11,13 +11,13 @@ It REUSES, never rebuilds:
   * sizing    -> pm_trading.policy.stake_units (flat unit + capped quarter-Kelly UNITS).
   * capture   -> live_grade.capture_pair_once (atomic paired-row write -> the grade file
     the aggregate grader reads). model_prob is captured LIVE -> replay is leak-free.
-  * placement -> paper_ingame.record_ingame_bet (idempotent by edge_key, executed=False).
+  * placement -> resting simulated maker quote -> paper_ingame.record_ingame_bet only
+    after a subsequent captured-price cross.
   * grade     -> inplay_aggregate_grade.aggregate_grade (clustered two-arm CLV-vs-close).
 
 ENTER / HOLD / EXIT (day-trader decision, per captured tick):
   * ENTER when inplay_edge_signal.evaluate -> action="bet" (justified + liquid + fresh +
-    a tier floor) AND we are FLAT -> size + paper-place (idempotent: a 2nd ENTER for the
-    same game/side/day is a no-op).
+    a tier floor) AND we are FLAT -> size + submit a simulated resting maker quote.
   * RE-ENTER on a side FLIP: if we hold one side and the live edge has flipped to the
     OTHER side and that side independently clears the same gate, ENTER the new side (a
     genuinely new +EV opportunity as the line moved). The old position stays open and
@@ -56,6 +56,8 @@ from typing import Any, Callable, Dict, List, Optional
 from scripts.platformkit.claims import condition_tagger as _tagger
 from scripts.platformkit.execution import ingame_exec_gate as _exec_gate
 from scripts.platformkit.execution import sizing as _sizing
+from scripts.platformkit.execution.paper_maker import PaperMakerAdapter
+from scripts.platformkit.execution.thresholds import ORDER_MODE
 from scripts.platformkit.ingame import ingame_clv_per_segment as _clvseg
 from scripts.platformkit.ingame import ingame_segment_trust_multi as _trust_multi
 from scripts.platformkit.ingame import inplay_breaker as _breaker
@@ -84,6 +86,7 @@ MARKET = "win_home"  # one anchor moneyline market per game (HOME side)
 # with no "venue" field defaults to "kalshi" (today's only wired price source; see
 # inplay_capture_loop._default_inplay_fetch), not to a silent block.
 DEFAULT_PAPER_VENUES = ("kalshi",)
+_PAPER_MAKER = PaperMakerAdapter()
 
 
 def _paper_venue_allowlist() -> frozenset:
@@ -174,7 +177,8 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
             grade_dir: Optional[Path] = None,
             ledger_path: Optional[Path] = None,
             extra: Optional[Dict[str, Any]] = None,
-            paper_venues: Optional[Any] = None) -> Dict[str, Any]:
+            paper_venues: Optional[Any] = None,
+            maker_adapter: Optional[PaperMakerAdapter] = None) -> Dict[str, Any]:
     """Process ONE live in-play tick: capture the pair, decide enter/hold/exit, size+place.
 
     *position* is the engine's open position for this game/side (None = FLAT). Returns a
@@ -202,6 +206,10 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
         "position": position, "edge_claimed": False,
     }
     try:
+        maker = maker_adapter or _PAPER_MAKER
+        maker_event = (maker.advance(position, tick, now=nowdt)
+                       if position is not None and position.get("status") == "resting"
+                       else None)
         ev = _sig.evaluate(
             model_prob=tick.get("model_prob"),
             yes_home_prob=tick.get("yes_home_prob"),
@@ -232,6 +240,41 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
                 market_fetch_fn=lambda s, g: dp,
                 out_dir=grade_dir, extra={**(extra or {}), "claim_tags": claim_tags})
             decision["captured"] = cap.get("status") == "captured"
+
+        # A submitted maker quote is an honest paper fill only when THIS later
+        # captured tick crossed it. The paper ledger is never touched at submit.
+        if maker_event is not None:
+            if maker_event["status"] == "filled":
+                quote, order = maker_event["quote"], maker_event["order"]
+                audit = {**(position.get("exec_gate") or {}),
+                         "execution_mode": "maker_only",
+                         "clv_series": "paper_ingame_maker",
+                         "maker_fee_units": quote["maker_fee_units"],
+                         "order_lifecycle": list(order.history),
+                         "order_state": order.state.value,
+                         "order_id": order.order_id}
+                fill_prob = order.avg_fill_price_cents / 100.0
+                placement = _paper.record_ingame_bet(
+                    sport, game_id, MARKET, position["side"], 1.0 / fill_prob,
+                    model_prob=position["model_prob"], stake=position["stake"],
+                    taken_book="paper_ingame_maker", path=ledger_path,
+                    signal_ts=tick.get("signal_ts"), exec_gate=audit,
+                    exec_depth=position.get("exec_depth"))
+                decision.update({"action": "bet", "side": position["side"],
+                                 "units": quote["units"], "placement": placement,
+                                 "reason": "maker_fill_cross",
+                                 "position": {"status": "open", "side": position["side"],
+                                              "tier": position["tier"],
+                                              "model_prob": position["model_prob"],
+                                              "edge_key": placement.get("edge_key"),
+                                              "opened_ts": _now_iso()}})
+                return decision
+            if maker_event["status"] == "expired":
+                decision.update({"action": "no_bet", "reason": "maker_ttl_expired",
+                                 "position": None})
+                return decision
+            decision.update({"action": "resting", "reason": "maker_resting"})
+            return decision
 
         # 2b. SUPPRESSION (queue item 8a, conservative withhold -- mechanism only, currently
         # INERT: _SANCTIONED_ADVERSE_SEGMENTS is empty pending human authorization, see that
@@ -309,16 +352,21 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
         # off preserves the legacy flat-0.0 stake exactly (no behavior change if disabled).
         stake = (_sizing.stake_for(ev["tier"], "moneyline")
                 if _sizing.tier_sizing_enabled() else 0.0)
-        placement = _paper.record_ingame_bet(
-            sport, game_id, MARKET, bet_side, float(dec_odds),
-            model_prob=bet_mp, stake=stake, path=ledger_path,  # units, never $
-            signal_ts=tick.get("signal_ts"), exec_gate=gr["exec_gate"],
-            exec_depth=gr["exec_depth"])
+        if ORDER_MODE != "maker_only":
+            decision["reason"] = "unsupported_order_mode"
+            return decision
+        quote = maker.quote(sport, game_id, bet_side, bet_mp, units=units,
+                            tick=tick, now=nowdt)
+        if quote.get("status") != "resting":
+            decision["reason"] = quote.get("reason", "maker_quote_rejected")
+            return decision
         decision.update({
-            "action": "bet", "side": bet_side, "units": units, "placement": placement,
-            "position": {"status": "open", "side": bet_side, "tier": ev["tier"],
-                         "model_prob": bet_mp, "devigged_price": ev.get("bet_devigged_price", dp),
-                         "edge_key": placement.get("edge_key"), "opened_ts": _now_iso()},
+            "action": "resting", "side": bet_side, "units": units, "placement": quote,
+            "reason": "maker_quote_submitted",
+            "position": {"status": "resting", "side": bet_side, "tier": ev["tier"],
+                         "model_prob": bet_mp, "stake": stake, "exec_gate": gr["exec_gate"],
+                         "exec_depth": gr["exec_depth"], "maker_quote": quote,
+                         "opened_ts": _now_iso()},
         })
     except Exception as exc:  # noqa: BLE001 -- one bad tick must never sink the loop
         logger.warning("on_tick(%s/%s) failed: %s", sport, game_id, exc)
@@ -345,6 +393,7 @@ def run_series(sport: str, game_id: str, ticks: List[LiveTick], *,
     return {
         "decisions": decisions,
         "n_bets": sum(1 for d in decisions if d["action"] == "bet"),
+        "n_resting": sum(1 for d in decisions if d["action"] == "resting"),
         "n_holds": sum(1 for d in decisions if d["action"] == "hold"),
         "n_captured": sum(1 for d in decisions if d["captured"]),
         "position": pos,
