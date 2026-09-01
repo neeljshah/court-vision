@@ -8,6 +8,7 @@ import pandas as pd
 
 FRAME_MANIFEST_SCHEMA = (
     "frame", "evaluated", "status", "calibration_provenance", "emitted_player_rows",
+    "camera_lock_id", "fresh_solve_count", "drift_residual_px", "drift_evidence_count",
 )
 
 

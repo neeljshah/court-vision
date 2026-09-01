@@ -133,6 +133,37 @@ def test_process_video_records_unsolved_and_skipped_frames(monkeypatch, tmp_path
     assert manifest.emitted_player_rows.sum() == 0
 
 
+def test_camera_lock_reuse_is_drift_checked_and_fails_closed(monkeypatch) -> None:
+    """A lock may reuse only with current line evidence; blank frames emit none."""
+    court = _court_image()
+    blank = np.full_like(court, (40, 120, 40))
+    frames = [court.copy() for _ in range(21)] + [blank.copy() for _ in range(5)]
+    monkeypatch.setattr(
+        "domains.tennis.tracking.adapter.cv2.VideoCapture",
+        lambda path: _FakeCapture(frames),
+    )
+    monkeypatch.setattr("domains.tennis.tracking.adapter.detect_cut", lambda previous, current: False)
+    adapter = TennisAdapter(detector=lambda frame: [])
+    seen = {"count": 0}
+
+    def fresh_then_partial(frame: np.ndarray):
+        seen["count"] += 1
+        return COURT if seen["count"] <= 20 else None
+
+    adapter.detect_court_corners = fresh_then_partial
+    adapter.detect_players = lambda frame, homography: [(1, np.array((20.0, 6.0))),
+                                                         (2, np.array((58.0, 30.0)))]
+    output = adapter.process_video("synthetic.avi")
+    manifest = adapter.last_frame_manifest
+
+    assert "camera_lock_drift_checked" in set(output.calibration_provenance)
+    reused = manifest.calibration_provenance == "camera_lock_drift_checked"
+    assert manifest.loc[reused, "drift_residual_px"].notna().all()
+    assert (manifest.loc[reused, "drift_evidence_count"] >= 2).all()
+    assert "unsolved_drift" in set(manifest.tail(5).status)
+    assert manifest.tail(5).emitted_player_rows.sum() == 0
+
+
 def test_synthetic_corners_and_homography() -> None:
     adapter = TennisAdapter(detector=lambda frame: [])
     corners = adapter.detect_court_corners(_court_image())
@@ -187,6 +218,15 @@ def test_mock_detector_projects_players_on_opposite_halves() -> None:
     points = {track_id: point for track_id, point in players}
     assert np.allclose(points[1], (20, 6), atol=0.5)
     assert np.allclose(points[2], (58, 30), atol=0.5)
+
+
+def test_ended_track_ids_do_not_bridge_an_emission_gap() -> None:
+    adapter = TennisAdapter(detector=lambda frame: [])
+    candidates = [(np.array((10.0, 10.0)), np.array((20.0, 6.0))),
+                  (np.array((30.0, 30.0)), np.array((58.0, 30.0)))]
+    assert [track_id for track_id, _ in adapter._track_ids(candidates)] == [1, 2]
+    adapter._end_track_ids()
+    assert [track_id for track_id, _ in adapter._track_ids(candidates)] == [3, 4]
 
 
 def test_temporal_calibration_limits_noisy_corner_projection_jitter() -> None:

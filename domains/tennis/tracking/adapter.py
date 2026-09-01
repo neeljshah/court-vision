@@ -8,7 +8,9 @@ import numpy as np
 import pandas as pd
 from scripts.platformkit.calibration.keypoint_calib import TemporalCalibrator
 from domains.tennis.tracking.ball import MotionDiffDetector, ball_rows, rectify_track
+from domains.tennis.tracking.camera_lock import CameraLock
 from domains.tennis.tracking.frame_manifest import FRAME_MANIFEST_SCHEMA, write_frame_manifest
+from domains.tennis.tracking.identity import assign_epoch, end_epoch
 from domains.tennis.tracking.rally_features import match_aggregates
 from domains.tennis.tracking.segmenter import detect_cut, small_gray
 from scripts.platformkit.coordinate_provenance import stamp_court_space_rows, write_tracking_csv
@@ -40,6 +42,9 @@ class TennisAdapter:
         self._calibrator = TemporalCalibrator("tennis", drift_threshold=8.0)
         self._calibration_updates = self._lost_corner_frames = 0; self._force_homography_recompute = False
         self._centroids: dict[int, np.ndarray] = {}
+        self._track_id_base = 0
+        self._camera_lock = CameraLock()
+        self._last_fresh_corners: Optional[np.ndarray] = None
         self.last_output, self.last_metadata = pd.DataFrame(columns=SCHEMA), {}
         self.last_frame_manifest = pd.DataFrame(columns=FRAME_MANIFEST_SCHEMA)
     @staticmethod
@@ -172,18 +177,17 @@ class TennisAdapter:
         return bool(np.max(np.linalg.norm(current - previous, axis=1)) <= 8.0)
     def _reset_temporal_calibration(self) -> None:
         """Drop camera-specific calibration history after a cut or prolonged loss."""
-        self._corners = self._homography = None; self._centroids = {}
+        self._corners = self._homography = None; self._end_track_ids()
         self._calibrator = TemporalCalibrator("tennis", drift_threshold=8.0)
         self._calibration_updates = self._lost_corner_frames = 0; self._force_homography_recompute = True
+        self._camera_lock.reset(); self._last_fresh_corners = None
     def _stable_homography(self, frame: np.ndarray) -> Optional[np.ndarray]:
         corners = self.detect_court_corners(frame)
+        self._last_fresh_corners = None
         if corners is None:
             self._lost_corner_frames += 1
-            if self._lost_corner_frames > 30:
+            if self._lost_corner_frames > 30 and not self._camera_lock.ready:
                 self._reset_temporal_calibration()
-            # A court-foot row needs a solve from this frame.  Carrying the
-            # previous matrix through a close-up or replay made stale geometry
-            # look like a contemporaneous calibration.
             self._calibration_provenance = "unavailable"
             return None
         self._lost_corner_frames = 0
@@ -196,18 +200,18 @@ class TennisAdapter:
         self._calibration_updates += 1
         self._corners, self._homography = corners, result.homography
         self._calibration_provenance = "solved"
+        self._last_fresh_corners = corners
         self._force_homography_recompute = False
         return self._homography
+    def _calibrated_homography(self, frame: np.ndarray) -> tuple[Optional[np.ndarray], str, str, float, int]:
+        result = self._camera_lock.resolve(frame, self._stable_homography(frame), self._last_fresh_corners)
+        self._calibration_provenance = result[1]
+        return result
+    def _end_track_ids(self) -> None:
+        """End identities instead of bridging a long no-emission interval."""
+        self._track_id_base, self._centroids = end_epoch(self._centroids, self._track_id_base)
     def _track_ids(self, candidates: list[tuple[np.ndarray, np.ndarray]]) -> list[tuple[int, np.ndarray]]:
-        centers = [candidate[0] for candidate in candidates]
-        if set(self._centroids) != {1, 2}:
-            order = sorted(range(2), key=lambda index: (-centers[index][1], centers[index][0]))
-        else:
-            direct = np.linalg.norm(centers[0] - self._centroids[1]) + np.linalg.norm(centers[1] - self._centroids[2])
-            crossed = np.linalg.norm(centers[1] - self._centroids[1]) + np.linalg.norm(centers[0] - self._centroids[2])
-            order = [0, 1] if direct <= crossed else [1, 0]
-        tracked = [(track_id, candidates[index][1]) for track_id, index in enumerate(order, start=1)]
-        self._centroids = {track_id: centers[index] for track_id, index in enumerate(order, start=1)}
+        tracked, self._centroids = assign_epoch(candidates, self._centroids, self._track_id_base)
         return tracked
     def detect_players(self, frame: np.ndarray, homography: np.ndarray) -> list[tuple[int, np.ndarray]]:
         """Return two player ids and their court-foot locations, when visible."""
@@ -243,6 +247,7 @@ class TennisAdapter:
         ball_points: list[Optional[tuple[float, float, float]]] = []
         ball_frames: list[tuple[int, np.ndarray]] = []
         source_frame = processed = 0
+        last_player_emission: Optional[int] = None
         previous_gray_small: Optional[np.ndarray] = None
         try:
             while max_frames is None or processed < max_frames:
@@ -255,23 +260,29 @@ class TennisAdapter:
                 previous_gray_small = current_gray_small
                 evaluated = source_frame % stride == 0
                 if evaluated:
-                    homography = self._stable_homography(frame)
+                    homography, provenance, calibration_status, drift, evidence_count = self._calibrated_homography(frame)
                     player_count = 0
                     if homography is not None:
+                        if last_player_emission is not None and source_frame - last_player_emission > 3 * stride:
+                            self._end_track_ids()
                         players = self.detect_players(frame, homography)
                         player_count = len(players)
                         for track_id, point in players:
-                            rows.append({"frame": source_frame, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1]), "calibration_provenance": self._calibration_provenance})
+                            rows.append({"frame": source_frame, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1]), "calibration_provenance": provenance})
+                        if player_count:
+                            last_player_emission = source_frame
                         ball_points.append(ball_detector.detect(frame))
-                        ball_frames.append((source_frame, homography, self._calibration_provenance))
-                    status = ("calibration_unavailable" if homography is None else
+                        ball_frames.append((source_frame, homography, provenance))
+                    status = (calibration_status if homography is None else
                               "emitted_players" if player_count else "no_complete_player_pair")
                     processed += 1
                 else:
-                    status, player_count = "skipped_stride", 0
+                    status, player_count, provenance, drift, evidence_count = "skipped_stride", 0, "not_evaluated", float("nan"), 0
                 manifest.append({"frame": source_frame, "evaluated": evaluated, "status": status,
-                                 "calibration_provenance": (self._calibration_provenance if evaluated else "not_evaluated"),
-                                 "emitted_player_rows": player_count})
+                                 "calibration_provenance": provenance, "emitted_player_rows": player_count,
+                                 "camera_lock_id": self._camera_lock.lock_id,
+                                 "fresh_solve_count": self._camera_lock.fresh_solve_count,
+                                 "drift_residual_px": drift, "drift_evidence_count": evidence_count})
                 source_frame += 1
         finally:
             capture.release()
