@@ -113,3 +113,20 @@ def render_sample(sport: str, seed: int | None = None, shape: tuple[int, int] = 
     visible = ((pixels[:, 0] >= 0) & (pixels[:, 0] < width) & (pixels[:, 1] >= 0) & (pixels[:, 1] < height)).astype(np.uint8)
     return {"image": image, "points": pixels.astype(np.float32), "visible": visible,
             "names": tuple(spec.points), "homography": homography}
+
+
+def render_soccer_samples(output_dir, count=12, seed=20260901):
+    """Write deterministic CPU-only soccer samples as PNG evidence frames."""
+    from pathlib import Path as _Path
+    import cv2 as _cv2
+    from scripts.platformkit.synthcal.soccer_sampler import sample_soccer_frame
+    if count <= 0:
+        raise ValueError("count must be positive")
+    output = _Path(output_dir)
+    output.mkdir(parents=True, exist_ok=True)
+    samples = [sample_soccer_frame(seed + index) for index in range(count)]
+    for index, sample in enumerate(samples):
+        path = output / ("soccer_synthcal_%02d.png" % index)
+        if not _cv2.imwrite(str(path), sample.image):
+            raise RuntimeError("Could not write %s" % path)
+    return samples
