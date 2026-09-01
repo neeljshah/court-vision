@@ -32,6 +32,18 @@ ADAPTERS = {
 # Sports whose adapter must be asked for player-only tracking rather than
 # raising, because it cannot honestly produce ball positions.
 PLAYER_ONLY = {"baseball", "soccer"}
+# Sports asked for IMAGE-SPACE rows because their court calibration is measured
+# never to succeed on broadcast footage, so the court path emits nothing and the
+# detector's work is simply discarded. Image rows declare coordinate_space and
+# are REJECTED by the harness with coordinate_contract -- they are a preserved
+# corpus for training, never a passing game.
+#   soccer: 0 accepted homographies over 200 reference frames; the 131-of-132
+#           "accepted" frames it used to report were a stale cached homography.
+# Add a sport here only once its adapter supports image_space=True AND its
+# calibration failure is MEASURED, not assumed. football and baseball qualify on
+# evidence (0/200 validated fits; infield geometrically out of frame) but their
+# adapters do not implement the flag yet.
+IMAGE_SPACE = {"soccer"}
 
 
 def main(argv: list) -> int:
@@ -55,6 +67,8 @@ def main(argv: list) -> int:
         options = {"max_frames": 30000, "stride": 3}
         if sport in PLAYER_ONLY:
             options["player_only"] = True
+        if sport in IMAGE_SPACE:
+            options["image_space"] = True
         frame = adapter.process_video(video, **options)
 
         output_dir = os.path.join("data", "tracking", game_id)
