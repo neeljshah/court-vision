@@ -114,6 +114,25 @@ def test_process_video_keeps_no_ball_rows_when_motion_is_absent(monkeypatch) -> 
     assert output.loc[output.cls == "ball"].empty
 
 
+def test_process_video_records_unsolved_and_skipped_frames(monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr(
+        "domains.tennis.tracking.adapter.cv2.VideoCapture",
+        lambda path: _FakeCapture(_ball_sequence(with_dot=False)),
+    )
+    adapter = TennisAdapter(detector=lambda frame: [])
+    adapter.detect_court_corners = lambda frame: None
+
+    adapter.process_video("synthetic.avi", stride=2)
+    adapter.write_csv(tmp_path / "tracking_data.csv")
+
+    manifest = pd.read_csv(tmp_path / "frame_manifest.csv")
+    assert len(manifest) == 14
+    assert manifest.evaluated.sum() == 7
+    assert set(manifest.status) == {"calibration_unavailable", "skipped_stride"}
+    assert set(manifest.calibration_provenance) == {"unavailable", "not_evaluated"}
+    assert manifest.emitted_player_rows.sum() == 0
+
+
 def test_synthetic_corners_and_homography() -> None:
     adapter = TennisAdapter(detector=lambda frame: [])
     corners = adapter.detect_court_corners(_court_image())

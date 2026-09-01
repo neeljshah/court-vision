@@ -8,21 +8,15 @@ import numpy as np
 import pandas as pd
 from scripts.platformkit.calibration.keypoint_calib import TemporalCalibrator
 from domains.tennis.tracking.ball import MotionDiffDetector, ball_rows, rectify_track
+from domains.tennis.tracking.frame_manifest import FRAME_MANIFEST_SCHEMA, write_frame_manifest
 from domains.tennis.tracking.rally_features import match_aggregates
 from domains.tennis.tracking.segmenter import detect_cut, small_gray
-from scripts.platformkit.coordinate_provenance import (stamp_court_space_rows,
-                                                       write_tracking_csv)
+from scripts.platformkit.coordinate_provenance import stamp_court_space_rows, write_tracking_csv
 SCHEMA = ("frame", "track_id", "cls", "x", "y", "calibration_provenance")
-# Court x is the 78-foot length; y is the 36-foot width.
 COURT_FEET = np.float32(((0, 0), (0, 36), (78, 0), (78, 36))); Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
-# Cross ratio of the five length-running court lines at y = 0, 4.5, 18, 31.5,
-# 36: (18*31.5)/(13.5*36). A projective invariant of a real court, so it is what
-# says five bright vertical clusters ARE the court and not replay architecture.
+# Projective invariant for the five length-running court lines.
 CROSS_RATIO = 567.0 / 486.0
-# Anchors: both near doubles corners, the far-left doubles corner (top endpoint
-# of the left doubles sideline) and the near service T (bottom endpoint of the
-# centre service line). Measured stable on this framing; the far baseline is
-# only ~172 grey and does not survive the 200 bright threshold.
+# Near doubles corners, far-left endpoint, and near service T.
 ANCHOR_FEET = np.float32(((0, 0), (0, 36), (78, 0), (18, 18)))
 def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
     """Write player tracking rows in the normalized platform schema."""
@@ -46,6 +40,7 @@ class TennisAdapter:
         self._calibration_updates = self._lost_corner_frames = 0; self._force_homography_recompute = False
         self._centroids: dict[int, np.ndarray] = {}
         self.last_output, self.last_metadata = pd.DataFrame(columns=SCHEMA), {}
+        self.last_frame_manifest = pd.DataFrame(columns=FRAME_MANIFEST_SCHEMA)
     @staticmethod
     def _load_yolo_detector(imgsz: int, conf: float) -> Detector:
         from scripts.platformkit.detection.shim import get_box_detector
@@ -114,11 +109,7 @@ class TennisAdapter:
             return None
         horizontal_clusters = self._cluster_lines(horizontal, True, (height, width))
         vertical_clusters = self._cluster_lines(vertical, False, (height, width))
-        # A tennis court has exactly five length-running lines; requiring five in
-        # the court's own cross ratio rejects replay and close-up framings. The
-        # old code took the topmost horizontal cluster as the far baseline with
-        # no court check, and on main-camera frames that cluster is the
-        # broadcast wordmark or a sponsor banner, never a court line.
+        # Require the court's five length-running lines and their cross ratio.
         if not horizontal_clusters or len(vertical_clusters) != 5:
             return None
         across = [self._line_position(self._fit_line(cluster), False, (height, width))
@@ -134,8 +125,7 @@ class TennisAdapter:
         far_left = self._point_at_row(left, self._endpoint_rows(vertical_clusters[0])[0])
         service_t = self._point_at_row(centre, self._endpoint_rows(vertical_clusters[2])[1])
         near_left, near_right = self._intersection(near, left), self._intersection(near, right)
-        # The camera sits behind the near baseline, so depth decreases up the
-        # frame: far baseline, then service T, then near baseline.
+        # Depth decreases up a behind-baseline broadcast frame.
         if near_left is None or near_right is None or not far_left[1] < service_t[1] < near_left[1]:
             return None
         anchors = np.float32((near_left, near_right, far_left, service_t))
@@ -222,14 +212,10 @@ class TennisAdapter:
             if x2 <= x1 or y2 <= y1:
                 continue
             foot = self._project(((x1 + x2) / 2.0, y2), homography)
-            # No court-region acceptance filter: the old ACCEPT_FEET window sat strictly
-            # inside the harness bounds, so oob read 0.0000 whatever the coordinates were.
+            # Do not filter coordinates inside the harness bounds.
             half = 0 if foot[0] < 39.0 else 1
             center = np.array(((x1 + x2) / 2.0, (y1 + y2) / 2.0))
-            # Rank by continuity, not pixel box area: the camera sits behind the near
-            # baseline, so far-half furniture out-sizes the far player and won 70 of 251
-            # far-half selections. ponytail: cold start still falls back to area (70/251
-            # on furniture); measured alternatives are no better, so no knob is shipped.
+            # Prefer centroid continuity over pixel area.
             key = -min(np.linalg.norm(center - prior) for prior in self._centroids.values()) if self._centroids else (x2 - x1) * (y2 - y1)
             if half not in per_half or key > per_half[half][0]:
                 per_half[half] = (key, center, foot)
@@ -245,7 +231,8 @@ class TennisAdapter:
         capture = cv2.VideoCapture(str(path))
         if not capture.isOpened():
             raise FileNotFoundError("Could not open video: %s" % path)
-        rows: list[dict[str, object]] = []; ball_detector = MotionDiffDetector()
+        rows: list[dict[str, object]] = []; manifest: list[dict[str, object]] = []
+        ball_detector = MotionDiffDetector()
         ball_points: list[Optional[tuple[float, float, float]]] = []
         ball_frames: list[tuple[int, np.ndarray]] = []
         source_frame = processed = 0
@@ -259,14 +246,25 @@ class TennisAdapter:
                 if previous_gray_small is not None and detect_cut(previous_gray_small, current_gray_small):
                     self._reset_temporal_calibration()
                 previous_gray_small = current_gray_small
-                if source_frame % stride == 0:
+                evaluated = source_frame % stride == 0
+                if evaluated:
                     homography = self._stable_homography(frame)
+                    player_count = 0
                     if homography is not None:
-                        for track_id, point in self.detect_players(frame, homography):
+                        players = self.detect_players(frame, homography)
+                        player_count = len(players)
+                        for track_id, point in players:
                             rows.append({"frame": source_frame, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1]), "calibration_provenance": self._calibration_provenance})
                         ball_points.append(ball_detector.detect(frame))
                         ball_frames.append((source_frame, homography, self._calibration_provenance))
+                    status = ("calibration_unavailable" if homography is None else
+                              "emitted_players" if player_count else "no_complete_player_pair")
                     processed += 1
+                else:
+                    status, player_count = "skipped_stride", 0
+                manifest.append({"frame": source_frame, "evaluated": evaluated, "status": status,
+                                 "calibration_provenance": (self._calibration_provenance if evaluated else "not_evaluated"),
+                                 "emitted_player_rows": player_count})
                 source_frame += 1
         finally:
             capture.release()
@@ -280,11 +278,13 @@ class TennisAdapter:
         # pixels were laundered into court units elsewhere in this system.
         self.last_output = stamp_court_space_rows(
             pd.DataFrame(rows, columns=SCHEMA), "tennis")
+        self.last_frame_manifest = pd.DataFrame(manifest, columns=FRAME_MANIFEST_SCHEMA)
         self.last_metadata = {}
         if not compute_features:
             return self.last_output
         self.last_metadata = {"rally_features": match_aggregates(self.last_output)}
         return self.last_output, self.last_metadata
     def write_csv(self, path: Union[str, Path], rows: Optional[pd.DataFrame] = None) -> None:
-        """Write the most recent output, or supplied rows, in normalized schema."""
+        """Write tracking rows and the required per-decoded-frame manifest."""
         write_csv(self.last_output if rows is None else rows, path)
+        write_frame_manifest(self.last_frame_manifest, path)
