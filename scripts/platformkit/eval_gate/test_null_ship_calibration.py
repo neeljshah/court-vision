@@ -4,6 +4,7 @@ from __future__ import annotations
 from scripts.platformkit.eval_gate.golden_loader import load_golden
 from scripts.platformkit.eval_gate.null_ship_calibration import (
     CalibrationResult, pure_noise_predictor, render_report, run_calibration,
+    run_exploit_regressions,
 )
 
 
@@ -26,3 +27,10 @@ def test_broken_report_suspends_prior_ships_in_exact_words():
     report = render_report(CalibrationResult(10, 2, 1.0, 0.05, False))
     assert "verdict=BROKEN" in report
     assert "every SHIP since the last passing calibration is suspended" in report
+
+
+def test_label_and_market_echoes_are_explicit_non_ships():
+    results = run_exploit_regressions()
+    assert [result.name for result in results] == ["LABEL-ECHO", "MARKET-ECHO"]
+    assert all(result.blocked for result in results)
+    assert {result.outcome for result in results} <= {"LEAK_ERROR", "REDACTED", "NON_SHIP"}

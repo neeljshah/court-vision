@@ -1,0 +1,12 @@
+NULL-SHIP CALIBRATION OF THE CORRECTED GATE
+status=FINAL candidates=200 ships=0
+nominal_alpha=0.050000 observed_null_ship_rate=0.000000 ceiling=0.100000
+wall_seconds=279.444 verdict=PASS
+exploit=LABEL-ECHO outcome=REDACTED ships=0 verdict=BLOCKED
+exploit=MARKET-ECHO outcome=REDACTED ships=0 verdict=BLOCKED
+
+RETRO-CORRECTION RE-RUN
+before_survivors=0 after_survivors=0
+before_documented_rejects=60 after_documented_rejects=60
+report_content=IDENTICAL
+verdict=PASS
