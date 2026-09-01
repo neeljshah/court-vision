@@ -82,3 +82,36 @@ def test_custom_prob_field():
     rows = [{"my_field": 0.1}, {"my_field": 0.1}, {"my_field": 0.2}]
     mask = qf.freshness_mask(rows, prob_field="my_field")
     assert mask == [True, False, True]
+
+
+# --- S1e-CADENCE: cadence measured from capture rows (vs the hand-written table) ---
+
+def _tick(sec, game="1", field="captured_at"):
+    return {field: "2026-09-01T00:00:%02dZ" % sec, "game_pk": game}
+
+
+def test_cadence_percentiles_measures_deltas_and_ignores_gaps():
+    rows = [_tick(s) for s in (0, 5, 10, 16, 40)]
+    out = qf.cadence_percentiles(rows, max_gap_sec=20.0)
+    assert out["n_deltas"] == 3, "the 24s jump exceeds max_gap_sec and is dropped"
+    assert out["p50_sec"] == 5.0 and out["p90_sec"] == 6.0 and out["max_sec"] == 6.0
+
+
+def test_cadence_percentiles_groups_and_sorts_and_is_honest_when_empty():
+    a = [_tick(s, game="A") for s in (0, 10, 20)]
+    b = [_tick(s, game="B") for s in (20, 0, 10)]  # out of order on purpose
+    out = qf.cadence_percentiles(a + b, group_field="game_pk")
+    assert out["n_deltas"] == 4 and out["p50_sec"] == 10.0, "per-game series, sorted"
+    # no cross-game delta invented, and no data stays None (never a fabricated 0.0)
+    assert qf.cadence_percentiles([]) == {"n_deltas": 0, "p50_sec": None,
+                                          "p90_sec": None, "max_sec": None}
+    assert qf.cadence_percentiles([{"captured_at": "junk"}, {}, "not-a-row"])["p50_sec"] is None
+
+
+def test_cadence_percentiles_reads_book_capture_rows_and_leaves_the_table_alone():
+    rows = [dict(_tick(s, field="capture_ts"), record_type="cadence") for s in (0, 6, 12, 19)]
+    out = qf.cadence_percentiles(rows, ts_field="capture_ts")
+    assert out["n_deltas"] == 3 and out["p50_sec"] == 6.0
+    # derivable, but the pre-registered ceiling is still the hand-written one
+    assert qf.STATE_AGE_CEILING_SEC["mlb"] == 5.0
+    assert qf.cadence_percentiles(rows, ts_field="capture_ts") == out, "idempotent re-read"

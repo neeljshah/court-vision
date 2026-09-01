@@ -148,8 +148,79 @@ def longest_stale_run(rows: Sequence[Dict[str, Any]], *,
     return longest
 
 
+def cadence_percentiles(rows: Sequence[Dict[str, Any]], *,
+                        ts_field: str = "captured_at",
+                        group_field: Optional[str] = None,
+                        max_gap_sec: float = 3600.0) -> Dict[str, Any]:
+    """MEASURED capture cadence (p50/p90 of successive timestamp deltas) for one row
+    stream. Works on any capture corpus: gumbo ticks (`captured_at`), book-capture
+    cadence rows (`capture_ts`). Rows are sorted per group before differencing, so an
+    unsorted file is fine; deltas <=0 or > max_gap_sec (restarts, day rollovers, game
+    boundaries) are dropped rather than counted as cadence. group_field (e.g. 'game_pk')
+    keeps per-game series separate; None treats the input as one series.
+
+    Returns {'n_deltas', 'p50_sec', 'p90_sec', 'max_sec'} -- every value None when
+    nothing is measurable, so 'no data' is never mistaken for 'measured 0s'. Never
+    raises; malformed/absent timestamps are skipped. This is the DERIVABLE counterpart
+    to the hand-registered STATE_AGE_CEILING_SEC table above; the table is NOT changed
+    from it -- compare the two, do not silently overwrite."""
+    series: Dict[Any, List[datetime]] = {}
+    for r in rows:
+        if not isinstance(r, dict):
+            continue
+        dt = _parse_ts(r.get(ts_field))
+        if dt is not None:
+            series.setdefault(r.get(group_field) if group_field else None, []).append(dt)
+    deltas: List[float] = []
+    for stamps in series.values():
+        stamps.sort()
+        deltas.extend(d for d in ((b - a).total_seconds() for a, b in zip(stamps, stamps[1:]))
+                      if 0.0 < d <= max_gap_sec)
+    if not deltas:
+        return {"n_deltas": 0, "p50_sec": None, "p90_sec": None, "max_sec": None}
+    deltas.sort()
+    n = len(deltas)
+    return {"n_deltas": n,
+            "p50_sec": round(deltas[n // 2], 3),
+            "p90_sec": round(deltas[min(n - 1, int(0.9 * n))], 3),
+            "max_sec": round(deltas[-1], 3)}
+
+
 __all__ = [
     "freshness_mask", "filter_fresh", "freshness_share", "longest_stale_run",
-    "state_age_sec", "state_age_ceiling_sec", "STATE_AGE_CEILING_SEC",
-    "SLOW_STATE_AGE_CEILING_SEC",
+    "state_age_sec", "state_age_ceiling_sec", "cadence_percentiles",
+    "STATE_AGE_CEILING_SEC", "SLOW_STATE_AGE_CEILING_SEC",
 ]
+
+
+if __name__ == "__main__":  # pragma: no cover -- read-only corpus scan, ASCII stdout
+    # Side-by-side: the hand-registered ceiling vs the cadence actually MEASURED in the
+    # capture corpus. Deliberately does NOT edit STATE_AGE_CEILING_SEC.
+    import argparse
+    import json as _json
+    from pathlib import Path as _Path
+
+    ap = argparse.ArgumentParser(description="registered vs measured capture cadence")
+    ap.add_argument("--glob", default="data/domains/mlb/gumbo_live/*.jsonl")
+    ap.add_argument("--ts-field", default="captured_at")
+    ap.add_argument("--group-field", default=None)
+    ap.add_argument("--sport", default="mlb")
+    args = ap.parse_args()
+
+    scanned: List[Dict[str, Any]] = []
+    for path in sorted(_Path().glob(args.glob)):
+        with open(path, encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                try:  # a torn final line (crash mid-append) is skipped, not fatal
+                    row = _json.loads(line)
+                except ValueError:
+                    continue
+                if isinstance(row, dict):
+                    row.setdefault("_file", path.name)
+                    scanned.append(row)
+    measured = cadence_percentiles(scanned, ts_field=args.ts_field,
+                                   group_field=args.group_field or "_file")
+    print("registered STATE_AGE_CEILING_SEC[%s] = %s (hand-written, unchanged)"
+          % (args.sport, state_age_ceiling_sec(args.sport)))
+    print("measured   cadence n=%s p50=%s p90=%s max=%s"
+          % (measured["n_deltas"], measured["p50_sec"], measured["p90_sec"], measured["max_sec"]))
