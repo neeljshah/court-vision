@@ -7,6 +7,8 @@ from __future__ import annotations
 import cv2
 import numpy as np
 import pandas as pd
+import sys
+from types import SimpleNamespace
 
 from domains.tennis.tracking.adapter import TennisAdapter
 from domains.tennis.tracking.segmenter import detect_cut, small_gray
@@ -200,3 +202,22 @@ def test_write_csv_uses_normalized_schema(tmp_path) -> None:
     output = tmp_path / "tracking.csv"
     adapter.write_csv(output)
     assert list(pd.read_csv(output).columns) == ["frame", "track_id", "cls", "x", "y"]
+
+
+def test_yolo_detector_receives_configured_imgsz_and_conf(monkeypatch, capsys) -> None:
+    calls: list[dict[str, object]] = []
+
+    class Model:
+        def __call__(self, frame, **kwargs):
+            calls.append(kwargs)
+            boxes = SimpleNamespace(
+                xyxy=SimpleNamespace(cpu=lambda: SimpleNamespace(numpy=lambda: np.array([[1, 2, 3, 4]]))),
+                conf=SimpleNamespace(cpu=lambda: SimpleNamespace(numpy=lambda: np.array([0.8]))),
+            )
+            return [SimpleNamespace(boxes=boxes)]
+
+    monkeypatch.setitem(sys.modules, "ultralytics", SimpleNamespace(YOLO=lambda _: Model()))
+    detector = TennisAdapter._load_yolo_detector(1280, 0.15)
+    assert detector(np.zeros((4, 4, 3), dtype=np.uint8)) == [[1, 2, 3, 4, 0.8]]
+    assert calls == [{"classes": [0], "imgsz": 1280, "conf": 0.15, "verbose": False}]
+    assert "TENNIS_INFERENCE imgsz=1280 conf=0.150" in capsys.readouterr().out

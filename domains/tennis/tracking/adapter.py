@@ -1,28 +1,17 @@
-"""Fixed-camera tennis broadcast tracking in normalized court feet.
-
-The first CV adapter intentionally tracks players only.  Ball tracking is a
-named empty stub until a validated TrackNet integration is available.
-"""
+"""Fixed-camera tennis broadcast tracking in normalized court feet."""
 from __future__ import annotations
-
 from pathlib import Path
 from typing import Callable, Optional, Sequence, Union
-
 import cv2
 import numpy as np
 import pandas as pd
-
 from scripts.platformkit.calibration.keypoint_calib import TemporalCalibrator
 from domains.tennis.tracking.ball import MotionDiffDetector, ball_rows, rectify_track
 from domains.tennis.tracking.rally_features import match_aggregates
 from domains.tennis.tracking.segmenter import detect_cut, small_gray
-
-
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
 COURT_FEET = np.float32(((0, 0), (78, 0), (0, 36), (78, 36)))
 Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
-
-
 def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
     """Write player tracking rows in the normalized platform schema."""
     missing = [column for column in SCHEMA if column not in rows.columns]
@@ -30,30 +19,34 @@ def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
         raise ValueError("Tracking rows missing columns: %s" % ", ".join(missing))
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     rows.loc[:, SCHEMA].to_csv(path, index=False)
-
-
 class TennisAdapter:
     """Track two tennis players from a fixed behind-baseline broadcast feed."""
-
     def __init__(
         self,
         detector: Optional[Detector] = None,
         corner_stability_px: float = 5.0,
+        imgsz: int = 640,
+        conf: float = 0.25,
+        tracker_conf: Optional[float] = None,
     ) -> None:
-        self.detector = detector if detector is not None else self._load_yolo_detector()
+        if imgsz <= 0 or not 0.0 <= conf <= 1.0:
+            raise ValueError("imgsz must be positive and conf must be in [0, 1]")
+        self.imgsz, self.conf = int(imgsz), float(conf)
+        self.tracker_conf = float(conf if tracker_conf is None else tracker_conf)
+        if not 0.0 <= self.tracker_conf <= 1.0:
+            raise ValueError("tracker_conf must be in [0, 1]")
+        self.detector = detector if detector is not None else self._load_yolo_detector(
+            self.imgsz, self.conf
+        )
         self.corner_stability_px = corner_stability_px
-        self._corners: Optional[np.ndarray] = None
-        self._homography: Optional[np.ndarray] = None
+        self._corners = self._homography = None
         self._calibrator = TemporalCalibrator("tennis", drift_threshold=8.0)
-        self._calibration_updates = 0
-        self._lost_corner_frames = 0
+        self._calibration_updates = self._lost_corner_frames = 0
         self._force_homography_recompute = False
         self._centroids: dict[int, np.ndarray] = {}
-        self.last_output = pd.DataFrame(columns=SCHEMA)
-        self.last_metadata: dict[str, object] = {}
-
+        self.last_output, self.last_metadata = pd.DataFrame(columns=SCHEMA), {}
     @staticmethod
-    def _load_yolo_detector() -> Detector:
+    def _load_yolo_detector(imgsz: int, conf: float) -> Detector:
         try:
             from ultralytics import YOLO
         except ImportError as exc:
@@ -61,17 +54,19 @@ class TennisAdapter:
                 "TennisAdapter requires ultralytics. Install it with "
                 "`pip install ultralytics` or pass a detector for testing."
             ) from exc
-
         model = YOLO("yolov8n.pt")
-
+        emitted = False
         def detect(frame: np.ndarray) -> Sequence[Sequence[float]]:
-            result = model(frame, classes=[0], verbose=False)[0]
+            nonlocal emitted
+            if not emitted:
+                print("TENNIS_INFERENCE imgsz=%d conf=%.3f" % (imgsz, conf))
+                emitted = True
+            result = model(frame, classes=[0], imgsz=imgsz, conf=conf, verbose=False)[0]
             if result.boxes is None:
                 return []
-            return result.boxes.xyxy.cpu().numpy().tolist()
-
+            return [box + [float(score)] for box, score in zip(
+                result.boxes.xyxy.cpu().numpy().tolist(), result.boxes.conf.cpu().numpy().tolist())]
         return detect
-
     @staticmethod
     def _line_position(line: np.ndarray, horizontal: bool, shape: tuple[int, int]) -> float:
         x1, y1, x2, y2 = line
@@ -83,7 +78,6 @@ class TennisAdapter:
         if abs(y2 - y1) < 1e-6:
             return float((x1 + x2) / 2.0)
         return float(x1 + (height / 2.0 - y1) * (x2 - x1) / (y2 - y1))
-
     @staticmethod
     def _cluster_lines(
         lines: list[np.ndarray], horizontal: bool, shape: tuple[int, int]
@@ -106,7 +100,6 @@ class TennisAdapter:
             else:
                 clusters.append([line])
         return clusters
-
     @staticmethod
     def _fit_line(lines: list[np.ndarray]) -> np.ndarray:
         points = np.asarray(
@@ -115,7 +108,6 @@ class TennisAdapter:
         )
         vx, vy, x0, y0 = cv2.fitLine(points, cv2.DIST_L2, 0, 0.01, 0.01).reshape(-1)
         return np.array((x0 - 10000 * vx, y0 - 10000 * vy, x0 + 10000 * vx, y0 + 10000 * vy))
-
     @staticmethod
     def _intersection(first: np.ndarray, second: np.ndarray) -> Optional[np.ndarray]:
         a = np.cross(
@@ -128,7 +120,6 @@ class TennisAdapter:
         if abs(point[2]) < 1e-8:
             return None
         return np.float32(point[:2] / point[2])
-
     def detect_court_corners(self, frame: np.ndarray) -> Optional[np.ndarray]:
         """Return near-left, near-right, far-left, far-right doubles corners."""
         height, width = frame.shape[:2]
@@ -170,7 +161,6 @@ class TennisAdapter:
         if np.any(result[:, 1] < -5) or np.any(result[:, 1] > height + 5):
             return None
         return result
-
     @staticmethod
     def homography_from_corners(corners: np.ndarray) -> np.ndarray:
         """Map ordered image doubles-court corners to a 78 by 36 foot plane."""
@@ -178,14 +168,12 @@ class TennisAdapter:
         if homography is None:
             raise ValueError("Could not calculate court homography")
         return homography
-
     @staticmethod
     def _project(point: tuple[float, float], homography: np.ndarray) -> np.ndarray:
         projected = cv2.perspectiveTransform(
             np.float32([[point]]), homography
         )
         return projected[0, 0]
-
     def _in_tolerance(self, homography: np.ndarray, shape: tuple[int, int]) -> bool:
         if self._homography is None:
             return True
@@ -194,16 +182,12 @@ class TennisAdapter:
         current = cv2.perspectiveTransform(probes.reshape(1, -1, 2), homography)[0]
         previous = cv2.perspectiveTransform(probes.reshape(1, -1, 2), self._homography)[0]
         return bool(np.max(np.linalg.norm(current - previous, axis=1)) <= 8.0)
-
     def _reset_temporal_calibration(self) -> None:
         """Drop camera-specific calibration history after a cut or prolonged loss."""
-        self._corners = None
-        self._homography = None
+        self._corners = self._homography = None
         self._calibrator = TemporalCalibrator("tennis", drift_threshold=8.0)
-        self._calibration_updates = 0
-        self._lost_corner_frames = 0
+        self._calibration_updates = self._lost_corner_frames = 0
         self._force_homography_recompute = True
-
     def _stable_homography(self, frame: np.ndarray) -> Optional[np.ndarray]:
         corners = self.detect_court_corners(frame)
         if corners is None:
@@ -228,7 +212,6 @@ class TennisAdapter:
         self._homography = result.homography
         self._force_homography_recompute = False
         return self._homography
-
     def _track_ids(self, candidates: list[tuple[np.ndarray, np.ndarray]]) -> list[tuple[int, np.ndarray]]:
         centers = [candidate[0] for candidate in candidates]
         if set(self._centroids) != {1, 2}:
@@ -240,12 +223,13 @@ class TennisAdapter:
         tracked = [(track_id, candidates[index][1]) for track_id, index in enumerate(order, start=1)]
         self._centroids = {track_id: centers[index] for track_id, index in enumerate(order, start=1)}
         return tracked
-
     def detect_players(self, frame: np.ndarray, homography: np.ndarray) -> list[tuple[int, np.ndarray]]:
         """Return two player ids and their court-foot locations, when visible."""
         per_half: dict[int, tuple[float, np.ndarray, np.ndarray]] = {}
         for box in self.detector(frame):
             x1, y1, x2, y2 = map(float, box[:4])
+            if len(box) >= 5 and float(box[4]) < self.tracker_conf:
+                continue
             if x2 <= x1 or y2 <= y1:
                 continue
             foot = self._project(((x1 + x2) / 2.0, y2), homography)
@@ -259,7 +243,6 @@ class TennisAdapter:
         if set(per_half) != {0, 1}:
             return []
         return self._track_ids([(per_half[0][1], per_half[0][2]), (per_half[1][1], per_half[1][2])])
-
     def process_video(
         self,
         path: Union[str, Path],
@@ -311,7 +294,6 @@ class TennisAdapter:
             self.last_metadata = {"rally_features": match_aggregates(self.last_output)}
             return self.last_output, self.last_metadata
         return self.last_output
-
     def write_csv(self, path: Union[str, Path], rows: Optional[pd.DataFrame] = None) -> None:
         """Write the most recent output, or supplied rows, in normalized schema."""
         write_csv(self.last_output if rows is None else rows, path)
