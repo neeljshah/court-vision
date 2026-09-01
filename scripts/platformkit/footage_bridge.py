@@ -28,6 +28,14 @@ import time
 from pathlib import Path
 from typing import Optional
 
+from scripts.platformkit import footage_content_gate
+
+from scripts.platformkit.section_fallback import (
+    MIN_SECTION_HEIGHT,
+    cut_full_download,
+    video_height,
+)
+
 POD = ["-o", "StrictHostKeyChecking=no", "-o", "ConnectTimeout=30", "-p", "40048",
        "root@213.192.2.83"]
 POD_HOST = "root@213.192.2.83"
@@ -62,11 +70,27 @@ SPORT_ADAPTER = {"tennis": "tennis", "soccer": "soccer", "npb": "baseball",
 # 720p FIRST, deliberately. Upload to the pod was measured at 88.6 Mbps
 # aggregate and is the pipeline ceiling -- the GPU sits at 11%. A 1080p game is
 # ~850 MB and a 720p one is roughly half that, so this doubles games/hour.
-# Justified by measurement, not taste: the detector-resolution arm was run and
-# came back a NULL -- recall is gated by homography eligibility (177/300
-# calibratable frames), not by pixels. Reference clips under data/videos/
-# reference/ exist to re-measure this if tracking quality ever regresses.
+# CORRECTION 2026-09-01: an earlier note here said the detector-resolution arm
+# "came back a NULL -- recall is gated by homography eligibility, not by
+# pixels". A controlled re-run refutes that. Same match, same section offset,
+# same 36 seconds, differing only in resolution
+# (docs/evidence/tracking/tennis_resolution_controlled_2026-09-01.md):
+#   frames reaching the court's five-line gate   5.0% -> 18.7%
+#   severe line under-detection (1-2 clusters)  36.7% ->  8.5%
+# Resolution matters a great deal to LINE DETECTION. It does not by itself fix
+# registration -- the bottleneck moves to cluster selection -- but "pixels do
+# not matter here" is not true and should not be repeated.
+#
+# THE FIRST RUNG EXISTS BECAUSE OF THAT. Section downloads force
+# player_client=web (see SECTION_CLIENT), and that client exposes exactly ONE
+# non-storyboard format: itag 18, 640x360. So every section download has been
+# 360p. With --cookies, YouTube offers HLS formats 300 (1280x720) and 301
+# (1920x1080), and a SECTION of an HLS stream only fetches the segments it
+# needs: measured at 5.58 MiB in 2 seconds for a 20s slice. The old warning
+# that "cookies get HLS, ~1100 fragments, very slow" was about fetching a WHOLE
+# video that way; it does not apply to a section.
 FORMAT_RUNGS = [
+    "b[height<=1080][height>=720]",
     "bv*[height<=720][vcodec^=avc1]+ba/b[height<=720]",
     "b[height<=720]",
     "bv*[height<=1080][vcodec^=avc1]+ba/b[height<=1080]",
@@ -160,7 +184,9 @@ def _resolve_download(destination: Path):
 # link whose 88.6 Mbps upload was the pipeline ceiling.
 SECTION_MINUTES = 16
 # ffmpeg does the cutting, and the default player client hands it a URL that
-# returns 403 to anything but yt-dlp itself. The web client's URL works.
+# returns 403 to anything but yt-dlp itself. The web client's URL works, but
+# can expose only 360p. A successful section must therefore be measured before
+# it is accepted; otherwise we use a native full download and cut locally.
 SECTION_CLIENT = ["--extractor-args", "youtube:player_client=web"]
 
 
@@ -263,6 +289,17 @@ def download_local(item: dict) -> Path:
             continue
         produced = _resolve_download(destination)
         if produced is not None:
+            if use_section is not None and video_height(produced) < MIN_SECTION_HEIGHT:
+                last_error = "section resolution below %dp" % MIN_SECTION_HEIGHT
+                _purge_leftovers(destination)
+                continue
+            if use_section is None and section is not None:
+                try:
+                    return cut_full_download(produced, destination, section)
+                except (OSError, RuntimeError, subprocess.SubprocessError) as exc:
+                    last_error = "local section cut failed: %s" % str(exc)[:160]
+                    _purge_leftovers(destination)
+                    continue
             return produced
         last_error = "yt-dlp reported success but produced no file"
     raise RuntimeError("download failed: %s" % last_error)
@@ -501,8 +538,16 @@ def run_queue(queue_path: Path, limit: int, decouple: bool = False) -> int:
         local = None
         try:
             local = download_local(item)
-            push = push_staged if decouple else push_and_track
-            status = push(local, item)
+            verdict = footage_content_gate.screen_fail_open(local, item.get("sport", ""))
+            if verdict.decision == "reject":
+                moved = footage_content_gate.quarantine(local, verdict)
+                status = "quarantined: %s (%s)" % (verdict.reason, moved.name)
+                local = None  # quarantine owns the evidence; never delete it below
+            else:
+                push = push_staged if decouple else push_and_track
+                status = push(local, item)
+                if verdict.decision == "review":
+                    status += " content_review"
         except Exception as exc:  # one bad item must never stop the run
             status = "failed: %s" % str(exc)[:200]
         finally:

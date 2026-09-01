@@ -406,6 +406,7 @@ def test_section_attempt_is_tried_first_and_falls_back_to_full_download(
     """If sectioning fails the game must still be fetchable in full."""
     monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
     monkeypatch.setattr(footage_bridge, "probe_duration", lambda url: 85 * 60)
+    monkeypatch.setattr(footage_bridge, "cut_full_download", lambda full, dst, sec: full)
     seen = []
 
     def fake_run(command, **kwargs):
@@ -427,6 +428,7 @@ def test_section_download_uses_the_web_client(monkeypatch, tmp_path):
     """ffmpeg gets 403 from the default client's URL; only web works."""
     monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
     monkeypatch.setattr(footage_bridge, "probe_duration", lambda url: 85 * 60)
+    monkeypatch.setattr(footage_bridge, "video_height", lambda path: 720)
     seen = []
 
     def fake_run(command, **kwargs):
@@ -439,6 +441,28 @@ def test_section_download_uses_the_web_client(monkeypatch, tmp_path):
                                    "url": "https://youtu.be/x"})
 
     assert "youtube:player_client=web" in seen[0]
+
+
+def test_low_resolution_section_is_rejected_before_native_full_fallback(
+        monkeypatch, tmp_path):
+    """A transport-successful 360p section must never enter the pod queue."""
+    monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
+    monkeypatch.setattr(footage_bridge, "probe_duration", lambda url: 85 * 60)
+    monkeypatch.setattr(footage_bridge, "video_height", lambda path: 360)
+    monkeypatch.setattr(footage_bridge, "cut_full_download", lambda full, dst, sec: full)
+    seen = []
+
+    def fake_run(command, **kwargs):
+        seen.append(command)
+        (tmp_path / "g1.mp4").write_bytes(b"video")
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(footage_bridge.subprocess, "run", fake_run)
+    footage_bridge.download_local({"game_id": "g1", "sport": "tennis",
+                                   "url": "https://youtu.be/x"})
+
+    assert "--download-sections" in seen[0]
+    assert any("--download-sections" not in command for command in seen)
 
 
 def test_direct_cdn_media_is_never_probed_for_duration(monkeypatch, tmp_path):
@@ -591,3 +615,18 @@ def test_http_416_clears_the_stale_partial_so_a_retry_can_succeed(
 
     assert result.read_bytes() == b"complete video"
     assert not (tmp_path / "g5.mp4.ytdl").exists()
+
+
+def test_the_first_rung_can_reach_high_resolution_hls():
+    """Every section download has been 360p because player_client=web exposes
+    only itag 18. With cookies, YouTube offers HLS 300 (720p) and 301 (1080p),
+    and a SECTION of an HLS stream fetches only the segments it needs --
+    measured at 5.58 MiB in 2s for a 20s slice. The first rung must therefore
+    be able to select a >=720p pre-muxed format, or the section path can never
+    clear section_fallback.MIN_SECTION_HEIGHT and every attempt is discarded."""
+    from scripts.platformkit.section_fallback import MIN_SECTION_HEIGHT
+
+    first = footage_bridge.FORMAT_RUNGS[0]
+    assert "height>=%d" % MIN_SECTION_HEIGHT in first.replace(" ", ""), first
+    # A bare "b[...]" selects a pre-muxed stream, which is what HLS 300/301 are.
+    assert first.startswith("b["), first
