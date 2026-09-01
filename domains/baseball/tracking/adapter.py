@@ -257,6 +257,21 @@ class BaseballAdapter:
                     if cut:
                         self._centroids.clear()
                     self._geometry = None if cut else self.detect_pitch_geometry(frame)
+                    if image_space:
+                        # Emit detections on EVERY processed frame, not only
+                        # pitch-view ones. Gating this on self._geometry made
+                        # the image path useless: pitch geometry needs the green
+                        # gate, which passes ~24 of 500 broadcast frames, so a
+                        # 300-frame run emitted 0 rows. Preserving detections is
+                        # the whole point of this path, and it must not depend
+                        # on the calibration it exists to work without.
+                        for track_id, point in self.detect_players_image_space(frame):
+                            rows.append({"frame": source_frame, "track_id": track_id,
+                                         "cls": "player", "x": float(point[0]),
+                                         "y": float(point[1]),
+                                         "coordinate_space": "image_px",
+                                         "observation": "observed",
+                                         "calibration": "none"})
                     if self._geometry is not None:
                         if not in_pitch_view:
                             segment_id += 1
@@ -271,13 +286,8 @@ class BaseballAdapter:
                         if compute_command:
                             pitch_frames.append(frame.copy())
                             pitch_scales.append(self._geometry.pixels_per_foot)
-                        players = self.detect_players_image_space(frame) if image_space else []
-                        players_seen += len(players) if image_space else self.count_players(frame, self._geometry)
-                        for track_id, point in players:
-                            rows.append({"frame": source_frame, "track_id": track_id,
-                                         "cls": "player", "x": float(point[0]),
-                                         "y": float(point[1]), "coordinate_space": "image_px",
-                                         "observation": "observed", "calibration": "none"})
+                        if not image_space:
+                            players_seen += self.count_players(frame, self._geometry)
                     else:
                         if in_pitch_view:
                             close_pitch_segment()

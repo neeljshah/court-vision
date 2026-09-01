@@ -171,3 +171,23 @@ def test_process_video_splits_pitch_segments_at_scene_cuts(monkeypatch) -> None:
     raw = metadata["raw_calibrations"]
     assert {row["segment_id"] for row in raw} == {1, 2}
     assert {12, 13}.isdisjoint({row["frame"] for row in raw})
+
+
+def test_image_space_emits_on_frames_without_pitch_geometry():
+    """The image path must NOT depend on the calibration it exists to work
+    without. It was gated on self._geometry, which needs the green gate that
+    passes ~24 of 500 broadcast frames, so a 300-frame run emitted 0 rows."""
+    import numpy as np
+
+    from domains.baseball.tracking.adapter import BaseballAdapter
+
+    adapter = BaseballAdapter(detector=lambda frame: [[10.0, 20.0, 30.0, 60.0]])
+    # A flat grey frame: no mound, no plate, no grass -> pitch geometry is None.
+    grey = np.full((120, 200, 3), 128, dtype=np.uint8)
+    adapter._geometry = None
+
+    players = adapter.detect_players_image_space(grey)
+
+    assert players, "detections must survive when calibration is unavailable"
+    _, point = players[0]
+    assert point[1] == 60.0, "bottom-centre pixel, unprojected"
