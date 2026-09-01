@@ -11,8 +11,12 @@ INPUT SOURCES (2026-06-16):
   - Model edge (measured, leak-free): summer sports (MLB/tennis/World-Cup
     soccer) MATCH the devigged close -> pregame edge ~0 to -5% after vig.
     The one durable edge (NBA AST +5%) is regular-season-only => NOT summer.
-  - Venue research: Kalshi taker fee ~1.75% notional at 0.50; Polymarket
-    sports ~0.75% taker / 0% maker. Capacity is the binding wall: ~1% of
+  - Venue research (see execution/venue_fees.py; both fees are PARABOLIC in
+    price, quoted here at P=0.50): Kalshi taker 1.75c/contract = 3.5% of the
+    $0.50 dollar notional; Polymarket sports 5% feeRate = 1.25c/share = 2.5%
+    of dollar notional (July 2026 rate) / 0% maker. Per-contract cents and
+    percent-of-notional differ by a factor of 1/P -- do not mix them.
+    Capacity is the binding wall: ~1% of
     markets tradeable at size; arb captures ~$100-$2k/episode, seconds-long,
     ~6% of events co-listed; deep mainlines are efficient.
 Fees are folded into the NET edge means below.

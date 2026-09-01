@@ -39,6 +39,20 @@ from risk import RiskConfig, RiskManager  # noqa: E402
 from run_trader import MarketState, PaperTrader, TraderConfig  # noqa: E402
 from venues.base import Level, OrderBook, Side  # noqa: E402
 from venues.paper import PaperVenue  # noqa: E402
+from scripts.platformkit.execution.venue_fees import fee_polymarket  # noqa: E402
+
+# Polymarket sports taker fee as bps of DOLLAR notional, per execution.venue_fees
+# (docs.polymarket.com/trading/fees, retrieved 2026-09-01, Sports feeRate=0.05).
+# UNITS: PaperVenue charges fee_bps/1e4 * (qty * price), i.e. bps of dollar
+# notional, while fee_polymarket returns dollars for a SHARE count. Dividing by
+# the reference price converts per-share dollars -> rate of dollar notional.
+# Skipping that division reads 125 bps and undercharges fees by exactly 2x.
+# PaperVenue takes only a flat scalar, but the true rate of notional is
+# feeRate * (1 - P) -- so this is NOT a worst case: it understates fees below
+# P=0.50 (-> 500 bps as P -> 0) and overstates them above it.
+_PM_REF_PRICE = 0.50
+_POLYMARKET_TAKER_BPS_AT_50 = round(
+    fee_polymarket("taker", 1.0, _PM_REF_PRICE) / _PM_REF_PRICE * 1e4, 2)  # 250.0
 
 
 @dataclass
@@ -59,7 +73,7 @@ class ValidationConfig:
     bankroll: float = 10_000.0
     edge: float = 0.0            # 0 = efficient market (model==line); >0 = model+line informative
     min_edge_bps: float = 50.0
-    fee_bps: float = 75.0        # ~Polymarket sports taker
+    fee_bps: float = _POLYMARKET_TAKER_BPS_AT_50  # Polymarket taker @ P=0.50, see above
     min_n: int = 30              # minimum traded markets to judge
 
 
