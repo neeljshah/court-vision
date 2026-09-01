@@ -102,3 +102,18 @@ def test_queue_statuses_and_video_cleanup(monkeypatch, tmp_path):
     }
     assert set(deleted) == {"ok.mp4", "unknown.mp4", "download_error.mp4"}
     assert not list((tmp_path / "footage").glob("*.mp4"))
+
+
+def test_nba_production_columns_are_not_laundered_into_court_coordinates():
+    """ft_x/ft_y are an affine rescale of map_2d PIXELS, not court feet, and
+    map_2d falls back to a hardcoded 940x500 when rectification fails. Aliasing
+    them to x/y made the harness score image space against court-feet gates."""
+    import pandas as pd
+
+    frame = pd.DataFrame({"frame": [1, 2], "player_id": [10, 11],
+                          "ft_x": [40.0, 50.0], "ft_y": [20.0, 25.0]})
+
+    normalized = footage_cycle._normalize_tracking(frame)
+
+    assert "track_id" in normalized, "player_id -> track_id is still correct"
+    assert "x" not in normalized and "y" not in normalized

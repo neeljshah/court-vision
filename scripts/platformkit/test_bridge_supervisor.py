@@ -53,3 +53,21 @@ def test_refill_reports_sports_it_cannot_refill(monkeypatch, capsys):
 
     assert not called
     assert "no expander source" in capsys.readouterr().out
+
+
+def test_every_lane_has_a_real_adapter():
+    """A lane with no adapter downloads and uploads a game, then the pod exits 2
+    with "unknown sport". Four lanes (nhl, cricket, handball, volleyball) ran
+    that way and burned bandwidth all night producing nothing."""
+    from scripts.platformkit.adapter_run import ADAPTERS
+    from scripts.platformkit.track_daemon import CLIP_SPORTS, SPORT_ADAPTER
+
+    orphans = []
+    for _, queues in bridge_supervisor.LANES:
+        for queue in queues:
+            sport = queue.replace("footage_queue_", "").replace(".json", "")
+            if sport in CLIP_SPORTS or SPORT_ADAPTER.get(sport, sport) in ADAPTERS:
+                continue
+            orphans.append(sport)
+
+    assert not orphans, "lanes with no adapter: %s" % sorted(orphans)

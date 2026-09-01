@@ -100,7 +100,14 @@ def download_item(item: dict[str, str], destination: Path) -> Path:
 
 
 def _normalize_tracking(frame: pd.DataFrame) -> pd.DataFrame:
-    aliases = {"player_id": "track_id", "ft_x": "x", "ft_y": "y"}
+    # ft_x/ft_y are NOT court feet. They are an affine rescale of map_2d pixel
+    # space (unified_pipeline computes ft_x = (x2d / map_w) * 94.0), and map_2d
+    # falls back to a hardcoded 940x500 when court rectification fails. Aliasing
+    # them to the canonical x/y made identify_tracking_schema report NORMALIZED,
+    # so tracking_harness scored image-affine pixels against court-feet gates
+    # and every basketball/wnba report down this path passed on a fiction.
+    # The harness must fail closed with coordinate_contract instead.
+    aliases = {"player_id": "track_id"}
     normalized = frame.rename(columns={key: value for key, value in aliases.items()
                                        if key in frame and value not in frame})
     if "cls" not in normalized:

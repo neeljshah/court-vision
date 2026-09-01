@@ -32,12 +32,14 @@ LANES = [
     ("soccer", ["footage_queue_soccer.json"]),
     ("football", ["footage_queue_football.json"]),
     ("mlb", ["footage_queue_mlb.json"]),
-    ("nhl", ["footage_queue_nhl.json"]),
     ("ncaa_basketball", ["footage_queue_ncaa_basketball.json"]),
-    ("cricket", ["footage_queue_cricket.json"]),
-    ("handball", ["footage_queue_handball.json"]),
-    ("volleyball", ["footage_queue_volleyball.json"]),
 ]
+# nhl, cricket, handball and volleyball were lanes here until 2026-09-01. They
+# have no adapter in domains/ and no entry in adapter_run.ADAPTERS or
+# track_daemon.CLIP_SPORTS, so every game they fetched was uploaded to the pod
+# and then failed with "unknown sport". Their queue files are kept on disk; a
+# lane is one line to restore once its adapter exists. test_bridge_supervisor
+# now fails if a lane is ever added back without one.
 REFILL_THRESHOLD = 6
 POLL_SECONDS = 90
 # Sports queue_expander.SOURCES can actually discover full games for. Its
