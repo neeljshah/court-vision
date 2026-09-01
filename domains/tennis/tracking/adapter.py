@@ -14,6 +14,7 @@ import pandas as pd
 
 from scripts.platformkit.calibration.keypoint_calib import TemporalCalibrator
 from domains.tennis.tracking.ball import MotionDiffDetector, ball_rows, rectify_track
+from domains.tennis.tracking.rally_features import match_aggregates
 from domains.tennis.tracking.segmenter import detect_cut, small_gray
 
 
@@ -49,6 +50,7 @@ class TennisAdapter:
         self._force_homography_recompute = False
         self._centroids: dict[int, np.ndarray] = {}
         self.last_output = pd.DataFrame(columns=SCHEMA)
+        self.last_metadata: dict[str, object] = {}
 
     @staticmethod
     def _load_yolo_detector() -> Detector:
@@ -259,9 +261,13 @@ class TennisAdapter:
         return self._track_ids([(per_half[0][1], per_half[0][2]), (per_half[1][1], per_half[1][2])])
 
     def process_video(
-        self, path: Union[str, Path], max_frames: Optional[int] = None, stride: int = 1
-    ) -> pd.DataFrame:
-        """Process a headless video stream into normalized player and ball rows."""
+        self,
+        path: Union[str, Path],
+        max_frames: Optional[int] = None,
+        stride: int = 1,
+        compute_features: bool = False,
+    ) -> Union[pd.DataFrame, tuple[pd.DataFrame, dict[str, object]]]:
+        """Process video into rows, optionally returning descriptive rally metadata."""
         if stride < 1:
             raise ValueError("stride must be at least 1")
         capture = cv2.VideoCapture(str(path))
@@ -300,6 +306,10 @@ class TennisAdapter:
                 ball["frame"] = frame
                 rows.append(ball)
         self.last_output = pd.DataFrame(rows, columns=SCHEMA)
+        self.last_metadata = {}
+        if compute_features:
+            self.last_metadata = {"rally_features": match_aggregates(self.last_output)}
+            return self.last_output, self.last_metadata
         return self.last_output
 
     def write_csv(self, path: Union[str, Path], rows: Optional[pd.DataFrame] = None) -> None:

@@ -67,6 +67,21 @@ def test_process_video_appends_rectified_ball_rows(monkeypatch) -> None:
     assert balls.y.between(0.0, 36.0).all()
 
 
+def test_process_video_returns_rally_metadata_only_when_requested(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "domains.tennis.tracking.adapter.cv2.VideoCapture",
+        lambda path: _FakeCapture(_ball_sequence(with_dot=True)),
+    )
+    adapter = TennisAdapter(detector=lambda frame: [])
+    adapter.detect_court_corners = lambda frame: COURT
+
+    rows, metadata = adapter.process_video("synthetic.avi", compute_features=True)
+
+    assert list(rows.columns) == ["frame", "track_id", "cls", "x", "y"]
+    assert metadata == adapter.last_metadata
+    assert set(metadata["rally_features"]) >= {"n_rallies", "players"}
+
+
 def test_process_video_keeps_no_ball_rows_when_motion_is_absent(monkeypatch) -> None:
     monkeypatch.setattr(
         "domains.tennis.tracking.adapter.cv2.VideoCapture",
