@@ -37,7 +37,7 @@ def rejection_gate(frame: np.ndarray) -> str:
         return "insufficient_oriented_lines"
     horizontal_clusters = TennisAdapter._cluster_lines(horizontal, True, (height, width))
     vertical_clusters = TennisAdapter._cluster_lines(vertical, False, (height, width))
-    if not horizontal_clusters or len(vertical_clusters) != 5:
+    if len(horizontal_clusters) < 4 or len(vertical_clusters) != 5:
         return "vertical_cluster_count"
     across = [TennisAdapter._line_position(TennisAdapter._fit_line(cluster), False, (height, width))
               for cluster in vertical_clusters]
@@ -45,13 +45,14 @@ def rejection_gate(frame: np.ndarray) -> str:
     ratio = (across[2] - across[0]) * (across[4] - across[1]) / denominator if abs(denominator) >= 1e-6 else np.inf
     if abs(denominator) < 1e-6 or abs(ratio - CROSS_RATIO) > 0.05:
         return "cross_ratio"
-    near = TennisAdapter._fit_line(horizontal_clusters[-1])
+    far, _, near_service, near = [TennisAdapter._fit_line(horizontal_clusters[index])
+                                  for index in (0, 1, -2, -1)]
     left, right = TennisAdapter._fit_line(vertical_clusters[0]), TennisAdapter._fit_line(vertical_clusters[-1])
     centre = TennisAdapter._fit_line(vertical_clusters[2])
-    far_left = TennisAdapter._point_at_row(left, TennisAdapter._endpoint_rows(vertical_clusters[0])[0])
-    service_t = TennisAdapter._point_at_row(centre, TennisAdapter._endpoint_rows(vertical_clusters[2])[1])
+    far_left, service_t = TennisAdapter._intersection(far, left), TennisAdapter._intersection(near_service, centre)
     near_left, near_right = TennisAdapter._intersection(near, left), TennisAdapter._intersection(near, right)
-    if near_left is None or near_right is None or not far_left[1] < service_t[1] < near_left[1]:
+    if (near_left is None or near_right is None or far_left is None or service_t is None or
+            not far_left[1] < service_t[1] < near_left[1]):
         return "depth_order"
     anchors = np.float32((near_left, near_right, far_left, service_t))
     to_image, _ = cv2.findHomography(np.float32(((0, 0), (0, 36), (78, 0), (18, 18))), anchors)
@@ -104,22 +105,24 @@ def held_out_service_t_error(frame: np.ndarray) -> Optional[float]:
         return None
     horizontal_clusters = TennisAdapter._cluster_lines(horizontal, True, (height, width))
     vertical_clusters = TennisAdapter._cluster_lines(vertical, False, (height, width))
-    if not horizontal_clusters or len(vertical_clusters) != 5:
+    if len(horizontal_clusters) < 4 or len(vertical_clusters) != 5:
         return None
     across = [TennisAdapter._line_position(TennisAdapter._fit_line(cluster), False, (height, width))
               for cluster in vertical_clusters]
     denominator = (across[2] - across[1]) * (across[4] - across[0])
     if abs(denominator) < 1e-6 or abs((across[2] - across[0]) * (across[4] - across[1]) / denominator - CROSS_RATIO) > 0.05:
         return None
-    near = TennisAdapter._fit_line(horizontal_clusters[-1])
+    far, opposite_service, near_service, near = [TennisAdapter._fit_line(horizontal_clusters[index])
+                                                  for index in (0, 1, -2, -1)]
     left, right = TennisAdapter._fit_line(vertical_clusters[0]), TennisAdapter._fit_line(vertical_clusters[-1])
     centre = TennisAdapter._fit_line(vertical_clusters[2])
-    far_left = TennisAdapter._point_at_row(left, TennisAdapter._endpoint_rows(vertical_clusters[0])[0])
+    far_left = TennisAdapter._intersection(far, left)
     near_left, near_right = TennisAdapter._intersection(near, left), TennisAdapter._intersection(near, right)
-    if near_left is None or near_right is None:
+    service_t = TennisAdapter._intersection(near_service, centre)
+    opposite_t = TennisAdapter._intersection(opposite_service, centre)
+    if (near_left is None or near_right is None or far_left is None or service_t is None or
+            opposite_t is None):
         return None
-    service_t = TennisAdapter._point_at_row(centre, TennisAdapter._endpoint_rows(vertical_clusters[2])[1])
-    opposite_t = TennisAdapter._point_at_row(centre, TennisAdapter._endpoint_rows(vertical_clusters[2])[0])
     if not far_left[1] < service_t[1] < near_left[1]:
         return None
     homography, _ = cv2.findHomography(np.float32((near_left, near_right, far_left, service_t)),

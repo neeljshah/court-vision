@@ -16,7 +16,8 @@ SCHEMA = ("frame", "track_id", "cls", "x", "y", "calibration_provenance")
 COURT_FEET = np.float32(((0, 0), (0, 36), (78, 0), (78, 36))); Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
 # Projective invariant for the five length-running court lines.
 CROSS_RATIO = 567.0 / 486.0
-# Near doubles corners, far-left endpoint, and near service T.
+# Anchors: both near doubles corners, the far-left doubles corner and the near
+# service T. All are intersections of fitted court lines.
 ANCHOR_FEET = np.float32(((0, 0), (0, 36), (78, 0), (18, 18)))
 def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
     """Write player tracking rows in the normalized platform schema."""
@@ -109,8 +110,12 @@ class TennisAdapter:
             return None
         horizontal_clusters = self._cluster_lines(horizontal, True, (height, width))
         vertical_clusters = self._cluster_lines(vertical, False, (height, width))
-        # Require the court's five length-running lines and their cross ratio.
-        if not horizontal_clusters or len(vertical_clusters) != 5:
+        # A tennis court has exactly five length-running lines; requiring five in
+        # the court's own cross ratio rejects replay and close-up framings. The
+        # old code took the topmost horizontal cluster as the far baseline with
+        # no court check, and on main-camera frames that cluster is the
+        # broadcast wordmark or a sponsor banner, never a court line.
+        if len(horizontal_clusters) < 4 or len(vertical_clusters) != 5:
             return None
         across = [self._line_position(self._fit_line(cluster), False, (height, width))
                   for cluster in vertical_clusters]
@@ -118,15 +123,17 @@ class TennisAdapter:
         if abs(denominator) < 1e-6 or abs(
                 (across[2] - across[0]) * (across[4] - across[1]) / denominator - CROSS_RATIO) > 0.05:
             return None
-        near = self._fit_line(horizontal_clusters[-1])
+        far, _, near_service, near = [self._fit_line(horizontal_clusters[index])
+                                      for index in (0, 1, -2, -1)]
         left = self._fit_line(vertical_clusters[0])
         right = self._fit_line(vertical_clusters[-1])
         centre = self._fit_line(vertical_clusters[2])
-        far_left = self._point_at_row(left, self._endpoint_rows(vertical_clusters[0])[0])
-        service_t = self._point_at_row(centre, self._endpoint_rows(vertical_clusters[2])[1])
+        far_left, service_t = self._intersection(far, left), self._intersection(near_service, centre)
         near_left, near_right = self._intersection(near, left), self._intersection(near, right)
-        # Depth decreases up a behind-baseline broadcast frame.
-        if near_left is None or near_right is None or not far_left[1] < service_t[1] < near_left[1]:
+        # The camera sits behind the near baseline, so depth decreases up the
+        # frame: far baseline, then service T, then near baseline.
+        if (near_left is None or near_right is None or far_left is None or service_t is None or
+                not far_left[1] < service_t[1] < near_left[1]):
             return None
         anchors = np.float32((near_left, near_right, far_left, service_t))
         to_image, _ = cv2.findHomography(ANCHOR_FEET, anchors)
