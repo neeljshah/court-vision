@@ -1,112 +1,196 @@
 """Download footage on the local (residential) IP, track it on the pod, delete both copies.
 
-Why this exists: YouTube blocks the pod's datacenter IP ("Sign in to confirm
-you're not a bot") for every league, while the same cookies work from the local
+Why this exists: YouTube blocks the pod datacenter IP ("Sign in to confirm
+you are not a bot") for every league, while the same cookies work from the local
 machine. The pod has the GPU. So the local box is used ONLY as a network hop:
 download -> scp -> track on pod -> delete local AND remote copies immediately.
 Neither disk ever accumulates video.
 
+Two landmines this module is built around:
+  1. Remote staging lives in data/footage_bridge/, NOT data/footage/. The pod
+     track_staged loop scans data/footage/ and deletes what it finds, which
+     raced this bridge and deleted a video mid-transfer ("video not found").
+     A private directory means there is exactly one writer per file.
+  2. Success is a row-count check, never `test -s`. A 103-row CSV is non-empty
+     and still useless; the non-empty test reported it as "tracked".
+
 Run: python -m scripts.platformkit.footage_bridge --queue data/footage_queue_tennis.json --limit 3
+     python -m scripts.platformkit.footage_bridge --all --forever
 """
 from __future__ import annotations
 
 import argparse
 import json
-import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 
-POD = ["-o", "StrictHostKeyChecking=no", "-p", "40048", "root@213.192.2.83"]
+POD = ["-o", "StrictHostKeyChecking=no", "-o", "ConnectTimeout=30", "-p", "40048",
+       "root@213.192.2.83"]
+POD_HOST = "root@213.192.2.83"
 POD_ROOT = "/workspace/nba-ai-system"
+REMOTE_STAGE = POD_ROOT + "/data/footage_bridge"
 LOCAL_STAGE = Path("data/videos/bridge")
 COOKIES = Path("data/videos/youtube_cookies.txt")
+LEDGER = Path("data/tracking/footage_bridge_ledger.jsonl")
+# A real tracked game has thousands of rows. Anything under this is a failed
+# detection pass wearing a successful exit code.
+MIN_TRACKING_ROWS = 500
 SPORT_ADAPTER = {"tennis": "tennis", "soccer": "soccer", "npb": "baseball",
                  "kbo": "baseball", "mlb": "baseball", "baseball": "baseball"}
+# yt-dlp rungs, cheapest first. The pod cannot use any of them; the local IP can.
+FORMAT_RUNGS = [
+    "bv*[height<=1080][vcodec^=avc1]+ba/b[height<=1080]",
+    "bv*[height<=720][vcodec^=avc1]+ba/b[height<=720]",
+    "b[height<=720]",
+]
 
 
-def _ssh(command: str, timeout: int = 5400) -> subprocess.CompletedProcess:
+def _ssh(command: str, timeout: int = 7200) -> subprocess.CompletedProcess:
     return subprocess.run(["ssh", *POD, command], capture_output=True, text=True,
                           timeout=timeout)
 
 
-def already_tracked(game_id: str) -> bool:
-    probe = _ssh("test -s %s/data/tracking/%s/tracking_data.csv && echo YES || echo NO"
+def tracking_rows(game_id: str) -> int:
+    """Row count of the pod-side tracking CSV, or 0 when absent."""
+    probe = _ssh("wc -l < %s/data/tracking/%s/tracking_data.csv 2>/dev/null || echo 0"
                  % (POD_ROOT, game_id), timeout=120)
-    return "YES" in probe.stdout
+    try:
+        return int((probe.stdout or "0").strip().split()[0])
+    except (ValueError, IndexError):
+        return 0
+
+
+def _resolve_download(destination: Path):
+    """Find what yt-dlp actually wrote; it falls back to .mkv/.webm on merge failure."""
+    if destination.exists():
+        return destination
+    produced = sorted(
+        (path for path in destination.parent.glob(destination.stem + "*")
+         if path.is_file() and not path.name.endswith((".part", ".ytdl"))
+         and "-Frag" not in path.name),
+        key=lambda path: path.stat().st_size, reverse=True)
+    return produced[0] if produced else None
 
 
 def download_local(item: dict) -> Path:
     """Download one item to the local stage, returning the merged file."""
     LOCAL_STAGE.mkdir(parents=True, exist_ok=True)
-    target = LOCAL_STAGE / (item["game_id"] + ".mp4")
-    command = ["yt-dlp", "--merge-output-format", "mp4", "--no-part",
-               "-f", item.get("format") or "bv*[height<=1080][vcodec^=avc1]+ba/b[height<=720]",
-               "-o", str(target), item["url"]]
-    if COOKIES.is_file():
-        command[1:1] = ["--cookies", str(COOKIES)]
-    subprocess.run(command, check=True, timeout=5400)
-    if target.exists():
-        return target
-    produced = sorted((p for p in LOCAL_STAGE.glob(target.stem + "*")
-                       if p.is_file() and not p.name.endswith(".part")),
-                      key=lambda p: p.stat().st_size, reverse=True)
-    if not produced:
-        raise FileNotFoundError("no local artifact for %s" % item["game_id"])
-    return produced[0]
+    destination = LOCAL_STAGE / (item["game_id"] + ".mp4")
+    rungs = ([item["format"]] + FORMAT_RUNGS) if item.get("format") else FORMAT_RUNGS
+    last_error = "no attempt made"
+    for rung in rungs:
+        command = ["yt-dlp", "--merge-output-format", "mp4", "--no-part",
+                   "--no-playlist", "-f", rung, "-o", str(destination), item["url"]]
+        if COOKIES.is_file():
+            command[1:1] = ["--cookies", str(COOKIES)]
+        try:
+            subprocess.run(command, check=True, timeout=7200,
+                           capture_output=True, text=True)
+        except subprocess.CalledProcessError as exc:
+            last_error = (exc.stderr or "")[-200:].replace("\n", " ")
+            continue
+        except subprocess.TimeoutExpired:
+            last_error = "yt-dlp timeout"
+            continue
+        produced = _resolve_download(destination)
+        if produced is not None:
+            return produced
+        last_error = "yt-dlp reported success but produced no file"
+    raise RuntimeError("download failed: %s" % last_error)
 
 
 def push_and_track(local: Path, item: dict) -> str:
-    """Upload, track on the pod, score, then delete the remote video."""
+    """Upload to the private stage, track on the pod, then delete the remote copy."""
     game_id, sport = item["game_id"], item["sport"]
-    remote = "%s/data/footage/%s%s" % (POD_ROOT, game_id, local.suffix)
-    subprocess.run(["scp", "-o", "StrictHostKeyChecking=no", "-P", "40048",
-                    str(local), "root@213.192.2.83:" + remote],
-                   check=True, timeout=5400)
-    adapter = SPORT_ADAPTER.get(sport, sport)
-    if adapter in ("wnba", "basketball"):
-        track = ("cd %s && PYTHONPATH=%s python scripts/run_clip.py --video %s "
-                 "--game-id %s --no-show --frames 18000" % (POD_ROOT, POD_ROOT, remote, game_id))
-    else:
-        track = ("cd %s && PYTHONPATH=%s python adapter_run.py %s %s %s"
-                 % (POD_ROOT, POD_ROOT, adapter, remote, game_id))
-    result = _ssh(track)
-    _ssh("rm -f %s" % remote, timeout=300)
-    ok = _ssh("test -s %s/data/tracking/%s/tracking_data.csv && echo YES || echo NO"
-              % (POD_ROOT, game_id), timeout=120)
-    return "tracked" if "YES" in ok.stdout else "no_output:" + result.stdout[-160:].replace("\n", " ")
+    remote = "%s/%s%s" % (REMOTE_STAGE, game_id, local.suffix)
+    _ssh("mkdir -p %s" % REMOTE_STAGE, timeout=120)
+    result = None
+    try:
+        subprocess.run(["scp", "-o", "StrictHostKeyChecking=no", "-P", "40048",
+                        str(local), "%s:%s" % (POD_HOST, remote)],
+                       check=True, timeout=7200, capture_output=True, text=True)
+        adapter = SPORT_ADAPTER.get(sport, sport)
+        if adapter in ("wnba", "basketball"):
+            track = ("cd %s && PYTHONPATH=%s python scripts/run_clip.py --video %s "
+                     "--game-id %s --no-show --frames 18000"
+                     % (POD_ROOT, POD_ROOT, remote, game_id))
+        else:
+            track = ("cd %s && PYTHONPATH=%s python adapter_run.py %s %s %s"
+                     % (POD_ROOT, POD_ROOT, adapter, remote, game_id))
+        result = _ssh(track)
+    finally:
+        # Always reclaim pod disk, even when tracking raised. The pod filled twice.
+        _ssh("rm -f %s" % remote, timeout=300)
+    rows = tracking_rows(game_id)
+    if rows >= MIN_TRACKING_ROWS:
+        return "tracked rows=%d" % rows
+    tail = ""
+    if result is not None:
+        tail = ((result.stdout or "") + (result.stderr or ""))[-160:].replace("\n", " ")
+    return "thin rows=%d %s" % (rows, tail)
 
 
-def run(queue_path: Path, limit: int) -> None:
-    items = json.loads(queue_path.read_text(encoding="utf-8"))
-    done = 0
+def _record(entry: dict) -> None:
+    LEDGER.parent.mkdir(parents=True, exist_ok=True)
+    with LEDGER.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(entry) + "\n")
+
+
+def run_queue(queue_path: Path, limit: int) -> int:
+    """Process up to `limit` untracked items. Returns how many were newly tracked."""
+    try:
+        items = json.loads(queue_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        print("queue unreadable %s: %s" % (queue_path, exc), flush=True)
+        return 0
+    done = tracked = 0
     for item in items:
         if done >= limit:
             break
-        game_id = item["game_id"]
-        if already_tracked(game_id):
+        game_id = item.get("game_id")
+        if not game_id or tracking_rows(game_id) >= MIN_TRACKING_ROWS:
             continue
         local = None
         try:
             local = download_local(item)
             status = push_and_track(local, item)
-        except Exception as exc:  # pragma: no cover - operational path
-            status = "failed:%s" % str(exc)[:160]
+        except Exception as exc:  # one bad item must never stop the run
+            status = "failed: %s" % str(exc)[:200]
         finally:
             if local is not None:
                 for leftover in LOCAL_STAGE.glob(local.stem + "*"):
                     leftover.unlink(missing_ok=True)
-        print("%s %s %s" % (game_id, item["sport"], status), flush=True)
+        print("%s %s %s" % (game_id, item.get("sport"), status), flush=True)
+        _record({"game_id": game_id, "sport": item.get("sport"), "status": status})
         done += 1
+        tracked += int(status.startswith("tracked"))
+    return tracked
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Local-download / pod-track bridge")
-    parser.add_argument("--queue", required=True, type=Path)
-    parser.add_argument("--limit", type=int, default=3)
+    parser.add_argument("--queue", type=Path, action="append", default=[])
+    parser.add_argument("--all", action="store_true",
+                        help="every data/footage_queue_*.json")
+    parser.add_argument("--limit", type=int, default=3, help="items per queue per pass")
+    parser.add_argument("--forever", action="store_true",
+                        help="keep cycling; the pod must never idle")
+    parser.add_argument("--sleep", type=int, default=120, help="pause between passes")
     args = parser.parse_args()
-    run(args.queue, args.limit)
-    return 0
+    queues = list(args.queue)
+    if args.all or not queues:
+        queues = sorted(Path("data").glob("footage_queue_*.json"))
+    if not queues:
+        print("no queues found", flush=True)
+        return 1
+    while True:
+        for queue_path in queues:
+            run_queue(queue_path, args.limit)
+        if not args.forever:
+            return 0
+        time.sleep(args.sleep)
 
 
 if __name__ == "__main__":
