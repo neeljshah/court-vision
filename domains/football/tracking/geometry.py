@@ -1,6 +1,7 @@
 """Fresh football calibration from named painted-yard and hash line correspondences."""
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Optional
 
 import cv2
@@ -11,7 +12,14 @@ from domains.football.tracking.field_gates import MIN_FIELD_VIEW_GREEN, field_vi
 
 FIELD_WIDTH_FT = 160.0
 FIELD_LENGTH_FT = 360.0
-YARD_LINE_SPACING_FT = 15.0
+# NFL Rule 1, Field Markings 10: professional inbounds hashes are 70 ft 9 in
+# from each sideline; on the 160-ft field that leaves 18 ft 6 in between rows.
+# Source: https://operations.nfl.com/rules-officiating/2026-nfl-rulebook
+NFL_HASH_ROW_SEPARATION_FT = 18.5
+NCAA_HASH_ROW_SEPARATION_FT = 40.0
+# NFL Football Operations: yard lines are painted at five-yard intervals.
+# Source: https://operations.nfl.com/football-101/terms-glossary/glossary-terms-list/yard-lines/
+YARD_LINE_SPACING_FT = 15.0  # 5 yd * 3 ft.
 MAX_YARD_LINES = int(FIELD_LENGTH_FT / YARD_LINE_SPACING_FT) + 1
 MIN_YARD_LINES = 4
 GRID_AGREEMENT_FT = 2.0
@@ -20,11 +28,36 @@ HASH_MAX_FRACTION = 0.12
 HASH_ROW_CLUSTER_PX = 12.0
 
 
+@dataclass(frozen=True)
+class FootballFieldSpec:
+    """Rule-set dimensions used only after the caller names a field level."""
+
+    name: str
+    hash_row_separation_ft: float
+
+
+FIELD_SPECS = {
+    "nfl": FootballFieldSpec("nfl", NFL_HASH_ROW_SEPARATION_FT),
+    "ncaa": FootballFieldSpec("ncaa", NCAA_HASH_ROW_SEPARATION_FT),
+}
+
+
+def field_spec(field_level: str) -> FootballFieldSpec:
+    """Return named rule-set dimensions; never infer a league from pixels."""
+    try:
+        return FIELD_SPECS[field_level.lower()]
+    except (AttributeError, KeyError) as exc:
+        raise ValueError("field_level must be one of: %s" % ", ".join(FIELD_SPECS)) from exc
+
+
 class FootballGeometryMixin:
     """Fit an image-to-football-field transform for one freshly observed frame."""
 
-    def __init__(self) -> None:
+    def __init__(self, field_level: Optional[str] = None) -> None:
         self.absolute_anchor_provider = PaintedYardAnchorProvider()
+        self.field_level = field_level.lower() if field_level is not None else None
+        if self.field_level is not None:
+            field_spec(self.field_level)
 
     @staticmethod
     def _line_coefficients(line: np.ndarray) -> np.ndarray:
@@ -149,13 +182,15 @@ class FootballGeometryMixin:
 
     def homography_from_yard_lines(self, frame: np.ndarray) -> Optional[np.ndarray]:
         """Return a fresh NCAA transform, or fail closed without an independent scale proof."""
-        stats = self.last_fit_stats = {"reject": None}
+        stats = self.last_fit_stats = {"reject": None, "field_level": self.field_level}
         def fail(reason: str) -> None:
             stats["reject"] = reason
             return None
         stats["green_frac"] = field_view_fraction(frame)
         if stats["green_frac"] < MIN_FIELD_VIEW_GREEN:
             return fail("not_field_view")
+        if self.field_level is None:
+            return fail("field_level_unset")
         anchor = self.absolute_anchor_provider.detect(frame)
         if anchor is None:
             return fail("absolute_anchor_unavailable")
