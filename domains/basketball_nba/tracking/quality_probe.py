@@ -47,6 +47,11 @@ class DepthReport:
     screen_candidate_count: int
     screen_candidates_per_minute: float
     depth_grade: str
+    # False when the CSV has no homography_valid column at all. Without this the
+    # probe reported an ABSENT measurement as a measured 0.0 and graded C, which
+    # is indistinguishable from a game whose homography genuinely never solved.
+    # Appended last with a default so existing positional construction still works.
+    homography_measured: bool = True
 
     @property
     def grade(self) -> str:
@@ -129,8 +134,9 @@ def measure_dataframe(df: pd.DataFrame, sport: str = "nba", fps: float = 30.0,
     frames = int(normalized["frame"].nunique())
     eight = players.groupby("frame")[identifier].nunique().ge(8)
     pct_eight = float(eight.sum() / frames) if frames else 0.0
+    homography_measured = "homography_valid" in normalized
     homography = (_frame_ratio(normalized, _truthy(normalized["homography_valid"]), frames)
-                  if "homography_valid" in normalized else 0.0)
+                  if homography_measured else 0.0)
     ball = _frame_ratio(normalized, _ball_mask(normalized), frames)
     jersey = (float(_present(players["jersey_number"]).mean())
               if "jersey_number" in players and len(players) else 0.0)
@@ -143,11 +149,12 @@ def measure_dataframe(df: pd.DataFrame, sport: str = "nba", fps: float = 30.0,
     span = float(numeric_frames.max() - numeric_frames.min() + 1) if len(numeric_frames) else 0.0
     minutes = span / fps / 60.0
     screens_per_minute = float(screens / minutes) if minutes else 0.0
-    grade = _grade(pct_eight, homography, ball, jersey, team)
+    grade = (_grade(pct_eight, homography, ball, jersey, team)
+             if homography_measured else "UNMEASURED")
     return DepthReport(str(source), sport.lower(), len(df), frames, round(pct_eight, 4),
                        round(homography, 4), round(ball, 4), round(jersey, 4),
                        round(team, 4), round(median_length, 2), screens,
-                       round(screens_per_minute, 2), grade)
+                       round(screens_per_minute, 2), grade, homography_measured)
 
 
 def _grade(players: float, homography: float, ball: float, jersey: float,
@@ -181,7 +188,8 @@ def compare_games(paths: Sequence[str | Path] | Mapping[str, str | Path]) -> lis
     headers = ("SPORT", "GAME", "DEPTH", ">=8", "HOMO", "BALL", "JERSEY", "TEAM", "MED_TRACK", "SCREENS/MIN")
     rows = [[sport.upper(), Path(report.source).name, report.depth_grade,
              "{:.1f}%".format(report.pct_frames_ge_8_players * 100),
-             "{:.1f}%".format(report.pct_frames_homography_valid * 100),
+             ("{:.1f}%".format(report.pct_frames_homography_valid * 100)
+              if report.homography_measured else "n/a"),
              "{:.1f}%".format(report.ball_row_coverage * 100),
              "{:.1f}%".format(report.jersey_number_fill_rate * 100),
              "{:.1f}%".format(report.team_assignment_fill_rate * 100),

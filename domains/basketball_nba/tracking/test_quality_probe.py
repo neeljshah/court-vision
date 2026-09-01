@@ -55,3 +55,43 @@ def test_grade_b_floor_is_tied_to_harness_and_compare_is_ascii(tmp_path, capsys)
     output = capsys.readouterr().out
     assert "NBA" in output and "WNBA" in output and "DEPTH" in output
     output.encode("ascii")
+
+
+def test_absent_homography_column_is_unmeasured_not_a_measured_zero():
+    """A CSV with no homography_valid column used to grade C off a 0.0 that was
+    never measured -- indistinguishable from a game whose homography never
+    solved. An absent measurement must say so."""
+    import pandas as pd
+
+    from domains.basketball_nba.tracking.quality_probe import measure_dataframe
+
+    frame = pd.DataFrame({
+        "frame": [1, 1, 2, 2],
+        "player_id": [1, 2, 1, 2],
+        "x_position": [10.0, 20.0, 11.0, 21.0],
+        "y_position": [5.0, 6.0, 5.5, 6.5],
+    })
+
+    report = measure_dataframe(frame, sport="nba", fps=30.0, source="synthetic")
+
+    assert report.homography_measured is False
+    assert report.depth_grade == "UNMEASURED"
+
+
+def test_present_homography_column_still_grades_normally():
+    import pandas as pd
+
+    from domains.basketball_nba.tracking.quality_probe import measure_dataframe
+
+    frame = pd.DataFrame({
+        "frame": [1, 1, 2, 2],
+        "player_id": [1, 2, 1, 2],
+        "x_position": [10.0, 20.0, 11.0, 21.0],
+        "y_position": [5.0, 6.0, 5.5, 6.5],
+        "homography_valid": [True, True, True, True],
+    })
+
+    report = measure_dataframe(frame, sport="nba", fps=30.0, source="synthetic")
+
+    assert report.homography_measured is True
+    assert report.depth_grade in ("A", "B", "C")
