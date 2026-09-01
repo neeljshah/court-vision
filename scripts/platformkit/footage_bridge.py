@@ -48,8 +48,17 @@ FORMAT_RUNGS = [
 
 
 def _ssh(command: str, timeout: int = 7200) -> subprocess.CompletedProcess:
-    return subprocess.run(["ssh", *POD, command], capture_output=True, text=True,
-                          timeout=timeout)
+    """Run one pod command. A hung ssh returns a failure, it never raises.
+
+    This runs unattended overnight: an uncaught TimeoutExpired here would kill
+    the whole bridge and leave the GPU idle until a human noticed.
+    """
+    try:
+        return subprocess.run(["ssh", *POD, command], capture_output=True,
+                              text=True, timeout=timeout)
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        return subprocess.CompletedProcess(command, 255, stdout="",
+                                           stderr="ssh failed: %s" % exc)
 
 
 def tracking_rows(game_id: str) -> int:
@@ -60,6 +69,26 @@ def tracking_rows(game_id: str) -> int:
         return int((probe.stdout or "0").strip().split()[0])
     except (ValueError, IndexError):
         return 0
+
+
+def tracked_row_counts() -> dict:
+    """Row count for every pod-side tracking CSV in ONE ssh round trip.
+
+    Probing per item cost one ssh each: a 22-item queue spent ~40s of round
+    trips before the first download, every pass, forever.
+    """
+    probe = _ssh("cd %s/data/tracking 2>/dev/null && wc -l */tracking_data.csv "
+                 "2>/dev/null || true" % POD_ROOT, timeout=300)
+    counts = {}
+    for line in (probe.stdout or "").splitlines():
+        parts = line.split()
+        if len(parts) != 2 or "/" not in parts[1]:
+            continue  # skips the "total" line and any stray output
+        try:
+            counts[parts[1].split("/")[0]] = int(parts[0])
+        except ValueError:
+            continue
+    return counts
 
 
 def _resolve_download(destination: Path):
@@ -146,11 +175,12 @@ def run_queue(queue_path: Path, limit: int) -> int:
         print("queue unreadable %s: %s" % (queue_path, exc), flush=True)
         return 0
     done = tracked = 0
+    known = tracked_row_counts()
     for item in items:
         if done >= limit:
             break
         game_id = item.get("game_id")
-        if not game_id or tracking_rows(game_id) >= MIN_TRACKING_ROWS:
+        if not game_id or known.get(game_id, 0) >= MIN_TRACKING_ROWS:
             continue
         local = None
         try:
@@ -187,7 +217,10 @@ def main() -> int:
         return 1
     while True:
         for queue_path in queues:
-            run_queue(queue_path, args.limit)
+            try:
+                run_queue(queue_path, args.limit)
+            except Exception as exc:  # a bad queue must never end the night
+                print("queue pass failed %s: %s" % (queue_path, exc), flush=True)
         if not args.forever:
             return 0
         time.sleep(args.sleep)

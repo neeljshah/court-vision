@@ -87,8 +87,8 @@ def test_queue_skips_already_tracked_and_records_ledger(monkeypatch, tmp_path):
     ]), encoding="utf-8")
     monkeypatch.setattr(footage_bridge, "LEDGER", tmp_path / "ledger.jsonl")
     monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path / "stage")
-    monkeypatch.setattr(footage_bridge, "tracking_rows",
-                        lambda game_id: 9000 if game_id == "done_01" else 0)
+    monkeypatch.setattr(footage_bridge, "tracked_row_counts",
+                        lambda: {"done_01": 9000})
     monkeypatch.setattr(footage_bridge, "download_local",
                         lambda item: Path(tmp_path / "stage" / "todo_01.mp4"))
     monkeypatch.setattr(footage_bridge, "push_and_track",
@@ -100,3 +100,23 @@ def test_queue_skips_already_tracked_and_records_ledger(monkeypatch, tmp_path):
     entries = [json.loads(line) for line
                in (tmp_path / "ledger.jsonl").read_text(encoding="utf-8").splitlines()]
     assert [entry["game_id"] for entry in entries] == ["todo_01"]
+
+
+def test_row_counts_parsed_from_one_batched_probe(monkeypatch):
+    """One ssh round trip for the whole corpus, not one per queue item."""
+    calls = []
+
+    def fake_ssh(command, timeout=7200):
+        calls.append(command)
+        return subprocess.CompletedProcess(
+            command, 0, stderr="",
+            stdout="  9000 kbo_01/tracking_data.csv\n"
+                   "   103 kbo_02/tracking_data.csv\n"
+                   "  9103 total\n")
+
+    monkeypatch.setattr(footage_bridge, "_ssh", fake_ssh)
+
+    counts = footage_bridge.tracked_row_counts()
+
+    assert counts == {"kbo_01": 9000, "kbo_02": 103}
+    assert len(calls) == 1
