@@ -16,12 +16,12 @@ def test_expand_queue_dedupes_filters_caps_and_writes_atomically(
     queue_path.parent.mkdir(parents=True)
     queue_path.write_text(
         json.dumps([
-            {"sport": "tennis", "game_id": "tennis_old", "url": "https://www.youtube.com/watch?v=old", "format": "x"},
-            {"sport": "tennis", "game_id": "tennis_tracked", "url": "https://www.youtube.com/watch?v=tracked", "format": "x"},
+            {"sport": "tennis", "game_id": "tennis_oldAAAAAAAA", "url": "https://www.youtube.com/watch?v=oldAAAAAAAA", "format": "x"},
+            {"sport": "tennis", "game_id": "tennis_trackedAAAA", "url": "https://www.youtube.com/watch?v=trackedAAAA", "format": "x"},
         ]),
         encoding="utf-8",
     )
-    (data_dir / "tracking" / "tennis_tracked").mkdir(parents=True)
+    (data_dir / "tracking" / "tennis_trackedAAAA").mkdir(parents=True)
     monkeypatch.setattr(queue_expander, "DATA_DIR", data_dir)
     monkeypatch.setattr(queue_expander, "TRACKING_DIR", data_dir / "tracking")
     monkeypatch.setattr(queue_expander, "COOKIES_FILE", data_dir / "videos" / "cookies.txt")
@@ -29,7 +29,9 @@ def test_expand_queue_dedupes_filters_caps_and_writes_atomically(
 
     def fake_run(command, **_kwargs):
         calls.append(command)
-        output = "old\ntracked\nshort\nnew\nextra\nignored\n"
+        # real YouTube ids are exactly 11 chars; the expander now rejects
+        # anything else (playlist/channel ids stalled every runner).
+        output = "oldAAAAAAAA\ntrackedAAAA\nshortAAAAAA\nnewAAAAAAAA\nextraAAAAAA\nignoredAAAA\n"
         if command[command.index("--print") + 1] == "duration":
             output = "5000\n5000\n100\n3600\n7200\n7200\n"
         return SimpleNamespace(stdout=output)
@@ -48,7 +50,7 @@ def test_expand_queue_dedupes_filters_caps_and_writes_atomically(
 
     entries = queue_expander.expand_queue("tennis", ["https://example.test/list"], 3)
 
-    assert [item["game_id"] for item in entries] == ["tennis_old", "tennis_tracked", "tennis_new", "tennis_extra"]
+    assert [item["game_id"] for item in entries] == ["tennis_oldAAAAAAAA", "tennis_trackedAAAA", "tennis_newAAAAAAAA", "tennis_extraAAAAAA"]
     assert queue_path.read_text(encoding="utf-8") == json.dumps(entries, indent=2) + "\n"
     assert len(replaced) == 1
     assert replaced[0][1] == queue_path

@@ -3,12 +3,25 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import os
 import subprocess
 import tempfile
 from itertools import zip_longest
 from pathlib import Path
 from typing import Iterable
+
+
+_VIDEO_ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
+
+
+def is_video_id(value: str) -> bool:
+    """True only for real 11-character YouTube video ids.
+
+    --flat-playlist can emit playlist/channel ids (PL..., UC...); queueing those
+    produced 'Video unavailable' on every item and stalled every runner.
+    """
+    return bool(_VIDEO_ID.match(str(value or "").strip()))
 
 
 FORMAT = "bv*[height>=1080][vcodec^=avc1]+ba/b[height<=720]"
@@ -101,8 +114,8 @@ def expand_queue(
         video_ids = _yt_dlp(url, "id")
         durations = _yt_dlp(url, "duration")
         for video_id, duration_text in zip_longest(video_ids, durations, fillvalue=""):
-            if not video_id:
-                continue
+            if not is_video_id(video_id):
+                continue  # skips playlist/channel ids from --flat-playlist
             game_id = "%s_%s" % (sport, video_id)
             duration = _duration(duration_text)
             if len(pending) >= target_pending:
