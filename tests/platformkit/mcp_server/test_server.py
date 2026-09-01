@@ -15,6 +15,8 @@ REPO = Path(__file__).resolve().parents[3]
 EXPECTED_TOOLS = {
     "ask", "scouting_report", "comparables", "matchup_preview", "win_probability",
     "injury_report", "analytics_receipts", "run_burst", "system_health",
+    "strength_atlas", "mechanism_exposure", "tracking_program_status", "harness_health",
+    "execution_status",
 }
 
 

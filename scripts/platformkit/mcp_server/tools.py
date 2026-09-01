@@ -1,25 +1,9 @@
-"""CourtVision MCP tool table + handlers.
-
-Every handler LAZY-imports its backing module inside the function body so the
-resident server process stays light (no pandas at import time). Each returns
-the standard fail-closed envelope dict:
-
-    {status: ok|refused|not_supported|no_data|ambiguous,
-     category, sport, source_artifact, as_of, ...category-specific fields}
-
-Refusal semantics (mirrors docs/AI_CONSUMER_CONTRACT.md) -- the CALLER must
-honor them, never soften into a hedge:
-  ok            -> use the numbers verbatim; cite source_artifact + as_of.
-  no_data       -> the backing artifact is absent/empty; say NO_DATA, do NOT
-                   fill the gap from model memory.
-  not_supported -> no resolver registered for this question type; stop.
-  refused       -> edge/ROI/retracted-number language, or a stale receipt;
-                   refuse, cite .claude/rules/no-edge-claims.md.
-  ambiguous     -> multiple candidates; disambiguate before answering.
-"""
+"""Lazy CourtVision MCP tool table with fail-closed response envelopes."""
 from __future__ import annotations
 
 from typing import Any, Callable, Dict, List
+
+from scripts.platformkit.mcp_server import artifact_tools
 
 _SPORT = {"type": "string", "description": "nba | mlb | soccer | tennis (default nba)"}
 
@@ -294,7 +278,7 @@ TOOLS: List[Dict[str, Any]] = [
         "inputSchema": {"type": "object", "properties": {}},
         "handler": _system_health,
     },
-]
+] + artifact_tools.tool_specs()
 
 
 def handler_for(name: str) -> Callable[[Dict[str, Any]], Dict[str, Any]] | None:
