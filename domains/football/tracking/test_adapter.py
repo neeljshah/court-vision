@@ -10,6 +10,7 @@ import pandas as pd
 
 from domains.football.tracking.adapter import (SANITY_LIMIT_FT, YARD_LINE_SPACING_FT,
                                                FootballAdapter)
+from domains.football.tracking.absolute_anchor import AbsoluteYardAnchor
 from scripts.platformkit.tracking_harness import evaluate
 
 
@@ -21,6 +22,18 @@ def _field() -> np.ndarray:
     cv2.line(image, (60, 40), (660, 40), (255, 255, 255), 3)
     cv2.line(image, (60, 319), (660, 319), (255, 255, 255), 3)
     return image
+
+
+class _AnchorProvider:
+    def detect(self, frame: np.ndarray) -> AbsoluteYardAnchor:
+        del frame
+        return AbsoluteYardAnchor(40, 1, (360.0, 180.0), 0.99)
+
+
+def _adapter(**kwargs: object) -> FootballAdapter:
+    adapter = FootballAdapter(**kwargs)
+    adapter.absolute_anchor_provider = _AnchorProvider()
+    return adapter
 
 
 class _FakeCapture:
@@ -37,16 +50,13 @@ class _FakeCapture:
         pass
 
 
-def test_yard_line_family_maps_spacing_to_fifteen_feet() -> None:
-    adapter = FootballAdapter(detector=lambda frame: [])
+def test_unmeasured_scale_never_promotes_a_grid_to_feet() -> None:
+    adapter = _adapter(detector=lambda frame: [])
     frame = _field()
     lines = adapter.detect_yard_line_family(frame)
     assert len(lines) >= 10
-    homography = adapter.homography_from_yard_lines(frame)
-    assert homography is not None
-    points = np.float32([[[90, 180], [135, 180]]])
-    mapped = cv2.perspectiveTransform(points, homography)[0]
-    assert abs(abs(mapped[1, 0] - mapped[0, 0]) - 15.0) <= 1.5
+    assert adapter.homography_from_yard_lines(frame) is None
+    assert adapter.last_fit_stats["reject"] == "independent_scale_unavailable"
 
 
 def test_pre_snap_classifier_separates_still_and_moving_frames() -> None:
@@ -61,14 +71,13 @@ def test_pre_snap_classifier_separates_still_and_moving_frames() -> None:
 
 def test_mocked_detector_projects_and_tracks_players() -> None:
     frame = _field()
-    homography = FootballAdapter(detector=lambda image: []).homography_from_yard_lines(frame)
-    assert homography is not None
+    homography = np.eye(3)
     boxes = [[90, 150, 100, 180], [135, 160, 145, 190]]
-    adapter = FootballAdapter(detector=lambda image: boxes)
+    adapter = _adapter(detector=lambda image: boxes)
     rows = adapter._track_players(adapter._detect(frame), homography)
     assert [row[0] for row in rows] == [1, 2]
-    assert abs(abs(rows[1][1][0] - rows[0][1][0]) - 15.0) <= 1.5
-    assert 0.0 <= rows[0][1][1] <= 160.0
+    assert abs(rows[1][1][0] - rows[0][1][0]) == 45.0
+    assert rows[0][1][1] == 180.0
 
 
 def test_off_field_projection_is_emitted_so_the_harness_can_count_it() -> None:
@@ -105,7 +114,7 @@ def test_scene_cut_clears_carried_geometry_and_identity_state() -> None:
 
 def test_scene_score_keeps_identical_view_below_cut_threshold() -> None:
     frame = _field()
-    adapter = FootballAdapter(detector=lambda image: [])
+    adapter = _adapter(detector=lambda image: [])
 
     assert adapter.scene_cut_score(frame, frame) == 0.0
     assert not adapter.is_scene_cut(frame, frame)
@@ -113,7 +122,7 @@ def test_scene_score_keeps_identical_view_below_cut_threshold() -> None:
 
 def test_degenerate_homography_normalization_is_rejected(monkeypatch) -> None:
     frame = _field()
-    adapter = FootballAdapter(detector=lambda image: [])
+    adapter = _adapter(detector=lambda image: [])
     monkeypatch.setattr(adapter, "detect_yard_line_family", lambda image: [
         np.array((1.0, 0.0, -10.0)), np.array((1.0, 0.0, -20.0)),
     ])
@@ -124,34 +133,26 @@ def test_degenerate_homography_normalization_is_rejected(monkeypatch) -> None:
 
 
 def test_contaminated_yard_line_family_is_rejected(monkeypatch) -> None:
-    adapter = FootballAdapter(detector=lambda image: [])
+    adapter = _adapter(detector=lambda image: [])
     monkeypatch.setattr(adapter, "detect_yard_line_family",
                         lambda image: [np.array((1.0, 0.0, -float(x))) for x in range(30)])
 
     assert adapter.homography_from_yard_lines(_field()) is None
-    assert adapter.last_fit_stats["reject"] == "family_size"
+    assert adapter.last_fit_stats["reject"] == "independent_scale_unavailable"
 
 
 def test_held_homography_is_reused_while_a_fresh_fit_agrees() -> None:
     frame = _field()
-    adapter = FootballAdapter(detector=lambda image: [])
+    adapter = _adapter(detector=lambda image: [])
 
-    assert adapter._stable_homography(frame) is None, "first fit only anchors the segment"
-    held = adapter._homography
-    assert held is not None
-    assert adapter._stable_homography(frame) is held
+    assert adapter._stable_homography(frame) is None
+    assert adapter._homography is None
 
 
 def test_disagreeing_fit_starts_a_new_segment_instead_of_sliding_the_origin(monkeypatch) -> None:
     frame = _field()
-    adapter = FootballAdapter(detector=lambda image: [])
-    adapter._stable_homography(frame)
-    assert adapter._stable_homography(frame) is not None
+    adapter = _adapter(detector=lambda image: [])
     adapter._centroids[7] = np.array((10.0, 10.0))
-    reindexed = adapter._homography.copy()
-    reindexed[0, 2] += YARD_LINE_SPACING_FT
-    monkeypatch.setattr(adapter, "homography_from_yard_lines", lambda image: reindexed)
-
     assert adapter._stable_homography(frame) is None
     assert not adapter._centroids
 
@@ -178,6 +179,15 @@ def test_image_space_rows_are_observed_and_fail_coordinate_contract(monkeypatch,
     assert any(failure.startswith("coordinate_contract:") for failure in report.failures)
 
 
+def test_default_path_preserves_unanchored_observations_as_pixels(monkeypatch) -> None:
+    monkeypatch.setattr(cv2, "VideoCapture", lambda path: _FakeCapture([_field(), _field()]))
+    adapter = FootballAdapter(detector=lambda frame: [[90, 150, 100, 180]])
+    rows = adapter.process_video("synthetic.mp4")
+    assert len(rows) == 2
+    assert set(rows["coordinate_space"]) == {"image_px"}
+    assert set(rows["calibration"]) == {"none"}
+
+
 def test_a_thin_pre_snap_frame_is_still_emitted_so_coverage_can_fail() -> None:
     """The sibling of the oob test above, for coverage.
 
@@ -190,10 +200,9 @@ def test_a_thin_pre_snap_frame_is_still_emitted_so_coverage_can_fail() -> None:
     """
     frame = _field()
     boxes = [[90 + 10 * i, 150, 100 + 10 * i, 180] for i in range(9)]
-    adapter = FootballAdapter(detector=lambda image: boxes, motion_threshold=2.0)
+    adapter = _adapter(detector=lambda image: boxes, motion_threshold=2.0)
 
     assert adapter.is_pre_snap(frame, frame), "motion is the snap evidence, not headcount"
-    homography = adapter.homography_from_yard_lines(frame)
-    assert homography is not None
+    homography = np.eye(3)
     rows = adapter._track_players(adapter._detect(frame), homography)
     assert len(rows) == 9, "a nine-player frame must reach the harness, not vanish"

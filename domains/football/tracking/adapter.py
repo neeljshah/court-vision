@@ -6,7 +6,8 @@ import cv2
 import numpy as np
 import pandas as pd
 from domains.football.tracking.geometry import FIELD_LENGTH_FT, FootballGeometryMixin, YARD_LINE_SPACING_FT
-from scripts.platformkit.coordinate_provenance import output_columns, stamp_image_space_rows
+from scripts.platformkit.coordinate_provenance import (HOMOGRAPHY, IMAGE_COORDINATE_SPACE,
+    NO_CALIBRATION, OBSERVED, output_columns, stamp_image_space_rows)
 
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
 SANITY_LIMIT_FT = 5.0 * FIELD_LENGTH_FT
@@ -22,6 +23,7 @@ def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
 class FootballAdapter(FootballGeometryMixin):
     """Estimate an offset-relative field plane and pre-snap player formations."""
     def __init__(self, detector: Optional[Detector] = None, motion_threshold: float = 3.0, scene_cut_threshold: float = 0.55) -> None:
+        super().__init__()
         self.detector, self.motion_threshold, self.scene_cut_threshold = detector, motion_threshold, scene_cut_threshold
         self._homography, self.last_fit_stats, self._centroids, self._next_track_id = None, {}, {}, 1
         self.scene_cuts_detected, self.last_output = 0, pd.DataFrame(columns=SCHEMA)
@@ -99,9 +101,10 @@ class FootballAdapter(FootballGeometryMixin):
                         processed += 1
                         frame_index += 1
                         continue
-                    if previous is not None and self.is_scene_cut(previous, frame): self._reset_segment()
-                    self.scene_cuts_detected += 1
-                    previous = None
+                    if previous is not None and self.is_scene_cut(previous, frame):
+                        self._reset_segment()
+                        self.scene_cuts_detected += 1
+                        previous = None
                     homography, boxes = self._stable_homography(frame), self._detect(frame)
                     if previous is not None and homography is not None and self.is_pre_snap(previous, frame, boxes):
                         players = self._track_players(boxes, homography)
@@ -111,11 +114,16 @@ class FootballAdapter(FootballGeometryMixin):
                         # unfailable, which is the point of the ban. A pre-snap frame
                         # showing 9 players is a real observation and coverage should
                         # say so.
-                        for track_id, point in players: rows.append({"frame": frame_index, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1])})
+                        for track_id, point in players:
+                            rows.append({"frame": frame_index, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1]), "coordinate_space": "court_feet", "observation": OBSERVED, "calibration": HOMOGRAPHY})
+                    elif homography is None:
+                        # An unanchored grid is useful teacher data in pixels, not feet.
+                        for track_id, point in self.detect_players_image_space(frame):
+                            rows.append({"frame": frame_index, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1]), "coordinate_space": IMAGE_COORDINATE_SPACE, "observation": OBSERVED, "calibration": NO_CALIBRATION})
                     previous, processed = frame, processed + 1
                 frame_index += 1
         finally: capture.release()
-        self.last_output = pd.DataFrame(rows, columns=SCHEMA)
+        self.last_output = pd.DataFrame(rows) if rows else pd.DataFrame(columns=SCHEMA)
         if image_space: self.last_output = stamp_image_space_rows(self.last_output)
         return self.last_output
     def write_csv(self, path: Union[str, Path], rows: Optional[pd.DataFrame] = None) -> None: write_csv(self.last_output if rows is None else rows, path)

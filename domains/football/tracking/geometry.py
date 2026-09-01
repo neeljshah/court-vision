@@ -7,6 +7,7 @@ import cv2
 import numpy as np
 
 from domains.football.tracking.field_gates import MIN_FIELD_VIEW_GREEN, field_view_fraction, pencil_is_uniform
+from domains.football.tracking.absolute_anchor import PaintedYardAnchorProvider
 
 
 FIELD_WIDTH_FT = 160.0
@@ -19,9 +20,23 @@ MIN_INLIER_FRACTION = 0.8
 MAX_FIT_RMSE_FT = 3.0
 MAX_FT_PER_PIXEL = 2.0
 GRID_AGREEMENT_FT = 2.0
+FIELD_LEVEL_RATIOS = {"ncaa": 40.0 / 15.0, "nfl": 18.5 / 15.0, "high_school": 53.33 / 15.0}
+FIELD_LEVEL_RATIO_TOLERANCE = 0.15
 
 
 class FootballGeometryMixin:
+    def __init__(self) -> None:
+        self.absolute_anchor_provider = PaintedYardAnchorProvider()
+
+    @staticmethod
+    def field_level_from_ratio(hash_separation_px: float, yard_spacing_px: float) -> Optional[str]:
+        """Select a field level from independent painted-line separations."""
+        if yard_spacing_px <= 0.0:
+            return None
+        ratio = hash_separation_px / yard_spacing_px
+        matches = [name for name, expected in FIELD_LEVEL_RATIOS.items()
+                   if abs(ratio - expected) <= FIELD_LEVEL_RATIO_TOLERANCE * expected]
+        return matches[0] if len(matches) == 1 else None
     @staticmethod
     def _line_coefficients(line: np.ndarray) -> np.ndarray:
         x1, y1, x2, y2 = map(float, line)
@@ -104,6 +119,17 @@ class FootballGeometryMixin:
         stats["green_frac"] = green = field_view_fraction(frame)
         if green < MIN_FIELD_VIEW_GREEN:
             return fail("not_field_view")
+        # A line pencil has no absolute origin or direction. Do this before any
+        # fit so a locally-indexed grid cannot be accidentally promoted to feet.
+        anchor = self.absolute_anchor_provider.detect(frame)
+        if anchor is None:
+            return fail("absolute_anchor_unavailable")
+        stats["anchor_yard"] = anchor.yard_from_goal
+        stats["anchor_direction"] = anchor.direction
+        # The anchor fixes only longitudinal identity. Until the separately
+        # measured hash/yard ratio selects a field level, no coordinate plane is
+        # physically identified; a line-pencil fit below would be only local.
+        return fail("independent_scale_unavailable")
         yard_lines = self.detect_yard_line_family(frame)
         stats["n_yard"] = len(yard_lines)
         if not MIN_YARD_LINES <= len(yard_lines) <= MAX_YARD_LINES:
