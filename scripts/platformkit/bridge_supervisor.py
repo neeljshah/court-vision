@@ -103,6 +103,7 @@ def main() -> int:
     args = parser.parse_args()
 
     workers: dict = {}
+    warned_unrefillable: set = set()
 
     while True:
         # Recomputed every poll: a queue created later (by a refill, or by hand)
@@ -128,10 +129,19 @@ def main() -> int:
                 workers[name] = spawn(name, queues, args.per_lane)
             remaining = sum(untracked_count(DATA_DIR / q, known) for q in queues)
             if remaining < REFILL_THRESHOLD:
-                print("lane %s down to %d untracked -- refilling"
-                      % (name, remaining), flush=True)
-                for queue in queues:
-                    refill(queue.replace("footage_queue_", "").replace(".json", ""))
+                sports = [q.replace("footage_queue_", "").replace(".json", "")
+                          for q in queues]
+                if any(sport in REFILLABLE for sport in sports):
+                    print("lane %s down to %d untracked -- refilling"
+                          % (name, remaining), flush=True)
+                    for sport in sports:
+                        refill(sport)
+                elif name not in warned_unrefillable:
+                    # Warn ONCE. Repeating this every poll buries real failures
+                    # in a log a human only skims in the morning.
+                    warned_unrefillable.add(name)
+                    print("lane %s has no expander source and cannot self-refill "
+                          "-- add one to queue_expander.SOURCES" % name, flush=True)
             status["lanes"][name] = {"untracked": remaining,
                                      "alive": workers[name].poll() is None}
         try:
