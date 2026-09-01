@@ -178,9 +178,14 @@ bounded by data breadth, not model breadth: one best-line / Shin-devig / EV / ar
 covers *every* event the feeds return.
 
 **The claims scale.** Every derived stat the brain answers from must pass an independent validator
-that marks it `VERIFIED`, `MISMATCH`, or `UNVERIFIABLE` -- **101,089 VERIFIED claim rows** stand
-behind the ask surfaces today (71 claim stores, 7 sports, tallied from every `*_validation.json`
-under `data/cache/intel_claims/`). A machine-readable **data census** inventories 67 derivable
+that marks it `VERIFIED`, `MISMATCH`, or `UNVERIFIABLE`. Honest accounting (tracked tally
+`scripts/platformkit/analytics_showcase/out/claims_corpus_meta.json`, regenerate with
+`python -m scripts.platformkit.analytics_showcase.claims_corpus_meta`): **103,048 generated claim
+rows** across 103 families under `data/cache/intel_claims/`; 99 families carry a `*_validation.json`
+sidecar covering 101,865 rows, of which **101,864 are `VERIFIED`** (0 mismatch, 1 unverifiable).
+`VERIFIED` means the stated number recomputes from its declared source file + formula -- a
+provenance/arithmetic check, not a claim of predictive accuracy or edge (an earlier "101,089
+VERIFIED" figure had no surviving artifact; see the evidence packet). A machine-readable **data census** inventories 67 derivable
 families across NBA, MLB, soccer, soccer_intl, tennis, WNBA, NPB, KBO and cross-sport markets, and
 ranks every still-`UNBUILT` one by `leverage_rank` into the queue the autoloop builds from.
 Per-sport breakdown: [docs/SPORTS_COVERAGE.md](docs/SPORTS_COVERAGE.md).
