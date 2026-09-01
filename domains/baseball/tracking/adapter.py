@@ -31,6 +31,7 @@ is a fabrication, so no player rows are emitted at all.  See
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Callable, Optional, Sequence, Union
 
@@ -82,22 +83,10 @@ class BaseballAdapter:
 
     @staticmethod
     def _load_yolo_detector() -> Detector:
-        try:
-            from ultralytics import YOLO
-        except ImportError as exc:
-            raise ImportError(
-                "BaseballAdapter requires ultralytics. Install it with "
-                "pip install ultralytics, or pass a detector for testing."
-            ) from exc
-        model = YOLO("yolov8n.pt")
-
-        def detect(frame: np.ndarray) -> Sequence[Sequence[float]]:
-            result = model(frame, classes=[0], verbose=False)[0]
-            if result.boxes is None:
-                return []
-            return result.boxes.xyxy.cpu().numpy().tolist()
-
-        return detect
+        from scripts.platformkit.detection.shim import get_box_detector
+        return get_box_detector(
+            model_path=os.environ.get("CV_DETECTOR_MODEL"), sport="baseball"
+        )
 
     def detect_pitch_geometry(
         self, frame: np.ndarray, min_chord_fraction: float = MIN_CHORD_FRACTION,

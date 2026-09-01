@@ -1,5 +1,6 @@
 """Fixed-camera tennis broadcast tracking in normalized court feet."""
 from __future__ import annotations
+import os
 from pathlib import Path
 from typing import Callable, Optional, Sequence, Union
 import cv2
@@ -47,22 +48,10 @@ class TennisAdapter:
         self.last_output, self.last_metadata = pd.DataFrame(columns=SCHEMA), {}
     @staticmethod
     def _load_yolo_detector(imgsz: int, conf: float) -> Detector:
-        try:
-            from ultralytics import YOLO
-        except ImportError as exc:
-            raise ImportError("TennisAdapter requires ultralytics; install it or pass a detector.") from exc
-        model = YOLO("yolov8n.pt")
-        emitted = False
-        def detect(frame: np.ndarray) -> Sequence[Sequence[float]]:
-            nonlocal emitted
-            if not emitted:
-                print("TENNIS_INFERENCE imgsz=%d conf=%.3f" % (imgsz, conf))
-                emitted = True
-            result = model(frame, classes=[0], imgsz=imgsz, conf=conf, verbose=False)[0]
-            if result.boxes is None:
-                return []
-            return [box + [float(score)] for box, score in zip(result.boxes.xyxy.cpu().numpy().tolist(), result.boxes.conf.cpu().numpy().tolist())]
-        return detect
+        from scripts.platformkit.detection.shim import get_box_detector
+        return get_box_detector(
+            model_path=os.environ.get("CV_DETECTOR_MODEL"), sport="tennis"
+        )
 
     @staticmethod
     def _line_position(line: np.ndarray, horizontal: bool, shape: tuple[int, int]) -> float:

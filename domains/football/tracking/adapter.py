@@ -1,5 +1,6 @@
 """American-football broadcast adapter for field geometry and pre-snap rows."""
 from __future__ import annotations
+import os
 from pathlib import Path
 from typing import Callable, Optional, Sequence, Union
 import cv2
@@ -41,14 +42,10 @@ class FootballAdapter(FootballGeometryMixin):
     def is_scene_cut(self, previous: np.ndarray, current: np.ndarray) -> bool: return self.scene_cut_score(previous, current) >= self.scene_cut_threshold
     @staticmethod
     def _load_yolo_detector() -> Detector:
-        try:
-            from ultralytics import YOLO
-        except ImportError as exc: raise ImportError("FootballAdapter requires ultralytics or a test detector.") from exc
-        model = YOLO("yolov8n.pt")
-        def detect(frame: np.ndarray) -> Sequence[Sequence[float]]:
-            result = model(frame, classes=[0], verbose=False)[0]
-            return [] if result.boxes is None else result.boxes.xyxy.cpu().numpy().tolist()
-        return detect
+        from scripts.platformkit.detection.shim import get_box_detector
+        return get_box_detector(
+            model_path=os.environ.get("CV_DETECTOR_MODEL"), sport="football"
+        )
     def _detect(self, frame: np.ndarray) -> Sequence[Sequence[float]]:
         if self.detector is None: self.detector = self._load_yolo_detector()
         return self.detector(frame)

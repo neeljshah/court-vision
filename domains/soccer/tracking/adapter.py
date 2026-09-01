@@ -1,5 +1,6 @@
 """Broadcast soccer tracking projected onto a 105 by 68 metre pitch."""
 from __future__ import annotations
+import os
 from pathlib import Path
 from typing import Callable, Optional, Sequence, Union
 import cv2
@@ -46,15 +47,10 @@ class SoccerAdapter(SoccerGeometryMixin):
 
     @staticmethod
     def _load_yolo_detector() -> Detector:
-        try:
-            from ultralytics import YOLO
-        except ImportError as exc:
-            raise ImportError("SoccerAdapter requires ultralytics or a test detector.") from exc
-        model = YOLO("yolov8n.pt")
-        def detect(frame: np.ndarray) -> Sequence[Sequence[float]]:
-            result = model(frame, classes=[0], verbose=False)[0]
-            return [] if result.boxes is None else result.boxes.xyxy.cpu().numpy().tolist()
-        return detect
+        from scripts.platformkit.detection.shim import get_box_detector
+        return get_box_detector(
+            model_path=os.environ.get("CV_DETECTOR_MODEL"), sport="soccer"
+        )
 
     def _assign_tracks(self, centers: list[np.ndarray]) -> list[int]:
         available, ids = set(self._tracks), []

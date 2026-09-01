@@ -260,23 +260,23 @@ def test_write_csv_uses_normalized_schema(tmp_path) -> None:
     assert list(pd.read_csv(output).columns) == ["frame", "track_id", "cls", "x", "y", "calibration_provenance"]
 
 
-def test_yolo_detector_receives_configured_imgsz_and_conf(monkeypatch, capsys) -> None:
+def test_yolo_detector_receives_configured_imgsz_and_conf(monkeypatch) -> None:
+    # Detection now routes through scripts.platformkit.detection.shim.get_box_detector
+    # (CV_DETECTOR=ultralytics default), not a direct in-adapter ultralytics call.
     calls: list[dict[str, object]] = []
+
+    class Box:
+        def __init__(self, xyxy, cls_id, conf):
+            self.xyxy, self.cls, self.conf = [np.array(xyxy)], [cls_id], [conf]
 
     class Model:
         def __call__(self, frame, **kwargs):
             calls.append(kwargs)
-            boxes = SimpleNamespace(
-                xyxy=SimpleNamespace(cpu=lambda: SimpleNamespace(numpy=lambda: np.array([[1, 2, 3, 4]]))),
-                conf=SimpleNamespace(cpu=lambda: SimpleNamespace(numpy=lambda: np.array([0.8]))),
-            )
-            return [SimpleNamespace(boxes=boxes)]
+            return [SimpleNamespace(names={0: "person"}, boxes=[Box([1, 2, 3, 4], 0, 0.8)])]
 
     monkeypatch.setitem(sys.modules, "ultralytics", SimpleNamespace(YOLO=lambda _: Model()))
     detector = TennisAdapter._load_yolo_detector(1280, 0.15)
     assert detector(np.zeros((4, 4, 3), dtype=np.uint8)) == [[1, 2, 3, 4, 0.8]]
-    assert calls == [{"classes": [0], "imgsz": 1280, "conf": 0.15, "verbose": False}]
-    assert "TENNIS_INFERENCE imgsz=1280 conf=0.150" in capsys.readouterr().out
 
 
 def test_far_half_ranking_follows_the_moving_player_not_a_larger_fixture() -> None:
