@@ -58,7 +58,9 @@ from scripts.platformkit.execution import ingame_exec_gate as _exec_gate
 from scripts.platformkit.execution import sizing as _sizing
 from scripts.platformkit.execution.paper_maker import PaperMakerAdapter
 from scripts.platformkit.execution.thresholds import ORDER_MODE
+from scripts.platformkit.execution import writer_identity as _writer
 from scripts.platformkit.ingame import ingame_clv_per_segment as _clvseg
+from scripts.platformkit.ingame import latency_scoreboard as _latsb
 from scripts.platformkit.ingame import ingame_segment_trust_multi as _trust_multi
 from scripts.platformkit.ingame import inplay_breaker as _breaker
 from scripts.platformkit.ingame import inplay_edge_signal as _sig
@@ -248,6 +250,13 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
         # captured tick crossed it. The paper ledger is never touched at submit.
         if maker_event is not None:
             if maker_event["status"] == "filled":
+                # ONE-WRITER (execution.writer_identity): only the sanctioned pod
+                # paper node may append the SHARED default ledger. An explicitly
+                # injected ledger_path (tests/scratch) is never gated.
+                if ledger_path is None and not _writer.default_ledger_write_allowed():
+                    decision.update({"action": "no_bet", "reason": "not_ledger_writer",
+                                     "position": None})
+                    return decision
                 quote, order = maker_event["quote"], maker_event["order"]
                 audit = {**(position.get("exec_gate") or {}),
                          "execution_mode": "maker_only",
@@ -276,7 +285,14 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
                 decision.update({"action": "no_bet", "reason": "maker_ttl_expired",
                                  "position": None})
                 return decision
-            decision.update({"action": "resting", "reason": "maker_resting"})
+            if maker_event["status"] == "cancelled_suspended":
+                # kickoff/void (paper_maker._market_suspended): the resting order
+                # was cancelled, never filled retroactively. Ledger untouched.
+                decision.update({"action": "no_bet", "reason": "maker_cancelled_suspended",
+                                 "position": None})
+                return decision
+            decision.update({"action": "resting",
+                             "reason": "maker_" + str(maker_event.get("reason", "resting"))})
             return decision
 
         # 2b. SUPPRESSION (queue item 8a, conservative withhold -- mechanism only, currently
@@ -291,6 +307,16 @@ def on_tick(sport: str, game_id: str, tick: LiveTick, *,
         if ev["action"] == "bet" and _segment_is_adverse(sport, tick):
             decision["reason"] = "segment_adverse_suppressed"
             return decision  # no_bet: captured above already ran; suppress the marginal entry
+
+        # 2b2. EVENT-REACTIVE ELIGIBILITY: an entry the caller declares event-reactive
+        # (tick["event_reactive"] truthy) is allowed only where the MEASURED venue
+        # latency supports it (latency_scoreboard: lag_p90<=5s AND src_ts
+        # coverage>=95% -- MLB yes, broadcast-tier NBA/soccer/tennis no). FAIL-CLOSED:
+        # an unmeasured/slow feed never supports it. Suppress-only, never adds a bet.
+        if (ev["action"] == "bet" and bool(tick.get("event_reactive"))
+                and not _latsb.event_reactive_supported(sport)):
+            decision["reason"] = "event_reactive_not_supported"
+            return decision
 
         # 2c. PAPER VENUE ALLOWLIST (binding: Kalshi-only paper decisions for now -- see
         # DEFAULT_PAPER_VENUES). Capture above already ran regardless -- this only ever

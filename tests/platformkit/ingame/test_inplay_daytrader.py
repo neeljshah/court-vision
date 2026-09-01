@@ -6,7 +6,9 @@ venue. The ledger + grade dir are tmp_path. Covers the binding honesty rails:
   * edge math (edge = model_prob - devig(price), HOME-aligned) + devig is the Shin no-vig.
   * tier floors (.02/.04/.08, +.01 proxy) -> below-floor = no_bet.
   * gates: illiquid -> no_bet; stale -> no_bet; not-calibration-justified -> no_bet.
-  * idempotent paper placement (a 2nd ENTER for the same game/side/day is a no-op).
+  * MAKER-ONLY execution: an ENTER submits a resting quote (action "resting"); the
+    ledger row lands only when a LATER captured tick crosses it (action "bet").
+  * idempotent paper placement (a 2nd FILL for the same game/side/day is a no-op).
   * leak-free: enter/size never see the close (only as-of-tick model_prob + live price).
   * NO $ field anywhere; executed is always False; edge_claimed False.
   * single game/tick -> aggregate grade = INSUFFICIENT_DATA (variance, not signal).
@@ -45,6 +47,16 @@ def _no_dollar_field(obj):
             for v in o:
                 _walk(v)
     _walk(obj)
+
+
+def _rest_then_fill(sport, gid, t, **kw):
+    """Maker-only ENTER helper: tick 1 submits the resting quote, tick 2 (same live
+    price, threaded position) crosses it. Returns (resting_decision, fill_decision)."""
+    d_rest = dt.on_tick(sport, gid, t, **kw)
+    assert d_rest["action"] == "resting", d_rest["reason"]
+    assert d_rest["position"]["status"] == "resting"
+    d_fill = dt.on_tick(sport, gid, t, position=d_rest["position"], **kw)
+    return d_rest, d_fill
 
 
 # --------------------------------------------------------------------------------------- #
@@ -92,12 +104,13 @@ def test_tiny_edge_below_floor_is_no_bet():
 
 def test_proxy_penalty_raises_the_floor():
     # An edge that clears the C floor on a TRUE close can fall below it on a PROXY close
-    # (+.01 penalty). Find a model prob whose EV sits between .02 and .03 at the fair line.
+    # (+.01 penalty). Maker-only tiering nets the Kalshi maker fee (0.01/contract at
+    # ~50c) off EV BEFORE the floor, so pick raw EV ~ .035 -> net EV ~ .025 (clears
+    # C=.02, below C+penalty=.03).
     yes_h, yes_a = 0.50, 0.50
     fair = sig.devig_home_price(yes_h, yes_a)  # ~0.50
     dec = 1.0 / fair
-    # EV = p*dec - 1; pick p so EV ~ 0.025 (clears C=.02, below C+penalty=.03).
-    p = (1.025) / dec
+    p = (1.035) / dec
     true_close = sig.evaluate(model_prob=p, yes_home_prob=yes_h, yes_away_prob=yes_a,
                               calibration_justified=True, is_liquid=True, is_fresh=True,
                               clv_is_proxy=False)
@@ -143,10 +156,12 @@ def test_enter_places_paper_bet_units_only(tmp_path):
     # silently rejected by the paper_ingame write-guard before placement, so this also
     # exercises the REAL placement path the live daemon hits with 9-char ESPN ids.
     gid = "401859967"
-    d = dt.on_tick("mlb", gid,
-                   _tick(0.65, 0.55, yes_away=0.50, home_score=3, away_score=1, inning=5),
-                   grade_dir=grade_dir, ledger_path=ledger)
+    t = _tick(0.65, 0.55, yes_away=0.50, home_score=3, away_score=1, inning=5)
+    # Maker-only: tick 1 rests the quote, tick 2 (price 0.55 crosses the 0.65 bid) fills.
+    d_rest, d = _rest_then_fill("mlb", gid, t, grade_dir=grade_dir, ledger_path=ledger)
+    assert d_rest["reason"] == "maker_quote_submitted"
     assert d["action"] == "bet"
+    assert d["reason"] == "maker_fill_cross"
     assert d["captured"] is True
     assert d["placement"]["executed"] is False  # paper-only, never executed
     assert d["placement"]["added_new"] is True
@@ -155,10 +170,10 @@ def test_enter_places_paper_bet_units_only(tmp_path):
     assert d["units"]["flat_unit"] == 1.0
     assert 0.0 <= d["units"]["quarter_kelly"] <= 0.25
     _no_dollar_field(d)
-    # The grade pair was captured for the leak-free CLV series.
+    # BOTH ticks' grade pairs were captured for the leak-free CLV series.
     path = grade_dir / "mlb" / ("%s.jsonl" % gid)
     rows = [json.loads(ln) for ln in path.read_text(encoding="ascii").splitlines() if ln.strip()]
-    assert len(rows) == 1 and rows[0]["side"] == "home"
+    assert len(rows) == 2 and all(r["side"] == "home" for r in rows)
 
 
 def test_second_enter_same_game_side_day_is_idempotent(tmp_path):
@@ -166,10 +181,10 @@ def test_second_enter_same_game_side_day_is_idempotent(tmp_path):
     grade_dir = tmp_path / "grade"
     gid = "401859968"  # realistic id -> clears the write-guard, so idempotency is what's tested
     t = _tick(0.65, 0.55, yes_away=0.50)
-    d1 = dt.on_tick("mlb", gid, t, grade_dir=grade_dir, ledger_path=ledger)
-    # 2nd ENTER from FLAT (position not threaded) -> the (sport,game,market,side,day)
+    _, d1 = _rest_then_fill("mlb", gid, t, grade_dir=grade_dir, ledger_path=ledger)
+    # 2nd rest+FILL from FLAT (position not threaded) -> the (sport,game,market,side,day)
     # edge_key already has an OPEN row -> the ledger idempotency check drops the duplicate.
-    d2 = dt.on_tick("mlb", gid, t, grade_dir=grade_dir, ledger_path=ledger)
+    _, d2 = _rest_then_fill("mlb", gid, t, grade_dir=grade_dir, ledger_path=ledger)
     assert d1["placement"]["added_new"] is True
     assert d2["placement"]["added_new"] is False  # no duplicate open row
     rows = [json.loads(ln) for ln in ledger.read_text(encoding="ascii").splitlines() if ln.strip()]
@@ -193,15 +208,25 @@ def test_edge_flip_to_other_side_reenters(tmp_path):
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
     pos = {"status": "open", "side": "home", "edge_key": "home-key"}
-    d = dt.on_tick("mlb", "401859970",
-                   _tick(0.40, 0.55, yes_away=0.50),  # home model 0.40 << fair -> away +EV
-                   position=pos, grade_dir=grade_dir, ledger_path=ledger)
-    assert d["action"] == "bet"
-    assert d["side"] == "away"
-    assert d["reason"] == "edge_flipped_reenter"
-    assert d["placement"]["added_new"] is True       # a real new placement on the new side
-    assert d["placement"]["executed"] is False        # still paper-only
-    _no_dollar_field(d)
+    t = _tick(0.40, 0.55, yes_away=0.50)  # home model 0.40 << fair -> away +EV
+    d1 = dt.on_tick("mlb", "401859970", t,
+                    position=pos, grade_dir=grade_dir, ledger_path=ledger)
+    # Maker-only: the flip-side re-entry SUBMITS a resting AWAY quote first.
+    # (The transient "edge_flipped_reenter" reason is overwritten by the maker-submit
+    # reason on the resting decision -- the side/action prove the re-entry happened.)
+    assert d1["action"] == "resting"
+    assert d1["side"] == "away"
+    assert d1["reason"] == "maker_quote_submitted"
+    assert d1["position"]["status"] == "resting" and d1["position"]["side"] == "away"
+    # A later crossing tick fills the away quote -> the real new placement lands.
+    d2 = dt.on_tick("mlb", "401859970", t,
+                    position=d1["position"], grade_dir=grade_dir, ledger_path=ledger)
+    assert d2["action"] == "bet"
+    assert d2["side"] == "away"
+    assert d2["reason"] == "maker_fill_cross"
+    assert d2["placement"]["added_new"] is True       # a real new placement on the new side
+    assert d2["placement"]["executed"] is False        # still paper-only
+    _no_dollar_field(d2)
 
 
 def test_same_side_edge_still_holds_not_reenter(tmp_path):
@@ -269,8 +294,10 @@ def test_extra_kwarg_forwarded_into_grade_row(tmp_path):
 
 def test_extra_none_is_backward_compatible(tmp_path):
     # Default (no extra passed) behaves exactly as before, plus the additive
-    # claim_tags field (CLAIMS-P3 wiring: condition_tagger.tag output, merged via
-    # the same extra pipeline) -- no OTHER new keys appear.
+    # claim_tags + venue fields (CLAIMS-P3 wiring + the venue stamp, merged via
+    # the same extra pipeline) -- no OTHER new keys appear. capture_schema_version
+    # and src_ts are pre-existing live_grade.capture_pair_once fields (commit
+    # 6ff50ea96, predates the maker-only wiring) -- not part of this reconciliation.
     grade_dir = tmp_path / "grade"
     d = dt.on_tick("mlb", "G11", _tick(0.65, 0.55, yes_away=0.50),
                    grade_dir=grade_dir, ledger_path=tmp_path / "l.jsonl")
@@ -278,18 +305,21 @@ def test_extra_none_is_backward_compatible(tmp_path):
     path = grade_dir / "mlb" / "G11.jsonl"
     row = json.loads(path.read_text(encoding="ascii").splitlines()[0])
     assert set(row.keys()) == {"sport", "game_id", "ts", "market_prob", "model_prob",
-                               "side", "state_summary", "claim_tags"}
+                               "side", "state_summary", "claim_tags", "venue",
+                               "capture_schema_version", "src_ts"}
+    assert row["venue"] == "kalshi"  # no venue on the tick -> the default stamp
 
 
 def test_leak_free_enter_does_not_see_the_close(tmp_path):
     # The ENTER decision uses only as-of-tick model_prob + the live price. We prove the
-    # close (a LATER, higher price) is never an input: an early tick with a +edge bets the
-    # SAME way regardless of what the (future) closing price will be.
+    # close (a LATER, higher price) is never an input: an early tick with a +edge quotes
+    # the SAME way regardless of what the (future) closing price will be.
     grade_dir = tmp_path / "grade"
     early = _tick(0.65, 0.55, yes_away=0.50)
     d = dt.on_tick("mlb", "G7", early, grade_dir=grade_dir,
                    ledger_path=tmp_path / "l.jsonl")
-    assert d["action"] == "bet"
+    assert d["action"] == "resting"  # maker-only ENTER = a resting quote
+    assert d["reason"] == "maker_quote_submitted"
     # The tick dict carries NO close/outcome key -- enter cannot have used one.
     assert "close" not in early and "outcome" not in early and "settled_outcome" not in early
 
@@ -341,9 +371,10 @@ def test_non_adverse_segment_bets_normally(tmp_path, monkeypatch):
         dt._trust_multi, "build_trust_for_sport",
         lambda sport: {"segments": {"H1": {"trust": "NEUTRAL"}}})
     gid = "401859981"
-    d = dt.on_tick("soccer_intl", gid,
-                   _tick(0.65, 0.55, yes_away=0.50, minute=20),
-                   grade_dir=grade_dir, ledger_path=ledger)
+    t = _tick(0.65, 0.55, yes_away=0.50, minute=20)
+    d_rest, d = _rest_then_fill("soccer_intl", gid, t,
+                                grade_dir=grade_dir, ledger_path=ledger)
+    assert d_rest["reason"] != "segment_adverse_suppressed"
     assert d["action"] == "bet"
     assert d["reason"] != "segment_adverse_suppressed"
     assert d["placement"]["added_new"] is True
@@ -361,9 +392,10 @@ def test_trust_lookup_raising_is_unchanged_behavior(tmp_path, monkeypatch):
         raise RuntimeError("ops doc missing")
     monkeypatch.setattr(dt._trust_multi, "build_trust_for_sport", _boom)
     gid = "401859982"
-    d = dt.on_tick("soccer_intl", gid,
-                   _tick(0.65, 0.55, yes_away=0.50, minute=20),
-                   grade_dir=grade_dir, ledger_path=ledger)
+    t = _tick(0.65, 0.55, yes_away=0.50, minute=20)
+    d_rest, d = _rest_then_fill("soccer_intl", gid, t,
+                                grade_dir=grade_dir, ledger_path=ledger)
+    assert d_rest["reason"] != "segment_adverse_suppressed"
     assert d["action"] == "bet"
     assert d["reason"] != "segment_adverse_suppressed"
     assert d["placement"]["added_new"] is True
@@ -388,9 +420,10 @@ def test_real_unmocked_trust_lookup_does_not_suppress_a_no_clock_soccer_tick(tmp
     grade_dir = tmp_path / "grade"
     ledger = tmp_path / "ledger.jsonl"
     gid = "401859983"
-    d = dt.on_tick("soccer_intl", gid,
-                   _tick(0.65, 0.55, yes_away=0.50),  # no minute/half -> segment UNK
-                   grade_dir=grade_dir, ledger_path=ledger)
+    t = _tick(0.65, 0.55, yes_away=0.50)  # no minute/half -> segment UNK
+    d_rest, d = _rest_then_fill("soccer_intl", gid, t,
+                                grade_dir=grade_dir, ledger_path=ledger)
+    assert d_rest["reason"] != "segment_adverse_suppressed"
     assert d["action"] == "bet"
     assert d["reason"] != "segment_adverse_suppressed"
     assert d["placement"]["added_new"] is True
@@ -405,9 +438,10 @@ def test_real_unmocked_trust_lookup_h1_is_not_suppressed_today(tmp_path):
     grade_dir = tmp_path / "grade"
     ledger = tmp_path / "ledger.jsonl"
     gid = "401859984"
-    d = dt.on_tick("soccer_intl", gid,
-                   _tick(0.65, 0.55, yes_away=0.50, minute=20),
-                   grade_dir=grade_dir, ledger_path=ledger)
+    t = _tick(0.65, 0.55, yes_away=0.50, minute=20)
+    d_rest, d = _rest_then_fill("soccer_intl", gid, t,
+                                grade_dir=grade_dir, ledger_path=ledger)
+    assert d_rest["reason"] != "segment_adverse_suppressed"
     assert d["action"] == "bet"
     assert d["reason"] != "segment_adverse_suppressed"
     assert d["placement"]["added_new"] is True
@@ -437,9 +471,9 @@ def test_exec_gate_suppresses_below_threshold_placement(tmp_path, monkeypatch):
 def test_ledger_row_carries_signal_ts_latency_and_exec_gate(tmp_path):
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    d = dt.on_tick("mlb", "401859991",
-                   _tick(0.65, 0.55, yes_away=0.50, signal_ts="2026-07-15T12:00:00Z"),
-                   grade_dir=grade_dir, ledger_path=ledger)
+    t = _tick(0.65, 0.55, yes_away=0.50, signal_ts="2026-07-15T12:00:00Z")
+    _, d = _rest_then_fill("mlb", "401859991", t,
+                           grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
     placed = d["placement"]
     assert placed["signal_ts"] == "2026-07-15T12:00:00Z"
@@ -447,6 +481,12 @@ def test_ledger_row_carries_signal_ts_latency_and_exec_gate(tmp_path):
     assert placed["placement_latency_ms"] >= 0.0
     assert placed["exec_gate"]["passed"] is True
     assert placed["exec_gate"]["drift_pct"] is None  # no fresher price supplied
+    # Maker-only audit fields ride the same exec_gate stamp on the ledger row.
+    # order_state is the raw OrderState enum value (lifecycle.py), UPPERCASE --
+    # confirmed by test_maker_only_wiring.py's own assertion, not the lowercase
+    # maker_event["status"] vocabulary used elsewhere in this module.
+    assert placed["exec_gate"]["execution_mode"] == "maker_only"
+    assert placed["exec_gate"]["order_state"] == "FILLED"
     _no_dollar_field(placed)
 
 
@@ -475,8 +515,8 @@ def test_tier_sizing_wires_stake_into_ledger_row(tmp_path):
     from scripts.platformkit.execution import sizing as _sizing
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    d = dt.on_tick("mlb", "401859993", _tick(0.65, 0.55, yes_away=0.50),
-                   grade_dir=grade_dir, ledger_path=ledger)
+    _, d = _rest_then_fill("mlb", "401859993", _tick(0.65, 0.55, yes_away=0.50),
+                           grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
     expected = _sizing.stake_for(d["tier"], "moneyline")
     assert d["placement"]["stake"] == expected
@@ -488,8 +528,8 @@ def test_tier_sizing_env_off_falls_back_to_legacy_zero_stake(tmp_path, monkeypat
     monkeypatch.setenv("CV_TIER_SIZING", "0")
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    d = dt.on_tick("mlb", "401859994", _tick(0.65, 0.55, yes_away=0.50),
-                   grade_dir=grade_dir, ledger_path=ledger)
+    _, d = _rest_then_fill("mlb", "401859994", _tick(0.65, 0.55, yes_away=0.50),
+                           grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
     assert d["placement"]["stake"] == 0.0  # toggle off -> exact legacy behavior
 
@@ -499,8 +539,8 @@ def test_exec_depth_threaded_into_placement_honest_null(tmp_path):
     # null dict (LEVER 1), never fabricated, and still lands on the ledger row.
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
-    d = dt.on_tick("mlb", "401859995", _tick(0.65, 0.55, yes_away=0.50),
-                   grade_dir=grade_dir, ledger_path=ledger)
+    _, d = _rest_then_fill("mlb", "401859995", _tick(0.65, 0.55, yes_away=0.50),
+                           grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
     assert d["placement"]["exec_depth"]["reason"] == "no_depth_source"
 
@@ -510,7 +550,7 @@ def test_exec_depth_threaded_from_tick_fields(tmp_path):
     grade_dir = tmp_path / "grade"
     t = _tick(0.65, 0.55, yes_away=0.50)
     t["spread_bp"], t["best_bid"], t["best_ask"] = 120.0, 0.60, 0.615
-    d = dt.on_tick("mlb", "401859996", t, grade_dir=grade_dir, ledger_path=ledger)
+    _, d = _rest_then_fill("mlb", "401859996", t, grade_dir=grade_dir, ledger_path=ledger)
     assert d["action"] == "bet"
     depth = d["placement"]["exec_depth"]
     assert depth["spread_bp"] == 120.0
@@ -535,12 +575,12 @@ def test_wide_spread_suppresses_the_entry(tmp_path):
 
 def test_unknown_spread_does_not_suppress_the_entry(tmp_path):
     # No spread field anywhere on this tick -- missing data must never silently
-    # kill the channel; the entry still places.
+    # kill the channel; the entry still quotes (maker-only ENTER = resting).
     ledger = tmp_path / "ledger.jsonl"
     grade_dir = tmp_path / "grade"
     d = dt.on_tick("mlb", "401859998", _tick(0.65, 0.55, yes_away=0.50),
                    grade_dir=grade_dir, ledger_path=ledger)
-    assert d["action"] == "bet"
+    assert d["action"] == "resting"
     assert d["exec_gate"]["spread_unknown"] is True
     assert d["exec_gate"]["spread_flag"] is False
 
@@ -555,7 +595,8 @@ def test_kalshi_venue_bets_normally(tmp_path):
     t = _tick(0.65, 0.55, yes_away=0.50)
     t["venue"] = "kalshi"
     d = dt.on_tick("mlb", "401860001", t, grade_dir=grade_dir, ledger_path=ledger)
-    assert d["action"] == "bet"
+    assert d["action"] == "resting"  # allowed venue -> the maker quote submits
+    assert d["reason"] == "maker_quote_submitted"
     assert d["captured"] is True
     _no_dollar_field(d)
 
@@ -584,7 +625,7 @@ def test_missing_venue_field_defaults_to_kalshi_and_bets(tmp_path):
     grade_dir = tmp_path / "grade"
     d = dt.on_tick("mlb", "401860003", _tick(0.65, 0.55, yes_away=0.50),
                    grade_dir=grade_dir, ledger_path=ledger)
-    assert d["action"] == "bet"
+    assert d["action"] == "resting"  # not venue-blocked: the ENTER quote submits
 
 
 def test_env_override_widens_the_allowlist(tmp_path, monkeypatch):
@@ -594,8 +635,8 @@ def test_env_override_widens_the_allowlist(tmp_path, monkeypatch):
     t = _tick(0.65, 0.55, yes_away=0.50)
     t["venue"] = "polymarket"
     d = dt.on_tick("mlb", "401860004", t, grade_dir=grade_dir, ledger_path=ledger)
-    assert d["action"] == "bet"
-    assert d["placement"]["added_new"] is True
+    assert d["action"] == "resting"  # widened allowlist -> quote submits, not venue-blocked
+    assert d["placement"]["status"] == "resting"
 
 
 def test_param_override_widens_the_allowlist(tmp_path):
@@ -605,8 +646,8 @@ def test_param_override_widens_the_allowlist(tmp_path):
     t["venue"] = "polymarket"
     d = dt.on_tick("mlb", "401860005", t, grade_dir=grade_dir, ledger_path=ledger,
                    paper_venues=("kalshi", "polymarket"))
-    assert d["action"] == "bet"
-    assert d["placement"]["added_new"] is True
+    assert d["action"] == "resting"  # widened allowlist -> quote submits, not venue-blocked
+    assert d["placement"]["status"] == "resting"
 
 
 def test_param_override_can_also_narrow_and_exclude_kalshi(tmp_path):
@@ -621,3 +662,55 @@ def test_param_override_can_also_narrow_and_exclude_kalshi(tmp_path):
     assert d["action"] == "no_bet"
     assert d["reason"] == "venue_not_allowed:kalshi"
     assert d["captured"] is True
+
+
+# --------------------------------------------------------------------------------------- #
+# held-diff branches: one-writer gate, suspended-market cancel, event-reactive gate        #
+# --------------------------------------------------------------------------------------- #
+
+
+def test_maker_fill_blocked_when_not_the_sanctioned_ledger_writer(tmp_path, monkeypatch):
+    # A fill against the DEFAULT (unset) ledger path is refused when this process is
+    # not the sanctioned pod writer (execution.writer_identity). No file is touched --
+    # the guard fires before record_ingame_bet, so it is safe to pass ledger_path=None.
+    grade_dir = tmp_path / "grade"
+    ledger = tmp_path / "ledger.jsonl"
+    t = _tick(0.65, 0.55, yes_away=0.50)
+    d_rest = dt.on_tick("mlb", "401860007", t, grade_dir=grade_dir, ledger_path=ledger)
+    assert d_rest["action"] == "resting"
+    monkeypatch.setattr(dt._writer, "default_ledger_write_allowed", lambda: False)
+    d_fill = dt.on_tick("mlb", "401860007", t, position=d_rest["position"],
+                        grade_dir=grade_dir, ledger_path=None)
+    assert d_fill["action"] == "no_bet"
+    assert d_fill["reason"] == "not_ledger_writer"
+    assert d_fill["position"] is None
+
+
+def test_maker_advance_cancels_on_suspended_market(tmp_path):
+    # A subsequent tick marking the market suspended/voided cancels the resting order
+    # instead of filling retroactively -- the ledger is never touched.
+    grade_dir = tmp_path / "grade"
+    ledger = tmp_path / "ledger.jsonl"
+    t = _tick(0.65, 0.55, yes_away=0.50)
+    d_rest = dt.on_tick("mlb", "401860008", t, grade_dir=grade_dir, ledger_path=ledger)
+    assert d_rest["action"] == "resting"
+    t2 = _tick(0.65, 0.55, yes_away=0.50, suspended=True)
+    d2 = dt.on_tick("mlb", "401860008", t2, position=d_rest["position"],
+                    grade_dir=grade_dir, ledger_path=ledger)
+    assert d2["action"] == "no_bet"
+    assert d2["reason"] == "maker_cancelled_suspended"
+    assert d2["position"] is None
+
+
+def test_event_reactive_entry_suppressed_when_venue_latency_unsupported(tmp_path, monkeypatch):
+    # tick["event_reactive"]=True only matters when the sport's MEASURED venue latency
+    # (latency_scoreboard) clears the lag/coverage bar. FAIL-CLOSED: unmeasured/slow ->
+    # suppress, never a bet.
+    grade_dir = tmp_path / "grade"
+    ledger = tmp_path / "ledger.jsonl"
+    monkeypatch.setattr(dt._latsb, "event_reactive_supported", lambda sport: False)
+    t = _tick(0.65, 0.55, yes_away=0.50, event_reactive=True)
+    d = dt.on_tick("mlb", "401860009", t, grade_dir=grade_dir, ledger_path=ledger)
+    assert d["action"] == "no_bet"
+    assert d["reason"] == "event_reactive_not_supported"
+    assert d["captured"] is True  # capture still ran before the suppression
