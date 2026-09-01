@@ -184,7 +184,8 @@ def test_youtube_url_still_uses_the_format_ladder(monkeypatch, tmp_path):
     footage_bridge.download_local(
         {"game_id": "yt_01", "url": "https://www.youtube.com/watch?v=ChxXA-7uyHk"})
 
-    assert "-f" in commands[0]
+    downloads = [c for c in commands if "--skip-download" not in c]
+    assert "-f" in downloads[0]
 
 
 def test_error_tail_skips_the_deprecation_banner():
@@ -242,13 +243,15 @@ def test_output_flag_is_immediately_followed_by_its_filename(monkeypatch, tmp_pa
     footage_bridge.download_local(
         {"game_id": "g", "url": "https://www.youtube.com/watch?v=abc"})
 
-    command = commands[0]
-    output_at = command.index("-o")
-    assert command[output_at + 1].endswith("g.mp4")
-    assert command[-1] == "https://www.youtube.com/watch?v=abc"
-    # -f must carry a real selector, never a flag
-    if "-f" in command:
-        assert not command[command.index("-f") + 1].startswith("-")
+    downloads = [c for c in commands if "--skip-download" not in c]
+    assert downloads, "no download command was issued"
+    for command in downloads:
+        output_at = command.index("-o")
+        assert command[output_at + 1].endswith("g.mp4")
+        assert command[-1] == "https://www.youtube.com/watch?v=abc"
+        # -f must carry a real selector, never a flag
+        if "-f" in command:
+            assert not command[command.index("-f") + 1].startswith("-")
 
 
 def test_resolver_never_returns_an_unmerged_stream(monkeypatch, tmp_path):
@@ -345,3 +348,84 @@ def test_decoupled_queue_keeps_a_reference_clip(monkeypatch, tmp_path):
     footage_bridge.run_queue(queue, limit=1, decouple=True)
 
     assert kept == ["tennis"]
+
+
+def test_short_videos_are_never_sectioned():
+    """A section starting at 10:00 downloads NOTHING from a highlight reel."""
+    assert footage_bridge.plan_section(9 * 60) is None
+    assert footage_bridge.plan_section(0) is None
+    assert footage_bridge.plan_section(None) is None
+
+
+def test_full_game_is_sectioned_to_the_frames_we_actually_track():
+    section = footage_bridge.plan_section(85 * 60)
+
+    assert section == "*00:10:00-00:26:00"
+
+
+def test_section_start_scales_down_for_mid_length_videos():
+    """15% in, so a 30-minute video does not start past its own midpoint."""
+    assert footage_bridge.plan_section(30 * 60) == "*00:04:30-00:20:30"
+
+
+def test_unparseable_duration_falls_back_to_whole_file(monkeypatch):
+    monkeypatch.setattr(footage_bridge.subprocess, "run",
+                        lambda *a, **k: subprocess.CompletedProcess(a, 0, "NA", ""))
+
+    assert footage_bridge.probe_duration("https://youtu.be/x") == 0.0
+
+
+def test_section_attempt_is_tried_first_and_falls_back_to_full_download(
+        monkeypatch, tmp_path):
+    """If sectioning fails the game must still be fetchable in full."""
+    monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
+    monkeypatch.setattr(footage_bridge, "probe_duration", lambda url: 85 * 60)
+    seen = []
+
+    def fake_run(command, **kwargs):
+        seen.append(command)
+        if "--download-sections" in command:
+            raise subprocess.CalledProcessError(1, command, "", "ERROR: 403")
+        (tmp_path / "g1.mp4").write_bytes(b"video")
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(footage_bridge.subprocess, "run", fake_run)
+    footage_bridge.download_local({"game_id": "g1", "sport": "tennis",
+                                   "url": "https://youtu.be/x"})
+
+    assert "--download-sections" in seen[0]
+    assert "--download-sections" not in seen[-1]
+
+
+def test_section_download_uses_the_web_client(monkeypatch, tmp_path):
+    """ffmpeg gets 403 from the default client's URL; only web works."""
+    monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
+    monkeypatch.setattr(footage_bridge, "probe_duration", lambda url: 85 * 60)
+    seen = []
+
+    def fake_run(command, **kwargs):
+        seen.append(command)
+        (tmp_path / "g1.mp4").write_bytes(b"video")
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(footage_bridge.subprocess, "run", fake_run)
+    footage_bridge.download_local({"game_id": "g1", "sport": "tennis",
+                                   "url": "https://youtu.be/x"})
+
+    assert "youtube:player_client=web" in seen[0]
+
+
+def test_direct_cdn_media_is_never_probed_for_duration(monkeypatch, tmp_path):
+    """MLB CDN mp4s have no extractor; a duration probe just wastes a request."""
+    monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
+    monkeypatch.setattr(footage_bridge, "probe_duration",
+                        lambda url: (_ for _ in ()).throw(
+                            AssertionError("must not probe a direct file")))
+
+    def fake_run(command, **kwargs):
+        (tmp_path / "m1.mp4").write_bytes(b"video")
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(footage_bridge.subprocess, "run", fake_run)
+    footage_bridge.download_local({"game_id": "m1", "sport": "mlb",
+                                   "url": "https://mlb-cuts-diamond.mlb.com/a.mp4"})

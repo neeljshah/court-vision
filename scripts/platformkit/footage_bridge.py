@@ -51,10 +51,17 @@ MIN_TRACKING_ROWS = 500
 SPORT_ADAPTER = {"tennis": "tennis", "soccer": "soccer", "npb": "baseball",
                  "kbo": "baseball", "mlb": "baseball", "baseball": "baseball"}
 # yt-dlp rungs, cheapest first. The pod cannot use any of them; the local IP can.
+# 720p FIRST, deliberately. Upload to the pod was measured at 88.6 Mbps
+# aggregate and is the pipeline ceiling -- the GPU sits at 11%. A 1080p game is
+# ~850 MB and a 720p one is roughly half that, so this doubles games/hour.
+# Justified by measurement, not taste: the detector-resolution arm was run and
+# came back a NULL -- recall is gated by homography eligibility (177/300
+# calibratable frames), not by pixels. Reference clips under data/videos/
+# reference/ exist to re-measure this if tracking quality ever regresses.
 FORMAT_RUNGS = [
-    "bv*[height<=1080][vcodec^=avc1]+ba/b[height<=1080]",
     "bv*[height<=720][vcodec^=avc1]+ba/b[height<=720]",
     "b[height<=720]",
+    "bv*[height<=1080][vcodec^=avc1]+ba/b[height<=1080]",
 ]
 
 
@@ -138,6 +145,45 @@ def _resolve_download(destination: Path):
     return produced[0] if produced else None
 
 
+# We track at most 30,000 frames (~16 min at 30fps), but were downloading and
+# uploading the whole 85-minute game to do it. Measured on a real handball
+# broadcast: the full 720p game is ~1.17 GB, while the 16-minute slice we
+# actually use is 69.9 MB fetched in 18 seconds -- about 12x less data on a
+# link whose 88.6 Mbps upload was the pipeline ceiling.
+SECTION_MINUTES = 16
+# ffmpeg does the cutting, and the default player client hands it a URL that
+# returns 403 to anything but yt-dlp itself. The web client's URL works.
+SECTION_CLIENT = ["--extractor-args", "youtube:player_client=web"]
+
+
+def _hhmmss(seconds: int) -> str:
+    return "%02d:%02d:%02d" % (seconds // 3600, (seconds % 3600) // 60, seconds % 60)
+
+
+def plan_section(duration: float) -> str:
+    """The slice worth downloading, or None to take the whole file.
+
+    Returns None for anything short enough that the slice would be most of the
+    video anyway, and for unknown durations -- a section that starts past the
+    end of a highlight reel downloads nothing at all.
+    """
+    if not duration or duration <= (SECTION_MINUTES + 4) * 60:
+        return None
+    start = min(600, int(duration * 0.15))
+    return "*%s-%s" % (_hhmmss(start), _hhmmss(start + SECTION_MINUTES * 60))
+
+
+def probe_duration(url: str) -> float:
+    """Video length in seconds, or 0.0 when it cannot be determined."""
+    try:
+        result = subprocess.run(
+            ["yt-dlp", "--skip-download", "--no-playlist", "--print", "duration", url],
+            capture_output=True, text=True, timeout=180)
+        return float((result.stdout or "").strip().splitlines()[-1])
+    except (subprocess.SubprocessError, OSError, ValueError, IndexError):
+        return 0.0
+
+
 def download_local(item: dict) -> Path:
     """Download one item to the local stage, returning the merged file."""
     LOCAL_STAGE.mkdir(parents=True, exist_ok=True)
@@ -149,12 +195,20 @@ def download_local(item: dict) -> Path:
         rungs = [None]
     else:
         rungs = ([item["format"]] + FORMAT_RUNGS) if item.get("format") else FORMAT_RUNGS
+    # Section attempts first, full-file attempts as the fallback. A section can
+    # legitimately fail (short video, no ffmpeg, an extractor that ignores it),
+    # and when it does the ladder must still be able to fetch the whole game.
+    section = None
+    if not _is_direct_media(item["url"]):
+        section = plan_section(probe_duration(item["url"]))
     last_error = "no attempt made"
     # Cookies LAST, not first. With cookies yt-dlp picks the tv client and gets
     # HLS (format 96, ~1100 fragments, very slow); without them it gets clean
     # DASH (137+251). The residential IP is not bot-blocked, so cookies are only
     # a fallback for the occasional video that demands them.
-    for rung, use_cookies in [(r, c) for c in (False, True) for r in rungs]:
+    attempts = [(r, c, sec) for sec in ([section, None] if section else [None])
+                for c in (False, True) for r in rungs]
+    for rung, use_cookies, use_section in attempts:
         # Build positionally rather than splicing into the list. Inserting at
         # command[-2:-2] once landed "-f <rung>" BETWEEN "-o" and its filename,
         # so yt-dlp took "-f" as the output template and failed every YouTube
@@ -167,6 +221,8 @@ def download_local(item: dict) -> Path:
             continue  # no cookie file, so the cookie pass is not a real retry
         if rung is not None:
             command += ["-f", rung]
+        if use_section is not None:
+            command += ["--download-sections", use_section] + SECTION_CLIENT
         command += ["-o", str(destination), item["url"]]
         try:
             subprocess.run(command, check=True, timeout=7200,
