@@ -197,12 +197,18 @@ def build_pred_matrix(frame: pd.DataFrame, features: Sequence[str], *,
     if not need.issubset(frame):
         raise ValueError("catalog frame lacks declared columns")
     df = frame.sort_values("date").dropna(subset=list(need)).reset_index(drop=True)
+    if "close_prob" in features:
+        raise ValueError("'close_prob' collides with the declared anchor feature name")
     x_raw = df.loc[:, features].to_numpy(float)
     y, close = df.outcome.to_numpy(int), df.close_prob.to_numpy(float)
+    # Mirrors combo_search's declared-anchor shape (red-team 2026-09-01): the test
+    # row's inputs come only from the redacted view; "index" is train-side only.
     states = [{"game_id": str(r.game_id), "home": str(getattr(r, "home", "h" + str(i))),
                "away": str(getattr(r, "away", "a" + str(i))), "state_ts": r.date.isoformat(),
-               "features": {name: float(x_raw[i, j]) for j, name in enumerate(features)},
-               "feature_avail": {name: (r.date - timedelta(seconds=1)).isoformat() for name in features},
+               "features": {**{name: float(x_raw[i, j]) for j, name in enumerate(features)},
+                            "close_prob": float(close[i])},
+               "feature_avail": {name: (r.date - timedelta(seconds=1)).isoformat()
+                                 for name in (*features, "close_prob")},
                "outcome": int(r.outcome), "devig_close_prob": float(r.close_prob), "index": i}
               for i, r in enumerate(df.itertuples(index=False))]
     preds: dict[float, np.ndarray] = {}
@@ -210,12 +216,13 @@ def build_pred_matrix(frame: pd.DataFrame, features: Sequence[str], *,
     for lam in lambdas:
         def predict(train, test, _inside, lam=float(lam)):
             idx = np.array([s["index"] for s in train], dtype=int)
+            anchor = np.array([test["features"]["close_prob"]], dtype=float)
             if len(idx) < min_train:
-                return float(close[test["index"]])
+                return float(anchor[0])
             mu, sd = x_raw[idx].mean(0), x_raw[idx].std(0) + 1e-9
+            tv = np.array([[test["features"][name] for name in features]], dtype=float)
             return float(_fit_predict(np.column_stack([_logit(close[idx]), (x_raw[idx] - mu) / sd]), y[idx],
-                                      np.column_stack([_logit(close[[test["index"]]]),
-                                                       (x_raw[[test["index"]]] - mu) / sd]), lam)[0])
+                                      np.column_stack([_logit(anchor), (tv - mu) / sd]), lam)[0])
         wf = walk_forward(states, predict, select_inside=True)
         preds[float(lam)] = np.array([r["p_model"] for r in wf.records])
         train_sizes = wf.n_train_sizes

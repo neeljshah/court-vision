@@ -344,6 +344,7 @@ scripts/**/_*
 !scripts/platformkit/reports/__init__.py
 !scripts/platformkit/benchmarks/clv_replay/__init__.py
 !scripts/platformkit/mcp/__init__.py
+!scripts/platformkit/ssac/__init__.py
 !scripts/platformkit/kalshi_complete/__init__.py
 # -- internal audit/research churn — keep LOCAL (matches the curate-only posture:
 #    only 5 of ~243 _audits docs were ever published; the rest are internal brain,

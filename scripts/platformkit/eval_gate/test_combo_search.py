@@ -15,8 +15,10 @@ def _frame(n=180):
 
 def test_path_is_charged_cumulatively_and_zeroes_constant_signal(tmp_path: Path):
     ledger = tmp_path / "ledger.json"
-    first = run_combo_search(_frame(), ["noise", "zero"], ledger_path=ledger, lambdas=(.1, 1.0))
-    second = run_combo_search(_frame(), ["noise", "zero"], ledger_path=ledger, lambdas=(.1, 1.0))
+    first = run_combo_search(_frame(), ["noise", "zero"], ledger_path=ledger, lambdas=(.1, 1.0),
+                             allow_unregistered_search=True)
+    second = run_combo_search(_frame(), ["noise", "zero"], ledger_path=ledger, lambdas=(.1, 1.0),
+                              allow_unregistered_search=True)
     assert first.k_cycle == 2 and first.k_cumulative == 2
     assert second.k_cumulative == 4
     assert "zero" not in first.coefficients
@@ -24,6 +26,7 @@ def test_path_is_charged_cumulatively_and_zeroes_constant_signal(tmp_path: Path)
 
 
 def test_small_corpus_is_not_testable_but_still_charged(tmp_path: Path):
-    result = run_combo_search(_frame(80), ["noise", "zero"], ledger_path=tmp_path / "k.json", lambdas=(.1, 1.0, 10.0))
+    result = run_combo_search(_frame(80), ["noise", "zero"], ledger_path=tmp_path / "k.json", lambdas=(.1, 1.0, 10.0),
+                              allow_unregistered_search=True)
     assert result.verdict == "NOT_TESTABLE"
     assert result.k_cumulative == 3

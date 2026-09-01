@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import time
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
@@ -12,6 +14,7 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 
+from scripts.platformkit.clv_ledger_io import ledger_lock
 from scripts.platformkit.combo.fwer_budget import DEFAULT_EPS, cumulative_k, eps_eff
 from scripts.platformkit.eval_gate.dm_test import diebold_mariano
 from scripts.platformkit.eval_gate.walkforward import walk_forward
@@ -19,6 +22,8 @@ from scripts.platformkit.eval_gate.walkforward import walk_forward
 FAMILY = "nba_elastic_net_all_catalog_signals_v1"
 LAMBDAS = (0.01, 0.03, 0.1, 0.3, 1.0, 3.0, 10.0, 30.0)
 MIN_TRAIN = 120
+# THE one ledger for FAMILY (R13): rotating the path resets the cumulative-K bar.
+CANONICAL_LEDGER = Path("data/cache/eval_gate/combo_fwer.json")
 
 
 @dataclass(frozen=True)
@@ -74,22 +79,62 @@ def _fit_predict(x: np.ndarray, y: np.ndarray, test: np.ndarray, lam: float) -> 
     return model.predict_proba(test)[:, 1]
 
 
+def _replace_retry(tmp: Path, path: Path, attempts: int = 20) -> None:
+    # ponytail: writers are already serialized by ledger_lock, so the only
+    # remaining os.replace failure is Windows' transient sharing violation (a
+    # scanner holding the destination open). Retry, don't crash the gate.
+    for i in range(attempts):
+        try:
+            os.replace(tmp, path)
+            return
+        except OSError:
+            if i == attempts - 1:
+                raise
+            time.sleep(0.02)
+
+
 def _ledger(path: Path, k_cycle: int) -> int:
-    prior = 0
-    if path.exists():
-        prior = int(json.loads(path.read_text(encoding="ascii")).get(FAMILY, 0))
-    total = cumulative_k(prior, k_cycle)
+    """Charge k_cycle to the family total; return the new cumulative K.
+
+    BY-DESIGN: the charge lands BEFORE results are computed and is never rolled
+    back on a later exception -- an unspent charge only tightens eps_eff (safe
+    fail-direction). The read-modify-write runs under a cross-process lock and
+    the write is an atomic replace, so concurrent charges neither tear the JSON
+    nor lose updates (a lost update would loosen eps_eff), and the replace is
+    retried so a transient OS sharing violation cannot crash a live gate call.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps({FAMILY: total}, sort_keys=True), encoding="ascii")
+    with ledger_lock(path):
+        prior = 0
+        if path.exists():
+            prior = int(json.loads(path.read_text(encoding="ascii")).get(FAMILY, 0))
+        total = cumulative_k(prior, k_cycle)
+        tmp = path.with_suffix(path.suffix + ".tmp")
+        tmp.write_text(json.dumps({FAMILY: total}, sort_keys=True), encoding="ascii")
+        _replace_retry(tmp, path)
     return total
 
 
 def run_combo_search(frame: pd.DataFrame, features: Sequence[str], *, ledger_path: Path,
-                     lambdas: Sequence[float] = LAMBDAS) -> ComboResult:
-    """Walk forward every registered lambda; the path is the entire search family."""
+                     lambdas: Sequence[float] = LAMBDAS,
+                     allow_unregistered_search: bool = False) -> ComboResult:
+    """Walk forward every registered lambda; CANONICAL_LEDGER is the search family.
+
+    R13 guard: a rotated ledger_path resets the family's cumulative-K bar and a
+    narrowed lambda grid under-charges the cycle, so any deviation from the
+    canonical path + registered LAMBDAS must be explicitly labelled via
+    allow_unregistered_search=True (tests only).
+    """
+    registered = (Path(ledger_path).resolve() == CANONICAL_LEDGER.resolve()
+                  and tuple(float(l) for l in lambdas) == LAMBDAS)
+    if not registered and not allow_unregistered_search:
+        raise ValueError("unregistered search: non-canonical ledger_path or lambda grid resets/narrows "
+                         "the R13 family budget; pass allow_unregistered_search=True only in tests")
     need = {"date", "game_id", "outcome", "close_prob", *features}
     if not need.issubset(frame):
         raise ValueError("catalog frame lacks declared columns")
+    if "close_prob" in features:
+        raise ValueError("'close_prob' collides with the declared anchor feature name")
     df = frame.sort_values("date").dropna(subset=list(need)).reset_index(drop=True)
     if len(df) <= MIN_TRAIN:
         return ComboResult("NOT_TESTABLE", None, None, len(lambdas), _ledger(ledger_path, len(lambdas)), {}, {"n": len(df)})
@@ -97,21 +142,28 @@ def run_combo_search(frame: pd.DataFrame, features: Sequence[str], *, ledger_pat
     y, close = df.outcome.to_numpy(int), df.close_prob.to_numpy(float)
     # Feed every lambda through the hardened split generator.  Features get an
     # explicit pre-prediction availability time, so a future-dated value fails there.
+    # The pre-registered close anchor is a DECLARED, vintage-checked feature: the
+    # test row's inputs come only from the redacted view (walk_forward strips
+    # "index"), never from closing over the raw arrays (red-team 2026-09-01).
     states = [{"game_id": str(r.game_id), "home": str(getattr(r, "home", "h" + str(i))),
                "away": str(getattr(r, "away", "a" + str(i))), "state_ts": r.date.isoformat(),
-               "features": {name: float(x_raw[i, j]) for j, name in enumerate(features)},
-               "feature_avail": {name: (r.date - timedelta(seconds=1)).isoformat() for name in features},
+               "features": {**{name: float(x_raw[i, j]) for j, name in enumerate(features)},
+                            "close_prob": float(close[i])},
+               "feature_avail": {name: (r.date - timedelta(seconds=1)).isoformat()
+                                 for name in (*features, "close_prob")},
                "outcome": int(r.outcome), "devig_close_prob": float(r.close_prob), "index": i}
               for i, r in enumerate(df.itertuples(index=False))]
     preds, train_sizes = {}, None
     for lam in lambdas:
         def predict(train, test, _inside, lam=float(lam)):
-            idx = np.array([s["index"] for s in train], dtype=int)
+            idx = np.array([s["index"] for s in train], dtype=int)   # train-side lookup only
+            anchor = np.array([test["features"]["close_prob"]], dtype=float)
             if len(idx) < MIN_TRAIN:
-                return float(close[test["index"]])
+                return float(anchor[0])
             mu, sd = x_raw[idx].mean(0), x_raw[idx].std(0) + 1e-9
+            tv = np.array([[test["features"][name] for name in features]], dtype=float)
             return float(_fit_predict(np.column_stack([_logit(close[idx]), (x_raw[idx] - mu) / sd]), y[idx],
-                                      np.column_stack([_logit(close[[test["index"]]]), (x_raw[[test["index"]]] - mu) / sd]), lam)[0])
+                                      np.column_stack([_logit(anchor), (tv - mu) / sd]), lam)[0])
         wf = walk_forward(states, predict, select_inside=True)
         preds[float(lam)] = np.array([r["p_model"] for r in wf.records])
         train_sizes = wf.n_train_sizes
@@ -141,10 +193,12 @@ def run_combo_search(frame: pd.DataFrame, features: Sequence[str], *, ledger_pat
 def main(argv: Sequence[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="pre-registered elastic-net combo search")
     ap.add_argument("--data-root", type=Path, default=Path("data/domains/basketball_nba"))
-    ap.add_argument("--ledger", type=Path, default=Path("data/cache/eval_gate/combo_fwer.json"))
+    ap.add_argument("--ledger", type=Path, default=CANONICAL_LEDGER)
+    ap.add_argument("--allow-unregistered-search", action="store_true")
     args = ap.parse_args(argv)
     frame, features = load_nba_catalog(args.data_root)
-    result = run_combo_search(frame, features, ledger_path=args.ledger)
+    result = run_combo_search(frame, features, ledger_path=args.ledger,
+                              allow_unregistered_search=args.allow_unregistered_search)
     print(json.dumps({**result.__dict__, "coefficients": result.coefficients}, sort_keys=True, default=str))
     return 0
 

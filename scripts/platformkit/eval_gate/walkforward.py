@@ -11,8 +11,17 @@ Self-contained (stdlib only). This is where leak-freeness is ENFORCED, not assum
 predict_fn(train_states, test_state, select_inside) -> p in [0,1]. The harness never trains a model;
 it orchestrates the leak-free split and collects per-state probabilities for scoring (scoring.py).
 Calibration-first; no dollar edge is computed.
+
+Red-team hardening (2026-09-01): each invocation deep-copies the caller's states, so a
+predictor that mutates its train/test views cannot poison the caller's list and read the
+plant back on a later walk_forward call over the same states. The test view also drops
+"index" (a raw-row pointer some callers attach for train-side lookups). NOTE the limit:
+the harness redacts the VIEWS it hands out; it cannot police a predict_fn that closes
+over the raw corpus arrays directly -- callers must route test-row inputs through the
+declared, vintage-checked `features` channel (see combo_search.py / pbo.py).
 """
 from __future__ import annotations
+import copy
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Callable, Dict, List, Tuple
@@ -80,7 +89,9 @@ def walk_forward(states: List[dict],
                  predict_fn: Callable[[List[dict], dict, bool], float],
                  select_inside: bool = True) -> WalkForwardResult:
     """Expanding-window walk-forward with purge + embargo + vintage. Returns per-state records."""
-    states = sorted(states, key=lambda s: s["state_ts"])
+    # Deep copy: predictor-side mutation of train/test dicts must never reach the
+    # caller's states (cross-invocation plant attack -- red-team 2026-09-01).
+    states = copy.deepcopy(sorted(states, key=lambda s: s["state_ts"]))
     records: List[dict] = []
     sizes: List[int] = []
     for i, test in enumerate(states):
@@ -98,7 +109,7 @@ def walk_forward(states: List[dict],
         assert_vintage(test)                              # defense in depth (schema also checks)
         test_view = {
             k: v for k, v in test.items()
-            if k not in ("outcome", "devig_close_prob", "truth_wp")
+            if k not in ("outcome", "devig_close_prob", "truth_wp", "index")
         }
         p = predict_fn(train, test_view, select_inside)
         if not 0.0 <= p <= 1.0:

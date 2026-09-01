@@ -18,6 +18,7 @@ from typing import Any, Callable, Dict, Sequence
 import numpy as np
 import pandas as pd
 
+from scripts.platformkit.clv_ledger_io import ledger_lock
 from scripts.platformkit.combo.fwer_budget import cumulative_k, eps_eff
 from scripts.platformkit.eval_gate.dm_test import diebold_mariano
 from scripts.platformkit.eval_gate.scoring import brier, log_loss
@@ -128,15 +129,18 @@ def _phase_metrics(records: list[dict]) -> dict:
 
 
 def _charge_ledger(path: Path, spec: str, sport: str, start: str, end: str) -> dict:
-    rows = []
-    if path.exists():
-        rows = [json.loads(line) for line in path.read_text(encoding="ascii").splitlines() if line.strip()]
-    prior = max((int(r.get("k_cumulative", 0)) for r in rows), default=0)
-    row = {"at": datetime.now(timezone.utc).isoformat(), "predictor": spec, "sport": sport,
-           "start": start, "end": end, "k_cumulative": cumulative_k(prior, 1)}
+    # Read-max + append run under one cross-process lock: concurrent charges must
+    # neither interleave bytes nor lose updates (K undercount loosens eps_eff).
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", encoding="ascii") as fh:
-        fh.write(json.dumps(row, ensure_ascii=True, sort_keys=True) + "\n")
+    with ledger_lock(path):
+        rows = []
+        if path.exists():
+            rows = [json.loads(line) for line in path.read_text(encoding="ascii").splitlines() if line.strip()]
+        prior = max((int(r.get("k_cumulative", 0)) for r in rows), default=0)
+        row = {"at": datetime.now(timezone.utc).isoformat(), "predictor": spec, "sport": sport,
+               "start": start, "end": end, "k_cumulative": cumulative_k(prior, 1)}
+        with path.open("a", encoding="ascii") as fh:
+            fh.write(json.dumps(row, ensure_ascii=True, sort_keys=True) + "\n")
     return row
 
 
@@ -152,6 +156,11 @@ def run_backtest(spec: str, sport: str, start: str, end: str, *, repo: Path | No
         return {"verdict": "INSUFFICIENT", "reason": "no joined games", "fwer": charge, "predictions": []}
 
     close_by_game = {s["game_id"]: s["devig_close_prob"] for s in states}
+    if len(close_by_game) != len(states):
+        # A duplicate game_id would double-weight one physical game in the headline
+        # scores AND collapse this side-table to whichever close came last.
+        raise ValueError(f"duplicate game_id in corpus ({len(states) - len(close_by_game)} collisions); "
+                         "refusing to double-weight games or serve the wrong reference close")
 
     def guarded(train: Sequence[dict], test: dict, select_inside: bool) -> float:
         view = _redact(test, training=False, allow_close=False)
