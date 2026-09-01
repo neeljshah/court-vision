@@ -1,0 +1,2 @@
+{"at": "2026-09-01T20:32:04.108731+00:00", "end": "2026-04-12", "k_cumulative": 1, "predictor": "scripts.platformkit.eval_gate.backtest_runner:close_echo", "sport": "basketball_nba", "start": "2025-10-21"}
+{"at": "2026-09-01T20:32:10.525202+00:00", "end": "2026-04-12", "k_cumulative": 2, "predictor": "scripts.platformkit.eval_gate.backtest_runner:uniform_half", "sport": "basketball_nba", "start": "2025-10-21"}
