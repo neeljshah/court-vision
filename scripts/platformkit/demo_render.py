@@ -92,7 +92,8 @@ def draw_court_inset(frame: np.ndarray, observations: list[Observation]) -> None
 
 
 def render(video: Path, tracking: Path, output: Path, sport: str, quality: str,
-           start_frame: int, seconds: float, output_fps: int, source_size: tuple[int, int] | None) -> None:
+           start_frame: int, seconds: float, output_fps: int, source_size: tuple[int, int] | None,
+           max_bytes: int | None = 8 * 1024 * 1024) -> None:
     """Render observed tracks only; no interpolation or fabricated boxes are introduced."""
     observations, coordinate_space = read_tracking(tracking)
     capture = cv2.VideoCapture(str(video))
@@ -115,7 +116,6 @@ def render(video: Path, tracking: Path, output: Path, sport: str, quality: str,
     try:
         for index in range(total):
             source_frame = start_frame + index * every
-            capture.set(cv2.CAP_PROP_POS_FRAMES, source_frame)
             ok, image = capture.read()
             if not ok:
                 break
@@ -139,6 +139,9 @@ def render(video: Path, tracking: Path, output: Path, sport: str, quality: str,
                     cv2.putText(image, "%s %s" % (item.cls, item.track_id), (x + 7, y - 7),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.43, color, 1, cv2.LINE_AA)
             writer.write(draw_caption(image, caption_lines(sport, coordinate_space, quality)))
+            for _ in range(every - 1):
+                if not capture.grab():
+                    break
     finally:
         writer.release()
         capture.release()
@@ -151,7 +154,7 @@ def render(video: Path, tracking: Path, output: Path, sport: str, quality: str,
         subprocess.run(command, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
     finally:
         temp.unlink(missing_ok=True)
-    if output.stat().st_size > 8 * 1024 * 1024:
+    if max_bytes is not None and output.stat().st_size > max_bytes:
         raise ValueError("Demo exceeds 8 MB: %s" % output)
 
 
@@ -167,9 +170,12 @@ def main() -> int:
     parser.add_argument("--output-fps", default=10, type=int,
                         help="Sampling rate; 10 fps preserves common stride-3 tracker rows at 30 fps")
     parser.add_argument("--source-size", nargs=2, type=int, metavar=("WIDTH", "HEIGHT"))
+    parser.add_argument("--max-bytes", type=int, default=8 * 1024 * 1024,
+                        help="Output size cap; use 0 for an uncapped local-only render")
     args = parser.parse_args()
     render(args.video, args.tracking, args.output, args.sport, args.quality, args.start_frame, args.seconds,
-           args.output_fps, tuple(args.source_size) if args.source_size else None)
+           args.output_fps, tuple(args.source_size) if args.source_size else None,
+           None if args.max_bytes == 0 else args.max_bytes)
     return 0
 
 
