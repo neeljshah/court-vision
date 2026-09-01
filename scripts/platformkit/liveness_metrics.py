@@ -110,6 +110,8 @@ def compute_liveness_metrics(df: pd.DataFrame, sport: str) -> LivenessMetrics:
                               distinct_position_ratio, stationary_track_share, "LIVE")
     if zero_step_share == 1.0 and stationary_track_share == 1.0:
         verdict = "FROZEN"
+    elif all(limit is None for limit in threshold.values()):
+        verdict = "UNCALIBRATED"
     elif liveness_failures(metrics, sport):
         verdict = "SUSPECT"
     else:
