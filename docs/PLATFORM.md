@@ -199,7 +199,7 @@ pip install -r requirements-predictor.txt    # or: pip install -e .  -> cv-match
 
 ## What The Numbers Say (calibration / sharpness -- NEVER a $ edge)
 
-All numbers are calibration/sharpness (lower Brier/RMSE = sharper). They are NOT a profit edge. The canonical record is **[docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)**; the per-sport detail is in `vault/_Edge_Maps/`.
+All numbers are calibration/sharpness (lower Brier/RMSE = sharper). They are NOT a profit edge. The canonical record is **[docs/JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)**.
 
 **Pregame -- beat-the-close (leak-free OOS, held-out 2nd half):**
 
