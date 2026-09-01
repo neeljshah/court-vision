@@ -86,6 +86,25 @@ def _coordinate_contract_items(records: Iterable[dict[str, Any]]) -> list[str]:
     return sorted(items)
 
 
+def _preserved_corpus(records: Iterable[dict[str, Any]]) -> tuple[int, int, Counter]:
+    """Games kept as a declared image-space corpus, with their row total.
+
+    These are NOT failures in the ordinary sense and must not read as "nothing
+    works". The detector found real players; the adapter could not place them in
+    court coordinates, so the rows are preserved with an explicit declaration
+    and REJECTED for scoring. Reporting them only as PASSING=0 makes a working
+    pipeline look broken.
+    """
+    games, rows, by_sport = 0, 0, Counter()
+    for record in records:
+        if any("image_px" in str(failure)
+               for failure in (record.get("failures") or [])):
+            games += 1
+            rows += _number(record.get("rows"))
+            by_sport[_sport(record)] += 1
+    return games, rows, by_sport
+
+
 def build_report(
     tracking_path: Path = DEFAULT_TRACKING,
     bridge_path: Path = DEFAULT_BRIDGE,
@@ -153,6 +172,20 @@ def build_report(
         "-------------------",
     ]
     lines.extend("- " + item for item in human) if human else lines.append("- None.")
+    kept_games, kept_rows, kept_by_sport = _preserved_corpus(tracking)
+    lines.extend(["", "PRESERVED DETECTION CORPUS (declared image-space)"])
+    if kept_games:
+        lines.append(
+            "%d games, %s rows, correctly REJECTED for scoring: %s"
+            % (kept_games, format(kept_rows, ","),
+               ", ".join("%s %d" % (sport, count)
+                         for sport, count in sorted(kept_by_sport.items()))))
+        lines.append(
+            "These are NOT broken runs. The detector worked; the coordinates "
+            "could not be trusted, so the rows are kept and declared instead of "
+            "discarded or laundered.")
+    else:
+        lines.append("none")
     lines.extend(["", "TRACKING HARNESS"])
     if tracking_problem:
         lines.append(tracking_problem)

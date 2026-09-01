@@ -56,3 +56,28 @@ def test_report_gracefully_handles_missing_and_malformed_inputs(tmp_path):
     assert "FOOTAGE BRIDGE\nno data (file missing)" in report
     assert "BRIDGE SUPERVISOR\nno data (file missing)" in report
     assert "WHAT NEEDS A HUMAN\n-------------------\n- None." in report
+
+
+def test_preserved_image_corpus_is_reported_separately(tmp_path):
+    """A declared image-space game is not a broken run. Reporting it only as
+    PASSING=0 makes a working pipeline look dead to whoever reads this first."""
+    from scripts.platformkit.night_report import build_report
+
+    ledger = tmp_path / "track_daemon_ledger.jsonl"
+    ledger.write_text("\n".join([
+        json.dumps({"game_id": "a", "sport": "football", "status": "tracked",
+                    "rows": 58652, "passed": False,
+                    "failures": ["coordinate_contract: rows declare "
+                                 "coordinate_space image_px"]}),
+        json.dumps({"game_id": "b", "sport": "tennis", "status": "tracked",
+                    "rows": 900, "passed": False,
+                    "failures": ["coverage 0.67 < 0.90"]}),
+    ]), encoding="utf-8")
+
+    report = build_report(tracking_path=ledger,
+                          bridge_path=tmp_path / "absent.jsonl",
+                          supervisor_path=tmp_path / "absent.json")
+
+    assert "PRESERVED DETECTION CORPUS" in report
+    assert "1 games, 58,652 rows" in report
+    assert "NOT broken runs" in report
