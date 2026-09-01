@@ -86,6 +86,7 @@ def load_states(sport: str, start: str, end: str, repo: Path | None = None) -> l
             continue
         game_id = str(getattr(row, "game_id", f"{row.date}-{row.home_team}-{row.away_team}"))
         states.append({"game_id": game_id, "state_ts": f"{row.date}T12:00:00",
+                       "features": {"schedule": 1.0},
                        "feature_avail": {"schedule": f"{row.date}T00:00:00"},
                        "home": str(row.home_team), "away": str(row.away_team),
                        "outcome": int(row.home_win), "devig_close_prob": p_close})
@@ -93,11 +94,11 @@ def load_states(sport: str, start: str, end: str, repo: Path | None = None) -> l
 
 
 def _redact(state: dict, *, training: bool, allow_close: bool) -> dict:
-    keep = ("game_id", "state_ts", "feature_avail", "home", "away")
+    keep = ("game_id", "state_ts", "features", "feature_avail", "home", "away")
     view = {k: state[k] for k in keep}
     if training:
         view["outcome"] = state["outcome"]
-    if allow_close:
+    if allow_close and "devig_close_prob" in state:
         view["declared_reference_close_prob"] = state["devig_close_prob"]
     return view
 
@@ -150,9 +151,16 @@ def run_backtest(spec: str, sport: str, start: str, end: str, *, repo: Path | No
     if not states:
         return {"verdict": "INSUFFICIENT", "reason": "no joined games", "fwer": charge, "predictions": []}
 
+    close_by_game = {s["game_id"]: s["devig_close_prob"] for s in states}
+
     def guarded(train: Sequence[dict], test: dict, select_inside: bool) -> float:
+        view = _redact(test, training=False, allow_close=False)
+        if is_echo:
+            # walkforward already strips the close; the reference echo gets it
+            # from the runner's own side table, clearly labelled.
+            view["declared_reference_close_prob"] = close_by_game[view["game_id"]]
         return predictor([_redact(s, training=True, allow_close=False) for s in train],
-                         _redact(test, training=False, allow_close=is_echo), select_inside)
+                         view, select_inside)
 
     wf = walk_forward(states, guarded)
     records = wf.records
