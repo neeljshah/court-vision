@@ -23,12 +23,36 @@ MIN_FIELD_VIEW_GREEN = 0.35
 # the detected "yard-line family" is usually hash marks, numbers and logos.
 YARD_PENCIL_CROSS_RATIO = 4.0 / 3.0
 CROSS_RATIO_TOLERANCE = 0.10
+FIELD_ROI_DILATION_FRACTION = 0.012
+FIELD_ROI_MIN_SEGMENT_SUPPORT = 0.85
+
+
+def field_paint_support(frame: np.ndarray) -> np.ndarray:
+    """Return the existing green field support as an 8-bit mask."""
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    return cv2.inRange(hsv, np.array((35, 30, 20)), np.array((95, 255, 255)))
+
+
+def field_roi_mask(frame: np.ndarray) -> np.ndarray:
+    """Dilate grass support just enough to retain painted field markings."""
+    support = field_paint_support(frame)
+    size = max(3, int(round(min(frame.shape[:2]) * FIELD_ROI_DILATION_FRACTION)))
+    size += 1 - size % 2
+    return cv2.dilate(support, np.ones((size, size), dtype=np.uint8))
+
+
+def segment_field_support(segment: np.ndarray, mask: np.ndarray) -> float:
+    """Return the fraction of sampled segment points supported by the field ROI."""
+    x1, y1, x2, y2 = map(float, segment)
+    count = max(2, int(np.hypot(x2 - x1, y2 - y1) / 4.0) + 1)
+    xs = np.clip(np.rint(np.linspace(x1, x2, count)).astype(int), 0, mask.shape[1] - 1)
+    ys = np.clip(np.rint(np.linspace(y1, y2, count)).astype(int), 0, mask.shape[0] - 1)
+    return float(np.mean(mask[ys, xs] > 0))
 
 
 def field_view_fraction(frame: np.ndarray) -> float:
     """Return the grass fraction of the frame."""
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    grass = cv2.inRange(hsv, np.array((35, 30, 20)), np.array((95, 255, 255)))
+    grass = field_paint_support(frame)
     return float((grass > 0).mean())
 
 

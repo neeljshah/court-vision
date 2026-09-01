@@ -8,7 +8,9 @@ import cv2
 import numpy as np
 
 from domains.football.tracking.absolute_anchor import PaintedYardAnchorProvider
-from domains.football.tracking.field_gates import MIN_FIELD_VIEW_GREEN, field_view_fraction, pencil_is_uniform
+from domains.football.tracking.field_gates import (FIELD_ROI_MIN_SEGMENT_SUPPORT,
+    MIN_FIELD_VIEW_GREEN, field_roi_mask, field_view_fraction, pencil_is_uniform,
+    segment_field_support)
 
 FIELD_WIDTH_FT = 160.0
 FIELD_LENGTH_FT = 360.0
@@ -101,12 +103,16 @@ class FootballGeometryMixin:
 
     @staticmethod
     def _segments(frame: np.ndarray, minimum: float) -> list[np.ndarray]:
-        """Detect grayscale LSD segments, deliberately without a brightness mask."""
-        found = cv2.createLineSegmentDetector().detect(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))[0]
+        """Detect LSD segments only where grass support can explain them."""
+        roi = field_roi_mask(frame)
+        grayscale = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.bitwise_and(grayscale, grayscale, mask=roi)
+        found = cv2.createLineSegmentDetector().detect(gray)[0]
         if found is None:
             return []
         return [segment.astype(float) for segment in found[:, 0, :]
-                if np.hypot(segment[2] - segment[0], segment[3] - segment[1]) >= minimum]
+                if np.hypot(segment[2] - segment[0], segment[3] - segment[1]) >= minimum
+                and segment_field_support(segment, roi) >= FIELD_ROI_MIN_SEGMENT_SUPPORT]
 
     def _line_groups(self, frame: np.ndarray) -> list[list[np.ndarray]]:
         groups: list[list[np.ndarray]] = []

@@ -234,6 +234,21 @@ def _purge_leftovers(destination: Path) -> None:
             pass
 
 
+def verify_requested_height(video: Path, item: dict) -> None:
+    """Fail closed when an explicitly requested rung did not materialize."""
+    required = item.get("required_height")
+    if required is None:
+        return
+    try:
+        required = int(required)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("required_height must be an integer") from exc
+    measured = video_height(video)
+    if measured != required:
+        raise RuntimeError("required %dp but ffprobe measured %dp" %
+                           (required, measured))
+
+
 def download_local(item: dict) -> Path:
     """Download one item to the local stage, returning the merged file."""
     LOCAL_STAGE.mkdir(parents=True, exist_ok=True)
@@ -289,6 +304,12 @@ def download_local(item: dict) -> Path:
             continue
         produced = _resolve_download(destination)
         if produced is not None:
+            try:
+                verify_requested_height(produced, item)
+            except RuntimeError as exc:
+                last_error = str(exc)
+                _purge_leftovers(destination)
+                continue
             if use_section is not None and video_height(produced) < MIN_SECTION_HEIGHT:
                 last_error = "section resolution below %dp" % MIN_SECTION_HEIGHT
                 _purge_leftovers(destination)
@@ -383,6 +404,7 @@ def push_staged(local: Path, item: dict) -> str:
     The file is scp'd to <name>.mp4.part and renamed atomically, so the daemon
     never sees a partial upload. Do not "simplify" this to a direct scp.
     """
+    verify_requested_height(local, item)
     game_id, sport = item["game_id"], item["sport"]
     remote = "%s/%s__%s%s" % (REMOTE_STAGE, sport, game_id, local.suffix)
     _ssh("mkdir -p %s" % REMOTE_STAGE, timeout=120)
