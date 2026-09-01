@@ -12,6 +12,7 @@ from scripts.platformkit.calibration.keypoint_calib import (
     solve_homography,
 )
 from domains.soccer.tracking.segmenter import is_pitch_view
+from domains.soccer.tracking.pressing import aggregate_pressing, pressure_index
 SCHEMA = ("frame", "track_id", "cls", "x", "y")
 PITCH_METRES = np.float32(((0, 0), (105, 0), (0, 68), (105, 68)))
 Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
@@ -38,6 +39,7 @@ class SoccerAdapter:
         self._calibrator = TemporalCalibrator("soccer", drift_threshold=8.0)
         self._calibration_updates = 0
         self.last_output = pd.DataFrame(columns=SCHEMA)
+        self.last_metadata: dict[str, object] = {}
 
     @staticmethod
     def _load_yolo_detector() -> Detector:
@@ -266,7 +268,14 @@ class SoccerAdapter:
         del frame, homography
         return []
 
-    def process_video(self, path: Union[str, Path], max_frames: Optional[int] = None, stride: int = 1, skip_non_pitch: bool = True) -> pd.DataFrame:
+    def process_video(
+        self,
+        path: Union[str, Path],
+        max_frames: Optional[int] = None,
+        stride: int = 1,
+        skip_non_pitch: bool = True,
+        compute_pressing: bool = True,
+    ) -> pd.DataFrame:
         """Process a headless stream, emitting rows only for validated pitch frames."""
         if stride < 1:
             raise ValueError("stride must be at least 1")
@@ -275,21 +284,27 @@ class SoccerAdapter:
             raise FileNotFoundError("Could not open video: %s" % path)
         rows: list[dict[str, object]] = []
         source_frame = processed = 0
+        pitch_frames: list[int] = []
+        accepted_homography_frames: list[int] = []
         try:
             while max_frames is None or processed < max_frames:
                 ok, frame = capture.read()
                 if not ok:
                     break
                 if source_frame % stride == 0:
-                    if skip_non_pitch and not is_pitch_view(frame):
+                    pitch_view = is_pitch_view(frame)
+                    if skip_non_pitch and not pitch_view:
                         self.mark_frame_lost()
                         processed += 1
                         source_frame += 1
                         continue
+                    if pitch_view:
+                        pitch_frames.append(source_frame)
                     homography = self._stable_homography(self._landmark_detections(frame), frame.shape[:2])
                     if homography is None:
                         self.mark_frame_lost()
                     else:
+                        accepted_homography_frames.append(source_frame)
                         for track_id, point in self.detect_players(frame, homography):
                             rows.append({"frame": source_frame, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1])})
                         self.detect_ball_stub(frame, homography)
@@ -298,6 +313,18 @@ class SoccerAdapter:
         finally:
             capture.release()
         self.last_output = pd.DataFrame(rows, columns=SCHEMA)
+        self.last_metadata = {
+            "processed_frames": processed,
+            "pitch_view_frames": pitch_frames,
+            "accepted_homography_frames": accepted_homography_frames,
+        }
+        if compute_pressing:
+            index = pressure_index(self.last_output, ball_proxy=True)
+            self.last_metadata["pressing_proxy"] = {
+                "per_frame": index,
+                "windows": aggregate_pressing(self.last_output, ball_proxy=True),
+                "frame_ids": index["frame"].astype(int).tolist(),
+            }
         return self.last_output
 
     def write_csv(self, path: Union[str, Path], rows: Optional[pd.DataFrame] = None) -> None:

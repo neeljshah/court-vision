@@ -123,3 +123,23 @@ def test_process_video_skips_non_pitch_frames(tmp_path) -> None:
     adapter._stable_homography = lambda detections, shape: None
     adapter.process_video(path)
     assert len(calls) == 2
+
+
+def test_process_video_pressing_metadata_preserves_row_schema(tmp_path) -> None:
+    path = tmp_path / "pressing.avi"
+    writer = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*"MJPG"), 25, (128, 72))
+    for _ in range(2):
+        writer.write(np.zeros((72, 128, 3), dtype=np.uint8))
+    writer.release()
+    adapter = SoccerAdapter(detector=lambda frame: [])
+    adapter._landmark_detections = lambda frame: {}
+    adapter._stable_homography = lambda detections, shape: np.eye(3, dtype=np.float32)
+    adapter.detect_players = lambda frame, homography: [
+        (1, np.array((50.0, 34.0))), (2, np.array((54.0, 34.0))),
+    ]
+    rows = adapter.process_video(path, skip_non_pitch=False, compute_pressing=True)
+    assert list(rows.columns) == ["frame", "track_id", "cls", "x", "y"]
+    assert "pressing_proxy" in adapter.last_metadata
+    assert adapter.last_metadata["pressing_proxy"]["frame_ids"] == [0, 1]
+    adapter.process_video(path, skip_non_pitch=False, compute_pressing=False)
+    assert "pressing_proxy" not in adapter.last_metadata
