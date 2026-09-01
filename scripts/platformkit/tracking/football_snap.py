@@ -86,11 +86,17 @@ def frame_energy(frames: Iterator[np.ndarray]) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=["frame", "energy", "x", "y"])
 
 
-def detect_snaps(energy: Sequence[float], fps: float) -> list[dict]:
+def detect_snaps(energy: Sequence[float], fps: float,
+                 gate: Optional[Sequence[bool]] = None) -> list[dict]:
     """Rising motion steps out of sustained stillness. Causal + fixed lookahead.
 
     ``energy[i]`` is the motion between frames i-1 and i, so index i in this
     sequence is the frame the caller labelled i in ``frame_energy``.
+
+    ``gate`` is an optional per-position acceptance mask aligned to ``energy``
+    (see ``football_fieldview.field_view_gate``): candidates outside it are
+    dropped. It is a precondition on the input shot, not a threshold change --
+    no detector constant moves when a gate is supplied.
     """
     series = np.asarray(energy, dtype=float)
     events: list[dict] = []
@@ -98,6 +104,8 @@ def detect_snaps(energy: Sequence[float], fps: float) -> list[dict]:
     last_fired = -refractory
     for i in range(QUIET_FRAMES, len(series) - STEP_FRAMES):
         if i - last_fired < refractory:
+            continue
+        if gate is not None and not gate[i]:
             continue
         quiet = float(np.median(series[max(0, i - QUIET_FRAMES):i]))
         after = float(np.median(series[i:i + STEP_FRAMES]))

@@ -1,0 +1,200 @@
+{
+  "video": "data/videos/reference/football.mp4",
+  "fps": 29.97002997002997,
+  "start_frame": 0,
+  "frames": 28771,
+  "coordinate_space": "image_px",
+  "rung": "IMAGE_PX_DECLARED",
+  "field_view_frames": 15982,
+  "field_view_fraction": 0.5554899030273539,
+  "scenes": 1273,
+  "constants": {
+    "GREEN_MIN": 0.25,
+    "GREEN_STRONG": 0.45,
+    "LINE_MIN": 2,
+    "EDGE_MIN": 0.015,
+    "CUT_MEAN": 25.0,
+    "MIN_SCENE_FRAMES": 15,
+    "CUT_GUARD_FRAMES": 15
+  },
+  "snaps_ungated": 83,
+  "snaps_gated": 25,
+  "snaps": [
+    {
+      "frame": 709,
+      "ts_s": 23.656966666666666,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 1320,
+      "ts_s": 44.044000000000004,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 1480,
+      "ts_s": 49.382666666666665,
+      "confidence": 0.2,
+      "energy": 3.0,
+      "quiet": 1.0
+    },
+    {
+      "frame": 1826,
+      "ts_s": 60.927533333333336,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 2098,
+      "ts_s": 70.00326666666666,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 3552,
+      "ts_s": 118.5184,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 3878,
+      "ts_s": 129.39593333333335,
+      "confidence": 0.040000000000000036,
+      "energy": 6.5,
+      "quiet": 2.5
+    },
+    {
+      "frame": 4402,
+      "ts_s": 146.88006666666666,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 4604,
+      "ts_s": 153.62013333333334,
+      "confidence": 0.4,
+      "energy": 3.5,
+      "quiet": 0.5
+    },
+    {
+      "frame": 4761,
+      "ts_s": 158.8587,
+      "confidence": 0.0,
+      "energy": 5.0,
+      "quiet": 2.0
+    },
+    {
+      "frame": 5437,
+      "ts_s": 181.41456666666667,
+      "confidence": 0.2,
+      "energy": 3.0,
+      "quiet": 1.0
+    },
+    {
+      "frame": 9266,
+      "ts_s": 309.17553333333336,
+      "confidence": 0.0,
+      "energy": 5.0,
+      "quiet": 2.0
+    },
+    {
+      "frame": 11518,
+      "ts_s": 384.3172666666667,
+      "confidence": 0.4,
+      "energy": 7.0,
+      "quiet": 2.0
+    },
+    {
+      "frame": 12638,
+      "ts_s": 421.6879333333333,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 14942,
+      "ts_s": 498.5647333333333,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 16396,
+      "ts_s": 547.0798666666667,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 0.0
+    },
+    {
+      "frame": 16728,
+      "ts_s": 558.1576,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 18861,
+      "ts_s": 629.3287,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 19328,
+      "ts_s": 644.9109333333333,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 19550,
+      "ts_s": 652.3183333333334,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 21074,
+      "ts_s": 703.1691333333333,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 21208,
+      "ts_s": 707.6402666666667,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 25738,
+      "ts_s": 858.7912666666667,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 0.0
+    },
+    {
+      "frame": 26454,
+      "ts_s": 882.6818000000001,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 28292,
+      "ts_s": 944.0097333333333,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    }
+  ],
+  "tag": "gameA_alabama_georgia"
+}

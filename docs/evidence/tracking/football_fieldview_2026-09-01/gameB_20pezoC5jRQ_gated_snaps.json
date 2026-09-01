@@ -1,0 +1,179 @@
+{
+  "video": "C:/Users/neelj/nba-track-a3/data/footage_corpus/football__football_20pezoC5jRQ_360p_source.mp4",
+  "fps": 29.97002997002997,
+  "start_frame": 0,
+  "frames": 28772,
+  "coordinate_space": "image_px",
+  "rung": "IMAGE_PX_DECLARED",
+  "field_view_frames": 12943,
+  "field_view_fraction": 0.44984707354372305,
+  "scenes": 1836,
+  "constants": {
+    "GREEN_MIN": 0.25,
+    "GREEN_STRONG": 0.45,
+    "LINE_MIN": 2,
+    "EDGE_MIN": 0.015,
+    "CUT_MEAN": 25.0,
+    "MIN_SCENE_FRAMES": 15,
+    "CUT_GUARD_FRAMES": 15
+  },
+  "snaps_ungated": 83,
+  "snaps_gated": 22,
+  "snaps": [
+    {
+      "frame": 330,
+      "ts_s": 11.011000000000001,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 732,
+      "ts_s": 24.424400000000002,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 979,
+      "ts_s": 32.66596666666667,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 1446,
+      "ts_s": 48.248200000000004,
+      "confidence": 0.2,
+      "energy": 3.0,
+      "quiet": 0.0
+    },
+    {
+      "frame": 2470,
+      "ts_s": 82.41566666666667,
+      "confidence": 0.2,
+      "energy": 3.0,
+      "quiet": 1.0
+    },
+    {
+      "frame": 5323,
+      "ts_s": 177.61076666666668,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 5473,
+      "ts_s": 182.61576666666667,
+      "confidence": 0.2,
+      "energy": 3.0,
+      "quiet": 1.0
+    },
+    {
+      "frame": 7907,
+      "ts_s": 263.83023333333335,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 8142,
+      "ts_s": 271.6714,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 0.5
+    },
+    {
+      "frame": 9431,
+      "ts_s": 314.68103333333335,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 9793,
+      "ts_s": 326.7597666666667,
+      "confidence": 0.2,
+      "energy": 3.0,
+      "quiet": 1.0
+    },
+    {
+      "frame": 10583,
+      "ts_s": 353.11943333333335,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 11749,
+      "ts_s": 392.02496666666667,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 14289,
+      "ts_s": 476.7763,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 14764,
+      "ts_s": 492.6254666666667,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 0.0
+    },
+    {
+      "frame": 15426,
+      "ts_s": 514.7142,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 17016,
+      "ts_s": 567.7672,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 18221,
+      "ts_s": 607.9740333333333,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 18981,
+      "ts_s": 633.3327,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 19455,
+      "ts_s": 649.1485,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 21935,
+      "ts_s": 731.8978333333333,
+      "confidence": 0.0,
+      "energy": 2.5,
+      "quiet": 1.0
+    },
+    {
+      "frame": 24531,
+      "ts_s": 818.5177,
+      "confidence": 0.6,
+      "energy": 4.0,
+      "quiet": 0.0
+    }
+  ],
+  "tag": "gameB_20pezoC5jRQ"
+}

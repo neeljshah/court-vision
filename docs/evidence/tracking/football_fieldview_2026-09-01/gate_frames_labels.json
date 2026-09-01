@@ -1,0 +1,162 @@
+[
+  {
+    "n": 1,
+    "game": "A",
+    "frame": 1946,
+    "is_field_view": true,
+    "score": 1.0,
+    "green": 0.5827604166666667
+  },
+  {
+    "n": 2,
+    "game": "A",
+    "frame": 2265,
+    "is_field_view": true,
+    "score": 0.5223148148148148,
+    "green": 0.1429166666666666
+  },
+  {
+    "n": 3,
+    "game": "A",
+    "frame": 10189,
+    "is_field_view": false,
+    "score": 0.5607214506172838,
+    "green": 0.2318923611111111
+  },
+  {
+    "n": 4,
+    "game": "A",
+    "frame": 13594,
+    "is_field_view": true,
+    "score": 1.0,
+    "green": 0.5208159722222222
+  },
+  {
+    "n": 5,
+    "game": "A",
+    "frame": 14189,
+    "is_field_view": true,
+    "score": 1.0,
+    "green": 0.5513368055555556
+  },
+  {
+    "n": 6,
+    "game": "A",
+    "frame": 15773,
+    "is_field_view": false,
+    "score": 0.3011612654320987,
+    "green": 0.0007465277777777
+  },
+  {
+    "n": 7,
+    "game": "A",
+    "frame": 16469,
+    "is_field_view": true,
+    "score": 0.9399652777777776,
+    "green": 0.41140625
+  },
+  {
+    "n": 8,
+    "game": "A",
+    "frame": 19352,
+    "is_field_view": true,
+    "score": 0.7622376543209877,
+    "green": 0.2971527777777778
+  },
+  {
+    "n": 9,
+    "game": "A",
+    "frame": 19490,
+    "is_field_view": true,
+    "score": 0.5712268518518518,
+    "green": 0.2386458333333333
+  },
+  {
+    "n": 10,
+    "game": "A",
+    "frame": 25977,
+    "is_field_view": false,
+    "score": 0.100108024691358,
+    "green": 6.944444444444444e-05
+  },
+  {
+    "n": 11,
+    "game": "B",
+    "frame": 1946,
+    "is_field_view": true,
+    "score": 1.0,
+    "green": 0.7344270833333334
+  },
+  {
+    "n": 12,
+    "game": "B",
+    "frame": 2265,
+    "is_field_view": false,
+    "score": 0.6706211419753086,
+    "green": 0.2703993055555556
+  },
+  {
+    "n": 13,
+    "game": "B",
+    "frame": 10190,
+    "is_field_view": true,
+    "score": 0.3337577160493827,
+    "green": 0.0217013888888888
+  },
+  {
+    "n": 14,
+    "game": "B",
+    "frame": 13595,
+    "is_field_view": true,
+    "score": 1.0,
+    "green": 0.8389409722222222
+  },
+  {
+    "n": 15,
+    "game": "B",
+    "frame": 14190,
+    "is_field_view": true,
+    "score": 1.0,
+    "green": 0.6253819444444445
+  },
+  {
+    "n": 16,
+    "game": "B",
+    "frame": 15774,
+    "is_field_view": true,
+    "score": 1.0,
+    "green": 0.727829861111111
+  },
+  {
+    "n": 17,
+    "game": "B",
+    "frame": 16469,
+    "is_field_view": false,
+    "score": 0.4621180555555555,
+    "green": 0.10421875
+  },
+  {
+    "n": 18,
+    "game": "B",
+    "frame": 19353,
+    "is_field_view": true,
+    "score": 1.0,
+    "green": 0.715920138888889
+  },
+  {
+    "n": 19,
+    "game": "B",
+    "frame": 19490,
+    "is_field_view": true,
+    "score": 1.0,
+    "green": 0.8117534722222223
+  },
+  {
+    "n": 20,
+    "game": "B",
+    "frame": 25978,
+    "is_field_view": false,
+    "score": 0.3078587962962963,
+    "green": 0.0050520833333333
+  }
+]
