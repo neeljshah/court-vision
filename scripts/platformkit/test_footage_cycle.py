@@ -14,6 +14,8 @@ def test_download_retries_youtube_ladder_and_records_rung(monkeypatch, tmp_path,
         calls.append((command, kwargs))
         if len(calls) < 3:
             raise subprocess.CalledProcessError(1, command, stderr="bot check")
+        # real yt-dlp writes the file on success; the resolver checks for it
+        (tmp_path / "game.mp4").write_bytes(b"video")
         return subprocess.CompletedProcess(command, 0)
 
     monkeypatch.setattr(footage_cycle.subprocess, "run", fake_run)

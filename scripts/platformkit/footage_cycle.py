@@ -76,7 +76,21 @@ def download_item(item: dict[str, str], destination: Path) -> Path:
                 text=True,
                 timeout=MAX_ITEM_SECONDS,
             )
-            return destination
+            if destination.exists():
+                return destination
+            # yt-dlp falls back to .mkv (and other containers) when the chosen
+            # streams cannot be merged into mp4; the tracker then looks for a
+            # file that does not exist and the GPU sits idle. Resolve the real
+            # artifact. Regression note: this fix was silently dropped once by a
+            # stale-worktree merge -- keep it inside the retry ladder.
+            produced = sorted(
+                (path for path in destination.parent.glob(destination.name + "*")
+                 if path.is_file() and not path.name.endswith(".part")),
+                key=lambda path: path.stat().st_size, reverse=True)
+            if produced:
+                return produced[0]
+            last_error = "yt-dlp reported success but produced no file"
+            continue
         except subprocess.TimeoutExpired as exc:
             last_error = str(getattr(exc, "stderr", "") or exc)
         except subprocess.CalledProcessError as exc:
