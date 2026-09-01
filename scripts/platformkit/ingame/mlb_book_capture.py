@@ -32,6 +32,7 @@ KALSHI_BASE = "https://api.elections.kalshi.com/trade-api/v2"
 TARGET_CADENCE_SEC = 5.0
 MAX_CADENCE_SEC = 60.0
 IDLE_CHECK_SEC = 30.0
+BRIDGE_TTL_SEC_DEFAULT = 600.0  # ids are fixed for a game's lifetime; env CV_MLB_BRIDGE_TTL_SEC
 PRE_REGISTERED_UNIT = 1.0  # contracts; fixed at authoring, never tuned from capture data
 MIN_SNAPSHOTS = 200
 
@@ -92,8 +93,10 @@ def cell_table(rows: Iterable[Dict[str, Any]]) -> List[Dict[str, Any]]:
     for row in rows:
         if row.get("record_type") != "snapshot" or row.get("game_pk") is None:
             continue
-        bucket = grouped.setdefault(str(row["game_pk"]), {"n": 0, "depths": []})
-        bucket["n"] += 1
+        bucket = grouped.setdefault(str(row["game_pk"]), {"ts": set(), "depths": []})
+        # One PASS is one snapshot even though it now writes one row per market
+        # side -- counting rows would halve the pre-registered MIN_SNAPSHOTS bar.
+        bucket["ts"].add(row.get("capture_ts"))
         depth = row.get("top_of_book_depth")
         if isinstance(depth, (int, float)):
             bucket["depths"].append(float(depth))
@@ -103,7 +106,7 @@ def cell_table(rows: Iterable[Dict[str, Any]]) -> List[Dict[str, Any]]:
         depths = bucket["depths"]
         ordered = sorted(depths)
         median = ordered[len(ordered) // 2] if ordered else None
-        n = bucket["n"]
+        n = len(bucket["ts"])
         out.append({"game_pk": game_pk, "inplay_snapshots": n,
                     "median_top_of_book_depth": median,
                     "pre_registered_unit": PRE_REGISTERED_UNIT,
@@ -134,23 +137,53 @@ class GovernedClient:
             return None
 
 
+def bridge_ttl_sec(env: Optional[Dict[str, str]] = None) -> float:
+    values = env if env is not None else os.environ
+    try:
+        return float(values.get("CV_MLB_BRIDGE_TTL_SEC", BRIDGE_TTL_SEC_DEFAULT))
+    except (TypeError, ValueError):
+        return BRIDGE_TTL_SEC_DEFAULT
+
+
+def resolve_market_tickers(client: GovernedClient, date_str: str, state: Dict[str, Any],
+                           clock: Callable[[], float] = time.monotonic) -> Dict[str, Dict[str, Any]]:
+    """game_pk -> {event_ticker, tickers}. THE one place capture resolves tickers.
+
+    The bridge is the sole id source and it costs ~5.5s per build, so it is held
+    for CV_MLB_BRIDGE_TTL_SEC (default 600s) rather than rebuilt every pass --
+    a game's Kalshi ids do not change once its event is open.  Only per-side
+    MARKET tickers are returned; the event stem has no orderbook (see
+    game_pk_bridge_live._fetch_kalshi_markets)."""
+    cached = state.get("bridge_cache")
+    now = clock()
+    if isinstance(cached, dict) and cached.get("date") == date_str \
+            and now - cached.get("ts", 0.0) < bridge_ttl_sec():
+        return cached["by_game_pk"]
+    by_game_pk = {str(r.game_pk): {"event_ticker": r.kalshi_ticker_stem,
+                                   "tickers": list(r.kalshi_market_tickers)}
+                  for r in _bridge.build_bridge(date_str, http=client.get)}
+    state["bridge_cache"] = {"date": date_str, "ts": now, "by_game_pk": by_game_pk}
+    return by_game_pk
+
+
 def live_gumbo_games(client: GovernedClient, date_str: str, state: Dict[str, Any]) -> List[Dict[str, Any]]:
     """Use the established GUMBO path, then its unambiguous gamePk/ticker bridge."""
     games = _gumbo.list_live_game_pks(date_str, fetch_fn=client.get)
     state["n_live_games"] = len(games)
     if not games:
         return []  # no Kalshi discovery or orderbook calls outside a live window
-    bridge = {str(r.game_pk): r.kalshi_ticker_stem for r in _bridge.build_bridge(date_str, http=client.get)}
+    bridge = resolve_market_tickers(client, date_str, state)
     poller_state = state.setdefault("gumbo", {})
     out = []
     for game in games:
         game_pk = game.get("game_pk")
-        ticker = bridge.get(str(game_pk))
-        if game_pk is None or not ticker:
+        ids = bridge.get(str(game_pk)) or {}
+        if game_pk is None or not ids.get("tickers"):
             continue
         tick = _gumbo.poll_one_game(int(game_pk), poller_state, fetch_fn=client.get)
         if isinstance(tick, dict) and tick:
-            out.append({"game_pk": str(game_pk), "ticker": ticker, "game_state": tick})
+            out.append({"game_pk": str(game_pk), "event_ticker": ids.get("event_ticker"),
+                        "tickers": list(ids["tickers"]), "game_state": tick})
     return out
 
 
@@ -166,19 +199,20 @@ def capture_once(*, client: Optional[GovernedClient] = None, date_str: Optional[
     prior_429 = client.n_429
     rows: List[Dict[str, Any]] = []
     for game in live_games_fn(client, date_str, state):
-        ticker = str(game.get("ticker") or "")
-        if not ticker:
-            continue
-        url = KALSHI_BASE + "/markets/" + urllib.parse.quote(ticker, safe="") + "/orderbook"
-        levels = _levels(client.get(url))
-        if not levels["yes"] and not levels["no"]:
-            continue
-        rows.append({"record_type": "snapshot", "venue": "kalshi", "sport": "mlb",
-                     "game_pk": str(game.get("game_pk")), "ticker": ticker,
-                     "src_ts": game.get("game_state", {}).get("ts"), "capture_ts": _iso(now),
-                     "game_state": game.get("game_state", {}), "yes_ladder": levels["yes"],
-                     "no_ladder": levels["no"], "top_of_book_depth": top_of_book_depth(levels),
-                     "derived_age_ceiling_sec": state.get("cadence_sec", TARGET_CADENCE_SEC)})
+        # One row per MARKET side; ``ticker`` is the market ticker (the event stem
+        # returns an empty book) and ``event_ticker`` keeps the two sides joinable.
+        for ticker in (str(t) for t in (game.get("tickers") or []) if t):
+            url = KALSHI_BASE + "/markets/" + urllib.parse.quote(ticker, safe="") + "/orderbook"
+            levels = _levels(client.get(url))
+            if not levels["yes"] and not levels["no"]:
+                continue
+            rows.append({"record_type": "snapshot", "venue": "kalshi", "sport": "mlb",
+                         "game_pk": str(game.get("game_pk")), "ticker": ticker,
+                         "event_ticker": game.get("event_ticker"),
+                         "src_ts": game.get("game_state", {}).get("ts"), "capture_ts": _iso(now),
+                         "game_state": game.get("game_state", {}), "yes_ladder": levels["yes"],
+                         "no_ladder": levels["no"], "top_of_book_depth": top_of_book_depth(levels),
+                         "derived_age_ceiling_sec": state.get("cadence_sec", TARGET_CADENCE_SEC)})
     n_429 = client.n_429 - prior_429
     cadence = float(state.get("cadence_sec", TARGET_CADENCE_SEC))
     if n_429:
@@ -234,4 +268,5 @@ def run_pod_capture(*, stop: Callable[[], bool], sleep: Callable[[float], None] 
 
 
 __all__ = ["GovernedClient", "TARGET_CADENCE_SEC", "PRE_REGISTERED_UNIT", "archive_path",
-           "capture_once", "cell_table", "live_archive_enabled", "run_pod_capture", "top_of_book_depth"]
+           "bridge_ttl_sec", "capture_once", "cell_table", "live_archive_enabled",
+           "resolve_market_tickers", "run_pod_capture", "top_of_book_depth"]

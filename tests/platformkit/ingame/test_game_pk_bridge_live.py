@@ -118,3 +118,29 @@ def test_feed_failure_returns_empty_rows_never_raises():
     http = lambda url: None  # noqa: E731 -- every feed fails
     rows = build_bridge("2026-07-03", http=http)
     assert rows == []
+
+
+# ---------------------------------------------------------------------------
+# S1e ticker-resolution defect (2026-09-01): the EVENT stem's /orderbook returns
+# 200 with empty ladders; only per-side MARKET tickers carry a book, so the
+# bridge must surface them.
+# ---------------------------------------------------------------------------
+def test_bridge_surfaces_per_side_market_tickers_not_just_the_stem():
+    stem = "KXMLBGAME-26JUL031805STLCHC"
+    games = [{"game_pk": 111, "away": "St. Louis Cardinals", "home": "Chicago Cubs"}]
+    kalshi = {"markets": [{"ticker": stem + "-STL", "event_ticker": stem},
+                          {"ticker": stem + "-CHC", "event_ticker": stem}]}
+    http = _fake_http(_schedule_body(games),
+                      _espn_body([("St. Louis Cardinals", "Chicago Cubs")]), kalshi)
+
+    r = build_bridge("2026-07-03", http=http)[0]
+    assert r.kalshi_ticker_stem == stem
+    assert r.kalshi_market_tickers == (stem + "-CHC", stem + "-STL")
+    assert stem not in r.kalshi_market_tickers, "the stem is an event id, not a market"
+
+
+def test_unresolved_stem_leaves_market_tickers_empty():
+    games = [{"game_pk": 111, "away": "St. Louis Cardinals", "home": "Chicago Cubs"}]
+    http = _fake_http(_schedule_body(games), _espn_body([]), {"markets": []})
+    r = build_bridge("2026-07-03", http=http)[0]
+    assert r.kalshi_ticker_stem is None and r.kalshi_market_tickers == ()

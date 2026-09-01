@@ -115,6 +115,9 @@ class BridgeRow:
     home: str
     espn_id: Optional[str]
     kalshi_ticker_stem: Optional[str]
+    # Per-side market tickers under the stem. The stem itself has NO orderbook;
+    # book callers must use these. Empty whenever the stem is unresolved.
+    kalshi_market_tickers: Tuple[str, ...] = ()
 
 
 def _fetch_statsapi_games(date_str: str, http: HttpGet) -> List[Dict[str, Any]]:
@@ -156,19 +159,27 @@ def _fetch_espn_events(date_str: str, http: HttpGet) -> Dict[str, List[str]]:
     return out
 
 
-def _fetch_kalshi_tickers(http: HttpGet) -> List[str]:
-    """All currently-open KXMLBGAME tickers. Never raises; [] on any feed failure."""
+def _fetch_kalshi_markets(http: HttpGet) -> Dict[str, List[str]]:
+    """event_ticker stem -> its open per-side MARKET tickers (sorted).
+
+    The stem is an EVENT id, not a market: GET /markets/<stem>/orderbook returns
+    200 with {"yes_dollars": [], "no_dollars": []} -- verified live 2026-09-01.
+    Only the per-side market tickers (stem + "-<TEAM>") carry ladders, so any
+    caller hitting /markets/<t>/orderbook must use these, never the stem.
+    Never raises; {} on any feed failure."""
     data = http(_KALSHI_MARKETS_URL)
     if not isinstance(data, dict):
-        return []
-    tickers = set()
+        return {}
+    out: Dict[str, List[str]] = {}
     for m in data.get("markets", []) or []:
-        if isinstance(m, dict) and m.get("ticker"):
-            # ticker stem is the event_ticker (drop any trailing -T<n>/-side suffix);
-            # event_ticker itself is already the KXMLBGAME-<...> stem when present.
-            stem = m.get("event_ticker") or str(m["ticker"]).rsplit("-", 1)[0]
-            tickers.add(str(stem))
-    return sorted(tickers)
+        if not isinstance(m, dict) or not m.get("ticker"):
+            continue
+        ticker = str(m["ticker"])
+        stem = str(m.get("event_ticker") or ticker.rsplit("-", 1)[0])
+        markets = out.setdefault(stem, [])
+        if ticker != stem and ticker not in markets:
+            markets.append(ticker)
+    return {stem: sorted(markets) for stem, markets in out.items()}
 
 
 def _kalshi_pair_key(ticker_stem: str) -> Optional[Tuple[str, Optional[str]]]:
@@ -212,8 +223,9 @@ def build_bridge(date_str: Optional[str] = None, *,
     games = _fetch_statsapi_games(date_str, http)
     espn_by_key = _fetch_espn_events(date_str, http)
 
+    kalshi_markets = _fetch_kalshi_markets(http)
     kalshi_by_key: Dict[str, List[str]] = {}
-    for stem in _fetch_kalshi_tickers(http):
+    for stem in sorted(kalshi_markets):
         parsed = _kalshi_pair_key(stem)
         if parsed is None:
             continue
@@ -237,6 +249,7 @@ def build_bridge(date_str: Optional[str] = None, *,
         rows.append(BridgeRow(
             game_pk=int(g["game_pk"]), date=date_str, away=g["away"], home=g["home"],
             espn_id=espn_id, kalshi_ticker_stem=kalshi_stem,
+            kalshi_market_tickers=tuple(kalshi_markets.get(kalshi_stem or "", ())),
         ))
     return rows
 

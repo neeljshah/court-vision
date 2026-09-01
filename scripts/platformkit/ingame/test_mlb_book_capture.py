@@ -18,12 +18,20 @@ def test_capture_writes_complete_ladder_and_paper_cell(tmp_path):
     client = StubClient()
 
     def live_games(_client, _date, _state):
-        return [{"game_pk": "123", "ticker": "KXMLBGAME-26SEP011200LADSF",
+        return [{"game_pk": "123", "event_ticker": "KXMLBGAME-26SEP011200LADSF",
+                 "tickers": ["KXMLBGAME-26SEP011200LADSF-LAD",
+                             "KXMLBGAME-26SEP011200LADSF-SF"],
                  "game_state": {"ts": "2026-09-01T12:00:00.000000Z", "inning": 4}}]
 
     out = capture.capture_once(client=client, now=datetime(2026, 9, 1, tzinfo=timezone.utc),
                                 live_games_fn=live_games, output=tmp_path / "books.jsonl")
     row = out["rows"][0]
+    assert len(out["rows"]) == 2, "one row per market side"
+    assert [r["ticker"] for r in out["rows"]] == ["KXMLBGAME-26SEP011200LADSF-LAD",
+                                                   "KXMLBGAME-26SEP011200LADSF-SF"]
+    assert row["event_ticker"] == "KXMLBGAME-26SEP011200LADSF"
+    assert all("/markets/KXMLBGAME-26SEP011200LADSF/orderbook" not in u for u in client.urls), \
+        "the event stem has no orderbook -- it must never be fetched"
     assert row["yes_ladder"] == [["0.30", "2"], ["0.40", "3"]]
     assert row["no_ladder"] == [["0.40", "4"], ["0.50", "5"]]
     assert row["top_of_book_depth"] == 8.0
@@ -134,3 +142,64 @@ def test_run_pod_capture_idles_slowly_and_metrics_row_survives_truncation(monkey
 
     assert tolerant_read() == rows[:-1], "torn tail dropped; earlier rows byte-identical"
     assert tolerant_read() == tolerant_read(), "re-reading the metrics rows is idempotent"
+
+
+# ---------------------------------------------------------------------------
+# S1e TICKER RESOLUTION (2026-09-01): run_pod_capture wrote ZERO rows because it
+# hit /markets/<EVENT stem>/orderbook, which returns 200 with empty ladders.
+# Tickers are resolved in exactly one place: resolve_market_tickers.
+# ---------------------------------------------------------------------------
+_STEM = "KXMLBGAME-26SEP011840SDCIN"
+
+
+class _BridgeClient:
+    """Serves the three real feeds the bridge calls, counting schedule fetches."""
+
+    def __init__(self):
+        self.n_429 = 0
+        self.n_schedule = 0
+
+    def get(self, url):
+        if "statsapi.mlb.com" in url:
+            self.n_schedule += 1
+            return {"dates": [{"games": [{"gamePk": 777, "teams": {
+                "away": {"team": {"name": "San Diego Padres"}},
+                "home": {"team": {"name": "Cincinnati Reds"}}}}]}]}
+        if "site.api.espn.com" in url:
+            return {"events": []}
+        if "kalshi.com" in url:
+            return {"markets": [{"ticker": _STEM + "-SD", "event_ticker": _STEM},
+                                {"ticker": _STEM + "-CIN", "event_ticker": _STEM}]}
+        return None
+
+
+def test_resolver_returns_market_tickers_never_the_event_stem():
+    state = {}
+    out = capture.resolve_market_tickers(_BridgeClient(), "2026-09-01", state)
+    assert out["777"]["event_ticker"] == _STEM
+    assert out["777"]["tickers"] == [_STEM + "-CIN", _STEM + "-SD"]
+    assert _STEM not in out["777"]["tickers"]
+
+
+def test_resolver_caches_bridge_for_ttl_then_rebuilds(monkeypatch):
+    monkeypatch.setenv("CV_MLB_BRIDGE_TTL_SEC", "600")
+    client, state, now = _BridgeClient(), {}, [0.0]
+    clock = lambda: now[0]
+
+    capture.resolve_market_tickers(client, "2026-09-01", state, clock)
+    now[0] = 599.0
+    capture.resolve_market_tickers(client, "2026-09-01", state, clock)
+    assert client.n_schedule == 1, "inside the TTL the cached bridge is reused"
+
+    now[0] = 601.0
+    capture.resolve_market_tickers(client, "2026-09-01", state, clock)
+    assert client.n_schedule == 2, "past the TTL the bridge is rebuilt"
+
+    capture.resolve_market_tickers(client, "2026-09-02", state, clock)
+    assert client.n_schedule == 3, "a date rollover always rebuilds"
+
+
+def test_bridge_ttl_sec_env_override_and_bad_value():
+    assert capture.bridge_ttl_sec({}) == capture.BRIDGE_TTL_SEC_DEFAULT
+    assert capture.bridge_ttl_sec({"CV_MLB_BRIDGE_TTL_SEC": "30"}) == 30.0
+    assert capture.bridge_ttl_sec({"CV_MLB_BRIDGE_TTL_SEC": "nope"}) == capture.BRIDGE_TTL_SEC_DEFAULT
