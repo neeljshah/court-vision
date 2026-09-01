@@ -311,7 +311,7 @@ Full account: [docs/PRODUCT_DEMO.md](docs/PRODUCT_DEMO.md).
 
 Lower Brier / RMSE is sharper. MATCH = within sampling noise of the sharp close. BEHIND = the
 market's injury / lineup / weather / park / starting-pitcher freshness a public + box-score model
-cannot see. Source: `vault/_Edge_Maps/_Beat_The_Close.md`, reproduced below verbatim from a live
+cannot see. Source: reproduced below verbatim from a live
 `scripts.platformkit.beat_the_close_scoreboard` run against the real corpora; full framing +
 the candidate-REJECT table in [docs/MARKET_EFFICIENCY_PROOF.md](docs/MARKET_EFFICIENCY_PROOF.md).
 
@@ -327,7 +327,7 @@ the candidate-REJECT table in [docs/MARKET_EFFICIENCY_PROOF.md](docs/MARKET_EFFI
 ### In-game -- conditioning on the realized state beats the static pregame line. All 4 WIN.
 
 A live book also sees the state, so this is forecaster QUALITY, not a dollar edge.
-Source: `vault/_Edge_Maps/_Ingame_Scoreboard.md`.
+Source: a live `scripts.platformkit.ingame_scoreboard` run against the real tick corpora.
 
 | Sport  | Static -> Conditional Brier             | When                                |
 |--------|-----------------------------------------|-------------------------------------|

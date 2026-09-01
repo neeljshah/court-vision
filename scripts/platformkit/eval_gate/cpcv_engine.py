@@ -22,6 +22,7 @@ never computes or claims a betting edge.
 """
 from __future__ import annotations
 
+import copy
 from datetime import datetime, timedelta
 from typing import Callable, List
 
@@ -40,7 +41,7 @@ Predictor = Callable[[List[dict], dict, bool], float]
 # importable constant to reuse. test_redaction_parity_field_by_field pins the
 # two together by diffing the ACTUAL view each harness hands its predictor, so
 # drift in either direction fails the test rather than leaking silently.
-_REDACTED_KEYS = ("outcome", "devig_close_prob", "truth_wp")
+_REDACTED_KEYS = ("outcome", "devig_close_prob", "truth_wp", "index")
 
 
 def _redact(state: dict) -> dict:
@@ -71,7 +72,8 @@ def cpcv_evaluate(states: List[dict], predictor: Predictor, n_groups: int = 8,
     so per-path matrices feed a PBO estimator later. ``n_train`` is the
     diagnostic that surfaces a path whose train set the purges emptied.
     """
-    ordered = sorted(states, key=lambda s: s["state_ts"])
+    # Deep copy mirrors walk_forward's mutation guard (red-team 2026-09-01).
+    ordered = copy.deepcopy(sorted(states, key=lambda s: s["state_ts"]))
     stamps = [datetime.fromisoformat(s["state_ts"]) for s in ordered]
 
     records: List[dict] = []
