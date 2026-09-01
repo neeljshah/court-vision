@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import time
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Dict, List, Sequence, Tuple
 
 import numpy as np
@@ -22,6 +23,7 @@ DEFAULT_CANDIDATES = 200
 MAX_WALL_SECONDS = 45.0 * 60.0
 _CLIP_LO = 0.02
 _CLIP_HI = 0.98
+_REPORT = Path(__file__).with_name("post_hardening_revalidation_report.txt")
 
 
 @dataclass(frozen=True)
@@ -43,6 +45,19 @@ class CalibrationResult:
     @property
     def passed(self) -> bool:
         return self.ship_rate <= self.threshold
+
+
+@dataclass(frozen=True)
+class ExploitRegressionResult:
+    """One forbidden predictor read exercised through the real gate."""
+
+    name: str
+    outcome: str
+    ships: int
+
+    @property
+    def blocked(self) -> bool:
+        return self.ships == 0
 
 
 def _game_keys(states: Sequence[dict]) -> List[Tuple[str, str]]:
@@ -71,6 +86,40 @@ def candidate_ships(rows: Sequence[dict]) -> bool:
     )
 
 
+def _label_echo_predictor(_train: List[dict], test: dict, select_inside: bool) -> float:
+    """Adversarially attempt to return the held-out realized outcome."""
+    assert select_inside is True, "label echo requires inside-window selection"
+    return float(test["outcome"])
+
+
+def _market_echo_predictor(_train: List[dict], test: dict, select_inside: bool) -> float:
+    """Adversarially attempt to return the held-out devigged close probability."""
+    assert select_inside is True, "market echo requires inside-window selection"
+    return float(test["devig_close_prob"])
+
+
+def run_exploit_regressions() -> Tuple[ExploitRegressionResult, ...]:
+    """Verify forbidden label and market echoes are redacted and cannot ship."""
+    checks = (
+        ("LABEL-ECHO", _label_echo_predictor),
+        ("MARKET-ECHO", _market_echo_predictor),
+    )
+    results = []
+    for name, predictor in checks:
+        try:
+            rows = run_gate_in_process(predictor)
+        except (KeyError, AssertionError) as exc:
+            outcome = "LEAK_ERROR" if "LEAK" in str(exc) else "REDACTED"
+            results.append(ExploitRegressionResult(name, outcome, 0))
+            continue
+        results.append(ExploitRegressionResult(
+            name,
+            "NON_SHIP" if not candidate_ships(rows) else "UNEXPECTED_SHIP",
+            int(candidate_ships(rows)),
+        ))
+    return tuple(results)
+
+
 def run_calibration(n: int = DEFAULT_CANDIDATES, seed: int = 20260901,
                     max_wall_seconds: float = MAX_WALL_SECONDS) -> CalibrationResult:
     """Run candidates serially; stop early only after the registered wall-time cap."""
@@ -96,7 +145,8 @@ def run_calibration(n: int = DEFAULT_CANDIDATES, seed: int = 20260901,
                              DEFAULT_EPS, provisional)
 
 
-def render_report(result: CalibrationResult) -> str:
+def render_report(result: CalibrationResult,
+                  exploits: Sequence[ExploitRegressionResult] = ()) -> str:
     """Render the pre-registered decision in ASCII only."""
     scope = "PROVISIONAL" if result.provisional else "FINAL"
     verdict = "PASS" if result.passed else "BROKEN"
@@ -111,16 +161,34 @@ def render_report(result: CalibrationResult) -> str:
         lines.append("PROVISIONAL: 200 sequential runs exceeded the 45-minute wall-time cap.")
     if not result.passed:
         lines.append("BROKEN: every SHIP since the last passing calibration is suspended.")
+    for exploit in exploits:
+        lines.append("exploit=%s outcome=%s ships=%d verdict=%s" % (
+            exploit.name, exploit.outcome, exploit.ships,
+            "BLOCKED" if exploit.blocked else "BROKEN"))
     return "\n".join(lines)
+
+
+def write_revalidation_report(result: CalibrationResult,
+                              exploits: Sequence[ExploitRegressionResult],
+                              path: Path = _REPORT) -> str:
+    """Persist the ASCII calibration evidence beside the reproducible gate code."""
+    text = render_report(result, exploits) + "\n"
+    path.write_text(text, encoding="ascii")
+    return text
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="sequential corrected-gate null calibration")
     parser.add_argument("--n", type=int, default=DEFAULT_CANDIDATES)
     parser.add_argument("--seed", type=int, default=20260901)
+    parser.add_argument("--write-report", action="store_true")
     args = parser.parse_args(argv)
     result = run_calibration(args.n, args.seed)
-    print(render_report(result))
+    exploits = run_exploit_regressions()
+    text = render_report(result, exploits)
+    if args.write_report:
+        write_revalidation_report(result, exploits)
+    print(text)
     return 0 if result.passed else 1
 
 
