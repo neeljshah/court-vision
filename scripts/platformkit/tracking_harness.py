@@ -13,6 +13,7 @@ import pandas as pd
 
 from scripts.platformkit.liveness_metrics import compute_liveness_metrics, liveness_failures
 from scripts.platformkit.tracking_schema import (
+    CoordinateTransformUnavailable,
     identify_tracking_schema,
     normalize_tracking_frame,
 )
@@ -119,8 +120,12 @@ def evaluate(df: pd.DataFrame, sport: str,
         return _failed_report(sport, config_version,
                               "unknown sport {}".format(sport), source_metadata)
 
-    schema = identify_tracking_schema(df)
-    df = normalize_tracking_frame(df)
+    try:
+        schema = identify_tracking_schema(df)
+        df = normalize_tracking_frame(df)
+    except CoordinateTransformUnavailable as exc:
+        return _failed_report(sport, config_version, "coordinate_contract: {}".format(exc),
+                              source_metadata)
     resolution, frame_rate = _source_fields(source_metadata)
     n_frames = int(df["frame"].nunique())
     n_unique_games = (int(df["game_id"].dropna().nunique()) if "game_id" in df

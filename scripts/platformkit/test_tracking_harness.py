@@ -7,7 +7,10 @@ from scripts.platformkit.tracking_harness import (
     SPORTS,
     evaluate,
 )
-from scripts.platformkit.tracking_schema import normalize_tracking_frame
+from scripts.platformkit.tracking_schema import (
+    CoordinateTransformUnavailable,
+    normalize_tracking_frame,
+)
 
 
 def _good_game(n_frames=100, n_players=10):
@@ -108,19 +111,17 @@ def test_empty_input_fails():
     assert not report.passed and report.n_unique_games == 0
 
 
-def test_nba_production_rows_normalize_to_players_and_skip_ball_gate():
+def test_nba_production_rows_fail_closed_without_persisted_homography():
     nba = pd.DataFrame({
         "frame": [0, 1], "timestamp": [0.0, 0.1], "player_id": [7, 7],
         "team": ["home", "home"], "x_position": [10.0, 10.1],
         "y_position": [25.0, 25.0],
     })
-    normalized = normalize_tracking_frame(nba)
-    assert list(normalized.columns) == ["cls", "frame", "track_id", "x", "y"]
-    assert normalized["cls"].eq("player").all()
+    with pytest.raises(CoordinateTransformUnavailable, match="image pixels"):
+        normalize_tracking_frame(nba)
     report = evaluate(nba, "basketball")
-    assert report.ball_rows == 0 and report.ball_valid_pct is None
-    assert report.ball_valid_applicable is False
-    assert not any("ball_valid" in failure for failure in report.failures)
+    assert report.passed is False
+    assert report.failures[0].startswith("coordinate_contract:")
 
 
 def test_normalized_frame_is_passed_through_unchanged():
