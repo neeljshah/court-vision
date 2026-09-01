@@ -265,7 +265,9 @@ def download_local(item: dict) -> Path:
     # and when it does the ladder must still be able to fetch the whole game.
     section = None
     if not _is_direct_media(item["url"]):
-        section = plan_section(probe_duration(item["url"]))
+        # An explicit "section" pins the slice. plan_section caps the start at
+        # 600s, which lands inside the pregame show on a 4-hour live stream.
+        section = item.get("section") or plan_section(probe_duration(item["url"]))
     last_error = "no attempt made"
     # Cookies LAST, not first. With cookies yt-dlp picks the tv client and gets
     # HLS (format 96, ~1100 fragments, very slow); without them it gets clean

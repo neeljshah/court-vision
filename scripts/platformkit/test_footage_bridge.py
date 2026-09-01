@@ -5,6 +5,8 @@ import json
 import subprocess
 from pathlib import Path
 
+import pytest
+
 from scripts.platformkit import footage_bridge
 
 
@@ -646,3 +648,27 @@ def test_the_first_rung_can_reach_high_resolution_hls():
     assert "height>=%d" % MIN_SECTION_HEIGHT in first.replace(" ", ""), first
     # A bare "b[...]" selects a pre-muxed stream, which is what HLS 300/301 are.
     assert first.startswith("b["), first
+
+
+def test_explicit_section_overrides_plan_section(monkeypatch, tmp_path):
+    """An item-supplied section pins the slice; plan_section is not consulted."""
+    monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
+    monkeypatch.setattr(footage_bridge, "COOKIES", tmp_path / "absent.txt")
+    monkeypatch.setattr(footage_bridge, "video_height", lambda path: 720)
+    monkeypatch.setattr(footage_bridge, "plan_section",
+                        lambda duration: pytest.fail("plan_section was consulted"))
+    seen = []
+
+    def fake_run(command, **kwargs):
+        seen.append(command)
+        (tmp_path / "g1.mp4").write_bytes(b"video")
+        return subprocess.CompletedProcess(command, 0)
+
+    monkeypatch.setattr(footage_bridge.subprocess, "run", fake_run)
+
+    produced = footage_bridge.download_local(
+        {"game_id": "g1", "url": "https://youtube.example/watch?v=1",
+         "section": "*01:00:00-01:10:00"})
+
+    assert produced.name == "g1.mp4"
+    assert "*01:00:00-01:10:00" in seen[-1]
