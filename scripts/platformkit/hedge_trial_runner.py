@@ -43,6 +43,8 @@ BAR = arm_registry.MINIMUM_DELTA_BRIER_IMPROVEMENT    # +0.004, never moves
 T_ROUNDS = {"mlb": 371, "soccer_intl": 68}            # pre-registered, not read off the corpus
 PBO_T = {"mlb": (100, 371, 1000), "soccer_intl": (30, 68, 200)}
 UNIFORM_T = 10 ** 9
+E4_VARIANTS = {"e4_w0.5_d0.15": (0.5, 0.15), "e4_w2.0_d0.15": (2.0, 0.15),   # PBO-only configs,
+               "e4_w1.0_d0.10": (1.0, 0.10), "e4_w1.0_d0.25": (1.0, 0.25)}   # pre-registered
 _INNING = re.compile(r"inning=(\d+)")
 
 
@@ -109,11 +111,13 @@ def regime_slices(frame: pd.DataFrame) -> Dict[str, Any]:
     return out
 
 
-def pbo_block(ticks: Sequence[Mapping[str, Any]], arms: Mapping[str, A.Series], sport: str) -> Dict[str, Any]:
+def pbo_block(ticks: Sequence[Mapping[str, Any]], arms: Mapping[str, A.Series], sport: str,
+              mixtures: bool = True) -> Dict[str, Any]:
     configs: Dict[str, A.Series] = {name: A.hedge_series(ticks, {name: arms[name]}, T_ROUNDS[sport]) for name in arms}
-    configs["uniform"] = A.hedge_series(ticks, arms, UNIFORM_T)
-    for t in PBO_T[sport]:
-        configs["hedge_T%d" % t] = A.hedge_series(ticks, arms, t)
+    if mixtures:
+        configs["uniform"] = A.hedge_series(ticks, arms, UNIFORM_T)
+        for t in PBO_T[sport]:
+            configs["hedge_T%d" % t] = A.hedge_series(ticks, arms, t)
     order = sorted(range(len(ticks)), key=lambda i: (str(ticks[i]["timestamp"]), str(ticks[i]["game"]), i))
     rows = [i for i in order if all(_finite(s[i]) for s in configs.values())]
     matrix = np.array([[float(configs[c][i]) for c in configs] for i in rows])
@@ -123,9 +127,10 @@ def pbo_block(ticks: Sequence[Mapping[str, Any]], arms: Mapping[str, A.Series], 
                                                         for j, c in enumerate(configs)}}
 
 
-def cpcv_block(ticks: Sequence[Mapping[str, Any]], arms: Mapping[str, A.Series], sport: str) -> Dict[str, Any]:
+def cpcv_block(ticks: Sequence[Mapping[str, Any]], arms: Mapping[str, A.Series], sport: str,
+               names: Optional[Sequence[str]] = None) -> Dict[str, Any]:
     states = A.game_states(ticks, arms)
-    hedged = cpcv_evaluate(states, A.hedge_predictor(tuple(arms), T_ROUNDS[sport]))
+    hedged = cpcv_evaluate(states, A.hedge_predictor(tuple(names or arms), T_ROUNDS[sport]))
     raw = cpcv_evaluate(states, A.raw_predictor)
     per_path: Dict[int, Dict[str, List[float]]] = defaultdict(lambda: defaultdict(list))
     for h, r in zip(hedged, raw):
@@ -145,8 +150,20 @@ def cpcv_block(ticks: Sequence[Mapping[str, Any]], arms: Mapping[str, A.Series],
             "min_n_train": int(min(min(p["n_train"]) for p in per_path.values()))}
 
 
+def e4_configs(ticks: Sequence[Mapping[str, Any]], features: pd.DataFrame,
+               arms: Mapping[str, A.Series]) -> Dict[str, A.Series]:
+    """Candidate-mode PBO matrix: raw, guard-only, e4 default, 4 pre-registered variants."""
+    configs = {"raw_model": arms["raw_model"], "e4_guard_only": A.e4_blend_series(ticks, features, column="arm_a_prob"),
+               "e4_blend": arms["e4_blend"]}
+    for name, (w_max, max_dev) in E4_VARIANTS.items():
+        configs[name] = A.e4_blend_series(ticks, features, w_max, max_dev)
+    return configs
+
+
 def run_sport(store: Path, sport: str, k_cum: int, bootstrap: int, max_estimators: int,
-              charge) -> Dict[str, Any]:
+              charge, candidate: Optional[str] = None) -> Dict[str, Any]:
+    """candidate=None: Hedge over S5's arm set. candidate='e4_blend': the single
+    arm IS the scored series (K=1 Hedge, eta=0), compared paired against raw."""
     ticks, features = A.load_corpus(store, sport)
     dates = sorted(str(t["timestamp"])[:10] for t in ticks)
     corpus = {"store": str(store / sport), "n_ticks": len(ticks), "n_games": len({t["game"] for t in ticks}),
@@ -154,11 +171,21 @@ def run_sport(store: Path, sport: str, k_cum: int, bootstrap: int, max_estimator
               "date_range": [dates[0], dates[-1]]}
     ledger_row = charge(dates[0], dates[-1]) if charge else None   # charged BEFORE any metric
     k_cum = int(ledger_row["k_cumulative"]) if ledger_row else k_cum
-    arms = A.arm_series(ticks, features, sport, max_estimators)
+    arms = A.arm_series(ticks, features, sport, max_estimators, ("raw_model", candidate) if candidate else None)
+    mix = {candidate: arms[candidate]} if candidate else arms
     coverage = {name: int(sum(_finite(v) for v in series)) for name, series in arms.items()}
-    report = hc.evaluate(ticks, arms, T_ROUNDS[sport], bootstrap_iterations=bootstrap)
-    hedge = A.hedge_series(ticks, arms, T_ROUNDS[sport])
-    frame = _losses(ticks, hedge, _paired_index(ticks, hedge))
+    report = hc.evaluate(ticks, mix, T_ROUNDS[sport], bootstrap_iterations=bootstrap)
+    hedge = A.hedge_series(ticks, mix, T_ROUNDS[sport])
+    idx = _paired_index(ticks, hedge)
+    frame = _losses(ticks, hedge, idx)
+    extra: Dict[str, Any] = {}
+    if candidate:
+        configs = e4_configs(ticks, features, arms)
+        guard = _losses(ticks, configs["e4_guard_only"], idx)
+        extra = {"candidate": candidate, "decomposition": {
+            "guard_only": _slice(guard), "signal_contribution_brier": float(
+                guard["loss_hedge"].mean() - frame["loss_hedge"].mean())},
+            "pbo": pbo_block(ticks, configs, sport, mixtures=False)}
     reported = report["slices"]["all_ticks"]["metrics"]["hedge_brier"]
     assert abs(float(frame["loss_hedge"].mean()) - reported) < 1e-9, "hedge series != evaluate() Brier"
     stats = primary_stats(frame, k_cum)
@@ -167,8 +194,9 @@ def run_sport(store: Path, sport: str, k_cum: int, bootstrap: int, max_estimator
             "combiner_render": hc.render(report), "primary": stats, "verdict": verdict_of(stats),
             "arm_registry_verdict_if_applied": arm_registry.verdict(
                 stats["delta_hedge_vs_market"], stats["ess"]["n_eff"], 2, 0.0, True),
-            "regime_slices": regime_slices(frame), "pbo": pbo_block(ticks, arms, sport),
-            "cpcv": cpcv_block(ticks, arms, sport)}
+            "regime_slices": regime_slices(frame), **extra,
+            "pbo": extra.get("pbo") or pbo_block(ticks, arms, sport),
+            "cpcv": cpcv_block(ticks, arms, sport, tuple(mix))}
 
 
 def _json(obj: Any) -> Any:
@@ -191,18 +219,21 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--sports", default="mlb,soccer_intl")
     parser.add_argument("--bootstrap-iterations", type=int, default=300)
     parser.add_argument("--max-estimators", type=int, default=300)
+    parser.add_argument("--candidate", default=None, help="single-arm mode, e.g. e4_blend (E4 promotion trial)")
+    parser.add_argument("--spec", default=SPEC, help="ledger predictor spec for the charge")
     args = parser.parse_args(argv)
     seal = hashlib.sha256(args.prereg.read_bytes()).hexdigest()
     store = discover_store(args.cache_root)
     if store is None:
         raise SystemExit("NOT_TESTABLE: no tick store under %s" % args.cache_root)
-    charge = lambda start, end: _charge_ledger(LEDGER, SPEC, "mlb", start, end)  # noqa: E731
+    charge = lambda start, end: _charge_ledger(LEDGER, args.spec, "mlb", start, end)  # noqa: E731
     result: Dict[str, Any] = {"generated_at": datetime.now(timezone.utc).isoformat(), "prereg": str(args.prereg),
-                              "prereg_sha256": seal, "lock": LOCK, "bar": BAR, "corpora": {}}
+                              "prereg_sha256": seal, "lock": LOCK, "bar": BAR, "corpora": {},
+                              "candidate": args.candidate, "ledger_spec": args.spec}
     k_cum = 0
     for sport in args.sports.split(","):
         block = run_sport(store, sport, k_cum, args.bootstrap_iterations, args.max_estimators,
-                          charge if sport == "mlb" else None)
+                          charge if sport == "mlb" else None, args.candidate)
         k_cum = block["primary"]["k_cumulative"]
         result["corpora"][sport] = block
         print("%s | VERDICT %s | improvement %.6f | dm_ci95 %s | deflated_p %.4f | ess %.1f | pbo %.3f" % (

@@ -19,6 +19,7 @@ import pandas as pd
 from scripts.platformkit.ingame import gap_blend_arm, gap_offset_arm, gap_regime_arm, hedge_combiner as hc
 from scripts.platformkit.ingame.run_gap_arms_real_corpus import _load_ticks
 from scripts.platformkit.ingame_state_lift import _feature_matrix
+from scripts.platformkit.mlb_state_features import parse_state
 from scripts.platformkit.regime_calibration import buckets, fit_per_regime
 from scripts.platformkit.wp_diag_oos import _game_dates
 from scripts.platformkit.wp_diag_series import load_records
@@ -34,7 +35,19 @@ def load_corpus(store: Path, sport: str) -> tuple[List[Dict[str, Any]], Optional
     ticks = load_records(store / sport)
     for row_id, tick in enumerate(ticks):
         tick.update({"_row_id": row_id, "in_window": True})
-    return ticks, None
+    return ticks, score_diff_features(ticks)
+
+
+def score_diff_features(ticks: Sequence[Mapping[str, Any]]) -> pd.DataFrame:
+    """E4's signal for a non-MLB store: home minus away score parsed from
+    state_summary by the sport-blind parse_state regex; NaN where absent."""
+    rows = []
+    for t in ticks:
+        state = parse_state(t.get("state_summary") or t.get("raw", {}).get("state_summary"))
+        home, away = state["home_score"], state["away_score"]
+        rows.append({"game": t["game"], "timestamp": t["timestamp"],
+                     "score_diff": home - away if None not in (home, away) else float("nan")})
+    return pd.DataFrame(rows)
 
 
 def _by_row(frame: pd.DataFrame, n: int, column: str = "arm_b_prob") -> Series:
@@ -44,16 +57,19 @@ def _by_row(frame: pd.DataFrame, n: int, column: str = "arm_b_prob") -> Series:
     return out
 
 
-def e4_blend_series(ticks: Sequence[Mapping[str, Any]], features: pd.DataFrame) -> Series:
+def e4_blend_series(ticks: Sequence[Mapping[str, Any]], features: pd.DataFrame,
+                    w_max: float = gap_blend_arm._DEFAULT_W_MAX,
+                    max_dev: float = gap_blend_arm._DEFAULT_MAX_DEVIATION,
+                    column: str = "arm_b_prob") -> Series:
+    """E4 via the module's own walk-forward; column arm_a_prob = guard only (weight 0)."""
     signal = features.set_index(["game", "timestamp"])["score_diff"].to_dict()
     keep = [t for t in ticks if pd.notna(signal.get((t["game"], t["timestamp"])))]
     rows = [{**t, "state_signal": float(signal[(t["game"], t["timestamp"])])} for t in keep]
     frame = gap_blend_arm._frame(rows)
     assert len(frame) == len(rows), "gap_blend_arm._frame dropped rows; alignment lost"
     frame["_row_id"] = [int(t["_row_id"]) for t in rows]
-    scored, _ = gap_blend_arm._walk_forward(frame, gap_blend_arm._DEFAULT_W_MAX,
-                                            gap_blend_arm._DEFAULT_MAX_DEVIATION)
-    return _by_row(scored, len(ticks))
+    scored, _ = gap_blend_arm._walk_forward(frame, w_max, max_dev)
+    return _by_row(scored, len(ticks), column)
 
 
 def e1_offset_series(ticks: Sequence[Mapping[str, Any]], features: pd.DataFrame,
@@ -89,13 +105,18 @@ def e2_regime_series(ticks: Sequence[Mapping[str, Any]], min_n: int = 200) -> Se
 
 
 def arm_series(ticks: Sequence[Mapping[str, Any]], features: Optional[pd.DataFrame],
-               sport: str, max_estimators: int = 300) -> Dict[str, Series]:
+               sport: str, max_estimators: int = 300,
+               only: Optional[Sequence[str]] = None) -> Dict[str, Series]:
+    """Hedge mode (only=None): S5's arm set. Candidate mode: just the named arms."""
+    want = set(only) if only else {"raw_model", "e2_regime"} | ({"e4_blend", "e1_offset"} if sport == "mlb" else set())
     arms: Dict[str, Series] = {"raw_model": [float(t["model_prob"]) for t in ticks]}
-    if sport == "mlb":
+    if "e4_blend" in want:
         assert features is not None
         arms["e4_blend"] = e4_blend_series(ticks, features)
+    if "e1_offset" in want:
         arms["e1_offset"] = e1_offset_series(ticks, features, max_estimators)
-    arms["e2_regime"] = e2_regime_series(ticks)
+    if "e2_regime" in want:
+        arms["e2_regime"] = e2_regime_series(ticks)
     return arms
 
 

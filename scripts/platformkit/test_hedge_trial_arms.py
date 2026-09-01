@@ -68,3 +68,22 @@ def test_pbo_and_slices_on_synthetic():
     hedge = A.hedge_series(ticks, arms, 371)
     slices = R.regime_slices(R._losses(ticks, hedge, R._paired_index(ticks, hedge)))
     assert {"all_ticks", "in_window_ticks", "inning=early_1_3", "month=07"} <= set(slices)
+
+
+def test_candidate_mode_single_arm_is_the_arm_and_e4_runs():
+    ticks, arms = _ticks(n_dates=8)
+    for t in ticks:                                   # give E4 a parseable score state
+        t["state_summary"] = "home_score=%d.0 away_score=0.0 inning=3" % (2 if t["outcome"] else 0)
+    features = A.score_diff_features(ticks)
+    assert features["score_diff"].tolist()[:2] == [0.0, 0.0] or features["score_diff"].notna().all()
+    only = A.arm_series(ticks, features, "mlb", only=("raw_model", "e4_blend"))
+    assert set(only) == {"raw_model", "e4_blend"}
+    guard = A.e4_blend_series(ticks, features, column="arm_a_prob")
+    first_date = sum(str(t["timestamp"])[:10] == "2026-07-01" for t in ticks)
+    assert all(v is None for v in only["e4_blend"][:first_date]) and any(v is not None for v in guard)
+    single = A.hedge_series(ticks, {"good": arms["good"]}, 371)
+    assert all(single[i] == arms["good"][i] for i in range(len(ticks)) if single[i] is not None)
+    assert sum(v is not None for v in single) == len(ticks) - 12   # burn-in only
+    block = R.pbo_block(ticks, R.e4_configs(ticks, features, only), "mlb", mixtures=False)
+    assert "uniform" not in block["configs"] and set(block["configs"]) >= {"e4_guard_only", "e4_blend", "raw_model"}
+    assert set(R.E4_VARIANTS) <= set(block["configs"])
