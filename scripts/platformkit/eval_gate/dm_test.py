@@ -29,6 +29,18 @@ class DMResult:
     n_clusters: int
 
 
+def cluster_blocks(values: Sequence[float], cluster_ids: Sequence) -> dict:
+    """Return the game-id blocks used by every clustered eval-gate statistic.
+
+    Keeping this small grouping primitive here prevents the bootstrap correction
+    from silently drifting from the DM test's game-level clustering contract.
+    """
+    groups: dict = {}
+    for value, cluster_id in zip(values, cluster_ids):
+        groups.setdefault(cluster_id, []).append(float(value))
+    return groups
+
+
 def diebold_mariano(d: Sequence[float], cluster_ids: Sequence) -> DMResult:
     """Cluster-robust DM test on per-state loss differences d_t.
 
@@ -40,9 +52,7 @@ def diebold_mariano(d: Sequence[float], cluster_ids: Sequence) -> DMResult:
     if n == 0:
         return DMResult(0.0, 1.0, 0.0, (0.0, 0.0), 0, 0)
     md = float(d.mean())
-    groups: dict = {}
-    for di, c in zip(d, cluster_ids):
-        groups.setdefault(c, []).append(di)
+    groups = cluster_blocks(d, cluster_ids)
     g = len(groups)
     if g > 1:
         # sum of within-cluster deviations from the grand mean

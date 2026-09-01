@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Callable, List, Optional
 
 import numpy as np
+from scripts.platformkit.combo.fwer_budget import DEFAULT_EPS, eps_eff
 
 try:  # bare run from eval_gate cwd (so test_gate.py can `from run_gate import ...`)
     from golden_loader import load_golden
@@ -27,17 +28,21 @@ try:  # bare run from eval_gate cwd (so test_gate.py can `from run_gate import .
     import scoring as S
     from dm_test import diebold_mariano
     from offline_predict import offline_predict_fn
+    from romano_wolf import romano_wolf_stepdown
 except ImportError:  # python -m package run
     from .golden_loader import load_golden
     from .walkforward import walk_forward
     from . import scoring as S
     from .dm_test import diebold_mariano
     from .offline_predict import offline_predict_fn
+    from .romano_wolf import romano_wolf_stepdown
 
 CORPORA = ["nba_2023_24", "nba_2024_25"]   # "mlb_2024" registered-but-skipped slot
 SKIPPED_SLOTS = ["mlb_2024"]
 DM_MIN_N = 200
 BRIER_REGRESS_TOL = 0.005                   # pre-registered min meaningful Brier delta
+ROMANO_WOLF_BOOTSTRAPS = 2000
+OFFLINE_BUDGET_SECONDS = 60.0
 
 _HERE = Path(__file__).resolve().parent
 _BASELINE_DIR = _HERE / "baselines"
@@ -101,6 +106,7 @@ def evaluate_corpus(name: str, predict_fn: Callable, states: List[dict]) -> dict
         "resolution": S.resolution(pm, y), "sharpness": S.sharpness(pm),
         "dm_stat": dm.dm_stat, "dm_p": dm.p_value, "ci95": dm.ci95,
         "verdict": _verdict(bss, dm, bm, bc), "leaked": False,
+        "_loss_diff": d, "_game_ids": gid,
     }
 
     # REGRESSION (BLOCKS): worse than the frozen baseline by > tol AND a DM test of
@@ -137,20 +143,52 @@ def run_gate_in_process(predict_fn: Callable, states: Optional[List[dict]] = Non
     is set (real --corpus path), _load_states raises FileNotFoundError offline -> every
     slot is CORPUS_ABSENT and the gate fails closed (empty measured set)."""
     rows: List[dict] = []
+    n_trials = len(CORPORA)
     for name in CORPORA:
         try:
             st = states if states is not None else _load_states(name, golden_path, corpus_dir)
-            rows.append(evaluate_corpus(name, predict_fn, st))
+            row = evaluate_corpus(name, predict_fn, st)
+            row["n_trials_this_sweep"] = n_trials
+            rows.append(row)
         except FileNotFoundError:
-            rows.append({"corpus": name, "status": "CORPUS_ABSENT (skip)"})
+            rows.append({"corpus": name, "status": "CORPUS_ABSENT (skip)",
+                         "n_trials_this_sweep": n_trials})
         except AssertionError as exc:
             if "LEAK" in str(exc):
                 rows.append({"corpus": name, "leaked": True, "regressed": True,
-                             "status": "LEAK"})
+                             "status": "LEAK", "n_trials_this_sweep": n_trials})
             else:
                 raise
+    measured = [r for r in rows if "_loss_diff" in r]
+    if measured:
+        alpha = DEFAULT_EPS
+        bonferroni = eps_eff(alpha, n_trials)
+        started = __import__("time").perf_counter()
+        correction = "romano_wolf"
+        power_loss = "none"
+        try:
+            rw = romano_wolf_stepdown([r["_loss_diff"] for r in measured],
+                                      [r["_game_ids"] for r in measured], alpha=alpha,
+                                      n_bootstrap=ROMANO_WOLF_BOOTSTRAPS)
+            elapsed = __import__("time").perf_counter() - started
+            if elapsed > OFFLINE_BUDGET_SECONDS:
+                raise TimeoutError("Romano-Wolf exceeded offline budget")
+            adjusted = rw.adjusted_p
+        except TimeoutError:
+            elapsed = __import__("time").perf_counter() - started
+            correction = "bonferroni"
+            power_loss = "Romano-Wolf unavailable inside 60s; Bonferroni used"
+            adjusted = tuple(min(1.0, r["dm_p"] * n_trials) for r in measured)
+        for row, corrected_p in zip(measured, adjusted):
+            row.update({"bonferroni_eps": bonferroni, "corrected_method": correction,
+                        "corrected_dm_p": corrected_p, "stepdown_seconds": elapsed,
+                        "power_loss": power_loss,
+                        "ship_eligible": bool(row["dm_stat"] > 0.0 and corrected_p <= alpha)})
+            row.pop("_loss_diff", None)
+            row.pop("_game_ids", None)
     for slot in SKIPPED_SLOTS:
-        rows.append({"corpus": slot, "status": "CORPUS_ABSENT (skip)"})
+        rows.append({"corpus": slot, "status": "CORPUS_ABSENT (skip)",
+                     "n_trials_this_sweep": n_trials})
     return rows
 
 
@@ -169,7 +207,7 @@ def _print_scoreboard(rows: List[dict]) -> None:
     print("eval gate -- calibration vs Shin-devigged close (BSS primary)")
     print("-" * 96)
     hdr = (f"{'corpus':<13}{'n':>5}{'brier_m':>9}{'brier_c':>9}{'bss':>8}"
-           f"{'ece':>8}{'sharp':>8}{'dm_p':>8}  {'verdict':<14}{'regr':>5}")
+           f"{'ece':>8}{'sharp':>8}{'dm_p':>8}{'K':>4}  {'verdict':<14}{'regr':>5}")
     print(hdr)
     print("-" * 96)
     for r in rows:
@@ -178,7 +216,7 @@ def _print_scoreboard(rows: List[dict]) -> None:
             continue
         print(f"{r['corpus']:<13}{r['n']:>5}"
               f"{_fmt(r['brier_model'], 9)}{_fmt(r['brier_close'], 9)}{_fmt(r['bss'])}"
-              f"{_fmt(r['ece'])}{_fmt(r['sharpness'])}{_fmt(r['dm_p'])}  "
+              f"{_fmt(r['ece'])}{_fmt(r['sharpness'])}{_fmt(r['dm_p'])}{r['n_trials_this_sweep']:>4}  "
               f"{r['verdict']:<14}{('YES' if r['regressed'] else 'no'):>5}")
     print("-" * 96)
     print("GOLDEN FIXTURE = SYNTHETIC ANCHOR (not a real calibration claim); "

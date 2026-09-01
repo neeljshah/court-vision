@@ -1,0 +1,70 @@
+EVAL-GATE RETRO MULTIPLICITY CORRECTION
+Evidence boundary: 60 current catalog classes are on disk; historical per-signal
+DM vectors are not archived. Published catalog outcome is REJECT-first.
+Corrected verdict therefore preserves every documented REJECT. No survivor is inferred.
+
+signal                                      raw verdict  corrected verdict  n_trials
+------------------------------------------  -----------  -----------------  --------
+basketball_nba:EloIdentitySignal            REJECT       REJECT                   85
+basketball_nba:AbsRestDiffSignal            REJECT       REJECT                   85
+basketball_nba:RestDiffSignedSignal         REJECT       REJECT                   85
+basketball_nba:HomeB2BIndicatorSignal       REJECT       REJECT                   85
+basketball_nba:AwayB2BIndicatorSignal       REJECT       REJECT                   85
+basketball_nba:RollingWin10HomeSignal       REJECT       REJECT                   85
+basketball_nba:EloMismatchMagnitudeSignal   REJECT       REJECT                   85
+basketball_nba:RestBucketSignal             REJECT       REJECT                   85
+basketball_nba:EloXRestDiffSignal           REJECT       REJECT                   85
+basketball_nba:EloXHomeB2BSignal            REJECT       REJECT                   85
+basketball_nba:B2BDifferentialSignal        REJECT       REJECT                   85
+basketball_nba:Win10XEloSignal              REJECT       REJECT                   85
+basketball_nba:EloClosenessXRestSignal      REJECT       REJECT                   85
+basketball_nba:AbsRestDiffXEloMismatchSign  REJECT       REJECT                   85
+basketball_nba:Win10XRestDiffSignal         REJECT       REJECT                   85
+basketball_nba:EloRatioXB2BDiffSignal       REJECT       REJECT                   85
+mlb:EloMismatchMagnitudeSignal              REJECT       REJECT                   85
+mlb:H2HResidualSignal                       REJECT       REJECT                   85
+mlb:RestDiffSignedSignal                    REJECT       REJECT                   85
+mlb:AbsRestDiffSignal                       REJECT       REJECT                   85
+mlb:EloDiffXH2HInteractionSignal            REJECT       REJECT                   85
+mlb:EloHomeAdvantageSignal                  REJECT       REJECT                   85
+mlb:RestDiffXEloDiffInteractionSignal       REJECT       REJECT                   85
+mlb:EloH2HProductSignal                     REJECT       REJECT                   85
+mlb:RestWeightedEloSignal                   REJECT       REJECT                   85
+mlb:EloSumRestDiffSignal                    REJECT       REJECT                   85
+mlb:H2HXRestDiffSignal                      REJECT       REJECT                   85
+mlb:EloRatioH2HSignal                       REJECT       REJECT                   85
+mlb:AbsRestDiffXEloDiffSignal               REJECT       REJECT                   85
+mlb:EloClosenessSqH2HSignal                 REJECT       REJECT                   85
+soccer:AttackingImbalanceSignal             REJECT       REJECT                   85
+soccer:LamTotalDeviationSignal              REJECT       REJECT                   85
+soccer:SignedRestDiffSignal                 REJECT       REJECT                   85
+soccer:HomeAttackShareSignal                REJECT       REJECT                   85
+soccer:LamTotalRestInteractionSignal        REJECT       REJECT                   85
+soccer:AbsRestDiffSignal                    REJECT       REJECT                   85
+soccer:LowScoringFlagSignal                 REJECT       REJECT                   85
+soccer:LamDiffRestDiffProductSignal         REJECT       REJECT                   85
+soccer:LamTotalAbsRestDiffSignal            REJECT       REJECT                   85
+soccer:LamRatioSignal                       REJECT       REJECT                   85
+soccer:HighVolumeAttackImbalanceSignal      REJECT       REJECT                   85
+soccer:HomeAttackShareRestDiffSignal        REJECT       REJECT                   85
+soccer:LamDiffSquaredSignal                 REJECT       REJECT                   85
+soccer:SignedLamDiffRestDiffSignal          REJECT       REJECT                   85
+soccer:LamWeightedRestDiffSignal            REJECT       REJECT                   85
+tennis:AbsRestDiffSignal                    REJECT       REJECT                   85
+tennis:SurfVsOverallEloSignal               REJECT       REJECT                   85
+tennis:EloGapMagnitudeSignal                REJECT       REJECT                   85
+tennis:BestOf5Signal                        REJECT       REJECT                   85
+tennis:RestSurfaceInteractionSignal         REJECT       REJECT                   85
+tennis:SurfSpecialistFlagSignal             REJECT       REJECT                   85
+tennis:SignedRestDiffSignal                 REJECT       REJECT                   85
+tennis:EloRestInteractionSignal             REJECT       REJECT                   85
+tennis:SurfDiffEloDampedSignal              REJECT       REJECT                   85
+tennis:Bo5EloDiffSignal                     REJECT       REJECT                   85
+tennis:SignedRestEloDiffSignal              REJECT       REJECT                   85
+tennis:SurfEloAbsDiffSignal                 REJECT       REJECT                   85
+tennis:RestCloseMatchSignal                 REJECT       REJECT                   85
+tennis:EloSurfProductSignal                 REJECT       REJECT                   85
+tennis:RestAsymmetryBo5Signal               REJECT       REJECT                   85
+
+catalog_signals_on_disk=60  n_trials_this_sweep=85  bonferroni_eps=0.00058824
+survivors=0
