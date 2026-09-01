@@ -51,6 +51,7 @@ def _tolerant(train, test, select_inside):
 def test_gate_passes_when_matches_close_no_regression():
     rows = run_gate_in_process(offline_predict_fn)
     assert all(not r.get("regressed") for r in rows if "regressed" in r)
+    assert all("spa_p" in r and "spa_note" in r for r in rows if "regressed" in r)
     assert gate_exit_code(rows) == 0                    # BEHIND/MATCHES never block
 
 

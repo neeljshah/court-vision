@@ -1,0 +1,71 @@
+HANSEN SPA CATALOG CROSS-CHECK
+benchmark=devigged_close
+family_spa_p=NA (historical per-signal loss differentials are not archived)
+per-signal studentized statistics=NA; no SPA survivor can be inferred
+retro_verdict_comparison=NOT_EVALUABLE (not an agreement claim)
+
+signal                                      studentized_stat  spa_verdict
+------------------------------------------  ----------------  -----------
+basketball_nba:EloIdentitySignal                          NA  NOT_EVALUABLE
+basketball_nba:AbsRestDiffSignal                          NA  NOT_EVALUABLE
+basketball_nba:RestDiffSignedSignal                       NA  NOT_EVALUABLE
+basketball_nba:HomeB2BIndicatorSignal                     NA  NOT_EVALUABLE
+basketball_nba:AwayB2BIndicatorSignal                     NA  NOT_EVALUABLE
+basketball_nba:RollingWin10HomeSignal                     NA  NOT_EVALUABLE
+basketball_nba:EloMismatchMagnitudeSignal                 NA  NOT_EVALUABLE
+basketball_nba:RestBucketSignal                           NA  NOT_EVALUABLE
+basketball_nba:EloXRestDiffSignal                         NA  NOT_EVALUABLE
+basketball_nba:EloXHomeB2BSignal                          NA  NOT_EVALUABLE
+basketball_nba:B2BDifferentialSignal                      NA  NOT_EVALUABLE
+basketball_nba:Win10XEloSignal                            NA  NOT_EVALUABLE
+basketball_nba:EloClosenessXRestSignal                    NA  NOT_EVALUABLE
+basketball_nba:AbsRestDiffXEloMismatchSign                NA  NOT_EVALUABLE
+basketball_nba:Win10XRestDiffSignal                       NA  NOT_EVALUABLE
+basketball_nba:EloRatioXB2BDiffSignal                     NA  NOT_EVALUABLE
+mlb:EloMismatchMagnitudeSignal                            NA  NOT_EVALUABLE
+mlb:H2HResidualSignal                                     NA  NOT_EVALUABLE
+mlb:RestDiffSignedSignal                                  NA  NOT_EVALUABLE
+mlb:AbsRestDiffSignal                                     NA  NOT_EVALUABLE
+mlb:EloDiffXH2HInteractionSignal                          NA  NOT_EVALUABLE
+mlb:EloHomeAdvantageSignal                                NA  NOT_EVALUABLE
+mlb:RestDiffXEloDiffInteractionSignal                     NA  NOT_EVALUABLE
+mlb:EloH2HProductSignal                                   NA  NOT_EVALUABLE
+mlb:RestWeightedEloSignal                                 NA  NOT_EVALUABLE
+mlb:EloSumRestDiffSignal                                  NA  NOT_EVALUABLE
+mlb:H2HXRestDiffSignal                                    NA  NOT_EVALUABLE
+mlb:EloRatioH2HSignal                                     NA  NOT_EVALUABLE
+mlb:AbsRestDiffXEloDiffSignal                             NA  NOT_EVALUABLE
+mlb:EloClosenessSqH2HSignal                               NA  NOT_EVALUABLE
+soccer:AttackingImbalanceSignal                           NA  NOT_EVALUABLE
+soccer:LamTotalDeviationSignal                            NA  NOT_EVALUABLE
+soccer:SignedRestDiffSignal                               NA  NOT_EVALUABLE
+soccer:HomeAttackShareSignal                              NA  NOT_EVALUABLE
+soccer:LamTotalRestInteractionSignal                      NA  NOT_EVALUABLE
+soccer:AbsRestDiffSignal                                  NA  NOT_EVALUABLE
+soccer:LowScoringFlagSignal                               NA  NOT_EVALUABLE
+soccer:LamDiffRestDiffProductSignal                       NA  NOT_EVALUABLE
+soccer:LamTotalAbsRestDiffSignal                          NA  NOT_EVALUABLE
+soccer:LamRatioSignal                                     NA  NOT_EVALUABLE
+soccer:HighVolumeAttackImbalanceSignal                    NA  NOT_EVALUABLE
+soccer:HomeAttackShareRestDiffSignal                      NA  NOT_EVALUABLE
+soccer:LamDiffSquaredSignal                               NA  NOT_EVALUABLE
+soccer:SignedLamDiffRestDiffSignal                        NA  NOT_EVALUABLE
+soccer:LamWeightedRestDiffSignal                          NA  NOT_EVALUABLE
+tennis:AbsRestDiffSignal                                  NA  NOT_EVALUABLE
+tennis:SurfVsOverallEloSignal                             NA  NOT_EVALUABLE
+tennis:EloGapMagnitudeSignal                              NA  NOT_EVALUABLE
+tennis:BestOf5Signal                                      NA  NOT_EVALUABLE
+tennis:RestSurfaceInteractionSignal                       NA  NOT_EVALUABLE
+tennis:SurfSpecialistFlagSignal                           NA  NOT_EVALUABLE
+tennis:SignedRestDiffSignal                               NA  NOT_EVALUABLE
+tennis:EloRestInteractionSignal                           NA  NOT_EVALUABLE
+tennis:SurfDiffEloDampedSignal                            NA  NOT_EVALUABLE
+tennis:Bo5EloDiffSignal                                   NA  NOT_EVALUABLE
+tennis:SignedRestEloDiffSignal                            NA  NOT_EVALUABLE
+tennis:SurfEloAbsDiffSignal                               NA  NOT_EVALUABLE
+tennis:RestCloseMatchSignal                               NA  NOT_EVALUABLE
+tennis:EloSurfProductSignal                               NA  NOT_EVALUABLE
+tennis:RestAsymmetryBo5Signal                             NA  NOT_EVALUABLE
+
+catalog_signals_on_disk=60
+documented_retro_survivors=0

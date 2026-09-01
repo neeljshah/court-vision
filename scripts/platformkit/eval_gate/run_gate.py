@@ -29,6 +29,7 @@ try:  # bare run from eval_gate cwd (so test_gate.py can `from run_gate import .
     from dm_test import diebold_mariano
     from offline_predict import offline_predict_fn
     from romano_wolf import romano_wolf_stepdown
+    from spa_test import hansen_spa
 except ImportError:  # python -m package run
     from .golden_loader import load_golden
     from .walkforward import walk_forward
@@ -36,12 +37,14 @@ except ImportError:  # python -m package run
     from .dm_test import diebold_mariano
     from .offline_predict import offline_predict_fn
     from .romano_wolf import romano_wolf_stepdown
+    from .spa_test import hansen_spa
 
 CORPORA = ["nba_2023_24", "nba_2024_25"]   # "mlb_2024" registered-but-skipped slot
 SKIPPED_SLOTS = ["mlb_2024"]
 DM_MIN_N = 200
 BRIER_REGRESS_TOL = 0.005                   # pre-registered min meaningful Brier delta
 ROMANO_WOLF_BOOTSTRAPS = 2000
+SPA_BOOTSTRAPS = 2000
 OFFLINE_BUDGET_SECONDS = 60.0
 
 _HERE = Path(__file__).resolve().parent
@@ -170,6 +173,14 @@ def run_gate_in_process(predict_fn: Callable, states: Optional[List[dict]] = Non
             rw = romano_wolf_stepdown([r["_loss_diff"] for r in measured],
                                       [r["_game_ids"] for r in measured], alpha=alpha,
                                       n_bootstrap=ROMANO_WOLF_BOOTSTRAPS)
+            try:
+                spa = hansen_spa([r["_loss_diff"] for r in measured],
+                                 [r["_game_ids"] for r in measured], alpha=alpha,
+                                 n_bootstrap=SPA_BOOTSTRAPS)
+                spa_note = "available"
+            except ValueError as exc:
+                spa = None
+                spa_note = "UNAVAILABLE: " + str(exc)
             elapsed = __import__("time").perf_counter() - started
             if elapsed > OFFLINE_BUDGET_SECONDS:
                 raise TimeoutError("Romano-Wolf exceeded offline budget")
@@ -179,11 +190,16 @@ def run_gate_in_process(predict_fn: Callable, states: Optional[List[dict]] = Non
             correction = "bonferroni"
             power_loss = "Romano-Wolf unavailable inside 60s; Bonferroni used"
             adjusted = tuple(min(1.0, r["dm_p"] * n_trials) for r in measured)
-        for row, corrected_p in zip(measured, adjusted):
+            spa = None
+            spa_note = "UNAVAILABLE: Romano-Wolf timeout"
+        for spa_index, (row, corrected_p) in enumerate(zip(measured, adjusted)):
             row.update({"bonferroni_eps": bonferroni, "corrected_method": correction,
                         "corrected_dm_p": corrected_p, "stepdown_seconds": elapsed,
                         "power_loss": power_loss,
-                        "ship_eligible": bool(row["dm_stat"] > 0.0 and corrected_p <= alpha)})
+                        "ship_eligible": bool(row["dm_stat"] > 0.0 and corrected_p <= alpha),
+                        "spa_p": None if spa is None else spa.family_p,
+                        "spa_stat": None if spa is None else spa.studentized_stats[spa_index],
+                        "spa_note": spa_note})
             row.pop("_loss_diff", None)
             row.pop("_game_ids", None)
     for slot in SKIPPED_SLOTS:

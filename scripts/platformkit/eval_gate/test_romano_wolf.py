@@ -37,6 +37,14 @@ def test_null_does_not_clear_corrected_threshold():
     assert out.rejected == (False,)
 
 
+def test_identical_candidates_preserve_the_single_candidate_p_value():
+    diffs, ids = _effects()
+    one = romano_wolf_stepdown([diffs[0]], [ids[0]], n_bootstrap=499, seed=12)
+    copies = romano_wolf_stepdown([diffs[0]] * 3, [ids[0]] * 3,
+                                  n_bootstrap=499, seed=12)
+    assert copies.adjusted_p == (one.adjusted_p[0],) * 3
+
+
 def test_mismatched_inputs_fail_closed():
     try:
         romano_wolf_stepdown([[0.1]], [])
