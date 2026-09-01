@@ -33,7 +33,14 @@ CANONICAL_LANDMARKS: Dict[str, Landmarks] = {
         "singles_bl": (0.0, 4.5), "singles_br": (78.0, 4.5),
         "singles_tr": (78.0, 31.5), "singles_tl": (0.0, 31.5),
         "net_post_bottom": (39.0, 0.0), "net_post_top": (39.0, 36.0),
-        "left_service_t": (21.0, 18.0), "right_service_t": (57.0, 18.0),
+        # The service line is 21 ft from the NET, not from the baseline. With
+        # the net at x=39 on a 78 ft court that puts the service Ts at x=18 and
+        # x=60. They were (21, 18) and (57, 18) -- 21 ft measured from the
+        # baseline instead, a 3 ft systematic error. Harmless so far only
+        # because the tennis adapter names just the four doubles corners and
+        # never fed these to a solve; the moment a provider adds them as the
+        # independent held-out landmark, that 3 ft goes into the homography.
+        "left_service_t": (18.0, 18.0), "right_service_t": (60.0, 18.0),
     },
     "soccer": {
         "pitch_bl": (0.0, 0.0), "pitch_br": (105.0, 0.0),

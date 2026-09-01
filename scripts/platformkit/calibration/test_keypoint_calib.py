@@ -68,3 +68,20 @@ def test_underdetermined_detections_return_none() -> None:
     detections = _detections("soccer", np.random.default_rng(5), drop=False)
     three = dict(list(detections.items())[:3])
     assert solve_homography(three, "soccer") is None
+
+
+def test_tennis_landmarks_agree_with_the_surveyed_court():
+    """Every canonical coordinate is derivable from the rulebook, so derive it.
+    The service Ts were 3 ft wrong (21 ft taken from the baseline rather than
+    from the net) and were only harmless because nothing solved with them."""
+    tennis = CANONICAL_LANDMARKS["tennis"]
+    net_x, half_width = 39.0, 18.0          # 78 ft court bisected; 36 ft doubles
+    assert tennis["net_post_bottom"] == (net_x, 0.0)
+    assert tennis["net_post_top"] == (net_x, 2 * half_width)
+    # Service line: 21 ft from the NET on each side; the T sits on the centre line.
+    assert tennis["left_service_t"] == (net_x - 21.0, half_width)
+    assert tennis["right_service_t"] == (net_x + 21.0, half_width)
+    # Singles sidelines sit one 4.5 ft doubles alley inside each doubles line.
+    assert tennis["singles_bl"][1] == 4.5
+    assert tennis["singles_tl"][1] == 2 * half_width - 4.5
+    assert tennis["doubles_br"][0] == 78.0
