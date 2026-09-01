@@ -1,0 +1,25 @@
+{
+  "games": [
+    {
+      "ball_valid_pct": 0.0,
+      "coverage_pct": 0.0,
+      "failures": [
+        "empty"
+      ],
+      "game_id": "tennis_3x3eEWCZmWQ",
+      "jump_p95": 0.0,
+      "median_track_len": null,
+      "oob_pct": 0.0,
+      "passed": false,
+      "rows": 0,
+      "status": "completed"
+    }
+  ],
+  "measurement": {
+    "corpus": "data/footage_corpus",
+    "max_frames": 600,
+    "stride": 3
+  },
+  "schema_version": 1,
+  "sport": "tennis"
+}
