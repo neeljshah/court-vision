@@ -176,3 +176,24 @@ def test_image_space_rows_are_observed_and_fail_coordinate_contract(monkeypatch,
     assert list(saved.columns) == list(rows.columns)
     assert not report.passed
     assert any(failure.startswith("coordinate_contract:") for failure in report.failures)
+
+
+def test_a_thin_pre_snap_frame_is_still_emitted_so_coverage_can_fail() -> None:
+    """The sibling of the oob test above, for coverage.
+
+    is_pre_snap ANDed in `len(detections) >= 14` and the emission loop repeated
+    `players if len(players) >= 14 else ()`. Football's harness min_players is
+    exactly 14 and the coverage denominator is the emitted CSV's frame count,
+    so no frame that could fail coverage was ever emitted: coverage was pinned
+    at 1.0 by construction. Nine players on a pre-snap frame is a real
+    observation and the harness must be allowed to count it.
+    """
+    frame = _field()
+    boxes = [[90 + 10 * i, 150, 100 + 10 * i, 180] for i in range(9)]
+    adapter = FootballAdapter(detector=lambda image: boxes, motion_threshold=2.0)
+
+    assert adapter.is_pre_snap(frame, frame), "motion is the snap evidence, not headcount"
+    homography = adapter.homography_from_yard_lines(frame)
+    assert homography is not None
+    rows = adapter._track_players(adapter._detect(frame), homography)
+    assert len(rows) == 9, "a nine-player frame must reach the harness, not vanish"

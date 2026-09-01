@@ -52,7 +52,20 @@ class FootballAdapter(FootballGeometryMixin):
         return self.detector(frame)
     @staticmethod
     def motion_magnitude(previous: np.ndarray, current: np.ndarray) -> float: return float(np.median(cv2.absdiff(cv2.cvtColor(previous, cv2.COLOR_BGR2GRAY), cv2.cvtColor(current, cv2.COLOR_BGR2GRAY))))
-    def is_pre_snap(self, previous: np.ndarray, current: np.ndarray, detections: Optional[Sequence[Sequence[float]]] = None) -> bool: return self.motion_magnitude(previous, current) <= self.motion_threshold and len(self._detect(current) if detections is None else detections) >= 14
+    def is_pre_snap(self, previous: np.ndarray, current: np.ndarray, detections: Optional[Sequence[Sequence[float]]] = None) -> bool:
+        """Low frame-to-frame motion. A snap is the motion step; that is the evidence.
+
+        The detection count used to be ANDed in here (>= 14) and the harness's
+        football min_players is exactly 14, so a frame that could have failed
+        coverage was never emitted and therefore never entered the denominator
+        -- n_frames comes from the emitted CSV (tracking_harness.py:132). A gate
+        whose window sits on the harness bound is the banned tautology class,
+        and this was the sixth instance found in this codebase.
+        Field-view evidence is still required, independently: the caller emits
+        only when _stable_homography solved for the frame.
+        """
+        del detections  # counting players must never decide whether to measure players
+        return self.motion_magnitude(previous, current) <= self.motion_threshold
     def _track_players(self, boxes: Sequence[Sequence[float]], homography: np.ndarray) -> list[tuple[int, np.ndarray]]:
         result, unused = [], set(self._centroids)
         for box in boxes:
@@ -92,7 +105,13 @@ class FootballAdapter(FootballGeometryMixin):
                     homography, boxes = self._stable_homography(frame), self._detect(frame)
                     if previous is not None and homography is not None and self.is_pre_snap(previous, frame, boxes):
                         players = self._track_players(boxes, homography)
-                        for track_id, point in players if len(players) >= 14 else (): rows.append({"frame": frame_index, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1])})
+                        # Emit every tracked player, not `players if len(players) >= 14`.
+                        # That guard made per-frame track_id count >= min_players by
+                        # construction, pinning coverage at exactly 1.0 for football --
+                        # unfailable, which is the point of the ban. A pre-snap frame
+                        # showing 9 players is a real observation and coverage should
+                        # say so.
+                        for track_id, point in players: rows.append({"frame": frame_index, "track_id": track_id, "cls": "player", "x": float(point[0]), "y": float(point[1])})
                     previous, processed = frame, processed + 1
                 frame_index += 1
         finally: capture.release()
