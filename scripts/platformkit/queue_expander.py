@@ -93,17 +93,25 @@ SOURCES: dict[str, tuple[str, ...]] = {
         "https://www.youtube.com/channel/UC0hy7TcR1gGD8nQBqrF2FaA",
     ),
 }
-# football deliberately accepts highlights and extended highlights (explicit
-# user decision 2026-08-31): full NFL/NCAA games are scarce on YouTube while
-# extended highlights carry many clean broadcast-angle snaps. Every other
-# sport keeps a full-game floor.
+# football accepted highlights and extended highlights on the assumption that
+# they "carry many clean broadcast-angle snaps". MEASURED FALSE on 2026-09-01:
+# five extended-highlight clips tracked to 0 rows each. FootballAdapter emits
+# ONLY low-motion pre-snap formation frames (>=14 detections, stable yard-line
+# homography, no scene cut) and highlight reels cut away from exactly those.
+# The adapter was refusing honestly, not failing.
+#
+# Raised to a condensed/full-game floor so the lane fetches footage that
+# actually contains pre-snap formations. Section downloads make this cheap: we
+# fetch a 16-minute slice, so a 3-hour game costs the same as a highlight reel.
+# If the sources cannot fill it, an empty football queue is the honest outcome
+# and better than lane capacity spent producing 0-row games.
 MIN_DURATION_SECONDS = {
     "tennis": 3600,
     "wnba": 4500,
     "npb": 4500,
     "kbo": 4500,
     "soccer": 5000,
-    "football": 300,
+    "football": 2400,
     "mlb": 7200,
     "nhl": 3600,
     "ncaa_basketball": 3600,

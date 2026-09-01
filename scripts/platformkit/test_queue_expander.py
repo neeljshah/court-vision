@@ -8,14 +8,19 @@ from types import SimpleNamespace
 from scripts.platformkit import queue_expander
 
 
-def test_football_accepts_highlights_while_others_require_full_games() -> None:
-    """Football is the deliberate exception (explicit user decision 2026-08-31).
+def test_football_no_longer_accepts_highlight_reels() -> None:
+    """The highlights exception was measured false and withdrawn on 2026-09-01.
 
-    Full NFL/NCAA games are scarce on YouTube; extended highlights carry many
-    clean broadcast-angle snaps. This must not leak into any other sport, so
-    the floors that reject clips elsewhere are asserted alongside it.
+    It rested on the claim that extended highlights "carry many clean
+    broadcast-angle snaps". Five extended-highlight clips then tracked to 0 rows
+    each: FootballAdapter emits ONLY low-motion pre-snap formation frames
+    (>=14 detections, stable yard-line homography, no scene cut), and highlight
+    reels cut away from exactly those. The adapter was refusing honestly.
+
+    The floor must stay above highlight-reel length so the lane cannot spend
+    capacity on footage that provably yields nothing.
     """
-    assert queue_expander.MIN_DURATION_SECONDS["football"] == 300
+    assert queue_expander.MIN_DURATION_SECONDS["football"] >= 2400
     assert len(queue_expander.SOURCES["football"]) >= 3
     for sport in ("tennis", "wnba", "soccer", "kbo", "npb"):
         assert queue_expander.MIN_DURATION_SECONDS[sport] >= 3600

@@ -8,12 +8,14 @@ from scripts.platformkit.corpus_rescore import _depth_probe, rescore_all
 
 
 def _good_rows() -> list[dict[str, object]]:
+    """Court-feet rows that also move: a frozen tracker is a liveness failure."""
     rows = []
     for frame in range(10):
         for track_id in range(6):
             rows.append({"frame": frame, "track_id": track_id, "cls": "player",
-                         "x": 10 + track_id, "y": 20})
-        rows.append({"frame": frame, "track_id": 99, "cls": "ball", "x": 47, "y": 25})
+                         "x": 10 + 2 * track_id + 0.5 * frame, "y": 20 + track_id})
+        rows.append({"frame": frame, "track_id": 99, "cls": "ball",
+                     "x": 47 + 0.5 * frame, "y": 25})
     return rows
 
 
