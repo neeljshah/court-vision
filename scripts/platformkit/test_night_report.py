@@ -1,0 +1,58 @@
+"""Tests for the local-only overnight tracking morning report."""
+
+import json
+
+from scripts.platformkit.night_report import build_report
+
+
+def _write_jsonl(path, records):
+    path.write_text("\n".join(json.dumps(record) for record in records), encoding="utf-8")
+
+
+def test_report_prioritizes_harness_passes_and_human_actions(tmp_path):
+    tracking = tmp_path / "track.jsonl"
+    bridge = tmp_path / "bridge.jsonl"
+    supervisor = tmp_path / "supervisor.json"
+    _write_jsonl(tracking, [
+        {"game_id": "nba-pass", "sport": "nba", "status": "tracked", "rows": 650,
+         "passed": True, "failures": [], "seconds": 10},
+        {"game_id": "nba-not-pass", "sport": "nba", "status": "tracked", "rows": 900,
+         "passed": False, "failures": ["coordinate_contract missing"], "seconds": 10},
+        {"game_id": "wnba-thin", "sport": "wnba", "status": "thin", "rows": 510,
+         "passed": False, "failures": ["low coverage"], "seconds": 10},
+    ])
+    _write_jsonl(bridge, [
+        {"game_id": "a", "sport": "nba", "status": "staged"},
+        {"game_id": "b", "sport": "nba", "status": "failed: no source"},
+        {"game_id": "c", "sport": "nba", "status": "failed: no source"},
+        {"game_id": "d", "sport": "wnba", "status": "failed: blocked"},
+    ])
+    supervisor.write_text(json.dumps({"tracked_games": 2, "lanes": {
+        "nba": {"untracked": 3, "alive": True}, "wnba": {"untracked": 5, "alive": False},
+    }}), encoding="utf-8")
+
+    report = build_report(tracking, bridge, supervisor)
+
+    assert "HEADLINE: 1 games PASSING the harness." in report
+    assert ">=500 rows does NOT mean a game PASSES the harness." in report
+    assert "- lane not alive: wnba" in report
+    assert "- zero passing games: wnba" in report
+    assert "- coordinate_contract: nba-not-pass (coordinate_contract missing)" in report
+    assert "nba: tracked=2 thin=0 PASSING=1 best_rows=900" in report
+    assert "wnba: tracked=0 thin=1 PASSING=0 best_rows=510" in report
+    assert "nba: staged=1 failed=2 top_failures=no source (2)" in report
+    assert "tracked_games=2 alive_lanes=nba total_queue_depth=8" in report
+    assert report.encode("ascii")
+
+
+def test_report_gracefully_handles_missing_and_malformed_inputs(tmp_path):
+    malformed = tmp_path / "malformed.jsonl"
+    malformed.write_text("not json\n[]", encoding="utf-8")
+
+    report = build_report(malformed, tmp_path / "missing.jsonl", tmp_path / "missing.json")
+
+    assert "HEADLINE: 0 games PASSING the harness." in report
+    assert "TRACKING HARNESS\nno data (empty or malformed)" in report
+    assert "FOOTAGE BRIDGE\nno data (file missing)" in report
+    assert "BRIDGE SUPERVISOR\nno data (file missing)" in report
+    assert "WHAT NEEDS A HUMAN\n-------------------\n- None." in report

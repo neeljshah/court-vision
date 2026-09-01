@@ -429,3 +429,139 @@ def test_direct_cdn_media_is_never_probed_for_duration(monkeypatch, tmp_path):
     monkeypatch.setattr(footage_bridge.subprocess, "run", fake_run)
     footage_bridge.download_local({"game_id": "m1", "sport": "mlb",
                                    "url": "https://mlb-cuts-diamond.mlb.com/a.mp4"})
+
+
+def test_backpressure_pauses_when_the_pod_is_already_saturated(monkeypatch):
+    """Downloads outrun tracking since section downloads got ~12x cheaper.
+    Without this the pod stage fills and this box piles up yt-dlp processes."""
+    seen = iter([40, 30, 5])
+    slept = []
+    monkeypatch.setattr(footage_bridge, "pod_backlog", lambda: next(seen))
+    monkeypatch.setattr(footage_bridge.time, "sleep", lambda s: slept.append(s))
+
+    backlog = footage_bridge.wait_for_capacity(limit=24, sleep_seconds=1)
+
+    assert backlog == 5
+    assert len(slept) == 2
+
+
+def test_unknown_backlog_never_blocks_the_night(monkeypatch):
+    """A failed ssh probe returns -1. Stalling every lane on a broken probe is
+    worse than briefly over-filling the stage."""
+    monkeypatch.setattr(footage_bridge, "pod_backlog", lambda: -1)
+    monkeypatch.setattr(footage_bridge.time, "sleep",
+                        lambda s: (_ for _ in ()).throw(
+                            AssertionError("must not sleep on unknown backlog")))
+
+    assert footage_bridge.wait_for_capacity(limit=24) == -1
+
+
+def test_backpressure_cannot_deadlock(monkeypatch):
+    """If the backlog never drains the bridge must give up and proceed."""
+    monkeypatch.setattr(footage_bridge, "pod_backlog", lambda: 99)
+    monkeypatch.setattr(footage_bridge.time, "sleep", lambda s: None)
+
+    assert footage_bridge.wait_for_capacity(limit=24, sleep_seconds=0,
+                                            attempts=3) == 99
+
+
+def test_backlog_ignores_in_flight_part_uploads(monkeypatch):
+    """A slow transfer is not backlog; counting .part would throttle on it."""
+    captured = {}
+
+    def fake_ssh(command, **kwargs):
+        captured["cmd"] = command
+        return subprocess.CompletedProcess(command, 0, "7\n", "")
+
+    monkeypatch.setattr(footage_bridge, "_ssh", fake_ssh)
+
+    assert footage_bridge.pod_backlog() == 7
+    assert "*.mp4" in captured["cmd"] and ".part" not in captured["cmd"]
+
+
+def test_unmeasured_clip_is_kept_provisionally_when_nothing_is_retained(
+        monkeypatch, tmp_path):
+    """In decoupled mode nothing has tracked the clip yet, so quality is
+    unknown. Rejecting every unmeasured candidate retains NOTHING, which is how
+    the reference corpus stayed empty."""
+    monkeypatch.setattr(footage_bridge, "REFERENCE_DIR", tmp_path / "ref")
+    monkeypatch.setattr(footage_bridge, "TRACKING_DIR", tmp_path / "none")
+    monkeypatch.setattr(footage_bridge, "TRACKING_REPORT_DIR", tmp_path / "none")
+    clip = tmp_path / "tennis_01.mp4"
+    clip.write_bytes(b"video")
+
+    assert footage_bridge.keep_reference(clip, "tennis") is True
+    assert (tmp_path / "ref" / "tennis.mp4").is_file()
+
+
+def test_a_measured_clip_replaces_a_provisional_one(monkeypatch, tmp_path):
+    ref = tmp_path / "ref"
+    ref.mkdir()
+    (ref / "tennis.mp4").write_bytes(b"old")
+    (ref / "tennis.reference.json").write_text(
+        json.dumps({"game_id": "old", "rows": 0, "passed": False}),
+        encoding="utf-8")
+    monkeypatch.setattr(footage_bridge, "REFERENCE_DIR", ref)
+    monkeypatch.setattr(footage_bridge, "TRACKING_DIR", tmp_path / "tracking")
+    monkeypatch.setattr(footage_bridge, "TRACKING_REPORT_DIR", tmp_path / "rep")
+    csv_dir = tmp_path / "tracking" / "tennis_09"
+    csv_dir.mkdir(parents=True)
+    (csv_dir / "tracking_data.csv").write_text("h\n" + "r\n" * 9000,
+                                               encoding="utf-8")
+    clip = tmp_path / "tennis_09.mp4"
+    clip.write_bytes(b"better")
+
+    assert footage_bridge.keep_reference(clip, "tennis") is True
+    assert (ref / "tennis.mp4").read_bytes() == b"better"
+
+
+def test_a_worse_clip_never_displaces_the_incumbent(monkeypatch, tmp_path):
+    """Losing the only retained footage is worse than keeping a mediocre clip."""
+    ref = tmp_path / "ref"
+    ref.mkdir()
+    (ref / "tennis.mp4").write_bytes(b"good")
+    (ref / "tennis.reference.json").write_text(
+        json.dumps({"game_id": "g", "rows": 9000, "passed": True}),
+        encoding="utf-8")
+    monkeypatch.setattr(footage_bridge, "REFERENCE_DIR", ref)
+    monkeypatch.setattr(footage_bridge, "TRACKING_DIR", tmp_path / "tracking")
+    monkeypatch.setattr(footage_bridge, "TRACKING_REPORT_DIR", tmp_path / "rep")
+    csv_dir = tmp_path / "tracking" / "tennis_02"
+    csv_dir.mkdir(parents=True)
+    (csv_dir / "tracking_data.csv").write_text("h\n" + "r\n" * 12,
+                                               encoding="utf-8")
+    clip = tmp_path / "tennis_02.mp4"
+    clip.write_bytes(b"worse")
+
+    assert footage_bridge.keep_reference(clip, "tennis") is False
+    assert (ref / "tennis.mp4").read_bytes() == b"good"
+
+
+def test_http_416_clears_the_stale_partial_so_a_retry_can_succeed(
+        monkeypatch, tmp_path):
+    """yt-dlp resumes onto an existing file; a leftover from a killed worker
+    makes every retry die with 416, blocking that game permanently."""
+    monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
+    monkeypatch.setattr(footage_bridge, "COOKIES", tmp_path / "absent.txt")
+    monkeypatch.setattr(footage_bridge, "probe_duration", lambda url: 0)
+    stale = tmp_path / "g5.mp4"
+    stale.write_bytes(b"partial")
+    (tmp_path / "g5.mp4.ytdl").write_bytes(b"state")
+    attempts = []
+
+    def fake_run(command, **kwargs):
+        attempts.append(command)
+        if len(attempts) == 1:
+            raise subprocess.CalledProcessError(
+                1, command, "",
+                "ERROR: unable to download video data: HTTP Error 416: "
+                "Requested range not satisfiable")
+        (tmp_path / "g5.mp4").write_bytes(b"complete video")
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(footage_bridge.subprocess, "run", fake_run)
+    result = footage_bridge.download_local(
+        {"game_id": "g5", "url": "https://www.youtube.com/watch?v=z"})
+
+    assert result.read_bytes() == b"complete video"
+    assert not (tmp_path / "g5.mp4.ytdl").exists()

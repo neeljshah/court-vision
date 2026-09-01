@@ -26,6 +26,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from typing import Optional
 
 POD = ["-o", "StrictHostKeyChecking=no", "-o", "ConnectTimeout=30", "-p", "40048",
        "root@213.192.2.83"]
@@ -40,6 +41,8 @@ LEDGER = Path("data/tracking/footage_bridge_ledger.jsonl")
 # homography investigation unable to produce a before/after because no footage
 # survived. Gitignored under data/, capped at one file per sport.
 REFERENCE_DIR = Path("data/videos/reference")
+TRACKING_REPORT_DIR = Path("data/tracking_reports")
+TRACKING_DIR = Path("data/tracking")
 # yt-dlp writes per-stream files like game.f137.mp4 (video-only) and
 # game.f299.mp4 (audio-only) before merging them. If the merge fails these
 # survive, and picking the largest would ship a video-only or audio-only
@@ -48,6 +51,11 @@ _FORMAT_PART = re.compile(r"\.f\d{2,4}\.")
 # A real tracked game has thousands of rows. Anything under this is a failed
 # detection pass wearing a successful exit code.
 MIN_TRACKING_ROWS = 500
+# The pod tracks ~24 games at once. Downloading past that just fills pod disk
+# and, locally, piles up yt-dlp processes -- this box has crashed twice from
+# concurrent unbounded load. Since section downloads made fetching ~12x cheaper,
+# downloads now comfortably outrun tracking, so the producer needs backpressure.
+MAX_POD_BACKLOG = 24
 SPORT_ADAPTER = {"tennis": "tennis", "soccer": "soccer", "npb": "baseball",
                  "kbo": "baseball", "mlb": "baseball", "baseball": "baseball"}
 # yt-dlp rungs, cheapest first. The pod cannot use any of them; the local IP can.
@@ -184,6 +192,22 @@ def probe_duration(url: str) -> float:
         return 0.0
 
 
+def _purge_leftovers(destination: Path) -> None:
+    """Delete a partial download and its yt-dlp siblings.
+
+    yt-dlp resumes onto an existing file. When a worker is killed mid-download
+    the leftover can be larger than the remote range allows, and every retry
+    then dies with "HTTP Error 416: Requested range not satisfiable" -- which
+    blocks that game permanently rather than transiently. Measured at 6 of the
+    last 60 download attempts.
+    """
+    for leftover in destination.parent.glob(destination.stem + "*"):
+        try:
+            leftover.unlink()
+        except OSError:
+            pass
+
+
 def download_local(item: dict) -> Path:
     """Download one item to the local stage, returning the merged file."""
     LOCAL_STAGE.mkdir(parents=True, exist_ok=True)
@@ -229,6 +253,10 @@ def download_local(item: dict) -> Path:
                            capture_output=True, text=True)
         except subprocess.CalledProcessError as exc:
             last_error = _error_tail(exc.stderr, exc.stdout)
+            if "416" in last_error:
+                # Resume onto a stale partial. Clear it so the NEXT rung starts
+                # clean instead of inheriting the same unsatisfiable range.
+                _purge_leftovers(destination)
             continue
         except subprocess.TimeoutExpired:
             last_error = "yt-dlp timeout"
@@ -238,6 +266,39 @@ def download_local(item: dict) -> Path:
             return produced
         last_error = "yt-dlp reported success but produced no file"
     raise RuntimeError("download failed: %s" % last_error)
+
+
+def pod_backlog() -> int:
+    """Complete games staged on the pod awaiting tracking. -1 when unknown.
+
+    Counts only published .mp4 files; in-flight .part uploads are deliberately
+    excluded so a slow transfer cannot look like backlog.
+    """
+    result = _ssh("ls %s/*.mp4 2>/dev/null | wc -l" % REMOTE_STAGE, timeout=120)
+    try:
+        return int((result.stdout or "").strip().splitlines()[-1])
+    except (ValueError, IndexError):
+        return -1
+
+
+def wait_for_capacity(limit: int = MAX_POD_BACKLOG, sleep_seconds: int = 120,
+                      attempts: int = 20) -> int:
+    """Pause while the pod already has more staged games than it can track.
+
+    Returns the last observed backlog. An UNKNOWN backlog (-1, e.g. ssh down)
+    never blocks: stalling the whole night on a failed probe would be worse
+    than briefly over-filling the stage. The attempt cap likewise guarantees
+    this can never deadlock if the backlog stops draining.
+    """
+    backlog = pod_backlog()
+    for _ in range(attempts):
+        if backlog < 0 or backlog < limit:
+            return backlog
+        print("pod backlog %d >= %d -- pausing downloads" % (backlog, limit),
+              flush=True)
+        time.sleep(sleep_seconds)
+        backlog = pod_backlog()
+    return backlog
 
 
 def push_and_track(local: Path, item: dict) -> str:
@@ -320,20 +381,90 @@ def grade(game_id: str, sport: str) -> str:
     return "ungraded:" + (result.stderr or "")[-90:].replace("\n", " ")
 
 
-def keep_reference(local: Path, sport: str) -> bool:
-    """Retain ONE clip per sport for re-measurement; return True if kept.
+def _reference_quality(local: Path, sport: str) -> Optional[dict]:
+    """Measured quality of a candidate clip, or None when nothing measured it.
 
-    Everything else is still deleted from both disks. Without this, no footage
-    survives a run and tracking changes cannot be measured before/after.
+    In DECOUPLED mode this is usually None: keep_reference runs immediately
+    after the upload, before the pod has tracked anything, and the tracking
+    output lives on the pod anyway. Callers must handle None by keeping the
+    clip provisionally rather than discarding it -- rejecting every unmeasured
+    candidate silently retains NOTHING, which is how the reference corpus
+    stayed empty.
     """
+    game_id = local.stem
+    report = TRACKING_REPORT_DIR / sport / (game_id + ".json")
+    tracking = TRACKING_DIR / game_id / "tracking_data.csv"
+    passed, evidence, rows = False, False, 0
+    try:
+        payload = json.loads(report.read_text(encoding="utf-8"))
+        passed = bool(payload.get("passed", False))
+        evidence = True
+    except (OSError, ValueError, TypeError):
+        pass
+    try:
+        with tracking.open(encoding="utf-8") as handle:
+            rows = max(0, sum(1 for _ in handle) - 1)
+        evidence = True
+    except OSError:
+        rows = 0
+    return {"game_id": game_id, "rows": rows, "passed": passed} if evidence else None
+
+
+def _reference_clip(sport: str) -> Optional[Path]:
+    """The retained clip for a sport, excluding its JSON metadata sidecar."""
+    for path in REFERENCE_DIR.glob(sport + ".*"):
+        if path.is_file() and path.stem == sport and path.suffix != ".json":
+            return path
+    return None
+
+
+def keep_reference(local: Path, sport: str) -> bool:
+    """Retain the BEST known clip per sport, replacing a weaker incumbent.
+
+    Ranked by (passed, rows), so a game that clears the harness always beats
+    one that does not. The previous version kept the FIRST clip forever, which
+    let a nine-row clip become a sport's permanent baseline.
+
+    An unmeasured candidate is kept PROVISIONALLY when there is no incumbent,
+    so a run always retains footage; any measured clip then outranks it.
+    """
+    quality = _reference_quality(local, sport)
+    provisional = quality is None
+    if provisional:
+        quality = {"game_id": local.stem, "rows": 0, "passed": False,
+                   "provisional": True}
+    sidecar = REFERENCE_DIR / (sport + ".reference.json")
+    candidate = REFERENCE_DIR / (sport + ".candidate" + local.suffix)
+    metadata = REFERENCE_DIR / (sport + ".reference.json.new")
     try:
         REFERENCE_DIR.mkdir(parents=True, exist_ok=True)
-        if any(REFERENCE_DIR.glob(sport + ".*")):
-            return False
-        local.replace(REFERENCE_DIR / (sport + local.suffix))
-        print("kept reference clip for %s" % sport, flush=True)
+        incumbent = _reference_clip(sport)
+        if incumbent is not None:
+            if provisional:
+                return False  # never displace a clip with an unmeasured one
+            try:
+                prior = json.loads(sidecar.read_text(encoding="utf-8"))
+                prior_rank = (bool(prior["passed"]), int(prior["rows"]))
+            except (OSError, ValueError, TypeError, KeyError):
+                prior_rank = (False, -1)  # unreadable sidecar must not lock us out
+            if (bool(quality["passed"]), int(quality["rows"])) <= prior_rank:
+                return False
+        local.replace(candidate)
+        metadata.write_text(json.dumps(quality, sort_keys=True), encoding="utf-8")
+        destination = REFERENCE_DIR / (sport + local.suffix)
+        # Stage before publishing: a failed publish leaves the incumbent intact,
+        # and an incumbent with a different suffix is removed only afterwards.
+        candidate.replace(destination)
+        metadata.replace(sidecar)
+        if incumbent is not None and incumbent != destination:
+            incumbent.unlink()
+        print("kept reference clip for %s (rows=%d passed=%s%s)"
+              % (sport, quality["rows"], quality["passed"],
+                 " provisional" if provisional else ""), flush=True)
         return True
     except OSError as exc:
+        candidate.unlink(missing_ok=True)
+        metadata.unlink(missing_ok=True)
         print("reference keep failed for %s: %s" % (sport, exc), flush=True)
         return False
 
@@ -404,6 +535,10 @@ def main() -> int:
     while True:
         for queue_path in queues:
             try:
+                # Backpressure lives here, not inside run_queue: run_queue is
+                # unit-tested and must never open an ssh connection or sleep.
+                if args.decouple:
+                    wait_for_capacity()
                 run_queue(queue_path, args.limit, args.decouple)
             except Exception as exc:  # a bad queue must never end the night
                 print("queue pass failed %s: %s" % (queue_path, exc), flush=True)
