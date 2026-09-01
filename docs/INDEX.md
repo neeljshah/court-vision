@@ -79,6 +79,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 
 ### Evidence pages (claim -> receipt -> reproduce, one per claim family)
 - [evidence/README](evidence/README.md) -- **the evidence hub**: all pages grouped (honesty / calibration-market / engineering / frontier), each with its strongest receipt, plus the one-command `check_all.py` proof
+- [evidence/SESSION_2026-09-01_INDEX](evidence/SESSION_2026-09-01_INDEX.md) -- public-safe session index: tracking audit, harness hardening, and paper-execution receipts
 - [evidence/retraction-story](evidence/retraction-story.md) -- the flagship: the instruments that refuted my own headline numbers
 - [evidence/ingame-conditioning](evidence/ingame-conditioning.md) -- the one measured calibration win, market-comparison losses stated plainly
 - [evidence/agent-fleet-direction](evidence/agent-fleet-direction.md) -- directing an agent fleet under fail-closed gates (~91% agent-authored, disclosed)

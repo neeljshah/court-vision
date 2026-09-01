@@ -19,6 +19,25 @@ agentic loop that re-validates every stage. Each stage refines the one above it.
 
 ---
 
+## September 1 evidence update
+
+- The multi-sport tracking audit is fail-closed: the frozen sweep accepted no
+  retained game as coordinate-quality evidence, while declared image-pixel rows
+  remain training-only. The audit also records its denominator limitation, a
+  falsified soccer camera-ceiling hypothesis, a scoped baseball retraction, and
+  the football graphics confounder. See the
+  [session evidence index](evidence/SESSION_2026-09-01_INDEX.md) and
+  [tracking status](TRACKING.md).
+- Evaluation receipts now include redacted predictor inputs, an identity floor,
+  fail-closed comparison, a versioned baseline, null calibration, multiplicity
+  correction, and a frozen-odds ledger. These are safeguards, not performance
+  claims.
+- Paper execution records maker-only wiring, venue-clock latency, market-data
+  capture, and insufficient or rejected mechanism arms. No live-money or
+  betting-edge claim follows from these receipts.
+
+---
+
 ## The one-paragraph version
 
 End-to-end NBA intelligence system, intensive solo build (3,206 commits, Mar–Jul 2026),
