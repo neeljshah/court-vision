@@ -41,12 +41,13 @@ TRACKING = Path("data/tracking")
 # non-empty CSV is not evidence of anything.
 MIN_TRACKING_ROWS = 500
 # No single game may hold a worker slot forever. Sport adapters finish in 1-4
-# minutes; the basketball path (scripts/run_clip.py) is the full production
+# minutes (that was BEFORE concurrency was raised); the basketball path
+# (scripts/run_clip.py) is the full production
 # pipeline and was measured at 18216 seconds -- 5.06 HOURS -- still running.
 # Two of those pinned two slots while 22 wnba/ncaa games queued behind them and
 # jammed the stage against the bridge's backlog cap. A slot freed after 45
 # minutes is worth far more than one game tracked in five hours.
-JOB_TIMEOUT_SECONDS = 2700
+JOB_TIMEOUT_SECONDS = 3600
 SPORT_ADAPTER = {"tennis": "tennis", "soccer": "soccer", "npb": "baseball",
                  "kbo": "baseball", "mlb": "baseball", "baseball": "baseball"}
 # These go through run_clip.py, which the adapter registry does not cover.
@@ -215,7 +216,12 @@ def tick(active: dict, workers: int) -> None:
 
 def main(argv: list) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--workers", type=int, default=12)
+    # 10, not 24. MEASURED over 210 jobs at 23-way concurrency: p50 972s,
+    # p90 4165s, max 8773s, with 79 jobs past 43 minutes -- while the GPU sat at
+    # 3-11% utilization. Low utilization with slow jobs is contention on a
+    # serialized resource (one 3090, 23 CUDA contexts), not saturation, so
+    # adding workers was buying queueing delay rather than throughput.
+    parser.add_argument("--workers", type=int, default=10)
     parser.add_argument("--forever", action="store_true")
     parser.add_argument("--interval", type=int, default=20)
     args = parser.parse_args(argv[1:])

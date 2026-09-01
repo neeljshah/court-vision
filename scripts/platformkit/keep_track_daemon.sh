@@ -15,7 +15,7 @@ REPO=/workspace/nba-ai-system
 PID_FILE=/workspace/track_daemon.pid
 LOG=/workspace/track_daemon.log
 KEEPALIVE_LOG=/workspace/keepalive.log
-WORKERS=${WORKERS:-24}
+WORKERS=${WORKERS:-10}
 
 cd "$REPO" || exit 1
 
