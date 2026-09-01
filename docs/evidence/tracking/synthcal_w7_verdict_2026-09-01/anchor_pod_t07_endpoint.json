@@ -1,0 +1,1 @@
+{"duration_seconds": 180.0, "held_out_right_service_t_count": 28, "held_out_right_service_t_error_ft": {"median": 17.867, "p95": 27.84}, "sample_interval_seconds": 0.08, "source_fps": 25.0, "stride": 2, "variant": "endpoint", "video": "tennis__tennis_07.mp4"}

@@ -52,6 +52,8 @@ if [ -f /tmp/synthcal_verdict/COMPLETE ]; then
 else
   echo "SYNTH_VERDICT_COMPLETE=0"
 fi
+# COMPLETE alone lied on 2026-09-01 (watcher wrote it after failed stages); count the judge reports too.
+echo "SYNTH_VERDICT_REPORTS=$(ls /tmp/synthcal_verdict/*_report.json 2>/dev/null | wc -l)"
 echo "SELF_PID=$$"
 echo "PARENT_PID=$PPID"
 echo "===DISK_DF==="
@@ -149,6 +151,12 @@ def capture_running(proc_dump: str, self_pid: str, parent_pid: str,
     return False
 
 
+def synthcal_complete(kv: dict) -> bool:
+    """Sentinel AND at least one judge report json -- a bare COMPLETE is not a verdict."""
+    reports = kv.get("SYNTH_VERDICT_REPORTS", "0").strip()
+    return kv.get("SYNTH_VERDICT_COMPLETE") == "1" and reports.isdigit() and int(reports) > 0
+
+
 def build_report(raw: str) -> dict:
     """Assemble the final report dict from the remote script's raw stdout."""
     kv = parse_kv(raw)
@@ -157,7 +165,7 @@ def build_report(raw: str) -> dict:
         "reachable": True,
         "daemon_alive": kv.get("DAEMON_ALIVE") == "1",
         "synthcal": {"step": step_loss["step"], "loss": step_loss["loss"],
-                     "complete": kv.get("SYNTH_VERDICT_COMPLETE") == "1"},
+                     "complete": synthcal_complete(kv)},
         "capture_running": capture_running(extract_block(raw, "PROC_DUMP"),
                                             kv.get("SELF_PID", ""),
                                             kv.get("PARENT_PID", "")),

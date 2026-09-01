@@ -1,0 +1,12 @@
+{
+  "steps": 20000,
+  "synthetic_val_pck_at_7px": 0.129821,
+  "converged": false,
+  "background_plates": "non-court frames from nyYk2nPZAwY",
+  "prior": "narrow behind-baseline",
+  "augmentation": [
+    "lighting-hue jitter",
+    "viewpoint diversity",
+    "decoy lines"
+  ]
+}

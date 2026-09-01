@@ -4,6 +4,7 @@ from scripts.platformkit import ops_healthcheck as ops
 
 RAW_FIXTURE = """DAEMON_ALIVE=1
 SYNTH_VERDICT_COMPLETE=0
+SYNTH_VERDICT_REPORTS=0
 SELF_PID=555
 PARENT_PID=554
 ===DISK_DF===
@@ -28,7 +29,7 @@ Filesystem     1024-blocks      Used Available Capacity Mounted on
 
 def test_extract_block_and_parse_kv():
     assert ops.parse_kv(RAW_FIXTURE) == {
-        "DAEMON_ALIVE": "1", "SYNTH_VERDICT_COMPLETE": "0",
+        "DAEMON_ALIVE": "1", "SYNTH_VERDICT_COMPLETE": "0", "SYNTH_VERDICT_REPORTS": "0",
         "SELF_PID": "555", "PARENT_PID": "554",
     }
     assert "23 %" in ops.extract_block(RAW_FIXTURE, "GPU_RAW")
@@ -159,3 +160,13 @@ def test_render_table_empty_and_nonempty():
     assert ops.render_table([]) == "(no task output files found)"
     out = ops.render_table([{"lane": "x", "exit": None, "last_line": "hi"}])
     assert "x" in out and "exit=?" in out and "hi" in out
+
+
+def test_synthcal_complete_requires_report_json():
+    # 2026-09-01 landmine: the pod watcher wrote COMPLETE after the emitter and judge both failed.
+    assert ops.synthcal_complete({"SYNTH_VERDICT_COMPLETE": "1", "SYNTH_VERDICT_REPORTS": "0"}) is False
+    assert ops.synthcal_complete({"SYNTH_VERDICT_COMPLETE": "1"}) is False
+    assert ops.synthcal_complete({"SYNTH_VERDICT_COMPLETE": "0", "SYNTH_VERDICT_REPORTS": "2"}) is False
+    assert ops.synthcal_complete({"SYNTH_VERDICT_COMPLETE": "1", "SYNTH_VERDICT_REPORTS": "2"}) is True
+    raw = RAW_FIXTURE.replace("SYNTH_VERDICT_COMPLETE=0", "SYNTH_VERDICT_COMPLETE=1")
+    assert ops.build_report(raw)["synthcal"]["complete"] is False
