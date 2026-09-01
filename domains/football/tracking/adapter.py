@@ -23,8 +23,9 @@ def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
 
 class FootballAdapter(FootballGeometryMixin):
     """Estimate an offset-relative field plane and pre-snap player formations."""
-    def __init__(self, detector: Optional[Detector] = None, motion_threshold: float = 3.0, scene_cut_threshold: float = 0.55) -> None:
-        super().__init__()
+    def __init__(self, detector: Optional[Detector] = None, motion_threshold: float = 3.0,
+                 scene_cut_threshold: float = 0.55, field_level: Optional[str] = None) -> None:
+        super().__init__(field_level=field_level)
         self.detector, self.motion_threshold, self.scene_cut_threshold = detector, motion_threshold, scene_cut_threshold
         self._homography, self.last_fit_stats, self._centroids, self._next_track_id = None, {}, {}, 1
         self.scene_cuts_detected, self.last_output = 0, pd.DataFrame(columns=SCHEMA)

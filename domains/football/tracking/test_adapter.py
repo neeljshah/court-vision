@@ -10,6 +10,8 @@ import pandas as pd
 
 from domains.football.tracking.adapter import (SANITY_LIMIT_FT, YARD_LINE_SPACING_FT,
                                                FootballAdapter)
+from domains.football.tracking.geometry import (NCAA_HASH_ROW_SEPARATION_FT,
+                                                NFL_HASH_ROW_SEPARATION_FT, field_spec)
 from domains.football.tracking.absolute_anchor import AbsoluteYardAnchor
 from scripts.platformkit.tracking_harness import evaluate
 
@@ -31,7 +33,7 @@ class _AnchorProvider:
 
 
 def _adapter(**kwargs: object) -> FootballAdapter:
-    adapter = FootballAdapter(**kwargs)
+    adapter = FootballAdapter(field_level="nfl", **kwargs)
     adapter.absolute_anchor_provider = _AnchorProvider()
     return adapter
 
@@ -57,6 +59,14 @@ def test_unmeasured_scale_never_promotes_a_grid_to_feet() -> None:
     assert len(lines) >= 10
     assert adapter.homography_from_yard_lines(frame) is None
     assert adapter.last_fit_stats["reject"] == "independent_scale_unavailable"
+
+
+def test_hash_row_dimensions_are_named_not_inferred() -> None:
+    assert NFL_HASH_ROW_SEPARATION_FT == 18.5
+    assert NCAA_HASH_ROW_SEPARATION_FT == 40.0
+    assert field_spec("nfl").hash_row_separation_ft == 18.5
+    assert field_spec("ncaa").hash_row_separation_ft == 40.0
+    assert FootballAdapter().field_level is None
 
 
 def test_pre_snap_classifier_separates_still_and_moving_frames() -> None:
