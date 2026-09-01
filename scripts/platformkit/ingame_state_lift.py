@@ -52,7 +52,8 @@ def _optional_feature_frame(ticks: List[Dict[str, Any]]) -> Optional[pd.DataFram
     except ImportError:
         return None
     builder = next((getattr(module, name, None) for name in
-                    ("build_feature_frame", "state_feature_frame", "build_features")
+                    ("build_feature_frame", "state_feature_frame", "build_features",
+                     "game_state_features")
                     if callable(getattr(module, name, None))), None)
     if builder is None:
         return None
