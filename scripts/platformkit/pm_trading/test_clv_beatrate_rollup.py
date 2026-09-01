@@ -25,9 +25,13 @@ import pytest
 
 from scripts.platformkit.pm_trading.clv_beatrate_rollup import (
     MIN_N,
+    MODE_LEGACY,
+    MODE_MAKER,
+    MODE_TAKER,
     _VERDICT_GRADED,
     _VERDICT_INSUFFICIENT,
     _VERDICT_PROXY_ONLY,
+    build_mode_rollup,
     build_rollup,
     load_and_rollup,
 )
@@ -366,3 +370,86 @@ def test_non_dict_items_skipped():
     assert len(result) == 1
     assert result[0]["n_settled"] == 1
     assert result[0]["verdict"] == _VERDICT_INSUFFICIENT
+
+
+# ---------------------------------------------------------------------------
+# Execution-mode axis (S1f, matrix R9): maker / taker / legacy
+# ---------------------------------------------------------------------------
+
+def _ingame(taken_book: str, clv_pct: Optional[float], unit_result: Optional[float] = None) -> Dict[str, Any]:
+    """Minimal settled paper_ingame-channel row (the only channel with a
+    maker/legacy split -- see _row_exec_mode)."""
+    row: Dict[str, Any] = {
+        "status": "settled",
+        "sport": "nba",
+        "market": "moneyline",
+        "channel": "paper_ingame",
+        "clv_pct": clv_pct,
+        "clv_is_proxy": False,
+        "taken_book": taken_book,
+        "stake_units": 1.0,
+    }
+    if unit_result is not None:
+        row["unit_result"] = unit_result
+    return row
+
+
+def test_mode_axis_three_modes_correct_counts_legacy_excluded_maker_honest():
+    """Synthetic ledger with maker+taker+legacy rows:
+      - build_mode_rollup shows all three modes with correct counts.
+      - build_rollup's headline (sport, market) series excludes legacy rows.
+      - the empty maker pool reports n_settled=0, never taker's numbers.
+    """
+    rows = [
+        # taker: real venue, immediate fill (no channel -> not paper_ingame)
+        _settled("nba", "moneyline", clv_pct=+1.0, taken_book="kalshi"),
+        _settled("nba", "moneyline", clv_pct=+1.0, taken_book="kalshi"),
+        _settled("nba", "moneyline", clv_pct=-0.5, taken_book="kalshi"),
+        # legacy: paper_ingame channel, pre-maker-tag default taken_book
+        _ingame(taken_book="paper_ingame", clv_pct=+2.0),
+        _ingame(taken_book="paper_ingame", clv_pct=+2.0),
+        # NOTE: zero maker-tagged rows -- the maker pool is genuinely empty,
+        # matching the real ledger as of 2026-09-01 (matrix R9).
+    ]
+
+    mode_rollup = build_mode_rollup(rows)
+    assert set(mode_rollup) == {MODE_MAKER, MODE_TAKER, MODE_LEGACY}
+
+    maker = mode_rollup[MODE_MAKER]
+    assert maker["n_settled"] == 0
+    assert maker["beat_rate"] is None
+    assert maker["mean_clv_pct"] is None
+    assert maker["verdict"] == _VERDICT_INSUFFICIENT
+
+    taker = mode_rollup[MODE_TAKER]
+    assert taker["n_settled"] == 3
+    # Empty maker pool never silently reports the taker bucket's numbers.
+    assert maker["n_settled"] != taker["n_settled"]
+
+    legacy = mode_rollup[MODE_LEGACY]
+    assert legacy["n_settled"] == 2
+
+    # Headline (sport, market) series excludes legacy: only the 3 taker rows.
+    headline = build_rollup(rows)
+    assert len(headline) == 1
+    assert headline[0]["sport"] == "nba"
+    assert headline[0]["n_settled"] == 3
+
+
+def test_mode_axis_maker_tagged_row_classifies_as_maker_fees_netted():
+    """A row explicitly tagged paper_ingame_maker is "maker"; its fees-netted
+    unit_result (grade_paper_one) surfaces as mean_unit_result, context-only."""
+    rows = [_ingame(taken_book="paper_ingame_maker", clv_pct=+1.5, unit_result=0.42)]
+    maker = build_mode_rollup(rows)[MODE_MAKER]
+    assert maker["n_settled"] == 1
+    assert maker["n_unit_result"] == 1
+    assert maker["mean_unit_result"] == pytest.approx(0.42)
+
+
+def test_mode_axis_non_ingame_rows_are_never_legacy():
+    """Pregame/PM rows (no paper_ingame channel) are always "taker", never
+    misclassified as the paper_ingame-specific "legacy" bucket."""
+    rows = [_settled("mlb", "totals", clv_pct=+1.0, taken_book="fanduel")]
+    mode_rollup = build_mode_rollup(rows)
+    assert mode_rollup[MODE_TAKER]["n_settled"] == 1
+    assert mode_rollup[MODE_LEGACY]["n_settled"] == 0

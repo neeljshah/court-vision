@@ -34,8 +34,22 @@ MAKER_SERIES = "paper_ingame_maker"
 
 
 def _row_series(row: Dict[str, Any]) -> str:
-    """The CLV series a ledger row belongs to. Untagged legacy rows predate any
-    taker path, so by construction they are the maker series."""
+    """The CLV series a ledger row belongs to.
+
+    CORRECTED 2026-09-01 (EXECUTION_ENFORCEMENT_MATRIX R9): this docstring
+    used to claim "untagged legacy rows predate any taker path, so by
+    construction they are the maker series". That is FALSE against real
+    rows -- record_ingame_bet (paper_ingame.py) ALWAYS stamps taken_book
+    (default "paper_ingame"), so the taken_book fallback below fires before
+    the MAKER_SERIES fallback ever does. Measured against the real ledger:
+    every existing paper_ingame row is (clv_series=None,
+    taken_book="paper_ingame") -> series=="paper_ingame" != MAKER_SERIES ->
+    EXCLUDED from the maker pool. The maker pool is genuinely EMPTY today.
+    The direction is safe (empty pool -> median None -> capped placement),
+    but no row here should be read as "maker" just because it is untagged.
+    See scripts/platformkit/pm_trading/clv_beatrate_rollup.py for the
+    maker/taker/legacy rollup that reports this honestly.
+    """
     gate = row.get("exec_gate") if isinstance(row.get("exec_gate"), dict) else {}
     return str(row.get("clv_series") or gate.get("clv_series")
                or row.get("taken_book") or MAKER_SERIES)
