@@ -168,4 +168,7 @@ LOW behind G25b.
 
 | gap | sport | measured result | evidence | status |
 |---|---|---|---|---|
-| G60 | tennis | The 250-265-horizontal premise reproduces on all six named clay frames. On 40 unique seeded/evenly-spaced `horizontal_roles` clay frames, 7,806/9,454 (82.6% [81.8%, 83.3%]) Hough horizontals lie above a solver-derived horizon, versus 1,872/14,624 (12.8% [12.3%, 13.4%]) on 40 hard controls. Removing only above-horizon horizontals gives 4/40 role-assignment passes but 0/40 full solver accepts on clay and hard. One of ten inspected clay renders is a crowd cutaway and remains counted. | `g60_clay_horizontals_2026-09-02.md`, `g60_clay_horizontals_2026-09-02.json`, `g60_renders/` | CLOSED AT LIMIT for above-court-horizontal exclusion alone; venue-scoped, no solver change |
+## G61 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
