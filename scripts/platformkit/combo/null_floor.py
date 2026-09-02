@@ -126,10 +126,21 @@ def prescreen_verdict(sport: str, corpus_unit: str, n_extra_params: int,
     unit_table = payload.get("floors", {}).get(corpus_unit)
     if unit_table is None:
         raise KeyError(f"no null floor cached for {sport!r} corpus_unit={corpus_unit!r}")
-    n_key = str(min(max(1, int(n_extra_params)), MAX_EXTRA_PARAMS))
-    entry = unit_table.get(n_key)
+    # S40b / RT-9: this used to CLAMP -- `min(max(1, n), MAX_EXTRA_PARAMS)` silently graded a
+    # candidate against a floor built for FEWER free columns (measured: n_extra=12 -> table
+    # key "4"), and a 4-column noise floor sits lower than a 12-column one, so the wider
+    # candidate returned PROCEED. MAX_EXTRA_PARAMS is a labelled CEILING on what the table
+    # covers; "no matched floor" is an honest stop, not a nearest-neighbour grade.
+    n_extra = int(n_extra_params)
+    if not 1 <= n_extra <= MAX_EXTRA_PARAMS:
+        raise KeyError(
+            f"no null floor for n_extra_params={n_extra}: the table covers 1..{MAX_EXTRA_PARAMS} "
+            f"(MAX_EXTRA_PARAMS is a ceiling on coverage, not a clamp); rebuild the floor table "
+            f"with MAX_EXTRA_PARAMS >= {n_extra} to grade this candidate"
+        )
+    entry = unit_table.get(str(n_extra))
     if entry is None:
-        raise KeyError(f"no null floor cached for {sport!r} unit={corpus_unit!r} n_extra={n_key}")
+        raise KeyError(f"no null floor cached for {sport!r} unit={corpus_unit!r} n_extra={n_extra}")
     return "REJECT" if candidate_delta <= entry["p99"] else "PROCEED"
 
 

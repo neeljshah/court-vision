@@ -44,7 +44,12 @@ class CalibrationResult:
 
     @property
     def passed(self) -> bool:
-        return self.ship_rate <= self.threshold
+        # S40b / RT-6: `passed` never consulted `provisional`, so a run that hit the
+        # wall-time cap after ONE candidate reported PASS (measured: candidates=1,
+        # ships=0, provisional=True -> passed True, main() exit 0). A provisional run
+        # has not measured the ship rate; it can only be UNDECIDED, never PASS.
+        # The 2*alpha ceiling itself is a pre-registered bar and does NOT move.
+        return (not self.provisional) and self.ship_rate <= self.threshold
 
 
 @dataclass(frozen=True)
@@ -149,7 +154,8 @@ def render_report(result: CalibrationResult,
                   exploits: Sequence[ExploitRegressionResult] = ()) -> str:
     """Render the pre-registered decision in ASCII only."""
     scope = "PROVISIONAL" if result.provisional else "FINAL"
-    verdict = "PASS" if result.passed else "BROKEN"
+    # A provisional run is UNDECIDED, not BROKEN: it stopped early, it did not misbehave.
+    verdict = "UNDECIDED" if result.provisional else ("PASS" if result.passed else "BROKEN")
     lines = [
         "NULL-SHIP CALIBRATION OF THE CORRECTED GATE",
         "status=%s candidates=%d ships=%d" % (scope, result.candidates, result.ships),
@@ -159,7 +165,7 @@ def render_report(result: CalibrationResult,
     ]
     if result.provisional:
         lines.append("PROVISIONAL: 200 sequential runs exceeded the 45-minute wall-time cap.")
-    if not result.passed:
+    if not result.passed and not result.provisional:
         lines.append("BROKEN: every SHIP since the last passing calibration is suspended.")
     for exploit in exploits:
         lines.append("exploit=%s outcome=%s ships=%d verdict=%s" % (
