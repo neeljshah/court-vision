@@ -1,0 +1,4 @@
+variant,visible_lines,detected_lines,total_lsd_segments,total_candidate_groups
+baseline,68,25,2577,1581
+g120_merge,68,24,2577,1311
+g123_clahe,68,23,2993,1654

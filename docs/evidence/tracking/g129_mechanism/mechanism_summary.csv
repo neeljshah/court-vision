@@ -1,0 +1,3 @@
+variant,stage_lost,mechanism,lost_lines
+g120_merge,pre-group fragment merge,merged fragment span refit changed the grouped candidate geometry,3
+g123_clahe,LSD proposal generation,CLAHE changed the LSD proposal set before grouping,7
