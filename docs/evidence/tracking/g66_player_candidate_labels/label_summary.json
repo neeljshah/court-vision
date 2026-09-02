@@ -1,0 +1,92 @@
+{
+  "n": 210,
+  "label_counts": {
+    "player": 51,
+    "non_player_person": 155,
+    "uncertain": 4
+  },
+  "per_clip": {
+    "tennis_09": {
+      "player": 16,
+      "non_player_person": 54
+    },
+    "tennis_10": {
+      "non_player_person": 56,
+      "player": 14
+    },
+    "tennis_nyYk2nPZAwY_720p": {
+      "player": 21,
+      "non_player_person": 45,
+      "uncertain": 4
+    }
+  },
+  "per_stratum": {
+    "baseline": 90,
+    "stride_proxy_gt8": 120
+  },
+  "per_range": {
+    "tennis_09|615|914": {
+      "baseline": 6,
+      "stride_proxy_gt8": 8
+    },
+    "tennis_09|5070|5369": {
+      "stride_proxy_gt8": 8,
+      "baseline": 6
+    },
+    "tennis_09|5775|6074": {
+      "baseline": 6,
+      "stride_proxy_gt8": 8
+    },
+    "tennis_09|6960|7259": {
+      "baseline": 6,
+      "stride_proxy_gt8": 8
+    },
+    "tennis_09|7140|7439": {
+      "stride_proxy_gt8": 8,
+      "baseline": 6
+    },
+    "tennis_10|150|449": {
+      "stride_proxy_gt8": 8,
+      "baseline": 6
+    },
+    "tennis_10|3585|3884": {
+      "baseline": 6,
+      "stride_proxy_gt8": 8
+    },
+    "tennis_10|3930|4229": {
+      "stride_proxy_gt8": 8,
+      "baseline": 6
+    },
+    "tennis_10|6345|6644": {
+      "baseline": 6,
+      "stride_proxy_gt8": 8
+    },
+    "tennis_10|6405|6704": {
+      "stride_proxy_gt8": 8,
+      "baseline": 6
+    },
+    "tennis_nyYk2nPZAwY_720p|5715|6014": {
+      "stride_proxy_gt8": 8,
+      "baseline": 6
+    },
+    "tennis_nyYk2nPZAwY_720p|33105|33404": {
+      "stride_proxy_gt8": 8,
+      "baseline": 6
+    },
+    "tennis_nyYk2nPZAwY_720p|33855|34154": {
+      "stride_proxy_gt8": 8,
+      "baseline": 6
+    },
+    "tennis_nyYk2nPZAwY_720p|41985|42284": {
+      "baseline": 6,
+      "stride_proxy_gt8": 8
+    },
+    "tennis_nyYk2nPZAwY_720p|43830|44129": {
+      "stride_proxy_gt8": 8,
+      "baseline": 6
+    }
+  },
+  "player_share_n": 51,
+  "proxy_not_player_n": 95,
+  "proxy_n": 120
+}
