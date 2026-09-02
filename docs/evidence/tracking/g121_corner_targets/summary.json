@@ -1,0 +1,16 @@
+{
+  "g111_seed_reused": 1112026,
+  "subset_slots": [
+    0,
+    10,
+    15
+  ],
+  "subset_frames": 33,
+  "g111_visible_role_rows": 104,
+  "committed_pixel_targets": 0,
+  "coordinate_status": "NOT_VALIDATED",
+  "reason": "At least one selected G111-visible role has no discernible source-frame intersection, so recording an x/y would fabricate ground truth.",
+  "detector_run": false,
+  "recall_measured": false,
+  "self_agreement_measured": false
+}
