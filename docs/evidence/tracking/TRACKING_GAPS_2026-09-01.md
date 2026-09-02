@@ -170,7 +170,7 @@ LOW behind G25b.
 
 | gap | sport | measured result | evidence | status |
 |---|---|---|---|---|
-| G62 | all | Newly written tracking-evidence artifacts from the two current writers carry complete additive environment stamps; old artifacts still parse and were not retrofitted. | `g62_run_environment_stamp_2026-09-02.md`; `scripts/platformkit/tracking/run_environment.py` | ACCEPT |
+| G33B attempt 2 | baseball | Both inventory-named DAY clips exist on the pod, but the transient historic-function run returns 32 segments (19 plus 13) where the retained source artifact defines 30 (19 plus 11). The 21 historical failures cannot be reconstructed; no 23-failure substitute or render was claimed. | `g33b_baseball_scale_bins_2026-09-02.md` | NOT VALIDATED; G36 remains unreleased. |
 ## G61 result register
 
 | Gap | Sport | Finding | Evidence | Status |
