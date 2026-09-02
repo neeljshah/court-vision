@@ -1,0 +1,118 @@
+{
+  "video": "data/footage_corpus/tennis__tennis_nyYk2nPZAwY_720p.mp4",
+  "selection": {
+    "requested_ranges": 5,
+    "frames_per_range": 300,
+    "seed": 20260901,
+    "court_view_gate": "court_diagnostics.rejection_gate(frame) == accepted",
+    "selection_note": "Ranges are centered on accepted samples; no new gate was added."
+  },
+  "ranges": [
+    {
+      "source_frame_range": {
+        "start": 5715,
+        "stop": 6014,
+        "count": 300
+      },
+      "decoded_frames": 300,
+      "fresh_solves": 147,
+      "drift_checked_reuses": 36,
+      "solved_frame_coverage": 0.61,
+      "harness_verdict": "PASS",
+      "harness_failures": [],
+      "harness_metrics": {
+        "coverage_pct": 1.0,
+        "median_track_len": 183.0,
+        "ball_valid_pct": 0.3825,
+        "jump_p95": 0.71,
+        "oob_pct": 0.0
+      }
+    },
+    {
+      "source_frame_range": {
+        "start": 33105,
+        "stop": 33404,
+        "count": 300
+      },
+      "decoded_frames": 300,
+      "fresh_solves": 273,
+      "drift_checked_reuses": 24,
+      "solved_frame_coverage": 0.99,
+      "harness_verdict": "PASS",
+      "harness_failures": [],
+      "harness_metrics": {
+        "coverage_pct": 1.0,
+        "median_track_len": 297.0,
+        "ball_valid_pct": 0.6229,
+        "jump_p95": 0.63,
+        "oob_pct": 0.0
+      }
+    },
+    {
+      "source_frame_range": {
+        "start": 33855,
+        "stop": 34154,
+        "count": 300
+      },
+      "decoded_frames": 300,
+      "fresh_solves": 273,
+      "drift_checked_reuses": 26,
+      "solved_frame_coverage": 0.9966666666666667,
+      "harness_verdict": "PASS",
+      "harness_failures": [],
+      "harness_metrics": {
+        "coverage_pct": 1.0,
+        "median_track_len": 299.0,
+        "ball_valid_pct": 0.5084,
+        "jump_p95": 0.82,
+        "oob_pct": 0.0
+      }
+    },
+    {
+      "source_frame_range": {
+        "start": 41985,
+        "stop": 42284,
+        "count": 300
+      },
+      "decoded_frames": 300,
+      "fresh_solves": 155,
+      "drift_checked_reuses": 17,
+      "solved_frame_coverage": 0.5733333333333334,
+      "harness_verdict": "PASS",
+      "harness_failures": [],
+      "harness_metrics": {
+        "coverage_pct": 1.0,
+        "median_track_len": 172.0,
+        "ball_valid_pct": 0.3372,
+        "jump_p95": 0.68,
+        "oob_pct": 0.0
+      }
+    },
+    {
+      "source_frame_range": {
+        "start": 43830,
+        "stop": 44129,
+        "count": 300
+      },
+      "decoded_frames": 300,
+      "fresh_solves": 150,
+      "drift_checked_reuses": 18,
+      "solved_frame_coverage": 0.56,
+      "harness_verdict": "PASS",
+      "harness_failures": [],
+      "harness_metrics": {
+        "coverage_pct": 1.0,
+        "median_track_len": 168.0,
+        "ball_valid_pct": 0.5357,
+        "jump_p95": 0.85,
+        "oob_pct": 0.0
+      }
+    }
+  ],
+  "summary": {
+    "selected_ranges": 5,
+    "passing_ranges": 5,
+    "pass_fraction": 1.0,
+    "selection_shortfall": false
+  }
+}
