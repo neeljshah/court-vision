@@ -20,7 +20,10 @@ import numpy as np
 def implied_from_decimal(odds: Sequence[float]) -> np.ndarray:
     """Quoted implied probabilities pi_i = 1/decimal_odds_i (NOT normalized)."""
     o = np.asarray(odds, dtype=float)
-    assert np.all(o > 1.0), "decimal odds must be > 1"
+    # raise, not assert: `python -O` strips asserts, and a stripped price guard
+    # returns silently-wrong fair probabilities from a corrupted book.
+    if not (np.all(np.isfinite(o)) and np.all(o > 1.0)):
+        raise ValueError("decimal odds must be finite and > 1, got %s" % (o.tolist(),))
     return 1.0 / o
 
 
@@ -40,18 +43,25 @@ def shin_devig(pi: Sequence[float], tol: float = 1e-12, max_iter: int = 200) -> 
     no-vig case (returns pi unchanged when B == 1).
     """
     pi = np.asarray(pi, dtype=float)
-    assert np.all(pi > 0), "implied probs must be positive"
+    # raise, not assert (survives `python -O`). An implied prob outside (0, 1] is not
+    # a price: pi > 1 solved to a plausible-looking z and returned fair probabilities
+    # that were silently wrong.
+    if not (np.all(np.isfinite(pi)) and np.all(pi > 0.0) and np.all(pi <= 1.0)):
+        raise ValueError("implied probs must be finite and in (0, 1], got %s" % (pi.tolist(),))
     B = float(pi.sum())
     if abs(B - 1.0) < tol:
         return pi.copy(), 0.0           # already fair, no overround
-    assert B > 1.0, f"booksum {B} < 1 (arbitrage / bad input)"
+    if B <= 1.0:
+        raise ValueError("booksum %s < 1 (arbitrage / bad input)" % B)
 
     lo, hi = 0.0, 0.999999              # z in [0, 1)
+    converged = False
     # sum_i p_i(z) decreases monotonically in z; bisect to hit sum == 1
     for _ in range(max_iter):
         z = 0.5 * (lo + hi)
         s = float(_fair_probs_given_z(pi, z).sum())
         if abs(s - 1.0) < tol:
+            converged = True
             break
         # larger z -> smaller sum (more shrinkage); adjust accordingly
         if s > 1.0:
@@ -59,6 +69,12 @@ def shin_devig(pi: Sequence[float], tol: float = 1e-12, max_iter: int = 200) -> 
         else:
             hi = z
     p = _fair_probs_given_z(pi, z)
+    residual = abs(float(p.sum()) - 1.0)
+    # The normalization below is a rounding clean-up (residual ~1e-13), never a rescue:
+    # a bisection that never reached sum == 1 is a LABELLED failure, not a fair price.
+    if not converged and residual > 1e-9:
+        raise ValueError("shin bisection did not converge: |sum(p) - 1| = %.3e "
+                         "after %d iterations" % (residual, max_iter))
     p = p / p.sum()                     # numerical clean-up; sum is ~1 already
     return p, z
 

@@ -51,3 +51,28 @@ def test_mismatched_inputs_fail_closed():
         raise AssertionError("mismatched inputs must not be accepted")
     except ValueError:
         pass
+
+
+def test_degenerate_control_arm_does_not_manufacture_a_rejection():
+    """A constant-loss control arm must not change any other arm's verdict.
+
+    Its 0/0 studentized scale used to NaN-poison the family max statistic --
+    `nan >= observed` is False for every draw -- so the whole family's adjusted
+    p collapsed to 1/(B+1) and a non-significant arm was rejected BY the
+    correction (measured: alone 0.08646 / False, with the control 0.00050 / True).
+    """
+    rng = np.random.default_rng(7)
+    d, g = [], []
+    for game in range(30):
+        game_effect = 0.0047 + float(rng.normal(0.0, 0.012))
+        for _ in range(6):
+            d.append(game_effect + float(rng.normal(0.0, 0.002)))
+            g.append("g%02d" % game)
+    control = [0.0] * len(d)            # loss differential identical to the benchmark
+
+    alone = romano_wolf_stepdown([d], [g])
+    both = romano_wolf_stepdown([d, control], [g, g])
+    assert alone.rejected == (False,)
+    assert both.rejected == (False, False)          # same verdict, with and without
+    assert both.adjusted_p[0] == alone.adjusted_p[0]
+    assert both.adjusted_p[1] == 1.0                # masked arm: no evidence at all

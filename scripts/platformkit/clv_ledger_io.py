@@ -61,6 +61,16 @@ except ImportError:  # pragma: no cover - exercised on Windows
 
 _LOCK_TIMEOUT_S = 5.0
 _LOCK_POLL_S = 0.02
+_LOCK_POLL_MAX_S = 0.25         # retry backoff cap; the 5s deadline is unchanged
+
+
+class LedgerLockError(RuntimeError):
+    """A ledger critical section could not take the cross-process lock.
+
+    Raised instead of running a read-modify-write unserialised: two charges that
+    both read K and both write K+1 lose an update, which UNDERCOUNTS K and
+    loosens the per-test bar -- the exact failure the lock exists to prevent.
+    """
 
 
 def _lock_path(target: Path) -> Path:
@@ -73,6 +83,7 @@ def _acquire(lock_fh) -> bool:
     Never raises on a transient/unsupported lock -- the caller proceeds either way.
     """
     deadline = time.monotonic() + _LOCK_TIMEOUT_S
+    delay = _LOCK_POLL_S
     while True:
         try:
             if _LOCK_KIND == "fcntl":
@@ -84,8 +95,9 @@ def _acquire(lock_fh) -> bool:
             return False  # no lock backend: caller proceeds unlocked
         except OSError:
             if time.monotonic() >= deadline:
-                return False  # give up gracefully; append still proceeds
-            time.sleep(_LOCK_POLL_S)
+                return False  # caller decides: fail closed (default) or proceed
+            time.sleep(delay)
+            delay = min(delay * 2.0, _LOCK_POLL_MAX_S)   # back off, then give up
 
 
 def _release(lock_fh) -> None:
@@ -103,7 +115,8 @@ def _release(lock_fh) -> None:
 
 
 @contextlib.contextmanager
-def ledger_lock(path: Optional[Path] = None) -> Iterator[None]:
+def ledger_lock(path: Optional[Path] = None, *,
+                required: bool = True) -> Iterator[None]:
     """THE one shared advisory-lock helper -- hold the cross-process lock for
     *path*'s ledger for the duration of the ``with`` block.
 
@@ -116,8 +129,19 @@ def ledger_lock(path: Optional[Path] = None) -> Iterator[None]:
     ``with ledger_lock(path): ...`` instead of re-implementing lock/unlock
     plumbing per caller.
 
-    Best-effort / advisory, matching append_row's existing contract: NEVER
-    raises on lock failure or timeout -- the block still runs unlocked.
+    FAILS CLOSED (default): when a real lock backend exists and the lock cannot
+    be taken within _LOCK_TIMEOUT_S (after backoff retries), this raises
+    LedgerLockError instead of running the critical section unlocked. A
+    read-max + append that runs unserialised loses updates and undercounts K.
+    The happy path is unchanged -- lock taken, body runs, lock released.
+
+    required=False keeps the historical best-effort contract (the block still
+    runs unlocked on timeout). It is used only by this module's own append
+    primitives, whose documented contract is never to raise and whose single
+    newline-terminated write is itself near-atomic on local filesystems.
+
+    # ponytail: with NO lock backend at all (_LOCK_KIND == "none") the block
+    # still runs -- there is nothing to fail closed against on such a platform.
     """
     target = Path(path) if path is not None else DEFAULT_LEDGER
     lock_fh = None
@@ -128,8 +152,10 @@ def ledger_lock(path: Optional[Path] = None) -> Iterator[None]:
         except OSError:
             lock_fh = None
     try:
-        if lock_fh is not None:
-            _acquire(lock_fh)
+        if lock_fh is not None and not _acquire(lock_fh) and required:
+            raise LedgerLockError(
+                "could not acquire the ledger lock for %s within %.1fs; refusing to "
+                "run the critical section unlocked" % (target, _LOCK_TIMEOUT_S))
         yield
     finally:
         if lock_fh is not None:
@@ -156,7 +182,7 @@ def append_row(row: Dict[str, Any], *, path: Optional[Path] = None) -> None:
     target = Path(path) if path is not None else DEFAULT_LEDGER
     target.parent.mkdir(parents=True, exist_ok=True)
     payload = json.dumps(row, default=str) + "\n"
-    with ledger_lock(target):
+    with ledger_lock(target, required=False):   # documented never-raise contract
         with target.open("a", encoding="utf-8") as fh:
             fh.write(payload)
             fh.flush()
@@ -187,7 +213,7 @@ def append_row_if_new(
     """
     target = Path(path) if path is not None else DEFAULT_LEDGER
     try:
-        with ledger_lock(target):
+        with ledger_lock(target, required=False):   # never-raise; see docstring
             existing = {key_fn(r) for r in load_rows(path=target)}
             if key_fn(row) in existing:
                 return False
@@ -237,4 +263,5 @@ def ledger_path() -> Path:
 
 __all__ = [
     "append_row", "append_row_if_new", "ledger_lock", "load_rows", "ledger_path",
+    "LedgerLockError",
 ]

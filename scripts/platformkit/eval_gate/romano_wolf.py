@@ -60,20 +60,33 @@ def romano_wolf_stepdown(loss_diffs: Sequence[Sequence[float]],
                        for values, ids in zip(loss_diffs, game_ids)]
         observed = np.array([max(0.0, studentized_stats(row[None, :])[0])
                              for row in independent])
+        scales = np.array([float(np.std(row, ddof=1)) for row in independent])
+    # A degenerate arm -- constant loss differential (scale 0, e.g. a control arm
+    # identical to the benchmark) or a non-finite scale -- has no studentized
+    # statistic. Mirror spa_test.py's `usable = scales > 0.0` mask instead of
+    # dividing: an unmasked NaN poisons the family max statistic, `nan >= observed`
+    # is False for every draw, and the family's adjusted p collapses to 1/(B+1),
+    # turning a non-significant arm into a rejection BY the correction.
+    usable = np.isfinite(scales) & (scales > 0.0)
     rng = np.random.default_rng(seed)
-    boot = np.empty((n_bootstrap, k), dtype=float)
+    boot = np.zeros((n_bootstrap, k), dtype=float)
     for b in range(n_bootstrap):
         if independent is None:
             draw = centered[:, stationary_indices(n_games, rng, mean_block_length)]
-            boot[b] = np.maximum(0.0, np.sqrt(n_games) * draw.mean(axis=1) / scales)
+            boot[b, usable] = np.maximum(
+                0.0, np.sqrt(n_games) * draw[usable].mean(axis=1) / scales[usable])
         else:
             for j, row in enumerate(independent):
+                if not usable[j]:
+                    continue        # zero-scale row: 0.0, and no RNG draw (as before)
                 draw = row - row.mean()
-                scale = float(np.std(row, ddof=1))
-                boot[b, j] = (0.0 if scale == 0.0 else max(
+                boot[b, j] = max(
                     0.0, np.sqrt(len(row)) * draw[stationary_indices(
-                        len(row), rng, mean_block_length)].mean() / scale))
-    order = np.argsort(-observed, kind="stable")
+                        len(row), rng, mean_block_length)].mean() / scales[j])
+    # Masked arms stay out of the max statistic AND out of the stepdown: each keeps
+    # adjusted_p 1.0 / rejected False (no evidence is not strong evidence).
+    order = np.array([i for i in np.argsort(-observed, kind="stable") if usable[i]],
+                     dtype=int)
     adjusted = np.ones(k, dtype=float)
     running = 0.0
     for rank, index in enumerate(order):
@@ -82,7 +95,7 @@ def romano_wolf_stepdown(loss_diffs: Sequence[Sequence[float]],
         running = max(running, p)
         adjusted[index] = running
     return RomanoWolfResult(tuple(float(x) for x in adjusted),
-                            tuple(bool(x <= alpha and observed[i] > 0.0)
+                            tuple(bool(usable[i] and x <= alpha and observed[i] > 0.0)
                                   for i, x in enumerate(adjusted)), n_bootstrap)
 
 

@@ -23,7 +23,10 @@ import tempfile
 from pathlib import Path
 from typing import List
 
-from scripts.platformkit.clv_ledger_io import load_rows
+from scripts.platformkit import clv_ledger_io as _CLV
+from scripts.platformkit.clv_ledger_io import (
+    LedgerLockError, append_row, ledger_lock, load_rows,
+)
 
 _ROOT = Path(__file__).resolve().parents[2]
 
@@ -108,7 +111,40 @@ def test_concurrent_settle_no_duplicate():
         assert len(settled) == 1, "expected exactly 1 settled row, got %d" % len(settled)
 
 
+def test_contended_required_lock_fails_closed():
+    """A required lock that cannot be taken RAISES; the body never runs unlocked.
+
+    Measured before the fix (_LOCK_KIND="msvcrt"): a contended _acquire returned
+    False after its 5s timeout and ledger_lock ran the critical section anyway --
+    two concurrent charges then both read prior=K and both wrote K+1, a lost
+    update that UNDERCOUNTS K. append_row keeps its documented never-raise
+    contract (required=False) so a settlement row is never silently dropped.
+    """
+    if _CLV._LOCK_KIND == "none":
+        return  # no lock backend on this platform: nothing to fail closed against
+    with tempfile.TemporaryDirectory() as td:
+        target = Path(td) / "contended.jsonl"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        holder = _CLV._lock_path(target).open("a+", encoding="utf-8")
+        assert _CLV._acquire(holder) is True, "could not take the lock to contend it"
+        try:
+            ran = False
+            try:
+                with ledger_lock(target):
+                    ran = True
+                raise AssertionError("a contended required lock must not run the body")
+            except LedgerLockError:
+                pass
+            assert ran is False
+            append_row({"bet_id": "still-lands", "status": "open"}, path=target)
+            assert len(load_rows(path=target)) == 1
+        finally:
+            _CLV._release(holder)
+            holder.close()
+
+
 if __name__ == "__main__":
     test_concurrent_append_no_lost_rows()
     test_concurrent_settle_no_duplicate()
+    test_contended_required_lock_fails_closed()
     print("OK")

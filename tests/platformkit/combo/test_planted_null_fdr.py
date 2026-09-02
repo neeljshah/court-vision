@@ -45,3 +45,21 @@ def test_weakened_gate_ships_a_null_and_freezes_family():
     assert res.fdr_hat == 1.0
     assert res.fdr_hat > res.budget
     assert res.frozen is True
+
+
+def test_every_null_crashing_fails_closed():
+    """20/20 crashed nulls measured NOTHING -> no rate, and the family FREEZES.
+
+    Counting a crash as a conservative non-ship let the lane report
+    fdr_hat=0.0 / n_shipped=0 / frozen=False -- "the gate is not manufacturing
+    ships" having scored nothing at all.
+    """
+    def broken_gate(*a, **k):
+        raise RuntimeError("gate blew up")
+
+    res = run_family_nulls("interaction", n=20, n_games=20, ticks=4, gate=broken_gate)
+    assert res.n_run == 20
+    assert res.n_error == 20          # crashes are COUNTED, not silently absorbed
+    assert res.n_shipped == 0
+    assert res.fdr_hat is None        # no scorable null -> no rate (never 0.0)
+    assert res.frozen is True         # fail CLOSED

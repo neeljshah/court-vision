@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Dict, List, Sequence
+from typing import Dict, List, Optional, Sequence
 
 import numpy as np
 
@@ -45,12 +45,13 @@ class FDRResult:
     """Per-family realized false-discovery estimate from >=20 shuffled-label combos."""
 
     family: str
-    fdr_hat: float
+    fdr_hat: Optional[float]     # None => no scorable null (every run crashed)
     n_run: int
     n_shipped: int
     budget: float
     frozen: bool
     note: str = "calibration, not edge"
+    n_error: int = 0             # crashed nulls: COUNTED, excluded from the denominator
 
 
 def _build_base_corpus(n_games: int, ticks: int, seed: int):
@@ -90,14 +91,16 @@ def run_family_nulls(family: str, *, n: int = _MIN_NULLS, n_games: int = 50,
     """Route >=20 shuffled-label combos for `family` through the IDENTICAL combo gate.
 
     Each null builds two disjoint corpora + a shuffled-label detail, then calls the SAME
-    `gate` object the real combos use (default combo_gate.gate_combo). fdr_hat = ships/run.
-    FREEZE on any ship OR fdr_hat > fdr_budget(eps, K). `gate` is a parameter ONLY so a
+    `gate` object the real combos use (default combo_gate.gate_combo). fdr_hat = ships/SCORED
+    run (a crashed null is counted in n_error and left out; all-crashed -> fdr_hat None).
+    FREEZE on any ship, on any crash, OR fdr_hat > fdr_budget(eps, K). `gate` is a parameter ONLY so a
     test can inject a deliberately-WEAKENED gate to prove the tripwire fires; production
     always uses the default (the same-object assertion guards drift).
     """
     n = max(_MIN_NULLS, int(n))
     budget = fdr_budget(eps, K)
     n_shipped = 0
+    n_error = 0
     for i in range(n):
         s = seed + i * 17
         base_a = _build_base_corpus(n_games, ticks, seed=s)
@@ -109,15 +112,23 @@ def run_family_nulls(family: str, *, n: int = _MIN_NULLS, n_games: int = 50,
                      base_feature_cols=None, parity_ok=True, eps=eps, K=K,
                      n_corpora=2)
             verdict = str(getattr(v, "verdict", "REJECT"))
-        except Exception as exc:  # a crashing null is a conservative non-ship
-            logger.debug("planted null %s/%d crashed -> non-ship: %s", family, i, exc)
+        except Exception as exc:  # a crashing null measured NOTHING -- not a non-ship
+            logger.warning("planted null %s/%d CRASHED -> unscorable: %s", family, i, exc)
+            n_error += 1
             verdict = "ERROR"
         if verdict == SHIP:
             n_shipped += 1
-    fdr_hat = n_shipped / float(n)
-    frozen = bool(n_shipped > 0 or fdr_hat > budget)
-    return FDRResult(family=family, fdr_hat=float(fdr_hat), n_run=n,
-                     n_shipped=int(n_shipped), budget=float(budget), frozen=frozen)
+    # A crashed null is COUNTED (n_error) and excluded from the denominator: scoring it
+    # as a non-ship let 20/20 crashes report fdr_hat=0.0 / frozen=False -- "the gate is
+    # not manufacturing ships" having measured nothing. No scorable null -> no rate.
+    n_scored = n - n_error
+    fdr_hat = (n_shipped / float(n_scored)) if n_scored > 0 else None
+    frozen = bool(n_shipped > 0 or n_error > 0
+                  or (fdr_hat is not None and fdr_hat > budget))
+    return FDRResult(family=family,
+                     fdr_hat=None if fdr_hat is None else float(fdr_hat), n_run=n,
+                     n_shipped=int(n_shipped), budget=float(budget), frozen=frozen,
+                     n_error=int(n_error))
 
 
 def frozen_families(results: Sequence[FDRResult]) -> List[str]:

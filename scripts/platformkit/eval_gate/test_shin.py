@@ -47,6 +47,35 @@ def test_decimal_helper_matches():
     assert np.allclose(implied_from_decimal([2.0, 4.0]), [0.5, 0.25])
 
 
+def test_implied_prob_above_one_is_rejected_not_devigged():
+    # pi > 1 is not a price. It used to solve to a plausible-looking z and return
+    # fair probabilities that summed to 1 and were silently wrong
+    # (measured: p=[0.81745, 0.18255], z=0.734047, no error).
+    try:
+        shin_devig([1.1111, 0.4762])
+        raise AssertionError("an implied prob > 1 must not be devigged")
+    except ValueError:
+        pass
+
+
+def test_price_guards_are_raises_that_survive_python_O():
+    # `python -O` strips asserts; the guard must be a raise or a corrupted book
+    # devigs silently (measured under -O: shin_devig_decimal([0.9, 2.1]) returned
+    # p=[0.81746, 0.18254], z=0.734065).
+    import subprocess
+    code = """import sys
+sys.path.insert(0, %r)
+from shin import shin_devig_decimal
+try:
+    shin_devig_decimal([0.9, 2.1])
+except ValueError:
+    print("GUARDED")
+""" % _os.path.dirname(_os.path.abspath(__file__))
+    out = subprocess.run([_sys.executable, "-O", "-c", code],
+                         capture_output=True, text=True, timeout=120)
+    assert out.stdout.strip() == "GUARDED", (out.stdout, out.stderr)
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for fn in fns:
