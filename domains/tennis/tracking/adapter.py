@@ -9,6 +9,7 @@ import pandas as pd
 from scripts.platformkit.calibration.keypoint_calib import TemporalCalibrator
 from domains.tennis.tracking.ball import MotionDiffDetector, ball_rows, rectify_track
 from domains.tennis.tracking.camera_lock import CameraLock
+from domains.tennis.tracking.court_lines import detect_court
 from domains.tennis.tracking.frame_manifest import FRAME_MANIFEST_SCHEMA, write_frame_manifest
 from domains.tennis.tracking.identity import assign_epoch, end_epoch
 from domains.tennis.tracking.rally_features import match_aggregates
@@ -96,67 +97,10 @@ class TennisAdapter:
         return None if abs(point[2]) < 1e-8 else np.float32(point[:2] / point[2])
     def detect_court_corners(self, frame: np.ndarray) -> Optional[np.ndarray]:
         """Return near-left, near-right, far-left, far-right doubles corners."""
-        height, width = frame.shape[:2]
-        bright = cv2.inRange(frame, np.array((200, 200, 200)), np.array((255, 255, 255)))
-        lines = cv2.HoughLinesP(bright, 1, np.pi / 180.0, threshold=45,
-                                minLineLength=max(40, width // 12), maxLineGap=20)
-        if lines is None:
-            return None
-        horizontal: list[np.ndarray] = []
-        vertical: list[np.ndarray] = []
-        for raw_line in lines[:, 0, :]:
-            line = raw_line.astype(float)
-            dx, dy = abs(line[2] - line[0]), abs(line[3] - line[1])
-            if dx >= 1.5 * dy:
-                horizontal.append(line)
-            elif dy > dx:
-                vertical.append(line)
-        if len(horizontal) < 2 or len(vertical) < 2:
-            return None
-        horizontal_clusters = self._cluster_lines(horizontal, True, (height, width))
-        vertical_clusters = self._cluster_lines(vertical, False, (height, width))
-        # A tennis court has exactly five length-running lines; requiring five in
-        # the court's own cross ratio rejects replay and close-up framings. The
-        # old code took the topmost horizontal cluster as the far baseline with
-        # no court check, and on main-camera frames that cluster is the
-        # broadcast wordmark or a sponsor banner, never a court line.
-        if len(horizontal_clusters) < 4 or len(vertical_clusters) != 5:
-            return None
-        across = [self._line_position(self._fit_line(cluster), False, (height, width))
-                  for cluster in vertical_clusters]
-        denominator = (across[2] - across[1]) * (across[4] - across[0])
-        if abs(denominator) < 1e-6 or abs(
-                (across[2] - across[0]) * (across[4] - across[1]) / denominator - CROSS_RATIO) > 0.05:
-            return None
-        far, _, near_service, near = [self._fit_line(horizontal_clusters[index])
-                                      for index in (0, 1, -2, -1)]
-        left = self._fit_line(vertical_clusters[0])
-        right = self._fit_line(vertical_clusters[-1])
-        centre = self._fit_line(vertical_clusters[2])
-        far_left, service_t = self._intersection(far, left), self._intersection(near_service, centre)
-        near_left, near_right = self._intersection(near, left), self._intersection(near, right)
-        # The camera sits behind the near baseline, so depth decreases up the
-        # frame: far baseline, then service T, then near baseline.
-        if (near_left is None or near_right is None or far_left is None or service_t is None or
-                not far_left[1] < service_t[1] < near_left[1]):
-            return None
-        anchors = np.float32((near_left, near_right, far_left, service_t))
-        to_image, _ = cv2.findHomography(ANCHOR_FEET, anchors)
-        if to_image is None:
-            return None
-        far_right = self._project((78.0, 36.0), to_image)
-        result = np.asarray((near_left, near_right, far_left, far_right), dtype=np.float32)
-        # A camera behind the near baseline sees both baselines near-parallel, so
-        # the far edge cannot be steeply skewed against the court's image depth.
-        # Rejects a replay frame whose five verticals happened to land in the
-        # court's cross ratio (skew 0.62 there, <= 0.09 on every main-camera
-        # frame) and then propagated a wrecked homography over 40 frames.
-        depth = float(result[0][1] - result[2][1])
-        if depth <= 0.0 or abs(result[2][1] - result[3][1]) > 0.25 * depth:
-            return None
-        if np.any(result[:, 0] < -5) or np.any(result[:, 0] > width + 5) or np.any(result[:, 1] < -5) or np.any(result[:, 1] > height + 5):
-            return None
-        return result
+        # Line evidence, court-role assignment (five length lines by two cross
+        # ratios, horizontals by their cross ratio along the centre line) and
+        # the corner solve live in court_lines; see it for the measured defects.
+        return detect_court(frame)[1]
     @staticmethod
     def homography_from_corners(corners: np.ndarray) -> np.ndarray:
         """Map ordered image doubles-court corners to a 78 by 36 foot plane."""

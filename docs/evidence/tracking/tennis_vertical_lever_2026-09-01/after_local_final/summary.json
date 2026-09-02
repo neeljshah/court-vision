@@ -1,0 +1,20 @@
+{
+  "requested_source_frames": 600,
+  "decoded": 599,
+  "raw_accepts": 135,
+  "fresh_solves": 107,
+  "locks_formed": 18,
+  "drift_checked_reuses": 12,
+  "drift_rejects": 2,
+  "solved_frames": 119,
+  "solved_frame_coverage": 0.1986644407345576,
+  "tracking_csv": "docs\\evidence\\tracking\\tennis_vertical_lever_2026-09-01\\after_local_final\\tracking.csv",
+  "frame_manifest_csv": "docs\\evidence\\tracking\\tennis_vertical_lever_2026-09-01\\after_local_final\\frame_manifest.csv",
+  "source_frame_plan": {
+    "first": 0,
+    "last": 48047,
+    "count": 600
+  },
+  "frozen_harness_exit_code": 1,
+  "frozen_harness_output": "docs\\evidence\\tracking\\tennis_vertical_lever_2026-09-01\\after_local_final\\frozen_harness.txt"
+}

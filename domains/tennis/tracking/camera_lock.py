@@ -7,6 +7,8 @@ from typing import Mapping, Optional
 import cv2
 import numpy as np
 
+from domains.tennis.tracking.court_lines import court_line_segments
+
 
 LOCK_MIN_FRESH_SOLVES = 3
 DRIFT_CEILING_720P_PX = 5.0
@@ -111,12 +113,9 @@ def detected_intersections(frame: np.ndarray, homography: np.ndarray) -> Mapping
     """Return presently visible, line-derived court intersections for a lock."""
     height, width = frame.shape[:2]
     scale = height / 720.0
-    bright = cv2.inRange(frame, np.array((200, 200, 200)), np.array((255, 255, 255)))
-    lines = cv2.HoughLinesP(bright, 1, np.pi / 180.0, threshold=30,
-                            minLineLength=max(30, width // 18), maxLineGap=18)
-    if lines is None:
+    raw_lines = court_line_segments(frame, threshold=30, min_length=max(30, width // 18), max_gap=18)
+    if not raw_lines:
         return {}
-    raw_lines = [item.astype(float).reshape(-1) for item in lines[:, 0, :]]
     to_image = np.linalg.inv(_normalise_homography(homography))
     result: dict[str, np.ndarray] = {}
     for name, (court_point, first, second) in _INTERSECTION_LINES.items():

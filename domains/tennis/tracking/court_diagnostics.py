@@ -7,65 +7,28 @@ from typing import Optional
 import cv2
 import numpy as np
 
-from domains.tennis.tracking.adapter import CROSS_RATIO, TennisAdapter
+from domains.tennis.tracking.adapter import TennisAdapter
+from domains.tennis.tracking.court_lines import CourtLines, detect_court
 
 
 GATE_ORDER = (
     "no_hough_lines", "insufficient_oriented_lines", "vertical_cluster_count",
-    "cross_ratio", "depth_order", "homography", "skew", "image_bounds",
-    "accepted",
+    "cross_ratio", "horizontal_roles", "depth_order", "homography", "skew", "image_bounds",
+    "far_right_consistency", "accepted",
 )
 
 
+def _anchors(court: CourtLines) -> tuple[Optional[np.ndarray], ...]:
+    far_left = TennisAdapter._intersection(court.far, court.left)
+    service_t = TennisAdapter._intersection(court.near_service, court.centre)
+    near_left = TennisAdapter._intersection(court.near, court.left)
+    near_right = TennisAdapter._intersection(court.near, court.right)
+    return near_left, near_right, far_left, service_t
+
+
 def rejection_gate(frame: np.ndarray) -> str:
-    """Return the first production-solver gate that rejects ``frame``."""
-    height, width = frame.shape[:2]
-    bright = cv2.inRange(frame, np.array((200, 200, 200)), np.array((255, 255, 255)))
-    lines = cv2.HoughLinesP(bright, 1, np.pi / 180.0, threshold=45,
-                            minLineLength=max(40, width // 12), maxLineGap=20)
-    if lines is None:
-        return "no_hough_lines"
-    horizontal, vertical = [], []
-    for raw in lines[:, 0, :]:
-        line = raw.astype(float)
-        dx, dy = abs(line[2] - line[0]), abs(line[3] - line[1])
-        if dx >= 1.5 * dy:
-            horizontal.append(line)
-        elif dy > dx:
-            vertical.append(line)
-    if len(horizontal) < 2 or len(vertical) < 2:
-        return "insufficient_oriented_lines"
-    horizontal_clusters = TennisAdapter._cluster_lines(horizontal, True, (height, width))
-    vertical_clusters = TennisAdapter._cluster_lines(vertical, False, (height, width))
-    if len(horizontal_clusters) < 4 or len(vertical_clusters) != 5:
-        return "vertical_cluster_count"
-    across = [TennisAdapter._line_position(TennisAdapter._fit_line(cluster), False, (height, width))
-              for cluster in vertical_clusters]
-    denominator = (across[2] - across[1]) * (across[4] - across[0])
-    ratio = (across[2] - across[0]) * (across[4] - across[1]) / denominator if abs(denominator) >= 1e-6 else np.inf
-    if abs(denominator) < 1e-6 or abs(ratio - CROSS_RATIO) > 0.05:
-        return "cross_ratio"
-    far, _, near_service, near = [TennisAdapter._fit_line(horizontal_clusters[index])
-                                  for index in (0, 1, -2, -1)]
-    left, right = TennisAdapter._fit_line(vertical_clusters[0]), TennisAdapter._fit_line(vertical_clusters[-1])
-    centre = TennisAdapter._fit_line(vertical_clusters[2])
-    far_left, service_t = TennisAdapter._intersection(far, left), TennisAdapter._intersection(near_service, centre)
-    near_left, near_right = TennisAdapter._intersection(near, left), TennisAdapter._intersection(near, right)
-    if (near_left is None or near_right is None or far_left is None or service_t is None or
-            not far_left[1] < service_t[1] < near_left[1]):
-        return "depth_order"
-    anchors = np.float32((near_left, near_right, far_left, service_t))
-    to_image, _ = cv2.findHomography(np.float32(((0, 0), (0, 36), (78, 0), (18, 18))), anchors)
-    if to_image is None:
-        return "homography"
-    far_right = TennisAdapter._project((78.0, 36.0), to_image)
-    result = np.asarray((near_left, near_right, far_left, far_right), dtype=np.float32)
-    depth = float(result[0][1] - result[2][1])
-    if depth <= 0.0 or abs(result[2][1] - result[3][1]) > 0.25 * depth:
-        return "skew"
-    if np.any(result[:, 0] < -5) or np.any(result[:, 0] > width + 5) or np.any(result[:, 1] < -5) or np.any(result[:, 1] > height + 5):
-        return "image_bounds"
-    return "accepted"
+    """Return the production-solver gate that rejects ``frame`` (last evidence pass), or ``accepted``."""
+    return detect_court(frame)[2]
 
 
 def count_gates(video: str, max_frames: int) -> Counter[str]:
@@ -86,44 +49,17 @@ def count_gates(video: str, max_frames: int) -> Counter[str]:
 
 
 def held_out_service_t_error(frame: np.ndarray) -> Optional[float]:
-    """Measure the observed opposite service T against four real line anchors."""
-    height, width = frame.shape[:2]
-    bright = cv2.inRange(frame, np.array((200, 200, 200)), np.array((255, 255, 255)))
-    lines = cv2.HoughLinesP(bright, 1, np.pi / 180.0, threshold=45,
-                            minLineLength=max(40, width // 12), maxLineGap=20)
-    if lines is None:
+    """Measure the observed opposite service T against four real line anchors.
+
+    Needs the far service line, which the solver treats as optional; frames
+    solved without it return None rather than a number measured against the net.
+    """
+    court, corners, _ = detect_court(frame)
+    if court is None or corners is None or court.far_service is None:
         return None
-    horizontal, vertical = [], []
-    for raw in lines[:, 0, :]:
-        line = raw.astype(float)
-        dx, dy = abs(line[2] - line[0]), abs(line[3] - line[1])
-        if dx >= 1.5 * dy:
-            horizontal.append(line)
-        elif dy > dx:
-            vertical.append(line)
-    if len(horizontal) < 2 or len(vertical) < 2:
-        return None
-    horizontal_clusters = TennisAdapter._cluster_lines(horizontal, True, (height, width))
-    vertical_clusters = TennisAdapter._cluster_lines(vertical, False, (height, width))
-    if len(horizontal_clusters) < 4 or len(vertical_clusters) != 5:
-        return None
-    across = [TennisAdapter._line_position(TennisAdapter._fit_line(cluster), False, (height, width))
-              for cluster in vertical_clusters]
-    denominator = (across[2] - across[1]) * (across[4] - across[0])
-    if abs(denominator) < 1e-6 or abs((across[2] - across[0]) * (across[4] - across[1]) / denominator - CROSS_RATIO) > 0.05:
-        return None
-    far, opposite_service, near_service, near = [TennisAdapter._fit_line(horizontal_clusters[index])
-                                                  for index in (0, 1, -2, -1)]
-    left, right = TennisAdapter._fit_line(vertical_clusters[0]), TennisAdapter._fit_line(vertical_clusters[-1])
-    centre = TennisAdapter._fit_line(vertical_clusters[2])
-    far_left = TennisAdapter._intersection(far, left)
-    near_left, near_right = TennisAdapter._intersection(near, left), TennisAdapter._intersection(near, right)
-    service_t = TennisAdapter._intersection(near_service, centre)
-    opposite_t = TennisAdapter._intersection(opposite_service, centre)
-    if (near_left is None or near_right is None or far_left is None or service_t is None or
-            opposite_t is None):
-        return None
-    if not far_left[1] < service_t[1] < near_left[1]:
+    near_left, near_right, far_left, service_t = _anchors(court)
+    opposite_t = TennisAdapter._intersection(court.far_service, court.centre)
+    if opposite_t is None:
         return None
     homography, _ = cv2.findHomography(np.float32((near_left, near_right, far_left, service_t)),
                                        np.float32(((0, 0), (0, 36), (78, 0), (18, 18))))
