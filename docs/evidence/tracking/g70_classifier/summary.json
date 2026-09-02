@@ -1,0 +1,192 @@
+{
+  "scored_n": 206,
+  "uncertain_excluded": 4,
+  "feature_names": [
+    "foot_x",
+    "foot_y",
+    "log_box_area",
+    "box_aspect",
+    "confidence"
+  ],
+  "pooled_held_out_metrics": {
+    "n": 206,
+    "correct": 130,
+    "accuracy": 0.6310679611650486,
+    "accuracy_wilson_95": [
+      0.5633381812330819,
+      0.693998781504526
+    ],
+    "specification_majority_baseline": 0.7380952380952381,
+    "scored_majority_baseline": 0.7524271844660194,
+    "per_class_recall": {
+      "player": {
+        "correct": 21,
+        "n": 51,
+        "recall": 0.4117647058823529,
+        "wilson_95": [
+          0.28754192992486893,
+          0.5483490725258254
+        ]
+      },
+      "non_player_person": {
+        "correct": 109,
+        "n": 155,
+        "recall": 0.7032258064516129,
+        "wilson_95": [
+          0.6270958111315506,
+          0.769525728817682
+        ]
+      }
+    }
+  },
+  "per_fold": [
+    {
+      "fold": 0,
+      "held_out_clip": "tennis_09",
+      "train_clips": [
+        "tennis_10",
+        "tennis_nyYk2nPZAwY_720p"
+      ],
+      "train_label_counts": {
+        "non_player_person": 101,
+        "player": 35
+      },
+      "held_out_label_counts": {
+        "player": 16,
+        "non_player_person": 54
+      },
+      "metrics": {
+        "n": 70,
+        "correct": 37,
+        "accuracy": 0.5285714285714286,
+        "accuracy_wilson_95": [
+          0.4132168390581603,
+          0.6409531680922806
+        ],
+        "specification_majority_baseline": 0.7380952380952381,
+        "scored_majority_baseline": 0.7714285714285715,
+        "per_class_recall": {
+          "player": {
+            "correct": 9,
+            "n": 16,
+            "recall": 0.5625,
+            "wilson_95": [
+              0.33178195606776517,
+              0.7690163666481448
+            ]
+          },
+          "non_player_person": {
+            "correct": 28,
+            "n": 54,
+            "recall": 0.5185185185185185,
+            "wilson_95": [
+              0.3885147504846543,
+              0.6460624396345678
+            ]
+          }
+        }
+      }
+    },
+    {
+      "fold": 1,
+      "held_out_clip": "tennis_10",
+      "train_clips": [
+        "tennis_09",
+        "tennis_nyYk2nPZAwY_720p"
+      ],
+      "train_label_counts": {
+        "player": 37,
+        "non_player_person": 99
+      },
+      "held_out_label_counts": {
+        "non_player_person": 56,
+        "player": 14
+      },
+      "metrics": {
+        "n": 70,
+        "correct": 50,
+        "accuracy": 0.7142857142857143,
+        "accuracy_wilson_95": [
+          0.5994958195463383,
+          0.8067792340819687
+        ],
+        "specification_majority_baseline": 0.7380952380952381,
+        "scored_majority_baseline": 0.8,
+        "per_class_recall": {
+          "player": {
+            "correct": 5,
+            "n": 14,
+            "recall": 0.35714285714285715,
+            "wilson_95": [
+              0.16344490737202735,
+              0.6123599531785959
+            ]
+          },
+          "non_player_person": {
+            "correct": 45,
+            "n": 56,
+            "recall": 0.8035714285714286,
+            "wilson_95": [
+              0.6815514267252283,
+              0.8866151998355589
+            ]
+          }
+        }
+      }
+    },
+    {
+      "fold": 2,
+      "held_out_clip": "tennis_nyYk2nPZAwY_720p",
+      "train_clips": [
+        "tennis_09",
+        "tennis_10"
+      ],
+      "train_label_counts": {
+        "player": 30,
+        "non_player_person": 110
+      },
+      "held_out_label_counts": {
+        "player": 21,
+        "non_player_person": 45
+      },
+      "metrics": {
+        "n": 66,
+        "correct": 43,
+        "accuracy": 0.6515151515151515,
+        "accuracy_wilson_95": [
+          0.5311193560366315,
+          0.755242926614396
+        ],
+        "specification_majority_baseline": 0.7380952380952381,
+        "scored_majority_baseline": 0.6818181818181818,
+        "per_class_recall": {
+          "player": {
+            "correct": 7,
+            "n": 21,
+            "recall": 0.3333333333333333,
+            "wilson_95": [
+              0.17194536432683688,
+              0.5462692434278971
+            ]
+          },
+          "non_player_person": {
+            "correct": 36,
+            "n": 45,
+            "recall": 0.8,
+            "wilson_95": [
+              0.6617674868607056,
+              0.8910399559749099
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "mistake_count": 76,
+  "mistake_counts": {
+    "false_negative": 30,
+    "false_positive": 46
+  },
+  "eye_check_selection_count": 20,
+  "eye_check_selection_rule": "10 evenly spaced held-out errors per direction, ordered by clip, source frame, and candidate index"
+}
