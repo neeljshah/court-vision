@@ -204,3 +204,45 @@ coverage numbers are materially lower than 0.90 on most passing ranges.
 This is escalated into **G40**, which now covers both the denominator
 contradiction and this tautology.
 
+---
+
+## 6. Is the tautology systemic? Audited across all 8 sports -- NO
+
+The obvious follow-up to section 5 is whether other coverage gates are inert the
+same way. Audited over every tracking table on the pod (174 clips, 8 sports) by
+computing the distribution of distinct player ids per emitted frame and the
+resulting harness coverage:
+
+| sport | min_players | clips | emitted frames | harness coverage | tautological |
+|---|---:|---:|---:|---:|---|
+| **tennis** | 2 | 9 | 8,394 | **1.0000** | **YES** |
+| npb | 2 | 23 | 166,171 | 0.7975 | no |
+| kbo | 2 | 35 | 226,695 | 0.7820 | no |
+| mlb | 2 | 34 | 214,914 | 0.6430 | no |
+| wnba | 6 | 7 | 16,231 | 0.5146 | no |
+| soccer | 14 | 24 | 117,156 | 0.3905 | no |
+| ncaa_basketball | 6 | 4 | 3,300 | 0.3018 | no |
+| football | 14 | 38 | 252,950 | 0.1884 | no |
+
+Tennis has the histogram `{2: 8394}` -- **every emitted frame across all nine
+clips has exactly two players, with no other value present.** Every other sport
+shows a real spread (football, for instance, runs 1 player on 76,378 frames up
+through 8+, against a bar of 14).
+
+**Conclusion: the harness is not the problem, and the defect is not systemic.**
+The gate logic is sound and discriminates properly on seven of eight sports. It
+is the tennis adapter's fixed two-slot design -- always emit exactly one player
+per half, never zero, never three -- that makes `min_players: 2` unsatisfiable
+to fail. This narrows G40's tennis half from "fix the harness" to "either the
+tennis adapter must be able to emit fewer than two players when it cannot find
+them, or tennis coverage must be measured on solved frames rather than emitted
+frames". The first is the honest fix and it is an adapter change, not a harness
+change.
+
+Note the interaction with G26 and G38: a two-slot adapter that must always fill
+both slots is exactly the mechanism that forces a courtside non-player into a
+slot when a real player is not detected. **The same design choice plausibly
+causes the tautological coverage, the oob failures and the jump instability.**
+That is a hypothesis, not a measurement, and G26 attempt 2 is the experiment
+that tests it.
+
