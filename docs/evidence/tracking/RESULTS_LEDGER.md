@@ -12,3 +12,4 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 2026-09-01 | all | G01 | corpus census: 12 junk clips quarantined; football denominator 41 -> 35 | LANDED | 398410393
 2026-09-01 | all | G14 | pod deploy 53 files, daemon restart; pod tennis coverage 0.8970 bit-identical to local | LANDED | 84d1c9652
 2026-09-02 | baseball | G11 | night pitch-view gate (hue_geometry, opt-in): night 4.0 -> 39.7 pct accepts but hand-check precision 0.78 (<0.80) and day marginal accepts 0/8 | REJECT (unmerged 00b9ed4de) | fed355220
+2026-09-02 | soccer | G17 | role filter attempt 1: paired delta manual-minus-detector -1.23 -> +2.26 (n=100), over-rejects players; found G22 detector non-reproducibility 27/100 | REJECT (unmerged 310be150b) | register
