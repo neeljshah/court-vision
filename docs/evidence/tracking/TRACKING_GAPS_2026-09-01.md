@@ -170,6 +170,7 @@ LOW behind G25b.
 
 | gap | sport | measured result | evidence | status |
 |---|---|---|---|---|
+| G62 | all | Newly written tracking-evidence artifacts from the two current writers carry complete additive environment stamps; old artifacts still parse and were not retrofitted. | `g62_run_environment_stamp_2026-09-02.md`; `scripts/platformkit/tracking/run_environment.py` | ACCEPT |
 ## G61 result register
 
 | Gap | Sport | Finding | Evidence | Status |

@@ -172,6 +172,15 @@ def main() -> int:
             print("range frames %d-%d equals seconds %.3f-%.3f at %.3f fps" % (
                 *selected[0], *seconds, fps))
     report = build_report(args.video, args.ranges, args.frames, selected=selected)
+    from scripts.platformkit.tracking.run_environment import with_run_environment
+    from scripts.platformkit import tracking_harness, tracking_schema
+    from domains.tennis.tracking import adapter, camera_lock, court_diagnostics, court_lines
+    report = with_run_environment(
+        report, seed=20260901,
+        module_paths=(Path(__file__), Path(adapter.__file__), Path(camera_lock.__file__),
+                      Path(court_diagnostics.__file__), Path(court_lines.__file__),
+                      Path(tracking_harness.__file__), Path(tracking_schema.__file__)),
+    )
     args.out.mkdir(parents=True, exist_ok=True)
     path = args.out / "sequential_plan.json"
     path.write_text(json.dumps(report, indent=2, allow_nan=False) + "\n", encoding="utf-8")

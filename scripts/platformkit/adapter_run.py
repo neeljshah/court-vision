@@ -24,6 +24,7 @@ import sys
 import traceback
 import json
 import argparse
+from pathlib import Path
 
 ADAPTERS = {
     "tennis": ("domains.tennis.tracking.adapter", "TennisAdapter"),
@@ -127,6 +128,14 @@ def main(argv: list) -> int:
             payload = json.loads(report.to_json())
             payload["sampling"] = plan.to_dict()
             payload["timebase_metrics"] = timebase_metrics(payload, plan)
+            from scripts.platformkit.tracking.run_environment import with_run_environment
+            from scripts.platformkit import tracking_harness, tracking_schema
+            payload = with_run_environment(
+                payload, seed=None,
+                seed_reason="adapter_run has no explicit seed configuration",
+                module_paths=(Path(__file__), Path(module.__file__),
+                              Path(tracking_harness.__file__), Path(tracking_schema.__file__)),
+            )
             handle.write(json.dumps(payload, indent=2) + "\n")
         print("%s rows=%d passed=%s failures=%s"
               % (game_id, len(frame), report.passed, report.failures))
