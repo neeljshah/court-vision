@@ -198,6 +198,11 @@ def _finish(name: str, job: dict, timed_out: bool = False) -> None:
     finished = time.time()
     entry = {"game_id": job["game_id"], "sport": job["sport"],
               "status": status, "adjudicated": graded is not None, "rows": rows,
+              # `status` remains the daemon lifecycle state for compatibility.
+              # This additive terminal verdict makes a killed process
+              # distinguishable from an honest empty or thin result by ledger
+              # inspection alone.
+              "verdict": "TIMEOUT" if timed_out else None,
               "passed": graded.get("passed") if graded else None,
               "failure_heads": (graded or {}).get("failure_heads", [])[:4],
               "failures": (graded or {}).get("failure_heads", [])[:4],
