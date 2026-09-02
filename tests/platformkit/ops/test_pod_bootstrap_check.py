@@ -1,11 +1,14 @@
-"""S47 -- pod_bootstrap_check: module list, self-exclusion, missing module.
+"""S47/S54 -- pod_bootstrap_check: module list, self-exclusion, probes.
 
-Three CONSTRUCT cases, one per claim the bootstrap rests on:
+CONSTRUCT cases, one per claim the bootstrap rests on:
   1. the module list is READ from config/boot/paper.json + supervisor/stack_specs
      (not hardcoded) -- a name added to the profile JSON changes the output;
   2. the /proc scan excludes the checking command itself (own pid AND own
      cmdline marker), so it can never report or act on its own shell;
-  3. a module that does not exist is REPORTED as failing.
+  3. a module that does not exist is REPORTED as failing;
+  4. (S54) --functional: fake probes, no network -- all OK -> 0 failures and a
+     zero exit; one raising -> FAIL with its cause and a nonzero exit; a hung
+     probe is killed by its timeout rather than blocking the preflight.
 """
 from __future__ import annotations
 
@@ -80,3 +83,40 @@ def test_missing_module_is_reported_and_exits_nonzero() -> None:
     assert bad["json"] is not None
 
     assert pbc.main(["--profile", "paper", "--dry-run"]) == 0
+
+
+def test_functional_probes_report_ok_fail_and_timeout(capsys, monkeypatch) -> None:
+    """Case 4 -- fake probes only: no network, no corpus, no pod."""
+    ok_probes = {"alpha": "print('rows=7')", "beta": "print('live_games=0')"}
+    assert pbc.run_functional(sys.executable, probes=ok_probes) == 0
+    out = capsys.readouterr().out
+    assert "OK   alpha                rows=7" in out
+    assert "FAIL" not in out
+
+    # one raising probe -> exactly one FAIL, and its cause is reported
+    mixed = dict(ok_probes, gamma="raise ValueError('pyarrow gone')")
+    assert pbc.run_functional(sys.executable, probes=mixed) == 1
+    out = capsys.readouterr().out
+    assert "FAIL gamma" in out and "ValueError: pyarrow gone" in out
+
+    # a hung probe is killed by the timeout, not left blocking the preflight
+    ok, cause = pbc.run_probe("import time; time.sleep(30)", sys.executable,
+                              timeout=0.5)
+    assert ok is False and cause.startswith("timeout after"), cause
+
+    # the six real probes exist and none of them can WRITE the snapshot: the
+    # produce probe calls the builder, never produce_once/store.save.
+    assert set(pbc._FUNCTIONAL_PROBES) == {
+        "parquet_mlb_games", "mlb_predictor_init", "produce_mlb_dry",
+        "espn_live_state_mlb", "boot_packages", "supervisor_lock_env"}
+    assert all("produce_once" not in c and "store.save" not in c
+               for c in pbc._FUNCTIONAL_PROBES.values())
+
+    # a probe FAIL makes the CLI exit nonzero (imports stubbed out: no network)
+    monkeypatch.setattr(pbc, "_FUNCTIONAL_PROBES", mixed)
+    monkeypatch.setattr(pbc, "check_imports", lambda *a, **k: {})
+    assert pbc.main(["--profile", "paper", "--functional",
+                     "--python", sys.executable]) == 1
+    monkeypatch.setattr(pbc, "_FUNCTIONAL_PROBES", ok_probes)
+    assert pbc.main(["--profile", "paper", "--functional",
+                     "--python", sys.executable]) == 0

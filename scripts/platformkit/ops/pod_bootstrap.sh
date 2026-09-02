@@ -57,6 +57,12 @@ if ! "$PY" "$CHECK" --profile paper --python "$PY"; then
     echo "pod_bootstrap: preflight FAILED -- not booting anything"
     exit 1
 fi
+# Functional probes (S54): importable is not usable -- an import-only preflight
+# passed 14/14 on 2026-09-03 while every parquet read failed (pyarrow wiped).
+# REPORTED, not a boot gate: supervisor_lock_env needs a RUNNING supervisor,
+# which is absent by definition on a cold restart (steps 4-5 boot it below).
+"$PY" "$CHECK" --profile paper --python "$PY" --functional \
+    || echo "pod_bootstrap: functional probe(s) FAILED above -- booting anyway"
 
 # ---- 4. supervisor, only if absent
 echo "== 4. supervisor"

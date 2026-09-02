@@ -5,12 +5,14 @@ Reports, for one boot profile (config/boot/<name>.json + supervisor/stack_specs)
   1. the python MODULE list the profile boots,
   2. an IMPORT check of each module under a given interpreter,
   3. the required ENV flags (profile global_env + the two capture flags),
-  4. the matching /proc pids, EXCLUDING this script's own shell,
-  5. the age of each readiness heartbeat file.
+  4. the matching /proc pids (own shell EXCLUDED) + heartbeat file ages,
+  5. with --functional, six RUNTIME probes (S54): an import-only preflight
+     passed 14/14 while every parquet read failed (pyarrow wiped).
 
 Exit status is nonzero when any module fails to import (a missing module or a
-missing package); ENV / PROC findings are reported but do not change it, so the
-bootstrap can use this as an import gate and still decide about booting itself.
+missing package) or any --functional probe FAILs; ENV / PROC findings are
+reported but do not change it, so the bootstrap can use this as an import gate
+and still decide about booting itself.
 
 Runs on the pod and locally (`--dry-run` skips the import subprocess and the
 /proc scan, so it works on a box with neither the packages nor /proc).
@@ -19,7 +21,7 @@ Stdlib-only, ASCII-only. Reads only; never kills, never boots, never writes
 data/registry/, never flips a flag on.
 
     python scripts/platformkit/ops/pod_bootstrap_check.py --profile paper \
-        --python /usr/local/bin/python
+        --functional --python /usr/local/bin/python
 """
 from __future__ import annotations
 
@@ -56,6 +58,51 @@ _IMPORT_PROBE = (
     "    except BaseException as exc:\n"
     "        print('FAIL %s %s: %s' % (m, type(exc).__name__, exc))\n"
 )
+
+
+# --functional: one snippet per probe, run in ONE child of --python with a hard
+# 60 s timeout. Prints one line on success; ANY exception -> FAIL + that cause.
+_PROBE_TIMEOUT_S = 60.0
+_FUNCTIONAL_PROBES: Dict[str, str] = {
+    "parquet_mlb_games": (
+        "import pandas as pd; from domains.mlb.predictor import _corpus_path\n"
+        "df = pd.read_parquet(_corpus_path(None))\n"
+        "print('rows=%d cols=%d' % (len(df), len(df.columns)))\n"),
+    "mlb_predictor_init": (
+        "from domains.mlb.predictor import MLBPredictor; p = MLBPredictor()\n"
+        "print('n_games=%d teams=%d r_home=%.3f' % (p.n_games, len(p.teams), p.r_home))\n"),
+    # produce_sport() is the BUILDER produce_once() wraps; it never reaches
+    # store.save, so this probe cannot overwrite latest.json.
+    "produce_mlb_dry": (
+        "from predict_service.produce import produce_sport; e = produce_sport('mlb')\n"
+        "print('status=%s predictions=%d markets=%d'"
+        " % (e.status, len(e.predictions), len(e.markets)))\n"),
+    # live_states() is fail-open ([] on any error) -> an empty slate is OK; FAIL
+    # only when the call itself raises (import / name breakage).
+    "espn_live_state_mlb": (
+        "from scripts.platformkit.ingame.ingame_live_state import live_states\n"
+        "st = live_states('mlb'); assert isinstance(st, list), repr(type(st))\n"
+        "print('live_games=%d' % len(st))\n"),
+    "boot_packages": (
+        "import fastapi, sklearn, pyarrow, statsmodels, xgboost\n"
+        "print('fastapi=%s sklearn=%s pyarrow=%s statsmodels=%s xgboost=%s'"
+        " % (fastapi.__version__, sklearn.__version__, pyarrow.__version__,"
+        " statsmodels.__version__, xgboost.__version__))\n"),
+    # pid from cmdline; scan_proc self-excludes this child (its own cmdline
+    # carries the _SELF_MARKER via the import line below).
+    "supervisor_lock_env": (
+        "import os; from supervisor._singleton import DEFAULT_LOCK_PATH\n"
+        "from scripts.platformkit.ops.pod_bootstrap_check import scan_proc, _CAPTURE_ENV\n"
+        "hits = scan_proc(('-m supervisor',))['-m supervisor']\n"
+        "assert hits, 'no -m supervisor pid in /proc'\n"
+        "pid = hits[0][0]\n"
+        "kvs = open('/proc/%d/environ' % pid).read().split(chr(0))\n"
+        "env = dict(kv.split('=', 1) for kv in kvs if '=' in kv)\n"
+        "missing = [n for n in _CAPTURE_ENV if n not in env]\n"
+        "assert not missing, 'pid %d missing %s' % (pid, missing)\n"
+        "print('pid=%d lock_exists=%s flags=%s'"
+        " % (pid, os.path.exists(DEFAULT_LOCK_PATH), ','.join(_CAPTURE_ENV)))\n"),
+}
 
 
 def profile_modules(profile: str) -> List[Tuple[str, str]]:
@@ -138,6 +185,35 @@ def scan_proc(patterns: Sequence[str] = _PROC_PATTERNS,
     return found
 
 
+def run_probe(code: str, python: str, cwd: Optional[str] = None,
+              timeout: float = _PROBE_TIMEOUT_S) -> Tuple[bool, str]:
+    """Run ONE probe snippet in a child of *python*. -> (ok, one-line cause)."""
+    try:
+        proc = subprocess.run([python, "-c", code], cwd=cwd or str(_REPO_ROOT),
+                              capture_output=True, text=True, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        return False, "timeout after %.0fs" % timeout
+    except (OSError, subprocess.SubprocessError) as exc:
+        return False, "%s: %s" % (type(exc).__name__, exc)
+    last = lambda s: ([ln.strip() for ln in s.splitlines() if ln.strip()] or [""])[-1]
+    if proc.returncode == 0:
+        return True, last(proc.stdout) or "(no output)"
+    return False, last(proc.stderr) or "exit %d" % proc.returncode
+
+
+def run_functional(python: str, cwd: Optional[str] = None,
+                   probes: Optional[Dict[str, str]] = None) -> int:
+    """Print OK/FAIL + cause for each named probe. Returns the FAIL count."""
+    probes = _FUNCTIONAL_PROBES if probes is None else probes
+    print("FUNCTIONAL (%s, %.0fs each):" % (python, _PROBE_TIMEOUT_S))
+    failed = 0
+    for name, code in probes.items():
+        ok, cause = run_probe(code, python, cwd)
+        failed += 0 if ok else 1
+        print("  %-4s %-20s %s" % ("OK" if ok else "FAIL", name, cause[:140]))
+    return failed
+
+
 def _print_env(profile: str) -> int:
     missing = 0
     print("ENV (required flags):")
@@ -172,9 +248,10 @@ def main(argv: Optional[List[str]] = None) -> int:
                     help="interpreter to import-check under")
     ap.add_argument("--dry-run", action="store_true",
                     help="list only: no import subprocess, no /proc scan")
+    ap.add_argument("--functional", action="store_true",
+                    help="also run the runtime probes (60s each; not in dry-run)")
     ap.add_argument("--repo", default=None,
-                    help="repo root, when this script runs from OUTSIDE the "
-                         "tree (import cwd + relative heartbeat paths)")
+                    help="repo root when run from OUTSIDE the tree (import cwd)")
     args = ap.parse_args(argv)
 
     bp = load_profile(args.profile)
@@ -211,9 +288,12 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     _print_heartbeats(args.profile, args.repo)
 
-    print("RESULT: %s" % ("FAIL -- %d module(s) not importable" % len(bad)
-                          if bad else "OK -- all modules importable"))
-    return 1 if bad else 0
+    n_fail = run_functional(args.python, args.repo) if args.functional else 0
+    problems = (["%d module(s) not importable" % len(bad)] if bad else []) + (
+        ["%d functional probe(s) FAILED" % n_fail] if n_fail else [])
+    print("RESULT: %s" % ("FAIL -- " + "; ".join(problems) if problems
+                          else "OK -- imports clean, no probe failed"))
+    return 1 if problems else 0
 
 
 if __name__ == "__main__":
