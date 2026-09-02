@@ -5,7 +5,9 @@ Per-file test only: `python -m pytest scripts/platformkit/combo/test_corpus_cach
 from __future__ import annotations
 
 import json
+import shutil
 import time
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -92,3 +94,132 @@ def test_real_corpus_carries_a_usable_date(sport):
     for _, group in df.assign(_d=dates).groupby("corpus_unit"):
         assert group["_d"].is_monotonic_increasing
     assert cc.freshness_report(sport)["order_basis"] == cc.DATE_COL
+
+
+# --------------------------------------------------------------------------- #
+# Gap S68 -- portable sidecars: relative source keys + opt-in portable load
+# --------------------------------------------------------------------------- #
+
+def _seed_host_a(tmp_path, monkeypatch):
+    """Build a real corpus + sidecar on 'host A' via build_gate_corpus itself."""
+    repo_a = tmp_path / "hostA"
+    (repo_a / "data" / "domains").mkdir(parents=True)
+    src = repo_a / "data" / "domains" / "fake_source.parquet"
+    df = pd.DataFrame({"event_id": ["a", "b"], "corpus_unit": ["u", "u"],
+                       "y": [1.0, 0.0], "p_base": [0.6, 0.4]})
+    df.to_parquet(src, index=False)
+    cache_a = repo_a / "data" / "cache" / "combo"
+    monkeypatch.setattr(cc, "_REPO", repo_a)
+    monkeypatch.setattr(cc, "_CACHE_DIR", cache_a)
+    monkeypatch.setitem(cc._BUILDERS, "mlb", lambda: (df, [src]))
+    cc.build_gate_corpus("mlb")
+    return repo_a, cache_a, src
+
+
+def _move_to_host_b(tmp_path, monkeypatch, cache_a):
+    """Copy ONLY the cache (parquet + sidecar) to a host with no sources."""
+    repo_b = tmp_path / "hostB"
+    cache_b = repo_b / "data" / "cache" / "combo"
+    shutil.copytree(cache_a, cache_b)
+    monkeypatch.setattr(cc, "_REPO", repo_b)
+    monkeypatch.setattr(cc, "_CACHE_DIR", cache_b)
+    return repo_b, cache_b
+
+
+def test_build_records_relative_sources_and_a_corpus_hash(tmp_path, monkeypatch):
+    _, cache_a, _ = _seed_host_a(tmp_path, monkeypatch)
+    man = json.loads((cache_a / "gate_corpus_mlb.sources.json").read_text(encoding="utf-8"))
+    assert list(man["sources"]) == ["data/domains/fake_source.parquet"]
+    assert man["corpus_sha256"] == cc._file_sha256(cache_a / "gate_corpus_mlb.parquet")
+    assert cc.freshness_report("mlb")["load_provenance"] == "host-local"
+
+
+def test_relative_sidecar_loads_on_the_build_host(tmp_path, monkeypatch):
+    _seed_host_a(tmp_path, monkeypatch)
+    assert len(cc.load_gate_corpus("mlb")) == 2
+    assert cc.freshness_report("mlb")["stale"] is False
+
+
+def test_host_b_refuses_by_default_and_names_the_absent_source(tmp_path, monkeypatch):
+    _, cache_a, _ = _seed_host_a(tmp_path, monkeypatch)
+    _move_to_host_b(tmp_path, monkeypatch, cache_a)
+    with pytest.raises(cc.StaleCorpusError) as exc:
+        cc.load_gate_corpus("mlb")
+    assert "data/domains/fake_source.parquet" in str(exc.value)
+    assert "no longer exists" in str(exc.value)
+
+
+def test_host_b_loads_in_portable_mode(tmp_path, monkeypatch):
+    _, cache_a, _ = _seed_host_a(tmp_path, monkeypatch)
+    _move_to_host_b(tmp_path, monkeypatch, cache_a)
+    assert len(cc.load_gate_corpus("mlb", portable=True)) == 2
+    rep = cc.freshness_report("mlb")
+    assert rep["load_provenance"] == "portable-sidecar"
+    assert rep["sources"][0]["exists"] is False
+
+
+def test_portable_mode_refuses_a_tampered_parquet(tmp_path, monkeypatch):
+    _, cache_a, _ = _seed_host_a(tmp_path, monkeypatch)
+    _, cache_b = _move_to_host_b(tmp_path, monkeypatch, cache_a)
+    pd.DataFrame({"event_id": ["z"]}).to_parquet(cache_b / "gate_corpus_mlb.parquet", index=False)
+    with pytest.raises(cc.StaleCorpusError) as exc:
+        cc.load_gate_corpus("mlb", portable=True)
+    assert "sha256" in str(exc.value)
+    assert cc.freshness_report("mlb")["load_provenance"] == "unloadable"
+
+
+def test_portable_mode_refuses_a_pre_s68_sidecar(tmp_path, monkeypatch):
+    """No corpus_sha256 to vouch for the bytes -> refuse, never a silent load."""
+    _, cache_a, _ = _seed_host_a(tmp_path, monkeypatch)
+    _, cache_b = _move_to_host_b(tmp_path, monkeypatch, cache_a)
+    side = cache_b / "gate_corpus_mlb.sources.json"
+    man = json.loads(side.read_text(encoding="utf-8"))
+    man.pop("corpus_sha256")
+    side.write_text(json.dumps(man), encoding="utf-8")
+    with pytest.raises(cc.StaleCorpusError) as exc:
+        cc.load_gate_corpus("mlb", portable=True)
+    assert "corpus_sha256" in str(exc.value)
+
+
+def test_legacy_absolute_sidecar_still_loads(tmp_path, monkeypatch):
+    """Backward compatibility: a pre-S68 sidecar keyed by ABSOLUTE host path."""
+    src = _seed(tmp_path, monkeypatch, with_date=False)
+    side = tmp_path / "gate_corpus_mlb.sources.json"
+    man = json.loads(side.read_text(encoding="utf-8"))
+    man["sources"] = {str(src): list(man["sources"].values())[0]}
+    side.write_text(json.dumps(man), encoding="utf-8")
+    assert Path(list(man["sources"])[0]).is_absolute()
+    assert len(cc.load_gate_corpus("mlb")) == 2
+    assert cc.freshness_report("mlb")["load_provenance"] == "host-local"
+
+
+@pytest.mark.parametrize("sport", cc.SPORTS)
+def test_real_sidecars_are_portable(sport):
+    """Every shipped sidecar keys its sources RELATIVE and records its own hash.
+
+    Skipped where data/ is absent (a git worktree has no data tree).
+    """
+    if not cc._sidecar_path(sport).exists():
+        pytest.skip("no cached corpus for %s" % sport)
+    man = json.loads(cc._sidecar_path(sport).read_text(encoding="utf-8"))
+    assert man.get("corpus_sha256") == cc._file_sha256(cc._corpus_path(sport))
+    for key in man["sources"]:
+        assert not Path(key).is_absolute(), key
+        assert cc._resolve_source(key).exists(), key
+    assert cc.freshness_report(sport)["load_provenance"] == "host-local"
+
+
+def test_portable_covers_a_different_file_at_the_recorded_path(tmp_path, monkeypatch):
+    """The pod case: host B HAS data/domains/... but it is not the recorded file."""
+    _, cache_a, _ = _seed_host_a(tmp_path, monkeypatch)
+    repo_b, _ = _move_to_host_b(tmp_path, monkeypatch, cache_a)
+    impostor = repo_b / "data" / "domains" / "fake_source.parquet"
+    impostor.parent.mkdir(parents=True)
+    pd.DataFrame({"event_id": ["different"]}).to_parquet(impostor, index=False)
+    with pytest.raises(cc.StaleCorpusError) as exc:
+        cc.load_gate_corpus("mlb")
+    assert "changed since build" in str(exc.value)
+    assert len(cc.load_gate_corpus("mlb", portable=True)) == 2
+    rep = cc.freshness_report("mlb")
+    assert rep["load_provenance"] == "portable-sidecar"
+    assert rep["stale"] is True          # honest: the recorded source is not here

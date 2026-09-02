@@ -16,6 +16,19 @@ build time. `load_gate_corpus` refuses (raises StaleCorpusError) if any
 source file's mtime OR sha differs from what the sidecar recorded -- an
 honest error, never a silent stale read.
 
+PORTABILITY (S68): source paths are recorded RELATIVE to the repo root and are
+resolved against the CURRENT repo root at load time, so a corpus + sidecar pair
+copied to another host still verifies as long as the domain sources are present
+there. A legacy ABSOLUTE key is still accepted when that exact path exists on
+this host. Where a RECORDED source is unavailable -- the path is missing, or a
+different file sits at it (a pod's own data/domains tree) --
+`load_gate_corpus(sport, portable=True)`, an explicit opt-in and never the
+default, verifies the parquet's own bytes against the `corpus_sha256` the
+sidecar recorded instead. That is an integrity check, not a freshness check:
+it proves the file is the one the sidecar describes, and says nothing about
+whether the sources have moved since. `freshness_report` labels it
+`load_provenance = "portable-sidecar"`.
+
 Calibration, not edge. NO $/ROI anywhere. pandas + numpy + stdlib only. ASCII.
 """
 from __future__ import annotations
@@ -67,8 +80,44 @@ def _file_sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+def _source_key(path: Path) -> str:
+    """The sidecar key for a source: REPO-RELATIVE posix, so the sidecar travels.
+
+    A source outside the repo root keeps its absolute string (nothing to
+    relativise against) and is then only resolvable on a host that has it.
+    """
+    try:
+        return str(path.resolve().relative_to(_REPO)).replace("\\", "/")
+    except ValueError:
+        return str(path)
+
+
+def _resolve_source(key: str) -> Path:
+    """Resolve a sidecar key against THIS host's repo root; absolute = legacy."""
+    p = Path(key)
+    return p if p.is_absolute() else _REPO / key
+
+
 def _source_manifest(paths: List[Path]) -> Dict[str, Dict[str, object]]:
-    return {str(p): {"mtime": p.stat().st_mtime, "sha256": _file_sha256(p)} for p in paths}
+    return {_source_key(p): {"mtime": p.stat().st_mtime, "sha256": _file_sha256(p)}
+            for p in paths}
+
+
+def _assert_portable(sport: str, manifest: Dict[str, object], cp: Path,
+                     unavailable: List[str]) -> None:
+    """Portable load: the parquet's own bytes must match the sidecar's record."""
+    recorded = manifest.get("corpus_sha256")
+    named = ", ".join(unavailable)
+    if not recorded:
+        raise StaleCorpusError(
+            f"portable load refused for {sport!r}: sidecar records no corpus_sha256 "
+            f"(pre-S68 sidecar) and recorded source(s) {named} are unavailable here -- "
+            f"rebuild via build_gate_corpus({sport!r}) on a host that has them")
+    actual = _file_sha256(cp)
+    if actual != recorded:
+        raise StaleCorpusError(
+            f"portable load refused for {sport!r}: {cp.name} sha256 {actual} != "
+            f"sidecar corpus_sha256 {recorded}")
 
 
 # --------------------------------------------------------------------------- #
@@ -329,26 +378,43 @@ def build_gate_corpus(sport: str) -> pd.DataFrame:
     _CACHE_DIR.mkdir(parents=True, exist_ok=True)
     df.to_parquet(_corpus_path(sport), index=False)
     manifest = {"sport": sport, "built_at": time.time(), "n_rows": len(df),
+               "corpus_sha256": _file_sha256(_corpus_path(sport)),
                "sources": _source_manifest(sources),
                "provenance": built[2] if len(built) > 2 else {}}
     _sidecar_path(sport).write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     return df
 
 
-def load_gate_corpus(sport: str) -> pd.DataFrame:
-    """Load a cached corpus; refuse (StaleCorpusError) if any source file moved."""
+def load_gate_corpus(sport: str, portable: bool = False) -> pd.DataFrame:
+    """Load a cached corpus; refuse (StaleCorpusError) if any source file moved.
+
+    `portable=True` is the S68 opt-in for a host that does NOT carry the domain
+    sources (a compute pod). A source the sidecar RECORDED is unavailable there
+    either because the path is missing or because a different file sits at that
+    path -- both are answered by verifying the parquet against the sidecar's
+    `corpus_sha256` instead of refusing. Default mode refuses on either, exactly
+    as before.
+    """
     cp, sp = _corpus_path(sport), _sidecar_path(sport)
     if not cp.exists() or not sp.exists():
         raise StaleCorpusError(f"no cached corpus for {sport!r}; run build_gate_corpus first")
     manifest = json.loads(sp.read_text(encoding="utf-8"))
+    unavailable: List[str] = []
     for src, rec in manifest.get("sources", {}).items():
-        p = Path(src)
+        p = _resolve_source(src)
         if not p.exists():
-            raise StaleCorpusError(f"source {src} for {sport!r} corpus no longer exists")
+            if not portable:
+                raise StaleCorpusError(f"source {src} for {sport!r} corpus no longer exists")
+            unavailable.append(src)
+            continue
         if p.stat().st_mtime != rec["mtime"] or _file_sha256(p) != rec["sha256"]:
-            raise StaleCorpusError(
-                f"source {src} for {sport!r} corpus changed since build "
-                f"(mtime/sha mismatch) -- rebuild via build_gate_corpus({sport!r})")
+            if not portable:
+                raise StaleCorpusError(
+                    f"source {src} for {sport!r} corpus changed since build "
+                    f"(mtime/sha mismatch) -- rebuild via build_gate_corpus({sport!r})")
+            unavailable.append(src)
+    if unavailable:
+        _assert_portable(sport, manifest, cp, unavailable)
     return pd.read_parquet(cp)
 
 
@@ -371,7 +437,7 @@ def freshness_report(sport: str) -> Dict[str, object]:
         "cache_mtime": cp.stat().st_mtime if cp.exists() else None,
         "built_at": None, "n_rows_at_build": None, "n_rows_cached": None,
         "sources": [], "stale": True, "stale_reason": "no cached corpus or sidecar",
-        "order_basis": POSITIONAL_ORDER, "provenance": {},
+        "order_basis": POSITIONAL_ORDER, "provenance": {}, "load_provenance": None,
     }
     if not (cp.exists() and sp.exists()):
         return rep
@@ -386,7 +452,7 @@ def freshness_report(sport: str) -> Dict[str, object]:
     rep["order_basis"] = DATE_COL if DATE_COL in cached.columns else POSITIONAL_ORDER
     changed_names: List[str] = []
     for src, rec in manifest.get("sources", {}).items():
-        p = Path(src)
+        p = _resolve_source(src)
         exists = p.exists()
         now = p.stat().st_mtime if exists else None
         changed = (not exists) or now != rec["mtime"] or _file_sha256(p) != rec["sha256"]
@@ -397,6 +463,17 @@ def freshness_report(sport: str) -> Dict[str, object]:
     rep["stale"] = bool(changed_names)
     rep["stale_reason"] = ("sources changed since build: " + ", ".join(changed_names)
                           if changed_names else None)
+    # S68: how this host CAN load the corpus -- a different question from
+    # `stale`. "host-local" = every recorded source is here and verifies;
+    # "portable-sidecar" = one is not, but the parquet matches the sidecar's own
+    # corpus_sha256, so load_gate_corpus(sport, portable=True) works;
+    # "unloadable" = neither the sources nor the parquet's bytes can be vouched for.
+    if not changed_names:
+        rep["load_provenance"] = "host-local"
+    else:
+        rec_sha = manifest.get("corpus_sha256")
+        rep["load_provenance"] = ("portable-sidecar"
+                                 if rec_sha and _file_sha256(cp) == rec_sha else "unloadable")
     return rep
 
 
