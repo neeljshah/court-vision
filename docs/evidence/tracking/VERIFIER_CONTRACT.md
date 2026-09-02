@@ -1,5 +1,5 @@
 # Verifier contract -- what every tracking landing must survive
-Every codex spec MUST cite this file and self-check against section B before reporting. Every verifier applies section A and B only; rules outside the spec's ACCEPTANCE RULE are filed as new gaps, not rejections.
+Every codex spec MUST cite this file and self-check against section B (and section Q for a harness/system S-row) before reporting. Every verifier applies section A + B, plus Q on S-rows, and nothing else; rules outside the spec's ACCEPTANCE RULE are filed as new gaps, not rejections.
 
 ---
 
@@ -26,6 +26,16 @@ B7  HEAD-SLICE EVIDENCE -- renders or rows sampled from the start of the set.
 B8  SELF-FIT AS INDEPENDENT -- a residual against the same points used to fit is not evidence. (G23)
 B9  DEGENERATE DENOMINATOR -- the metric's unit is recycled or trivially constant, e.g. 10 recycled track ids per game. (G25)
 B10 MOVED BAR -- any harness threshold or gate value differs from master.
+
+## Q. Quant additions (harness / signals / system rows -- the S-register)
+Apply Q1-Q6 to every row in docs/evidence/HARNESS_GAPS_2026-09-03.md exactly as
+B1-B10 apply to every tracking row. Codex self-checks them before reporting.
+Q1 PREREG SEALED BEFORE SCORING -- a scored comparison names its prereg artifact and the SHA-256 seal embedded in it, and the seal predates the first metric. No seal, no scored claim.
+Q2 LEDGER CHARGED BEFORE THE METRIC -- a charged trial appends its ledger row before computing anything and reports the K it read AT LAUNCH. K read after scoring is an automatic reject (nine unrelated trials once moved K 3 -> 12 between prereg and launch and flipped a verdict).
+Q3 NO BAR OR THRESHOLD MOVED -- every bar in the artifact is byte-identical to the bar in the spec. A bar found unmeetable is reported CLOSED AT LIMIT, never lowered.
+Q4 LEAK CONTRACT VIA CPCV -- anything scored OOS runs through walk_forward or cpcv_evaluate with purging and a symmetric embargo; any meta-learner consumes OOF series only, asserted to reproduce each arm's own reported metric to 1e-9.
+Q5 TWO CORPORA FOR ANY AHEAD -- an AHEAD names its second corpus or corpus_unit and prints min_corpora_eff at the current K; if it cannot be satisfied the verdict is labelled SINGLE-WINDOW in the artifact AND the register row.
+Q6 CALIBRATION LANGUAGE ONLY -- no dollar, ROI, profit or "edge" language in any artifact, memo, ledger line or register row; none of the retracted figures (+18.38, 0.119, +54, 78.11, 8.94, 54.57) appears outside an explicit retraction context. Accuracy is not edge; an honest REJECT, NULL or BEHIND is a success.
 
 ## C. Verdicts
 ACCEPT (land) | ACCEPT WITH CORRECTIONS (land; ledger carries the corrections)
