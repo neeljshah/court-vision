@@ -1,0 +1,3 @@
+population,successes,denominator,rate,wilson_95_lower,wilson_95_upper,excluded_frames
+all_g104_seeded_frames,1,120,0.00833333333333333,0.00147255573334209,0.0456962912450497,0
+after_g117_quarantined_clip_exclusion,1,80,0.0125,0.00220997552045227,0.0674627007766866,40
