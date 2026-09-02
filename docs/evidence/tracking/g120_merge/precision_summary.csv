@@ -1,0 +1,3 @@
+variant,court_line_candidates,all_candidates,precision,wilson_95_low,wilson_95_high
+before,94,1581,0.059456,0.048833,0.072215
+after,72,1311,0.054920,0.043837,0.068603

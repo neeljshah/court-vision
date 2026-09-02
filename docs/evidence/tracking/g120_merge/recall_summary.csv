@@ -1,0 +1,11 @@
+variant,role,detected,visible,recall,wilson_95_low,wilson_95_high
+before,baseline,1,17,0.058824,0.010460,0.269820
+before,free_throw,2,17,0.117647,0.032880,0.343364
+before,lane_left,8,17,0.470588,0.261651,0.690368
+before,lane_right,14,17,0.823529,0.589705,0.938089
+before,overall,25,68,0.367647,0.263005,0.486444
+after,baseline,1,17,0.058824,0.010460,0.269820
+after,free_throw,1,17,0.058824,0.010460,0.269820
+after,lane_left,8,17,0.470588,0.261651,0.690368
+after,lane_right,14,17,0.823529,0.589705,0.938089
+after,overall,24,68,0.352941,0.250020,0.471589
