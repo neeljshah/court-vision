@@ -1,0 +1,56 @@
+GAP G65 | sport tennis | worktree a3 | log cx_g65_ball_label_set
+CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it, including the A7 clause; self-check
+every line of section B before you report. THIS ROW PRODUCES A LABEL SET. It measures nothing else
+and it fixes nothing.
+WHY THIS ROW EXISTS: G44B has now stopped TWICE at its premise gate, and correctly both times. The
+blocker is not footage (that was fixed) and not the detector. It is that **the per-frame ball labels
+behind G44's headline never existed as an artifact**. G44 reported 64 pct of rally frames show a
+ball and 52 pct of sightings fall inside the `y < 2/3 * height` gate, but only the SUMMARY survived:
+the per-frame visibility and coordinate labels were never persisted. So no lane can compute recall,
+compute precision, hold out a disjoint set, or re-analyse anything. Five lanes today were blocked by
+missing per-item evidence; this is the tennis-ball instance of it.
+DELIVERABLE: one durable, committed label file, and nothing more.
+  (a) >= 150 rally frames, sampled SEEDED and EVENLY SPACED across >= 3 tennis clips. Not a head
+      slice. State the seed, the clips, the frame indices and how you chose the rally windows.
+      The local worktree links data/footage_corpus; the full 63-clip corpus is on the pod and listed
+      in docs/evidence/tracking/FOOTAGE_CORPUS_INVENTORY.md. Frame work may run read-only on the pod.
+  (b) For EACH sampled frame record exactly: clip, source_frame, ball_visible (true/false), and when
+      visible the ball centre x and y in IMAGE PIXELS with the frame width and height alongside, plus
+      an approximate ball radius in pixels. Declare the coordinate space explicitly -- these are
+      image_px rows and they must never be confused with court_feet (the rung ladder is binding).
+  (c) Label by LOOKING at the frame. Render each sampled frame, view it, and record what you see.
+      A label produced by running the existing detector and calling its output ground truth is
+      circular and is an automatic REJECT (B7/B8) -- the whole point is to have truth INDEPENDENT of
+      the detector you intend to evaluate.
+  (d) Record honest uncertainty: an `uncertain` flag with a one-clause reason for any frame where you
+      cannot tell (motion blur, occlusion, ball leaving frame). Do NOT force a binary call. Report
+      how many you flagged; a high uncertain rate is itself a finding about the achievable ceiling.
+  (e) Commit the label file AND the rendered frames under docs/evidence/tracking/g65_ball_labels/.
+      Durability is the entire deliverable (A7).
+ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
+  metric        = label-set completeness and independence
+  before        = no per-frame ball label set exists anywhere; only G44's summary numbers survive
+  bar           = >= 150 frames labelled by eye across >= 3 clips, every field present or explicitly
+                  uncertain-with-reason, the sampling reproducible from the stated seed, and the
+                  labels demonstrably NOT produced by the detector under test
+  n             = >= 150; state the exact count and the per-clip breakdown
+  eye check     = this row IS the eye check. Describe what you saw, including the hard cases.
+  must not move = every harness threshold, the detector, the solver, the coordinate contract. You
+                  are creating evidence, not changing behaviour.
+DO NOT, in this row: change MotionDiffDetector, propose a new spatial rule, or compute recall and
+precision. That is G44B's job and it becomes possible the moment this lands. Staying out of it is
+what keeps the evaluation honest -- the person who labels must not also tune the rule against the
+labels in the same pass.
+ALSO REPORT, in one line each, so G44B can be re-specified accurately: how many labelled frames have
+a visible ball, and of those how many fall inside `y < 2/3 * height`. These two numbers are the
+independent re-measurement of G44's 64 pct and 52 pct. If they disagree with G44, say so plainly --
+that is a finding, not a failure.
+EVIDENCE: docs/evidence/tracking/g65_ball_label_set_2026-09-0X.md with the sampling method, the
+per-clip counts, the two re-measured fractions with Wilson intervals, the uncertain rate, and a
+NOT VERIFIED list.
+TEST: exactly one new per-file test if you add code; run only that file. Never a full pytest.
+POD: read-only frame work is fine. No scp, no deploy, no daemon restart, never kill anything.
+COMMIT: explicit pathspec only (never the whole tree, never the gitignored local trees), in a3,
+no push. Report the sha.
+SHARED MODULE: none.
+NEVER PARK: do not poll your own jobs in a blocking loop; never end waiting.
