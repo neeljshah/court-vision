@@ -37,6 +37,19 @@ Q4 LEAK CONTRACT VIA CPCV -- anything scored OOS runs through walk_forward or cp
 Q5 TWO CORPORA FOR ANY AHEAD -- an AHEAD names its second corpus or corpus_unit and prints min_corpora_eff at the current K; if it cannot be satisfied the verdict is labelled SINGLE-WINDOW in the artifact AND the register row.
 Q6 CALIBRATION LANGUAGE ONLY -- no dollar, ROI, profit or "edge" language in any artifact, memo, ledger line or register row; none of the retracted figures (+18.38, 0.119, +54, 78.11, 8.94, 54.57) appears outside an explicit retraction context. Accuracy is not edge; an honest REJECT, NULL or BEHIND is a success.
 
+## Q7-Q8 (added 2026-09-03 by the roadmap audit)
+Q7 SAMPLING RAIL SCOPE -- `n >= 30` binds a SAMPLED or SCORED metric. A spec that
+writes `n = <k> (CONSTRUCT)` has enumerated every case and may NOT be rejected on
+the rail; the verifier instead checks that the enumeration really is exhaustive.
+An S-row's `eye check` is replaced by REPRODUCTION (A2 applies, A3 does not).
+Q8 PREMISE FIRST ON A ROW OLDER THAN A DAY -- before any work, re-measure the one
+fact the row rests on. Three premises in this program were already false when the
+row was read: the "three overdue pod deploys" (done 2026-09-02 22:05, ledger
+G14b), the "two unguarded default-ledger writers" (both guarded,
+inplay_derivative_mlb.py:257 and mlb_deriv_settle.py:120-122), and H01's "no
+games.parquet" (all four gate corpora exist). A falsified premise is a VALID
+result: report FALSIFIED, write the memo, and the row closes without a fix.
+
 ## C. Verdicts
 ACCEPT (land) | ACCEPT WITH CORRECTIONS (land; ledger carries the corrections)
 | NOT VALIDATED (land as unused/opt-in with zero callers, honest row)

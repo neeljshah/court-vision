@@ -1,5 +1,18 @@
-# Codex spec template for tracking gaps
+# Codex spec template for tracking (G) and harness (S) gaps
 Copy this template into each codex spec artifact; fill in the placeholders and run through the ACCEPTANCE RULE validation before dispatching. Max 40 lines.
+
+TWO ADJUSTMENTS FOR AN S-ROW (added 2026-09-03; without them the template
+contradicts more than half the S-register):
+- **`eye check` is a TRACKING element.** An S-row has no frames. Write
+  `eye check = n/a (S-row); reproduction = <exactly how the verifier recomputes
+  the headline from the artifact>` -- contract A2 still applies, A3 does not.
+- **`n >= 30` is a SAMPLING rail, not a universal one.** A deterministic
+  CONSTRUCT test enumerates every case rather than sampling, so its n is the case
+  count: write `n = <k> (CONSTRUCT)` and the verifier may NOT reject on the rail.
+  Use CONSTRUCT only when every case is enumerated; a sampled or scored
+  measurement keeps `n >= 30`. On the S-register today the construct rows are
+  S01, S07, S08, S09, S12, S13, S15, S17, S21, S23, S24, S28, S29.
+Also cite `VERIFIER_CONTRACT.md` section Q on an S-row, not just section B.
 
 ---
 
@@ -19,13 +32,13 @@ ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
   metric        = <name + exact denominator: decoded frames/rows/segments>
   before        = <measured today, with n>
   bar           = <the number "after" must beat; fixed now, never moved>
-  n             = <>= 30>
+  n             = <>= 30 for a sampled/scored metric; "<k> (CONSTRUCT)" when every case is enumerated>
   eye check     = <k renders EVENLY SPACED over the decision set, no head slice>
   must not move = <thresholds/files that must be byte-identical after>
 NON-TAUTOLOGY: state which rows the metric covers and which are excluded. If
 excluding the failing rows is what makes the number good, the metric is
 circular -- say so and report REJECT yourself.
-EVIDENCE: docs/evidence/tracking/<gid>_<slug>_2026-09-02.md -- before/after
+EVIDENCE: docs/evidence/tracking/<gid>_<slug>_<TODAY>.md -- before/after
 table, n, denominator, render tally, and a "NOT VERIFIED" list.
 TEST: exactly one new per-file test; run only that file.
 POD: heavy compute only; own nohup setsid nice job, unique /tmp log, never
