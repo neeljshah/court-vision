@@ -47,14 +47,10 @@ TRACKING = Path("data/tracking")
 # A completed upload is not automatically a video. Smallest real staged game
 # measured 29.3 MB; this floor is two orders of magnitude below that.
 MIN_VIDEO_BYTES = 1_000_000
-# No single game may hold a worker slot forever. Sport adapters finish in 1-4
-# minutes (that was BEFORE concurrency was raised); the basketball path
-# (scripts/run_clip.py) is the full production
-# pipeline and was measured at 18216 seconds -- 5.06 HOURS -- still running.
-# Two of those pinned two slots while 22 wnba/ncaa games queued behind them and
-# jammed the stage against the bridge's backlog cap. A slot freed after 45
-# minutes is worth far more than one game tracked in five hours.
-JOB_TIMEOUT_SECONDS = 3600
+# TEMPORARY: 12,000 s is roughly 1.37x the largest healthy 8,773 s pre-budget
+# completion and will be replaced by a per-clip frame-derived budget once G56
+# has denominator-bearing ledger rows.
+JOB_TIMEOUT_SECONDS = 12_000
 # The basketball path needs its own budget because its output is QUANTIZED.
 # unified_pipeline checkpoints tracking_data.csv every _CHECKPOINT_INTERVAL
 # (2000) frames and never flushes the residual, so a run_clip job is worth

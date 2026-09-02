@@ -1,0 +1,8 @@
+{
+  "budget_seconds": 12000,
+  "comparison": "seconds > budget_seconds",
+  "historical_rows": 397,
+  "ledger_path": "/workspace/nba-ai-system/data/tracking/track_daemon_ledger.jsonl",
+  "source_reproduction": "docs/evidence/tracking/g55_timeout_budget_2026-09-02.md",
+  "would_have_been_killed": 0
+}
