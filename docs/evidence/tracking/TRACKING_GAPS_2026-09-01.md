@@ -25,6 +25,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | G18 | tennis | linspace sampling plan FAILS harness on jump_p95 by construction (1.6 s spacing); harness plan must be sequential ranges -- fix the PLAN, never the threshold; also only 1 match + 1 clip measured (n=1 match) | tennis_vertical_lever_2026-09-01 README | OPEN |
 | G19 | basketball | ~4 pct residual off-frame = Kalman coasts (advanced_tracker.py:1165); wnba_04 tracker latched onto bench/crowd | basketball_producer_fix_2026-09-01.md | OPEN |
 | G20 | all | scripts/platformkit footage_cycle imports render_csv from demo_render which does not exist -> footage_cycle broken on master (fails locally too) | pod_deploy_2026-09-01.md | OPEN (small) |
+| G21 | tennis | 5 stale audit/probe scripts still measure the OLD solver (tennis_gate_funnel, line_detector_ab, tennis_threshold_sweep, tennis_resolution_anchor_ab, tennis_vertical_probe) via adapter helpers kept only for them | code review of 1c5f1e6b7 | OPEN (small; retarget or retire) |
 | G16 | all | teacher->student gate does not exist as a module (rule only) | product_runtime_contract memory | OPEN; needed before any "tracking improved a model" claim |
 
 Next single-problem lanes, in order: G18 tennis sequential-plan harness on >=3 matches, G01 ingest re-gate, G15
