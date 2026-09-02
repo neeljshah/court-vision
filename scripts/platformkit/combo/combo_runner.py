@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence
 
 from scripts.platformkit.combo import combo_bandit as B
@@ -48,6 +49,26 @@ logger = logging.getLogger("combo_runner")
 NO_CANDIDATE = "NO_CANDIDATE"
 PROPOSED = "PROPOSED"
 SHIPPED_DEGRADED = "DEGRADED"
+
+
+def _ledger_k(ledger_path: Optional[str]) -> int:
+    """Max k_cumulative on the canonical FWER ledger; 0 when it is absent/unreadable.
+
+    S40b / RT-20: `combo_k` used to be read from a per-sport CHECKPOINT and nothing else,
+    so deleting one JSON restored the per-test bar (measured: checkpoint 240 -> eps_eff
+    0.0002083; the same run with a fresh checkpoint -> 0.05, a 240x looser bar) even
+    though the ledger still recorded the trials. The ledger is the second, independent K
+    universe; reconciling to the LARGER of the two makes a deleted checkpoint harmless.
+    """
+    try:
+        from scripts.platformkit.eval_gate.backtest_runner import canonical_ledger_path
+        from scripts.platformkit.eval_gate.ledger import load_fwer
+
+        path = Path(ledger_path) if ledger_path else canonical_ledger_path()
+        return max((int(r.get("k_cumulative", 0)) for r in load_fwer(path)), default=0)
+    except Exception as exc:  # noqa: BLE001 -- an unreadable ledger never blocks a cycle
+        logger.debug("combo_runner: ledger K unreadable (%s); falling back to checkpoint", exc)
+        return 0
 
 
 @dataclass
@@ -115,6 +136,7 @@ def combo_cycle(
     proposals_path: Optional[str] = None,
     reject_path: Optional[str] = None,
     status_path: Optional[str] = None,
+    ledger_path: Optional[str] = None,
     replay_spec: Optional[CombinationSpec] = None,
     now: float = 0.0,
     **ingest_kw: Any,
@@ -132,7 +154,15 @@ def combo_cycle(
         cur = ckpt.cursor(sport)
         state = B.load_state(state_path)
         seen = list(cur.get("seen_ids", []))
-        prior_k = int(cur.get("combo_k", 0))
+        # K-SOURCE DISCIPLINE (RT-20): reconcile the checkpoint against the ledger at
+        # LAUNCH and take the LARGER -- a deleted/rolled-back checkpoint can no longer
+        # loosen the bar. Logged so the reconciliation is visible in the cycle log.
+        ckpt_k = int(cur.get("combo_k", 0))
+        ledger_k = _ledger_k(ledger_path)
+        prior_k = max(ckpt_k, ledger_k)
+        if prior_k != ckpt_k:
+            logger.info("combo_runner(%s): prior_k reconciled checkpoint=%d ledger=%d -> %d",
+                        sport, ckpt_k, ledger_k, prior_k)
 
         # --- INGEST (honest dead-feed-aware) ----------------------------------------
         sf = settled_games_fn

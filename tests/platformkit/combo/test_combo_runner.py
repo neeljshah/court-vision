@@ -39,11 +39,14 @@ def _settled_fn(n=14):
 
 
 def _paths(tmp_path):
+    # ledger_path pins the SECOND K source (S40b / RT-20) to an empty tmp ledger, so these
+    # tests read K from their own checkpoint only and never from the canonical repo ledger.
     return dict(ckpt_path=str(tmp_path / "ckpt.json"),
                 state_path=str(tmp_path / "bandit.json"),
                 proposals_path=str(tmp_path / "prop.jsonl"),
                 reject_path=str(tmp_path / "rej.jsonl"),
-                status_path=str(tmp_path / "stat.jsonl"))
+                status_path=str(tmp_path / "stat.jsonl"),
+                ledger_path=str(tmp_path / "fwer.jsonl"))
 
 
 def test_inert_no_candidate_when_sentinel_absent(monkeypatch, tmp_path):
@@ -138,3 +141,38 @@ def test_null_ship_freezes_family_through_runner(monkeypatch, tmp_path):
     assert fam in __import__(
         "scripts.platformkit.improve.prioritizer", fromlist=["frozen_families"]
     ).frozen_families(B.frozen_ledger(st))
+
+
+def test_s40b_rt20_deleted_checkpoint_cannot_restore_the_bar(monkeypatch, tmp_path):
+    """RT-20: prior_k came ONLY from the per-sport checkpoint, so deleting one JSON
+    restored the per-test bar. Measured before the fix, with the ledger at K=240:
+    warm checkpoint -> k_cumulative 240 (eps_eff 0.0002083); fresh checkpoint -> 0
+    (eps_eff 0.05), a 240x looser bar. K is now max(checkpoint, ledger)."""
+    from scripts.platformkit.combo.fwer_budget import eps_eff
+
+    monkeypatch.setattr(PF, "SENTINEL_PATH", tmp_path / "ABSENT")
+    p = _paths(tmp_path)
+    Path(p["ledger_path"]).write_text('{"k_cumulative": 240}\n', encoding="ascii")
+
+    def _no_games(name, since="", seen_ids=None, **kw):
+        return []
+
+    res = RUN.combo_cycle("nba", settled_games_fn=_no_games, **p)   # no checkpoint at all
+    assert res.k_cumulative == 240
+    # the bar the ledger's own K implies, derived here rather than copied from the runner.
+    assert eps_eff(0.05, res.k_cumulative) == 0.05 / 240
+
+    # an ADVANCED checkpoint still wins over a lagging ledger (the larger of the two).
+    Path(p["ckpt_path"]).write_text(
+        '{"cycle": 0, "cursors": {"nba": {"combo_k": 900}}}', encoding="ascii")
+    assert RUN.combo_cycle("nba", settled_games_fn=_no_games, **p).k_cumulative == 900
+
+
+def test_s40b_rt20_unreadable_ledger_never_blocks_a_cycle(tmp_path):
+    """The ledger is a SECOND opinion, not a dependency: an absent one falls back to
+    the checkpoint rather than raising (combo_cycle never raises)."""
+    from scripts.platformkit.combo.combo_runner import _ledger_k
+
+    assert _ledger_k(str(tmp_path / "nope.jsonl")) == 0
+    Path(tmp_path / "torn.jsonl").write_text("{not json\n", encoding="ascii")
+    assert _ledger_k(str(tmp_path / "torn.jsonl")) == 0

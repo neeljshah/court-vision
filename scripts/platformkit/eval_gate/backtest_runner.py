@@ -42,6 +42,33 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[3]
 
 
+# S40b / RT-3. `--ledger` was a free caller-supplied path that `_charge_ledger` would CREATE,
+# and codex worktrees never receive the ledger junction, so a charged trial run outside the
+# main repo necessarily started a FRESH K. Measured: a fresh path charges k_cumulative=1 ->
+# dm_alpha 0.050000, against 0.003846 at the canonical K=13 -- a 13x looser per-test bar.
+CANONICAL_LEDGER_PARTS = ("data", "cache", "eval_gate", "backtest_fwer.jsonl")
+
+
+def canonical_ledger_path() -> Path:
+    """The one repo-root ledger a charged run is allowed to read its K from."""
+    return _repo_root().joinpath(*CANONICAL_LEDGER_PARTS)
+
+
+def assert_canonical_ledger(ledger_path: Path, allow_noncanonical: bool) -> bool:
+    """Return True when `ledger_path` IS the canonical ledger; raise when it is not and
+    the caller has not explicitly opted out (tests pass allow_noncanonical_ledger=True)."""
+    canonical = canonical_ledger_path()
+    is_canonical = Path(ledger_path).expanduser().resolve() == canonical.resolve()
+    if not is_canonical and not allow_noncanonical:
+        raise ValueError(
+            f"refusing to charge a trial against a non-canonical ledger: {ledger_path}\n"
+            f"the canonical ledger is {canonical}; a fresh path restarts K and LOOSENS the "
+            "per-test bar. Pass allow_noncanonical_ledger=True "
+            "(--allow-noncanonical-ledger) only for tests."
+        )
+    return is_canonical
+
+
 def _load_callable(spec: str) -> Callable[[Sequence[dict], dict, bool], float]:
     module_name, sep, name = spec.partition(":")
     if not sep or not module_name or not name:
@@ -154,12 +181,16 @@ def _charge_ledger(path: Path, spec: str, sport: str, start: str, end: str, *,
 
 
 def run_backtest(spec: str, sport: str, start: str, end: str, *, repo: Path | None = None,
-                 ledger_path: Path, allow_reference_close_echo: bool = False) -> dict:
+                 ledger_path: Path, allow_reference_close_echo: bool = False,
+                 allow_noncanonical_ledger: bool = False) -> dict:
     """Replay one predictor and return the frozen-protocol report."""
     is_echo = spec.endswith(":close_echo")
     if is_echo and not allow_reference_close_echo:
         raise ValueError("close_echo requires --allow-reference-close-echo")
+    # K-source discipline (RT-3): refuse before charging, and stamp the source in the report.
+    ledger_canonical = assert_canonical_ledger(ledger_path, allow_noncanonical_ledger)
     charge = _charge_ledger(ledger_path, spec, sport, start, end)
+    charge = {**charge, "ledger_canonical": ledger_canonical, "ledger_path": str(ledger_path)}
     states, predictor = load_states(sport, start, end, repo), _load_callable(spec)
     if not states:
         return {"verdict": "INSUFFICIENT", "reason": "no joined games", "fwer": charge, "predictions": []}
@@ -216,9 +247,12 @@ def main() -> int:
     parser.add_argument("predictor"); parser.add_argument("sport"); parser.add_argument("start"); parser.add_argument("end")
     parser.add_argument("--repo", type=Path, default=None); parser.add_argument("--out-json", type=Path, required=True)
     parser.add_argument("--ledger", type=Path, required=True); parser.add_argument("--allow-reference-close-echo", action="store_true")
+    parser.add_argument("--allow-noncanonical-ledger", action="store_true",
+                        help="tests only: charge against a ledger that is not the repo-root canonical one")
     args = parser.parse_args()
     report = run_backtest(args.predictor, args.sport, args.start, args.end, repo=args.repo, ledger_path=args.ledger,
-                          allow_reference_close_echo=args.allow_reference_close_echo)
+                          allow_reference_close_echo=args.allow_reference_close_echo,
+                          allow_noncanonical_ledger=args.allow_noncanonical_ledger)
     args.out_json.parent.mkdir(parents=True, exist_ok=True)
     args.out_json.write_text(json.dumps(report, indent=2, ensure_ascii=True), encoding="ascii")
     print(ascii_table(report))
