@@ -55,6 +55,27 @@ _PRIVATE_RE = re.compile(
 _SWEEP_RE = re.compile(r"\bgit\b[^\n;&|]*\badd\b[^\n;&|]*\s(-A|--all|\.)(\s|$)")
 
 
+_TAR_X_RE = re.compile(r"\btar\b[^\n;|&]*\s-?[a-zA-Z]*x[a-zA-Z]*\b[^\n;|&]*")
+
+
+def _is_local_tar_extract(cmd):
+    # Block a tar extract that lands in the main repo: no -C at all, or -C pointing at the repo root.
+    for m in _TAR_X_RE.finditer(cmd):
+        seg = m.group(0)
+        if "ssh " in cmd[: m.start()]:
+            continue  # remote extract inside an ssh command string
+        # The sanctioned landing recipe archives an EXPLICIT pathspec (git archive <sha> -- <paths> | tar -x -C <repo>);
+        # the 2026-09-03 clobber was a PATHLESS archive of a stale branch. Exempt archives that name their paths.
+        upstream = cmd[: m.start()]
+        if "git" in upstream and "archive" in upstream and " -- " in upstream:
+            continue
+        if "-C" not in seg:
+            return True
+        if re.search(r"-C\s+[\"']?(/c|C:)?/?Users/neelj/nba-ai-system[\"']?(\s|$)", seg):
+            return True
+    return False
+
+
 def _stages_private_paths(cmd):
     return bool(_PRIVATE_RE.search(cmd))
 
@@ -84,6 +105,10 @@ def main():
     if _stages_private_paths(cmd):
         _block("staging/committing data/, vault/, youtube_cookies, .codex-a*/ or auth.json "
                "is forbidden (public origin). Stage an explicit pathspec.")
+    if _is_local_tar_extract(cmd):
+        _block("`tar -x` into the MAIN repo (or with no -C target) overwrites the shared working tree "
+               "with a stale archive -- 3,154 tracked files were clobbered on 2026-09-03 this way. "
+               "Extract only into a pod path via ssh or an explicit scratch -C target.")
     if _is_sweeping_add(cmd):
         _block("`git add -A` / `git add .` sweeps gitignored-intent files into the commit. "
                "Stage an explicit pathspec instead.")
