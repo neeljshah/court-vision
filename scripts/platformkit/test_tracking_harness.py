@@ -40,6 +40,35 @@ def test_good_game_has_versioned_provenance_aware_report():
     assert report.liveness_verdict == "LIVE" and report.zero_step_share == 0.0
 
 
+def test_sampling_interval_is_additive_and_never_changes_the_verdict():
+    cases = (
+        ({"frame_rate": 25, "frame_stride": 1}, 0.04, None),
+        ({"frame_rate": 25, "frame_stride": 3}, 0.12, None),
+        ({"frame_stride": 3}, None, "source frame rate unavailable"),
+        ({"frame_rate": 30, "frame_stride": 5}, 0.1667, None),
+    )
+    baseline = evaluate(_good_game(), "basketball",
+                        source_metadata={"frame_rate": 25})
+
+    for metadata, interval, reason in cases:
+        report = evaluate(_good_game(), "basketball", source_metadata=metadata)
+        assert report.passed == baseline.passed
+        assert report.verdict == baseline.verdict
+        assert report.failures == baseline.failures
+        assert report.sampling_interval_s == interval
+        assert report.sampling_interval_reason == reason
+        assert report.jump_p95_ft_per_s == (
+            round(report.jump_p95 / interval, 2) if interval is not None else None
+        )
+
+    with_interval = evaluate(_good_game(), "basketball",
+                             source_metadata={"frame_rate": 25, "frame_stride": 3})
+    new_fields = {"sampling_interval_s", "sampling_interval_reason", "jump_p95_ft_per_s"}
+    assert {key: value for key, value in baseline.__dict__.items() if key not in new_fields} == {
+        key: value for key, value in with_interval.__dict__.items() if key not in new_fields
+    }
+
+
 def test_frozen_game_fails_liveness_gate():
     df = _good_game()
     df.loc[df["cls"] == "player", ["x", "y"]] = (20.0, 25.0)
