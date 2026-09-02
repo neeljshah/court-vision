@@ -10,8 +10,8 @@ from typing import Iterable, Sequence
 import cv2
 import numpy as np
 
-from domains.soccer.tracking.adapter import SoccerAdapter
 from domains.soccer.tracking.segmenter import is_pitch_view
+from scripts.platformkit.detection.deterministic import build_soccer_packet_detector, read_packet_frame
 
 
 def _safe_name(path: Path) -> str:
@@ -109,7 +109,7 @@ def build_packet(videos: Sequence[Path], output_dir: Path, frames_per_clip: int)
     output_dir.mkdir(parents=True, exist_ok=True)
     frames_dir = output_dir / "frames"
     frames_dir.mkdir(exist_ok=True)
-    detector = SoccerAdapter().detector
+    detector = build_soccer_packet_detector()
     labels: list[dict[str, str]] = []
     detector_counts: list[dict[str, str]] = []
     next_id = 1
@@ -130,7 +130,7 @@ def build_packet(videos: Sequence[Path], output_dir: Path, frames_per_clip: int)
                     raise RuntimeError("could not write packet image: %s" % image_path)
                 labels.append({"frame_id": frame_id, "clip": clip, "manual_player_count": ""})
                 detector_counts.append({"frame_id": frame_id, "clip": clip,
-                                        "detector_observed_distinct_player_count": str(_valid_detection_count(detector(frame)))})
+                                        "detector_observed_distinct_player_count": str(_valid_detection_count(detector(read_packet_frame(image_path))))})
                 image_paths.append(image_path)
         finally:
             capture.release()

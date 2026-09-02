@@ -1,0 +1,843 @@
+{
+  "n": 100,
+  "pooled_delta_before": -1.23,
+  "pooled_delta_after": 0.9,
+  "flips_across_14": 11,
+  "rerun_raw_mismatches": 27,
+  "per_clip": {
+    "soccer_AgspyOj5BPk": {
+      "n": 34,
+      "delta_before": -1.794,
+      "delta_after": 0.765,
+      "flips": 5
+    },
+    "soccer_DdnvC6-PGYY": {
+      "n": 33,
+      "delta_before": -0.545,
+      "delta_after": 2.0,
+      "flips": 4
+    },
+    "soccer_kSgNjoaqCpI_1080p": {
+      "n": 33,
+      "delta_before": -1.333,
+      "delta_after": -0.061,
+      "flips": 2
+    }
+  },
+  "rendered_frame_ids": [
+    "S1_0001",
+    "S1_0012",
+    "S1_0047",
+    "S1_0058",
+    "S1_0013",
+    "S1_0024",
+    "S1_0068",
+    "S1_0079",
+    "S1_0025",
+    "S1_0036",
+    "S1_0089",
+    "S1_0100"
+  ],
+  "records": [
+    {
+      "frame_id": "S1_0001",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 6,
+      "old_raw": 6,
+      "rerun_raw": 6,
+      "player_boxes": 5
+    },
+    {
+      "frame_id": "S1_0002",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 1,
+      "old_raw": 1,
+      "rerun_raw": 1,
+      "player_boxes": 0
+    },
+    {
+      "frame_id": "S1_0003",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 15,
+      "old_raw": 19,
+      "rerun_raw": 19,
+      "player_boxes": 16
+    },
+    {
+      "frame_id": "S1_0004",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 2,
+      "old_raw": 5,
+      "rerun_raw": 5,
+      "player_boxes": 4
+    },
+    {
+      "frame_id": "S1_0005",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 12,
+      "old_raw": 13,
+      "rerun_raw": 14,
+      "player_boxes": 12
+    },
+    {
+      "frame_id": "S1_0006",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 16,
+      "old_raw": 17,
+      "rerun_raw": 17,
+      "player_boxes": 15
+    },
+    {
+      "frame_id": "S1_0007",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 16,
+      "old_raw": 17,
+      "rerun_raw": 17,
+      "player_boxes": 15
+    },
+    {
+      "frame_id": "S1_0008",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 11,
+      "old_raw": 10,
+      "rerun_raw": 10,
+      "player_boxes": 8
+    },
+    {
+      "frame_id": "S1_0009",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 19,
+      "old_raw": 22,
+      "rerun_raw": 22,
+      "player_boxes": 20
+    },
+    {
+      "frame_id": "S1_0010",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 14,
+      "old_raw": 12,
+      "rerun_raw": 12,
+      "player_boxes": 11
+    },
+    {
+      "frame_id": "S1_0011",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 13,
+      "old_raw": 10,
+      "rerun_raw": 10,
+      "player_boxes": 8
+    },
+    {
+      "frame_id": "S1_0012",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 17,
+      "old_raw": 17,
+      "rerun_raw": 17,
+      "player_boxes": 15
+    },
+    {
+      "frame_id": "S1_0013",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 16,
+      "old_raw": 15,
+      "rerun_raw": 13,
+      "player_boxes": 10
+    },
+    {
+      "frame_id": "S1_0014",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 4,
+      "old_raw": 9,
+      "rerun_raw": 9,
+      "player_boxes": 4
+    },
+    {
+      "frame_id": "S1_0015",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 15,
+      "old_raw": 18,
+      "rerun_raw": 18,
+      "player_boxes": 17
+    },
+    {
+      "frame_id": "S1_0016",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 20,
+      "old_raw": 18,
+      "rerun_raw": 16,
+      "player_boxes": 14
+    },
+    {
+      "frame_id": "S1_0017",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 13,
+      "old_raw": 12,
+      "rerun_raw": 14,
+      "player_boxes": 13
+    },
+    {
+      "frame_id": "S1_0018",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 16,
+      "old_raw": 5,
+      "rerun_raw": 5,
+      "player_boxes": 4
+    },
+    {
+      "frame_id": "S1_0019",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 12,
+      "old_raw": 14,
+      "rerun_raw": 14,
+      "player_boxes": 12
+    },
+    {
+      "frame_id": "S1_0020",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 11,
+      "old_raw": 13,
+      "rerun_raw": 13,
+      "player_boxes": 10
+    },
+    {
+      "frame_id": "S1_0021",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 11,
+      "old_raw": 14,
+      "rerun_raw": 14,
+      "player_boxes": 11
+    },
+    {
+      "frame_id": "S1_0022",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 19,
+      "old_raw": 17,
+      "rerun_raw": 17,
+      "player_boxes": 17
+    },
+    {
+      "frame_id": "S1_0023",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 3,
+      "old_raw": 2,
+      "rerun_raw": 3,
+      "player_boxes": 1
+    },
+    {
+      "frame_id": "S1_0024",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 6,
+      "old_raw": 11,
+      "rerun_raw": 11,
+      "player_boxes": 6
+    },
+    {
+      "frame_id": "S1_0025",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 15,
+      "old_raw": 19,
+      "rerun_raw": 18,
+      "player_boxes": 18
+    },
+    {
+      "frame_id": "S1_0026",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 14,
+      "old_raw": 18,
+      "rerun_raw": 17,
+      "player_boxes": 17
+    },
+    {
+      "frame_id": "S1_0027",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 19,
+      "old_raw": 18,
+      "rerun_raw": 18,
+      "player_boxes": 18
+    },
+    {
+      "frame_id": "S1_0028",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 14,
+      "old_raw": 13,
+      "rerun_raw": 13,
+      "player_boxes": 12
+    },
+    {
+      "frame_id": "S1_0029",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 2,
+      "old_raw": 2,
+      "rerun_raw": 2,
+      "player_boxes": 2
+    },
+    {
+      "frame_id": "S1_0030",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 15,
+      "old_raw": 16,
+      "rerun_raw": 16,
+      "player_boxes": 14
+    },
+    {
+      "frame_id": "S1_0031",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 18,
+      "old_raw": 18,
+      "rerun_raw": 17,
+      "player_boxes": 13
+    },
+    {
+      "frame_id": "S1_0032",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 19,
+      "old_raw": 17,
+      "rerun_raw": 17,
+      "player_boxes": 14
+    },
+    {
+      "frame_id": "S1_0033",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 12,
+      "old_raw": 14,
+      "rerun_raw": 14,
+      "player_boxes": 14
+    },
+    {
+      "frame_id": "S1_0034",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 17,
+      "old_raw": 22,
+      "rerun_raw": 21,
+      "player_boxes": 18
+    },
+    {
+      "frame_id": "S1_0035",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 14,
+      "old_raw": 17,
+      "rerun_raw": 17,
+      "player_boxes": 15
+    },
+    {
+      "frame_id": "S1_0036",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 16,
+      "old_raw": 18,
+      "rerun_raw": 17,
+      "player_boxes": 16
+    },
+    {
+      "frame_id": "S1_0037",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 4,
+      "old_raw": 5,
+      "rerun_raw": 5,
+      "player_boxes": 4
+    },
+    {
+      "frame_id": "S1_0038",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 10,
+      "old_raw": 13,
+      "rerun_raw": 12,
+      "player_boxes": 9
+    },
+    {
+      "frame_id": "S1_0039",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 14,
+      "old_raw": 18,
+      "rerun_raw": 19,
+      "player_boxes": 11
+    },
+    {
+      "frame_id": "S1_0040",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 17,
+      "old_raw": 22,
+      "rerun_raw": 22,
+      "player_boxes": 18
+    },
+    {
+      "frame_id": "S1_0041",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 16,
+      "old_raw": 17,
+      "rerun_raw": 16,
+      "player_boxes": 14
+    },
+    {
+      "frame_id": "S1_0042",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 1,
+      "old_raw": 1,
+      "rerun_raw": 1,
+      "player_boxes": 0
+    },
+    {
+      "frame_id": "S1_0043",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 1,
+      "old_raw": 1,
+      "rerun_raw": 1,
+      "player_boxes": 0
+    },
+    {
+      "frame_id": "S1_0044",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 20,
+      "old_raw": 20,
+      "rerun_raw": 19,
+      "player_boxes": 18
+    },
+    {
+      "frame_id": "S1_0045",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 19,
+      "old_raw": 22,
+      "rerun_raw": 22,
+      "player_boxes": 21
+    },
+    {
+      "frame_id": "S1_0046",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 4,
+      "old_raw": 7,
+      "rerun_raw": 6,
+      "player_boxes": 5
+    },
+    {
+      "frame_id": "S1_0047",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 13,
+      "old_raw": 14,
+      "rerun_raw": 14,
+      "player_boxes": 13
+    },
+    {
+      "frame_id": "S1_0048",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 16,
+      "old_raw": 21,
+      "rerun_raw": 21,
+      "player_boxes": 16
+    },
+    {
+      "frame_id": "S1_0049",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 14,
+      "old_raw": 13,
+      "rerun_raw": 13,
+      "player_boxes": 12
+    },
+    {
+      "frame_id": "S1_0050",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 12,
+      "old_raw": 19,
+      "rerun_raw": 18,
+      "player_boxes": 17
+    },
+    {
+      "frame_id": "S1_0051",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 11,
+      "old_raw": 13,
+      "rerun_raw": 13,
+      "player_boxes": 12
+    },
+    {
+      "frame_id": "S1_0052",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 15,
+      "old_raw": 19,
+      "rerun_raw": 18,
+      "player_boxes": 10
+    },
+    {
+      "frame_id": "S1_0053",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 16,
+      "old_raw": 25,
+      "rerun_raw": 25,
+      "player_boxes": 17
+    },
+    {
+      "frame_id": "S1_0054",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 2,
+      "old_raw": 2,
+      "rerun_raw": 2,
+      "player_boxes": 0
+    },
+    {
+      "frame_id": "S1_0055",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 13,
+      "old_raw": 16,
+      "rerun_raw": 16,
+      "player_boxes": 13
+    },
+    {
+      "frame_id": "S1_0056",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 12,
+      "old_raw": 12,
+      "rerun_raw": 12,
+      "player_boxes": 10
+    },
+    {
+      "frame_id": "S1_0057",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 17,
+      "old_raw": 18,
+      "rerun_raw": 18,
+      "player_boxes": 13
+    },
+    {
+      "frame_id": "S1_0058",
+      "clip": "soccer_AgspyOj5BPk",
+      "manual": 18,
+      "old_raw": 21,
+      "rerun_raw": 21,
+      "player_boxes": 19
+    },
+    {
+      "frame_id": "S1_0059",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 9,
+      "old_raw": 8,
+      "rerun_raw": 8,
+      "player_boxes": 6
+    },
+    {
+      "frame_id": "S1_0060",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 9,
+      "old_raw": 11,
+      "rerun_raw": 12,
+      "player_boxes": 10
+    },
+    {
+      "frame_id": "S1_0061",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 2,
+      "old_raw": 4,
+      "rerun_raw": 4,
+      "player_boxes": 3
+    },
+    {
+      "frame_id": "S1_0062",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 11,
+      "old_raw": 12,
+      "rerun_raw": 13,
+      "player_boxes": 11
+    },
+    {
+      "frame_id": "S1_0063",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 2,
+      "old_raw": 3,
+      "rerun_raw": 3,
+      "player_boxes": 3
+    },
+    {
+      "frame_id": "S1_0064",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 4,
+      "old_raw": 5,
+      "rerun_raw": 5,
+      "player_boxes": 4
+    },
+    {
+      "frame_id": "S1_0065",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 15,
+      "old_raw": 18,
+      "rerun_raw": 16,
+      "player_boxes": 14
+    },
+    {
+      "frame_id": "S1_0066",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 8,
+      "old_raw": 10,
+      "rerun_raw": 10,
+      "player_boxes": 7
+    },
+    {
+      "frame_id": "S1_0067",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 16,
+      "old_raw": 16,
+      "rerun_raw": 16,
+      "player_boxes": 15
+    },
+    {
+      "frame_id": "S1_0068",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 14,
+      "old_raw": 16,
+      "rerun_raw": 16,
+      "player_boxes": 16
+    },
+    {
+      "frame_id": "S1_0069",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 8,
+      "old_raw": 8,
+      "rerun_raw": 8,
+      "player_boxes": 6
+    },
+    {
+      "frame_id": "S1_0070",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 5,
+      "old_raw": 12,
+      "rerun_raw": 12,
+      "player_boxes": 4
+    },
+    {
+      "frame_id": "S1_0071",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 16,
+      "old_raw": 18,
+      "rerun_raw": 18,
+      "player_boxes": 18
+    },
+    {
+      "frame_id": "S1_0072",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 16,
+      "old_raw": 15,
+      "rerun_raw": 14,
+      "player_boxes": 12
+    },
+    {
+      "frame_id": "S1_0073",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 9,
+      "old_raw": 10,
+      "rerun_raw": 9,
+      "player_boxes": 5
+    },
+    {
+      "frame_id": "S1_0074",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 11,
+      "old_raw": 12,
+      "rerun_raw": 12,
+      "player_boxes": 7
+    },
+    {
+      "frame_id": "S1_0075",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 12,
+      "old_raw": 5,
+      "rerun_raw": 5,
+      "player_boxes": 3
+    },
+    {
+      "frame_id": "S1_0076",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 11,
+      "old_raw": 13,
+      "rerun_raw": 13,
+      "player_boxes": 0
+    },
+    {
+      "frame_id": "S1_0077",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 3,
+      "old_raw": 3,
+      "rerun_raw": 3,
+      "player_boxes": 2
+    },
+    {
+      "frame_id": "S1_0078",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 9,
+      "old_raw": 8,
+      "rerun_raw": 8,
+      "player_boxes": 7
+    },
+    {
+      "frame_id": "S1_0079",
+      "clip": "soccer_DdnvC6-PGYY",
+      "manual": 2,
+      "old_raw": 1,
+      "rerun_raw": 1,
+      "player_boxes": 0
+    },
+    {
+      "frame_id": "S1_0080",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 12,
+      "old_raw": 11,
+      "rerun_raw": 11,
+      "player_boxes": 10
+    },
+    {
+      "frame_id": "S1_0081",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 10,
+      "old_raw": 12,
+      "rerun_raw": 13,
+      "player_boxes": 13
+    },
+    {
+      "frame_id": "S1_0082",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 19,
+      "old_raw": 19,
+      "rerun_raw": 19,
+      "player_boxes": 16
+    },
+    {
+      "frame_id": "S1_0083",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 19,
+      "old_raw": 22,
+      "rerun_raw": 21,
+      "player_boxes": 21
+    },
+    {
+      "frame_id": "S1_0084",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 16,
+      "old_raw": 17,
+      "rerun_raw": 16,
+      "player_boxes": 15
+    },
+    {
+      "frame_id": "S1_0085",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 18,
+      "old_raw": 17,
+      "rerun_raw": 17,
+      "player_boxes": 16
+    },
+    {
+      "frame_id": "S1_0086",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 16,
+      "old_raw": 16,
+      "rerun_raw": 16,
+      "player_boxes": 16
+    },
+    {
+      "frame_id": "S1_0087",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 1,
+      "old_raw": 1,
+      "rerun_raw": 1,
+      "player_boxes": 1
+    },
+    {
+      "frame_id": "S1_0088",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 13,
+      "old_raw": 15,
+      "rerun_raw": 15,
+      "player_boxes": 15
+    },
+    {
+      "frame_id": "S1_0089",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 9,
+      "old_raw": 11,
+      "rerun_raw": 10,
+      "player_boxes": 9
+    },
+    {
+      "frame_id": "S1_0090",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 17,
+      "old_raw": 19,
+      "rerun_raw": 19,
+      "player_boxes": 16
+    },
+    {
+      "frame_id": "S1_0091",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 10,
+      "old_raw": 10,
+      "rerun_raw": 10,
+      "player_boxes": 9
+    },
+    {
+      "frame_id": "S1_0092",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 13,
+      "old_raw": 14,
+      "rerun_raw": 14,
+      "player_boxes": 12
+    },
+    {
+      "frame_id": "S1_0093",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 13,
+      "old_raw": 16,
+      "rerun_raw": 16,
+      "player_boxes": 16
+    },
+    {
+      "frame_id": "S1_0094",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 16,
+      "old_raw": 18,
+      "rerun_raw": 18,
+      "player_boxes": 16
+    },
+    {
+      "frame_id": "S1_0095",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 12,
+      "old_raw": 15,
+      "rerun_raw": 15,
+      "player_boxes": 15
+    },
+    {
+      "frame_id": "S1_0096",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 16,
+      "old_raw": 16,
+      "rerun_raw": 16,
+      "player_boxes": 16
+    },
+    {
+      "frame_id": "S1_0097",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 17,
+      "old_raw": 23,
+      "rerun_raw": 23,
+      "player_boxes": 21
+    },
+    {
+      "frame_id": "S1_0098",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 14,
+      "old_raw": 15,
+      "rerun_raw": 15,
+      "player_boxes": 14
+    },
+    {
+      "frame_id": "S1_0099",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 16,
+      "old_raw": 16,
+      "rerun_raw": 17,
+      "player_boxes": 17
+    },
+    {
+      "frame_id": "S1_0100",
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "manual": 18,
+      "old_raw": 19,
+      "rerun_raw": 19,
+      "player_boxes": 17
+    }
+  ]
+}
