@@ -1,0 +1,12 @@
+clip,source_frame,source_mp4,source_available,g102_status,label_plan
+tennis_09,7034,data/footage_corpus/tennis__tennis_09.mp4,true,not_in_g102,label_new
+tennis_09,7124,data/footage_corpus/tennis__tennis_09.mp4,true,not_in_g102,label_new
+tennis_09,7160,data/footage_corpus/tennis__tennis_09.mp4,true,not_in_g102,label_new
+tennis_09,7178,data/footage_corpus/tennis__tennis_09.mp4,true,not_in_g102,label_new
+tennis_09,7190,data/footage_corpus/tennis__tennis_09.mp4,true,not_in_g102,label_new
+tennis_09,7202,data/footage_corpus/tennis__tennis_09.mp4,true,not_in_g102,label_new
+tennis_09,7214,data/footage_corpus/tennis__tennis_09.mp4,true,not_in_g102,label_new
+tennis_09,7244,data/footage_corpus/tennis__tennis_09.mp4,true,not_in_g102,label_new
+nyyk_720p,34001,data/footage_corpus/tennis__tennis_nyYk2nPZAwY_720p.mp4,true,not_in_g102,label_new
+nyyk_720p,34079,data/footage_corpus/tennis__tennis_nyYk2nPZAwY_720p.mp4,true,not_in_g102,label_new
+nyyk_720p,34091,data/footage_corpus/tennis__tennis_nyYk2nPZAwY_720p.mp4,true,not_in_g102,label_new

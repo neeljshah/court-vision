@@ -1,0 +1,12 @@
+clip,source_frame,predecessor_frame,current_frame,successor_frame,source_mp4,source_dimensions,tile_count,tile_width,scale,strip_directory,review_card
+tennis_09,7034,7033,7034,7035,data/footage_corpus/tennis__tennis_09.mp4,1920x1080,3,640,2x,strips_blind,review_cards_blind/tennis_09_f007034_temporal_tiles_2x.jpg
+tennis_09,7124,7123,7124,7125,data/footage_corpus/tennis__tennis_09.mp4,1920x1080,3,640,2x,strips_blind,review_cards_blind/tennis_09_f007124_temporal_tiles_2x.jpg
+tennis_09,7160,7159,7160,7161,data/footage_corpus/tennis__tennis_09.mp4,1920x1080,3,640,2x,strips_blind,review_cards_blind/tennis_09_f007160_temporal_tiles_2x.jpg
+tennis_09,7178,7177,7178,7179,data/footage_corpus/tennis__tennis_09.mp4,1920x1080,3,640,2x,strips_blind,review_cards_blind/tennis_09_f007178_temporal_tiles_2x.jpg
+tennis_09,7190,7189,7190,7191,data/footage_corpus/tennis__tennis_09.mp4,1920x1080,3,640,2x,strips_blind,review_cards_blind/tennis_09_f007190_temporal_tiles_2x.jpg
+tennis_09,7202,7201,7202,7203,data/footage_corpus/tennis__tennis_09.mp4,1920x1080,3,640,2x,strips_blind,review_cards_blind/tennis_09_f007202_temporal_tiles_2x.jpg
+tennis_09,7214,7213,7214,7215,data/footage_corpus/tennis__tennis_09.mp4,1920x1080,3,640,2x,strips_blind,review_cards_blind/tennis_09_f007214_temporal_tiles_2x.jpg
+tennis_09,7244,7243,7244,7245,data/footage_corpus/tennis__tennis_09.mp4,1920x1080,3,640,2x,strips_blind,review_cards_blind/tennis_09_f007244_temporal_tiles_2x.jpg
+nyyk_720p,34001,34000,34001,34002,data/footage_corpus/tennis__tennis_nyYk2nPZAwY_720p.mp4,1280x720,3,426,2x,strips_blind,review_cards_blind/nyyk_720p_f034001_temporal_tiles_2x.jpg
+nyyk_720p,34079,34078,34079,34080,data/footage_corpus/tennis__tennis_nyYk2nPZAwY_720p.mp4,1280x720,3,426,2x,strips_blind,review_cards_blind/nyyk_720p_f034079_temporal_tiles_2x.jpg
+nyyk_720p,34091,34090,34091,34092,data/footage_corpus/tennis__tennis_nyYk2nPZAwY_720p.mp4,1280x720,3,426,2x,strips_blind,review_cards_blind/nyyk_720p_f034091_temporal_tiles_2x.jpg
