@@ -1,0 +1,666 @@
+{
+  "seed": 9102026,
+  "sampling": "20 seeded uniform draws, one from each equal-sized temporal twentieth per clip",
+  "clips": [
+    {
+      "clip": "soccer__soccer_AgspyOj5BPk.mp4",
+      "frame_count": 28805,
+      "fps": 30.0,
+      "source_shape": [
+        1280,
+        720
+      ],
+      "frames": [
+        {
+          "slot": 1,
+          "requested_frame": 1392,
+          "source_frame": 1392,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f001392.jpg"
+        },
+        {
+          "slot": 2,
+          "requested_frame": 2375,
+          "source_frame": 2375,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f002375.jpg"
+        },
+        {
+          "slot": 3,
+          "requested_frame": 2997,
+          "source_frame": 2997,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f002997.jpg"
+        },
+        {
+          "slot": 4,
+          "requested_frame": 4458,
+          "source_frame": 4458,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f004458.jpg"
+        },
+        {
+          "slot": 5,
+          "requested_frame": 6013,
+          "source_frame": 6013,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f006013.jpg"
+        },
+        {
+          "slot": 6,
+          "requested_frame": 7890,
+          "source_frame": 7890,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f007890.jpg"
+        },
+        {
+          "slot": 7,
+          "requested_frame": 8858,
+          "source_frame": 8858,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f008858.jpg"
+        },
+        {
+          "slot": 8,
+          "requested_frame": 10430,
+          "source_frame": 10430,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f010430.jpg"
+        },
+        {
+          "slot": 9,
+          "requested_frame": 12536,
+          "source_frame": 12536,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f012536.jpg"
+        },
+        {
+          "slot": 10,
+          "requested_frame": 13579,
+          "source_frame": 13579,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f013579.jpg"
+        },
+        {
+          "slot": 11,
+          "requested_frame": 14628,
+          "source_frame": 14628,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f014628.jpg"
+        },
+        {
+          "slot": 12,
+          "requested_frame": 16705,
+          "source_frame": 16705,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f016705.jpg"
+        },
+        {
+          "slot": 13,
+          "requested_frame": 17635,
+          "source_frame": 17635,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f017635.jpg"
+        },
+        {
+          "slot": 14,
+          "requested_frame": 19874,
+          "source_frame": 19874,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f019874.jpg"
+        },
+        {
+          "slot": 15,
+          "requested_frame": 21055,
+          "source_frame": 21055,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f021055.jpg"
+        },
+        {
+          "slot": 16,
+          "requested_frame": 22850,
+          "source_frame": 22850,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f022850.jpg"
+        },
+        {
+          "slot": 17,
+          "requested_frame": 23181,
+          "source_frame": 23181,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f023181.jpg"
+        },
+        {
+          "slot": 18,
+          "requested_frame": 25193,
+          "source_frame": 25193,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f025193.jpg"
+        },
+        {
+          "slot": 19,
+          "requested_frame": 26033,
+          "source_frame": 26033,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f026033.jpg"
+        },
+        {
+          "slot": 20,
+          "requested_frame": 28718,
+          "source_frame": 28718,
+          "render": "renders/soccer__soccer_AgspyOj5BPk_f028718.jpg"
+        }
+      ],
+      "contact_sheet": "renders/soccer__soccer_AgspyOj5BPk_contact_sheet.jpg"
+    },
+    {
+      "clip": "soccer__soccer_cKXZysISV4w.mp4",
+      "frame_count": 28951,
+      "fps": 30.0,
+      "source_shape": [
+        1280,
+        720
+      ],
+      "frames": [
+        {
+          "slot": 1,
+          "requested_frame": 8,
+          "source_frame": 8,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f000008.jpg"
+        },
+        {
+          "slot": 2,
+          "requested_frame": 2880,
+          "source_frame": 2880,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f002880.jpg"
+        },
+        {
+          "slot": 3,
+          "requested_frame": 3323,
+          "source_frame": 3323,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f003323.jpg"
+        },
+        {
+          "slot": 4,
+          "requested_frame": 4690,
+          "source_frame": 4690,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f004690.jpg"
+        },
+        {
+          "slot": 5,
+          "requested_frame": 6455,
+          "source_frame": 6455,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f006455.jpg"
+        },
+        {
+          "slot": 6,
+          "requested_frame": 8565,
+          "source_frame": 8565,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f008565.jpg"
+        },
+        {
+          "slot": 7,
+          "requested_frame": 9655,
+          "source_frame": 9655,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f009655.jpg"
+        },
+        {
+          "slot": 8,
+          "requested_frame": 11150,
+          "source_frame": 11150,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f011150.jpg"
+        },
+        {
+          "slot": 9,
+          "requested_frame": 12517,
+          "source_frame": 12517,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f012517.jpg"
+        },
+        {
+          "slot": 10,
+          "requested_frame": 13364,
+          "source_frame": 13364,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f013364.jpg"
+        },
+        {
+          "slot": 11,
+          "requested_frame": 15084,
+          "source_frame": 15084,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f015084.jpg"
+        },
+        {
+          "slot": 12,
+          "requested_frame": 16439,
+          "source_frame": 16439,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f016439.jpg"
+        },
+        {
+          "slot": 13,
+          "requested_frame": 18632,
+          "source_frame": 18632,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f018632.jpg"
+        },
+        {
+          "slot": 14,
+          "requested_frame": 19204,
+          "source_frame": 19204,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f019204.jpg"
+        },
+        {
+          "slot": 15,
+          "requested_frame": 21559,
+          "source_frame": 21559,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f021559.jpg"
+        },
+        {
+          "slot": 16,
+          "requested_frame": 21876,
+          "source_frame": 21876,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f021876.jpg"
+        },
+        {
+          "slot": 17,
+          "requested_frame": 24230,
+          "source_frame": 24230,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f024230.jpg"
+        },
+        {
+          "slot": 18,
+          "requested_frame": 24977,
+          "source_frame": 24977,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f024977.jpg"
+        },
+        {
+          "slot": 19,
+          "requested_frame": 27500,
+          "source_frame": 27500,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f027500.jpg"
+        },
+        {
+          "slot": 20,
+          "requested_frame": 28814,
+          "source_frame": 28814,
+          "render": "renders/soccer__soccer_cKXZysISV4w_f028814.jpg"
+        }
+      ],
+      "contact_sheet": "renders/soccer__soccer_cKXZysISV4w_contact_sheet.jpg"
+    },
+    {
+      "clip": "soccer__soccer_DdnvC6-PGYY.mp4",
+      "frame_count": 28951,
+      "fps": 30.0,
+      "source_shape": [
+        1280,
+        720
+      ],
+      "frames": [
+        {
+          "slot": 1,
+          "requested_frame": 390,
+          "source_frame": 390,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f000390.jpg"
+        },
+        {
+          "slot": 2,
+          "requested_frame": 1801,
+          "source_frame": 1801,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f001801.jpg"
+        },
+        {
+          "slot": 3,
+          "requested_frame": 3909,
+          "source_frame": 3909,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f003909.jpg"
+        },
+        {
+          "slot": 4,
+          "requested_frame": 5212,
+          "source_frame": 5212,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f005212.jpg"
+        },
+        {
+          "slot": 5,
+          "requested_frame": 6954,
+          "source_frame": 6954,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f006954.jpg"
+        },
+        {
+          "slot": 6,
+          "requested_frame": 8521,
+          "source_frame": 8521,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f008521.jpg"
+        },
+        {
+          "slot": 7,
+          "requested_frame": 9162,
+          "source_frame": 9162,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f009162.jpg"
+        },
+        {
+          "slot": 8,
+          "requested_frame": 10233,
+          "source_frame": 10233,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f010233.jpg"
+        },
+        {
+          "slot": 9,
+          "requested_frame": 12931,
+          "source_frame": 12931,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f012931.jpg"
+        },
+        {
+          "slot": 10,
+          "requested_frame": 13616,
+          "source_frame": 13616,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f013616.jpg"
+        },
+        {
+          "slot": 11,
+          "requested_frame": 15668,
+          "source_frame": 15668,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f015668.jpg"
+        },
+        {
+          "slot": 12,
+          "requested_frame": 16923,
+          "source_frame": 16923,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f016923.jpg"
+        },
+        {
+          "slot": 13,
+          "requested_frame": 17843,
+          "source_frame": 17843,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f017843.jpg"
+        },
+        {
+          "slot": 14,
+          "requested_frame": 19179,
+          "source_frame": 19179,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f019179.jpg"
+        },
+        {
+          "slot": 15,
+          "requested_frame": 20345,
+          "source_frame": 20345,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f020345.jpg"
+        },
+        {
+          "slot": 16,
+          "requested_frame": 21794,
+          "source_frame": 21794,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f021794.jpg"
+        },
+        {
+          "slot": 17,
+          "requested_frame": 24157,
+          "source_frame": 24157,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f024157.jpg"
+        },
+        {
+          "slot": 18,
+          "requested_frame": 25469,
+          "source_frame": 25469,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f025469.jpg"
+        },
+        {
+          "slot": 19,
+          "requested_frame": 26313,
+          "source_frame": 26313,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f026313.jpg"
+        },
+        {
+          "slot": 20,
+          "requested_frame": 27821,
+          "source_frame": 27821,
+          "render": "renders/soccer__soccer_DdnvC6-PGYY_f027821.jpg"
+        }
+      ],
+      "contact_sheet": "renders/soccer__soccer_DdnvC6-PGYY_contact_sheet.jpg"
+    },
+    {
+      "clip": "soccer__soccer_EKhrdU9bVZA.mp4",
+      "frame_count": 28821,
+      "fps": 30.0,
+      "source_shape": [
+        1280,
+        720
+      ],
+      "frames": [
+        {
+          "slot": 1,
+          "requested_frame": 1065,
+          "source_frame": 1065,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f001065.jpg"
+        },
+        {
+          "slot": 2,
+          "requested_frame": 2165,
+          "source_frame": 2165,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f002165.jpg"
+        },
+        {
+          "slot": 3,
+          "requested_frame": 3107,
+          "source_frame": 3107,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f003107.jpg"
+        },
+        {
+          "slot": 4,
+          "requested_frame": 5154,
+          "source_frame": 5154,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f005154.jpg"
+        },
+        {
+          "slot": 5,
+          "requested_frame": 6084,
+          "source_frame": 6084,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f006084.jpg"
+        },
+        {
+          "slot": 6,
+          "requested_frame": 7319,
+          "source_frame": 7319,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f007319.jpg"
+        },
+        {
+          "slot": 7,
+          "requested_frame": 8804,
+          "source_frame": 8804,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f008804.jpg"
+        },
+        {
+          "slot": 8,
+          "requested_frame": 10131,
+          "source_frame": 10131,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f010131.jpg"
+        },
+        {
+          "slot": 9,
+          "requested_frame": 11568,
+          "source_frame": 11568,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f011568.jpg"
+        },
+        {
+          "slot": 10,
+          "requested_frame": 13143,
+          "source_frame": 13143,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f013143.jpg"
+        },
+        {
+          "slot": 11,
+          "requested_frame": 15698,
+          "source_frame": 15698,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f015698.jpg"
+        },
+        {
+          "slot": 12,
+          "requested_frame": 16410,
+          "source_frame": 16410,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f016410.jpg"
+        },
+        {
+          "slot": 13,
+          "requested_frame": 18171,
+          "source_frame": 18171,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f018171.jpg"
+        },
+        {
+          "slot": 14,
+          "requested_frame": 19919,
+          "source_frame": 19919,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f019919.jpg"
+        },
+        {
+          "slot": 15,
+          "requested_frame": 21183,
+          "source_frame": 21183,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f021183.jpg"
+        },
+        {
+          "slot": 16,
+          "requested_frame": 22918,
+          "source_frame": 22918,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f022918.jpg"
+        },
+        {
+          "slot": 17,
+          "requested_frame": 23567,
+          "source_frame": 23567,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f023567.jpg"
+        },
+        {
+          "slot": 18,
+          "requested_frame": 25181,
+          "source_frame": 25181,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f025181.jpg"
+        },
+        {
+          "slot": 19,
+          "requested_frame": 26789,
+          "source_frame": 26789,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f026789.jpg"
+        },
+        {
+          "slot": 20,
+          "requested_frame": 28400,
+          "source_frame": 28400,
+          "render": "renders/soccer__soccer_EKhrdU9bVZA_f028400.jpg"
+        }
+      ],
+      "contact_sheet": "renders/soccer__soccer_EKhrdU9bVZA_contact_sheet.jpg"
+    },
+    {
+      "clip": "soccer__soccer_kSgNjoaqCpI_1080p.mp4",
+      "frame_count": 18150,
+      "fps": 30.0,
+      "source_shape": [
+        1920,
+        1080
+      ],
+      "frames": [
+        {
+          "slot": 1,
+          "requested_frame": 197,
+          "source_frame": 197,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f000197.jpg"
+        },
+        {
+          "slot": 2,
+          "requested_frame": 1725,
+          "source_frame": 1725,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f001725.jpg"
+        },
+        {
+          "slot": 3,
+          "requested_frame": 2457,
+          "source_frame": 2457,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f002457.jpg"
+        },
+        {
+          "slot": 4,
+          "requested_frame": 2911,
+          "source_frame": 2911,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f002911.jpg"
+        },
+        {
+          "slot": 5,
+          "requested_frame": 4084,
+          "source_frame": 4084,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f004084.jpg"
+        },
+        {
+          "slot": 6,
+          "requested_frame": 4600,
+          "source_frame": 4600,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f004600.jpg"
+        },
+        {
+          "slot": 7,
+          "requested_frame": 6095,
+          "source_frame": 6095,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f006095.jpg"
+        },
+        {
+          "slot": 8,
+          "requested_frame": 7095,
+          "source_frame": 7095,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f007095.jpg"
+        },
+        {
+          "slot": 9,
+          "requested_frame": 7425,
+          "source_frame": 7425,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f007425.jpg"
+        },
+        {
+          "slot": 10,
+          "requested_frame": 8477,
+          "source_frame": 8477,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f008477.jpg"
+        },
+        {
+          "slot": 11,
+          "requested_frame": 9485,
+          "source_frame": 9485,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f009485.jpg"
+        },
+        {
+          "slot": 12,
+          "requested_frame": 10419,
+          "source_frame": 10419,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f010419.jpg"
+        },
+        {
+          "slot": 13,
+          "requested_frame": 11135,
+          "source_frame": 11135,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f011135.jpg"
+        },
+        {
+          "slot": 14,
+          "requested_frame": 12540,
+          "source_frame": 12540,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f012540.jpg"
+        },
+        {
+          "slot": 15,
+          "requested_frame": 13114,
+          "source_frame": 13114,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f013114.jpg"
+        },
+        {
+          "slot": 16,
+          "requested_frame": 14432,
+          "source_frame": 14432,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f014432.jpg"
+        },
+        {
+          "slot": 17,
+          "requested_frame": 15377,
+          "source_frame": 15377,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f015377.jpg"
+        },
+        {
+          "slot": 18,
+          "requested_frame": 15780,
+          "source_frame": 15780,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f015780.jpg"
+        },
+        {
+          "slot": 19,
+          "requested_frame": 17174,
+          "source_frame": 17174,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f017174.jpg"
+        },
+        {
+          "slot": 20,
+          "requested_frame": 17263,
+          "source_frame": 17263,
+          "render": "renders/soccer__soccer_kSgNjoaqCpI_1080p_f017263.jpg"
+        }
+      ],
+      "contact_sheet": "renders/soccer__soccer_kSgNjoaqCpI_1080p_contact_sheet.jpg"
+    }
+  ]
+}

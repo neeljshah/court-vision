@@ -8,6 +8,8 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable
 
+from scripts.platformkit.bridge_liveness import STATUS_MAX_AGE_SECONDS, status_is_fresh
+
 
 DEFAULT_TRACKING = Path("data/tracking/track_daemon_ledger.jsonl")
 DEFAULT_BRIDGE = Path("data/tracking/footage_bridge_ledger.jsonl")
@@ -150,8 +152,9 @@ def build_report(
             text = status.split(":", 1)[1].strip() if ":" in status else status
             bridge_failures[sport][text] += 1
 
+    status_fresh, _, status_reason = status_is_fresh(supervisor_path)
     lanes: dict[str, Any] = {}
-    if supervisor is not None and isinstance(supervisor.get("lanes"), dict):
+    if status_fresh and supervisor is not None and isinstance(supervisor.get("lanes"), dict):
         lanes = supervisor["lanes"]
     alive_lanes = sorted(_ascii(name) for name, lane in lanes.items()
                          if isinstance(lane, dict) and lane.get("alive") is True)
@@ -161,6 +164,8 @@ def build_report(
                       if isinstance(lane, dict))
 
     human: list[str] = []
+    if not status_fresh:
+        human.append("bridge supervisor status unknown: %s" % status_reason)
     human.extend("lane not alive: %s" % name for name in stopped_lanes)
     human.extend("zero passing games: %s" % sport for sport in sports if passing[sport] == 0)
     human.extend(_coordinate_contract_items(tracking))
@@ -207,7 +212,10 @@ def build_report(
                 sport, staged[sport], bridge_failed[sport], _top(bridge_failures[sport])
             ))
     lines.extend(["", "BRIDGE SUPERVISOR"])
-    if supervisor_problem:
+    if not status_fresh:
+        lines.append("unknown: %s (budget=%ds)" % (
+            status_reason, STATUS_MAX_AGE_SECONDS))
+    elif supervisor_problem:
         lines.append(supervisor_problem)
     else:
         tracked_games = _number(supervisor.get("tracked_games"))

@@ -14,9 +14,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 from scripts.platformkit.footage_bridge import MIN_TRACKING_ROWS, tracked_row_counts
@@ -24,6 +26,7 @@ from scripts.platformkit.footage_bridge import MIN_TRACKING_ROWS, tracked_row_co
 DATA_DIR = Path("data")
 LOG_DIR = Path("logs")
 STATUS_PATH = Path("data/tracking/bridge_supervisor_status.json")
+PID_PATH = Path("data/tracking/bridge_supervisor.pid")
 # Each lane is (name, [queue files]). Lanes are disjoint so workers never race.
 LANES = [
     ("baseball", ["footage_queue_kbo.json", "footage_queue_npb.json"]),
@@ -107,6 +110,33 @@ def active_lanes() -> list:
     return lanes
 
 
+def write_pid(pid_path: Path = PID_PATH) -> None:
+    """Publish this supervisor's pid for the liveness check."""
+    pid_path.parent.mkdir(parents=True, exist_ok=True)
+    pid_path.write_text("%d\n" % os.getpid(), encoding="ascii")
+
+
+def remove_own_pid(pid_path: Path = PID_PATH) -> None:
+    """Remove the pid file only when it still names this process."""
+    try:
+        if pid_path.read_text(encoding="ascii").strip() == str(os.getpid()):
+            pid_path.unlink()
+    except OSError:
+        pass
+
+
+def write_status(status: dict, status_path: Path = STATUS_PATH) -> None:
+    """Atomically publish a timestamped supervisor snapshot."""
+    status["written_at"] = datetime.now(timezone.utc).isoformat()
+    try:
+        status_path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = status_path.with_suffix(status_path.suffix + ".tmp")
+        temporary.write_text(json.dumps(status, indent=2), encoding="utf-8")
+        temporary.replace(status_path)
+    except OSError:
+        pass
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Keep footage bridges alive")
     parser.add_argument("--per-lane", type=int, default=3,
@@ -116,54 +146,53 @@ def main() -> int:
 
     workers: dict = {}
     warned_unrefillable: set = set()
-
-    while True:
-        # Recomputed every poll: a queue created later (by a refill, or by hand)
-        # must get a worker without restarting the supervisor.
-        lanes = active_lanes()
-        if not lanes:
-            print("no queue files yet -- waiting", flush=True)
-        try:
-            known = tracked_row_counts()
-        except Exception as exc:
-            known = {}
-            print("row-count probe failed: %s" % exc, flush=True)
-        status = {"tracked_games": sum(1 for v in known.values()
-                                       if v >= MIN_TRACKING_ROWS), "lanes": {}}
-        for name, queues in lanes:
-            worker = workers.get(name)
-            if worker is None:
-                print("lane %s starting" % name, flush=True)
-                workers[name] = spawn(name, queues, args.per_lane)
-            elif worker.poll() is not None:
-                print("lane %s died (exit %s) -- restarting"
-                      % (name, worker.returncode), flush=True)
-                workers[name] = spawn(name, queues, args.per_lane)
-            remaining = sum(untracked_count(DATA_DIR / q, known) for q in queues)
-            if remaining < REFILL_THRESHOLD:
-                sports = [q.replace("footage_queue_", "").replace(".json", "")
-                          for q in queues]
-                if any(sport in REFILLABLE for sport in sports):
-                    print("lane %s down to %d untracked -- refilling"
-                          % (name, remaining), flush=True)
-                    for sport in sports:
-                        refill(sport)
-                elif name not in warned_unrefillable:
-                    # Warn ONCE. Repeating this every poll buries real failures
-                    # in a log a human only skims in the morning.
-                    warned_unrefillable.add(name)
-                    print("lane %s has no expander source and cannot self-refill "
-                          "-- add one to queue_expander.SOURCES" % name, flush=True)
-            status["lanes"][name] = {"untracked": remaining,
-                                     "alive": workers[name].poll() is None}
-        try:
-            STATUS_PATH.parent.mkdir(parents=True, exist_ok=True)
-            STATUS_PATH.write_text(json.dumps(status, indent=2), encoding="utf-8")
-        except OSError:
-            pass
-        if args.once:
-            return 0
-        time.sleep(POLL_SECONDS)
+    write_pid()
+    try:
+        while True:
+            # Recomputed every poll: a queue created later (by a refill, or by hand)
+            # must get a worker without restarting the supervisor.
+            lanes = active_lanes()
+            if not lanes:
+                print("no queue files yet -- waiting", flush=True)
+            try:
+                known = tracked_row_counts()
+            except Exception as exc:
+                known = {}
+                print("row-count probe failed: %s" % exc, flush=True)
+            status = {"tracked_games": sum(1 for v in known.values()
+                                           if v >= MIN_TRACKING_ROWS), "lanes": {}}
+            for name, queues in lanes:
+                worker = workers.get(name)
+                if worker is None:
+                    print("lane %s starting" % name, flush=True)
+                    workers[name] = spawn(name, queues, args.per_lane)
+                elif worker.poll() is not None:
+                    print("lane %s died (exit %s) -- restarting"
+                          % (name, worker.returncode), flush=True)
+                    workers[name] = spawn(name, queues, args.per_lane)
+                remaining = sum(untracked_count(DATA_DIR / q, known) for q in queues)
+                if remaining < REFILL_THRESHOLD:
+                    sports = [q.replace("footage_queue_", "").replace(".json", "")
+                              for q in queues]
+                    if any(sport in REFILLABLE for sport in sports):
+                        print("lane %s down to %d untracked -- refilling"
+                              % (name, remaining), flush=True)
+                        for sport in sports:
+                            refill(sport)
+                    elif name not in warned_unrefillable:
+                        # Warn ONCE. Repeating this every poll buries real failures
+                        # in a log a human only skims in the morning.
+                        warned_unrefillable.add(name)
+                        print("lane %s has no expander source and cannot self-refill "
+                              "-- add one to queue_expander.SOURCES" % name, flush=True)
+                status["lanes"][name] = {"untracked": remaining,
+                                         "alive": workers[name].poll() is None}
+            write_status(status)
+            if args.once:
+                return 0
+            time.sleep(POLL_SECONDS)
+    finally:
+        remove_own_pid()
 
 
 if __name__ == "__main__":

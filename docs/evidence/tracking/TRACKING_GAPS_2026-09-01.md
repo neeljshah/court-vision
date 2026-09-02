@@ -213,3 +213,4 @@ LOW behind G25b.
 
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
+| G91 | soccer | Seeded five-clip canonical-landmark visibility census: 34/100 frames have >=3 discernible canonical points, while 0/100 have >=4 or >=5. The five-point precondition is absent in the measured broadcast decision set, so no penalty-box provider, solve, or court_feet declaration was attempted. | g91_soccer_landmarks_2026-09-02.md; g91_soccer_landmarks/ | CLOSED AT LIMIT |
