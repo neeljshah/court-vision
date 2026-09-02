@@ -1,35 +1,35 @@
 clip,source_frame,ball_visible,center_x_image_px,center_y_image_px,frame_width_image_px,frame_height_image_px,ball_radius_image_px,uncertain,uncertain_reason,render
 tennis__tennis_09.mp4,6962,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_001.jpg
-tennis__tennis_09.mp4,6968,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_002.jpg
-tennis__tennis_09.mp4,6974,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_003.jpg
+tennis__tennis_09.mp4,6968,true,1009,727,1920,1080,4,false,,renders/tennis__tennis_09_002.jpg
+tennis__tennis_09.mp4,6974,true,1021,743,1920,1080,5,false,,renders/tennis__tennis_09_003.jpg
 tennis__tennis_09.mp4,6980,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_004.jpg
-tennis__tennis_09.mp4,6986,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_005.jpg
-tennis__tennis_09.mp4,6992,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_006.jpg
-tennis__tennis_09.mp4,6998,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_007.jpg
-tennis__tennis_09.mp4,7004,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_008.jpg
-tennis__tennis_09.mp4,7010,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_009.jpg
-tennis__tennis_09.mp4,7016,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_010.jpg
+tennis__tennis_09.mp4,6986,true,1053,766,1920,1080,5,false,,renders/tennis__tennis_09_005.jpg
+tennis__tennis_09.mp4,6992,true,1034,762,1920,1080,5,false,,renders/tennis__tennis_09_006.jpg
+tennis__tennis_09.mp4,6998,true,1006,619,1920,1080,3,false,,renders/tennis__tennis_09_007.jpg
+tennis__tennis_09.mp4,7004,true,1009,492,1920,1080,3,false,,renders/tennis__tennis_09_008.jpg
+tennis__tennis_09.mp4,7010,true,1011,439,1920,1080,3,false,,renders/tennis__tennis_09_009.jpg
+tennis__tennis_09.mp4,7016,true,1011,455,1920,1080,3,false,,renders/tennis__tennis_09_010.jpg
 tennis__tennis_09.mp4,7022,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_011.jpg
 tennis__tennis_09.mp4,7028,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_012.jpg
 tennis__tennis_09.mp4,7034,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_013.jpg
 tennis__tennis_09.mp4,7040,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_014.jpg
-tennis__tennis_09.mp4,7046,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_015.jpg
-tennis__tennis_09.mp4,7052,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_016.jpg
-tennis__tennis_09.mp4,7058,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_017.jpg
-tennis__tennis_09.mp4,7064,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_018.jpg
-tennis__tennis_09.mp4,7070,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_019.jpg
+tennis__tennis_09.mp4,7046,true,636,147,1920,1080,2,false,,renders/tennis__tennis_09_015.jpg
+tennis__tennis_09.mp4,7052,true,701,148,1920,1080,3,false,,renders/tennis__tennis_09_016.jpg
+tennis__tennis_09.mp4,7058,true,770,182,1920,1080,2,false,,renders/tennis__tennis_09_017.jpg
+tennis__tennis_09.mp4,7064,true,1212,687,1920,1080,3,false,,renders/tennis__tennis_09_018.jpg
+tennis__tennis_09.mp4,7070,true,1235,713,1920,1080,3,false,,renders/tennis__tennis_09_019.jpg
 tennis__tennis_09.mp4,7076,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_020.jpg
 tennis__tennis_09.mp4,7082,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_021.jpg
-tennis__tennis_09.mp4,7088,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_022.jpg
-tennis__tennis_09.mp4,7094,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_023.jpg
+tennis__tennis_09.mp4,7088,true,1124,733,1920,1080,3,false,,renders/tennis__tennis_09_022.jpg
+tennis__tennis_09.mp4,7094,true,1172,733,1920,1080,3,false,,renders/tennis__tennis_09_023.jpg
 tennis__tennis_09.mp4,7100,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_024.jpg
 tennis__tennis_09.mp4,7106,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_025.jpg
 tennis__tennis_09.mp4,7112,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_026.jpg
 tennis__tennis_09.mp4,7118,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_027.jpg
 tennis__tennis_09.mp4,7124,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_028.jpg
-tennis__tennis_09.mp4,7130,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_029.jpg
-tennis__tennis_09.mp4,7136,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_030.jpg
-tennis__tennis_09.mp4,7142,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_031.jpg
+tennis__tennis_09.mp4,7130,true,791,126,1920,1080,3,false,,renders/tennis__tennis_09_029.jpg
+tennis__tennis_09.mp4,7136,true,891,118,1920,1080,3,false,,renders/tennis__tennis_09_030.jpg
+tennis__tennis_09.mp4,7142,true,998,172,1920,1080,3,false,,renders/tennis__tennis_09_031.jpg
 tennis__tennis_09.mp4,7148,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_032.jpg
 tennis__tennis_09.mp4,7154,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_033.jpg
 tennis__tennis_09.mp4,7160,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_034.jpg
@@ -49,26 +49,26 @@ tennis__tennis_09.mp4,7238,,,,1920,1080,,true,"ball centre not resolvable at ima
 tennis__tennis_09.mp4,7244,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_048.jpg
 tennis__tennis_09.mp4,7250,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_049.jpg
 tennis__tennis_09.mp4,7256,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_09_050.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33857,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_001.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33863,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_002.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33869,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_003.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33875,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_004.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33881,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_005.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33887,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_006.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33893,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_007.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33899,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_008.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33905,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_009.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33911,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_010.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33917,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_011.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33923,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_012.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33929,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_013.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33935,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_014.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33941,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_015.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33947,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_016.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33953,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_017.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33959,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_018.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33965,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_019.jpg
-tennis__tennis_nyYk2nPZAwY_720p.mp4,33971,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_020.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33857,true,72,219,1280,720,3,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_001.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33863,true,960,348,1280,720,4,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_002.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33869,true,888,278,1280,720,4,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_003.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33875,true,835,235,1280,720,4,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_004.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33881,true,795,211,1280,720,3,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_005.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33887,true,764,198,1280,720,3,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_006.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33893,true,740,196,1280,720,3,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_007.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33899,true,721,204,1280,720,3,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_008.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33905,true,705,218,1280,720,3,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_009.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33911,true,695,199,1280,720,3,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_010.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33917,true,695,190,1280,720,3,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_011.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33923,true,697,189,1280,720,3,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_012.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33929,true,699,195,1280,720,3,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_013.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33935,true,702,213,1280,720,3,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_014.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33941,true,707,238,1280,720,3,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_015.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33947,true,710,277,1280,720,3,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_016.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33953,true,714,327,1280,720,3,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_017.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33959,true,719,392,1280,720,3,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_018.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33965,true,724,472,1280,720,3,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_019.jpg
+tennis__tennis_nyYk2nPZAwY_720p.mp4,33971,true,727,510,1280,720,3,false,,renders/tennis__tennis_nyYk2nPZAwY_720p_020.jpg
 tennis__tennis_nyYk2nPZAwY_720p.mp4,33977,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_021.jpg
 tennis__tennis_nyYk2nPZAwY_720p.mp4,33983,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_022.jpg
 tennis__tennis_nyYk2nPZAwY_720p.mp4,33989,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_023.jpg
@@ -99,9 +99,9 @@ tennis__tennis_nyYk2nPZAwY_720p.mp4,34133,,,,1280,720,,true,"ball centre not res
 tennis__tennis_nyYk2nPZAwY_720p.mp4,34139,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_048.jpg
 tennis__tennis_nyYk2nPZAwY_720p.mp4,34145,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_049.jpg
 tennis__tennis_nyYk2nPZAwY_720p.mp4,34151,,,,1280,720,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_nyYk2nPZAwY_720p_050.jpg
-tennis__tennis_10.mp4,4043,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_10_004043.jpg
-tennis__tennis_10.mp4,4048,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_10_004048.jpg
-tennis__tennis_10.mp4,4053,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_10_004053.jpg
+tennis__tennis_10.mp4,4043,true,1160,780,1920,1080,3,false,,renders/tennis__tennis_10_004043.jpg
+tennis__tennis_10.mp4,4048,true,1145,742,1920,1080,3,false,,renders/tennis__tennis_10_004048.jpg
+tennis__tennis_10.mp4,4053,true,1122,685,1920,1080,3,false,,renders/tennis__tennis_10_004053.jpg
 tennis__tennis_10.mp4,4058,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_10_004058.jpg
 tennis__tennis_10.mp4,4063,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_10_004063.jpg
 tennis__tennis_10.mp4,4068,,,,1920,1080,,true,"ball centre not resolvable at image-pixel precision from the reviewed rendered frame",renders/tennis__tennis_10_004068.jpg
