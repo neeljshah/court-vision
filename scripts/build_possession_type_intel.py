@@ -115,6 +115,12 @@ def load_game_frames(game_id: str) -> pd.DataFrame | None:
         cols_needed.append("distance_to_ball")
 
         df = pd.read_csv(path, low_memory=False, usecols=lambda c: c in cols_needed)
+        if "player_id" not in df.columns:
+            # S77 (guard from S69): sport-blind tracking runs (tracking_schema
+            # columns track_id/cls/x/y -- e.g. an MLB teacher run) land under
+            # data/tracking/ too. SKIPPED and NAMED, never aliased onto player_id.
+            print(f"  [{game_id}] no player_id column (non-NBA tracking schema), skipping")
+            return None
         if len(df) < 500:
             return None
         return df

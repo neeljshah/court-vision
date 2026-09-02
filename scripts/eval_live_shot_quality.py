@@ -81,6 +81,14 @@ def load_all_shots() -> pd.DataFrame:
     for csv in sorted(TRACKING_DIR.glob("*/shot_log_enriched.csv")):
         try:
             df = pd.read_csv(csv)
+            if "made" not in df.columns or "defender_distance" not in df.columns:
+                # S77 (guard from S69): sport-blind tracking runs (tracking_schema
+                # columns track_id/cls/x/y -- e.g. an MLB teacher run) land under
+                # data/tracking/ too. A foreign-schema shot log is SKIPPED and
+                # NAMED, never aliased onto the NBA shot columns below.
+                print(f"  SKIP {csv.parent.name}: no made/defender_distance "
+                      f"(non-NBA tracking schema)")
+                continue
             df["_game_id"] = csv.parent.name
             frames.append(df)
         except Exception as e:

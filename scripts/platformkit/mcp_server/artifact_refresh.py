@@ -1,29 +1,24 @@
 """S24: one-pass refresher for the MCP front-door artifacts.
 
-Every tool in ``artifact_tools.py`` reads an artifact that some OTHER module
-wrote; nothing ever scheduled those writers, so the MCP front door served
-whatever age happened to be on disk (`fleet_on` is false by design for the
-resident server). This module maps each tool's artifact to its producer
-CALLABLE and runs them in one pass.
+Every tool in ``artifact_tools.py`` reads an artifact some OTHER module wrote and
+nothing ever scheduled those writers, so the front door served whatever age was on
+disk. This module maps each tool's artifact to its producer CALLABLE and runs them.
 
-Supervisor-independent: it does NOT read `fleet_on`, does NOT depend on the
-fleet, and STARTS NO DAEMON. `--once` runs one pass and exits; the cadence
-belongs to the OS scheduler, which the ORCHESTRATOR arms with the line in
-``SCHTASKS`` -- this module never creates a task. `--loop` is provided for a
-supervisor ProcSpec but is never run by the landing lane.
+Supervisor-independent: it does NOT read `fleet_on`, STARTS NO DAEMON, and never
+creates a scheduler task -- the ORCHESTRATOR arms ``SCHTASKS``.
 
-Artifact paths are IMPORTED from artifact_tools, never re-declared here. A failing
-producer is a FAILED row, one hanging past PRODUCER_TIMEOUT_SEC a TIMEOUT row (S66);
-either way the rest of the pass runs.
+Artifact paths are IMPORTED from artifact_tools, never re-declared. A failing
+producer is a FAILED row, one past PRODUCER_TIMEOUT_SEC a TIMEOUT row (S66); either
+way the rest of the pass runs.
 
-S57 adds the ``data/intelligence`` layer behind ``--intelligence`` (opt-in, so
-the hourly front-door pass does not start 95 batch builders); its map lives in
-``intelligence_producers``. A producer that exists but may not run this pass --
-a human-gated tree, an absent script, an out-of-scope one -- is a NO_RUN row
-naming its reason, distinct from NO_PRODUCER and never a silent skip.
+S57 adds ``data/intelligence`` behind ``--intelligence`` (opt-in: the hourly pass
+must not start 95 batch builders); its map lives in ``intelligence_producers``. A
+producer that exists but may not run -- gated tree, absent script, out of scope --
+is a NO_RUN row naming its reason, never a silent skip. S77: the wall cap has ONE
+owner (``intelligence_producers``), is exposed as ``--timeout-sec``, and a timeout
+KILLS the child instead of abandoning it.
 
-    python -m scripts.platformkit.mcp_server.artifact_refresh --once
-    python -m scripts.platformkit.mcp_server.artifact_refresh --dry-run --intelligence
+    python -m scripts.platformkit.mcp_server.artifact_refresh --once [--timeout-sec N]
 """
 from __future__ import annotations
 
@@ -37,10 +32,15 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, NamedTuple, Optional, Sequence
 
 from scripts.platformkit.mcp_server import artifact_tools
+from scripts.platformkit.mcp_server.intelligence_producers import PRODUCER_TIMEOUT_S
 
 ROOT = artifact_tools._ROOT
 OUT_DIR_REL = "data/cache/mcp_server"
-PRODUCER_TIMEOUT_SEC = 120.0   # S66: per-producer wall cap -> a TIMEOUT row
+# S66 set this to 120.0 here while intelligence_producers carried its own 900.0;
+# four of the five walls S69 MEASURED (77-275 s) sat above 120, so the CLI reported
+# 5 TIMEOUT / 0 advanced for producers that all completed. S77: ONE owner, the
+# value beside those walls; this name stays an alias (B2).
+PRODUCER_TIMEOUT_SEC = PRODUCER_TIMEOUT_S
 HEARTBEAT_NAME = "artifact_refresh_heartbeat.jsonl"
 STATUS_NAME = "artifact_refresh_status.json"
 
@@ -53,10 +53,8 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-# --- producers -------------------------------------------------------------
-# Each adapter takes the repo root and writes the FIRST path its MCP tool reads.
-# Imports are lazy so a heavy or missing dependency is a FAILED row, not an
-# import error that kills the whole pass.
+# --- producers: each adapter takes the repo root and writes the FIRST path its
+# MCP tool reads. Imports are lazy: a missing dep is a FAILED row, not a dead pass.
 
 def _run_atlas(root: Path) -> None:
     from scripts.platformkit.analytics_showcase import market_strength_atlas as m
@@ -74,8 +72,7 @@ def _run_harness_health(root: Path) -> None:
 
 
 def _run_execution(root: Path) -> None:
-    # ponytail: the paper ledger is a fixed repo artifact, so the producer reads
-    # DEFAULT_LEDGER as-is; --root steers only the OUTPUT.
+    # ponytail: the ledger is a fixed repo artifact; --root steers only the OUTPUT.
     from scripts.platformkit.clv_ledger import DEFAULT_LEDGER
     from scripts.platformkit.pm_trading import clv_daily_readout as m
     m.write_readout(Path(DEFAULT_LEDGER), root / artifact_tools._EXECUTION[0],
@@ -90,10 +87,9 @@ def _write(path: Path, payload: Any) -> None:
 class Target(NamedTuple):
     """One MCP tool, the artifact paths IT reads, and the producer that writes them.
 
-    ``no_run_reason`` (S57) separates "a producer exists but this pass may not
-    run it" (NO_RUN -- a human-gated tree, an absent script, an out-of-scope
-    producer) from "nothing writes this at all" (NO_PRODUCER). Defaulted, so
-    every pre-existing Target is unchanged.
+    ``no_run_reason`` (S57) separates "exists but may not run here" (NO_RUN --
+    gated tree, absent script, out of scope) from "nothing writes this at all"
+    (NO_PRODUCER). Defaulted: every pre-existing Target is unchanged.
     """
     name: str
     rels: Sequence[str]
@@ -106,9 +102,7 @@ TARGETS: Sequence[Target] = (
     Target("mechanism_exposure", artifact_tools._MECHANISM, _run_mechanism),
     Target("harness_health", artifact_tools._HEALTH, _run_harness_health),
     Target("execution_status", artifact_tools._EXECUTION, _run_execution),
-    # tracking_program_status derives itself from a glob over docs/evidence/tracking
-    # and data/tracking_reports -- no single artifact, no producer. Recorded
-    # NO_PRODUCER honestly; never invented, never counted as advanced.
+    # tracking_program_status globs two trees -- no artifact, no producer: NO_PRODUCER.
     Target("tracking_program_status", (), None),
 )
 
@@ -116,17 +110,13 @@ TARGETS: Sequence[Target] = (
 def _probe(root: Path, rels: Sequence[str]) -> Dict[str, Any]:
     """Freshness of the first readable artifact, exactly as the MCP tool resolves it.
 
-    `stamp` prefers ``generated_at`` (the producer's own write time) because some
-    artifacts declare a descriptive `as_of` that is not a freshness stamp at all
-    (market_strength_atlas: "latest accepted game date per sport"). `as_of` is the
-    value the MCP tool itself reports and is carried alongside, never replaced.
+    `stamp` prefers ``generated_at`` because some artifacts declare a descriptive
+    `as_of` that is not a freshness stamp; `as_of` is carried alongside, never lost.
     """
     loaded = artifact_tools._load(root, rels) if rels else None
     if loaded is None:
-        # S57: most intelligence artifacts are parquet/pkl/png, which _load
-        # cannot parse. An unparseable-but-PRESENT artifact still has a write
-        # time, and without it every such target reads NO_ARTIFACT forever and
-        # a real rebuild could never show as advanced. Labelled `mtime:`.
+        # S57: parquet/pkl/png cannot be parsed by _load, but a PRESENT artifact
+        # still has a write time; without it a rebuild never shows as advanced.
         for rel in rels:
             path = root / rel
             if path.is_file() and path.suffix not in (".json", ".jsonl"):
@@ -145,9 +135,13 @@ def _probe(root: Path, rels: Sequence[str]) -> Dict[str, Any]:
 def _run_producer(producer: Callable[[Path], None], root: Path,
                   timeout_sec: float) -> tuple:
     """Run one producer under a wall cap. Returns (rc, error, timed_out).
-    ponytail: a DAEMON thread, not a child process (the producers are in-process
-    callables and this module spawns nothing). Ceiling: a hung thread cannot be
-    killed and leaks until the process exits -- one per hang under --loop."""
+
+    S77: a producer that shells out publishes its child as ``.proc`` and reads its
+    cap from ``.timeout_sec``, so this cap is the ONLY number and a TIMEOUT cannot
+    leave a writer running. Ceiling: an IN-PROCESS producer has no child to kill,
+    so its daemon thread is still abandoned."""
+    if hasattr(producer, "timeout_sec"):
+        producer.timeout_sec = timeout_sec   # one owner, propagated to the child
     box: Dict[str, Optional[str]] = {}
     def target() -> None:
         try:
@@ -158,6 +152,10 @@ def _run_producer(producer: Callable[[Path], None], root: Path,
     thread.start()
     thread.join(timeout_sec)
     if thread.is_alive():
+        proc = getattr(producer, "proc", None)
+        if proc is not None and proc.poll() is None:
+            proc.kill()
+            thread.join(30.0)
         return 1, "producer exceeded {0:.0f}s wall cap".format(timeout_sec), True
     return (1, box["error"], False) if box.get("error") else (0, None, False)
 
@@ -242,8 +240,8 @@ def _select(names: Optional[str], pool: Sequence[Target] = TARGETS) -> Sequence[
 
 
 def _pool(root: Path, intelligence: bool, scope: str) -> Sequence[Target]:
-    """S57: the intelligence targets are OPT-IN. The hourly MCP front-door pass
-    must not start 95 batch builders, so --intelligence is what adds them."""
+    """S57: the intelligence targets are OPT-IN -- the hourly front-door pass must
+    not start 95 batch builders, so --intelligence is what adds them."""
     if not intelligence:
         return TARGETS
     from scripts.platformkit.mcp_server import intelligence_producers as ip
@@ -262,8 +260,10 @@ def main(argv=None) -> int:
     ap.add_argument("--intelligence", action="store_true",
                     help="also carry the data/intelligence producers (S57, opt-in)")
     ap.add_argument("--scope", default="rebuilt", choices=("rebuilt", "all"),
-                    help="rebuilt (default): only producers reading an input newer "
+                    help="rebuilt (default): only producers whose input is newer "
                          "than the artifact may run; the rest are NO_RUN by reason")
+    ap.add_argument("--timeout-sec", type=float, default=PRODUCER_TIMEOUT_SEC,
+                    help="per-producer wall cap, seconds (default %(default)s)")
     ap.add_argument("--dry-run", action="store_true",
                     help="print the plan (name, status, artifacts) and run nothing")
     args = ap.parse_args(argv)
@@ -281,7 +281,7 @@ def main(argv=None) -> int:
             print("  {0:<40} {1}".format(t.name, state[:120]))
         return 0
     while True:
-        record = refresh_once(args.root, args.out_dir, targets)
+        record = refresh_once(args.root, args.out_dir, targets, args.timeout_sec)
         print("artifact refresh -- {0} target(s), {1} advanced, {2} failed, {3} timeout,"
               " {4} no_producer, {5} no_run".format(
                   record["n_targets"], record["n_advanced"], record["n_failed"],
@@ -291,8 +291,8 @@ def main(argv=None) -> int:
                 row["name"], row["status"], row["stamp_before"], row["stamp_after"]))
         if not args.loop:
             return 0
-        # ponytail: one global hourly cadence. If a target needs its own period,
-        # give it a second scheduler entry with --targets rather than a scheduler here.
+        # ponytail: one global cadence. A target needing its own period gets a
+        # second scheduler entry with --targets, not a scheduler in here.
         time.sleep(max(1.0, args.interval))
 
 

@@ -195,6 +195,27 @@ def _load_jersey_name_map(game_dir: Path) -> Dict[str, str]:
 # Step 1 — Build game-level team mapping for each NBA player_id
 # ---------------------------------------------------------------------------
 
+def _has_player_id(td_path: Path) -> bool:
+    """True when tracking_data.csv carries the NBA `player_id` column.
+
+    S77 (guard from S69): sport-blind tracking runs (tracking_schema columns
+    track_id/cls/x/y -- e.g. an MLB teacher run) land under data/tracking/ too.
+    csv.DictReader's `row.get("player_id", 0)` never raises on them, so such a
+    directory silently contributed 0 slots instead of being named. It is now
+    SKIPPED and NAMED, never aliased onto player_id.
+    """
+    try:
+        with open(td_path, newline="", encoding="utf-8", errors="replace") as f:
+            header = f.readline()
+    except Exception:
+        return False
+    if "player_id" in [c.strip() for c in header.split(",")]:
+        return True
+    print(f"  [{td_path.parent.name}] no player_id column "
+          f"(non-NBA tracking schema), skipping")
+    return False
+
+
 def _get_team_for_game_slot(
     game_dir: Path,
     slot_id: int,
@@ -204,7 +225,7 @@ def _get_team_for_game_slot(
     tracking_data.csv.
     """
     td_path = game_dir / "tracking_data.csv"
-    if not td_path.exists():
+    if not td_path.exists() or not _has_player_id(td_path):
         return None
     team_ctr: Counter = Counter()
     try:
@@ -262,7 +283,7 @@ def build_player_game_team_map(
         slot_jersey: Dict[int, Counter] = defaultdict(Counter)
 
         td_path = game_dir / "tracking_data.csv"
-        if not td_path.exists():
+        if not td_path.exists() or not _has_player_id(td_path):
             # Fallback: shot_log.csv
             sl_path = game_dir / "shot_log.csv"
             if sl_path.exists():

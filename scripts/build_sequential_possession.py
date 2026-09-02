@@ -153,6 +153,12 @@ def load_tracking(game_dir: Path) -> pd.DataFrame:
             path, low_memory=False,
             usecols=lambda c: c in needed_cols,
         )
+        if "player_id" not in df.columns:
+            # S77 (guard from S69): sport-blind tracking runs (tracking_schema
+            # columns track_id/cls/x/y -- e.g. an MLB teacher run) land under
+            # data/tracking/ too. SKIPPED and NAMED, never aliased onto player_id.
+            print(f"  [{game_dir.name}] no player_id column (non-NBA tracking schema), skipping")
+            return pd.DataFrame()
         if len(df) < 200:
             return pd.DataFrame()
         return df
