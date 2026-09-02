@@ -340,6 +340,7 @@ data/*.html
 /SCOUT_*.txt
 # -- nested throwaway scripts (underscore-prefixed) under any scripts/ subdir ---
 scripts/**/_*
+!scripts/**/__init__.py
 !scripts/platformkit/models/__init__.py
 !scripts/platformkit/reports/__init__.py
 !scripts/platformkit/benchmarks/clv_replay/__init__.py
