@@ -24,9 +24,25 @@ CROSS_RATIO = 567.0 / 486.0
 # Anchors: both near doubles corners, the far-left doubles corner and the near
 # service T. All are intersections of fitted court lines.
 ANCHOR_FEET = np.float32(((0, 0), (0, 36), (78, 0), (18, 18)))
+PROJECTION_COLUMNS = ("projection_status", "projection_rejection_reason",
+                      "raw_projected_x_ft", "raw_projected_y_ft")
+BASE_SCHEMA = tuple(column for column in SCHEMA if column not in PROJECTION_COLUMNS)
+
+
 def write_csv(rows: pd.DataFrame, path: Union[str, Path]) -> None:
-    """Write player tracking rows in the normalized platform schema."""
-    write_tracking_csv(rows, path, SCHEMA)
+    """Write player tracking rows in the normalized platform schema.
+
+    The G45 projection columns are an OPTIONAL extension carried by ball rows,
+    the same all-or-nothing shape ``coordinate_provenance`` already uses for its
+    provenance columns. Requiring them unconditionally raised on any row set
+    without a ball -- including a real run that detected none.
+    """
+    present = [column for column in PROJECTION_COLUMNS if column in rows.columns]
+    if present and len(present) != len(PROJECTION_COLUMNS):
+        missing = [column for column in PROJECTION_COLUMNS if column not in rows.columns]
+        raise ValueError("Tracking rows have partial projection status; missing columns: %s"
+                         % ", ".join(missing))
+    write_tracking_csv(rows, path, SCHEMA if present else BASE_SCHEMA)
 class TennisAdapter:
     """Track two tennis players from a fixed behind-baseline broadcast feed."""
     def __init__(self, detector: Optional[Detector] = None, corner_stability_px: float = 5.0,
