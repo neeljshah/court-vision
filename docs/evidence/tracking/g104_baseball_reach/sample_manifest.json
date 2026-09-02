@@ -1,0 +1,804 @@
+{
+  "seed": 1042026,
+  "sampling": "two without-replacement clips per feeder label from the pod inventory, then one uniform pseudorandom draw from each of 20 equal-sized temporal strata per selected clip",
+  "clips": [
+    {
+      "feeder_label": "mlb",
+      "clip": "mlb__mlb_5IA4jaKNOYg.mp4",
+      "decoded_frame_count": 28801,
+      "fps": 30.0,
+      "source_shape": [
+        640,
+        360
+      ],
+      "frames": [
+        {
+          "slot": 1,
+          "requested_frame": 648,
+          "source_frame": 648,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f000648.jpg"
+        },
+        {
+          "slot": 2,
+          "requested_frame": 2703,
+          "source_frame": 2703,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f002703.jpg"
+        },
+        {
+          "slot": 3,
+          "requested_frame": 3655,
+          "source_frame": 3655,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f003655.jpg"
+        },
+        {
+          "slot": 4,
+          "requested_frame": 4714,
+          "source_frame": 4714,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f004714.jpg"
+        },
+        {
+          "slot": 5,
+          "requested_frame": 6018,
+          "source_frame": 6018,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f006018.jpg"
+        },
+        {
+          "slot": 6,
+          "requested_frame": 8024,
+          "source_frame": 8024,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f008024.jpg"
+        },
+        {
+          "slot": 7,
+          "requested_frame": 9338,
+          "source_frame": 9338,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f009338.jpg"
+        },
+        {
+          "slot": 8,
+          "requested_frame": 11461,
+          "source_frame": 11461,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f011461.jpg"
+        },
+        {
+          "slot": 9,
+          "requested_frame": 12269,
+          "source_frame": 12269,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f012269.jpg"
+        },
+        {
+          "slot": 10,
+          "requested_frame": 13394,
+          "source_frame": 13394,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f013394.jpg"
+        },
+        {
+          "slot": 11,
+          "requested_frame": 15562,
+          "source_frame": 15562,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f015562.jpg"
+        },
+        {
+          "slot": 12,
+          "requested_frame": 16468,
+          "source_frame": 16468,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f016468.jpg"
+        },
+        {
+          "slot": 13,
+          "requested_frame": 17469,
+          "source_frame": 17469,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f017469.jpg"
+        },
+        {
+          "slot": 14,
+          "requested_frame": 19087,
+          "source_frame": 19087,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f019087.jpg"
+        },
+        {
+          "slot": 15,
+          "requested_frame": 20667,
+          "source_frame": 20667,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f020667.jpg"
+        },
+        {
+          "slot": 16,
+          "requested_frame": 21735,
+          "source_frame": 21735,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f021735.jpg"
+        },
+        {
+          "slot": 17,
+          "requested_frame": 23332,
+          "source_frame": 23332,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f023332.jpg"
+        },
+        {
+          "slot": 18,
+          "requested_frame": 25781,
+          "source_frame": 25781,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f025781.jpg"
+        },
+        {
+          "slot": 19,
+          "requested_frame": 27233,
+          "source_frame": 27233,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f027233.jpg"
+        },
+        {
+          "slot": 20,
+          "requested_frame": 27648,
+          "source_frame": 27648,
+          "render": "final_renders/mlb__mlb_5IA4jaKNOYg_f027648.jpg"
+        }
+      ],
+      "contact_sheet": "final_renders/mlb__mlb_5IA4jaKNOYg_contact_sheet.jpg"
+    },
+    {
+      "feeder_label": "mlb",
+      "clip": "mlb__mlb_3Oc4S_1np98.mp4",
+      "decoded_frame_count": 35965,
+      "fps": 59.94006049298551,
+      "source_shape": [
+        1280,
+        720
+      ],
+      "frames": [
+        {
+          "slot": 1,
+          "requested_frame": 1708,
+          "source_frame": 1708,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f001708.jpg"
+        },
+        {
+          "slot": 2,
+          "requested_frame": 2474,
+          "source_frame": 2474,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f002474.jpg"
+        },
+        {
+          "slot": 3,
+          "requested_frame": 3768,
+          "source_frame": 3768,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f003768.jpg"
+        },
+        {
+          "slot": 4,
+          "requested_frame": 6645,
+          "source_frame": 6645,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f006645.jpg"
+        },
+        {
+          "slot": 5,
+          "requested_frame": 8113,
+          "source_frame": 8113,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f008113.jpg"
+        },
+        {
+          "slot": 6,
+          "requested_frame": 9911,
+          "source_frame": 9911,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f009911.jpg"
+        },
+        {
+          "slot": 7,
+          "requested_frame": 11143,
+          "source_frame": 11143,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f011143.jpg"
+        },
+        {
+          "slot": 8,
+          "requested_frame": 13484,
+          "source_frame": 13484,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f013484.jpg"
+        },
+        {
+          "slot": 9,
+          "requested_frame": 15163,
+          "source_frame": 15163,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f015163.jpg"
+        },
+        {
+          "slot": 10,
+          "requested_frame": 17774,
+          "source_frame": 17774,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f017774.jpg"
+        },
+        {
+          "slot": 11,
+          "requested_frame": 19590,
+          "source_frame": 19590,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f019590.jpg"
+        },
+        {
+          "slot": 12,
+          "requested_frame": 20708,
+          "source_frame": 20708,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f020708.jpg"
+        },
+        {
+          "slot": 13,
+          "requested_frame": 21699,
+          "source_frame": 21699,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f021699.jpg"
+        },
+        {
+          "slot": 14,
+          "requested_frame": 25028,
+          "source_frame": 25028,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f025028.jpg"
+        },
+        {
+          "slot": 15,
+          "requested_frame": 25859,
+          "source_frame": 25859,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f025859.jpg"
+        },
+        {
+          "slot": 16,
+          "requested_frame": 27135,
+          "source_frame": 27135,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f027135.jpg"
+        },
+        {
+          "slot": 17,
+          "requested_frame": 29042,
+          "source_frame": 29042,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f029042.jpg"
+        },
+        {
+          "slot": 18,
+          "requested_frame": 31631,
+          "source_frame": 31631,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f031631.jpg"
+        },
+        {
+          "slot": 19,
+          "requested_frame": 33169,
+          "source_frame": 33169,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f033169.jpg"
+        },
+        {
+          "slot": 20,
+          "requested_frame": 35241,
+          "source_frame": 35241,
+          "render": "final_renders/mlb__mlb_3Oc4S_1np98_f035241.jpg"
+        }
+      ],
+      "contact_sheet": "final_renders/mlb__mlb_3Oc4S_1np98_contact_sheet.jpg"
+    },
+    {
+      "feeder_label": "kbo",
+      "clip": "kbo__kbo_FDSWjM_OaTs.mp4",
+      "decoded_frame_count": 28800,
+      "fps": 30.0,
+      "source_shape": [
+        640,
+        360
+      ],
+      "frames": [
+        {
+          "slot": 1,
+          "requested_frame": 54,
+          "source_frame": 54,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f000054.jpg"
+        },
+        {
+          "slot": 2,
+          "requested_frame": 2752,
+          "source_frame": 2752,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f002752.jpg"
+        },
+        {
+          "slot": 3,
+          "requested_frame": 4116,
+          "source_frame": 4116,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f004116.jpg"
+        },
+        {
+          "slot": 4,
+          "requested_frame": 5586,
+          "source_frame": 5586,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f005586.jpg"
+        },
+        {
+          "slot": 5,
+          "requested_frame": 5804,
+          "source_frame": 5804,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f005804.jpg"
+        },
+        {
+          "slot": 6,
+          "requested_frame": 8026,
+          "source_frame": 8026,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f008026.jpg"
+        },
+        {
+          "slot": 7,
+          "requested_frame": 9542,
+          "source_frame": 9542,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f009542.jpg"
+        },
+        {
+          "slot": 8,
+          "requested_frame": 10093,
+          "source_frame": 10093,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f010093.jpg"
+        },
+        {
+          "slot": 9,
+          "requested_frame": 11611,
+          "source_frame": 11611,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f011611.jpg"
+        },
+        {
+          "slot": 10,
+          "requested_frame": 13636,
+          "source_frame": 13636,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f013636.jpg"
+        },
+        {
+          "slot": 11,
+          "requested_frame": 14846,
+          "source_frame": 14846,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f014846.jpg"
+        },
+        {
+          "slot": 12,
+          "requested_frame": 16297,
+          "source_frame": 16297,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f016297.jpg"
+        },
+        {
+          "slot": 13,
+          "requested_frame": 18697,
+          "source_frame": 18697,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f018697.jpg"
+        },
+        {
+          "slot": 14,
+          "requested_frame": 19106,
+          "source_frame": 19106,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f019106.jpg"
+        },
+        {
+          "slot": 15,
+          "requested_frame": 20839,
+          "source_frame": 20839,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f020839.jpg"
+        },
+        {
+          "slot": 16,
+          "requested_frame": 21667,
+          "source_frame": 21667,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f021667.jpg"
+        },
+        {
+          "slot": 17,
+          "requested_frame": 24164,
+          "source_frame": 24164,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f024164.jpg"
+        },
+        {
+          "slot": 18,
+          "requested_frame": 24833,
+          "source_frame": 24833,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f024833.jpg"
+        },
+        {
+          "slot": 19,
+          "requested_frame": 26781,
+          "source_frame": 26781,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f026781.jpg"
+        },
+        {
+          "slot": 20,
+          "requested_frame": 28673,
+          "source_frame": 28673,
+          "render": "final_renders/kbo__kbo_FDSWjM_OaTs_f028673.jpg"
+        }
+      ],
+      "contact_sheet": "final_renders/kbo__kbo_FDSWjM_OaTs_contact_sheet.jpg"
+    },
+    {
+      "feeder_label": "kbo",
+      "clip": "kbo__kbo_bGQwZl43E9Y.mp4",
+      "decoded_frame_count": 28800,
+      "fps": 30.0,
+      "source_shape": [
+        640,
+        360
+      ],
+      "frames": [
+        {
+          "slot": 1,
+          "requested_frame": 760,
+          "source_frame": 760,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f000760.jpg"
+        },
+        {
+          "slot": 2,
+          "requested_frame": 2107,
+          "source_frame": 2107,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f002107.jpg"
+        },
+        {
+          "slot": 3,
+          "requested_frame": 3568,
+          "source_frame": 3568,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f003568.jpg"
+        },
+        {
+          "slot": 4,
+          "requested_frame": 5180,
+          "source_frame": 5180,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f005180.jpg"
+        },
+        {
+          "slot": 5,
+          "requested_frame": 5908,
+          "source_frame": 5908,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f005908.jpg"
+        },
+        {
+          "slot": 6,
+          "requested_frame": 8535,
+          "source_frame": 8535,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f008535.jpg"
+        },
+        {
+          "slot": 7,
+          "requested_frame": 9278,
+          "source_frame": 9278,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f009278.jpg"
+        },
+        {
+          "slot": 8,
+          "requested_frame": 11384,
+          "source_frame": 11384,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f011384.jpg"
+        },
+        {
+          "slot": 9,
+          "requested_frame": 12822,
+          "source_frame": 12822,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f012822.jpg"
+        },
+        {
+          "slot": 10,
+          "requested_frame": 14149,
+          "source_frame": 14149,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f014149.jpg"
+        },
+        {
+          "slot": 11,
+          "requested_frame": 14925,
+          "source_frame": 14925,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f014925.jpg"
+        },
+        {
+          "slot": 12,
+          "requested_frame": 16099,
+          "source_frame": 16099,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f016099.jpg"
+        },
+        {
+          "slot": 13,
+          "requested_frame": 17328,
+          "source_frame": 17328,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f017328.jpg"
+        },
+        {
+          "slot": 14,
+          "requested_frame": 18832,
+          "source_frame": 18832,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f018832.jpg"
+        },
+        {
+          "slot": 15,
+          "requested_frame": 20751,
+          "source_frame": 20751,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f020751.jpg"
+        },
+        {
+          "slot": 16,
+          "requested_frame": 22893,
+          "source_frame": 22893,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f022893.jpg"
+        },
+        {
+          "slot": 17,
+          "requested_frame": 23467,
+          "source_frame": 23467,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f023467.jpg"
+        },
+        {
+          "slot": 18,
+          "requested_frame": 25915,
+          "source_frame": 25915,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f025915.jpg"
+        },
+        {
+          "slot": 19,
+          "requested_frame": 25960,
+          "source_frame": 25960,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f025960.jpg"
+        },
+        {
+          "slot": 20,
+          "requested_frame": 28456,
+          "source_frame": 28456,
+          "render": "final_renders/kbo__kbo_bGQwZl43E9Y_f028456.jpg"
+        }
+      ],
+      "contact_sheet": "final_renders/kbo__kbo_bGQwZl43E9Y_contact_sheet.jpg"
+    },
+    {
+      "feeder_label": "npb",
+      "clip": "npb__npb_01_720p.mp4",
+      "decoded_frame_count": 18001,
+      "fps": 30.0,
+      "source_shape": [
+        1280,
+        720
+      ],
+      "frames": [
+        {
+          "slot": 1,
+          "requested_frame": 170,
+          "source_frame": 170,
+          "render": "final_renders/npb__npb_01_720p_f000170.jpg"
+        },
+        {
+          "slot": 2,
+          "requested_frame": 944,
+          "source_frame": 944,
+          "render": "final_renders/npb__npb_01_720p_f000944.jpg"
+        },
+        {
+          "slot": 3,
+          "requested_frame": 2149,
+          "source_frame": 2149,
+          "render": "final_renders/npb__npb_01_720p_f002149.jpg"
+        },
+        {
+          "slot": 4,
+          "requested_frame": 3294,
+          "source_frame": 3294,
+          "render": "final_renders/npb__npb_01_720p_f003294.jpg"
+        },
+        {
+          "slot": 5,
+          "requested_frame": 4105,
+          "source_frame": 4105,
+          "render": "final_renders/npb__npb_01_720p_f004105.jpg"
+        },
+        {
+          "slot": 6,
+          "requested_frame": 5008,
+          "source_frame": 5008,
+          "render": "final_renders/npb__npb_01_720p_f005008.jpg"
+        },
+        {
+          "slot": 7,
+          "requested_frame": 5557,
+          "source_frame": 5557,
+          "render": "final_renders/npb__npb_01_720p_f005557.jpg"
+        },
+        {
+          "slot": 8,
+          "requested_frame": 7150,
+          "source_frame": 7150,
+          "render": "final_renders/npb__npb_01_720p_f007150.jpg"
+        },
+        {
+          "slot": 9,
+          "requested_frame": 7595,
+          "source_frame": 7595,
+          "render": "final_renders/npb__npb_01_720p_f007595.jpg"
+        },
+        {
+          "slot": 10,
+          "requested_frame": 8215,
+          "source_frame": 8215,
+          "render": "final_renders/npb__npb_01_720p_f008215.jpg"
+        },
+        {
+          "slot": 11,
+          "requested_frame": 9327,
+          "source_frame": 9327,
+          "render": "final_renders/npb__npb_01_720p_f009327.jpg"
+        },
+        {
+          "slot": 12,
+          "requested_frame": 10285,
+          "source_frame": 10285,
+          "render": "final_renders/npb__npb_01_720p_f010285.jpg"
+        },
+        {
+          "slot": 13,
+          "requested_frame": 11558,
+          "source_frame": 11558,
+          "render": "final_renders/npb__npb_01_720p_f011558.jpg"
+        },
+        {
+          "slot": 14,
+          "requested_frame": 12427,
+          "source_frame": 12427,
+          "render": "final_renders/npb__npb_01_720p_f012427.jpg"
+        },
+        {
+          "slot": 15,
+          "requested_frame": 13164,
+          "source_frame": 13164,
+          "render": "final_renders/npb__npb_01_720p_f013164.jpg"
+        },
+        {
+          "slot": 16,
+          "requested_frame": 13590,
+          "source_frame": 13590,
+          "render": "final_renders/npb__npb_01_720p_f013590.jpg"
+        },
+        {
+          "slot": 17,
+          "requested_frame": 14612,
+          "source_frame": 14612,
+          "render": "final_renders/npb__npb_01_720p_f014612.jpg"
+        },
+        {
+          "slot": 18,
+          "requested_frame": 15465,
+          "source_frame": 15465,
+          "render": "final_renders/npb__npb_01_720p_f015465.jpg"
+        },
+        {
+          "slot": 19,
+          "requested_frame": 16467,
+          "source_frame": 16467,
+          "render": "final_renders/npb__npb_01_720p_f016467.jpg"
+        },
+        {
+          "slot": 20,
+          "requested_frame": 17383,
+          "source_frame": 17383,
+          "render": "final_renders/npb__npb_01_720p_f017383.jpg"
+        }
+      ],
+      "contact_sheet": "final_renders/npb__npb_01_720p_contact_sheet.jpg"
+    },
+    {
+      "feeder_label": "npb",
+      "clip": "npb__npb_jm2Ocr-LAtc.mp4",
+      "decoded_frame_count": 28801,
+      "fps": 30.0,
+      "source_shape": [
+        640,
+        360
+      ],
+      "frames": [
+        {
+          "slot": 1,
+          "requested_frame": 647,
+          "source_frame": 647,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f000647.jpg"
+        },
+        {
+          "slot": 2,
+          "requested_frame": 2217,
+          "source_frame": 2217,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f002217.jpg"
+        },
+        {
+          "slot": 3,
+          "requested_frame": 3596,
+          "source_frame": 3596,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f003596.jpg"
+        },
+        {
+          "slot": 4,
+          "requested_frame": 5246,
+          "source_frame": 5246,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f005246.jpg"
+        },
+        {
+          "slot": 5,
+          "requested_frame": 7080,
+          "source_frame": 7080,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f007080.jpg"
+        },
+        {
+          "slot": 6,
+          "requested_frame": 7506,
+          "source_frame": 7506,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f007506.jpg"
+        },
+        {
+          "slot": 7,
+          "requested_frame": 9095,
+          "source_frame": 9095,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f009095.jpg"
+        },
+        {
+          "slot": 8,
+          "requested_frame": 10432,
+          "source_frame": 10432,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f010432.jpg"
+        },
+        {
+          "slot": 9,
+          "requested_frame": 12374,
+          "source_frame": 12374,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f012374.jpg"
+        },
+        {
+          "slot": 10,
+          "requested_frame": 14082,
+          "source_frame": 14082,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f014082.jpg"
+        },
+        {
+          "slot": 11,
+          "requested_frame": 15244,
+          "source_frame": 15244,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f015244.jpg"
+        },
+        {
+          "slot": 12,
+          "requested_frame": 16348,
+          "source_frame": 16348,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f016348.jpg"
+        },
+        {
+          "slot": 13,
+          "requested_frame": 17667,
+          "source_frame": 17667,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f017667.jpg"
+        },
+        {
+          "slot": 14,
+          "requested_frame": 19187,
+          "source_frame": 19187,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f019187.jpg"
+        },
+        {
+          "slot": 15,
+          "requested_frame": 20414,
+          "source_frame": 20414,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f020414.jpg"
+        },
+        {
+          "slot": 16,
+          "requested_frame": 22638,
+          "source_frame": 22638,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f022638.jpg"
+        },
+        {
+          "slot": 17,
+          "requested_frame": 24050,
+          "source_frame": 24050,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f024050.jpg"
+        },
+        {
+          "slot": 18,
+          "requested_frame": 24830,
+          "source_frame": 24830,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f024830.jpg"
+        },
+        {
+          "slot": 19,
+          "requested_frame": 27109,
+          "source_frame": 27109,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f027109.jpg"
+        },
+        {
+          "slot": 20,
+          "requested_frame": 28619,
+          "source_frame": 28619,
+          "render": "final_renders/npb__npb_jm2Ocr-LAtc_f028619.jpg"
+        }
+      ],
+      "contact_sheet": "final_renders/npb__npb_jm2Ocr-LAtc_contact_sheet.jpg"
+    }
+  ]
+}

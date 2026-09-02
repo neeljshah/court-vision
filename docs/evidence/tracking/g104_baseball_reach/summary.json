@@ -1,0 +1,67 @@
+{
+  "baseball_gameplay_frames": 60,
+  "by_clip": {
+    "kbo__kbo_FDSWjM_OaTs.mp4": {
+      "gameplay": 0,
+      "n": 20,
+      "point_ge_2": 0,
+      "point_ge_3": 0,
+      "point_ge_4": 0
+    },
+    "kbo__kbo_bGQwZl43E9Y.mp4": {
+      "gameplay": 0,
+      "n": 20,
+      "point_ge_2": 0,
+      "point_ge_3": 0,
+      "point_ge_4": 0
+    },
+    "mlb__mlb_3Oc4S_1np98.mp4": {
+      "gameplay": 20,
+      "n": 20,
+      "point_ge_2": 2,
+      "point_ge_3": 2,
+      "point_ge_4": 1
+    },
+    "mlb__mlb_5IA4jaKNOYg.mp4": {
+      "gameplay": 0,
+      "n": 20,
+      "point_ge_2": 0,
+      "point_ge_3": 0,
+      "point_ge_4": 0
+    },
+    "npb__npb_01_720p.mp4": {
+      "gameplay": 20,
+      "n": 20,
+      "point_ge_2": 4,
+      "point_ge_3": 0,
+      "point_ge_4": 0
+    },
+    "npb__npb_jm2Ocr-LAtc.mp4": {
+      "gameplay": 20,
+      "n": 20,
+      "point_ge_2": 7,
+      "point_ge_3": 1,
+      "point_ge_4": 0
+    }
+  },
+  "independent_line_direction_distribution": {
+    "0": 116,
+    "1": 2,
+    "2": 2
+  },
+  "non_game_program_frames": 60,
+  "point_count_distribution": {
+    "0": 103,
+    "1": 4,
+    "2": 10,
+    "3": 2,
+    "4": 1
+  },
+  "point_cutoffs": {
+    "2": 13,
+    "3": 3,
+    "4": 1
+  },
+  "sampled_frames": 120,
+  "unique_clip_slot_pairs": 120
+}
