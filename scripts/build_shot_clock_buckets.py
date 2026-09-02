@@ -183,6 +183,13 @@ def process_game(game_id: str) -> tuple[list[dict], list[str]]:
             usecols=lambda c: c in set(TRACKING_COLS_NEEDED),
             low_memory=False,
         )
+        if td is not None and "player_id" not in td.columns and not td.empty:
+            # S77 (guard from S69): sport-blind tracking runs (tracking_schema
+            # columns track_id/cls/x/y -- e.g. an MLB teacher run) land under
+            # data/tracking/ too. SKIPPED and NAMED, never aliased onto player_id.
+            warns.append(f"{game_id}: tracking_data.csv has no player_id "
+                         f"(non-NBA tracking schema), tracking columns skipped")
+            td = None
         if td is not None and not td.empty:
             # Ensure possession_id is numeric
             if "possession_id" in td.columns:

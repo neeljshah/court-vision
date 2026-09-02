@@ -1,33 +1,24 @@
 """S57: the 151 ``data/intelligence`` artifacts, their producers, and what may run.
 
-The intelligence layer sat outside freshness governance: 0 of 151 artifacts
-appeared in ``gate_manifest.json`` and nothing ever re-ran their producers.
-This module is the DATA half of the fix -- a measured artifact -> producer map
-plus the run-scope classification -- so ``artifact_refresh`` can carry
-intelligence targets without re-deriving anything at runtime.
+The intelligence layer sat outside freshness governance: 0 of 151 artifacts were
+in ``gate_manifest.json`` and nothing re-ran their producers. This module is the
+DATA half of the fix -- a measured artifact -> producer map plus run scope -- so
+``artifact_refresh`` re-derives nothing at runtime.
 
 MEASURED 2026-09-03 (re-derive with the scan described below; do not hand-edit):
-  151 artifacts, 143 with a producer, 8 with none (``NO_PRODUCER``),
-  95 distinct producers, ALL under ``scripts/`` -- 0 gated. ``intel/*.py`` only
-  READ these artifacts (the one ``data/intelligence`` string in ``intel/`` is a
-  docstring in ``team_three_pt_defense.py:274``), so no producer needs a
-  human-gated edit today. The gated branch is kept live because a future
-  producer may land in a gated tree, and a gated producer must be reported
-  NO_RUN by name, never skipped silently.
-
+  151 artifacts, 143 with a producer, 8 with none (``NO_PRODUCER``), 95 distinct
+  producers, ALL under ``scripts/`` -- 0 gated. ``intel/*.py`` only READ these (its
+  one ``data/intelligence`` string is a docstring, ``team_three_pt_defense.py:274``),
+  so no producer needs a gated edit today; the gated branch stays live because a
+  future one may land there and must be reported NO_RUN by name, never skipped.
   Scan: for each file under ``data/intelligence``, the modules under
-  ``scripts|intel|src|api|kernel`` whose text contains the artifact's exact
-  basename AND a write call (``to_parquet``/``json.dump``/``write_text``/...);
-  a single candidate wins outright, otherwise the closest name match.
+  ``scripts|intel|src|api|kernel`` whose text holds its exact basename AND a write
+  call (``to_parquet``/``json.dump``/...); one candidate wins, else closest name.
 
-INPUT_REBUILT is the run scope. Re-running a producer whose inputs are OLDER
-than its own artifact reproduces the same content from the same inputs, so it
-is not a freshness fix -- it is churn. Only the producers reading at least one
-input newer than the artifact they write can actually advance anything, and
-those are the ones this module offers to run. Every other producer is reported
-with its named reason, never dropped.
-
-This is an audit/calibration tool. It states no $ edge / ROI. ASCII + stdlib.
+INPUT_REBUILT is the run scope: re-running a producer whose inputs are OLDER than
+its artifact reproduces the same content -- churn, not a freshness fix. Every
+other producer is reported with its named reason, never dropped.
+Audit/calibration tool. No $ edge / ROI claim. ASCII + stdlib.
 """
 from __future__ import annotations
 
@@ -39,23 +30,19 @@ from typing import Dict, List, Optional, Sequence, Tuple
 
 INTEL_DIR = "data/intelligence"
 
-# Human-gated trees (.claude/rules/human-gated-paths.md): a producer here is
-# reported NO_RUN with its path, never edited and never silently skipped.
+# Human-gated trees: a producer here is NO_RUN with its path, never edited.
 GATED_PREFIXES = ("src/", "kernel/", "api/", "intel/", "scripts/team_system/")
 
-# A producer gets this long before it is recorded as a FAILED row. Knob, not a
-# bar: these are batch builders, not services.
-#
-# S69 raised it 300 -> 900 on MEASURED walls, after the five S57 failures were
-# repaired (build_quarter_momentum 132 s, build_tipoff_predictability 108 s,
-# build_cv_fatigue_trajectories 275 s, build_ingame_momentum 77 s,
-# build_lineup_chemistry 179 s -- all one full pass over the 357-game,
-# 4.56 GB data/tracking corpus). The slowest sits 25 s under the old 300 s, and
-# this box's read throughput varies by more than an order of magnitude with
-# antivirus scanning, so 300 s was killing runs that were merely slow.
-# ponytail: one global knob. The ceiling is that a genuinely hung builder now
-# wastes 15 min instead of 5 -- give a per-producer timeout only if one of these
-# ever hangs rather than crawls.
+# THE per-producer wall cap, and since S77 its single OWNER: artifact_refresh
+# imports it as PRODUCER_TIMEOUT_SEC and exposes it as --timeout-sec, so the two
+# knobs that disagreed (120 there, 900 here) are one number. Knob, not a bar.
+# S69 raised it 300 -> 900 on MEASURED walls over the 357-game, 4.56 GB
+# data/tracking corpus: build_quarter_momentum 132 s, build_tipoff_predictability
+# 108 s, build_cv_fatigue_trajectories 275 s, build_ingame_momentum 77 s,
+# build_lineup_chemistry 179 s. The slowest sat 25 s under the old 300 s and this
+# box's read throughput varies by an order of magnitude with antivirus scanning,
+# so 300 s was killing runs that were merely slow.
+# ponytail: one global knob; ceiling is a hung builder wasting 15 min, not 5.
 PRODUCER_TIMEOUT_S = 900.0
 
 PRODUCERS = {
@@ -204,10 +191,9 @@ NO_PRODUCER = (
     "pra_arbitrage_opportunities_2026-05-29.parquet",
 )
 
-# The 19 producers measured to read at least one input NEWER than the artifact
-# they write (30 of the 143 mapped artifacts). Everything else is reported with
-# the reason in ``_SCOPE_REASON``: inputs_not_rebuilt 38, all_inputs_missing 35,
-# no_inputs_detected 3 producers.
+# The 19 producers measured to read an input NEWER than the artifact they write
+# (30 of 143 mapped artifacts). The rest report ``_SCOPE_REASON``:
+# inputs_not_rebuilt 38, all_inputs_missing 35, no_inputs_detected 3.
 INPUT_REBUILT = (
     "scripts/build_clutch_cv.py",
     "scripts/build_coaching_adjustments.py",
@@ -239,6 +225,11 @@ def _runner(script: str):
     These builders are CLI scripts with no importable ``build()``, so they are
     invoked the documented way. A non-zero rc (or a timeout) raises, which
     ``artifact_refresh`` records as a FAILED row without killing the pass.
+
+    S77: the child is a ``Popen`` published on ``run.proc`` and the cap is read
+    from ``run.timeout_sec`` at call time, so whichever cap fires first -- here or
+    on artifact_refresh's thread -- kills the writer. Before this a refresh-layer
+    timeout abandoned the thread and the builder kept writing.
     """
 
     def run(root: Path) -> None:
@@ -248,18 +239,27 @@ def _runner(script: str):
         # written part of its output -- a half-refreshed artifact reported as
         # a clean failure. The encoding belongs to the pipe, not to the data.
         env = dict(os.environ, PYTHONIOENCODING="utf-8")
-        proc = subprocess.run([sys.executable, script], cwd=str(root), env=env,
-                              capture_output=True, timeout=PRODUCER_TIMEOUT_S)
+        proc = subprocess.Popen([sys.executable, script], cwd=str(root), env=env,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        run.proc = proc
+        try:
+            _, err = proc.communicate(timeout=run.timeout_sec)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            proc.communicate()
+            raise
         if proc.returncode != 0:
-            tail = proc.stderr.decode("utf-8", "replace").strip().splitlines()
+            tail = err.decode("utf-8", "replace").strip().splitlines()
             raise RuntimeError("rc={0}: {1}".format(
                 proc.returncode, tail[-1][:200] if tail else "no stderr"))
 
+    run.proc = None
+    run.timeout_sec = PRODUCER_TIMEOUT_S
     return run
 
 
 def classify(script: str, root: Path, scope: str = "rebuilt") -> Optional[str]:
-    """Return the NO_RUN reason for ``script``, or None when it may run."""
+    """The NO_RUN reason for ``script``, or None when it may run."""
     if script.startswith(GATED_PREFIXES):
         return "gated tree (human-gated, read-only): " + script
     if not (root / script).exists():
@@ -272,9 +272,8 @@ def classify(script: str, root: Path, scope: str = "rebuilt") -> Optional[str]:
 def targets(root: Path, scope: str = "rebuilt") -> Sequence:
     """Build one ``artifact_refresh.Target`` per producer, plus the orphans.
 
-    Imported lazily: ``artifact_refresh`` imports this module, so a top-level
-    import back would be a cycle.
-    """
+    Imported lazily: ``artifact_refresh`` imports this module at top level, so an
+    import back here would be a cycle."""
     from scripts.platformkit.mcp_server.artifact_refresh import Target
 
     out: List = []

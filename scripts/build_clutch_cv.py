@@ -232,6 +232,16 @@ def _process_one_game(game_id: str, resolve_fn, verbose: bool = False) -> list[d
     if len(df) < MIN_TOTAL_ROWS:
         return []
 
+    if "player_id" not in df.columns:
+        # S77 (guard from S69): sport-blind tracking runs (tracking_schema columns
+        # track_id/cls/x/y -- e.g. an MLB teacher run) land under data/tracking/
+        # too. A foreign-schema directory is SKIPPED and NAMED, never aliased onto
+        # player_id: its track ids are not NBA players and it carries none of the
+        # CV feature columns below.
+        if verbose:
+            print("  [" + game_id + "] no player_id column (non-NBA tracking schema), skipping")
+        return []
+
     jersey_map = _load_jersey_map(jm_path)
 
     nc_df, clutch_df = _identify_clutch_frames(df)
