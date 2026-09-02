@@ -8,8 +8,9 @@ Acceptance criteria (WS1 restart-api-selfcheck):
   SH2. mount_selfcheck on a minimal FastAPI app that is MISSING the route
        reports ok=False, route in missing, logs WARN.
 
-  SH3. mount_selfcheck is idempotent: calling it twice returns the same result
-       and sets the cache attribute on the app.
+  SH3. mount_selfcheck re-reads the route table on EVERY call: two calls on an
+       unchanged app agree, and a route added after the first call is PRESENT on
+       the next call (no cached pre-registration snapshot -- S49b).
 
   SH4. smoke_probe with an injected fetcher returning 200 -> ok=True.
 
@@ -110,21 +111,35 @@ def test_sh2_missing_route_reported_and_ok_false():
 
 
 # ---------------------------------------------------------------------------
-# SH3 -- idempotency
+# SH3 -- evaluated at call time (stable when nothing changed, fresh when it did)
 # ---------------------------------------------------------------------------
 
-def test_sh3_idempotent_second_call_returns_cache():
-    """SH3: calling mount_selfcheck twice returns the same dict (cached result)."""
+def test_sh3_reevaluates_route_table_each_call():
+    """SH3: repeated calls agree; a route added later is seen on the NEXT call."""
     app = _make_minimal_app("/api/paper/predictions")
     result1 = mount_selfcheck(app)
     result2 = mount_selfcheck(app)
-    assert result1 is result2, (
-        "SH3: second call must return the same cached result object"
+    assert result1 == result2, (
+        "SH3: two calls on an unchanged app must agree; got %r vs %r"
+        % (result1, result2)
     )
     assert hasattr(app, _SELFCHECK_ATTR), (
-        "SH3: cache attribute %r must be set on app" % _SELFCHECK_ATTR
+        "SH3: last-result attribute %r must be set on app" % _SELFCHECK_ATTR
     )
     assert result1["ok"] is True, "SH3: ok must be True when route is registered"
+
+    # A route registered AFTER the first check must not be masked by a snapshot.
+    late = _make_minimal_app()
+    assert mount_selfcheck(late)["ok"] is False, (
+        "SH3: app without /api/paper/predictions must read ok=False first"
+    )
+    late.add_api_route("/api/paper/predictions", lambda: {"status": "ok"},
+                       methods=["GET"])
+    after = mount_selfcheck(late)
+    assert after["ok"] is True, (
+        "SH3: route added after the first call must be PRESENT on the next "
+        "call (no cached pre-registration snapshot); got %r" % after
+    )
 
 
 # ---------------------------------------------------------------------------

@@ -13,6 +13,10 @@ while the existing /health 200 liveness contract is UNCHANGED.
   R4. /ready falls back to liveness-only 200 if mount_selfcheck is unavailable
       (it must never be MORE fragile than /health).
   R5. No $/pnl/profit/roi key in any /ready response (honesty rail).
+  R6. S49b regression: a probe taken while a required router is NOT mounted
+      reads 503 (fail-closed), and the NEXT probe -- after that router
+      registers -- reads 200 ready. The selfcheck must evaluate the route table
+      at probe time, never a snapshot cached before the routers mounted.
 
 Run (per-file only)::
     cd /c/Users/neelj/nba-ai-system && python -m pytest predict_service/test_app_ready_probe.py -q
@@ -36,8 +40,10 @@ except ImportError:
     pytest.skip("fastapi/httpx not installed", allow_module_level=True)
 
 import predict_service.app as app_mod
+from supervisor.health import _SELFCHECK_ATTR
 
 _BANNED = ("$", "pnl", "profit", "roi")
+_TARGET = "/api/paper/predictions"
 
 
 def _assert_no_money(body: Any) -> None:
@@ -105,3 +111,48 @@ def test_ready_falls_back_to_liveness_when_selfcheck_unavailable():
     assert body["status"] == "ready"
     assert body["selfcheck"] == "unavailable"
     _assert_no_money(body)
+
+
+# R6 -----------------------------------------------------------------------
+def test_ready_sees_router_mounted_after_the_first_probe():
+    """S49b: a not_ready probe must not stick once the router registers.
+
+    Reproduces the pod ordering on the REAL app: the required route is detached
+    (the router has not mounted yet) -> the probe is 503 not_ready, which is the
+    fail-closed contract. The route is then re-attached, as the paper routers do
+    after module execution, and the NEXT probe must read 200 ready.
+    """
+    app = app_mod.app
+    saved = [r for r in app.routes if getattr(r, "path", "") == _TARGET]
+    assert saved, "%s must be mounted on the real app before this test" % _TARGET
+    for route in saved:
+        app.routes.remove(route)
+    if hasattr(app, _SELFCHECK_ATTR):
+        delattr(app, _SELFCHECK_ATTR)
+    try:
+        client = _client()
+        first = client.get("/ready")
+        assert first.status_code == 503, (
+            "a genuinely missing required route must stay fail-closed; got %d"
+            % first.status_code)
+        assert first.json()["status"] == "not_ready"
+        assert _TARGET in first.json()["selfcheck"]["missing"]
+        _assert_no_money(first.json())
+
+        for route in saved:  # the paper routers register AFTER the first probe
+            app.routes.append(route)
+        second = client.get("/ready")
+        assert second.status_code == 200, (
+            "probe after the router mounted must be ready, not a cached "
+            "pre-registration snapshot; got %d %r"
+            % (second.status_code, second.json()))
+        body = second.json()
+        assert body["status"] == "ready"
+        assert _TARGET in body["selfcheck"]["present"]
+        _assert_no_money(body)
+    finally:
+        for route in saved:
+            if route not in app.routes:
+                app.routes.append(route)
+        if hasattr(app, _SELFCHECK_ATTR):
+            delattr(app, _SELFCHECK_ATTR)

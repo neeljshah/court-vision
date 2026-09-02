@@ -211,40 +211,40 @@ _SELFCHECK_ATTR = "_supervisor_health_selfcheck_done"
 
 
 def mount_selfcheck(app: Any) -> Dict[str, Any]:
-    """Idempotent startup mount-verification self-check.
+    """Mount-verification self-check, evaluated at CALL time.
 
     Inspects the FastAPI *app*'s routes and verifies every path in
     _REQUIRED_ROUTES is present. Missing routes log WARN (never green-on-
-    missing). Safe to call multiple times -- second call returns cached result.
-    Returns {checked, present, missing, ok} -- ok=True iff missing==[].
-    Never raises; non-conforming *app* objects yield ok=False.
+    missing). Safe to call repeatedly: the route table is re-read on EVERY call
+    -- a snapshot cached at import time (before the paper routers mounted) made
+    /ready a false negative for the life of the process, so the last result is
+    kept only to log the WARN once per change. Returns {checked, present,
+    missing, ok} -- ok=True iff missing==[]. Never raises; non-conforming *app*
+    objects yield ok=False.
     """
-    cached = getattr(app, _SELFCHECK_ATTR, None)
-    if cached is not None:
-        return cached  # type: ignore[return-value]
+    prev = getattr(app, _SELFCHECK_ATTR, None)
     checked = list(_REQUIRED_ROUTES)
     present: list = []
     missing: list = []
     try:
         mounted = {str(getattr(r, "path", "")) for r in (getattr(app, "routes", None) or [])}
         for rp in checked:
-            if rp in mounted:
-                present.append(rp)
-            else:
-                missing.append(rp)
-                logger.warning(
-                    "supervisor.health: mount_selfcheck WARN -- required route %r "
-                    "NOT mounted (stale process or failed import). "
-                    "FE will 404. Restart predict_service to fix.", rp)
+            (present if rp in mounted else missing).append(rp)
     except Exception as exc:  # noqa: BLE001
         logger.warning("supervisor.health: mount_selfcheck inspect failed (%s); "
                        "treating all required routes as missing.", exc)
         missing = list(checked)
         present = []
     ok = not missing
-    if ok:
-        logger.info("supervisor.health: mount_selfcheck OK -- %d required routes present",
-                    len(checked))
+    if not isinstance(prev, dict) or prev.get("missing") != missing:
+        for rp in missing:
+            logger.warning(
+                "supervisor.health: mount_selfcheck WARN -- required route %r "
+                "NOT mounted (stale process or failed import). "
+                "FE will 404. Restart predict_service to fix.", rp)
+        if ok:
+            logger.info("supervisor.health: mount_selfcheck OK -- %d required "
+                        "routes present", len(checked))
     result: Dict[str, Any] = {"checked": checked, "present": present,
                                "missing": missing, "ok": ok}
     try:
