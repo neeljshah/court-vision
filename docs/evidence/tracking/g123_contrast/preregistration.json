@@ -1,0 +1,21 @@
+{
+  "gap": "G123",
+  "written_before_scoring": true,
+  "method": "CLAHE on CIELAB L channel",
+  "clip_limit": 2.0,
+  "tile_grid": [8, 8],
+  "colour_space": "CIELAB; modify L only; retain A and B",
+  "application_region": "whole 640x384 frame",
+  "frozen_detector": {
+    "detect_lsd_segments_min_length": 28.0,
+    "candidate_angle_deg": 5.0,
+    "candidate_offset_px": 10.0
+  },
+  "frozen_correspondence": {
+    "angle_deg": 12.0,
+    "perpendicular_distance_px": 12.0,
+    "endpoint_extension_px": 20.0
+  },
+  "fixed_population": "G115 valid 30 frames / 68 visible physical paint lines",
+  "precision_label_population": "G84 33-frame audited candidate labels"
+}

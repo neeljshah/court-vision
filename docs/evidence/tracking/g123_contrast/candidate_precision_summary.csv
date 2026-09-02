@@ -1,0 +1,4 @@
+scope,court_line_candidates,candidates,precision,wilson_95_low,wilson_95_high
+G84_audited_33,198,1764,0.112245,0.098349,0.127826
+G115_valid_30,180,1584,0.113636,0.098933,0.130209
+CLAHE_fixed_label_transfer_30,191,1654,0.115478,0.100958,0.131779

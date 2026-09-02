@@ -6,6 +6,12 @@
 |---|---|---|---|---|
 | G103 | basketball | The 33 fixed G84 source-sheet tiles cannot yet be rebuilt identically from their read-only pod clips: 0/33 decoded BGR tile checksums match, across 11 clips. The required durable-input check therefore stops before the unchanged G93 protocol, leaving recall, visible-line denominator, role intervals, miss reasons, and overlays unmeasured. | `g103_g68_recipe_and_g93_recall_2026-09-02.md`; `g103_recall/tile_manifest.csv`; `g103_recall/tile_checksum_verification.csv` | CLOSED AT LIMIT (specified checksum stop; no detector or protocol change). |
 
+## G123 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G123 | basketball | The preregistered whole-frame CIELAB-L CLAHE feasibility test (clip limit 2.0; 8x8 tiles) reduces frozen G115 recall from 25/68 to 23/68 and recovers none of the 17 existing low-contrast misses. The same-identity G84 fixed-label candidate precision proxy is 180/1,584 before and 191/1,654 after, so a small proxy increase accompanies 70 additional candidates and worse recall. The implied independent all-four-line co-occurrence falls from 1.83 pct to 1.31 pct. Six evenly distributed enhanced overlays show crowd, graphics, reflections, players, and floor texture made more line-like. | `g123_low_contrast_lines_2026-09-02.md`; `g123_contrast/` | REJECT. Do not tune CLAHE on this frozen sample; G120 fragmentation and G121 corner-first work remain independent. |
+
 ## G44B attempt-2 disposition
 
 | Gap | sport | finding | evidence | status |
