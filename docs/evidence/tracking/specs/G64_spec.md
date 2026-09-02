@@ -1,4 +1,4 @@
- sport baseball | sport baseball | worktree a2 | log cx_g64_segment_count_bisect
+GAP G64 | sport baseball | worktree a2 | log cx_g64_segment_count_bisect
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it, including A7; self-check every
 line of section B before you report. BISECT, do not fix. Name what changed; stop there.
 PREMISE (step 0, reproduce it): G33B attempt 2 located both 2026-09-01 DAY clips on the pod and
