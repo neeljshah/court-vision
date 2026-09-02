@@ -39,8 +39,8 @@ class BridgeReport:
     gaps_rejected_gap_too_long: int
     gaps_rejected_infeasible: int
     rows_bridged: int
-    coverage_observed: float
-    coverage_with_bridge: float
+    coverage_observed: float | None
+    coverage_with_bridge: float | None
 
     def to_dict(self) -> dict[str, Any]:
         """Return a JSON-serializable report."""
@@ -95,8 +95,17 @@ def _p99_from_bounds(bounds: Mapping[str, Any] | str | Path | float, sport: str)
     return p99
 
 
-def _coverage(table: pd.DataFrame, sport: str) -> float:
-    return float(evaluate(table, sport).coverage_pct)
+def _coverage(
+    table: pd.DataFrame,
+    sport: str,
+    *,
+    allow_legacy_undeclared: bool = False,
+) -> float | None:
+    """Return measured coverage, preserving an insufficient-data null."""
+    report = evaluate(table, sport, allow_legacy_undeclared=allow_legacy_undeclared)
+    if report.verdict == "INSUFFICIENT_DATA" or report.coverage_pct is None:
+        return None
+    return float(report.coverage_pct)
 
 
 def _group_columns(table: pd.DataFrame) -> list[str]:

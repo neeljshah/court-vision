@@ -9,8 +9,7 @@ from typing import Any, Mapping
 
 import pandas as pd
 
-from scripts.platformkit.tracking.bridge_infill import _p99_from_bounds, _sport_key
-from scripts.platformkit.tracking_harness import evaluate
+from scripts.platformkit.tracking.bridge_infill import _coverage, _p99_from_bounds, _sport_key
 
 
 @dataclass(frozen=True)
@@ -22,8 +21,8 @@ class MergeReport:
     median_track_length_before: float
     median_track_length_after: float
     concurrent_duplicates_culled: int
-    coverage_before: float
-    coverage_after: float
+    coverage_before: float | None
+    coverage_after: float | None
 
     def to_dict(self) -> dict[str, Any]:
         """Return a JSON-serializable report."""
@@ -231,8 +230,8 @@ def merge_tracklets(
         # producer emission; it predates the coordinate_space contract, so
         # coverage measurement uses the explicit legacy-corpus switch rather
         # than tripping the fail-closed coordinate_contract gate.
-        coverage_before=float(evaluate(tracks, key, allow_legacy_undeclared=True).coverage_pct),
-        coverage_after=float(evaluate(after, key, allow_legacy_undeclared=True).coverage_pct),
+        coverage_before=_coverage(tracks, key, allow_legacy_undeclared=True),
+        coverage_after=_coverage(after, key, allow_legacy_undeclared=True),
     )
     return mapping, report
 
