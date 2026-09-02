@@ -4,6 +4,7 @@ Walks (never writes into, except the --out manifest itself):
   (a) data/cache/eval_gate/*.json + *.jsonl  -- ledgers (fwer cumulative K, backtest charges)
   (b) docs/evidence/**/*.json                -- harness sweeps / packets (absence tolerated)
   (c) data/cache/**/*_lock*.json, null_ship*.json -- lock + null-ship-calibration artifacts
+  (d) data/intelligence/**            -- the intelligence layer (S57), category "intelligence"
 
 For each artifact this records: name, verdict (if the file exposes one), an as_of
 timestamp (from the file's own fields, else mtime), explicit measurement-time
@@ -124,6 +125,14 @@ def _scan(repo_root: Path, bad_dirs: List[str],
         if p.suffix == ".json" and ("_lock" in p.name or p.name.startswith("null_ship")):
             claim(p, "lock_or_null_ship")
 
+    # S57: the intelligence layer was outside freshness governance entirely --
+    # 0 of its artifacts appeared here, so nothing dated (or could block) a
+    # stale intelligence answer. EVERY file counts, not just .json: 99 of the
+    # 151 are parquet, and registering only the readable half would understate
+    # the layer's age exactly where it is least visible.
+    for p in _walk(repo_root / "data" / "intelligence", bad_dirs):
+        claim(p, "intelligence")
+
     return list(seen.values())
 
 
@@ -147,11 +156,17 @@ def _row_for(path: Path, category: str, repo_root: Path, as_of: datetime) -> dic
         # this row (or that cannot be stat-ed) must become an UNREADABLE row, not a
         # FileNotFoundError that kills every other row in the manifest.
         mtime = datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
-        obj = _load(path)
-        if obj is None:
-            status = "EMPTY"
-        else:
-            verdict, as_of_field, as_of_key = _extract(obj)
+        # A parquet/pkl/png carries no readable header, so it is registered and
+        # mtime-labelled rather than parsed. Reading it as text would make 100
+        # intelligence artifacts UNREADABLE and exit(1) the whole audit -- that
+        # is a broken reader, not broken evidence. Pre-existing categories only
+        # ever yielded .json/.jsonl, so no existing row changes.
+        if path.suffix in (".json", ".jsonl"):
+            obj = _load(path)
+            if obj is None:
+                status = "EMPTY"
+            else:
+                verdict, as_of_field, as_of_key = _extract(obj)
     except Exception as e:  # fail-closed: never skip, never raise past this row
         status, error = "UNREADABLE", f"{type(e).__name__}: {e}"
 

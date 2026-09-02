@@ -15,7 +15,14 @@ supervisor ProcSpec but is never run by the landing lane.
 Artifact paths are IMPORTED from artifact_tools, never re-declared here.
 One failing producer is recorded as a FAILED row; the rest of the pass runs.
 
+S57 adds the ``data/intelligence`` layer behind ``--intelligence`` (opt-in, so
+the hourly front-door pass does not start 95 batch builders); its map lives in
+``intelligence_producers``. A producer that exists but may not run this pass --
+a human-gated tree, an absent script, an out-of-scope one -- is a NO_RUN row
+naming its reason, distinct from NO_PRODUCER and never a silent skip.
+
     python -m scripts.platformkit.mcp_server.artifact_refresh --once
+    python -m scripts.platformkit.mcp_server.artifact_refresh --dry-run --intelligence
 """
 from __future__ import annotations
 
@@ -78,10 +85,17 @@ def _write(path: Path, payload: Any) -> None:
 
 
 class Target(NamedTuple):
-    """One MCP tool, the artifact paths IT reads, and the producer that writes them."""
+    """One MCP tool, the artifact paths IT reads, and the producer that writes them.
+
+    ``no_run_reason`` (S57) separates "a producer exists but this pass may not
+    run it" (NO_RUN -- a human-gated tree, an absent script, an out-of-scope
+    producer) from "nothing writes this at all" (NO_PRODUCER). Defaulted, so
+    every pre-existing Target is unchanged.
+    """
     name: str
     rels: Sequence[str]
     producer: Optional[Callable[[Path], None]]
+    no_run_reason: Optional[str] = None
 
 
 TARGETS: Sequence[Target] = (
@@ -106,6 +120,17 @@ def _probe(root: Path, rels: Sequence[str]) -> Dict[str, Any]:
     """
     loaded = artifact_tools._load(root, rels) if rels else None
     if loaded is None:
+        # S57: most intelligence artifacts are parquet/pkl/png, which _load
+        # cannot parse. An unparseable-but-PRESENT artifact still has a write
+        # time, and without it every such target reads NO_ARTIFACT forever and
+        # a real rebuild could never show as advanced. Labelled `mtime:`.
+        for rel in rels:
+            path = root / rel
+            if path.is_file() and path.suffix not in (".json", ".jsonl"):
+                stat = path.stat()
+                stamp = datetime.fromtimestamp(stat.st_mtime, timezone.utc).isoformat()
+                return {"source_artifact": rel.replace("\\", "/"),
+                        "stamp": "mtime:" + stamp, "as_of": None, "bytes": stat.st_size}
         return {"source_artifact": None, "stamp": None, "as_of": None, "bytes": None}
     path, rel, value = loaded
     generated = value.get("generated_at") if isinstance(value, dict) else None
@@ -118,6 +143,14 @@ def _refresh_target(root: Path, target: Target) -> Dict[str, Any]:
     before = _probe(root, target.rels)
     row: Dict[str, Any] = {"name": target.name, "stamp_before": before["stamp"],
                            "as_of_before": before["as_of"]}
+    if target.no_run_reason is not None:
+        # NEVER a silent skip: the reason is on the row and in the pass counts.
+        row.update({"status": "NO_RUN", "rc": None, "advanced": False,
+                    "source_artifact": before["source_artifact"],
+                    "stamp_after": before["stamp"], "as_of": before["as_of"],
+                    "generated_at": before["stamp"], "bytes": before["bytes"],
+                    "error": target.no_run_reason})
+        return row
     if target.producer is None:
         row.update({"status": "NO_PRODUCER", "rc": None, "advanced": False,
                     "source_artifact": before["source_artifact"],
@@ -160,6 +193,7 @@ def refresh_once(root: Path | str = ROOT, out_dir: Path | str | None = None,
         "n_advanced": sum(row["advanced"] for row in rows),
         "n_failed": sum(row["status"] == "FAILED" for row in rows),
         "n_no_producer": sum(row["status"] == "NO_PRODUCER" for row in rows),
+        "n_no_run": sum(row["status"] == "NO_RUN" for row in rows),
         "n_stale": sum(row["status"] in ("STALE", "NO_ARTIFACT") for row in rows),
         "targets": rows,
     }
@@ -171,15 +205,24 @@ def refresh_once(root: Path | str = ROOT, out_dir: Path | str | None = None,
     return record
 
 
-def _select(names: Optional[str]) -> Sequence[Target]:
+def _select(names: Optional[str], pool: Sequence[Target] = TARGETS) -> Sequence[Target]:
     if not names:
-        return TARGETS
+        return pool
     wanted = [part.strip() for part in names.split(",") if part.strip()]
-    chosen = [t for t in TARGETS if t.name in wanted]
+    chosen = [t for t in pool if t.name in wanted]
     unknown = sorted(set(wanted) - {t.name for t in chosen})
     if unknown:
         raise SystemExit("unknown target(s): " + ", ".join(unknown))
     return chosen
+
+
+def _pool(root: Path, intelligence: bool, scope: str) -> Sequence[Target]:
+    """S57: the intelligence targets are OPT-IN. The hourly MCP front-door pass
+    must not start 95 batch builders, so --intelligence is what adds them."""
+    if not intelligence:
+        return TARGETS
+    from scripts.platformkit.mcp_server import intelligence_producers as ip
+    return tuple(TARGETS) + tuple(ip.targets(root, scope))
 
 
 def main(argv=None) -> int:
@@ -192,14 +235,33 @@ def main(argv=None) -> int:
     ap.add_argument("--root", default=str(ROOT))
     ap.add_argument("--out-dir", default=None)
     ap.add_argument("--targets", default=None, help="comma-separated target names")
+    ap.add_argument("--intelligence", action="store_true",
+                    help="also carry the data/intelligence producers (S57, opt-in)")
+    ap.add_argument("--scope", default="rebuilt", choices=("rebuilt", "all"),
+                    help="rebuilt (default): only producers reading an input newer "
+                         "than the artifact may run; the rest are NO_RUN by reason")
+    ap.add_argument("--dry-run", action="store_true",
+                    help="print the plan (name, status, artifacts) and run nothing")
     args = ap.parse_args(argv)
-    if not (args.once or args.loop):
-        ap.error("pass --once (or --loop for the cadence mode)")
-    targets = _select(args.targets)
+    if not (args.once or args.loop or args.dry_run):
+        ap.error("pass --once (or --loop for the cadence mode, or --dry-run)")
+    targets = _select(args.targets, _pool(Path(args.root), args.intelligence, args.scope))
+    if args.dry_run:
+        runnable = sum(1 for t in targets if t.producer is not None)
+        print("dry run -- {0} target(s), {1} runnable, {2} artifact path(s)".format(
+            len(targets), runnable, sum(len(t.rels) for t in targets)))
+        for t in targets:
+            state = ("RUN" if t.producer is not None
+                     else ("NO_RUN " + (t.no_run_reason or "") if t.no_run_reason
+                           else "NO_PRODUCER"))
+            print("  {0:<40} {1}".format(t.name, state[:120]))
+        return 0
     while True:
         record = refresh_once(args.root, args.out_dir, targets)
-        print("artifact refresh -- {0} target(s), {1} advanced, {2} failed, {3} no_producer".format(
-            record["n_targets"], record["n_advanced"], record["n_failed"], record["n_no_producer"]))
+        print("artifact refresh -- {0} target(s), {1} advanced, {2} failed, {3} no_producer, "
+              "{4} no_run".format(record["n_targets"], record["n_advanced"],
+                                  record["n_failed"], record["n_no_producer"],
+                                  record["n_no_run"]))
         for row in record["targets"]:
             print("  {0:<24} {1:<12} {2} -> {3}".format(
                 row["name"], row["status"], row["stamp_before"], row["stamp_after"]))
