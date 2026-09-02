@@ -1,0 +1,100 @@
+[
+ {
+  "frame": 0,
+  "gate": "horizontal_roles",
+  "segments": 57,
+  "horizontal": 40,
+  "vertical": 17
+ },
+ {
+  "frame": 1690,
+  "gate": "insufficient_oriented_lines",
+  "segments": 22,
+  "horizontal": 4,
+  "vertical": 15
+ },
+ {
+  "frame": 3380,
+  "gate": "vertical_cluster_count",
+  "segments": 100,
+  "horizontal": 94,
+  "vertical": 6
+ },
+ {
+  "frame": 5070,
+  "gate": "horizontal_roles",
+  "segments": 62,
+  "horizontal": 44,
+  "vertical": 18
+ },
+ {
+  "frame": 6760,
+  "gate": "horizontal_roles",
+  "segments": 65,
+  "horizontal": 45,
+  "vertical": 20
+ },
+ {
+  "frame": 8571,
+  "gate": "horizontal_roles",
+  "segments": 52,
+  "horizontal": 38,
+  "vertical": 14
+ },
+ {
+  "frame": 10261,
+  "gate": "horizontal_roles",
+  "segments": 57,
+  "horizontal": 43,
+  "vertical": 14
+ },
+ {
+  "frame": 11951,
+  "gate": "vertical_cluster_count",
+  "segments": 61,
+  "horizontal": 52,
+  "vertical": 9
+ },
+ {
+  "frame": 13641,
+  "gate": "insufficient_oriented_lines",
+  "segments": 59,
+  "horizontal": 53,
+  "vertical": 2
+ },
+ {
+  "frame": 15331,
+  "gate": "horizontal_roles",
+  "segments": 49,
+  "horizontal": 34,
+  "vertical": 15
+ },
+ {
+  "frame": 17142,
+  "gate": "horizontal_roles",
+  "segments": 47,
+  "horizontal": 33,
+  "vertical": 14
+ },
+ {
+  "frame": 18832,
+  "gate": "no_hough_lines",
+  "segments": 0,
+  "horizontal": 0,
+  "vertical": 0
+ },
+ {
+  "frame": 20522,
+  "gate": "insufficient_oriented_lines",
+  "segments": 212,
+  "horizontal": 198,
+  "vertical": 4
+ },
+ {
+  "frame": 22212,
+  "gate": "no_hough_lines",
+  "segments": 1,
+  "horizontal": 0,
+  "vertical": 1
+ }
+]
