@@ -213,15 +213,31 @@ def _joined(sport: str, start: str | None = None, end: str | None = None,
     return joined, counts
 
 
-def gate_corpus_states(sport: str, start: str, end: str) -> list[dict]:
-    """Build vintage-safe pregame states carrying a devigged decimal close."""
-    joined, _ = _joined(sport, start, end)
-    ready = joined.loc[
-        joined["_spine_join"].eq("both")
-        & joined["devig_close_prob"].notna()
-        & joined["y"].notna()
-        & joined["p_base"].notna()
-    ].sort_values("date")
+def gate_corpus_states(sport: str, start: str, end: str,
+                       counts: dict[str, int] | None = None) -> list[dict]:
+    """Build vintage-safe pregame states carrying a devigged decimal close.
+
+    RT-17: this DISCARDED ``_joined``'s close-drop counts and then applied its own
+    four-way filter with nothing counting what that removed, so the scored
+    denominator was not the corpus denominator (MEASURED on a 10-row synthetic
+    join: 6 states out, 4 rows dropped, no drop named anywhere in the return).
+    Pass a dict as ``counts`` and it is filled IN PLACE with the close counts plus
+    this filter's own ``spine_unmatched`` / ``null_close`` / ``null_target`` --
+    additive, so the existing callers read exactly what they read before.
+    """
+    joined, close_counts = _joined(sport, start, end)
+    matched = joined["_spine_join"].eq("both")
+    priced = joined["devig_close_prob"].notna()
+    targeted = joined["y"].notna() & joined["p_base"].notna()
+    ready = joined.loc[matched & priced & targeted].sort_values("date")
+    if counts is not None:
+        counts.clear()
+        counts.update({**{k: int(v) for k, v in close_counts.items()},
+                       "n_joined": int(len(joined)),
+                       "spine_unmatched": int((~matched).sum()),
+                       "null_close": int((matched & ~priced).sum()),
+                       "null_target": int((matched & priced & ~targeted).sum()),
+                       "n_states": int(len(ready))})
     states: list[dict] = []
     for row in ready.itertuples(index=False):
         day = pd.Timestamp(row.date).date().isoformat()
