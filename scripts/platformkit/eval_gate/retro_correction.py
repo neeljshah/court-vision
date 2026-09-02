@@ -26,9 +26,20 @@ def catalog_signals() -> List[Tuple[str, str]]:
 def render_report(pairs: List[Tuple[str, str]]) -> str:
     """Render the evidence-limited retro judgment without inventing raw statistics."""
     k = RETRO_SWEEP_TRIALS
+    # RT-14: the pre-registered sweep width was hardcoded with nothing tying it to the
+    # catalog, and the prose below hardcoded "60" beside it (MEASURED 2026-09-03:
+    # len(catalog_signals()) = 60, RETRO_SWEEP_TRIALS = 85). The width stays
+    # pre-registered -- it must not shrink to the surviving catalog -- but a catalog
+    # that outgrows it would price its Bonferroni eps too loosely, so that fails
+    # closed here. `raise`, not `assert`: an `assert` disappears under `python -O`
+    # (RT-11). The rendered count comes from the pairs, never from a literal.
+    if len(pairs) > k:
+        raise ValueError(
+            "catalog has %d classes but the pre-registered retro sweep width is %d; "
+            "re-preregister the width before rendering" % (len(pairs), k))
     lines = [
         "EVAL-GATE RETRO MULTIPLICITY CORRECTION",
-        "Evidence boundary: 60 current catalog classes are on disk; historical per-signal",
+        f"Evidence boundary: {len(pairs)} current catalog classes are on disk; historical per-signal",
         "DM vectors are not archived. Published catalog outcome is REJECT-first.",
         "Corrected verdict therefore preserves every documented REJECT. No survivor is inferred.",
         "",
