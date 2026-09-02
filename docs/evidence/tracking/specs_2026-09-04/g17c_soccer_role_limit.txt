@@ -27,7 +27,18 @@ ACCEPTANCE RULE (the verifier applies exactly this and nothing else, all three o
                   (b) paired delta manual-minus-detector on the n=100 packet (denominator = 100
                   sealed frames); (c) render disagreement rate
   before        = paired delta -1.23 at n=100; no labeled role set has ever existed
-  bar           = crop accuracy >= 0.90 AND |paired delta| < 1.0 AND render disagreement < 10 pct
+  bar           = crop accuracy >= 0.90 AND |paired delta| < 1.0 AND render disagreement < 10 pct,
+                  AND per-class recall reported for all three classes.
+                  READ THIS BEFORE YOU REPORT: the label set is player 268 / other 25 /
+                  referee 7, so the MAJORITY-CLASS BASELINE IS 0.8933. A model that always
+                  answers `player` scores 0.8933 and finds zero referees, which is 0.0067
+                  under the accuracy bar. Accuracy alone therefore CANNOT show this model is
+                  useful, and reporting it alone is a B1/B9 tautology. Report per-class recall
+                  and the majority-class baseline alongside every accuracy figure, and state
+                  plainly whether the model beats that baseline for a reason other than class
+                  imbalance. With 7 referee examples over 5 folds (1.4 per fold) the honest
+                  expected outcome for the referee class is CLOSED AT LIMIT on label scarcity
+                  rather than on model capability -- say so if that is what you find.
   n             = 300 crops for (a); 100 frames for (b)
   eye check     = the render disagreement tally itself, EVENLY SPACED over the 100 packet frames;
                   no head slice
