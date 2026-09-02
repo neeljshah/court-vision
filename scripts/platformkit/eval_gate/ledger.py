@@ -141,9 +141,16 @@ def load_fwer(path) -> List[dict]:
 
 
 def next_k_family(rows: List[dict], family: Optional[str]) -> Optional[int]:
-    """1 + the max k_family already charged to `family`; first row of a family = 1, no family -> None."""
+    """1 + the charges already made to `family`; first row of a family = 1, no family -> None.
+
+    S89: COUNT, not max. Rows charged before a family was frozen each carry k_family 1
+    (families of one), so a max over the aliased set would undercount. Aliases resolve
+    through family_bars.FAMILY_ALIASES; with no alias the count and the max agree.
+    """
     if family is None:
         return None
-    seen = [int(r["k_family"]) for r in rows
-            if r.get("family") == family and r.get("k_family") is not None]
-    return max(seen, default=0) + 1
+    from scripts.platformkit.eval_gate.family_bars import resolve_family
+
+    target = resolve_family(family)
+    return 1 + sum(1 for r in rows if r.get("k_family") is not None
+                   and resolve_family(r.get("family")) == target)

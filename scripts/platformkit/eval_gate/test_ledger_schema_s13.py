@@ -86,3 +86,17 @@ def test_unknown_tier_raises_before_anything_is_written(ledger_copy: Path) -> No
         backtest_runner._charge_ledger(ledger_copy, "pkg.mod:pred", "nba",
                                        "2025-10-21", "2026-04-12", tier="T1")
     assert ledger_copy.read_bytes() == before
+
+
+def test_next_k_family_counts_aliased_rows_s89():
+    """S89: the write path counts aliased in-game arm rows (rows 15/16 -> ingame_arms_mlb = 3 next)."""
+    import json
+    from pathlib import Path
+    from scripts.platformkit.eval_gate.ledger import next_k_family
+    path = Path("data/cache/eval_gate/backtest_fwer.jsonl")
+    if not path.exists():
+        return
+    rows = [json.loads(l) for l in path.read_text(encoding="utf-8").splitlines() if l.strip()]
+    assert next_k_family(rows, "ingame_arms_mlb") == 3
+    assert next_k_family(rows, "soccer_gate") == 2
+    assert next_k_family(rows, None) is None
