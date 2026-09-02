@@ -57,6 +57,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from scripts.platformkit.eval_gate.claim_primacy import label_row
+
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 DOMAINS_DIR = _REPO_ROOT / "data" / "domains"
 OUT_PATH = _REPO_ROOT / "data" / "frontend" / "ops" / "forward_evidence_scoreboard.json"
@@ -217,6 +219,7 @@ def build_scoreboard(now: Optional[datetime] = None) -> Dict[str, Any]:
             ["n_rows"], ENRICHMENT_MIN_GAMES))
     except Exception:  # noqa: BLE001
         pass
+    rows = [label_row(row) for row in rows]
     n_decidable_now = sum(1 for r in rows if r["distance_to_decidable"] == _NOW)
     n_never = sum(1 for r in rows if r["distance_to_decidable"] == _NEVER)
     return {
@@ -247,24 +250,24 @@ def write_doc(doc: Dict[str, Any], path: Optional[Path] = None) -> None:
 
 
 def render(doc: Dict[str, Any]) -> str:
-    L = ["=" * 96, "FORWARD-EVIDENCE SCOREBOARD -- the honest 'what can we conclude yet' view"]
-    L.append("%-32s %-12s %-18s %10s %8s %-16s" %
-             ("GATE", "SPORT", "PRE_REGISTERED", "DAYS_ACC", "FWD_N", "VERDICT"))
-    L.append("-" * 96)
+    L = ["=" * 112, "FORWARD-EVIDENCE SCOREBOARD -- the honest 'what can we conclude yet' view"]
+    L.append("%-32s %-12s %-18s %10s %8s %-16s %-14s" %
+             ("GATE", "SPORT", "PRE_REGISTERED", "DAYS_ACC", "FWD_N", "VERDICT", "CLAIM_LABEL"))
+    L.append("-" * 112)
     for r in doc.get("rows", []):
         days = r.get("days_accruing")
         days_s = ("%.1f" % days) if isinstance(days, (int, float)) else "n/a"
-        L.append("%-32s %-12s %-18s %10s %8s %-16s -> %s" % (
+        L.append("%-32s %-12s %-18s %10s %8s %-16s %-14s -> %s" % (
             r.get("gate"), r.get("sport"),
             (r.get("pre_registered_at") or "n/a")[:18],
-            days_s, r.get("forward_n"), r.get("verdict"),
+            days_s, r.get("forward_n"), r.get("verdict"), r.get("claim_label"),
             r.get("distance_to_decidable")))
-    L.append("=" * 96)
+    L.append("=" * 112)
     L.append("rows=%d decidable_now=%d never_at_current_rate=%d" % (
         doc.get("n_rows", 0), doc.get("n_decidable_now", 0),
         doc.get("n_never_at_current_rate", 0)))
     L.append("edge_claimed=False. Read-only composition, no stat recomputed here.")
-    L.append("=" * 96)
+    L.append("=" * 112)
     return "\n".join(L)
 
 
