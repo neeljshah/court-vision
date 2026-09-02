@@ -1,0 +1,982 @@
+tracking mlb_2026-08-30_10893dca (baseball), 1 active
+tracking football_17DHInPNTnY (football), 2 active
+tracking football_7Af2PqyvT8A (football), 3 active
+tracking football_O-vEbXeVc_0 (football), 4 active
+tracking football_a7OUF22mt-I (football), 5 active
+tracking football_wHZt1eY3A9s (football), 6 active
+tracking ncaa_basketball_IB-_u4gW3ds (ncaa_basketball), 7 active
+tracking ncaa_basketball_WFl3V7ZY4ss (ncaa_basketball), 8 active
+tracking ncaa_basketball_sRtHQbywiTE (ncaa_basketball), 9 active
+tracking ncaa_basketball_tiUvyvWOCxo (ncaa_basketball), 10 active
+tracking ncaa_basketball_zqBCKovJCQU (ncaa_basketball), 11 active
+tracking soccer_HxBqMbI5kqQ (soccer), 12 active
+tracking soccer_Z6NTDyxcODs (soccer), 13 active
+tracking soccer_c1mzmBGHQr4 (soccer), 14 active
+tracking soccer_dnR5C6WLJI4 (soccer), 15 active
+tracking soccer_kSgNjoaqCpI (soccer), 16 active
+tracking tennis_01 (tennis), 17 active
+tracking tennis_02 (tennis), 18 active
+tracking tennis_03 (tennis), 19 active
+tracking tennis_04 (tennis), 20 active
+tracking tennis_05 (tennis), 21 active
+tracking wnba_01 (wnba), 22 active
+tracking wnba_02 (wnba), 23 active
+tracking wnba_04 (wnba), 24 active
+football_17DHInPNTnY football thin rows=0
+football_7Af2PqyvT8A football thin rows=0
+football_O-vEbXeVc_0 football thin rows=0
+tracking kbo_01 (baseball), 22 active
+tracking wnba_05 (wnba), 23 active
+tracking wnba_06 (wnba), 24 active
+football_a7OUF22mt-I football thin rows=0
+tracking kbo_02 (baseball), 24 active
+kbo_02 baseball thin rows=0
+tracking kbo_03 (baseball), 24 active
+mlb_2026-08-30_10893dca baseball thin rows=116
+tracking kbo_04 (baseball), 24 active
+soccer_c1mzmBGHQr4 soccer tracked rows=523
+tracking kbo_05 (baseball), 24 active
+tracking kbo_01 (baseball), 1 active
+tracking kbo_03 (baseball), 2 active
+tracking kbo_04 (baseball), 3 active
+tracking kbo_05 (baseball), 4 active
+tracking mlb_2026-08-30_08b16ce9 (baseball), 5 active
+tracking mlb_2026-08-30_10893dca (baseball), 6 active
+tracking mlb_2026-08-30_3a02d9b3 (baseball), 7 active
+tracking npb_01 (baseball), 8 active
+tracking npb_02 (baseball), 9 active
+tracking npb_03 (baseball), 10 active
+tracking npb_04 (baseball), 11 active
+tracking npb_05 (baseball), 12 active
+tracking football_Z8Ezd95NnjM (football), 13 active
+tracking football_lsYEcWf4Zbg (football), 14 active
+tracking football_owXX5PI64gU (football), 15 active
+tracking football_wHZt1eY3A9s (football), 16 active
+tracking football_yahhMkUWd7c (football), 17 active
+tracking ncaa_basketball_IB-_u4gW3ds (ncaa_basketball), 18 active
+tracking ncaa_basketball_WFl3V7ZY4ss (ncaa_basketball), 19 active
+tracking ncaa_basketball_sRtHQbywiTE (ncaa_basketball), 20 active
+tracking ncaa_basketball_tiUvyvWOCxo (ncaa_basketball), 21 active
+tracking ncaa_basketball_zqBCKovJCQU (ncaa_basketball), 22 active
+tracking soccer_HxBqMbI5kqQ (soccer), 23 active
+tracking soccer_Z6NTDyxcODs (soccer), 24 active
+npb_01 baseball thin rows=36 passed=False coverage 0.44 < 0.70;oob 0.64 > 0.10;jump_p95 100.12 > 10.00;ball_valid 0.00 < 0.10
+npb_02 baseball thin rows=184 passed=False coverage 0.16 < 0.70;oob 0.68 > 0.10;jump_p95 92.36 > 10.00;ball_valid 0.00 < 0.10
+npb_04 baseball thin rows=110 passed=False coverage 0.15 < 0.70;oob 0.95 > 0.10;jump_p95 99.19 > 10.00;ball_valid 0.00 < 0.10
+soccer_c1mzmBGHQr4 already tracked, dropping stage copy
+tracking soccer_dnR5C6WLJI4 (soccer), 22 active
+tracking soccer_kSgNjoaqCpI (soccer), 23 active
+tracking tennis_01 (tennis), 24 active
+npb_03 baseball tracked rows=650 passed=False coverage 0.44 < 0.70;oob 0.82 > 0.10;jump_p95 102.47 > 10.00;ball_valid 0.00 < 0.10
+tracking npb_02 (baseball), 24 active
+npb_05 baseball tracked rows=1455 passed=False coverage 0.58 < 0.70;oob 0.80 > 0.10;jump_p95 102.02 > 10.00;ball_valid 0.00 < 0.10
+npb_03 already tracked, dropping stage copy
+tracking npb_04 (baseball), 24 active
+npb_02 baseball thin rows=184 passed=False coverage 0.16 < 0.70;oob 0.68 > 0.10;jump_p95 92.36 > 10.00;ball_valid 0.00 < 0.10
+npb_05 already tracked, dropping stage copy
+tracking soccer_6dIn3fUfI6U (soccer), 24 active
+npb_04 baseball thin rows=110 passed=False coverage 0.15 < 0.70;oob 0.95 > 0.10;jump_p95 99.19 > 10.00;ball_valid 0.00 < 0.10
+tracking tennis_02 (tennis), 24 active
+football_lsYEcWf4Zbg football thin rows=0 passed=None 
+tracking tennis_03 (tennis), 24 active
+mlb_2026-08-30_3a02d9b3 baseball tracked rows=919 passed=False coverage 0.42 < 0.70;oob 0.80 > 0.10;jump_p95 88.58 > 10.00;ball_valid 0.00 < 0.10
+tracking tennis_04 (tennis), 24 active
+mlb_2026-08-30_10893dca baseball tracked rows=3061 passed=False coverage 0.65 < 0.70;oob 0.65 > 0.10;jump_p95 88.66 > 10.00;ball_valid 0.00 < 0.10
+mlb_2026-08-30_3a02d9b3 already tracked, dropping stage copy
+tracking tennis_05 (tennis), 24 active
+football_owXX5PI64gU football thin rows=0 passed=None 
+tracking kbo_02 (baseball), 24 active
+kbo_03 baseball tracked rows=3678 passed=False coverage 0.64 < 0.70;oob 0.79 > 0.10;jump_p95 86.79 > 10.00;ball_valid 0.00 < 0.10
+tracking football_lsYEcWf4Zbg (football), 24 active
+mlb_2026-08-30_08b16ce9 baseball tracked rows=3436 passed=False oob 0.63 > 0.10;jump_p95 96.03 > 10.00;ball_valid 0.00 < 0.10
+tracking football_owXX5PI64gU (football), 24 active
+kbo_05 baseball tracked rows=3298 passed=False oob 0.82 > 0.10;jump_p95 110.83 > 10.00;ball_valid 0.00 < 0.10
+mlb_2026-08-30_08b16ce9 already tracked, dropping stage copy
+tracking wnba_01 (wnba), 24 active
+soccer_HxBqMbI5kqQ soccer thin rows=256 passed=False coverage 0.00 < 0.85;jump_p95 78.29 > 8.00;ball_valid 0.00 < 0.20
+kbo_03 already tracked, dropping stage copy
+tracking mlb_2026-08-30_2b814fad (baseball), 24 active
+soccer_dnR5C6WLJI4 soccer tracked rows=4111 passed=False coverage 0.00 < 0.85;jump_p95 33.95 > 8.00;ball_valid 0.00 < 0.20
+tracking wnba_02 (wnba), 24 active
+kbo_04 baseball tracked rows=2717 passed=False coverage 0.68 < 0.70;oob 0.73 > 0.10;jump_p95 106.03 > 10.00;ball_valid 0.00 < 0.10
+soccer_dnR5C6WLJI4 already tracked, dropping stage copy
+tracking wnba_04 (wnba), 24 active
+football_lsYEcWf4Zbg football thin rows=0 passed=None 
+kbo_05 already tracked, dropping stage copy
+tracking mlb_2026-08-30_03d78bee (baseball), 24 active
+kbo_01 baseball tracked rows=5300 passed=False oob 0.71 > 0.10;jump_p95 88.00 > 10.00;ball_valid 0.00 < 0.10
+tracking mlb_2026-08-30_2143de43 (baseball), 24 active
+soccer_kSgNjoaqCpI soccer tracked rows=5025 passed=False coverage 0.00 < 0.85;jump_p95 39.98 > 8.00;ball_valid 0.00 < 0.20
+tracking npb_01 (baseball), 24 active
+football_Z8Ezd95NnjM football tracked rows=1220 passed=False oob 0.48 > 0.05;jump_p95 3995.74 > 8.00
+tracking npb_02 (baseball), 24 active
+soccer_6dIn3fUfI6U soccer thin rows=3 passed=False coverage 0.00 < 0.85;ball_valid 0.00 < 0.20
+tracking npb_04 (baseball), 24 active
+football_wHZt1eY3A9s football tracked rows=8578 passed=False oob 0.55 > 0.05;jump_p95 3336.88 > 8.00
+football_owXX5PI64gU football thin rows=0 passed=None 
+tracking npb_06 (baseball), 23 active
+tracking npb_07 (baseball), 24 active
+soccer_Z6NTDyxcODs soccer tracked rows=29785 passed=False coverage 0.00 < 0.85;jump_p95 27.62 > 8.00;ball_valid 0.00 < 0.20
+tracking football_lsYEcWf4Zbg (football), 24 active
+football_yahhMkUWd7c football tracked rows=4697 passed=False oob 0.59 > 0.05;jump_p95 1422.61 > 8.00
+tracking football_owXX5PI64gU (football), 24 active
+kbo_02 baseball tracked rows=2000 passed=False coverage 0.51 < 0.70;oob 0.76 > 0.10;jump_p95 85.16 > 10.00;ball_valid 0.00 < 0.10
+football_wHZt1eY3A9s already tracked, dropping stage copy
+tracking soccer_6dIn3fUfI6U (soccer), 24 active
+npb_01 baseball thin rows=36 passed=False coverage 0.44 < 0.70;oob 0.64 > 0.10;jump_p95 100.12 > 10.00;ball_valid 0.00 < 0.10
+kbo_02 already tracked, dropping stage copy
+football_yahhMkUWd7c already tracked, dropping stage copy
+tracking soccer_HkN1E3HESS8 (soccer), 24 active
+tennis_01 tennis tracked rows=9547 passed=False coverage 0.67 < 0.90
+tracking football_m8UWuQoflJo (football), 24 active
+npb_02 baseball thin rows=184 passed=False coverage 0.16 < 0.70;oob 0.68 > 0.10;jump_p95 92.36 > 10.00;ball_valid 0.00 < 0.10
+tracking soccer_HxBqMbI5kqQ (soccer), 24 active
+npb_04 baseball thin rows=110 passed=False coverage 0.15 < 0.70;oob 0.95 > 0.10;jump_p95 99.19 > 10.00;ball_valid 0.00 < 0.10
+tracking soccer_JLMH7eUeJBY (soccer), 24 active
+npb_07 baseball tracked rows=565 passed=False coverage 0.55 < 0.70;oob 0.78 > 0.10;jump_p95 111.87 > 10.00;ball_valid 0.00 < 0.10
+tracking wnba_05 (wnba), 24 active
+npb_06 baseball tracked rows=835 passed=False coverage 0.48 < 0.70;oob 0.73 > 0.10;jump_p95 87.15 > 10.00;ball_valid 0.00 < 0.10
+tracking kbo_06 (baseball), 24 active
+mlb_2026-08-30_2b814fad baseball tracked rows=2335 passed=False oob 0.64 > 0.10;jump_p95 84.02 > 10.00;ball_valid 0.00 < 0.10
+tracking football_eU55ugTsdz8 (football), 24 active
+mlb_2026-08-30_03d78bee baseball tracked rows=2064 passed=False coverage 0.67 < 0.70;oob 0.76 > 0.10;jump_p95 87.62 > 10.00;ball_valid 0.00 < 0.10
+tracking kbo_07 (baseball), 24 active
+football_lsYEcWf4Zbg football thin rows=0 passed=None 
+tracking kbo_08 (baseball), 24 active
+football_owXX5PI64gU football thin rows=0 passed=None 
+tracking kbo_09 (baseball), 24 active
+mlb_2026-08-30_2143de43 baseball tracked rows=2976 passed=False coverage 0.69 < 0.70;oob 0.68 > 0.10;jump_p95 84.60 > 10.00;ball_valid 0.00 < 0.10
+mlb_2026-08-30_2b814fad already tracked, dropping stage copy
+tracking npb_01 (baseball), 24 active
+soccer_HkN1E3HESS8 soccer tracked rows=1632 passed=False coverage 0.00 < 0.85;jump_p95 22.96 > 8.00;ball_valid 0.00 < 0.20
+tracking npb_02 (baseball), 24 active
+tennis_02 tennis tracked rows=2421 passed=False coverage 0.15 < 0.90;jump_p95 22.13 > 8.00
+mlb_2026-08-30_2143de43 already tracked, dropping stage copy
+tracking npb_04 (baseball), 24 active
+npb_01 baseball thin rows=36 passed=False coverage 0.44 < 0.70;oob 0.64 > 0.10;jump_p95 100.12 > 10.00;ball_valid 0.00 < 0.10
+tracking npb_08 (baseball), 24 active
+npb_02 baseball thin rows=184 passed=False coverage 0.16 < 0.70;oob 0.68 > 0.10;jump_p95 92.36 > 10.00;ball_valid 0.00 < 0.10
+tracking mlb_2026-08-30_f8812b72 (baseball), 24 active
+npb_04 baseball thin rows=110 passed=False coverage 0.15 < 0.70;oob 0.95 > 0.10;jump_p95 99.19 > 10.00;ball_valid 0.00 < 0.10
+tracking npb_09 (baseball), 24 active
+soccer_6dIn3fUfI6U soccer thin rows=3 passed=False coverage 0.00 < 0.85;ball_valid 0.00 < 0.20
+tracking football_lsYEcWf4Zbg (football), 24 active
+npb_08 baseball tracked rows=577 passed=False coverage 0.68 < 0.70;oob 0.93 > 0.10;jump_p95 105.42 > 10.00;ball_valid 0.00 < 0.10
+tracking football_owXX5PI64gU (football), 24 active
+npb_09 baseball thin rows=96 passed=False coverage 0.68 < 0.70;oob 0.40 > 0.10;jump_p95 50.26 > 10.00;ball_valid 0.00 < 0.10
+tracking football_r3nqqnCyZw8 (football), 24 active
+soccer_JLMH7eUeJBY soccer tracked rows=26361 passed=False coverage 0.03 < 0.85;jump_p95 19.19 > 8.00;ball_valid 0.00 < 0.20
+tracking kbo_10 (baseball), 24 active
+soccer_HxBqMbI5kqQ soccer thin rows=256 passed=False coverage 0.00 < 0.85;jump_p95 78.29 > 8.00;ball_valid 0.00 < 0.20
+tracking mlb_A5AkcaXA2fk (mlb), 24 active
+kbo_06 baseball tracked rows=5285 passed=False oob 0.69 > 0.10;jump_p95 84.83 > 10.00;ball_valid 0.00 < 0.10
+tracking npb_01 (baseball), 24 active
+football_m8UWuQoflJo football tracked rows=13583 passed=False oob 0.66 > 0.05;jump_p95 2950.85 > 8.00
+tracking npb_02 (baseball), 24 active
+tennis_03 tennis tracked rows=5610 passed=False coverage 0.44 < 0.90;jump_p95 34.36 > 8.00
+tracking npb_04 (baseball), 24 active
+mlb_A5AkcaXA2fk mlb thin rows=0 passed=None 
+tracking npb_09 (baseball), 24 active
+tennis_04 tennis tracked rows=7492 passed=False coverage 0.60 < 0.90;jump_p95 10.03 > 8.00
+tracking npb_10 (baseball), 24 active
+kbo_07 baseball tracked rows=1809 passed=False coverage 0.46 < 0.70;oob 0.72 > 0.10;jump_p95 83.44 > 10.00;ball_valid 0.00 < 0.10
+tracking mlb_nLoG6gvC-Nk (mlb), 24 active
+npb_01 baseball thin rows=36 passed=False coverage 0.44 < 0.70;oob 0.64 > 0.10;jump_p95 100.12 > 10.00;ball_valid 0.00 < 0.10
+tracking soccer_-YbZsM26GDI (soccer), 24 active
+tennis_05 tennis tracked rows=4303 passed=False coverage 0.33 < 0.90;jump_p95 36.79 > 8.00
+kbo_07 already tracked, dropping stage copy
+tracking soccer_6dIn3fUfI6U (soccer), 24 active
+npb_02 baseball thin rows=184 passed=False coverage 0.16 < 0.70;oob 0.68 > 0.10;jump_p95 92.36 > 10.00;ball_valid 0.00 < 0.10
+tracking football_xnHO7JWdRcQ (football), 24 active
+npb_09 baseball thin rows=96 passed=False coverage 0.68 < 0.70;oob 0.40 > 0.10;jump_p95 50.26 > 10.00;ball_valid 0.00 < 0.10
+tracking mlb_A5AkcaXA2fk (mlb), 24 active
+npb_10 baseball thin rows=7 passed=False coverage 0.00 < 0.70;oob 1.00 > 0.10;jump_p95 34.96 > 10.00;ball_valid 0.00 < 0.10
+soccer_HkN1E3HESS8 already tracked, dropping stage copy
+tracking soccer_HxBqMbI5kqQ (soccer), 24 active
+npb_04 baseball thin rows=110 passed=False coverage 0.15 < 0.70;oob 0.95 > 0.10;jump_p95 99.19 > 10.00;ball_valid 0.00 < 0.10
+tracking soccer_lv2CukQcR5s (soccer), 24 active
+mlb_nLoG6gvC-Nk mlb thin rows=393 passed=False oob 0.78 > 0.10;jump_p95 117.04 > 10.00;ball_valid 0.00 < 0.10
+tracking soccer_y0-6FHIaiZA (soccer), 24 active
+football_lsYEcWf4Zbg football thin rows=0 passed=None 
+tracking tennis_06 (tennis), 24 active
+kbo_08 baseball tracked rows=2437 passed=False coverage 0.70 < 0.70;oob 0.75 > 0.10;jump_p95 88.35 > 10.00;ball_valid 0.00 < 0.10
+kbo_09 baseball tracked rows=1811 passed=False coverage 0.60 < 0.70;oob 0.84 > 0.10;jump_p95 86.46 > 10.00;ball_valid 0.00 < 0.10
+tracking tennis_07 (tennis), 23 active
+tracking tennis_08 (tennis), 24 active
+mlb_A5AkcaXA2fk mlb thin rows=0 passed=None 
+tracking football_lsYEcWf4Zbg (football), 24 active
+football_owXX5PI64gU football thin rows=0 passed=None 
+tracking npb_01 (baseball), 24 active
+football_eU55ugTsdz8 football tracked rows=9096 passed=False oob 0.61 > 0.05;jump_p95 3822.05 > 8.00
+tracking npb_02 (baseball), 24 active
+soccer_-YbZsM26GDI soccer tracked rows=7221 passed=False coverage 0.42 < 0.85;jump_p95 18.34 > 8.00;ball_valid 0.00 < 0.20
+tracking npb_04 (baseball), 24 active
+kbo_10 baseball thin rows=150 passed=False coverage 0.61 < 0.70;oob 0.65 > 0.10;jump_p95 65.05 > 10.00;ball_valid 0.00 < 0.10
+tracking npb_09 (baseball), 24 active
+npb_01 baseball thin rows=36 passed=False coverage 0.44 < 0.70;oob 0.64 > 0.10;jump_p95 100.12 > 10.00;ball_valid 0.00 < 0.10
+tracking npb_10 (baseball), 24 active
+npb_02 baseball thin rows=184 passed=False coverage 0.16 < 0.70;oob 0.68 > 0.10;jump_p95 92.36 > 10.00;ball_valid 0.00 < 0.10
+tracking npb_01 (baseball), 24 active
+npb_04 baseball thin rows=110 passed=False coverage 0.15 < 0.70;oob 0.95 > 0.10;jump_p95 99.19 > 10.00;ball_valid 0.00 < 0.10
+football_eU55ugTsdz8 already tracked, dropping stage copy
+tracking football_owXX5PI64gU (football), 24 active
+npb_09 baseball thin rows=96 passed=False coverage 0.68 < 0.70;oob 0.40 > 0.10;jump_p95 50.26 > 10.00;ball_valid 0.00 < 0.10
+tracking football_J9WamaxtwdQ (football), 24 active
+npb_10 baseball thin rows=7 passed=False coverage 0.00 < 0.70;oob 1.00 > 0.10;jump_p95 34.96 > 10.00;ball_valid 0.00 < 0.10
+tracking kbo_Y4HqKr58TZk (kbo), 24 active
+football_lsYEcWf4Zbg football thin rows=0 passed=None 
+tracking kbo_cyRosVcG7zI (kbo), 24 active
+mlb_2026-08-30_f8812b72 baseball tracked rows=9182 passed=False oob 0.65 > 0.10;jump_p95 85.67 > 10.00;ball_valid 0.00 < 0.10
+tracking kbo_h7IUxRgXbL8 (kbo), 24 active
+npb_01 baseball thin rows=36 passed=False coverage 0.44 < 0.70;oob 0.64 > 0.10;jump_p95 100.12 > 10.00;ball_valid 0.00 < 0.10
+tracking kbo_hl_xGuMseB8 (kbo), 24 active
+kbo_Y4HqKr58TZk kbo thin rows=7 passed=False coverage 0.17 < 0.70;oob 1.00 > 0.10;jump_p95 24.15 > 10.00;ball_valid 0.00 < 0.10
+tracking kbo_10 (baseball), 24 active
+kbo_h7IUxRgXbL8 kbo thin rows=0 passed=None 
+mlb_2026-08-30_f8812b72 already tracked, dropping stage copy
+tracking kbo_Y4HqKr58TZk (kbo), 24 active
+kbo_cyRosVcG7zI kbo thin rows=34 passed=False coverage 0.42 < 0.70;oob 0.82 > 0.10;jump_p95 140.11 > 10.00;ball_valid 0.00 < 0.10
+tracking npb_01 (baseball), 24 active
+kbo_hl_xGuMseB8 kbo thin rows=0 passed=None 
+tracking football_lsYEcWf4Zbg (football), 24 active
+soccer_y0-6FHIaiZA soccer tracked rows=11710 passed=False coverage 0.18 < 0.85;jump_p95 25.46 > 8.00;ball_valid 0.00 < 0.20
+tracking npb_02 (baseball), 24 active
+soccer_6dIn3fUfI6U soccer thin rows=3 passed=False coverage 0.00 < 0.85;ball_valid 0.00 < 0.20
+tracking npb_04 (baseball), 24 active
+kbo_Y4HqKr58TZk kbo thin rows=7 passed=False coverage 0.17 < 0.70;oob 1.00 > 0.10;jump_p95 24.15 > 10.00;ball_valid 0.00 < 0.10
+tracking npb_09 (baseball), 24 active
+soccer_HxBqMbI5kqQ soccer thin rows=256 passed=False coverage 0.00 < 0.85;jump_p95 78.29 > 8.00;ball_valid 0.00 < 0.20
+tracking npb_10 (baseball), 24 active
+npb_01 baseball thin rows=36 passed=False coverage 0.44 < 0.70;oob 0.64 > 0.10;jump_p95 100.12 > 10.00;ball_valid 0.00 < 0.10
+tracking mlb_A5AkcaXA2fk (mlb), 24 active
+football_r3nqqnCyZw8 football tracked rows=6155 passed=False oob 0.56 > 0.05;jump_p95 2272.81 > 8.00
+tracking mlb_gDv5xF2AA2E (mlb), 24 active
+npb_02 baseball thin rows=184 passed=False coverage 0.16 < 0.70;oob 0.68 > 0.10;jump_p95 92.36 > 10.00;ball_valid 0.00 < 0.10
+tracking mlb_nLoG6gvC-Nk (mlb), 24 active
+npb_09 baseball thin rows=96 passed=False coverage 0.68 < 0.70;oob 0.40 > 0.10;jump_p95 50.26 > 10.00;ball_valid 0.00 < 0.10
+tracking kbo_hl_xGuMseB8 (kbo), 24 active
+npb_04 baseball thin rows=110 passed=False coverage 0.15 < 0.70;oob 0.95 > 0.10;jump_p95 99.19 > 10.00;ball_valid 0.00 < 0.10
+tracking kbo_h7IUxRgXbL8 (kbo), 24 active
+mlb_A5AkcaXA2fk mlb thin rows=0 passed=None 
+tracking soccer_6dIn3fUfI6U (soccer), 24 active
+npb_10 baseball thin rows=7 passed=False coverage 0.00 < 0.70;oob 1.00 > 0.10;jump_p95 34.96 > 10.00;ball_valid 0.00 < 0.10
+football_r3nqqnCyZw8 already tracked, dropping stage copy
+tracking kbo_Y4HqKr58TZk (kbo), 24 active
+football_owXX5PI64gU football thin rows=0 passed=None 
+tracking soccer_8_DRy2i5-hs (soccer), 24 active
+soccer_lv2CukQcR5s soccer tracked rows=40624 passed=False coverage 0.12 < 0.85;jump_p95 20.38 > 8.00;ball_valid 0.00 < 0.20
+tracking kbo_cyRosVcG7zI (kbo), 24 active
+football_xnHO7JWdRcQ football tracked rows=9877 passed=False oob 0.72 > 0.05;jump_p95 6162.65 > 8.00
+tracking npb_01 (baseball), 24 active
+mlb_gDv5xF2AA2E mlb thin rows=496 passed=False oob 0.45 > 0.10;jump_p95 77.90 > 10.00;ball_valid 0.00 < 0.10
+tracking npb_02 (baseball), 24 active
+kbo_h7IUxRgXbL8 kbo thin rows=0 passed=None 
+tracking npb_04 (baseball), 24 active
+kbo_hl_xGuMseB8 kbo thin rows=0 passed=None 
+tracking npb_09 (baseball), 24 active
+mlb_nLoG6gvC-Nk mlb thin rows=393 passed=False oob 0.78 > 0.10;jump_p95 117.04 > 10.00;ball_valid 0.00 < 0.10
+tracking npb_10 (baseball), 24 active
+kbo_Y4HqKr58TZk kbo thin rows=7 passed=False coverage 0.17 < 0.70;oob 1.00 > 0.10;jump_p95 24.15 > 10.00;ball_valid 0.00 < 0.10
+tracking football_owXX5PI64gU (football), 24 active
+football_lsYEcWf4Zbg football thin rows=0 passed=None 
+tracking football_fh9CTJ0-PpQ (football), 24 active
+kbo_cyRosVcG7zI kbo thin rows=34 passed=False coverage 0.42 < 0.70;oob 0.82 > 0.10;jump_p95 140.11 > 10.00;ball_valid 0.00 < 0.10
+football_xnHO7JWdRcQ already tracked, dropping stage copy
+tracking mlb_A5AkcaXA2fk (mlb), 24 active
+npb_01 baseball thin rows=36 passed=False coverage 0.44 < 0.70;oob 0.64 > 0.10;jump_p95 100.12 > 10.00;ball_valid 0.00 < 0.10
+tracking mlb_gDv5xF2AA2E (mlb), 24 active
+npb_02 baseball thin rows=184 passed=False coverage 0.16 < 0.70;oob 0.68 > 0.10;jump_p95 92.36 > 10.00;ball_valid 0.00 < 0.10
+tracking soccer_Cn26lFZ0_jI (soccer), 24 active
+npb_09 baseball thin rows=96 passed=False coverage 0.68 < 0.70;oob 0.40 > 0.10;jump_p95 50.26 > 10.00;ball_valid 0.00 < 0.10
+tracking soccer_HxBqMbI5kqQ (soccer), 24 active
+npb_10 baseball thin rows=7 passed=False coverage 0.00 < 0.70;oob 1.00 > 0.10;jump_p95 34.96 > 10.00;ball_valid 0.00 < 0.10
+soccer_y0-6FHIaiZA already tracked, dropping stage copy
+tracking tennis_09 (tennis), 24 active
+npb_04 baseball thin rows=110 passed=False coverage 0.15 < 0.70;oob 0.95 > 0.10;jump_p95 99.19 > 10.00;ball_valid 0.00 < 0.10
+tracking tennis_10 (tennis), 24 active
+tennis_10 tennis thin rows=0 passed=None 
+tracking wnba_06 (wnba), 24 active
+kbo_10 baseball thin rows=150 passed=False coverage 0.61 < 0.70;oob 0.65 > 0.10;jump_p95 65.05 > 10.00;ball_valid 0.00 < 0.10
+mlb_A5AkcaXA2fk mlb thin rows=0 passed=None 
+tracking football_lsYEcWf4Zbg (football), 23 active
+tracking kbo_10 (baseball), 24 active
+mlb_gDv5xF2AA2E mlb thin rows=496 passed=False oob 0.45 > 0.10;jump_p95 77.90 > 10.00;ball_valid 0.00 < 0.10
+tracking kbo_hl_xGuMseB8 (kbo), 24 active
+tracking kbo_10 (baseball), 1 active
+tracking football_J9WamaxtwdQ (football), 2 active
+tracking football_fh9CTJ0-PpQ (football), 3 active
+tracking football_lsYEcWf4Zbg (football), 4 active
+tracking football_owXX5PI64gU (football), 5 active
+tracking kbo_Y4HqKr58TZk (kbo), 6 active
+tracking kbo_h7IUxRgXbL8 (kbo), 7 active
+tracking kbo_hl_xGuMseB8 (kbo), 8 active
+tracking ncaa_basketball_IB-_u4gW3ds (ncaa_basketball), 9 active
+tracking ncaa_basketball_WFl3V7ZY4ss (ncaa_basketball), 10 active
+tracking ncaa_basketball_sRtHQbywiTE (ncaa_basketball), 11 active
+tracking ncaa_basketball_tiUvyvWOCxo (ncaa_basketball), 12 active
+tracking ncaa_basketball_zqBCKovJCQU (ncaa_basketball), 13 active
+tracking soccer_6dIn3fUfI6U (soccer), 14 active
+tracking soccer_8_DRy2i5-hs (soccer), 15 active
+tracking soccer_Cn26lFZ0_jI (soccer), 16 active
+tracking soccer_HxBqMbI5kqQ (soccer), 17 active
+tracking tennis_06 (tennis), 18 active
+tracking tennis_07 (tennis), 19 active
+tracking tennis_08 (tennis), 20 active
+tracking tennis_09 (tennis), 21 active
+tracking wnba_01 (wnba), 22 active
+tracking wnba_02 (wnba), 23 active
+tracking wnba_04 (wnba), 24 active
+kbo_Y4HqKr58TZk kbo thin rows=7 passed=False coverage 0.17 < 0.70;oob 1.00 > 0.10;jump_p95 24.15 > 10.00;ball_valid 0.00 < 0.10
+kbo_h7IUxRgXbL8 kbo thin rows=0 passed=None 
+kbo_hl_xGuMseB8 kbo thin rows=0 passed=None 
+tracking wnba_05 (wnba), 22 active
+tracking wnba_06 (wnba), 23 active
+tracking kbo_10 (baseball), 1 active
+tracking football_J9WamaxtwdQ (football), 2 active
+tracking football_fh9CTJ0-PpQ (football), 3 active
+tracking football_lsYEcWf4Zbg (football), 4 active
+tracking football_owXX5PI64gU (football), 5 active
+tracking ncaa_basketball_IB-_u4gW3ds (ncaa_basketball), 6 active
+tracking ncaa_basketball_WFl3V7ZY4ss (ncaa_basketball), 7 active
+tracking ncaa_basketball_sRtHQbywiTE (ncaa_basketball), 8 active
+tracking ncaa_basketball_tiUvyvWOCxo (ncaa_basketball), 9 active
+tracking ncaa_basketball_zqBCKovJCQU (ncaa_basketball), 10 active
+tracking soccer_6dIn3fUfI6U (soccer), 11 active
+tracking soccer_8_DRy2i5-hs (soccer), 12 active
+tracking soccer_Cn26lFZ0_jI (soccer), 13 active
+tracking soccer_HxBqMbI5kqQ (soccer), 14 active
+tracking tennis_06 (tennis), 15 active
+tracking tennis_07 (tennis), 16 active
+tracking tennis_08 (tennis), 17 active
+tracking tennis_09 (tennis), 18 active
+tracking wnba_01 (wnba), 19 active
+tracking wnba_02 (wnba), 20 active
+tracking wnba_04 (wnba), 21 active
+tracking wnba_05 (wnba), 22 active
+tracking wnba_06 (wnba), 23 active
+wnba_04 wnba thin rows=0 passed=None 
+tracking mlb_2026-08-30_0f36e8cc (baseball), 23 active
+tracking npb_01 (baseball), 24 active
+npb_01 baseball thin rows=36 passed=False coverage 0.44 < 0.70;oob 0.64 > 0.10;jump_p95 100.12 > 10.00;ball_valid 0.00 < 0.10
+tracking mlb_2026-08-30_7e8080e5 (baseball), 24 active
+football_lsYEcWf4Zbg football thin rows=0 passed=None 
+tracking npb_02 (baseball), 24 active
+football_owXX5PI64gU football thin rows=0 passed=None 
+tracking npb_04 (baseball), 24 active
+kbo_10 baseball thin rows=150 passed=False coverage 0.61 < 0.70;oob 0.65 > 0.10;jump_p95 65.05 > 10.00;ball_valid 0.00 < 0.10
+tracking npb_09 (baseball), 24 active
+npb_02 baseball thin rows=184 passed=False coverage 0.16 < 0.70;oob 0.68 > 0.10;jump_p95 92.36 > 10.00;ball_valid 0.00 < 0.10
+tracking mlb_A5AkcaXA2fk (mlb), 24 active
+football_J9WamaxtwdQ exceeded 2700s -- killing to free the slot
+football_J9WamaxtwdQ football timeout rows=0 passed=None 
+football_fh9CTJ0-PpQ exceeded 2700s -- killing to free the slot
+football_fh9CTJ0-PpQ football timeout rows=0 passed=None 
+ncaa_basketball_IB-_u4gW3ds exceeded 2700s -- killing to free the slot
+ncaa_basketball_IB-_u4gW3ds ncaa_basketball timeout rows=0 passed=None 
+ncaa_basketball_WFl3V7ZY4ss exceeded 2700s -- killing to free the slot
+ncaa_basketball_WFl3V7ZY4ss ncaa_basketball timeout rows=0 passed=None 
+ncaa_basketball_sRtHQbywiTE exceeded 2700s -- killing to free the slot
+ncaa_basketball_sRtHQbywiTE ncaa_basketball timeout rows=0 passed=None 
+ncaa_basketball_tiUvyvWOCxo exceeded 2700s -- killing to free the slot
+ncaa_basketball_tiUvyvWOCxo ncaa_basketball timeout rows=0 passed=None 
+ncaa_basketball_zqBCKovJCQU exceeded 2700s -- killing to free the slot
+ncaa_basketball_zqBCKovJCQU ncaa_basketball timeout rows=0 passed=None 
+soccer_6dIn3fUfI6U exceeded 2700s -- killing to free the slot
+soccer_6dIn3fUfI6U soccer timeout rows=3 passed=False coverage 0.00 < 0.85;ball_valid 0.00 < 0.20
+soccer_8_DRy2i5-hs exceeded 2700s -- killing to free the slot
+soccer_8_DRy2i5-hs soccer timeout rows=0 passed=None 
+soccer_Cn26lFZ0_jI exceeded 2700s -- killing to free the slot
+soccer_Cn26lFZ0_jI soccer timeout rows=0 passed=None 
+soccer_HxBqMbI5kqQ exceeded 2700s -- killing to free the slot
+soccer_HxBqMbI5kqQ soccer timeout rows=256 passed=False coverage 0.00 < 0.85;jump_p95 78.29 > 8.00;ball_valid 0.00 < 0.20
+tennis_06 exceeded 2700s -- killing to free the slot
+tennis_06 tennis timeout rows=0 passed=None 
+tennis_07 exceeded 2700s -- killing to free the slot
+tennis_07 tennis timeout rows=0 passed=None 
+tennis_08 exceeded 2700s -- killing to free the slot
+tennis_08 tennis timeout rows=0 passed=None 
+tennis_09 exceeded 2700s -- killing to free the slot
+tennis_09 tennis timeout rows=0 passed=None 
+wnba_01 exceeded 2700s -- killing to free the slot
+wnba_01 wnba timeout rows=0 passed=None 
+wnba_02 exceeded 2700s -- killing to free the slot
+wnba_02 wnba timeout rows=0 passed=None 
+wnba_05 exceeded 2700s -- killing to free the slot
+wnba_05 wnba timeout rows=0 passed=None 
+wnba_06 exceeded 2700s -- killing to free the slot
+wnba_06 wnba timeout rows=0 passed=None 
+tracking mlb_nLoG6gvC-Nk (mlb), 6 active
+tracking wnba_04 (wnba), 7 active
+npb_09 baseball thin rows=96 passed=False coverage 0.68 < 0.70;oob 0.40 > 0.10;jump_p95 50.26 > 10.00;ball_valid 0.00 < 0.10
+npb_04 baseball thin rows=110 passed=False coverage 0.15 < 0.70;oob 0.95 > 0.10;jump_p95 99.19 > 10.00;ball_valid 0.00 < 0.10
+mlb_A5AkcaXA2fk mlb thin rows=0 passed=None 
+mlb_nLoG6gvC-Nk mlb thin rows=393 passed=False oob 0.78 > 0.10;jump_p95 117.04 > 10.00;ball_valid 0.00 < 0.10
+mlb_2026-08-30_0f36e8cc baseball tracked rows=4043 passed=False oob 0.65 > 0.10;jump_p95 91.64 > 10.00;ball_valid 0.00 < 0.10
+mlb_2026-08-30_7e8080e5 baseball tracked rows=3125 passed=False coverage 0.65 < 0.70;oob 0.67 > 0.10;jump_p95 98.56 > 10.00;ball_valid 0.00 < 0.10
+tracking football_lsYEcWf4Zbg (football), 2 active
+tracking wnba_01 (wnba), 3 active
+tracking soccer_HxBqMbI5kqQ (soccer), 4 active
+tracking tennis_06 (tennis), 5 active
+tracking football_owXX5PI64gU (football), 6 active
+tracking mlb_A5AkcaXA2fk (mlb), 7 active
+tracking soccer_6dIn3fUfI6U (soccer), 8 active
+tracking wnba_02 (wnba), 9 active
+wnba_04 wnba thin rows=0 passed=None 
+football_lsYEcWf4Zbg football thin rows=0 passed=None 
+mlb_A5AkcaXA2fk mlb thin rows=0 passed=None 
+tracking ncaa_basketball_IB-_u4gW3ds (ncaa_basketball), 7 active
+tracking tennis_07 (tennis), 8 active
+tracking kbo_10 (baseball), 9 active
+tracking wnba_04 (wnba), 10 active
+tracking football_J9WamaxtwdQ (football), 11 active
+tracking mlb_nLoG6gvC-Nk (mlb), 12 active
+tracking ncaa_basketball_tiUvyvWOCxo (ncaa_basketball), 13 active
+tracking soccer_8_DRy2i5-hs (soccer), 14 active
+tracking tennis_08 (tennis), 15 active
+tracking kbo_hl_xGuMseB8 (kbo), 16 active
+kbo_hl_xGuMseB8 kbo thin rows=0 passed=None 
+tracking football_fh9CTJ0-PpQ (football), 16 active
+tracking tennis_09 (tennis), 17 active
+tracking wnba_05 (wnba), 18 active
+tracking ncaa_basketball_sRtHQbywiTE (ncaa_basketball), 19 active
+tracking kbo_h7IUxRgXbL8 (kbo), 20 active
+tracking soccer_Cn26lFZ0_jI (soccer), 21 active
+tracking kbo_Y4HqKr58TZk (kbo), 22 active
+tracking football_lsYEcWf4Zbg (football), 23 active
+tracking ncaa_basketball_zqBCKovJCQU (ncaa_basketball), 24 active
+mlb_nLoG6gvC-Nk mlb thin rows=393 passed=False oob 0.78 > 0.10;jump_p95 117.04 > 10.00;ball_valid 0.00 < 0.10
+tracking npb_01 (baseball), 24 active
+kbo_h7IUxRgXbL8 kbo thin rows=0 passed=None 
+tracking npb_02 (baseball), 24 active
+kbo_Y4HqKr58TZk kbo thin rows=0 passed=None 
+tracking npb_04 (baseball), 24 active
+npb_01 baseball thin rows=0 passed=None 
+tracking npb_09 (baseball), 24 active
+football_owXX5PI64gU football thin rows=0 passed=None 
+tracking mlb_FGtFanovws4 (mlb), 24 active
+npb_02 baseball thin rows=0 passed=None 
+tracking mlb_gDv5xF2AA2E (mlb), 24 active
+mlb_FGtFanovws4 mlb thin rows=0 passed=None 
+npb_04 baseball thin rows=0 passed=None 
+npb_09 baseball thin rows=0 passed=None 
+tracking mlb_A5AkcaXA2fk (mlb), 22 active
+tracking football_owXX5PI64gU (football), 23 active
+tracking kbo_hl_xGuMseB8 (kbo), 24 active
+mlb_gDv5xF2AA2E mlb thin rows=0 passed=None 
+tracking kbo_Y4HqKr58TZk (kbo), 24 active
+soccer_HxBqMbI5kqQ soccer thin rows=256 passed=False coverage 0.00 < 0.85;jump_p95 78.29 > 8.00;ball_valid 0.00 < 0.20
+tracking kbo_h7IUxRgXbL8 (kbo), 24 active
+football_lsYEcWf4Zbg football thin rows=0 passed=None 
+tracking mlb_FGtFanovws4 (mlb), 24 active
+mlb_A5AkcaXA2fk mlb thin rows=0 passed=None 
+tracking mlb_nLoG6gvC-Nk (mlb), 24 active
+wnba_01 exceeded 2700s -- killing to free the slot
+wnba_01 wnba timeout rows=0 passed=None 
+kbo_hl_xGuMseB8 kbo thin rows=0 passed=None 
+tennis_06 exceeded 2700s -- killing to free the slot
+tennis_06 tennis timeout rows=0 passed=None 
+soccer_6dIn3fUfI6U exceeded 2700s -- killing to free the slot
+soccer_6dIn3fUfI6U soccer timeout rows=3 passed=False coverage 0.00 < 0.85;ball_valid 0.00 < 0.20
+wnba_02 exceeded 2700s -- killing to free the slot
+wnba_02 wnba timeout rows=0 passed=None 
+tracking football_lsYEcWf4Zbg (football), 20 active
+tracking wnba_01 (wnba), 21 active
+ncaa_basketball_IB-_u4gW3ds exceeded 2700s -- killing to free the slot
+ncaa_basketball_IB-_u4gW3ds ncaa_basketball timeout rows=0 passed=None 
+tennis_07 exceeded 2700s -- killing to free the slot
+tennis_07 tennis timeout rows=0 passed=None 
+tracking ncaa_basketball_IB-_u4gW3ds (ncaa_basketball), 20 active
+tracking soccer_HxBqMbI5kqQ (soccer), 21 active
+kbo_10 exceeded 2700s -- killing to free the slot
+kbo_10 baseball timeout rows=150 passed=False coverage 0.61 < 0.70;oob 0.65 > 0.10;jump_p95 65.05 > 10.00;ball_valid 0.00 < 0.10
+wnba_04 exceeded 2700s -- killing to free the slot
+wnba_04 wnba timeout rows=0 passed=None 
+tracking npb_01 (baseball), 20 active
+tracking mlb_A5AkcaXA2fk (mlb), 21 active
+football_J9WamaxtwdQ exceeded 2700s -- killing to free the slot
+football_J9WamaxtwdQ football timeout rows=0 passed=None 
+tracking tennis_06 (tennis), 21 active
+ncaa_basketball_tiUvyvWOCxo exceeded 2700s -- killing to free the slot
+ncaa_basketball_tiUvyvWOCxo ncaa_basketball timeout rows=0 passed=None 
+soccer_8_DRy2i5-hs exceeded 2700s -- killing to free the slot
+soccer_8_DRy2i5-hs soccer timeout rows=0 passed=None 
+kbo_Y4HqKr58TZk kbo thin rows=0 passed=None 
+tennis_08 exceeded 2700s -- killing to free the slot
+tennis_08 tennis timeout rows=0 passed=None 
+tracking wnba_02 (wnba), 18 active
+kbo_h7IUxRgXbL8 kbo thin rows=0 passed=None 
+mlb_FGtFanovws4 mlb thin rows=0 passed=None 
+tracking ncaa_basketball_tiUvyvWOCxo (ncaa_basketball), 17 active
+tracking soccer_6dIn3fUfI6U (soccer), 18 active
+tracking tennis_07 (tennis), 19 active
+football_fh9CTJ0-PpQ exceeded 2700s -- killing to free the slot
+football_fh9CTJ0-PpQ football timeout rows=0 passed=None 
+tracking football_J9WamaxtwdQ (football), 19 active
+tennis_09 exceeded 2700s -- killing to free the slot
+tennis_09 tennis timeout rows=0 passed=None 
+tracking npb_02 (baseball), 19 active
+wnba_05 exceeded 2700s -- killing to free the slot
+wnba_05 wnba timeout rows=0 passed=None 
+ncaa_basketball_sRtHQbywiTE exceeded 2700s -- killing to free the slot
+ncaa_basketball_sRtHQbywiTE ncaa_basketball timeout rows=0 passed=None 
+tracking tennis_08 (tennis), 18 active
+soccer_Cn26lFZ0_jI exceeded 2700s -- killing to free the slot
+soccer_Cn26lFZ0_jI soccer timeout rows=0 passed=None 
+tracking wnba_04 (wnba), 18 active
+mlb_nLoG6gvC-Nk mlb thin rows=0 passed=None 
+mlb_A5AkcaXA2fk mlb thin rows=0 passed=None 
+tracking ncaa_basketball_sRtHQbywiTE (ncaa_basketball), 17 active
+npb_01 baseball thin rows=0 passed=None 
+npb_02 baseball thin rows=0 passed=None 
+tracking soccer_8_DRy2i5-hs (soccer), 16 active
+tracking npb_04 (baseball), 17 active
+tracking football_fh9CTJ0-PpQ (football), 18 active
+tracking mlb_gDv5xF2AA2E (mlb), 19 active
+tracking tennis_09 (tennis), 20 active
+ncaa_basketball_zqBCKovJCQU exceeded 2700s -- killing to free the slot
+ncaa_basketball_zqBCKovJCQU ncaa_basketball timeout rows=0 passed=None 
+tracking ncaa_basketball_zqBCKovJCQU (ncaa_basketball), 20 active
+tracking wnba_05 (wnba), 21 active
+tracking mlb_FGtFanovws4 (mlb), 22 active
+tracking npb_09 (baseball), 23 active
+tracking soccer_Cn26lFZ0_jI (soccer), 24 active
+mlb_FGtFanovws4 mlb thin rows=0 passed=None 
+npb_09 baseball thin rows=0 passed=None 
+tracking mlb_A5AkcaXA2fk (mlb), 23 active
+mlb_gDv5xF2AA2E mlb thin rows=0 passed=None 
+tracking npb_04 (baseball), 1 active
+tracking football_J9WamaxtwdQ (football), 2 active
+tracking football_fh9CTJ0-PpQ (football), 3 active
+tracking football_lsYEcWf4Zbg (football), 4 active
+tracking football_owXX5PI64gU (football), 5 active
+tracking mlb_A5AkcaXA2fk (mlb), 6 active
+tracking mlb_nLoG6gvC-Nk (mlb), 7 active
+tracking ncaa_basketball_IB-_u4gW3ds (ncaa_basketball), 8 active
+tracking ncaa_basketball_sRtHQbywiTE (ncaa_basketball), 9 active
+tracking ncaa_basketball_tiUvyvWOCxo (ncaa_basketball), 10 active
+mlb_A5AkcaXA2fk mlb thin rows=0 passed=None 
+mlb_nLoG6gvC-Nk mlb thin rows=0 passed=None 
+tracking ncaa_basketball_zqBCKovJCQU (ncaa_basketball), 9 active
+tracking soccer_6dIn3fUfI6U (soccer), 10 active
+npb_04 baseball thin rows=0 passed=None 
+tracking kbo_10 (baseball), 10 active
+football_lsYEcWf4Zbg football thin rows=0 passed=None 
+tracking kbo_Y4HqKr58TZk (kbo), 10 active
+football_owXX5PI64gU football thin rows=0 passed=None 
+tracking kbo_h7IUxRgXbL8 (kbo), 10 active
+kbo_10 baseball thin rows=0 passed=None 
+tracking kbo_hl_xGuMseB8 (kbo), 10 active
+soccer_6dIn3fUfI6U soccer tracked rows=96168 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+tracking mlb_FGtFanovws4 (mlb), 10 active
+football_fh9CTJ0-PpQ football thin rows=0 passed=None 
+tracking npb_01 (baseball), 10 active
+football_J9WamaxtwdQ football thin rows=0 passed=None 
+tracking npb_02 (baseball), 10 active
+kbo_Y4HqKr58TZk kbo tracked rows=18736 passed=False empty
+tracking npb_04 (baseball), 10 active
+kbo_h7IUxRgXbL8 kbo tracked rows=16502 passed=False empty
+tracking npb_09 (baseball), 10 active
+tracking npb_01 (baseball), 1 active
+tracking npb_02 (baseball), 2 active
+tracking npb_04 (baseball), 3 active
+tracking npb_09 (baseball), 4 active
+tracking football_fh9CTJ0-PpQ (football), 5 active
+tracking football_lsYEcWf4Zbg (football), 6 active
+tracking football_owXX5PI64gU (football), 7 active
+tracking kbo_hl_xGuMseB8 (kbo), 8 active
+tracking mlb_A5AkcaXA2fk (mlb), 9 active
+tracking mlb_FGtFanovws4 (mlb), 10 active
+football_lsYEcWf4Zbg football tracked rows=16305 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+tracking mlb_gDv5xF2AA2E (mlb), 10 active
+kbo_hl_xGuMseB8 kbo tracked rows=9950 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+mlb_FGtFanovws4 mlb thin rows=0 passed=None 
+tracking mlb_nLoG6gvC-Nk (mlb), 9 active
+tracking ncaa_basketball_IB-_u4gW3ds (ncaa_basketball), 10 active
+npb_01 baseball tracked rows=36684 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+npb_02 baseball tracked rows=43025 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+npb_04 baseball tracked rows=32744 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+npb_09 baseball tracked rows=41348 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+football_fh9CTJ0-PpQ football tracked rows=58652 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+football_owXX5PI64gU football tracked rows=9635 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+mlb_A5AkcaXA2fk mlb tracked rows=15889 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking ncaa_basketball_sRtHQbywiTE (ncaa_basketball), 4 active
+tracking ncaa_basketball_tiUvyvWOCxo (ncaa_basketball), 5 active
+tracking ncaa_basketball_zqBCKovJCQU (ncaa_basketball), 6 active
+tracking soccer_8_DRy2i5-hs (soccer), 7 active
+tracking soccer_Cn26lFZ0_jI (soccer), 8 active
+tracking soccer_HxBqMbI5kqQ (soccer), 9 active
+tracking soccer_JIQnnYy7qYk (soccer), 10 active
+soccer_Cn26lFZ0_jI soccer tracked rows=64359 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+tracking kbo_10 (baseball), 10 active
+mlb_nLoG6gvC-Nk mlb tracked rows=23345 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking football_6oUm30M1HZ8 (football), 10 active
+mlb_gDv5xF2AA2E mlb tracked rows=49475 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking football_J9WamaxtwdQ (football), 10 active
+soccer_JIQnnYy7qYk soccer tracked rows=88867 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+tracking football_P_TdW-vpywo (football), 10 active
+soccer_8_DRy2i5-hs soccer tracked rows=75954 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+tracking football_tKc73Meexzo (football), 10 active
+soccer_HxBqMbI5kqQ soccer tracked rows=91744 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+tracking npb_10 (baseball), 10 active
+football_P_TdW-vpywo football tracked rows=12578 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+tracking kbo_QrO9d2csjsg (kbo), 10 active
+football_J9WamaxtwdQ football tracked rows=89052 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+tracking kbo_cyRosVcG7zI (kbo), 10 active
+football_6oUm30M1HZ8 football tracked rows=23081 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+tracking mlb_6SEjheAAtcs (mlb), 10 active
+football_tKc73Meexzo football tracked rows=68965 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+tracking mlb_FGtFanovws4 (mlb), 10 active
+npb_10 baseball tracked rows=43625 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking mlb_Z5u9T4b1qxk (mlb), 10 active
+ncaa_basketball_IB-_u4gW3ds exceeded 3600s -- killing to free the slot
+ncaa_basketball_IB-_u4gW3ds ncaa_basketball timeout rows=0 passed=None 
+tracking mlb_dSX2ujmGBgg (mlb), 10 active
+ncaa_basketball_sRtHQbywiTE exceeded 3600s -- killing to free the slot
+ncaa_basketball_sRtHQbywiTE ncaa_basketball timeout rows=0 passed=None 
+ncaa_basketball_tiUvyvWOCxo exceeded 3600s -- killing to free the slot
+ncaa_basketball_tiUvyvWOCxo ncaa_basketball timeout rows=0 passed=None 
+ncaa_basketball_zqBCKovJCQU exceeded 3600s -- killing to free the slot
+ncaa_basketball_zqBCKovJCQU ncaa_basketball timeout rows=0 passed=None 
+tracking npb_Arpw32zVTuc (npb), 8 active
+tracking npb_RIwbEjh-zTs (npb), 9 active
+tracking npb_aEpT4HU_ilg (npb), 10 active
+kbo_QrO9d2csjsg kbo tracked rows=11400 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking football_TqKwnvxbKDw (football), 10 active
+kbo_cyRosVcG7zI kbo tracked rows=21208 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking soccer_GF-WteOINCc (soccer), 10 active
+mlb_6SEjheAAtcs mlb tracked rows=28798 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+mlb_FGtFanovws4 mlb thin rows=0 passed=None 
+tracking football_qzjIo3_M_3U (football), 9 active
+tracking ncaa_basketball_IB-_u4gW3ds (ncaa_basketball), 10 active
+mlb_Z5u9T4b1qxk mlb tracked rows=31016 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking football_aL_ZQEaQ_LY (football), 10 active
+mlb_dSX2ujmGBgg mlb tracked rows=18128 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking football__Bsqeb795J0 (football), 10 active
+npb_Arpw32zVTuc npb tracked rows=30965 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+npb_RIwbEjh-zTs npb tracked rows=36367 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+npb_aEpT4HU_ilg npb tracked rows=34836 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking ncaa_basketball_tiUvyvWOCxo (ncaa_basketball), 8 active
+soccer_HxBqMbI5kqQ already tracked, dropping stage copy
+tracking soccer_QIpZ1pad73w (soccer), 9 active
+tracking soccer_ci4vyd6PsNg (soccer), 10 active
+kbo_10 baseball tracked rows=82967 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking tennis_06 (tennis), 10 active
+football_TqKwnvxbKDw football tracked rows=67082 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+soccer_GF-WteOINCc soccer tracked rows=80980 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+kbo_10 already tracked, dropping stage copy
+mlb_6SEjheAAtcs already tracked, dropping stage copy
+mlb_Z5u9T4b1qxk already tracked, dropping stage copy
+tracking ncaa_basketball_sRtHQbywiTE (ncaa_basketball), 9 active
+tracking tennis_07 (tennis), 10 active
+ncaa_basketball_IB-_u4gW3ds ncaa_basketball thin rows=0 passed=None 
+tennis_06 tennis thin rows=14 passed=False coverage 0.00 < 0.90;oob 1.00 > 0.08
+tracking ncaa_basketball_zqBCKovJCQU (ncaa_basketball), 9 active
+tracking npb_YI146E0gNnA (npb), 10 active
+football_qzjIo3_M_3U football tracked rows=9591 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+tracking tennis_08 (tennis), 10 active
+football_aL_ZQEaQ_LY football tracked rows=9575 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+tracking mlb_5WpMyA0Xj6Y (mlb), 10 active
+tennis_07 tennis tracked rows=1356 passed=False oob 0.23 > 0.08;jump_p95 31.31 > 8.00
+tracking kbo_eeH8RMtS24U (kbo), 10 active
+football__Bsqeb795J0 football tracked rows=59321 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+tracking kbo_UuivYJVZYtY (kbo), 10 active
+soccer_QIpZ1pad73w soccer tracked rows=110774 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+tracking football_kXfNJsCLLIA (football), 10 active
+soccer_ci4vyd6PsNg soccer tracked rows=102639 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+tracking kbo_fy6pf01O2gE (kbo), 10 active
+ncaa_basketball_tiUvyvWOCxo ncaa_basketball thin rows=0 passed=None 
+tracking football_bj9lY3FEDw0 (football), 10 active
+tennis_08 tennis tracked rows=4595 passed=False oob 0.09 > 0.08;jump_p95 36.53 > 8.00
+tracking kbo_OJfFKo9Dq2A (kbo), 10 active
+npb_YI146E0gNnA npb tracked rows=42827 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking mlb_FGtFanovws4 (mlb), 10 active
+ncaa_basketball_sRtHQbywiTE ncaa_basketball thin rows=0 passed=None 
+tracking mlb_MUbgCYez-LY (mlb), 10 active
+ncaa_basketball_zqBCKovJCQU ncaa_basketball thin rows=0 passed=None 
+mlb_5WpMyA0Xj6Y mlb tracked rows=33247 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+kbo_eeH8RMtS24U kbo tracked rows=13907 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking mlb_VxQlqZhLJso (mlb), 8 active
+tracking ncaa_basketball_IB-_u4gW3ds (ncaa_basketball), 9 active
+tracking npb_2iFIuWxu6HI (npb), 10 active
+kbo_UuivYJVZYtY kbo tracked rows=14323 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking soccer_7fOG8j_ncWY (soccer), 10 active
+football_kXfNJsCLLIA football tracked rows=96562 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+kbo_fy6pf01O2gE kbo tracked rows=19500 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking soccer_Pbyn08kfhXY (soccer), 9 active
+tracking tennis_06 (tennis), 10 active
+football_bj9lY3FEDw0 football tracked rows=43005 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+football_kXfNJsCLLIA already tracked, dropping stage copy
+tennis_07 already tracked, dropping stage copy
+tracking tennis_09 (tennis), 10 active
+mlb_FGtFanovws4 mlb thin rows=0 passed=None 
+tennis_06 tennis thin rows=14 passed=False coverage 0.00 < 0.90;oob 1.00 > 0.08
+tracking wnba_01 (wnba), 9 active
+tracking wnba_02 (wnba), 10 active
+kbo_OJfFKo9Dq2A kbo tracked rows=44485 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking tennis_06 (tennis), 10 active
+mlb_MUbgCYez-LY mlb tracked rows=49586 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+football_bj9lY3FEDw0 already tracked, dropping stage copy
+mlb_5WpMyA0Xj6Y already tracked, dropping stage copy
+tracking ncaa_basketball_sRtHQbywiTE (ncaa_basketball), 10 active
+soccer_7fOG8j_ncWY soccer tracked rows=68211 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+tracking ncaa_basketball_tiUvyvWOCxo (ncaa_basketball), 10 active
+npb_2iFIuWxu6HI npb tracked rows=41591 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking football_B-aAcjvtu9I (football), 10 active
+mlb_VxQlqZhLJso mlb tracked rows=41756 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+ncaa_basketball_IB-_u4gW3ds ncaa_basketball thin rows=0 passed=None 
+tennis_06 tennis thin rows=14 passed=False coverage 0.00 < 0.90;oob 1.00 > 0.08
+tracking ncaa_basketball_zqBCKovJCQU (ncaa_basketball), 8 active
+tracking npb_dTLgOoX4nhc (npb), 9 active
+tracking npb_wZgoTPoZXKM (npb), 10 active
+soccer_Pbyn08kfhXY soccer tracked rows=81222 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+tracking football_ZHJWGNGE0Cg (football), 10 active
+tennis_09 tennis tracked rows=4303 passed=False coverage 0.64 < 0.90;oob 0.59 > 0.08;jump_p95 1583.88 > 8.00
+tracking football_jK1AuQzymVE (football), 10 active
+reaped 10 orphaned tracking jobs from a previous daemon
+tracking football_B-aAcjvtu9I (football), 1 active
+tracking football_ZHJWGNGE0Cg (football), 2 active
+tracking football_jK1AuQzymVE (football), 3 active
+tracking football_tEpTKZKk7ks (football), 4 active
+tracking kbo_1IwwT5ysVSY (kbo), 5 active
+tracking kbo_64cdlFkEuCc (kbo), 6 active
+tracking kbo_FA3W5xMyYRY (kbo), 7 active
+tracking kbo_vPUqzscNQIk (kbo), 8 active
+tracking mlb_FGtFanovws4 (mlb), 9 active
+tracking mlb_Fu9kVrQRg0M (mlb), 10 active
+mlb_FGtFanovws4 mlb thin rows=0 passed=None 
+mlb_MUbgCYez-LY already tracked, dropping stage copy
+tracking mlb_cC3rQWxcOqk (mlb), 10 active
+football_B-aAcjvtu9I football tracked rows=66722 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+football_ZHJWGNGE0Cg football tracked rows=31467 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+football_jK1AuQzymVE football tracked rows=81441 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+football_tEpTKZKk7ks football tracked rows=61273 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+kbo_1IwwT5ysVSY kbo tracked rows=30119 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+kbo_64cdlFkEuCc kbo tracked rows=33942 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+kbo_FA3W5xMyYRY kbo tracked rows=41028 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+kbo_vPUqzscNQIk kbo tracked rows=28965 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking mlb_yihNr8zCgkA (mlb), 3 active
+tracking ncaa_basketball_IB-_u4gW3ds (ncaa_basketball), 4 active
+tracking ncaa_basketball_sRtHQbywiTE (ncaa_basketball), 5 active
+tracking ncaa_basketball_tiUvyvWOCxo (ncaa_basketball), 6 active
+tracking ncaa_basketball_zqBCKovJCQU (ncaa_basketball), 7 active
+tracking npb_XGhDpaeFSKc (npb), 8 active
+tracking npb_dTLgOoX4nhc (npb), 9 active
+tracking npb_wZgoTPoZXKM (npb), 10 active
+mlb_Fu9kVrQRg0M mlb tracked rows=36656 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking soccer_A9ad17VZvs8 (soccer), 10 active
+soccer_A9ad17VZvs8 soccer tracked rows=6126 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+tracking mlb_FGtFanovws4 (mlb), 10 active
+mlb_cC3rQWxcOqk mlb tracked rows=27022 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking soccer_DdnvC6-PGYY (soccer), 10 active
+mlb_yihNr8zCgkA mlb tracked rows=15623 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking soccer_EKhrdU9bVZA (soccer), 10 active
+npb_XGhDpaeFSKc npb tracked rows=33729 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking soccer_cKXZysISV4w (soccer), 10 active
+npb_wZgoTPoZXKM npb tracked rows=36632 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking tennis_06 (tennis), 10 active
+npb_dTLgOoX4nhc npb tracked rows=34698 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking tennis_10 (tennis), 10 active
+tennis_10 tennis thin rows=0 passed=None 
+tracking tennis_nyYk2nPZAwY (tennis), 10 active
+mlb_FGtFanovws4 mlb thin rows=0 passed=None 
+tracking football_5x9vPq9HsTI (football), 10 active
+reaped 10 orphaned tracking jobs from a previous daemon
+tracking football_20pezoC5jRQ (football), 1 active
+tracking football_5x9vPq9HsTI (football), 2 active
+tracking football_DrxDFaRonuE (football), 3 active
+tracking football_h-_3BmAh9po (football), 4 active
+tracking kbo_9Hv-cd-BmSY (kbo), 5 active
+tracking kbo_W-tKSex-WPU (kbo), 6 active
+tracking kbo_lIxmDQyQDtc (kbo), 7 active
+tracking kbo_tzC71aneg9c (kbo), 8 active
+tracking mlb_7T-rpI5l0ro (mlb), 9 active
+tracking mlb_NiSezRTvsew (mlb), 10 active
+football_DrxDFaRonuE football tracked rows=7218 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+tracking mlb_dVNOESziFWQ (mlb), 10 active
+football_20pezoC5jRQ football tracked rows=39255 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+football_5x9vPq9HsTI football tracked rows=65146 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+football_h-_3BmAh9po football tracked rows=99581 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+kbo_9Hv-cd-BmSY kbo tracked rows=23001 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+kbo_W-tKSex-WPU kbo tracked rows=17107 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+kbo_lIxmDQyQDtc kbo tracked rows=20094 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+kbo_tzC71aneg9c kbo tracked rows=21312 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+mlb_7T-rpI5l0ro mlb tracked rows=12629 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+mlb_NiSezRTvsew mlb tracked rows=12189 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking ncaa_basketball_IB-_u4gW3ds (ncaa_basketball), 2 active
+tracking ncaa_basketball_sRtHQbywiTE (ncaa_basketball), 3 active
+tracking ncaa_basketball_tiUvyvWOCxo (ncaa_basketball), 4 active
+tracking ncaa_basketball_zqBCKovJCQU (ncaa_basketball), 5 active
+tracking npb_HQfhD5Iwm7U (npb), 6 active
+tracking npb_V3FrwLVwCpA (npb), 7 active
+tracking npb_jm2Ocr-LAtc (npb), 8 active
+tracking npb_kqPv-_WwWLk (npb), 9 active
+tracking soccer_AgspyOj5BPk (soccer), 10 active
+reaped 10 orphaned tracking jobs from a previous daemon
+tennis_10 is 262 bytes -- not a video, dropping
+tracking football_GU6CrRLjTkw (football), 1 active
+tracking football_VEoXn84p9o8 (football), 2 active
+tracking football_cxbBz4nkovE (football), 3 active
+tracking football_iaDDTxNEOfE (football), 4 active
+tracking kbo_8yxSFxuR2Lk (kbo), 5 active
+tracking kbo_FDSWjM_OaTs (kbo), 6 active
+tracking kbo_bGQwZl43E9Y (kbo), 7 active
+tracking kbo_qLQbGFQ0-EQ (kbo), 8 active
+tracking mlb_5IA4jaKNOYg (mlb), 9 active
+tracking mlb_FGtFanovws4 (mlb), 10 active
+mlb_FGtFanovws4 mlb thin rows=0 passed=None 
+tracking mlb_QqHhEShXAX0 (mlb), 10 active
+football_VEoXn84p9o8 football tracked rows=5960 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+tracking mlb_dVNOESziFWQ (mlb), 10 active
+football_GU6CrRLjTkw football tracked rows=5539 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+football_iaDDTxNEOfE football tracked rows=6086 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+kbo_bGQwZl43E9Y kbo tracked rows=10009 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking ncaa_basketball_IB-_u4gW3ds (ncaa_basketball), 8 active
+tracking ncaa_basketball_WFl3V7ZY4ss (ncaa_basketball), 9 active
+tracking ncaa_basketball_sRtHQbywiTE (ncaa_basketball), 10 active
+kbo_8yxSFxuR2Lk kbo tracked rows=13488 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+kbo_qLQbGFQ0-EQ kbo tracked rows=31494 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking ncaa_basketball_tiUvyvWOCxo (ncaa_basketball), 9 active
+tracking ncaa_basketball_zqBCKovJCQU (ncaa_basketball), 10 active
+football_cxbBz4nkovE football tracked rows=40470 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+kbo_FDSWjM_OaTs kbo tracked rows=48793 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking npb_HQfhD5Iwm7U (npb), 9 active
+tracking npb_V3FrwLVwCpA (npb), 10 active
+mlb_5IA4jaKNOYg mlb tracked rows=36700 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking npb_jm2Ocr-LAtc (npb), 10 active
+tennis_10 is 262 bytes -- not a video, dropping
+mlb_dVNOESziFWQ mlb thin rows=0 passed=None 
+retain failed data/footage_bridge/mlb__mlb_dVNOESziFWQ.mp4: [Errno 2] No such file or directory: 'data/footage_bridge/mlb__mlb_dVNOESziFWQ.mp4' -> 'data/footage_corpus/mlb__mlb_dVNOESziFWQ.mp4' -- deleting
+tracking football_34GmmlakBYU (football), 10 active
+mlb_QqHhEShXAX0 mlb tracked rows=42606 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking football_B7znSVfBnM4 (football), 10 active
+npb_HQfhD5Iwm7U npb tracked rows=35142 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking football_L3WOKdFhdkQ (football), 10 active
+npb_V3FrwLVwCpA npb tracked rows=30831 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+npb_jm2Ocr-LAtc npb tracked rows=36626 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking football_gek9fXGlwas (football), 9 active
+tracking mlb_FGtFanovws4 (mlb), 10 active
+football_34GmmlakBYU football tracked rows=112988 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+tracking kbo_ahHGpSJWcIU (kbo), 10 active
+tennis_10 is 262 bytes -- not a video, dropping
+football_B7znSVfBnM4 football tracked rows=146689 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+tracking kbo_2ZtgAvs67so (kbo), 10 active
+mlb_FGtFanovws4 mlb thin rows=0 passed=None 
+tracking kbo_Lh8n_DUXyGE (kbo), 10 active
+football_L3WOKdFhdkQ football tracked rows=108705 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+tracking kbo_lrK_Hv6BEE0 (kbo), 10 active
+football_gek9fXGlwas football tracked rows=103205 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+tracking mlb_dVNOESziFWQ (mlb), 10 active
+kbo_ahHGpSJWcIU kbo tracked rows=20866 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking mlb_x6YpMlNYbrU (mlb), 10 active
+kbo_2ZtgAvs67so kbo tracked rows=13042 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking kbo_ahHGpSJWcIU (kbo), 10 active
+ncaa_basketball_IB-_u4gW3ds exceeded 5400s -- killing to free the slot
+ncaa_basketball_IB-_u4gW3ds ncaa_basketball timeout rows=3061 passed=False coordinate_contract: NBA production tracking uses image pixels in x_position/y_position; x
+ncaa_basketball_WFl3V7ZY4ss exceeded 5400s -- killing to free the slot
+ncaa_basketball_WFl3V7ZY4ss ncaa_basketball timeout rows=0 passed=None 
+ncaa_basketball_sRtHQbywiTE exceeded 5400s -- killing to free the slot
+ncaa_basketball_sRtHQbywiTE ncaa_basketball timeout rows=0 passed=None 
+ncaa_basketball_tiUvyvWOCxo exceeded 5400s -- killing to free the slot
+ncaa_basketball_tiUvyvWOCxo ncaa_basketball timeout rows=4 passed=False coordinate_contract: NBA production tracking uses image pixels in x_position/y_position; x
+ncaa_basketball_zqBCKovJCQU exceeded 5400s -- killing to free the slot
+ncaa_basketball_zqBCKovJCQU ncaa_basketball timeout rows=4 passed=False coordinate_contract: NBA production tracking uses image pixels in x_position/y_position; x
+tracking npb_kqPv-_WwWLk (npb), 6 active
+tracking soccer_AgspyOj5BPk (soccer), 7 active
+tracking soccer_DdnvC6-PGYY (soccer), 8 active
+tracking soccer_EKhrdU9bVZA (soccer), 9 active
+tracking soccer_cKXZysISV4w (soccer), 10 active
+kbo_lrK_Hv6BEE0 kbo tracked rows=11392 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking tennis_06 (tennis), 10 active
+kbo_Lh8n_DUXyGE kbo tracked rows=13693 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking tennis_3x3eEWCZmWQ (tennis), 10 active
+mlb_dVNOESziFWQ mlb tracked rows=9165 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking tennis_nyYk2nPZAwY (tennis), 10 active
+soccer_DdnvC6-PGYY soccer tracked rows=37105 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+tracking kbo_Lh8n_DUXyGE (kbo), 10 active
+mlb_x6YpMlNYbrU mlb tracked rows=17726 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tennis_06 tennis thin rows=0 passed=None 
+tracking ncaa_basketball_tiUvyvWOCxo (ncaa_basketball), 9 active
+tracking wnba_01 (wnba), 10 active
+tennis_3x3eEWCZmWQ tennis thin rows=266 passed=False jump_p95 24.37 > 8.00
+tracking wnba_02 (wnba), 10 active
+soccer_AgspyOj5BPk soccer tracked rows=105084 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+tracking wnba_04 (wnba), 10 active
+soccer_EKhrdU9bVZA soccer tracked rows=90058 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+tracking wnba_05 (wnba), 10 active
+soccer_cKXZysISV4w soccer tracked rows=96966 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+npb_kqPv-_WwWLk npb tracked rows=24431 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+kbo_ahHGpSJWcIU kbo tracked rows=21945 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tennis_nyYk2nPZAwY tennis thin rows=415 passed=False jump_p95 19.12 > 8.00
+tracking kbo_2ZtgAvs67so (kbo), 7 active
+tracking tennis_06 (tennis), 8 active
+tracking ncaa_basketball_sRtHQbywiTE (ncaa_basketball), 9 active
+tracking soccer_cKXZysISV4w (soccer), 10 active
+kbo_Lh8n_DUXyGE kbo tracked rows=13767 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking kbo_lrK_Hv6BEE0 (kbo), 10 active
+kbo_2ZtgAvs67so kbo tracked rows=13314 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking football_22iadGbRAyE (football), 10 active
+tennis_06 exceeded 3600s -- killing to free the slot
+tennis_06 tennis timeout rows=0 passed=None 
+tracking mlb_FGtFanovws4 (mlb), 10 active
+soccer_cKXZysISV4w soccer tracked rows=98261 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+tracking mlb_dVNOESziFWQ (mlb), 10 active
+kbo_lrK_Hv6BEE0 kbo tracked rows=11810 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking mlb_x6YpMlNYbrU (mlb), 10 active
+wnba_02 wnba tracked rows=5342 passed=False coordinate_contract: NBA production tracking uses image pixels in x_position/y_position; x
+wnba_05 wnba tracked rows=2230 passed=False coordinate_contract: NBA production tracking uses image pixels in x_position/y_position; x
+football_22iadGbRAyE football tracked rows=118924 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport footbal
+retain failed data/footage_bridge/football__football_22iadGbRAyE.mp4: [Errno 2] No such file or directory: 'data/footage_bridge/football__football_22iadGbRAyE.mp4' -> 'data/footage_corpus/football__football_22iadGbRAyE.mp4' -- deleting
+tracking ncaa_basketball_zqBCKovJCQU (ncaa_basketball), 8 active
+tracking npb_3PwJwWdTMek (npb), 9 active
+tracking soccer_AgspyOj5BPk (soccer), 10 active
+wnba_04 wnba tracked rows=4906 passed=False coordinate_contract: NBA production tracking uses image pixels in x_position/y_position; x
+tracking soccer_DdnvC6-PGYY (soccer), 10 active
+ncaa_basketball_tiUvyvWOCxo ncaa_basketball tracked rows=4424 passed=False coordinate_contract: NBA production tracking uses image pixels in x_position/y_position; x
+wnba_01 wnba tracked rows=4855 passed=False coordinate_contract: NBA production tracking uses image pixels in x_position/y_position; x
+tracking tennis_10 (tennis), 9 active
+ncaa_basketball_sRtHQbywiTE ncaa_basketball tracked rows=2234 passed=False coordinate_contract: NBA production tracking uses image pixels in x_position/y_position; x
+mlb_FGtFanovws4 mlb thin rows=0 passed=None 
+mlb_dVNOESziFWQ mlb tracked rows=8483 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+mlb_x6YpMlNYbrU mlb tracked rows=19936 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+npb_3PwJwWdTMek npb tracked rows=46809 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+soccer_DdnvC6-PGYY soccer tracked rows=34728 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+tracking football_wHZt1eY3A9s (football), 4 active
+soccer_AgspyOj5BPk soccer tracked rows=107232 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport soccer;
+ncaa_basketball_zqBCKovJCQU ncaa_basketball tracked rows=5303 passed=False coordinate_contract: NBA production tracking uses image pixels in x_position/y_position; x
+tracking tennis_07 (tennis), 3 active
+tracking tennis_08 (tennis), 4 active
+tracking tennis_09 (tennis), 5 active
+tennis_07 tennis thin rows=8 passed=False oob 0.38 > 0.08;jump_p95 19.13 > 8.00;ball_valid 0.00 < 0.20
+tennis_08 tennis thin rows=228 passed=False oob 0.29 > 0.08;jump_p95 13.93 > 8.00
+tennis_09 tennis tracked rows=578 passed=False oob 0.61 > 0.08;jump_p95 171.17 > 8.00
+tennis_10 tennis thin rows=8 passed=False coverage 0.75 < 0.90;oob 0.67 > 0.08;jump_p95 1051.77 > 8.00
+tracking football_wHZt1eY3A9s_1080p (football), 2 active
+football_wHZt1eY3A9s exceeded 3600s -- killing to free the slot
+football_wHZt1eY3A9s football timeout rows=8578 passed=False oob 0.55 > 0.05;jump_p95 3336.88 > 8.00
+tracking giants_jets_format96_1080p (football), 2 active
+football_wHZt1eY3A9s_1080p exceeded 3600s -- killing to free the slot
+football_wHZt1eY3A9s_1080p football timeout rows=0 passed=None 
+giants_jets_format96_1080p exceeded 3600s -- killing to free the slot
+giants_jets_format96_1080p football timeout rows=0 passed=None 
+tracking tennis_06 (tennis), 1 active
+tracking npb_3PwJwWdTMek (npb), 2 active
+tracking tennis_09 (tennis), 3 active
+tracking tennis_10 (tennis), 4 active
+tracking tennis_459iho5_AFs (tennis), 5 active
+tennis_06 tennis thin rows=0 passed=None 
+npb_3PwJwWdTMek npb tracked rows=62260 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tennis_459iho5_AFs tennis thin rows=0 passed=None 
+tennis_09 tennis thin rows=4 passed=False median_track_len 2.00 < 3.00;ball_valid 0.00 < 0.20
+tennis_10 tennis thin rows=0 passed=None 
+tracking mlb_gMm3EODDb6w (mlb), 1 active
+tracking mlb_3Oc4S_1np98 (mlb), 2 active
+mlb_gMm3EODDb6w mlb tracked rows=31181 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking mlb_ARtRmUHC7dw (mlb), 2 active
+mlb_3Oc4S_1np98 mlb tracked rows=40106 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking mlb_2iosUkpL0Bc (mlb), 2 active
+mlb_ARtRmUHC7dw mlb tracked rows=38335 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+mlb_2iosUkpL0Bc mlb tracked rows=39503 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+tracking mlb_ptIBgr6U1Y8 (mlb), 1 active
+tracking mlb_PPj97yvNGOo (mlb), 2 active
+mlb_ptIBgr6U1Y8 mlb tracked rows=48319 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
+mlb_PPj97yvNGOo mlb tracked rows=38319 passed=False coordinate_contract: rows declare coordinate_space image_px not accepted for sport basebal
