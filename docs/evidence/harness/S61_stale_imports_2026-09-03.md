@@ -265,6 +265,9 @@ Decision: RETIRE. `git rm scripts/platformkit/baseball_funnel_probe.py`.
 The `domains/baseball/tracking/adapter.py` read was diagnosis only -- that file
 is unmodified by this row.
 
+See the attribution note in section 4a -- this deletion did not land under this
+row's own commit.
+
 ## 4. Summary table
 
 | # | module | cause | decision | history sha |
@@ -280,6 +283,29 @@ is unmodified by this row.
 | 9 | `intel_query/ask_fit.py` | C import-order cycle | FIXED | n/a (order, not deletion) |
 | 10 | `overlay_render.py` | C API deleted | FIXED | `57625b81b` |
 | 11 | `baseball_funnel_probe.py` | C API deleted | **RETIRED** | `de124527e` |
+
+## 4a. Attribution defect -- this row's code did not land under this row's commit
+
+Recorded, not hidden. Every code change in section 3 is landed and correct in
+master, but **none of it is in a commit carrying the S61 subject.** Two other
+lanes committed against the SHARED INDEX while this lane's changes sat staged,
+and a commit takes whatever the index holds:
+
+| what | swept into | that commit's subject |
+|---|---|---|
+| the `git rm` of `baseball_funnel_probe.py` (191 lines) | **`c2ab121dd`** | "evidence(tennis): G39 cause established -- the ball detections are not balls" |
+| all ten fixed files + the new `seqmodel/__init__.py` | **`c2409ff22`** | "ops(tracking): codex wrapper hardcoded a versioned binary path; four lanes died as EXIT:127" |
+
+Verified after the fact: `git status --short` reports none of the eleven paths
+dirty (working tree == HEAD for all of them), `git cat-file -e
+HEAD:scripts/platformkit/baseball_funnel_probe.py` fails (the retirement is in
+HEAD), and the full import sweep re-run against HEAD is 10/10 clean (section 5).
+So the CONTENT is right; only the attribution is wrong.
+
+Nothing was amended or rewritten to repair this. Another lane's commit is not
+this lane's to edit, and `--amend` is forbidden on the shared index. This memo
+is therefore the only artifact that carries the S61 subject, and it names the
+two commits that actually hold the code. Filed as a new gap in section 8.
 
 ## 5. Evidence -- imports and per-file tests
 
@@ -385,6 +411,14 @@ git log -S<symbol> --oneline -- <path>     # e.g. -Sdiscover_store -- scripts/pl
   importing from the wrong module for as long as nothing imported them. A
   re-export deletion has no reader check today (contract A5 asks for one on
   fields, not on re-exported symbols).
+- NEW GAP: the shared index has no single-writer discipline for STAGED work, and
+  it cost this row its whole attribution (section 4a): a `git rm` and ten edits
+  were swept into two unrelated lanes' commits. The explicit-pathspec commit rule
+  does NOT protect against this -- a pathspec restricts what a commit adds, not
+  what the index already holds, and it is the OTHER lane's commit that does the
+  sweeping. Cheap mitigation: stage immediately before committing, never earlier.
+  Real mitigation: a per-lane `GIT_INDEX_FILE` or a worktree. Worth measuring how
+  many landed S-rows and G-rows are already mis-attributed this way.
 - NEW GAP: the baseball adapter's per-stage funnel diagnosis has no replacement
   after this retirement. If a thin baseball run needs attributing to a specific
   gate again, a probe must be written against the CURRENT adapter API
