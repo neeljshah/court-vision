@@ -3,6 +3,8 @@
 Rule: a gap is closed only by a measured artifact (n, denominator = decoded
 frames, render-and-look). Harness thresholds never move. Broadcast footage
 only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
+NEXT_GAP_ID: G33  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+Specs cite CODEX_SPEC_TEMPLATE.md; verifiers apply the spec ACCEPTANCE RULE + VERIFIER_CONTRACT.md B1-B10.
 
 | id | sport | gap (measured) | evidence | status |
 |----|-------|----------------|----------|--------|
