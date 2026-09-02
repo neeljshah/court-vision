@@ -1,4 +1,4 @@
-holder: none | gap: - | taken: - | expires: -
+holder: account1 | gap: S40c | taken: 2026-09-02T12:01-05:00 | expires: +4h
 
 Shared-module token (loop rule 4). Modules: track_daemon.py, tracking_harness.py, tracking_schema.py,
 footage_census.py, the ingest gate, eval_gate/ledger.py, backtest_runner.py, combo/fwer_budget.py.
