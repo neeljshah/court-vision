@@ -1,0 +1,1898 @@
+{
+  "canonical_glob": "/workspace/nba-ai-system/data/tracking/*/tracking_data.csv",
+  "census_completed_utc": "2026-09-02T23:37:03+00:00",
+  "census_started_utc": "2026-09-02T23:36:56+00:00",
+  "eligibility_definition": "G107 preregistration: >=30 distinct frames; all rows declare court_feet; usable player track_id/frame/x/y; unique positive modal same-track frame stride with >=1 modal-stride pair; no displacement, candidate, or verdict filter.",
+  "eligible_table_count": 8,
+  "eligible_tables": [
+    {
+      "path": "/workspace/nba-ai-system/data/tracking/g89_tennis_09/tracking_data.csv",
+      "table": "g89_tennis_09"
+    },
+    {
+      "path": "/workspace/nba-ai-system/data/tracking/g89_tennis_10/tracking_data.csv",
+      "table": "g89_tennis_10"
+    },
+    {
+      "path": "/workspace/nba-ai-system/data/tracking/g89_tennis_nyYk2nPZAwY_720p/tracking_data.csv",
+      "table": "g89_tennis_nyYk2nPZAwY_720p"
+    },
+    {
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_06/tracking_data.csv",
+      "table": "tennis_06"
+    },
+    {
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_07/tracking_data.csv",
+      "table": "tennis_07"
+    },
+    {
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_08/tracking_data.csv",
+      "table": "tennis_08"
+    },
+    {
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_3x3eEWCZmWQ/tracking_data.csv",
+      "table": "tennis_3x3eEWCZmWQ"
+    },
+    {
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_nyYk2nPZAwY/tracking_data.csv",
+      "table": "tennis_nyYk2nPZAwY"
+    }
+  ],
+  "records": [
+    {
+      "eligibility": "empty_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_17DHInPNTnY/tracking_data.csv",
+      "raw_frame_count": 0,
+      "row_count": 0,
+      "sha256": "d8a6e3659807b20c33cd9e93e401a5a108cee5e578caa4e4de65df0662d478fb",
+      "sport": "football",
+      "table": "football_17DHInPNTnY"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_20pezoC5jRQ/tracking_data.csv",
+      "raw_frame_count": 7781,
+      "row_count": 39255,
+      "sha256": "c9aa1d4c6405f711cadaf219f6f68aad0a33bf4404e03354ece3bb9f0d4ca146",
+      "sport": "football",
+      "table": "football_20pezoC5jRQ"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_22iadGbRAyE/tracking_data.csv",
+      "raw_frame_count": 9593,
+      "row_count": 118924,
+      "sha256": "dc26b6c808f0d5d56942ce604b7dbdf3a8470668aa5c4069e0f3cb457ecb068b",
+      "sport": "football",
+      "table": "football_22iadGbRAyE"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_34GmmlakBYU/tracking_data.csv",
+      "raw_frame_count": 9542,
+      "row_count": 112988,
+      "sha256": "f5095f0d90583bd56d987587e6ff2dcb0f9f7e6f1507c7540d89ea98f86315eb",
+      "sport": "football",
+      "table": "football_34GmmlakBYU"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_5x9vPq9HsTI/tracking_data.csv",
+      "raw_frame_count": 8943,
+      "row_count": 65146,
+      "sha256": "3dd1f03b9c8c5b24766593e3398665e218f57850039a930c9bb69d0a5eb7ddf5",
+      "sport": "football",
+      "table": "football_5x9vPq9HsTI"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_6oUm30M1HZ8/tracking_data.csv",
+      "raw_frame_count": 7163,
+      "row_count": 23081,
+      "sha256": "3aa860675c1bb3fd8633547d5909a1d6833ea3819832988576486bd67d4afa60",
+      "sport": "football",
+      "table": "football_6oUm30M1HZ8"
+    },
+    {
+      "eligibility": "empty_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_7Af2PqyvT8A/tracking_data.csv",
+      "raw_frame_count": 0,
+      "row_count": 0,
+      "sha256": "d8a6e3659807b20c33cd9e93e401a5a108cee5e578caa4e4de65df0662d478fb",
+      "sport": "football",
+      "table": "football_7Af2PqyvT8A"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_B-aAcjvtu9I/tracking_data.csv",
+      "raw_frame_count": 8825,
+      "row_count": 66722,
+      "sha256": "d973332c19e9e4ad565b7c1cb132f1814066a48457bce58be5d23470db34d951",
+      "sport": "football",
+      "table": "football_B-aAcjvtu9I"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_B7znSVfBnM4/tracking_data.csv",
+      "raw_frame_count": 9585,
+      "row_count": 146689,
+      "sha256": "18a7473adf2ebead8047cce6787e8aebc6f5c87ac3c324b1539acf5c96e7832c",
+      "sport": "football",
+      "table": "football_B7znSVfBnM4"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_DrxDFaRonuE/tracking_data.csv",
+      "raw_frame_count": 6448,
+      "row_count": 7218,
+      "sha256": "500fe6bb4a5843592c569105ec593eaf028f55fd84ffbb42050e815ad88b4cb4",
+      "sport": "football",
+      "table": "football_DrxDFaRonuE"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_GU6CrRLjTkw/tracking_data.csv",
+      "raw_frame_count": 5397,
+      "row_count": 5539,
+      "sha256": "aa2b277ab177cca49e534f65ee67185b80dd43492e5f2c446cc4b5c63223f27d",
+      "sport": "football",
+      "table": "football_GU6CrRLjTkw"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_J9WamaxtwdQ/tracking_data.csv",
+      "raw_frame_count": 9511,
+      "row_count": 89052,
+      "sha256": "7dfd796a12c9b12b315459ccf2eac57fe0fef8dd6692e82d9c63ffd1b169b9e9",
+      "sport": "football",
+      "table": "football_J9WamaxtwdQ"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_L3WOKdFhdkQ/tracking_data.csv",
+      "raw_frame_count": 9409,
+      "row_count": 108705,
+      "sha256": "01094047693c49ed4d8f6793768b014a03265e898caeaf679be4f13fe1a731a0",
+      "sport": "football",
+      "table": "football_L3WOKdFhdkQ"
+    },
+    {
+      "eligibility": "empty_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_O-vEbXeVc_0/tracking_data.csv",
+      "raw_frame_count": 0,
+      "row_count": 0,
+      "sha256": "d8a6e3659807b20c33cd9e93e401a5a108cee5e578caa4e4de65df0662d478fb",
+      "sport": "football",
+      "table": "football_O-vEbXeVc_0"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_P_TdW-vpywo/tracking_data.csv",
+      "raw_frame_count": 4300,
+      "row_count": 12578,
+      "sha256": "bdd7d354d52c094a7edb43d5ea55bb49373f88a596152d5d4b2fae4dbad055a6",
+      "sport": "football",
+      "table": "football_P_TdW-vpywo"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_S3ZqSGRVU3w/tracking_data.csv",
+      "raw_frame_count": 9283,
+      "row_count": 109240,
+      "sha256": "cb4cade5f663ed6a67cc05decffcc31cd2b97894c37ac8741278ad230075f092",
+      "sport": "football",
+      "table": "football_S3ZqSGRVU3w"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_TqKwnvxbKDw/tracking_data.csv",
+      "raw_frame_count": 8692,
+      "row_count": 67082,
+      "sha256": "1a03f1d1c2f14edb902f1f03eebc847934b56fd77a3edf35be6688bb3f1cddfd",
+      "sport": "football",
+      "table": "football_TqKwnvxbKDw"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_VEoXn84p9o8/tracking_data.csv",
+      "raw_frame_count": 4954,
+      "row_count": 5960,
+      "sha256": "4b0d5345062772f52b29f2626f49f38d18c5795c2b9b3ab36041587e333951f7",
+      "sport": "football",
+      "table": "football_VEoXn84p9o8"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_Z8Ezd95NnjM/tracking_data.csv",
+      "raw_frame_count": 79,
+      "row_count": 1220,
+      "sha256": "3e8e3dfdc8c42643b2812084dd218171eafc0ba8f57f0534c1f5c6064c012010",
+      "sport": "football",
+      "table": "football_Z8Ezd95NnjM"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_ZHJWGNGE0Cg/tracking_data.csv",
+      "raw_frame_count": 7332,
+      "row_count": 31467,
+      "sha256": "be0f08fa2ef878e7aeadb40c04d30bdc05efddaa25079fa34a5f769d03e91caa",
+      "sport": "football",
+      "table": "football_ZHJWGNGE0Cg"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football__Bsqeb795J0/tracking_data.csv",
+      "raw_frame_count": 8934,
+      "row_count": 59321,
+      "sha256": "8bff3d569bf9508e5a23a2bf4009b6582b5674a03f550e32e5df9494bc0debd3",
+      "sport": "football",
+      "table": "football__Bsqeb795J0"
+    },
+    {
+      "eligibility": "empty_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_a7OUF22mt-I/tracking_data.csv",
+      "raw_frame_count": 0,
+      "row_count": 0,
+      "sha256": "d8a6e3659807b20c33cd9e93e401a5a108cee5e578caa4e4de65df0662d478fb",
+      "sport": "football",
+      "table": "football_a7OUF22mt-I"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_aL_ZQEaQ_LY/tracking_data.csv",
+      "raw_frame_count": 9575,
+      "row_count": 9575,
+      "sha256": "ea820d29254abe062e23a91b27aa3bc0bb180dd08df3063a2ae090e4dd7d657b",
+      "sport": "football",
+      "table": "football_aL_ZQEaQ_LY"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_bj9lY3FEDw0/tracking_data.csv",
+      "raw_frame_count": 7909,
+      "row_count": 43005,
+      "sha256": "1021df1e0f193424abc044be09ab8c77ee54e7e71071eb2874bedd7d0fa256e3",
+      "sport": "football",
+      "table": "football_bj9lY3FEDw0"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_cxbBz4nkovE/tracking_data.csv",
+      "raw_frame_count": 9601,
+      "row_count": 40470,
+      "sha256": "2635b52ad0f4fe4bbb0afa4acc8b8e903cb9ec43d1fa1f2bc62b6df226272e43",
+      "sport": "football",
+      "table": "football_cxbBz4nkovE"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_eU55ugTsdz8/tracking_data.csv",
+      "raw_frame_count": 568,
+      "row_count": 9096,
+      "sha256": "3fc6faff85f60f937ad9e170d7fef71001a71766c9794b06ea35dbec052e517a",
+      "sport": "football",
+      "table": "football_eU55ugTsdz8"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_fh9CTJ0-PpQ/tracking_data.csv",
+      "raw_frame_count": 8547,
+      "row_count": 58652,
+      "sha256": "dec2b286947b78da71c04c4c714f0fb0f1b249af6ce8b9a08a1b2ba01166b55e",
+      "sport": "football",
+      "table": "football_fh9CTJ0-PpQ"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_gek9fXGlwas/tracking_data.csv",
+      "raw_frame_count": 9527,
+      "row_count": 103205,
+      "sha256": "c903fb49f339027a3340535f51e18a32f98c1f449dbee95fb87605f0ba1426a0",
+      "sport": "football",
+      "table": "football_gek9fXGlwas"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_h-_3BmAh9po/tracking_data.csv",
+      "raw_frame_count": 9358,
+      "row_count": 99581,
+      "sha256": "d7b468a950ac3dbdcafaf2773b6391516dc52d6f1c8528200bcf813c72a7e374",
+      "sport": "football",
+      "table": "football_h-_3BmAh9po"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_iaDDTxNEOfE/tracking_data.csv",
+      "raw_frame_count": 6012,
+      "row_count": 6086,
+      "sha256": "706486dc1958c2aeef87b05d9397391476b90d928febe7ddbc29896e00da42a6",
+      "sport": "football",
+      "table": "football_iaDDTxNEOfE"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_jK1AuQzymVE/tracking_data.csv",
+      "raw_frame_count": 9439,
+      "row_count": 81441,
+      "sha256": "e88cc61f0ce7ff42aed301899611f0ac88fb660f5a040b14143d73837d7dac60",
+      "sport": "football",
+      "table": "football_jK1AuQzymVE"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_kXfNJsCLLIA/tracking_data.csv",
+      "raw_frame_count": 9499,
+      "row_count": 96562,
+      "sha256": "3983dfb322800b5180f84e838b56bde313c9692cbbcee89264d21d7f04cf00cb",
+      "sport": "football",
+      "table": "football_kXfNJsCLLIA"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_lsYEcWf4Zbg/tracking_data.csv",
+      "raw_frame_count": 7673,
+      "row_count": 16305,
+      "sha256": "176f93e59d8c9e16659885c28f073bdeeee02ad26927c91e9f8aaebc8d1f8485",
+      "sport": "football",
+      "table": "football_lsYEcWf4Zbg"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_m8UWuQoflJo/tracking_data.csv",
+      "raw_frame_count": 765,
+      "row_count": 13583,
+      "sha256": "5a301f50bcf5b5670710ef7be51a3fa01b5bbb0da418385148df583011036b03",
+      "sport": "football",
+      "table": "football_m8UWuQoflJo"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_owXX5PI64gU/tracking_data.csv",
+      "raw_frame_count": 9591,
+      "row_count": 9635,
+      "sha256": "ad7653f014cd565deaa5e3c10a408a5f90bc7709f70fb0c59cadb8424e3e1deb",
+      "sport": "football",
+      "table": "football_owXX5PI64gU"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_qzjIo3_M_3U/tracking_data.csv",
+      "raw_frame_count": 9591,
+      "row_count": 9591,
+      "sha256": "2e2fa678d115e070733e5f2e28fa71c23961ee57e7d1157a05a7bb1475614b24",
+      "sport": "football",
+      "table": "football_qzjIo3_M_3U"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_r3nqqnCyZw8/tracking_data.csv",
+      "raw_frame_count": 384,
+      "row_count": 6155,
+      "sha256": "e398d61e40a7562e64b4aa79c4089bf21f620c4cae990ad8c5199c9616f8098d",
+      "sport": "football",
+      "table": "football_r3nqqnCyZw8"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_tEpTKZKk7ks/tracking_data.csv",
+      "raw_frame_count": 8294,
+      "row_count": 61273,
+      "sha256": "815c7a1bda15de3de77b7a309357f56494f02f2db0c6eb93b52b40035e1f335c",
+      "sport": "football",
+      "table": "football_tEpTKZKk7ks"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_tKc73Meexzo/tracking_data.csv",
+      "raw_frame_count": 8748,
+      "row_count": 68965,
+      "sha256": "a4a6b4c02b7f3e2667e125bced0669c9e04747f88d0710dd8c8f6b26f778d1c2",
+      "sport": "football",
+      "table": "football_tKc73Meexzo"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_wHZt1eY3A9s/tracking_data.csv",
+      "raw_frame_count": 513,
+      "row_count": 8578,
+      "sha256": "c63d34f9ff4858e3eb17042f3a9623c8f0df960ae34868340ed27de887f0f383",
+      "sport": "football",
+      "table": "football_wHZt1eY3A9s"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_wPk3WVHBib4/tracking_data.csv",
+      "raw_frame_count": 9305,
+      "row_count": 110072,
+      "sha256": "b42703512809ecc7b7af7b0c7212d4670247f93489a0d587672d620d0496599c",
+      "sport": "football",
+      "table": "football_wPk3WVHBib4"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_xnHO7JWdRcQ/tracking_data.csv",
+      "raw_frame_count": 555,
+      "row_count": 9877,
+      "sha256": "6f16b399e82772b2a74a03d21abaf53c0e3df190993b49e623995228eecea6bf",
+      "sport": "football",
+      "table": "football_xnHO7JWdRcQ"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_yaLoyksqqFY/tracking_data.csv",
+      "raw_frame_count": 45,
+      "row_count": 872,
+      "sha256": "ec80fd8a963d215dc153e26da254f1a1b7b9f14c2da4438768d9abebf9a90f72",
+      "sport": "football",
+      "table": "football_yaLoyksqqFY"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/football_yahhMkUWd7c/tracking_data.csv",
+      "raw_frame_count": 268,
+      "row_count": 4697,
+      "sha256": "090c2e89d77db8a7fec22be1ee6130faf8fa4fe0aa3cd2d912405b60b340cf52",
+      "sport": "football",
+      "table": "football_yahhMkUWd7c"
+    },
+    {
+      "eligibility": "unknown_sport_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/g122_mlb_retention_10893dca/tracking_data.csv",
+      "raw_frame_count": 0,
+      "row_count": 0,
+      "sha256": "d8a6e3659807b20c33cd9e93e401a5a108cee5e578caa4e4de65df0662d478fb",
+      "sport": "UNKNOWN",
+      "table": "g122_mlb_retention_10893dca"
+    },
+    {
+      "eligibility": "eligible_reaches_jump_statistic",
+      "modal_stride_frames": 2,
+      "modal_stride_jump_max": 50.79150769309016,
+      "modal_stride_pair_count": 2430,
+      "path": "/workspace/nba-ai-system/data/tracking/g89_tennis_09/tracking_data.csv",
+      "raw_frame_count": 1226,
+      "row_count": 2850,
+      "sha256": "3fb0138cf32169bea6b1c283cd50ce641b71542bacdd2c19e3e1bacc6668d433",
+      "sport": "tennis",
+      "table": "g89_tennis_09"
+    },
+    {
+      "eligibility": "eligible_reaches_jump_statistic",
+      "modal_stride_frames": 2,
+      "modal_stride_jump_max": 45.21377998861818,
+      "modal_stride_pair_count": 1726,
+      "path": "/workspace/nba-ai-system/data/tracking/g89_tennis_10/tracking_data.csv",
+      "raw_frame_count": 880,
+      "row_count": 2103,
+      "sha256": "95306dba89d198f27db2bec53a54a32923552a8d6d46a0cc37c4201bb8f8c445",
+      "sport": "tennis",
+      "table": "g89_tennis_10"
+    },
+    {
+      "eligibility": "eligible_reaches_jump_statistic",
+      "modal_stride_frames": 5,
+      "modal_stride_jump_max": 56.38955132715972,
+      "modal_stride_pair_count": 4396,
+      "path": "/workspace/nba-ai-system/data/tracking/g89_tennis_nyYk2nPZAwY_720p/tracking_data.csv",
+      "raw_frame_count": 2245,
+      "row_count": 5333,
+      "sha256": "9232e98deb96d0bc6128a1e044313db7d031f6bddbb966fd07b4f6ab2cfb5f29",
+      "sport": "tennis",
+      "table": "g89_tennis_nyYk2nPZAwY_720p"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_01/tracking_data.csv",
+      "raw_frame_count": 3036,
+      "row_count": 5300,
+      "sha256": "3da602771afecd565b9988bd063b0d80b01d5dcf6e7cf0aad4dec0f018f58126",
+      "sport": "kbo",
+      "table": "kbo_01"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_02/tracking_data.csv",
+      "raw_frame_count": 1326,
+      "row_count": 2000,
+      "sha256": "d1d9ce10b466206e05f38b22bccbdf1d8489eaf98e38e3e084fa70f1f1d59db5",
+      "sport": "kbo",
+      "table": "kbo_02"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_03/tracking_data.csv",
+      "raw_frame_count": 2245,
+      "row_count": 3678,
+      "sha256": "5a45a78b9007239e75d6b80d77a4d7b99b9cdcb65379296c8fa5d31216611164",
+      "sport": "kbo",
+      "table": "kbo_03"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_04/tracking_data.csv",
+      "raw_frame_count": 1616,
+      "row_count": 2717,
+      "sha256": "60d63d86e1e9b43786a2213a33f8d898e9d6c9cc2944d3e861c779be2a449e27",
+      "sport": "kbo",
+      "table": "kbo_04"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_05/tracking_data.csv",
+      "raw_frame_count": 1930,
+      "row_count": 3298,
+      "sha256": "305c178cd97d8c13756bc10b52a3dfdff43e54c188a2b32d80c602a5def2ec71",
+      "sport": "kbo",
+      "table": "kbo_05"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_06/tracking_data.csv",
+      "raw_frame_count": 3001,
+      "row_count": 5285,
+      "sha256": "8cd6b02be64d9610cce30a3077ac4ed78c9263f046500da2c49a5e34cf96a914",
+      "sport": "kbo",
+      "table": "kbo_06"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_07/tracking_data.csv",
+      "raw_frame_count": 1242,
+      "row_count": 1809,
+      "sha256": "cea29073da7ac119eaffcfd620484fc2be023bcbbdccc3a14a34a59877a99d0f",
+      "sport": "kbo",
+      "table": "kbo_07"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_08/tracking_data.csv",
+      "raw_frame_count": 1436,
+      "row_count": 2437,
+      "sha256": "eff84972872bd83979a143a8d9770297920dc420017c2741871a3bea7bbbd5d3",
+      "sport": "kbo",
+      "table": "kbo_08"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_09/tracking_data.csv",
+      "raw_frame_count": 1131,
+      "row_count": 1811,
+      "sha256": "437e329bd3aed36eb203cd1688dc1470146a3feb7db717d33b6fd73ea6204e80",
+      "sport": "kbo",
+      "table": "kbo_09"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_10/tracking_data.csv",
+      "raw_frame_count": 18966,
+      "row_count": 82967,
+      "sha256": "fc09594bbda8430b4849c094588f90028d29591c6d0bdc257c44146e16c77eb4",
+      "sport": "kbo",
+      "table": "kbo_10"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_1IwwT5ysVSY/tracking_data.csv",
+      "raw_frame_count": 8122,
+      "row_count": 30119,
+      "sha256": "0ab47566e1d1ccf12fbb59d1ba99aeb22f2d357eea2f946eea275457ece9c9e3",
+      "sport": "kbo",
+      "table": "kbo_1IwwT5ysVSY"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_2LWy6-b6_dU/tracking_data.csv",
+      "raw_frame_count": 8803,
+      "row_count": 47578,
+      "sha256": "7f13bcc255e0a9ac968f66a092d1e9a693f7c6fb58a6262fdba95bd061d94bbc",
+      "sport": "kbo",
+      "table": "kbo_2LWy6-b6_dU"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_2WqtNa-uUZU/tracking_data.csv",
+      "raw_frame_count": 9551,
+      "row_count": 50366,
+      "sha256": "40fe9b163d6679b5b404cae06a39f0853a1ac669ee2119d8fc906a1e28957422",
+      "sport": "kbo",
+      "table": "kbo_2WqtNa-uUZU"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_2ZtgAvs67so/tracking_data.csv",
+      "raw_frame_count": 6682,
+      "row_count": 13314,
+      "sha256": "79f7c9ee8f9220e60e0d3b93b9dba545121ddffb334f1a1a318e1a610d3c90d8",
+      "sport": "kbo",
+      "table": "kbo_2ZtgAvs67so"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_64cdlFkEuCc/tracking_data.csv",
+      "raw_frame_count": 8766,
+      "row_count": 33942,
+      "sha256": "f35b430d3a2a4b6ecff00b51447daf0461ff6b083d9dd7f40cc768c124853ba0",
+      "sport": "kbo",
+      "table": "kbo_64cdlFkEuCc"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_8yxSFxuR2Lk/tracking_data.csv",
+      "raw_frame_count": 6932,
+      "row_count": 13488,
+      "sha256": "2ca73dc13ecef2fd1c8bfd0fa9d7946879d35321229d9d2b29966dfc5ba730d0",
+      "sport": "kbo",
+      "table": "kbo_8yxSFxuR2Lk"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_9Hv-cd-BmSY/tracking_data.csv",
+      "raw_frame_count": 8536,
+      "row_count": 23001,
+      "sha256": "114ac14a6577f95b879200a1af5871c41f0a4d749257447312a2cc05235a54d7",
+      "sport": "kbo",
+      "table": "kbo_9Hv-cd-BmSY"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_FA3W5xMyYRY/tracking_data.csv",
+      "raw_frame_count": 9454,
+      "row_count": 41028,
+      "sha256": "fe3c91b9f6116996e9010f80eb258c030bb5fb2d2260ea7cd0f364e439f7fa1d",
+      "sport": "kbo",
+      "table": "kbo_FA3W5xMyYRY"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_FDSWjM_OaTs/tracking_data.csv",
+      "raw_frame_count": 8499,
+      "row_count": 48793,
+      "sha256": "587ec25282b664248477ad30d5b631a220c29731573ccc6b0cf400542d9f1812",
+      "sport": "kbo",
+      "table": "kbo_FDSWjM_OaTs"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_Lh8n_DUXyGE/tracking_data.csv",
+      "raw_frame_count": 7943,
+      "row_count": 13767,
+      "sha256": "ca31adad97a11ac4f1afe2a9cffa6d85ead4b73528b9453cdea3f1305cbc86d5",
+      "sport": "kbo",
+      "table": "kbo_Lh8n_DUXyGE"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_OJfFKo9Dq2A/tracking_data.csv",
+      "raw_frame_count": 8414,
+      "row_count": 44485,
+      "sha256": "d42e83999ebb8221ff4c2db1f09f54404a4e860ff0910a8e5259264cea76d6a7",
+      "sport": "kbo",
+      "table": "kbo_OJfFKo9Dq2A"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_QrO9d2csjsg/tracking_data.csv",
+      "raw_frame_count": 6294,
+      "row_count": 11400,
+      "sha256": "467fea5dde78e7b711f93e54d77a0bb04b91cb28db930bff9449441da1a47e40",
+      "sport": "kbo",
+      "table": "kbo_QrO9d2csjsg"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_UuivYJVZYtY/tracking_data.csv",
+      "raw_frame_count": 5603,
+      "row_count": 14323,
+      "sha256": "44a4d168f87ab089f19e51b9b37aff4fcf9fb9cbbf430e36318bc844fa6bd353",
+      "sport": "kbo",
+      "table": "kbo_UuivYJVZYtY"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_W-tKSex-WPU/tracking_data.csv",
+      "raw_frame_count": 9600,
+      "row_count": 17107,
+      "sha256": "a431843f809b52c31dfd9d20567c0c4ad1757f892e1d3d916fad2e868585c985",
+      "sport": "kbo",
+      "table": "kbo_W-tKSex-WPU"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_Y4HqKr58TZk/tracking_data.csv",
+      "raw_frame_count": 9190,
+      "row_count": 18736,
+      "sha256": "fd9bb7f15bd0376ea11691cc649f4543e64cf4e8d74d4747a8523f661f76c081",
+      "sport": "kbo",
+      "table": "kbo_Y4HqKr58TZk"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_ahHGpSJWcIU/tracking_data.csv",
+      "raw_frame_count": 8547,
+      "row_count": 21945,
+      "sha256": "6d92521f6f7799a7bdbf9c0c78fcc367dfdd29bd5223a0325cb9d102fcf8846e",
+      "sport": "kbo",
+      "table": "kbo_ahHGpSJWcIU"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_bGQwZl43E9Y/tracking_data.csv",
+      "raw_frame_count": 4992,
+      "row_count": 10009,
+      "sha256": "ceee612eb0ec46025b456b5505ae23e74cdf335423b6620525eb4b80ae77521b",
+      "sport": "kbo",
+      "table": "kbo_bGQwZl43E9Y"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_cyRosVcG7zI/tracking_data.csv",
+      "raw_frame_count": 8951,
+      "row_count": 21208,
+      "sha256": "f74f9c405fc6339dcac250eb9ad6e78bf7024b05a59b3505e941192b81223e9a",
+      "sport": "kbo",
+      "table": "kbo_cyRosVcG7zI"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_eeH8RMtS24U/tracking_data.csv",
+      "raw_frame_count": 7283,
+      "row_count": 13907,
+      "sha256": "cb81851d376bf3d14855af69b15b6c75606f2de2af25e39ed5c3761f2777a0ea",
+      "sport": "kbo",
+      "table": "kbo_eeH8RMtS24U"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_fy6pf01O2gE/tracking_data.csv",
+      "raw_frame_count": 8055,
+      "row_count": 19500,
+      "sha256": "0fdd9ca424d824923177ee1b798d5a81262fb1508bd2e887031bd6e5e7038b12",
+      "sport": "kbo",
+      "table": "kbo_fy6pf01O2gE"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_h7IUxRgXbL8/tracking_data.csv",
+      "raw_frame_count": 7559,
+      "row_count": 16502,
+      "sha256": "3cbc6358be95268d9e144c8baec913112088ea9d7a53139aa51127509f81cadf",
+      "sport": "kbo",
+      "table": "kbo_h7IUxRgXbL8"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_hl_xGuMseB8/tracking_data.csv",
+      "raw_frame_count": 5533,
+      "row_count": 9950,
+      "sha256": "0b818a3b0b3e234b4423c9055c994bc7f2daa77010a97b95b1ac84c023c88b56",
+      "sport": "kbo",
+      "table": "kbo_hl_xGuMseB8"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_lIxmDQyQDtc/tracking_data.csv",
+      "raw_frame_count": 6905,
+      "row_count": 20094,
+      "sha256": "0c2954078c2f137eaf352c9d1f7b60c3aec77a970a92424c5856607b18dd4faf",
+      "sport": "kbo",
+      "table": "kbo_lIxmDQyQDtc"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_lrK_Hv6BEE0/tracking_data.csv",
+      "raw_frame_count": 4911,
+      "row_count": 11810,
+      "sha256": "cb126cee284e7b504e9dcb68c85a0a6c5d7e314367e1b61370f6ca7a42b8cd86",
+      "sport": "kbo",
+      "table": "kbo_lrK_Hv6BEE0"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_qLQbGFQ0-EQ/tracking_data.csv",
+      "raw_frame_count": 7334,
+      "row_count": 31494,
+      "sha256": "c45688b9618748f679b00a57719fb4775f4b93502e082331d2427c05ad767a9c",
+      "sport": "kbo",
+      "table": "kbo_qLQbGFQ0-EQ"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_tHih8xD7MSY/tracking_data.csv",
+      "raw_frame_count": 8754,
+      "row_count": 37621,
+      "sha256": "7557dfac47dafa3222919572d4b05990ec1ea1991058cb1f0f7d4046d3d80dcf",
+      "sport": "kbo",
+      "table": "kbo_tHih8xD7MSY"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_tzC71aneg9c/tracking_data.csv",
+      "raw_frame_count": 7097,
+      "row_count": 21312,
+      "sha256": "e44e7d107aabfe41bf79f4ffa1f091c6555415408f25cc362981f96d44b0469c",
+      "sport": "kbo",
+      "table": "kbo_tzC71aneg9c"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/kbo_vPUqzscNQIk/tracking_data.csv",
+      "raw_frame_count": 9564,
+      "row_count": 28965,
+      "sha256": "a5181ed3359f335bf67cacfba819e0cea8f6f627abac1acadb972d4f84c98b10",
+      "sport": "kbo",
+      "table": "kbo_vPUqzscNQIk"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_2026-08-30_03d78bee/tracking_data.csv",
+      "raw_frame_count": 1235,
+      "row_count": 2064,
+      "sha256": "3bcbf94cf8db8a6a8736d6b0979468146fb85238b5f2d364d904ec37a0ecb1a6",
+      "sport": "baseball",
+      "table": "mlb_2026-08-30_03d78bee"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_2026-08-30_08b16ce9/tracking_data.csv",
+      "raw_frame_count": 1873,
+      "row_count": 3436,
+      "sha256": "54688087d750397e65257c03aa8989543a6e14b4cf943edd4905e75c2f5ee951",
+      "sport": "baseball",
+      "table": "mlb_2026-08-30_08b16ce9"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_2026-08-30_0f36e8cc/tracking_data.csv",
+      "raw_frame_count": 2254,
+      "row_count": 4043,
+      "sha256": "fe8e9802ec84924600ec9603c55c9dd9da60827efbefce9ea5aa419412c8d98d",
+      "sport": "baseball",
+      "table": "mlb_2026-08-30_0f36e8cc"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_2026-08-30_10893dca/tracking_data.csv",
+      "raw_frame_count": 1857,
+      "row_count": 3061,
+      "sha256": "b2bbca14864e33cfb30c48dc64faf6d876622ceaf6311f889b27b62b819af045",
+      "sport": "baseball",
+      "table": "mlb_2026-08-30_10893dca"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_2026-08-30_1c6706c6/tracking_data.csv",
+      "raw_frame_count": 335,
+      "row_count": 670,
+      "sha256": "46e14e5b8f577f04c1cb49078d0ea2494ae54d4516b2aca7312ef1615c17ddec",
+      "sport": "baseball",
+      "table": "mlb_2026-08-30_1c6706c6"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_2026-08-30_2143de43/tracking_data.csv",
+      "raw_frame_count": 1763,
+      "row_count": 2976,
+      "sha256": "477d9b3b9477ae50793cd816a279593521e1a137b6b9de70a517db8cfca2a56d",
+      "sport": "baseball",
+      "table": "mlb_2026-08-30_2143de43"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_2026-08-30_2b814fad/tracking_data.csv",
+      "raw_frame_count": 1284,
+      "row_count": 2335,
+      "sha256": "6833570bbbb127ebec0f6011954a8a1c3ece61db07219f318f58f0b505b9dab2",
+      "sport": "baseball",
+      "table": "mlb_2026-08-30_2b814fad"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_2026-08-30_3a02d9b3/tracking_data.csv",
+      "raw_frame_count": 648,
+      "row_count": 919,
+      "sha256": "7a6ce66457576192eda1f8cd76ccf6ed391da846a18fc78fa79d5aae6726ccfe",
+      "sport": "baseball",
+      "table": "mlb_2026-08-30_3a02d9b3"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_2026-08-30_7e8080e5/tracking_data.csv",
+      "raw_frame_count": 1893,
+      "row_count": 3125,
+      "sha256": "147d326a9d69f01f5ebaf4d707643aebb1a201ad3736ba0382b572d6ec44ec61",
+      "sport": "baseball",
+      "table": "mlb_2026-08-30_7e8080e5"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_2026-08-30_f8812b72/tracking_data.csv",
+      "raw_frame_count": 4925,
+      "row_count": 9182,
+      "sha256": "fdc78c8e53c1f2b2ff8df2829951ef2860a9b7b38be85a4ddd5fb2a9952983bd",
+      "sport": "baseball",
+      "table": "mlb_2026-08-30_f8812b72"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_231Mmqijar8/tracking_data.csv",
+      "raw_frame_count": 8501,
+      "row_count": 78315,
+      "sha256": "f83a47ac72594b25da59c114052f78d223efe03d62bb891a1a8ee6ff8ad7f50f",
+      "sport": "baseball",
+      "table": "mlb_231Mmqijar8"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_2iosUkpL0Bc/tracking_data.csv",
+      "raw_frame_count": 5867,
+      "row_count": 39503,
+      "sha256": "38d08448a664c96e16997b007b1523738112c27aa198edcbbe5a19ce1e50f551",
+      "sport": "baseball",
+      "table": "mlb_2iosUkpL0Bc"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_3Oc4S_1np98/tracking_data.csv",
+      "raw_frame_count": 5802,
+      "row_count": 40106,
+      "sha256": "3e1e943b99307e92d5b0814710ca9b1d5ecd1ecd29ead26eb4ced60d824861f0",
+      "sport": "baseball",
+      "table": "mlb_3Oc4S_1np98"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_5IA4jaKNOYg/tracking_data.csv",
+      "raw_frame_count": 9601,
+      "row_count": 36700,
+      "sha256": "066b70b3ee77c2d230027e9a666166b551d40086224d7e055f4fefcf122a5799",
+      "sport": "baseball",
+      "table": "mlb_5IA4jaKNOYg"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_5WpMyA0Xj6Y/tracking_data.csv",
+      "raw_frame_count": 9601,
+      "row_count": 33247,
+      "sha256": "99159ab6f3787718434885d61c0543dc3c9cb279b801145e8a8293500bd0d016",
+      "sport": "baseball",
+      "table": "mlb_5WpMyA0Xj6Y"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_6SEjheAAtcs/tracking_data.csv",
+      "raw_frame_count": 9600,
+      "row_count": 28798,
+      "sha256": "1744bfee0aea65277195dace4d4791f1a8a366c0b0cb7f0488d4f316fc1fcff1",
+      "sport": "baseball",
+      "table": "mlb_6SEjheAAtcs"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_7T-rpI5l0ro/tracking_data.csv",
+      "raw_frame_count": 9600,
+      "row_count": 12629,
+      "sha256": "f7350bb7b551fd19254d218b75a8f7331ac28ba80a27c6357ae11c657bd21f0c",
+      "sport": "baseball",
+      "table": "mlb_7T-rpI5l0ro"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_A5AkcaXA2fk/tracking_data.csv",
+      "raw_frame_count": 8957,
+      "row_count": 15889,
+      "sha256": "3fb4e079c5f698abcc51e02d99074bc45eee9045f961dd0a3178492a7a2e9b94",
+      "sport": "baseball",
+      "table": "mlb_A5AkcaXA2fk"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_ARtRmUHC7dw/tracking_data.csv",
+      "raw_frame_count": 5826,
+      "row_count": 38335,
+      "sha256": "81aa6e5c2d93241601638d2930ce45f77c4141a88b75d55ad43a2202cc6e8145",
+      "sport": "baseball",
+      "table": "mlb_ARtRmUHC7dw"
+    },
+    {
+      "eligibility": "empty_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_FGtFanovws4/tracking_data.csv",
+      "raw_frame_count": 0,
+      "row_count": 0,
+      "sha256": "ea473065e8e147b086b03cccb0d0a1c0b194bea5156f3b5ffdcd976a126680cf",
+      "sport": "baseball",
+      "table": "mlb_FGtFanovws4"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_Fu9kVrQRg0M/tracking_data.csv",
+      "raw_frame_count": 9600,
+      "row_count": 36656,
+      "sha256": "d6666667e1c5201531424e2555d80133958737eaf4c00f8d7b1570ad20d950ab",
+      "sport": "baseball",
+      "table": "mlb_Fu9kVrQRg0M"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_MUbgCYez-LY/tracking_data.csv",
+      "raw_frame_count": 9600,
+      "row_count": 49586,
+      "sha256": "f984ab00c0bb05ffe0d1f0e71a1a813d704fbf8f3672d88c57189394bf15a7b0",
+      "sport": "baseball",
+      "table": "mlb_MUbgCYez-LY"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_NiSezRTvsew/tracking_data.csv",
+      "raw_frame_count": 5016,
+      "row_count": 12189,
+      "sha256": "30dfc80dd59b87ba38e38243ac371217b1ef2c8c174aa8d5e91d81cd96a1da86",
+      "sport": "baseball",
+      "table": "mlb_NiSezRTvsew"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_PPj97yvNGOo/tracking_data.csv",
+      "raw_frame_count": 5867,
+      "row_count": 38319,
+      "sha256": "f11e39fd9b2d70bf997a67f28bcf04c9f4ca2ee4c302c4258aaf96bb5698d44a",
+      "sport": "baseball",
+      "table": "mlb_PPj97yvNGOo"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_QqHhEShXAX0/tracking_data.csv",
+      "raw_frame_count": 9600,
+      "row_count": 42606,
+      "sha256": "3018eb26a4ab448c36d272b9debcabeffbdd43cda07c74899714df99d15d6d36",
+      "sport": "baseball",
+      "table": "mlb_QqHhEShXAX0"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_VxQlqZhLJso/tracking_data.csv",
+      "raw_frame_count": 9601,
+      "row_count": 41756,
+      "sha256": "0f324f613095c2fa4a1ad545a7a5fa11f4558936d2574f075f6ea59c8cc10f6b",
+      "sport": "baseball",
+      "table": "mlb_VxQlqZhLJso"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_Z5u9T4b1qxk/tracking_data.csv",
+      "raw_frame_count": 9528,
+      "row_count": 31016,
+      "sha256": "59346d75c2e0851686b22d7f5cef74f182a4eb165031031845e2ac6eb9f140d5",
+      "sport": "baseball",
+      "table": "mlb_Z5u9T4b1qxk"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_cC3rQWxcOqk/tracking_data.csv",
+      "raw_frame_count": 9598,
+      "row_count": 27022,
+      "sha256": "edb32c465de466bc1db257cd4403a7114dcdde09b8f94ec9900f96309114160e",
+      "sport": "baseball",
+      "table": "mlb_cC3rQWxcOqk"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_dSX2ujmGBgg/tracking_data.csv",
+      "raw_frame_count": 9600,
+      "row_count": 18128,
+      "sha256": "18d3899da912dc7d8b40b3960af2795650fe576d0811bb1f7a74384811fb3c13",
+      "sport": "baseball",
+      "table": "mlb_dSX2ujmGBgg"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_dVNOESziFWQ/tracking_data.csv",
+      "raw_frame_count": 4125,
+      "row_count": 8483,
+      "sha256": "f6ef615d24ce1c1e40412caa04e63a605e86d2c30fbc532eb59de6c1707e4932",
+      "sport": "baseball",
+      "table": "mlb_dVNOESziFWQ"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_gDv5xF2AA2E/tracking_data.csv",
+      "raw_frame_count": 9342,
+      "row_count": 49475,
+      "sha256": "e66dcf056b1d4ece912519fb011b41b448e27d02ddf461b084dadf5f8dba9510",
+      "sport": "baseball",
+      "table": "mlb_gDv5xF2AA2E"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_gMm3EODDb6w/tracking_data.csv",
+      "raw_frame_count": 5852,
+      "row_count": 31181,
+      "sha256": "3e17debb34a40b246f8388e5b5c8d6597b0f2444ff755f5ba521cec1aad0988e",
+      "sport": "baseball",
+      "table": "mlb_gMm3EODDb6w"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_nLoG6gvC-Nk/tracking_data.csv",
+      "raw_frame_count": 9600,
+      "row_count": 23345,
+      "sha256": "97d1cf71304beab7bfcb497849684416a3e5c11234607271380528d9e3e18c4e",
+      "sport": "baseball",
+      "table": "mlb_nLoG6gvC-Nk"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_ptIBgr6U1Y8/tracking_data.csv",
+      "raw_frame_count": 5852,
+      "row_count": 48319,
+      "sha256": "01bbd07721d3a796b7948c89eb81a25ebe4d8f61b4448a13d73825ba8116fbb1",
+      "sport": "baseball",
+      "table": "mlb_ptIBgr6U1Y8"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_x6YpMlNYbrU/tracking_data.csv",
+      "raw_frame_count": 9611,
+      "row_count": 19936,
+      "sha256": "d7251baccd1dfde0c1bc44bd213b72ffe553dd5925e97b554e0b413aecad3c34",
+      "sport": "baseball",
+      "table": "mlb_x6YpMlNYbrU"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/mlb_yihNr8zCgkA/tracking_data.csv",
+      "raw_frame_count": 9601,
+      "row_count": 15623,
+      "sha256": "5e53fe2242d23d1d3d08b26b2c19820aa8d89457ba042af47f4d073db9e5a404",
+      "sport": "baseball",
+      "table": "mlb_yihNr8zCgkA"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/ncaa_basketball_IB-_u4gW3ds/tracking_data.csv",
+      "raw_frame_count": 578,
+      "row_count": 3061,
+      "sha256": "bea79a4e1a331cadf13af73b2864b1d5e83561bdf2d877fee465c569e4b23d0a",
+      "sport": "basketball",
+      "table": "ncaa_basketball_IB-_u4gW3ds"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/ncaa_basketball_WFl3V7ZY4ss/tracking_data.csv",
+      "raw_frame_count": 993,
+      "row_count": 3644,
+      "sha256": "c6c57ddde3474e86db55ef4c36d7bb0d9c262c6d68208c7354a4525aed49dc7a",
+      "sport": "basketball",
+      "table": "ncaa_basketball_WFl3V7ZY4ss"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/ncaa_basketball_mRkuGgeECak/tracking_data.csv",
+      "raw_frame_count": 979,
+      "row_count": 3140,
+      "sha256": "c79654e1b12af14f3ffc3051cbb3c05d74b076ce343c90c6056d479f264fc15d",
+      "sport": "basketball",
+      "table": "ncaa_basketball_mRkuGgeECak"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/ncaa_basketball_sRtHQbywiTE/tracking_data.csv",
+      "raw_frame_count": 745,
+      "row_count": 2234,
+      "sha256": "5b2606297bdf459a1b89c4fd9317e817bd0e24be35ce4407fe36461787b4d070",
+      "sport": "basketball",
+      "table": "ncaa_basketball_sRtHQbywiTE"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/ncaa_basketball_tiUvyvWOCxo/tracking_data.csv",
+      "raw_frame_count": 978,
+      "row_count": 4424,
+      "sha256": "2caead803e6119d6defc52761e748ca27ef3015df31e138d8ffa37861eebec67",
+      "sport": "basketball",
+      "table": "ncaa_basketball_tiUvyvWOCxo"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/ncaa_basketball_zqBCKovJCQU/tracking_data.csv",
+      "raw_frame_count": 999,
+      "row_count": 5303,
+      "sha256": "57b44428af51a0de86b0c8d127bc75632f3a246f704096794e61b07a235a52f2",
+      "sport": "basketball",
+      "table": "ncaa_basketball_zqBCKovJCQU"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_01/tracking_data.csv",
+      "raw_frame_count": 8775,
+      "row_count": 36684,
+      "sha256": "0f7973e666d501ab5e392fdf18d0e6aee420ea616f3664c5cfe699558bbad54d",
+      "sport": "npb",
+      "table": "npb_01"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_02/tracking_data.csv",
+      "raw_frame_count": 9396,
+      "row_count": 43025,
+      "sha256": "585bff187fc2641670faeedb217ed0663a2552a38c84e20c3d3a1f6f31cc6968",
+      "sport": "npb",
+      "table": "npb_02"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_03/tracking_data.csv",
+      "raw_frame_count": 452,
+      "row_count": 650,
+      "sha256": "7394ead458356f357383ff034cb208645c8a9cd863ddef04c70c065b7e22b7c9",
+      "sport": "npb",
+      "table": "npb_03"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_04/tracking_data.csv",
+      "raw_frame_count": 9228,
+      "row_count": 32744,
+      "sha256": "739ce68a1d55f085b6157687f37e801e4b00eab6d812a7dfadf6ad88662f14be",
+      "sport": "npb",
+      "table": "npb_04"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_05/tracking_data.csv",
+      "raw_frame_count": 920,
+      "row_count": 1455,
+      "sha256": "bd571ccd0641ab2af04d45fe1e81e54cd183a62a087875cf755beb946c022534",
+      "sport": "npb",
+      "table": "npb_05"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_06/tracking_data.csv",
+      "raw_frame_count": 565,
+      "row_count": 835,
+      "sha256": "72f9f7672c7c2a8c1acf62342c8ec458bb95e9ff6601c14e96535389cda51f69",
+      "sport": "npb",
+      "table": "npb_06"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_07/tracking_data.csv",
+      "raw_frame_count": 365,
+      "row_count": 565,
+      "sha256": "268b09f9a9a75142e513a22899a4c6de8f272d6d8819495e1ddbed7995b095ed",
+      "sport": "npb",
+      "table": "npb_07"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_08/tracking_data.csv",
+      "raw_frame_count": 343,
+      "row_count": 577,
+      "sha256": "0b06884ab2ce0220a948a6ae65e34918ff456c044c8b9d63eb377e0fc23c3f8b",
+      "sport": "npb",
+      "table": "npb_08"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_09/tracking_data.csv",
+      "raw_frame_count": 8630,
+      "row_count": 41348,
+      "sha256": "57115fc8669f6160908154830fbc1dfcb3f51999a7ff3d78975c897fa0aae1e3",
+      "sport": "npb",
+      "table": "npb_09"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_10/tracking_data.csv",
+      "raw_frame_count": 9259,
+      "row_count": 43625,
+      "sha256": "391b1de91e440f0b543e7d2e4e3aef9449f384f58d5121211b19a26fbbf134e5",
+      "sport": "npb",
+      "table": "npb_10"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_2iFIuWxu6HI/tracking_data.csv",
+      "raw_frame_count": 9272,
+      "row_count": 41591,
+      "sha256": "70dec38078cd3aa6a3500bc8055d3496661964ed79cfca4878cd6b4dc2cb441a",
+      "sport": "npb",
+      "table": "npb_2iFIuWxu6HI"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_3PwJwWdTMek/tracking_data.csv",
+      "raw_frame_count": 9510,
+      "row_count": 62260,
+      "sha256": "a3c3501a6feb9c07bdde90687599e868332d1614e718e78339f78bbd0b8687ec",
+      "sport": "npb",
+      "table": "npb_3PwJwWdTMek"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_Arpw32zVTuc/tracking_data.csv",
+      "raw_frame_count": 9235,
+      "row_count": 30965,
+      "sha256": "6410f376c95fc62bd0ba78cdc4604951721edef427ca5e8a7c56536f8e9c4665",
+      "sport": "npb",
+      "table": "npb_Arpw32zVTuc"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_HQfhD5Iwm7U/tracking_data.csv",
+      "raw_frame_count": 9216,
+      "row_count": 35142,
+      "sha256": "47ef9c17765bf993c159cc9cdc42b4f491192e29ad2fd32fe58b3b0ddadee581",
+      "sport": "npb",
+      "table": "npb_HQfhD5Iwm7U"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_RIwbEjh-zTs/tracking_data.csv",
+      "raw_frame_count": 9242,
+      "row_count": 36367,
+      "sha256": "cec32f96b7c938d643b1bee13fc4f1df3c76ab7f692a0cdf05433f8995ffcb77",
+      "sport": "npb",
+      "table": "npb_RIwbEjh-zTs"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_V3FrwLVwCpA/tracking_data.csv",
+      "raw_frame_count": 9199,
+      "row_count": 30831,
+      "sha256": "67eee2a23dec1abeb202f0a530ebf32af0fcb66d4a3b7615768bb0e806b68bba",
+      "sport": "npb",
+      "table": "npb_V3FrwLVwCpA"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_XGhDpaeFSKc/tracking_data.csv",
+      "raw_frame_count": 9038,
+      "row_count": 33729,
+      "sha256": "f7d12bebfcd1fefd1358e567752350ef27be35c0b9e637a1db735b5e8546f1fc",
+      "sport": "npb",
+      "table": "npb_XGhDpaeFSKc"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_YI146E0gNnA/tracking_data.csv",
+      "raw_frame_count": 8590,
+      "row_count": 42827,
+      "sha256": "1d7749c39ffdc9f79895aceeb9b8b5b2de5baf33b8d9c524aeec13d37d28a5e1",
+      "sport": "npb",
+      "table": "npb_YI146E0gNnA"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_aEpT4HU_ilg/tracking_data.csv",
+      "raw_frame_count": 9002,
+      "row_count": 34836,
+      "sha256": "1f32a350204c04778a38d8e12b04b00ba1f20a0919ecfabfba38f2fed9ce94ff",
+      "sport": "npb",
+      "table": "npb_aEpT4HU_ilg"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_cHZcTsFreJY/tracking_data.csv",
+      "raw_frame_count": 9417,
+      "row_count": 44359,
+      "sha256": "a4db4d7e4e86b9d0fdbeb8e1d0d57796c2f3028a6ed93c83c99da883557c00b7",
+      "sport": "npb",
+      "table": "npb_cHZcTsFreJY"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_dTLgOoX4nhc/tracking_data.csv",
+      "raw_frame_count": 8965,
+      "row_count": 34698,
+      "sha256": "38961f0c688c359afcf48c1478fca03af21a429fb463e128ff6f4d62fe0de52f",
+      "sport": "npb",
+      "table": "npb_dTLgOoX4nhc"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_jm2Ocr-LAtc/tracking_data.csv",
+      "raw_frame_count": 9285,
+      "row_count": 36626,
+      "sha256": "bfcd1d0370cedaf2b84dafdf9a198ea355e18eb2fe3b51a2e81c24c2e0642906",
+      "sport": "npb",
+      "table": "npb_jm2Ocr-LAtc"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_kqPv-_WwWLk/tracking_data.csv",
+      "raw_frame_count": 9087,
+      "row_count": 24431,
+      "sha256": "71b2b42c645d0b02189bd2a93bc26cdaa580547247aa61670459ef8199b15f50",
+      "sport": "npb",
+      "table": "npb_kqPv-_WwWLk"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_u2svMam9fKE/tracking_data.csv",
+      "raw_frame_count": 9410,
+      "row_count": 46821,
+      "sha256": "8920dfb9139fb98511eb9115c822bdfcd29dd84f860627f61ee09f16c3c2c3eb",
+      "sport": "npb",
+      "table": "npb_u2svMam9fKE"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_ul7Kq_Km7eA/tracking_data.csv",
+      "raw_frame_count": 9442,
+      "row_count": 47683,
+      "sha256": "84c4cf136e5e077190384c4c1824f75ce06ecf559d6d3880024f54a04d2d8874",
+      "sport": "npb",
+      "table": "npb_ul7Kq_Km7eA"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/npb_wZgoTPoZXKM/tracking_data.csv",
+      "raw_frame_count": 8597,
+      "row_count": 36632,
+      "sha256": "c5ed3892666cd5935f40b9a65f59f20d23a215f733675c8aff70b826279495d2",
+      "sport": "npb",
+      "table": "npb_wZgoTPoZXKM"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_-YbZsM26GDI/tracking_data.csv",
+      "raw_frame_count": 662,
+      "row_count": 7221,
+      "sha256": "4bc9e176bcf671b5898203907585dfe80b543557dee1b25ebfebbcc9b76f44ce",
+      "sport": "soccer",
+      "table": "soccer_-YbZsM26GDI"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_2TwKQrkV7FA/tracking_data.csv",
+      "raw_frame_count": 2167,
+      "row_count": 21357,
+      "sha256": "60395fab87a7c85d0edcbef28e17c1e0d52b33d8e6d004691555c396ceb8b252",
+      "sport": "soccer",
+      "table": "soccer_2TwKQrkV7FA"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_6dIn3fUfI6U/tracking_data.csv",
+      "raw_frame_count": 8122,
+      "row_count": 96168,
+      "sha256": "dd79e238462b4b4335cfa1acc4a29992df87f0a87cfcbfb2d93d0f7ec279d19a",
+      "sport": "soccer",
+      "table": "soccer_6dIn3fUfI6U"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_7fOG8j_ncWY/tracking_data.csv",
+      "raw_frame_count": 6573,
+      "row_count": 68211,
+      "sha256": "d15e4ed578c8d8de9df56d66c82c9b0ad9761bdc3e3a4704e04d3ebdf80e6f00",
+      "sport": "soccer",
+      "table": "soccer_7fOG8j_ncWY"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_8_DRy2i5-hs/tracking_data.csv",
+      "raw_frame_count": 6818,
+      "row_count": 75954,
+      "sha256": "58e78354d05885dec603fc79a903d910caafab6fe7b858ab4e2d638407f112cb",
+      "sport": "soccer",
+      "table": "soccer_8_DRy2i5-hs"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_A9ad17VZvs8/tracking_data.csv",
+      "raw_frame_count": 907,
+      "row_count": 6126,
+      "sha256": "9c0531c3f530e37ad700e8d1efcad52d6c519cfb79c73cccb23233f30f7f9741",
+      "sport": "soccer",
+      "table": "soccer_A9ad17VZvs8"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_AgspyOj5BPk/tracking_data.csv",
+      "raw_frame_count": 7271,
+      "row_count": 107232,
+      "sha256": "70a0e3435729ca811c691d8f5821c54f3ba355c18276cdd43c8b17c14040bc43",
+      "sport": "soccer",
+      "table": "soccer_AgspyOj5BPk"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_Cn26lFZ0_jI/tracking_data.csv",
+      "raw_frame_count": 5371,
+      "row_count": 64359,
+      "sha256": "815686de18954ea13497cc3cfc3aca2af233167a25f318e1c7f370b572c42366",
+      "sport": "soccer",
+      "table": "soccer_Cn26lFZ0_jI"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_DdnvC6-PGYY/tracking_data.csv",
+      "raw_frame_count": 3176,
+      "row_count": 34728,
+      "sha256": "8ef24365cb4938f419876cb1d054025b93484410b44f08bb4f101d6b6d78eccd",
+      "sport": "soccer",
+      "table": "soccer_DdnvC6-PGYY"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_EKhrdU9bVZA/tracking_data.csv",
+      "raw_frame_count": 7710,
+      "row_count": 90058,
+      "sha256": "4d10c28d262ad323397d74a5e3e50a027d962ff7ca5d3e51b75404e834fa1889",
+      "sport": "soccer",
+      "table": "soccer_EKhrdU9bVZA"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_GF-WteOINCc/tracking_data.csv",
+      "raw_frame_count": 6765,
+      "row_count": 80980,
+      "sha256": "dc0776addecb82aee33bafb492401f136d4470e1c1f86f171ac297eb2b292530",
+      "sport": "soccer",
+      "table": "soccer_GF-WteOINCc"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_HkN1E3HESS8/tracking_data.csv",
+      "raw_frame_count": 680,
+      "row_count": 1632,
+      "sha256": "4dc451abf6255c31ff7d2fd66302469384c80e06e9efd4216271c0485a471b67",
+      "sport": "soccer",
+      "table": "soccer_HkN1E3HESS8"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_HxBqMbI5kqQ/tracking_data.csv",
+      "raw_frame_count": 7979,
+      "row_count": 91744,
+      "sha256": "9c94f9b03595c8d52e45d8fd4aec03189f65b3cad8df52a048238e402a5a3880",
+      "sport": "soccer",
+      "table": "soccer_HxBqMbI5kqQ"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_JIQnnYy7qYk/tracking_data.csv",
+      "raw_frame_count": 6632,
+      "row_count": 88867,
+      "sha256": "cd4cec1b6fe665e97e3d4c4f61c1c961bbf278d7fe14004c1104766adb8afdd2",
+      "sport": "soccer",
+      "table": "soccer_JIQnnYy7qYk"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_JLMH7eUeJBY/tracking_data.csv",
+      "raw_frame_count": 3656,
+      "row_count": 26361,
+      "sha256": "bd4d7b1911494d9999c20fa9460036e9185e1f91afabc5d15a0f05a83aa170b4",
+      "sport": "soccer",
+      "table": "soccer_JLMH7eUeJBY"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_Pbyn08kfhXY/tracking_data.csv",
+      "raw_frame_count": 7699,
+      "row_count": 81222,
+      "sha256": "3ccefd073bb2ca536305632c4141a7ea2a1add868e136303b290c215070486a1",
+      "sport": "soccer",
+      "table": "soccer_Pbyn08kfhXY"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_QIpZ1pad73w/tracking_data.csv",
+      "raw_frame_count": 7071,
+      "row_count": 110774,
+      "sha256": "a95f5fb41e9eaa6236db792aa83536daff2e4616ee44c28305090302decbd096",
+      "sport": "soccer",
+      "table": "soccer_QIpZ1pad73w"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_Z6NTDyxcODs/tracking_data.csv",
+      "raw_frame_count": 5059,
+      "row_count": 29785,
+      "sha256": "286ab462c87fcffef40bddd260abc190b9ed9a8e601f277079c804f9bc793fae",
+      "sport": "soccer",
+      "table": "soccer_Z6NTDyxcODs"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_c1mzmBGHQr4/tracking_data.csv",
+      "raw_frame_count": 292,
+      "row_count": 523,
+      "sha256": "259b5b987070d5c2e16b331babb523fc6b31aec1f3de2255c6d2d444429f1292",
+      "sport": "soccer",
+      "table": "soccer_c1mzmBGHQr4"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_cKXZysISV4w/tracking_data.csv",
+      "raw_frame_count": 8333,
+      "row_count": 98261,
+      "sha256": "d4ece195284a301c3a0c001bd0cbffb151d27942a0ee12c6cf90c7129abdfe5d",
+      "sport": "soccer",
+      "table": "soccer_cKXZysISV4w"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_cS4OpYJ0Pps/tracking_data.csv",
+      "raw_frame_count": 9743,
+      "row_count": 97339,
+      "sha256": "8ea54be57ee8260d8aee08ecab15b8209d8c31aafbea9c1df8ee85a74e2a15d6",
+      "sport": "soccer",
+      "table": "soccer_cS4OpYJ0Pps"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_ci4vyd6PsNg/tracking_data.csv",
+      "raw_frame_count": 7523,
+      "row_count": 102639,
+      "sha256": "efed8c21f14f4349f6763c0366c79ae8cc3e4038508f376b256399b73ba9b81a",
+      "sport": "soccer",
+      "table": "soccer_ci4vyd6PsNg"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_dnR5C6WLJI4/tracking_data.csv",
+      "raw_frame_count": 933,
+      "row_count": 4111,
+      "sha256": "19ea906d5c7c7c24ada86b7613348471a1bd1c8c7b720753edc908f3b1b60608",
+      "sport": "soccer",
+      "table": "soccer_dnR5C6WLJI4"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_kSgNjoaqCpI/tracking_data.csv",
+      "raw_frame_count": 1511,
+      "row_count": 5025,
+      "sha256": "7b8be17437624abad17dedc1898ce9914c4d78e5074bd0be5f0901cde08e53ab",
+      "sport": "soccer",
+      "table": "soccer_kSgNjoaqCpI"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_lv2CukQcR5s/tracking_data.csv",
+      "raw_frame_count": 5076,
+      "row_count": 40624,
+      "sha256": "f1fe2d0e5fd5f89f2c595091f84f8d5c6c4580a4eb8dbfe576685cea4950dbde",
+      "sport": "soccer",
+      "table": "soccer_lv2CukQcR5s"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/soccer_y0-6FHIaiZA/tracking_data.csv",
+      "raw_frame_count": 1337,
+      "row_count": 11710,
+      "sha256": "db79f2a990c0814d2eb6aa780eb08a2e81f57fc05e7d75017c73b1e2213e98db",
+      "sport": "soccer",
+      "table": "soccer_y0-6FHIaiZA"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_01/tracking_data.csv",
+      "raw_frame_count": 4510,
+      "row_count": 9547,
+      "sha256": "5be90ecdc658ae94eb68ed10b21a425af0c369a8fe61832c35045fda9eb33fbd",
+      "sport": "tennis",
+      "table": "tennis_01"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_02/tracking_data.csv",
+      "raw_frame_count": 1951,
+      "row_count": 2421,
+      "sha256": "854d6e1d5de50e333714a6c24a623b4cace433a090d7c84a93196b65cc6c6fb0",
+      "sport": "tennis",
+      "table": "tennis_02"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_03/tracking_data.csv",
+      "raw_frame_count": 3392,
+      "row_count": 5610,
+      "sha256": "9cf2fcab44180e0171f993b5989a935db5e203e7100f4bfa240a1a55384fbeed",
+      "sport": "tennis",
+      "table": "tennis_03"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_04/tracking_data.csv",
+      "raw_frame_count": 3789,
+      "row_count": 7492,
+      "sha256": "4297b826c50896a0406ed9118d48729d426416347a9f421fee647c3041ec6221",
+      "sport": "tennis",
+      "table": "tennis_04"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_05/tracking_data.csv",
+      "raw_frame_count": 2905,
+      "row_count": 4303,
+      "sha256": "15c5b527783c744f17b30af7f47bc830552fbebf9642b838d6239e26484d7a38",
+      "sport": "tennis",
+      "table": "tennis_05"
+    },
+    {
+      "eligibility": "eligible_reaches_jump_statistic",
+      "modal_stride_frames": 2,
+      "modal_stride_jump_max": 17.662807573869923,
+      "modal_stride_pair_count": 196,
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_06/tracking_data.csv",
+      "raw_frame_count": 141,
+      "row_count": 340,
+      "sha256": "8fd29debfc78d07e5167c6db2e3b04ebbfc593341b6508f46fca1bb3d1a5d9fe",
+      "sport": "tennis",
+      "table": "tennis_06"
+    },
+    {
+      "eligibility": "eligible_reaches_jump_statistic",
+      "modal_stride_frames": 2,
+      "modal_stride_jump_max": 79.96179202728183,
+      "modal_stride_pair_count": 5718,
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_07/tracking_data.csv",
+      "raw_frame_count": 2925,
+      "row_count": 7128,
+      "sha256": "17a854e4e154294046faf87511a147b5c1b684d1ef825739b5a9dd9572d99f6d",
+      "sport": "tennis",
+      "table": "tennis_07"
+    },
+    {
+      "eligibility": "eligible_reaches_jump_statistic",
+      "modal_stride_frames": 2,
+      "modal_stride_jump_max": 2.8490917415162142,
+      "modal_stride_pair_count": 120,
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_08/tracking_data.csv",
+      "raw_frame_count": 93,
+      "row_count": 228,
+      "sha256": "f5b22782558b191d1bd5ec64de505625e0fa3eccdb89e9a852bb5e7da3189921",
+      "sport": "tennis",
+      "table": "tennis_08"
+    },
+    {
+      "eligibility": "insufficient_frames_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_09/tracking_data.csv",
+      "raw_frame_count": 2,
+      "row_count": 4,
+      "sha256": "50d4d00fca3ec6eb082149e16d7f9169f4e6a73c96b226113a70396613f946ff",
+      "sport": "tennis",
+      "table": "tennis_09"
+    },
+    {
+      "eligibility": "empty_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_10/tracking_data.csv",
+      "raw_frame_count": 0,
+      "row_count": 0,
+      "sha256": "69a10378d87fbb805328f53615a813df64e45fe4bae25b8ad35b5d8073ae074e",
+      "sport": "tennis",
+      "table": "tennis_10"
+    },
+    {
+      "eligibility": "eligible_reaches_jump_statistic",
+      "modal_stride_frames": 2,
+      "modal_stride_jump_max": 23.38078837836429,
+      "modal_stride_pair_count": 116,
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_3x3eEWCZmWQ/tracking_data.csv",
+      "raw_frame_count": 101,
+      "row_count": 266,
+      "sha256": "84c788693caa536e4c5db6e639c7aa25233847ae7867728bdd5b5252e17a98bc",
+      "sport": "tennis",
+      "table": "tennis_3x3eEWCZmWQ"
+    },
+    {
+      "eligibility": "empty_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_459iho5_AFs/tracking_data.csv",
+      "raw_frame_count": 0,
+      "row_count": 0,
+      "sha256": "69a10378d87fbb805328f53615a813df64e45fe4bae25b8ad35b5d8073ae074e",
+      "sport": "tennis",
+      "table": "tennis_459iho5_AFs"
+    },
+    {
+      "eligibility": "eligible_reaches_jump_statistic",
+      "modal_stride_frames": 2,
+      "modal_stride_jump_max": 9.792663345080264,
+      "modal_stride_pair_count": 190,
+      "path": "/workspace/nba-ai-system/data/tracking/tennis_nyYk2nPZAwY/tracking_data.csv",
+      "raw_frame_count": 160,
+      "row_count": 415,
+      "sha256": "ecb7bd0139e2a66110eda424ee349658500ec0e5d208d0e578e97a49909c9c68",
+      "sport": "tennis",
+      "table": "tennis_nyYk2nPZAwY"
+    },
+    {
+      "eligibility": "unknown_sport_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/test720_4MoMewm2j-o/tracking_data.csv",
+      "raw_frame_count": 5896,
+      "row_count": 29830,
+      "sha256": "93935e4140b863276c1627d05f160c23ca72dca62d1e7584ab98249c62b2158d",
+      "sport": "UNKNOWN",
+      "table": "test720_4MoMewm2j-o"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/wnba_01/tracking_data.csv",
+      "raw_frame_count": 999,
+      "row_count": 4855,
+      "sha256": "d5d963a9cb9a3a9f6c5d1666a9453be0a8e5fe84f9526fbfedda34678b7f7d00",
+      "sport": "wnba",
+      "table": "wnba_01"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/wnba_02/tracking_data.csv",
+      "raw_frame_count": 1000,
+      "row_count": 5342,
+      "sha256": "e759d4315d6f8ae56d81c8346ab9533b3554f4591ef66eb64d3038ee84bccdc7",
+      "sport": "wnba",
+      "table": "wnba_02"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/wnba_03/tracking_data.csv",
+      "raw_frame_count": 971,
+      "row_count": 2380,
+      "sha256": "cf98388942f377a473ee0269fa7b31004e9aa0957c8d2e75677e1d7b85644ace",
+      "sport": "wnba",
+      "table": "wnba_03"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/wnba_04/tracking_data.csv",
+      "raw_frame_count": 997,
+      "row_count": 4906,
+      "sha256": "dd2a356fbc6d3581669b5306ed79e58cfcfb16804ef77cce42f13878c7941647",
+      "sport": "wnba",
+      "table": "wnba_04"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/wnba_05/tracking_data.csv",
+      "raw_frame_count": 547,
+      "row_count": 2230,
+      "sha256": "35f923c610e769c96de798230f7fccb193ebd65e58794b99653da466989cc49a",
+      "sport": "wnba",
+      "table": "wnba_05"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/wnba_06/tracking_data.csv",
+      "raw_frame_count": 1000,
+      "row_count": 4495,
+      "sha256": "7accf8a07876bf97011e4e9f7b8365f273a1d6bcb38be1864616a3440f88b21a",
+      "sport": "wnba",
+      "table": "wnba_06"
+    },
+    {
+      "eligibility": "missing_required_columns_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/wnba_07/tracking_data.csv",
+      "raw_frame_count": 1000,
+      "row_count": 5375,
+      "sha256": "fcba6a7632fbff77c4c000aed294442867cdc67173b14e37d5ac08e5692fa624",
+      "sport": "wnba",
+      "table": "wnba_07"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/wnba_kangps_g1/tracking_data.csv",
+      "raw_frame_count": 5730,
+      "row_count": 38424,
+      "sha256": "e5f1144590cd3f1e37bb04c28deae9ae073b39b01b2ddc8a52d30cde82a46dcf",
+      "sport": "wnba",
+      "table": "wnba_kangps_g1"
+    },
+    {
+      "eligibility": "not_all_court_feet_before_jump",
+      "path": "/workspace/nba-ai-system/data/tracking/wnba_kangps_g2/tracking_data.csv",
+      "raw_frame_count": 5987,
+      "row_count": 29850,
+      "sha256": "a091ff17a875b40af590ff852069df1f17123efe63e90731e26229d6e2babb50",
+      "sport": "wnba",
+      "table": "wnba_kangps_g2"
+    }
+  ],
+  "schema": "g131_current_jump_gate_census_v1",
+  "sport_routing": "Directory prefixes use the G107/G109 routing; historical g89_tennis_* source directories are tennis.",
+  "total_tables_read": 203,
+  "unit": "one distinct source-table directory"
+}
