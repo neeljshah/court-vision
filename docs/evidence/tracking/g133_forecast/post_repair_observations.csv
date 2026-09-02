@@ -1,0 +1,8 @@
+observation,game_id,observed_at_utc,stage,timestamp_source,post_repair_counting_status,source
+repair_start,,2026-09-02T21:44:56Z,window_start,git_commit_03a34eef8,window_boundary,03a34eef84a599005d9fd785c8ea892528bff6a6
+tracked_terminal,tennis_06,2026-09-02T22:22:22Z,tracked,pod_track_daemon_ledger_finished_at,include_exact,workspace/nba-ai-system/data/tracking/track_daemon_ledger.jsonl
+tracked_terminal,tennis_07,2026-09-02T22:39:07Z,tracked,pod_track_daemon_ledger_finished_at,include_exact,workspace/nba-ai-system/data/tracking/track_daemon_ledger.jsonl
+tracking_table_write,tennis_06,2026-09-02T22:21:34Z,tracking_table,pod_tracking_data_mtime,corroborating_only,workspace/nba-ai-system/data/tracking/tennis_06/tracking_data.csv
+tracking_table_write,tennis_07,2026-09-02T22:36:38Z,tracking_table,pod_tracking_data_mtime,corroborating_only,workspace/nba-ai-system/data/tracking/tennis_07/tracking_data.csv
+staged_file,tennis_08,2026-09-02T23:38:38Z,staged,pod_footage_bridge_mtime,include_direct_stage,workspace/nba-ai-system/data/footage_bridge/tennis__tennis_08.mp4
+snapshot_end,,2026-09-02T23:43:37Z,window_end,pod_utc_command,window_boundary,read_only_snapshot

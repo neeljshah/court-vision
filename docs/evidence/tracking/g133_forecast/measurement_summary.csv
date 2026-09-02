@@ -1,0 +1,5 @@
+metric,window_start_utc,window_end_utc,window_seconds,window_hours,numerator,denominator,rate_per_hour,status,interpretation
+successful_local_acquisition,2026-09-02T21:44:56Z,2026-09-02T23:43:37Z,7121,1.978056,not_observable,not_observable,not_observable,not_measurable,the bridge ledger and bridge log have no per-event timestamp or download-complete event
+directly_timestamped_pod_stage,2026-09-02T21:44:56Z,2026-09-02T23:43:37Z,7121,1.978056,1,1,0.505544,lower_bound_only,tennis_08 was directly observed in pod footage_bridge at 23:38:38Z; two terminal games necessarily staged earlier but lack stage timestamps
+terminal_tennis_tracked,2026-09-02T21:44:56Z,2026-09-02T23:43:37Z,7121,1.978056,2,2,1.011094,exact_for_terminal_ledger,distinct tennis_06 and tennis_07 finished in the append-only pod ledger after repair
+tracked_to_jump_eligible,2026-09-02T21:44:56Z,2026-09-02T23:43:37Z,7121,1.978056,2,2,1.000000,descriptive_only,both terminal tables are eligible in G131; n=2 is not forecast support
