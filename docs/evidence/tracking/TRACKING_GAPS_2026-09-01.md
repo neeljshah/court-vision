@@ -2,6 +2,12 @@
 
 ## G103 result register
 
+## G126 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G126 | basketball | Blind source-index audit across 45 label-stratified G111 units: source and committed render agree 45/45, but the retained G111 label agrees 22/45 (48.9 pct, Wilson 95 pct 35.0--63.0). The mismatch is label error rather than a source-render association defect. The reweighted source four-corner audit estimate is 33.8 pct; this does not itself revise G111 or the REACH verdict. | `g126_g111_label_audit_2026-09-02.md`; `g126_label_audit/` | **ACCEPT WITH CORRECTIONS -- evidence audit landed; orchestrator adjudicates the unchanged G111/REACH verdict.** |
+
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G103 | basketball | The 33 fixed G84 source-sheet tiles cannot yet be rebuilt identically from their read-only pod clips: 0/33 decoded BGR tile checksums match, across 11 clips. The required durable-input check therefore stops before the unchanged G93 protocol, leaving recall, visible-line denominator, role intervals, miss reasons, and overlays unmeasured. | `g103_g68_recipe_and_g93_recall_2026-09-02.md`; `g103_recall/tile_manifest.csv`; `g103_recall/tile_checksum_verification.csv` | CLOSED AT LIMIT (specified checksum stop; no detector or protocol change). |
