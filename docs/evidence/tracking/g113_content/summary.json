@@ -1,0 +1,187 @@
+{
+  "decoded_frames": 207,
+  "per_sport": [
+    {
+      "content_counts": {
+        "live_action": 15
+      },
+      "group": "football",
+      "live_action": 15,
+      "live_action_share": 1.0,
+      "n": 15,
+      "non_live": 0,
+      "wilson_95": [
+        0.796117,
+        1.0
+      ]
+    },
+    {
+      "content_counts": {
+        "graphic_or_scoreboard": 18,
+        "live_action": 3,
+        "studio_or_desk": 18
+      },
+      "group": "kbo",
+      "live_action": 3,
+      "live_action_share": 0.076923,
+      "n": 39,
+      "non_live": 36,
+      "wilson_95": [
+        0.026507,
+        0.203211
+      ]
+    },
+    {
+      "content_counts": {
+        "graphic_or_scoreboard": 8,
+        "live_action": 21,
+        "studio_or_desk": 10
+      },
+      "group": "mlb",
+      "live_action": 21,
+      "live_action_share": 0.538462,
+      "n": 39,
+      "non_live": 18,
+      "wilson_95": [
+        0.385694,
+        0.684331
+      ]
+    },
+    {
+      "content_counts": {
+        "crowd_or_filler": 3,
+        "graphic_or_scoreboard": 1,
+        "live_action": 14
+      },
+      "group": "ncaa_basketball",
+      "live_action": 14,
+      "live_action_share": 0.777778,
+      "n": 18,
+      "non_live": 4,
+      "wilson_95": [
+        0.547854,
+        0.909991
+      ]
+    },
+    {
+      "content_counts": {
+        "crowd_or_filler": 1,
+        "live_action": 23
+      },
+      "group": "npb",
+      "live_action": 23,
+      "live_action_share": 0.958333,
+      "n": 24,
+      "non_live": 1,
+      "wilson_95": [
+        0.797582,
+        0.992607
+      ]
+    },
+    {
+      "content_counts": {
+        "live_action": 30
+      },
+      "group": "soccer",
+      "live_action": 30,
+      "live_action_share": 1.0,
+      "n": 30,
+      "non_live": 0,
+      "wilson_95": [
+        0.886487,
+        1.0
+      ]
+    },
+    {
+      "content_counts": {
+        "crowd_or_filler": 3,
+        "live_action": 24
+      },
+      "group": "tennis",
+      "live_action": 24,
+      "live_action_share": 0.888889,
+      "n": 27,
+      "non_live": 3,
+      "wilson_95": [
+        0.719422,
+        0.96148
+      ]
+    },
+    {
+      "content_counts": {
+        "live_action": 15
+      },
+      "group": "wnba",
+      "live_action": 15,
+      "live_action_share": 1.0,
+      "n": 15,
+      "non_live": 0,
+      "wilson_95": [
+        0.796117,
+        1.0
+      ]
+    }
+  ],
+  "sampling_unit": "unique (file_name, source_frame) from one of three predefined interior temporal strata",
+  "schema_checks": {
+    "all_manifest_rows_decoded": true,
+    "label_rows": 207,
+    "manifest_rows": 207,
+    "unique_label_keys": 207,
+    "unique_manifest_keys": 207
+  },
+  "seed": 11320260902,
+  "sport_families": [
+    {
+      "content_counts": {
+        "crowd_or_filler": 1,
+        "graphic_or_scoreboard": 26,
+        "live_action": 47,
+        "studio_or_desk": 28
+      },
+      "group": "baseball (kbo + mlb + npb)",
+      "live_action": 47,
+      "live_action_share": 0.460784,
+      "n": 102,
+      "non_live": 55,
+      "wilson_95": [
+        0.367235,
+        0.55718
+      ]
+    },
+    {
+      "content_counts": {
+        "crowd_or_filler": 3,
+        "graphic_or_scoreboard": 1,
+        "live_action": 29
+      },
+      "group": "basketball (ncaa_basketball + wnba)",
+      "live_action": 29,
+      "live_action_share": 0.878788,
+      "n": 33,
+      "non_live": 4,
+      "wilson_95": [
+        0.726745,
+        0.951838
+      ]
+    },
+    {
+      "content_counts": {
+        "crowd_or_filler": 6,
+        "graphic_or_scoreboard": 1,
+        "live_action": 98
+      },
+      "group": "non_baseball comparison (football + basketball + soccer + tennis)",
+      "live_action": 98,
+      "live_action_share": 0.933333,
+      "n": 105,
+      "non_live": 7,
+      "wilson_95": [
+        0.868744,
+        0.967334
+      ]
+    }
+  ],
+  "unique_frames": 207
+}
+
