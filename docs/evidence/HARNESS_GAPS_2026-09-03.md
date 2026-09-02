@@ -4,7 +4,7 @@ Rule: a gap is closed only by a measured artifact (metric, exact denominator, n,
 and for any scored claim a prereg sealed before the metric). Harness thresholds
 and gate values NEVER move. Calibration language only -- no dollar, ROI or edge
 claim ever appears in a row, an artifact or a memo.
-NEXT_GAP_ID: S34  (allocated by the orchestrator ONLY; lanes never invent ids.
+NEXT_GAP_ID: S36  (allocated by the orchestrator ONLY; lanes never invent ids.
 OWNERSHIP IN FORCE 2026-09-03: account 1 = this harness session holds THIS counter (S); account 2 = the tracking session holds G (G33). Account 1 dispatches codex ONLY into worktrees a10-a12.
 S-ids start at S01 so they can never collide with the tracking register's G-ids.
 S28/S29 allocated 2026-09-03 by the roadmap-audit lane.)
@@ -74,6 +74,9 @@ CLOSED with no S-row; S11-S18 and S27-S29 are new.
 | S31 | harness | S04 landed with two verifier-filed defects: the CONSTRUCT tests give every row a unique game_id so ICC=0 and the INSUFFICIENT branch (n_eff<30, clusters<20) is never exercised; and _student_plus_ids hardcodes prior_strength=50.0 while run_student_gate never threads the parameter, so the two id-using arms silently diverge for any other value | S04 verifier report 2026-09-03; scripts/platformkit/eval_gate/student_gate.py (landed c7523ce63) | OPEN (new 2026-09-03, S04 verifier) |
 | S32 | execution | THE keystone blocker: the pairing bridge has produced 0 paired rows in 36.6 h across two live MLB windows -- inplay_capture_loop.py:794-816 returns no_live_state for EVERY game (88/88 in the sampled cycle; 380 settle rows exist but `grep -l model_prob data/cache/ingame_grade/*/*.jsonl` = 0 files, so capture_pair_once has NEVER written a paired row); neither ls_fn nor _scan_live_by_legs bridges a Kalshi ticker (e.g. KXMLBGAME-26SEP022210STLLAD) to an ESPN live state; also the stop rule keys on daemon liveness so this failure is invisible to it -- 'zero paired rows across a completed live window' must alarm | S20 premise memo section 2 (433f76d49); pod /proc + data reads 2026-09-02 04:36 UTC | OPEN (new 2026-09-03) -- diagnosis lane dispatched |
 | S33 | execution | /workspace/mlb_book_capture.log is 0 bytes with mtime 2026-09-01 23:49 while pid 3040635 runs -- the book-capture writer has written nothing in ~5 h, so S19's 30-pass acceptance has no cadence rows to score and the depth archive may be silently empty; needs a read-only check of where run_pod_capture actually writes before any restart | S20 premise memo section 2; /proc/3040635 fd/1 | OPEN (new 2026-09-03) |
+
+| S34 | harness | `close_join.gate_corpus_states` stamps a SYNTHETIC vintage (state_ts fixed 12:00:00, feature_avail 00:00:00), so walk_forward's leak guard passes BY CONSTRUCTION on these states -- any sport scored through them (S03, S22) inherits a leak check that can never fail; needs a real odds/feature timestamp or an explicit SYNTHETIC-VINTAGE label carried into every artifact | S02 verifier report 2026-09-03; scripts/platformkit/eval_gate/close_join.py (landed 40e991be1) | OPEN (new 2026-09-03, S02 verifier) -- S03's spec carries the label fix |
+| S35 | harness | `close_join.coverage_report.by_corpus_unit` groups MATCHED rows only, so per-unit join_rate is 1.0 by construction and hides per-unit coverage holes wherever unjoined > 0 -- exactly the S03 case (ATP 84.4 / WTA 71.2) | same report | OPEN (new 2026-09-03, S02 verifier) -- fixed inside the S03 pass (same module) |
 
 ## Quant additions to the verifier contract (Q1-Q6)
 
