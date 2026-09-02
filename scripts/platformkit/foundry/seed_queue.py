@@ -65,6 +65,8 @@ def frozen_hypotheses(sport: str | None = None) -> Iterator[Hypothesis]:
     for family in load_families().families:
         if sport is not None and family.sport != sport:
             continue
+        if family.kind != "grid":   # S89: an ARM family's members are predictors, not columns
+            continue
         spec = {"sport": family.sport, "transforms": TRANSFORMS, "conditionings": (frozenset(),),
                 "horizons": (family.horizon,), "markets": (family.market,),
                 "columns": family.members, "family": family.name,
