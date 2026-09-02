@@ -34,10 +34,10 @@ def _raw(path: Path) -> list[dict]:
 
 
 def test_real_rows_load_unchanged_with_optional_fields_none(ledger_copy: Path) -> None:
-    """(1) The 13 rows on disk load, k_cumulative is exactly the on-disk sequence."""
+    """(1) Every row on disk loads (>= 13 -- the ledger only grows); k_cumulative is exactly the on-disk sequence."""
     on_disk = _raw(ledger_copy)
     rows = load_fwer(ledger_copy)
-    assert len(rows) == len(on_disk) == 13
+    assert len(rows) == len(on_disk) >= 13
     assert [r["k_cumulative"] for r in rows] == [r["k_cumulative"] for r in on_disk]
     for loaded, raw in zip(rows, on_disk):
         # the loader adds the five keys as None and changes nothing else
@@ -47,13 +47,14 @@ def test_real_rows_load_unchanged_with_optional_fields_none(ledger_copy: Path) -
 
 def test_legacy_charge_writes_no_new_keys(ledger_copy: Path) -> None:
     """(2) A pre-S13 call site charges row 14 with the old six keys and nothing else."""
-    prior = max(r["k_cumulative"] for r in _raw(ledger_copy))
+    before = _raw(ledger_copy)
+    prior = max(r["k_cumulative"] for r in before)
     row = backtest_runner._charge_ledger(ledger_copy, "pkg.mod:pred", "nba", "2025-10-21", "2026-04-12")
     assert row["k_cumulative"] == prior + 1
     assert [f for f in FWER_OPTIONAL_FIELDS if f in row] == []
     assert set(_raw(ledger_copy)[-1]) == {"at", "predictor", "sport", "start", "end", "k_cumulative"}
     rows = load_fwer(ledger_copy)
-    assert len(rows) == 14 and all(rows[-1][f] is None for f in FWER_OPTIONAL_FIELDS)
+    assert len(rows) == len(before) + 1 and all(rows[-1][f] is None for f in FWER_OPTIONAL_FIELDS)
 
 
 def test_k_family_counts_within_a_family_and_k_cumulative_stays_monotone(ledger_copy: Path) -> None:
