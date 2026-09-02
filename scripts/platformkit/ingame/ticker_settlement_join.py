@@ -22,7 +22,8 @@ Nothing here re-derives an outcome or close price -- it only JOINS existing numb
 
 OUTPUT: one row per valid tick -> data/cache/ingame_grade_joined/<sport>/<TICKER>.jsonl
   {"sport","game_id","ts","model_prob","market_prob","side","state_summary",
-   "outcome","close_source","close_prob","close_ts","edge_claimed":False}
+   "outcome","close_source","close_prob","close_ts","edge_claimed":False} + every
+   _CARRY_KEYS player-identity field the source tick carries, copied unchanged.
 Full, current rebuild of that ticker's file each run (idempotent, never a growing
 duplicate append). The SOURCE grade file also gets an idempotent settle_stamp.
 
@@ -67,6 +68,12 @@ _CLOSE_SOURCE_LABEL: Dict[str, str] = {
 }
 
 
+# Player/lineup identity already resolved onto the grade row (inplay_capture_loop.py:
+# 975-979), carried through UNCHANGED so the joined store keeps player grain. Absent
+# key -> absent, never fabricated. ponytail: explicit list, schema stays enumerable.
+_CARRY_KEYS: Tuple[str, ...] = ("mlb_batter_id", "mlb_pitcher_id",
+                                "mlb_pitcher_pitch_count", "mlb_ondeck_id",
+                                "mlb_bullpen_used")
 # sport -> (module under scripts.platformkit.ingame, resolver class name). Every
 # resolver here already exists and shares the ticker-in/label-out contract; this
 # table is the only per-sport code a new sport needs to add.
@@ -193,6 +200,7 @@ def join_ticker_file(sport: str, path: Path, resolver: Any, *,
             "close_ts": close["close_ts"] if close else None,
             "edge_claimed": False,
         }
+        row.update({k: r[k] for k in _CARRY_KEYS if k in r})
         out_lines.append(json.dumps(row, ensure_ascii=True))
 
     jdir = Path(joined_dir) if joined_dir is not None else DEFAULT_JOINED_DIR
