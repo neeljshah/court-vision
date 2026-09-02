@@ -43,6 +43,10 @@ from scripts.platformkit.combo.stack_fit import logit  # noqa: E402
 
 _CACHE_DIR = _REPO / "data" / "cache" / "combo"
 SPORTS: Tuple[str, ...] = ("mlb", "nba", "soccer", "tennis")
+# The column a walk-forward over a gate corpus may order by, and the honest
+# label for a corpus that carries no such column (gap S44).
+DATE_COL = "event_date"
+POSITIONAL_ORDER = "POSITIONAL-ORDER"
 
 
 class StaleCorpusError(RuntimeError):
@@ -282,4 +286,50 @@ def load_gate_corpus(sport: str) -> pd.DataFrame:
     return pd.read_parquet(cp)
 
 
-__all__ = ["SPORTS", "StaleCorpusError", "build_gate_corpus", "load_gate_corpus"]
+def freshness_report(sport: str) -> Dict[str, object]:
+    """Read-only freshness + ordering facts for one cached corpus (gap S41).
+
+    Never rebuilds and never raises on a stale cache -- `stale` is a plain bool
+    the caller decides on, unlike `load_gate_corpus` which refuses. Row counts:
+    `n_rows_at_build` is what the sidecar recorded when the cache was written,
+    `n_rows_cached` is what the parquet holds now. `order_basis` is the column a
+    walk-forward over this corpus may order by, or the literal
+    "POSITIONAL-ORDER" when the corpus carries no date column (gap S44).
+    """
+    if sport not in _BUILDERS:
+        raise ValueError(f"unknown sport {sport!r}; must be one of {SPORTS}")
+    cp, sp = _corpus_path(sport), _sidecar_path(sport)
+    rep: Dict[str, object] = {
+        "sport": sport, "corpus_path": str(cp),
+        "cache_exists": cp.exists(), "sidecar_exists": sp.exists(),
+        "cache_mtime": cp.stat().st_mtime if cp.exists() else None,
+        "built_at": None, "n_rows_at_build": None, "n_rows_cached": None,
+        "sources": [], "stale": True, "stale_reason": "no cached corpus or sidecar",
+        "order_basis": POSITIONAL_ORDER,
+    }
+    if not (cp.exists() and sp.exists()):
+        return rep
+    manifest = json.loads(sp.read_text(encoding="utf-8"))
+    rep["built_at"] = manifest.get("built_at")
+    rep["n_rows_at_build"] = manifest.get("n_rows")
+    cached = pd.read_parquet(cp)
+    rep["n_rows_cached"] = len(cached)
+    rep["order_basis"] = DATE_COL if DATE_COL in cached.columns else POSITIONAL_ORDER
+    changed_names: List[str] = []
+    for src, rec in manifest.get("sources", {}).items():
+        p = Path(src)
+        exists = p.exists()
+        now = p.stat().st_mtime if exists else None
+        changed = (not exists) or now != rec["mtime"] or _file_sha256(p) != rec["sha256"]
+        rep["sources"].append({"path": src, "exists": exists, "changed": changed,
+                              "mtime_at_build": rec["mtime"], "mtime_now": now})
+        if changed:
+            changed_names.append(p.name)
+    rep["stale"] = bool(changed_names)
+    rep["stale_reason"] = ("sources changed since build: " + ", ".join(changed_names)
+                          if changed_names else None)
+    return rep
+
+
+__all__ = ["SPORTS", "DATE_COL", "POSITIONAL_ORDER", "StaleCorpusError",
+           "build_gate_corpus", "load_gate_corpus", "freshness_report"]
