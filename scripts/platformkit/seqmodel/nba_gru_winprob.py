@@ -28,7 +28,7 @@ from pathlib import Path
 os.environ.setdefault("OMP_NUM_THREADS", "2")  # do not starve the fleet
 import numpy as np
 
-import nba_gru_dataset as ds  # noqa: E402  (same dir; run via -m or with sys.path)
+import nba_gru_dataset as ds  # noqa: E402  (same dir; __init__.py bootstraps sys.path)
 
 WEIGHTS = "data/cache/seqmodel/nba_gru_v1.pt"
 REPORT = "data/frontend/ops/nba_seqmodel_v1.json"

@@ -15,8 +15,10 @@ from typing import Any, Dict, List, Optional, Sequence
 
 from sklearn.isotonic import IsotonicRegression
 
-from scripts.platformkit.market_lag_study import (_event, _seconds, _sport, candidate_dirs,
-                                                   load_records)
+from scripts.platformkit.market_lag_study import _event, _seconds, _sport, load_records
+# candidate_dirs is defined in ingame_replay_scoreboard; market_lag_study only
+# re-exported it until 725a45aab dropped that re-export line.
+from scripts.platformkit.ingame_replay_scoreboard import candidate_dirs
 from scripts.platformkit.wp_diag_oos import _game_dates, walk_forward_isotonic
 _REPO = Path(__file__).resolve().parents[3]
 _DEFAULT_CACHE = Path(r"C:\Users\neelj\nba-ai-system\data\cache")

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from collections import deque
 from pathlib import Path
@@ -10,13 +11,77 @@ import cv2
 import numpy as np
 import pandas as pd
 
-from scripts.platformkit.demo_render import _draw_frame, _track_color
 from scripts.platformkit.tracking_harness import SPORTS
 
 _PANEL_WIDTH = 960
 _PANEL_HEIGHT = 540
 _TICKER_HEIGHT = 48
 _ANNOTATION_CARRY_FRAMES = 5
+_FOOTER_HEIGHT = 52
+_PADDING = 36
+
+
+# ---------------------------------------------------------------------------
+# Court-view panel. These four helpers used to be imported from demo_render;
+# 57625b81b rewrote that module onto a different API (color_for /
+# draw_court_inset, which paints into an existing frame instead of returning a
+# panel), leaving this file's import dangling. This is the only consumer, so
+# the helpers moved here verbatim rather than reviving demo_render's old API.
+# ---------------------------------------------------------------------------
+
+def _track_color(track_id: object) -> tuple[int, int, int]:
+    """Return a stable bright BGR color for a track identifier."""
+    digest = hashlib.sha256(str(track_id).encode("utf-8")).digest()
+    return tuple(80 + value % 176 for value in digest[:3])
+
+
+def _court_geometry(bounds: tuple[float, float, float, float]) -> tuple[float, float, float, float]:
+    x0, x1, y0, y1 = bounds
+    available_width = _PANEL_WIDTH - 2 * _PADDING
+    available_height = _PANEL_HEIGHT - _FOOTER_HEIGHT - 2 * _PADDING
+    scale = min(available_width / (x1 - x0), available_height / (y1 - y0))
+    court_width, court_height = (x1 - x0) * scale, (y1 - y0) * scale
+    left = (_PANEL_WIDTH - court_width) / 2
+    top = (_PANEL_HEIGHT - _FOOTER_HEIGHT - court_height) / 2
+    return left, top, scale, court_height
+
+
+def _point(x: float, y: float, bounds: tuple[float, float, float, float]) -> tuple[int, int]:
+    x0, _, y0, _ = bounds
+    left, top, scale, court_height = _court_geometry(bounds)
+    return round(left + (x - x0) * scale), round(top + court_height - (y - y0) * scale)
+
+
+def _draw_frame(
+    rows: pd.DataFrame,
+    bounds: tuple[float, float, float, float],
+    ball_trail: deque[tuple[int, int]],
+    footer: str,
+) -> np.ndarray:
+    image = np.full((_PANEL_HEIGHT, _PANEL_WIDTH, 3), (21, 25, 31), dtype=np.uint8)
+    x0, x1, y0, y1 = bounds
+    left, top, scale, court_height = _court_geometry(bounds)
+    right, bottom = round(left + (x1 - x0) * scale), round(top + court_height)
+    cv2.rectangle(image, (round(left), round(top)), (right, bottom), (235, 235, 235), 2)
+    mid_x = round(left + (x1 - x0) * scale / 2)
+    cv2.line(image, (mid_x, round(top)), (mid_x, bottom), (235, 235, 235), 1)
+
+    valid = rows.dropna(subset=["x", "y"])
+    for row in valid[valid["cls"] != "ball"].itertuples(index=False):
+        cv2.circle(image, _point(float(row.x), float(row.y), bounds), 7, _track_color(row.track_id), -1)
+
+    balls = valid[valid["cls"] == "ball"]
+    if not balls.empty:
+        ball = balls.iloc[-1]
+        ball_trail.append(_point(float(ball["x"]), float(ball["y"]), bounds))
+    for index in range(1, len(ball_trail)):
+        cv2.line(image, ball_trail[index - 1], ball_trail[index], (0, 190, 255), 2)
+    if ball_trail:
+        cv2.circle(image, ball_trail[-1], 6, (0, 255, 255), -1)
+
+    cv2.putText(image, footer, (20, _PANEL_HEIGHT - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.55,
+                (235, 235, 235), 1, cv2.LINE_AA)
+    return image
 
 
 def _load_homography(path: str | Path | None) -> np.ndarray | None:

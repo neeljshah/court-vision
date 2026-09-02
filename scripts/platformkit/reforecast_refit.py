@@ -17,6 +17,11 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence
 from scripts.platformkit.wp_diag_oos import (
     _game_dates,
     _sport,
+)
+# discover_store/load_ticks physically live here; wp_diag_oos only re-exported
+# them until 725a45aab dropped that re-export line (it moved to
+# tick_dedupe.load_ticks_deduped). Import from the defining module.
+from scripts.platformkit.ingame_replay_scoreboard import (
     discover_store,
     load_ticks,
 )

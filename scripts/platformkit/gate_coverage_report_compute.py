@@ -11,7 +11,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
-from gate_surface_catalog import (
+# Ensure the platformkit/ directory is on sys.path for sibling imports, so this
+# module imports both as a script (run from here) and as scripts.platformkit.*.
+import sys
+
+_PK_DIR = Path(__file__).resolve().parent
+if str(_PK_DIR) not in sys.path:
+    sys.path.insert(0, str(_PK_DIR))
+
+from gate_surface_catalog import (  # noqa: E402
     ADHOC_FLAGS,
     PREEXISTING_FLAGS,
     enumerate_prediction_surfaces,

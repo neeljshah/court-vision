@@ -18,7 +18,6 @@ import re
 from typing import Any
 
 from scripts.platformkit.intel_query import ask_index
-from scripts.platformkit.intel_query.ask import _ascii_name, _claim_evidence, _unanswerable
 from scripts.platformkit.intel_query.families import (
     FAMILY_ENTITY_LOOKUP,
     FAMILY_GATE_VERDICT,
@@ -266,3 +265,16 @@ def _try_shooter_profile(question: str) -> dict[str, Any] | None:
     result["question"] = question
     result["answerable"] = result.get("status") == "OK"
     return result
+
+
+# Imported at the BOTTOM, not the top: ask.py's own bottom-of-module block
+# imports the names below back out of THIS module. Doing our side last means
+# every name ask.py wants is already bound here whichever module the caller
+# imports first, so `import ...ask_families` no longer raises a partially-
+# initialized circular ImportError. Only function bodies use these, so binding
+# them after the defs above changes nothing at call time.
+from scripts.platformkit.intel_query.ask import (  # noqa: E402
+    _ascii_name,
+    _claim_evidence,
+    _unanswerable,
+)

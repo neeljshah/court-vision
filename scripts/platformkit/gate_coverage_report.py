@@ -8,7 +8,13 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
-from gate_surface_catalog import VERDICT_LABEL
+# Ensure the platformkit/ directory is on sys.path for sibling imports, so this
+# module imports both as a script (run from here) and as scripts.platformkit.*.
+_PK_DIR = Path(__file__).resolve().parent
+if str(_PK_DIR) not in sys.path:
+    sys.path.insert(0, str(_PK_DIR))
+
+from gate_surface_catalog import VERDICT_LABEL  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Repo root resolution

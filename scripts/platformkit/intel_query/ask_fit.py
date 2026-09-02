@@ -15,13 +15,6 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from scripts.platformkit.intel_query.ask import (
-    _ascii_name,
-    _claim_evidence,
-    load_verified_claims,
-    pairs_for_claim_stores,
-)
-
 # FIT is a compose_fit(player, team)-only family (explicit args, not a
 # free-text question routed through families.classify), so it is defined
 # here rather than added to families.py's question-classifier enum.
@@ -169,3 +162,18 @@ def compose_fit(player: str, team: str) -> dict[str, Any]:
         "answer": answer,
         "evidence": evidence,
     }
+
+
+# Imported at the BOTTOM, not the top -- see the identical note in
+# ask_families.py. ask.py's bottom-of-module block imports FAMILY_FIT /
+# compose_fit et al. back out of THIS module, so binding our side of the cycle
+# last makes `import ...ask_fit` work whichever module the caller imports
+# first. Only function bodies use these names, so call-time behaviour is
+# unchanged (and monkeypatching ask.CLAIM_SOURCE_PAIRS still works, because
+# load_verified_claims/pairs_for_claim_stores still physically live in ask.py).
+from scripts.platformkit.intel_query.ask import (  # noqa: E402
+    _ascii_name,
+    _claim_evidence,
+    load_verified_claims,
+    pairs_for_claim_stores,
+)

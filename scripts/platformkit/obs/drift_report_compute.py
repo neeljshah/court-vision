@@ -13,9 +13,17 @@ Python 3.9 compatible.  No torch / GPU imports.
 from __future__ import annotations
 
 import logging
+import sys
+from pathlib import Path
 from typing import Any, Dict, List
 
-from drift_report_metrics import (
+# Ensure the obs/ directory is on sys.path for sibling imports (same bootstrap
+# drift_report.py already carries), so this module imports standalone too.
+_OBS_DIR = Path(__file__).resolve().parent
+if str(_OBS_DIR) not in sys.path:
+    sys.path.insert(0, str(_OBS_DIR))
+
+from drift_report_metrics import (  # noqa: E402
     _brier_binary,
     _brier_raw,
     _pit_uniformity,
