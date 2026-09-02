@@ -1,0 +1,4 @@
+measurement,observed_utc,total_tennis_tables,eligible,missing_coordinate_or_schema,empty_or_header_only,insufficient_data,notes
+g109_frozen_snapshot,2026-09-02T22:33:31Z,16,7,5,2,2,"Frozen reference from G109; not used as the current after count."
+g114_current_before_no_repair,2026-09-02T22:43:33Z,16,8,5,2,1,"Complete 16-directory live census, including g89_tennis_* tables; tennis_07 is now eligible."
+g114_current_after_no_repair,2026-09-02T22:46:31Z,16,8,5,2,1,"Second complete 16-directory read-only census after evidence assembly; no G114 producer or pod change occurred."
