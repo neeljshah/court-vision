@@ -40,6 +40,8 @@ excluding the failing rows is what makes the number good, the metric is
 circular -- say so and report REJECT yourself.
 EVIDENCE: docs/evidence/tracking/<gid>_<slug>_<TODAY>.md -- before/after
 table, n, denominator, render tally, and a "NOT VERIFIED" list.
+REQUIRED EVIDENCE DURABILITY: before reporting, copy under docs/evidence/ every artifact a verifier must use to reproduce a number: at minimum a summary JSON and the sampled rows. A directory of renders may stay local, but the numbers behind the renders must not.
+RE-EMITTED TABLES: preserve the FULL column set, not only the subset this lane uses; a table written for one purpose can omit columns a later lane needs (for example frame_width and frame_height).
 TEST: exactly one new per-file test; run only that file.
 POD: heavy compute only; own nohup setsid nice job, unique /tmp log, never
 kill anything, no git on the pod, and NO scp of any module until the verifier
