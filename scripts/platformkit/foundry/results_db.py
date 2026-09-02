@@ -261,20 +261,24 @@ class ResultsDB:
         return int(cursor.rowcount)
 
     def claim(self, n: int, tier: Optional[str] = None,
-              lease_seconds: float = LEASE_SECONDS) -> list:
+              lease_seconds: float = LEASE_SECONDS, sport: Optional[str] = None) -> list:
         """Claim up to n queued hypotheses in ONE transaction, holding a lease.
 
         BEGIN IMMEDIATE takes the write lock before the SELECT, so two claimers can
         never both see the same unclaimed row. A claimed row is not claimable again
         until its lease expires (B4): `reap_expired` runs in the same transaction, so
         an expired claim is reclaimable on the NEXT claim and never before it.
+        S75: `sport` filters the hypothesis's OWN sport, so a screener bound to one
+        corpus cannot claim a row it would screen on foreign states. None = as before.
         """
-        sql = "SELECT hash FROM queue WHERE claimed_at IS NULL"
+        sql = ("SELECT q.hash FROM queue q JOIN hypothesis h ON h.hash=q.hash "
+               "WHERE q.claimed_at IS NULL")
         args: list = []
-        if tier is not None:
-            sql += " AND tier=?"
-            args.append(tier)
-        sql += " ORDER BY enqueued_at, hash LIMIT ?"
+        for column, value in (("q.tier", tier), ("h.sport", sport)):
+            if value is not None:
+                sql += " AND {0}=?".format(column)
+                args.append(value)
+        sql += " ORDER BY q.enqueued_at, q.hash LIMIT ?"
         args.append(int(n))
         self._c.execute("BEGIN IMMEDIATE")
         try:

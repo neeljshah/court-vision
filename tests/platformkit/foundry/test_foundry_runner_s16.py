@@ -9,10 +9,11 @@ import json
 from datetime import date, timedelta
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 from scripts.platformkit import foundry_runner as runner
-from scripts.platformkit.foundry import results_db, tiers
+from scripts.platformkit.foundry import results_db, screen_predictor, tiers
 from scripts.platformkit.foundry.grammar import Hypothesis
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -25,12 +26,12 @@ class _Exploded(Exception):
     """Raised if the legacy matrix is consulted on a queue pass."""
 
 
-def _corpus(rows: int = 60) -> list:
+def _corpus(rows: int = 60, prefix: str = "s") -> list:
     base, states = date(2026, 1, 5), []
     for index in range(rows):
         day = base + timedelta(days=(index // 5) * 7 + (index % 5))
         states.append({
-            "game_id": "s%03d" % index, "state_ts": "%sT12:00:00" % day.isoformat(),
+            "game_id": "%s%03d" % (prefix, index), "state_ts": "%sT12:00:00" % day.isoformat(),
             "features": {"p_base": 0.4 + (index % 7) / 20.0},
             "feature_avail": {"p_base": "%sT00:00:00" % (day - timedelta(days=1)).isoformat()},
             "home": TEAMS[index % 6], "away": TEAMS[(index + 3) % 6],
@@ -64,12 +65,24 @@ def _ledger_rows(path: Path) -> int:
     return len(path.read_text(encoding="ascii").splitlines()) if path.exists() else 0
 
 
-def _seed(db, n: int) -> list:
+def _seed(db, n: int, sport: str = "nba", family: str = FAMILY) -> list:
     hashes = [db.upsert_hypothesis(
-        Hypothesis("nba", "feat_%03d" % i, "raw", (), frozenset(), "pregame", "ml"),
-        family=FAMILY) for i in range(n)]
+        Hypothesis(sport, "feat_%03d" % i, "raw", (), frozenset(), "pregame", "ml"),
+        family=family) for i in range(n)]
     db.enqueue(hashes, "T0")
     return hashes
+
+
+def _bound(tmp_path: Path, db, sport: str, rows: int) -> runner.ScreenQueue:
+    """One sport's screening context. corpus_sha NAMES the states it serves, so a row screened
+    on the wrong sport's states shows up in the DB as corpus != the sha's sport (S75)."""
+    states = _corpus(rows, prefix=sport[:2])
+    rule = tiers.PromotionRule.from_spec(SPEC)
+    part = tiers.partition_corpus(states, seed=rule.partition_seed)
+    return runner.ScreenQueue(db, [s for s in states if s["game_id"] in part.screen_ids],
+                              runner._p_base_predict, part, rule, tmp_path / "fwer.jsonl",
+                              [s for s in states if s["game_id"] in part.verdict_ids],
+                              "sha_" + sport, sport, poll_seconds=0.0)
 
 
 def test_empty_queue_idles_once_without_charging_or_building_the_legacy_matrix(tmp_path, monkeypatch):
@@ -127,3 +140,55 @@ def test_legacy_path_keeps_the_matrix_and_the_sleep_default(tmp_path, monkeypatc
             for item in results}
     assert seen == set(runner.PASS_CONFIGS) and len(results) == 6
     assert all("screened_n" not in item for item in results)
+
+
+# --- S75: one bound queue per sport; every hypothesis is screened on its OWN sport's states ---
+
+def test_two_sport_queue_screens_every_hypothesis_on_its_own_sports_states(tmp_path, monkeypatch):
+    """Before S75 one binder held one sport's states and claimed both sports' hypotheses."""
+    _isolate(tmp_path, monkeypatch)
+    monkeypatch.setattr(tiers, "SPORTS", ())     # routing test: no real gate corpus is opened
+    with results_db.ResultsDB(tmp_path / "h.sqlite") as db:
+        _seed(db, 6, sport="nba", family="nba_f")
+        _seed(db, 4, sport="soccer", family="soccer_f")
+        queues = {"nba": _bound(tmp_path, db, "nba", 40),
+                  "soccer": _bound(tmp_path, db, "soccer", 60)}
+        summary = runner.run_pass(0, queues, batch=20)
+        rows = db._c.execute("SELECT corpus, corpus_sha, count(*) FROM result WHERE tier='T1' "
+                             "GROUP BY corpus, corpus_sha").fetchall()
+    assert {(row[0], row[1]) for row in rows} == {("nba", "sha_nba"), ("soccer", "sha_soccer")}
+    assert {(row[0], row[2]) for row in rows} == {("nba", 6), ("soccer", 4)}
+    assert summary["screens"] == 10 and summary["screened_n"] == {"nba_f": 6, "soccer_f": 4}
+    assert summary["charges"] == 0 and _ledger_rows(tmp_path / "fwer.jsonl") == 0
+
+
+def test_a_bound_queue_never_claims_another_sports_hypothesis(tmp_path, monkeypatch):
+    """The claim is the guard: a sport with nothing queued idles, it does not take a foreign row."""
+    _isolate(tmp_path, monkeypatch)
+    monkeypatch.setattr(tiers, "SPORTS", ())
+    with results_db.ResultsDB(tmp_path / "h.sqlite") as db:
+        _seed(db, 5, sport="soccer", family="soccer_f")
+        summary = runner.run_pass(0, {"nba": _bound(tmp_path, db, "nba", 40)}, batch=20)
+        assert len(db.claim(10, tier="T0", sport="soccer")) == 5    # still queued, unclaimed
+    assert summary["idle"] is True and summary["screens"] == 0
+
+
+def _fake_corpus_states(sport: str) -> tuple:
+    states = [dict(state, game_date=state["state_ts"][:10])
+              for state in _corpus(20, prefix=sport[:2])]
+    table = pd.DataFrame({"feat": range(len(states))}, index=[s["game_id"] for s in states])
+    return states, table, "p_base"
+
+
+def test_real_predictor_binds_one_screen_binder_per_sport(tmp_path, monkeypatch):
+    """--predictor real over four sports: four binders, each over its OWN sport's states."""
+    monkeypatch.setattr(screen_predictor, "corpus_states", _fake_corpus_states)
+    sports = ("mlb", "nba", "soccer", "tennis")
+    with results_db.ResultsDB(tmp_path / "h.sqlite") as db:
+        queues = {sport: runner.screen_queue(sport, db=db, ledger_path=tmp_path / "fwer.jsonl",
+                                             rows=10, predictor="real") for sport in sports}
+    assert tuple(queue.binder.sport for queue in queues.values()) == sports   # none refused
+    assert len({id(queue.binder) for queue in queues.values()}) == 4
+    for sport, queue in queues.items():
+        assert all(state["game_id"].startswith(sport[:2]) for state in queue.binder.states)
+        assert all(state["game_id"].startswith(sport[:2]) for state in queue.states)

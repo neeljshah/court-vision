@@ -259,3 +259,26 @@ def test_mixed_queue_claims_group_per_family(tmp_path):
         for hypothesis in db.claim(10, tier=TIER):
             groups[hypothesis.family] = groups.get(hypothesis.family, 0) + 1
         assert groups == {"nba_pace": 2, "soccer_form": 2}
+
+
+# --- S75: a claim may be filtered to ONE sport ---------------------------------
+
+def test_claim_with_a_sport_never_returns_another_sports_row(tmp_path):
+    """A screener bound to one corpus must not be handed a hypothesis of another sport."""
+    with _db(tmp_path) as db:
+        _queued(db, halflives=(3, 5), sport="nba", family="nba_pace")
+        _queued(db, halflives=(10, 20), sport="soccer", family="soccer_form")
+        nba = db.claim(10, tier=TIER, sport="nba")
+        assert [h.sport for h in nba] == ["nba", "nba"]
+        soccer = db.claim(10, tier=TIER, sport="soccer")
+        assert [h.sport for h in soccer] == ["soccer", "soccer"]
+        assert db.claim(10, tier=TIER, sport="tennis") == []      # nothing queued, nothing stolen
+        assert db.claim(10, tier=TIER) == []                      # all four already claimed
+
+
+def test_an_unfiltered_claim_is_unchanged_by_the_sport_argument(tmp_path):
+    """sport=None is the pre-S75 behaviour: claim across every sport in queue order."""
+    with _db(tmp_path) as db:
+        _queued(db, halflives=(3,), sport="nba", family="nba_pace")
+        _queued(db, halflives=(10,), sport="soccer", family="soccer_form")
+        assert sorted(h.sport for h in db.claim(10, tier=TIER)) == ["nba", "soccer"]
