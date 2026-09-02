@@ -27,7 +27,12 @@ import shutil
 
 import pandas as pd
 
-from scripts.platformkit.coordinate_provenance import SPORT_COORDINATE_SPACES
+from scripts.platformkit.coordinate_provenance import (
+    METRIC_LOCAL,
+    METRIC_LOCAL_CALIBRATION,
+    SPORT_COORDINATE_SPACES,
+    SPORT_METRIC_LOCAL_SPACES,
+)
 
 NORMALIZED_COLUMNS = frozenset({"cls", "frame", "track_id", "x", "y"})
 NBA_PRODUCTION_COLUMNS = frozenset(
@@ -143,7 +148,8 @@ def _validate_coordinate_space(df: pd.DataFrame, sport: str | None,
     _validate_image_px_containment(df)
     declared = {"(null)" if pd.isna(value) else str(value)
                 for value in df[COORDINATE_SPACE_COLUMN].unique()}
-    accepted = SPORT_COORDINATE_SPACES.get(sport, frozenset())
+    accepted = (SPORT_COORDINATE_SPACES.get(sport, frozenset())
+                | SPORT_METRIC_LOCAL_SPACES.get(sport, frozenset()))
     offending = sorted(declared - accepted)
     if offending:
         raise CoordinateTransformUnavailable(
@@ -152,6 +158,15 @@ def _validate_coordinate_space(df: pd.DataFrame, sport: str | None,
                 ", ".join(offending), sport or "(unspecified)"
             )
         )
+    if declared == {METRIC_LOCAL}:
+        calibrations = {"(null)" if pd.isna(value) else str(value)
+                        for value in df.get("calibration", pd.Series(dtype="object")).unique()}
+        if calibrations != {METRIC_LOCAL_CALIBRATION}:
+            raise CoordinateTransformUnavailable(
+                "metric_local rows require calibration {}; found {}".format(
+                    METRIC_LOCAL_CALIBRATION, ", ".join(sorted(calibrations)) or "(absent)"
+                )
+            )
 
 
 def write_ball_telemetry_declaration(output_path: str | Path, sport: str,
