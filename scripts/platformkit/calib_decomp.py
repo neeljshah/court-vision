@@ -38,6 +38,31 @@ def _arr(x: Sequence[float]) -> np.ndarray:
     return np.asarray(x, dtype=float)
 
 
+def bin_edges(bins: int = 10) -> np.ndarray:
+    """The ONE equal-width edge array every calibration binner must use (S42).
+
+    scoring.ece and decompose() below both bin by `np.linspace(0, 1, bins + 1)`
+    with [lo, hi) intervals and a closed last bin. wp_diagnostics.reliability
+    used to bin by min(bins-1, int(p*bins)), which disagrees with those edges on
+    predictions landing exactly on the grid (float: 0.6*10 == 6.000000000000001
+    but linspace's 7th edge is 0.6000000000000001), so a report publishing a bin
+    table beside a summary ECE was self-inconsistent. Import this, do not rebuild
+    the array. Calibration only -- no edge claim.
+    """
+    return np.linspace(0.0, 1.0, bins + 1)
+
+
+def bin_index(prob: float, edges: np.ndarray) -> int:
+    """Bin `prob` under `edges` with EXACTLY decompose()/ece() semantics.
+
+    [edges[k], edges[k+1]) for every bin but the last, which is closed on both
+    sides so p == 1.0 lands in it. Out-of-range probabilities clamp to the end
+    bins rather than raising -- the callers here are diagnostics, not gates.
+    """
+    k = int(np.searchsorted(edges, prob, side="right")) - 1
+    return min(max(k, 0), len(edges) - 2)
+
+
 # ---------------------------------------------------------------------------
 # Core decomposition
 # ---------------------------------------------------------------------------
@@ -94,7 +119,7 @@ def decompose(
     brier_val = float(np.mean((p - y) ** 2))
     unc = float(o_bar * (1.0 - o_bar))
 
-    edges = np.linspace(0.0, 1.0, bins + 1)
+    edges = bin_edges(bins)
     rel = 0.0
     res = 0.0
     bins_detail: List[Dict] = []

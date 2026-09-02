@@ -10,6 +10,9 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
+import numpy as np
+
+from scripts.platformkit.calib_decomp import bin_edges, bin_index
 from scripts.platformkit.ingame_replay_scoreboard import discover_store, load_ticks
 
 _REPO = Path(__file__).resolve().parents[2]
@@ -29,11 +32,23 @@ def _phase(tick: Dict[str, Any]) -> str:
     return str(value) if value not in (None, "") else "UNKNOWN"
 
 
-def reliability(ticks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Summarize ten probability bins, including a binomial uncertainty flag."""
-    bins: List[List[Dict[str, Any]]] = [[] for _ in range(10)]
+def reliability(ticks: List[Dict[str, Any]], edges: Optional[Any] = None,
+                legacy_bins: bool = False) -> List[Dict[str, Any]]:
+    """Summarize probability bins, including a binomial uncertainty flag.
+
+    `edges` defaults to `calib_decomp.bin_edges(10)` -- the SAME numpy edges
+    `scoring.ece` and `calib_decomp.decompose` use -- so a report publishing this
+    bin table beside a summary ECE or Murphy figure is self-consistent (S42).
+    `legacy_bins=True` restores the pre-S42 min(bins-1, int(p*bins)) assignment,
+    which disagrees with those edges on predictions landing exactly on the grid.
+    """
+    edge_array = bin_edges(10) if edges is None else np.asarray(edges, dtype=float)
+    count = len(edge_array) - 1
+    bins: List[List[Dict[str, Any]]] = [[] for _ in range(count)]
     for tick in ticks:
-        bins[min(9, int(tick["model_prob"] * 10))].append(tick)
+        prob = tick["model_prob"]
+        bins[min(count - 1, int(prob * count)) if legacy_bins
+             else bin_index(prob, edge_array)].append(tick)
     rows: List[Dict[str, Any]] = []
     for index, group in enumerate(bins):
         n = len(group)
@@ -42,7 +57,7 @@ def reliability(ticks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         gap = observed - mean_prob if n else None
         limit = (2 * math.sqrt(mean_prob * (1 - mean_prob) / n) if n and mean_prob is not None
                  else None)
-        rows.append({"bin": "%0.1f-%0.1f" % (index / 10, (index + 1) / 10), "n": n,
+        rows.append({"bin": "%0.1f-%0.1f" % (edge_array[index], edge_array[index + 1]), "n": n,
                      "mean_predicted_prob": mean_prob, "observed_win_freq": observed,
                      "gap": gap, "flag": bool(limit is not None and abs(gap) > limit),
                      "status": "OK" if n >= 50 else "INSUFFICIENT"})
