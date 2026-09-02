@@ -130,6 +130,52 @@ def test_empty_measured_set_fails_closed():
     assert gate_exit_code(only_skips) == 1              # all-skip rows also fail closed
 
 
+def test_s40b_prior_redteam_verdict_and_floor_and_seal():
+    """Three of the four OPEN prior-red-team items, re-checked on disk and closed.
+
+    1.1 BEATS_CLOSE was decided on the RAW dm p while corrected_dm_p / ship_eligible
+        were computed later and never consulted.
+    1.3 DM_MIN_N=200 was tested against dm.n (raw STATES); the golden fixture is 103
+        states over 70 game_ids, so states are not clusters.
+    1.2 load_golden ran only the structural validate_golden -- a schema-valid hand edit
+        redefined "gate green" with nothing pinning the fixture's bytes.
+    """
+    import hashlib
+    from types import SimpleNamespace
+    import pytest
+    import golden_loader as GL
+    from run_gate import DM_MIN_N, _verdict
+
+    # 1.3: the same run passes the state floor and fails the cluster floor.
+    dm = SimpleNamespace(p_value=0.001, n=DM_MIN_N, n_clusters=DM_MIN_N - 1, ci95=(0.1, 0.9))
+    assert _verdict(0.01, dm, 0.2, 0.3) != "BEATS_CLOSE"
+    dm_ok = SimpleNamespace(p_value=0.001, n=DM_MIN_N, n_clusters=DM_MIN_N, ci95=(0.1, 0.9))
+    assert _verdict(0.01, dm_ok, 0.2, 0.3) == "BEATS_CLOSE"
+
+    # 1.1: a BEATS_CLOSE row must now be FWER ship-eligible, and any downgrade keeps
+    # the raw label beside it rather than vanishing.
+    for row in run_gate_in_process(offline_predict_fn):
+        if row.get("verdict") == "BEATS_CLOSE":
+            assert row["ship_eligible"] is True
+        if "verdict_uncorrected" in row:
+            assert row["verdict_uncorrected"] == "BEATS_CLOSE"
+            assert row["ship_eligible"] is False
+
+    # 1.2: the seal is the fixture's real digest, and a one-byte edit fails closed.
+    assert hashlib.sha256(GL.DEFAULT_GOLDEN.read_bytes()).hexdigest() == GL.GOLDEN_SHA256
+    tampered = GL.DEFAULT_GOLDEN.parent / "_s40b_seal_probe.json"
+    original = GL.DEFAULT_GOLDEN
+    try:
+        tampered.write_bytes(GL.DEFAULT_GOLDEN.read_bytes() + b" ")
+        GL.DEFAULT_GOLDEN = tampered
+        with pytest.raises(ValueError, match="seal mismatch"):
+            GL.load_golden()
+        assert GL.load_golden(str(tampered))     # an EXPLICIT path is not sealed
+    finally:
+        GL.DEFAULT_GOLDEN = original
+        tampered.unlink(missing_ok=True)
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     passed = 0

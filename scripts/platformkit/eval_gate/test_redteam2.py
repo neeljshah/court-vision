@@ -83,7 +83,7 @@ def test_duplicate_game_id_is_refused(tmp_path: Path, monkeypatch):
         backtest_runner.run_backtest(
             "scripts.platformkit.eval_gate.backtest_runner:uniform_half",
             "basketball_nba", "2024-02-01", "2024-02-28",
-            ledger_path=tmp_path / "fwer.jsonl")
+            ledger_path=tmp_path / "fwer.jsonl", allow_noncanonical_ledger=True)
 
 
 def test_unregistered_search_is_refused(tmp_path: Path):

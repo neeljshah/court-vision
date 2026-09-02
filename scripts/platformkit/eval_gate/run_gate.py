@@ -80,12 +80,20 @@ def _load_model_predictor() -> Callable:
     return _fn
 
 def _verdict(bss: float, dm, bm: float, bc: float) -> str:
-    if bss > 0 and dm.p_value < 0.05 and dm.n >= DM_MIN_N:
+    # S40b (prior red team, agent 1.3): DM_MIN_N was tested against dm.n -- raw STATES --
+    # while the SE that produced dm.p_value clusters by game. 200 states can be far fewer
+    # than 200 independent games (the golden fixture is 103 states over 70 game_ids), so
+    # the floor is now applied to the clusters the statistic actually has.
+    if bss > 0 and dm.p_value < 0.05 and dm.n >= DM_MIN_N and dm.n_clusters >= DM_MIN_N:
         return "BEATS_CLOSE"
     lo, hi = dm.ci95
     if lo <= 0.0 <= hi:                       # CI on (loss_close - loss_model) overlaps 0
         return "MATCHES_CLOSE"
-    return "BEHIND"                           # honest, recorded, NON-blocking
+    # d = loss_close - loss_model, so a STRICTLY NEGATIVE interval is the model doing worse.
+    # A strictly positive interval that did not clear the BEATS_CLOSE bar above is a
+    # non-claim, not a loss -- it used to be mislabelled BEHIND, contradicting this
+    # function's own documented contract ("CI strictly negative -> BEHIND").
+    return "BEHIND" if hi < 0.0 else "MATCHES_CLOSE"   # honest, recorded, NON-blocking
 
 
 def evaluate_corpus(name: str, predict_fn: Callable, states: List[dict]) -> dict:
@@ -203,6 +211,14 @@ def run_gate_in_process(predict_fn: Callable, states: Optional[List[dict]] = Non
                         "spa_p": None if spa is None else spa.family_p,
                         "spa_stat": None if spa is None else spa.studentized_stats[spa_index],
                         "spa_note": spa_note})
+            # S40b (prior red team, agent 1.1): _verdict runs BEFORE the multiplicity
+            # correction exists, so BEATS_CLOSE was decided on the RAW dm p while
+            # corrected_dm_p / ship_eligible were written here and never consulted. A
+            # "beat" the corrected p does not support is not a beat; the raw label is
+            # kept alongside so the downgrade is visible rather than silent.
+            if row["verdict"] == "BEATS_CLOSE" and not row["ship_eligible"]:
+                row["verdict_uncorrected"] = "BEATS_CLOSE"
+                row["verdict"] = "MATCHES_CLOSE"
             row.pop("_loss_diff", None)
             row.pop("_game_ids", None)
     for slot in SKIPPED_SLOTS:

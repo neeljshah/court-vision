@@ -247,12 +247,18 @@ def test_verdict_classify_behind_is_non_beat():
     d_beats = 0.008 + 0.003 * rng.standard_normal(n)
     dm_beats = diebold_mariano(d_beats.tolist(), gids)
     # Only assert BEATS_CLOSE if DM confirms (the synthetic d may not always reach p<0.05
-    # depending on cluster structure -- check the conditions rather than forcing the verdict)
-    if dm_beats.p_value < 0.05 and dm_beats.n >= 200:
+    # depending on cluster structure -- check the conditions rather than forcing the verdict).
+    # S40b: the sample floor now binds CLUSTERS as well as states, so this precondition
+    # mirrors the gate. These 300 states sit in 50 game clusters, so the floor is NOT met
+    # and a positive-but-uncleared interval is MATCHES_CLOSE, never BEHIND.
+    if dm_beats.p_value < 0.05 and dm_beats.n >= 200 and dm_beats.n_clusters >= 200:
         verdict = _verdict(bss=0.03, dm=dm_beats, bm=0.23, bc=0.245)
         assert verdict == "BEATS_CLOSE", (
             "Expected BEATS_CLOSE when BSS>0 and DM significant, got %r" % verdict
         )
+    else:
+        assert dm_beats.n_clusters == 50
+        assert _verdict(bss=0.03, dm=dm_beats, bm=0.23, bc=0.245) == "MATCHES_CLOSE"
 
 
 def test_gate_not_blocked_by_honest_reject():
