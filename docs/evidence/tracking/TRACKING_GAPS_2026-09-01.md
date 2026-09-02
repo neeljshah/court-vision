@@ -7,10 +7,10 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | id | sport | gap (measured) | evidence | status |
 |----|-------|----------------|----------|--------|
 | G01 | all | corpus intake accepted junk (talk shows, volleyball, esports); 12 clips quarantined; football denominator 35/41 | corpus_mislabel_2026-09-01.md, footage_census.py | census tool shipped; ingest gate (_valid_football_item) NOT yet re-run on legacy queue items |
-| G02 | all | coordinate declaration gate is magnitude-blind (minimap px passed as image_px) | basketball_imagepx_relabel_2026-09-01.md, test_image_px_containment.py | containment gate in flight (T3b) |
-| G03 | basketball | producer writes map_2d canvas px under x/y; 23.22 pct inside frame, 8/8 games FAIL | same | producer fix in flight (T3b) |
+| G02 | all | coordinate declaration gate is magnitude-blind (minimap px passed as image_px) | basketball_imagepx_relabel_2026-09-01.md, test_image_px_containment.py | CLOSED: containment gate at intake (IMAGE_PX_CONTAINMENT_MIN 0.95, reason image_px_containment; beb8e4c6d) |
+| G03 | basketball | producer writes map_2d canvas px under x/y; 23.22 pct inside frame, 8/8 games FAIL | same | post-processing fix shipped (8 games 0.94-0.97 inside); PRODUCER fix is src/tracking/advanced_tracker.py:1425 + unified_pipeline.py:2013 -> HUMAN APPLY PROPOSED_basketball_producer_2026-09-01.md (278b1bd4e) |
 | G04 | basketball | no player identity; no court lock on broadcast pans | harness_sweep_173_games | OPEN; after G03: image_px features + partial court lock on half-court possessions |
-| G05 | tennis | far-court verticals vanish (0-1 vs >=2 gate) -> 10.18 pct camera-lock coverage | tennis_camera_lock_honest_measurement_2026-09-01.md | in flight (T1) |
+| G05 | tennis | far-court verticals vanish (0-1 vs >=2 gate) -> 10.18 pct camera-lock coverage | tennis_camera_lock_honest_measurement_2026-09-01.md | MAJOR: 0.1018 -> 0.1987 linspace; sequential 15300-15600 coverage 0.897 harness PASS; 1080p control 0.817 PASS; root cause = brightness mask killed shadowed lines + exactly-5 cluster rule + ordinal roles (1c5f1e6b7). Linspace plan still FAIL (jump_p95 from 1.6 s row spacing) |
 | G06 | tennis | synthcal keypoint model does not converge (PCK 0.13, no checkpoint) | synthcal_w7_verdict_2026-09-01.md | CLOSED as FAIL; classical 5.28 ft = ceiling until G05 lands |
 | G07 | soccer | detector-bound vs camera-bound undecided at n=36 (pct>=14 0.5833) | soccer_s1_blind_verdict_2026-09-01.md | CLOSED AMBIGUOUS at n=100 (manual median 13.0, pct>=14 0.490, delta -1.23; c59f5499d): soccer stays S0 per prereg |
 | G08 | soccer | ext packet distinct_track_ids blank: homography never locks on isolated frames (needs video stream) | 50b9c69ca report | OPEN; churn unmeasurable until stream-based packet |
@@ -22,8 +22,10 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | G14 | all | pod adapter/keypoint code lags master (tennis adapter pre camera-lock) | synthcal verdict report | OPEN; deploy + daemon restart pending after G02/G03 |
 | G15 | all | daemon "done" = rows>=500 not harness verdict; deletes footage | done_means_verdict memory | OPEN; verify current daemon logic |
 | G17 | soccer | detector over-counts vs human (paired delta -1.23; refs/staff/medics enter raw_boxes) -> a player-role filter is needed before any count-based verdict | soccer_s1_blind_verdict_n100_2026-09-01.md | OPEN |
+| G18 | tennis | linspace sampling plan FAILS harness on jump_p95 by construction (1.6 s spacing); harness plan must be sequential ranges -- fix the PLAN, never the threshold; also only 1 match + 1 clip measured (n=1 match) | tennis_vertical_lever_2026-09-01 README | OPEN |
+| G19 | basketball | ~4 pct residual off-frame = Kalman coasts (advanced_tracker.py:1165); wnba_04 tracker latched onto bench/crowd | basketball_producer_fix_2026-09-01.md | OPEN |
 | G16 | all | teacher->student gate does not exist as a module (rule only) | product_runtime_contract memory | OPEN; needed before any "tracking improved a model" claim |
 
-Next single-problem lanes, in order: G01 ingest re-gate, G14 pod deploy, G15
+Next single-problem lanes, in order: G14 pod deploy (tennis court_lines + containment gate + relabel; daemon restart), G18 tennis sequential-plan harness on >=3 matches, G01 ingest re-gate, G15
 daemon done-definition, G12 more real baseball, G04 basketball image_px
 features, G09 licence check, G16 student gate.
