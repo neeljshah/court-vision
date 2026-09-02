@@ -1,0 +1,33 @@
+{
+  "n": 220,
+  "unique_clip_source_slot_pairs": 220,
+  "g84_overlap_count": 1,
+  "points_ge_2": 161,
+  "points_ge_3": 147,
+  "points_ge_4": 147,
+  "point_distribution": {
+    "0": 59,
+    "1": 0,
+    "2": 14,
+    "3": 0,
+    "4": 147
+  },
+  "independent_direction_distribution": {
+    "0": 59,
+    "1": 0,
+    "2": 161
+  },
+  "per_clip": {
+    "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds": 20,
+    "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p": 20,
+    "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss": 20,
+    "ncaa_basketball__ncaa_basketball_sRtHQbywiTE": 20,
+    "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo": 20,
+    "ncaa_basketball__ncaa_basketball_zqBCKovJCQU": 20,
+    "wnba__wnba_01": 20,
+    "wnba__wnba_01_1080p": 20,
+    "wnba__wnba_02": 20,
+    "wnba__wnba_04": 20,
+    "wnba__wnba_05": 20
+  }
+}

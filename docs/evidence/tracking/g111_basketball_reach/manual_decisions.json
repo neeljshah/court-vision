@@ -1,0 +1,16 @@
+{
+  "review_basis": "All 11 per-clip contact sheets, with full-resolution renders available for ambiguous tiles. Nonlisted slots were visually judged to have fewer than two named point landmarks.",
+  "clips": {
+    "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds": {"four_point_slots": [0, 2, 3, 7, 8, 9, 10, 11, 14, 18], "two_point_slots": []},
+    "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p": {"four_point_slots": [0, 1, 3, 5, 8, 11, 12, 13, 15, 16, 19], "two_point_slots": []},
+    "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss": {"four_point_slots": [0, 1, 2, 4, 5, 6, 8, 9, 10, 11, 12, 15, 17], "two_point_slots": [16]},
+    "ncaa_basketball__ncaa_basketball_sRtHQbywiTE": {"four_point_slots": [0, 2, 4, 5, 7, 9, 10, 11, 13, 14, 15, 18, 19], "two_point_slots": [8]},
+    "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo": {"four_point_slots": [0, 1, 2, 3, 4, 5, 6, 7, 10, 16, 17, 18], "two_point_slots": [8, 11, 14]},
+    "ncaa_basketball__ncaa_basketball_zqBCKovJCQU": {"four_point_slots": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 17, 18, 19], "two_point_slots": [16]},
+    "wnba__wnba_01": {"four_point_slots": [0, 1, 2, 5, 6, 8, 9, 10, 12, 13, 14, 15, 18, 19], "two_point_slots": [16]},
+    "wnba__wnba_01_1080p": {"four_point_slots": [0, 1, 2, 4, 6, 7, 8, 9, 10, 12, 13, 14, 16, 19], "two_point_slots": [11]},
+    "wnba__wnba_02": {"four_point_slots": [0, 1, 2, 6, 7, 8, 10, 12, 13, 14, 15, 16, 19], "two_point_slots": [3, 11]},
+    "wnba__wnba_04": {"four_point_slots": [2, 3, 4, 6, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19], "two_point_slots": [0, 1]},
+    "wnba__wnba_05": {"four_point_slots": [2, 3, 4, 5, 6, 7, 8, 9, 11, 13, 14, 16, 17, 18, 19], "two_point_slots": [1, 15]}
+  }
+}

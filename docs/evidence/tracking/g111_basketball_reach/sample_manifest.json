@@ -1,0 +1,2220 @@
+{
+  "seed": 1112026,
+  "method": "one random frame from each of 20 equal temporal strata per clip",
+  "strata_per_clip": 20,
+  "per_clip": {
+    "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds": 20,
+    "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p": 20,
+    "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss": 20,
+    "ncaa_basketball__ncaa_basketball_sRtHQbywiTE": 20,
+    "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo": 20,
+    "ncaa_basketball__ncaa_basketball_zqBCKovJCQU": 20,
+    "wnba__wnba_01": 20,
+    "wnba__wnba_01_1080p": 20,
+    "wnba__wnba_02": 20,
+    "wnba__wnba_04": 20,
+    "wnba__wnba_05": 20
+  },
+  "frames": [
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 0,
+      "source_frame": 1204,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s00__f001204.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 1,
+      "source_frame": 2304,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s01__f002304.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 2,
+      "source_frame": 3553,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s02__f003553.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 3,
+      "source_frame": 5104,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s03__f005104.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 4,
+      "source_frame": 6596,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s04__f006596.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 5,
+      "source_frame": 8130,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s05__f008130.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 6,
+      "source_frame": 9340,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s06__f009340.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 7,
+      "source_frame": 11396,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s07__f011396.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 8,
+      "source_frame": 12524,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s08__f012524.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 9,
+      "source_frame": 13382,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s09__f013382.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 10,
+      "source_frame": 14856,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s10__f014856.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 11,
+      "source_frame": 16865,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s11__f016865.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 12,
+      "source_frame": 18721,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s12__f018721.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 13,
+      "source_frame": 18821,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s13__f018821.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 14,
+      "source_frame": 20700,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s14__f020700.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 15,
+      "source_frame": 22638,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s15__f022638.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 16,
+      "source_frame": 24398,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s16__f024398.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 17,
+      "source_frame": 24849,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s17__f024849.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 18,
+      "source_frame": 27259,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s18__f027259.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "slot": 19,
+      "source_frame": 28008,
+      "decoded_frames": 28905,
+      "width": 640,
+      "height": 360,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s19__f028008.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 0,
+      "source_frame": 755,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s00__f000755.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 1,
+      "source_frame": 1664,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s01__f001664.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 2,
+      "source_frame": 2148,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s02__f002148.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 3,
+      "source_frame": 3384,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s03__f003384.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 4,
+      "source_frame": 4503,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s04__f004503.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 5,
+      "source_frame": 5397,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s05__f005397.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 6,
+      "source_frame": 5785,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s06__f005785.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 7,
+      "source_frame": 6909,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s07__f006909.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 8,
+      "source_frame": 7577,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s08__f007577.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 9,
+      "source_frame": 8289,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s09__f008289.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 10,
+      "source_frame": 9686,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s10__f009686.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 11,
+      "source_frame": 10566,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s11__f010566.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 12,
+      "source_frame": 11415,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s12__f011415.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 13,
+      "source_frame": 12099,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s13__f012099.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 14,
+      "source_frame": 13009,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s14__f013009.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 15,
+      "source_frame": 13987,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s15__f013987.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 16,
+      "source_frame": 15182,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s16__f015182.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 17,
+      "source_frame": 15937,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s17__f015937.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 18,
+      "source_frame": 16976,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s18__f016976.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p",
+      "source_file": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "slot": 19,
+      "source_frame": 17660,
+      "decoded_frames": 18115,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s19__f017660.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 0,
+      "source_frame": 329,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s00__f000329.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 1,
+      "source_frame": 2162,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s01__f002162.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 2,
+      "source_frame": 3702,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s02__f003702.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 3,
+      "source_frame": 5758,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s03__f005758.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 4,
+      "source_frame": 7020,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s04__f007020.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 5,
+      "source_frame": 7544,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s05__f007544.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 6,
+      "source_frame": 9382,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s06__f009382.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 7,
+      "source_frame": 10197,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s07__f010197.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 8,
+      "source_frame": 12684,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s08__f012684.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 9,
+      "source_frame": 14359,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s09__f014359.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 10,
+      "source_frame": 15697,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s10__f015697.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 11,
+      "source_frame": 16116,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s11__f016116.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 12,
+      "source_frame": 17427,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s12__f017427.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 13,
+      "source_frame": 19867,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s13__f019867.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 14,
+      "source_frame": 20839,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s14__f020839.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 15,
+      "source_frame": 22298,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s15__f022298.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 16,
+      "source_frame": 24454,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s16__f024454.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 17,
+      "source_frame": 24671,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s17__f024671.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 18,
+      "source_frame": 26099,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s18__f026099.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE",
+      "source_file": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "slot": 19,
+      "source_frame": 27506,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s19__f027506.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 0,
+      "source_frame": 723,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s00__f000723.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 1,
+      "source_frame": 2055,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s01__f002055.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 2,
+      "source_frame": 4224,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s02__f004224.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 3,
+      "source_frame": 5335,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s03__f005335.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 4,
+      "source_frame": 6087,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s04__f006087.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 5,
+      "source_frame": 7292,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s05__f007292.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 6,
+      "source_frame": 9456,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s06__f009456.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 7,
+      "source_frame": 10173,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s07__f010173.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 8,
+      "source_frame": 12317,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s08__f012317.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 9,
+      "source_frame": 13132,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s09__f013132.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 10,
+      "source_frame": 15293,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s10__f015293.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 11,
+      "source_frame": 17255,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s11__f017255.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 12,
+      "source_frame": 17399,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s12__f017399.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 13,
+      "source_frame": 19481,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s13__f019481.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 14,
+      "source_frame": 21027,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s14__f021027.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 15,
+      "source_frame": 23118,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s15__f023118.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 16,
+      "source_frame": 24274,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s16__f024274.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 17,
+      "source_frame": 25892,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s17__f025892.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 18,
+      "source_frame": 26039,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s18__f026039.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo",
+      "source_file": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "slot": 19,
+      "source_frame": 27834,
+      "decoded_frames": 28904,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s19__f027834.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 0,
+      "source_frame": 1064,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s00__f001064.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 1,
+      "source_frame": 1983,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s01__f001983.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 2,
+      "source_frame": 3739,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s02__f003739.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 3,
+      "source_frame": 4737,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s03__f004737.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 4,
+      "source_frame": 5404,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s04__f005404.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 5,
+      "source_frame": 7356,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s05__f007356.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 6,
+      "source_frame": 8214,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s06__f008214.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 7,
+      "source_frame": 9978,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s07__f009978.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 8,
+      "source_frame": 10390,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s08__f010390.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 9,
+      "source_frame": 11723,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s09__f011723.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 10,
+      "source_frame": 12806,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s10__f012806.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 11,
+      "source_frame": 14744,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s11__f014744.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 12,
+      "source_frame": 15833,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s12__f015833.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 13,
+      "source_frame": 17041,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s13__f017041.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 14,
+      "source_frame": 18067,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s14__f018067.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 15,
+      "source_frame": 18924,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s15__f018924.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 16,
+      "source_frame": 21308,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s16__f021308.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 17,
+      "source_frame": 22517,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s17__f022517.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 18,
+      "source_frame": 23815,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s18__f023815.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss",
+      "source_file": "ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "slot": 19,
+      "source_frame": 24792,
+      "decoded_frames": 25194,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__s19__f024792.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 0,
+      "source_frame": 783,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s00__f000783.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 1,
+      "source_frame": 2374,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s01__f002374.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 2,
+      "source_frame": 2996,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s02__f002996.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 3,
+      "source_frame": 4514,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s03__f004514.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 4,
+      "source_frame": 6094,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s04__f006094.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 5,
+      "source_frame": 7862,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s05__f007862.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 6,
+      "source_frame": 9543,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s06__f009543.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 7,
+      "source_frame": 11009,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s07__f011009.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 8,
+      "source_frame": 12817,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s08__f012817.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 9,
+      "source_frame": 13889,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s09__f013889.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 10,
+      "source_frame": 15074,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s10__f015074.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 11,
+      "source_frame": 17305,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s11__f017305.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 12,
+      "source_frame": 18667,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s12__f018667.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 13,
+      "source_frame": 20102,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s13__f020102.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 14,
+      "source_frame": 21532,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s14__f021532.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 15,
+      "source_frame": 22066,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s15__f022066.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 16,
+      "source_frame": 23739,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s16__f023739.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 17,
+      "source_frame": 24906,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s17__f024906.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 18,
+      "source_frame": 26966,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s18__f026966.jpg"
+    },
+    {
+      "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+      "source_file": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "slot": 19,
+      "source_frame": 28032,
+      "decoded_frames": 28939,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s19__f028032.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 0,
+      "source_frame": 505,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s00__f000505.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 1,
+      "source_frame": 2484,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s01__f002484.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 2,
+      "source_frame": 3618,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s02__f003618.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 3,
+      "source_frame": 5027,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s03__f005027.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 4,
+      "source_frame": 5965,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s04__f005965.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 5,
+      "source_frame": 7869,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s05__f007869.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 6,
+      "source_frame": 10018,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s06__f010018.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 7,
+      "source_frame": 10205,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s07__f010205.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 8,
+      "source_frame": 12155,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s08__f012155.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 9,
+      "source_frame": 13137,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s09__f013137.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 10,
+      "source_frame": 14468,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s10__f014468.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 11,
+      "source_frame": 17203,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s11__f017203.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 12,
+      "source_frame": 18642,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s12__f018642.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 13,
+      "source_frame": 19823,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s13__f019823.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 14,
+      "source_frame": 21255,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s14__f021255.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 15,
+      "source_frame": 22492,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s15__f022492.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 16,
+      "source_frame": 23417,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s16__f023417.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 17,
+      "source_frame": 25304,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s17__f025304.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 18,
+      "source_frame": 27367,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s18__f027367.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01",
+      "source_file": "wnba__wnba_01.mp4",
+      "slot": 19,
+      "source_frame": 27718,
+      "decoded_frames": 28861,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_01__s19__f027718.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 0,
+      "source_frame": 243,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s00__f000243.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 1,
+      "source_frame": 1343,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s01__f001343.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 2,
+      "source_frame": 1871,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s02__f001871.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 3,
+      "source_frame": 3053,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s03__f003053.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 4,
+      "source_frame": 4138,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s04__f004138.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 5,
+      "source_frame": 5238,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s05__f005238.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 6,
+      "source_frame": 6146,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s06__f006146.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 7,
+      "source_frame": 6444,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s07__f006444.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 8,
+      "source_frame": 7316,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s08__f007316.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 9,
+      "source_frame": 8226,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s09__f008226.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 10,
+      "source_frame": 9741,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s10__f009741.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 11,
+      "source_frame": 10002,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s11__f010002.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 12,
+      "source_frame": 11216,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s12__f011216.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 13,
+      "source_frame": 11973,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s13__f011973.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 14,
+      "source_frame": 13535,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s14__f013535.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 15,
+      "source_frame": 13855,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s15__f013855.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 16,
+      "source_frame": 15151,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s16__f015151.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 17,
+      "source_frame": 15812,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s17__f015812.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 18,
+      "source_frame": 17075,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s18__f017075.jpg"
+    },
+    {
+      "clip": "wnba__wnba_01_1080p",
+      "source_file": "wnba__wnba_01_1080p.mp4",
+      "slot": 19,
+      "source_frame": 17447,
+      "decoded_frames": 18060,
+      "width": 1920,
+      "height": 1080,
+      "render": "final_renders/wnba__wnba_01_1080p__s19__f017447.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 0,
+      "source_frame": 567,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s00__f000567.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 1,
+      "source_frame": 2746,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s01__f002746.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 2,
+      "source_frame": 3469,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s02__f003469.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 3,
+      "source_frame": 4859,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s03__f004859.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 4,
+      "source_frame": 6696,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s04__f006696.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 5,
+      "source_frame": 8256,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s05__f008256.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 6,
+      "source_frame": 9812,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s06__f009812.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 7,
+      "source_frame": 10762,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s07__f010762.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 8,
+      "source_frame": 11813,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s08__f011813.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 9,
+      "source_frame": 13951,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s09__f013951.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 10,
+      "source_frame": 15398,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s10__f015398.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 11,
+      "source_frame": 17224,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s11__f017224.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 12,
+      "source_frame": 18553,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s12__f018553.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 13,
+      "source_frame": 19976,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s13__f019976.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 14,
+      "source_frame": 20431,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s14__f020431.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 15,
+      "source_frame": 22552,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s15__f022552.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 16,
+      "source_frame": 24309,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s16__f024309.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 17,
+      "source_frame": 25192,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s17__f025192.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 18,
+      "source_frame": 26398,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s18__f026398.jpg"
+    },
+    {
+      "clip": "wnba__wnba_02",
+      "source_file": "wnba__wnba_02.mp4",
+      "slot": 19,
+      "source_frame": 28189,
+      "decoded_frames": 28808,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_02__s19__f028189.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 0,
+      "source_frame": 1077,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s00__f001077.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 1,
+      "source_frame": 1456,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s01__f001456.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 2,
+      "source_frame": 3587,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s02__f003587.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 3,
+      "source_frame": 5210,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s03__f005210.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 4,
+      "source_frame": 6919,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s04__f006919.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 5,
+      "source_frame": 7770,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s05__f007770.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 6,
+      "source_frame": 9012,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s06__f009012.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 7,
+      "source_frame": 10857,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s07__f010857.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 8,
+      "source_frame": 12752,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s08__f012752.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 9,
+      "source_frame": 13596,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s09__f013596.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 10,
+      "source_frame": 15348,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s10__f015348.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 11,
+      "source_frame": 17270,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s11__f017270.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 12,
+      "source_frame": 18097,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s12__f018097.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 13,
+      "source_frame": 19345,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s13__f019345.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 14,
+      "source_frame": 21578,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s14__f021578.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 15,
+      "source_frame": 21678,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s15__f021678.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 16,
+      "source_frame": 23315,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s16__f023315.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 17,
+      "source_frame": 25615,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s17__f025615.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 18,
+      "source_frame": 26000,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s18__f026000.jpg"
+    },
+    {
+      "clip": "wnba__wnba_04",
+      "source_file": "wnba__wnba_04.mp4",
+      "slot": 19,
+      "source_frame": 28225,
+      "decoded_frames": 28819,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_04__s19__f028225.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 0,
+      "source_frame": 1313,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s00__f001313.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 1,
+      "source_frame": 2708,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s01__f002708.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 2,
+      "source_frame": 3064,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s02__f003064.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 3,
+      "source_frame": 4409,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s03__f004409.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 4,
+      "source_frame": 6712,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s04__f006712.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 5,
+      "source_frame": 7299,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s05__f007299.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 6,
+      "source_frame": 9826,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s06__f009826.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 7,
+      "source_frame": 11128,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s07__f011128.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 8,
+      "source_frame": 11664,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s08__f011664.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 9,
+      "source_frame": 14392,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s09__f014392.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 10,
+      "source_frame": 15119,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s10__f015119.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 11,
+      "source_frame": 17253,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s11__f017253.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 12,
+      "source_frame": 17497,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s12__f017497.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 13,
+      "source_frame": 19963,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s13__f019963.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 14,
+      "source_frame": 20737,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s14__f020737.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 15,
+      "source_frame": 22921,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s15__f022921.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 16,
+      "source_frame": 24088,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s16__f024088.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 17,
+      "source_frame": 25645,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s17__f025645.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 18,
+      "source_frame": 27161,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s18__f027161.jpg"
+    },
+    {
+      "clip": "wnba__wnba_05",
+      "source_file": "wnba__wnba_05.mp4",
+      "slot": 19,
+      "source_frame": 27649,
+      "decoded_frames": 28815,
+      "width": 1280,
+      "height": 720,
+      "render": "final_renders/wnba__wnba_05__s19__f027649.jpg"
+    }
+  ]
+}
