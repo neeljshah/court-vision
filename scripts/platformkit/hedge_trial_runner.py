@@ -29,6 +29,7 @@ from scripts.platformkit.eval_gate.cpcv_engine import cpcv_evaluate
 from scripts.platformkit.eval_gate.deflated_metrics import deflated_p
 from scripts.platformkit.eval_gate.dm_test import diebold_mariano
 from scripts.platformkit.eval_gate.pbo import cscv_pbo
+from scripts.platformkit.eval_gate.replication_gate import replication_fields, replication_verdict
 from scripts.platformkit.ingame import arm_registry, hedge_combiner as hc
 from scripts.platformkit.ingame.gap_effective_n import effective_sample_size
 from scripts.platformkit.ingame_replay_scoreboard import discover_store
@@ -43,6 +44,7 @@ BAR = arm_registry.MINIMUM_DELTA_BRIER_IMPROVEMENT    # +0.004, never moves
 T_ROUNDS = {"mlb": 371, "soccer_intl": 68}            # pre-registered, not read off the corpus
 PBO_T = {"mlb": (100, 371, 1000), "soccer_intl": (30, 68, 200)}
 UNIFORM_T = 10 ** 9
+N_CORPORA_PER_SPORT = 1        # S08: each run_sport scores ONE disjoint corpus_unit
 E4_VARIANTS = {"e4_w0.5_d0.15": (0.5, 0.15), "e4_w2.0_d0.15": (2.0, 0.15),   # PBO-only configs,
                "e4_w1.0_d0.10": (1.0, 0.10), "e4_w1.0_d0.25": (1.0, 0.25)}   # pre-registered
 _INNING = re.compile(r"inning=(\d+)")
@@ -101,6 +103,16 @@ def verdict_of(stats: Mapping[str, Any]) -> str:
     ahead = (stats["improvement_vs_raw"] >= BAR and stats["dm_ci95_improvement"][0] > 0.0
              and stats["deflated_p"] < 0.05)
     return "AHEAD" if ahead else "BEHIND"
+
+
+def verdict_of_replicated(stats: Mapping[str, Any], n_corpora: int) -> str:
+    """ADDITIVE (S08): `verdict_of` with the replication floor applied at the trial's K.
+
+    Returns "SINGLE-WINDOW" for an AHEAD that ran on fewer disjoint corpus_units than
+    min_corpora_eff demands; every other verdict is byte-identical to `verdict_of`.
+    `verdict_of` itself is untouched -- this label is written BESIDE it, never over it.
+    """
+    return replication_verdict(verdict_of(stats), int(n_corpora), int(stats["k_cumulative"]))
 
 
 def regime_slices(frame: pd.DataFrame) -> Dict[str, Any]:
@@ -189,9 +201,12 @@ def run_sport(store: Path, sport: str, k_cum: int, bootstrap: int, max_estimator
     reported = report["slices"]["all_ticks"]["metrics"]["hedge_brier"]
     assert abs(float(frame["loss_hedge"].mean()) - reported) < 1e-9, "hedge series != evaluate() Brier"
     stats = primary_stats(frame, k_cum)
+    # S08 (additive): one run_sport call scores ONE disjoint corpus_unit, so n_corpora = 1.
+    stats.update(replication_fields(verdict_of(stats), N_CORPORA_PER_SPORT, stats["k_cumulative"]))
     return {"corpus": corpus, "ledger_row": ledger_row, "t_rounds": T_ROUNDS[sport], "arm_coverage_ticks": coverage,
             "combiner_report": {k: v for k, v in report.items() if k != "folds"},
             "combiner_render": hc.render(report), "primary": stats, "verdict": verdict_of(stats),
+            "replication_label": verdict_of_replicated(stats, N_CORPORA_PER_SPORT),
             "arm_registry_verdict_if_applied": arm_registry.verdict(
                 stats["delta_hedge_vs_market"], stats["ess"]["n_eff"], 2, 0.0, True),
             "regime_slices": regime_slices(frame), **extra,
