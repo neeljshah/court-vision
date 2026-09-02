@@ -70,3 +70,37 @@ def test_s40b_rt3_noncanonical_ledger_is_refused_before_it_is_created(tmp_path: 
     assert report["fwer"]["ledger_canonical"] is False
     assert canonical_ledger_path().name == "backtest_fwer.jsonl"
     assert canonical_ledger_path().parent.as_posix().endswith("data/cache/eval_gate")
+
+
+def _corpus_with_drops(root: Path) -> None:
+    """60 usable games plus 5 corrupt prices and 1 unsettled outcome."""
+    base = root / "data" / "domains" / "basketball_nba"
+    base.mkdir(parents=True)
+    odds, games = [], []
+    for i in range(66):
+        date = str((pd.Timestamp("2025-10-01") + pd.Timedelta(days=i)).date())
+        favorite, corrupt = i % 2 == 0, 60 <= i < 65
+        odds.append({"date": date, "home_team": f"H{i}", "away_team": f"A{i}",
+                     "home_ml": 0 if corrupt else (-400 if favorite else 400),
+                     "away_ml": 0 if corrupt else (400 if favorite else -400)})
+        games.append({"game_id": f"g{i}", "date": date, "home_team": f"H{i}",
+                      "away_team": f"A{i}", "home_win": 2 if i == 65 else int(favorite)})
+    pd.DataFrame(odds).to_parquet(base / "odds.parquet", index=False)
+    pd.DataFrame(games).to_parquet(base / "games.parquet", index=False)
+
+
+def test_rt16_dropped_rows_are_counted_beside_n_games(tmp_path: Path):
+    """RT-16: unpriceable / unsettled joined rows were dropped with no counter,
+    so n_games was a survivor count. MEASURED before: 10 joined rows, 5 with a
+    corrupt price -> 5 states and nothing in the report naming the 5."""
+    _corpus_with_drops(tmp_path)
+    report = run_backtest("scripts.platformkit.eval_gate.backtest_runner:close_echo",
+                          "basketball_nba", "2025-01-01", "2025-12-31", repo=tmp_path,
+                          ledger_path=tmp_path / "ledger.jsonl",
+                          allow_reference_close_echo=True, allow_noncanonical_ledger=True)
+    counts = report["corpus_counts"]
+    assert counts == {"n_joined": 66, "dropped_unpriceable": 5,
+                      "dropped_unsettled": 1, "n_states": 60}
+    assert report["n_games"] == 60 < counts["n_joined"]      # survivors != corpus
+    assert (counts["n_states"] + counts["dropped_unpriceable"]
+            + counts["dropped_unsettled"]) == counts["n_joined"]
