@@ -347,6 +347,18 @@ scripts/**/_*
 !scripts/platformkit/mcp/__init__.py
 !scripts/platformkit/ssac/__init__.py
 !scripts/platformkit/kalshi_complete/__init__.py
+# -- S60: private helpers that a TRACKED module imports. The rule above exists to
+#    keep _scratch throwaways out of git; these six are NOT throwaways -- a tracked
+#    module does `from ..._<helper> import ...`, so a fresh clone (and the pod's
+#    `git archive` deploy) breaks without them. Listed one path at a time on
+#    purpose: a blanket `!scripts/**/_*.py` would re-admit ~181 scratch files.
+#    Enforced by tests/platformkit/ops/test_private_helpers_tracked.py.
+!scripts/_pts_oof_harness.py
+!scripts/ingame/_ingame_fast_harness.py
+!scripts/pit/_scratch_ben_ortho.py
+!scripts/platformkit/autonomy/_monitor_merge_helpers.py
+!scripts/platformkit/data_frontier/_politeness.py
+!scripts/platformkit/improve/_market_metrics.py
 # -- internal audit/research churn — keep LOCAL (matches the curate-only posture:
 #    only 5 of ~243 _audits docs were ever published; the rest are internal brain,
 #    like vault/ and .planning/). Already-tracked audits stay tracked.
