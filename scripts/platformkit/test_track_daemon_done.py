@@ -103,3 +103,26 @@ def test_empty_csv_is_unadjudicated_and_footage_is_never_deleted(tmp_path, monke
     assert ledger["status"] == "thin" and ledger["adjudicated"] is False
     assert read_adjudicated(track_daemon.TRACKING, "empty") is None
     assert (track_daemon.CORPUS / video.name).exists()
+
+
+def test_every_acquisition_label_maps_to_a_sport_the_harness_knows():
+    """No staged game may reach the harness under its acquisition lane name.
+
+    The regression: only the basketball feeders were folded, so `mlb` went to
+    the harness raw and came back "unknown sport mlb". The first MLB game
+    tracked after the footage bridge was repaired was never quality scored --
+    it produced 78,315 rows and no verdict. `kbo` and `npb` survived only
+    because tracking_harness.SPORTS happens to carry them as byte-identical
+    aliases of baseball, which is luck, not routing.
+    """
+    from scripts.platformkit.track_daemon import CLIP_SPORTS, SPORT_ADAPTER
+    from scripts.platformkit.track_daemon_done import HARNESS_SPORT
+    from scripts.platformkit.tracking_harness import SPORTS
+
+    for label in set(SPORT_ADAPTER) | CLIP_SPORTS:
+        assert label in HARNESS_SPORT, "acquisition label %r has no harness sport" % label
+        assert HARNESS_SPORT[label] in SPORTS, (
+            "%r maps to %r which the harness does not score" % (label, HARNESS_SPORT[label]))
+
+    assert HARNESS_SPORT["mlb"] == "baseball"
+    assert HARNESS_SPORT["ncaa_basketball"] == "basketball"

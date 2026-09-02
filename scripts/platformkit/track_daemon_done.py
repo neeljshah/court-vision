@@ -92,6 +92,28 @@ def _with_decoded_denominator(frame: pd.DataFrame, decoded: int) -> pd.DataFrame
     return pd.concat((frame, fillers.loc[:, frame.columns]), ignore_index=True)
 
 
+# A staged game carries its ACQUISITION label (mlb, kbo, npb, wnba, ncaa_basketball),
+# which is a source lane, not a sport the harness scores. tracking_harness.SPORTS
+# happens to carry kbo and npb as byte-identical aliases of baseball but has no
+# mlb entry, so mlb fell straight through to "unknown sport mlb" and the first new
+# MLB game tracked after the footage bridge came back was never quality scored at
+# all. Only basketball was being folded here; every baseball feeder was missed.
+# This mirrors track_daemon.SPORT_ADAPTER, which cannot be imported from here --
+# track_daemon imports adjudicate from this module, so the dependency runs the
+# other way and importing back would be a cycle.
+HARNESS_SPORT = {
+    "wnba": "basketball", "basketball": "basketball",
+    "ncaa_basketball": "basketball", "nba": "basketball",
+    "mlb": "baseball", "kbo": "baseball", "npb": "baseball",
+    "baseball": "baseball",
+    # Listed even though they are already their own harness sport. The map is
+    # exhaustive on purpose: a fall-through default is what let mlb through, so
+    # a new acquisition lane must fail the paired test rather than silently
+    # inherit its own name.
+    "tennis": "tennis", "soccer": "soccer", "football": "football",
+}
+
+
 def adjudicate(video: Path, sport: str, game_id: str, tracking: Path,
                harness: Callable = evaluate,
                frame_counter: Callable[[Path], int] = decoded_frame_count) -> dict | None:
@@ -116,7 +138,7 @@ def adjudicate(video: Path, sport: str, game_id: str, tracking: Path,
         harness_input = emitted
         coverage = 0.0
         failures.append("decoded_frame_denominator: %s" % str(exc)[:120])
-    harness_sport = "basketball" if sport in {"wnba", "basketball", "ncaa_basketball", "nba"} else sport
+    harness_sport = HARNESS_SPORT.get(sport, sport)
     try:
         report = harness(harness_input, harness_sport, source=str(csv_path))
         failures.extend(getattr(report, "failures", []))
