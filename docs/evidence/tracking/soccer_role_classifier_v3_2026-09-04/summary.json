@@ -1,0 +1,84 @@
+{
+  "config": {
+    "image_height": 160,
+    "image_width": 96,
+    "batch_size": 32,
+    "epochs": 60,
+    "learning_rate": 0.0005,
+    "weight_decay": 0.0001
+  },
+  "device": "cpu",
+  "summary": {
+    "n": 300,
+    "accuracy": 0.91,
+    "majority_class_baseline": 0.8933333333333333,
+    "per_class_recall": {
+      "player": 0.9850746268656716,
+      "other": 0.36,
+      "referee": 0.0
+    }
+  },
+  "per_fold": [
+    {
+      "fold": 0,
+      "n": 64,
+      "accuracy": 0.90625,
+      "majority_class_baseline": 0.875,
+      "per_class_recall": {
+        "player": 1.0,
+        "other": 0.4,
+        "referee": 0.0
+      }
+    },
+    {
+      "fold": 1,
+      "n": 60,
+      "accuracy": 0.8166666666666667,
+      "majority_class_baseline": 0.85,
+      "per_class_recall": {
+        "player": 0.9607843137254902,
+        "other": 0.0,
+        "referee": 0.0
+      }
+    },
+    {
+      "fold": 2,
+      "n": 55,
+      "accuracy": 0.9272727272727272,
+      "majority_class_baseline": 0.9090909090909091,
+      "per_class_recall": {
+        "player": 1.0,
+        "other": 0.25,
+        "referee": 0.0
+      }
+    },
+    {
+      "fold": 3,
+      "n": 57,
+      "accuracy": 0.9649122807017544,
+      "majority_class_baseline": 0.9298245614035088,
+      "per_class_recall": {
+        "player": 0.9811320754716981,
+        "other": 0.75,
+        "referee": null
+      }
+    },
+    {
+      "fold": 4,
+      "n": 64,
+      "accuracy": 0.9375,
+      "majority_class_baseline": 0.90625,
+      "per_class_recall": {
+        "player": 0.9827586206896551,
+        "other": 0.5,
+        "referee": null
+      }
+    }
+  ],
+  "packet": {
+    "n": 100,
+    "baseline_delta": -1.23,
+    "oof_delta": -0.54,
+    "fresh_vs_sealed_mismatches": 27
+  }
+}
