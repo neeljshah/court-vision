@@ -6,8 +6,8 @@ Walks (never writes into, except the --out manifest itself):
   (c) data/cache/**/*_lock*.json, null_ship*.json -- lock + null-ship-calibration artifacts
 
 For each artifact this records: name, verdict (if the file exposes one), an as_of
-timestamp (from the file's own fields, else mtime), staleness in days vs a reference
-"today", and the source path.
+timestamp (from the file's own fields, else mtime), explicit measurement-time
+provenance, staleness in days vs a reference "today", and the source path.
 
 FAIL-CLOSED CONTRACT: nothing an audit cannot read is allowed to vanish silently.
 An artifact that cannot be parsed OR stat-ed is emitted as a row with status
@@ -50,13 +50,14 @@ def _parse_dt(s: Optional[str]):
         return None
 
 
-def _extract(obj) -> Tuple[Optional[str], Optional[str]]:
+def _extract(obj) -> Tuple[Optional[str], Optional[str], Optional[str]]:
     if not isinstance(obj, dict):
-        return None, None
+        return None, None, None
     verdict = next((obj[k] for k in _VERDICT_KEYS if k in obj), None)
-    as_of = next((obj[k] for k in _ASOF_KEYS if k in obj), None)
+    as_of_key = next((k for k in _ASOF_KEYS if k in obj), None)
+    as_of = obj.get(as_of_key) if as_of_key is not None else None
     return (str(verdict) if verdict is not None else None,
-            str(as_of) if as_of is not None else None)
+            str(as_of) if as_of is not None else None, as_of_key)
 
 
 def _load(path: Path):
@@ -116,7 +117,8 @@ def _scan(repo_root: Path, bad_dirs: List[str],
 def _dir_error_row(msg: str) -> dict:
     return {"name": "<unreadable dir>", "source_path": msg, "category": "scan_error",
             "status": "UNREADABLE", "verdict": None, "as_of_field": None,
-            "mtime": None, "staleness_days": None, "error": msg}
+            "mtime": None, "measured_at": None, "measured_at_source": None,
+            "staleness_days": None, "error": msg}
 
 
 def _row_for(path: Path, category: str, repo_root: Path, as_of: datetime) -> dict:
@@ -125,7 +127,7 @@ def _row_for(path: Path, category: str, repo_root: Path, as_of: datetime) -> dic
     except ValueError:
         rel = str(path)
 
-    status, verdict, as_of_field, error, mtime = "OK", None, None, None, None
+    status, verdict, as_of_field, as_of_key, error, mtime = "OK", None, None, None, None, None
     try:
         # stat() lives INSIDE the guard: a file that vanishes between the scan and
         # this row (or that cannot be stat-ed) must become an UNREADABLE row, not a
@@ -135,17 +137,49 @@ def _row_for(path: Path, category: str, repo_root: Path, as_of: datetime) -> dic
         if obj is None:
             status = "EMPTY"
         else:
-            verdict, as_of_field = _extract(obj)
+            verdict, as_of_field, as_of_key = _extract(obj)
     except Exception as e:  # fail-closed: never skip, never raise past this row
         status, error = "UNREADABLE", f"{type(e).__name__}: {e}"
 
-    effective = _parse_dt(as_of_field) or mtime
+    effective = _parse_dt(as_of_field)
+    measured_at_source = f"field:{as_of_key}" if effective else ("mtime" if mtime else None)
+    effective = effective or mtime
     staleness = (round((as_of - effective).total_seconds() / 86400.0, 2)
                  if effective is not None else None)
     return {"name": path.name, "source_path": rel, "category": category, "status": status,
             "verdict": verdict, "as_of_field": as_of_field,
             "mtime": mtime.isoformat() if mtime else None,
+            "measured_at": effective.isoformat() if effective else None,
+            "measured_at_source": measured_at_source,
             "staleness_days": staleness, "error": error}
+
+
+class StaleEvidence(Exception):
+    """Raised when a freshness claim lacks usable, timely evidence."""
+
+
+def _stale_rows(manifest: dict, max_age_days: float,
+                categories: tuple[str, ...] | None = None) -> List[dict]:
+    offenders = []
+    for row in manifest.get("rows", []):
+        if categories is not None and row.get("category") not in categories:
+            continue
+        if (row.get("measured_at_source") in (None, "mtime")
+                or row.get("measured_at") is None
+                or row.get("status") in ("UNREADABLE", "EMPTY")
+                or row.get("staleness_days") is None
+                or row["staleness_days"] > max_age_days):
+            offenders.append(row)
+    return offenders
+
+
+def assert_fresh(manifest: dict, max_age_days: float,
+                 categories: tuple[str, ...] | None = None) -> None:
+    """Raise StaleEvidence when a requested claim lacks fresh measurement evidence."""
+    offenders = _stale_rows(manifest, max_age_days, categories)
+    if offenders:
+        names = ", ".join(f"{row['name']} ({row['source_path']})" for row in offenders)
+        raise StaleEvidence("stale evidence: " + names)
 
 
 def build_manifest(repo_root: Path, as_of: Optional[datetime] = None,
@@ -189,6 +223,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--out", type=Path, default=None,
                     help="default: <repo-root>/data/cache/eval_gate/gate_manifest.json")
     ap.add_argument("--as-of", type=str, default=None, help="ISO datetime; default now (UTC)")
+    ap.add_argument("--max-age-days", type=float, default=None,
+                    help="opt-in claim gate; mark stale rows and exit 1")
     args = ap.parse_args(argv)
 
     as_of = None
@@ -200,13 +236,21 @@ def main(argv: Optional[List[str]] = None) -> int:
     out = args.out or (args.repo_root / "data" / "cache" / "eval_gate" / "gate_manifest.json")
     # exclude our own output: otherwise run N+1 audits run N's manifest as a "ledger".
     manifest = build_manifest(args.repo_root, as_of=as_of, exclude=out)
+    stale_rows = _stale_rows(manifest, args.max_age_days) if args.max_age_days is not None else []
+    for row in stale_rows:
+        row["status"] = "STALE"
+    if stale_rows:
+        for status in ("OK", "EMPTY", "UNREADABLE"):
+            manifest["summary"][status.lower()] = sum(
+                1 for row in manifest["rows"] if row["status"] == status)
+        manifest["summary"]["stale"] = len(stale_rows)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(manifest, indent=2, ensure_ascii=True, sort_keys=True) + "\n",
                    encoding="ascii")
 
     print(render_table(manifest))
     print("manifest written: " + str(out))
-    return 1 if manifest["summary"]["unreadable"] > 0 else 0
+    return 1 if stale_rows or manifest["summary"]["unreadable"] > 0 else 0
 
 
 if __name__ == "__main__":
