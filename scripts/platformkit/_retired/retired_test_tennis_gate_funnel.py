@@ -1,3 +1,4 @@
+# RETIRED: covers retired tennis_gate_funnel.py; renamed so pytest does not collect it.
 """The funnel's one load-bearing property: every frame lands in exactly one bucket.
 
 Run: python -m pytest scripts/platformkit/test_tennis_gate_funnel.py -q

@@ -1,3 +1,4 @@
+# RETIRED: covers retired tennis_resolution_anchor_ab.py; renamed so pytest does not collect it.
 """Regression test for the tennis line-correspondence solver."""
 from __future__ import annotations
 
