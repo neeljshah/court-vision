@@ -56,11 +56,28 @@ def hypotheses(entries: Sequence[catalogue.Entry] | None = None,
             print("skipped path={0} reason={1}".format(entry.path.name, error))
 
 
+def frozen_hypotheses(sport: str | None = None) -> Iterator[Hypothesis]:
+    """S58c: the FROZEN grammar -- every member of every FWER_FAMILIES_SPEC family x the 9
+    transform instances, at the family's frozen horizon/market, conditioning {}. 3,564 enumerated;
+    a member shared by two families (same sport/horizon/market) collapses to one semantic_hash."""
+    from scripts.platformkit.eval_gate.family_bars import load_families
+
+    for family in load_families().families:
+        if sport is not None and family.sport != sport:
+            continue
+        spec = {"sport": family.sport, "transforms": TRANSFORMS, "conditionings": (frozenset(),),
+                "horizons": (family.horizon,), "markets": (family.market,),
+                "columns": family.members, "family": family.name,
+                "runtime_available": {name: False for name in family.members}}
+        for hypothesis in enumerate_family(spec):
+            yield hypothesis
+
+
 def seed(db: results_db.ResultsDB, *, limit: int, tier: str = "T0",
-         sport: str | None = None) -> int:
+         sport: str | None = None, frozen: bool = False) -> int:
     """Upsert up to `limit` hypotheses and queue them at `tier`. Returns the number queued."""
     hashes: list[str] = []
-    for hypothesis in hypotheses(sport=sport):
+    for hypothesis in (frozen_hypotheses(sport) if frozen else hypotheses(sport=sport)):
         if len(hashes) >= limit:
             break
         hashes.append(db.upsert_hypothesis(hypothesis, family=hypothesis.family,
@@ -76,10 +93,13 @@ def main() -> None:
     parser.add_argument("--limit", type=int, default=300)
     parser.add_argument("--tier", default="T0")
     parser.add_argument("--sport", default=None, help="restrict to one catalogue sport")
+    parser.add_argument("--frozen", action="store_true",
+                        help="seed the frozen FWER_FAMILIES_SPEC grammar instead of the catalogue grid")
     args = parser.parse_args()
     with results_db.ResultsDB(args.db) as db:
-        seeded = seed(db, limit=args.limit, tier=args.tier, sport=args.sport)
-        print("seeded={0} db={1} tier={2} sport={3}".format(seeded, args.db, args.tier, args.sport))
+        seeded = seed(db, limit=args.limit, tier=args.tier, sport=args.sport, frozen=args.frozen)
+        print("seeded={0} db={1} tier={2} sport={3} frozen={4}".format(
+            seeded, args.db, args.tier, args.sport, args.frozen))
 
 
 if __name__ == "__main__":

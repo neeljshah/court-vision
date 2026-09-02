@@ -1,12 +1,11 @@
 """Continuously screen the Signal Foundry pool: a claim-driven T0/T1 queue, or the legacy matrix.
 
-`run_pass(number, queue=...)` claims hypotheses from the S15 results DB and runs the S12 cheap
-tiers (T0 then T1) on the SCREEN side of the family partition; an empty queue idles for
-`poll_seconds` and never rebuilds `PASS_CONFIGS`. `run_pass(number)` (no queue) and `--legacy`
-keep the old rotated-matrix behaviour byte-for-byte. T0/T1 never reach the FWER ledger --
-`tiers.charge_tier` refuses them by construction -- and T2/T3 run only off `tiers.promote`,
-serially under `ledger_lock`, and only with `--allow-charge`. Calibration only: a SCREEN is
-a non-finding.
+`run_pass(number, queue=...)` claims hypotheses from the S15 results DB and runs the S12 cheap tiers
+(T0 then T1) on the SCREEN side of the family partition; an empty queue idles `poll_seconds` and never
+rebuilds `PASS_CONFIGS`. `run_pass(number)` / `--legacy` keep the old rotated matrix. T0/T1 never reach
+the FWER ledger (`tiers.charge_tier` refuses them); T2/T3 run only off `tiers.promote`, serially under
+`ledger_lock`, only with `--allow-charge`. `--predictor real` (S58c) = the honest per-hypothesis logistic
+screen; default = the p_base fixture. A SCREEN is a non-finding.
 """
 from __future__ import annotations
 
@@ -32,8 +31,7 @@ from scripts.platformkit.teacher_student_ab import LOAD_FEATURES, build_features
 SUMMARY_PATH = Path(os.environ.get("FOUNDRY_RUNNER_SUMMARY", "data/ab_reports/foundry_runner.jsonl"))
 HEARTBEAT_PATH = Path(os.environ.get("FOUNDRY_RUNNER_HEARTBEAT", "data/ab_reports/foundry_runner.heartbeat.json"))
 PASS_CONFIGS = ((3, 1), (4, 2), (5, 1), (3, 2), (4, 1), (5, 2))
-POLL_SECONDS = 60.0
-SCREEN_ROWS = 800
+POLL_SECONDS, SCREEN_ROWS, PREDICTORS = 60.0, 800, ("p_base", "real")
 
 
 class ChargeNotAllowed(RuntimeError):
@@ -72,9 +70,7 @@ def _legacy_pass(number: int) -> dict[str, object]:
     """Run one configuration, preserving progress when an individual stage fails."""
     n_folds, embargo_blocks = PASS_CONFIGS[number % len(PASS_CONFIGS)]
     config = {"n_folds": n_folds, "embargo_blocks": embargo_blocks}
-    grades: dict[str, int] = {}
-    pool_delta: float | None = None
-    signals: Sequence[foundry.SignalSpec] = []
+    grades, pool_delta, signals = {}, None, []   # type: dict[str, int], float | None, Sequence
     try:
         matrix, signals = build_minutes_matrix()
         folds = list(expanding_folds(matrix, folds=n_folds))
@@ -121,26 +117,32 @@ class ScreenQueue:
     poll_seconds: float = POLL_SECONDS
     allow_charge: bool = False
     trials_dir: Path | None = None       # None -> the S15 production trials directory
+    binder: Callable | None = None       # S58c: hypothesis -> (states, predict_fn); None = fixture
+    incumbent: str = "devig_close"
 
 
 def screen_queue(sport: str, *, db: Any, ledger_path: Any, rows: int = SCREEN_ROWS,
                  allow_charge: bool = False, spec_path: Any = tiers.SPEC_PATH,
-                 trials_dir: Any = None) -> ScreenQueue:
-    """Build a queue over a real gate corpus. `p_base` is the screen predictor -- honest, not tuned.
-
-    ponytail: eval_gate.close_join covers soccer and tennis only today; a sport it does not
-    support raises there rather than being faked here.
-    """
+                 trials_dir: Any = None, predictor: str = "p_base") -> ScreenQueue:
+    """Queue over a real gate corpus. `p_base` = the S16 fixture; `real` = screen_predictor per claim."""
     from scripts.platformkit.eval_gate.close_join import gate_corpus_states
+    from scripts.platformkit.foundry import screen_predictor
 
-    states = gate_corpus_states(sport, "1900-01-01", "2999-01-01")
+    assert predictor in PREDICTORS, "predictor must be one of %s" % list(PREDICTORS)
+    if predictor == "real":
+        states, table, incumbent = screen_predictor.corpus_states(sport)
+    else:
+        states, table, incumbent = gate_corpus_states(sport, "1900-01-01", "2999-01-01"), None, "devig_close"
     rule = tiers.PromotionRule.from_spec(spec_path)
     partition = tiers.partition_corpus(states, seed=rule.partition_seed)
-    screen = [s for s in states if s["game_id"] in partition.screen_ids][-rows:]
+    screen = [s for s in states if s["game_id"] in partition.screen_ids]
     verdict = [s for s in states if s["game_id"] in partition.verdict_ids][-rows:]
-    return ScreenQueue(db, screen, _p_base_predict, partition, rule, Path(ledger_path), verdict,
-                       partition.screen_sha256[:16], sport, allow_charge=allow_charge,
-                       trials_dir=None if trials_dir is None else Path(trials_dir))
+    queue = ScreenQueue(db, screen[-rows:], _p_base_predict, partition, rule, Path(ledger_path), verdict,
+                        partition.screen_sha256[:16], sport, allow_charge=allow_charge, incumbent=incumbent,
+                        trials_dir=None if trials_dir is None else Path(trials_dir))
+    if predictor == "real":
+        queue.binder = screen_predictor.ScreenBinder(sport, screen, table, rows, incumbent)
+    return queue
 
 
 def _p_base_predict(train: Sequence[dict], test: dict, select_inside: bool) -> float:
@@ -149,13 +151,12 @@ def _p_base_predict(train: Sequence[dict], test: dict, select_inside: bool) -> f
 
 def _record(queue: ScreenQueue, result: tiers.TierResult) -> None:
     """Index one tier call and write its evidence JSON. The DB indexes evidence, never replaces it."""
-    row = {"hash": result.hash, "tier": result.tier, "corpus": result.corpus,
-           "corpus_unit": result.corpus_unit, "corpus_sha": queue.corpus_sha, "n": result.n,
-           "n_eff": result.n_eff, "brier_model": result.brier_model,
-           "brier_close": result.brier_close, "dm_stat": result.dm, "raw_p": result.raw_p,
-           "k_family": result.k_family, "k_global": result.k_global,
-           "deflated_p": result.deflated_p, "pbo": result.pbo, "verdict": result.verdict,
-           "prereg_sha256": result.prereg_sha256, "artifact_path": "", "run_at": None}
+    row = {"hash": result.hash, "tier": result.tier, "corpus": result.corpus, "corpus_unit": result.corpus_unit,
+           "corpus_sha": queue.corpus_sha, "n": result.n, "n_eff": result.n_eff, "brier_model": result.brier_model,
+           "brier_close": result.brier_close, "dm_stat": result.dm, "raw_p": result.raw_p, "k_family": result.k_family,
+           "k_global": result.k_global, "deflated_p": result.deflated_p, "pbo": result.pbo, "verdict": result.verdict,
+           "prereg_sha256": result.prereg_sha256, "artifact_path": "", "run_at": None, "family": result.family,
+           "incumbent": queue.incumbent, "screen_partition_sha256": result.screen_partition_sha256, "archive": result.archive}
     path = results_db.trial_artifact_path(result.hash, result.tier, result.corpus_unit or "all")
     if queue.trials_dir is not None:
         path = Path(queue.trials_dir) / path.name
@@ -163,21 +164,23 @@ def _record(queue: ScreenQueue, result: tiers.TierResult) -> None:
     path.write_text(json.dumps(row, allow_nan=False), encoding="ascii")
     row["artifact_path"] = path.as_posix()
     try:
-        queue.db.record(row)
+        queue.db.record(row)          # record() reads only its own field list; the extras stay in the JSON
     except sqlite3.IntegrityError:   # the same trial is never double-indexed; it still counted
         pass
 
 
 def _screen_one(queue: ScreenQueue, hypothesis: Any, family: str) -> tiers.TierResult | None:
     """T0 then T1 on the screen side. A failed screen is a screen with its reason, never dropped."""
-    last = None
+    last, states, predict_fn = None, queue.states, queue.predict_fn
     for tier in tiers.SCREEN_TIERS:
         try:
-            last = tiers.run_tier(hypothesis, tier, states=queue.states, predict_fn=queue.predict_fn,
+            if tier == "T0" and queue.binder is not None:
+                states, predict_fn = queue.binder(hypothesis)
+            last = tiers.run_tier(hypothesis, tier, states=states, predict_fn=predict_fn,
                                   ledger_path=queue.ledger_path, partition=queue.partition,
                                   rule=queue.rule, family=family)
         except Exception as error:   # a bad hypothesis must not stop the pod
-            print("screen_failed tier={0} family={1} reason={2}".format(tier, family, type(error).__name__))
+            print("screen_failed tier={0} family={1} feature={2} reason={3}: {4}".format(tier, family, getattr(hypothesis, "feature", "?"), type(error).__name__, str(error)[:120]))
             return None
         _record(queue, last)
         if tier == "T0" and last.verdict != "COVERED":
@@ -207,8 +210,7 @@ def _promotions(queue: ScreenQueue, screens: Sequence[tiers.TierResult]) -> tupl
     promoted, charges = 0, 0
     for family in sorted({r.family for r in screens}):
         group = [r for r in screens if r.family == family]
-        picks = tiers.promote(group, queue.rule)
-        promoted += len(picks)
+        promoted += len(picks := tiers.promote(group, queue.rule))
         try:
             charges += run_charged(queue, picks, len(group), family)
         except ChargeNotAllowed:
@@ -218,9 +220,8 @@ def _promotions(queue: ScreenQueue, screens: Sequence[tiers.TierResult]) -> tupl
 
 def _finish(number: int, screened: dict[str, int], promotions: int, charges: int,
             idle: bool, started: float) -> dict[str, object]:
-    summary = {"ts": datetime.now(timezone.utc).isoformat(), "pass": number,
-               "screens": sum(screened.values()), "screened_n": screened,
-               "promotions": promotions, "charges": charges, "idle": idle,
+    summary = {"ts": datetime.now(timezone.utc).isoformat(), "pass": number, "screens": sum(screened.values()),
+               "screened_n": screened, "promotions": promotions, "charges": charges, "idle": idle,
                "seconds": round(time.time() - started, 3)}
     _append_summary(summary)
     HEARTBEAT_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -239,8 +240,7 @@ def run_pass(number: int, queue: ScreenQueue | None = None, batch: int = 50) -> 
     if not hypotheses:
         time.sleep(queue.poll_seconds)
         return _finish(number, {}, 0, 0, True, started)
-    screened: dict[str, int] = {}
-    screens: list[tiers.TierResult] = []
+    screened, screens = {}, []   # type: dict[str, int], list[tiers.TierResult]
     for hypothesis in hypotheses:
         family = getattr(hypothesis, "family", "") or queue.family
         screened[family] = screened.get(family, 0) + 1
@@ -251,18 +251,14 @@ def run_pass(number: int, queue: ScreenQueue | None = None, batch: int = 50) -> 
     return _finish(number, screened, promotions, charges, False, started)
 
 
-def run(max_passes: int | None = None, sleep_seconds: float = 900.0,
-        queue: ScreenQueue | None = None, batch: int = 50,
-        deadline: float | None = None) -> list[dict[str, object]]:
-    """Run until stopped, or for a bounded pass count / wall deadline in tests and jobs.
-
-    Legacy (queue=None) is unchanged; with a queue the pass itself idles, so no second sleep.
-    """
+def run(max_passes: int | None = None, sleep_seconds: float = 900.0, queue: ScreenQueue | None = None,
+        batch: int = 50, deadline: float | None = None, idle_exit: bool = False) -> list[dict[str, object]]:
+    """Run until stopped / pass count / deadline / (idle_exit) first empty pass. Legacy (queue=None) unchanged."""
     results: list[dict[str, object]] = []
     while max_passes is None or len(results) < max_passes:
         results.append(run_pass(len(results), queue, batch) if queue is not None
                        else run_pass(len(results)))
-        if deadline is not None and time.time() >= deadline:
+        if (deadline is not None and time.time() >= deadline) or (idle_exit and results[-1].get("idle")):
             break
         if queue is None and (max_passes is None or len(results) < max_passes):
             time.sleep(sleep_seconds)
@@ -283,6 +279,8 @@ def main() -> None:
     parser.add_argument("--poll-seconds", type=float, default=POLL_SECONDS)
     parser.add_argument("--minutes", type=float, default=None, help="stop after this much wall time")
     parser.add_argument("--trials-dir", default=None)
+    parser.add_argument("--predictor", default="p_base", choices=PREDICTORS, help="p_base = S16 fixture; real = S58c")
+    parser.add_argument("--idle-exit", action="store_true", help="stop at the first empty-queue pass")
     # THE REFUSAL, defaulting OFF: without this flag no promotion may reach the FWER ledger.
     parser.add_argument("--allow-charge", action="store_true")
     args = parser.parse_args()
@@ -292,9 +290,10 @@ def main() -> None:
     deadline = None if args.minutes is None else time.time() + args.minutes * 60.0
     with results_db.ResultsDB(args.db) as db:
         queue = screen_queue(args.sport, db=db, ledger_path=args.ledger, rows=args.screen_rows,
-                             allow_charge=args.allow_charge, trials_dir=args.trials_dir)
-        queue.poll_seconds = args.poll_seconds
-        run(args.max_passes, args.sleep_seconds, queue, args.batch, deadline)
+                             allow_charge=args.allow_charge, trials_dir=args.trials_dir,
+                             predictor=args.predictor)
+        queue.poll_seconds = 0.0 if args.idle_exit else args.poll_seconds
+        run(args.max_passes, args.sleep_seconds, queue, args.batch, deadline, args.idle_exit)
 
 
 if __name__ == "__main__":
