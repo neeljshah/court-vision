@@ -15,7 +15,9 @@ from domains.tennis.tracking.identity import assign_epoch, end_epoch
 from domains.tennis.tracking.rally_features import match_aggregates
 from domains.tennis.tracking.segmenter import detect_cut, small_gray
 from scripts.platformkit.coordinate_provenance import stamp_court_space_rows, write_tracking_csv
-SCHEMA = ("frame", "track_id", "cls", "x", "y", "calibration_provenance")
+SCHEMA = ("frame", "track_id", "cls", "x", "y", "calibration_provenance",
+          "projection_status", "projection_rejection_reason", "raw_projected_x_ft",
+          "raw_projected_y_ft")
 COURT_FEET = np.float32(((0, 0), (0, 36), (78, 0), (78, 36))); Detector = Callable[[np.ndarray], Sequence[Sequence[float]]]
 # Projective invariant for the five length-running court lines.
 CROSS_RATIO = 567.0 / 486.0
