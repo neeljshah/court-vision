@@ -59,11 +59,19 @@ def contiguous_blocks(n_obs: int, s_blocks: int = DEFAULT_S_BLOCKS) -> list[np.n
     positional row index rather than distinct calendar dates. Blocks are NEVER
     shuffled: each is an ascending run of ADJACENT rows, so no split interleaves
     rows across a time boundary.
+
+    RT-15: every block is EQUAL. np.array_split over a non-multiple n_obs yields
+    unequal blocks, so the IS half and its OOS complement hold different row
+    counts across combos -- the same non-uniform-rank break that _check_s_blocks
+    rejects for odd s_blocks. MEASURED before the trim: contiguous_blocks(70, 16)
+    -> sizes [5,5,5,5,5,5,4,4,4,4,4,4,4,4,4,4] and an IS half holding 32..38 rows.
+    The `n_obs % s_blocks` trailing rows are dropped; cscv_pbo reports the count
+    as detail["dropped_tail_rows"] so the scored denominator is never silent.
     """
     _check_s_blocks(s_blocks)
     if n_obs < s_blocks:
         raise ValueError("n_obs must be >= s_blocks")
-    return np.array_split(np.arange(n_obs), s_blocks)
+    return np.array_split(np.arange(n_obs - (n_obs % s_blocks)), s_blocks)
 
 
 def enumerate_split_indices(s_blocks: int = DEFAULT_S_BLOCKS, max_splits: int = DEFAULT_MAX_SPLITS,
@@ -145,7 +153,9 @@ def cscv_pbo(pred_matrix: np.ndarray, outcome: Sequence[int] | np.ndarray, *,
     pbo = float(np.mean(np.asarray(logit_lambdas) <= 0.0))
     return CSCVResult(pbo=pbo, n_splits=len(splits), n_configs=n_configs, n_obs=n_obs, s_blocks=s_blocks,
                       logit_lambdas=logit_lambdas, omegas=omegas, is_best_idx=is_best_idx,
-                      detail={"seed": seed, "max_splits": max_splits})
+                      detail={"seed": seed, "max_splits": max_splits,
+                              "n_obs_scored": int(n_obs - (n_obs % s_blocks)),
+                              "dropped_tail_rows": int(n_obs % s_blocks)})
 
 
 # ponytail: _logit/_fit_predict duplicate combo_search.py:35-37,70-74 (both private
