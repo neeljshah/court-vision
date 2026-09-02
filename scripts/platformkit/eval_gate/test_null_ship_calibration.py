@@ -17,10 +17,18 @@ def test_noise_is_reproducible_and_constant_within_each_game():
 
 
 def test_small_n_uses_the_real_corrected_gate_serially():
+    """S40b / RT-21(c): `0 <= ships <= candidates` was vacuous -- a gate shipping 100% of
+    pure-noise candidates passed it, and `.passed` was never exercised at all. Assert the
+    outcome the null run must actually produce: pure noise ships NOTHING."""
     result = run_calibration(n=2, seed=19, max_wall_seconds=600.0)
     assert result.candidates == 2
-    assert 0 <= result.ships <= result.candidates
+    assert result.ships == 0                      # pure noise must not clear the real gate
+    assert result.ship_rate == 0.0
     assert result.provisional is False
+    assert result.passed is True                  # .passed exercised, not just .ships
+
+    # and a run whose noise DID ship fails: rate 1/2 = 0.5, above the 2*0.05 ceiling.
+    assert CalibrationResult(2, 1, 1.0, 0.05, False).passed is False
 
 
 def test_broken_report_suspends_prior_ships_in_exact_words():

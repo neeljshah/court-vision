@@ -1,7 +1,9 @@
 """Eval-gate rows obey the nightly R1 false-discovery schema."""
 from __future__ import annotations
 
-from scripts.platformkit.eval_gate.false_discovery import accounting_row
+from scripts.platformkit.eval_gate.false_discovery import (
+    MIN_SURVIVORS_ALLOWED, accounting_row,
+)
 
 
 def test_eval_gate_accounting_uses_bonferroni_expectation():
@@ -17,7 +19,12 @@ def test_eval_gate_accounting_uses_bonferroni_expectation():
     assert row["families_touched"] == ["eval_gate"]
     assert row["expected_false_survivors"] == 0.05
     assert row["survivor_ids"] == ["b"]
-    assert row["within_noise_floor"] is True
+    # S40b / RT-21(a): `assert within_noise_floor is True` was tautological -- it PINNED
+    # the ceil() hole (expectation 0.05, one survivor) as correct behaviour. Assert the
+    # rule instead, derived here: allowed = max(MIN_SURVIVORS_ALLOWED, int(expected)).
+    allowed = max(MIN_SURVIVORS_ALLOWED, int(row["expected_false_survivors"]))
+    assert row["min_survivors_allowed"] == allowed
+    assert row["within_noise_floor"] == (row["observed_survivors"] <= allowed)
 
 
 def test_s40b_rt5_two_survivors_against_a_sub_one_expectation_is_not_within_the_floor():
