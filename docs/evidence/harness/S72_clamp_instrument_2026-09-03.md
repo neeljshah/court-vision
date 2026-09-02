@@ -3,8 +3,14 @@
 ## VERDICT: INSTRUMENT REPAIRED (no verdict, no charge, no bar moved)
 
 This row repairs the INSTRUMENT that produced the S58 batch-2 trial-A NULL (6afb8fed1). It
-does NOT re-score, re-verdict or re-charge that family. The real ledger stays at 17 rows;
-nothing in this lane read a K, sealed a prereg, or wrote `data/cache/eval_gate/`.
+does NOT re-score, re-verdict or re-charge that family. Nothing in this lane read a K, sealed a
+prereg, charged the FWER ledger, or wrote `data/cache/eval_gate/`.
+
+CORRECTION (measured after the landing commit): `backtest_fwer.jsonl` was 17 rows at this lane's
+start and is 18 rows now. The 18th row -- `foundry:d65df2a9...`, family `soccer_gate`, at
+2026-09-02T17:27:21Z -- was charged by a CONCURRENT foundry lane, not by S72. S72's charge count
+is 0. Any statement in this memo or in the S72 results-ledger line that the ledger "stays at 17
+rows" is scoped to this lane's own writes and is corrected here.
 
 ## STEP 0 -- the defect reproduced on window 1 (before any change)
 
