@@ -31,7 +31,7 @@ machinery cost the job).
 | G12 | g12_more_real_baseball | 97,955 | 19:59 | 20:06 | 7 | BLOCKED (no cookie jar) | DATA |
 | G23 | g23_tennis_pseudolabels | 256,013 | 20:00 | 20:15 | 15 | LANDED 45b60357f | - |
 | G20+G21 | g20_g21_cleanup | 138,652 | 20:01 | 20:08 | 7 | LANDED 77539bc9d (+verifier fix 321c589a1) | - |
-| G08 | g08_soccer_stream_packet | (running) | 20:03 | 20:43+ | 40+ | RUNNING | - |
+| G08 | g08_soccer_stream_packet | (running) | 20:03 | 20:43+ | 40+ | LANDED f07c71cd7 (ACCEPT WITH CORRECTIONS) | - |
 | G24 | g24_ext_packet_determinism | 75,879 | 20:05 | 20:11 | 6 | LANDED 3e55c2c62 | - |
 | G12b | g12b_more_real_baseball | 156,107 | 20:06 | 20:38 | 32 | AWAITING VERIFIER | - |
 | G11 v3 | g11c_geometry_first | 319,259 | 20:07 | 20:23 | 16 | REJECT; G11 closed at limit | PROCESS |
