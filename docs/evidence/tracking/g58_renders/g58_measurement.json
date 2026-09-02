@@ -1,0 +1,42 @@
+{
+  "g46_probe_sha256": "b314d300e1e01a1de53b01d18a4ee6d0c70dba57e2a52b0afa4858b1bf38b0be",
+  "method": "bounded G58 diagnostic: two evenly separated accepted G46 frames per multi-frame clip and the sole accepted 3x3 frame; unchanged production G46 probe path",
+  "per_clip": {
+    "06": {"median_ratio": 0.989944, "n": 2, "values": [0.99077031, 0.98911796]},
+    "3x3": {"median_ratio": 0.990632, "n": 1, "values": [0.99063236]},
+    "459": {"median_ratio": 0.990105, "n": 2, "values": [0.98765273, 0.99255805]},
+    "nyYk": {"median_ratio": 0.992411, "n": 2, "values": [0.99225827, 0.9925633]}
+  },
+  "position_diagnostic": {
+    "ratio_vs_court_centre_y_pearson": -0.302128,
+    "ratio_vs_court_height_pearson": -0.294788
+  },
+  "rows": [
+    {"clip": "nyYk", "court_centre_y_px": 426.6651, "court_height_px": 390.6088, "frame": 0, "ratio": 0.99225827},
+    {"clip": "nyYk", "court_centre_y_px": 423.8762, "court_height_px": 389.1694, "frame": 43942, "ratio": 0.9925633},
+    {"clip": "459", "court_centre_y_px": 617.8581, "court_height_px": 567.0471, "frame": 76, "ratio": 0.98765273},
+    {"clip": "459", "court_centre_y_px": 622.3, "court_height_px": 569.5276, "frame": 6882, "ratio": 0.99255805},
+    {"clip": "06", "court_centre_y_px": 612.5338, "court_height_px": 537.8431, "frame": 498, "ratio": 0.99077031},
+    {"clip": "06", "court_centre_y_px": 617.6189, "court_height_px": 546.0588, "frame": 6249, "ratio": 0.98911796},
+    {"clip": "3x3", "court_centre_y_px": 200.7934, "court_height_px": 186.3394, "frame": 9053, "ratio": 0.99063236}
+  ],
+  "run_environment": {
+    "cuda_available": true,
+    "cv2_version": "4.14.0",
+    "git_revision": null,
+    "git_tree_dirty": false,
+    "hostname": "4309ad9ecdb5",
+    "numpy_version": "2.1.2",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.39",
+    "python_version": "3.12.3",
+    "seed": null,
+    "seed_reason": "No random selection; fixed evenly distributed accepted G46 frames.",
+    "source_hashes_sha256": {
+      "domains/tennis/tracking/adapter.py": "d17beee681e6fad5fb44deef79bbe65f93e8d56d6a19ff6260ed47c3c3e19cd8",
+      "domains/tennis/tracking/court_lines.py": "0f0f3fa393c8a58320fe352d43ddb673fab515200b7cd8a4dd8fa5ec2f51bbe0"
+    },
+    "stamp_note": "Schema-equivalent inline stamp because scripts/platformkit/tracking/run_environment.py is absent on the pod checkout; no module was copied or deployed.",
+    "timestamp_utc": "2026-09-02T19:17:18.374024Z",
+    "torch_version": "2.8.0+cu128"
+  }
+}
