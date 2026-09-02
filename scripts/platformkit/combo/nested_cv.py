@@ -130,6 +130,15 @@ def select_then_score(
         raise AssertionError(
             "SELECTION LEAK: select_fn was given a holdout game_id -- nested CV "
             "violated; the sealed outer fold must never reach the selector.")
+    # RT-12: an EMPTY sealed holdout used to return a score anyway. MEASURED: 3
+    # game_ids over n_folds=5 leaves folds 3 and 4 empty, and holdout_fold=3 gave
+    # n_holdout_games=0 with outer_score=0.0 -- a caller reading outer_score could
+    # not tell a 0-game holdout from a real one. Fail closed instead.
+    if not holdout:
+        raise ValueError(
+            "sealed outer holdout is empty: fold %d of %d holds 0 of %d game_ids; "
+            "an outer score over 0 games is not a score"
+            % (int(holdout_fold), int(n_folds), len(list(game_ids))))
     score = float(score_fn(selected, holdout))  # scored ONCE on the sealed fold
     return NestedResult(
         selected_spec=selected, outer_score=score, holdout_fold=int(holdout_fold),
