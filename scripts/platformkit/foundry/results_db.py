@@ -18,7 +18,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from dataclasses import asdict, dataclass, is_dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Optional
 
@@ -49,8 +49,10 @@ CREATE TABLE IF NOT EXISTS result(
     deflated_p REAL, pbo REAL, verdict TEXT, artifact_path TEXT, prereg_sha256 TEXT,
     run_at TEXT, UNIQUE(hash, tier, corpus, corpus_unit, corpus_sha));
 CREATE TABLE IF NOT EXISTS queue(
-    hash TEXT PRIMARY KEY, tier TEXT, enqueued_at TEXT, claimed_at TEXT);
+    hash TEXT PRIMARY KEY, tier TEXT, enqueued_at TEXT, claimed_at TEXT, lease_until TEXT);
 """
+
+LEASE_SECONDS = 900.0  # S66: how long a claim is held before reap_expired frees it
 
 
 @dataclass(frozen=True)
@@ -104,7 +106,12 @@ def _hypothesis(row: sqlite3.Row) -> Hypothesis:
         sport=row["sport"], feature=row["feature"], transform=row["transform"],
         params=tuple(tuple(pair) for pair in json.loads(row["params"])),
         conditioning=frozenset(json.loads(row["conditioning"])),
-        horizon=row["horizon"], market=row["market"])
+        horizon=row["horizon"], market=row["market"],
+        # S66: DROPPED here before, so every claimed hypothesis came back with
+        # family="" and the runner's `or queue.family` fallback labelled all 6,000
+        # pod claims with the queue's sport. Stored all along; reconstruction lost it.
+        family=row["family"] or "",
+        runtime_available=bool(row["runtime_available"]))
 
 
 class ResultsDB:
@@ -118,6 +125,10 @@ class ResultsDB:
         self._c.row_factory = sqlite3.Row
         self._c.execute("PRAGMA foreign_keys=ON")
         self._c.executescript(_SCHEMA)
+        # Additive migration for a DB created before S66 (see reap_expired).
+        columns = {row[1] for row in self._c.execute("PRAGMA table_info(queue)")}
+        if "lease_until" not in columns:
+            self._c.execute("ALTER TABLE queue ADD COLUMN lease_until TEXT")
 
     def close(self) -> None:
         self._c.close()
@@ -129,8 +140,8 @@ class ResultsDB:
         self.close()
 
     # -- hypotheses -------------------------------------------------------------
-    def upsert_hypothesis(self, hypothesis: Hypothesis, *, family: str = "",
-                          runtime_available: bool = True,
+    def upsert_hypothesis(self, hypothesis: Hypothesis, *, family: Optional[str] = None,
+                          runtime_available: Optional[bool] = None,
                           grammar_version: str = GRAMMAR_VERSION,
                           created_at: Optional[str] = None) -> str:
         """Insert-if-absent, keyed by semantic_hash. Returns the hash.
@@ -139,8 +150,15 @@ class ResultsDB:
         collision. sqlite has already refused it on the primary key; we re-raise
         that IntegrityError rather than merging the two hypotheses into one row.
         An identical re-proposal is simply idempotent.
+
+        S66: `family` / `runtime_available` now DEFAULT to the hypothesis's own
+        fields (hash-excluded, so neither can move the digest), so a caller that
+        forgets them can no longer strand a row with family="".
         """
         digest = semantic_hash(hypothesis)
+        family = hypothesis.family if family is None else family
+        runtime_available = (hypothesis.runtime_available if runtime_available is None
+                             else runtime_available)
         raw = (hypothesis.sport, hypothesis.feature, hypothesis.transform,
                json.dumps([list(pair) for pair in hypothesis.params]),
                json.dumps(sorted(hypothesis.conditioning)),
@@ -221,13 +239,35 @@ class ResultsDB:
             "VALUES(?,?,?,NULL)", rows)
         return len(rows)
 
-    def claim(self, n: int, tier: Optional[str] = None) -> list:
-        """Claim up to n queued hypotheses in ONE transaction.
+    def reap_expired(self, now: Optional[str] = None) -> int:
+        """Hand every EXPIRED claim back to the queue. Returns the row count.
+
+        B4: a claimer that dies mid-tier must not strand its rows. `claim()` calls
+        this inside its own transaction, so every claimer reaps by construction; it
+        is public because the runner may also reap on a pass that claims nothing.
+        A row claimed BEFORE S66 has lease_until NULL and is NEVER auto-reaped --
+        nothing can tell a live pre-lease claimer from a dead one, so only
+        `release()` frees those."""
+        cursor = self._c.execute(
+            "UPDATE queue SET claimed_at=NULL, lease_until=NULL WHERE claimed_at IS NOT NULL "
+            "AND lease_until IS NOT NULL AND lease_until <= ?", (now or _now(),))
+        return int(cursor.rowcount)
+
+    def release(self, hashes: Iterable[str]) -> int:
+        """Hand claimed rows back on a FAILURE path, without waiting out the lease."""
+        cursor = self._c.executemany(
+            "UPDATE queue SET claimed_at=NULL, lease_until=NULL WHERE hash=?",
+            [(h,) for h in hashes])
+        return int(cursor.rowcount)
+
+    def claim(self, n: int, tier: Optional[str] = None,
+              lease_seconds: float = LEASE_SECONDS) -> list:
+        """Claim up to n queued hypotheses in ONE transaction, holding a lease.
 
         BEGIN IMMEDIATE takes the write lock before the SELECT, so two claimers can
-        never both see the same unclaimed row. A claimed row is not claimable again.
-        ponytail: single-shot claim, no lease expiry -- add one if a claimer can die
-        mid-tier and strand rows (B4).
+        never both see the same unclaimed row. A claimed row is not claimable again
+        until its lease expires (B4): `reap_expired` runs in the same transaction, so
+        an expired claim is reclaimable on the NEXT claim and never before it.
         """
         sql = "SELECT hash FROM queue WHERE claimed_at IS NULL"
         args: list = []
@@ -238,11 +278,15 @@ class ResultsDB:
         args.append(int(n))
         self._c.execute("BEGIN IMMEDIATE")
         try:
+            stamp = _now()
+            self.reap_expired(stamp)
             hashes = [row[0] for row in self._c.execute(sql, args).fetchall()]
             if hashes:
-                stamp = _now()
-                self._c.executemany("UPDATE queue SET claimed_at=? WHERE hash=?",
-                                    [(stamp, h) for h in hashes])
+                until = (datetime.fromisoformat(stamp)          # all stamps are UTC,
+                         + timedelta(seconds=float(lease_seconds))).isoformat()
+                self._c.executemany(
+                    "UPDATE queue SET claimed_at=?, lease_until=? WHERE hash=?",
+                    [(stamp, until, h) for h in hashes])
             rows = [self._c.execute("SELECT * FROM hypothesis WHERE hash=?", (h,)).fetchone()
                     for h in hashes]
             self._c.execute("COMMIT")

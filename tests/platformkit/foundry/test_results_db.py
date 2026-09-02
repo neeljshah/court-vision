@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import json
 import sqlite3
+from dataclasses import replace
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -121,7 +123,10 @@ def test_round_trip_every_column(tmp_path):
             "conditioning": json.dumps(sorted(CONDITIONING)), "horizon": "pregame",
             "market": "ml", "runtime_available": 0, "created_at": "2026-09-03T00:00:00+00:00",
             "grammar_version": "s11"}
-        assert db.get_hypothesis(digest) == HYPOTHESIS
+        # S66: family / runtime_available now survive the round trip. Before the fix
+        # this read back as HYPOTHESIS (family="") -- the stored "pace" was dropped.
+        assert db.get_hypothesis(digest) == replace(
+            HYPOTHESIS, family="pace", runtime_available=False)
 
         db.record(_result(digest))
         row = db.lookup(digest, TIER, CORPUS, UNIT, SHA)
@@ -175,3 +180,82 @@ def _result(hash, **overrides):
                   prereg_sha256="0" * 64, run_at="2026-09-03T01:00:00+00:00")
     fields.update(overrides)
     return TierResult(**fields)
+
+
+# --- S66: claim leases + family round trip -----------------------------------
+
+def _plus(seconds):
+    """An ISO-UTC stamp `seconds` from now -- what a lease is compared against."""
+    return (datetime.now(timezone.utc) + timedelta(seconds=seconds)).isoformat()
+
+
+def _queued(db, halflives=(3, 5, 10), sport="nba", family="pace"):
+    """Upsert and queue one hypothesis per halflife. Returns the hashes."""
+    hashes = []
+    for halflife in halflives:
+        hypothesis = Hypothesis(sport, "pace_diff_asof", "ew", (("halflife", halflife),),
+                                CONDITIONING, "pregame", "ml", family=family)
+        hashes.append(db.upsert_hypothesis(hypothesis))
+    db.enqueue(hashes, TIER)
+    return hashes
+
+
+def test_expired_claim_is_reclaimable_after_the_lease_never_before(tmp_path):
+    """B4: a claimer that DIES (never releases, never records) strands nothing."""
+    with _db(tmp_path) as db:
+        _queued(db)
+        assert len(db.claim(3, tier=TIER, lease_seconds=900)) == 3
+        # the claimer dies here -- no release, no record.
+        assert db.claim(3, tier=TIER) == []              # never before the lease
+        row = db._c.execute("SELECT claimed_at, lease_until FROM queue").fetchone()
+        assert row["claimed_at"] is not None and row["lease_until"] > row["claimed_at"]
+
+        assert db.reap_expired(_plus(899)) == 0          # still inside the lease
+        assert db.claim(3, tier=TIER) == []
+        assert db.reap_expired(_plus(901)) == 3          # after it
+        assert len(db.claim(3, tier=TIER)) == 3          # reclaimable
+
+
+def test_claim_reaps_expired_rows_itself(tmp_path):
+    """The reap runs INSIDE claim, so a claimer cannot forget to call it."""
+    with _db(tmp_path) as db:
+        _queued(db)
+        assert len(db.claim(3, tier=TIER, lease_seconds=-1)) == 3   # already expired
+        assert len(db.claim(3, tier=TIER)) == 3
+
+
+def test_release_frees_a_claim_before_the_lease(tmp_path):
+    with _db(tmp_path) as db:
+        hashes = _queued(db)
+        assert len(db.claim(3, tier=TIER)) == 3
+        assert db.release(hashes[:2]) == 2
+        assert len(db.claim(3, tier=TIER)) == 2
+
+
+def test_pre_lease_claim_is_never_auto_reaped(tmp_path):
+    """A row claimed before S66 has lease_until NULL: only release() frees it."""
+    with _db(tmp_path) as db:
+        hashes = _queued(db)
+        db.claim(3, tier=TIER)
+        db._c.execute("UPDATE queue SET lease_until=NULL")
+        assert db.reap_expired(_plus(100000)) == 0
+        assert db.release(hashes) == 3
+
+
+def test_claimed_hypothesis_round_trips_its_family(tmp_path):
+    with _db(tmp_path) as db:
+        _queued(db, halflives=(3,), family="pace")
+        claimed = db.claim(1, tier=TIER)
+        assert [h.family for h in claimed] == ["pace"]
+
+
+def test_mixed_queue_claims_group_per_family(tmp_path):
+    """What run_pass counts per family: the claim itself must carry the family,
+    or every row falls through to the queue's single sport label."""
+    with _db(tmp_path) as db:
+        _queued(db, halflives=(3, 5), sport="nba", family="nba_pace")
+        _queued(db, halflives=(10, 20), sport="soccer", family="soccer_form")
+        groups = {}
+        for hypothesis in db.claim(10, tier=TIER):
+            groups[hypothesis.family] = groups.get(hypothesis.family, 0) + 1
+        assert groups == {"nba_pace": 2, "soccer_form": 2}

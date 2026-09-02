@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import itertools
 import json
+import time
 from pathlib import Path
 
 from scripts.platformkit.mcp_server import artifact_refresh as ar
@@ -118,3 +119,44 @@ def test_module_starts_no_daemon_and_arms_no_task():
         assert forbidden not in text, forbidden
     # the schtasks line is a documented STRING for the orchestrator, never executed
     assert "schtasks /Create" in ar.SCHTASKS
+
+
+# --- S66: the per-producer wall cap ------------------------------------------
+
+def _sleeper(root: Path) -> None:
+    """A producer that hangs. Before S66 this hung the whole pass (and the --loop
+    daemon) forever; the cap turns it into ONE row."""
+    time.sleep(5.0)
+
+
+def _timeout_targets():
+    return (ar.Target("good_a", ("out/a.json",), _maker("out/a.json")),
+            ar.Target("hangs", ("out/e.json",), _sleeper))
+
+
+def test_hanging_producer_is_a_timeout_row_and_the_pass_continues(tmp_path):
+    root, out = tmp_path / "repo", tmp_path / "cache"
+    started = time.time()
+    record = ar.refresh_once(root, out, _timeout_targets(), timeout_sec=0.2)
+    elapsed = time.time() - started
+
+    hangs = _rows(record)["hangs"]
+    assert hangs["status"] == "TIMEOUT" and hangs["rc"] == 1 and not hangs["advanced"]
+    assert "wall cap" in hangs["error"]
+    assert record["n_timeout"] == 1 and record["n_failed"] == 0
+    # the pass CONTINUED past the hang, and was not held for the producer's 5s
+    assert _rows(record)["good_a"]["status"] == "ok"
+    assert record["n_advanced"] == 1
+    assert elapsed < 3.0, elapsed
+    assert len(_lines(out)) == 1
+
+
+def test_timeout_and_failure_are_distinct_statuses(tmp_path):
+    """A hang is not a crash: TIMEOUT never lands in n_failed and back."""
+    root, out = tmp_path / "repo", tmp_path / "cache"
+    record = ar.refresh_once(
+        root, out, (ar.Target("hangs", ("out/e.json",), _sleeper),
+                    ar.Target("broken", ("out/c.json",), _boom)), timeout_sec=0.2)
+    rows = _rows(record)
+    assert (rows["hangs"]["status"], rows["broken"]["status"]) == ("TIMEOUT", "FAILED")
+    assert (record["n_timeout"], record["n_failed"]) == (1, 1)

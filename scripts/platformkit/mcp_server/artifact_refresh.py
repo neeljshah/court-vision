@@ -12,8 +12,9 @@ belongs to the OS scheduler, which the ORCHESTRATOR arms with the line in
 ``SCHTASKS`` -- this module never creates a task. `--loop` is provided for a
 supervisor ProcSpec but is never run by the landing lane.
 
-Artifact paths are IMPORTED from artifact_tools, never re-declared here.
-One failing producer is recorded as a FAILED row; the rest of the pass runs.
+Artifact paths are IMPORTED from artifact_tools, never re-declared here. A failing
+producer is a FAILED row, one hanging past PRODUCER_TIMEOUT_SEC a TIMEOUT row (S66);
+either way the rest of the pass runs.
 
 S57 adds the ``data/intelligence`` layer behind ``--intelligence`` (opt-in, so
 the hourly front-door pass does not start 95 batch builders); its map lives in
@@ -28,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import threading
 import time
 import traceback
 from datetime import datetime, timezone
@@ -38,6 +40,7 @@ from scripts.platformkit.mcp_server import artifact_tools
 
 ROOT = artifact_tools._ROOT
 OUT_DIR_REL = "data/cache/mcp_server"
+PRODUCER_TIMEOUT_SEC = 120.0   # S66: per-producer wall cap -> a TIMEOUT row
 HEARTBEAT_NAME = "artifact_refresh_heartbeat.jsonl"
 STATUS_NAME = "artifact_refresh_status.json"
 
@@ -139,7 +142,28 @@ def _probe(root: Path, rels: Sequence[str]) -> Dict[str, Any]:
             "as_of": as_of, "bytes": path.stat().st_size}
 
 
-def _refresh_target(root: Path, target: Target) -> Dict[str, Any]:
+def _run_producer(producer: Callable[[Path], None], root: Path,
+                  timeout_sec: float) -> tuple:
+    """Run one producer under a wall cap. Returns (rc, error, timed_out).
+    ponytail: a DAEMON thread, not a child process (the producers are in-process
+    callables and this module spawns nothing). Ceiling: a hung thread cannot be
+    killed and leaks until the process exits -- one per hang under --loop."""
+    box: Dict[str, Optional[str]] = {}
+    def target() -> None:
+        try:
+            producer(root)
+        except Exception:
+            box["error"] = traceback.format_exc().strip().splitlines()[-1][:300]
+    thread = threading.Thread(target=target, daemon=True)
+    thread.start()
+    thread.join(timeout_sec)
+    if thread.is_alive():
+        return 1, "producer exceeded {0:.0f}s wall cap".format(timeout_sec), True
+    return (1, box["error"], False) if box.get("error") else (0, None, False)
+
+
+def _refresh_target(root: Path, target: Target,
+                    timeout_sec: float = PRODUCER_TIMEOUT_SEC) -> Dict[str, Any]:
     before = _probe(root, target.rels)
     row: Dict[str, Any] = {"name": target.name, "stamp_before": before["stamp"],
                            "as_of_before": before["as_of"]}
@@ -158,14 +182,13 @@ def _refresh_target(root: Path, target: Target) -> Dict[str, Any]:
                     "generated_at": before["stamp"], "bytes": before["bytes"],
                     "error": "no producer module writes this artifact"})
         return row
-    rc, error = 0, None
-    try:
-        target.producer(root)
-    except Exception:  # never raises out: one bad producer must not kill the pass
-        rc, error = 1, traceback.format_exc().strip().splitlines()[-1][:300]
+    # never raises out: one bad or HUNG producer must not kill the pass
+    rc, error, timed_out = _run_producer(target.producer, root, timeout_sec)
     after = _probe(root, target.rels)
     advanced = bool(rc == 0 and after["stamp"] and after["stamp"] != before["stamp"])
-    if rc:
+    if timed_out:
+        status = "TIMEOUT"
+    elif rc:
         status = "FAILED"
     elif advanced:
         status = "ok"
@@ -181,17 +204,19 @@ def _refresh_target(root: Path, target: Target) -> Dict[str, Any]:
 
 
 def refresh_once(root: Path | str = ROOT, out_dir: Path | str | None = None,
-                 targets: Sequence[Target] = TARGETS) -> Dict[str, Any]:
+                 targets: Sequence[Target] = TARGETS,
+                 timeout_sec: float = PRODUCER_TIMEOUT_SEC) -> Dict[str, Any]:
     """Run every producer once, append ONE heartbeat line, rewrite status.json."""
     root = Path(root)
     out = Path(out_dir) if out_dir else root / OUT_DIR_REL
     started = _now()
-    rows: List[Dict[str, Any]] = [_refresh_target(root, target) for target in targets]
+    rows: List[Dict[str, Any]] = [_refresh_target(root, t, timeout_sec) for t in targets]
     record = {
         "started_at": started, "finished_at": _now(),
         "n_targets": len(rows),
         "n_advanced": sum(row["advanced"] for row in rows),
         "n_failed": sum(row["status"] == "FAILED" for row in rows),
+        "n_timeout": sum(row["status"] == "TIMEOUT" for row in rows),
         "n_no_producer": sum(row["status"] == "NO_PRODUCER" for row in rows),
         "n_no_run": sum(row["status"] == "NO_RUN" for row in rows),
         "n_stale": sum(row["status"] in ("STALE", "NO_ARTIFACT") for row in rows),
@@ -229,8 +254,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="refresh the MCP front-door artifacts")
     ap.add_argument("--once", action="store_true", help="run one pass and exit")
     ap.add_argument("--loop", action="store_true",
-                    help="repeat every --interval seconds (for a supervisor ProcSpec; "
-                         "prefer the OS scheduler line in SCHTASKS)")
+                    help="repeat every --interval seconds (the m51 ProcSpec mode)")
     ap.add_argument("--interval", type=float, default=3600.0, help="--loop period, seconds")
     ap.add_argument("--root", default=str(ROOT))
     ap.add_argument("--out-dir", default=None)
@@ -258,10 +282,10 @@ def main(argv=None) -> int:
         return 0
     while True:
         record = refresh_once(args.root, args.out_dir, targets)
-        print("artifact refresh -- {0} target(s), {1} advanced, {2} failed, {3} no_producer, "
-              "{4} no_run".format(record["n_targets"], record["n_advanced"],
-                                  record["n_failed"], record["n_no_producer"],
-                                  record["n_no_run"]))
+        print("artifact refresh -- {0} target(s), {1} advanced, {2} failed, {3} timeout,"
+              " {4} no_producer, {5} no_run".format(
+                  record["n_targets"], record["n_advanced"], record["n_failed"],
+                  record["n_timeout"], record["n_no_producer"], record["n_no_run"]))
         for row in record["targets"]:
             print("  {0:<24} {1:<12} {2} -> {3}".format(
                 row["name"], row["status"], row["stamp_before"], row["stamp_after"]))

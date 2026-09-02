@@ -270,3 +270,89 @@ def test_producer_silent_past_2700_reads_down(monkeypatch):
         assert row["live"] is False, "age=%s should be not-live" % age
         assert agg._row_severity(row) == agg.DOWN, "age=%s row not DOWN" % age
         assert overall == "down", "age=%s critical-down should be overall=down" % age
+
+
+# --------------------------------------------------------------------------- #
+# S66 -- the two factory ProcSpecs, registered but NOT armed
+# --------------------------------------------------------------------------- #
+_S66_NAMES = ("m50_foundry_runner", "m51_artifact_refresh")
+
+
+def _s66_specs():
+    return {s.name: s for s in base_specs() if s.name in _S66_NAMES}
+
+
+def test_s66_specs_present_and_shaped():
+    specs = _s66_specs()
+    assert sorted(specs) == sorted(_S66_NAMES)
+    assert specs["m50_foundry_runner"].module == "scripts.platformkit.foundry_runner"
+    assert (specs["m51_artifact_refresh"].module
+            == "scripts.platformkit.mcp_server.artifact_refresh")
+    for spec in specs.values():
+        assert spec.kind == "py" and not spec.depends_on and spec.port is None
+        assert spec.readiness.kind == HEARTBEAT and spec.readiness.fresh_sec > 0
+        assert spec.restart_policy.max_retries is None      # restart forever
+
+
+def test_m50_can_never_charge_the_fwer_ledger():
+    """THE REFUSAL: --allow-charge is absent BY CONSTRUCTION from the supervised argv."""
+    argv = _s66_specs()["m50_foundry_runner"].argv
+    assert "--allow-charge" not in argv
+    assert argv == ["--db", "data/cache/eval_gate/hypotheses.sqlite",
+                    "--batch", "50", "--poll-seconds", "30"]
+
+
+def test_m50_and_m51_argv_are_flags_the_module_really_accepts():
+    """A ProcSpec whose argv argparse would reject is an unbootable spec."""
+    import importlib
+
+    for name, spec in _s66_specs().items():
+        module = importlib.import_module(spec.module)
+        parser = _parser_of(module)
+        parser.parse_args(spec.argv)          # raises SystemExit on an unknown flag
+
+
+def _parser_of(module):
+    """The module's own ArgumentParser, captured without running anything."""
+    import argparse
+    import unittest.mock as mock
+
+    captured = []
+
+    def spy(self, *args, **kwargs):
+        captured.append(self)
+        raise _Stop()
+
+    with mock.patch.object(argparse.ArgumentParser, "parse_args", autospec=True,
+                           side_effect=spy):
+        try:
+            module.main([]) if module.__name__.endswith("artifact_refresh") else module.main()
+        except _Stop:
+            pass
+    assert captured, "no ArgumentParser built by %s.main" % module.__name__
+    return captured[0]
+
+
+class _Stop(Exception):
+    """Raised in place of parse_args so main() stops at the parser."""
+
+
+def test_s66_specs_are_not_armed_in_the_paper_profile():
+    """Registered != running. Arming is a config/boot/paper.json change the
+    ORCHESTRATOR makes, plus a supervisor restart -- never this lane."""
+    import json
+    from pathlib import Path
+
+    from supervisor.manifest import manifest
+
+    services = json.loads(
+        Path("config/boot/paper.json").read_text(encoding="utf-8"))["services"]
+    assert not set(_S66_NAMES) & set(services)
+
+    booted = {s.name for s in manifest("paper", services=services)}
+    assert not set(_S66_NAMES) & booted
+    # ... and a scratch profile that DOES include them validates (no unknown name,
+    # no dangling depends_on, no cycle).
+    scratch = {s.name for s in manifest("paper", services=services + list(_S66_NAMES))}
+    assert set(_S66_NAMES) <= scratch
+    assert len(scratch) == len(booted) + 2
