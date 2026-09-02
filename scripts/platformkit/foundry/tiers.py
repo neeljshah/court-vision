@@ -102,6 +102,7 @@ class TierResult:
     global_passed: Optional[bool] = None
     dual_verdict: str = ""
     families_spec_sha256: str = ""
+    archive: Optional[dict] = None   # S58c/Q9: differential + as-of fit state; trial JSON, never a DB column
 
 
 def _event_id(state: dict) -> str:
@@ -221,13 +222,33 @@ def run_tier(hypothesis: Hypothesis, tier: str, *, states: Sequence[dict], predi
                           verdict="COVERED" if filled >= _COVERAGE_FLOOR * len(states)
                           else "UNCOVERED", **_EMPTY, **common)
     if tier == "T1":
-        records = walk_forward(list(states), predict_fn).records
-        y = [r["y"] for r in records]
-        return TierResult(n_eff=float(len(states)), verdict="SCREEN", **_EMPTY, **common,
-                          brier_model=scoring.brier([r["p_model"] for r in records], y),
-                          brier_close=scoring.brier([r["p_close"] for r in records], y))
+        return _run_screen(states, predict_fn, sport, common)
     return _run_charged(tier, states, predict_fn, sport, ledger_path, family, screened_n,
                         n_corpora, rule, digest, common, results_db)
+
+
+def _run_screen(states: Sequence[dict], predict_fn: Callable, sport: str, common: dict) -> TierResult:
+    """T1: paired Brier delta + cluster-robust DM p + n_eff, differential archived (Q9). The DM p is
+    archive["screen_p"], not raw_p: family_p_values has no tier filter (S59 bar stays charged-only)."""
+    records = walk_forward(list(states), predict_fn).records
+    model, close, y = (np.array([r[k] for r in records], dtype=float)
+                       for k in ("p_model", "p_close", "y"))
+    by_id = {_event_id(s): s for s in states}
+    try:
+        key, clusters = _cluster_ids([by_id[r["game_id"]] for r in records], sport)
+    except ValueError:                    # a construct corpus with no declared key: per-event
+        key, clusters = "event_id", [r["game_id"] for r in records]
+    loss_model, loss_close = (model - y) ** 2, (close - y) ** 2
+    dm = diebold_mariano((loss_model - loss_close).tolist(), clusters)
+    archive = dict(getattr(predict_fn, "archive", dict)())
+    archive.update(screen_p=dm.p_value, cluster_key=key, differential=[
+        (r["game_id"], r["ts"], c, float(a), float(b))
+        for r, c, a, b in zip(records, clusters, loss_model, loss_close)])
+    return TierResult(n_eff=_n_eff((loss_model - loss_close).tolist(), clusters), verdict="SCREEN",
+                      dm=dm.dm_stat, archive=archive, brier_model=scoring.brier(model, y),
+                      brier_close=scoring.brier(close, y),
+                      **{k: v for k, v in _EMPTY.items() if k != "dm"},
+                      **{**common, "cluster_key": key})
 
 
 def _run_charged(tier: str, states: Sequence[dict], predict_fn: Callable, sport: str,
