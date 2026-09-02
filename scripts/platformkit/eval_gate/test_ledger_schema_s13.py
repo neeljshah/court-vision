@@ -40,9 +40,10 @@ def test_real_rows_load_unchanged_with_optional_fields_none(ledger_copy: Path) -
     assert len(rows) == len(on_disk) >= 13
     assert [r["k_cumulative"] for r in rows] == [r["k_cumulative"] for r in on_disk]
     for loaded, raw in zip(rows, on_disk):
-        # the loader adds the five keys as None and changes nothing else
-        assert all(loaded[field] is None for field in FWER_OPTIONAL_FIELDS)
-        assert {k: v for k, v in loaded.items() if k not in FWER_OPTIONAL_FIELDS} == raw
+        # the loader adds any of the five keys ABSENT on disk as None and changes nothing else;
+        # rows charged after S13 (14+) carry real values and load them unchanged
+        assert all(loaded[field] == raw.get(field) for field in FWER_OPTIONAL_FIELDS)
+        assert {k: v for k, v in loaded.items() if k in raw} == raw
 
 
 def test_legacy_charge_writes_no_new_keys(ledger_copy: Path) -> None:
