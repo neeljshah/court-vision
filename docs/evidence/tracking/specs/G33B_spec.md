@@ -46,7 +46,16 @@ EVIDENCE: docs/evidence/tracking/g33b_baseball_scale_bins_2026-09-0X.md with the
 premise, the pre-declared bin definitions, the binning with intervals, the renders, the explicit
 G36 gate answer, and a NOT VERIFIED list.
 TEST: exactly one new per-file test if you add code; run only that file. Never a full pytest.
-POD: read-only if at all. No scp, no deploy, no daemon restart, never kill anything.
+FOOTAGE -- READ THIS, attempt 1 died here. Attempt 1 returned NOT VALIDATED because the DAY
+source clips were absent from the worktree. That was an infrastructure gap, now partly FIXED:
+worktree_data_links.py did not link data/footage_corpus and now does. The LOCAL corpus is only 4
+clips and contains NO baseball, but the pod holds 63 clips including 12 mlb, 11 kbo and 6 npb --
+every one listed by name in docs/evidence/tracking/FOOTAGE_CORPUS_INVENTORY.md. So: FIRST consult
+that inventory, THEN check the pod for the specific clips the 2026-09-01 validation used, and run
+the frame work ON THE POD read-only if they are there. Only report the evidence as unavailable
+after you have named the clips you needed and shown they are absent from the pod inventory too.
+POD: read-only, and you MAY run read-only frame measurement there because that is where the
+baseball footage is. No scp, no deploy, no daemon restart, never kill anything.
 COMMIT: explicit pathspec only (never the whole tree, never the gitignored local trees), in a9,
 no push. Report the sha.
 SHARED MODULE: none. If you find yourself editing the harness, STOP.
