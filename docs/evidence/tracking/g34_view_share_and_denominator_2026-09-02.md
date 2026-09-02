@@ -132,3 +132,75 @@ both in the manifest, and never overwrite the old field.
   across the whole clip. It was inferred as the minimum inter-frame step, not
   read from the adapter config.
 - The sequential-range check in section 3 has not been run.
+
+---
+
+## 5. ADDENDUM, same day: the check in section 3 was run, and it is worse than expected
+
+Section 3 called for reporting frames-in-table against the 300 frames per range
+before the flagship number is quoted again. **No pod run was needed** -- the
+committed plan JSONs in `tennis_sequential_plan_2026-09-01/` already carry both
+denominators per range, as `solved_frame_coverage` (decoded) and
+`harness_metrics.coverage_pct` (the harness denominator).
+
+| match | range start | decoded | solved coverage | harness coverage_pct | verdict |
+|---|---:|---:|---:|---:|---|
+| tennis_09 | 615 | 300 | 0.7067 | **1.0** | FAIL (oob) |
+| tennis_09 | 5070 | 300 | 1.0000 | **1.0** | FAIL (oob) |
+| tennis_09 | 5775 | 300 | 0.5933 | **1.0** | FAIL (oob) |
+| tennis_09 | 6960 | 300 | 1.0000 | **1.0** | PASS |
+| tennis_09 | 7140 | 300 | 1.0000 | **1.0** | FAIL (oob) |
+| tennis_10 | 150 | 300 | 0.3967 | **1.0** | FAIL (oob) |
+| tennis_10 | 3585 | 300 | **0.4600** | **1.0** | **PASS** |
+| tennis_10 | 3930 | 300 | 0.6767 | **1.0** | PASS |
+| tennis_10 | 6345 | 300 | 0.8433 | **1.0** | PASS |
+| tennis_10 | 6405 | 300 | 0.6533 | **1.0** | PASS |
+| nyYk 720p | 5715 | 300 | 0.6100 | **1.0** | PASS |
+| nyYk 720p | 33105 | 300 | 0.9900 | **1.0** | PASS |
+| nyYk 720p | 33855 | 300 | 0.9967 | **1.0** | PASS |
+| nyYk 720p | 41985 | 300 | 0.5733 | **1.0** | PASS |
+| nyYk 720p | 43830 | 300 | 0.5600 | **1.0** | PASS |
+
+`coverage_pct` is **exactly 1.0 on 15 of 15 ranges**. Honest decoded-frame solve
+coverage over the same ranges runs 0.3967 to 1.0000, median 0.6767.
+
+### Why it is 1.0, and why that is a tautology
+
+`tracking_harness.py:37-38` sets tennis `min_players: 2` and
+`coverage_min: 0.90`. Coverage is
+`(frames where distinct player track ids >= 2) / (frames present in the table)`.
+
+The tennis adapter emits **exactly one player per half on every frame it emits**
+-- measured independently in the G38 work, where every clip has exactly two
+player tracks with exactly equal row counts (1490/1490, 954/954, 295/295,
+2273/2273). So every frame in the table has exactly 2 player ids, the numerator
+equals the denominator, and **coverage is 1.0 by construction**.
+
+**The tennis coverage gate cannot fail.** It is contract B1 (a metric computed
+after excluding the rows that would fail it) and B9 (a degenerate denominator)
+at the same time.
+
+### What this corrects
+
+Seven of the ten PASS ranges have decoded-frame solve coverage **below the 0.90
+bar** -- 0.4600, 0.6767, 0.8433, 0.6533, 0.6100, 0.5733, 0.5600. `tennis_10`
+range 3585 passes the harness at **46 pct** honest coverage. Had the 0.90 bar
+been applied to the decoded-frame number, most of those passes would have
+failed.
+
+The G05 headline figure itself (`270/301 = 0.897` on range 15300-15600) is a
+`solved_frame_coverage`, so **that number is honest** and is not restated here.
+What is not honest is the PASS beside it: the coverage gate did not test it,
+because for tennis that gate is 1.0 whatever the solver does. The claim "0.897
+coverage, harness PASS" should be read as "0.897 solve coverage, and the harness
+passed it on oob, jump and ball_valid, with the coverage gate inert".
+
+**The rung is unchanged and nothing here is a fabricated pass in the other
+direction** -- these ranges genuinely produce `court_feet`, the lines-on-lines
+render check was 12/12, and no threshold was moved. But the program has been
+quoting a coverage PASS that carried no information, and the honest per-range
+coverage numbers are materially lower than 0.90 on most passing ranges.
+
+This is escalated into **G40**, which now covers both the denominator
+contradiction and this tautology.
+
