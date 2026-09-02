@@ -1,0 +1,510 @@
+[
+ {
+  "id": "A01",
+  "tool": "ask",
+  "arguments": {
+   "query": "How many points per game did Nikola Jokic average?",
+   "sport": "nba"
+  },
+  "expect": "any_valid",
+  "notes": "nba player_stat"
+ },
+ {
+  "id": "A02",
+  "tool": "ask",
+  "arguments": {
+   "query": "What is Nikola Jokic's rebounding rating?",
+   "sport": "nba"
+  },
+  "expect": "any_valid",
+  "notes": "nba rating_attribute"
+ },
+ {
+  "id": "A03",
+  "tool": "ask",
+  "arguments": {
+   "query": "Who is the best rim protector in the NBA?",
+   "sport": "nba"
+  },
+  "expect": "any_valid",
+  "notes": "nba concept_rating"
+ },
+ {
+  "id": "A04",
+  "tool": "ask",
+  "arguments": {
+   "query": "What is Aaron Judge's on base percentage?",
+   "sport": "mlb"
+  },
+  "expect": "any_valid",
+  "notes": "mlb player_stat"
+ },
+ {
+  "id": "A05",
+  "tool": "ask",
+  "arguments": {
+   "query": "Who won the last New York Yankees vs Boston Red Sox game?",
+   "sport": "mlb"
+  },
+  "expect": "any_valid",
+  "notes": "mlb historical_result"
+ },
+ {
+  "id": "A06",
+  "tool": "ask",
+  "arguments": {
+   "query": "How many rest days do the New York Yankees have?",
+   "sport": "mlb"
+  },
+  "expect": "any_valid",
+  "notes": "mlb schedule_context"
+ },
+ {
+  "id": "A07",
+  "tool": "ask",
+  "arguments": {
+   "query": "What is Arsenal's attacking rating?",
+   "sport": "soccer"
+  },
+  "expect": "any_valid",
+  "notes": "soccer rating_attribute"
+ },
+ {
+  "id": "A08",
+  "tool": "ask",
+  "arguments": {
+   "query": "Does home advantage hold up locally?",
+   "sport": "soccer"
+  },
+  "expect": "any_valid",
+  "notes": "soccer mechanism_effect"
+ },
+ {
+  "id": "A09",
+  "tool": "ask",
+  "arguments": {
+   "query": "What does the evidence say about lefty advantage on return?",
+   "sport": "tennis"
+  },
+  "expect": "any_valid",
+  "notes": "tennis mechanism_effect"
+ },
+ {
+  "id": "A10",
+  "tool": "ask",
+  "arguments": {
+   "query": "What is Adrian Mannarino's first serve percentage?",
+   "sport": "tennis"
+  },
+  "expect": "any_valid",
+  "notes": "tennis player_stat"
+ },
+ {
+  "id": "A11",
+  "tool": "ask",
+  "arguments": {
+   "query": "What is the NBA Brier score on the calibration scoreboard?",
+   "sport": "nba"
+  },
+  "expect": "any_valid",
+  "notes": "nba calibration_number"
+ },
+ {
+  "id": "A12",
+  "tool": "ask",
+  "arguments": {
+   "query": "injury report for the Boston Celtics",
+   "sport": "nba"
+  },
+  "expect": "any_valid",
+  "notes": "nba injury_report via front door"
+ },
+ {
+  "id": "A13",
+  "tool": "ask",
+  "arguments": {
+   "query": "How does the system work and what produces the calibration scoreboard?",
+   "sport": "nba"
+  },
+  "expect": "any_valid",
+  "notes": "system_map"
+ },
+ {
+  "id": "A14",
+  "tool": "ask",
+  "arguments": {
+   "query": "anything at all",
+   "sport": "nba",
+   "category": "underwater_basket_weaving"
+  },
+  "expect": "not_supported",
+  "notes": "unknown category forced"
+ },
+ {
+  "id": "E01",
+  "tool": "ask",
+  "arguments": {
+   "query": "what is our betting edge on the Lakers tonight",
+   "sport": "nba"
+  },
+  "expect": "refused",
+  "notes": "edge language"
+ },
+ {
+  "id": "E02",
+  "tool": "ask",
+  "arguments": {
+   "query": "what is the expected ROI on tonight's slate",
+   "sport": "mlb"
+  },
+  "expect": "refused",
+  "notes": "ROI language"
+ },
+ {
+  "id": "E03",
+  "tool": "ask",
+  "arguments": {
+   "query": "give me guaranteed profit picks",
+   "sport": "soccer"
+  },
+  "expect": "refused",
+  "notes": "profit language"
+ },
+ {
+  "id": "E04",
+  "tool": "ask",
+  "arguments": {
+   "query": "how much money can we make beating the closing line",
+   "sport": "tennis"
+  },
+  "expect": "refused",
+  "notes": "dollar/beat-the-close language"
+ },
+ {
+  "id": "S01",
+  "tool": "scouting_report",
+  "arguments": {
+   "sport": "nba",
+   "player": "Nikola Jokic"
+  },
+  "expect": "any_valid",
+  "notes": "nba scouting vector",
+  "asof_must_describe_data": true
+ },
+ {
+  "id": "S02",
+  "tool": "scouting_report",
+  "arguments": {
+   "sport": "mlb",
+   "player": "Aaron Judge"
+  },
+  "expect": "any_valid",
+  "notes": "mlb scouting vector"
+ },
+ {
+  "id": "S03",
+  "tool": "scouting_report",
+  "arguments": {
+   "sport": "tennis",
+   "player": "Adrian Mannarino"
+  },
+  "expect": "any_valid",
+  "notes": "tennis scouting vector"
+ },
+ {
+  "id": "S04",
+  "tool": "scouting_report",
+  "arguments": {
+   "sport": "soccer",
+   "player": "Bukayo Saka"
+  },
+  "expect": "any_valid",
+  "notes": "soccer has team profiles only"
+ },
+ {
+  "id": "S05",
+  "tool": "scouting_report",
+  "arguments": {
+   "sport": "nba",
+   "player": "Zzz Notaplayer"
+  },
+  "expect": "no_data",
+  "notes": "player resolves on zero axes"
+ },
+ {
+  "id": "C01",
+  "tool": "comparables",
+  "arguments": {
+   "sport": "nba",
+   "player": "Nikola Jokic",
+   "k": 5
+  },
+  "expect": "any_valid",
+  "notes": "nba neighbours",
+  "asof_must_describe_data": true
+ },
+ {
+  "id": "C02",
+  "tool": "comparables",
+  "arguments": {
+   "sport": "mlb",
+   "player": "Aaron Judge",
+   "k": 5
+  },
+  "expect": "any_valid",
+  "notes": "mlb neighbours"
+ },
+ {
+  "id": "C03",
+  "tool": "comparables",
+  "arguments": {
+   "sport": "tennis",
+   "player": "Adrian Mannarino",
+   "k": 5
+  },
+  "expect": "any_valid",
+  "notes": "tennis neighbours"
+ },
+ {
+  "id": "C04",
+  "tool": "comparables",
+  "arguments": {
+   "sport": "nba",
+   "player": "Zzz Notaplayer",
+   "k": 5
+  },
+  "expect": "any_valid",
+  "notes": "below shared-attribute floor"
+ },
+ {
+  "id": "M01",
+  "tool": "matchup_preview",
+  "arguments": {
+   "sport": "nba",
+   "home": "Boston Celtics",
+   "away": "Los Angeles Lakers"
+  },
+  "expect": "any_valid",
+  "notes": "nba fan-out"
+ },
+ {
+  "id": "M02",
+  "tool": "matchup_preview",
+  "arguments": {
+   "sport": "mlb",
+   "home": "New York Yankees",
+   "away": "Boston Red Sox"
+  },
+  "expect": "any_valid",
+  "notes": "mlb fan-out"
+ },
+ {
+  "id": "M03",
+  "tool": "matchup_preview",
+  "arguments": {
+   "sport": "soccer",
+   "home": "Arsenal",
+   "away": "Chelsea"
+  },
+  "expect": "any_valid",
+  "notes": "soccer fan-out"
+ },
+ {
+  "id": "W01",
+  "tool": "win_probability",
+  "arguments": {
+   "sport": "nba",
+   "home": "Boston Celtics",
+   "away": "Los Angeles Lakers"
+  },
+  "expect": "any_valid",
+  "notes": "nba pregame",
+  "asof_must_describe_data": true
+ },
+ {
+  "id": "W02",
+  "tool": "win_probability",
+  "arguments": {
+   "sport": "mlb",
+   "home": "New York Yankees",
+   "away": "Boston Red Sox"
+  },
+  "expect": "any_valid",
+  "notes": "mlb pregame",
+  "asof_must_describe_data": true
+ },
+ {
+  "id": "W03",
+  "tool": "win_probability",
+  "arguments": {
+   "sport": "soccer",
+   "home": "Arsenal",
+   "away": "Chelsea"
+  },
+  "expect": "any_valid",
+  "notes": "soccer pregame",
+  "asof_must_describe_data": true
+ },
+ {
+  "id": "W04",
+  "tool": "win_probability",
+  "arguments": {
+   "sport": "tennis",
+   "home": "Adrian Mannarino",
+   "away": "Adam Walton"
+  },
+  "expect": "any_valid",
+  "notes": "tennis pregame",
+  "asof_must_describe_data": true
+ },
+ {
+  "id": "I01",
+  "tool": "injury_report",
+  "arguments": {
+   "sport": "nba",
+   "team_or_player": "Boston Celtics"
+  },
+  "expect": "any_valid",
+  "notes": "nba team",
+  "max_ok_staleness_days": 7
+ },
+ {
+  "id": "I02",
+  "tool": "injury_report",
+  "arguments": {
+   "sport": "mlb",
+   "team_or_player": "New York Yankees"
+  },
+  "expect": "any_valid",
+  "notes": "mlb team",
+  "max_ok_staleness_days": 7
+ },
+ {
+  "id": "I03",
+  "tool": "injury_report",
+  "arguments": {
+   "sport": "tennis",
+   "team_or_player": "Adrian Mannarino"
+  },
+  "expect": "any_valid",
+  "notes": "tennis has no injury store",
+  "max_ok_staleness_days": 7
+ },
+ {
+  "id": "R01",
+  "tool": "analytics_receipts",
+  "arguments": {
+   "kind": "attribution",
+   "sport": "all"
+  },
+  "expect": "any_valid",
+  "notes": "attribution ledger",
+  "max_ok_staleness_days": 2
+ },
+ {
+  "id": "R02",
+  "tool": "analytics_receipts",
+  "arguments": {
+   "kind": "claim_survival",
+   "sport": "nba"
+  },
+  "expect": "any_valid",
+  "notes": "claim survival",
+  "max_ok_staleness_days": 2
+ },
+ {
+  "id": "R03",
+  "tool": "analytics_receipts",
+  "arguments": {
+   "kind": "verification",
+   "sport": "mlb"
+  },
+  "expect": "any_valid",
+  "notes": "independent re-checks",
+  "max_ok_staleness_days": 2
+ },
+ {
+  "id": "R04",
+  "tool": "analytics_receipts",
+  "arguments": {
+   "kind": "contradictions",
+   "sport": "soccer"
+  },
+  "expect": "any_valid",
+  "notes": "conflict dump",
+  "max_ok_staleness_days": 2
+ },
+ {
+  "id": "R05",
+  "tool": "analytics_receipts",
+  "arguments": {
+   "kind": "system_map",
+   "sport": "tennis"
+  },
+  "expect": "any_valid",
+  "notes": "dataflow graph",
+  "max_ok_staleness_days": 2
+ },
+ {
+  "id": "R06",
+  "tool": "analytics_receipts",
+  "arguments": {
+   "kind": "not_a_registered_kind"
+  },
+  "expect": "not_supported",
+  "notes": "unknown kind"
+ },
+ {
+  "id": "H01",
+  "tool": "system_health",
+  "arguments": {},
+  "expect": "any_valid",
+  "notes": "cheap read-only status"
+ },
+ {
+  "id": "X01",
+  "tool": "strength_atlas",
+  "arguments": {},
+  "expect": "any_valid",
+  "notes": "market strength atlas"
+ },
+ {
+  "id": "X02",
+  "tool": "mechanism_exposure",
+  "arguments": {},
+  "expect": "any_valid",
+  "notes": "all exposure sheets"
+ },
+ {
+  "id": "X03",
+  "tool": "mechanism_exposure",
+  "arguments": {
+   "game_id": "no_such_game_zzz"
+  },
+  "expect": "no_data",
+  "notes": "unknown game id fails closed"
+ },
+ {
+  "id": "X04",
+  "tool": "tracking_program_status",
+  "arguments": {},
+  "expect": "any_valid",
+  "notes": "tracking packets"
+ },
+ {
+  "id": "X05",
+  "tool": "harness_health",
+  "arguments": {},
+  "expect": "any_valid",
+  "notes": "harness scoreboard, S23 writes it"
+ },
+ {
+  "id": "X06",
+  "tool": "execution_status",
+  "arguments": {},
+  "expect": "any_valid",
+  "notes": "paper execution audit",
+  "max_ok_staleness_days": 2,
+  "asof_must_describe_data": true
+ }
+]
