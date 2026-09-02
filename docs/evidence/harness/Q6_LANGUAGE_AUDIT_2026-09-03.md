@@ -22,7 +22,7 @@ close/market/line" sentence regex and a follow-up grep for
 
 Audited in full (checks a+b+c): `docs/evidence/HARNESS_GAPS_2026-09-03.md`,
 `docs/evidence/RESULTS_LEDGER_SYSTEM.md`, `docs/evidence/tracking/VERIFIER_CONTRACT.md`,
-`docs/evidence/harness/*.md` (2 files), `docs/evidence/tracking/specs/S*_spec.md` (17 files),
+`docs/evidence/harness/*.md` (3 files), `docs/evidence/tracking/specs/S*_spec.md` (17 files),
 and the 5 named plans under `docs/research/organization-sprint/`.
 Retracted-figure check only: `README.md`, `docs/JOB_EVIDENCE_PACKET.md`.
 
@@ -86,7 +86,7 @@ matched on that line.
 No sentence in any audited file asserts the system beats the close or the market pregame.
 The regex sweep for `beat(s) the close/market/line`, `outperform`, `alpha`, `profitab*`,
 `positive EV`, `tradeable` and `kelly edge` returned zero matches across the 27 fully
-audited files. The only claim-shaped sentence about the close is
+audited files (S04 included). The only claim-shaped sentence about the close is
 `MASTER_ROADMAP_2026-09-03.md:360` -- "we match the close" -- which is the sanctioned
 calibration framing from `.claude/rules/no-edge-claims.md`.
 
@@ -99,6 +99,7 @@ calibration framing from `.claude/rules/no-edge-claims.md`.
 | docs/evidence/tracking/VERIFIER_CONTRACT.md | 6 (all retraction-context) | 5 | 0 |
 | docs/evidence/harness/S20_premise_2026-09-03.md | 0 | 0 (2 process-name `bankroll` mentions) | 0 |
 | docs/evidence/harness/S28_prepush_guard_2026-09-03.md | 0 | 0 | 0 |
+| docs/evidence/harness/S04_student_gate_2026-09-03.md | 0 | 0 | 0 |
 | docs/evidence/tracking/specs/S01..S17,S19,S23 (15 files) | 0 | 4-7 each (60 total) | 0 |
 | docs/evidence/tracking/specs/S20_spec.md | 0 | 9 | 0 |
 | docs/evidence/tracking/specs/S27_spec.md | 0 | 8 | 0 |
@@ -111,7 +112,9 @@ calibration framing from `.claude/rules/no-edge-claims.md`.
 | docs/JOB_EVIDENCE_PACKET.md (figures only) | 7 (6 retraction-context, 1 false positive) | n/a | 0 |
 | **TOTAL** | **25 occurrences, 0 live** | **148** | **0** |
 
-Denominators: 27 files fully audited (a+b+c) + 2 files figure-only = 29 files.
+Denominators: 28 files fully audited (a+b+c) + 2 files figure-only = 30 files.
+`docs/evidence/harness/S04_student_gate_2026-09-03.md` (58 lines) landed untracked during
+this audit and was scanned after the first pass: zero hits of any kind.
 `docs/evidence/tracking/specs/S19_spec.md` (20 lines) has zero hits of any kind.
 
 ## NOT VERIFIED
