@@ -16,13 +16,33 @@ _TRANSFORMS = frozenset(("raw", "ew", "rank_in_league", "z_vs_league", "delta_vs
 _HORIZONS = frozenset(("pregame", "period", "live_tick"))
 _MARKETS = frozenset(("ml", "total", "spread", "prop", "inplay"))
 _EW_HALFLIVES = frozenset((3, 5, 10, 20))
-_REGISTRY_PATH = Path("data/registry/signal_registry.parquet")
+# Anchored to the repo root: a relative path silently degraded signal_id
+# resolution to raw column names whenever the process cwd was not the root,
+# which changed every hash. parents[3] == <repo>/ from foundry/grammar.py.
+_REGISTRY_PATH = Path(__file__).resolve().parents[3] / "data" / "registry" / "signal_registry.parquet"
 _MONTH = re.compile(r"^\d{4}-\d{2}$")
+# Closed phase alphabet, snapshotted once from the source columns
+# regime_calibration.buckets reads (game_phase, phase, period, quarter, inning).
+# Measured 2026-09-03: only `period` is materialized on disk, over 5 parquets,
+# values {"1", "2", "3"}; all five sources are ordinal counters, so the ordinals
+# 1-9 are snapshotted (covers an NBA overtime period and an MLB ninth inning).
+# The three named phase kinds are the S11 spec's written vocabulary
+# (`phase=<period|quarter|inning>`) and are already in use downstream, so they
+# stay legal. Anything else -- "Q1", "periods", "10" -- raises.
+_PHASES = frozenset(("1", "2", "3", "4", "5", "6", "7", "8", "9", "period", "quarter", "inning"))
 
 
 @dataclass(frozen=True)
 class Hypothesis:
-    """One fully specified foundry candidate before any evaluation."""
+    """One fully specified foundry candidate before any evaluation.
+
+    `family` (the FWER family S13 stores and S14 prices) and `runtime_available`
+    (the teacher-lane vs runtime-lane split) are BOTH excluded from
+    canonical_payload, so neither can move a semantic_hash: the same feature
+    grid must hash identically no matter which family enumerated it or whether
+    the column is servable at runtime. They are carried so an enumerated row is
+    self-describing; they default so every pre-S46 construction still works.
+    """
 
     sport: str
     feature: str
@@ -31,6 +51,8 @@ class Hypothesis:
     conditioning: frozenset[str]
     horizon: str
     market: str
+    family: str = ""
+    runtime_available: bool = False
 
 
 def _param_map(params: tuple[Any, ...]) -> dict[str, Any]:
@@ -60,6 +82,8 @@ def _validate_conditioning(conditioning: frozenset[str]) -> frozenset[str]:
         key, value = item.split("=", 1)
         if key not in {"phase", "rest", "month", "confidence"} or not value:
             raise ValueError("unknown conditioning key: {0}".format(item))
+        if key == "phase" and value not in _PHASES:
+            raise ValueError("invalid phase conditioning: {0}".format(item))
         if key == "rest" and value not in {"B2B", "RESTED", "NORMAL"}:
             raise ValueError("invalid rest conditioning: {0}".format(item))
         if key == "month" and not _MONTH.fullmatch(value):
@@ -176,6 +200,7 @@ def enumerate_family(spec: Mapping[str, Any]) -> Iterator[Hypothesis]:
         _validate_conditioning(condition)
     for horizon, market, column, (transform, params), condition in product(
             spec["horizons"], spec["markets"], columns, variants, conditionings):
-        hypothesis = Hypothesis(str(spec["sport"]), column, transform, params, condition, horizon, market)
+        hypothesis = Hypothesis(str(spec["sport"]), column, transform, params, condition, horizon, market,
+                                str(spec["family"]), bool(availability[column]))
         canonical_payload(hypothesis)
         yield hypothesis
