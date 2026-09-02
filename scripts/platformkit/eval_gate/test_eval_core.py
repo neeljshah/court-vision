@@ -185,3 +185,24 @@ if __name__ == "__main__":
         print(f"PASS  {fn.__name__}")
         passed += 1
     print(f"\n{passed}/{len(fns)} eval-gate core tests passed.")
+
+
+def test_s40b_rt4_interval_uses_the_same_t_distribution_as_the_p_value():
+    """RT-4: ci95 used the normal 1.96 while p_value used Student-t with g-1 df.
+    Measured before the fix (g=4, d=[0.7,0.2,0.2,0.7]): p_value(t,3)=0.0526, NOT
+    significant, yet ci95=(0.16710, 0.73290) EXCLUDED 0 and read as significant --
+    and run_gate._verdict / hedge_trial_runner.verdict_of both read that sign."""
+    from scripts.platformkit.eval_gate.dm_test import _student_t_two_tailed_quantile
+
+    # The published two-tailed t_.975 table -- written here independently of the module.
+    for df, textbook in ((1, 12.7062), (3, 3.1824), (10, 2.2281), (30, 2.0423)):
+        assert abs(_student_t_two_tailed_quantile(0.05, df) - textbook) < 5e-4
+
+    result = diebold_mariano([0.7, 0.2, 0.2, 0.7], ["g1", "g2", "g3", "g4"])
+    assert result.n_clusters == 4
+    assert result.p_value > 0.05                       # the test says NOT significant
+    lo, hi = result.ci95
+    assert lo <= 0.0 <= hi                             # ...and now so does the interval
+    # the half-width IS t(3) x se, recomputed here from mean/stat rather than trusted.
+    se = result.mean_diff / result.dm_stat
+    assert abs((hi - lo) / 2.0 - 3.1824 * se) < 1e-4

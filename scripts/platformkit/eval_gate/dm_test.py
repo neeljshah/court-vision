@@ -61,6 +61,28 @@ def _student_t_two_tailed_pvalue(stat: float, degrees_of_freedom: int) -> float:
     return _regularized_beta(x, degrees_of_freedom / 2.0, 0.5)
 
 
+def _student_t_two_tailed_quantile(alpha: float, degrees_of_freedom: int) -> float:
+    """The t value whose two-tailed tail mass is `alpha`, by bisection on the SAME
+    p-value function the test reports.
+
+    S40b / RT-4: `ci95` used the normal 1.96 while `p_value` used Student-t with g-1 df,
+    so at small cluster counts the two disagreed. Measured (g=4, d=[0.7,0.2,0.2,0.7]):
+    p_value(t,3)=0.0526 -- NOT significant -- yet the reported ci95=(0.16710, 0.73290)
+    EXCLUDED 0 and read as significant; the honest t(3) interval (-0.00934, 0.90934)
+    straddles 0. `run_gate._verdict` and `hedge_trial_runner.verdict_of` both read the
+    interval's sign, so the mismatch could flip a printed verdict. Deriving the quantile
+    from `_student_t_two_tailed_pvalue` makes the two provably the same distribution.
+    """
+    lo, hi = 0.0, 1.0e3
+    for _ in range(200):
+        mid = 0.5 * (lo + hi)
+        if _student_t_two_tailed_pvalue(mid, degrees_of_freedom) > alpha:
+            lo = mid
+        else:
+            hi = mid
+    return 0.5 * (lo + hi)
+
+
 @dataclass(frozen=True)
 class DMResult:
     dm_stat: float
@@ -108,5 +130,7 @@ def diebold_mariano(d: Sequence[float], cluster_ids: Sequence) -> DMResult:
     se = sqrt(var) if var > 0 else 0.0
     dm = md / se if se > 0 else 0.0
     p = _student_t_two_tailed_pvalue(abs(dm), g - 1)
-    ci = (md - 1.96 * se, md + 1.96 * se)
+    # Same distribution as the p-value above -- never the normal 1.96 (RT-4).
+    crit = _student_t_two_tailed_quantile(0.05, g - 1)
+    ci = (md - crit * se, md + crit * se)
     return DMResult(float(dm), float(p), md, ci, n, g)
