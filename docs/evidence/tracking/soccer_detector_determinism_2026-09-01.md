@@ -56,3 +56,25 @@ This proves repeatability for frozen packet JPEGs and this installed weight
 file. It does not recreate the unavailable source-video frames, prove a prior
 weight-file hash, or retroactively make the old sealed CSV comparable to the
 new packet-JPEG count statistic.
+
+## G24 EXT packet repair -- 2026-09-01
+
+The S1 extension builder previously had the same input-boundary defect as the
+base builder: it saved each JPEG but sealed `raw_boxes` from the in-memory
+`VideoCapture` frame through `SoccerAdapter().detector`. It now builds the
+same pinned packet detector and decodes the saved JPEG through
+`read_packet_frame(image_path)` before every detector-backed EXT operation.
+No detection or NMS threshold changed.
+
+One repaired-path process reran all 64 immutable EXT JPEGs in
+`a1_artifacts/soccer_s1/ext_2026-09-01/frames/` and compared the resulting
+raw counts with `detector_counts_separate_ext.csv`: **17/64 differ**. This
+quantifies the old seal's JPEG-versus-in-memory drift; the n=100 S1 verdict
+continues to use manual columns only and is unchanged.
+
+The regression test now launches a small count program in two fresh Python
+processes on five repo-root-resolved packet JPEGs, from a non-repository
+working directory, and asserts that their printed counts match. It passed
+(`1 passed`). The EXT builder unit file also passed (`3 passed`). This does
+not regenerate the EXT packet from unavailable source videos, establish a
+historical in-memory input, or rerun manual labels/adjudication.

@@ -18,6 +18,10 @@ import cv2
 import numpy as np
 
 from domains.soccer.tracking.adapter import SoccerAdapter
+from scripts.platformkit.detection.deterministic import (
+    build_soccer_packet_detector,
+    read_packet_frame,
+)
 from scripts.platformkit.soccer_s1_adjudication_packet import (
     _frame_at,
     _pitch_indices,
@@ -54,7 +58,7 @@ def build_ext_packet(videos: Sequence[Path], output_dir: Path, total_frames: int
     frames_dir.mkdir(exist_ok=True)
     crops_dir.mkdir(exist_ok=True)
     counts = split_counts(total_frames, len(videos))
-    detector = SoccerAdapter().detector
+    detector = build_soccer_packet_detector()
     labels: list[dict[str, str]] = []
     detector_rows: list[dict[str, str]] = []
     next_id = start_id
@@ -68,24 +72,26 @@ def build_ext_packet(videos: Sequence[Path], output_dir: Path, total_frames: int
             for source_frame in selected:
                 frame_id = "S1_%04d" % next_id
                 next_id += 1
+                image_path = frames_dir / (frame_id + ".jpg")
                 frame = _frame_at(capture, source_frame)
-                if not cv2.imwrite(str(frames_dir / (frame_id + ".jpg")), frame):
+                if not cv2.imwrite(str(image_path), frame):
                     raise RuntimeError("could not write frame: %s" % frame_id)
                 zoomed = cv2.resize(frame, None, fx=2.0, fy=2.0, interpolation=cv2.INTER_CUBIC)
                 if not cv2.imwrite(str(crops_dir / (frame_id + ".jpg")), zoomed):
                     raise RuntimeError("could not write 2x crop: %s" % frame_id)
                 labels.append({"frame_id": frame_id, "clip": clip, "manual_player_count": ""})
+                packet_frame = read_packet_frame(image_path)
                 adapter = SoccerAdapter(detector=detector)
-                landmarks = adapter._landmark_detections(frame)
+                landmarks = adapter._landmark_detections(packet_frame)
                 for _ in range(STABILIZE_CALLS):
-                    adapter._stable_homography(landmarks, frame.shape[:2])
+                    adapter._stable_homography(landmarks, packet_frame.shape[:2])
                 track_count = (
-                    str(len(adapter.detect_players(frame, adapter._homography)))
+                    str(len(adapter.detect_players(packet_frame, adapter._homography)))
                     if adapter._homography is not None else ""
                 )
                 detector_rows.append({
                     "frame_id": frame_id, "clip": clip,
-                    "raw_boxes": str(_valid_detection_count(detector(frame))),
+                    "raw_boxes": str(_valid_detection_count(detector(packet_frame))),
                     "distinct_track_ids": track_count,
                 })
         finally:
