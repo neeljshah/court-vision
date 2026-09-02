@@ -1,0 +1,47 @@
+GAP G28b (fix pass) | sport all | worktree a2 | log cx_g28b_siblings_duration
+CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it; self-check every line of
+section B before you report. THIS JOB HOLDS THE SHARED-MODULE TOKEN for track_daemon.py. No
+other job may touch it while this one runs.
+START HERE: a2 was reset and no longer points at the rejected G28 work. Cherry-pick the tag
+g28-reject-9ba9d395e (commit 9ba9d395e, fix: canonicalize tracking corpus variants) into a2
+first; it is otherwise reachable only from the reflog.
+PREMISE (step 0): G28 was rejected because its max(source_height) rule is height-only while 3 of
+the 4 real sibling pairs differ in DURATION -- football 964.5 s (720p) vs 300.1 s (1080p),
+wnba_01 962.1 vs 600.1, ncaa IB-_u4gW3ds 960.2 vs 600.1; only tennis_nyYk2nPZAwY is time-aligned
+at 960.0 vs 960.0. Height-first enqueues the SHORT clip and loses 664 / 362 / 360 seconds.
+Second defect: canonical_game_id() re-keys the 4 single-variant suffixed clips, collapsing the
+300 s football_wHZt1eY3A9s_1080p onto the 964 s football_wHZt1eY3A9s identity, where the
+already-tracked-and-passing veto then shadows it permanently. Re-confirm the durations with
+ffprobe on the pod corpus before changing anything. If they do not reproduce, STOP and report
+FALSIFIED.
+LIMIT (step 1): there are exactly 4 sibling groups and 4 single-variant suffixed ids in the
+corpus today. Every case is enumerable, so this is a CONSTRUCT row, not a sampled one.
+CHANGE (step 2): prefer LONGEST DURATION, then greatest height as the tie-break. Use an EXPLICIT
+variant key -- never strip a suffix from an id that has no sibling. Keep every landmine comment
+already in the daemon. Additive columns only; no rename, no removal, and if a rename is
+unavoidable keep the old name as an alias in the same commit and name every reader you checked.
+track_daemon.py is at EXACTLY 300 lines, which is the cap: EXTRACT A HELPER into a new module
+rather than growing it.
+ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
+  metric        = for each of the 4 sibling groups, which variant is enqueued; and for each of
+                  the 4 single-variant suffixed ids, whether its identity is unchanged
+  before        = height-first picks the SHORT copy in 3 of 4 groups; 4 single-variant ids are
+                  re-keyed and shadowed
+  bar           = all 4 sibling groups enqueue the LONGEST clip AND all 4 single-variant ids are
+                  unchanged AND 28 daemon tests + 2 plan tests pass AND track_daemon.py is
+                  <= 300 lines after the change
+  n             = 8 (CONSTRUCT: 4 sibling groups + 4 single-variant ids, every case enumerated;
+                  the n >= 30 sampling rail does not apply, contract Q7)
+  eye check     = n/a for the selection logic (CONSTRUCT); report the ffprobe duration/height
+                  table for all 8 ids as the reproduction artifact
+  must not move = every harness threshold, the ledger schema, the daemon done-definition landed
+                  as G15b, and the tracking_schema column set
+NON-TAUTOLOGY: state which ids the rule covers and which it deliberately leaves alone. A rule
+that only works because the hard ids were excluded is circular -- say so and report REJECT.
+EVIDENCE: docs/evidence/tracking/corpus_sibling_variants_2026-09-04.md -- the ffprobe table, the
+selection table before/after, the test lines, and a NOT VERIFIED list.
+TEST: run the 28 daemon tests and the 2 plan tests, per-file only. Never a full pytest run.
+POD: ffprobe over the pod corpus is read-only pod work. No scp of track_daemon.py or any shared
+module until the verifier accepts (contract B5).
+COMMIT: explicit pathspec, in a2, no push. Report the sha.
+NEVER PARK: do not poll your own jobs in a blocking loop; never end waiting.

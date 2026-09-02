@@ -3,7 +3,8 @@
 Rule: a gap is closed only by a measured artifact (n, denominator = decoded
 frames, render-and-look). Harness thresholds never move. Broadcast footage
 only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
-NEXT_GAP_ID: G33  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G37  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+G33-G36 were allocated by the tracking orchestrator in the 2026-09-03 planning session; G37+ are reserved for the G35 gap-finder rows.
 ONE COUNTER, ONE HOLDER: if two sessions run (the two-account split in
 HANDOFF_TRACKING_ACCOUNT2_2026-09-02.md), exactly one may increment this header.
 Say which, in the first turn of the day.
@@ -11,21 +12,38 @@ Specs cite CODEX_SPEC_TEMPLATE.md; verifiers apply the spec ACCEPTANCE RULE + VE
 
 AUDIT 2026-09-03 -- NOTHING IS DISPATCHED. Codex was stopped the night of 09-02.
 Every "RUNNING" / "dispatched" word previously in this table was stale and has
-been corrected below. Worktree state, measured 2026-09-03:
-- a5 (G26): UNCOMMITTED changes only (adapter.py modified; player_select.py and
-  test_player_select.py untracked), HEAD 8151f0dde BEHIND master, `master..HEAD`
-  EMPTY. **Loop rule 3's refusal does NOT protect uncommitted work -- a routine
-  `reset --hard master` deletes it. Commit in a5 FIRST.**
-- a6 (G31): trainer IS COMMITTED as b78d8cb46 (memory and NOW.md say
-  "uncommitted"; they are wrong). Pod fold-0 checkpoint must be confirmed under
-  `data/models/` -- `/tmp` does not survive a pod stop.
-- a9 (G25) 93e8dcd69 and a2 (G28) 9ba9d395e: unmerged REJECTED work; G25b / G28b
-  are the fix passes.
+been corrected below.
+
+WORKTREE STATE RE-MEASURED in the 2026-09-03 planning session. This block
+SUPERSEDES the earlier audit text, which was itself already stale; four of its
+premises were false. Full premise ledger:
+docs/evidence/tracking/TRACKING_DAY1_EXECUTION_PLAN_2026-09-04.md section 1.
+- a5 (G26): **CLEAN and COMMITTED** -- `master..HEAD` = 948122992 (wip) +
+  a60b4268a (evidence memo + 8 renders). The earlier "UNCOMMITTED, commit first"
+  warning is FALSIFIED and queue step 0 is DONE. Do not reset a5; it holds live work.
+- a2 (G28): **RESET** -- HEAD is 8ca8f1e93 (master G15b) and `master..HEAD` is
+  EMPTY. The rejected G28 work 9ba9d395e was DANGLING, reachable from no branch.
+  It is now protected by tag **g28-reject-9ba9d395e**; G28b cherry-picks the tag.
+- a6 (G31): trainer COMMITTED as b78d8cb46. **Fold 0 is COMPLETE** -- the pod was
+  never stopped, `data/models/tennis_keypoints_fold0.pt` exists (46,735,897 bytes,
+  Sep 2 03:20), 30/30 epochs, and the result is: held_out tennis09,
+  PCK@7px 0.0774, median_px 17.395, frames_ge_4_in_7 **0.0**, train 1713 / test 300,
+  final train loss 0.000007. Two corrections that follow from reading the trainer:
+  it supports folds 0 and 1 ONLY (nyYk is never held out, so this is a 2-fold
+  result, not 3-fold), and it defaults to torchvision
+  ResNet18_Weights.IMAGENET1K_V1, the weights this program flags research-only.
+- a9 (G25) 93e8dcd69: unmerged REJECTED work, intact; G25b builds on it. Do not reset.
 - a3 b2ddcc1ec, a4 ebc82a15e, a7 72de73265, a8 b020b6715: unmerged commits whose
   CONTENT already landed on master under other shas (G01c 4212afa1e, G15b
-  8ca8f1e93, G29b 7daae6c7c, G08 f07c71cd7). Rule 3 would refuse to reset these
-  forever; the refusal is lifted once each commit is confirmed content-identical
-  to something already on master.
+  8ca8f1e93, G29b 7daae6c7c, G08 f07c71cd7). All four are clean and safe to reset
+  once content-identity is confirmed. The only dirty trees are a6 and a8, and
+  their dirt is `findings.md` / `task_plan.md` planning scratch, not work.
+- NET: no uncommitted real work exists anywhere in the fleet today.
+
+AMENDED RULE 3 (both amendments are now forced by measurement): the sync refusal
+must fire on a DIRTY tree as well as on a non-empty `master..HEAD`, and it must be
+LIFTABLE once every commit in `master..HEAD` is content-identical to something
+already on master, or a3/a4/a7/a8 can never be synced again.
 
 | id | sport | gap (measured) | evidence | status |
 |----|-------|----------------|----------|--------|
@@ -63,28 +81,55 @@ been corrected below. Worktree state, measured 2026-09-03:
 | G29 | all | 165 of 173 pod tracking tables (95.4 pct) contain ZERO rows with cls=="ball"; excluding football (the only sport whose config honestly sets ball_valid_min 0.0), 127 of 135 gated tables (94.1 pct) have no ball row while their sport config demands one -- kbo 35/35, mlb 32/32, soccer 24/24, npb 23/23, wnba 7/7, ncaa_basketball 4/4, tennis 2/10. tracking_harness.py:160 computes ball_valid from cls=="ball" whenever schema.ball_telemetry_available, and the normalized schema sets that True (tracking_schema.py:54), so ball_valid is 0.00 and the gate fails BY CONSTRUCTION on 127 tables; the only 8 tables with ball rows are tennis, and every landed ball_valid number (G05 0.6889 / 0.4828) comes from them | gapfinder_2026-09-02/ball_rows_absent.md + pod_trackid_ball_census.json (182 game dirs, 173 with csv) | codex a6 done (eafc126d8 unmerged): per-producer ball_telemetry_available declaration (tracking_capability.json sidecar; legacy fallback = ball-row presence), harness skips ball_valid when False and labels PASS_NO_BALL; 21+3 tests; after-sweep 0 PASS_NO_BALL; VERIFIER REJECT: legacy_ball_rows fallback turns a zero-ball TENNIS table from FAIL(ball_valid 0.00<0.20) into PASS_NO_BALL (row absence must never imply no detector); footage_cycle.track_item and basketball_relabel drop the sidecar. G29b ACCEPTED and LANDED as 7daae6c7c (LANDED + DEPLOYED to pod 2026-09-02 ~22:05 (48 files, md5-identical; keeper 3047264->3127042, daemon 3047270->3127047)): sidecar declaration authoritative; no sidecar => unknown_no_sidecar and the ball_valid gate STAYS ACTIVE; per-sport declaration tennis True, all others False; sidecar emitted from adapter_run, footage_cycle, track_daemon (run_clip path) and copied forward by the relabel. Verifier reproduced the exact G29 reject case on the fix -- synthetic tennis table, zero ball rows, NO sidecar -> FAIL 'ball_valid 0.00 < 0.20', rule unknown_no_sidecar, identical to the pre-G29 harness on the same CSV; tennis sidecar True + zero rows -> FAIL; basketball sidecar False -> PASS_NO_BALL, never bare PASS; sport threshold table byte-unchanged. 23+4+8+6+2+28 tests pass in master. DEPLOY STATUS CORRECTED 2026-09-03: this row ended "NOT deployed: pod daemon still runs pre-G29 code", which contradicts its own earlier sentence and the ledger -- G14b records this file among the 48 deployed 2026-09-02 ~22:05, md5-identical, daemon restarted to 3127047 (c7816aecd). The pod DOES run G29b. What is still true is that no pod table carries a sidecar yet, because no producer has re-run since the deploy. |
 | G30 | all | data/footage_corpus holds a byte-identical duplicate under two names: football__football_wHZt1eY3A9s_1080p.mp4 and football__giants_jets_format96_1080p.mp4 both md5 1855b74edf86166cb23348f5b4da8a4a (9,124 frames, 148.4 MB each), so the corpus denominator is 60 distinct clips not 61 and the football 1080p denominator is 1 not 2; footage_census.py (the G01 tool) dedupes by name and content class, never by content hash | gapfinder_2026-09-02/corpus_byte_duplicate.md (md5sum on the pod; exactly 1 duplicate pair among the 61 rows today) | ACCEPTED + LANDED b667e21d7 (that commit's files only; the a3 branch has moved on and nothing else was taken). VERIFIER: the fingerprint is md5 over at most the first 64 MiB, read in 1 MiB blocks; the second and later files with a matching prefix hash get verdict DUPLICATE_VARIANT plus duplicate_variant_of=<first path> and the loop CONTINUES BEFORE the JUNK-quarantine branch, so a duplicate is never moved or deleted; the module contains no unlink/remove/rmtree and the only mover is the pre-existing quarantine_manual call on JUNK, unchanged. test_footage_census.py 5 passed in master. NOT VERIFIED: no run against the real pod corpus, so the known 1855b74e football pair has not yet been observed as a DUPLICATE_VARIANT row in a live census csv, and a >64 MiB pair that diverges only after the prefix would be a false DUPLICATE_VARIANT (the docstring says screening fingerprint, not identity). |
 | G31 | tennis | no learned keypoint model yet: train a permissive-licence tennis court-keypoint model on the G23 pseudo-labels and evaluate on a HELD-OUT MATCH, not held-out frames of the same rallies | G23 (45b60357f), docs/evidence/tracking/tennis_pseudolabels_2026-09-02.md | OPEN -- trainer COMMITTED in a6 as **b78d8cb46** (corrected 2026-09-03: memory `tracking_week_program_2026_09_01` and .planning/NOW.md both say the trainer is UNCOMMITTED in a6; they are wrong, and a worktree sync on that belief would have been resolved the wrong way). `scripts/platformkit/tracking/tennis_keypoint_train.py` + test (1 passed; dedupe 2,209 -> 2,013 unique frames per the G23 verifier count). Pod fold 0 was training at wind-down (epoch 15/30, pid 3077867, log /tmp/g31_fold0.log, ckpt data/models/tennis_keypoints_fold0.pt). **FIRST CHECK: `/tmp` does not survive a pod stop -- confirm `data/models/tennis_keypoints_fold0.pt` exists on the network volume before assuming a result; if only the /tmp log is gone the checkpoint may still be fine, if the checkpoint is gone the fold is lost and reruns from scratch.** Then: launch fold 1; evaluate PCK@7px at 1280x720, median px, and the >=4-keypoints-within-7px solve proxy on the HELD-OUT MATCH per fold; 12 renders per fold, evenly spaced; compare against classical coverage on the same ranges; memo; commit in a6; verify. ACCEPTANCE IS HONESTY, NOT A NUMBER: below the 0.933 acc / 2.83 px ceiling is expected and is not a failure -- the question the row answers is whether the model solves frames the classical solver fails on. PCK measures distillation fidelity, not corner truth, until a hand-annotated set exists; say so in the memo. |
+| G33 | baseball | the two-reference scale gate (mound chord vs the 24 in rubber, same image row, 10 pct) validates 9 of 36 pitch segments (25.0 pct) and 73 of 332 pitch-view frames (22.0 pct); the 27 failures have never been attributed, so nobody knows whether more day footage would help | baseball_scale_validation_2026-09-01.md (452c9d954, 1942be94b) | OPEN -- allocated 2026-09-03. MEASUREMENT ONLY, no code change and no tolerance change: 3 evenly spaced renders per segment (108 renders) and every one of the 27 failures binned into exactly one of chord_off_dirt / rubber_occluded / row_mismatch / not_pitch_view / resolution_360p, with the 9 validated segments as a control. n = 36 (CONSTRUCT). **This row GATES G36**: if resolution_360p dominates, more day broadcasts buy nothing until the HLS route works (G27 ACCESS LIMIT) and G36 is not dispatched. Spec: specs_2026-09-04/g33_baseball_scale_bins.txt |
+| G34 | tennis + basketball + soccer | every coverage number in this program is quoted against DECODED frames, but a fixed-camera lock only applies to rally or wide frames, so no limit in the program is currently quotable against its true denominator | tennis_camera_lock_honest_measurement_2026-09-01.md, PLAN_TRACKING_RESEARCH T2/K3/S2 | OPEN -- allocated 2026-09-03. ORCHESTRATOR DECISION: the research plan wrote this as CLIP zero-shot, but the pod has no open_clip, no clip and no transformers, and zero new dependencies is a standing default. CLIP was only the scaler; the hand labels ARE the measurement. Seeded, evenly spaced 300-frame census per sport (tennis rally/non-rally, basketball wide/pan/tight, soccer wide/non-wide), hand-labeled, reported as a share with a Wilson 95 pct interval, seed and frame indices recorded. No model, no dependency, no GPU. Spec: specs_2026-09-04/g34_view_denominator.txt |
+| G35 | all | the memos landed since 2026-09-01 carry NOT VERIFIED sections that nobody has swept; known unchecked items include the 24 unviewed G08 renders and its identity tally, which detector branch the pod actually took on G22, the coordinate_contract passed:false cause strings on both G12 keeps, and the G19 coast rule that could only ever have fired on the off-frame branch | RESULTS_LEDGER.md, the pod ledger, G08/G12/G19/G22 rows | OPEN -- allocated 2026-09-03. Opus lane, no worktree, no codex job. Deliver at least 3 new rows, each with a measured number and an evidence path. Ids from NEXT_GAP_ID (G37+), orchestrator only. Also fix the stale G29 row, which still reads as open although G29b landed at 7daae6c7c. |
+| G36 | baseball | G12 is CLOSED at 2 kept clips of 8 candidates; the validated-scale fraction stands at 9 of 36 segments on four day clips, which is too small a corpus to carry a confidence interval | baseball_footage_acq2_2026-09-02.md (a4982b734) | OPEN but **BLOCKED ON G33** -- allocated 2026-09-03 as the successor id the queue asked for (G12 is closed and may not be reused). 8 more official MLB DAY broadcasts through the bridge at the unchanged >= 6/12 field-view keep bar, then the existing scale validation re-run over the enlarged corpus with a Wilson interval and a G33 bin for every new failure. Night stays CLOSED AT LIMIT (G11, three rejected designs); do not fetch night footage. The fraction is a LIMIT measurement and is NOT required to rise. Spec: specs_2026-09-04/g36_baseball_day_corpus.txt |
 
 Next single-problem lanes, in order (REWRITTEN 2026-09-03 -- the previous line was
 entirely stale: 11 of its 13 entries had already landed, closed or been superseded,
 and following it would have re-dispatched finished work):
 
-0. **BEFORE ANY WORKTREE SYNC** -- commit the uncommitted G26 files in a5 (see the
-   audit block in the header). Not a gap; a protection step.
-1. **G26** tennis player selection -- verify the a5 WIP, or re-dispatch once.
-2. **re-run the 15 tennis sequential ranges** on the frozen harness after G26.
-3. **G31** tennis keypoint model -- confirm the fold-0 checkpoint survived the pod
-   stop, then fold 1 and the held-out-match evaluation.
-4. **G25b** basketball floor gate, mask-sanity fix pass (attempt 2 of 2).
-5. **G28b** high-res siblings, duration-first fix pass (attempt 2 of 2). HOLDS THE
-   SHARED-MODULE TOKEN -- nothing else may touch track_daemon.py while it runs.
-6. **G17 v3** soccer role classifier -- jersey template or a detector class, NOT
-   colour. Attempt 3 by count; it is permitted ONLY because attempts 1 and 2 were
-   the same colour-heuristic design and v3 is a different mechanism. If v3 fails,
-   G17 closes AT LIMIT.
-7. **G03** basketball producer diff -- HUMAN APPLY, Neel only, then re-track 11 games.
-8. **a new id from NEXT_GAP_ID** for further baseball corpus growth (G12 is CLOSED).
-9. **G09** soccer self-label calibration set (SCCvSD BSD-2 route).
-10. **G32** night detector -- LOW, stays low until the day corpus is large.
+ORDER REWRITTEN 2026-09-03 (planning session). Wave A is the six that dispatch
+together at session start; wave B is what unblocks during the day. Full plan,
+lane allocation and paste-ready specs:
+docs/evidence/tracking/TRACKING_DAY1_EXECUTION_PLAN_2026-09-04.md and
+docs/evidence/tracking/CODEX_SPECS_2026-09-04.md.
+
+Step 0 of the previous order ("commit the uncommitted G26 work in a5 before any
+sync") is DONE -- a5 is clean and committed. See the audit block in the header.
+
+WAVE A (dispatch together, 6 codex, the concurrency cap):
+1. **G26 attempt 2** tennis player selection, worktree a5. Rule 2 final attempt and
+   it must be a LIMIT measurement: measure where REAL-player foot points actually
+   land in court feet on the 15 PASS ranges, attributed by render, then set the
+   prior from that distribution. Acceptance: pass fractions not below 5/5, 1/5, 4/5
+   with oob 0.0000 and solver coverage identical per range.
+2. **G31 fold 1** tennis keypoints, worktree a6, pod GPU. Fold 0 is DONE and its
+   numbers are in the header. Expected verdict CLOSED AT LIMIT.
+3. **G25b** basketball floor gate mask sanity, worktree a9, attempt 2 of 2.
+4. **G28b** high-res siblings duration-first, worktree a2, attempt 2 of 2. HOLDS THE
+   SHARED-MODULE TOKEN -- nothing else may touch track_daemon.py while it runs, and
+   it must cherry-pick tag g28-reject-9ba9d395e first.
+5. **G33** baseball scale-failure bins, worktree a7. Measurement only. Gates G36.
+6. **G34** view-share denominator across 3 sports, worktree a3. Hand labels, not CLIP.
+
+IN PARALLEL (Opus lane, gates wave B): label 300 soccer role crops into
+docs/evidence/tracking/soccer_roles_labels/.
+
+WAVE B (as slots free):
+7. **G17 v3** soccer role classifier, worktree a8, after the 300 labels exist. This
+   is the LIMIT measurement rule 2 requires (attempts 1 and 2 were the same
+   colour-heuristic design against no ground truth); if any of its three bars is
+   missed, G17 closes AT LIMIT and S1 is never re-adjudicated.
+8. **G35** gap-finder pass, Opus lane, no worktree.
+9. **G36** baseball day-corpus growth, worktree a4, ONLY if G33 says resolution_360p
+   is not the dominant failure bin.
+
+NOT SCHEDULED, and why: **G03** basketball producer diff is HUMAN APPLY, Neel only,
+and must never appear on a codex dispatch list; **G09** soccer self-label calibration
+waits on G17 and G34; **G32** night detector stays LOW until the day corpus is large;
+**G19** coast tagging stays LOW behind G25b; football **G13** stays PAUSED.
 
 NOT on this list, and why: G01/G01c, G02, G04, G05, G08, G12, G14/G14b, G15/G15b,
 G18, G20, G21, G22, G23, G24, G29/G29b, G30 are CLOSED or LANDED; G11 is CLOSED AT

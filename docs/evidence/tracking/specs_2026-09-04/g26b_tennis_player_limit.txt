@@ -1,0 +1,39 @@
+GAP G26 (attempt 2 of 2, LIMIT) | sport tennis | worktree a5 | log cx_g26b_tennis_player_limit
+CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it; self-check every line of
+section B before you report. Rule 2: this is the second and final attempt, and it must be a
+LIMIT MEASUREMENT, not a redesign. a5 already holds the attempt-1 work at a60b4268a; build on it.
+PREMISE (step 0): attempt 1 stipulated a court prior x=[-6,84] y=[-4,40] ft. It drove oob to
+0.0000 on all 15 sequential ranges and 12 of 13 render-checked selections were real players, but
+pass fractions fell 5/5,1/5,4/5 to 1/5,0/5,1/5 because REAL players project outside that
+rectangle and the frozen two-player coverage gate then fails. Confirm this by re-reading
+docs/evidence/tracking/tennis_player_select_2026-09-02.md. If the table does not reproduce,
+STOP, write the memo, report FALSIFIED.
+LIMIT (step 1): THE WORK. On the same 15 ranges (5 per match, 300 frames, seed 20260901), dump
+every candidate person box with its projected foot point in court feet, per frame, to a CSV.
+Attribute real player vs courtside non-player by RENDER, not by the prior under test. Report the
+empirical distribution of REAL-player foot points: min, p01, p05, p50, p95, p99, max on x and y,
+and the count outside the attempt-1 rectangle. That distribution IS the deliverable.
+CHANGE (step 2): only after the limit is measured, set the prior from the data as a quantile
+envelope (start at p01/p99 on each axis), then re-run the same 15 ranges. Additive only: no new
+gate, no solver change, no camera-lock change. If no envelope restores the before-fractions,
+report CLOSED AT LIMIT and say that selection needs a role signal rather than geometry.
+ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
+  metric        = harness pass fraction per match over the 15 sequential ranges (denominator =
+                  15 ranges of 300 decoded frames each), plus oob per range
+  before        = 5/5 nyYk 720p, 1/5 tennis09, 4/5 tennis10 (G18, c57bcb85e)
+  bar           = pass fractions NOT BELOW 5/5, 1/5, 4/5 AND oob 0.0000 on all 15 ranges AND
+                  solver coverage per range IDENTICAL to the attempt-1 table
+  n             = >= 30 attributed real-player foot points
+  eye check     = 8 renders EVENLY SPACED over the ranges that still fail; no head slice
+  must not move = every harness threshold, seed 20260901, range count 5, frame count 300, the
+                  court solver, the camera lock, domains/tennis/tracking/court_lines.py
+NON-TAUTOLOGY: the foot-point distribution must be attributed by render, never by the prior it
+is used to fit. State which candidates are excluded and why. If excluding the hard candidates is
+what makes the envelope work, say so and report REJECT yourself.
+EVIDENCE: docs/evidence/tracking/tennis_player_select_limit_2026-09-04.md -- the distribution
+table, the before/after 15-range table with coverage, the render tally, and a NOT VERIFIED list.
+TEST: exactly one new per-file test; run only that file.
+POD: heavy compute only; own nohup nice job, unique /tmp log, never kill anything, no git on the
+pod, NO scp of any module. Report the files you would deploy; do not deploy them.
+COMMIT: explicit pathspec, in a5, no push. Report the sha.
+NEVER PARK: do not poll your own jobs in a blocking loop; never end waiting.

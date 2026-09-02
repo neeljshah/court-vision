@@ -1,0 +1,43 @@
+GAP G25b (fix pass) | sport basketball | worktree a9 | log cx_g25b_bb_mask_sanity
+CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it; self-check every line of
+section B before you report. a9 holds the rejected G25 work at 93e8dcd69; build on it.
+PREMISE (step 0): G25 was rejected because the module trusts a mask it never checks. On wnba_01,
+4,815 of 4,855 rows (99.18 pct) are stamped observation=nonfloor while 2,998 of 2,998 frames are
+flagged tight_shot, and the hue mask covers under 15 pct of every single frame. On wnba_04
+(Climate Pledge Arena, tan hardwood plus a large forest-green apron) the learned hue keeps only
+one of the two tones, so the 96.92 pct nonfloor share is predominantly MASK FAILURE, not real
+non-floor detections. Reproduce both numbers before changing anything. If they do not reproduce,
+STOP and report FALSIFIED.
+LIMIT (step 1): the mask is arena- AND shot-dependent, not merely arena-dependent: on ncaa
+IB-_u4gW3ds, f000857 keeps a sliver at the left edge with the whole court visible
+(under-coverage) while f001429 swallows the tan crowd into the largest component
+(over-coverage). A single hue mask therefore cannot be a general floor gate. The achievable
+result is a gate that KNOWS when it cannot see, not a gate that is always right.
+CHANGE (step 2): additive only. (a) per-game mask sanity: when the hardwood mask covers under
+15 pct of the frame on more than 50 pct of the games frames, emit mask_unreliable for that game
+and tag NO rows at all; (b) add court-line density as a SECOND reference, ANDed with the hue
+mask before any nonfloor tag. Do not drop a row, do not rename a column, do not change
+containment.
+ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
+  metric        = per game: mask_unreliable true/false, count of nonfloor tags, and
+                  containment_all (denominator = all 32,355 emitted rows across the 8 pod games)
+  before        = containment_all 0.9827 / 0.9749 / 0.9424 / 0.9370 / 0.9489 / 0.9672 / 0.9576 /
+                  0.9493; wnba_01 99.18 pct nonfloor; wnba_04 96.92 pct nonfloor
+  bar           = NO game carrying mask_unreliable has a single nonfloor tag, AND containment_all
+                  is byte-identical before and after on all 8 games
+  n             = 8 games (CONSTRUCT: every game in the set is evaluated), 32,355 rows
+  eye check     = 24 renders EVENLY SPACED across 3 arenas and MUST include wnba_01, which had
+                  zero renders in the rejected attempt; no head slice
+  must not move = the 15 pct and 50 pct constants once written into this spec, containment_all,
+                  the intake containment gate 0.95, and every harness threshold
+NON-TAUTOLOGY: the nonfloor rule must not be derived from the containment criterion it is judged
+by (that was the B1 check G25 passed; keep passing it). State exactly which rows the metric
+covers and which are excluded.
+EVIDENCE: docs/evidence/tracking/basketball_floor_gate_v2_2026-09-04.md -- per-game
+mask_unreliable table, nonfloor counts, containment before/after, the 24-render tally, and a NOT
+VERIFIED list.
+TEST: exactly one new per-file test; run only that file.
+POD: re-measurement over the 8 pod tables is pod work; own nohup nice job, unique /tmp log, never
+kill anything, no git on the pod, NO scp of any module until the verifier accepts.
+COMMIT: explicit pathspec, in a9, no push. Report the sha.
+NEVER PARK: do not poll your own jobs in a blocking loop; never end waiting.
