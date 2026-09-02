@@ -18,6 +18,12 @@ third of them:
         DB, or any historical artifact. It cannot reach a recorded verdict, so it
         cannot restate one under the looser bar.
 
+S89 amends the partition ONCE, additively: two in-game ARM families are added because all
+37 original families are feature grids, so no within-family bar existed for an in-game arm.
+Nothing is removed and no bar moves; the pin goes 62702554f -> new and spec_version
+s14-families-v1 -> s89-families-v2, which is exactly the tamper-evidence condition (i) is
+for. Condition (iii) holds: the three charged in-game verdicts keep their own artifacts.
+
 The global bar is UNCHANGED: `deflated_p`, `eps_eff`, `min_corpora_eff` and the
 cumulative K are untouched, and K is still charged and reported on every trial.
 
@@ -39,11 +45,24 @@ from scripts.platformkit.combo.fwer_budget import DEFAULT_Q, BHResult, bh_within
 from scripts.platformkit.eval_gate.deflated_metrics import deflated_p
 
 SPEC_PATH = Path("docs/evidence/harness/FWER_FAMILIES_SPEC_2026-09-03.md")
+LEDGER_PATH = Path("data/cache/eval_gate/backtest_fwer.jsonl")
 DEFAULT_ALPHA = 0.05
+# S89. Three in-game ARM trials were charged (k_cumulative 15, 16, 17) as families of one
+# OUTSIDE the partition, before any arm family was frozen. This maps those historical
+# strings onto the two new frozen families so within-family K counts them retroactively.
+# The ledger is NEVER rewritten and no recorded verdict is re-scored: an alias only changes
+# how a NAME resolves, and this module still prices the p-values its caller supplies.
+FAMILY_ALIASES = {
+    "ingame_mlb_arms": "ingame_arms_mlb",
+    "ingame_mlb_clamp": "ingame_arms_mlb",
+    "ingame_nba_halftime_asof": "ingame_arms_nba",
+}
 # The q-rule is a PREREG choice: it is declared per family in the frozen spec, never
 # picked after the p-values are in. Both are computed and printed on every verdict.
 Q_RULES = ("fdr_bh", "fdr_by")
 DEFAULT_Q_RULE = "fdr_bh"
+KINDS = ("grid", "arm")
+DEFAULT_KIND = "grid"
 _BLOCK = re.compile(r"^### fam: (\S+)\s*$", re.M)
 
 
@@ -64,6 +83,9 @@ class Family:
     sources: tuple
     members: tuple
     q_rule: str = DEFAULT_Q_RULE
+    # S89. "grid": members are columns the 9-transform grammar enumerates. "arm": members
+    # are whole predictors, which nothing transforms, so a feature enumerator SKIPS them.
+    kind: str = DEFAULT_KIND
 
 
 @dataclass(frozen=True)
@@ -77,12 +99,33 @@ class FamiliesSpec:
     families: tuple
 
     def get(self, name: str) -> Family:
+        name = resolve_family(name)
         for family in self.families:
             if family.name == name:
                 return family
         raise KeyError("family %r is not in %s (%d frozen families); a family invented "
                        "after the fact is not a family" % (name, self.spec_path,
                                                            len(self.families)))
+
+
+def resolve_family(name: Optional[str]) -> Optional[str]:
+    """The frozen family a (possibly historical) ledger family string belongs to (S89)."""
+    return None if name is None else FAMILY_ALIASES.get(name, name)
+
+
+def k_family(family: str, ledger_path: Any = LEDGER_PATH) -> int:
+    """How many charges the ledger ALREADY carries for a frozen family, aliases resolved.
+
+    READ-ONLY: it never appends, so it is not a charge and cannot move k_cumulative.
+    `ledger.next_k_family` (the WRITE path) still matches the string exactly -- PROPOSED
+    patch in docs/research/organization-sprint/ (eval_gate/ledger.py is token-locked).
+    """
+    target = resolve_family(family)
+    path = Path(ledger_path)
+    if not path.exists():
+        return 0
+    return sum(1 for line in path.read_text(encoding="ascii").splitlines() if line.strip()
+               and resolve_family(json.loads(line).get("family")) == target)
 
 
 def git_blob_id(path: Any) -> str:
@@ -137,11 +180,15 @@ def load_families(path: Any = SPEC_PATH) -> FamiliesSpec:
         if q_rule not in Q_RULES:
             raise ValueError("family %s declares q_rule %r; frozen choices are %s"
                              % (name, q_rule, list(Q_RULES)))
+        kind = _field(body, "kind", DEFAULT_KIND)
+        if kind not in KINDS:
+            raise ValueError("family %s declares kind %r; frozen choices are %s"
+                             % (name, kind, list(KINDS)))
         family = Family(name, _field(body, "sport"), _field(body, "horizon"),
                         _field(body, "market"), int(_field(body, "features")),
                         int(_field(body, "hypotheses")),
                         tuple(s.strip() for s in _field(body, "sources").split(",")), members,
-                        q_rule)
+                        q_rule, kind)
         if len(members) != family.features:
             raise ValueError("family %s declares %d features but enumerates %d members"
                              % (name, family.features, len(members)))
@@ -225,7 +272,8 @@ def render_bars(result: dict) -> str:
 
 def frozen_family(name: str) -> Optional[Family]:
     """The frozen Family of that name, or None. A family invented after the fact is not one."""
-    return next((f for f in load_families(SPEC_PATH).families if f.name == name), None)
+    resolved = resolve_family(name)
+    return next((f for f in load_families(SPEC_PATH).families if f.name == resolved), None)
 
 
 def families_spec_sha() -> str:

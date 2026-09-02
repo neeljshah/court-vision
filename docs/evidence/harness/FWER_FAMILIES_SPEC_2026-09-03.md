@@ -1,12 +1,15 @@
 # FWER families -- FROZEN prereg (S14)
 
-spec_version: s14-families-v1
+spec_version: s89-families-v2
 frozen_on: 2026-09-03
+amended_on: 2026-09-03 (S89 -- two in-game ARM families added; nothing removed, no bar moved)
 q_within_family: 0.05
 alpha_global: 0.05
-families: 37
-features: 396
-hypotheses: 3564
+families: 39
+feature_grid_families: 37
+arm_families: 2
+features: 407
+hypotheses: 3575
 transform_grid: raw, ew(halflife=3), ew(halflife=5), ew(halflife=10), ew(halflife=20), rank_in_league, z_vs_league, delta_vs_prior, ratio_to_opponent
 transform_instances: 9
 conditioning: empty set (SF-16 freezes v1 conditioning to {})
@@ -48,6 +51,30 @@ horizon/market are frozen labels, not measurements: a family sourced from
 `asof_quarter_shape` is (period, spread); everything else is pregame, with market `ml`
 (nba, mlb, tennis), `total` (soccer), or `prop` for `nba_opp_allowed` and `nba_player_adv`.
 
+## Arm-family construction rule (S89 amendment, 2026-09-03)
+
+The 37 families above are FEATURE GRIDS. Eleven of them carry (live_tick, inplay), but a
+feature grid is not an arm: an in-game ARM is a whole scored predictor (a blend config, a
+checkpoint pricer), so the 9-transform grid does not apply to it and
+`hypotheses = features` for an arm family, one hypothesis per arm. `features` still equals
+`len(members)`, so `family_bars.load_families` parses an arm family with no code change beyond the OPTIONAL
+`kind:` field, which is `grid` by default so all 37 original blocks stay byte-identical.
+An enumerator that walks members as COLUMNS (`foundry/seed_queue.frozen_hypotheses`) skips
+`kind: arm`, so the frozen 9-transform grammar still enumerates exactly 3,564 hypotheses.
+
+S89 adds ONE arm family per sport that has an in-game arm on disk. Two qualify:
+`ingame_arms_mlb` and `ingame_arms_nba`. There is NO soccer arm family: no soccer in-game
+arm exists in `scripts/platformkit/ingame/` and none has ever been charged, and a family
+invented for a sport with no arm is a family invented after the fact.
+
+Three in-game charges were made BEFORE this amendment, as families of one outside the
+partition: `ingame_mlb_arms` (k_cumulative 15), `ingame_mlb_clamp` (16) and
+`ingame_nba_halftime_asof` (17). `family_bars.FAMILY_ALIASES` maps those three historical
+strings onto the two new families so within-family K counts them retroactively. The ledger
+`data/cache/eval_gate/backtest_fwer.jsonl` is NOT rewritten -- every row keeps the string it
+was charged with -- and NO recorded verdict is re-scored: the three stay labelled
+family-of-one in their own artifacts, exactly as condition (iii) requires.
+
 ## Not in this partition
 
 Five NAMED catalogue paths are absent from disk and therefore define NO family:
@@ -69,6 +96,8 @@ by eye rather than by the dtype rule above.
 
 | family | sport | horizon | market | features | hypotheses |
 |---|---|---|---|---|---|
+| ingame_arms_mlb | mlb | live_tick | inplay | 10 | 10 |
+| ingame_arms_nba | nba | live_tick | inplay | 1 | 1 |
 | mlb_atbat_states | mlb | live_tick | inplay | 10 | 90 |
 | mlb_bullpen_relief_chains | mlb | pregame | ml | 6 | 54 |
 | mlb_catcher_framing_index | mlb | pregame | ml | 3 | 27 |
@@ -108,6 +137,26 @@ by eye rather than by the dtype rule above.
 | tennis_travel_scouting | tennis | pregame | ml | 3 | 27 |
 
 ## Families
+
+### fam: ingame_arms_mlb
+kind: arm
+sport: mlb
+horizon: live_tick
+market: inplay
+features: 10
+hypotheses: 10
+sources: scripts/platformkit/eval_gate/s58_e2_slice_trial.py, scripts/platformkit/eval_gate/s58_clamp_family_trial.py
+members: e2_gd, e4_gd, e4_w0.5_d0.10, e4_w1.0_d0.10, e4_w2.0_d0.10, e4_w0.5_d0.15, e4_w2.0_d0.15, e4_w0.5_d0.25, e4_w1.0_d0.25, e4_w2.0_d0.25
+
+### fam: ingame_arms_nba
+kind: arm
+sport: nba
+horizon: live_tick
+market: inplay
+features: 1
+hypotheses: 1
+sources: scripts/platformkit/eval_gate/s58_nba_halftime_asof_trial.py
+members: nba_halftime_asof
 
 ### fam: mlb_atbat_states
 sport: mlb
