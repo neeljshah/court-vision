@@ -158,6 +158,46 @@ def render(video: Path, tracking: Path, output: Path, sport: str, quality: str,
         raise ValueError("Demo exceeds 8 MB: %s" % output)
 
 
+def render_csv(csv_path: str | Path, sport: str, out_path: str | Path | None = None,
+               gif_path: str | Path | None = None, fps: int = 30,
+               max_seconds: float = 20) -> int:
+    """Render the legacy coordinate-only demo used by queue and evidence callers."""
+    from scripts.platformkit.tracking_harness import SPORTS
+    if sport not in SPORTS or fps <= 0 or max_seconds <= 0:
+        raise ValueError("sport, fps, and max_seconds must be valid")
+    if out_path is None and gif_path is None:
+        raise ValueError("Specify --out and/or --gif")
+    rows: dict[int, list[tuple[str, str, float, float]]] = defaultdict(list)
+    with Path(csv_path).open(newline="", encoding="utf-8") as handle:
+        for raw in csv.DictReader(handle):
+            try:
+                rows[int(float(raw["frame"]))].append((raw["track_id"], raw.get("cls", "object"),
+                                                          float(raw["x"]), float(raw["y"])))
+            except (KeyError, ValueError):
+                continue
+    frames = sorted(rows)[:int(fps * max_seconds)]
+    if not frames: raise ValueError("No renderable tracking rows in %s" % csv_path)
+    x0, x1, y0, y1 = SPORTS[sport]["bounds"]
+    if out_path is not None: Path(out_path).parent.mkdir(parents=True, exist_ok=True)
+    writer = None if out_path is None else cv2.VideoWriter(str(out_path), cv2.VideoWriter_fourcc(*"mp4v"), fps, (960, 540))
+    if writer is not None and not writer.isOpened():
+        raise OSError("Could not create demo output: %s" % out_path)
+    images: list[np.ndarray] = []
+    try:
+        for frame in frames:
+            image = np.full((540, 960, 3), (21, 25, 31), dtype=np.uint8); cv2.rectangle(image, (36, 36), (924, 504), (235, 235, 235), 2)
+            for track_id, cls, x, y in rows[frame]:
+                point = (round(36 + 888 * np.clip((x - x0) / (x1 - x0), 0, 1)), round(504 - 468 * np.clip((y - y0) / (y1 - y0), 0, 1)))
+                cv2.circle(image, point, 6, (0, 255, 255) if cls == "ball" else color_for(track_id), -1)
+            if writer is not None: writer.write(image)
+            if gif_path is not None: images.append(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    finally:
+        if writer is not None: writer.release()
+    if gif_path is not None and images:
+        try: import imageio.v2 as imageio; imageio.mimsave(gif_path, images, duration=1 / fps)
+        except ImportError: pass
+    return len(frames)
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--video", required=True, type=Path)
