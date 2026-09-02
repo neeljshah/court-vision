@@ -12,8 +12,10 @@ from typing import Mapping
 import pandas as pd
 
 from scripts.platformkit.liveness_metrics import compute_liveness_metrics, liveness_failures
+from scripts.platformkit.metric_local_profile import report_fields as metric_local_report_fields
 from scripts.platformkit.tracking_schema import (
     CoordinateTransformUnavailable,
+    METRIC_LOCAL,
     identify_tracking_schema,
     normalize_tracking_frame,
 )
@@ -84,12 +86,12 @@ class QualityReport:
     ball_valid_applicable: bool
     ball_telemetry_available: bool | None
     ball_telemetry_rule: str
-    jump_p95: float | None
-    oob_pct: float | None
+    jump_p95: float | str | None
+    oob_pct: float | str | None
     zero_step_share: float | None
-    median_step_distance: float | None
-    distinct_position_ratio: float | None
-    stationary_track_share: float | None
+    median_step_distance: float | str | None
+    distinct_position_ratio: float | str | None
+    stationary_track_share: float | str | None
     liveness_verdict: str | None
     source_resolution: str | None
     source_frame_rate: float | None
@@ -101,7 +103,7 @@ class QualityReport:
     # 106,853 ft counts as valid telemetry. This reports how many of those rows
     # actually land on the court. Additive and informational -- it does NOT
     # gate, and no threshold reads it.
-    ball_in_bounds_pct: float | None = None
+    ball_in_bounds_pct: float | str | None = None
     # G50: coverage_pct 1.0 has been published on a 2-frame table. This flags a
     # report whose metrics rest on too little data to mean anything. Additive
     # and informational -- `passed` deliberately does not read it.
@@ -111,7 +113,7 @@ class QualityReport:
     # informational only; `passed` deliberately does not read them.
     sampling_interval_s: float | None = None
     sampling_interval_reason: str | None = None
-    jump_p95_ft_per_s: float | None = None
+    jump_p95_ft_per_s: float | str | None = None
 
     def to_json(self) -> str:
         return json.dumps(asdict(self), indent=2)
@@ -195,6 +197,13 @@ def evaluate(df: pd.DataFrame, sport: str,
                               source_metadata, schema)
     resolution, frame_rate = _source_fields(source_metadata)
     sampling_interval, sampling_interval_reason = _sampling_fields(source_metadata)
+    if df["coordinate_space"].eq(METRIC_LOCAL).all():
+        return QualityReport(
+            sport=sport, config_version=config_version, source_resolution=resolution,
+            source_frame_rate=frame_rate, sampling_interval_s=sampling_interval,
+            sampling_interval_reason=sampling_interval_reason,
+            **metric_local_report_fields(df, cfg, schema),
+        )
     n_frames = int(df["frame"].nunique())
     n_unique_games = (int(df["game_id"].dropna().nunique()) if "game_id" in df
                       else int(n_frames > 0))

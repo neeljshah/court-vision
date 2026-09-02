@@ -10,15 +10,22 @@ COORDINATE_SPACE, OBSERVATION, CALIBRATION = PROVENANCE_COLUMNS
 IMAGE_COORDINATE_SPACE, OBSERVED, NO_CALIBRATION = "image_px", "observed", "none"
 # A court adapter that solved a real homography for the frame it is reporting.
 HOMOGRAPHY = "homography"
-COURT_FEET, PITCH_METRES = "court_feet", "pitch_metres"
-ALLOWED_COORDINATE_SPACES = frozenset((IMAGE_COORDINATE_SPACE, COURT_FEET, PITCH_METRES))
+COURT_FEET, PITCH_METRES, METRIC_LOCAL = "court_feet", "pitch_metres", "metric_local"
+METRIC_LOCAL_CALIBRATION = "mound_lateral_px_per_ft"
+ALLOWED_COORDINATE_SPACES = frozenset(
+    (IMAGE_COORDINATE_SPACE, COURT_FEET, PITCH_METRES, METRIC_LOCAL)
+)
 ALLOWED_OBSERVATIONS = frozenset((OBSERVED,))
-ALLOWED_CALIBRATIONS = frozenset((NO_CALIBRATION, HOMOGRAPHY))
+ALLOWED_CALIBRATIONS = frozenset((NO_CALIBRATION, HOMOGRAPHY, METRIC_LOCAL_CALIBRATION))
 SPORT_COORDINATE_SPACES = {
     "basketball": frozenset((COURT_FEET,)), "wnba": frozenset((COURT_FEET,)),
     "tennis": frozenset((COURT_FEET,)), "soccer": frozenset((PITCH_METRES,)),
     "baseball": frozenset((COURT_FEET,)), "npb": frozenset((COURT_FEET,)),
     "kbo": frozenset((COURT_FEET,)), "football": frozenset((COURT_FEET,)),
+}
+# Metric-local rows are a distinct profile, never a court-coordinate alias.
+SPORT_METRIC_LOCAL_SPACES = {
+    sport: frozenset((METRIC_LOCAL,)) for sport in ("baseball", "npb", "kbo")
 }
 
 
