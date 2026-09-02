@@ -6,7 +6,8 @@ with p1/p2-ORIENTED prices (anti-leak orientation — see §Anti-Leak below).
 
 PRIVATE: outputs are price-bearing or license-restricted; `data/domains/tennis/`
 is never tracked. Tennis-data.co.uk prices are price-bearing; gitignored by the
-nested `data/domains/tennis/.gitignore`.
+nested `data/domains/tennis/.gitignore`. Licence: the publisher states "All Data is free to use"
+(docs/evidence/LICENCE_LEDGER.md, read 2026-09-03); the restriction above is ours, not the source's.
 
 §Anti-Leak orientation
 ----------------------
