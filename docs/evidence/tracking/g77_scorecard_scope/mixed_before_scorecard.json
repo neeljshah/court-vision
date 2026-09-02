@@ -1,0 +1,12 @@
+{
+  "games_scored": 2,
+  "metric_medians": {
+    "ball_valid": 0.975,
+    "coverage": 0.975,
+    "jump_p95": 1.0,
+    "oob": 0.01
+  },
+  "pass_rate": 0.5,
+  "trend": {},
+  "worst_metric": "coverage"
+}

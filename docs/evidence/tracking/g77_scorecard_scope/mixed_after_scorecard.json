@@ -1,0 +1,39 @@
+{
+  "coordinate_profile": "court_feet",
+  "coordinate_profiles": {
+    "court_feet": {
+      "coordinate_profile": "court_feet",
+      "games_scored": 1,
+      "metric_medians": {
+        "ball_valid": 0.95,
+        "coverage": 0.95,
+        "jump_p95": 1.0,
+        "oob": 0.01
+      },
+      "pass_rate": 1.0,
+      "trend": {},
+      "worst_metric": "coverage"
+    },
+    "metric_local": {
+      "coordinate_profile": "metric_local",
+      "games_scored": 1,
+      "metric_medians": {
+        "ball_valid": 1.0,
+        "coverage": 1.0
+      },
+      "pass_rate": 0.0,
+      "trend": {},
+      "worst_metric": "coverage"
+    }
+  },
+  "games_scored": 1,
+  "metric_medians": {
+    "ball_valid": 0.95,
+    "coverage": 0.95,
+    "jump_p95": 1.0,
+    "oob": 0.01
+  },
+  "pass_rate": 1.0,
+  "trend": {},
+  "worst_metric": "coverage"
+}

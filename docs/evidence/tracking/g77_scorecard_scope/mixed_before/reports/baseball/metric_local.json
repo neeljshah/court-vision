@@ -1,0 +1,10 @@
+{
+  "sport": "baseball",
+  "coordinate_profile": "metric_local",
+  "coverage_pct": 1.0,
+  "ball_valid_pct": 1.0,
+  "jump_p95": "not_applicable",
+  "oob_pct": "not_applicable",
+  "passed": false,
+  "verdict": "PASS_METRIC_LOCAL"
+}

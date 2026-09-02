@@ -53,18 +53,23 @@ def _threshold_margin(metric: str, value: float, cfg: dict[str, Any]) -> float:
     return (threshold - value) / threshold
 
 
-def scorecard(sport: str, reports_dir: Path = REPORTS_DIR) -> dict[str, Any]:
-    """Return aggregate tracking quality for one sport."""
-    if sport not in SPORTS:
-        raise ValueError(f"Unknown sport: {sport}")
-    reports = _load_reports(sport, reports_dir)
+def _coordinate_profile(report: dict[str, Any]) -> str:
+    """Return a report's declared profile, preserving legacy court-feet reports."""
+    declared = report.get("coordinate_profile", report.get("coordinate_space"))
+    if isinstance(declared, str) and declared:
+        return declared
+    verdict = report.get("verdict")
+    return "metric_local" if isinstance(verdict, str) and verdict.endswith("_METRIC_LOCAL") else "court_feet"
+
+
+def _profile_scorecard(reports: list[dict[str, Any]], cfg: dict[str, Any]) -> dict[str, Any]:
+    """Return legacy scorecard fields for reports sharing one coordinate profile."""
     medians = {
         metric: median(values)
         for metric in METRICS
         if (values := [value for report in reports
                        if (value := _metric_value(report, metric)) is not None])
     }
-    cfg = SPORTS[sport]
     worst_metric = min(
         medians,
         key=lambda metric: _threshold_margin(metric, medians[metric], cfg),
@@ -86,6 +91,34 @@ def scorecard(sport: str, reports_dir: Path = REPORTS_DIR) -> dict[str, Any]:
         "metric_medians": medians,
         "worst_metric": worst_metric,
         "trend": trend,
+    }
+
+
+def _scorecards_by_profile(reports: list[dict[str, Any]], cfg: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Aggregate reports separately for every coordinate profile."""
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for report in reports:
+        grouped.setdefault(_coordinate_profile(report), []).append(report)
+    return {profile: _profile_scorecard(group, cfg) for profile, group in sorted(grouped.items())}
+
+
+def scorecard(sport: str, reports_dir: Path = REPORTS_DIR) -> dict[str, Any]:
+    """Return profile-scoped aggregate tracking quality for one sport."""
+    if sport not in SPORTS:
+        raise ValueError(f"Unknown sport: {sport}")
+    scoped = _scorecards_by_profile(_load_reports(sport, reports_dir), SPORTS[sport])
+    # Retain the exact legacy object for court-feet-only corpora. It has no
+    # rendered headline; main() supplies the explicit court_feet label.
+    if set(scoped) <= {"court_feet"}:
+        return scoped.get("court_feet", _profile_scorecard([], SPORTS[sport]))
+    headline_profile = "court_feet" if "court_feet" in scoped else next(iter(scoped))
+    return {
+        "coordinate_profile": headline_profile,
+        **scoped[headline_profile],
+        "coordinate_profiles": {
+            profile: {"coordinate_profile": profile, **card}
+            for profile, card in scoped.items()
+        }
     }
 
 
@@ -124,6 +157,10 @@ def next_actions(reports_dir: Path = REPORTS_DIR) -> list[dict[str, Any]]:
     skipped = _skipped_sports(reports_dir)
     for sport in sorted(_sports_with_evidence(reports_dir)):
         card = scorecard(sport, reports_dir)
+        if "coordinate_profiles" in card:
+            card = card["coordinate_profiles"].get("court_feet")
+            if card is None:
+                continue
         if card["games_scored"] < 10:
             actions.append({"sport": sport, "priority": 1,
                             "reason": f"insufficient games ({card['games_scored']} < 10)",
@@ -143,11 +180,13 @@ def next_actions(reports_dir: Path = REPORTS_DIR) -> list[dict[str, Any]]:
 def main() -> None:
     """Print a compact ASCII dashboard for the hourly dispatch loop."""
     sports = sorted(_sports_with_evidence(REPORTS_DIR))
-    print("SPORT       GAMES  PASS_RATE  WORST_METRIC")
+    print("SPORT       PROFILE       GAMES  PASS_RATE  WORST_METRIC")
     for sport in sports:
         card = scorecard(sport)
-        print(f"{sport:<11} {card['games_scored']:>5}  {card['pass_rate']:>9.1%}  "
-              f"{card['worst_metric'] or '-'}")
+        scoped = card.get("coordinate_profiles", {"court_feet": card})
+        for profile, profile_card in scoped.items():
+            print(f"{sport:<11} {profile:<13} {profile_card['games_scored']:>5}  "
+                  f"{profile_card['pass_rate']:>9.1%}  {profile_card['worst_metric'] or '-'}")
     print("\nPRIORITY  SPORT       REASON                                      ACTION")
     for action in next_actions():
         print(f"{action['priority']:>8}  {action['sport']:<11} {action['reason']:<43} "

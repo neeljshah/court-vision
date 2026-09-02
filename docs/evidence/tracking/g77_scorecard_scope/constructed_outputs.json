@@ -1,0 +1,96 @@
+{
+  "court_feet_only": {
+    "output": {
+      "games_scored": 1,
+      "metric_medians": {
+        "ball_valid": 0.95,
+        "coverage": 0.95,
+        "jump_p95": 1.0,
+        "oob": 0.01
+      },
+      "pass_rate": 1.0,
+      "trend": {},
+      "worst_metric": "coverage"
+    },
+    "sha256": "d6b791997d591e5ac69c732750ae2177a43cb0c7bce8a82c798ae65f25e88bdd"
+  },
+  "empty": {
+    "output": {
+      "games_scored": 0,
+      "metric_medians": {},
+      "pass_rate": 0.0,
+      "trend": {},
+      "worst_metric": null
+    },
+    "sha256": "b8eb9743c2f32d524a5c88739faa73fd403ddac16876b0c3f43e5d0c31a5f313"
+  },
+  "metric_local_only": {
+    "output": {
+      "coordinate_profile": "metric_local",
+      "coordinate_profiles": {
+        "metric_local": {
+          "coordinate_profile": "metric_local",
+          "games_scored": 1,
+          "metric_medians": {
+            "ball_valid": 1.0,
+            "coverage": 1.0
+          },
+          "pass_rate": 0.0,
+          "trend": {},
+          "worst_metric": "coverage"
+        }
+      },
+      "games_scored": 1,
+      "metric_medians": {
+        "ball_valid": 1.0,
+        "coverage": 1.0
+      },
+      "pass_rate": 0.0,
+      "trend": {},
+      "worst_metric": "coverage"
+    },
+    "sha256": "fd1fa3e543542dfb770f4763614a92e67c6be6b4b1ac81c6b4b884ceb9b80043"
+  },
+  "mixed": {
+    "output": {
+      "coordinate_profile": "court_feet",
+      "coordinate_profiles": {
+        "court_feet": {
+          "coordinate_profile": "court_feet",
+          "games_scored": 1,
+          "metric_medians": {
+            "ball_valid": 0.95,
+            "coverage": 0.95,
+            "jump_p95": 1.0,
+            "oob": 0.01
+          },
+          "pass_rate": 1.0,
+          "trend": {},
+          "worst_metric": "coverage"
+        },
+        "metric_local": {
+          "coordinate_profile": "metric_local",
+          "games_scored": 1,
+          "metric_medians": {
+            "ball_valid": 1.0,
+            "coverage": 1.0
+          },
+          "pass_rate": 0.0,
+          "trend": {},
+          "worst_metric": "coverage"
+        }
+      },
+      "games_scored": 1,
+      "metric_medians": {
+        "ball_valid": 0.95,
+        "coverage": 0.95,
+        "jump_p95": 1.0,
+        "oob": 0.01
+      },
+      "pass_rate": 1.0,
+      "trend": {},
+      "worst_metric": "coverage"
+    },
+    "sha256": "4d9b39bcdaea858705d6b31545cd788549a23c09d040e4e2fbac97fe560f6205"
+  }
+}

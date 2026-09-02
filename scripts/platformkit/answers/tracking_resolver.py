@@ -126,10 +126,13 @@ def scoreboard(sport: str, reports_dir: Path = REPORTS_DIR) -> dict:
     if not card["games_scored"]:
         return _envelope("no_data", key, art,
                          note="report files present but none parsed as a QualityReport")
+    scoped = {"coordinate_profile": card.get("coordinate_profile", "court_feet")}
+    if "coordinate_profiles" in card:
+        scoped["coordinate_profiles"] = card["coordinate_profiles"]
     return _envelope("ok", key, art, as_of=_as_of(paths), thresholds=dict(SPORTS[key]),
                      games_scored=card["games_scored"], pass_rate=card["pass_rate"],
                      metric_medians=card["metric_medians"], worst_metric=card["worst_metric"],
-                     trend=card["trend"], games=[p.stem for p in paths])
+                     trend=card["trend"], games=[p.stem for p in paths], **scoped)
 
 
 def worst_metric(sport: str, reports_dir: Path = REPORTS_DIR) -> dict:
