@@ -105,13 +105,16 @@ Downstream per-file tests re-run in MASTER, all green: `test_harness_health_repo
 `test_backtest_runner.py` 3 passed, `tests/governance/test_leak_audit.py` 11 passed,
 `tests/predict_service/test_produce_conformance.py` 5 passed 1 skipped.
 
-Readers grepped (A5): the four other `run_gate_in_process` call sites
-(`calibration_record.py:186`, `econ/greenlight_criteria.py:196`,
-`eval_gate/harness_health_report.py:95`, `tests/predict_service/test_produce_conformance.py:178`)
-all pass the pre-existing arguments only, so every one keeps `k_source="corpora"`.
-`false_discovery.py:27` filters rows on `n_trials_this_sweep`, which is unchanged and
-still present. `tests/kernel/test_golden.py`'s `load_golden` is the unrelated kernel
-function, not this one.
+Readers grepped (A5), REPO-WIDE, not just `scripts/`: the five other
+`run_gate_in_process` call sites (`calibration_record.py:186`,
+`econ/greenlight_criteria.py:196`, `eval_gate/harness_health_report.py:95`,
+`sell/reproduce.py:79`, `tests/predict_service/test_produce_conformance.py:178`) all pass
+the pre-existing arguments only, so every one keeps `k_source="corpora"` and the
+byte-identical default path. `tests/sell/test_evidence.py` 12 passed. `false_discovery.py:27`
+filters rows on `n_trials_this_sweep`, which is unchanged and still present.
+`kernel/testing/golden.py` defines its OWN unrelated `load_golden(name, gdir)` (kernel
+artifact store) and does not import `golden_loader`; `tests/kernel/test_golden.py` exercises
+that one, not this one.
 
 ## NOT VERIFIED
 
