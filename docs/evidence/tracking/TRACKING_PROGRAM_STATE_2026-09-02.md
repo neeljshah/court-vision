@@ -68,3 +68,26 @@ producer fix HUMAN APPLY (docs/research/organization-sprint/PROPOSED_basketball_
   adjudicates and writes register rows.
 - Every night: stop runbook; every morning: start runbook; the ledger is the
   only progress report.
+
+## 7. POD STOP / RESTART (RunPod can be stopped at any time after this)
+What persists on the /workspace network volume: repo copy, data/footage_corpus,
+data/footage_bridge, data/models (incl. tennis_keypoints_fold*.pt when saved),
+data/cache (book capture archive, ledgers), /workspace/track_daemon_ledger.
+What is LOST on stop: running processes only -- track_daemon (pid 3047270 via
+keeper /workspace/keep_track_daemon.sh), MLB book capture (pid 3040635), and
+any in-flight tracking jobs (at wind-down 2026-09-02 ~21:30 local: G31 tennis
+keypoint train fold 0 at epoch 5/30 -> rerun both folds tomorrow; G25
+basketball floor gate; G26 tennis sequential rerun). /tmp is also lost:
+anything a job left only under /tmp (g18/g23/g25/g26/g31 outputs) must be
+scp-ed to docs/evidence before stop if it is needed; the labeled JSONL for G23
+is already committed under docs/evidence/tracking/tennis_pseudolabels_2026-09-02/.
+
+RESTART (in this order, after the pod is up and `ssh -p <port> root@<ip>` works;
+the port drifts -- see memory pod_tracking_ops):
+  cd /workspace/nba-ai-system
+  nohup setsid bash /workspace/keep_track_daemon.sh > /workspace/keep_track_daemon.log 2>&1 < /dev/null &
+  CV_CAPTURE_POD=1 CV_MLB_BOOK_ARCHIVE_LIVE=1 CV_GUMBO_PACE_SEC=0.25 nohup setsid nice -n 10 python -c "from scripts.platformkit.ingame.mlb_book_capture import run_pod_capture; run_pod_capture(stop=lambda: False)" > /workspace/mlb_book_capture.log 2>&1 < /dev/null &
+  # verify: ls /proc/$(cat /workspace/track_daemon.pid); tail -2 /workspace/mlb_book_capture.log
+Then deploy master to the pod BEFORE any new tracking job (git archive of the
+landed files; CRLF-normalised md5 check) -- G15b/G29b/G01c land after this
+record was written and the daemon must be restarted on the new code.
