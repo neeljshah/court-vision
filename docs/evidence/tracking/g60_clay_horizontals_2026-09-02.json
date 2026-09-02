@@ -1,0 +1,36 @@
+{
+  "method": "G60 read-only output. Production gate scan uses rejection_gate on full-clip linspace grids. The decision set is frames whose unfiltered production gate is horizontal_roles. A seeded one-per-stratum sample (seed 60) is selected from that named set. For each record, h is the horizontal count from the richest contrast pass that itself reaches horizontal_roles; above is the count whose midpoint is above the median upper endpoint of the five solver-selected vertical clusters. role_ok and solver_ok are re-run after only those above horizontals are removed.",
+  "clay": {
+    "clip": "tennis__tennis_06.mp4",
+    "scan_count": 400,
+    "sample_count": 40,
+    "seed": 60,
+    "gate_counts": {"accepted": 28, "cross_ratio": 15, "far_right_consistency": 6, "horizontal_roles": 102, "insufficient_oriented_lines": 141, "no_hough_lines": 63, "read_failed": 7, "vertical_cluster_count": 38},
+    "records": [
+      [0,260,246,false,false], [516,174,161,true,false], [611,198,185,false,false], [650,205,176,false,false], [726,173,164,true,false], [745,265,249,false,false], [1644,267,249,false,false], [1701,255,232,false,false], [1740,192,162,false,false], [1797,256,220,false,false],
+      [2524,258,237,false,false], [2811,275,256,false,false], [2849,269,250,false,false], [2944,164,156,false,false], [3002,243,225,false,false], [3040,157,148,false,false], [3078,257,242,false,false], [3136,246,230,false,false], [3193,161,152,true,false], [3633,174,29,true,false],
+      [3958,196,173,false,false], [4092,229,216,false,false], [4302,247,225,false,false], [4321,255,237,false,false], [4685,101,0,false,false], [4780,74,69,false,false], [4838,739,4,false,false], [5010,251,230,false,false], [5889,258,234,false,false], [5947,239,217,false,false],
+      [5985,258,234,false,false], [6788,262,241,false,false], [6807,268,248,false,false], [6960,225,208,false,false], [7094,251,230,false,false], [7266,250,227,false,false], [7343,257,240,false,false], [7362,252,234,false,false], [7438,233,219,false,false], [7457,160,151,false,false]
+    ]
+  },
+  "hard": {
+    "clips": ["tennis__tennis_09.mp4", "tennis__tennis_10.mp4"],
+    "scan_count_per_clip": 1400,
+    "sample_count": 40,
+    "seed": 60,
+    "gate_counts": {
+      "tennis__tennis_09.mp4": {"accepted": 559, "cross_ratio": 13, "horizontal_roles": 8, "insufficient_oriented_lines": 514, "no_hough_lines": 140, "read_failed": 1, "vertical_cluster_count": 165},
+      "tennis__tennis_10.mp4": {"accepted": 318, "cross_ratio": 40, "far_right_consistency": 8, "horizontal_roles": 32, "insufficient_oriented_lines": 732, "no_hough_lines": 26, "read_failed": 11, "skew": 10, "vertical_cluster_count": 223}
+    },
+    "records": [
+      ["10",171,43,0,false,false], ["10",466,40,2,false,false], ["10",787,629,124,false,false], ["10",792,648,148,false,false], ["10",803,673,144,false,false], ["10",808,717,49,false,false], ["10",813,764,1,false,false], ["10",818,827,0,false,false], ["10",824,658,118,false,false], ["10",829,750,67,false,false],
+      ["10",839,588,59,false,false], ["10",850,701,93,false,false], ["10",865,603,88,false,false], ["10",870,667,139,false,false], ["10",875,723,0,false,false], ["10",881,612,30,false,false], ["10",891,700,67,false,false], ["10",907,719,125,false,false], ["09",1196,220,9,false,false], ["09",1266,442,61,false,false],
+      ["10",1803,117,17,true,false], ["10",1808,114,16,true,false], ["10",2099,45,0,false,false], ["10",2104,43,0,false,false], ["10",2140,63,0,false,false], ["10",2534,638,145,false,false], ["10",2539,612,126,false,false], ["09",3240,87,19,false,false], ["09",3514,64,11,false,false], ["09",3519,72,14,false,false],
+      ["09",3583,70,13,false,false], ["10",3716,159,19,true,false], ["10",3726,136,19,true,false], ["10",3985,42,0,false,false], ["10",4016,32,0,false,false], ["10",4270,236,65,false,false], ["09",5054,69,0,false,false], ["09",5059,54,3,false,false], ["10",4934,222,64,false,false], ["10",6753,25,17,false,false]
+    ]
+  },
+  "record_fields": {
+    "clay": ["frame", "h", "above", "role_ok", "solver_ok"],
+    "hard": ["clip_suffix", "frame", "h", "above", "role_ok", "solver_ok"]
+  }
+}
