@@ -91,8 +91,17 @@ def _devig(home: object, away: object) -> float | None:
         return None
 
 
-def load_states(sport: str, start: str, end: str, repo: Path | None = None) -> list[dict]:
-    """Join the strength-atlas two-sided close to settled home-win outcomes."""
+def load_states(sport: str, start: str, end: str, repo: Path | None = None,
+                counts: dict[str, int] | None = None) -> list[dict]:
+    """Join the strength-atlas two-sided close to settled home-win outcomes.
+
+    RT-16: the unpriceable / unsettled rows below were dropped with NO counter,
+    so run_backtest's ``n_games`` was a survivor count and the scored denominator
+    was not the corpus denominator (MEASURED: 10 joined rows, 5 carrying a
+    corrupt price -> 5 states, nothing in the report naming the 5). Pass a dict
+    as ``counts`` and it is filled IN PLACE; run_backtest emits it as
+    ``corpus_counts`` beside ``n_games``. Additive -- existing callers unchanged.
+    """
     root = repo or _repo_root()
     base = root / "data" / "domains" / sport
     odds_path, games_path = base / "odds.parquet", base / "games.parquet"
@@ -109,9 +118,13 @@ def load_states(sport: str, start: str, end: str, repo: Path | None = None) -> l
     merged = games.merge(odds[list(required_odds)], on=["date", "home_team", "away_team"], how="inner")
     merged = merged[(merged["date"] >= start) & (merged["date"] <= end)].sort_values("date", kind="mergesort")
     states = []
+    n_unpriceable = n_unsettled = 0
     for row in merged.itertuples(index=False):
         p_close = _devig(row.home_ml, row.away_ml)
-        if p_close is None or float(row.home_win) not in (0.0, 1.0):
+        settled = float(row.home_win) in (0.0, 1.0)
+        if p_close is None or not settled:
+            n_unpriceable += int(p_close is None)
+            n_unsettled += int(p_close is not None and not settled)
             continue
         game_id = str(getattr(row, "game_id", f"{row.date}-{row.home_team}-{row.away_team}"))
         states.append({"game_id": game_id, "state_ts": f"{row.date}T12:00:00",
@@ -119,6 +132,10 @@ def load_states(sport: str, start: str, end: str, repo: Path | None = None) -> l
                        "feature_avail": {"schedule": f"{row.date}T00:00:00"},
                        "home": str(row.home_team), "away": str(row.away_team),
                        "outcome": int(row.home_win), "devig_close_prob": p_close})
+    if counts is not None:
+        counts.clear()
+        counts.update({"n_joined": int(len(merged)), "dropped_unpriceable": n_unpriceable,
+                       "dropped_unsettled": n_unsettled, "n_states": len(states)})
     return states
 
 
@@ -191,9 +208,12 @@ def run_backtest(spec: str, sport: str, start: str, end: str, *, repo: Path | No
     ledger_canonical = assert_canonical_ledger(ledger_path, allow_noncanonical_ledger)
     charge = _charge_ledger(ledger_path, spec, sport, start, end)
     charge = {**charge, "ledger_canonical": ledger_canonical, "ledger_path": str(ledger_path)}
-    states, predictor = load_states(sport, start, end, repo), _load_callable(spec)
+    corpus_counts: dict[str, int] = {}
+    states = load_states(sport, start, end, repo, counts=corpus_counts)
+    predictor = _load_callable(spec)
     if not states:
-        return {"verdict": "INSUFFICIENT", "reason": "no joined games", "fwer": charge, "predictions": []}
+        return {"verdict": "INSUFFICIENT", "reason": "no joined games", "fwer": charge,
+                "corpus_counts": corpus_counts, "predictions": []}
 
     close_by_game = {s["game_id"]: s["devig_close_prob"] for s in states}
     if len(close_by_game) != len(states):
@@ -226,7 +246,8 @@ def run_backtest(spec: str, sport: str, start: str, end: str, *, repo: Path | No
     rolling = [{"game_id": records[i]["game_id"], "brier_model": round(brier(p[i-49:i+1], y[i-49:i+1]), 6),
                 "brier_close": round(brier(c[i-49:i+1], y[i-49:i+1]), 6)} for i in range(49, len(records))]
     return {"predictor": spec, "sport": sport, "date_range": [start, end], "reference_close_echo": is_echo,
-            "n_games": len(records), "fwer": {**charge, "dm_alpha": threshold}, "verdict": verdict,
+            "n_games": len(records), "corpus_counts": corpus_counts,
+            "fwer": {**charge, "dm_alpha": threshold}, "verdict": verdict,
             "scores": {"model_brier": round(brier(p, y), 6), "close_brier": round(brier(c, y), 6),
                        "model_logloss": round(log_loss(p, y), 6), "close_logloss": round(log_loss(c, y), 6)},
             "dm_vs_close": {"stat": round(dm.dm_stat, 6), "p_value": round(dm.p_value, 6),
