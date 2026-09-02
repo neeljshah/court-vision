@@ -196,7 +196,7 @@ def run_charged(queue: ScreenQueue, hypotheses: Sequence[Any], screened_n: int,
             result = tiers.run_tier(hypothesis, tier, states=queue.verdict_states,
                                     predict_fn=queue.predict_fn, ledger_path=queue.ledger_path,
                                     partition=queue.partition, rule=queue.rule, family=family,
-                                    screened_n=screened_n)
+                                    screened_n=screened_n, results_db=queue.db)  # S58: family bar sees prior p
             _record(queue, result)
             charged += 1
     return charged
