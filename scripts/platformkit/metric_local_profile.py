@@ -7,7 +7,7 @@ import pandas as pd
 
 NOT_APPLICABLE = "not_applicable"
 _SPATIAL_FIELDS = (
-    "jump_p95", "oob_pct", "median_step_distance", "distinct_position_ratio",
+    "jump_p95", "jump_max", "oob_pct", "median_step_distance", "distinct_position_ratio",
     "stationary_track_share", "liveness_verdict", "ball_in_bounds_pct",
     "jump_p95_ft_per_s",
 )

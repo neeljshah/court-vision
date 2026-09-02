@@ -1,0 +1,7 @@
+reader_or_artifact,legacy_jump_p95_behavior,G88_action
+scripts/platformkit/tracking_harness.py,legacy literal raw-row p95 and p95 per second fields,retain as deprecated compatibility fields and add jump_max gate field
+scripts/platformkit/metric_local_profile.py,spatial fields are not applicable,add jump_max to the not_applicable field set
+scripts/platformkit/evidence_page.py and tracking report utilities,read literal jump_p95 from historical and current report JSON,no rename required because jump_p95 remains a real p95; new gate is explicitly named jump_max
+scripts/platformkit/tracking_timebase.py,uses literal jump_p95 timebase observation,no rename required because it does not receive a max under the p95 name
+domains/baseball/tracking/scale_anchor.py,uses the retained legacy jump_p95_max compatibility bar,no change; the harness gate reads the equal-valued jump_max_max bar
+docs/evidence and tests,historical p95 values and labels,retain historical evidence unchanged

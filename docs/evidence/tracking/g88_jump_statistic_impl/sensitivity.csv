@@ -1,0 +1,5 @@
+teleport_count,total_modal_pairs,teleport_prevalence_pct,legacy_jump_p95_ft,jump_max_ft,after_verdict,after_jump_failure
+10,990,1.010,0.02,40.02,FAIL,jump_max 40.02 > 6.00
+30,990,3.030,0.02,40.02,FAIL,jump_max 40.02 > 6.00
+49,990,4.949,0.02,40.02,FAIL,jump_max 40.02 > 6.00
+60,990,6.061,39.98,40.02,FAIL,jump_max 40.02 > 6.00
