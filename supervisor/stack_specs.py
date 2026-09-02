@@ -230,7 +230,16 @@ _EXEC_EVIDENCE_HB = "data/cache/daemon_heartbeats/m44_exec_evidence.txt"
 # (mirrors m39).
 _NEWS_FACTS_HB = "data/cache/daemon_heartbeats/m45_news_facts.txt"
 
-_FOREVER = RestartPolicy(max_retries=None, backoff_base_sec=2.0, backoff_cap_sec=60.0)
+# M50 / M51 (S66) -- these two do NOT beat ops.liveness txt heartbeats: each
+# already writes its own pass artifact, so the readiness probe (mtime-based)
+# reads the REAL writer rather than a second stamp nobody else consumes.
+# foundry_runner._finish rewrites the heartbeat json once per pass (idle passes
+# included); artifact_refresh.refresh_once APPENDS one line per pass, so the
+# file's mtime advances every pass.
+_FOUNDRY_HB = "data/ab_reports/foundry_runner.heartbeat.json"
+_ARTIFACT_REFRESH_HB = "data/cache/mcp_server/artifact_refresh_heartbeat.jsonl"
+
+_FOREVER =RestartPolicy(max_retries=None, backoff_base_sec=2.0, backoff_cap_sec=60.0)
 
 # The Next.js UI directory. Default "court-visions" (the original wired app);
 # set NBA_AI_UI_DIR=webapp to boot the newer P5/P6 dashboard (reads :8099,
@@ -974,6 +983,43 @@ def base_specs() -> List[ProcSpec]:
             argv=["--interval", "21600"],
             readiness=ReadinessSpec(
                 kind=HEARTBEAT, heartbeat_path=_NEWS_FACTS_HB, fresh_sec=45000.0),
+            restart_policy=_FOREVER,
+        ),
+        # M50 -- the Signal Foundry SCREENING runner (S16/S66). Claims T0/T1
+        # batches off the S15 results DB, screens them, and beats _FOUNDRY_HB
+        # once per pass (foundry_runner._finish). An empty queue idles for
+        # --poll-seconds and still beats, so absent/stale reads NOT-READY and a
+        # wedged pass can never read stale-green. Independent branch (no
+        # depends_on) so a dead runner is ONE red status entry.
+        # THE REFUSAL: --allow-charge is ABSENT BY CONSTRUCTION, so nothing this
+        # supervised process runs can reach the FWER ledger; T0/T1 are refused a
+        # charge by tiers.charge_tier anyway. NOT ARMED -- registered here but
+        # absent from config/boot/paper.json, so no profile boots it until the
+        # ORCHESTRATOR adds the name and restarts. No flag flip, no data/registry/
+        # write, no $ claim.
+        ProcSpec(
+            name="m50_foundry_runner", kind="py",
+            module="scripts.platformkit.foundry_runner",
+            argv=["--db", "data/cache/eval_gate/hypotheses.sqlite",
+                  "--batch", "50", "--poll-seconds", "30"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_FOUNDRY_HB, fresh_sec=1800.0),
+            restart_policy=_FOREVER,
+        ),
+        # M51 -- the MCP front-door artifact refresher (S24/S66) in its cadence
+        # mode. One pass an hour; each pass appends _ARTIFACT_REFRESH_HB, and a
+        # producer that hangs is a TIMEOUT row (120s cap) rather than a stuck
+        # daemon, so the heartbeat keeps advancing. fresh_sec = 2x the 3600s
+        # interval + margin (the m43/m44 pattern). Independent branch. NOT ARMED
+        # -- absent from config/boot/paper.json; the OS-scheduler line in
+        # artifact_refresh.SCHTASKS remains the alternative the orchestrator may
+        # arm instead. Read/rebuild only: no flag flip, no data/registry/ write.
+        ProcSpec(
+            name="m51_artifact_refresh", kind="py",
+            module="scripts.platformkit.mcp_server.artifact_refresh",
+            argv=["--loop", "--interval", "3600"],
+            readiness=ReadinessSpec(
+                kind=HEARTBEAT, heartbeat_path=_ARTIFACT_REFRESH_HB, fresh_sec=9000.0),
             restart_policy=_FOREVER,
         ),
     ]
