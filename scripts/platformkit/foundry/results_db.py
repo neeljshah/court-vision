@@ -200,6 +200,17 @@ class ResultsDB:
             k_now is not None and int(k_now) != int(out["k_at_run"]))
         return out
 
+    def family_p_values(self, family: str) -> list:
+        """Raw p-values of every scored trial already recorded for ONE frozen family (S59).
+
+        What a within-family BH/BY bar is computed over. Read-only: indexing is not a
+        trial, so this costs the FWER ledger nothing and cannot re-score a stored verdict.
+        """
+        rows = self._c.execute(
+            "SELECT r.raw_p FROM result r JOIN hypothesis h ON h.hash = r.hash "
+            "WHERE h.family = ? AND r.raw_p IS NOT NULL ORDER BY r.id", (family,)).fetchall()
+        return [float(row[0]) for row in rows]
+
     # -- queue ------------------------------------------------------------------
     def enqueue(self, hashes: Iterable[str], tier: str) -> int:
         """Queue hypotheses for a tier. Already-queued hashes are left alone."""

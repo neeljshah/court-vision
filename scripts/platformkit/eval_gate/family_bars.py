@@ -25,6 +25,7 @@ Calibration bookkeeping only -- no dollar, ROI, profit or edge claim lives here.
 """
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 from dataclasses import dataclass
@@ -32,17 +33,27 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Optional, Sequence
 
-from scripts.platformkit.combo.fwer_budget import DEFAULT_Q, bh_within_family
+from statsmodels.stats.multitest import multipletests
+
+from scripts.platformkit.combo.fwer_budget import DEFAULT_Q, BHResult, bh_within_family
 from scripts.platformkit.eval_gate.deflated_metrics import deflated_p
 
 SPEC_PATH = Path("docs/evidence/harness/FWER_FAMILIES_SPEC_2026-09-03.md")
 DEFAULT_ALPHA = 0.05
+# The q-rule is a PREREG choice: it is declared per family in the frozen spec, never
+# picked after the p-values are in. Both are computed and printed on every verdict.
+Q_RULES = ("fdr_bh", "fdr_by")
+DEFAULT_Q_RULE = "fdr_bh"
 _BLOCK = re.compile(r"^### fam: (\S+)\s*$", re.M)
 
 
 @dataclass(frozen=True)
 class Family:
-    """One frozen FWER family. `members` are the modelable feature columns."""
+    """One frozen FWER family. `members` are the modelable feature columns.
+
+    `q_rule` is OPTIONAL in the spec file and defaults to fdr_bh, so the frozen
+    2026-09-03 partition (which declares none) keeps blob id 62702554f unchanged.
+    """
 
     name: str
     sport: str
@@ -52,6 +63,7 @@ class Family:
     hypotheses: int
     sources: tuple
     members: tuple
+    q_rule: str = DEFAULT_Q_RULE
 
 
 @dataclass(frozen=True)
@@ -83,11 +95,32 @@ def git_blob_id(path: Any) -> str:
                           check=True).stdout.strip()
 
 
-def _field(text: str, name: str) -> str:
+def _field(text: str, name: str, default: Optional[str] = None) -> str:
     match = re.search(r"^\s*%s:\s*(.+?)\s*$" % name, text, re.M)
     if match is None:
+        if default is not None:
+            return default
         raise ValueError("families spec is missing field %r" % name)
     return match.group(1)
+
+
+def _by_within_family(p_values: Sequence[float], q: float) -> BHResult:
+    """Benjamini-Yekutieli over ONE family -- BH's dependence-proof sibling, same shape.
+
+    BH assumes PRDS; a family here is the correlated columns of one parquet, which is
+    exactly where PRDS is not obvious. BY is valid under ARBITRARY dependence and is
+    strictly more conservative, so printing both tells the reader how much of a verdict
+    rests on the PRDS assumption. ponytail: not added to combo/fwer_budget.bh_within_family
+    because that module is token-locked (docs/evidence/SHARED_MODULE_TOKEN.md).
+    """
+    if not (0.0 < q <= 1.0):
+        raise ValueError("q must be in (0,1], got %r" % (q,))
+    values = [float(p) for p in p_values]
+    rejected, adjusted, _sidak, _bonf = multipletests(values, alpha=float(q), method="fdr_by")
+    flags = tuple(bool(r) for r in rejected)
+    hits = [p for p, flag in zip(values, flags) if flag]
+    return BHResult(float(q), len(values), len(hits), flags,
+                    tuple(float(a) for a in adjusted), max(hits) if hits else 0.0)
 
 
 @lru_cache(maxsize=4)
@@ -100,10 +133,15 @@ def load_families(path: Any = SPEC_PATH) -> FamiliesSpec:
     families = []
     for name, body in zip(blocks[0::2], blocks[1::2]):
         members = tuple(m.strip() for m in _field(body, "members").split(",") if m.strip())
+        q_rule = _field(body, "q_rule", DEFAULT_Q_RULE)
+        if q_rule not in Q_RULES:
+            raise ValueError("family %s declares q_rule %r; frozen choices are %s"
+                             % (name, q_rule, list(Q_RULES)))
         family = Family(name, _field(body, "sport"), _field(body, "horizon"),
                         _field(body, "market"), int(_field(body, "features")),
                         int(_field(body, "hypotheses")),
-                        tuple(s.strip() for s in _field(body, "sources").split(",")), members)
+                        tuple(s.strip() for s in _field(body, "sources").split(",")), members,
+                        q_rule)
         if len(members) != family.features:
             raise ValueError("family %s declares %d features but enumerates %d members"
                              % (name, family.features, len(members)))
@@ -135,15 +173,22 @@ def dual_bar_verdict(raw_p: float, k_global: int, family_p_values: Sequence[floa
         raise ValueError("raw_p %r is not among the %d family p-values; a hypothesis is "
                          "priced inside its OWN frozen family" % (raw_p, len(values)))
     spec = load_families(spec_path)
-    if family is not None:
-        spec.get(family)          # raises on a family invented after the fact
-    bh = bh_within_family(values, q)
+    # The DECIDING q-rule is read off the frozen spec BEFORE any p-value is seen; both
+    # rules are computed and returned either way, so the reader sees what BY would say.
+    q_rule = spec.get(family).q_rule if family is not None else DEFAULT_Q_RULE
+    bh, by = bh_within_family(values, q), _by_within_family(values, q)
+    deciding = bh if q_rule == "fdr_bh" else by
     index = next(i for i, p in enumerate(values) if p == float(raw_p))
     global_p = deflated_p(float(raw_p), int(k_global))
     global_pass = global_p < float(alpha)
-    family_pass = bool(bh.rejected[index])
+    family_pass = bool(deciding.rejected[index])
     blocked = [name for name, ok in (("global", global_pass), ("family", family_pass)) if not ok]
     return {
+        "q_rule": q_rule,
+        "fdr_bh_adjusted_p": bh.adjusted[index], "fdr_bh_pass": bool(bh.rejected[index]),
+        "fdr_bh_discoveries": bh.n_discoveries,
+        "fdr_by_adjusted_p": by.adjusted[index], "fdr_by_pass": bool(by.rejected[index]),
+        "fdr_by_discoveries": by.n_discoveries,
         "verdict": "AHEAD" if not blocked else "NOT AHEAD",
         "blocked_by": tuple(blocked),
         "raw_p": float(raw_p),
@@ -152,8 +197,8 @@ def dual_bar_verdict(raw_p: float, k_global: int, family_p_values: Sequence[floa
         "k_global": int(k_global), "alpha": float(alpha),
         "deflated_p": global_p, "global_pass": global_pass,
         # bar 2 -- within-family Benjamini-Hochberg (the loosening, admissible only with bar 1)
-        "q": float(q), "n_family": bh.n, "family_discoveries": bh.n_discoveries,
-        "bh_adjusted_p": bh.adjusted[index], "bh_threshold": bh.threshold,
+        "q": float(q), "n_family": deciding.n, "family_discoveries": deciding.n_discoveries,
+        "bh_adjusted_p": deciding.adjusted[index], "bh_threshold": deciding.threshold,
         "family_pass": family_pass,
         "families_spec_path": spec.spec_path, "families_spec_sha": spec.prereg_sha256,
         "families_spec_version": spec.spec_version, "n_families": len(spec.families),
@@ -161,11 +206,47 @@ def dual_bar_verdict(raw_p: float, k_global: int, family_p_values: Sequence[floa
 
 
 def render_bars(result: dict) -> str:
-    """One ASCII line carrying BOTH bars -- what an AHEAD must print (condition ii)."""
+    """One ASCII line carrying BOTH bars -- what an AHEAD must print (condition ii).
+
+    Both q-rules are printed whichever one decides, so nobody has to take the PRDS
+    assumption on trust; `rule=` names the one the frozen spec chose beforehand.
+    """
     return ("verdict=%s blocked_by=%s raw_p=%.6g | GLOBAL k=%d deflated_p=%.6g alpha=%.4g "
-            "pass=%s | FAMILY %s q=%.4g n=%d bh_adj_p=%.6g pass=%s | spec=%s@%s" % (
+            "pass=%s | FAMILY %s q=%.4g n=%d bh_adj_p=%.6g pass=%s | rule=%s fdr_bh_adj_p=%.6g "
+            "pass=%s fdr_by_adj_p=%.6g pass=%s | spec=%s@%s" % (
                 result["verdict"], ",".join(result["blocked_by"]) or "-", result["raw_p"],
                 result["k_global"], result["deflated_p"], result["alpha"], result["global_pass"],
                 result["family"] or "-", result["q"], result["n_family"],
                 result["bh_adjusted_p"], result["family_pass"],
+                result["q_rule"], result["fdr_bh_adjusted_p"], result["fdr_bh_pass"],
+                result["fdr_by_adjusted_p"], result["fdr_by_pass"],
                 result["families_spec_version"], result["families_spec_sha"][:12]))
+
+
+def frozen_family(name: str) -> Optional[Family]:
+    """The frozen Family of that name, or None. A family invented after the fact is not one."""
+    return next((f for f in load_families(SPEC_PATH).families if f.name == name), None)
+
+
+def families_spec_sha() -> str:
+    """The content pin of the frozen partition, for embedding beside prereg_sha256."""
+    return load_families(SPEC_PATH).prereg_sha256
+
+
+def charged_bars(raw_p: float, k_global: int, family: str, prior_p_values: Sequence[float],
+                 alpha: float = DEFAULT_ALPHA, artifact_path: str = "") -> dict:
+    """Price ONE charged trial against both bars and write them into its artifact JSON (S59).
+
+    `prior_p_values` are the raw p-values already recorded for this frozen family; this
+    trial's own `raw_p` is appended here, so a family's first trial is honestly a family
+    of one rather than borrowing another family's p-values.
+    """
+    spec = load_families(SPEC_PATH)
+    result = dual_bar_verdict(raw_p, k_global, list(prior_p_values) + [float(raw_p)],
+                              q=spec.q_within_family, alpha=alpha, family=family)
+    result["bars_line"] = render_bars(result)
+    if artifact_path:
+        path = Path(artifact_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(result, allow_nan=False, sort_keys=True), encoding="ascii")
+    return result

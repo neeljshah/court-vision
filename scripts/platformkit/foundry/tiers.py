@@ -3,14 +3,14 @@
 Frozen prereg: docs/evidence/harness/FACTORY_TIERS_SPEC_2026-09-03.md, pinned by content
 (`git hash-object`) into every TierResult and every charged ledger row as prereg_sha256.
 T0/T1 are screens: charge_tier raises TierNotChargeable for them and a T1 verdict is the
-non-finding "SCREEN". T2/T3 are charged and read a corpus partition DISJOINT from the rows the
-screen selected on (SF-1). Calibration language only.
+non-finding "SCREEN". T2/T3 are charged, read a corpus partition DISJOINT from the rows the
+screen selected on (SF-1), and since S59 decide on BOTH bars: a charged AHEAD needs the global
+deflated p AND its frozen family's BH/BY bar. A family absent from the frozen FWER partition
+is verdict NOT_IN_FROZEN_FAMILIES and is never charged. Calibration language only.
 """
 from __future__ import annotations
 
 import hashlib
-import re
-import subprocess
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -24,20 +24,26 @@ from scripts.platformkit.combo.fwer_budget import min_corpora_eff
 from scripts.platformkit.eval_gate import scoring
 from scripts.platformkit.eval_gate.backtest_runner import _charge_ledger
 from scripts.platformkit.eval_gate.cpcv_engine import cpcv_evaluate
-from scripts.platformkit.eval_gate.deflated_metrics import deflated_p
 from scripts.platformkit.eval_gate.dm_test import diebold_mariano
+from scripts.platformkit.eval_gate.family_bars import (charged_bars,  # noqa: F401 re-export
+                                                       families_spec_sha, frozen_family,
+                                                       git_blob_id)
 from scripts.platformkit.eval_gate.pbo import cscv_pbo
 from scripts.platformkit.eval_gate.walkforward import assert_vintage, walk_forward
 from scripts.platformkit.foundry.grammar import Hypothesis, semantic_hash
+# Re-exported so `tiers.PromotionRule` / `tiers.promote` keep resolving for every importer.
+from scripts.platformkit.foundry.promotion import SPEC_PATH, PromotionRule, promote  # noqa: F401
 from scripts.platformkit.ingame.gap_effective_n import design_effect, intraclass_correlation
 
-SPEC_PATH = Path("docs/evidence/harness/FACTORY_TIERS_SPEC_2026-09-03.md")
 TIERS = ("T0", "T1", "T2", "T3")
 SCREEN_TIERS = ("T0", "T1")
 CHARGED_TIERS = ("T2", "T3")
 CLUSTER_KEYS = {"nba": "team", "mlb": "team", "soccer": "div", "tennis": "player"}
 _CLUSTER_FIELDS = {"team": ("away", "home"), "div": ("div",), "player": ("p1_id", "home")}
 _COVERAGE_FLOOR, _VINTAGE_SAMPLE = 0.8, 100
+_EMPTY = dict(dm=None, raw_p=None, k_family=None, k_global=None, deflated_p=None, pbo=None)
+# Nothing was scored: no metric, no bar, no charge. Used only by NOT_IN_FROZEN_FAMILIES.
+_UNSCORED = dict(_EMPTY, brier_model=None, brier_close=None, n_eff=0.0)
 
 
 class TierNotChargeable(RuntimeError):
@@ -60,33 +66,6 @@ class Partition:
 
     def side(self, tier: str) -> frozenset:
         return self.screen_ids if tier in SCREEN_TIERS else self.verdict_ids
-
-
-@dataclass(frozen=True)
-class PromotionRule:
-    """The promotion width is FROZEN in the spec file; it is never a function argument."""
-    spec_version: str
-    top_n: int
-    group_by: tuple
-    rank_by: str
-    partition_seed: int
-    alpha: float
-    spec_path: str
-    prereg_sha256: str
-
-    @classmethod
-    def from_spec(cls, path: Any = SPEC_PATH) -> "PromotionRule":
-        path, text = Path(path), Path(path).read_text(encoding="ascii")
-
-        def field(name: str) -> str:
-            match = re.search(r"^\s*%s:\s*(\S+)\s*$" % name, text, re.M)
-            if match is None:
-                raise ValueError("spec %s is missing field %r" % (path, name))
-            return match.group(1)
-
-        return cls(field("spec_version"), int(field("top_n")), tuple(field("group_by").split(",")),
-                   field("rank_by"), int(field("partition_seed")), float(field("alpha")),
-                   path.as_posix(), git_blob_id(path))
 
 
 @dataclass(frozen=True)
@@ -116,12 +95,13 @@ class TierResult:
     prereg_sha256: str
     spec_version: str
     hypothesis: Optional[Hypothesis] = None
-
-
-def git_blob_id(path: Any) -> str:
-    """Content pin identical to `git hash-object <path>` -- tamper-evident without trusting a clock."""
-    return subprocess.run(["git", "hash-object", str(path)], capture_output=True, text=True,
-                          check=True).stdout.strip()
+    # S59 -- the second bar. AHEAD iff bh_passed AND global_passed; the frozen family
+    # partition is pinned here beside prereg_sha256 so a stale partition is self-evident.
+    family_q: Optional[float] = None
+    bh_passed: Optional[bool] = None
+    global_passed: Optional[bool] = None
+    dual_verdict: str = ""
+    families_spec_sha256: str = ""
 
 
 def _event_id(state: dict) -> str:
@@ -203,11 +183,13 @@ def _pooled_oof(records: Sequence[dict]) -> tuple:
 def run_tier(hypothesis: Hypothesis, tier: str, *, states: Sequence[dict], predict_fn: Callable,
              ledger_path: Any, partition: Partition, rule: PromotionRule, family: str = "",
              screened_n: Optional[int] = None, n_corpora: int = 1,
-             artifact_path: str = "") -> TierResult:
+             artifact_path: str = "", results_db: Any = None) -> TierResult:
     """Run one tier on rows that must already sit on that tier's side of the partition.
 
-    `partition` and `predict_fn` are additions the spec's own field list forces: both partition
-    sha256s are TierResult fields (SF-1), and no Brier exists without a predictor.
+    `partition`/`predict_fn` are forced by the spec's field list (both partition sha256s are
+    TierResult fields, SF-1; no Brier exists without a predictor). `results_db` is optional and
+    read-only: it supplies the family's already-recorded raw p-values for the S59 family bar,
+    and without it a charged trial is priced as a family of one.
     """
     if tier not in TIERS:
         raise ValueError("unknown tier %r" % tier)
@@ -227,7 +209,6 @@ def run_tier(hypothesis: Hypothesis, tier: str, *, states: Sequence[dict], predi
                   cluster_key=CLUSTER_KEYS.get(sport, ""), screened_n=screened_n,
                   prereg_sha256=rule.prereg_sha256, spec_version=rule.spec_version,
                   hypothesis=hypothesis)
-    empty = dict(dm=None, raw_p=None, k_family=None, k_global=None, deflated_p=None, pbo=None)
     if tier == "T0":
         if sport in SPORTS:
             load_gate_corpus(sport)                            # raises StaleCorpusError
@@ -238,22 +219,28 @@ def run_tier(hypothesis: Hypothesis, tier: str, *, states: Sequence[dict], predi
                      if s.get("features") and all(v is not None for v in s["features"].values()))
         return TierResult(n_eff=float(filled), brier_model=None, brier_close=None,
                           verdict="COVERED" if filled >= _COVERAGE_FLOOR * len(states)
-                          else "UNCOVERED", **empty, **common)
+                          else "UNCOVERED", **_EMPTY, **common)
     if tier == "T1":
         records = walk_forward(list(states), predict_fn).records
         y = [r["y"] for r in records]
-        return TierResult(n_eff=float(len(states)), verdict="SCREEN", **empty, **common,
+        return TierResult(n_eff=float(len(states)), verdict="SCREEN", **_EMPTY, **common,
                           brier_model=scoring.brier([r["p_model"] for r in records], y),
                           brier_close=scoring.brier([r["p_close"] for r in records], y))
     return _run_charged(tier, states, predict_fn, sport, ledger_path, family, screened_n,
-                        n_corpora, rule, digest, common)
+                        n_corpora, rule, digest, common, results_db)
 
 
 def _run_charged(tier: str, states: Sequence[dict], predict_fn: Callable, sport: str,
                  ledger_path: Any, family: str, screened_n: Optional[int], n_corpora: int,
-                 rule: PromotionRule, digest: str, common: dict) -> TierResult:
+                 rule: PromotionRule, digest: str, common: dict,
+                 results_db: Any = None) -> TierResult:
     if screened_n is None:
         raise ValueError("%s must print screened_n beside deflated_p (SF-2)" % tier)
+    if frozen_family(family) is None:
+        # No frozen family, no family bar, so no AHEAD is reachable -- and the refusal comes
+        # BEFORE charge_tier, so an unfrozen family never consumes K silently.
+        return TierResult(verdict="NOT_IN_FROZEN_FAMILIES",
+                          families_spec_sha256=families_spec_sha(), **_UNSCORED, **common)
     stamps = sorted(str(s["state_ts"])[:10] for s in states)
     # Q2: the ledger row is appended BEFORE any metric, and K is read AT LAUNCH.
     charge = charge_tier(tier, ledger_path=ledger_path, family=family, hypothesis_hash=digest,
@@ -267,34 +254,25 @@ def _run_charged(tier: str, states: Sequence[dict], predict_fn: Callable, sport:
     dm = diebold_mariano(losses.tolist(), cluster_ids)
     pbo = cscv_pbo(np.column_stack([model, close]), y, s_blocks=16).pbo
     brier_model, brier_close = scoring.brier(model, y), scoring.brier(close, y)
-    dp = deflated_p(dm.p_value, k_global)
-    if dp >= rule.alpha:
+    prior = [] if results_db is None else list(results_db.family_p_values(family))
+    bars = charged_bars(dm.p_value, k_global, family, prior, rule.alpha,
+                        common["artifact_path"])
+    if not bars["global_pass"]:
         verdict = "MATCH"
     elif brier_model > brier_close:
         verdict = "BEHIND"
     elif tier == "T3" and n_corpora < min_corpora_eff(n_corpora, k_global):
         verdict = "SINGLE-WINDOW"
+    elif not bars["family_pass"]:
+        verdict = "MATCH"                       # AHEAD needs BOTH bars; the family bar blocked
     else:
         verdict = "AHEAD"
     return TierResult(n_eff=_n_eff(losses.tolist(), cluster_ids), brier_model=brier_model,
                       brier_close=brier_close, dm=dm.dm_stat, raw_p=dm.p_value, k_family=k_family,
-                      k_global=k_global, deflated_p=dp, pbo=pbo, verdict=verdict,
+                      k_global=k_global, deflated_p=bars["deflated_p"], pbo=pbo, verdict=verdict,
+                      family_q=bars["q"], bh_passed=bars["family_pass"],
+                      global_passed=bars["global_pass"], dual_verdict=bars["verdict"],
+                      families_spec_sha256=bars["families_spec_sha"],
                       **{**common, "cluster_key": key, "n": len(ids)})
 
 
-def promote(t1_results: Sequence[TierResult], rule: PromotionRule) -> list:
-    """Promote the rule's frozen top_n by T1 Brier improvement within ONE family/ISO-week group.
-
-    The caller supplies the group (rule.group_by names it); the WIDTH comes only off the rule, so
-    no caller can widen the search without editing the spec and changing prereg_sha256.
-    """
-    screens = [r for r in t1_results if r.tier == "T1" and r.brier_model is not None]
-    if len(screens) != len(t1_results):
-        raise ValueError("promote takes T1 screens only; got %d non-T1 rows"
-                         % (len(t1_results) - len(screens)))
-    families = {r.family for r in screens}
-    if len(families) > 1:
-        raise ValueError("promote takes one %s group; got families %s"
-                         % ("/".join(rule.group_by), sorted(families)))
-    ranked = sorted(screens, key=lambda r: (r.brier_model - r.brier_close, r.hash))
-    return [r.hypothesis for r in ranked[:rule.top_n]]
