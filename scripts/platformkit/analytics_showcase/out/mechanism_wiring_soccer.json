@@ -2,12 +2,12 @@
   "label": "DESCRIPTIVE_ONLY",
   "edge_claimed": false,
   "not_a_claim": "CONFIRMED_LOCAL is a descriptive local effect on a frozen corpus with a SYNTHETIC-vintage close (S34); it is uncharged and not walk-forward, so it is not a scored claim.",
-  "generated_at": "2026-09-02T14:39:26.113510+00:00",
+  "generated_at": "2026-09-02T14:50:13.635677+00:00",
   "as_of": "2026-05-24",
   "vintage": [
     "SYNTHETIC"
   ],
-  "prereg_sha256": "e8d215adbecfacbe363791f2e06f97fb60654395a63128212a3c7cd52a64f02a",
+  "prereg_sha256": "580ace70664e63bba79bab6d854e1d19822387b394f18b1abf20248e83d694ec",
   "corpus": {
     "sport": "soccer",
     "description": "data/cache/combo/gate_corpus_soccer.parquet x close_join, 16322 states 2019-08-02..2026-05-24, outcome = over 2.5 goals",
@@ -24,10 +24,11 @@
   "counts": {
     "mechanisms": 15,
     "wired": 15,
-    "with_trigger": 0,
-    "not_testable": 15,
+    "with_trigger": 1,
+    "not_testable": 14,
     "by_verdict": {
-      "NOT_TESTABLE": 15
+      "NOT_TESTABLE": 14,
+      "NULL_LOCAL": 1
     }
   },
   "rows": [
@@ -133,13 +134,97 @@
     },
     {
       "mechanism_id": "trailing_xg_supremacy_is_a_stable_team_trait_persistence_not_incremental_brier",
-      "trigger": null,
+      "trigger": "diff_xg_supremacy_asof",
       "mask": null,
-      "source_artifact": "(none)",
-      "corpus_units": {},
-      "verdict": "NOT_TESTABLE",
-      "n": 0,
-      "reason": "the ingredient is diff_xg_supremacy_asof from the data/domains/soccer as-of xG family; data/cache/combo/gate_corpus_soccer.parquet carries no xG column at all -- its as-of family is shots and shots-on-target (diff_shots_for_asof, diff_sot_for_asof), a different quantity, and the claim is a split-half persistence property of the trait rather than a per-match trigger"
+      "source_artifact": "data/cache/combo/gate_corpus_soccer.parquet",
+      "corpus_units": {
+        "D1": {
+          "n": 2134,
+          "date_range": [
+            "2019-08-16",
+            "2026-05-16"
+          ],
+          "n_high": 1067,
+          "n_low": 1067,
+          "effect": 0.017806,
+          "p_value": 0.38742182880848064,
+          "verdict": "NULL_LOCAL"
+        },
+        "E0": {
+          "n": 2660,
+          "date_range": [
+            "2019-08-09",
+            "2026-05-24"
+          ],
+          "n_high": 1330,
+          "n_low": 1330,
+          "effect": 0.010903,
+          "p_value": 0.5663693689610871,
+          "verdict": "NULL_LOCAL"
+        },
+        "E1": {
+          "n": 3855,
+          "date_range": [
+            "2019-08-03",
+            "2026-05-02"
+          ],
+          "n_high": 1927,
+          "n_low": 1928,
+          "effect": -0.03526,
+          "p_value": 0.026981456811959074,
+          "verdict": "NULL_LOCAL"
+        },
+        "F1": {
+          "n": 2329,
+          "date_range": [
+            "2019-08-09",
+            "2026-05-17"
+          ],
+          "n_high": 1164,
+          "n_low": 1165,
+          "effect": 0.028088,
+          "p_value": 0.16591910656216274,
+          "verdict": "NULL_LOCAL"
+        },
+        "I1": {
+          "n": 2651,
+          "date_range": [
+            "2019-08-24",
+            "2026-05-24"
+          ],
+          "n_high": 1325,
+          "n_low": 1326,
+          "effect": -0.016884,
+          "p_value": 0.3779169798105315,
+          "verdict": "NULL_LOCAL"
+        },
+        "SP1": {
+          "n": 2655,
+          "date_range": [
+            "2019-08-16",
+            "2026-05-24"
+          ],
+          "n_high": 1327,
+          "n_low": 1328,
+          "effect": 0.02477,
+          "p_value": 0.1907611603977126,
+          "verdict": "NULL_LOCAL"
+        }
+      },
+      "n": 16284,
+      "coverage_share": 0.9977,
+      "note": "the mechanism's own ingredient is the as-of xG-supremacy differential from domains.soccer.asof_xg_proxy (a SHOTS-BASED PROXY, not true xG), joined onto data/cache/combo/gate_corpus_soccer.parquet by S53 on event_id at 25,708 / 25,834 non-null. The ledger's claim is a SPLIT-HALF PERSISTENCE property of the trait, so the corpus-grain rendering here is the trait level itself against the close residual -- a declared rendering of the ingredient, NOT the ledger's persistence statistic",
+      "verdict": "NULL_LOCAL",
+      "corpus_units_scored": 6,
+      "single_corpus_unit": false,
+      "n_by_corpus_unit": {
+        "D1": 2134,
+        "E0": 2660,
+        "E1": 3855,
+        "F1": 2329,
+        "I1": 2651,
+        "SP1": 2655
+      }
     },
     {
       "mechanism_id": "first_substitution_timing_early_vs_late_moderates_the_shot_rate_shift",

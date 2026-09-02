@@ -12,21 +12,30 @@ Measured corpus facts behind every reason below (2026-09-03, this repo):
   E0/E1/D1/F1/I1/SP1) joined to the devigged decimal close by
   ``scripts/platformkit/eval_gate/close_join.py`` (16,322 states with a close,
   vintage SYNTHETIC per S34).
-- Its ONLY feature columns are ``p_base``, ``p_over25``, ``home_sot_for_l10``,
-  ``away_sot_for_l10``, ``diff_sot_for_asof``, ``diff_sot_against_asof``,
-  ``diff_shots_for_asof``, ``diff_shots_against_asof``,
-  ``home_sot_ratio_for_asof``, ``away_sot_ratio_for_asof``, ``home_n_prior``,
-  ``away_n_prior``.
+- Its feature columns are ``p_base``, ``p_over25``, the ten pregame shot/SOT
+  as-of columns it has always carried (``home_sot_for_l10``, ``away_sot_for_l10``,
+  ``diff_sot_for_asof``, ``diff_sot_against_asof``, ``diff_shots_for_asof``,
+  ``diff_shots_against_asof``, ``home_sot_ratio_for_asof``,
+  ``away_sot_ratio_for_asof``, ``home_n_prior``, ``away_n_prior``) and, since
+  gap **S53**, seventeen more as-of columns joined on ``event_id``: the eight
+  remaining ``asof_features`` per-side shot/SOT columns and the nine-column
+  as-of xG-PROXY family from ``data/domains/soccer/asof_xg_proxy.parquet``
+  (``diff_xg_supremacy_asof`` among them, 25,708 / 25,834 non-null).
 - Its outcome ``y`` is the OVER-2.5-total-goals indicator (mean 0.5154) and the
   close is the devigged over/under 2.5 pair -- not a match-result label.
-- Every CONFIRMED soccer mechanism's own ingredient is StatsBomb event-grain
-  (score state, possession id, shot type, PPDA, goal-kick height, tactical
-  shift), or lives on ``data/domains/soccer_intl/results.parquet`` (neutral
-  venue, competition type), or is an xG as-of column. None of those is a column
-  of the scored corpus.
+- Fourteen of the fifteen CONFIRMED soccer mechanisms need an ingredient that is
+  StatsBomb event-grain (score state, possession id, shot type, PPDA, goal-kick
+  height, tactical shift), or lives on ``data/domains/soccer_intl/results.parquet``
+  (neutral venue, competition type). None of those is a column of the scored
+  corpus, and the soccer_intl frame shares **0** of its 49,477 rows with the
+  25,834 corpus matches on (date, home_team, away_team) -- so those three rows
+  cannot be joined even in principle.
+- The fifteenth (trailing xG supremacy) names an xG as-of column, which S53
+  joined onto the spine; it is the one row here that now carries a trigger.
 
-Consequently every row here is NOT_TESTABLE: a wired state with a measured data
-reason, not a gap. DESCRIPTIVE_ONLY; no dollar or ROI claim anywhere.
+DESCRIPTIVE_ONLY; no dollar or ROI claim anywhere. A trigger row declares a
+column, not a result -- verdicts come from ``mechanism_close_effect.py`` and are
+descriptive local effects, never claims.
 """
 from __future__ import annotations
 
@@ -80,10 +89,8 @@ ROWS: tuple[tuple[str, str], ...] = (
      "corpus_units (E0, E1, D1, F1, I1, SP1) and carries no competition-type column, so the "
      "friendly arm of the contrast does not exist in it at all"),
     ("trailing_xg_supremacy_is_a_stable_team_trait_persistence_not_incremental_brier",
-     "the ingredient is diff_xg_supremacy_asof from the data/domains/soccer as-of xG family; "
-     + GATE + " carries no xG column at all -- its as-of family is shots and shots-on-target "
-     "(diff_shots_for_asof, diff_sot_for_asof), a different quantity, and the claim is a "
-     "split-half persistence property of the trait rather than a per-match trigger"),
+     "SUPERSEDED by the TRIGGERS entry below: S53 joined the as-of xG-PROXY family onto "
+     + GATE + ", so diff_xg_supremacy_asof is now a column of the scored corpus"),
     ("first_substitution_timing_early_vs_late_moderates_the_shot_rate_shift",
      "the trigger is the in-match minute of a team's first substitution and the outcome is a "
      "shots-per-minute shift around it; " + GATE + " carries no substitution column and holds no "
@@ -104,8 +111,24 @@ ROWS: tuple[tuple[str, str], ...] = (
      "shots; neither exists as a column in " + GATE),
 )
 
-WIRING: dict[str, dict] = {slug: {"source": None, "expr": None, "reason": reason}
-                           for slug, reason in ROWS}
+# The rows whose declared ingredient IS a column of the enriched spine (S53).
+# Same shape as mechanism_wiring_tennis's ``_t`` rows; overrides the ROWS reason
+# for that slug while leaving every other row's declared absence untouched.
+TRIGGERS: dict[str, dict] = {
+    "trailing_xg_supremacy_is_a_stable_team_trait_persistence_not_incremental_brier": {
+        "source": GATE, "expr": "diff_xg_supremacy_asof",
+        "columns": ("diff_xg_supremacy_asof",), "mask": None,
+        "note": "the mechanism's own ingredient is the as-of xG-supremacy differential from "
+                "domains.soccer.asof_xg_proxy (a SHOTS-BASED PROXY, not true xG), joined onto "
+                + GATE + " by S53 on event_id at 25,708 / 25,834 non-null. The ledger's claim is "
+                "a SPLIT-HALF PERSISTENCE property of the trait, so the corpus-grain rendering "
+                "here is the trait level itself against the close residual -- a declared "
+                "rendering of the ingredient, NOT the ledger's persistence statistic"},
+}
+
+WIRING: dict[str, dict] = {
+    slug: TRIGGERS.get(slug) or {"source": None, "expr": None, "reason": reason}
+    for slug, reason in ROWS}
 
 # A duplicate slug would silently drop a mechanism from the ledger join.
 assert len(WIRING) == len(ROWS), "duplicate soccer mechanism slug in ROWS"

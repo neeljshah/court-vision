@@ -111,11 +111,13 @@
   },
   {
     "mechanism_id": "trailing_xg_supremacy_is_a_stable_team_trait_persistence_not_incremental_brier",
-    "trigger": null,
+    "trigger": "diff_xg_supremacy_asof",
     "mask": null,
-    "columns": [],
-    "source_artifact": "(none)",
-    "planned": "NOT_TESTABLE",
+    "columns": [
+      "diff_xg_supremacy_asof"
+    ],
+    "source_artifact": "data/cache/combo/gate_corpus_soccer.parquet",
+    "planned": "descriptive_effect",
     "alpha": 0.01,
     "min_effect": 0.02,
     "min_coverage": 0.25

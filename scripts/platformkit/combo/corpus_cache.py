@@ -180,12 +180,57 @@ def _build_nba() -> Tuple[pd.DataFrame, List[Path]]:
     return out[cols], sources
 
 
-def _build_soccer() -> Tuple[pd.DataFrame, List[Path]]:
+# Same-match (post-kickoff) soccer facts: final shots/SOT/corners/fouls/cards,
+# half-time and full-time goals, the label itself, post-match residuals, and any
+# whole-season team aggregate that CONTAINS the match being scored
+# (style_fingerprints). A column named here is a leak, never an as-of ingredient
+# for the gate spine (gap S53).
+SOCCER_LEAKY_COLUMNS = frozenset({
+    "home_shots", "away_shots", "home_sot", "away_sot", "home_corners", "away_corners",
+    "home_fouls", "away_fouls", "home_yellow", "away_yellow", "home_red", "away_red",
+    "total_shots", "total_sot", "home_sot_ratio", "away_sot_ratio",
+    "hthg", "htag", "htr", "fthg", "ftag", "ftr", "total_goals", "target_over25",
+    "total_fouls", "total_yellow", "total_red", "total_cards",
+    "shot_share", "sot_ratio", "fouls_committed_pm", "fouls_drawn_pm", "corners_pm",
+    "cards_pm", "ppg", "finishing_residual_home", "finishing_residual_away", "sot_diff",
+})
+
+# The as-of ingredient columns the soccer spine carried before S53 (order kept
+# exactly) and the ones S53 joins in addition. Both families are prior-only.
+_SOCCER_ASOF_EXISTING: Tuple[str, ...] = (
+    "home_sot_for_l10", "away_sot_for_l10", "diff_sot_for_asof", "diff_sot_against_asof",
+    "diff_shots_for_asof", "diff_shots_against_asof", "home_sot_ratio_for_asof",
+    "away_sot_ratio_for_asof", "home_n_prior", "away_n_prior")
+# asof_features.parquet already shipped these eight; the builder selected them out.
+_SOCCER_ASOF_ADDED: Tuple[str, ...] = (
+    "home_sot_for_asof", "home_sot_against_asof", "home_shots_for_asof",
+    "home_shots_against_asof", "away_sot_for_asof", "away_sot_against_asof",
+    "away_shots_for_asof", "away_shots_against_asof")
+
+
+def _asof_only(columns: List[str]) -> List[str]:
+    """Refuse a same-match column by name before it can reach the gate spine."""
+    leaky = sorted(set(columns) & SOCCER_LEAKY_COLUMNS)
+    if leaky:
+        raise ValueError("same-match (leaky) column(s) refused for the soccer gate "
+                         "spine: " + ", ".join(leaky))
+    return list(columns)
+
+
+def _build_soccer() -> Tuple[pd.DataFrame, List[Path], Dict[str, Dict[str, object]]]:
     """matches.parquet `div` column = disjoint-league corpus_unit; base = Poisson
-    walk_forward_goals p_over25, mirrors home_sot_replication_gate exactly."""
+    walk_forward_goals p_over25, mirrors home_sot_replication_gate exactly.
+
+    S53 additively joins the as-of ingredients that already exist on disk at this
+    spine's own `event_id` grain: the eight asof_features columns the selection
+    dropped, plus the leak-free as-of xG-PROXY family
+    (`domains.soccer.asof_xg_proxy`, prior-only by construction). Nothing
+    same-match is joined -- `_asof_only` refuses those by name.
+    """
     matches = _REPO / "data/domains/soccer/matches.parquet"
     asof = _REPO / "data/domains/soccer/asof_features.parquet"
-    sources = [matches, asof]
+    xg = _REPO / "data/domains/soccer/asof_xg_proxy.parquet"
+    sources = [matches, asof, xg]
 
     mdf = pd.read_parquet(matches)
     mdf["event_id"] = mdf["event_id"].astype(str)
@@ -200,18 +245,31 @@ def _build_soccer() -> Tuple[pd.DataFrame, List[Path]]:
     adf = pd.read_parquet(asof)
     adf["event_id"] = adf["event_id"].astype(str)
     adf = adf.drop_duplicates("event_id", keep="first")
-    ing_cols = [c for c in (
-        "home_sot_for_l10", "away_sot_for_l10", "diff_sot_for_asof", "diff_sot_against_asof",
-        "diff_shots_for_asof", "diff_shots_against_asof", "home_sot_ratio_for_asof",
-        "away_sot_ratio_for_asof", "home_n_prior", "away_n_prior") if c in adf.columns]
+    ing_cols = _asof_only([c for c in _SOCCER_ASOF_EXISTING if c in adf.columns])
+    added_cols = _asof_only([c for c in _SOCCER_ASOF_ADDED if c in adf.columns])
 
-    out = wf.merge(adf[["event_id"] + ing_cols], on="event_id", how="left")
+    out = wf.merge(adf[["event_id"] + ing_cols + added_cols], on="event_id", how="left")
+
+    # S53: the as-of xG-PROXY family, same event_id spine. home_n_prior /
+    # away_n_prior already arrive from asof_features and are NOT re-joined.
+    xdf = pd.read_parquet(xg)
+    xdf["event_id"] = xdf["event_id"].astype(str)
+    xdf = xdf.drop_duplicates("event_id", keep="first")
+    xg_cols = _asof_only([c for c in xdf.columns
+                          if c != "event_id" and c not in ing_cols + added_cols])
+    out = out.merge(xdf[["event_id"] + xg_cols], on="event_id", how="left")
+
     out["corpus_unit"] = out["div"].astype(str) if "div" in out.columns else "unknown_league"
     out["y"] = out["target_over25"].astype(float)
     out["p_base"] = out["p_over25"].astype(float)
     out[DATE_COL] = out["date"]  # S44: surface the builder's own date, renaming nothing
+    provenance = {col: {"source": str(src.relative_to(_REPO)).replace("\\", "/"),
+                        "join_key": "event_id", "n_rows": int(len(out)),
+                        "n_joined": int(out[col].notna().sum()),
+                        "join_rate": round(float(out[col].notna().mean()), 6)}
+                  for cols, src in ((added_cols, asof), (xg_cols, xg)) for col in cols}
     return out[["event_id", "corpus_unit", DATE_COL, "y", "p_base", "p_over25"]
-              + ing_cols], sources
+              + ing_cols + added_cols + xg_cols], sources, provenance
 
 
 def _build_tennis() -> Tuple[pd.DataFrame, List[Path]]:
@@ -265,11 +323,14 @@ def build_gate_corpus(sport: str) -> pd.DataFrame:
     """Build ONE sport's gate-ready frame, persist to parquet + sources sidecar."""
     if sport not in _BUILDERS:
         raise ValueError(f"unknown sport {sport!r}; must be one of {SPORTS}")
-    df, sources = _BUILDERS[sport]()
+    # A builder may return a third element: per-added-column provenance (S53).
+    built = _BUILDERS[sport]()
+    df, sources = built[0], built[1]
     _CACHE_DIR.mkdir(parents=True, exist_ok=True)
     df.to_parquet(_corpus_path(sport), index=False)
     manifest = {"sport": sport, "built_at": time.time(), "n_rows": len(df),
-               "sources": _source_manifest(sources)}
+               "sources": _source_manifest(sources),
+               "provenance": built[2] if len(built) > 2 else {}}
     _sidecar_path(sport).write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     return df
 
@@ -310,13 +371,16 @@ def freshness_report(sport: str) -> Dict[str, object]:
         "cache_mtime": cp.stat().st_mtime if cp.exists() else None,
         "built_at": None, "n_rows_at_build": None, "n_rows_cached": None,
         "sources": [], "stale": True, "stale_reason": "no cached corpus or sidecar",
-        "order_basis": POSITIONAL_ORDER,
+        "order_basis": POSITIONAL_ORDER, "provenance": {},
     }
     if not (cp.exists() and sp.exists()):
         return rep
     manifest = json.loads(sp.read_text(encoding="utf-8"))
     rep["built_at"] = manifest.get("built_at")
     rep["n_rows_at_build"] = manifest.get("n_rows")
+    # S53: per-added-column source parquet + join key + join rate, or {} where
+    # the builder joins no extra ingredient family.
+    rep["provenance"] = manifest.get("provenance", {})
     cached = pd.read_parquet(cp)
     rep["n_rows_cached"] = len(cached)
     rep["order_basis"] = DATE_COL if DATE_COL in cached.columns else POSITIONAL_ORDER
@@ -336,5 +400,5 @@ def freshness_report(sport: str) -> Dict[str, object]:
     return rep
 
 
-__all__ = ["SPORTS", "DATE_COL", "POSITIONAL_ORDER", "StaleCorpusError",
-           "build_gate_corpus", "load_gate_corpus", "freshness_report"]
+__all__ = ["SPORTS", "DATE_COL", "POSITIONAL_ORDER", "SOCCER_LEAKY_COLUMNS",
+           "StaleCorpusError", "build_gate_corpus", "load_gate_corpus", "freshness_report"]

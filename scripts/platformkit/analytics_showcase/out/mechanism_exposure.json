@@ -2,7 +2,7 @@
   "label": "DESCRIPTIVE_ONLY",
   "edge_claimed": false,
   "as_of": "2026-05-24",
-  "generated_at": "2026-09-02T14:39:32.846975+00:00",
+  "generated_at": "2026-09-02T14:51:47.557328+00:00",
   "no_new_numbers_claim": "This artifact computes NO new statistics -- it is a relevance join over rows that already passed their own validation.",
   "source": "domains/<sport>/knowledge/mechanisms.md + data/domains/basketball_nba/odds.parquet",
   "ledger_cross_check": {
@@ -47,8 +47,8 @@
       "wired": 15,
       "not_wired": [],
       "wired_by_schedule_trigger": 0,
-      "wired_by_asof_column": 0,
-      "wired_not_testable": 15,
+      "wired_by_asof_column": 1,
+      "wired_not_testable": 14,
       "pct_games_with_live_mechanism": 0.0
     },
     "tennis": {
