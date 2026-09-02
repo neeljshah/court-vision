@@ -10,8 +10,13 @@ import subprocess
 import sys
 
 MAIN = r"C:\Users\neelj\nba-ai-system\data"
-RELS = ["domains", "models", "frontend", "cache/combo", "cache/ingame_grade_joined", "cache/ingame",
+RELS = ["domains", "models", "frontend", "footage_corpus", "tracking",
+        "cache/combo", "cache/ingame_grade_joined", "cache/ingame",
         "cache/pit", "cache/inplay_odds", "cache/ingame_grade", "cache/clv", "cache/pm_paper"]
+# footage_corpus and tracking added 2026-09-02: G25b, G33b and G44b all returned NOT VALIDATED
+# because a worktree could not see any source clip or tracking table. Linking them is necessary
+# but NOT sufficient -- the local main repo holds 2 clips and the pod holds 63 (6.6 GB), so any
+# measurement that decodes frames still belongs on the pod. See FOOTAGE_CORPUS_INVENTORY.md.
 FORBIDDEN = ["cache/eval_gate", "registry"]
 
 
