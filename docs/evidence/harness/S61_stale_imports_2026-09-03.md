@@ -309,8 +309,8 @@ two commits that actually hold the code. Filed as a new gap in section 8.
 
 ## 5. Evidence -- imports and per-file tests
 
-All fourteen modules below import cleanly at the post-fix tree (the ten fixed,
-plus the four modules whose namespaces this row touched or read):
+All fifteen modules below import cleanly at HEAD after the landing (the ten
+fixed, plus the five modules whose namespaces this row touched or read):
 
     gate_coverage_report, gate_coverage_report_compute, intel_query.ask_families,
     intel_query.ask_fit, intel_query.ask, obs.drift_report_compute,
@@ -328,7 +328,7 @@ Per-file tests, run individually in MASTER (never the full tree):
 | `scripts/platformkit/test_reforecast_refit.py` | **1 passed** in 2.39s | 3.5 |
 | `scripts/platformkit/test_retrain_loop.py` | **2 passed** in 92.62s | 3.6 |
 | `scripts/platformkit/paper/test_window_strategy_spec.py` | **1 passed** in 2.31s | 3.7 |
-| `scripts/platformkit/intel_query/test_ask.py` | see section 7 | 3.8, 3.9 |
+| `scripts/platformkit/intel_query/test_ask.py` | **40 of 46 passed, 6 not reached** -- see section 7 | 3.8, 3.9 |
 | `scripts/platformkit/test_overlay_render.py` | **2 passed** in 4.04s | 3.10 |
 
 `obs/drift_report_compute.py` has no test file of its own; besides
@@ -370,11 +370,17 @@ git log -S<symbol> --oneline -- <path>     # e.g. -Sdiscover_store -- scripts/pl
 
 ## 7. NOT VERIFIED
 
-- `scripts/platformkit/intel_query/test_ask.py` did not finish inside this
-  lane's command timeout; the three intel_query modules (`ask`, `ask_families`,
-  `ask_fit`) are verified IMPORTABLE in all three entry orders, and the import
-  fix is a statement move with no call-time effect, but the ask test suite's
-  pass/fail is NOT recorded here. Re-run it before relying on section 3.8/3.9.
+- `scripts/platformkit/intel_query/test_ask.py` was run in two selections
+  because the whole file never finished inside a command timeout: `-k fit`
+  gave **4 passed, 42 deselected in 2.82s** (this is the ask_fit / 3.9
+  evidence), and `-k "not fit"` emitted **36 consecutive passes** before the
+  timeout killed it mid-run. So **40 of 46 tests passed and 6 were never
+  reached** -- zero failures observed, but 6 tests are UNMEASURED, and which 6
+  is not pinned down here beyond "the slow whole-corpus ones at the end of the
+  file". The three intel_query modules are separately verified IMPORTABLE in all
+  three entry orders, and the fix is an import-statement move with no call-time
+  effect, but section 3.8's evidence is 40/46, not a green suite. Re-run the
+  whole file with a longer budget before treating it as one.
 - Importability is not correctness. Nine of the ten fixed modules are covered by
   a per-file test; none of those tests were written by this row, and none of
   them assert the RENDERED or COMPUTED output of the specific lines this row
