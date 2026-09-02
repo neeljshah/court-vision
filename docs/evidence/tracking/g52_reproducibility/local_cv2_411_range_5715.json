@@ -1,0 +1,10 @@
+{
+ "cv2": "4.11.0",
+ "coverage": 0.61,
+ "decoded_frames": 300,
+ "fresh_solves": 147,
+ "drift_checked_reuses": 36,
+ "elapsed_s": 53.6,
+ "pod_value": 0.6,
+ "g26b_control": 0.61
+}

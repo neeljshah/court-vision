@@ -1,11 +1,12 @@
-# G52: the tennis pipeline is deterministic on the pod, and the rejected selector was not the cause
+# G52 RESOLVED: the pipeline is deterministic in each environment; the two runs came from different ones
 
 Date: 2026-09-02. Gap: G52, with the G59 remediation as its control arm.
 Two pod measurements: the bisection job (pid 214874, 50 records) and the control
 arm run immediately after removing the rejected selector.
 
-**Verdict so far: NOT VALIDATED as originally framed, and the leading
-replacement hypothesis is FALSIFIED too.** G52 was recorded as "the tennis
+**Verdict: RESOLVED. The original framing is false, my replacement hypothesis
+was falsified, and the actual cause is an environment difference between two runs
+that were assumed to be from one environment.** See section 4. G52 was recorded as "the tennis
 pipeline is NOT REPRODUCIBLE run to run". On the pod it is exactly reproducible.
 I then proposed that the rejected player selector was deterministically moving
 solver coverage; the control arm refutes that as well.
@@ -67,22 +68,70 @@ Removing the rejected selector did not restore a single value. **The selector is
 not the cause.** `player_select.py` was absent from the filesystem for this run,
 which is as clean a removal as exists.
 
-## 3. What is left, stated honestly
+## 3. What this narrowed to (superseded by section 4)
 
-The pod is deterministic and produces one stable answer. The G26b control and
-treatment runs were done LOCALLY and produced two different answers. So the
-non-reproducibility G52 recorded is real but is **not located where G52 assumed**:
-it is not in the detector, the GPU, the thread count or the decode, and it is not
-caused by the selector. The remaining candidates are the local environment itself
-and the possibility that something other than the selector changed between the
-two local runs. Neither is established here.
+At this point the pod was established as deterministic and the selector was
+ruled out, leaving "the local environment" as the remaining candidate. That was
+the right next question and section 4 answers it directly, so this section is
+kept only to show the order the reasoning actually went in.
 
-The original framing must not be quoted as-is. "The tennis pipeline is not
-reproducible run to run" is false on the pod; what is true is that the pod and
-the local machine disagree, and that the local pair disagreed with each other.
+The original framing must not be quoted as-is: "the tennis pipeline is not
+reproducible run to run" is false on the pod AND false locally.
+
+
+## 4. RESOLVED: it is an environment difference between two runs assumed to be one
+
+The decisive test was cheap and should have been run first. `nyYk` is one of the
+four clips available locally, so the same `run_range` entry point was invoked on
+this machine, on master's code, with `player_select.py` absent -- the identical
+configuration the pod ran.
+
+| range | G26b control | LOCAL (cv2 4.11.0) | POD (cv2 4.14.0) |
+|---|---:|---:|---:|
+| nyYk 5715 | 0.6100 | **0.6100** | 0.6000 |
+| nyYk 43830 | 0.5600 | **0.5600** | 0.5300 |
+| nyYk 33105 | 0.9900 | **0.9900** | 0.9933 |
+| nyYk 41985 | 0.5733 | **0.5733** | 0.5733 |
+
+**Local reproduces the control column on 4 of 4 ranges.** The pod reproduces the
+treatment column. Both machines are internally deterministic -- the pod at 30 of
+30 identical repeats, and local matching the control column that was recorded on
+a different day.
+
+So the G26b "control" and "treatment" columns were not a control and a treatment
+at all. They are one local run and one pod run, compared as though they came from
+the same environment. Nothing about the selector was ever being measured by that
+difference. G52's premise -- "the tennis pipeline is NOT REPRODUCIBLE run to run"
+-- is false in both environments taken separately.
+
+The environments differ in several ways at once, recorded by the G62 stamp:
+
+| | local | pod |
+|---|---|---|
+| cv2 | 4.11.0 | 4.14.0 |
+| OS | Windows-10-10.0.26200 | Linux |
+| python | 3.10.0 | 3.12 |
+
+**Which specific factor causes the divergence is NOT established.** cv2 is the
+leading candidate because the solver's Hough and LSD calls live there and a
+different build gives different segments, but this experiment varied all three
+together and cannot separate them. Pinning cv2 to 4.14 locally, changing nothing
+else, is the one-variable test and it has not been run.
+
+### What this costs, and what it is worth
+
+Every tennis before/after comparison that mixed a local run with a pod run is
+invalid, including the G26 acceptance rule that tried to hold coverage constant
+as a control. But the pipeline itself is sound: it is deterministic on both
+machines, and G22's treatment for soccer (pinned decode, seeds, single-thread
+cv2) is not what tennis needed. What tennis needed was for anyone to record
+where a number was computed -- which is exactly the G62 gap.
 
 ## NOT VERIFIED
 
+- **The specific environment factor is not isolated.** Local differs from the pod
+  in cv2 build, OS and python version simultaneously. Pinning cv2 to 4.14 locally
+  and changing nothing else is the one-variable test; it has not been run.
 - **I contaminated part of my own control arm.** At about 18:20 UTC, while it was
   running, I deployed 13 modules to the pod, and `tennis_sequential_plan.py`
   imports one of them (`source_timebase.py`). Ranges recorded before 18:20 are on
