@@ -29,7 +29,7 @@ from pathlib import Path
 from typing import Optional
 
 SSH_HOST = "root@213.192.2.83"
-SSH_PORT = "40048"
+SSH_PORT = "40193"  # drifts on every RunPod proxy change (40045 -> 40048 -> 40193); prefer `ssh -F ~/.ssh/config.pod pod`
 SSH_TIMEOUT_S = 25
 CAPTURE_PATTERN = "mlb_book_capture"
 

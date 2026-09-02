@@ -334,3 +334,11 @@ Next steps (see Phase 1 in [MASTER_PLAN.md](../../MASTER_PLAN.md)):
 ---
 <!-- nav-footer -->
 **Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Glossary](../GLOSSARY.md)
+
+## After a CONTAINER RESTART (measured 2026-09-03; pids reset, /workspace kept, pip packages WIPED)
+1. `ssh -F ~/.ssh/config.pod pod` -- the port drifts (40045 -> 40048 -> 40193); fix the alias, never hardcode.
+2. `pip install --break-system-packages "fastapi>=0.110" "uvicorn[standard]>=0.27" "scikit-learn==1.8.0"` (PEP 668 refuses without the flag; the container is disposable). Import-check the paper-profile modules before booting.
+3. Boot the keeper: `cd /workspace/nba-ai-system && CV_CAPTURE_POD=1 CV_MLB_BOOK_ARCHIVE_LIVE=1 nohup setsid /usr/local/bin/python -u -m supervisor --profile paper </dev/null >/workspace/paper.log 2>&1 &` -- NOT `python3` (same 3.12 today, but keep the path explicit). Expect 15 children in /proc within 80 s and 0 `restart #` lines.
+4. Relaunch the MLB book capture (not a supervisor child): `nohup setsid python -c "from scripts.platformkit.ingame.mlb_book_capture import run_pod_capture; run_pod_capture(stop=lambda: False)" </dev/null >>/workspace/mlb_book_capture.log 2>&1 &`
+5. When listing or killing by /proc cmdline, EXCLUDE your own shell (`[ "$pid" = "$$" ] && continue`; skip cmdlines containing your loop text) -- a pattern that matches the checking command kills the ssh session (bitten again 2026-09-03).
+6. Ship `scripts/**/__init__.py` with every deploy (S46a) or the pod's packages resolve as namespace packages and routes fail to mount.
