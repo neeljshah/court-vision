@@ -115,46 +115,58 @@ def _paths(sport: str) -> tuple[Path, Path]:
     return base / "odds.parquet", base / "matches.parquet"
 
 
-def _named_spine(spec: JoinSpec) -> pd.DataFrame:
+def _named_spine(spec: JoinSpec, key: str) -> pd.DataFrame:
     """Union the per-unit spine files, exposing date + the two side names."""
     base = _ROOT / "data" / "domains" / spec.sport
+    columns = [spec.spine, spec.date_col, "p1_name", "p2_name"]
+    if key != spec.spine:
+        columns.insert(1, key)
     frames = []
     for filename in spec.spine_files:
         path = base / filename
         if not path.exists():
             raise FileNotFoundError(f"missing spine file: {path}")
         frame = pd.read_parquet(path)
-        frames.append(frame[[spec.spine, spec.date_col, "p1_name", "p2_name"]])
+        missing = [c for c in columns if c not in frame.columns]
+        if missing:
+            raise KeyError(f"{path.name} lacks join column(s): {missing}")
+        frames.append(frame[columns])
     spine = pd.concat(frames, ignore_index=True).rename(
         columns={"p1_name": "home_team", "p2_name": "away_team"})
-    spine[spec.spine] = spine[spec.spine].astype(str)
+    for column in {spec.spine, key}:
+        spine[column] = spine[column].astype(str)
     return spine
 
 
-def _joined_spine_first(spec: JoinSpec, start: str | None, end: str | None):
+def _joined_spine_first(spec: JoinSpec, start: str | None, end: str | None, key: str):
     """Join odds ONTO the full corpus spine: every spine row stays in the denominator."""
     odds_path = _ROOT / "data" / "domains" / spec.sport / "odds.parquet"
     if not odds_path.exists():
         raise FileNotFoundError(f"missing local close inputs: {odds_path}")
     odds = pd.read_parquet(odds_path).copy()
-    odds[spec.spine] = odds[spec.spine].astype(str)
-    # A colliding event_id names two DIFFERENT real matches while the spine holds
-    # one row for it; attaching either price set would mislabel that row, so both
-    # sides are dropped and counted rather than silently kept-first.
-    ambiguous = odds[spec.spine].duplicated(keep=False)
+    if key not in odds.columns:
+        raise KeyError(f"odds.parquet lacks join column: {key}")
+    odds[key] = odds[key].astype(str)
+    # A colliding key names two DIFFERENT real matches while the spine holds one
+    # row for it; attaching either price set would mislabel that row, so both
+    # sides are dropped and counted rather than silently kept-first. Under the
+    # S48 `event_uid` key the collision cannot arise and this count is 0.
+    ambiguous = odds[key].duplicated(keep=False)
     odds = odds.loc[~ambiguous].copy()
     close = close_column(odds, spec)
     counts = dict(close.attrs)
     counts["ambiguous_event_id_drop_count"] = int(ambiguous.sum())
-    odds = odds[[spec.spine]].copy()
+    odds = odds[[key]].copy()
     odds["devig_close_prob"] = close
 
     corpus = load_gate_corpus(spec.sport).copy()
     corpus[spec.spine] = corpus[spec.spine].astype(str)
-    spine = _named_spine(spec)
-    for name, frame in (("odds", odds), ("spine", spine), ("corpus", corpus)):
-        if frame[spec.spine].duplicated().any():
-            raise ValueError(f"duplicate {spec.spine} in {name}")
+    spine = _named_spine(spec, key)
+    for name, frame, column in (
+        ("odds", odds, key), ("spine", spine, spec.spine), ("corpus", corpus, spec.spine),
+    ):
+        if frame[column].duplicated().any():
+            raise ValueError(f"duplicate {column} in {name}")
     joined = corpus[[spec.spine, "corpus_unit", "y", "p_base"]].merge(
         spine, on=spec.spine, how="left", validate="one_to_one")
     joined[spec.date_col] = pd.to_datetime(joined[spec.date_col], errors="raise")
@@ -163,14 +175,17 @@ def _joined_spine_first(spec: JoinSpec, start: str | None, end: str | None):
     if end is not None:
         joined = joined.loc[joined[spec.date_col] <= pd.Timestamp(end)].copy()
     joined = joined.merge(
-        odds, on=spec.spine, how="left", validate="one_to_one", indicator="_spine_join")
+        odds, on=key, how="left", validate="one_to_one", indicator="_spine_join")
     return joined, counts
 
 
-def _joined(sport: str, start: str | None = None, end: str | None = None) -> tuple[pd.DataFrame, dict[str, int]]:
+def _joined(sport: str, start: str | None = None, end: str | None = None,
+            key: str | None = None) -> tuple[pd.DataFrame, dict[str, int]]:
     spec = _spec(sport)
     if spec.spine_files:
-        return _joined_spine_first(spec, start, end)
+        return _joined_spine_first(spec, start, end, key or spec.spine)
+    if key is not None and key != spec.spine:
+        raise ValueError(f"{sport}: alternative join key {key!r} is not supported")
     odds_path, matches_path = _paths(sport)
     if not odds_path.exists() or not matches_path.exists():
         raise FileNotFoundError(f"missing local close inputs: {odds_path} or {matches_path}")
@@ -228,9 +243,14 @@ def _rate(numerator: int, denominator: int) -> float:
     return float(numerator / denominator) if denominator else 0.0
 
 
-def coverage_report(sport: str) -> dict[str, Any]:
-    """Report join coverage with all odds rows retained in its denominator."""
-    joined, drops = _joined(sport)
+def coverage_report(sport: str, key: str | None = None) -> dict[str, Any]:
+    """Report join coverage with all odds rows retained in its denominator.
+
+    ``key`` is OPT-IN and defaults to the spec's ``spine`` column, so every
+    existing caller reads exactly the number it read before. Tennis additionally
+    accepts ``key="event_uid"`` (S48), the collision-free odds key.
+    """
+    joined, drops = _joined(sport, key=key)
     denominator = len(joined)
     matched = joined["_spine_join"].eq("both")
     scored = matched & joined["devig_close_prob"].notna() & joined["y"].notna() & joined["p_base"].notna()
@@ -264,7 +284,8 @@ def coverage_report(sport: str) -> dict[str, Any]:
     if unjoined and any(u["join_rate"] == 1.0 for u in by_unit.values()):
         raise ValueError("degenerate by_corpus_unit denominator: per-unit rate 1.0 with unjoined rows")
     return {
-        "sport": sport, "denominator": denominator, "joined": int(matched.sum()),
+        "sport": sport, "join_key": key or _spec(sport).spine,
+        "denominator": denominator, "joined": int(matched.sum()),
         "unjoined": unjoined, "join_rate": _rate(int(matched.sum()), denominator),
         # S34: states/close rows carry no real odds timestamp yet.
         "vintage": "SYNTHETIC",

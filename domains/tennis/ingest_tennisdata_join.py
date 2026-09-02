@@ -183,6 +183,7 @@ def _empty_joined_df() -> pd.DataFrame:
         "event_id", "date_td", "tour", "tournament_td", "round_td", "comment",
         "b365w", "b365l", "psw", "psl", "maxw", "maxl", "avgw", "avgl",
         "b365_p1", "b365_p2", "ps_p1", "ps_p2",
+        "event_uid",  # S48: appended last, mirroring build_odds
     ]
     return pd.DataFrame(columns=cols)
 

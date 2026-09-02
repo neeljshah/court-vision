@@ -71,3 +71,33 @@ def test_coverage_report_keys_and_full_spine_denominators():
         assert block["brier_devig_close"] < block["brier_p_base"]
     assert sum(b["denominator"] for b in report["by_corpus_unit"].values()) == report["denominator"]
     assert sum(b["denominator"] for b in report["by_year"].values()) == report["denominator"]
+
+
+def test_event_uid_key_is_opt_in_and_removes_the_ambiguous_drop():
+    """S48: the default key is untouched; ``event_uid`` retires the collision."""
+    default = coverage_report("tennis")
+    opt_in = coverage_report("tennis", key="event_uid")
+
+    # Default reads exactly what the S03 landing measured.
+    assert default["join_key"] == "event_id"
+    assert default["ambiguous_event_id_drop_count"] == 186
+    assert default["by_corpus_unit"]["ATP"]["joined"] == 25764
+    assert default["by_corpus_unit"]["WTA"]["joined"] == 8002
+
+    # Opt-in: 93 spine rows recover their own price row, none is mislabelled.
+    assert opt_in["join_key"] == "event_uid"
+    assert opt_in["ambiguous_event_id_drop_count"] == 0
+    assert opt_in["by_corpus_unit"]["ATP"]["joined"] == 25831
+    assert opt_in["by_corpus_unit"]["WTA"]["joined"] == 8028
+    for unit, spine_rows in _SPINE.items():
+        block = opt_in["by_corpus_unit"][unit]
+        assert block["denominator"] == spine_rows      # S35 denominator unmoved
+        assert block["join_rate"] < 1.0
+        assert block["brier_devig_close"] < block["brier_p_base"]
+    assert opt_in["denominator"] == default["denominator"] == 41886
+    assert opt_in["joined"] - default["joined"] == 93
+
+
+def test_unknown_join_key_raises_rather_than_silently_falling_back():
+    with pytest.raises(KeyError, match="event_uid_typo"):
+        coverage_report("tennis", key="event_uid_typo")

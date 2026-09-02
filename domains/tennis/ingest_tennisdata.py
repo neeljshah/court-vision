@@ -43,6 +43,7 @@ import pyarrow.parquet as pq
 # Sub-module imports — re-exported to keep all existing import paths working
 # ---------------------------------------------------------------------------
 
+from domains.tennis.event_uid import add_odds_event_uid  # noqa: F401
 from domains.tennis.ingest_tennisdata_load import (  # noqa: F401
     _TD_ATP_URL,
     _TD_WTA_URL,
@@ -142,6 +143,12 @@ def build_odds(
             kind="mergesort",
             na_position="last",
         ).reset_index(drop=True)
+
+        # S48: the 20-day window in join_odds lets two tennis-data rows from two
+        # DIFFERENT tournaments claim one Sackmann match, so event_id is not 1:1
+        # here. event_uid is appended as the collision-free key; event_id is kept
+        # verbatim for every existing reader.
+        joined = add_odds_event_uid(joined)
 
     out.parent.mkdir(parents=True, exist_ok=True)
     table = pa.Table.from_pandas(joined, preserve_index=False)

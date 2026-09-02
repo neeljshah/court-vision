@@ -24,6 +24,8 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
+from domains.tennis.event_uid import add_spine_event_uid
+
 _BASE_ATP = "https://raw.githubusercontent.com/JeffSackmann/tennis_atp/master"
 _BASE_WTA = "https://raw.githubusercontent.com/JeffSackmann/tennis_wta/master"
 _UA = "tennis-domain-ingest/1.0 (private research; github.com/JeffSackmann)"
@@ -249,6 +251,8 @@ def _transform_matches(raw_df: pd.DataFrame, out_dir: str) -> pd.DataFrame:
             out.loc[mask, "event_id"] + "-"
             + out.loc[mask].groupby("event_id").cumcount().astype(str)
         )
+    # S48: additive 1:1 key appended AFTER the dedup; event_id itself is untouched.
+    out = add_spine_event_uid(out)
     Path(out_dir).mkdir(parents=True, exist_ok=True)
     pq.write_table(pa.Table.from_pandas(out, preserve_index=False), Path(out_dir) / "matches.parquet")
     return out

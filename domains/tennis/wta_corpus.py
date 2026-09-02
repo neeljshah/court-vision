@@ -32,6 +32,7 @@ from domains.tennis.ingest_sackmann import (
     _ROUND_DEFAULT,
     ROUND_ORDER,
 )
+from domains.tennis.event_uid import add_spine_event_uid
 from domains.tennis.elo_walkforward import walk_forward_elo
 from domains.tennis.elo_tune import brier, logloss, ece, platt_recalibrate, _walk_forward_blend
 
@@ -165,6 +166,9 @@ def _transform_wta(raw_df: pd.DataFrame, out_path: str | Path) -> pd.DataFrame:
             out.loc[mask, "event_id"] + "-"
             + out.loc[mask].groupby("event_id").cumcount().astype(str)
         )
+
+    # S48: additive 1:1 key appended AFTER the dedup; event_id itself is untouched.
+    out = add_spine_event_uid(out)
 
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
