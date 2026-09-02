@@ -172,6 +172,15 @@ def _failed_report(sport: str, config_version: str, failure: str,
         jump_p95_ft_per_s=(0.0 if interval is not None else None))
 
 
+def _adjudicate_insufficient_data(report: QualityReport) -> QualityReport:
+    if report.insufficient_data:
+        report.passed = False
+        report.verdict = "INSUFFICIENT_DATA"
+        report.failures = ["insufficient data: {} frames < {}".format(
+            report.n_frames, MIN_FRAMES_FOR_METRICS)]
+    return report
+
+
 def evaluate(df: pd.DataFrame, sport: str,
              config_version: str = DEFAULT_CONFIG_VERSION,
              source_metadata: Mapping[str, object] | None = None,
@@ -202,12 +211,12 @@ def evaluate(df: pd.DataFrame, sport: str,
     # Reading it unconditionally turned an intended clean FAIL into a KeyError,
     # so absence means "not metric_local" and falls through to the court profile.
     if "coordinate_space" in df and df["coordinate_space"].eq(METRIC_LOCAL).all():
-        return QualityReport(
+        return _adjudicate_insufficient_data(QualityReport(
             sport=sport, config_version=config_version, source_resolution=resolution,
             source_frame_rate=frame_rate, sampling_interval_s=sampling_interval,
             sampling_interval_reason=sampling_interval_reason,
             **metric_local_report_fields(df, cfg, schema),
-        )
+        ))
     n_frames = int(df["frame"].nunique())
     n_unique_games = (int(df["game_id"].dropna().nunique()) if "game_id" in df
                       else int(n_frames > 0))
@@ -291,7 +300,7 @@ def evaluate(df: pd.DataFrame, sport: str,
     if report.insufficient_data:
         for field in _N_DEPENDENT_METRIC_FIELDS:
             setattr(report, field, None)
-    return report
+    return _adjudicate_insufficient_data(report)
 
 
 if __name__ == "__main__":
