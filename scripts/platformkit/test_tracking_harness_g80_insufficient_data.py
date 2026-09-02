@@ -53,7 +53,15 @@ def test_g80_insufficient_data_is_never_a_pass() -> None:
     assert adequate.insufficient_data is False
     assert adequate.passed is False and adequate.verdict == "FAIL"
     assert adequate.oob_pct == 0.24
-    assert adequate.failures == ["oob 0.24 > 0.05"]
+    # G88: this fixture teleports 6 tracks out of bounds at frame 10 and back at
+    # frame 26 -- a real 95.5 ft and 102.0 ft step WITHIN one track between
+    # CONSECUTIVE frames. At 12 of ~400 steps that is 3.0 pct prevalence, below
+    # the 6 pct where a p95 trips, so jump_p95 was blind to it by construction
+    # and this assertion originally encoded that blindness. jump_max now catches
+    # it. The oob failure must still be present and the verdict is FAIL either
+    # way, so no verdict flipped.
+    assert "oob 0.24 > 0.05" in adequate.failures
+    assert any(failure.startswith("jump_max") for failure in adequate.failures)
 
     metric_local = evaluate(_metric_local_tiny_table(), "baseball")
     assert metric_local.insufficient_data is True
