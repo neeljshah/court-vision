@@ -288,6 +288,38 @@ def test_gate_not_blocked_by_honest_reject():
         )
 
 
+def test_s51_ledger_k_source_changes_only_k_and_stays_honest():
+    """S51: --k-source ledger reprices the deflation K and NOTHING else -- every verdict,
+    regressed flag and the exit code are identical to the default sweep, and the new
+    k_source key does not smuggle a $/edge/roi field onto the scoreboard.
+    """
+    import json, tempfile
+    from pathlib import Path
+    from run_gate import run_gate_in_process as run
+
+    led = Path(tempfile.mkdtemp(prefix="s51_")) / "backtest_fwer.jsonl"
+    with led.open("w", encoding="ascii") as fh:
+        for i in (1, 2, 3, 4, 5, 6, 7):
+            fh.write(json.dumps({"at": "2026-09-03T00:00:00+00:00", "predictor": "x:y",
+                                 "sport": "nba", "start": "2023-10-01",
+                                 "end": "2024-04-01", "k_cumulative": i},
+                                sort_keys=True) + "\n")
+    before = led.read_bytes()
+
+    base = run(offline_predict_fn)
+    ledger = run(offline_predict_fn, k_source="ledger", ledger_path=led,
+                 allow_noncanonical_ledger=True)
+
+    assert [r.get("verdict") for r in base] == [r.get("verdict") for r in ledger]
+    assert [r.get("regressed") for r in base] == [r.get("regressed") for r in ledger]
+    assert gate_exit_code(base) == gate_exit_code(ledger) == 0
+    assert all(r["n_trials_this_sweep"] == 2 for r in base)
+    assert all(r["n_trials_this_sweep"] == 7 for r in ledger)
+    assert led.read_bytes() == before          # read-only: run_gate charges no trial
+    for r in ledger:
+        assert not _has_banned_key(r), r
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     passed = 0

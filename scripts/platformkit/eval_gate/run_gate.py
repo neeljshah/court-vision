@@ -150,14 +150,40 @@ def _load_states(name: str, golden_path: Optional[str], corpus_dir: Optional[str
     filt = [s for s in states if s.get("season") == season]
     return filt if filt else states
 
+K_SOURCES = ("corpora", "ledger")
+
+
+def resolve_n_trials(k_source="corpora", ledger_path=None, allow_noncanonical_ledger=False) -> int:
+    """S51: the K this sweep prices its deflation at. `corpora` (default) = len(CORPORA),
+    today's behaviour byte for byte and the ONLY source --golden accepts (opens nothing
+    under data/). `ledger` = the canonical FWER ledger's max k_cumulative, READ-ONLY (this
+    module charges no trial); a non-canonical ledger is REFUSED under the same S40b/RT-3
+    rule as backtest_runner, since a fresh path restarts K and LOOSENS the per-test bar."""
+    if k_source not in K_SOURCES:
+        raise ValueError(f"k_source must be one of {list(K_SOURCES)}, got {k_source!r}")
+    if k_source == "corpora":
+        return len(CORPORA)
+    try:  # deferred: --golden must never import the ledger/pandas stack
+        from backtest_runner import assert_canonical_ledger, canonical_ledger_path
+        from ledger import load_fwer
+    except ImportError:
+        from .backtest_runner import assert_canonical_ledger, canonical_ledger_path
+        from .ledger import load_fwer
+    p = Path(ledger_path) if ledger_path else canonical_ledger_path()
+    assert_canonical_ledger(p, allow_noncanonical_ledger)
+    return max((int(r.get("k_cumulative", 0)) for r in load_fwer(p)), default=0)
+
+
 def run_gate_in_process(predict_fn: Callable, states: Optional[List[dict]] = None,
                         golden_path: Optional[str] = None,
-                        corpus_dir: Optional[str] = None) -> List[dict]:
+                        corpus_dir: Optional[str] = None,
+                        k_source: str = "corpora", ledger_path=None,
+                        allow_noncanonical_ledger: bool = False) -> List[dict]:
     """Return scoreboard rows WITHOUT sys.exit (for tests + embedding). When corpus_dir
     is set (real --corpus path), _load_states raises FileNotFoundError offline -> every
     slot is CORPUS_ABSENT and the gate fails closed (empty measured set)."""
     rows: List[dict] = []
-    n_trials = len(CORPORA)
+    n_trials = resolve_n_trials(k_source, ledger_path, allow_noncanonical_ledger)
     for name in CORPORA:
         try:
             st = states if states is not None else _load_states(name, golden_path, corpus_dir)
@@ -224,6 +250,8 @@ def run_gate_in_process(predict_fn: Callable, states: Optional[List[dict]] = Non
     for slot in SKIPPED_SLOTS:
         rows.append({"corpus": slot, "status": "CORPUS_ABSENT (skip)",
                      "n_trials_this_sweep": n_trials})
+    for r in rows:
+        r["k_source"] = k_source          # S51: which K convention priced this sweep
     return rows
 
 
@@ -254,6 +282,10 @@ def _print_scoreboard(rows: List[dict]) -> None:
               f"{_fmt(r['ece'])}{_fmt(r['sharpness'])}{_fmt(r['dm_p'])}{r['n_trials_this_sweep']:>4}  "
               f"{r['verdict']:<14}{('YES' if r['regressed'] else 'no'):>5}")
     print("-" * 96)
+    # S51: the K column already carries K; name the SOURCE only when it is not the default,
+    # so the default sweep's stdout stays byte-identical to the pre-S51 gate.
+    if rows and rows[0].get("k_source", "corpora") != "corpora":
+        print("K source: %s (K=%s)" % (rows[0]["k_source"], rows[0]["n_trials_this_sweep"]))
     print("GOLDEN FIXTURE = SYNTHETIC ANCHOR (not a real calibration claim); "
           "blocks on REGRESSION/LEAK only")
 
@@ -264,10 +296,16 @@ def main(argv: Optional[List[str]] = None) -> int:
                     help="run offline on the committed synthetic golden fixture")
     ap.add_argument("--corpus", default=None,
                     help="path to a real corpus dir (data/domains/<sport>); human-run")
+    ap.add_argument("--k-source", choices=K_SOURCES, default="corpora",
+                    help="deflation K: corpora (default, offline) or ledger (READ-ONLY)")
     args = ap.parse_args(argv)
+    # --golden's contract is offline / no data/: the ledger K-source would break it.
+    if args.golden and args.k_source != "corpora":
+        ap.error("--golden runs offline and accepts --k-source corpora only")
     # offline --golden NEVER imports proof_nba; real --corpus wires it (not run offline)
     predict_fn = _load_model_predictor() if args.corpus else offline_predict_fn
-    rows = run_gate_in_process(predict_fn, golden_path=None, corpus_dir=args.corpus)
+    rows = run_gate_in_process(predict_fn, golden_path=None, corpus_dir=args.corpus,
+                               k_source=args.k_source)
     _print_scoreboard(rows)
     return gate_exit_code(rows)
 

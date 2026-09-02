@@ -22,8 +22,10 @@ Generative truth model (leak-free, learnable):
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
+import re
 from datetime import datetime, timedelta
 
 import numpy as np
@@ -164,6 +166,34 @@ def build_states(rng) -> list:
     return states
 
 
+def write_sidecar(out_path: str) -> str:
+    """Write `<out_path>.sha256` holding the fixture's digest; return the digest."""
+    digest = hashlib.sha256(open(out_path, "rb").read()).hexdigest()
+    with open(out_path + ".sha256", "w", encoding="ascii") as fh:
+        fh.write(digest + "\n")
+    return digest
+
+
+def emit_seal(out_path: str) -> str:
+    """S51: write `<fixture>.sha256` and refresh golden_loader.GOLDEN_SHA256 in place.
+
+    The gate seals the fixture's BYTES (S40b agent 1.2). Before this, regenerating meant
+    hand-computing the digest and hand-editing the constant, so a legitimate regeneration
+    left the gate red. The sidecar is the emitted seal; the constant stays as the fallback
+    pin, and golden_loader fails closed if the two ever disagree.
+    """
+    digest = write_sidecar(out_path)
+    loader = os.path.join(_HERE, "golden_loader.py")
+    with open(loader, "r", encoding="ascii") as fh:
+        src = fh.read()
+    new = re.sub(r'^GOLDEN_SHA256 = "[0-9a-f]{64}"$',
+                 'GOLDEN_SHA256 = "%s"' % digest, src, count=1, flags=re.M)
+    if new != src:
+        with open(loader, "w", encoding="ascii") as fh:
+            fh.write(new)
+    return digest
+
+
 def main() -> None:
     rng = np.random.default_rng(SEED)
     states = build_states(rng)
@@ -185,8 +215,11 @@ def main() -> None:
     with open(OUT_PATH, "w", encoding="ascii") as fh:
         json.dump(payload, fh, indent=1, sort_keys=True, ensure_ascii=True)
 
+    digest = emit_seal(OUT_PATH)
+
     regimes = sorted({s["regime"] for s in states})
     print("OK %d states, regimes=%s" % (len(states), regimes))
+    print("GOLDEN_SHA256 = %s" % digest)
 
 
 if __name__ == "__main__":

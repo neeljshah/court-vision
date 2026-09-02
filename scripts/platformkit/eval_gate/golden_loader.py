@@ -33,6 +33,31 @@ DEFAULT_GOLDEN = _REPO_ROOT / "tests" / "fixtures" / "golden" / "game_states.jso
 GOLDEN_SHA256 = "fe9298fc5aef80b10a799d547057374b291c4bb465fb1cf3e3aae2ed03cbcbf2"
 
 
+def sidecar_path(p) -> Path:
+    """The digest sidecar gen_golden writes beside the fixture it emits."""
+    p = Path(p)
+    return p.with_name(p.name + ".sha256")
+
+
+def expected_seal(p) -> tuple:
+    """S51: return (expected_digest, source). gen_golden now emits the digest into a
+    sidecar, so a legitimate regeneration no longer needs a hand-COMPUTED constant --
+    the generator writes both the sidecar and the GOLDEN_SHA256 line. The constant
+    remains the fallback pin for the committed fixture: when both exist they MUST
+    agree, and a disagreement fails closed naming both values.
+    """
+    sc = sidecar_path(p)
+    if not sc.exists():
+        return GOLDEN_SHA256, "constant"
+    pinned = sc.read_text(encoding="ascii").strip().split()[0]
+    if pinned != GOLDEN_SHA256:
+        raise ValueError(
+            f"golden seal disagreement: {sc}\n sidecar {pinned}\nconstant {GOLDEN_SHA256}\n"
+            "gen_golden.py writes both; regenerate deliberately and commit them together."
+        )
+    return pinned, "sidecar"
+
+
 def load_golden(path=None) -> List[dict]:
     """Read + validate the frozen golden fixture; return plain dicts (no mutation)."""
     p = Path(path) if path else DEFAULT_GOLDEN
@@ -40,9 +65,10 @@ def load_golden(path=None) -> List[dict]:
         raise FileNotFoundError(f"golden fixture missing: {p}")
     if path is None:
         digest = hashlib.sha256(p.read_bytes()).hexdigest()
-        if digest != GOLDEN_SHA256:
+        expected, source = expected_seal(p)
+        if digest != expected:
             raise ValueError(
-                f"golden fixture seal mismatch: {p}\nexpected {GOLDEN_SHA256}\n"
+                f"golden fixture seal mismatch: {p}\nexpected {expected} ({source})\n"
                 f"     got {digest}\nthe frozen anchor changed; regenerate deliberately and "
                 "commit the new GOLDEN_SHA256 with it."
             )

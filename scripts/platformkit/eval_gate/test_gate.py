@@ -176,6 +176,116 @@ def test_s40b_prior_redteam_verdict_and_floor_and_seal():
         tampered.unlink(missing_ok=True)
 
 
+def _tmp_ledger(n_rows):
+    """A NON-canonical scratch ledger carrying k_cumulative 1..n_rows."""
+    import json, tempfile
+    from pathlib import Path
+    p = Path(tempfile.mkdtemp(prefix="s51_")) / "backtest_fwer.jsonl"
+    with p.open("w", encoding="ascii") as fh:
+        for i in range(1, n_rows + 1):
+            fh.write(json.dumps({"at": "2026-09-03T00:00:00+00:00", "predictor": "x:y",
+                                 "sport": "nba", "start": "2023-10-01", "end": "2024-04-01",
+                                 "k_cumulative": i}, sort_keys=True) + "\n")
+    return p
+
+
+def test_s51_k_source_ledger_reads_k_and_never_appends():
+    """S51(a): --k-source ledger prices the deflation at the ledger's max k_cumulative,
+    reads it READ-ONLY (row count unchanged -- run_gate charges no trial), and refuses a
+    non-canonical ledger under the same S40b/RT-3 rule that guards backtest_runner."""
+    import pytest
+    from run_gate import resolve_n_trials, CORPORA
+
+    led = _tmp_ledger(7)
+    before = led.read_bytes()
+
+    # refusal first: a scratch path restarts K and LOOSENS the bar -> raise, do not read.
+    with pytest.raises(ValueError, match="non-canonical ledger"):
+        resolve_n_trials("ledger", led)
+
+    assert resolve_n_trials("ledger", led, allow_noncanonical_ledger=True) == 7
+    assert resolve_n_trials("corpora") == len(CORPORA) == 2
+    with pytest.raises(ValueError, match="k_source must be one of"):
+        resolve_n_trials("wishful")
+
+    rows = run_gate_in_process(offline_predict_fn, k_source="ledger", ledger_path=led,
+                               allow_noncanonical_ledger=True)
+    assert all(r["n_trials_this_sweep"] == 7 for r in rows)
+    assert all(r["k_source"] == "ledger" for r in rows)
+    assert gate_exit_code(rows) == 0                     # K prices deflation, never blocks
+    assert led.read_bytes() == before                    # append-free: 7 rows in, 7 out
+    assert len(before.splitlines()) == 7
+
+
+def test_s51_default_path_is_byte_identical():
+    """S51(a): the DEFAULT sweep must be the pre-S51 gate byte for byte. The digest is of
+    the PRE-CHANGE `python -m ...run_gate --golden` stdout, captured before the edit and
+    newline-normalized (the Windows console writes CRLF; sha256 of the raw capture is
+    28ba7f97d2f4c26ac7264816d6b7580c396ec5c54b2587cfd5861c16a0db63fe, 782 bytes)."""
+    import hashlib, io
+    from contextlib import redirect_stdout
+    from run_gate import main
+    buf = io.StringIO()
+    with redirect_stdout(buf):
+        code = main(["--golden"])
+    out = buf.getvalue().encode("ascii")
+    assert code == 0
+    assert hashlib.sha256(out).hexdigest() == (
+        "1f523ea25a59785dcdf898fc2724b7e74891bc52151cd8ce1b6db9e1a6635348"), out
+
+    # and --golden refuses the ledger source outright: its contract is offline / no data/.
+    try:
+        main(["--golden", "--k-source", "ledger"])
+        raise SystemExit("FAIL: --golden accepted --k-source ledger")
+    except SystemExit as exc:
+        assert exc.code == 2
+
+
+def test_s51_golden_seal_sidecar_regenerate_and_tamper():
+    """S51(b): gen_golden emits the digest into a sidecar, so a legitimate regeneration
+    no longer needs a hand-computed constant. The constant stays as the fallback pin: the
+    two must agree, and any mismatch fails closed NAMING BOTH values."""
+    import hashlib, shutil, tempfile
+    from pathlib import Path
+    import pytest
+    import golden_loader as GL
+    from gen_golden import write_sidecar
+
+    work = Path(tempfile.mkdtemp(prefix="s51_seal_"))
+    fx = work / "game_states.json"
+    shutil.copyfile(GL.DEFAULT_GOLDEN, fx)
+    original, orig_const = GL.DEFAULT_GOLDEN, GL.GOLDEN_SHA256
+    try:
+        # no sidecar -> the constant is the fallback pin (today's committed behaviour).
+        GL.DEFAULT_GOLDEN = fx
+        assert GL.expected_seal(fx) == (orig_const, "constant")
+        assert GL.load_golden()
+
+        # "regenerated": new bytes + emitted sidecar + the refreshed constant -> passes.
+        fx.write_bytes(GL.DEFAULT_GOLDEN.read_bytes() + b" ")
+        digest = write_sidecar(str(fx))
+        assert digest == hashlib.sha256(fx.read_bytes()).hexdigest() != orig_const
+        GL.GOLDEN_SHA256 = digest
+        assert GL.expected_seal(fx) == (digest, "sidecar")
+        assert GL.load_golden()
+
+        # tampered fixture, sidecar+constant intact -> fail closed, both digests named.
+        fx.write_bytes(fx.read_bytes() + b" ")
+        got = hashlib.sha256(fx.read_bytes()).hexdigest()
+        with pytest.raises(ValueError, match="seal mismatch") as err:
+            GL.load_golden()
+        assert digest in str(err.value) and got in str(err.value)
+
+        # a sidecar edited alone (constant stale) -> fail closed, both values named.
+        GL.GOLDEN_SHA256 = orig_const
+        with pytest.raises(ValueError, match="seal disagreement") as err:
+            GL.expected_seal(fx)
+        assert digest in str(err.value) and orig_const in str(err.value)
+    finally:
+        GL.DEFAULT_GOLDEN, GL.GOLDEN_SHA256 = original, orig_const
+        shutil.rmtree(work, ignore_errors=True)
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     passed = 0
