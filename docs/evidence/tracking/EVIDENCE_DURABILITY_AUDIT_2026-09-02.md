@@ -348,3 +348,29 @@ can regenerate.
 7. **`data/` is gitignored and machine-local.** A `data/` artifact that resolves here is not
    evidence that it resolves on any other checkout, and the inverse holds too. That cuts both
    ways for the SAFE count.
+
+
+## RECOVERY PASS, same day (orchestrator, after this audit)
+
+The audit named specific missing artifacts, so they were hunted rather than
+re-measured. Three of the largest concentrations were recovered intact:
+
+| artifact | rows it backs | outcome |
+|---|---|---|
+| `baseball_night_pitchview_2026-09-01.md` + 72 renders | G11, G32 (both BROKEN) | **RECOVERED** from unmerged worktree commit `00b9ed4de`; the object was still reachable in the store |
+| `footage_cycle_ledger.jsonl` | G48, G49, G50, G51 (four rows collapse on this one file) | **RECOVERED** from the pod, 17 rows, now under `docs/evidence/tracking/recovered_pod_artifacts/` |
+| `/workspace/track_daemon.log` | 8 rows -- the single largest fragility concentration | **RECOVERED** from the pod, 982 lines, kept as `.txt` to respect the `.gitignore` `.log` rule |
+| `/tmp/t3b_reemit/` | 7 rows | **PERMANENTLY LOST.** Destroyed by the pod reallocation exactly as G54 predicted. Those rows stay BROKEN and nobody should spend another lane looking. |
+
+Nothing above needed re-measuring. The evidence existed; it was simply somewhere
+no verifier could reach -- an unmerged worktree commit, or a pod path outside the
+repo. That is the whole shape of the problem this audit found.
+
+The recovered daemon log also independently corroborates G47: its verdict lines
+read `passed=False coordinate_contract: rows declare coordinate_space image_px
+not accepted for sport`, which is the contract-only rejection G47 measured at
+119 of 187.
+
+NOT recovered and still outstanding: the `data/tracking/<game>/harness_verdict.json`
+class-name problem (a placeholder path segment is unopenable under A7 regardless
+of whether the data survives), and the rows citing no evidence file at all.
