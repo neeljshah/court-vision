@@ -1,0 +1,5 @@
+verdict_class,outcome_count,distinct_current_table_count,row_count_matching_historical_outcomes
+coordinate_contract_rejection,60,14,0
+insufficient_data,1,1,0
+real_verdict,7,5,3
+total,68,20,3

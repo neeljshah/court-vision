@@ -1,0 +1,4 @@
+game_id,historical_rows,current_rows,current_frames,source_path,source_bytes,header_and_content_check
+tennis_3x3eEWCZmWQ,266,266,101,data/footage_corpus/tennis__tennis_3x3eEWCZmWQ.mp4,73051009,"Opened header, first, and last row; 267 CSV lines equals 266 data rows; court_feet rows present."
+tennis_nyYk2nPZAwY,415,415,160,data/footage_corpus/tennis__tennis_nyYk2nPZAwY.mp4,68996181,"Opened header, first, and last row; 416 CSV lines equals 415 data rows; court_feet rows present."
+tennis_08,228,228,93,data/footage_corpus/tennis__tennis_08.mp4,30729994,"Opened header, first, and last row; 229 CSV lines equals 228 data rows; court_feet rows present."

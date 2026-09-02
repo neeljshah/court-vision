@@ -1,0 +1,7 @@
+scope,units,source_present,source_present_pct
+all_historical_outcomes,68,8,11.76
+distinct_current_table_paths,20,6,30.00
+current_rows_match_historical,3,3,100.00
+jump_eligible_outcomes,7,7,100.00
+distinct_jump_eligible_current_paths,5,5,100.00
+row_matching_jump_eligible_partials,3,3,100.00
