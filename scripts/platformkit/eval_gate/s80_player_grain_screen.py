@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import glob
 import json
+import sys
 from datetime import date as _date
 from datetime import timedelta
 from pathlib import Path
@@ -75,13 +76,20 @@ def _jsonl(directory: Path) -> List[dict]:
     return rows
 
 
-def load_player_ticks(joined: Path = JOINED, grade: Path = GRADE) -> pd.DataFrame:
-    """Scored ticks (outcome + market line) that also carry pitcher identity at the tick."""
-    ident = {(r["game_id"], r["ts"]): r for r in _jsonl(grade) if r.get("mlb_pitcher_id") is not None}
+def load_player_ticks(joined: Path = JOINED, grade: Path = GRADE, *,
+                      rejoin: bool = True) -> pd.DataFrame:
+    """Scored ticks (outcome + market line) that also carry pitcher identity at the tick.
+
+    rejoin=True  -- identity re-joined from the raw grade store on (game_id, ts) (S80).
+    rejoin=False -- identity read straight off the joined row, which carries it since
+    S83 (ticker_settlement_join._CARRY_KEYS). Both paths must agree."""
+    ident = ({(r["game_id"], r["ts"]): r for r in _jsonl(grade)
+              if r.get("mlb_pitcher_id") is not None} if rejoin else {})
     rows = []
     for r in _jsonl(joined):
         key = (r["game_id"], r["ts"])
-        if key not in ident or r.get("outcome") is None or r.get("market_prob") is None:
+        src = ident.get(key) if rejoin else (r if r.get("mlb_pitcher_id") is not None else None)
+        if src is None or r.get("outcome") is None or r.get("market_prob") is None:
             continue
         summary = str(r.get("state_summary") or "")
         parts = dict(p.split("=", 1) for p in summary.split() if "=" in p)
@@ -92,8 +100,8 @@ def load_player_ticks(joined: Path = JOINED, grade: Path = GRADE) -> pd.DataFram
         rows.append({"game": str(r["game_id"]), "timestamp": str(r["ts"]),
                      "outcome": float(r["outcome"]), "model_prob": float(r["model_prob"]),
                      "market_prob": float(r["market_prob"]), "signal": diff,
-                     "pitcher_id": int(ident[key]["mlb_pitcher_id"]),
-                     "batter_id": int(ident[key]["mlb_batter_id"]),
+                     "pitcher_id": int(src["mlb_pitcher_id"]),
+                     "batter_id": int(src["mlb_batter_id"]),
                      "half": parts.get("half", "")})
     frame = pd.DataFrame(rows)
     if frame.empty:
@@ -227,8 +235,9 @@ def score(scored: pd.DataFrame, folds: List[dict], part, *, embargo_days: int) -
     return summary, series
 
 
-def run(*, embargo_days: int = 1, out_dir: Path = OUT_DIR, suffix: str = "") -> dict:
-    ticks = load_player_ticks()
+def run(*, embargo_days: int = 1, out_dir: Path = OUT_DIR, suffix: str = "",
+        rejoin: bool = True) -> dict:
+    ticks = load_player_ticks(rejoin=rejoin)
     logs = pd.read_parquet(GAMELOGS, columns=["player_id", "date", "is_pitcher", "outs", "earnedRuns"])
     frame = attach_feature(ticks, logs)
     screen, part = screen_side(frame)
@@ -249,8 +258,10 @@ def run(*, embargo_days: int = 1, out_dir: Path = OUT_DIR, suffix: str = "") -> 
 
 
 def main() -> int:
+    rejoin = "--no-rejoin" not in sys.argv          # S83: read identity off the joined store
     for embargo, suffix in ((1, ""), (0, "_embargo0")):
-        res = run(embargo_days=embargo, suffix=suffix)
+        res = run(embargo_days=embargo, suffix=suffix + ("" if rejoin else "_s83"),
+                  rejoin=rejoin)
         if res["verdict"] == "SCREEN_INFEASIBLE":
             print("embargo=%d SCREEN_INFEASIBLE %s" % (embargo, res["folds"]))
             continue

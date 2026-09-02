@@ -148,6 +148,42 @@ def test_backfill_sport_join_rate(tmp_path, monkeypatch):
     assert result["join_rate"] == pytest.approx(2 / 3)
 
 
+# --------------------------------------------------------------------------- #
+# S83: the five mlb_* player-identity fields survive the join unchanged, and a tick
+# without them still produces the exact same non-player row it always did.
+# --------------------------------------------------------------------------- #
+def test_player_identity_carried_through_and_other_fields_unchanged(tmp_path):
+    grade_dir = tmp_path / "grade"
+    p = grade_dir / "mlb" / "KXMLBGAME-26JUL011235CWSBAL.jsonl"
+    ids = {"mlb_batter_id": 592450, "mlb_pitcher_id": 656302,
+           "mlb_pitcher_pitch_count": 74, "mlb_ondeck_id": 700000,
+           "mlb_bullpen_used": [656492, 111]}
+    with_ids = dict(_tick(p.stem, "2026-07-01T17:00:00Z", 0.58, 0.55), **ids)
+    without = _tick(p.stem, "2026-07-01T17:05:00Z", 0.63, 0.60)
+    _write_ticks(p, [with_ids, without])
+    resolver = _StubHomeWinResolver({p.stem: 1})
+
+    J.join_ticker_file("mlb", p, resolver, joined_dir=tmp_path / "joined",
+                       grade_dir=grade_dir)
+    rows = [json.loads(x) for x in
+            (tmp_path / "joined" / "mlb" / p.name).read_text(encoding="utf-8").splitlines()]
+
+    assert len(rows) == 2
+    for k, v in ids.items():
+        assert rows[0][k] == v            # carried through UNCHANGED
+        assert k not in rows[1]           # absent stays absent, never fabricated
+    # every non-player field is byte-identical to the pre-S83 schema
+    non_player = {k: v for k, v in rows[0].items() if k not in ids}
+    assert list(non_player) == list(rows[1])   # identical key order + key set
+    assert non_player == {"sport": "mlb", "game_id": p.stem,
+                          "ts": "2026-07-01T17:00:00Z", "model_prob": 0.58,
+                          "market_prob": 0.55, "side": "home",
+                          "state_summary": "inning=5", "outcome": 1.0,
+                          "close_source": J._CLOSE_SOURCE_LABEL["mlb"],
+                          "close_prob": non_player["close_prob"],
+                          "close_ts": non_player["close_ts"], "edge_claimed": False}
+
+
 def test_backfill_sport_unknown_sport_is_honest_empty(tmp_path):
     result = J.backfill_sport("curling", grade_dir=tmp_path / "grade")
     assert result == {"sport": "curling", "n_files": 0, "n_joined": 0,
