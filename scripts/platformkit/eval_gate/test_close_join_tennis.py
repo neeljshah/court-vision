@@ -127,3 +127,32 @@ def test_states_are_monotone_in_event_date_within_each_corpus_unit():
 def test_unknown_join_key_raises_rather_than_silently_falling_back():
     with pytest.raises(KeyError, match="event_uid_typo"):
         coverage_report("tennis", key="event_uid_typo")
+
+
+def test_gate_corpus_states_accounts_for_every_dropped_row(monkeypatch):
+    """RT-17: gate_corpus_states discarded _joined's close-drop counts and then
+    applied its own four-way filter with nothing counting what that removed, so
+    the scored denominator was not the corpus denominator. MEASURED before: a
+    10-row join returned 6 states and named none of the 4 drops. Synthetic join,
+    no parquet read."""
+    from scripts.platformkit.eval_gate import close_join as cj
+
+    frame = pd.DataFrame({
+        "event_id": ["e%d" % i for i in range(10)],
+        "date": pd.to_datetime(["2026-01-%02d" % (i + 1) for i in range(10)]),
+        "devig_close_prob": [0.5] * 6 + [np.nan] * 2 + [0.5, 0.5],
+        "home_team": ["H"] * 10, "away_team": ["A"] * 10, "corpus_unit": ["u"] * 10,
+        "y": [1.0] * 8 + [np.nan, 1.0], "p_base": [0.5] * 9 + [np.nan],
+        "_spine_join": ["both"] * 7 + ["left_only"] + ["both"] * 2})
+    close_counts = {"bad_price_drop_count": 3, "null_close_count": 2, "valid_close_count": 8}
+    monkeypatch.setattr(cj, "_joined", lambda *a, **k: (frame, close_counts))
+
+    counts: dict[str, int] = {}
+    states = cj.gate_corpus_states("tennis", "2026-01-01", "2026-12-31", counts=counts)
+    assert len(states) == 6 and counts["n_states"] == 6
+    assert counts["spine_unmatched"] == 1 and counts["null_close"] == 1 and counts["null_target"] == 2
+    # every joined row lands in exactly one bucket -- no silent drop survives
+    assert (counts["n_states"] + counts["spine_unmatched"] + counts["null_close"]
+            + counts["null_target"]) == counts["n_joined"] == len(frame)
+    assert close_counts.items() <= counts.items()          # close drops carried through
+    assert isinstance(cj.gate_corpus_states("tennis", "a", "b"), list)   # callers unchanged
