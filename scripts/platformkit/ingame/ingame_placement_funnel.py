@@ -37,6 +37,12 @@ COMPONENT = "m_ingame_placement_funnel"
 # earlier one; the reason it carries tells us the FIRST stage it failed.
 _STAGE_OF_REASON = {
     "no_live_state": "live_state",
+    # S107: the ticker DID have a live team-match, but that game belongs to a
+    # different date (a series' other night / the other half of a doubleheader),
+    # so no live state was bound -- same funnel stage as no_live_state. Mapped
+    # explicitly because an UNMAPPED reason falls through as "cleared every
+    # stage", which would silently inflate the funnel.
+    "bridge_date_mismatch": "live_state",
     "no_model_prob": "model_prob",
     "no_home_leg": "home_leg",
     "bad_price": "priced",

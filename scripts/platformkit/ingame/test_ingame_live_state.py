@@ -676,3 +676,17 @@ def test_live_states_npb_never_raises_on_source_error():
     def _boom(url):
         raise RuntimeError("boom")
     assert S.live_states("npb", http_get=_boom) == []
+
+
+def test_start_time_copied_from_event_date():
+    """S107: the Kalshi-ticker bridge tells two nights of a series apart by comparing
+    the ticker's encoded first pitch to THIS field, so it must carry the ESPN event's
+    own scheduled start verbatim -- and be None (no info) when the feed omits it."""
+    ev = _wc_event(live=True)
+    ev["date"] = "2026-06-22T20:00Z"
+    payload = {"events": [ev]}
+    st = S.live_state("soccer_intl", http_get=lambda url: payload)
+    assert st is not None and st["start_time"] == "2026-06-22T20:00Z"
+    # feed omits it -> None, never fabricated
+    st2 = S.live_state("soccer_intl", http_get=lambda url: {"events": [_wc_event(live=True)]})
+    assert st2 is not None and st2["start_time"] is None

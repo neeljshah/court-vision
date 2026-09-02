@@ -162,3 +162,80 @@ def test_no_live_game_no_bet(monkeypatch, tmp_path):
     )
     assert hb["n_bets"] == 0
     assert hb["games"][0]["reason"] == "no_live_state"  # honest: no fabricated game
+
+
+# ---------------------------------------------------------------------------
+# S107: FIRST-PITCH bridge guard. The day-granular DATE GUARD above compares the
+# TICKER to TODAY and never looks at the matched game, and it allows an ET-yesterday
+# ticker on purpose -- so day-2 of a series still bound to day-1's ticker (S106: 122
+# of 227 scored MLB tickers held > 1 real game). These cover the added predicate:
+# nearest start time, within ticker_date.BRIDGE_WINDOW_H, no-info -> unchanged.
+# ---------------------------------------------------------------------------
+
+def _milpit(start_time):
+    st = dict(_LIVE_MIL_PIT)
+    st["start_time"] = start_time
+    return st
+
+
+# ticker 2026-07-06 18:40 ET == 22:40Z; the SAME two teams play again the next night.
+_TICKER_JUL06 = "KXMLBGAME-26JUL061840MILPIT"
+_NOW_JUL07_EVENING = datetime(2026, 7, 8, 0, 30, 0, tzinfo=timezone.utc)  # 20:30 ET Jul 7
+_NOW_JUL06_EVENING = datetime(2026, 7, 6, 23, 30, 0, tzinfo=timezone.utc)  # 19:30 ET Jul 6
+
+
+def test_next_day_of_series_does_not_bridge_to_previous_ticker(monkeypatch):
+    """Day-2 of a MIL@PIT series must NOT bind to day-1's ticker. The pre-existing
+    day guard PASSES this case (a Jul-6 ticker is 'yesterday' on Jul 7)."""
+    day2 = _milpit("2026-07-07T22:40Z")
+    monkeypatch.setattr(L._ls, "live_states", lambda sport, **kw: [day2])
+    reason = {}
+    st = L._scan_live_by_legs("mlb", _MIL_PIT_LEGS, gid=_TICKER_JUL06,
+                              nowdt=_NOW_JUL07_EVENING, reason_out=reason)
+    assert st is None
+    assert reason == {"reason": "bridge_date_mismatch"}
+
+
+def test_same_day_game_still_bridges(monkeypatch):
+    day1 = _milpit("2026-07-06T22:40Z")
+    monkeypatch.setattr(L._ls, "live_states", lambda sport, **kw: [day1])
+    reason = {}
+    st = L._scan_live_by_legs("mlb", _MIL_PIT_LEGS, gid=_TICKER_JUL06,
+                              nowdt=_NOW_JUL06_EVENING, reason_out=reason)
+    assert st is day1 and reason == {}
+
+
+def test_doubleheader_binds_each_ticker_to_its_own_game(monkeypatch):
+    """Two tickers, same teams, SAME day -> each takes the nearest first pitch."""
+    g1 = _milpit("2026-07-12T17:05Z")   # 13:05 ET
+    g2 = _milpit("2026-07-12T23:15Z")   # 19:15 ET
+    monkeypatch.setattr(L._ls, "live_states", lambda sport, **kw: [g1, g2])
+    now = datetime(2026, 7, 12, 23, 30, 0, tzinfo=timezone.utc)  # 19:30 ET Jul 12
+    assert L._scan_live_by_legs("mlb", _MIL_PIT_LEGS, nowdt=now,
+                                gid="KXMLBGAME-26JUL121305MILPITG1") is g1
+    assert L._scan_live_by_legs("mlb", _MIL_PIT_LEGS, nowdt=now,
+                                gid="KXMLBGAME-26JUL121915MILPITG2") is g2
+
+
+def test_state_without_start_time_is_no_info_not_a_reject(monkeypatch):
+    """Missing != bad (contract B3): a state carrying no start_time binds as before."""
+    monkeypatch.setattr(L._ls, "live_states", lambda sport, **kw: [_LIVE_MIL_PIT])
+    assert L._scan_live_by_legs("mlb", _MIL_PIT_LEGS, gid=_TICKER_JUL06,
+                                nowdt=_NOW_JUL07_EVENING) is not None
+
+
+def test_heartbeat_counts_bridge_date_mismatch(monkeypatch, tmp_path):
+    """The skip is NAMED in the heartbeat, distinct from a genuinely absent game."""
+    monkeypatch.setattr(L._ls, "live_states",
+                        lambda sport, **kw: [_milpit("2026-07-07T22:40Z")])
+    ticks = [{"game_id": _TICKER_JUL06, "side": "Pittsburgh Pirates", "prob": 0.465},
+             {"game_id": _TICKER_JUL06, "side": "Milwaukee Brewers", "prob": 0.535}]
+    hb = L.poll_once(sports=["mlb"], inplay_fetch_fn=lambda s: ticks,
+                     live_state_fn=lambda s, g: None, model_fn=lambda s, st: 0.55,
+                     finals_fn=lambda s: [], grade_dir=tmp_path / "g",
+                     ledger_path=tmp_path / "l.jsonl",
+                     heartbeat_path=tmp_path / "hb.json",
+                     now=_NOW_JUL07_EVENING)
+    assert hb["n_pairs"] == 0 and hb["n_bets"] == 0
+    assert hb["games"][0]["reason"] == "bridge_date_mismatch"
+    assert hb["grade_write_fail_by_reason"] == {"bridge_date_mismatch": 1}

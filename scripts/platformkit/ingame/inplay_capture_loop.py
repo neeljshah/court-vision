@@ -53,6 +53,7 @@ from scripts.platformkit.ingame import inplay_daytrader as _dt
 from scripts.platformkit.ingame import ingame_live_state as _ls
 from scripts.platformkit.ingame import ingame_segment_trust as _segment_trust
 from scripts.platformkit.ingame import settle_stamp as _settle
+from scripts.platformkit.ingame import ticker_date as _tdate
 from scripts.platformkit.odds_provider.kalshi_series_spec import ticker_game_date as _ticker_game_date
 from scripts.platformkit.paper.et_day import now_et_day as _now_et_day
 
@@ -452,7 +453,9 @@ def _cached_live_states(sport: str, cache: Optional[Dict[str, List[Dict[str, Any
 def _scan_live_by_legs(sport: str, legs: Dict[str, float],
                        gid: Optional[str] = None,
                        nowdt: Optional[datetime] = None,
-                       states: Optional[List[Dict[str, Any]]] = None) -> Optional[Dict[str, Any]]:
+                       states: Optional[List[Dict[str, Any]]] = None,
+                       reason_out: Optional[Dict[str, Any]] = None
+                       ) -> Optional[Dict[str, Any]]:
     """Bridge a Kalshi-keyed game to its ESPN live state by TEAM.
 
     The capture loop keys games by their Kalshi ticker (e.g. KXWCGAME-26JUN22ARGAUT), which
@@ -471,10 +474,24 @@ def _scan_live_by_legs(sport: str, legs: Dict[str, float],
     tomorrow-or-later is rejected before the scan even runs. An unparseable/absent gid is
     honest no-info -- the guard is a no-op and behavior is unchanged.
 
+    FIRST-PITCH GUARD (S107, the residual the DATE GUARD above cannot see): that guard
+    compares the TICKER to TODAY and never looks at the matched game, and it allows an
+    ET-yesterday ticker on purpose -- so a series' NEXT game still binds to the PREVIOUS
+    day's ticker (S106: 122 of 227 scored MLB tickers hold > 1 real game). Among the
+    team-matching states we now keep the one whose OWN start time is NEAREST the ticker's
+    encoded first pitch, and only within ticker_date.BRIDGE_WINDOW_H; a candidate outside
+    that window is skipped and counted as bridge_date_mismatch. This also separates a
+    doubleheader (two tickers, same teams, same day) by time. Either side missing a time
+    is honest NO INFO -> first team match wins, exactly as before.
+
     *states*: an optional pre-fetched _ls.live_states(sport) list (see
     _cached_live_states) -- the caller supplies this so N games in the same sport/tick
     share ONE ESPN scoreboard fetch instead of each triggering its own. None (default,
     every existing/test call site) -> fetches live directly, byte-identical to before.
+
+    *reason_out*: an optional dict the caller reads AFTER a None return to learn WHY --
+    only "bridge_date_mismatch" is ever written (a plain no-team-match leaves it empty,
+    so the caller keeps its existing "no_live_state" reason). Observability only.
     """
     try:
         game_date = _ticker_game_date(gid)
@@ -482,13 +499,25 @@ def _scan_live_by_legs(sport: str, legs: Dict[str, float],
             today = date.fromisoformat(_now_et_day(nowdt))
             if game_date not in (today, today - timedelta(days=1)):
                 return None
+        best: Optional[Dict[str, Any]] = None
+        best_gap: Optional[float] = None
         for st in (states if states is not None else _ls.live_states(sport)):
             if not isinstance(st, dict):
                 continue
             home = str(st.get("home_display") or st.get("home") or "")
             away = str(st.get("away_display") or st.get("away") or "")
-            if _team_in_legs(home, legs) and _team_in_legs(away, legs):
-                return st
+            if not (_team_in_legs(home, legs) and _team_in_legs(away, legs)):
+                continue
+            gap = _tdate.bridge_gap_hours(gid, st)
+            if gap is None:
+                return st  # no first-pitch info on one side -> unchanged behavior
+            if gap > _tdate.BRIDGE_WINDOW_H:
+                if reason_out is not None:
+                    reason_out["reason"] = "bridge_date_mismatch"
+                continue
+            if best_gap is None or gap < best_gap:
+                best, best_gap = st, gap
+        return best
     except Exception as exc:  # noqa: BLE001 -- a scan error is no match, never a crash
         logger.debug("inplay_capture_loop scan-by-legs(%s) failed: %s", sport, exc)
     return None
@@ -790,12 +819,14 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
     ONCE per sport per tick instead of once per game (see _cached_live_states)."""
     row: Dict[str, Any] = {"sport": sport, "game_id": gid, "paired": False,
                            "bet": False, "reason": ""}
+    bridge_reason: Dict[str, Any] = {}
     try:
         state = ls_fn(sport, gid)
         if not isinstance(state, dict):
             # gid is a Kalshi ticker, not an ESPN id -> bridge to the live game by team.
             state = _scan_live_by_legs(sport, legs, gid=gid, nowdt=nowdt,
-                                       states=_cached_live_states(sport, live_states_cache))
+                                       states=_cached_live_states(sport, live_states_cache),
+                                       reason_out=bridge_reason)
         if not isinstance(state, dict):
             # KBO REORDER (kbo-reorder-verify lane, capture-only): ESPN cannot resolve a
             # KBO live state at all (ESPN doesn't carry the league), so this branch is
@@ -813,7 +844,11 @@ def _process_game(sport: str, gid: str, legs: Dict[str, float],
                     logger.debug(
                         "inplay_capture_loop kbo capture-only deep(%s/%s) failed: %s",
                         sport, gid, exc)
-            row["reason"] = "no_live_state"
+            # "bridge_date_mismatch" when the ONLY team-matching live game belongs to a
+            # different date than this ticker (S107) -- distinct from a genuinely absent
+            # live game, and counted per tick in the heartbeat's
+            # grade_write_fail_by_reason so the ops SLA can see the two apart.
+            row["reason"] = str(bridge_reason.get("reason") or "no_live_state")
             return row
         state.setdefault("sport", sport)  # segment-trust floor lookup needs the sport
         # DEEP base-out enrichment (MLB): resolve gid (Kalshi ticker) -> statsapi gamePk ->

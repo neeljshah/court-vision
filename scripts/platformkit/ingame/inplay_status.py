@@ -37,6 +37,7 @@ from typing import Any, Dict, List, Optional
 # Human label + ordering for each per-game reason emitted by the capture loop.
 _REASON_LABEL = {
     "no_live_state": "not live yet (future/pregame on book)",
+    "bridge_date_mismatch": "live game found, but it is a different date's game",
     "no_model_prob": "live, no model number resolved",
     "no_home_leg": "live, price legs would not align",
     "below_floor": "live, priced -- no edge past floor",

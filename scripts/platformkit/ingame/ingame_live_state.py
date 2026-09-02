@@ -380,6 +380,14 @@ def _extract(sport: str, ev: dict, p0: Optional[float],
         "p0": p0v,            # leak-free pregame prior (auto-supplied when caller omits it)
         "p0_source": p0_src,  # 'CALLER' | 'PRIOR' | 'BASE_FALLBACK' (honest label)
         "status": str(st.get("shortDetail") or st.get("detail") or st.get("name", "")),
+        # start_time: the ESPN event's own scheduled start (ISO 8601 UTC), copied
+        # verbatim. ADDITIVE -- no existing consumer reads it. S107 needs it because
+        # the Kalshi-ticker bridge (inplay_capture_loop._scan_live_by_legs) matched
+        # only on team names, so a series' consecutive games are indistinguishable to
+        # it; comparing this to the ticker's OWN encoded first pitch (ticker_date.py)
+        # is what tells the two nights apart. None when the feed omits it -> the
+        # bridge falls back to its previous team-only behavior (missing != bad).
+        "start_time": str(ev.get("date") or "") or None,
     }
     out.update(_segment_fields(sport, ev))  # period/inning/half/minute/set for segment CLV
     # DEEP in-game state (MLB): base-out + run-expectancy from the live situation block.
