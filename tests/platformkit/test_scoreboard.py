@@ -113,25 +113,44 @@ def test_open_rows_excluded():
 
 
 def test_settled_no_close_excluded_from_clv_count():
-    """Rows with clv_pct=None (no close found) are excluded from n_settled."""
+    """Rows with clv_pct=None (no close found) are excluded from the CLV counts but
+    still counted as real settled bets.
+
+    Contract set by 8b297860b (2026-06-26): n_settled counts EVERY status='settled'
+    row so the track record cannot under-report itself to zero; the no-close rows
+    surface separately as n_no_close and contribute nothing to any CLV statistic.
+    """
     rows = [_settled_no_close(), _settled_no_close()]
     board = build_scoreboard(rows=rows)
-    assert board["n_settled"] == 0
+    assert board["n_settled"] == 2      # real settled bets, counted honestly
+    assert board["n_no_close"] == 2     # ... and flagged as carrying no close
+    # every CLV statistic stays empty: no close was captured, so none is computable
+    assert board["n_clv"] == 0
+    assert board["n_true_close"] == 0
+    assert board["n_proxy_close"] == 0
+    assert board["mean_clv_pct"] == "INSUFFICIENT_DATA"
+    assert board["pct_beat_close"] is None
+    assert board["flat_unit_clv"] is None
 
 
 # ---------------------------------------------------------------------------
 # N / mean / pct-beat-close
 # ---------------------------------------------------------------------------
 
-def test_n_settled_counts_only_clv_rows():
+def test_n_settled_counts_all_settled_and_n_clv_counts_only_clv_rows():
+    """n_settled is the settled population; n_clv/n_no_close split it by close capture."""
     rows = [
-        _settled(2.5),          # has clv_pct -> counted
-        _settled(-1.0),         # has clv_pct -> counted
-        _open_row(),            # open -> excluded
-        _settled_no_close(),    # no clv_pct -> excluded
+        _settled(2.5),          # settled + has clv_pct
+        _settled(-1.0),         # settled + has clv_pct
+        _open_row(),            # open -> excluded from every settled count
+        _settled_no_close(),    # settled, no clv_pct -> in n_settled, not in n_clv
     ]
     board = build_scoreboard(rows=rows)
-    assert board["n_settled"] == 2
+    assert board["n_settled"] == 3      # the three settled rows
+    assert board["n_clv"] == 2          # only the two carrying a captured close
+    assert board["n_no_close"] == 1
+    # the CLV denominator is the clv subset (2), never the settled count (3)
+    assert board["pct_beat_close"] == 50.0
 
 
 def test_mean_clv_pct():

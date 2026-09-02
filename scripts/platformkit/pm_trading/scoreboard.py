@@ -8,8 +8,9 @@ docstring below.
 GRADE_SUMMARY.JSON FIELD SHAPE (the gate reads these exact keys):
   {
     "as_of":            "<ISO-8601 UTC>",
-    "n_settled":        <int>,            # count of settled rows with clv_pct
+    "n_settled":        <int>,            # ALL settled rows (with or without a close)
     "n_clv":            <int>,            # true-close sample backing mean_clv_pct
+    "n_no_close":       <int>,            # settled rows with no captured close
     "min_clv_n":        <int>,            # MIN_CLV_N floor (small-N noise guard)
     "mean_clv_pct":     <float|str>,      # mean CLV %, or "INSUFFICIENT_DATA" below floor
     "pct_beat_close":   <float|null>,     # % of settled rows where clv_pct > 0
@@ -34,10 +35,14 @@ GRADE_SUMMARY.JSON FIELD SHAPE (the gate reads these exact keys):
   }
 
 GATE CRITERIA (pre-registered constants; decision-only, never auto-authorises):
-  GATE_MIN_N         = 500    settled rows with clv_pct required
+  GATE_MIN_N         = 500    settled rows CARRYING A clv_pct required -- i.e. the
+                              n_clv/n_true_close sample, NOT n_settled (which counts
+                              no-close rows too and would inflate the denominator).
   GATE_CLV_LB_PCT    = 0.0    bootstrap 95 % lower bound on mean_clv_pct > this
   GATE_PCT_BEAT_CLOSE= 55.0   pct_beat_close >= this
   ROI is NEVER a gate criterion.
+  These constants are advisory copies. realmoney_gate.evaluate recomputes eligibility
+  from the ledger rows themselves (_settled_clv_rows), so this file cannot spoof it.
 
 INVARIANTS: <=300 LOC; ASCII only; no secrets; no $-edge field; no ROI anywhere.
 Build only under scripts/platformkit/.
