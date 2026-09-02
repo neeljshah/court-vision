@@ -1,6 +1,8 @@
 """Synthetic coverage for CSCV probability of backtest overfitting."""
 from __future__ import annotations
 
+import itertools
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -14,13 +16,29 @@ from scripts.platformkit.eval_gate.pbo import (
 
 
 def test_contiguous_blocks_covers_every_row_once():
-    n_obs = 200
+    n_obs = 208                              # an exact multiple of 16: nothing to trim
     blocks = contiguous_blocks(n_obs, 16)
     assert sum(len(b) for b in blocks) == n_obs
     seen = np.concatenate(blocks)
     assert list(seen) == list(range(n_obs))  # disjoint, ascending, covers every row
     with pytest.raises(ValueError):
         contiguous_blocks(10, 16)
+
+
+def test_blocks_are_equal_and_the_trim_is_reported():
+    """RT-15: np.array_split over a non-multiple n_obs gave UNEQUAL blocks, so the
+    IS half and its OOS complement held different row counts across combos --
+    the non-uniform-rank break _check_s_blocks rejects for odd s_blocks. MEASURED
+    before: contiguous_blocks(70, 16) -> [5]*6 + [4]*10, IS half 32..38 rows."""
+    sizes = [len(b) for b in contiguous_blocks(70, 16)]
+    assert len(set(sizes)) == 1 and sizes[0] == 4        # 70 -> 64 scored, equal
+    halves = [sum(sizes[i] for i in c) for c in itertools.combinations(range(16), 8)]
+    assert min(halves) == max(halves) == 32              # every IS half identical
+    rng = np.random.default_rng(11)
+    result = cscv_pbo(np.clip(rng.random((70, 3)), 0.01, 0.99),
+                      rng.integers(0, 2, 70), s_blocks=16, max_splits=200)
+    assert result.n_obs == 70                            # input denominator unchanged
+    assert result.detail["n_obs_scored"] == 64 and result.detail["dropped_tail_rows"] == 6
 
 
 def test_enumerate_split_indices_is_deterministic_and_capped():
