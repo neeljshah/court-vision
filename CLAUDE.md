@@ -1,6 +1,6 @@
 ## CourtVision — Agent Onboarding
 
-**What:** AI-native NBA intelligence platform evolving toward a domain-agnostic, multi-sport forecasting + decision engine. CV tracking + NBA API + 85 trained signals + 80-artifact intelligence layer → Monte Carlo possession sim → calibrated predictions. Claude agents autonomously discover, validate, and ship (or reject) prediction signals.
+**What:** AI-native NBA intelligence platform evolving toward a domain-agnostic, multi-sport forecasting + decision engine. CV tracking + NBA API + 60 candidate signal classes (`eval_gate/spa_catalog_report.txt`; 0 shipped) + 86 registry signals (`data/registry/signal_registry.parquet`; untested) + a 151-file intelligence layer (`data/intelligence/`) → Monte Carlo possession sim → calibrated predictions. Claude agents autonomously discover, validate, and ship (or reject) prediction signals.
 **Architecture direction:** sport-blind `kernel/` (the validated machinery) + `domains/<sport>/` adapters — see [docs/PLATFORM.md](docs/PLATFORM.md).
 **Stack:** YOLOv8n → SIFT homography → Kalman+Hungarian → OSNet re-ID → EasyOCR → EventDetector → FastAPI → Claude agents
 **Built by:** [Neel Shah](https://neelshahportfolio.netlify.app) — solo human architect/director of an agentic build pipeline (3,206 commits, Mar–Jul 2026). [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
@@ -15,7 +15,7 @@ Read these files in order, nothing else, before doing anything else:
 0. **[.planning/NOW.md](.planning/NOW.md)** — the SINGLE SOURCE OF TRUTH for what's done / what's next (read first, 30s; update before you finish). Don't re-derive state from scattered docs.
 1. **[docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)** — the honest, adversarially-audited account: every claim's proof artifact + the do-not-claim list. **This is the truth source for any number.**
 2. **[README.md](README.md)** — funnel narrative end-to-end with honest numbers + architecture.
-3. **[docs/PUBLIC_EVIDENCE.md](docs/PUBLIC_EVIDENCE.md)** — 60-second funnel scan · **[docs/INTELLIGENCE.md](docs/INTELLIGENCE.md)** — 80-artifact intelligence-layer manifest.
+3. **[docs/PUBLIC_EVIDENCE.md](docs/PUBLIC_EVIDENCE.md)** — 60-second funnel scan · **[docs/INTELLIGENCE.md](docs/INTELLIGENCE.md)** — 151-file intelligence-layer manifest.
 
 **Numbers/claims live in [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md), not here** (so this file can't drift). Market is efficient; honest calibration wins only. **Never re-print the retracted +18.38% / endQ3-0.119 / +54%-as-edge / 78.11 numbers as current** — full list + framing in @.claude/rules/no-edge-claims.md.
 

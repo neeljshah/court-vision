@@ -42,7 +42,7 @@ agentic loop that re-validates every stage. Each stage refines the one above it.
 
 End-to-end NBA intelligence system, intensive solo build (3,206 commits, Mar–Jul 2026),
 human-architected over an agentic build pipeline. Broadcast video → court coordinates (CV pipeline
-on a consumer GPU at **~$0.10–0.13/game**) → 80-artifact intelligence layer → 7 prop models +
+on a consumer GPU at **~$0.10–0.13/game**) → 151-file intelligence layer (`data/intelligence/`) → 7 prop models +
 in-play snapshot heads → devig / sim / decision engines → calibrated predictions → 1,249-dossier
 intelligence layer + a self-improving agentic loop. **430 Python modules** across the full stack.
 
@@ -70,7 +70,8 @@ produce.
 
 ### 2 · SIGNALS — *real engineering, edge at open frontiers*
 
-- **80-artifact intelligence layer**: 291,625-pair player-vs-player matchup matrix from 2,214 raw
+- **151-file intelligence layer** (the full artifact set on disk: 151 files, `data/intelligence/`,
+  dated 2026-06-02; no market-relative test): 291,625-pair player-vs-player matchup matrix from 2,214 raw
   tracking files → **690-node** idempotent knowledge graph (660 player + 30 team nodes) →
   1,249 per-player dossiers (28 statistical categories, archetype-labeled, scheme-tagged).
 - Self-improving discovery loop with a ship gate built to *refute*: expanding WF + null-shuffle
@@ -184,7 +185,7 @@ Full do-not-claim list with source-code root causes: **[JOB_EVIDENCE_PACKET.md](
 | The honest, audited account (start here) | [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) |
 | The full README with the funnel narrative | [../README.md](../README.md) |
 | The 15-minute demo path (system health, live prediction, oracle receipt, board, ledgers) | [PRODUCT_DEMO.md](PRODUCT_DEMO.md) |
-| The 80-artifact intelligence layer | [INTELLIGENCE.md](INTELLIGENCE.md) |
+| The 151-file intelligence layer | [INTELLIGENCE.md](INTELLIGENCE.md) |
 | System architecture (funnel, component by component) | [../ARCHITECTURE.md](../ARCHITECTURE.md) |
 | Known limitations + validation gaps | [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) |
 | The data/feature ceiling analysis | [CEILING.md](CEILING.md) |

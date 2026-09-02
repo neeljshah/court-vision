@@ -7,15 +7,17 @@
 
 The intelligence layer sits between raw CV tracking and the prediction models. It is **151 artifact
 files** (parquet + json) derived from broadcast-video tracking, NBA Stats API, and play-by-play
-microstructure — the original 80-artifact core plus later additions (compound-signal hunts, CV
-sidecars, daily-picks retros). Every artifact answers a specific question the prediction stack
+microstructure — the full artifact set on disk: 151 files, `data/intelligence/`, dated 2026-06-02.
+It grew from an earlier core plus later additions (compound-signal hunts, CV sidecars,
+daily-picks retros); that earlier subset is **not enumerable from disk**, so 151 is the only
+count this page states. Every artifact answers a specific question the prediction stack
 would otherwise have to guess at: *who is this player right now, what scheme is the opponent
 imposing, how does this matchup behave, is the model confident here?*
 
 Artifacts are gitignored (`data/intelligence/`) — regenerable from raw tracking + NBA Stats. This
 doc is the public-facing **manifest**: what exists, what's in each file, how it plugs in. The
-10-section inventory below documents the original 80-artifact core in full; later additions are
-not yet individually catalogued.
+10-section inventory below documents the earliest-catalogued artifacts in full; later additions are
+not yet individually catalogued, and no script reproduces the boundary between the two.
 
 > **Local-only research layer — not part of the public clone.** The 151 artifact files live under
 > `data/intelligence/` (gitignored) and are **absent from a fresh clone**; they are not rendered by
@@ -24,7 +26,7 @@ not yet individually catalogued.
 > evidence pages**. Treat every row count and scale figure below as a description of the local
 > research corpus, not something the clone can reproduce on its own.
 
-> **Status (2026-07-15):** 151 artifact files populated (80-artifact core + growth). Coverage is uneven — some layers (lineup
+> **Status (2026-07-15):** 151 artifact files populated (counted on disk 2026-09-03; all 151 mtime 2026-06-02). Coverage is uneven — some layers (lineup
 > chemistry, similarity index) span thousands of rows; others (officials player-sensitivity,
 > absence-effects) are early and small. Per-artifact row counts are listed so maturity of each
 > signal is legible at a glance.
@@ -98,7 +100,7 @@ and scouting resource. See [CEILING.md](CEILING.md) for the ceiling analysis.
 
 ## The artifact classes (what each one *is*)
 
-The 80 artifacts cluster into a small number of *classes*, each answering a different question.
+The catalogued artifacts cluster into a small number of *classes*, each answering a different question.
 This taxonomy is the conceptual map under the 10-section inventory below.
 
 | Artifact class | Question it answers | Representative artifacts | Persistence |
@@ -300,7 +302,7 @@ served model, and produces **no** betting edge versus closing lines.
 
 ## Trait profiles + season claims (2026-07)
 
-A second generation of this layer sits on top of the 80 artifacts above: instead of a fixed
+A second generation of this layer sits on top of the artifacts above: instead of a fixed
 parquet, `scripts/platformkit/intel_query/` answers questions live from **VERIFIED claims** --
 each claim independently recomputed and checked by a separate validator before it is allowed to
 answer anything. This is the "AI chat surface" (section 9 above) grown into a full query layer.
@@ -410,7 +412,7 @@ per-layer scripts can be run individually. Required inputs:
 `data/tracking/*` (CV tracking), `data/nba/*` (gamelogs),
 `data/cache/inplay_pbp_microstructure.parquet` (microstructure).
 
-Regeneration takes ~25 min on the dev box for the full 80-artifact pass. The artifacts are kept
+Regeneration takes ~25 min on the dev box for the full artifact pass. The artifacts are kept
 out of git both because they're large and because they encode the proprietary derivation; the
 **schema and counts on this page are the public commitment**.
 

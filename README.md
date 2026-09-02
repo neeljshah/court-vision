@@ -25,7 +25,7 @@ All figures in this opening are from the audited
 | Check | What the record says | Why it matters |
 |---|---|---|
 | Same-night red-team hardening | 0/200 null ships; echo attackers blocked | A green-looking result is not accepted until adversarial controls fail to reproduce it. |
-| Multiplicity correction | 0/85 candidate signals survive; the complete set is published as the honest graveyard | Discovery volume does not become evidence by repetition. |
+| Multiplicity correction | 0 of 60 candidate signal classes survive (`scripts/platformkit/eval_gate/spa_catalog_report.txt`: `catalog_signals_on_disk=60`, `documented_retro_survivors=0`); the complete set is published as the honest graveyard | Discovery volume does not become evidence by repetition. |
 | Self-falsification | Two impossibility claims were falsified by our own adversarial checks | The evidence trail records both counterexamples and retractions rather than preserving a convenient theory. |
 
 ## Demos
