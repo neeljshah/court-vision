@@ -1,0 +1,358 @@
+{
+  "bounds": {
+    "x": [
+      -6.0,
+      84.0
+    ],
+    "y": [
+      -4.0,
+      40.0
+    ]
+  },
+  "matches": {
+    "tennis_nyYk2nPZAwY_720p": {
+      "ranges": [
+        {
+          "source_frame_range": {
+            "start": 5715,
+            "stop": 6014,
+            "count": 300
+          },
+          "decoded_frames": 300,
+          "fresh_solves": 154,
+          "drift_checked_reuses": 26,
+          "solved_frame_coverage": 0.6,
+          "harness_verdict": "FAIL",
+          "harness_failures": [
+            "coverage 0.68 < 0.90"
+          ],
+          "harness_metrics": {
+            "coverage_pct": 0.6778,
+            "median_track_len": 83.5,
+            "ball_valid_pct": 0.3944,
+            "jump_p95": 0.6,
+            "oob_pct": 0.0
+          }
+        },
+        {
+          "source_frame_range": {
+            "start": 33105,
+            "stop": 33404,
+            "count": 300
+          },
+          "decoded_frames": 300,
+          "fresh_solves": 273,
+          "drift_checked_reuses": 25,
+          "solved_frame_coverage": 0.9933333333333333,
+          "harness_verdict": "FAIL",
+          "harness_failures": [
+            "coverage 0.52 < 0.90"
+          ],
+          "harness_metrics": {
+            "coverage_pct": 0.5168,
+            "median_track_len": 226.0,
+            "ball_valid_pct": 0.6174,
+            "jump_p95": 0.74,
+            "oob_pct": 0.0
+          }
+        },
+        {
+          "source_frame_range": {
+            "start": 33855,
+            "stop": 34154,
+            "count": 300
+          },
+          "decoded_frames": 300,
+          "fresh_solves": 261,
+          "drift_checked_reuses": 39,
+          "solved_frame_coverage": 1.0,
+          "harness_verdict": "FAIL",
+          "harness_failures": [
+            "coverage 0.32 < 0.90"
+          ],
+          "harness_metrics": {
+            "coverage_pct": 0.3232,
+            "median_track_len": 44.0,
+            "ball_valid_pct": 0.5185,
+            "jump_p95": 0.65,
+            "oob_pct": 0.0
+          }
+        },
+        {
+          "source_frame_range": {
+            "start": 41985,
+            "stop": 42284,
+            "count": 300
+          },
+          "decoded_frames": 300,
+          "fresh_solves": 160,
+          "drift_checked_reuses": 12,
+          "solved_frame_coverage": 0.5733333333333334,
+          "harness_verdict": "FAIL",
+          "harness_failures": [
+            "coverage 0.36 < 0.90"
+          ],
+          "harness_metrics": {
+            "coverage_pct": 0.3605,
+            "median_track_len": 117.0,
+            "ball_valid_pct": 0.314,
+            "jump_p95": 1.13,
+            "oob_pct": 0.0
+          }
+        },
+        {
+          "source_frame_range": {
+            "start": 43830,
+            "stop": 44129,
+            "count": 300
+          },
+          "decoded_frames": 300,
+          "fresh_solves": 148,
+          "drift_checked_reuses": 11,
+          "solved_frame_coverage": 0.53,
+          "harness_verdict": "FAIL",
+          "harness_failures": [
+            "coverage 0.89 < 0.90"
+          ],
+          "harness_metrics": {
+            "coverage_pct": 0.8868,
+            "median_track_len": 150.0,
+            "ball_valid_pct": 0.6164,
+            "jump_p95": 0.96,
+            "oob_pct": 0.0
+          }
+        }
+      ],
+      "passing_ranges": 0
+    },
+    "tennis_09": {
+      "ranges": [
+        {
+          "source_frame_range": {
+            "start": 615,
+            "stop": 914,
+            "count": 300
+          },
+          "decoded_frames": 300,
+          "fresh_solves": 208,
+          "drift_checked_reuses": 4,
+          "solved_frame_coverage": 0.7066666666666667,
+          "harness_verdict": "FAIL",
+          "harness_failures": [
+            "coverage 0.21 < 0.90"
+          ],
+          "harness_metrics": {
+            "coverage_pct": 0.2075,
+            "median_track_len": 128.0,
+            "ball_valid_pct": 0.2972,
+            "jump_p95": 1.25,
+            "oob_pct": 0.0
+          }
+        },
+        {
+          "source_frame_range": {
+            "start": 5070,
+            "stop": 5369,
+            "count": 300
+          },
+          "decoded_frames": 300,
+          "fresh_solves": 299,
+          "drift_checked_reuses": 0,
+          "solved_frame_coverage": 0.9966666666666667,
+          "harness_verdict": "FAIL",
+          "harness_failures": [
+            "coverage 0.19 < 0.90",
+            "jump_p95 33.95 > 8.00"
+          ],
+          "harness_metrics": {
+            "coverage_pct": 0.1906,
+            "median_track_len": 178.0,
+            "ball_valid_pct": 0.3612,
+            "jump_p95": 33.95,
+            "oob_pct": 0.0
+          }
+        },
+        {
+          "source_frame_range": {
+            "start": 5775,
+            "stop": 6074,
+            "count": 300
+          },
+          "decoded_frames": 300,
+          "fresh_solves": 178,
+          "drift_checked_reuses": 0,
+          "solved_frame_coverage": 0.5933333333333334,
+          "harness_verdict": "FAIL",
+          "harness_failures": [
+            "coverage 0.00 < 0.90"
+          ],
+          "harness_metrics": {
+            "coverage_pct": 0.0,
+            "median_track_len": 178.0,
+            "ball_valid_pct": 0.5787,
+            "jump_p95": 0.22,
+            "oob_pct": 0.0
+          }
+        },
+        {
+          "source_frame_range": {
+            "start": 6960,
+            "stop": 7259,
+            "count": 300
+          },
+          "decoded_frames": 300,
+          "fresh_solves": 300,
+          "drift_checked_reuses": 0,
+          "solved_frame_coverage": 1.0,
+          "harness_verdict": "FAIL",
+          "harness_failures": [
+            "coverage 0.05 < 0.90"
+          ],
+          "harness_metrics": {
+            "coverage_pct": 0.0471,
+            "median_track_len": 155.0,
+            "ball_valid_pct": 0.3939,
+            "jump_p95": 4.47,
+            "oob_pct": 0.0
+          }
+        },
+        {
+          "source_frame_range": {
+            "start": 7140,
+            "stop": 7439,
+            "count": 300
+          },
+          "decoded_frames": 300,
+          "fresh_solves": 300,
+          "drift_checked_reuses": 0,
+          "solved_frame_coverage": 1.0,
+          "harness_verdict": "FAIL",
+          "harness_failures": [
+            "coverage 0.43 < 0.90"
+          ],
+          "harness_metrics": {
+            "coverage_pct": 0.4305,
+            "median_track_len": 210.5,
+            "ball_valid_pct": 0.3051,
+            "jump_p95": 1.67,
+            "oob_pct": 0.0
+          }
+        }
+      ],
+      "passing_ranges": 0
+    },
+    "tennis_10": {
+      "ranges": [
+        {
+          "source_frame_range": {
+            "start": 150,
+            "stop": 449,
+            "count": 300
+          },
+          "decoded_frames": 300,
+          "fresh_solves": 105,
+          "drift_checked_reuses": 13,
+          "solved_frame_coverage": 0.3933333333333333,
+          "harness_verdict": "PASS",
+          "harness_failures": [],
+          "harness_metrics": {
+            "coverage_pct": 1.0,
+            "median_track_len": 118.0,
+            "ball_valid_pct": 0.3898,
+            "jump_p95": 1.61,
+            "oob_pct": 0.0
+          }
+        },
+        {
+          "source_frame_range": {
+            "start": 3585,
+            "stop": 3884,
+            "count": 300
+          },
+          "decoded_frames": 300,
+          "fresh_solves": 130,
+          "drift_checked_reuses": 8,
+          "solved_frame_coverage": 0.46,
+          "harness_verdict": "FAIL",
+          "harness_failures": [
+            "coverage 0.88 < 0.90"
+          ],
+          "harness_metrics": {
+            "coverage_pct": 0.8768,
+            "median_track_len": 129.5,
+            "ball_valid_pct": 0.3986,
+            "jump_p95": 0.82,
+            "oob_pct": 0.0
+          }
+        },
+        {
+          "source_frame_range": {
+            "start": 3930,
+            "stop": 4229,
+            "count": 300
+          },
+          "decoded_frames": 300,
+          "fresh_solves": 194,
+          "drift_checked_reuses": 9,
+          "solved_frame_coverage": 0.6766666666666666,
+          "harness_verdict": "FAIL",
+          "harness_failures": [
+            "coverage 0.69 < 0.90"
+          ],
+          "harness_metrics": {
+            "coverage_pct": 0.6931,
+            "median_track_len": 34.0,
+            "ball_valid_pct": 0.6287,
+            "jump_p95": 1.36,
+            "oob_pct": 0.0
+          }
+        },
+        {
+          "source_frame_range": {
+            "start": 6345,
+            "stop": 6644,
+            "count": 300
+          },
+          "decoded_frames": 300,
+          "fresh_solves": 249,
+          "drift_checked_reuses": 4,
+          "solved_frame_coverage": 0.8433333333333334,
+          "harness_verdict": "FAIL",
+          "harness_failures": [
+            "coverage 0.61 < 0.90"
+          ],
+          "harness_metrics": {
+            "coverage_pct": 0.6126,
+            "median_track_len": 204.0,
+            "ball_valid_pct": 0.5613,
+            "jump_p95": 1.67,
+            "oob_pct": 0.0
+          }
+        },
+        {
+          "source_frame_range": {
+            "start": 6405,
+            "stop": 6704,
+            "count": 300
+          },
+          "decoded_frames": 300,
+          "fresh_solves": 192,
+          "drift_checked_reuses": 4,
+          "solved_frame_coverage": 0.6533333333333333,
+          "harness_verdict": "FAIL",
+          "harness_failures": [
+            "coverage 0.79 < 0.90"
+          ],
+          "harness_metrics": {
+            "coverage_pct": 0.7908,
+            "median_track_len": 175.5,
+            "ball_valid_pct": 0.5153,
+            "jump_p95": 1.76,
+            "oob_pct": 0.0
+          }
+        }
+      ],
+      "passing_ranges": 1
+    }
+  }
+}

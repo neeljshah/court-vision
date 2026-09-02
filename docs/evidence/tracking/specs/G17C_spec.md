@@ -3,9 +3,10 @@ CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it; self-check eve
 section B before you report. Rule 2 adjudication by the orchestrator: attempts 1 and 2 were
 colour-heuristic DESIGNS measured against no ground truth. v3 builds the ground truth and
 measures the ceiling, so it is the LIMIT measurement rule 2 requires and it is the LAST attempt.
-BLOCKS ON: docs/evidence/tracking/soccer_roles_labels/ must already contain 300 hand-labeled
-crops (player / referee / other), labeled by the Opus lane. Do not label them yourself and do not
-start before the directory exists with 300 labels.
+UNBLOCKED 2026-09-02: the label set EXISTS and is complete. docs/evidence/tracking/soccer_roles_labels/
+holds labels.csv (300 rows + header), crops/ (300 JPEGs, filenames match column 1 of labels.csv),
+crop_manifest.csv and per_frame_counts.csv. Verify the 300/300 filename join in step 0 and then
+proceed. Do NOT re-label and do NOT wait for anything.
 PREMISE (step 0): the detector over-counts humans against the manual column. n=100 blind verdict
 is AMBIGUOUS: manual median 13.0, pct >= 14 is 0.490, paired delta manual-minus-detector -1.23.
 Attempt 1 pushed the delta to +2.26 (over-rejects real players); attempt 2 reached +0.90 but at
@@ -52,7 +53,10 @@ EVIDENCE: docs/evidence/tracking/soccer_role_classifier_v3_2026-09-04.md plus th
 CV accuracy per fold, the paired-delta table, the disagreement tally, a LICENCE line naming every
 weight and dataset used, and a NOT VERIFIED list.
 TEST: exactly one new per-file test; run only that file.
-POD: training is pod GPU work; own nohup nice job, unique /tmp log, never kill anything, no git
-on the pod, NO scp of any module until the verifier accepts.
+POD: NONE. Do NOT use the pod and do NOT ask for a pod path -- attempt 1 of this lane stalled and
+returned no work because it waited on a pod mount that was never needed. The label set, the crops
+and the classifier are ALL LOCAL and CPU-sized: 300 JPEG crops of about 50x100 px each. Train and
+cross-validate in-process on this machine. If you believe you need a GPU for 300 crops, that is
+itself the finding -- write it down and continue on CPU anyway.
 COMMIT: explicit pathspec, in a8, no push. Report the sha.
 NEVER PARK: do not poll your own jobs in a blocking loop; never end waiting.
