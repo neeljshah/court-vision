@@ -19,13 +19,13 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | G11 | baseball | dominant_green scores 0 on night games (stadium lighting) -> pitch-view gate lighting-dependent | same | OPEN |
 | G12 | baseball | pod daemon corpus 87 games mostly junk; only 4 real broadcasts | same | OPEN; acquire more official condensed games (bridge fixed: explicit section) |
 | G13 | football | motion-energy snap detection structural REJECT (13-15 pct precision); OCR terminal | football_fieldview_2026-09-01.md | PAUSED this session |
-| G14 | all | pod adapter/keypoint code lags master (tennis adapter pre camera-lock) | synthcal verdict report | OPEN; deploy + daemon restart pending after G02/G03 |
+| G14 | all | pod adapter/keypoint code lagged master: 50 of 148 in-scope tracked files behind (32 absent incl. tennis court_lines.py + camera_lock.py, 18 stale) | pod_deploy_2026-09-01.md | CLOSED: 50 files deployed by git-archive, 50/50 md5 match after; keeper 1278551 -> 3047264, daemon 2201564 -> 3047270 (same cmdline, cwd /workspace/nba-ai-system); pod reproduces tennis sequential 15300-15600 coverage 0.897 bit-identical to local. NOT verified: no pytest on pod, daemon has processed no game yet (stage empty, ledger flat at 395) |
 | G15 | all | daemon "done" = rows>=500 not harness verdict; deletes footage | done_means_verdict memory | OPEN; verify current daemon logic |
 | G17 | soccer | detector over-counts vs human (paired delta -1.23; refs/staff/medics enter raw_boxes) -> a player-role filter is needed before any count-based verdict | soccer_s1_blind_verdict_n100_2026-09-01.md | OPEN |
 | G18 | tennis | linspace sampling plan FAILS harness on jump_p95 by construction (1.6 s spacing); harness plan must be sequential ranges -- fix the PLAN, never the threshold; also only 1 match + 1 clip measured (n=1 match) | tennis_vertical_lever_2026-09-01 README | OPEN |
 | G19 | basketball | ~4 pct residual off-frame = Kalman coasts (advanced_tracker.py:1165); wnba_04 tracker latched onto bench/crowd | basketball_producer_fix_2026-09-01.md | OPEN |
 | G16 | all | teacher->student gate does not exist as a module (rule only) | product_runtime_contract memory | OPEN; needed before any "tracking improved a model" claim |
 
-Next single-problem lanes, in order: G14 pod deploy (tennis court_lines + containment gate + relabel; daemon restart), G18 tennis sequential-plan harness on >=3 matches, G01 ingest re-gate, G15
+Next single-problem lanes, in order: G18 tennis sequential-plan harness on >=3 matches, G01 ingest re-gate, G15
 daemon done-definition, G12 more real baseball, G04 basketball image_px
 features, G09 licence check, G16 student gate.
