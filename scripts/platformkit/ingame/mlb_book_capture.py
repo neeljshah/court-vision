@@ -9,6 +9,7 @@ https://help.kalshi.com/en/articles/13823805-fees
 """
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 import json
 import os
 import time
@@ -17,6 +18,7 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
+from threading import Lock
 from typing import Any, Callable, Dict, Iterable, List, Optional
 
 from scripts.platformkit.ingame import game_pk_bridge_live as _bridge
@@ -35,6 +37,7 @@ IDLE_CHECK_SEC = 30.0
 BRIDGE_TTL_SEC_DEFAULT = 600.0  # ids are fixed for a game's lifetime; env CV_MLB_BRIDGE_TTL_SEC
 PRE_REGISTERED_UNIT = 1.0  # contracts; fixed at authoring, never tuned from capture data
 MIN_SNAPSHOTS = 200
+MAX_FETCH_CONCURRENCY = 4  # ponytail: upgrade to 8 after the pod 30-pass evidence
 
 
 def _iso(now: Optional[datetime] = None) -> str:
@@ -122,16 +125,19 @@ class GovernedClient:
         self.governor = get_governor("depth_capture")
         self.opener = opener
         self.n_429 = 0
+        self._governor_lock = Lock()
 
     def get(self, url: str) -> Optional[Any]:
-        before_request(self.governor, "mlb", n_active_sports=1)
+        with self._governor_lock:
+            before_request(self.governor, "mlb", n_active_sports=1)
         try:
             with self.opener(urllib.request.Request(url), timeout=15.0) as response:
                 return json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
             if exc.code == 429:
-                self.n_429 += 1
-                report_429(self.governor)
+                with self._governor_lock:
+                    self.n_429 += 1
+                    report_429(self.governor)
             return None
         except (urllib.error.URLError, TimeoutError, OSError, ValueError):
             return None
@@ -190,7 +196,7 @@ def live_gumbo_games(client: GovernedClient, date_str: str, state: Dict[str, Any
 def capture_once(*, client: Optional[GovernedClient] = None, date_str: Optional[str] = None,
                  now: Optional[datetime] = None, state: Optional[Dict[str, Any]] = None,
                  live_games_fn: Callable[[GovernedClient, str, Dict[str, Any]], List[Dict[str, Any]]] = live_gumbo_games,
-                 output: Optional[Path] = None) -> Dict[str, Any]:
+                 output: Optional[Path] = None, max_concurrency: int = MAX_FETCH_CONCURRENCY) -> Dict[str, Any]:
     """Capture one full ladder per currently live, unambiguously bridged MLB game."""
     client = client or GovernedClient()
     state = state if state is not None else {}
@@ -198,21 +204,37 @@ def capture_once(*, client: Optional[GovernedClient] = None, date_str: Optional[
     date_str = date_str or now.strftime("%Y-%m-%d")
     prior_429 = client.n_429
     rows: List[Dict[str, Any]] = []
-    for game in live_games_fn(client, date_str, state):
-        # One row per MARKET side; ``ticker`` is the market ticker (the event stem
-        # returns an empty book) and ``event_ticker`` keeps the two sides joinable.
-        for ticker in (str(t) for t in (game.get("tickers") or []) if t):
-            url = KALSHI_BASE + "/markets/" + urllib.parse.quote(ticker, safe="") + "/orderbook"
-            levels = _levels(client.get(url))
-            if not levels["yes"] and not levels["no"]:
-                continue
-            rows.append({"record_type": "snapshot", "venue": "kalshi", "sport": "mlb",
+    fetches = [(game, str(ticker)) for game in live_games_fn(client, date_str, state)
+               for ticker in (game.get("tickers") or []) if ticker]
+
+    def fetch(item: Any) -> Any:
+        game, ticker = item
+        url = KALSHI_BASE + "/markets/" + urllib.parse.quote(ticker, safe="") + "/orderbook"
+        try:
+            return game, ticker, client.get(url), None
+        except Exception as exc:  # a custom client must not erase one request from the pass
+            return game, ticker, None, type(exc).__name__
+
+    with ThreadPoolExecutor(max_workers=max(1, int(max_concurrency))) as executor:
+        fetched = list(executor.map(fetch, fetches))
+    for game, ticker, body, error in fetched:
+        if body is None:
+            rows.append({"record_type": "fetch_error", "venue": "kalshi", "sport": "mlb",
                          "game_pk": str(game.get("game_pk")), "ticker": ticker,
-                         "event_ticker": game.get("event_ticker"),
-                         "src_ts": game.get("game_state", {}).get("ts"), "capture_ts": _iso(now),
-                         "game_state": game.get("game_state", {}), "yes_ladder": levels["yes"],
-                         "no_ladder": levels["no"], "top_of_book_depth": top_of_book_depth(levels),
+                         "event_ticker": game.get("event_ticker"), "capture_ts": _iso(now),
+                         "error": error or "fetch_failed",
                          "derived_age_ceiling_sec": state.get("cadence_sec", TARGET_CADENCE_SEC)})
+            continue
+        levels = _levels(body)
+        if not levels["yes"] and not levels["no"]:
+            continue
+        rows.append({"record_type": "snapshot", "venue": "kalshi", "sport": "mlb",
+                     "game_pk": str(game.get("game_pk")), "ticker": ticker,
+                     "event_ticker": game.get("event_ticker"),
+                     "src_ts": game.get("game_state", {}).get("ts"), "capture_ts": _iso(now),
+                     "game_state": game.get("game_state", {}), "yes_ladder": levels["yes"],
+                     "no_ladder": levels["no"], "top_of_book_depth": top_of_book_depth(levels),
+                     "derived_age_ceiling_sec": state.get("cadence_sec", TARGET_CADENCE_SEC)})
     n_429 = client.n_429 - prior_429
     cadence = float(state.get("cadence_sec", TARGET_CADENCE_SEC))
     if n_429:
