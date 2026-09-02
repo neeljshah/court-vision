@@ -282,9 +282,12 @@ TOOLS: List[Dict[str, Any]] = [
 
 
 def handler_for(name: str) -> Callable[[Dict[str, Any]], Dict[str, Any]] | None:
+    """The one place every tool call passes through -- so the staleness stamp
+    (artifact_tools.finalize, S71/F1) is applied to every `ok` envelope."""
     for t in TOOLS:
         if t["name"] == name:
-            return t["handler"]
+            handler = t["handler"]
+            return lambda args, _h=handler: artifact_tools.finalize(_h(args))
     return None
 
 

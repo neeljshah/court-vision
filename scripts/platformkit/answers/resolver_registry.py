@@ -56,6 +56,7 @@ Every resolve() call returns one envelope shape:
 from __future__ import annotations
 
 import difflib
+import glob
 import json
 import os
 import re
@@ -620,9 +621,50 @@ _SCOREBOARD_ROW_RE = re.compile(
 )
 
 
+_RELIABILITY_DIR = os.path.join("docs", "evidence", "calibration")
+
+
+def _tracked_reliability(sport: str) -> str | None:
+    """Newest TRACKED per-sport reliability artifact written by S05b, e.g.
+    docs/evidence/calibration/nba_reliability_2026-09-03.json. The `_per_unit_`
+    and `_ingame_` siblings are deliberately not matched -- they are different
+    scorings of the same corpus, not the headline one."""
+    hits = sorted(glob.glob(os.path.join(_RELIABILITY_DIR, "%s_reliability_2*.json" % sport.lower())))
+    return hits[-1] if hits else None
+
+
+def _reliability_answer(sport: str, path: str) -> dict | None:
+    """S71/F6: serve the tracked artifact. Brier is not stored as a scalar, but
+    the artifact stores the full Murphy decomposition, and Brier = reliability
+    - resolution + uncertainty is that decomposition's identity -- not a new
+    number, the same number written in its parts."""
+    try:
+        with open(path, encoding="utf-8") as fh:
+            v = json.load(fh)
+        brier = lambda m: round(m["reliability"] - m["resolution"] + m["uncertainty"], 6)  # noqa: E731
+        return {"status": "ok", "category": "calibration_number", "sport": sport,
+                "source_artifact": path.replace("\\", "/"),
+                "as_of": os.path.basename(path).rsplit("_", 1)[-1][:-len(".json")],
+                "n": int(v["input_rows"]),
+                "baseline_brier": brier(v["murphy_before"]), "improved_brier": brier(v["murphy_after"]),
+                "baseline_ece": v["ece_before"], "improved_ece": v["ece_after"],
+                "method": v["recalibration"], "verdict": v["verdict"],
+                "prereg_path": v.get("prereg_path"), "prereg_seal_sha256": v.get("prereg_seal_sha256"),
+                "note": "tracked S05b reliability artifact; Brier from the stored Murphy "
+                        "decomposition (reliability - resolution + uncertainty)"}
+    except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError):
+        return None
+
+
 def calibration_number(sport: str) -> dict:
-    """Parses the pinned scoreboard row for `sport` -- never recomputes.
-    Absent artifact (fresh clone; vault/ is gitignored) -> honest no_data."""
+    """Serves the newest TRACKED reliability artifact for `sport`, falling back
+    to the pinned vault scoreboard row (gitignored, so absent on a clone) and
+    saying which was used -- never recomputes either."""
+    tracked = _tracked_reliability(sport)
+    if tracked:
+        answer = _reliability_answer(sport, tracked)
+        if answer is not None:
+            return answer
     if not os.path.exists(_SCOREBOARD_PATH):
         return {"status": "no_data", "category": "calibration_number", "sport": sport,
                 "source_artifact": _SCOREBOARD_PATH, "note": "scoreboard not built in this clone"}
@@ -635,7 +677,10 @@ def calibration_number(sport: str) -> dict:
                      "n": int(m.group("n").replace(",", "")),
                      "baseline_brier": float(m.group("base_brier")), "improved_brier": float(m.group("imp_brier")),
                      "baseline_ece": float(m.group("base_ece")), "improved_ece": float(m.group("imp_ece")),
-                     "method": m.group("method").strip()}
+                     "method": m.group("method").strip(),
+                     "note": "FALLBACK: no tracked docs/evidence/calibration/%s_reliability_*.json "
+                             "-- served from the gitignored vault scoreboard, as_of is its mtime"
+                             % sport.lower()}
     return {"status": "no_data", "category": "calibration_number", "sport": sport,
             "source_artifact": _SCOREBOARD_PATH, "note": f"no row for sport '{sport}' in current scoreboard"}
 
@@ -765,7 +810,14 @@ def mechanism_effect(sport: str, mechanism: str) -> dict:
         matches = [key]
     else:
         q_tokens = _mech_tokens(mechanism)
-        matches = [n for n in names if q_tokens and q_tokens <= _mech_tokens(n)]
+        # S71/F5: route by the mechanism NAME first -- "why does lefty advantage
+        # on return hold or not hold" carries extra words ("why", "or", "not")
+        # that are not in any hypothesis name, so the query-subset test below
+        # can never fire on that phrasing. A name whose every token appears in
+        # the question is named BY the question.
+        matches = [n for n in names if q_tokens and _mech_tokens(n) and _mech_tokens(n) <= q_tokens]
+        if not matches:
+            matches = [n for n in names if q_tokens and q_tokens <= _mech_tokens(n)]
         if not matches:
             matches = difflib.get_close_matches(key, names, n=5, cutoff=0.6)
     if not matches:

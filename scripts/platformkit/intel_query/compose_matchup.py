@@ -66,6 +66,16 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _parse_iso(stamp: str) -> datetime | None:
+    """A block as_of ranges from a bare "2026-07-26" to a full offset stamp --
+    compare them as datetimes, never as strings (S71/F4)."""
+    try:
+        parsed = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
 def _mtime_iso(path: str) -> str | None:
     if not os.path.exists(path):
         return None
@@ -150,9 +160,18 @@ def compose_matchup(sport: str, home: str, away: str, date: str | None = None) -
     }
     blocks_ok = [k for k, v in blocks.items() if v.get("status") == "ok"]
     blocks_absent = [k for k in blocks if k not in blocks_ok]
+    # S71/F4: the preview is only as fresh as its freshest input -- the outer
+    # `as_of` is the max of the blocks' own as_of stamps, never the wall clock.
+    # The call time keeps its own key (`computed_at`) instead of impersonating a
+    # data date (the S38(d) pattern).
+    computed_at = _now_iso()
+    stamps = sorted((p, s) for v in blocks.values()
+                    if isinstance(v, dict) and v.get("as_of")
+                    and (p := _parse_iso(s := str(v["as_of"]))) is not None)
     return {
         "status": "ok", "category": CATEGORY, "sport": sport, "source_artifact": SOURCE_ARTIFACT,
-        "as_of": _now_iso(), "home": home, "away": away, "date": date,
+        "as_of": stamps[-1][1] if stamps else computed_at, "computed_at": computed_at,
+        "home": home, "away": away, "date": date,
         "blocks": blocks, "blocks_ok": blocks_ok, "blocks_absent": blocks_absent,
         "note": ("DESCRIPTIVE matchup preview assembled from independently fail-closed "
                  "sub-resolvers -- each block carries its own source_artifact/as_of; a block's "

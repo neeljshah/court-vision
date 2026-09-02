@@ -126,3 +126,21 @@ def test_main_cli_prints_json(monkeypatch, capsys):
     out = json.loads(capsys.readouterr().out)
     assert out["status"] == "ok"
     assert out["category"] == "matchup_preview"
+
+
+def test_as_of_is_the_newest_input_and_computed_at_is_separate(monkeypatch):
+    """S71/F4: the outer as_of was `_now_iso()` -- a wall clock stamped on data
+    that can be months old. It is now the max of the blocks' own as_of stamps,
+    and the call time keeps its own key."""
+    def _block(as_of):
+        return lambda *a, **k: {"status": "ok", "as_of": as_of, "source_artifact": "x"}
+
+    monkeypatch.setattr(cm, "winprob_dispatch", _block("2026-07-26"))
+    monkeypatch.setattr(cm, "_team_profile_block", _block("2026-05-24"))
+    monkeypatch.setattr(cm, "_style_matchup_block", lambda *a, **k: {"status": "no_data",
+                                                                   "as_of": "2026-09-30"})
+    monkeypatch.setattr(cm, "injury_report", _block("2026-08-01T12:00:00+00:00"))
+    monkeypatch.setattr(cm, "schedule_resolve", _block("2026-06-01"))
+    env = cm.compose_matchup("nba", "Boston Celtics", "Los Angeles Lakers")
+    assert env["as_of"] == "2026-09-30"          # newest input, absent block included
+    assert env["computed_at"] != env["as_of"]    # the call time, kept separately

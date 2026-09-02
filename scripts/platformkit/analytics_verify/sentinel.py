@@ -242,7 +242,17 @@ def build_report(*, clv_path: Optional[Path] = None,
     n_discrepant = sum(1 for c in checks if c["verdict"] == "DISCREPANT")
     n_stale = sum(1 for c in checks if c["verdict"] == "STALE")
     n_uncheckable = sum(1 for c in checks if c["verdict"] == "UNCHECKABLE")
-    overall = "DISCREPANT" if n_discrepant else "VERIFIED"
+    # S71/F7: VERIFIED is a claim about checks that actually ran. With
+    # n_verified == 0 (every check STALE or UNCHECKABLE) the honest headline is
+    # the reason nothing was verified, never the word VERIFIED.
+    if n_discrepant:
+        overall = "DISCREPANT"
+    elif n_verified:
+        overall = "VERIFIED"
+    elif n_stale:
+        overall = "STALE"
+    else:
+        overall = "UNCHECKABLE" if n_uncheckable else "INSUFFICIENT"
     return {
         "as_of": _now().isoformat(),
         "edge_claimed": False,
