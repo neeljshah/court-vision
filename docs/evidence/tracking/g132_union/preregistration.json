@@ -1,0 +1,10 @@
+{
+  "clahe_clip_limit": 2.0,
+  "clahe_tile_grid": [
+    8,
+    8
+  ],
+  "duplicate_endpoint_tolerance_px": 1.0,
+  "group_once_over_union": true,
+  "baseline_first": true
+}

@@ -18,6 +18,12 @@
 |---|---|---|---|---|
 | G123 | basketball | The preregistered whole-frame CIELAB-L CLAHE feasibility test (clip limit 2.0; 8x8 tiles) reduces frozen G115 recall from 25/68 to 23/68 and recovers none of the 17 existing low-contrast misses. The same-identity G84 fixed-label candidate precision proxy is 180/1,584 before and 191/1,654 after, so a small proxy increase accompanies 70 additional candidates and worse recall. The implied independent all-four-line co-occurrence falls from 1.83 pct to 1.31 pct. Six evenly distributed enhanced overlays show crowd, graphics, reflections, players, and floor texture made more line-like. | `g123_low_contrast_lines_2026-09-02.md`; `g123_contrast/` | REJECT. Do not tune CLAHE on this frozen sample; G120 fragmentation and G121 corner-first work remain independent. |
 
+## G132 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G132 | basketball | The preregistered original-plus-CLAHE segment union lifts frozen recall from 25/68 to 28/68 but fails its defining direct check: only 24/25 baseline-matched roles survive one grouping pass over the union. The lost `IB-_u4gW3ds_1080p:11760:lane_right` candidate is altered by union group fitting. Paired fixed-label precision falls from 212/1,581 = 13.41 pct to 225/2,014 = 11.17 pct as volume rises 27.4 pct. | `g132_additive_candidate_union_2026-09-02.md`; `g132_union/` | REJECT. Do not claim the apparent recall rise as additive; no tuning or production change. |
+
 ## G44B attempt-2 disposition
 
 | Gap | sport | finding | evidence | status |
