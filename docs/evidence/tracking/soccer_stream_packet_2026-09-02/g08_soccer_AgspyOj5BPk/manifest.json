@@ -1,0 +1,24 @@
+{
+  "seed": 20260902,
+  "window_seconds": 10,
+  "windows_per_clip": 5,
+  "decode": "cv2.VideoCapture sequential frames",
+  "detector": "G22 deterministic helper when available",
+  "sources": [
+    {
+      "clip": "soccer_AgspyOj5BPk",
+      "path": "data/footage_corpus/soccer__soccer_AgspyOj5BPk.mp4",
+      "fps": 30.0,
+      "total_frames": 28805,
+      "window_frames": 300,
+      "starts": [
+        721,
+        10962,
+        13780,
+        20669,
+        25062
+      ]
+    }
+  ],
+  "csv_sha256": "18baf2166c6538015a47234fbae863dc7c7d4d9c048b51ba0d0012230642aa3d"
+}

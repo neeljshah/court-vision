@@ -1,0 +1,24 @@
+{
+  "seed": 20260902,
+  "window_seconds": 10,
+  "windows_per_clip": 5,
+  "decode": "cv2.VideoCapture sequential frames",
+  "detector": "G22 deterministic helper when available",
+  "sources": [
+    {
+      "clip": "soccer_kSgNjoaqCpI_1080p",
+      "path": "data/footage_corpus/soccer__soccer_kSgNjoaqCpI_1080p.mp4",
+      "fps": 30.0,
+      "total_frames": 18150,
+      "window_frames": 300,
+      "starts": [
+        451,
+        6864,
+        8629,
+        12943,
+        15694
+      ]
+    }
+  ],
+  "csv_sha256": "68a2867cabcf1253af4e0efe0242e6aa2addffc3734d468471dc4ade4ea1dab3"
+}

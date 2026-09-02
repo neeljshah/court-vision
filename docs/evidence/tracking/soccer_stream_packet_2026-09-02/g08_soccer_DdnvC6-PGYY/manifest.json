@@ -1,0 +1,24 @@
+{
+  "seed": 20260902,
+  "window_seconds": 10,
+  "windows_per_clip": 5,
+  "decode": "cv2.VideoCapture sequential frames",
+  "detector": "G22 deterministic helper when available",
+  "sources": [
+    {
+      "clip": "soccer_DdnvC6-PGYY",
+      "path": "data/footage_corpus/soccer__soccer_DdnvC6-PGYY.mp4",
+      "fps": 30.0,
+      "total_frames": 28951,
+      "window_frames": 300,
+      "starts": [
+        725,
+        11018,
+        13851,
+        20775,
+        25190
+      ]
+    }
+  ],
+  "csv_sha256": "ab1e9a9082c04042b565e721b2797e5f7319c3508cced36088ea41087700a513"
+}
