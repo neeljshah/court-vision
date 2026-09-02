@@ -1,0 +1,11 @@
+{
+  "g111_label_rows": 220,
+  "unique_frame_keys": 220,
+  "visible_corner_role_denominator": 616,
+  "coordinate_columns_present": [],
+  "localisation_tolerance_canonical_pixels": 16.0,
+  "proposal_rows": 36434,
+  "render_count": 44,
+  "scoring_status": "NOT_VALIDATED",
+  "reason": "G111 commits role visibility but no target pixel coordinates; recall would be circular."
+}
