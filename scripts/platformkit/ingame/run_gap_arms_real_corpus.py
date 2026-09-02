@@ -15,8 +15,8 @@ from scripts.platformkit.ingame_state_lift import _window_ids
 from scripts.platformkit.mlb_state_features import _FEATURE_COLUMNS, drop_unparsed, game_state_features
 from scripts.platformkit.wp_diag_series import load_records
 
-_BASELINE_TICKS = 144424
-_BASELINE_WINDOW_TICKS = 14802
+_BASELINE_TICKS = 52558
+_BASELINE_WINDOW_TICKS = 7158
 
 
 def _load_ticks(store: Path) -> tuple[List[Dict[str, Any]], pd.DataFrame]:
