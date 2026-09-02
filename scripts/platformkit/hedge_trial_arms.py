@@ -146,9 +146,23 @@ def _iso(stamp: str) -> datetime:
     return datetime.fromisoformat(str(stamp).replace("Z", "+00:00"))
 
 
+# RT-13. `home`/`away` below are SYNTHESIZED from the game_id suffix, not carried
+# from the corpus: `mlb-2026-06-28-NYY-BOS` -> home='' away='BOS' (measured), so
+# `_same_team` is True for every pair of dash-form ids; a Kalshi ticker
+# `KXMLBGAME-26JUL011310AAABBB0` -> home='BB0' away='AAB', which shifts the real
+# codes by the trailing sequence digit. The purge that cpcv_engine runs on these
+# keys is therefore NOT a team purge, and n_train / any "purged by team" wording
+# in an artifact must not be read as one. Every state carries TEAM_KEY_SOURCE so a
+# consumer can see that. Carrying the real home/away through load_corpus would
+# change n_train on both corpora, so it is PROPOSED, not applied here.
+TEAM_KEY_SOURCE = "game_id_suffix (synthesized -- NOT real team codes, RT-13)"
+
+
 def game_states(ticks: Sequence[Mapping[str, Any]], arms: Mapping[str, Series]) -> List[dict]:
     """One walk_forward-shaped state per game for cpcv_evaluate. Checkpoint = the
-    median tick by timestamp; state_ts = last tick + 1s; feature_avail = last tick."""
+    median tick by timestamp; state_ts = last tick + 1s; feature_avail = last tick.
+
+    `home`/`away` are synthesized from the game_id suffix -- see TEAM_KEY_SOURCE."""
     groups: Dict[str, List[int]] = defaultdict(list)
     for i, t in enumerate(ticks):
         if t.get("outcome") is not None and t.get("market_prob") is not None:
@@ -160,7 +174,8 @@ def game_states(ticks: Sequence[Mapping[str, Any]], arms: Mapping[str, Series]) 
         code = gid.rsplit("-", 1)[-1][-6:]
         states.append({
             "game_id": gid, "state_ts": (last + timedelta(seconds=1)).isoformat(),
-            "home": code[3:], "away": code[:3], "outcome": int(float(ticks[mid]["outcome"])),
+            "home": code[3:], "away": code[:3], "team_key_source": TEAM_KEY_SOURCE,
+            "outcome": int(float(ticks[mid]["outcome"])),
             "devig_close_prob": float(ticks[mid]["market_prob"]),
             "features": {"checkpoint": {n: arms[n][mid] for n in arms},
                          "arm_ticks": {n: [p for p in (arms[n][i] for i in idx) if p is not None] for n in arms}},

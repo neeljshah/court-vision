@@ -113,3 +113,37 @@ def test_hedge_predictor_cache_is_keyed_on_train_content_not_address():
     fresh = cpcv_evaluate(states, _uncached_hedge(names, 371), n_groups=8, n_test_groups=2)
     assert len({r["split_id"] for r in cached}) >= 20   # enough splits to reuse addresses
     assert [r["p_model"] for r in cached] == [r["p_model"] for r in fresh]
+
+
+def test_team_keys_are_labelled_synthesized_not_real(tmp_path):
+    """RT-13: home/away are cut out of the game_id suffix, so they are not team
+    codes. MEASURED here: two dash-form ids with DISJOINT real teams both parse
+    to home='' and _same_team says True. The states must say where the key came
+    from rather than presenting it as a team dimension."""
+    from scripts.platformkit.eval_gate.walkforward import _same_team
+
+    def synth(gid):
+        code = gid.rsplit("-", 1)[-1][-6:]
+        return {"home": code[3:], "away": code[:3]}
+    nyy, lad = synth("mlb-2026-06-28-NYY-BOS"), synth("mlb-2026-06-29-LAD-SFG")
+    assert nyy["home"] == lad["home"] == "" and _same_team(nyy, lad)   # not a team key
+    ticks, arms = _ticks()
+    states = A.game_states(ticks, arms)
+    assert states and all(s["team_key_source"] == A.TEAM_KEY_SOURCE for s in states)
+    assert "NOT real team codes" in A.TEAM_KEY_SOURCE
+
+
+def test_every_corpus_is_charged_under_its_own_sport(monkeypatch):
+    """RT-10: the charge lambda was `charge if sport == "mlb" else None` with the
+    ledger sport hardcoded to "mlb", so a second corpus inherited the first
+    block's k_cumulative (measured on hedge_trial_2026-09-01.json: soccer_intl
+    k_cumulative=12, its own ledger_row None). No real ledger is touched here."""
+    seen = []
+    monkeypatch.setattr(R, "_charge_ledger",
+                        lambda path, spec, sport, start, end:
+                        seen.append((path, spec, sport)) or {"k_cumulative": len(seen)})
+    rows = [R.sport_charge("spec-x", s)("2026-06-01", "2026-06-30")
+            for s in ("mlb", "soccer_intl")]
+    assert [sport for _, _, sport in seen] == ["mlb", "soccer_intl"]
+    assert {spec for _, spec, _ in seen} == {"spec-x"} and {p for p, _, _ in seen} == {R.LEDGER}
+    assert [r["k_cumulative"] for r in rows] == [1, 2]     # each corpus charges once
