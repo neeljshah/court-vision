@@ -1,0 +1,10 @@
+{
+  "method": "leave_one_clip_out",
+  "unit": "match",
+  "clips": [
+    "tennis_09",
+    "tennis_10",
+    "tennis_nyYk2nPZAwY_720p"
+  ],
+  "rule": "Each held-out clip is absent from its training set; no row-wise split is used."
+}
