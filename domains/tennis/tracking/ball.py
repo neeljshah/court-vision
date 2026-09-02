@@ -8,10 +8,13 @@ import cv2
 import numpy as np
 import pandas as pd
 
+from domains.tennis.tracking.ball_projection_guard import guard_ball_projection
+
 
 BallPoint = Tuple[float, float, float]
 RectifiedTrack = list[Optional[BallPoint]]
-BALL_COLUMNS = ("frame", "track_id", "cls", "x", "y")
+BALL_COLUMNS = ("frame", "track_id", "cls", "x", "y", "projection_status",
+                "projection_rejection_reason", "raw_projected_x_ft", "raw_projected_y_ft")
 _MIN_CONFIDENCE = 0.5
 
 
@@ -236,9 +239,14 @@ def ball_rows(rectified: Sequence[Optional[BallPoint]], homography: np.ndarray) 
     for frame, point in enumerate(rectified):
         if point is None or point[2] < _MIN_CONFIDENCE:
             continue
-        court = cv2.perspectiveTransform(np.float32([[[point[0], point[1]]]]), homography)[0, 0]
+        decision = guard_ball_projection(point, homography)
         rows.append({"frame": frame, "track_id": 99, "cls": "ball",
-                     "x": float(court[0]), "y": float(court[1])})
+                     "x": decision.raw_x if decision.status == "accepted" else float("nan"),
+                     "y": decision.raw_y if decision.status == "accepted" else float("nan"),
+                     "projection_status": decision.status,
+                     "projection_rejection_reason": decision.rejection_reason,
+                     "raw_projected_x_ft": decision.raw_x,
+                     "raw_projected_y_ft": decision.raw_y})
     return pd.DataFrame(rows, columns=BALL_COLUMNS)
 
 
