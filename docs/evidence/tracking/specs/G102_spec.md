@@ -26,6 +26,17 @@ DO THIS:
   (b) ONE labeller labels those 40 rows from the STRIPS ONLY, blind to every prior label, including
       their own from any earlier row. Anchoring on a prior call is what would reproduce the old
       numbers regardless of whether the strip helped.
+      **OPERATIONAL RULE, AND ATTEMPT 1 FAILED ON EXACTLY THIS.** The first G102 lane disqualified
+      itself -- correctly -- for opening the G65/G85/G92 row-level label files while inspecting
+      schemas, before the blind pass. Once seen, a labeller is anchored and no later discipline
+      undoes it. THE ORDER IS PART OF THE METHOD:
+        1. Derive the frame list WITHOUT reading any ball_visible value. You need only clip id and
+           source_frame. Select those columns explicitly; never print a whole label row.
+        2. Render the strips.  3. Label all 40 from the strips.
+        4. WRITE your labels to their own file and commit them.
+        5. ONLY THEN open any prior label file, and do the join and the agreement computation.
+      If you saw a prior label for a row before step 4, that row is contaminated: exclude it, say
+      so, and report the reduced n. Do not attempt to un-see it.
   (c) MEASURE THE THING THAT MATTERS: agreement. Compare the strip labels against the G85 blind
       labels on whatever subset overlaps, and report the agreement with a Wilson 95 pct interval.
       Then compare it to the 75.0 pct (Wilson 62.8-84.2) that the still-frame method produced. The
