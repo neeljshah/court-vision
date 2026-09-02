@@ -64,7 +64,7 @@ def test_k_family_counts_within_a_family_and_k_cumulative_stays_monotone(ledger_
                for i, fam in enumerate(("f1", "f1", "f2"))]
     assert [r["k_family"] for r in charged] == [1, 2, 1]
     ks = [r["k_cumulative"] for r in load_fwer(ledger_copy)]
-    assert ks == sorted(ks) == list(range(1, 17))
+    assert ks == sorted(ks) == list(range(1, len(ks) + 1))  # ledger only grows; the on-disk count moves
 
 
 def test_five_optional_fields_round_trip_through_the_loader(ledger_copy: Path) -> None:
