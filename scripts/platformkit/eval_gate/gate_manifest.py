@@ -14,7 +14,13 @@ An artifact that cannot be parsed OR stat-ed is emitted as a row with status
 UNREADABLE; a DIRECTORY that cannot be traversed is emitted as a scan_error row
 (pathlib.rglob swallows PermissionError and would drop a whole subtree without a
 trace, so this walks with os.walk + onerror instead). The CLI exits 1 if any row
-is UNREADABLE.
+is UNREADABLE, or (under --max-age-days) if any row is stale.
+
+Staleness is a SEPARATE `stale` flag, never a status value: overwriting status
+with "STALE" erased UNREADABLE/EMPTY and hid unparseable artifacts from every
+reader that filters on status (S45a). A measurement time in the FUTURE beyond
+_FUTURE_TOLERANCE_DAYS is invalid evidence, not fresh evidence, and the row says
+so in `measured_at_invalid` (RT-7).
 
 This is an audit/calibration tool. It reports verdicts already present in gate
 artifacts; it computes and claims no $ edge / ROI of its own. ASCII + stdlib only.
@@ -31,6 +37,13 @@ from typing import Dict, Iterator, List, Optional, Tuple
 
 _VERDICT_KEYS = ("verdict", "gate_verdict", "result")
 _ASOF_KEYS = ("as_of", "frozen_at", "at", "extracted_at", "ts", "generated_at")
+
+# Freshness is SELF-DECLARED, so an artifact can claim a measurement time in the
+# future and read as fresh forever (RT-7 measured as_of=2031-01-01 -> staleness
+# -1581.0 days, status OK). A measurement time beyond `as_of` by more than this
+# clock-skew tolerance is INVALID evidence, never fresh evidence. Knob, not a
+# bar: widen it for a fleet with looser clocks, never to admit a claim.
+_FUTURE_TOLERANCE_DAYS = 1.0
 
 
 def _as_utc(dt: datetime) -> datetime:
@@ -118,6 +131,7 @@ def _dir_error_row(msg: str) -> dict:
     return {"name": "<unreadable dir>", "source_path": msg, "category": "scan_error",
             "status": "UNREADABLE", "verdict": None, "as_of_field": None,
             "mtime": None, "measured_at": None, "measured_at_source": None,
+            "measured_at_invalid": None, "stale": False,
             "staleness_days": None, "error": msg}
 
 
@@ -146,11 +160,17 @@ def _row_for(path: Path, category: str, repo_root: Path, as_of: datetime) -> dic
     effective = effective or mtime
     staleness = (round((as_of - effective).total_seconds() / 86400.0, 2)
                  if effective is not None else None)
+    # RT-7: a measurement time AFTER the reference "today" is not fresh evidence,
+    # it is a broken clock or a self-serving stamp. Keep the declared value in the
+    # row (that is the honest record) and name why it cannot be trusted.
+    invalid = ("future" if staleness is not None and staleness < -_FUTURE_TOLERANCE_DAYS
+               else None)
     return {"name": path.name, "source_path": rel, "category": category, "status": status,
             "verdict": verdict, "as_of_field": as_of_field,
             "mtime": mtime.isoformat() if mtime else None,
             "measured_at": effective.isoformat() if effective else None,
             "measured_at_source": measured_at_source,
+            "measured_at_invalid": invalid, "stale": False,
             "staleness_days": staleness, "error": error}
 
 
@@ -166,6 +186,7 @@ def _stale_rows(manifest: dict, max_age_days: float,
             continue
         if (row.get("measured_at_source") in (None, "mtime")
                 or row.get("measured_at") is None
+                or row.get("measured_at_invalid") is not None
                 or row.get("status") in ("UNREADABLE", "EMPTY")
                 or row.get("staleness_days") is None
                 or row["staleness_days"] > max_age_days):
@@ -197,8 +218,8 @@ def build_manifest(repo_root: Path, as_of: Optional[datetime] = None,
 
 
 def render_table(manifest: dict) -> str:
-    headers = ["NAME", "CATEGORY", "STATUS", "VERDICT", "STALE_D", "PATH"]
-    widths = [28, 20, 11, 16, 8, 48]
+    headers = ["NAME", "CATEGORY", "STATUS", "STALE", "VERDICT", "STALE_D", "PATH"]
+    widths = [28, 20, 11, 5, 16, 8, 48]
 
     def fmt(vals):
         # PATH is last and is never truncated: clipping it to a fixed width made two
@@ -209,11 +230,16 @@ def render_table(manifest: dict) -> str:
     lines = [fmt(headers), "-+-".join("-" * w for w in widths)]
     for r in manifest["rows"]:
         stale = "-" if r["staleness_days"] is None else r["staleness_days"]
-        lines.append(fmt([r["name"], r["category"], r["status"], r["verdict"] or "-",
-                          stale, r["source_path"]]))
+        invalid = r.get("measured_at_invalid")
+        lines.append(fmt([r["name"], r["category"], r["status"],
+                          (invalid or "YES").upper() if r.get("stale") else "-",
+                          r["verdict"] or "-", stale, r["source_path"]]))
     s = manifest["summary"]
+    # S45(b): the STALE count a human reads. It is a SEPARATE column from the
+    # status counts now, so OK+EMPTY+UNREADABLE still sums to TOTAL.
     lines.append(f"TOTAL={s['total']} OK={s['ok']} EMPTY={s['empty']} "
-                 f"UNREADABLE={s['unreadable']}  as_of={manifest['as_of']}")
+                 f"UNREADABLE={s['unreadable']} STALE={s.get('stale', 0)}  "
+                 f"as_of={manifest['as_of']}")
     return "\n".join(lines)
 
 
@@ -237,12 +263,12 @@ def main(argv: Optional[List[str]] = None) -> int:
     # exclude our own output: otherwise run N+1 audits run N's manifest as a "ledger".
     manifest = build_manifest(args.repo_root, as_of=as_of, exclude=out)
     stale_rows = _stale_rows(manifest, args.max_age_days) if args.max_age_days is not None else []
+    # S45(a): staleness is its own flag. Overwriting status with "STALE" ERASED
+    # UNREADABLE and EMPTY -- an artifact nobody can parse then reported as merely
+    # old, and gate_manifest_tool / harness_health_report counted zero unreadables.
     for row in stale_rows:
-        row["status"] = "STALE"
+        row["stale"] = True
     if stale_rows:
-        for status in ("OK", "EMPTY", "UNREADABLE"):
-            manifest["summary"][status.lower()] = sum(
-                1 for row in manifest["rows"] if row["status"] == status)
         manifest["summary"]["stale"] = len(stale_rows)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(manifest, indent=2, ensure_ascii=True, sort_keys=True) + "\n",
