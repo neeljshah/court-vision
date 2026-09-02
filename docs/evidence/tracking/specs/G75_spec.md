@@ -1,4 +1,4 @@
-GAP G75 | sport basketball | worktree a2 | log cx_g75_paint_role_assignment
+GAP G75 | sport basketball | worktree a4 | log cx_g75_paint_role_assignment
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it, including A7; self-check every
 line of section B before you report.
 GATES CLEARED 2026-09-02, and you must restate these numbers in your first paragraph. The G68
@@ -68,7 +68,7 @@ baseline, the renders and every confusion you saw, and a NOT VERIFIED list.
 TEST: exactly one new per-file test; run only that file. Never a full pytest -- it freezes the box.
 POD: read-only. No scp, no deploy, no daemon restart, never kill anything -- another session has
 live processes there.
-COMMIT: explicit pathspec only (never the whole tree, never the gitignored local trees), in a2,
+COMMIT: explicit pathspec only (never the whole tree, never the gitignored local trees), in a4,
 no push. Report the sha.
 SHARED MODULE: none. line_calibration.py is under domains/, not the token.
 NEVER PARK: do not poll your own jobs in a blocking loop; never end waiting.
