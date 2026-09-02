@@ -15,7 +15,7 @@
  ],
  "bins": 10,
  "ess_note": "effective_sample_size over each series' OWN per-tick residual loss (model_prob - outcome) ** 2, clustered by game; the column is named loss_differential by that function's signature, it is a level not a paired difference",
- "generated_at": "2026-09-02T15:10:15.893900+00:00",
+ "generated_at": "2026-09-02T19:46:34.295985+00:00",
  "input": {
   "e4_blend_leakfree_gd": "stacker.e4_gd_series -- the game-first-date leak-free e4 variant scored by S06 (column pair_leakfree)",
   "market": "tick market_prob captured per tick by live_grade.capture_pair_once; the same series the E4 trial scored",
@@ -487,7 +487,26 @@
     "resolution": 0.05106073579241581
    },
    "reproduction_max_abs_diff": 6.609296443471635e-16,
-   "sharpness": 0.0611002473632042
+   "sharpness": 0.0611002473632042,
+   "tick_informative": {
+    "ci95_informative": [
+     0.1525037683117597,
+     0.18953595655655497
+    ],
+    "dm_p_informative": 1.2475713720086828e-40,
+    "loss_col_note": "S87 flags computed against the market series; the loss is this block's OWN level loss (p - y) ** 2 -- the same series its ess uses -- so n_eff_icc is directly comparable to ess.n_eff and ci95_informative is a BRIER interval on the informative ticks, NOT a verdict comparison. This module arms no bar (DESCRIPTIVE)",
+    "mean_loss_differential_informative": 0.17101986243415734,
+    "n": 47104,
+    "n_dup": 0,
+    "n_eff_icc": 452.33596323006765,
+    "n_games": 158,
+    "n_games_informative": 158,
+    "n_held_both": 32487,
+    "n_held_market": 33989,
+    "n_held_model": 42430,
+    "n_informative": 14617,
+    "note": "S87: the headline CI stays as published (all rows); ci95_informative re-quotes the same paired losses on informative ticks only. No bar moved."
+   }
   },
   "market": {
    "base_rate": 0.46335767663043476,
@@ -1407,7 +1426,26 @@
     "resolution": 0.024746360657359925
    },
    "reproduction_max_abs_diff": 1.1934897514720433e-15,
-   "sharpness": 0.06002721895586637
+   "sharpness": 0.06002721895586637,
+   "tick_informative": {
+    "ci95_informative": [
+     0.1854134852558801,
+     0.21647347121301466
+    ],
+    "dm_p_informative": 8.02670992276744e-58,
+    "loss_col_note": "S87 flags computed against the market series; the loss is this block's OWN level loss (p - y) ** 2 -- the same series its ess uses -- so n_eff_icc is directly comparable to ess.n_eff and ci95_informative is a BRIER interval on the informative ticks, NOT a verdict comparison. This module arms no bar (DESCRIPTIVE)",
+    "mean_loss_differential_informative": 0.2009434782344474,
+    "n": 47104,
+    "n_dup": 0,
+    "n_eff_icc": 631.0490367252464,
+    "n_games": 158,
+    "n_games_informative": 158,
+    "n_held_both": 31123,
+    "n_held_market": 33989,
+    "n_held_model": 42138,
+    "n_informative": 15981,
+    "note": "S87: the headline CI stays as published (all rows); ci95_informative re-quotes the same paired losses on informative ticks only. No bar moved."
+   }
   }
  }
 }

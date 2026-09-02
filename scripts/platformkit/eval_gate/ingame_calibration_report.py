@@ -31,6 +31,7 @@ import pandas as pd
 from scripts.platformkit.calib_decomp import bin_edges, decompose
 from scripts.platformkit.eval_gate.calibration_report import _from_bins
 from scripts.platformkit.eval_gate.scoring import ece, sharpness
+from scripts.platformkit.eval_gate.tick_informative import attach_informative_summary
 from scripts.platformkit.ingame.gap_effective_n import effective_sample_size
 from scripts.platformkit.wp_diagnostics import max_loser_wp, reliability
 
@@ -47,6 +48,11 @@ DESCRIPTIVE_NOTE = (
     "no promotion is armed by this artifact. Gating on it would require its own "
     "prereg-sealed bar fixed before the first metric (Q3). Calibration, not edge."
 )
+INFORMATIVE_LOSS_NOTE = (
+    "S87 flags computed against the market series; the loss is this block's OWN level loss "
+    "(p - y) ** 2 -- the same series its ess uses -- so n_eff_icc is directly comparable to "
+    "ess.n_eff and ci95_informative is a BRIER interval on the informative ticks, NOT a "
+    "verdict comparison. This module arms no bar (DESCRIPTIVE)")
 ESS_NOTE = ("effective_sample_size over each series' OWN per-tick residual loss "
             "(model_prob - outcome) ** 2, clustered by game; the column is named "
             "loss_differential by that function's signature, it is a level not a paired "
@@ -124,6 +130,16 @@ def build_ingame_report(ticks: Sequence[Any], series: Mapping[str, Sequence[floa
             raise ValueError("series %r has %d rows, ticks has %d" % (name, len(values), n))
     blocks = {name: _series_block(values, outcomes, game_ids, bins)
               for name, values in series.items()}
+    for name, block in blocks.items():                                          # S87
+        if name == "market" or "market" not in series:
+            continue                    # the model side of the pair is what is flagged
+        attach_informative_summary(block, pd.DataFrame({
+            "game": [str(value) for value in game_ids], "timestamp": list(ticks),
+            "market": [float(value) for value in series["market"]],
+            "model": [float(value) for value in series[name]],
+            "loss": [(float(prob) - float(outcome)) ** 2
+                     for prob, outcome in zip(series[name], outcomes)]}), "loss")
+        block["tick_informative"]["loss_col_note"] = INFORMATIVE_LOSS_NOTE
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "mode": "DESCRIPTIVE",

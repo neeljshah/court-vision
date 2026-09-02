@@ -6,6 +6,12 @@ Verdict **NOT VERIFIED** -- this memo is the lane's own report; every number bel
 from a run or a test in this session, but no independent verifier has re-run them.
 Calibration language only. Nothing here is a dollar, ROI or edge claim. No verdict changes.
 
+CORRECTION (same session, second commit): the first version of this memo claimed
+`ingame_calibration_report.py` "does not exist". It DOES -- at
+`scripts/platformkit/eval_gate/ingame_calibration_report.py`, not under `ingame/`, which is the only
+directory the first `ls | grep -i calib` looked in. The file is now wired and the evidence is in
+section 2b. The wrong claim is left visible here rather than quietly deleted.
+
 The first half of S87 (memo `S87_tick_informative_2026-09-03.md`) built `flag_ticks` and re-quoted
 three archived CIs. Its own honest limit was: "nothing in the scoring path calls them yet". That is
 the half closed here.
@@ -30,6 +36,7 @@ from a per-unit paired-loss series. The narrowing grep is
 | `scripts/platformkit/foundry/ingame_screen.py` | tick | (lane S82's file) | NOT TOUCHED -- another lane owns it |
 | `scripts/platformkit/ingame/forward_evidence_scoreboard.py` | n/a | `:248` `tmp.write_text(json.dumps(doc, ...))` | NO -- see below |
 | `scripts/platformkit/ingame/arm_evaluation.py` | n/a | `:37` `print(json.dumps(evaluate(rows)))` | NO -- see below |
+| `scripts/platformkit/eval_gate/ingame_calibration_report.py` | tick (DESCRIPTIVE, no verdict, no CI) | `:196` `OUTPUT.write_text(json.dumps(report, ...))` | YES -- triple added (see 2b) |
 | `scripts/platformkit/eval_gate/calibration_report.py` | pregame corpus rows | (S05 calibration report) | NO -- not an in-game tick CI |
 
 Honest exclusions, each with the reason:
@@ -39,11 +46,16 @@ Honest exclusions, each with the reason:
   (`n_forward_games`), and its own docstring says "from existing verdict artifacts only". There is
   no tick frame to flag; whatever triple the source artifact carries is the triple.
 - `arm_evaluation.py` (42 lines) is a shadow-eligibility gate: it counts cache/manifest rows and
-  returns `verdict(None, None, 0, None, False)` -- no probabilities, no losses, no CI. The task
-  named `ingame_calibration_report.py`; no such file exists (`ls scripts/platformkit/ingame | grep
-  -i calib` -> `bucket_recalibration.py`, `exec_calibration.py`). The nearest real module is
-  `eval_gate/calibration_report.py`, which scores the PREGAME cached gate corpora (S05), not
-  in-game ticks.
+  returns `verdict(None, None, 0, None, False)` -- no probabilities, no losses, no CI.
+- `ingame_calibration_report.py` (S43) IS a real in-game per-tick module and IS now wired. It was
+  missed by the STEP 0 greps for a defensible reason and then by a bad `ls`: it contains no
+  `dm_ci`, no `deflated_p`, no `"verdict"` and never calls `diebold_mariano`, so it appears in
+  NEITHER narrowing grep -- it is DESCRIPTIVE (its own docstring: "no bar, no threshold and no gate
+  is armed here"). But it publishes `n_ticks` and a clustered `ess.n_eff` PER SERIES over 47,104
+  raw ticks, which is precisely the arithmetic the S87 row calls out ("the known n_eff 420-483 of
+  47,104 is the same arithmetic"), so it is in the bar even without a CI. Wired in section 2b.
+- `eval_gate/calibration_report.py` (S05) scores the PREGAME cached gate corpora, not in-game
+  ticks, and is not in the bar.
 - `s86_nba_every_tick.py` (lane S86, landed today) ALREADY writes `n_informative` beside its
   `n_eff` and `dm_ci95` (`:89`, `:157`). It is NOT edited here -- both because lane S86 owns it and
   because it is already at the bar. One honest difference to record: S86's `informative` flag is
@@ -73,7 +85,8 @@ lines):
 - `n_eff_icc` is `ingame.gap_effective_n.effective_sample_size` on the informative subset -- the
   same primitive the artifacts already quote; the ESS is not reimplemented.
 
-Per-writer diff (143 insertions, 5 deletions across 10 files, of which 73 lines are tests):
+Per-writer diff (the first commit was 143 insertions / 5 deletions over 10 files, 73 of them tests;
+the correction commit adds 16 more lines in `ingame_calibration_report.py`):
 
 | file | diff |
 |---|---|
@@ -84,6 +97,7 @@ Per-writer diff (143 insertions, 5 deletions across 10 files, of which 73 lines 
 | `s58_e2_slice_trial.py` | +7/-1 (same shape) |
 | `s58_nba_halftime_asof_trial.py` | +5/-1 (event block: `grain`, `n_events`, `n_informative`, `n_eff`, note) |
 | `s58_t2_first_trial.py` | +5/-1 (same event block) |
+| `ingame_calibration_report.py` | +16 (import, a 5-line loop over the non-market series, and the note constant) |
 
 B2 ADDITIVE: every change ADDS a key. No column, status value or field was renamed or removed; the
 published `dm` / `pooled` / `dm_vs_incumbent` blocks are byte-identical in shape and value.
@@ -135,6 +149,46 @@ identity off the S83 joined store; that is the S83 difference, not an S87 one.)
 
 No verdict moved: both embargo arms are SCREEN_NULL before and after, exactly as they were.
 
+## 2b. `ingame_calibration_report.py` (S43) -- wired, and the artifact re-run
+
+DESCRIPTIVE module, so there is no CI to sit beside and no verdict to protect. The flags are
+computed against the `market` series with each block's OWN level loss `(p - y) ** 2` -- the same
+series that block's `ess` already uses -- so `n_eff_icc` is directly comparable to the published
+`ess.n_eff`. A per-block `loss_col_note` says exactly that, and says that `ci95_informative` is
+therefore a BRIER interval on the informative ticks, NOT a verdict comparison. The `market` series
+gets no flags by design: it is the market side of the pair, not a model.
+
+`python -m scripts.platformkit.eval_gate.ingame_calibration_report` (uncharged; the module reads
+no ledger):
+
+    n_ticks 47104 | n_games 158 | reproduction_max_abs_diff 2.03e-15
+    raw_model | brier 0.236683 | ece 0.086901 ... e4_blend_leakfree_gd | 0.206786 | 0.074150 ...
+    market | 0.195387 | 0.066715 ...
+
+`docs/evidence/calibration/mlb_ingame_reliability_2026-09-03.json`, per series:
+
+| series | n | n_informative | n_eff_icc (informative) | published ess.n_eff (all ticks) | held market | held model |
+|---|---|---|---|---|---|---|
+| `raw_model` | 47,104 | 15,981 | 631.05 | 483.03 | 33,989 | 42,138 |
+| `e4_blend_leakfree_gd` | 47,104 | 14,617 | 452.34 | 434.66 | 33,989 | 42,430 |
+| `market` | 47,104 | (not flagged by design) | -- | 420.36 | -- | -- |
+
+The 420-483 range the S87 row names is exactly this `ess.n_eff` column, now standing beside the
+informative counts. Dropping ~69 pct of the ticks RAISES the effective sample on both model series,
+the same direction the first half measured.
+
+ARTIFACT NOT SILENTLY REWRITTEN: the published JSON was copied to scratch first, and after the run
+every pre-existing key compares EQUAL (`strip(before) == strip(after)` ignoring only `generated_at`
+and the added `tick_informative` blocks) -- so this is also a clean reproduction of S43's numbers,
+`reproduction_max_abs_diff 2.03e-15`. No key was added at report level; no bar exists in this module
+to move.
+
+Honest note on the two paths: this run reports held-market 33,989 of 47,104 on the same window where
+the S87 first half reported 33,998 for S58 trial A. The two read the market column by different
+routes (this module joins `market_prob` by `_row_id` from the live store; trial A reads its own
+archived series) and pair it with different model columns, so a 9-row difference is expected and is
+NOT reconciled here.
+
 ## 3. Guard rails observed
 
 - NO CHARGE: `data/cache/eval_gate/backtest_fwer.jsonl` is 18 rows, md5
@@ -158,6 +212,8 @@ No verdict moved: both embargo arms are SCREEN_NULL before and after, exactly as
   `ci95_informative: None` and a stated reason; and the S80 writer's own `score()` on a synthetic
   8-tick / 2-game frame returns `n 8, n_informative 5, n_held_market 3, n_dup 0`, a non-None
   `n_eff_icc`, a 2-element `ci95_informative`, and a headline `dm.ci95` that differs from it.
+- `python -m pytest scripts/platformkit/eval_gate/test_ingame_calibration_report.py -q` ->
+  **4 passed** (unchanged file, re-run after the wiring).
 - Writer regressions, all re-run in master after the diff:
   `tests/platformkit/eval_gate/test_s58_clamp_family_trial.py -q` -> 6 passed (its
   seal->charge->score test now ALSO asserts the artifact carries `tick_informative` with
@@ -186,6 +242,9 @@ No verdict moved: both embargo arms are SCREEN_NULL before and after, exactly as
   neither probability moved is still counted redundant -- right for a paired loss comparison, wrong
   for a state-feature screen. S86's market-only variant is a different rule and both now coexist;
   unifying them is not done here.
+- In `ingame_calibration_report.py` the `market` series carries no flags (it is the market side of
+  the pair), and `n_dup` there is structurally 0 because the flag key is the store `_row_id`, which
+  is unique by construction -- held-flags are the informative signal on that stream, not dedup.
 - The bar says "every in-game verdict artifact". What is enforced is every in-game verdict writer
   that computes a DM CI from a paired-loss series and is not owned by another live lane. A future
   writer can still omit the triple: nothing MECHANICALLY refuses an artifact without it (no schema
