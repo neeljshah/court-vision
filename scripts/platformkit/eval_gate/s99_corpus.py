@@ -17,6 +17,7 @@ from typing import Any, Dict, List, Tuple
 import numpy as np
 import pandas as pd
 
+from scripts.platformkit.eval_gate.asof_join import asof_join_state
 from scripts.platformkit.ingame.soccer_outcome import (SoccerOutcomeResolver, _resolve_code,
                                                        parse_wc_ticker)
 
@@ -36,7 +37,9 @@ _SOCCER_ALIAS = {"Bosnia-Herzegovina": "Bosnia and Herzegovina", "Congo DR": "DR
 _KV = re.compile(r"(\w+)=([\w\.\-]+)")
 # A joined-store state series stops when the capture stops, but the price series runs to
 # settlement, so a backward as-of join would silently carry a 2-hour-stale score forward.
-# Ticks further than this from their last observed state are DROPPED, never guessed.
+# Ticks further than this from their last observed state are DROPPED, never guessed. The
+# join itself is `asof_join.asof_join_state` (S104), which applies this same rail and also
+# reports the share it nulled -- `pd.merge_asof(tolerance=)` nulls in silence.
 STATE_TOLERANCE_S = 300
 
 
@@ -140,6 +143,7 @@ def build_mlb() -> Tuple[pd.DataFrame, Dict[str, Any]]:
     ticks, games = rekey("mlb"), _mlb_games()
     ticks = ticks[ticks.groupby("game_key", observed=True)["market_type"].transform("nunique") >= 2]
     rows, kept, dropped = [], [], {"unparsed": 0, "no_state": 0, "no_outcome": 0}
+    stale = [0.0, 0]                     # (ticks whose as-of state was too stale, ticks joined)
     for key, block in ticks.groupby("game_key", observed=True):
         match = _MLB_TICKER.match(key)
         state_path = JOINED / "mlb" / ("KXMLBGAME-%s.jsonl" % key)
@@ -183,8 +187,9 @@ def build_mlb() -> Tuple[pd.DataFrame, Dict[str, Any]]:
             frame = pd.DataFrame({"ts": leg["ts"].to_numpy(), "price": price,
                                   "strike": (np.nan if market == "moneyline"
                                              else pd.to_numeric(leg["side"]).to_numpy())})
-            frame = pd.merge_asof(frame.sort_values("ts"), state, on="ts", direction="backward",
-                                  tolerance=STATE_TOLERANCE_S)
+            frame, stale_share = asof_join_state(frame, state, "ts", STATE_TOLERANCE_S)
+            stale[0] += stale_share * len(frame)
+            stale[1] += len(frame)
             frame = frame.dropna(subset=["cur_h", "inning"])
             if not len(frame):
                 continue
@@ -200,7 +205,10 @@ def build_mlb() -> Tuple[pd.DataFrame, Dict[str, Any]]:
             rows.append(frame)
         kept.append(key)
     meta = {"n_multi_market_games": int(ticks["game_key"].nunique()), "n_games_joined": len(kept),
-            "dropped": dropped, "tie_weight": 0.5, "crps_kmax": 40}
+            "dropped": dropped,
+            "state_tolerance_s": STATE_TOLERANCE_S, "n_ticks_asof_joined": stale[1],
+            "stale_state_share": (stale[0] / stale[1]) if stale[1] else 0.0,
+            "tie_weight": 0.5, "crps_kmax": 40}
     return pd.concat(rows, ignore_index=True), meta
 
 
@@ -213,6 +221,7 @@ def build_soccer() -> Tuple[pd.DataFrame, Dict[str, Any]]:
     results = results.dropna(subset=["home_score", "away_score"]).copy()
     results["d"] = pd.to_datetime(results["date"]).dt.date
     rows, kept, dropped = [], [], {"unparsed": 0, "no_state": 0, "no_outcome": 0}
+    stale = [0.0, 0]                     # (ticks whose as-of state was too stale, ticks joined)
     for key, block in ticks.groupby("game_key", observed=True):
         parsed = parse_wc_ticker("KXWCGAME-%s" % key)
         state_path = JOINED / "soccer_intl" / ("KXWCGAME-%s.jsonl" % key)
@@ -249,8 +258,9 @@ def build_soccer() -> Tuple[pd.DataFrame, Dict[str, Any]]:
                                   "team": team,
                                   "strike": (np.nan if market == "moneyline"
                                              else pd.to_numeric(leg["side"].str[3:]).to_numpy())})
-            frame = pd.merge_asof(frame.sort_values("ts"), state, on="ts", direction="backward",
-                                  tolerance=STATE_TOLERANCE_S)
+            frame, stale_share = asof_join_state(frame, state, "ts", STATE_TOLERANCE_S)
+            stale[0] += stale_share * len(frame)
+            stale[1] += len(frame)
             frame = frame.dropna(subset=["cur_h", "minute"])
             if not len(frame):
                 continue
@@ -269,6 +279,9 @@ def build_soccer() -> Tuple[pd.DataFrame, Dict[str, Any]]:
             rows.append(frame)
         kept.append(key)
     meta = {"n_multi_market_games": int(ticks["game_key"].nunique()), "n_games_joined": len(kept),
-            "dropped": dropped, "tie_weight": 0.0, "crps_kmax": 12}
+            "dropped": dropped,
+            "state_tolerance_s": STATE_TOLERANCE_S, "n_ticks_asof_joined": stale[1],
+            "stale_state_share": (stale[0] / stale[1]) if stale[1] else 0.0,
+            "tie_weight": 0.0, "crps_kmax": 12}
     return pd.concat(rows, ignore_index=True), meta
 
