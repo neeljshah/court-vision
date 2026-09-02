@@ -4,7 +4,7 @@ Rule: a gap is closed only by a measured artifact (metric, exact denominator, n,
 and for any scored claim a prereg sealed before the metric). Harness thresholds
 and gate values NEVER move. Calibration language only -- no dollar, ROI or edge
 claim ever appears in a row, an artifact or a memo.
-NEXT_GAP_ID: S36  (allocated by the orchestrator ONLY; lanes never invent ids.
+NEXT_GAP_ID: S37  (allocated by the orchestrator ONLY; lanes never invent ids.
 OWNERSHIP IN FORCE 2026-09-03: account 1 = this harness session holds THIS counter (S); account 2 = the tracking session holds G (G33). Account 1 dispatches codex ONLY into worktrees a10-a12.
 S-ids start at S01 so they can never collide with the tracking register's G-ids.
 S28/S29 allocated 2026-09-03 by the roadmap-audit lane.)
@@ -77,6 +77,8 @@ CLOSED with no S-row; S11-S18 and S27-S29 are new.
 
 | S34 | harness | `close_join.gate_corpus_states` stamps a SYNTHETIC vintage (state_ts fixed 12:00:00, feature_avail 00:00:00), so walk_forward's leak guard passes BY CONSTRUCTION on these states -- any sport scored through them (S03, S22) inherits a leak check that can never fail; needs a real odds/feature timestamp or an explicit SYNTHETIC-VINTAGE label carried into every artifact | S02 verifier report 2026-09-03; scripts/platformkit/eval_gate/close_join.py (landed 40e991be1) | OPEN (new 2026-09-03, S02 verifier) -- S03's spec carries the label fix |
 | S35 | harness | `close_join.coverage_report.by_corpus_unit` groups MATCHED rows only, so per-unit join_rate is 1.0 by construction and hides per-unit coverage holes wherever unjoined > 0 -- exactly the S03 case (ATP 84.4 / WTA 71.2) | same report | OPEN (new 2026-09-03, S02 verifier) -- fixed inside the S03 pass (same module) |
+
+| S36 | harness | e4_blend and e2_regime fit windows self-leak across UTC midnight: gap_blend_arm.py:84 asserts DATE order only, and 124/178 corpus games span midnight, so 52.86 pct of e4's scored ticks (25,000/47,292) and 43.49 pct of e2's (2,867/6,593) had their OWN game's outcome in the fit window. Measured effect: e4 leak-free 0.206786 vs shipped 0.207033 (leak did NOT flatter; the E4 AHEAD direction stands, conservatively), e2 leak-free 0.254351 vs shipped 0.252261 (leak FLATTERED e2 by +0.002090). Fix = game-first-date fit windows + per-fold game-disjoint assert in both arm modules; the S06 stacker already consumes only the leak-free variants | S06 OOF pre-flight memo c5d49ce58 (Fable lane, Briers reproduced to 1e-9) | OPEN (new 2026-09-03) -- arm-module fix pass after S06 |
 
 ## Quant additions to the verifier contract (Q1-Q6)
 

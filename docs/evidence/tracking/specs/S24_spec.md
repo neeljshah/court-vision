@@ -22,3 +22,5 @@ EVIDENCE: docs/evidence/harness/S24_artifact_refresh_scheduler_2026-09-03.md -- 
 POD: none. Local only. Do not start any long-running process.
 COMMIT: explicit pathspec (module, test, memo), in this worktree, no push. Last line of your report: `SHA: <sha>`.
 NEVER PARK: run everything to completion this turn; never end waiting.
+
+UPDATE 2026-09-03: harness_health.json now HAS a producer (scripts/platformkit/eval_gate/harness_health_report.py, landed bbf49a597, writes data/frontend/analytics/harness_health.json) -- include it in the refresh set; the NO_PRODUCER exclusion above is obsolete.
