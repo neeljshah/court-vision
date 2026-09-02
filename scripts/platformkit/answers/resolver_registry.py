@@ -86,8 +86,18 @@ from scripts.platformkit.profiles import ask as _ask
 # Retracted-number / edge-language guard (binding list, .claude/rules/no-edge-claims.md)
 # ---------------------------------------------------------------------------
 RETRACTED_NUMBERS = ("18.38", "0.119", "+54%", "54%", "78.11", "8.94", "54.57")
-EDGE_KEYWORDS = ("edge", "roi", "beat the market", "beat the close", "profit",
-                 "positive ev", "+ev", "bankroll", "win rate over market")
+# S37: the list carried no gerund and no money-OUTCOME family, so probe E04
+# "how much money can we make beating the closing line" fell through this guard
+# and was classified player_stat. "beat the clos*" / "beating the clos*" are
+# deliberate stems (close / closing line / closing number). "guaranteed profit"
+# needs no entry of its own -- "profit" already catches it.
+# Narrow on purpose: bare "close"/"closing line" stays legal so calibration
+# questions ("do we match the closing line", "Brier vs the close") still answer.
+EDGE_KEYWORDS = ("edge", "roi", "return on investment", "beat the market",
+                 "beating the market", "beat the clos*", "beating the clos*",
+                 "profit", "positive ev", "+ev", "bankroll",
+                 "win rate over market", "how much money", "make money",
+                 "winnings", "sure bet")
 
 
 def _word_boundary_hit(text: str, keyword: str) -> bool:
