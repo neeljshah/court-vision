@@ -8,17 +8,23 @@ from pathlib import Path
 import cv2
 
 
-def probe_source(video: Path) -> dict[str, float | int | None]:
+def probe_source(video: Path) -> dict[str, float | int | str | None]:
     """Return declared source timing and dimensions without full decoding."""
     capture = cv2.VideoCapture(str(video))
     try:
         if not capture.isOpened():
-            return {"source_fps": None, "source_height": None, "source_duration": None}
+            return {"source_fps": None, "source_width": None,
+                    "source_height": None, "source_resolution": None,
+                    "source_duration": None}
         fps = float(capture.get(cv2.CAP_PROP_FPS))
         frames = float(capture.get(cv2.CAP_PROP_FRAME_COUNT))
+        width = int(capture.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        resolution = "{}x{}".format(width, height) if width > 0 and height > 0 else None
         return {"source_fps": fps if fps > 0 else None,
+                "source_width": width if width > 0 else None,
                 "source_height": height if height > 0 else None,
+                "source_resolution": resolution,
                 "source_duration": frames / fps if frames > 0 and fps > 0 else None}
     finally:
         capture.release()
