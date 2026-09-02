@@ -135,7 +135,11 @@ def write_readout(ledger_path: Path, out_json: Path, memo_md: Path, *, now_iso: 
     doc = rollup(rows, now_iso=now_iso)
     timestamps = [str(row.get("settled_at") or row.get("graded_at")) for row in rows if _kind(row) == "settled"]
     doc.update({"source_artifact": str(ledger_path).replace("\\", "/"),
-                "as_of": max(timestamps) if timestamps else "%s (no rows)" % now_iso,
+                # S71/F3: `as_of` stays ISO-parseable even with no settled rows --
+                # the "(no rows)" caveat moves to as_of_note, so a consumer can
+                # date the readout instead of failing to parse it.
+                "as_of": max(timestamps) if timestamps else now_iso,
+                "as_of_note": None if timestamps else "no settled rows -- as_of is the run time",
                 "generated_at": now_iso, "staleness_days": 0 if timestamps else _I,
                 "status": "ok" if timestamps else "no_data"})
     out_json.parent.mkdir(parents=True, exist_ok=True)

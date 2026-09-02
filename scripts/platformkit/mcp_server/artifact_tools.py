@@ -37,6 +37,44 @@ def _as_of(path: Path, value: Any) -> str:
     return datetime.fromtimestamp(path.stat().st_mtime, timezone.utc).isoformat()
 
 
+def _parse_iso(stamp: Any) -> datetime | None:
+    try:
+        parsed = datetime.fromisoformat(str(stamp).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
+def finalize(env: Dict[str, Any], root: Path = _ROOT) -> Dict[str, Any]:
+    """S71/F1: age every `ok` envelope that names a real file on disk.
+
+    The single point every MCP handler passes through (tools.handler_for), so
+    `staleness_days` cannot be forgotten by a new tool. `as_of` is preferred
+    over the file mtime when it parses -- it is the artifact's own measurement
+    time -- and `staleness_days_source` says which was used. Envelopes that are
+    not `ok` (no_data / not_supported / refused / ambiguous) carry no number and
+    are returned untouched.
+    """
+    if not isinstance(env, dict) or env.get("status") != "ok":
+        return env
+    if env.get("staleness_days") is not None:
+        return env
+    sources = env.get("source_artifact")
+    paths = [root / str(s).replace("\\", "/")
+             for s in (sources if isinstance(sources, list) else [sources]) if isinstance(s, str)]
+    paths = [p for p in paths if p.is_file()]
+    if not paths:
+        return env
+    stamp, source = _parse_iso(env.get("as_of")), "as_of"
+    if stamp is None:
+        stamp = datetime.fromtimestamp(max(p.stat().st_mtime for p in paths), timezone.utc)
+        source = "source_artifact_mtime"
+    env["staleness_days"] = round(
+        (datetime.now(timezone.utc) - stamp).total_seconds() / 86400.0, 4)
+    env["staleness_days_source"] = source
+    return env
+
+
 def _no_data(category: str, source: str, note: str) -> Dict[str, Any]:
     return {"status": "no_data", "category": category, "source_artifact": source,
             "as_of": None, "note": note}
@@ -106,7 +144,10 @@ def mechanism_exposure(args: Dict[str, Any], root: Path = _ROOT) -> Dict[str, An
     if game_id is None:
         payload = value
     else:
-        rows = value.get("games", value.get("rows", [])) if isinstance(value, dict) else []
+        # S71/F2: the producer writes the per-game list under "game_sheets";
+        # games/rows stay as fallbacks for any older artifact on disk.
+        rows = (value.get("game_sheets", value.get("games", value.get("rows", [])))
+                if isinstance(value, dict) else [])
         payload = [row for row in rows if str(row.get("game_id")) == str(game_id)]
         if not payload:
             return _no_data("mechanism_exposure", rel, "no exposure sheet for requested game_id")
@@ -164,6 +205,16 @@ def execution_status(args: Dict[str, Any], root: Path = _ROOT) -> Dict[str, Any]
     if loaded is None:
         return _no_data("execution_status", _EXECUTION[0], "execution artifact absent or unreadable")
     path, rel, value = loaded
+    # S71/F3: the artifact states its own status -- an execution readout over an
+    # empty ledger writes status "no_data" / verdict "INSUFFICIENT". Serving that
+    # as `ok` invented a health the ledger does not have.
+    own = _field(value, "status")
+    if own in ("no_data", "not_supported", "refused", "ambiguous"):
+        return {"status": own, "category": "execution_status", "source_artifact": rel,
+                "as_of": _as_of(path, value),
+                "note": "artifact reports status=%s, verdict=%s -- passed through verbatim" % (
+                    own, _field(value, "verdict")),
+                "units_only": True}
     return {"status": "ok", "category": "execution_status", "source_artifact": rel,
             "as_of": _as_of(path, value),
             "mlb_event_reactive_latency": _field(value, "mlb_event_reactive_latency", "mlb_event_reactive"),

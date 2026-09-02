@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from pathlib import Path
 
 from scripts.platformkit.pm_trading.clv_daily_readout import rollup, write_readout
@@ -43,6 +44,12 @@ def test_empty_and_absent_ledgers_are_no_data(tmp_path: Path) -> None:
                    "tick_latency_sec_p90", "staleness_days")
         assert all(doc[key] == "INSUFFICIENT" for key in numeric)
         assert json.loads(out.read_text(encoding="utf-8"))["n_settled"] == "INSUFFICIENT"
+        # S71/F3: as_of stays ISO-parseable with no settled rows -- the caveat
+        # moved to as_of_note. "<iso> (no rows)" made every consumer fail to
+        # date the readout (envelope probe X06).
+        assert doc["as_of"] == NOW
+        assert datetime.fromisoformat(doc["as_of"]) is not None
+        assert "no settled rows" in doc["as_of_note"]
 
 
 def test_unit_result_without_outcome_is_integrity_flag() -> None:

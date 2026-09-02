@@ -139,3 +139,15 @@ def test_real_data_grade_summary():
         pytest.skip("real frontend data not present in this environment")
     checks = S.grade_summary_checks()
     assert len(checks) == 6
+
+
+def test_overall_is_never_verified_when_nothing_was_verified(monkeypatch):
+    """S71/F7: the served headline read `overall: VERIFIED` at n_verified 0 /
+    10 STALE / 1 UNCHECKABLE. VERIFIED is a claim about checks that RAN."""
+    monkeypatch.setattr(S._clv, "load_ledger", lambda p: [])
+    monkeypatch.setattr(S, "grade_summary_checks", lambda *a, **k: [
+        {"verdict": "STALE"} for _ in range(10)])
+    monkeypatch.setattr(S, "pnl_series_checks", lambda *a, **k: [{"verdict": "UNCHECKABLE"}])
+    report = S.build_report()
+    assert report["n_verified"] == 0
+    assert report["overall"] == "STALE"

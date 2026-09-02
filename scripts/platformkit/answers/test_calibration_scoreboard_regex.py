@@ -39,7 +39,24 @@ def test_negative_delta_row_still_parses():
 
 
 def test_calibration_number_nba_returns_real_data_not_no_data():
+    # S71/F6: the truth source is now the TRACKED S05b reliability artifact
+    # (docs/evidence/calibration/nba_reliability_<date>.json), not the
+    # gitignored vault scoreboard -- so this pins the tracked ECE, and the row
+    # regex above still guards the fallback path's parsing.
     result = R.calibration_number("nba")
     assert result["status"] == "ok", result
-    assert "as_of" in result
-    assert result["improved_ece"] == 0.03113
+    assert result["source_artifact"].startswith("docs/evidence/calibration/nba_reliability_")
+    assert result["as_of"] == result["source_artifact"].rsplit("_", 1)[-1][:-len(".json")]
+    assert result["improved_ece"] == 0.024842541854003943
+    assert result["prereg_seal_sha256"]
+
+
+def test_calibration_number_falls_back_to_the_scoreboard_and_says_so(monkeypatch):
+    # With no tracked artifact (a clone that has only the vault), the vault
+    # scoreboard still answers -- and labels itself FALLBACK.
+    monkeypatch.setattr(R, "_RELIABILITY_DIR", "no/such/dir")
+    result = R.calibration_number("nba")
+    assert result["status"] in ("ok", "no_data")
+    if result["status"] == "ok":
+        assert result["source_artifact"] == R._SCOREBOARD_PATH
+        assert result["note"].startswith("FALLBACK")

@@ -71,3 +71,44 @@ def test_tracking_harness_and_execution_artifacts_are_returned_verbatim(tmp_path
     assert tools.harness_health({}, tmp_path)["multiplicity_ledger_K"] == 85
     execution = tools.execution_status({}, tmp_path)
     assert execution["paper_ledger_counts"]["paper_units"] == 4 and execution["units_only"] is True
+
+
+def test_mechanism_exposure_reads_game_sheets_key(tmp_path):
+    # S71/F2: the real producer writes the per-game list under "game_sheets";
+    # reading only games/rows made all 1,317 sheets unaddressable by game_id.
+    _write(tmp_path, "scripts/platformkit/analytics_showcase/out/mechanism_exposure.json",
+           {"as_of": "2026-05-24",
+            "game_sheets": [{"game_id": "2025-10-21-GSW-LAL-0", "exposures": [{"n": 3}]}]})
+    env = tools.mechanism_exposure({"game_id": "2025-10-21-GSW-LAL-0"}, tmp_path)
+    assert env["status"] == "ok"
+    assert env["exposure_sheets"][0]["exposures"] == [{"n": 3}]
+    assert tools.mechanism_exposure({"game_id": "nope"}, tmp_path)["status"] == "no_data"
+
+
+def test_execution_status_passes_the_artifacts_own_status_through(tmp_path):
+    # S71/F3: an execution readout over an empty ledger writes status no_data /
+    # verdict INSUFFICIENT -- serving that as ok invented a health it lacks.
+    _write(tmp_path, "data/frontend/analytics/execution_status.json",
+           {"as_of": "2026-09-02T14:10:16+00:00", "status": "no_data",
+            "verdict": "INSUFFICIENT", "n_records": 20, "n_open": 18})
+    env = tools.execution_status({}, tmp_path)
+    assert env["status"] == "no_data"
+    assert "INSUFFICIENT" in env["note"]
+    _write(tmp_path, "data/frontend/analytics/execution_status.json",
+           {"as_of": "2026-09-02T14:10:16+00:00", "status": "ok", "n_records": 20})
+    assert tools.execution_status({}, tmp_path)["status"] == "ok"
+
+
+def test_finalize_stamps_staleness_only_on_ok_envelopes_naming_a_real_file(tmp_path):
+    # S71/F1: the shared finaliser every handler passes through.
+    _write(tmp_path, "a.json", {"x": 1})
+    ok = tools.finalize({"status": "ok", "source_artifact": "a.json",
+                         "as_of": "2020-01-01T00:00:00+00:00"}, tmp_path)
+    assert ok["staleness_days"] > 2000 and ok["staleness_days_source"] == "as_of"
+    mtime = tools.finalize({"status": "ok", "source_artifact": "a.json",
+                            "as_of": "2026-09-02T14:10:16+00:00 (no rows)"}, tmp_path)
+    assert mtime["staleness_days_source"] == "source_artifact_mtime"
+    for env in ({"status": "refused", "source_artifact": "a.json"},
+                {"status": "not_supported", "source_artifact": "a.json"},
+                {"status": "ok", "source_artifact": "absent.json", "as_of": "2020-01-01"}):
+        assert "staleness_days" not in tools.finalize(dict(env), tmp_path)

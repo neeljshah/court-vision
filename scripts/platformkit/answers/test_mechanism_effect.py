@@ -204,3 +204,18 @@ def test_mechanism_not_supported_keeps_original_envelope_when_bridge_also_misses
     r = R.resolve("what does the evidence say about teleportation field advantage", sport="nba")
     assert r["status"] == "not_supported"
     assert "Registered hypotheses" in r["note"]  # original mechanism envelope, untouched
+
+
+def test_why_does_x_hold_phrasing_resolves_the_same_mechanism():
+    """S71/F5: three phrasings of ONE registered tennis mechanism must land on
+    the same hypothesis. The 'why does X hold or not hold' form carries words
+    ('why', 'or', 'not') absent from every hypothesis name, so the old
+    query-tokens-subset-of-name test could never fire on it."""
+    phrasings = [
+        "lefty_advantage_on_return",
+        "What does the evidence say about lefty advantage on return?",
+        "why does lefty advantage on return hold or not hold?",
+    ]
+    answers = [R.mechanism_effect("tennis", q) for q in phrasings]
+    assert [a["status"] for a in answers] == ["ok", "ok", "ok"], answers
+    assert {a["hypothesis"] for a in answers} == {"lefty_advantage_on_return"}
