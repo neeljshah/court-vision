@@ -1,4 +1,4 @@
-GAP S03 | sport tennis (harness) | worktree a11 AFTER S02 LANDS (same module, second JoinSpec) | log cx_s03_close_join_tennis
+GAP S03 | sport tennis (harness) | worktree a11 | log cx_s03_close_join_tennis
 VERIFIER-FILED PREREQUISITES (2026-09-03, from the S02 landing -- part of THIS pass, same module):
 - Fix S35 in close_join.py: by_corpus_unit rates must use the FULL spine per unit as denominator (ATP 30,616 / WTA 11,270), never matched rows only; a per-unit join_rate of exactly 1.0 with unjoined > 0 overall is an automatic self-REJECT.
 - Label S34 in every artifact this pass writes: states built by gate_corpus_states carry `vintage: SYNTHETIC` until a real odds timestamp exists; the coverage_report JSON and the memo both print that label.
