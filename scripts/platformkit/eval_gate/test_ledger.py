@@ -2,7 +2,11 @@
 from __future__ import annotations
 import os, tempfile
 from datetime import datetime, timedelta
-from ledger import LedgerRow, append_row, load, settled, brier_of, drift_report
+try:
+    from scripts.platformkit.eval_gate.ledger import (LedgerRow, append_row, load,
+                                                        settled, brier_of, drift_report)
+except ModuleNotFoundError:  # standalone run from this directory
+    from ledger import LedgerRow, append_row, load, settled, brier_of, drift_report
 
 
 def _tmp():
