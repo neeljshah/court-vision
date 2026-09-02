@@ -36,3 +36,13 @@ def test_adapter_run_has_a_bounded_frame_override_for_real_clip_measurements():
 def test_adapter_run_maps_probed_dimensions_to_harness_resolution_metadata():
     source = open("scripts/platformkit/adapter_run.py", encoding="utf-8").read()
     assert 'metadata["resolution"] = "{}x{}".format(width, height)' in source
+
+
+def test_adapter_ball_telemetry_declarations_match_detector_capabilities():
+    from scripts.platformkit.adapter_run import BALL_TELEMETRY_AVAILABLE
+
+    assert BALL_TELEMETRY_AVAILABLE["tennis"] is True
+    assert all(BALL_TELEMETRY_AVAILABLE[sport] is False for sport in (
+        "soccer", "baseball", "football", "basketball", "wnba",
+        "ncaa_basketball", "nba",
+    ))

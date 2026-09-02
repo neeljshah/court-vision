@@ -127,7 +127,11 @@ def track_item(item: dict[str, str], video: Path) -> Path:
         # asked for player-only tracking or they raise. adapter_run owns that
         # set; duplicating it here is how this caller silently broke when
         # soccer was added to it.
-        from scripts.platformkit.adapter_run import PLAYER_ONLY
+        from scripts.platformkit.adapter_run import (
+            BALL_TELEMETRY_AVAILABLE,
+            PLAYER_ONLY,
+        )
+        from scripts.platformkit.tracking_schema import write_ball_telemetry_declaration
 
         options = {"max_frames": 30000, "stride": 3}
         if sport in PLAYER_ONLY:
@@ -135,6 +139,7 @@ def track_item(item: dict[str, str], video: Path) -> Path:
         rows = getattr(module, SPORT_ADAPTERS[sport])().process_video(
             video, **options)
         module.write_csv(rows, output)
+        write_ball_telemetry_declaration(output, sport, BALL_TELEMETRY_AVAILABLE[sport])
         return output
     if sport in {"basketball", "wnba"}:
         subprocess.run([
@@ -144,6 +149,9 @@ def track_item(item: dict[str, str], video: Path) -> Path:
         ], check=True)
         if not output.is_file():
             raise FileNotFoundError("Basketball runner did not write %s" % output)
+        from scripts.platformkit.adapter_run import BALL_TELEMETRY_AVAILABLE
+        from scripts.platformkit.tracking_schema import write_ball_telemetry_declaration
+        write_ball_telemetry_declaration(output, sport, BALL_TELEMETRY_AVAILABLE[sport])
         return output
     raise ValueError("Unsupported sport: %s" % sport)
 

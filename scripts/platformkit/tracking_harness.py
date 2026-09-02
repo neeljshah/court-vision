@@ -69,7 +69,10 @@ class QualityReport:
     det_per_frame: float
     median_track_len: float
     ball_valid_pct: float | None
+    ball_valid: str
     ball_valid_applicable: bool
+    ball_telemetry_available: bool | None
+    ball_telemetry_rule: str
     jump_p95: float
     oob_pct: float
     zero_step_share: float
@@ -81,6 +84,7 @@ class QualityReport:
     source_frame_rate: float | None
     self_consistency_only: bool
     passed: bool
+    verdict: str
     failures: list[str]
 
     def to_json(self) -> str:
@@ -97,18 +101,22 @@ def _source_fields(metadata: Mapping[str, object] | None) -> tuple[str | None, f
 
 
 def _failed_report(sport: str, config_version: str, failure: str,
-                   metadata: Mapping[str, object] | None = None) -> QualityReport:
+                   metadata: Mapping[str, object] | None = None,
+                   schema=None) -> QualityReport:
     resolution, frame_rate = _source_fields(metadata)
+    available = schema.ball_telemetry_available if schema is not None else None
+    rule = schema.ball_telemetry_rule if schema is not None else "not_normalized"
     return QualityReport(
         sport=sport, config_version=config_version, n_frames=0, n_unique_games=0,
         n_duplicate_frame_track_rows=0, ball_rows=0, coverage_pct=0.0,
         det_per_frame=0.0, median_track_len=0.0, ball_valid_pct=0.0,
-        ball_valid_applicable=True,
+        ball_valid="not_evaluated", ball_valid_applicable=available is not False,
+        ball_telemetry_available=available, ball_telemetry_rule=rule,
         jump_p95=0.0, oob_pct=0.0, zero_step_share=0.0,
         median_step_distance=0.0, distinct_position_ratio=0.0,
         stationary_track_share=0.0, liveness_verdict="SUSPECT",
         source_resolution=resolution, source_frame_rate=frame_rate,
-        self_consistency_only=True, passed=False, failures=[failure])
+        self_consistency_only=True, passed=False, verdict="FAIL", failures=[failure])
 
 
 def evaluate(df: pd.DataFrame, sport: str,
@@ -127,12 +135,13 @@ def evaluate(df: pd.DataFrame, sport: str,
         return _failed_report(sport, config_version,
                               "unknown sport {}".format(sport), source_metadata)
 
+    schema = None
     try:
-        schema = identify_tracking_schema(df)
+        schema = identify_tracking_schema(df, source)
         df = normalize_tracking_frame(df, source, sport, allow_legacy_undeclared)
     except CoordinateTransformUnavailable as exc:
         return _failed_report(sport, config_version, "coordinate_contract: {}".format(exc),
-                              source_metadata)
+                              source_metadata, schema)
     resolution, frame_rate = _source_fields(source_metadata)
     n_frames = int(df["frame"].nunique())
     n_unique_games = (int(df["game_id"].dropna().nunique()) if "game_id" in df
@@ -143,7 +152,7 @@ def evaluate(df: pd.DataFrame, sport: str,
     duplicates = int(df.duplicated(duplicate_keys).sum())
     ball_rows = int((df["cls"] == "ball").sum())
     if n_frames == 0:
-        report = _failed_report(sport, config_version, "empty", source_metadata)
+        report = _failed_report(sport, config_version, "empty", source_metadata, schema)
         report.n_duplicate_frame_track_rows = duplicates
         report.ball_rows = ball_rows
         return report
@@ -158,7 +167,7 @@ def evaluate(df: pd.DataFrame, sport: str,
     oob = (~players["x"].between(x0, x1)) | (~players["y"].between(y0, y1))
     oob_pct = float(oob.mean()) if len(players) else 1.0
     ball_valid = (float(df[df["cls"] == "ball"]["frame"].nunique() / n_frames)
-                  if schema.ball_telemetry_available else None)
+                  if schema.ball_telemetry_available is not False else None)
     grouped = players.sort_values(["track_id", "frame"]).groupby("track_id")
     jump = ((grouped["x"].diff() ** 2 + grouped["y"].diff() ** 2) ** 0.5).dropna()
     jump_p95 = float(jump.quantile(0.95)) if len(jump) else 0.0
@@ -187,18 +196,24 @@ def evaluate(df: pd.DataFrame, sport: str,
         failures.append("liveness verdict FROZEN")
     failures.extend(liveness_failures(liveness, sport))
 
+    passed = not failures
+    verdict = "PASS_NO_BALL" if passed and schema.ball_telemetry_available is False else (
+        "PASS" if passed else "FAIL"
+    )
     return QualityReport(sport, config_version, n_frames, n_unique_games,
                          duplicates, ball_rows, round(coverage, 4),
                          round(det_per_frame, 2), track_len,
                          round(ball_valid, 4) if ball_valid is not None else None,
-                         schema.ball_telemetry_available,
+                         "evaluated" if ball_valid is not None else "not_evaluated",
+                         schema.ball_telemetry_available is not False,
+                         schema.ball_telemetry_available, schema.ball_telemetry_rule,
                          round(jump_p95, 2), round(oob_pct, 4),
                          round(liveness.zero_step_share, 4),
                          round(liveness.median_step_distance, 4),
                          round(liveness.distinct_position_ratio, 4),
                          round(liveness.stationary_track_share, 4),
                          liveness.verdict, resolution,
-                         frame_rate, True, not failures, failures)
+                         frame_rate, True, passed, verdict, failures)
 
 
 if __name__ == "__main__":

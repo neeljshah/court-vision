@@ -21,6 +21,9 @@ and every writer has emitted the full columns for one retention cycle.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
+from pathlib import Path
+import shutil
 
 import pandas as pd
 
@@ -48,11 +51,13 @@ class TrackingSchema:
     """Schema identity and whether ball coverage can be evaluated."""
 
     name: str
-    ball_telemetry_available: bool
+    ball_telemetry_available: bool | None
+    ball_telemetry_rule: str
 
 
-_NORMALIZED = TrackingSchema("normalized", True)
-_NBA_PRODUCTION = TrackingSchema("nba_production_player_rows", False)
+_NBA_PRODUCTION = TrackingSchema("nba_production_player_rows", False,
+                                 "nba_production_schema")
+_CAPABILITY_FILE = "tracking_capability.json"
 
 
 class CoordinateTransformUnavailable(ValueError):
@@ -149,11 +154,52 @@ def _validate_coordinate_space(df: pd.DataFrame, sport: str | None,
         )
 
 
-def identify_tracking_schema(df: pd.DataFrame) -> TrackingSchema:
+def write_ball_telemetry_declaration(output_path: str | Path, sport: str,
+                                     available: bool) -> None:
+    """Persist an adapter's ball-telemetry capability beside its tracking CSV."""
+    if type(available) is not bool:
+        raise ValueError("ball telemetry declaration must be boolean")
+    destination = Path(output_path).parent / _CAPABILITY_FILE
+    destination.write_text(json.dumps({"sport": sport,
+                                       "ball_telemetry_available": available}, indent=2)
+                           + "\n", encoding="utf-8")
+
+
+def copy_ball_telemetry_declaration(source_path: str | Path,
+                                    output_path: str | Path) -> bool:
+    """Copy an existing tracking capability sidecar to a re-emitted CSV."""
+    source = Path(source_path).parent / _CAPABILITY_FILE
+    if not source.is_file():
+        return False
+    destination = Path(output_path).parent / _CAPABILITY_FILE
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source, destination)
+    return True
+
+
+def _producer_ball_telemetry(source: str | None) -> bool | None:
+    if source is None:
+        return None
+    source_path = Path(source)
+    capability_path = (source_path.parent if source_path.suffix else source_path) / _CAPABILITY_FILE
+    if not capability_path.is_file():
+        return None
+    payload = json.loads(capability_path.read_text(encoding="utf-8"))
+    available = payload.get("ball_telemetry_available")
+    if type(available) is not bool:
+        raise ValueError("producer ball_telemetry_available must be boolean")
+    return available
+
+
+def identify_tracking_schema(df: pd.DataFrame,
+                             source: str | None = None) -> TrackingSchema:
     """Identify a supported schema or fail without inferring column meaning."""
     columns = frozenset(df.columns)
     if NORMALIZED_COLUMNS <= columns:
-        return _NORMALIZED
+        declared = _producer_ball_telemetry(source)
+        if declared is not None:
+            return TrackingSchema("normalized", declared, "producer_declaration")
+        return TrackingSchema("normalized", None, "unknown_no_sidecar")
     if NBA_PRODUCTION_COLUMNS <= columns:
         return _NBA_PRODUCTION
     found = ", ".join(sorted(columns)) or "(no columns)"
@@ -189,8 +235,8 @@ def normalize_tracking_frame(df: pd.DataFrame,
         allow_legacy_undeclared: Permit only an audited historical corpus that
             predates coordinate provenance.
     """
-    schema = identify_tracking_schema(df)
-    if schema is _NORMALIZED:
+    schema = identify_tracking_schema(df, source)
+    if schema.name == "normalized":
         _validate_coordinate_space(df, sport, allow_legacy_undeclared)
         return df
     if source is None:

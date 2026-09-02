@@ -10,6 +10,7 @@ from scripts.platformkit.tracking_harness import (
 from scripts.platformkit.tracking_schema import (
     CoordinateTransformUnavailable,
     normalize_tracking_frame,
+    write_ball_telemetry_declaration,
 )
 
 
@@ -71,11 +72,83 @@ def test_step_held_game_fails_liveness_gate():
     assert any("zero_step_share" in failure for failure in report.failures)
 
 
-def test_ball_stub_without_rows_fails_nonzero_threshold():
-    report = evaluate(_good_game().query("cls != 'ball'"), "basketball")
+def test_ball_stub_without_rows_fails_nonzero_threshold(tmp_path):
+    output_path = tmp_path / "tracking_data.csv"
+    write_ball_telemetry_declaration(output_path, "basketball", True)
+    report = evaluate(_good_game().query("cls != 'ball'"), "basketball",
+                      source=str(output_path))
     assert not report.passed
     assert report.ball_rows == 0
     assert any("ball_valid" in failure for failure in report.failures)
+
+
+def test_no_sidecar_zero_ball_tennis_fails_closed_at_existing_threshold():
+    report = evaluate(_good_game().query("cls != 'ball'"), "tennis")
+
+    assert not report.passed and report.verdict == "FAIL"
+    assert report.ball_telemetry_available is None
+    assert report.ball_telemetry_rule == "unknown_no_sidecar"
+    assert report.ball_valid == "evaluated" and report.ball_valid_pct == 0.0
+    assert report.failures == ["ball_valid 0.00 < 0.20"]
+
+
+def test_declared_tennis_ball_telemetry_without_rows_fails_ball_gate(tmp_path):
+    output_path = tmp_path / "tracking_data.csv"
+    write_ball_telemetry_declaration(output_path, "tennis", True)
+
+    report = evaluate(_good_game().query("cls != 'ball'"), "tennis",
+                      source=str(output_path))
+
+    assert not report.passed and report.verdict == "FAIL"
+    assert report.ball_telemetry_available is True
+    assert report.ball_valid == "evaluated" and report.ball_valid_pct == 0.0
+    assert report.failures == ["ball_valid 0.00 < 0.20"]
+
+
+def test_declared_no_ball_telemetry_skips_gate_and_uses_weaker_pass_label(tmp_path):
+    output_path = tmp_path / "tracking_data.csv"
+    write_ball_telemetry_declaration(output_path, "basketball", False)
+
+    report = evaluate(_good_game().query("cls != 'ball'"), "basketball",
+                      source=str(output_path))
+
+    assert report.passed and report.verdict == "PASS_NO_BALL"
+    assert report.ball_valid == "not_evaluated"
+    assert report.ball_valid_pct is None
+    assert report.ball_telemetry_available is False
+    assert report.ball_telemetry_rule == "producer_declaration"
+    assert not any("ball_valid" in failure for failure in report.failures)
+
+
+def test_declared_ball_telemetry_without_rows_still_fails_ball_gate(tmp_path):
+    output_path = tmp_path / "tracking_data.csv"
+    write_ball_telemetry_declaration(output_path, "basketball", True)
+
+    report = evaluate(_good_game().query("cls != 'ball'"), "basketball",
+                      source=str(output_path))
+
+    assert not report.passed and report.verdict == "FAIL"
+    assert report.ball_valid == "evaluated" and report.ball_valid_pct == 0.0
+    assert any("ball_valid" in failure for failure in report.failures)
+
+
+def test_no_sidecar_with_ball_rows_keeps_telemetry_unknown():
+    report = evaluate(_good_game(), "basketball")
+
+    assert report.passed and report.verdict == "PASS"
+    assert report.ball_telemetry_available is None
+    assert report.ball_telemetry_rule == "unknown_no_sidecar"
+    assert report.ball_valid == "evaluated" and report.ball_valid_pct == 1.0
+
+
+def test_coordinate_contract_failure_keeps_unknown_no_sidecar_rule():
+    report = evaluate(_good_game(coordinate_space="image_px").query("cls != 'ball'"),
+                      "basketball")
+
+    assert not report.passed
+    assert report.ball_valid == "not_evaluated"
+    assert report.ball_telemetry_available is None
+    assert report.ball_telemetry_rule == "unknown_no_sidecar"
 
 
 def test_duplicate_frame_track_rows_are_visible_failures():

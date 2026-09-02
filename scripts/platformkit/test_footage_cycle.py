@@ -1,7 +1,9 @@
 """Focused tests for the footage download, tracking, score, and cleanup cycle."""
 import logging
+import json
 import subprocess
 from pathlib import Path
+from types import SimpleNamespace
 
 from scripts.platformkit import footage_cycle
 
@@ -129,3 +131,22 @@ def test_player_only_sports_are_opted_in_here_too():
 
     assert "PLAYER_ONLY" in source, "must reuse adapter_run's set, not hardcode"
     assert {"baseball", "soccer"} <= PLAYER_ONLY
+
+
+def test_track_item_writes_adapter_ball_telemetry_sidecar(monkeypatch, tmp_path):
+    output_rows = "frame,track_id,cls,x,y\n0,1,player,1,1\n"
+    module = SimpleNamespace(
+        TennisAdapter=lambda: SimpleNamespace(process_video=lambda video, **options: []),
+        write_csv=lambda rows, output: Path(output).write_text(output_rows, encoding="utf-8"),
+    )
+
+    monkeypatch.setattr(footage_cycle, "TRACKING_DIR", tmp_path)
+    monkeypatch.setattr(footage_cycle, "SPORT_ADAPTERS", {"tennis": "TennisAdapter"})
+    monkeypatch.setattr(footage_cycle.importlib, "import_module", lambda name: module)
+
+    output = footage_cycle.track_item(
+        {"sport": "tennis", "game_id": "tennis_sidecar"}, tmp_path / "clip.mp4")
+
+    assert output.is_file()
+    payload = json.loads((output.parent / "tracking_capability.json").read_text(encoding="utf-8"))
+    assert payload == {"sport": "tennis", "ball_telemetry_available": True}

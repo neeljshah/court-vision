@@ -45,6 +45,20 @@ PLAYER_ONLY = {"baseball", "soccer"}
 # calibration failure is MEASURED, not assumed.
 IMAGE_SPACE = {"baseball", "football", "soccer"}
 TEACHER_META = {"baseball"}
+# Persisted declaration consumed by tracking_schema at the sole normalized-table
+# decision point. Tennis runs MotionDiffDetector; every other current adapter
+# writes player-only rows or has no evidenced ball detector. The basketball
+# family is produced through run_clip by other callers and declares false too.
+BALL_TELEMETRY_AVAILABLE = {
+    "tennis": True,
+    "soccer": False,
+    "baseball": False,
+    "football": False,
+    "basketball": False,
+    "wnba": False,
+    "ncaa_basketball": False,
+    "nba": False,
+}
 
 
 def _source_metadata(video: str) -> dict:
@@ -98,6 +112,8 @@ def main(argv: list) -> int:
         os.makedirs(output_dir, exist_ok=True)
         output_path = os.path.join(output_dir, "tracking_data.csv")
         module.write_csv(frame, output_path)
+        from scripts.platformkit.tracking_schema import write_ball_telemetry_declaration
+        write_ball_telemetry_declaration(output_path, sport, BALL_TELEMETRY_AVAILABLE[sport])
         if sport in TEACHER_META:
             from scripts.platformkit.tracking.teacher_emit import write_teacher_meta
             write_teacher_meta(teacher_metadata, game_id, sport, output_dir)

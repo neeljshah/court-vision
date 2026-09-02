@@ -5,6 +5,7 @@ import pytest
 from scripts.platformkit.tracking_harness import evaluate
 from scripts.platformkit.tracking_schema import (
     CoordinateTransformUnavailable,
+    identify_tracking_schema,
     normalize_tracking_frame,
 )
 
@@ -58,3 +59,10 @@ def test_unrecognized_and_null_declarations_fail_closed():
     mixed.loc[0, "coordinate_space"] = "image_px"
     with pytest.raises(CoordinateTransformUnavailable):
         normalize_tracking_frame(mixed)
+
+
+def test_normalized_table_without_capability_sidecar_is_unknown_not_row_inferred():
+    schema = identify_tracking_schema(_rows("court_feet"))
+
+    assert schema.ball_telemetry_available is None
+    assert schema.ball_telemetry_rule == "unknown_no_sidecar"

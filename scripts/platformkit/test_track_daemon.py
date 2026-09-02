@@ -101,6 +101,27 @@ def test_finished_job_is_graded_and_video_deleted(tmp_path, monkeypatch):
     assert not video.exists()
 
 
+def test_direct_run_clip_output_writes_no_ball_capability_sidecar(tmp_path, monkeypatch):
+    """run_clip writes the CSV itself, so the daemon owns its capability sidecar."""
+    stage = _stage(tmp_path, monkeypatch)
+    video = stage / "wnba__w1.mp4"
+    video.write_bytes(_VIDEO)
+    log = stage / "wnba__w1.log"
+    log.write_text("done", encoding="utf-8")
+    csv_dir = track_daemon.TRACKING / "w1"
+    csv_dir.mkdir(parents=True)
+    (csv_dir / "tracking_data.csv").write_text(
+        "h\n" + "row\n" * 900, encoding="utf-8")
+
+    active = {"wnba__w1.mp4": {"proc": FakeProc(), "video": video, "log": log,
+                               "sport": "wnba", "game_id": "w1", "started": 0.0}}
+    track_daemon.tick(active, workers=4)
+
+    payload = json.loads(
+        (csv_dir / "tracking_capability.json").read_text(encoding="utf-8"))
+    assert payload == {"sport": "wnba", "ball_telemetry_available": False}
+
+
 def test_nonempty_output_is_adjudicated_even_when_the_harness_fails(tmp_path, monkeypatch):
     """Completion means a verdict, not a minimum row count or a PASS."""
     stage = _stage(tmp_path, monkeypatch)

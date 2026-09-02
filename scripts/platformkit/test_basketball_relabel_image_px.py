@@ -1,7 +1,9 @@
 """Focused tests for the basketball image-pixel relabel migration."""
 import pandas as pd
+from types import SimpleNamespace
 
-from scripts.platformkit.basketball_relabel_image_px import relabel_all
+from scripts.platformkit.basketball_relabel_image_px import reemit_game, relabel_all
+from scripts.platformkit.tracking_schema import write_ball_telemetry_declaration
 
 
 def _source_rows() -> pd.DataFrame:
@@ -47,3 +49,26 @@ def test_relabel_all_preserves_pixels_and_fails_harness(tmp_path):
     assert set(relabeled["coordinate_space"]) == {"image_px"}
     assert set(relabeled["coordinate_calibration_reason"]) == {"no_court_calibration_sidecar"}
     assert (tracking / "wnba_01" / "tracking_data.csv.pre_relabel").exists()
+
+
+def test_reemit_game_copies_source_ball_telemetry_sidecar(monkeypatch, tmp_path):
+    from scripts.platformkit.tracking import image_px_containment
+
+    source = tmp_path / "source" / "tracking_data.csv"
+    source.parent.mkdir(parents=True)
+    _source_rows().to_csv(source, index=False)
+    write_ball_telemetry_declaration(source, "basketball", False)
+    output = tmp_path / "re_emitted" / "tracking_data.csv"
+    output.parent.mkdir(parents=True)
+    monkeypatch.setattr(image_px_containment, "source_resolution", lambda video: (1280, 720))
+    monkeypatch.setattr(
+        image_px_containment,
+        "containment",
+        lambda rows, width, height: SimpleNamespace(n_rows=len(rows), inside_share=1.0,
+                                                     verdict="PASS"),
+    )
+
+    reemit_game(source, source, tmp_path / "clip.mp4", output)
+
+    assert (output.parent / "tracking_capability.json").read_text(encoding="utf-8") == (
+        source.parent / "tracking_capability.json").read_text(encoding="utf-8")

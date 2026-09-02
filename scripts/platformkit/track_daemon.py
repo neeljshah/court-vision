@@ -157,6 +157,11 @@ def _record(entry: dict) -> None:
 def _finish(name: str, job: dict, timed_out: bool = False) -> None:
     """Record a finished job; only a durable verdict is a done game."""
     rows = tracking_rows(TRACKING, job["game_id"])
+    if rows and job["sport"] in CLIP_SPORTS:  # declare before verdict() adjudicates
+        from scripts.platformkit.adapter_run import BALL_TELEMETRY_AVAILABLE as _BALL
+        from scripts.platformkit.tracking_schema import write_ball_telemetry_declaration
+        write_ball_telemetry_declaration(TRACKING / job["game_id"] / "tracking_data.csv",
+                                         job["sport"], _BALL[job["sport"]])
     graded = None if timed_out else verdict(job["sport"], job["game_id"], job["video"])
     status = "timeout" if timed_out else "tracked" if graded is not None else "thin"
     # finished_at, because without it the ledger cannot be read. Diagnosing this

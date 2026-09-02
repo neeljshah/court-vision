@@ -15,6 +15,7 @@ import pandas as pd
 from scripts.platformkit import coordinate_provenance
 from scripts.platformkit.coordinate_provenance import stamp_image_space_rows, write_tracking_csv
 from scripts.platformkit.tracking_harness import evaluate
+from scripts.platformkit.tracking_schema import copy_ball_telemetry_declaration
 
 _REASON = "no_court_calibration_sidecar"
 _BACKUP_SUFFIX = ".pre_relabel"
@@ -160,6 +161,7 @@ def reemit_game(shipped_csv: Path, nba_csv: Path, video: Path,
     fixed = _image_pixel_rows(pd.read_csv(nba_csv, low_memory=False), width, height)
     write_tracking_csv(fixed, out_csv,
                        _OUTPUT_SCHEMA + ("frame_width", "frame_height"))
+    copy_ball_telemetry_declaration(shipped_csv, out_csv)
     before = containment(pd.read_csv(shipped_csv, low_memory=False), width, height)
     after = containment(fixed, width, height)
     sport = sport_for(shipped_csv)
