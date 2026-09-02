@@ -44,6 +44,7 @@ CONFIGS = [(1.0, 0.15), (0.5, 0.10), (1.0, 0.10), (2.0, 0.10), (0.5, 0.15), (2.0
 SCORED = (47104, 158)                          # asserted BEFORE the charge
 REPRO_INCUMBENT = 0.206785778212713            # e4_gd on the 47,104 scored ticks (S06/S43/S58-1)
 MIN_TRAIN, MIN_STAMPS = 1000, 8
+RECHARGE_BLOCKED = True                        # S72: instrument repaired after the charge; re-prereg first
 COLS = ("model_prob", "market_prob", "signal", "outcome")
 Series = List[Optional[float]]
 
@@ -90,17 +91,24 @@ def game_states(frame: pd.DataFrame, games: Sequence[str]) -> List[dict]:
 
 
 def _predictor(w_max: float, max_dev: float):
+    """S72: a test state whose PURGED train set is empty or under MIN_TRAIN is scored as
+    MISSING for this state only (recorded in `skipped`), never raised -- one such state used
+    to fail the whole config for the whole outer fold. The 0.5 handed back satisfies
+    cpcv_evaluate's [0,1] contract for a record that is never scored (only `stash` is)."""
     def predictor(train: List[dict], test: dict, _select_inside: bool) -> float:
         key = frozenset(s["game_id"] for s in train)
         if key not in predictor.fits:
-            df = pd.DataFrame({k: np.concatenate([s["features"][k] for s in train]) for k in COLS})
-            if len(df) < MIN_TRAIN or df["outcome"].nunique() < 2: raise ValueError("inner train infeasible")  # noqa: E701
-            predictor.fits[key] = B._fit_weight(df, w_max, max_dev)
+            df = pd.DataFrame({k: np.concatenate([s["features"][k] for s in train]) for k in COLS}) if train else None
+            predictor.fits[key] = (None if df is None or len(df) < MIN_TRAIN or df["outcome"].nunique() < 2
+                                   else B._fit_weight(df, w_max, max_dev))
+        fit = predictor.fits[key]
+        if fit is None:
+            predictor.skipped.append(test["game_id"]); return 0.5  # noqa: E702
         f = test["features"]
-        p = B._guarded_prob(f["model_prob"], f["market_prob"], f["signal"], predictor.fits[key], max_dev)
+        p = B._guarded_prob(f["model_prob"], f["market_prob"], f["signal"], fit, max_dev)
         predictor.stash.append((float(((p - f["outcome"]) ** 2).sum()), int(len(p)), test["game_id"]))
         return float(np.clip(p[len(p) // 2], 0.0, 1.0))
-    predictor.fits, predictor.stash = {}, []
+    predictor.fits, predictor.stash, predictor.skipped = {}, [], []
     return predictor
 
 
@@ -111,9 +119,15 @@ def inner_score(states: List[dict], cfg) -> dict:
         recs = cpcv_evaluate(states, pred, n_groups=8, n_test_groups=2, embargo_days=1)
     except Exception as exc:  # infeasible fit or path -> caller falls back to the incumbent
         return {"config": config_name(cfg), "status": "FAILED", "error": str(exc)[:200]}
+    n_empty = len(pred.skipped)
+    if not pred.stash:                       # S72: no non-empty inner test state at all
+        return {"config": config_name(cfg), "status": "NO_SCORED_STATE", "n_states_empty": n_empty,
+                "n_states_scored": 0, "error": "every inner test state had a purged-empty or short train set"}
     loss, n = sum(s for s, _, _ in pred.stash), sum(k for _, k, _ in pred.stash)
     return {"config": config_name(cfg), "status": "OK", "score": loss / n, "n_ticks": n,
-            "n_paths": len({r["split_id"] for r in recs}), "n_fold_fits": len(pred.fits)}
+            "n_states_scored": len(pred.stash), "n_states_empty": n_empty,
+            "n_paths": len({r["split_id"] for r in recs}),
+            "n_fold_fits": sum(1 for v in pred.fits.values() if v is not None)}
 
 
 def _task(args):
@@ -130,7 +144,8 @@ def select_configs(frame: pd.DataFrame, dates: Sequence[str], *, workers: int = 
         states = game_states(frame, train_games)
         n_train = int(frame["game"].isin(train_games).sum())
         feasible = n_train >= MIN_TRAIN and len({s["state_ts"] for s in states}) >= MIN_STAMPS
-        by_date[d] = {"date": d, "n_train_games": len(train_games), "n_train_ticks": n_train, "feasible": feasible, "inner": {}}
+        by_date[d] = {"date": d, "n_train_games": len(train_games), "n_train_ticks": n_train,
+                      "n_train_stamps": len({s["state_ts"] for s in states}), "feasible": feasible, "inner": {}}
         if feasible: tasks += [(d, states, c) for c in CONFIGS]  # noqa: E701
     results = list(ProcessPoolExecutor(max_workers=workers).map(_task, tasks)) if workers > 1 else [_task(t) for t in tasks]
     for d, name, res in results: by_date[d]["inner"][name] = res  # noqa: E701
@@ -138,7 +153,15 @@ def select_configs(frame: pd.DataFrame, dates: Sequence[str], *, workers: int = 
         ok = [(rec["inner"][config_name(c)]["score"], i) for i, c in enumerate(CONFIGS)
               if rec["inner"].get(config_name(c), {}).get("status") == "OK"]
         best = min(ok)[1] if ok else 0                    # ties -> earliest in CONFIGS (incumbent first)
-        rec.update({"selected": config_name(CONFIGS[best]), "selected_idx": best, "fallback": not ok})
+        # S72: the fallback clause fires ONLY when no config has a valid inner score.
+        if ok: reason = "%d/%d configs scored on non-empty purged inner test states (%d empty)" % (
+            len(ok), len(CONFIGS), int(rec["inner"][config_name(CONFIGS[best])].get("n_states_empty", 0)))  # noqa: E701
+        elif not rec["feasible"]: reason = "outer fold infeasible: %d train ticks / %d distinct state stamps" % (
+            rec["n_train_ticks"], rec["n_train_stamps"])  # noqa: E701
+        else: reason = "no config scored: every inner test state had a purged-empty or short train set"  # noqa: E701
+        rec.update({"selected": config_name(CONFIGS[best]), "selected_idx": best, "fallback": not ok,
+                    "inner_selection": "operative" if ok else "fallback", "inner_selection_reason": reason,
+                    "n_configs_scored": len(ok)})
     return by_date
 
 
@@ -229,7 +252,15 @@ def run_trial(ticks, frame: pd.DataFrame, idxs: Sequence[int], *, ledger_path: P
 
 
 def main() -> int:
-    """The REAL charged trial A (main repo, canonical ledger). Pre-charge work is counts-only."""
+    """The REAL charged trial A (main repo, canonical ledger). Pre-charge work is counts-only.
+
+    BLOCKED since S72: the inner runner was repaired after the 2026-09-03 charge, so PREREG_SHA256
+    seals a prereg that describes the PRE-repair instrument. Re-running would charge a different
+    candidate under a stale seal (Q1). The re-prereg + re-charge is window 2 (>= 30 games) --
+    docs/evidence/harness/S72_clamp_instrument_2026-09-03.md.
+    """
+    assert not RECHARGE_BLOCKED, ("S72: re-prereg + re-charge required before this trial runs again "
+                                  "(see docs/evidence/harness/S72_clamp_instrument_2026-09-03.md)")
     from scripts.platformkit import hedge_trial_arms as A
     from scripts.platformkit.eval_gate.stacker import e4_gd_series
     from scripts.platformkit.ingame_replay_scoreboard import discover_store

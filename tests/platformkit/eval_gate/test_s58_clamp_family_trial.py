@@ -1,5 +1,7 @@
 """S58 trial-A module: seal-before-charge on a TMP ledger, K read from the row, inner selection
-never touches an outer score, incumbent identity with CONFIGS[0].
+never touches an outer score, incumbent identity with CONFIGS[0]. S72: a purged-empty inner
+test state is scored as missing PER STATE and no longer disables the whole config; the outer
+fallback fires only when no config scored, with the reason recorded.
 python -m pytest tests/platformkit/eval_gate/test_s58_clamp_family_trial.py -q"""
 import hashlib, json
 
@@ -69,3 +71,60 @@ def test_inner_selection_is_train_only():
     for d, rec in sel.items():
         assert rec["n_train_games"] == int((frame.groupby("game")["date"].min() < d).sum())
         assert rec["selected"] in {T.config_name(c) for c in T.CONFIGS}
+
+
+def _corpus_days(days, per=30, seed=7):
+    """`days` = [(calendar_day, n_games)]; each game's first date is its own calendar day."""
+    rng = np.random.default_rng(seed)
+    ticks, feats = [], []
+    for day, n in days:
+        for g in range(n):
+            y = int(rng.integers(0, 2))
+            for k in range(per):
+                m = float(np.clip(0.5 + (0.25 if y else -0.25) * k / per + rng.normal(0, 0.15), 0.02, 0.98))
+                mk = float(np.clip(0.5 + (0.3 if y else -0.3) * k / per + rng.normal(0, 0.05), 0.02, 0.98))
+                gid = "2026-07-%02d-AAAC%02d%02d" % (day, day, g)
+                off = g + k                     # distinct end stamp per game, same calendar day
+                ticks.append({"game": gid, "timestamp": "2026-07-%02dT%02d:%02d:00+00:00" % (day, 8 + off // 60, off % 60),
+                              "outcome": y, "market_prob": mk, "model_prob": m, "_row_id": len(ticks), "in_window": True})
+                feats.append({"game": gid, "timestamp": ticks[-1]["timestamp"],
+                              "score_diff": float((k / per) * (3 if y else -3) + rng.normal(0, 1))})
+    return ticks, pd.DataFrame(feats)
+
+
+def test_planted_empty_state_does_not_disable_the_config():
+    """S72 instrument repair: an empty / short purged train set is missing for THAT state only."""
+    pred = T._predictor(*T.CONFIGS[0])
+    ticks, feats = _corpus_days([(1, 20), (2, 20), (10, 20), (11, 20)])
+    frame = T.signal_frame(ticks, feats)
+    states = T.game_states(frame, sorted(frame["game"].unique()))
+    assert pred([], states[0], True) == 0.5                      # planted: empty purged train
+    assert len(pred.skipped) == 1 and not pred.stash             # missing, not raised
+    p = pred(states[:40], states[-1], True)               # >= MIN_TRAIN: the SAME config keeps scoring
+    assert 0.0 <= p <= 1.0 and len(pred.stash) == 1 and len(pred.skipped) == 1
+    res = T.inner_score(states, T.CONFIGS[0])             # splits straddling both blocks purge to empty
+    assert res["status"] == "OK", res
+    assert res["n_states_empty"] > 0 and res["n_states_scored"] > 0
+    assert res["n_ticks"] > 0 and 0.0 <= res["score"] <= 1.0
+
+
+def test_all_states_empty_falls_back_with_the_reason():
+    """Every inner test state purged-empty -> no config scored -> fallback, reason recorded."""
+    ticks, feats = _corpus_days([(1, 40), (2, 4)], seed=8)       # 40 train games on ONE calendar day
+    frame = T.signal_frame(ticks, feats)
+    d = sorted(frame["date"].unique())[1]
+    sel = T.select_configs(frame, [d])[d]
+    assert sel["feasible"] and sel["n_train_ticks"] >= T.MIN_TRAIN     # not a scarcity fallback
+    assert all(r["status"] == "NO_SCORED_STATE" for r in sel["inner"].values())
+    assert sel["inner_selection"] == "fallback" and sel["fallback"] and sel["n_configs_scored"] == 0
+    assert "every inner test state" in sel["inner_selection_reason"]
+    assert sel["selected"] == T.config_name(T.CONFIGS[0])
+
+
+def test_operative_fold_records_the_selection_reason():
+    ticks, feats = _corpus_days([(1, 12), (3, 12), (5, 12), (7, 12), (9, 12), (11, 4)], seed=9)
+    frame = T.signal_frame(ticks, feats)
+    d = sorted(frame["date"].unique())[-1]
+    sel = T.select_configs(frame, [d])[d]
+    assert sel["inner_selection"] == "operative" and not sel["fallback"]
+    assert sel["n_configs_scored"] == len(T.CONFIGS) and "configs scored" in sel["inner_selection_reason"]
