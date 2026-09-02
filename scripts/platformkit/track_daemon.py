@@ -7,6 +7,7 @@ Run: ``python -m scripts.platformkit.track_daemon --workers 12 --forever``.
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import os
 import subprocess
@@ -74,6 +75,9 @@ SPORT_ADAPTER = {"tennis": "tennis", "soccer": "soccer", "npb": "baseball",
                  "kbo": "baseball", "mlb": "baseball", "baseball": "baseball"}
 # These go through run_clip.py, which the adapter registry does not cover.
 CLIP_SPORTS = {"wnba", "basketball", "ncaa_basketball", "nba"}
+# A fivefold density move is operationally conspicuous without changing any
+# harness bar. The marker is diagnostic only; completion remains G15b's verdict.
+ROW_DENSITY_STEP_FACTOR = 5.0
 
 
 def build_command(sport: str, video: Path, game_id: str) -> list:
@@ -121,6 +125,58 @@ def _record(entry: dict) -> None:
         handle.write(json.dumps(entry) + "\n")
 
 
+def _fresh_solve_summary(game_id: str) -> tuple[int | None, int | None]:
+    """Read the adapter's per-frame solve counter without inferring from rows."""
+    path = TRACKING / game_id / "frame_manifest.csv"
+    try:
+        with path.open(newline="", encoding="utf-8", errors="replace") as handle:
+            manifest = list(csv.DictReader(handle))
+    except (OSError, csv.Error):
+        return None, None
+    values = []
+    for row in manifest:
+        try:
+            values.append(int(row.get("fresh_solve_count", "")))
+        except (TypeError, ValueError):
+            continue
+    return len(manifest), max(values) if values else None
+
+
+def _previous_sport_entry(sport: str) -> dict | None:
+    """Return the immediately preceding readable ledger row for this sport."""
+    try:
+        lines = LEDGER.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError:
+        return None
+    for line in reversed(lines):
+        try:
+            entry = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(entry, dict) and entry.get("sport") == sport:
+            return entry
+    return None
+
+
+def _step_change(previous: dict | None, entry: dict) -> dict | None:
+    """Describe a material row-density move against the previous same-sport row."""
+    if previous is None:
+        return None
+    try:
+        prior_density = int(previous["rows"]) / int(previous["decoded_frames"])
+        density = int(entry["rows"]) / int(entry["decoded_frames"])
+    except (KeyError, TypeError, ValueError, ZeroDivisionError):
+        return None
+    if prior_density <= 0 or density <= 0:
+        return None
+    factor = max(density / prior_density, prior_density / density)
+    if factor <= ROW_DENSITY_STEP_FACTOR:
+        return None
+    return {"previous_game_id": previous.get("game_id"),
+            "direction": "increase" if density > prior_density else "decrease",
+            "factor": round(factor, 3)}
+
+
 def _finish(name: str, job: dict, timed_out: bool = False) -> None:
     """Record a finished job; only a durable verdict is a done game."""
     rows = tracking_rows(TRACKING, job["game_id"])
@@ -162,6 +218,12 @@ def _finish(name: str, job: dict, timed_out: bool = False) -> None:
             entry["tail"] = output[-300:].replace("\n", " ")
         except OSError:
             entry["tail"] = "no log"
+    manifest_frames, fresh_solves = _fresh_solve_summary(job["game_id"])
+    entry.update(decoded_frames=(graded or {}).get("decoded_frames", manifest_frames),
+                 source_resolution=(source or {}).get("source_resolution"),
+                 fresh_solves=fresh_solves)
+    entry["rows_per_decoded_frame_step_change"] = _step_change(
+        _previous_sport_entry(job["sport"]), entry)
     _record(entry)
     print("%s %s %s rows=%d passed=%s %s"
           % (job["game_id"], job["sport"], status, rows, entry["passed"],

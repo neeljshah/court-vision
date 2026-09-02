@@ -1,0 +1,2528 @@
+{
+  "generated_for": "S64",
+  "charged": false,
+  "prereg": null,
+  "n_signals": 146,
+  "note": "SCREEN only -- no charged trial, no finding, calibration language only",
+  "verdict_counts": {
+    "SCREEN_NULL": 57,
+    "SCREEN_POSITIVE": 2,
+    "SCREEN_NEGATIVE": 1,
+    "NOT_TESTABLE": 86
+  },
+  "signals": [
+    {
+      "signal": "nba:EloIdentitySignal",
+      "sport": "nba",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 908,
+      "n_eff": 908,
+      "brier_delta": -0.00032970793613220094,
+      "dm_p": 0.8683198927987894,
+      "corpus_unit": [
+        "2024-25",
+        "2025-26"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/nba/nba_EloIdentitySignal.parquet"
+    },
+    {
+      "signal": "nba:AbsRestDiffSignal",
+      "sport": "nba",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 881,
+      "n_eff": 881,
+      "brier_delta": 0.0003869511169028753,
+      "dm_p": 0.8499502494368586,
+      "corpus_unit": [
+        "2024-25",
+        "2025-26"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/nba/nba_AbsRestDiffSignal.parquet"
+    },
+    {
+      "signal": "nba:RestDiffSignedSignal",
+      "sport": "nba",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 881,
+      "n_eff": 881,
+      "brier_delta": 0.0015423183023369994,
+      "dm_p": 0.4803923688027918,
+      "corpus_unit": [
+        "2024-25",
+        "2025-26"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/nba/nba_RestDiffSignedSignal.parquet"
+    },
+    {
+      "signal": "nba:HomeB2BIndicatorSignal",
+      "sport": "nba",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 895,
+      "n_eff": 895,
+      "brier_delta": 0.001011307428185959,
+      "dm_p": 0.6494599446283426,
+      "corpus_unit": [
+        "2024-25",
+        "2025-26"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/nba/nba_HomeB2BIndicatorSignal.parquet"
+    },
+    {
+      "signal": "nba:AwayB2BIndicatorSignal",
+      "sport": "nba",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 894,
+      "n_eff": 894,
+      "brier_delta": -6.586511872416301e-05,
+      "dm_p": 0.9776388283980644,
+      "corpus_unit": [
+        "2024-25",
+        "2025-26"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/nba/nba_AwayB2BIndicatorSignal.parquet"
+    },
+    {
+      "signal": "nba:RollingWin10HomeSignal",
+      "sport": "nba",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 908,
+      "n_eff": 908,
+      "brier_delta": -0.00015907850897458998,
+      "dm_p": 0.9358491552513621,
+      "corpus_unit": [
+        "2024-25",
+        "2025-26"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/nba/nba_RollingWin10HomeSignal.parquet"
+    },
+    {
+      "signal": "nba:EloMismatchMagnitudeSignal",
+      "sport": "nba",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 908,
+      "n_eff": 908,
+      "brier_delta": -0.00014463649205306465,
+      "dm_p": 0.9419194970482483,
+      "corpus_unit": [
+        "2024-25",
+        "2025-26"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/nba/nba_EloMismatchMagnitudeSignal.parquet"
+    },
+    {
+      "signal": "nba:RestBucketSignal",
+      "sport": "nba",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 895,
+      "n_eff": 895,
+      "brier_delta": 0.0011631550665725425,
+      "dm_p": 0.5811223249610495,
+      "corpus_unit": [
+        "2024-25",
+        "2025-26"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/nba/nba_RestBucketSignal.parquet"
+    },
+    {
+      "signal": "nba:EloXRestDiffSignal",
+      "sport": "nba",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 881,
+      "n_eff": 881,
+      "brier_delta": 0.0016184188481028333,
+      "dm_p": 0.4455578260129135,
+      "corpus_unit": [
+        "2024-25",
+        "2025-26"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/nba/nba_EloXRestDiffSignal.parquet"
+    },
+    {
+      "signal": "nba:EloXHomeB2BSignal",
+      "sport": "nba",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 895,
+      "n_eff": 895,
+      "brier_delta": 0.0002336230785275467,
+      "dm_p": 0.9131253719417307,
+      "corpus_unit": [
+        "2024-25",
+        "2025-26"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/nba/nba_EloXHomeB2BSignal.parquet"
+    },
+    {
+      "signal": "nba:B2BDifferentialSignal",
+      "sport": "nba",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 881,
+      "n_eff": 881,
+      "brier_delta": 0.002630233523351124,
+      "dm_p": 0.2623181829376713,
+      "corpus_unit": [
+        "2024-25",
+        "2025-26"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/nba/nba_B2BDifferentialSignal.parquet"
+    },
+    {
+      "signal": "nba:Win10XEloSignal",
+      "sport": "nba",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 908,
+      "n_eff": 908,
+      "brier_delta": -0.00039160937408182743,
+      "dm_p": 0.8471743855992593,
+      "corpus_unit": [
+        "2024-25",
+        "2025-26"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/nba/nba_Win10XEloSignal.parquet"
+    },
+    {
+      "signal": "nba:EloClosenessXRestSignal",
+      "sport": "nba",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 881,
+      "n_eff": 881,
+      "brier_delta": -0.0011280838728257017,
+      "dm_p": 0.6511684540939313,
+      "corpus_unit": [
+        "2024-25",
+        "2025-26"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/nba/nba_EloClosenessXRestSignal.parquet"
+    },
+    {
+      "signal": "nba:AbsRestDiffXEloMismatchSignal",
+      "sport": "nba",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 881,
+      "n_eff": 881,
+      "brier_delta": 0.0003662481125573653,
+      "dm_p": 0.8596906377848891,
+      "corpus_unit": [
+        "2024-25",
+        "2025-26"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/nba/nba_AbsRestDiffXEloMismatchSignal.parquet"
+    },
+    {
+      "signal": "nba:Win10XRestDiffSignal",
+      "sport": "nba",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 881,
+      "n_eff": 881,
+      "brier_delta": 0.001699821930689197,
+      "dm_p": 0.43709320651888317,
+      "corpus_unit": [
+        "2024-25",
+        "2025-26"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/nba/nba_Win10XRestDiffSignal.parquet"
+    },
+    {
+      "signal": "nba:EloRatioXB2BDiffSignal",
+      "sport": "nba",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 881,
+      "n_eff": 881,
+      "brier_delta": 0.0026566192043531414,
+      "dm_p": 0.2574632678760206,
+      "corpus_unit": [
+        "2024-25",
+        "2025-26"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/nba/nba_EloRatioXB2BDiffSignal.parquet"
+    },
+    {
+      "signal": "mlb:EloMismatchMagnitudeSignal",
+      "sport": "mlb",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 13992,
+      "n_eff": 13992,
+      "brier_delta": 7.905900070710292e-05,
+      "dm_p": 0.07957012396296917,
+      "corpus_unit": [
+        "era_2010_2021"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/mlb/mlb_EloMismatchMagnitudeSignal.parquet"
+    },
+    {
+      "signal": "mlb:H2HResidualSignal",
+      "sport": "mlb",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 13992,
+      "n_eff": 13992,
+      "brier_delta": 8.351438885896396e-05,
+      "dm_p": 0.05126915825604792,
+      "corpus_unit": [
+        "era_2010_2021"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/mlb/mlb_H2HResidualSignal.parquet"
+    },
+    {
+      "signal": "mlb:RestDiffSignedSignal",
+      "sport": "mlb",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 13992,
+      "n_eff": 13992,
+      "brier_delta": 6.924957654820711e-05,
+      "dm_p": 0.20668871167360015,
+      "corpus_unit": [
+        "era_2010_2021"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/mlb/mlb_RestDiffSignedSignal.parquet"
+    },
+    {
+      "signal": "mlb:AbsRestDiffSignal",
+      "sport": "mlb",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 13992,
+      "n_eff": 13992,
+      "brier_delta": 5.7974563914484665e-05,
+      "dm_p": 0.24521826141448666,
+      "corpus_unit": [
+        "era_2010_2021"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/mlb/mlb_AbsRestDiffSignal.parquet"
+    },
+    {
+      "signal": "mlb:EloDiffXH2HInteractionSignal",
+      "sport": "mlb",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 13992,
+      "n_eff": 13992,
+      "brier_delta": 8.737207618527379e-05,
+      "dm_p": 0.1580908000369835,
+      "corpus_unit": [
+        "era_2010_2021"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/mlb/mlb_EloDiffXH2HInteractionSignal.parquet"
+    },
+    {
+      "signal": "mlb:EloHomeAdvantageSignal",
+      "sport": "mlb",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 13992,
+      "n_eff": 13992,
+      "brier_delta": 8.240357373954978e-05,
+      "dm_p": 0.05257107988682905,
+      "corpus_unit": [
+        "era_2010_2021"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/mlb/mlb_EloHomeAdvantageSignal.parquet"
+    },
+    {
+      "signal": "mlb:RestDiffXEloDiffInteractionSignal",
+      "sport": "mlb",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 13992,
+      "n_eff": 13992,
+      "brier_delta": 6.207699878719249e-05,
+      "dm_p": 0.3423786797949929,
+      "corpus_unit": [
+        "era_2010_2021"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/mlb/mlb_RestDiffXEloDiffInteractionSignal.parquet"
+    },
+    {
+      "signal": "mlb:EloH2HProductSignal",
+      "sport": "mlb",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 13992,
+      "n_eff": 13992,
+      "brier_delta": 8.737207618527379e-05,
+      "dm_p": 0.1580908000369835,
+      "corpus_unit": [
+        "era_2010_2021"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/mlb/mlb_EloH2HProductSignal.parquet"
+    },
+    {
+      "signal": "mlb:RestWeightedEloSignal",
+      "sport": "mlb",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 13992,
+      "n_eff": 13992,
+      "brier_delta": 0.00011086025866151824,
+      "dm_p": 0.07098138362705904,
+      "corpus_unit": [
+        "era_2010_2021"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/mlb/mlb_RestWeightedEloSignal.parquet"
+    },
+    {
+      "signal": "mlb:EloSumRestDiffSignal",
+      "sport": "mlb",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 13992,
+      "n_eff": 13992,
+      "brier_delta": 6.974747122403113e-05,
+      "dm_p": 0.20226733006358422,
+      "corpus_unit": [
+        "era_2010_2021"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/mlb/mlb_EloSumRestDiffSignal.parquet"
+    },
+    {
+      "signal": "mlb:H2HXRestDiffSignal",
+      "sport": "mlb",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 13992,
+      "n_eff": 13992,
+      "brier_delta": 7.569147377617665e-05,
+      "dm_p": 0.14987298882273015,
+      "corpus_unit": [
+        "era_2010_2021"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/mlb/mlb_H2HXRestDiffSignal.parquet"
+    },
+    {
+      "signal": "mlb:EloRatioH2HSignal",
+      "sport": "mlb",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 13992,
+      "n_eff": 13992,
+      "brier_delta": 8.443701041126238e-05,
+      "dm_p": 0.049364695127490525,
+      "corpus_unit": [
+        "era_2010_2021"
+      ],
+      "verdict": "SCREEN_POSITIVE",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/mlb/mlb_EloRatioH2HSignal.parquet"
+    },
+    {
+      "signal": "mlb:AbsRestDiffXEloDiffSignal",
+      "sport": "mlb",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 13992,
+      "n_eff": 13992,
+      "brier_delta": 6.280485206590361e-05,
+      "dm_p": 0.18043519143085995,
+      "corpus_unit": [
+        "era_2010_2021"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/mlb/mlb_AbsRestDiffXEloDiffSignal.parquet"
+    },
+    {
+      "signal": "mlb:EloClosenessSqH2HSignal",
+      "sport": "mlb",
+      "kind": "catalog",
+      "incumbent": "p_base",
+      "n": 13992,
+      "n_eff": 13992,
+      "brier_delta": 9.280328751746833e-05,
+      "dm_p": 0.034759344499099266,
+      "corpus_unit": [
+        "era_2010_2021"
+      ],
+      "verdict": "SCREEN_POSITIVE",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/mlb/mlb_EloClosenessSqH2HSignal.parquet"
+    },
+    {
+      "signal": "soccer:AttackingImbalanceSignal",
+      "sport": "soccer",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 8161,
+      "n_eff": 8161,
+      "brier_delta": -0.00035243050395488887,
+      "dm_p": 0.09876888207145096,
+      "corpus_unit": [
+        "D1",
+        "E0",
+        "E1",
+        "F1",
+        "I1",
+        "SP1"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/soccer/soccer_AttackingImbalanceSignal.parquet"
+    },
+    {
+      "signal": "soccer:LamTotalDeviationSignal",
+      "sport": "soccer",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 8161,
+      "n_eff": 8161,
+      "brier_delta": -0.0004696043458078061,
+      "dm_p": 0.03137745563558189,
+      "corpus_unit": [
+        "D1",
+        "E0",
+        "E1",
+        "F1",
+        "I1",
+        "SP1"
+      ],
+      "verdict": "SCREEN_NEGATIVE",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/soccer/soccer_LamTotalDeviationSignal.parquet"
+    },
+    {
+      "signal": "soccer:SignedRestDiffSignal",
+      "sport": "soccer",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 8161,
+      "n_eff": 8161,
+      "brier_delta": -0.000336194261743436,
+      "dm_p": 0.09136690117793733,
+      "corpus_unit": [
+        "D1",
+        "E0",
+        "E1",
+        "F1",
+        "I1",
+        "SP1"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/soccer/soccer_SignedRestDiffSignal.parquet"
+    },
+    {
+      "signal": "soccer:HomeAttackShareSignal",
+      "sport": "soccer",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 8161,
+      "n_eff": 8161,
+      "brier_delta": -0.0002934619863810362,
+      "dm_p": 0.1524007725795018,
+      "corpus_unit": [
+        "D1",
+        "E0",
+        "E1",
+        "F1",
+        "I1",
+        "SP1"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/soccer/soccer_HomeAttackShareSignal.parquet"
+    },
+    {
+      "signal": "soccer:LamTotalRestInteractionSignal",
+      "sport": "soccer",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 8161,
+      "n_eff": 8161,
+      "brier_delta": -0.00041098055441330734,
+      "dm_p": 0.05129624664534508,
+      "corpus_unit": [
+        "D1",
+        "E0",
+        "E1",
+        "F1",
+        "I1",
+        "SP1"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/soccer/soccer_LamTotalRestInteractionSignal.parquet"
+    },
+    {
+      "signal": "soccer:AbsRestDiffSignal",
+      "sport": "soccer",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 8161,
+      "n_eff": 8161,
+      "brier_delta": -0.00020778436387036873,
+      "dm_p": 0.33159674908408143,
+      "corpus_unit": [
+        "D1",
+        "E0",
+        "E1",
+        "F1",
+        "I1",
+        "SP1"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/soccer/soccer_AbsRestDiffSignal.parquet"
+    },
+    {
+      "signal": "soccer:LowScoringFlagSignal",
+      "sport": "soccer",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 8161,
+      "n_eff": 8161,
+      "brier_delta": -0.00042443909207092866,
+      "dm_p": 0.06334791058735635,
+      "corpus_unit": [
+        "D1",
+        "E0",
+        "E1",
+        "F1",
+        "I1",
+        "SP1"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/soccer/soccer_LowScoringFlagSignal.parquet"
+    },
+    {
+      "signal": "soccer:LamDiffRestDiffProductSignal",
+      "sport": "soccer",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 8161,
+      "n_eff": 8161,
+      "brier_delta": -0.00017948838635061936,
+      "dm_p": 0.3623862133576363,
+      "corpus_unit": [
+        "D1",
+        "E0",
+        "E1",
+        "F1",
+        "I1",
+        "SP1"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/soccer/soccer_LamDiffRestDiffProductSignal.parquet"
+    },
+    {
+      "signal": "soccer:LamTotalAbsRestDiffSignal",
+      "sport": "soccer",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 8161,
+      "n_eff": 8161,
+      "brier_delta": -0.0002872328437057688,
+      "dm_p": 0.17416209862893928,
+      "corpus_unit": [
+        "D1",
+        "E0",
+        "E1",
+        "F1",
+        "I1",
+        "SP1"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/soccer/soccer_LamTotalAbsRestDiffSignal.parquet"
+    },
+    {
+      "signal": "soccer:LamRatioSignal",
+      "sport": "soccer",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 8161,
+      "n_eff": 8161,
+      "brier_delta": -0.0003689150649970576,
+      "dm_p": 0.08901906369438295,
+      "corpus_unit": [
+        "D1",
+        "E0",
+        "E1",
+        "F1",
+        "I1",
+        "SP1"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/soccer/soccer_LamRatioSignal.parquet"
+    },
+    {
+      "signal": "soccer:HighVolumeAttackImbalanceSignal",
+      "sport": "soccer",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 8161,
+      "n_eff": 8161,
+      "brier_delta": -0.0003144041229505781,
+      "dm_p": 0.15789336660217324,
+      "corpus_unit": [
+        "D1",
+        "E0",
+        "E1",
+        "F1",
+        "I1",
+        "SP1"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/soccer/soccer_HighVolumeAttackImbalanceSignal.parquet"
+    },
+    {
+      "signal": "soccer:HomeAttackShareRestDiffSignal",
+      "sport": "soccer",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 8161,
+      "n_eff": 8161,
+      "brier_delta": -0.0003376650662758007,
+      "dm_p": 0.07142850378966835,
+      "corpus_unit": [
+        "D1",
+        "E0",
+        "E1",
+        "F1",
+        "I1",
+        "SP1"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/soccer/soccer_HomeAttackShareRestDiffSignal.parquet"
+    },
+    {
+      "signal": "soccer:LamDiffSquaredSignal",
+      "sport": "soccer",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 8161,
+      "n_eff": 8161,
+      "brier_delta": -0.00039376326246430896,
+      "dm_p": 0.05774867062209678,
+      "corpus_unit": [
+        "D1",
+        "E0",
+        "E1",
+        "F1",
+        "I1",
+        "SP1"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/soccer/soccer_LamDiffSquaredSignal.parquet"
+    },
+    {
+      "signal": "soccer:SignedLamDiffRestDiffSignal",
+      "sport": "soccer",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 8161,
+      "n_eff": 8161,
+      "brier_delta": -0.0002254944993603532,
+      "dm_p": 0.25500409279726677,
+      "corpus_unit": [
+        "D1",
+        "E0",
+        "E1",
+        "F1",
+        "I1",
+        "SP1"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/soccer/soccer_SignedLamDiffRestDiffSignal.parquet"
+    },
+    {
+      "signal": "soccer:LamWeightedRestDiffSignal",
+      "sport": "soccer",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 8161,
+      "n_eff": 8161,
+      "brier_delta": -0.0003936226566486874,
+      "dm_p": 0.05413265305050193,
+      "corpus_unit": [
+        "D1",
+        "E0",
+        "E1",
+        "F1",
+        "I1",
+        "SP1"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/soccer/soccer_LamWeightedRestDiffSignal.parquet"
+    },
+    {
+      "signal": "tennis:AbsRestDiffSignal",
+      "sport": "tennis",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 12847,
+      "n_eff": 12847,
+      "brier_delta": 6.36322377264665e-05,
+      "dm_p": 0.47688543474280554,
+      "corpus_unit": [
+        "ATP"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/tennis/tennis_AbsRestDiffSignal.parquet"
+    },
+    {
+      "signal": "tennis:SurfVsOverallEloSignal",
+      "sport": "tennis",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 12847,
+      "n_eff": 12847,
+      "brier_delta": 5.9043943424048915e-05,
+      "dm_p": 0.4814077610137705,
+      "corpus_unit": [
+        "ATP"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/tennis/tennis_SurfVsOverallEloSignal.parquet"
+    },
+    {
+      "signal": "tennis:EloGapMagnitudeSignal",
+      "sport": "tennis",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 12847,
+      "n_eff": 12847,
+      "brier_delta": 4.3818371585515544e-05,
+      "dm_p": 0.6020044561275619,
+      "corpus_unit": [
+        "ATP"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/tennis/tennis_EloGapMagnitudeSignal.parquet"
+    },
+    {
+      "signal": "tennis:BestOf5Signal",
+      "sport": "tennis",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 12847,
+      "n_eff": 12847,
+      "brier_delta": 1.0425246099263641e-05,
+      "dm_p": 0.9058136531308466,
+      "corpus_unit": [
+        "ATP"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/tennis/tennis_BestOf5Signal.parquet"
+    },
+    {
+      "signal": "tennis:RestSurfaceInteractionSignal",
+      "sport": "tennis",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 12847,
+      "n_eff": 12847,
+      "brier_delta": 3.889044326537464e-05,
+      "dm_p": 0.6801017577805587,
+      "corpus_unit": [
+        "ATP"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/tennis/tennis_RestSurfaceInteractionSignal.parquet"
+    },
+    {
+      "signal": "tennis:SurfSpecialistFlagSignal",
+      "sport": "tennis",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 12847,
+      "n_eff": 12847,
+      "brier_delta": 7.212362324192622e-05,
+      "dm_p": 0.40049225028885993,
+      "corpus_unit": [
+        "ATP"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/tennis/tennis_SurfSpecialistFlagSignal.parquet"
+    },
+    {
+      "signal": "tennis:SignedRestDiffSignal",
+      "sport": "tennis",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 12847,
+      "n_eff": 12847,
+      "brier_delta": -3.187416898770641e-05,
+      "dm_p": 0.7969310452842997,
+      "corpus_unit": [
+        "ATP"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/tennis/tennis_SignedRestDiffSignal.parquet"
+    },
+    {
+      "signal": "tennis:EloRestInteractionSignal",
+      "sport": "tennis",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 12847,
+      "n_eff": 12847,
+      "brier_delta": 4.6497263334845194e-05,
+      "dm_p": 0.6224514536913476,
+      "corpus_unit": [
+        "ATP"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/tennis/tennis_EloRestInteractionSignal.parquet"
+    },
+    {
+      "signal": "tennis:SurfDiffEloDampedSignal",
+      "sport": "tennis",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 12847,
+      "n_eff": 12847,
+      "brier_delta": 1.594654828638176e-05,
+      "dm_p": 0.8591520326787535,
+      "corpus_unit": [
+        "ATP"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/tennis/tennis_SurfDiffEloDampedSignal.parquet"
+    },
+    {
+      "signal": "tennis:Bo5EloDiffSignal",
+      "sport": "tennis",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 12847,
+      "n_eff": 12847,
+      "brier_delta": 3.0679982732596074e-05,
+      "dm_p": 0.7280371359999613,
+      "corpus_unit": [
+        "ATP"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/tennis/tennis_Bo5EloDiffSignal.parquet"
+    },
+    {
+      "signal": "tennis:SignedRestEloDiffSignal",
+      "sport": "tennis",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 12847,
+      "n_eff": 12847,
+      "brier_delta": 6.009710203526803e-05,
+      "dm_p": 0.5266478083814002,
+      "corpus_unit": [
+        "ATP"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/tennis/tennis_SignedRestEloDiffSignal.parquet"
+    },
+    {
+      "signal": "tennis:SurfEloAbsDiffSignal",
+      "sport": "tennis",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 12847,
+      "n_eff": 12847,
+      "brier_delta": 7.395101488446608e-05,
+      "dm_p": 0.38470022662617687,
+      "corpus_unit": [
+        "ATP"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/tennis/tennis_SurfEloAbsDiffSignal.parquet"
+    },
+    {
+      "signal": "tennis:RestCloseMatchSignal",
+      "sport": "tennis",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 12847,
+      "n_eff": 12847,
+      "brier_delta": 4.622597582451718e-05,
+      "dm_p": 0.6087601709188428,
+      "corpus_unit": [
+        "ATP"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/tennis/tennis_RestCloseMatchSignal.parquet"
+    },
+    {
+      "signal": "tennis:EloSurfProductSignal",
+      "sport": "tennis",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 12847,
+      "n_eff": 12847,
+      "brier_delta": 4.4530913230448086e-05,
+      "dm_p": 0.5908659627377177,
+      "corpus_unit": [
+        "ATP"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/tennis/tennis_EloSurfProductSignal.parquet"
+    },
+    {
+      "signal": "tennis:RestAsymmetryBo5Signal",
+      "sport": "tennis",
+      "kind": "catalog",
+      "incumbent": "devigged_close",
+      "n": 12847,
+      "n_eff": 12847,
+      "brier_delta": 4.13156816731995e-05,
+      "dm_p": 0.6273397448734779,
+      "corpus_unit": [
+        "ATP"
+      ],
+      "verdict": "SCREEN_NULL",
+      "absent_columns": [],
+      "differential_path": "data/cache/eval_gate/differentials/tennis/tennis_RestAsymmetryBo5Signal.parquet"
+    },
+    {
+      "signal": "player.scoring.ppp_by_zone",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.scoring.ppp_by_zone",
+        "ppp_by_zone"
+      ]
+    },
+    {
+      "signal": "player.scoring.self_created_share",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.scoring.self_created_share",
+        "self_created_share"
+      ]
+    },
+    {
+      "signal": "player.scoring.catch_shoot_ppp",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.scoring.catch_shoot_ppp",
+        "catch_shoot_ppp"
+      ]
+    },
+    {
+      "signal": "player.scoring.pullup_ppp",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.scoring.pullup_ppp",
+        "pullup_ppp"
+      ]
+    },
+    {
+      "signal": "player.scoring.by_defender_pressure",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.scoring.by_defender_pressure",
+        "by_defender_pressure"
+      ]
+    },
+    {
+      "signal": "player.scoring.by_shot_clock",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.scoring.by_shot_clock",
+        "by_shot_clock"
+      ]
+    },
+    {
+      "signal": "player.scoring.by_leverage",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.scoring.by_leverage",
+        "by_leverage"
+      ]
+    },
+    {
+      "signal": "player.scoring.by_game_script",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.scoring.by_game_script",
+        "by_game_script"
+      ]
+    },
+    {
+      "signal": "player.scoring.transition_ppp",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.scoring.transition_ppp",
+        "transition_ppp"
+      ]
+    },
+    {
+      "signal": "player.scoring.ft_generation",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.scoring.ft_generation",
+        "ft_generation"
+      ]
+    },
+    {
+      "signal": "player.playmaking.potential_assists",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.playmaking.potential_assists",
+        "potential_assists"
+      ]
+    },
+    {
+      "signal": "player.playmaking.ast_points_created",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.playmaking.ast_points_created",
+        "ast_points_created"
+      ]
+    },
+    {
+      "signal": "player.playmaking.assist_target_mix",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.playmaking.assist_target_mix",
+        "assist_target_mix"
+      ]
+    },
+    {
+      "signal": "player.playmaking.turnover_taxonomy",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.playmaking.turnover_taxonomy",
+        "turnover_taxonomy"
+      ]
+    },
+    {
+      "signal": "player.playmaking.ato_under_pressure",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.playmaking.ato_under_pressure",
+        "ato_under_pressure"
+      ]
+    },
+    {
+      "signal": "player.playmaking.drive_and_kick",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.playmaking.drive_and_kick",
+        "drive_and_kick"
+      ]
+    },
+    {
+      "signal": "player.playmaking.secondary_assists",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.playmaking.secondary_assists",
+        "secondary_assists"
+      ]
+    },
+    {
+      "signal": "player.rebounding.reb_by_zone",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.rebounding.reb_by_zone",
+        "reb_by_zone"
+      ]
+    },
+    {
+      "signal": "player.rebounding.contested_reb_rate",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.rebounding.contested_reb_rate",
+        "contested_reb_rate"
+      ]
+    },
+    {
+      "signal": "player.rebounding.box_out_rate",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.rebounding.box_out_rate",
+        "box_out_rate"
+      ]
+    },
+    {
+      "signal": "player.rebounding.reb_chance_conversion",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.rebounding.reb_chance_conversion",
+        "reb_chance_conversion"
+      ]
+    },
+    {
+      "signal": "player.rebounding.putback_rate",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.rebounding.putback_rate",
+        "putback_rate"
+      ]
+    },
+    {
+      "signal": "player.rebounding.second_chance_gen",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.rebounding.second_chance_gen",
+        "second_chance_gen"
+      ]
+    },
+    {
+      "signal": "player.defense.stops_index",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.defense.stops_index",
+        "stops_index"
+      ]
+    },
+    {
+      "signal": "player.defense.fg_suppression",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.defense.fg_suppression",
+        "fg_suppression"
+      ]
+    },
+    {
+      "signal": "player.defense.ppp_allowed",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.defense.ppp_allowed",
+        "ppp_allowed"
+      ]
+    },
+    {
+      "signal": "player.defense.fg3_allowed",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.defense.fg3_allowed",
+        "fg3_allowed"
+      ]
+    },
+    {
+      "signal": "player.defense.versatility",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.defense.versatility",
+        "versatility"
+      ]
+    },
+    {
+      "signal": "player.defense.switch_rate",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.defense.switch_rate",
+        "switch_rate"
+      ]
+    },
+    {
+      "signal": "player.defense.rim_protection",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.defense.rim_protection",
+        "rim_protection"
+      ]
+    },
+    {
+      "signal": "player.defense.foul_rate_defending",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.defense.foul_rate_defending",
+        "foul_rate_defending"
+      ]
+    },
+    {
+      "signal": "player.defense.top_shutdowns",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.defense.top_shutdowns",
+        "top_shutdowns"
+      ]
+    },
+    {
+      "signal": "player.defense.got_cooked_by",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.defense.got_cooked_by",
+        "got_cooked_by"
+      ]
+    },
+    {
+      "signal": "player.movement.speed_profile",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.movement.speed_profile",
+        "speed_profile"
+      ]
+    },
+    {
+      "signal": "player.movement.distance_load",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.movement.distance_load",
+        "distance_load"
+      ]
+    },
+    {
+      "signal": "player.movement.off_ball_movement",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.movement.off_ball_movement",
+        "off_ball_movement"
+      ]
+    },
+    {
+      "signal": "player.movement.fatigue_curve",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.movement.fatigue_curve",
+        "fatigue_curve"
+      ]
+    },
+    {
+      "signal": "player.movement.paint_touches",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.movement.paint_touches",
+        "paint_touches"
+      ]
+    },
+    {
+      "signal": "player.usage.usage_by_lineup",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.usage.usage_by_lineup",
+        "usage_by_lineup"
+      ]
+    },
+    {
+      "signal": "player.usage.time_of_possession",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.usage.time_of_possession",
+        "time_of_possession"
+      ]
+    },
+    {
+      "signal": "player.usage.role_consistency",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.usage.role_consistency",
+        "role_consistency"
+      ]
+    },
+    {
+      "signal": "player.usage.vacated_load_response",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.usage.vacated_load_response",
+        "vacated_load_response"
+      ]
+    },
+    {
+      "signal": "player.situational.clutch_elevation",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.situational.clutch_elevation",
+        "clutch_elevation"
+      ]
+    },
+    {
+      "signal": "player.situational.quarter_shape",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.situational.quarter_shape",
+        "quarter_shape"
+      ]
+    },
+    {
+      "signal": "player.situational.b2b_fade",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.situational.b2b_fade",
+        "b2b_fade"
+      ]
+    },
+    {
+      "signal": "player.situational.rest_response",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.situational.rest_response",
+        "rest_response"
+      ]
+    },
+    {
+      "signal": "player.situational.foul_trouble_behavior",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.situational.foul_trouble_behavior",
+        "foul_trouble_behavior"
+      ]
+    },
+    {
+      "signal": "player.situational.blowout_behavior",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.situational.blowout_behavior",
+        "blowout_behavior"
+      ]
+    },
+    {
+      "signal": "player.durability.injury_history",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.durability.injury_history",
+        "injury_history"
+      ]
+    },
+    {
+      "signal": "player.durability.minutes_trend",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.durability.minutes_trend",
+        "minutes_trend"
+      ]
+    },
+    {
+      "signal": "player.durability.age_curve_pos",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.durability.age_curve_pos",
+        "age_curve_pos"
+      ]
+    },
+    {
+      "signal": "player.durability.rampup_after_absence",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.durability.rampup_after_absence",
+        "rampup_after_absence"
+      ]
+    },
+    {
+      "signal": "player.form.rolling_windows",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.form.rolling_windows",
+        "rolling_windows"
+      ]
+    },
+    {
+      "signal": "player.form.streaks",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.form.streaks",
+        "streaks"
+      ]
+    },
+    {
+      "signal": "player.form.dispersion",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.form.dispersion",
+        "dispersion"
+      ]
+    },
+    {
+      "signal": "player.form.trajectory",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.form.trajectory",
+        "trajectory"
+      ]
+    },
+    {
+      "signal": "player.correlation.own_stat_rho",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.correlation.own_stat_rho",
+        "own_stat_rho"
+      ]
+    },
+    {
+      "signal": "player.correlation.teammate_conditional",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.correlation.teammate_conditional",
+        "teammate_conditional"
+      ]
+    },
+    {
+      "signal": "player.correlation.archetype_rho",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "player.correlation.archetype_rho",
+        "archetype_rho"
+      ]
+    },
+    {
+      "signal": "team.offense.playtype_ppp",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.offense.playtype_ppp",
+        "playtype_ppp"
+      ]
+    },
+    {
+      "signal": "team.offense.shot_diet",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.offense.shot_diet",
+        "shot_diet"
+      ]
+    },
+    {
+      "signal": "team.offense.ball_movement",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.offense.ball_movement",
+        "ball_movement"
+      ]
+    },
+    {
+      "signal": "team.offense.ato_efficiency",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.offense.ato_efficiency",
+        "ato_efficiency"
+      ]
+    },
+    {
+      "signal": "team.offense.late_clock",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.offense.late_clock",
+        "late_clock"
+      ]
+    },
+    {
+      "signal": "team.defense.coverage_tendency",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.defense.coverage_tendency",
+        "coverage_tendency"
+      ]
+    },
+    {
+      "signal": "team.defense.paint_perimeter_split",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.defense.paint_perimeter_split",
+        "paint_perimeter_split"
+      ]
+    },
+    {
+      "signal": "team.defense.forced_turnovers",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.defense.forced_turnovers",
+        "forced_turnovers"
+      ]
+    },
+    {
+      "signal": "team.defense.transition_defense",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.defense.transition_defense",
+        "transition_defense"
+      ]
+    },
+    {
+      "signal": "team.defense.rim_protection_team",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.defense.rim_protection_team",
+        "rim_protection_team"
+      ]
+    },
+    {
+      "signal": "team.lineup_eco.top_lineups",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.lineup_eco.top_lineups",
+        "top_lineups"
+      ]
+    },
+    {
+      "signal": "team.lineup_eco.closing_lineup",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.lineup_eco.closing_lineup",
+        "closing_lineup"
+      ]
+    },
+    {
+      "signal": "team.lineup_eco.bench_units",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.lineup_eco.bench_units",
+        "bench_units"
+      ]
+    },
+    {
+      "signal": "team.lineup_eco.rotation_patterns",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.lineup_eco.rotation_patterns",
+        "rotation_patterns"
+      ]
+    },
+    {
+      "signal": "team.context.srs",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.context.srs",
+        "srs"
+      ]
+    },
+    {
+      "signal": "team.context.home_road_split",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.context.home_road_split",
+        "home_road_split"
+      ]
+    },
+    {
+      "signal": "team.context.rest_split",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.context.rest_split",
+        "rest_split"
+      ]
+    },
+    {
+      "signal": "team.context.vs_tier",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.context.vs_tier",
+        "vs_tier"
+      ]
+    },
+    {
+      "signal": "team.context.fragility",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "team.context.fragility",
+        "fragility"
+      ]
+    },
+    {
+      "signal": "lineup.fivemix.net_rating",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "lineup.fivemix.net_rating",
+        "net_rating"
+      ]
+    },
+    {
+      "signal": "lineup.fivemix.pace",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "lineup.fivemix.pace",
+        "pace"
+      ]
+    },
+    {
+      "signal": "lineup.fivemix.vs_scheme",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "lineup.fivemix.vs_scheme",
+        "vs_scheme"
+      ]
+    },
+    {
+      "signal": "lineup.pair.synergy",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "lineup.pair.synergy",
+        "synergy"
+      ]
+    },
+    {
+      "signal": "lineup.pair.spacing_delta",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "lineup.pair.spacing_delta",
+        "spacing_delta"
+      ]
+    },
+    {
+      "signal": "lineup.pair.pnr_roles",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "lineup.pair.pnr_roles",
+        "pnr_roles"
+      ]
+    },
+    {
+      "signal": "lineup.pair.def_chemistry",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "lineup.pair.def_chemistry",
+        "def_chemistry"
+      ]
+    },
+    {
+      "signal": "lineup.pair.stagger_timing",
+      "sport": "nba",
+      "kind": "registry",
+      "incumbent": "p_base",
+      "n": 0,
+      "n_eff": 0,
+      "brier_delta": null,
+      "dm_p": null,
+      "corpus_unit": [],
+      "verdict": "NOT_TESTABLE",
+      "differential_path": null,
+      "absent_columns": [
+        "lineup.pair.stagger_timing",
+        "stagger_timing"
+      ]
+    }
+  ]
+}
