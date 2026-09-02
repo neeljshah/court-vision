@@ -43,7 +43,7 @@ from .kalshi_pacing import (
     cooldown_after_429, is_429, record_429, record_request, stagger_sleep, REQUEST_STAGGER_SEC)
 from .kalshi_rate_governor import before_request as _governor_before
 from .kalshi_rate_governor import report_429 as _governor_report_429, resolve_governor as _resolve_governor
-from .kalshi_series_spec import series_for
+from .kalshi_series_spec import is_future_game, series_for
 from .transport import resilient_get_json
 
 logger = logging.getLogger(__name__)
@@ -167,7 +167,7 @@ def _list_tickers(sport: str, *, http: HttpGet, stats: Optional[Dict[str, Any]],
             if not isinstance(m, dict):
                 continue
             t = str(m.get("ticker") or "").strip()
-            if not t:
+            if not t or is_future_game(t, datetime.now(timezone.utc)):  # S105: live budget
                 continue
             out.append({"ticker": t, "event_ticker": str(m.get("event_ticker") or t)})
     return out

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from scripts.platformkit.ingame.ingame_book_depth_retention import evict_over_cap
+from scripts.platformkit.ingame.ingame_book_depth_retention import evict_over_cap, live_first
 
 _NOW = datetime(2026, 7, 5, 12, 0, 0, tzinfo=timezone.utc)
 
@@ -59,3 +59,14 @@ def test_evict_over_cap_unparseable_ticker_never_evicted_before_a_future_one():
     active = [_NO_DATE, _FUTURE_1]
     evict_over_cap(active, 1, _NOW)
     assert active == [_NO_DATE]
+
+
+def test_live_first_drops_future_dated_before_capping():
+    """S105 root cause: the cap used to be reached by future markets alone, so a
+    ticker whose game is TODAY never made it into the poll budget."""
+    discovered = [_FUTURE_1, _FUTURE_2, _TODAY, _TOMORROW]
+    assert live_first(discovered, _NOW, 2) == [_TODAY, _TOMORROW]
+
+
+def test_live_first_never_drops_an_unparseable_ticker():
+    assert live_first([_NO_DATE, _FUTURE_1], _NOW, 5) == [_NO_DATE]

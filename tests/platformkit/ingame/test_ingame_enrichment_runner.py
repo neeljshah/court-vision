@@ -163,3 +163,24 @@ def test_retention_raising_is_isolated_and_never_sinks_the_tick(tmp_path, monkey
                       book_depth_fn=lambda: {}, retention_fn=_boom)
     assert doc["retention"]["error"] == "retention sweep exploded"
     assert doc["fotmob"]["n_matches"] == 1, "a raising retention pass never sinks other sources"
+
+
+def test_book_depth_state_is_threaded_across_ticks(monkeypatch):
+    """S105 root cause: the runner is the only production caller of poll_once, and
+    it used to pass state=None every tick -- so the sticky active-ticker list and
+    the trade watermarks were discarded 30 s after being built."""
+    from scripts.platformkit.ingame import ingame_book_depth_poller as poller
+
+    seen = []
+
+    def fake_poll_once(*, sports, state=None, **kw):
+        seen.append(id(state))
+        state.setdefault("kalshi_active", {}).setdefault("mlb", []).append("KXMLBGAME-X-AAA")
+        return {"kalshi": {"n_snapshotted": 1}, "polymarket": {}}
+
+    monkeypatch.setattr(poller, "poll_once", fake_poll_once)
+    monkeypatch.setattr(runner, "_BOOK_DEPTH_STATE", {})
+    runner._run_book_depth()
+    runner._run_book_depth()
+    assert len(set(seen)) == 1, "each tick got a fresh state dict"
+    assert runner._BOOK_DEPTH_STATE["kalshi_active"]["mlb"] == ["KXMLBGAME-X-AAA"] * 2

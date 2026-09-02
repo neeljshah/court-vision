@@ -184,11 +184,15 @@ def test_poll_kalshi_depth_protects_live_today_ticker_over_future_dated(tmp_path
     tick["n"] = 2
     poller.poll_kalshi_depth(["mlb"], http=_http, sidecar_dir=tmp_path, now=lambda: now_dt,
                              active_by_sport=active, miss_counts=misses, max_active_per_sport=2)
-    # cap=2, 3 candidates now (today + 2 future) -> ONE future ticker is
-    # evicted, never today_ticker.
+    # S105 (2026-09-03) STRENGTHENS this: a >1-day-out ticker no longer enters the
+    # budget at ALL (live_first filters discovery before the cap), so the cap is
+    # never reached by future markets in the first place -- today_ticker is the
+    # only thing tracked. The eviction ORDER this test used to assert is covered
+    # directly in test_ingame_book_depth_retention.py (evict_over_cap), which is
+    # still the last resort when >max_active_per_sport same-day tickers exist.
     assert today_ticker in active["mlb"]
-    assert "KXMLBGAME-26JUL07CCCDDD-CCC" not in active["mlb"]  # oldest future -> evicted first
-    assert len(active["mlb"]) == 2
+    assert "KXMLBGAME-26JUL07CCCDDD-CCC" not in active["mlb"]
+    assert active["mlb"] == [today_ticker]
 
 
 def test_poll_kalshi_depth_evicts_after_max_consecutive_misses(tmp_path):
@@ -285,3 +289,21 @@ def test_serve_bounded_tick_error_never_stops_loop(tmp_path, monkeypatch):
                                    time_fn=lambda: fake_time["t"])
     assert summary["n_ticks"] >= 1
     assert calls["n"] == summary["n_ticks"]
+
+
+def test_poll_kalshi_depth_skips_markets_more_than_a_day_out(tmp_path):
+    """S105: a >1-day-out market must not consume the per-tick budget. now_dt is
+    2026-07-06, so 07-06/07-07 are kept and 07-09 is dropped BEFORE the cap."""
+    now_dt = datetime(2026, 7, 6, 0, 0, 0, tzinfo=timezone.utc)
+    body = {"markets": [{"ticker": "KXMLBGAME-26JUL09FUTFUT-FUT"},
+                        {"ticker": "KXMLBGAME-26JUL06TODTOD-TOD"}]}
+
+    def _http(url: str):
+        if "/markets?" in url and "series_ticker" in url:
+            return body
+        return _ORDERBOOK_BODY if "orderbook" in url else _TRADES_BODY
+
+    summary = poller.poll_kalshi_depth(["mlb"], http=_http, sidecar_dir=tmp_path,
+                                       now=lambda: now_dt, max_markets_per_sport=1)
+    assert summary["n_snapshotted"] == 1
+    assert [r["ticker"] for r in summary["rows"]] == ["KXMLBGAME-26JUL06TODTOD-TOD"]

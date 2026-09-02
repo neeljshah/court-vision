@@ -88,11 +88,23 @@ def _run_gumbo() -> Dict[str, Any]:
     return report
 
 
+# S105: the poller's cross-tick state lives HERE because this runner is the only
+# production caller of poll_once. It used to pass state=None every tick, so the sticky
+# active-ticker list, the per-ticker miss counts, the prev snapshots stale_quote_flag is
+# computed against and the trade watermarks were all discarded 30 s after being built --
+# the 2026-07-11 sticky-retention fix therefore never actually ran in production. Measured
+# on the resulting local archive: 98.3 pct of MLB tickers (227 of 231) had their LAST
+# capture BEFORE their own first pitch, and the trades sidecar re-persisted the same tape
+# 29.2x (1,060,539 rows for 36,369 distinct trades). Bounded by max_active_per_sport.
+_BOOK_DEPTH_STATE: Dict[str, Any] = {}
+
+
 def _run_book_depth() -> Dict[str, Any]:
     """One bounded (single-tick) book-depth poll across mlb+wnba. Returns its
-    own {kalshi, polymarket} summary dict."""
+    own {kalshi, polymarket} summary dict. State is threaded across ticks via
+    _BOOK_DEPTH_STATE so a ticker stays tracked through its own game day."""
     from scripts.platformkit.ingame.ingame_book_depth_poller import poll_once
-    return poll_once(sports=["mlb", "wnba"])
+    return poll_once(sports=["mlb", "wnba"], state=_BOOK_DEPTH_STATE)
 
 
 # Retention is a periodic housekeeping pass, not a per-tick one (a directory walk every

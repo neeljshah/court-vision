@@ -136,7 +136,8 @@ def poll_kalshi_depth(sports: List[str], *, http: HttpGet = resilient_get_json,
     n_snapshotted = n_stale = n_trades = 0
     rows: List[Dict[str, Any]] = []
     for sport in sports:
-        discovered = _live_kalshi_tickers(sport, http=http)[:max_markets_per_sport]
+        discovered = _retention.live_first(_live_kalshi_tickers(sport, http=http),
+                                           now_dt, max_markets_per_sport)
         active = active_by_sport.setdefault(sport, [])
         # sticky tickers from a PRIOR tick that this tick's discovery page didn't
         # re-list -- appended (not merged in) so discovered's own count/order is

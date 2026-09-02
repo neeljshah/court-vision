@@ -55,4 +55,22 @@ def evict_over_cap(active: List[str], max_active: int, now_dt: datetime) -> None
     active[:] = [t for t in active if t not in drop]
 
 
-__all__ = ["evict_over_cap"]
+def live_first(tickers: List[str], now_dt: datetime, limit: int) -> List[str]:
+    """Discovery order for ONE poll tick: drop markets whose game is >1 day out,
+    THEN cap at *limit*.
+
+    THE S105 GAP: discovery is a bare status=open page and Kalshi opens game
+    markets days ahead, so the per-tick budget was spent on markets that cannot
+    be in play -- measured over the local book_depth archive, 90.1 pct of
+    captured KXMLBGAME rows were for a game 1-3 days out, and 98.3 pct of
+    tickers (227 of 231) had their LAST capture BEFORE their own first pitch
+    (median 61 h before). Capping AFTER the filter, not before, is the whole
+    point: the cap used to be reached by future markets alone.
+
+    Same predicate evict_over_cap uses, so today/tomorrow always survive and an
+    unparseable ticker (is_future_game -> False) is never dropped.
+    """
+    return [t for t in tickers if not is_future_game(t, now_dt)][:limit]
+
+
+__all__ = ["evict_over_cap", "live_first"]

@@ -247,3 +247,20 @@ def test_run_capture_pass_per_sport_failure_isolated(tmp_path, monkeypatch):
     summary = dc.run_capture_pass(["mlb", "tennis"], base_dir=tmp_path)
     assert summary["sports"]["mlb"]["n_markets"] == 0
     assert summary["sports"]["tennis"]["n_markets"] == 0
+
+
+def test_list_tickers_skips_markets_more_than_a_day_out(monkeypatch):
+    """S105: the per-pass ticker budget must reach markets that can be IN PLAY.
+    Kalshi opens game markets days ahead, and 88.1 pct of the captured
+    depth_history/mlb rows were for a game 1-3 days out -- the budget never
+    reached the live slate. is_future_game is stubbed so the test is
+    clock-independent."""
+    future = "KXMLBGAME-FUTURE-AAA"
+    listing = {"markets": [{"ticker": future, "event_ticker": "KXMLBGAME-FUTURE"},
+                           {"ticker": "KXMLBGAME-LIVE-AAA", "event_ticker": "KXMLBGAME-LIVE"}]}
+    monkeypatch.setattr(dc, "is_future_game", lambda t, now: t == future)
+    rows = dc.capture_depth_snapshot(
+        "mlb", http=lambda url: (listing if "/markets?" in url
+                                 else _book([["0.50", "1"]], [["0.50", "1"]])))
+    assert rows, "the live ticker must still be captured"
+    assert {r["ticker"] for r in rows} == {"KXMLBGAME-LIVE-AAA"}
