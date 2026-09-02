@@ -1,0 +1,6 @@
+population,basis,n,min_seconds,max_seconds,total_seconds,checkpoint_clear_interpretation
+all_qualifying_timeouts,observed_elapsed_before_timeout,25,2701,5416,82113,Each strict lower bound in timeout_pre_first_checkpoint_live.csv only proves that the job needed more time than its observed kill; it does not prove the time at frame 2000.
+historical_2700_group,observed_elapsed_before_timeout,17,2701,2715,46044,No per-job processing rate recorded.
+historical_3600_group,observed_elapsed_before_timeout,4,3608,3609,14435,No per-job processing rate recorded.
+current_5400_group,observed_elapsed_before_timeout,4,5401,5416,21634,Already exceeds the current 5400-second cap without crossing the checkpoint; a higher cap has an unbounded required extension from this data.
+measured_ncaas,2000_divided_by_measured_pipeline_fps,4,2062,3610,10675,Exact per-measurement checkpoint times are in timeout_rate_measurements.csv.

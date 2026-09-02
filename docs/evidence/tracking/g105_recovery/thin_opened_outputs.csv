@@ -1,0 +1,7 @@
+sport,ledger_ordinal,game_id,ledger_rows,current_data_rows,byte_size,verdict_sidecar_exists,inspection_classification
+baseball,2,mlb_2026-08-30_10893dca,116,3061,159977,false,mutable_retracked_current_output_not_attributable_to_historic_thin
+football,3,football_a7OUF22mt-I,0,0,23,false,historical_match_header_only
+kbo,98,kbo_Y4HqKr58TZk,7,18736,1400435,false,mutable_retracked_current_output_not_attributable_to_historic_thin
+mlb,176,mlb_FGtFanovws4,0,0,64,false,historical_match_header_only
+soccer,35,soccer_HxBqMbI5kqQ,256,91744,6950503,false,mutable_retracked_current_output_not_attributable_to_historic_thin
+tennis,128,tennis_10,0,0,87,false,historical_match_header_only
