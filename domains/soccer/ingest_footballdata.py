@@ -3,7 +3,7 @@
 BUILD-SEPARABLE: ``fetch_raw`` downloads/caches CSVs (network-only, never called by tests);
 ``build_matches``, ``build_odds``, ``build_report`` are pure transforms (fixture-tested, no I/O).
 PRIVATE: combined with price data these artefacts are price-bearing; data/domains/soccer/ is
-never tracked.  football-data.co.uk data is free for personal/research use only.
+never tracked.  football-data.co.uk: the publisher states its data is free ("My data is free" -- see docs/evidence/LICENCE_LEDGER.md, read 2026-09-03); our earlier "personal/research use only" wording was narrower than the source.
 """
 from __future__ import annotations
 
