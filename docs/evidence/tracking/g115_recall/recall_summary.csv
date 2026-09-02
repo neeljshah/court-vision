@@ -1,0 +1,6 @@
+role,detected,visible,recall,wilson_95_low,wilson_95_high
+baseline,1,17,0.058824,0.010460,0.269820
+free_throw,2,17,0.117647,0.032880,0.343364
+lane_left,8,17,0.470588,0.261651,0.690368
+lane_right,14,17,0.823529,0.589705,0.938089
+overall,25,68,0.367647,0.263005,0.486444
