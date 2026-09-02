@@ -33,12 +33,13 @@ Calibration, not edge. NO $/ROI anywhere. pandas + numpy + stdlib only. ASCII.
 """
 from __future__ import annotations
 
+import os
 import hashlib
 import json
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Optional, Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -385,8 +386,11 @@ def build_gate_corpus(sport: str) -> pd.DataFrame:
     return df
 
 
-def load_gate_corpus(sport: str, portable: bool = False) -> pd.DataFrame:
+def load_gate_corpus(sport: str, portable: Optional[bool] = None) -> pd.DataFrame:
     """Load a cached corpus; refuse (StaleCorpusError) if any source file moved.
+
+    portable=None reads FOUNDRY_PORTABLE_CORPUS=1 from the environment (S75: every
+    call site, close_join included, then behaves the same on a pod host).
 
     `portable=True` is the S68 opt-in for a host that does NOT carry the domain
     sources (a compute pod). A source the sidecar RECORDED is unavailable there
@@ -395,6 +399,8 @@ def load_gate_corpus(sport: str, portable: bool = False) -> pd.DataFrame:
     `corpus_sha256` instead of refusing. Default mode refuses on either, exactly
     as before.
     """
+    if portable is None:
+        portable = os.environ.get("FOUNDRY_PORTABLE_CORPUS") == "1"
     cp, sp = _corpus_path(sport), _sidecar_path(sport)
     if not cp.exists() or not sp.exists():
         raise StaleCorpusError(f"no cached corpus for {sport!r}; run build_gate_corpus first")
