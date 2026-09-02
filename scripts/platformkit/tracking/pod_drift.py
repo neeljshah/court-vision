@@ -16,6 +16,13 @@ SCOPE_GLOBS = (
     "scripts/platformkit/tracking/*.py",
     "scripts/platformkit/track_daemon*.py",
     "scripts/platformkit/tracking_harness.py",
+    # The harness dependencies below. Kept in step with HARNESS_DEPENDENCIES and
+    # with pod_command() by test_pod_drift_scope.py -- the scope used to live in
+    # three places and only one of them ever got updated.
+    "scripts/platformkit/metric_local_profile.py",
+    "scripts/platformkit/tracking_schema.py",
+    "scripts/platformkit/coordinate_provenance.py",
+    "scripts/platformkit/liveness_metrics.py",
 )
 # Local-only tooling that never runs on the pod. It is in the scope globs by
 # path but is not a tracking-number producer, so leaving it in reports a
@@ -29,6 +36,24 @@ POD_ROOT = "/workspace/nba-ai-system"
 DEFAULT_HOST = "213.192.2.83"
 DEFAULT_PORT = "40193"
 _POD_LINE = re.compile(r"^([0-9a-fA-F]{32})\s+/workspace/nba-ai-system/(.+)$")
+
+
+# tracking_harness.py is in scope, but until 2026-09-02 its DEPENDENCIES were not,
+# and every one of them changes tracking numbers: metric_local_profile builds
+# report fields, tracking_schema and coordinate_provenance define the coordinate
+# contract, liveness_metrics computes a gated verdict. That blind spot broke the
+# pod twice in one day -- once deploying the harness without these (ImportError),
+# once rolling the harness back without metric_local_profile, which then passed a
+# field the older QualityReport would not accept (TypeError on three tables).
+# A drift checker that cannot see a module feeding the thing it checks is the
+# same class of silent gap as the SSH port that drifted unnoticed for a day.
+# test_pod_drift_scope.py fails if the harness gains an import that is not here.
+HARNESS_DEPENDENCIES = frozenset((
+    "metric_local_profile.py",
+    "tracking_schema.py",
+    "coordinate_provenance.py",
+    "liveness_metrics.py",
+))
 
 
 def _is_scoped_module(path: str) -> bool:
@@ -45,7 +70,9 @@ def _is_scoped_module(path: str) -> bool:
     ) or (
         len(parts) == 3
         and parts[:2] == ["scripts", "platformkit"]
-        and (parts[2].startswith("track_daemon") or parts[2] == "tracking_harness.py")
+        and (parts[2].startswith("track_daemon")
+             or parts[2] == "tracking_harness.py"
+             or parts[2] in HARNESS_DEPENDENCIES)
     )
 
 
@@ -70,7 +97,7 @@ def pod_command() -> str:
         "find /workspace/nba-ai-system/scripts/platformkit/tracking -maxdepth 1 "
         "-type f -name '*.py' -exec md5sum {} \\; 2>/dev/null; "
         "find /workspace/nba-ai-system/scripts/platformkit -maxdepth 1 -type f "
-        "\\( -name 'track_daemon*.py' -o -name 'tracking_harness.py' \\) "
+        "\( -name 'track_daemon*.py' -o -name 'tracking_harness.py'" + "".join(" -o -name '%s'" % n for n in sorted(HARNESS_DEPENDENCIES)) + " \) "
         "-exec md5sum {} \\; 2>/dev/null"
     )
 
