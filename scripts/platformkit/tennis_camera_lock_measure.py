@@ -135,7 +135,7 @@ def orientation_rejections(video: Path, start: int, stop: int, limit: int = 10) 
                                     minLineLength=max(40, width // 12), maxLineGap=20)
             horizontal = vertical = unclassified = 0
             ratios: list[float] = []
-            for raw in lines[:, 0, :] if lines is not None else ():
+            for raw in lines.reshape(-1, lines.shape[-1]) if lines is not None else ():
                 dx, dy = abs(float(raw[2] - raw[0])), abs(float(raw[3] - raw[1]))
                 ratios.append(dx / dy if dy else float("inf"))
                 if dx >= 1.5 * dy:

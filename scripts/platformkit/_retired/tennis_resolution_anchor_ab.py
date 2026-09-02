@@ -78,7 +78,7 @@ def _court_lines(frame: np.ndarray) -> tuple[list[list[np.ndarray]], list[list[n
     if found is None:
         return None
     horizontal, vertical = [], []
-    for raw in found[:, 0, :]:
+    for raw in found.reshape(-1, found.shape[-1]):
         line = raw.astype(float)
         dx, dy = abs(line[2] - line[0]), abs(line[3] - line[1])
         if dx >= 1.5 * dy:

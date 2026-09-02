@@ -93,7 +93,7 @@ def court_line_segments(frame: np.ndarray, threshold: int = 45, min_length: Opti
     found = cv2.HoughLinesP(mask, 1, np.pi / 180.0, threshold,
                             minLineLength=max(40, width // 12) if min_length is None else min_length,
                             maxLineGap=max_gap)
-    return [] if found is None else [segment.astype(float) for segment in found[:, 0, :]]
+    return [] if found is None else [segment.astype(float) for segment in found.reshape(-1, found.shape[-1])]
 
 
 def split_orientation(segments: list[np.ndarray]) -> tuple[list[np.ndarray], list[np.ndarray]]:

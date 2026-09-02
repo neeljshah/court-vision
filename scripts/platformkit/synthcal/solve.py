@@ -47,8 +47,9 @@ def _opposite_t(frame: np.ndarray):
     bright = cv2.inRange(frame, np.array((200, 200, 200)), np.array((255, 255, 255)))
     found = cv2.HoughLinesP(bright, 1, np.pi / 180., threshold=45, minLineLength=max(40, width // 12), maxLineGap=20)
     if found is None: return None
-    horizontal = [line[0].astype(float) for line in found if abs(line[0][2] - line[0][0]) >= 1.5 * abs(line[0][3] - line[0][1])]
-    vertical = [line[0].astype(float) for line in found if abs(line[0][3] - line[0][1]) > abs(line[0][2] - line[0][0])]
+    segments = found.reshape(-1, found.shape[-1])
+    horizontal = [line.astype(float) for line in segments if abs(line[2] - line[0]) >= 1.5 * abs(line[3] - line[1])]
+    vertical = [line.astype(float) for line in segments if abs(line[3] - line[1]) > abs(line[2] - line[0])]
     def fit(lines):
         points = np.float32([[x[0], x[1]] for x in lines] + [[x[2], x[3]] for x in lines]); return cv2.fitLine(points, cv2.DIST_L2, 0, .01, .01).reshape(-1)
     def position(line):

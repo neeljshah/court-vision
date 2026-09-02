@@ -39,7 +39,7 @@ def _length(seg: np.ndarray) -> float:
 
 def _hough(mask: np.ndarray, threshold: int, min_len: int) -> list[np.ndarray]:
     found = cv2.HoughLinesP(mask, 1, np.pi / 180.0, threshold, minLineLength=min_len, maxLineGap=20)
-    return [] if found is None else [seg.astype(float) for seg in found[:, 0, :]]
+    return [] if found is None else [seg.astype(float) for seg in found.reshape(-1, found.shape[-1])]
 
 
 def _lsd(gray: np.ndarray) -> list[np.ndarray]:

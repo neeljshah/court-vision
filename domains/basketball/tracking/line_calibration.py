@@ -59,7 +59,7 @@ def detect_lsd_segments(frame: np.ndarray, min_length: float = 60.0) -> list[Obs
     if detected is None:
         return []
     segments = []
-    for values in detected[:, 0, :]:
+    for values in detected.reshape(-1, detected.shape[-1]):
         segment = ObservedSegment(tuple(float(value) for value in values))
         if segment.length >= min_length:
             segments.append(segment)

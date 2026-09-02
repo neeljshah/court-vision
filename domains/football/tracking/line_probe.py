@@ -42,7 +42,7 @@ def _hough_family(frame: np.ndarray, adapter: FootballAdapter) -> list[np.ndarra
     lines = cv2.HoughLinesP(mask, 1, np.pi / 180, threshold=35,
                             minLineLength=max(30, frame.shape[1] // 12), maxLineGap=18)
     return [] if lines is None else adapter.family_from_segments(
-        [line.astype(float) for line in lines[:, 0, :]])
+        [line.astype(float) for line in lines.reshape(-1, lines.shape[-1])])
 
 
 def measure(video: Path, budget: int, stride: int) -> Probe:

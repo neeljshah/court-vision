@@ -33,7 +33,8 @@ def _segments(frame: np.ndarray, use_field_roi: bool) -> list[np.ndarray]:
     roi = field_roi_mask(frame) if use_field_roi else None
     source = cv2.bitwise_and(grayscale, grayscale, mask=roi) if roi is not None else grayscale
     found = cv2.createLineSegmentDetector().detect(source)[0]
-    raw = [] if found is None else [item.astype(float) for item in found[:, 0, :]]
+    raw = ([] if found is None else
+           [item.astype(float) for item in found.reshape(-1, found.shape[-1])])
     if roi is None:
         return raw
     return [item for item in raw

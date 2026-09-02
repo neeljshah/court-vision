@@ -50,7 +50,7 @@ def _yard_line_count(frame: np.ndarray) -> int:
     if lines is None:
         return 0
     rows: list[int] = []
-    for x1, y1, x2, y2 in lines[:, 0]:
+    for x1, y1, x2, y2 in lines.reshape(-1, lines.shape[-1]):
         if abs(int(y2) - int(y1)) > max(8, int(height * 0.05)):
             continue
         rows.append(int((int(y1) + int(y2)) / 2))

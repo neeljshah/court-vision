@@ -98,7 +98,7 @@ class SoccerGeometryMixin:
         vertical: list[np.ndarray] = []
         if lines is None:
             return horizontal, vertical
-        for raw in lines[:, 0, :]:
+        for raw in lines.reshape(-1, lines.shape[-1]):
             line = raw.astype(float)
             angle = min(abs(np.degrees(np.arctan2(line[3] - line[1], line[2] - line[0]))) % 180, 180 - (abs(np.degrees(np.arctan2(line[3] - line[1], line[2] - line[0]))) % 180))
             if angle <= 35:

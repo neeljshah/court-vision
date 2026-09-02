@@ -110,7 +110,8 @@ class FootballGeometryMixin:
         found = cv2.createLineSegmentDetector().detect(gray)[0]
         if found is None:
             return []
-        return [segment.astype(float) for segment in found[:, 0, :]
+        return [segment.astype(float)
+                for segment in found.reshape(-1, found.shape[-1])
                 if np.hypot(segment[2] - segment[0], segment[3] - segment[1]) >= minimum
                 and segment_field_support(segment, roi) >= FIELD_ROI_MIN_SEGMENT_SUPPORT]
 

@@ -48,7 +48,7 @@ def _lines(frame: np.ndarray, config: LineConfig) -> tuple[list[np.ndarray], lis
     horizontal, vertical = [], []
     if found is None:
         return horizontal, vertical
-    for item in found[:, 0, :]:
+    for item in found.reshape(-1, found.shape[-1]):
         line = item.astype(float)
         dx, dy = abs(line[2] - line[0]), abs(line[3] - line[1])
         if dx >= 1.5 * dy:

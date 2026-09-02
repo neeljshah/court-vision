@@ -47,7 +47,7 @@ class SoccerKeypointProvider:
         if lines is None:
             return False
         cx, cy = center
-        for x1, y1, x2, y2 in lines[:, 0, :]:
+        for x1, y1, x2, y2 in lines.reshape(-1, lines.shape[-1]):
             length = float(np.hypot(x2 - x1, y2 - y1))
             if not length:
                 continue

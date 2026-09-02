@@ -73,7 +73,7 @@ def main(argv: list) -> int:
             if lines is None:
                 continue
             horizontal, vertical = [], []
-            for raw in lines[:, 0, :]:
+            for raw in lines.reshape(-1, lines.shape[-1]):
                 line = raw.astype(float)
                 dx, dy = abs(line[2] - line[0]), abs(line[3] - line[1])
                 if dx >= 1.5 * dy:

@@ -65,6 +65,7 @@ def _parallel_lines(edges: np.ndarray) -> int:
                                maxLineGap=8)
     if segments is None:
         return 0
+    segments = segments.reshape(-1, segments.shape[-1])
     x1, y1, x2, y2 = (segments[:, 0, i].astype(float) for i in range(4))
     angle = np.degrees(np.arctan2(y2 - y1, x2 - x1)) % 180.0
     # ponytail: O(n^2) over long segments only -- tens per frame, not thousands.

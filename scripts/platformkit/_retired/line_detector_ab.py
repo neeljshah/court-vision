@@ -25,7 +25,7 @@ import numpy as np
 def _hough(gray_mask, width):
     lines = cv2.HoughLinesP(gray_mask, 1, np.pi / 180.0, threshold=45,
                             minLineLength=max(40, width // 12), maxLineGap=20)
-    return [] if lines is None else [l.astype(float) for l in lines[:, 0, :]]
+    return [] if lines is None else [l.astype(float) for l in lines.reshape(-1, lines.shape[-1])]
 
 
 def _lsd(gray, width):

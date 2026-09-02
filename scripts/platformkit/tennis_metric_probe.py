@@ -65,7 +65,7 @@ def validate_reference(frame: np.ndarray,
                             minLineLength=max(40, width // 12), maxLineGap=20)
     if lines is None:
         return None
-    vertical = [line.astype(float) for line in lines[:, 0, :]
+    vertical = [line.astype(float) for line in lines.reshape(-1, lines.shape[-1])
                 if abs(line[3] - line[1]) > abs(line[2] - line[0])]
     if len(vertical) < 2:
         return None
