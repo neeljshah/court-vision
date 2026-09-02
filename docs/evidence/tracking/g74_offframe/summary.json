@@ -1,0 +1,134 @@
+{
+  "scope": "one tracking table and its one source clip only",
+  "definition": "A row is off-frame when its bbox's minimum x or y is below 0, or its maximum x exceeds frame width or maximum y exceeds frame height.",
+  "frame_bounds": {
+    "width": 1280,
+    "height": 720,
+    "source": "cv2.VideoCapture of same-named archived full-games copy; recorded input path in run.log was unavailable"
+  },
+  "source": {
+    "table_path": "/workspace/nba-ai-system/data/tracking/test720_4MoMewm2j-o/tracking_data.csv",
+    "table_sha256": "93935e4140b863276c1627d05f160c23ca72dca62d1e7584ab98249c62b2158d",
+    "source_video": "/workspace/nba-ai-system/data/videos/full_games/test720_4MoMewm2j-o.mp4",
+    "recorded_input_video": "/root/nba_videos/test720_4MoMewm2j-o.mp4",
+    "row_count": 29830,
+    "column_count": 67
+  },
+  "pure_coast": {
+    "evaluable": false,
+    "candidate_fields": [],
+    "reason": "No detection/match/coast-status field is present."
+  },
+  "pooled": {
+    "rows": 29830,
+    "geometry_evaluable_rows": 29830,
+    "off_frame_rows": 7596,
+    "off_frame_fraction": 0.2546429768689239,
+    "wilson_95": [
+      0.24973088897445533,
+      0.25961824998223376
+    ]
+  },
+  "per_track": {
+    "1": {
+      "rows": 3004,
+      "geometry_evaluable_rows": 3004,
+      "off_frame_rows": 715,
+      "off_frame_fraction": 0.23801597869507324,
+      "wilson_95": [
+        0.22312752588459372,
+        0.2535736162636599
+      ]
+    },
+    "2": {
+      "rows": 2974,
+      "geometry_evaluable_rows": 2974,
+      "off_frame_rows": 644,
+      "off_frame_fraction": 0.21654337592468056,
+      "wilson_95": [
+        0.20211080608704715,
+        0.23170727210315248
+      ]
+    },
+    "3": {
+      "rows": 2971,
+      "geometry_evaluable_rows": 2971,
+      "off_frame_rows": 609,
+      "off_frame_fraction": 0.20498148771457422,
+      "wilson_95": [
+        0.19085096569701296,
+        0.21987393367462096
+      ]
+    },
+    "4": {
+      "rows": 2773,
+      "geometry_evaluable_rows": 2773,
+      "off_frame_rows": 616,
+      "off_frame_fraction": 0.22214208438514244,
+      "wilson_95": [
+        0.2070606743813102,
+        0.23799226693624975
+      ]
+    },
+    "5": {
+      "rows": 1086,
+      "geometry_evaluable_rows": 1086,
+      "off_frame_rows": 283,
+      "off_frame_fraction": 0.2605893186003683,
+      "wilson_95": [
+        0.23535874011746985,
+        0.28750764031672055
+      ]
+    },
+    "6": {
+      "rows": 3327,
+      "geometry_evaluable_rows": 3327,
+      "off_frame_rows": 937,
+      "off_frame_fraction": 0.28163510670273517,
+      "wilson_95": [
+        0.266609665730068,
+        0.29716422805518455
+      ]
+    },
+    "7": {
+      "rows": 3385,
+      "geometry_evaluable_rows": 3385,
+      "off_frame_rows": 952,
+      "off_frame_fraction": 0.2812407680945347,
+      "wilson_95": [
+        0.26634924316104414,
+        0.2966282469351188
+      ]
+    },
+    "8": {
+      "rows": 3351,
+      "geometry_evaluable_rows": 3351,
+      "off_frame_rows": 860,
+      "off_frame_fraction": 0.25663980901223515,
+      "wilson_95": [
+        0.2421358649732846,
+        0.2717010718775748
+      ]
+    },
+    "9": {
+      "rows": 3503,
+      "geometry_evaluable_rows": 3503,
+      "off_frame_rows": 983,
+      "off_frame_fraction": 0.2806166143305738,
+      "wilson_95": [
+        0.2659844431642984,
+        0.2957294187116036
+      ]
+    },
+    "10": {
+      "rows": 3456,
+      "geometry_evaluable_rows": 3456,
+      "off_frame_rows": 997,
+      "off_frame_fraction": 0.2884837962962963,
+      "wilson_95": [
+        0.2736204261542033,
+        0.3038168589350589
+      ]
+    }
+  }
+}
