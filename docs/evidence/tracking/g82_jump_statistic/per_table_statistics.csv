@@ -1,0 +1,3 @@
+table,sport,source,rows,player_rows,frames,steps,sampling_stride_frames_modal,current_jump_p95_ft,jump_max_ft,oversized_10_29_count,oversized_above_p95_count,oversized_above_p95_fraction,row_diffs_gap_gt_stride_count,row_diffs_gap_gt_stride_fraction,max_frame_gap,gap_normalized_p95_ft_per_stride,gap_normalized_max_ft_per_stride
+tennis_09_retained,tennis,data/tracking/G83_tennis_09/tracking_data.csv,87,76,38,74,2,1.6375454996801166,2.318213824656639,0,0,,0,0.0,2,1.6375454996801166,2.318213824656639
+basketball_0022501165,basketball,data/tracking/0022501165/tracking_data.csv,35198,35198,5954,35188,3,2.160133612623942,10.207962578301315,16,16,1.0,4812,0.1367511651699443,1188,1.6807632194329676,10.207962578301315

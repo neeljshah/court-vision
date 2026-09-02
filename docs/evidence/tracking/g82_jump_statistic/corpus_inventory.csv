@@ -1,0 +1,3 @@
+table,sport,retained_source,physical_feet_rows,measurable_player_steps,reason_in_scope
+tennis_09_retained,tennis,data/tracking/G83_tennis_09/tracking_data.csv,yes,74,only locally retained tennis court_feet table with player jump rows
+basketball_0022501165,basketball,data/tracking/0022501165/tracking_data.csv,yes,35188,real other-sport contrast using its retained ft_x/ft_y player coordinates
