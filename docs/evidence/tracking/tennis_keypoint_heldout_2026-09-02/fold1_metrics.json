@@ -1,0 +1,12 @@
+{
+  "pck_at_7": 0.0354737862944603,
+  "median_px": 17.474897384643555,
+  "frames_ge_4_in_7": 0.0,
+  "fold": 1,
+  "held_out": "tennis10",
+  "raw_rows": 2209,
+  "unique_rows": 2013,
+  "duplicates_dropped": 196,
+  "train_frames": 1419,
+  "test_frames": 594
+}
