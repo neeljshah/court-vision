@@ -161,3 +161,30 @@ wins. The pod remains as S16b left it:
   by `test_legacy_path_keeps_the_matrix_and_the_sleep_default` and
   `scripts/platformkit/test_foundry_runner.py`, both of which stub `build_minutes_matrix`; the real
   minutes matrix was not rebuilt.
+
+## Verifier pod step (orchestrator, 2026-09-03 ~18:10-18:30Z)
+
+- Deployed foundry_runner.py, results_db.py, screen_predictor.py (md5 parity 3/3), then two verifier commits:
+  screen_predictor.corpus_states honours FOUNDRY_PORTABLE_CORPUS (07affe55f) and load_gate_corpus(portable=None)
+  reads the env flag so close_join's own loads stop refusing on a pod host.
+- The pod lacked every domain as-of source the real predictor reads: nba games.parquet, tennis odds/matches/
+  wta_matches, then 363 FileNotFound screen_failed per pass. Shipped 127 top-level parquet under data/domains/{
+  basketball_nba,mlb,soccer,tennis} + data/cache/pit (76 MB, espn_* excluded per S62) and the 4 S68 corpora +
+  sidecars (the pod soccer sidecar was pre-S68 and refused once its sources' mtimes changed). Filed as S78.
+- Runner 231346 killed (EXITED); relaunched as 254284: FOUNDRY_PORTABLE_CORPUS=1, --sport mlb,nba,soccer,tennis
+  --predictor real, log /workspace/foundry_runner_s75b.log. Landmine: a /proc kill loop matched the ssh shell
+  itself once (self-match); the relaunch scan excludes $$.
+- Read-back (rows with run_at >= 2026-09-02T18:12:02Z, the first own-sport row):
+
+| corpus | corpus_sha | T0 | T1 |
+|---|---|---|---|
+| mlb | ad743c92 | 73 (32 UNCOVERED) | 39 |
+| nba | 1a32541d | 407 (119 UNCOVERED) | 283 |
+| soccer | 5c8d6397 | 157 | 157 |
+| tennis | c8dde4f3 | 347 (137 UNCOVERED) | 205 |
+
+  T1 own-sport share 684 / 684 = 100 pct (one distinct corpus_sha per sport; the old 81a66c86 soccer sha appears
+  only before the restart). charges 0, k_global rows 0, T2/T3 rows 0, backtest_fwer.jsonl and data/registry absent
+  on the pod. ScreenRefused rows are leaky/unavailable refusals on their merits. All screens are non-findings.
+- NOT VERIFIED: a full hour of the new runner; the S66 lease/reap path; whether the shipped as-of tables are the
+  same vintage the local screens used (shipped from this box today); corpus_cache.py is 487 LOC (pre-existing).
