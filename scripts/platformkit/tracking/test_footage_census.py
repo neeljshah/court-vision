@@ -1,7 +1,7 @@
 import numpy as np
 
 from scripts.platformkit.tracking.footage_census import (
-    sport_of, verdict_of, _edge_density, discover_clips,
+    sport_of, verdict_of, _edge_density, discover_clips, run_census,
 )
 
 
@@ -34,3 +34,17 @@ def test_discover_clips_skips_fragments_and_quarantined(tmp_path):
     clips = discover_clips([tmp_path])
 
     assert [c.name for c in clips] == ["football__good.mp4"]
+
+
+def test_census_marks_later_matching_content_as_duplicate_variant(tmp_path):
+    first = tmp_path / "football__first.mp4"
+    second = tmp_path / "football__second.mp4"
+    first.write_bytes(b"same video prefix")
+    second.write_bytes(b"same video prefix")
+
+    rows = run_census([tmp_path], tmp_path / "out", do_quarantine=False)
+
+    assert rows[0].content_md5_prefix64m
+    assert rows[1].verdict == "DUPLICATE_VARIANT"
+    assert rows[1].duplicate_variant_of == str(first)
+    assert second.exists()

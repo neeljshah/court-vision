@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -53,6 +54,9 @@ _FORMAT_PART = re.compile(r"\.f\d{2,4}\.")
 USABLE_SURFACE_FRAC = 0.5
 GRAPHIC_SUSPECT_FRAC = 0.5
 GRAPHIC_EDGE_FLOOR = 0.02
+# This intentionally hashes a bounded prefix rather than whole multi-GB videos.
+# It is a duplicate-screening fingerprint, not a cryptographic file identity.
+CONTENT_HASH_BYTES = 64 * 1024 * 1024
 
 
 @dataclass(frozen=True)
@@ -64,6 +68,8 @@ class CensusRow:
     surface_frac: float
     graphic_frac: float
     verdict: str
+    content_md5_prefix64m: str
+    duplicate_variant_of: str
 
 
 # Checked longest-first so "ncaa_basketball_x" doesn't split on its own
@@ -100,6 +106,20 @@ def discover_clips(dirs: list[Path]) -> list[Path]:
     return clips
 
 
+def content_md5_prefix64m(video: Path) -> str:
+    """Return the MD5 of at most the first 64 MiB of a video file."""
+    digest = hashlib.md5()
+    remaining = CONTENT_HASH_BYTES
+    with video.open("rb") as handle:
+        while remaining:
+            block = handle.read(min(1024 * 1024, remaining))
+            if not block:
+                break
+            digest.update(block)
+            remaining -= len(block)
+    return digest.hexdigest()
+
+
 def _edge_density(frame: np.ndarray) -> float:
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     edges = cv2.Canny(gray, 50, 150)
@@ -132,7 +152,7 @@ def verdict_of(surface_frac: float, graphic_frac: float) -> str:
     return "USABLE"
 
 
-def census_clip(video: Path, sample_count: int = SAMPLE_COUNT
+def census_clip(video: Path, content_hash: str, sample_count: int = SAMPLE_COUNT
                ) -> tuple[CensusRow, list[np.ndarray]]:
     """Score one clip. Returns the row plus its sampled frames for rendering."""
     sport = sport_of(video)
@@ -145,7 +165,7 @@ def census_clip(video: Path, sample_count: int = SAMPLE_COUNT
     graphic_frac = sum(graphics) / len(graphics)
     row = CensusRow(video.stem, sport, str(video), len(frames),
                     round(surface_frac, 3), round(graphic_frac, 3),
-                    verdict_of(surface_frac, graphic_frac))
+                    verdict_of(surface_frac, graphic_frac), content_hash, "")
     return row, frames
 
 
@@ -161,22 +181,40 @@ def write_csv(rows: list[CensusRow], path: Path) -> None:
     with path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
         writer.writerow(["clip_id", "sport", "path", "samples", "surface_frac",
-                         "graphic_frac", "verdict"])
+                         "graphic_frac", "verdict", "content_md5_prefix64m",
+                         "duplicate_variant_of"])
         for row in rows:
             writer.writerow([row.clip_id, row.sport, row.path, row.samples,
-                             row.surface_frac, row.graphic_frac, row.verdict])
+                             row.surface_frac, row.graphic_frac, row.verdict,
+                             row.content_md5_prefix64m, row.duplicate_variant_of])
 
 
 def run_census(dirs: list[Path], out_dir: Path, sample_count: int = SAMPLE_COUNT,
               do_quarantine: bool = True) -> list[CensusRow]:
     """Census every discovered clip; quarantine JUNK; render SUSPECT frames."""
     rows: list[CensusRow] = []
+    first_path_by_hash: dict[str, str] = {}
     for video in discover_clips(dirs):
         try:
-            row, frames = census_clip(video, sample_count)
+            content_hash = content_md5_prefix64m(video)
+        except OSError as exc:
+            rows.append(CensusRow(video.stem, sport_of(video), str(video), 0,
+                                  0.0, 0.0, "SUSPECT:unreadable(%s)" % str(exc)[:60],
+                                  "", ""))
+            continue
+        original = first_path_by_hash.get(content_hash)
+        if original is not None:
+            rows.append(CensusRow(video.stem, sport_of(video), str(video), 0,
+                                  0.0, 0.0, "DUPLICATE_VARIANT", content_hash,
+                                  original))
+            continue
+        first_path_by_hash[content_hash] = str(video)
+        try:
+            row, frames = census_clip(video, content_hash, sample_count)
         except (cv2.error, OSError, ValueError) as exc:
             rows.append(CensusRow(video.stem, sport_of(video), str(video), 0,
-                                  0.0, 0.0, "SUSPECT:unreadable(%s)" % str(exc)[:60]))
+                                  0.0, 0.0, "SUSPECT:unreadable(%s)" % str(exc)[:60],
+                                  content_hash, ""))
             continue
         rows.append(row)
         if row.verdict == "SUSPECT":
@@ -200,13 +238,14 @@ def main() -> int:
     counts: dict[str, dict[str, int]] = {}
     for row in rows:
         verdict = row.verdict.split(":")[0]
-        counts.setdefault(row.sport, {"USABLE": 0, "SUSPECT": 0, "JUNK": 0})
+        counts.setdefault(row.sport, {"USABLE": 0, "SUSPECT": 0, "JUNK": 0,
+                                      "DUPLICATE_VARIANT": 0})
         counts[row.sport][verdict] = counts[row.sport].get(verdict, 0) + 1
     for sport, tally in sorted(counts.items()):
         total = sum(tally.values())
-        print("%s: usable=%d suspect=%d junk=%d of %d" %
+        print("%s: usable=%d suspect=%d junk=%d duplicate_variant=%d of %d" %
               (sport, tally.get("USABLE", 0), tally.get("SUSPECT", 0),
-               tally.get("JUNK", 0), total))
+               tally.get("JUNK", 0), tally.get("DUPLICATE_VARIANT", 0), total))
     return 0
 
 
