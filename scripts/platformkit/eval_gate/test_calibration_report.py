@@ -3,13 +3,19 @@
 Per-file test only:
 `python -m pytest scripts/platformkit/eval_gate/test_calibration_report.py -q`
 """
+import json
+from pathlib import Path
+
 import numpy as np
+import pytest
 
 from scripts.platformkit.calib_decomp import decompose
 from scripts.platformkit.eval_gate.calibration_report import (
     PREREG_SEAL, _bin_table, _from_bins, build_report,
 )
 from scripts.platformkit.eval_gate.scoring import ece
+
+_REPO = Path(__file__).resolve().parents[3]
 
 
 def _flattening_records(n: int = 400) -> list[dict]:
@@ -96,3 +102,83 @@ def test_every_report_names_its_prereg_and_seal() -> None:
         assert report["prereg_seal_sha256"] == PREREG_SEAL
         assert "np.linspace" in report["bin_edge_rule"]
         assert report["order_basis"] in ("POSITIONAL-ORDER", "event_date")
+
+
+# --------------------------------------------------------------------------- #
+# S50: per-corpus_unit chronological walk (opt-in; default OFF)
+# --------------------------------------------------------------------------- #
+
+def _unit_records(unit: str, n: int = 300, *, descending: bool = False) -> list[dict]:
+    """One unit's rows, every probability distinct so regime terciles are stable.
+
+    ``descending`` hands the rows in REVERSE date order, so the walk is only
+    chronological if ``order_by`` actually sorts them.
+    """
+    rng = np.random.default_rng(hash(unit) % 2**32)
+    probs = list(np.round(np.linspace(0.02, 0.98, n) + rng.uniform(-0.004, 0.004, n), 6))
+    days = list(range(n))
+    if descending:
+        probs, days = probs[::-1], days[::-1]
+    return [
+        {"event_id": "%s-%03d" % (unit, day), "corpus_unit": unit,
+         "event_date": "2020-01-01T%06d" % day,
+         "p_base": float(prob), "y": float(rng.random() < prob)}
+        for prob, day in zip(probs, days)
+    ]
+
+
+def _per_unit(report: dict) -> dict:
+    return {row["corpus_unit"]: row for row in report["by_corpus_unit"]}
+
+
+def test_per_unit_walk_is_independent_of_the_order_the_units_are_concatenated_in():
+    """S50's whole point: no isotonic history may cross a corpus_unit boundary."""
+    unit_a, unit_b = _unit_records("A"), _unit_records("B", descending=True)
+    kwargs = dict(min_n=200, order_by="event_date", unit_col="corpus_unit")
+
+    forward = build_report(unit_a + unit_b, "synthetic", **kwargs)
+    reversed_units = build_report(unit_b + unit_a, "synthetic", **kwargs)
+    alone = {"A": build_report(unit_a, "synthetic", **kwargs),
+             "B": build_report(unit_b, "synthetic", **kwargs)}
+
+    assert set(_per_unit(forward)) == {"A", "B"}
+    for unit in ("A", "B"):
+        for key in ("n", "date_min", "date_max", "ece_before", "ece_after"):
+            assert _per_unit(forward)[unit][key] == _per_unit(reversed_units)[unit][key]
+        # ... and each unit reads exactly what it reads scored on its own.
+        assert abs(_per_unit(forward)[unit]["ece_after"] - alone[unit]["ece_after"]) < 1e-12
+        assert abs(_per_unit(forward)[unit]["ece_before"] - alone[unit]["ece_before"]) < 1e-12
+
+
+def test_the_sort_is_reported_and_actually_moves_a_reversed_unit():
+    kwargs = dict(min_n=200, order_by="event_date", unit_col="corpus_unit")
+    records = _unit_records("A") + _unit_records("B", descending=True)
+
+    walked = build_report(records, "synthetic", **kwargs)
+    positional = build_report(records, "synthetic", min_n=200)
+
+    assert walked["order_basis"] == "event_date"
+    assert walked["walk_unit_col"] == "corpus_unit"
+    assert walked["walk_sort_within_unit_is_noop"] is False   # unit B was reversed
+    assert walked["walk_partition_is_identity"] is False      # so is the partition
+    assert walked["ece_after"] != positional["ece_after"]     # not cosmetic
+    # Default OFF: an untouched caller reads a positional walk and no unit block.
+    assert positional["order_basis"] == "POSITIONAL-ORDER"
+    assert positional["by_corpus_unit"] is None
+
+
+def test_the_default_report_still_reproduces_the_landed_nba_artifact():
+    """B10 / Q3: the opt-in must not move the bar the S05b landing published."""
+    from scripts.platformkit.combo.corpus_cache import load_gate_corpus
+
+    landed_path = _REPO / "docs" / "evidence" / "calibration" / "nba_reliability_2026-09-03.json"
+    if not landed_path.exists() or not (_REPO / "data" / "cache" / "combo").exists():
+        pytest.skip("gate corpus cache or landed artifact absent (clean clone)")
+    landed = json.loads(landed_path.read_text(encoding="utf-8"))
+    report = build_report(load_gate_corpus("nba"), "nba")
+
+    for key in ("scored_rows", "base_rate", "ece_before", "ece_after", "verdict",
+                "sharpness_before", "sharpness_after", "order_basis"):
+        assert report[key] == landed[key], key
+    assert report["murphy_after"] == landed["murphy_after"]
+    assert report["reliability_bins_after"] == landed["reliability_bins_after"]

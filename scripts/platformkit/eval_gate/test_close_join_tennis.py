@@ -5,8 +5,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from scripts.platformkit.combo.corpus_cache import load_gate_corpus
 from scripts.platformkit.eval_gate.close_join import (
-    JoinSpec, close_column, coverage_report,
+    JoinSpec, close_column, coverage_report, gate_corpus_states,
 )
 
 _SPEC = JoinSpec(
@@ -96,6 +97,31 @@ def test_event_uid_key_is_opt_in_and_removes_the_ambiguous_drop():
         assert block["brier_devig_close"] < block["brier_p_base"]
     assert opt_in["denominator"] == default["denominator"] == 41886
     assert opt_in["joined"] - default["joined"] == 93
+
+
+def test_states_are_monotone_in_event_date_within_each_corpus_unit():
+    """S50: the tennis states pass is already chronological, ATP and WTA both.
+
+    `gate_corpus_states` sorts globally by the spine `date`; this pins BOTH facts
+    the S50 row needs -- that spine date IS the corpus `event_date` on every
+    emitted state, and that the emitted order never steps backwards inside a
+    corpus_unit. The gate corpus's own row order does step backwards at the
+    ATP->WTA boundary (S44); the states do not, so no per-unit re-ordering was
+    needed here.
+    """
+    states = pd.DataFrame(gate_corpus_states("tennis", "2014-01-01", "2026-12-31"))
+    corpus = load_gate_corpus("tennis")[["event_id", "corpus_unit", "event_date"]].copy()
+    corpus["event_id"] = corpus["event_id"].astype(str)
+    merged = states.merge(corpus, left_on="game_id", right_on="event_id",
+                          how="left", validate="one_to_one")
+
+    assert len(merged) == 33685 and merged["corpus_unit"].notna().all()
+    event_date = pd.to_datetime(merged["event_date"]).dt.date.astype(str)
+    assert int((event_date == merged["game_date"]).sum()) == len(merged)
+    assert set(merged["corpus_unit"]) == {"ATP", "WTA"}
+    for unit, block in merged.groupby("corpus_unit", sort=True):
+        assert block["game_date"].is_monotonic_increasing, unit
+    assert (merged["vintage"] == "SYNTHETIC").all()          # S34, unmoved
 
 
 def test_unknown_join_key_raises_rather_than_silently_falling_back():

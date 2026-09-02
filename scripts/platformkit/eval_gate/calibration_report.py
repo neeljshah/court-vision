@@ -7,12 +7,9 @@ ONE BIN-EDGE RULE (the attempt-1 defect, register gap S42): the published bin
 table and the summary ECE / Murphy figures are produced from the SAME equal-width
 `np.linspace(0, 1, bins + 1)` edges that `eval_gate.scoring.ece` and
 `calib_decomp.decompose` bin by -- half-open [lo, hi) with a closed last bin.
-Attempt 1 published `wp_diagnostics.reliability`'s `min(9, int(p * 10))` table
-beside those summaries, and the two disagree on any prediction landing exactly on
-the 0.1 grid, so the artifact did not reproduce itself.  `_bin_table` below is
-that one rule, and `build_report` MEASURES the reproduction: it recomputes ECE
-and both fitted Murphy terms from the published bins and publishes the largest
-absolute disagreement in `reproduction_max_abs_diff`.
+Attempt 1 published a second, disagreeing table beside those summaries, so the
+artifact did not reproduce itself.  `_bin_table` below is that one rule, and
+`build_report` MEASURES the reproduction into `reproduction_max_abs_diff`.
 
 Calibration, not edge.  Nothing here is charged, promoted or served.
 """
@@ -20,6 +17,7 @@ from __future__ import annotations
 
 import json
 import math
+import sys
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -114,6 +112,44 @@ def _ticks(probs: Sequence[float], outcomes: Sequence[float],
     ]
 
 
+def _unit_groups(rows: Sequence[Mapping[str, Any]], unit_col: str | None,
+                 order_by: str | None) -> tuple[list[tuple[str, list[int]]], bool, bool]:
+    """Positions per corpus_unit, sorted within the unit by ``order_by`` (S50).
+
+    Returns (groups, sort_within_unit_is_noop, partition_is_identity) -- both
+    flags published so a reader sees whether the walk order actually moved.
+    ponytail: the sort key is ``str(value)``; every gate corpus stores one
+    ISO-ordered date dtype per column, so lexical order IS date order there.
+    """
+    units: dict[str, list[int]] = {}
+    for index, row in enumerate(rows):
+        units.setdefault(str(row.get(unit_col)) if unit_col else "ALL", []).append(index)
+    groups: list[tuple[str, list[int]]] = []
+    sort_noop = True
+    for key, positions in units.items():
+        ordered = positions
+        if order_by and any(order_by in rows[index] for index in positions):
+            ordered = sorted(positions, key=lambda index: str(rows[index].get(order_by)))
+            sort_noop = sort_noop and ordered == positions
+        groups.append((key, ordered))
+    walked = [index for _, positions in groups for index in positions]
+    return groups, sort_noop, walked == list(range(len(rows)))
+
+
+def _unit_summary(key: str, positions: list[int], rows: Sequence[Mapping[str, Any]],
+                  order_by: str | None, raw: list[float], calibrated: list[float],
+                  outcomes: list[float], bins: int) -> dict[str, Any]:
+    dates = [str(rows[index].get(order_by)) for index in positions] if order_by else []
+    y = [outcomes[index] for index in positions]
+    return {
+        "corpus_unit": key, "n": len(positions),
+        "date_min": min(dates) if dates else None,
+        "date_max": max(dates) if dates else None,
+        "ece_before": ece([raw[index] for index in positions], y, bins=bins),
+        "ece_after": ece([calibrated[index] for index in positions], y, bins=bins),
+    }
+
+
 def _oof_per_regime(
     probs: list[float], outcomes: list[float], keys: list[str], min_n: int,
 ) -> list[float]:
@@ -142,15 +178,17 @@ def _max_loser_summary(ticks: list[dict[str, Any]]) -> dict[str, Any]:
     return {key: result[key] for key in ("quantiles", "above_0_8", "above_0_9")}
 
 
-def _stamp(report: dict[str, Any], sport: str) -> dict[str, Any]:
+def _stamp(report: dict[str, Any], sport: str,
+           order_basis: str = "POSITIONAL-ORDER") -> dict[str, Any]:
     report["prereg_path"] = PREREG_PATH
     report["prereg_seal_sha256"] = PREREG_SEAL
     report["bin_edge_rule"] = BIN_EDGE_RULE
     report["reproduction"] = REPRODUCTION
     # walk_forward_recalibrate consumes ROW ORDER, never a date, so the scoring
-    # order is positional whatever the corpus carries (gap S44). The date column
-    # is reported separately so the two facts are never conflated.
-    report["order_basis"] = "POSITIONAL-ORDER"
+    # order is positional UNLESS build_report sorted the rows itself (S44
+    # surfaced the column, S50 walks it). `corpus_date_column` -- what the corpus
+    # CARRIES -- stays a separate key so the two facts are never conflated.
+    report["order_basis"] = order_basis
     try:
         basis = freshness_report(sport)["order_basis"]
     except ValueError:
@@ -170,13 +208,26 @@ def _no_metrics(sport: str, status: str, **extra: Any) -> dict[str, Any]:
         "murphy_before": None, "murphy_after": None,
         "sharpness_before": None, "sharpness_after": None,
         "reproduction_max_abs_diff": None,
+        "walk_unit_col": None, "walk_sort_within_unit_is_noop": None,
+        "walk_partition_is_identity": None, "by_corpus_unit": None,
     }
     report.update(extra)
     return _stamp(report, sport)
 
 
-def build_report(records: Any, sport: str, *, bins: int = 10, min_n: int = 200) -> dict:
-    """Build one sport's evidence report from every finite/binary corpus row."""
+def build_report(records: Any, sport: str, *, bins: int = 10, min_n: int = 200,
+                 order_by: str | None = None, unit_col: str | None = None) -> dict:
+    """Build one sport's evidence report from every finite/binary corpus row.
+
+    ``order_by`` / ``unit_col`` (gap S50) are OPT-IN and default OFF: given both,
+    rows are partitioned by ``unit_col``, stable-sorted within each unit by
+    ``order_by`` and recalibrated PER UNIT, so no isotonic history crosses a
+    corpus_unit boundary. Bins/ECE/Murphy/sharpness aggregate over the union
+    unchanged (all four are order-free); per-unit ECE and date ranges are added.
+    Default OFF because that split is NOT a no-op on the three already-
+    chronological corpora -- it withholds the first unit's history from the
+    second, and splits soccer's six interleaved divisions. Deltas: S50 memo.
+    """
     rows = _as_records(records)
     prediction_column = _prediction_column(rows)
     usable: list[dict[str, Any]] = []
@@ -203,7 +254,16 @@ def build_report(records: Any, sport: str, *, bins: int = 10, min_n: int = 200) 
     raw = [float(row["model_prob"]) for row in usable]
     outcomes = [float(row["y"]) for row in usable]
     keys = buckets(usable)
-    calibrated = _oof_per_regime(raw, outcomes, keys, min_n)
+    # Default OFF collapses to ONE group in row order, i.e. the pre-S50 call.
+    walked = bool(order_by and unit_col)
+    groups, sort_noop, identity = _unit_groups(
+        usable, unit_col if walked else None, order_by if walked else None)
+    calibrated = [0.0] * len(usable)
+    for _, positions in groups:
+        local = _oof_per_regime([raw[i] for i in positions], [outcomes[i] for i in positions],
+                                [keys[i] for i in positions], min_n)
+        for index, value in zip(positions, local):
+            calibrated[index] = float(value)
     raw_ticks = _ticks(raw, outcomes, usable)
     murphy_before = decompose(raw, outcomes, bins=bins)
     murphy_after = decompose(calibrated, outcomes, bins=bins)
@@ -254,7 +314,16 @@ def build_report(records: Any, sport: str, *, bins: int = 10, min_n: int = 200) 
         "sharpness_after": sharpness(calibrated),
         "reproduction_max_abs_diff": max(checks),
         "verdict": "IMPROVES" if improves else "FLATTENED",
-    }, sport)
+        # S50: what the walk actually did, never inferred from the column's presence.
+        "walk_unit_col": unit_col if walked else None,
+        "walk_sort_within_unit_is_noop": sort_noop if walked else None,
+        "walk_partition_is_identity": identity if walked else None,
+        "by_corpus_unit": [
+            _unit_summary(key, positions, usable, order_by if walked else None,
+                          raw, calibrated, outcomes, bins)
+            for key, positions in groups
+        ] if walked else None,
+    }, sport, "event_date" if walked else "POSITIONAL-ORDER")
 
 
 def _unavailable(sport: str, error: Exception) -> dict[str, Any]:
@@ -262,15 +331,22 @@ def _unavailable(sport: str, error: Exception) -> dict[str, Any]:
     return _no_metrics(sport, "INPUT_UNAVAILABLE", reason=str(error))
 
 
-def main() -> int:
-    """Write one dated JSON calibration artifact for every gate corpus."""
+def main(argv: Sequence[str] | None = None) -> int:
+    """Write one dated JSON calibration artifact for every gate corpus.
+
+    `--per-unit` (S50) writes the SEPARATE `*_reliability_per_unit_*.json` family
+    instead -- a different measurement, so it never overwrites the S05b files.
+    """
+    per_unit = "--per-unit" in (list(argv) if argv is not None else sys.argv[1:])
+    walk = {"order_by": "event_date", "unit_col": "corpus_unit"} if per_unit else {}
+    suffix = "_per_unit" if per_unit else ""
     _OUTPUT.mkdir(parents=True, exist_ok=True)
     for sport in SPORTS:
         try:
-            report = build_report(load_gate_corpus(sport), sport)
+            report = build_report(load_gate_corpus(sport), sport, **walk)
         except StaleCorpusError as error:
             report = _unavailable(sport, error)
-        output = _OUTPUT / f"{sport}_reliability_2026-09-03.json"
+        output = _OUTPUT / f"{sport}_reliability{suffix}_2026-09-03.json"
         output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         print("%s: %s rows; prediction=%s; verdict=%s; reproduction_max_abs_diff=%s" % (
             sport, report["scored_rows"], report["prediction_column"],
