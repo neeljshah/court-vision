@@ -1,0 +1,9 @@
+{
+  "seed": 20260902,
+  "sample_size": 210,
+  "per_range_count": 14,
+  "per_range_proxy_positive": 8,
+  "per_range_baseline": 6,
+  "source_csv": "docs/evidence/tracking/tennis_player_select_limit_2026-09-04/candidates.csv",
+  "proxy_definition": "same candidate_index at source frames three apart with Euclidean foot-point distance > 8 ft; not a selector endpoint identity"
+}
