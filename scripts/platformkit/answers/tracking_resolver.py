@@ -39,7 +39,7 @@ CATEGORY = "tracking_quality"
 GAME_BAR = 10
 
 CAVEAT = (
-    "SELF-CONSISTENCY health check, not accuracy: coverage/ball_valid/jump_p95/oob "
+    "SELF-CONSISTENCY health check, not accuracy: coverage/ball_valid/jump_max/oob "
     "are internal plausibility metrics scored against the versioned per-sport "
     "thresholds in scripts/platformkit/tracking_harness.py (SPORTS). No labeled "
     "ground truth is involved -- these numbers support no accuracy claim and no "

@@ -23,8 +23,8 @@ from scripts.platformkit.tracking_quality_scan import scan
 
 
 VIDEO_SUFFIXES = {".avi", ".mkv", ".mov", ".mp4", ".webm"}
-LOWER_IS_BETTER = {"oob_pct", "jump_p95"}
-FIELDS = ("rows", "coverage_pct", "oob_pct", "jump_p95", "ball_valid_pct",
+LOWER_IS_BETTER = {"oob_pct", "jump_max"}
+FIELDS = ("rows", "coverage_pct", "oob_pct", "jump_max", "ball_valid_pct",
           "median_track_len")
 
 
@@ -49,7 +49,8 @@ def _report_row(game_id: str, report: Mapping[str, Any], quality: Mapping[str, A
     return {
         "game_id": game_id, "status": "completed", "rows": int(quality.get("rows", 0)),
         "coverage_pct": report.get("coverage_pct"), "oob_pct": report.get("oob_pct"),
-        "jump_p95": report.get("jump_p95"), "ball_valid_pct": report.get("ball_valid_pct"),
+        "jump_p95": report.get("jump_p95"), "jump_max": report.get("jump_max"),
+        "ball_valid_pct": report.get("ball_valid_pct"),
         "median_track_len": quality.get("median_track_frames"),
         "passed": bool(report.get("passed")), "failures": list(report.get("failures", [])),
     }
@@ -100,7 +101,7 @@ def _format(value: Any) -> str:
 
 def render_table(results: list[Mapping[str, Any]], requested: int, capped: int) -> str:
     """Render every requested game outcome as an ASCII-only table."""
-    headers = ("GAME", "ROWS", "COVER", "OOB", "JUMP95", "BALL", "MEDLEN", "VERDICT")
+    headers = ("GAME", "ROWS", "COVER", "OOB", "JUMPMAX", "BALL", "MEDLEN", "VERDICT")
     lines = ["%-18s %6s %6s %6s %7s %6s %6s %s" % headers,
              "-" * 92]
     for row in results:
@@ -111,7 +112,7 @@ def render_table(results: list[Mapping[str, Any]], requested: int, capped: int) 
             verdict = "PASS" if row["passed"] else "FAIL: {}".format("; ".join(row["failures"]))
             values = (row["game_id"][:18], _format(row["rows"]),
                       _format(row["coverage_pct"]), _format(row["oob_pct"]),
-                      _format(row["jump_p95"]), _format(row["ball_valid_pct"]),
+                      _format(_metric_value(row, "jump_max")), _format(row["ball_valid_pct"]),
                       _format(row["median_track_len"]), verdict)
         lines.append("%-18s %6s %6s %6s %7s %6s %6s %s" % values)
     lines.append("requested={} completed={} incomplete={} capped={}".format(
@@ -130,6 +131,13 @@ def _load_baseline(path: Path) -> dict[str, Mapping[str, Any]]:
     return {str(row["game_id"]): row for row in rows if isinstance(row, dict) and "game_id" in row}
 
 
+def _metric_value(row: Mapping[str, Any], field: str) -> Any:
+    """Read the current gate metric, accepting pre-G88 baseline rows."""
+    if field == "jump_max" and field not in row:
+        return row.get("jump_p95")
+    return row.get(field)
+
+
 def baseline_diff(baseline: Mapping[str, Mapping[str, Any]],
                   results: list[Mapping[str, Any]]) -> list[str]:
     """Name each game and metric that regressed; absent baselines remain explicit."""
@@ -143,7 +151,7 @@ def baseline_diff(baseline: Mapping[str, Mapping[str, Any]],
         if before.get("status") == "completed" and current.get("status") != "completed":
             worse.append("status {}->{}".format(before["status"], current["status"]))
         for field in FIELDS:
-            old, new = before.get(field), current.get(field)
+            old, new = _metric_value(before, field), _metric_value(current, field)
             if _number(old) and _number(new):
                 regressed = new > old if field in LOWER_IS_BETTER else new < old
                 if regressed:

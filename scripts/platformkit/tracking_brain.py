@@ -13,11 +13,11 @@ from scripts.platformkit.tracking_harness import SPORTS
 
 
 REPORTS_DIR = Path("data/tracking_reports")
-METRICS = ("coverage", "ball_valid", "jump_p95", "oob")
+METRICS = ("coverage", "ball_valid", "jump_max", "oob")
 RULES = {
     "coverage": "detector/coverage: check court-view segmentation + detector confidence",
     "ball_valid": "ball detector upgrade (TrackNet-class)",
-    "jump_p95": "homography stability: recalibrate/keyframe cadence",
+    "jump_max": "homography stability: recalibrate/keyframe cadence",
     "oob": "calibration bounds/projection bug",
 }
 
@@ -39,8 +39,13 @@ def _load_reports(sport: str, reports_dir: Path) -> list[dict[str, Any]]:
 
 
 def _metric_value(report: dict[str, Any], metric: str) -> float | None:
-    key = f"{metric}_pct" if metric in ("coverage", "ball_valid", "oob") else metric
-    value = report.get(key)
+    if metric == "jump_max":
+        # G90: old report rows retain only the predecessor field. A current
+        # row's explicit null is meaningful and must not be masked by p95.
+        value = report["jump_max"] if "jump_max" in report else report.get("jump_p95")
+    else:
+        key = f"{metric}_pct" if metric in ("coverage", "ball_valid", "oob") else metric
+        value = report.get(key)
     return float(value) if isinstance(value, (int, float)) else None
 
 
