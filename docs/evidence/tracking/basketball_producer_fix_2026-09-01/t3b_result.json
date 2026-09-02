@@ -1,0 +1,319 @@
+[
+  {
+    "game": "ncaa_basketball_IB-_u4gW3ds",
+    "sport": "basketball",
+    "rows_shipped": 3061,
+    "x_equals_x_position": true,
+    "videos": [
+      "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+      "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4"
+    ],
+    "per_video": [
+      {
+        "video": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+        "resolution": "640x360",
+        "n_points_before": 3061,
+        "n_points_after": 3061,
+        "containment_before": 0.0,
+        "containment_after": 0.9533,
+        "verdict_before": "FAIL",
+        "verdict_after": "FAIL",
+        "max_x_before": 3396.0,
+        "max_y_before": 1350.0,
+        "max_x_after": 2483.4822000000004,
+        "max_y_after": 668.7019,
+        "rung_before": "declared image_px (corpus lane)",
+        "rung_after": "declared image_px (corpus lane)",
+        "harness_failures_after": [
+          "coordinate_contract: rows declare coordinate_space image_px not accepted for sport basketball; a preserved detection corpus is never a scorable game"
+        ]
+      },
+      {
+        "video": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+        "resolution": "1920x1080",
+        "n_points_before": 3061,
+        "n_points_after": 3061,
+        "containment_before": 0.0947,
+        "containment_after": 0.9827,
+        "verdict_before": "FAIL",
+        "verdict_after": "FAIL",
+        "max_x_before": 3396.0,
+        "max_y_before": 1350.0,
+        "max_x_after": 2483.4822000000004,
+        "max_y_after": 668.7019,
+        "rung_before": "declared image_px (corpus lane)",
+        "rung_after": "declared image_px (corpus lane)",
+        "harness_failures_after": [
+          "coordinate_contract: rows declare coordinate_space image_px not accepted for sport basketball; a preserved detection corpus is never a scorable game"
+        ]
+      }
+    ],
+    "out_csv": "/tmp/t3b_reemit/ncaa_basketball_IB-_u4gW3ds/tracking_data.csv",
+    "rows_out": 3061
+  },
+  {
+    "game": "ncaa_basketball_sRtHQbywiTE",
+    "sport": "basketball",
+    "rows_shipped": 2234,
+    "x_equals_x_position": true,
+    "videos": [
+      "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4"
+    ],
+    "per_video": [
+      {
+        "video": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+        "resolution": "1280x720",
+        "n_points_before": 2234,
+        "n_points_after": 2234,
+        "containment_before": 0.8098,
+        "containment_after": 0.9749,
+        "verdict_before": "FAIL",
+        "verdict_after": "FAIL",
+        "max_x_before": 461.0,
+        "max_y_before": 1480.0,
+        "max_x_after": 3374.1611,
+        "max_y_after": 675.0,
+        "rung_before": "declared image_px (corpus lane)",
+        "rung_after": "declared image_px (corpus lane)",
+        "harness_failures_after": [
+          "coordinate_contract: rows declare coordinate_space image_px not accepted for sport basketball; a preserved detection corpus is never a scorable game"
+        ]
+      }
+    ],
+    "out_csv": "/tmp/t3b_reemit/ncaa_basketball_sRtHQbywiTE/tracking_data.csv",
+    "rows_out": 2234
+  },
+  {
+    "game": "ncaa_basketball_tiUvyvWOCxo",
+    "sport": "basketball",
+    "rows_shipped": 4424,
+    "x_equals_x_position": true,
+    "videos": [
+      "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4"
+    ],
+    "per_video": [
+      {
+        "video": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+        "resolution": "1280x720",
+        "n_points_before": 4424,
+        "n_points_after": 4424,
+        "containment_before": 0.208,
+        "containment_after": 0.9424,
+        "verdict_before": "FAIL",
+        "verdict_after": "FAIL",
+        "max_x_before": 1465.0,
+        "max_y_before": 1710.0,
+        "max_x_after": 3229.4167500000003,
+        "max_y_after": 1309.1234,
+        "rung_before": "declared image_px (corpus lane)",
+        "rung_after": "image_px_containment",
+        "harness_failures_after": [
+          "coordinate_contract: image_px_containment: 0.9424 of 4424 declared image_px points lie inside the decoded frame, below 0.95; x/y are not source-image pixels"
+        ]
+      }
+    ],
+    "out_csv": "/tmp/t3b_reemit/ncaa_basketball_tiUvyvWOCxo/tracking_data.csv",
+    "rows_out": 4424
+  },
+  {
+    "game": "ncaa_basketball_zqBCKovJCQU",
+    "sport": "basketball",
+    "rows_shipped": 5303,
+    "x_equals_x_position": true,
+    "videos": [
+      "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4"
+    ],
+    "per_video": [
+      {
+        "video": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+        "resolution": "1920x1080",
+        "n_points_before": 5303,
+        "n_points_after": 5303,
+        "containment_before": 0.4848,
+        "containment_after": 0.937,
+        "verdict_before": "FAIL",
+        "verdict_after": "FAIL",
+        "max_x_before": 3171.0,
+        "max_y_before": 1239.0,
+        "max_x_after": 4775.5283500000005,
+        "max_y_after": 3592.0989,
+        "rung_before": "declared image_px (corpus lane)",
+        "rung_after": "image_px_containment",
+        "harness_failures_after": [
+          "coordinate_contract: image_px_containment: 0.9370 of 5303 declared image_px points lie inside the decoded frame, below 0.95; x/y are not source-image pixels"
+        ]
+      }
+    ],
+    "out_csv": "/tmp/t3b_reemit/ncaa_basketball_zqBCKovJCQU/tracking_data.csv",
+    "rows_out": 5303
+  },
+  {
+    "game": "wnba_01",
+    "sport": "wnba",
+    "rows_shipped": 4855,
+    "x_equals_x_position": true,
+    "videos": [
+      "wnba__wnba_01.mp4",
+      "wnba__wnba_01_1080p.mp4"
+    ],
+    "per_video": [
+      {
+        "video": "wnba__wnba_01.mp4",
+        "resolution": "1280x720",
+        "n_points_before": 4855,
+        "n_points_after": 4855,
+        "containment_before": 0.4363,
+        "containment_after": 0.9151,
+        "verdict_before": "FAIL",
+        "verdict_after": "FAIL",
+        "max_x_before": 1632.0,
+        "max_y_before": 1527.0,
+        "max_x_after": 5530.956,
+        "max_y_after": 2078.7458,
+        "rung_before": "declared image_px (corpus lane)",
+        "rung_after": "image_px_containment",
+        "harness_failures_after": [
+          "coordinate_contract: image_px_containment: 0.9151 of 4855 declared image_px points lie inside the decoded frame, below 0.95; x/y are not source-image pixels"
+        ]
+      },
+      {
+        "video": "wnba__wnba_01_1080p.mp4",
+        "resolution": "1920x1080",
+        "n_points_before": 4855,
+        "n_points_after": 4855,
+        "containment_before": 0.9061,
+        "containment_after": 0.9489,
+        "verdict_before": "FAIL",
+        "verdict_after": "FAIL",
+        "max_x_before": 1632.0,
+        "max_y_before": 1527.0,
+        "max_x_after": 5530.956,
+        "max_y_after": 2078.7458,
+        "rung_before": "declared image_px (corpus lane)",
+        "rung_after": "image_px_containment",
+        "harness_failures_after": [
+          "coordinate_contract: image_px_containment: 0.9489 of 4855 declared image_px points lie inside the decoded frame, below 0.95; x/y are not source-image pixels"
+        ]
+      }
+    ],
+    "out_csv": "/tmp/t3b_reemit/wnba_01/tracking_data.csv",
+    "rows_out": 4855
+  },
+  {
+    "game": "wnba_02",
+    "sport": "wnba",
+    "rows_shipped": 5342,
+    "x_equals_x_position": true,
+    "videos": [
+      "wnba__wnba_02.mp4"
+    ],
+    "per_video": [
+      {
+        "video": "wnba__wnba_02.mp4",
+        "resolution": "1280x720",
+        "n_points_before": 5342,
+        "n_points_after": 5342,
+        "containment_before": 0.018,
+        "containment_after": 0.9672,
+        "verdict_before": "FAIL",
+        "verdict_after": "FAIL",
+        "max_x_before": 3386.0,
+        "max_y_before": 1667.0,
+        "max_x_after": 2913.1272,
+        "max_y_after": 932.5074,
+        "rung_before": "declared image_px (corpus lane)",
+        "rung_after": "declared image_px (corpus lane)",
+        "harness_failures_after": [
+          "coordinate_contract: rows declare coordinate_space image_px not accepted for sport wnba; a preserved detection corpus is never a scorable game"
+        ]
+      }
+    ],
+    "out_csv": "/tmp/t3b_reemit/wnba_02/tracking_data.csv",
+    "rows_out": 5342
+  },
+  {
+    "game": "wnba_03",
+    "sport": "wnba",
+    "rows_shipped": 2380,
+    "x_equals_x_position": true,
+    "skipped": "no footage"
+  },
+  {
+    "game": "wnba_04",
+    "sport": "wnba",
+    "rows_shipped": 4906,
+    "x_equals_x_position": true,
+    "videos": [
+      "wnba__wnba_04.mp4"
+    ],
+    "per_video": [
+      {
+        "video": "wnba__wnba_04.mp4",
+        "resolution": "1280x720",
+        "n_points_before": 4906,
+        "n_points_after": 4906,
+        "containment_before": 0.0,
+        "containment_after": 0.9576,
+        "verdict_before": "FAIL",
+        "verdict_after": "FAIL",
+        "max_x_before": 3384.0,
+        "max_y_before": 1699.0,
+        "max_x_after": 1379.02525,
+        "max_y_after": 713.83813,
+        "rung_before": "declared image_px (corpus lane)",
+        "rung_after": "declared image_px (corpus lane)",
+        "harness_failures_after": [
+          "coordinate_contract: rows declare coordinate_space image_px not accepted for sport wnba; a preserved detection corpus is never a scorable game"
+        ]
+      }
+    ],
+    "out_csv": "/tmp/t3b_reemit/wnba_04/tracking_data.csv",
+    "rows_out": 4906
+  },
+  {
+    "game": "wnba_05",
+    "sport": "wnba",
+    "rows_shipped": 2230,
+    "x_equals_x_position": true,
+    "videos": [
+      "wnba__wnba_05.mp4"
+    ],
+    "per_video": [
+      {
+        "video": "wnba__wnba_05.mp4",
+        "resolution": "1280x720",
+        "n_points_before": 2230,
+        "n_points_after": 2230,
+        "containment_before": 0.0,
+        "containment_after": 0.9493,
+        "verdict_before": "FAIL",
+        "verdict_after": "FAIL",
+        "max_x_before": 1695.0,
+        "max_y_before": 1710.0,
+        "max_x_after": 1864.0,
+        "max_y_after": 680.9806,
+        "rung_before": "declared image_px (corpus lane)",
+        "rung_after": "image_px_containment",
+        "harness_failures_after": [
+          "coordinate_contract: image_px_containment: 0.9493 of 2230 declared image_px points lie inside the decoded frame, below 0.95; x/y are not source-image pixels"
+        ]
+      }
+    ],
+    "out_csv": "/tmp/t3b_reemit/wnba_05/tracking_data.csv",
+    "rows_out": 2230
+  },
+  {
+    "game": "wnba_kangps_g1",
+    "sport": "wnba",
+    "rows_shipped": 38424,
+    "x_equals_x_position": true,
+    "skipped": "no footage"
+  },
+  {
+    "game": "wnba_kangps_g2",
+    "sport": "wnba",
+    "rows_shipped": 29850,
+    "x_equals_x_position": true,
+    "skipped": "no footage"
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "game": "wnba_01",
+    "frame": 300,
+    "resolution": "1280x720",
+    "points": 5,
+    "inside": 4,
+    "path": "/tmp/t3b_overlays/wnba_01_f000300.png"
+  },
+  {
+    "game": "wnba_01",
+    "frame": 1500,
+    "resolution": "1280x720",
+    "points": 6,
+    "inside": 6,
+    "path": "/tmp/t3b_overlays/wnba_01_f001500.png"
+  },
+  {
+    "game": "wnba_04",
+    "frame": 600,
+    "resolution": "1280x720",
+    "points": 5,
+    "inside": 4,
+    "path": "/tmp/t3b_overlays/wnba_04_f000600.png"
+  },
+  {
+    "game": "wnba_04",
+    "frame": 1800,
+    "resolution": "1280x720",
+    "points": 5,
+    "inside": 5,
+    "path": "/tmp/t3b_overlays/wnba_04_f001800.png"
+  },
+  {
+    "game": "ncaa_basketball_zqBCKovJCQU",
+    "frame": 300,
+    "resolution": "1920x1080",
+    "points": 7,
+    "inside": 7,
+    "path": "/tmp/t3b_overlays/ncaa_basketball_zqBCKovJCQU_f000300.png"
+  },
+  {
+    "game": "ncaa_basketball_zqBCKovJCQU",
+    "frame": 1500,
+    "resolution": "1920x1080",
+    "points": 6,
+    "inside": 6,
+    "path": "/tmp/t3b_overlays/ncaa_basketball_zqBCKovJCQU_f001500.png"
+  }
+]
