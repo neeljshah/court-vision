@@ -184,6 +184,7 @@ LOW behind G25b.
 | gap | sport | measured result | evidence | status |
 |---|---|---|---|---|
 | G33B attempt 2 | baseball | Both inventory-named DAY clips exist on the pod, but the transient historic-function run returns 32 segments (19 plus 13) where the retained source artifact defines 30 (19 plus 11). The 21 historical failures cannot be reconstructed; no 23-failure substitute or render was claimed. | `g33b_baseball_scale_bins_2026-09-02.md` | NOT VALIDATED; G36 remains unreleased. |
+| G64 | baseball | Historic and current geometry both return 19 plus 13 on the same pod clips, ruling out code. The original environment stamp and source hashes do not survive, so environment and footage cannot be separated. | `g64_segment_bisect/` | NOT VALIDATED; G36 remains blocked. |
 ## G61 result register
 
 | Gap | Sport | Finding | Evidence | Status |
