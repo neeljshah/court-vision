@@ -197,7 +197,11 @@ def evaluate(df: pd.DataFrame, sport: str,
                               source_metadata, schema)
     resolution, frame_rate = _source_fields(source_metadata)
     sampling_interval, sampling_interval_reason = _sampling_fields(source_metadata)
-    if df["coordinate_space"].eq(METRIC_LOCAL).all():
+    # Legacy-undeclared rows reach here without a coordinate_space column at all
+    # (normalize_tracking_frame leaves them as-is under the audited legacy mode).
+    # Reading it unconditionally turned an intended clean FAIL into a KeyError,
+    # so absence means "not metric_local" and falls through to the court profile.
+    if "coordinate_space" in df and df["coordinate_space"].eq(METRIC_LOCAL).all():
         return QualityReport(
             sport=sport, config_version=config_version, source_resolution=resolution,
             source_frame_rate=frame_rate, sampling_interval_s=sampling_interval,
