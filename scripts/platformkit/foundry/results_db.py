@@ -121,7 +121,8 @@ class ResultsDB:
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         # isolation_level=None: autocommit, so claim() can own its BEGIN IMMEDIATE.
-        self._c = sqlite3.connect(str(self.path), isolation_level=None)
+        # S110: a 30 s busy timeout so a concurrent seed/read never kills the runner with "database is locked"
+        self._c = sqlite3.connect(str(self.path), isolation_level=None, timeout=30.0)
         self._c.row_factory = sqlite3.Row
         self._c.execute("PRAGMA foreign_keys=ON")
         self._c.executescript(_SCHEMA)
