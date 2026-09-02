@@ -23,11 +23,11 @@ from scripts.platformkit.tracking_schema import (
 DEFAULT_CONFIG_VERSION = "2026-09-01-v1"
 _BASKETBALL = {"bounds": (0, 94, 0, 50), "min_players": 6,
                "ball_valid_min": 0.30, "coverage_min": 0.60,
-               "oob_max": 0.05, "jump_p95_max": 6.0,
+               "oob_max": 0.05, "jump_p95_max": 6.0, "jump_max_max": 6.0,
                "min_median_track_len": 3.0}
 _BASEBALL = {"bounds": (-30, 30, 0, 60), "min_players": 2,
              "ball_valid_min": 0.10, "coverage_min": 0.70,
-             "oob_max": 0.10, "jump_p95_max": 10.0,
+             "oob_max": 0.10, "jump_p95_max": 10.0, "jump_max_max": 10.0,
              "min_median_track_len": 3.0}
 
 # A report carries both this version and its input sport label, even when an
@@ -38,11 +38,11 @@ CONFIG_VERSIONS: dict[str, dict[str, dict]] = {
         "wnba": dict(_BASKETBALL),
         "tennis": {"bounds": (-21, 99, -12, 48), "min_players": 2,
                    "ball_valid_min": 0.20, "coverage_min": 0.90,
-                   "oob_max": 0.08, "jump_p95_max": 8.0,
+                   "oob_max": 0.08, "jump_p95_max": 8.0, "jump_max_max": 8.0,
                    "min_median_track_len": 3.0},
         "soccer": {"bounds": (0, 105, 0, 68), "min_players": 14,
                    "ball_valid_min": 0.20, "coverage_min": 0.85,
-                   "oob_max": 0.05, "jump_p95_max": 8.0,
+                   "oob_max": 0.05, "jump_p95_max": 8.0, "jump_max_max": 8.0,
                    "min_median_track_len": 3.0},
         "baseball": dict(_BASEBALL),
         "npb": dict(_BASEBALL),
@@ -51,7 +51,7 @@ CONFIG_VERSIONS: dict[str, dict[str, dict]] = {
         # 360-by-160-foot field plane and deliberately has no ball detector.
         "football": {"bounds": (0, 360, 0, 160), "min_players": 14,
                      "ball_valid_min": 0.0, "coverage_min": 0.85,
-                     "oob_max": 0.05, "jump_p95_max": 8.0,
+                     "oob_max": 0.05, "jump_p95_max": 8.0, "jump_max_max": 8.0,
                      "min_median_track_len": 3.0},
     }
 }
@@ -64,9 +64,9 @@ SPORTS = CONFIG_VERSIONS[DEFAULT_CONFIG_VERSION]
 MIN_FRAMES_FOR_METRICS = 30
 _N_DEPENDENT_METRIC_FIELDS = (
     "coverage_pct", "det_per_frame", "median_track_len", "ball_valid_pct",
-    "ball_in_bounds_pct", "jump_p95", "oob_pct", "zero_step_share",
+    "ball_in_bounds_pct", "jump_p95", "jump_max", "oob_pct", "zero_step_share",
     "median_step_distance", "distinct_position_ratio", "stationary_track_share",
-    "liveness_verdict", "jump_p95_ft_per_s",
+    "liveness_verdict", "jump_p95_ft_per_s", "jump_max_modal_stride_frames",
 )
 
 
@@ -86,7 +86,10 @@ class QualityReport:
     ball_valid_applicable: bool
     ball_telemetry_available: bool | None
     ball_telemetry_rule: str
+    # Deprecated gate statistic retained for historical report readers only.
     jump_p95: float | str | None
+    # Current gate statistic: max displacement on modal-stride-adjacent pairs.
+    jump_max: float | str | None
     oob_pct: float | str | None
     zero_step_share: float | None
     median_step_distance: float | str | None
@@ -114,6 +117,7 @@ class QualityReport:
     sampling_interval_s: float | None = None
     sampling_interval_reason: str | None = None
     jump_p95_ft_per_s: float | str | None = None
+    jump_max_modal_stride_frames: int | None = None
 
     def to_json(self) -> str:
         return json.dumps(asdict(self), indent=2)
@@ -163,13 +167,23 @@ def _failed_report(sport: str, config_version: str, failure: str,
         det_per_frame=0.0, median_track_len=0.0, ball_valid_pct=0.0,
         ball_valid="not_evaluated", ball_valid_applicable=available is not False,
         ball_telemetry_available=available, ball_telemetry_rule=rule,
-        jump_p95=0.0, oob_pct=0.0, zero_step_share=0.0,
+        jump_p95=0.0, jump_max=None, oob_pct=0.0, zero_step_share=0.0,
         median_step_distance=0.0, distinct_position_ratio=0.0,
         stationary_track_share=0.0, liveness_verdict="SUSPECT",
         source_resolution=resolution, source_frame_rate=frame_rate,
         self_consistency_only=True, passed=False, verdict="FAIL", failures=[failure],
         sampling_interval_s=interval, sampling_interval_reason=interval_reason,
         jump_p95_ft_per_s=(0.0 if interval is not None else None))
+
+
+def _modal_stride(frame_gaps: pd.Series) -> int | None:
+    """Return the unique most-frequent positive per-track frame gap, if any."""
+    counts = frame_gaps.loc[frame_gaps > 0].value_counts()
+    if counts.empty:
+        return None
+    top_count = counts.max()
+    modes = counts.loc[counts.eq(top_count)]
+    return int(modes.index[0]) if len(modes) == 1 else None
 
 
 def _adjudicate_insufficient_data(report: QualityReport) -> QualityReport:
@@ -246,8 +260,12 @@ def evaluate(df: pd.DataFrame, sport: str,
     ball_in_bounds = (float((balls["x"].between(x0, x1) & balls["y"].between(y0, y1)).mean())
                       if len(balls) else None)
     grouped = players.sort_values(["track_id", "frame"]).groupby("track_id")
+    frame_gaps = grouped["frame"].diff()
     jump = ((grouped["x"].diff() ** 2 + grouped["y"].diff() ** 2) ** 0.5).dropna()
     jump_p95 = float(jump.quantile(0.95)) if len(jump) else 0.0
+    modal_stride = _modal_stride(frame_gaps)
+    modal_jump = jump.loc[frame_gaps.eq(modal_stride)] if modal_stride is not None else jump.iloc[0:0]
+    jump_max = float(modal_jump.max()) if len(modal_jump) else None
     liveness = compute_liveness_metrics(df, sport)
 
     failures: list[str] = []
@@ -257,14 +275,14 @@ def evaluate(df: pd.DataFrame, sport: str,
         ("coverage", coverage, cfg["coverage_min"], "min"),
         ("median_track_len", track_len, cfg["min_median_track_len"], "min"),
         ("oob", oob_pct, cfg["oob_max"], "max"),
-        ("jump_p95", jump_p95, cfg["jump_p95_max"], "max"),
+        ("jump_max", jump_max, cfg["jump_max_max"], "max"),
     ):
-        invalid = value < threshold if operator == "min" else value > threshold
+        invalid = value is not None and (value < threshold if operator == "min" else value > threshold)
         if invalid:
             sign = "<" if operator == "min" else ">"
             failures.append("{} {:.2f} {} {:.2f}".format(name, value, sign, threshold))
-    if len(players) and not len(jump):
-        failures.append("jump_p95 unmeasurable: no track with >=2 observations")
+    if len(players) and jump_max is None:
+        failures.append("jump_max unmeasurable: no unique positive modal frame stride")
     if ball_valid is not None and ball_valid < cfg["ball_valid_min"]:
         failures.append("ball_valid {:.2f} < {:.2f}".format(
             ball_valid, cfg["ball_valid_min"]
@@ -278,6 +296,7 @@ def evaluate(df: pd.DataFrame, sport: str,
         "PASS" if passed else "FAIL"
     )
     reported_jump_p95 = round(jump_p95, 2)
+    reported_jump_max = round(jump_max, 2) if jump_max is not None else None
     jump_p95_ft_per_s = (round(reported_jump_p95 / sampling_interval, 2)
                           if sampling_interval is not None else None)
     report = QualityReport(sport, config_version, n_frames, n_unique_games,
@@ -287,7 +306,7 @@ def evaluate(df: pd.DataFrame, sport: str,
                            "evaluated" if ball_valid is not None else "not_evaluated",
                            schema.ball_telemetry_available is not False,
                            schema.ball_telemetry_available, schema.ball_telemetry_rule,
-                           reported_jump_p95, round(oob_pct, 4),
+                           reported_jump_p95, reported_jump_max, round(oob_pct, 4),
                            round(liveness.zero_step_share, 4),
                            round(liveness.median_step_distance, 4),
                            round(liveness.distinct_position_ratio, 4),
@@ -296,7 +315,7 @@ def evaluate(df: pd.DataFrame, sport: str,
                            frame_rate, True, passed, verdict, failures,
                            round(ball_in_bounds, 4) if ball_in_bounds is not None else None,
                            n_frames < MIN_FRAMES_FOR_METRICS, sampling_interval,
-                           sampling_interval_reason, jump_p95_ft_per_s)
+                           sampling_interval_reason, jump_p95_ft_per_s, modal_stride)
     if report.insufficient_data:
         for field in _N_DEPENDENT_METRIC_FIELDS:
             setattr(report, field, None)
