@@ -25,11 +25,11 @@ DENOMINATOR: ALL sampled decoded frames. Never "court frames only" and never "fr
 accepted" -- conditioning the denominator on the outcome is B1 and this program has already been
 bitten by it (G40). The COURT_NO_PAINT share is itself the first honest measurement of the panning
 problem G04 named, so report it as a result in its own right rather than as leftover.
-YOUR CHUNK -- READ THIS FIRST. G68 is 1,650 tiles, which is too much visual review for one
+ATTEMPT 2 -- the two NCAA clips of this chunk are ALREADY DONE and committed (tiUvyvWOCxo and zqBCKovJCQU, 150 rows each). Do NOT relabel them. YOUR REMAINING CLIPS ARE THE TWO WNBA ONES ONLY. YOUR CHUNK -- READ THIS FIRST. G68 is 1,650 tiles, which is too much visual review for one
 session: two attempts ran out mid-way and the second LOST 300 completed tile labels because it held
 them in context instead of writing them down. The census is therefore split by clip, and YOUR clips
 are exactly these and no others:
-    ncaa_basketball__ncaa_basketball_tiUvyvWOCxo, ncaa_basketball__ncaa_basketball_zqBCKovJCQU, wnba__wnba_01, wnba__wnba_01_1080p
+     wnba__wnba_01, wnba__wnba_01_1080p
 The contact sheets already exist at docs/evidence/tracking/g68_paint_census/contact_sheets/<clip>/
 -- the dedupe and rendering are DONE (11 distinct-content clip sets, content-hash verified). Do NOT
 re-render and do NOT re-dedupe. Note that names ending _1080p are NOT duplicates to be dropped: the
