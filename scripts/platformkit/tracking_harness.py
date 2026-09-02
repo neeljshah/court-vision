@@ -60,6 +60,12 @@ SPORTS = CONFIG_VERSIONS[DEFAULT_CONFIG_VERSION]
 # G50: below this many frames the metrics are not meaningful. NEW constant --
 # it gates nothing today and no existing threshold was touched.
 MIN_FRAMES_FOR_METRICS = 30
+_N_DEPENDENT_METRIC_FIELDS = (
+    "coverage_pct", "det_per_frame", "median_track_len", "ball_valid_pct",
+    "ball_in_bounds_pct", "jump_p95", "oob_pct", "zero_step_share",
+    "median_step_distance", "distinct_position_ratio", "stationary_track_share",
+    "liveness_verdict", "jump_p95_ft_per_s",
+)
 
 
 @dataclass
@@ -70,21 +76,21 @@ class QualityReport:
     n_unique_games: int
     n_duplicate_frame_track_rows: int
     ball_rows: int
-    coverage_pct: float
-    det_per_frame: float
-    median_track_len: float
+    coverage_pct: float | None
+    det_per_frame: float | None
+    median_track_len: float | None
     ball_valid_pct: float | None
     ball_valid: str
     ball_valid_applicable: bool
     ball_telemetry_available: bool | None
     ball_telemetry_rule: str
-    jump_p95: float
-    oob_pct: float
-    zero_step_share: float
-    median_step_distance: float
-    distinct_position_ratio: float
-    stationary_track_share: float
-    liveness_verdict: str
+    jump_p95: float | None
+    oob_pct: float | None
+    zero_step_share: float | None
+    median_step_distance: float | None
+    distinct_position_ratio: float | None
+    stationary_track_share: float | None
+    liveness_verdict: str | None
     source_resolution: str | None
     source_frame_rate: float | None
     self_consistency_only: bool
@@ -252,23 +258,27 @@ def evaluate(df: pd.DataFrame, sport: str,
     reported_jump_p95 = round(jump_p95, 2)
     jump_p95_ft_per_s = (round(reported_jump_p95 / sampling_interval, 2)
                           if sampling_interval is not None else None)
-    return QualityReport(sport, config_version, n_frames, n_unique_games,
-                         duplicates, ball_rows, round(coverage, 4),
-                         round(det_per_frame, 2), track_len,
-                         round(ball_valid, 4) if ball_valid is not None else None,
-                         "evaluated" if ball_valid is not None else "not_evaluated",
-                         schema.ball_telemetry_available is not False,
-                         schema.ball_telemetry_available, schema.ball_telemetry_rule,
-                         reported_jump_p95, round(oob_pct, 4),
-                         round(liveness.zero_step_share, 4),
-                         round(liveness.median_step_distance, 4),
-                         round(liveness.distinct_position_ratio, 4),
-                         round(liveness.stationary_track_share, 4),
-                         liveness.verdict, resolution,
-                         frame_rate, True, passed, verdict, failures,
-                         round(ball_in_bounds, 4) if ball_in_bounds is not None else None,
-                         n_frames < MIN_FRAMES_FOR_METRICS, sampling_interval,
-                         sampling_interval_reason, jump_p95_ft_per_s)
+    report = QualityReport(sport, config_version, n_frames, n_unique_games,
+                           duplicates, ball_rows, round(coverage, 4),
+                           round(det_per_frame, 2), track_len,
+                           round(ball_valid, 4) if ball_valid is not None else None,
+                           "evaluated" if ball_valid is not None else "not_evaluated",
+                           schema.ball_telemetry_available is not False,
+                           schema.ball_telemetry_available, schema.ball_telemetry_rule,
+                           reported_jump_p95, round(oob_pct, 4),
+                           round(liveness.zero_step_share, 4),
+                           round(liveness.median_step_distance, 4),
+                           round(liveness.distinct_position_ratio, 4),
+                           round(liveness.stationary_track_share, 4),
+                           liveness.verdict, resolution,
+                           frame_rate, True, passed, verdict, failures,
+                           round(ball_in_bounds, 4) if ball_in_bounds is not None else None,
+                           n_frames < MIN_FRAMES_FOR_METRICS, sampling_interval,
+                           sampling_interval_reason, jump_p95_ft_per_s)
+    if report.insufficient_data:
+        for field in _N_DEPENDENT_METRIC_FIELDS:
+            setattr(report, field, None)
+    return report
 
 
 if __name__ == "__main__":
