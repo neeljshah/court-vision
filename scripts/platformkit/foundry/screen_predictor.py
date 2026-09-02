@@ -13,6 +13,7 @@ as-of values. A SCREEN is a NON-FINDING. Calibration language only.
 """
 from __future__ import annotations
 
+import os
 import math
 import re
 from functools import lru_cache
@@ -263,7 +264,8 @@ def corpus_states(sport: str) -> tuple:
     partition by ISO week per the spec's SF-11 caveat."""
     from scripts.platformkit.eval_gate.close_join import gate_corpus_states
 
-    corpus = load_gate_corpus(sport).copy()
+    # S75: honour the same portable flag tiers.run_tier passes (pod hosts lack the domain sources)
+    corpus = load_gate_corpus(sport, portable=os.environ.get("FOUNDRY_PORTABLE_CORPUS") == "1").copy()
     corpus["event_id"] = corpus["event_id"].astype(str)
     table = corpus.drop_duplicates("event_id").set_index("event_id")
     units = table["corpus_unit"].astype(str)
