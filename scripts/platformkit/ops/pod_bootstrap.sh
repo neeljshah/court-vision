@@ -44,7 +44,7 @@ proc_pids() {
 
 # ---- 1. packages (PEP 668 refuses without the flag; the container is disposable)
 echo "== 1. pip install"
-"$PY" -m pip install --break-system-packages -q -r requirements-predictor.txt "pyarrow>=14"
+"$PY" -m pip install --break-system-packages -q -r requirements-predictor.txt "pyarrow>=14" "statsmodels>=0.14"
 "$PY" -m pip install --break-system-packages -q \
     "fastapi>=0.110" "uvicorn[standard]>=0.27" "scikit-learn>=1.3" "xgboost>=2.0"
 
