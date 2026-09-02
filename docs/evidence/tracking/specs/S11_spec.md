@@ -1,4 +1,4 @@
-GAP S11 | sport all (signals) | worktree a13 | log cx_s11_grammar | creates the NEW package `scripts/platformkit/foundry/` (S12/S15 land beside it; the flat `foundry_runner.py` and `signal_foundry.py` STAY where they are)
+GAP S11 | sport all (signals) | worktree a12 | log cx_s11_grammar | creates the NEW package `scripts/platformkit/foundry/` (S12/S15 land beside it; the flat `foundry_runner.py` and `signal_foundry.py` STAY where they are)
 REDTEAM PREREQUISITES (2026-09-03, REDTEAM_SIGNAL_FACTORY memo 187101ea -- binding for this pass):
 - SF-5/SF-6: do NOT enumerate conditioning from regime_calibration.buckets at runtime (open alphabet, transductive terciles). The grammar takes a CLOSED conditioning alphabet declared in the family spec file (explicit frozensets); reusing a buckets key means snapshotting its exact value set into the spec.
 - SF-8/SF-9: runtime_available comes ONLY from an explicit per-column declaration in the family spec; runtime_contract.classify_feature returning UNKNOWN (751 of 806 catalogue columns) is NOT runtime-available -- UNKNOWN enumerates for the teacher lane only.
