@@ -1,0 +1,8 @@
+{
+  "status": "unavailable",
+  "required_source": "data/footage_corpus/tennis__tennis_nyYk2nPZAwY_720p.mp4",
+  "source_present_in_worktree": false,
+  "published_g44_per_frame_labels_present": false,
+  "labels_copied": 0,
+  "reason": "The original source and the G44 hand-label file are absent from this worktree. Creating labels or asserting a 150-frame disjoint split without source frames would be fabricated evidence."
+}
