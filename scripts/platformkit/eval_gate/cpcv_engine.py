@@ -24,29 +24,30 @@ from __future__ import annotations
 
 import copy
 from datetime import datetime, timedelta
-from typing import Callable, List
+from typing import Callable, List, Sequence
 
 from scripts.platformkit.cpcv import cpcv_splits
 from scripts.platformkit.eval_gate.walkforward import (
     EMBARGO_DAYS,
     PURGE_HOURS,
+    _SETTLED_DENY,
     _same_matchup,
     _same_team,
     assert_vintage,
+    redact_test_view,
 )
 
 Predictor = Callable[[List[dict], dict, bool], float]
 
-# Hand-copied from walk_forward's inline test_view filter -- there is no
-# importable constant to reuse. test_redaction_parity_field_by_field pins the
-# two together by diffing the ACTUAL view each harness hands its predictor, so
-# drift in either direction fails the test rather than leaking silently.
-_REDACTED_KEYS = ("outcome", "devig_close_prob", "truth_wp", "index")
+# S40b / RT-18: the redaction is now walk_forward's own `redact_test_view`, IMPORTED rather
+# than hand-copied, so the two harnesses cannot drift. `_REDACTED_KEYS` is kept as an alias
+# for the legacy deny-list because test_redaction_parity_field_by_field reads it.
+_REDACTED_KEYS = _SETTLED_DENY
 
 
-def _redact(state: dict) -> dict:
+def _redact(state: dict, *, allow_keys: Sequence[str] = (), strict: bool = False) -> dict:
     """Strip the settled-outcome / close keys a test row must never see."""
-    return {k: v for k, v in state.items() if k not in _REDACTED_KEYS}
+    return redact_test_view(state, allow_keys=allow_keys, strict=strict)
 
 
 def _purged(train_state: dict, train_ts: datetime, test_state: dict,
@@ -61,7 +62,9 @@ def _purged(train_state: dict, train_ts: datetime, test_state: dict,
 
 
 def cpcv_evaluate(states: List[dict], predictor: Predictor, n_groups: int = 8,
-                  n_test_groups: int = 2, embargo_days: int = 1) -> List[dict]:
+                  n_test_groups: int = 2, embargo_days: int = 1,
+                  *, strict_redaction: bool = False,
+                  allow_keys: Sequence[str] = ()) -> List[dict]:
     """Combinatorial purged cross-validation over walk_forward-shaped states.
 
     ``states`` are walk_forward-shaped dicts (game_id, state_ts, home, away,
@@ -88,7 +91,9 @@ def cpcv_evaluate(states: List[dict], predictor: Predictor, n_groups: int = 8,
         for i in test_idx:
             test = ordered[i]
             assert_vintage(test)
-            p = predictor(train_states, _redact(test), True)
+            p = predictor(train_states,
+                          _redact(test, allow_keys=allow_keys, strict=strict_redaction),
+                          True)
             if not 0.0 <= p <= 1.0:
                 raise ValueError(f"predictor returned {p} out of [0,1]")
             records.append({

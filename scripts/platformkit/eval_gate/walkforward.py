@@ -24,10 +24,22 @@ from __future__ import annotations
 import copy
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Callable, Dict, List, Tuple
+from typing import Callable, Dict, List, Sequence, Tuple
 
 PURGE_HOURS = 48
 EMBARGO_DAYS = 3
+
+# S40b / RT-18. The legacy redaction was a DENY-list of four known settled names, so the
+# NEXT settled column added to a state schema reached the predictor by default (measured:
+# a state carrying `final_margin` scored Brier 0.0000 with no LeakError). TEST_VIEW_KEYS is
+# the ALLOW-list: the structural keys backtest_runner._redact already keeps, plus the
+# non-settled descriptors the golden corpus carries. A caller declares anything else it
+# genuinely needs on the test row via `allow_keys`; in strict mode an UNDECLARED key is a
+# LeakError instead of a silent pass-through.
+TEST_VIEW_KEYS = ("game_id", "state_ts", "features", "feature_avail", "home", "away",
+                  "season", "sport", "game_date", "regime")
+# Legacy (non-strict) behaviour, byte-identical to the pre-S40b deny-list.
+_SETTLED_DENY = ("outcome", "devig_close_prob", "truth_wp", "index")
 
 
 class LeakError(AssertionError):
@@ -48,6 +60,28 @@ def _same_team(a: dict, b: dict) -> bool:
 
 def _same_matchup(a: dict, b: dict) -> bool:
     return _teams(a) == _teams(b)
+
+
+def redact_test_view(state: dict, *, allow_keys: Sequence[str] = (),
+                     strict: bool = False) -> dict:
+    """Return the view a predictor may see for THIS test row (RT-18).
+
+    strict=False (default) keeps the pre-S40b deny-list survivors exactly, so no existing
+    caller changes. strict=True keeps only TEST_VIEW_KEYS + `allow_keys` and raises
+    LeakError on any undeclared key -- a new settled column then fails closed.
+    """
+    if not strict:
+        return {k: v for k, v in state.items() if k not in _SETTLED_DENY}
+    allowed = set(TEST_VIEW_KEYS) | set(allow_keys)
+    # The four historically-known settled keys stay silently dropped (that part always
+    # worked). What must fail closed is a key that is NEITHER allowed NOR known settled.
+    undeclared = sorted(k for k in state if k not in allowed and k not in _SETTLED_DENY)
+    if undeclared:
+        raise LeakError(
+            f"undeclared test-row key(s) {undeclared} in {state.get('game_id')}; "
+            "declare them via allow_keys or keep them out of the test view"
+        )
+    return {k: v for k, v in state.items() if k in allowed}
 
 
 def assert_vintage(s: dict) -> None:
@@ -87,7 +121,9 @@ class WalkForwardResult:
 
 def walk_forward(states: List[dict],
                  predict_fn: Callable[[List[dict], dict, bool], float],
-                 select_inside: bool = True) -> WalkForwardResult:
+                 select_inside: bool = True,
+                 *, strict_redaction: bool = False,
+                 allow_keys: Sequence[str] = ()) -> WalkForwardResult:
     """Expanding-window walk-forward with purge + embargo + vintage. Returns per-state records."""
     # Deep copy: predictor-side mutation of train/test dicts must never reach the
     # caller's states (cross-invocation plant attack -- red-team 2026-09-01).
@@ -107,10 +143,7 @@ def walk_forward(states: List[dict],
                 continue                                  # purge same-team back-to-back
             train.append(s)
         assert_vintage(test)                              # defense in depth (schema also checks)
-        test_view = {
-            k: v for k, v in test.items()
-            if k not in ("outcome", "devig_close_prob", "truth_wp", "index")
-        }
+        test_view = redact_test_view(test, allow_keys=allow_keys, strict=strict_redaction)
         p = predict_fn(train, test_view, select_inside)
         if not 0.0 <= p <= 1.0:
             raise ValueError(f"predict_fn returned {p} out of [0,1]")

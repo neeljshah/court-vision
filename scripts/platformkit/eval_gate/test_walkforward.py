@@ -2,7 +2,7 @@
 from __future__ import annotations
 import os as _os, sys as _sys  # noqa: E402
 _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))  # blueprint uses bare sibling imports; make them work under "python -m pytest" from the repo root too
-from walkforward import walk_forward, assert_vintage
+from walkforward import LeakError, walk_forward, assert_vintage, redact_test_view
 
 
 def _s(game_id, ts, home, away, **kw):
@@ -100,6 +100,39 @@ def test_select_inside_flag_recorded():
     res_bad = walk_forward(states, _trivial, select_inside=False)
     assert res_ok.select_inside is True
     assert res_bad.select_inside is False          # gate must FAIL the run when this is False
+
+
+def test_s40b_rt18_new_settled_column_is_not_handed_to_the_predictor():
+    """RT-18: the deny-list let ANY new settled column through. Measured before the fix:
+    a state carrying `final_margin` let an oracle score Brier 0.0000 with no LeakError."""
+    states = [_s(f"g{i}", f"2024-02-{10+i:02d}T19:00:00", f"H{i}", f"V{i}",
+                 final_margin=10.0) for i in range(4)]
+
+    # default (legacy) mode is unchanged: the four deny-listed keys and nothing else.
+    legacy = redact_test_view(states[0])
+    assert "final_margin" in legacy                      # documented legacy behaviour
+    assert not {"outcome", "devig_close_prob"} & set(legacy)
+
+    # strict mode: the undeclared settled column is a LeakError, not a silent pass-through.
+    try:
+        walk_forward(states, lambda train, test, inside: 0.5, strict_redaction=True)
+        raise SystemExit("FAIL: undeclared settled column reached the predictor")
+    except LeakError as exc:
+        assert "final_margin" in str(exc)
+
+    # a caller that genuinely needs a key DECLARES it, and only that key comes back.
+    view = redact_test_view(states[0], allow_keys=("final_margin",), strict=True)
+    assert view["final_margin"] == 10.0
+    assert view["game_id"] == "g0" and "outcome" not in view
+
+
+def test_s40b_rt18_strict_view_is_exactly_the_declared_allow_list():
+    """The strict view is derived from TEST_VIEW_KEYS, not from what the state happens
+    to carry -- an independently written expectation, not a copy of the constant."""
+    state = _s("g0", "2024-03-01T19:00:00", "A", "B", season="2023-24", sport="nba")
+    view = redact_test_view(state, strict=True)
+    assert set(view) == {"game_id", "state_ts", "home", "away", "features",
+                         "feature_avail", "season", "sport"}
 
 
 if __name__ == "__main__":

@@ -90,7 +90,10 @@ def _verdict(bss: float, dm, bm: float, bc: float) -> str:
 
 def evaluate_corpus(name: str, predict_fn: Callable, states: List[dict]) -> dict:
     """Score one corpus end-to-end. Never blocks on a non-beat; only regression / leak."""
-    res = walk_forward(states, predict_fn, select_inside=True)
+    # S40b / RT-18: the gate is the fail-closed path, so it opts into the ALLOW-list
+    # redaction. A settled column added to the fixture schema later raises LeakError here
+    # instead of reaching predict_fn (measured before the fix: Brier 0.0000, no LeakError).
+    res = walk_forward(states, predict_fn, select_inside=True, strict_redaction=True)
     # feature-selection-inside-window is non-negotiable: a False flag fails the run
     regressed = res.select_inside is not True
     recs = res.records
