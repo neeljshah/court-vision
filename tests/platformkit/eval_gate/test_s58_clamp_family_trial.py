@@ -51,6 +51,10 @@ def test_seal_charge_select_score(tmp_path):
     assert all(f["fallback"] for f in folds.values() if not f["feasible"])
     series = pd.read_csv(tmp_path / "s.csv")
     assert len(series) == len(idxs) and abs(((series["candidate"] - series["y"]) ** 2).mean() - res["brier"]["candidate_inner_selected"]) < 1e-12
+    ti = res["tick_informative"]                                                     # S87b
+    assert ti["n"] == len(idxs) and 0 < ti["n_informative"] <= ti["n"]
+    assert ti["n_eff_icc"] is not None and len(ti["ci95_informative"]) == 2
+    assert len(res["dm"]["ci95"]) == 2 and res["dm"]["n_clusters"] == res["n_games"]  # headline intact
 
 
 def test_repro_gate_stops_after_charge(tmp_path):

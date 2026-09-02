@@ -168,7 +168,10 @@ def run_trial(ledger_path: Path = LEDGER, db_path: Path = SCREENS_DB, out: Path 
         verdict_partition_sha256=result.verdict_partition_sha256,
         tiers_spec_pin=result.prereg_sha256, families_spec_sha256=result.families_spec_sha256,
         family_q=result.family_q, bh_passed=result.bh_passed, global_passed=result.global_passed,
-        archive=predictor.archive())
+        archive=predictor.archive(),
+        tick_informative=dict(grain="event (one row per match)", n_events=int(result.n),  # S87
+                              n_informative=int(result.n), n_eff=float(result.n_eff),
+                              note="S87: event grain -- one row per match, so no tick can repeat the previous quote; the informative-tick filter does not apply and n_events IS n_informative."))
     Path(str(out) + ".json").write_text(json.dumps(trial, allow_nan=False, indent=1, sort_keys=True),
                                         encoding="ascii")
     return trial

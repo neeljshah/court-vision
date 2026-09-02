@@ -97,6 +97,51 @@ def flag_ticks(
     return out, summary
 
 
+def attach_informative_summary(
+    artifact: Dict[str, Any],
+    frame: pd.DataFrame,
+    loss_col: str,
+    *,
+    game_col: str = "game",
+    ts_col: str = "timestamp",
+    market_col: str = "market",
+    model_col: str = "model",
+    eps: float = EPS,
+    key: str = "tick_informative",
+) -> Dict[str, Any]:
+    """S87 bar: write the n / n_informative / n_eff triple into `artifact[key]`.
+
+    The artifact's OWN CI is never touched -- this only ADDS a second CI,
+    `ci95_informative`, computed from the SAME per-tick paired losses on the
+    informative rows only, beside the full-series CI the writer already publishes.
+
+    Rows are stably sorted by (game, ts) first so a writer that scored in some
+    other order still gets per-game tick order, which `flag_ticks` requires.
+    `ci95_informative` is None when the informative subset has fewer than two
+    game clusters (a DM CI needs two).
+    """
+    flagged, summary = flag_ticks(
+        frame.sort_values([game_col, ts_col], kind="mergesort"),
+        game_col=game_col, ts_col=ts_col, market_col=market_col, model_col=model_col,
+        loss_col=loss_col, eps=eps,
+    )
+    informative = flagged[flagged["is_informative"]]
+    block: Dict[str, Any] = dict(summary)
+    block["n_games_informative"] = int(informative[game_col].nunique())
+    if block["n_games_informative"] >= 2:
+        dm = diebold_mariano(informative[loss_col].astype(float).tolist(),
+                             informative[game_col].astype(str).tolist())
+        block["ci95_informative"] = [float(dm.ci95[0]), float(dm.ci95[1])]
+        block["dm_p_informative"] = float(dm.p_value)
+        block["mean_loss_differential_informative"] = float(dm.mean_diff)
+    else:
+        block["ci95_informative"] = None
+        block["ci95_informative_absent_because"] = "fewer than 2 informative game clusters"
+    block["note"] = ("S87: the headline CI stays as published (all rows); ci95_informative "
+                     "re-quotes the same paired losses on informative ticks only. No bar moved.")
+    artifact[key] = block
+    return artifact
+
 def _demo() -> None:
     frame = pd.DataFrame(
         {

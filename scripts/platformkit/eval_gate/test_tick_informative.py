@@ -7,7 +7,9 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from scripts.platformkit.eval_gate.tick_informative import _ARTIFACTS, _CACHE, flag_ticks, requote
+from scripts.platformkit.eval_gate.tick_informative import (
+    _ARTIFACTS, _CACHE, attach_informative_summary, flag_ticks, requote,
+)
 
 
 def _frame() -> pd.DataFrame:
@@ -68,3 +70,68 @@ def test_requote_reproduces_the_published_ci(name):
     assert row["published_ci_reproduced_from_series"] is True
     assert row["after_informative"]["n"] == row["tick_flags"]["n_informative"]
     assert row["after_informative"]["n"] <= row["before_all_rows"]["n"]
+
+
+# --- S87b: the helper, and one real writer wired to it ------------------------
+
+
+def test_attach_informative_summary_adds_the_triple_without_touching_the_headline():
+    artifact = {"verdict": "SCREEN_NULL", "dm": {"ci95": [-0.1, 0.2]}}
+    frame = _frame()
+    out = attach_informative_summary(artifact, frame, "loss_differential")
+    block = out["tick_informative"]
+    assert artifact is out and out["dm"]["ci95"] == [-0.1, 0.2]      # headline untouched
+    assert out["verdict"] == "SCREEN_NULL"
+    assert (block["n"], block["n_informative"]) == (7, 5)
+    assert block["n_eff_icc"] is not None and block["ci95_informative"] is not None
+    assert len(block["ci95_informative"]) == 2
+    assert list(frame.columns) == list(_frame().columns)             # input frame not mutated
+
+
+def test_attach_is_row_order_independent():
+    shuffled = _frame().iloc[[6, 2, 0, 5, 4, 3, 1]].reset_index(drop=True)
+    a, b = {}, {}
+    attach_informative_summary(a, _frame(), "loss_differential")
+    attach_informative_summary(b, shuffled, "loss_differential")
+    assert a["tick_informative"]["n_informative"] == b["tick_informative"]["n_informative"]
+    assert a["tick_informative"]["ci95_informative"] == b["tick_informative"]["ci95_informative"]
+
+
+def test_attach_reports_no_ci_when_one_cluster():
+    one = _frame()[_frame()["game"] == "g1"].reset_index(drop=True)
+    block = attach_informative_summary({}, one, "loss_differential")["tick_informative"]
+    assert block["ci95_informative"] is None
+    assert block["ci95_informative_absent_because"]
+    assert block["n"] == 5 and block["n_informative"] == 3            # the triple still reported
+
+
+def test_s80_writer_reports_the_triple_on_a_synthetic_scored_frame():
+    """The S80 SCREEN writer's own score() -- the wiring, not the corpus."""
+    from types import SimpleNamespace
+
+    from scripts.platformkit.eval_gate import s80_player_grain_screen as s80
+
+    n = 8
+    scored = pd.DataFrame({
+        "game": ["g1"] * 4 + ["g2"] * 4,
+        "timestamp": ["t0", "t1", "t2", "t3"] * 2,
+        "date": ["2026-07-09"] * n,
+        "outcome": [1, 1, 0, 0, 1, 0, 1, 0],
+        "pitcher_id": list(range(n)),
+        "z": [0.1] * n, "z_std": [0.1] * n, "beta": [0.0] * n, "weight": [1.0] * n,
+        # market/model repeat within g1 (held) and move within g2 (informative)
+        "market_prob": [0.55, 0.55, 0.55, 0.55, 0.50, 0.52, 0.54, 0.56],
+        "p_incumbent": [0.60] * 4 + [0.50, 0.53, 0.55, 0.57],
+        "p_candidate": [0.60, 0.60, 0.60, 0.60, 0.51, 0.54, 0.56, 0.58],
+    })
+    part = SimpleNamespace(basis="game", seed=0, screen_sha256="a" * 8, verdict_sha256="b" * 8,
+                           screen_ids=["g1", "g2"], verdict_ids=[])
+    summary, series = s80.score(scored, [], part, embargo_days=1)
+    block = summary["tick_informative"]
+    assert block["n"] == len(series) == n
+    assert block["n_informative"] == 5                # g1 t1..t3 held on both sides
+    assert block["n_held_market"] == 3 and block["n_dup"] == 0
+    assert block["n_eff_icc"] is not None
+    assert len(block["ci95_informative"]) == 2
+    # the published CI is untouched -- the informative one is a SECOND number beside it
+    assert summary["dm"]["ci95"] != block["ci95_informative"]

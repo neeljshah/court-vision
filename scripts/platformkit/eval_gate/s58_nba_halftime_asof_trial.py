@@ -117,7 +117,10 @@ def score(cp: pd.DataFrame, k: int) -> dict:
             "ece_10bin": {"model": _ece(cp["model"].to_numpy(), y), "market": _ece(cp["market"].to_numpy(), y)},
             "pbo": {"pbo": float(pbo.pbo), "n_obs": int(pbo.n_obs), "n_splits": int(pbo.n_splits), "configs": ["model", "neutral_0.5", "p0_only"]},
             "prior_stale_slice": ({"n": int(len(stale)), **{k2: v for k2, v in _unit_row(stale).items() if k2 != "n"}} if len(stale) > 1 else {"n": int(len(stale))}),
-            "ess_note": "one row per game; each game is its own cluster, n_eff = n_games"}
+            "ess_note": "one row per game; each game is its own cluster, n_eff = n_games",
+            "tick_informative": {"grain": "event (one row per game at the halftime anchor)",  # S87
+                                 "n_events": int(len(cp)), "n_informative": int(len(cp)),
+                                 "n_eff": int(len(cp)), "note": "S87: event grain -- one row per game, so no tick can repeat the previous quote; the informative-tick filter does not apply and n_events IS n_informative."}}
 
 
 def run_trial(cp: pd.DataFrame, games: pd.DataFrame, *, ledger_path: Path, prereg_path: Path = PREREG,

@@ -36,6 +36,7 @@ import pandas as pd
 
 from scripts.platformkit.eval_gate.catalog_rescreen import verdict_of
 from scripts.platformkit.eval_gate.dm_test import diebold_mariano
+from scripts.platformkit.eval_gate.tick_informative import attach_informative_summary
 from scripts.platformkit.foundry.tiers import partition_corpus
 from scripts.platformkit.ingame.nba_mechanism_ladder import (_BASE_COLS, _fit_predict,
                                                              build_crosswalk, load_corpus)
@@ -254,6 +255,8 @@ def score(scored: pd.DataFrame, folds: List[dict], part, *, embargo_days: int,
                        ("loss_market", l_mkt), ("loss_differential", diff)):
         series[name] = vals
     series["cluster_id"] = series["game"]
+    attach_informative_summary(summary, series, "loss_differential", ts_col="ts",   # S87
+                               market_col="market_prob", model_col="p_candidate")
     return summary, series
 
 

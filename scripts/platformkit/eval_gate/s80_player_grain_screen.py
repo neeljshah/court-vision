@@ -31,6 +31,7 @@ import pandas as pd
 
 from scripts.platformkit.eval_gate.catalog_rescreen import verdict_of
 from scripts.platformkit.eval_gate.dm_test import diebold_mariano
+from scripts.platformkit.eval_gate.tick_informative import attach_informative_summary
 from scripts.platformkit.foundry.tiers import partition_corpus
 from scripts.platformkit.ingame import gap_blend_arm as B
 
@@ -232,6 +233,8 @@ def score(scored: pd.DataFrame, folds: List[dict], part, *, embargo_days: int) -
     series["loss_candidate"] = l_cand
     series["loss_differential"] = diff
     series["cluster_id"] = series["game"]
+    attach_informative_summary(summary, series, "loss_differential",           # S87
+                               market_col="market_prob", model_col="p_candidate")
     return summary, series
 
 

@@ -26,6 +26,7 @@ from scripts.platformkit.eval_gate.backtest_runner import _charge_ledger
 from scripts.platformkit.eval_gate.dm_test import diebold_mariano
 from scripts.platformkit.eval_gate.family_bars import dual_bar_verdict, render_bars
 from scripts.platformkit.eval_gate.pbo import cscv_pbo
+from scripts.platformkit.eval_gate.tick_informative import attach_informative_summary
 from scripts.platformkit.eval_gate.stacker import _finite, _first_dates, brier, e2_gd_series, e4_gd_series
 from scripts.platformkit.ingame.gap_effective_n import effective_sample_size
 
@@ -63,7 +64,7 @@ def score_slice(ticks: Sequence[dict], cand: Series, inc: Series, idxs: Sequence
     for name, s in (extra or {}).items():
         if all(_finite(s[i]) for i in idxs): cols[name] = np.array([float(s[i]) for i in idxs])  # noqa: E701
     pbo = cscv_pbo(np.column_stack(list(cols.values())), y.astype(int))
-    return {"n_ticks": len(idxs), "n_games": len(set(games)), "k_at_launch": int(k),
+    res = {"n_ticks": len(idxs), "n_games": len(set(games)), "k_at_launch": int(k),
             "brier": {"candidate_e2_gd": b_c, "incumbent_e4_gd_slice": b_i,
                       **{n: float(brier(v, y)) for n, v in cols.items() if n not in ("candidate", "incumbent")}},
             "improvement": improvement, "bar_improvement": BAR, "conditions": conds, "verdict": verdict,
@@ -73,6 +74,10 @@ def score_slice(ticks: Sequence[dict], cand: Series, inc: Series, idxs: Sequence
             "pbo": {"pbo": float(pbo.pbo), "n_obs": int(pbo.n_obs), "n_splits": int(pbo.n_splits), "configs": list(cols)},
             "ess_scored_differential": {kk: float(vv) for kk, vv in ess.items()},
             "min_corpora_eff_at_launch_k": int(min_corpora_eff(1, k)), "single_window": True}
+    return attach_informative_summary(res, pd.DataFrame({          # S87: n / n_informative / n_eff
+        "game": games, "timestamp": [str(ticks[i]["timestamp"]) for i in idxs],
+        "market": [float(ticks[i]["market_prob"]) for i in idxs],
+        "model": p_c, "loss_differential": d}), "loss_differential")
 
 
 def run_trial(ticks, cand: Series, inc: Series, idxs: Sequence[int], *, ledger_path: Path,

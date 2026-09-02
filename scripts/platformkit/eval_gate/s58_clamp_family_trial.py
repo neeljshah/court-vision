@@ -28,6 +28,7 @@ from scripts.platformkit.eval_gate.cpcv_engine import cpcv_evaluate
 from scripts.platformkit.eval_gate.dm_test import diebold_mariano
 from scripts.platformkit.eval_gate.family_bars import dual_bar_verdict, render_bars
 from scripts.platformkit.eval_gate.pbo import cscv_pbo
+from scripts.platformkit.eval_gate.tick_informative import attach_informative_summary
 from scripts.platformkit.eval_gate.stacker import _finite, _first_dates, brier
 from scripts.platformkit.ingame import gap_blend_arm as B
 from scripts.platformkit.ingame.gap_effective_n import effective_sample_size
@@ -201,7 +202,7 @@ def score(ticks, cand: Series, inc: Series, idxs: Sequence[int], k: int, *, per_
     ess = effective_sample_size(pd.DataFrame({"game": games, "loss_differential": d}))
     pbo = cscv_pbo(np.column_stack(mat), y.astype(int))
     market = np.array([float(ticks[i]["market_prob"]) for i in idxs])
-    return {"n_ticks": len(idxs), "n_games": len(set(games)), "k_at_launch": int(k),
+    res = {"n_ticks": len(idxs), "n_games": len(set(games)), "k_at_launch": int(k),
             "brier": {"candidate_inner_selected": b_c, "incumbent_e4_gd": b_i, "market": float(((market - y) ** 2).mean())},
             "improvement": improvement, "bar_improvement": BAR, "conditions": conds, "verdict": verdict,
             "dm": {"stat": float(dm.dm_stat), "p_raw": raw_p, "ci95": [float(dm.ci95[0]), float(dm.ci95[1])], "n_clusters": int(dm.n_clusters)},
@@ -209,6 +210,9 @@ def score(ticks, cand: Series, inc: Series, idxs: Sequence[int], k: int, *, per_
             "pbo": {"pbo": float(pbo.pbo), "n_obs": int(pbo.n_obs), "n_splits": int(pbo.n_splits), "configs": list(per_config)},
             "ess_scored_differential": {kk: float(vv) for kk, vv in ess.items()},
             "min_corpora_eff_at_launch_k": int(min_corpora_eff(1, k)), "single_window": True}
+    return attach_informative_summary(res, pd.DataFrame({          # S87: n / n_informative / n_eff
+        "game": games, "timestamp": [str(ticks[i]["timestamp"]) for i in idxs],
+        "market": market, "model": p_c, "loss_differential": d}), "loss_differential")
 
 
 def run_trial(ticks, frame: pd.DataFrame, idxs: Sequence[int], *, ledger_path: Path, prereg_path: Path = PREREG,
