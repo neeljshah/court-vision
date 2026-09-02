@@ -170,11 +170,18 @@ def game_states(ticks: Sequence[Mapping[str, Any]], arms: Mapping[str, Series]) 
 
 def hedge_predictor(arm_names: Sequence[str], t_rounds: int):
     """Batch Hedge over a CPCV path's purged train games (final weights are
-    order-invariant), cached per train-set identity."""
-    cache: Dict[int, hc.HedgeState] = {}
+    order-invariant), cached per train-set CONTENT.
+
+    RT-2: keying on ``id(train)`` served one split's Hedge state to another --
+    cpcv_evaluate rebinds ``train_states`` per split and CPython reuses the
+    freed address (64 states / 28 splits -> 3 distinct addresses, 400 of 448
+    predictor calls served a stale split's weights, which can include the
+    current test block). The key is the train game_id set, so a different
+    train set can never hit another split's entry."""
+    cache: Dict[tuple, hc.HedgeState] = {}
 
     def predict(train: List[dict], test: dict, _select_inside: bool) -> float:
-        key = id(train)
+        key = tuple(sorted(str(s["game_id"]) for s in train))
         if key not in cache:
             state = hc.initial_state(arm_names, t_rounds)
             for s in train:

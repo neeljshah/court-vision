@@ -87,3 +87,29 @@ def test_candidate_mode_single_arm_is_the_arm_and_e4_runs():
     block = R.pbo_block(ticks, R.e4_configs(ticks, features, only), "mlb", mixtures=False)
     assert "uniform" not in block["configs"] and set(block["configs"]) >= {"e4_guard_only", "e4_blend", "raw_model"}
     assert set(R.E4_VARIANTS) <= set(block["configs"])
+
+
+def _uncached_hedge(arm_names, t_rounds):
+    """Reference predictor: refits Hedge from scratch on every call (no cache)."""
+    def predict(train, test, _select_inside):
+        state = hc.initial_state(arm_names, t_rounds)
+        for s in train:
+            state = hc.fold_settlement(state, s["game_id"], s["features"]["arm_ticks"], s["outcome"])
+        p = hc.predict(state, test["features"]["checkpoint"])
+        return float(p if p is not None else test["features"]["checkpoint"]["raw_model"])
+    return predict
+
+
+def test_hedge_predictor_cache_is_keyed_on_train_content_not_address():
+    """RT-2: `key = id(train)` served one CPCV split's Hedge state to another
+    (CPython reuses the freed list address), so weights fit on a different
+    split's games -- possibly including the current test block -- priced the
+    test rows. The cached predictor must agree with an uncached refit on EVERY
+    row of a multi-split path."""
+    ticks, arms = _ticks(n_dates=16)              # 16 dates x 4 games = 64 games
+    states = A.game_states(ticks, arms)
+    names = tuple(arms)
+    cached = cpcv_evaluate(states, A.hedge_predictor(names, 371), n_groups=8, n_test_groups=2)
+    fresh = cpcv_evaluate(states, _uncached_hedge(names, 371), n_groups=8, n_test_groups=2)
+    assert len({r["split_id"] for r in cached}) >= 20   # enough splits to reuse addresses
+    assert [r["p_model"] for r in cached] == [r["p_model"] for r in fresh]
