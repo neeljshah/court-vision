@@ -1,4 +1,4 @@
-GAP G64 | sport baseball | worktree a9 | log cx_g64_segment_count_bisect
+ sport baseball | sport baseball | worktree a2 | log cx_g64_segment_count_bisect
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it, including A7; self-check every
 line of section B before you report. BISECT, do not fix. Name what changed; stop there.
 PREMISE (step 0, reproduce it): G33B attempt 2 located both 2026-09-01 DAY clips on the pod and
@@ -54,7 +54,7 @@ the axes tested and ruled out, the named cause or an honest cannot-determine, th
 described from having viewed them, and a NOT VERIFIED list.
 TEST: exactly one new per-file test if you add code; run only that file. Never a full pytest.
 POD: READ-ONLY. No scp, no deploy, no daemon restart, never kill anything.
-COMMIT: explicit pathspec only (never the whole tree, never the gitignored local trees), in a9,
+COMMIT: explicit pathspec only (never the whole tree, never the gitignored local trees), in a2,
 no push. Report the sha.
 SHARED MODULE: none.
 NEVER PARK: do not poll your own jobs in a blocking loop; never end waiting.
