@@ -27,6 +27,10 @@ class JoinSpec:
     fallback_b: str
     name_a: str
     name_b: str
+    # ponytail: two optional knobs cover tennis; add a third only if a third
+    # sport actually needs one.
+    price_suffixes: tuple[str, ...] = ()
+    spine_files: tuple[str, ...] = ()
 
 
 _SPECS = {
@@ -35,6 +39,16 @@ _SPECS = {
         side_a="ou_close_over", side_b="ou_close_under",
         fallback_a="avgc_over", fallback_b="avgc_under",
         name_a="over25", name_b="under25",
+    ),
+    # ATP/WTA stay two corpus_units and are never pooled. `ps_*`/`b365_*` are the
+    # de-leaked p1/p2 columns; the winner/loser `*w`/`*l` columns are LEAKY.
+    "tennis": JoinSpec(
+        sport="tennis", spine="event_id", date_col="date",
+        side_a="ps_p1", side_b="ps_p2",
+        fallback_a="b365_p1", fallback_b="b365_p2",
+        name_a="p1_win", name_b="p2_win",
+        price_suffixes=("_p1", "_p2"),
+        spine_files=("matches.parquet", "wta_matches.parquet"),
     ),
 }
 
@@ -55,8 +69,28 @@ def _number(frame: pd.DataFrame, primary: str, fallback: str) -> pd.Series:
     return value.astype(float)
 
 
+def _check_orientation(spec: JoinSpec) -> None:
+    """Refuse leaky winner/loser price columns; enforce declared side suffixes.
+
+    A winner/loser oriented column knows the outcome and can never be a legal
+    close column: ``*_w``/``*_l`` is refused for every sport, and where a spec
+    declares ``price_suffixes`` the bare bookmaker form (``psw``, ``b365l``) is
+    refused too. Those suffixes also pin the tennis de-leaked ``_p1``/``_p2``
+    pair positively -- anything else raises.
+    """
+    for column in (spec.side_a, spec.side_b, spec.fallback_a, spec.fallback_b):
+        off_spec = bool(spec.price_suffixes) and not column.endswith(spec.price_suffixes)
+        if column.endswith(("_w", "_l")) or (off_spec and column.endswith(("w", "l"))):
+            raise ValueError(
+                f"leaky winner/loser close column: {column!r} (use the de-leaked pair)")
+        if off_spec:
+            raise ValueError(
+                f"close column {column!r} must end with one of {spec.price_suffixes}")
+
+
 def close_column(odds: pd.DataFrame, spec: JoinSpec) -> pd.Series:
     """Return fair probability for ``name_a`` and expose all close-drop counts."""
+    _check_orientation(spec)
     price_a = _number(odds, spec.side_a, spec.fallback_a)
     price_b = _number(odds, spec.side_b, spec.fallback_b)
     missing = price_a.isna() | price_b.isna()
@@ -81,8 +115,62 @@ def _paths(sport: str) -> tuple[Path, Path]:
     return base / "odds.parquet", base / "matches.parquet"
 
 
+def _named_spine(spec: JoinSpec) -> pd.DataFrame:
+    """Union the per-unit spine files, exposing date + the two side names."""
+    base = _ROOT / "data" / "domains" / spec.sport
+    frames = []
+    for filename in spec.spine_files:
+        path = base / filename
+        if not path.exists():
+            raise FileNotFoundError(f"missing spine file: {path}")
+        frame = pd.read_parquet(path)
+        frames.append(frame[[spec.spine, spec.date_col, "p1_name", "p2_name"]])
+    spine = pd.concat(frames, ignore_index=True).rename(
+        columns={"p1_name": "home_team", "p2_name": "away_team"})
+    spine[spec.spine] = spine[spec.spine].astype(str)
+    return spine
+
+
+def _joined_spine_first(spec: JoinSpec, start: str | None, end: str | None):
+    """Join odds ONTO the full corpus spine: every spine row stays in the denominator."""
+    odds_path = _ROOT / "data" / "domains" / spec.sport / "odds.parquet"
+    if not odds_path.exists():
+        raise FileNotFoundError(f"missing local close inputs: {odds_path}")
+    odds = pd.read_parquet(odds_path).copy()
+    odds[spec.spine] = odds[spec.spine].astype(str)
+    # A colliding event_id names two DIFFERENT real matches while the spine holds
+    # one row for it; attaching either price set would mislabel that row, so both
+    # sides are dropped and counted rather than silently kept-first.
+    ambiguous = odds[spec.spine].duplicated(keep=False)
+    odds = odds.loc[~ambiguous].copy()
+    close = close_column(odds, spec)
+    counts = dict(close.attrs)
+    counts["ambiguous_event_id_drop_count"] = int(ambiguous.sum())
+    odds = odds[[spec.spine]].copy()
+    odds["devig_close_prob"] = close
+
+    corpus = load_gate_corpus(spec.sport).copy()
+    corpus[spec.spine] = corpus[spec.spine].astype(str)
+    spine = _named_spine(spec)
+    for name, frame in (("odds", odds), ("spine", spine), ("corpus", corpus)):
+        if frame[spec.spine].duplicated().any():
+            raise ValueError(f"duplicate {spec.spine} in {name}")
+    joined = corpus[[spec.spine, "corpus_unit", "y", "p_base"]].merge(
+        spine, on=spec.spine, how="left", validate="one_to_one")
+    joined[spec.date_col] = pd.to_datetime(joined[spec.date_col], errors="raise")
+    if start is not None:
+        joined = joined.loc[joined[spec.date_col] >= pd.Timestamp(start)].copy()
+    if end is not None:
+        joined = joined.loc[joined[spec.date_col] <= pd.Timestamp(end)].copy()
+    joined = joined.merge(
+        odds, on=spec.spine, how="left", validate="one_to_one", indicator="_spine_join")
+    return joined, counts
+
+
 def _joined(sport: str, start: str | None = None, end: str | None = None) -> tuple[pd.DataFrame, dict[str, int]]:
     spec = _spec(sport)
+    if spec.spine_files:
+        return _joined_spine_first(spec, start, end)
     odds_path, matches_path = _paths(sport)
     if not odds_path.exists() or not matches_path.exists():
         raise FileNotFoundError(f"missing local close inputs: {odds_path} or {matches_path}")
@@ -130,6 +218,8 @@ def gate_corpus_states(sport: str, start: str, end: str) -> list[dict]:
             "feature_avail": {"p_base": f"{day}T00:00:00"},
             "devig_close_prob": float(row.devig_close_prob), "truth_wp": float(row.y),
             "outcome": int(row.y),
+            # S34: no real odds timestamp exists yet, so state_ts is constructed.
+            "vintage": "SYNTHETIC",
         })
     return states
 
@@ -148,20 +238,36 @@ def coverage_report(sport: str) -> dict[str, Any]:
     close = joined.loc[scored, "devig_close_prob"].to_numpy(float)
     base = joined.loc[scored, "p_base"].to_numpy(float)
 
-    def summary(frame: pd.DataFrame) -> dict[str, float | int]:
+    def summary(frame: pd.DataFrame) -> dict[str, Any]:
         total = len(frame)
         hit = int(frame["_spine_join"].eq("both").sum())
-        return {"denominator": total, "joined": hit, "join_rate": _rate(hit, total)}
+        fit = frame.loc[scored.reindex(frame.index, fill_value=False)]
+        out: dict[str, Any] = {
+            "denominator": total, "joined": hit, "join_rate": _rate(hit, total),
+            "scored": len(fit),
+        }
+        if len(fit):
+            truth = fit["y"].to_numpy(float)
+            out["brier_devig_close"] = float(np.mean((fit["devig_close_prob"].to_numpy(float) - truth) ** 2))
+            out["brier_p_base"] = float(np.mean((fit["p_base"].to_numpy(float) - truth) ** 2))
+        return out
 
     by_year = {
         str(year): summary(frame) for year, frame in joined.groupby(joined["date"].dt.year, sort=True)
     }
+    # S35: the FULL spine per unit is the denominator -- never `joined.loc[matched]`,
+    # which would make every per-unit join_rate a tautological 1.0.
     by_unit = {
-        str(unit): summary(frame) for unit, frame in joined.loc[matched].groupby("corpus_unit", sort=True)
+        str(unit): summary(frame) for unit, frame in joined.groupby("corpus_unit", sort=True)
     }
+    unjoined = int((~matched).sum())
+    if unjoined and any(u["join_rate"] == 1.0 for u in by_unit.values()):
+        raise ValueError("degenerate by_corpus_unit denominator: per-unit rate 1.0 with unjoined rows")
     return {
         "sport": sport, "denominator": denominator, "joined": int(matched.sum()),
-        "unjoined": int((~matched).sum()), "join_rate": _rate(int(matched.sum()), denominator),
+        "unjoined": unjoined, "join_rate": _rate(int(matched.sum()), denominator),
+        # S34: states/close rows carry no real odds timestamp yet.
+        "vintage": "SYNTHETIC",
         **drops, "scored": int(scored.sum()),
         "brier_devig_close": float(np.mean((close - y) ** 2)) if len(y) else None,
         "brier_p_base": float(np.mean((base - y) ** 2)) if len(y) else None,

@@ -1,0 +1,73 @@
+"""Focused tests for the tennis decimal-close join (ATP/WTA, de-leaked p1/p2)."""
+from __future__ import annotations
+
+import numpy as np
+import pandas as pd
+import pytest
+
+from scripts.platformkit.eval_gate.close_join import (
+    JoinSpec, close_column, coverage_report,
+)
+
+_SPEC = JoinSpec(
+    "tennis", "event_id", "date", "ps_p1", "ps_p2", "b365_p1", "b365_p2",
+    "p1_win", "p2_win", price_suffixes=("_p1", "_p2"),
+)
+
+# The full spines the S03 acceptance rule fixes as the per-unit denominators.
+_SPINE = {"ATP": 30616, "WTA": 11270}
+
+
+def test_winner_loser_columns_are_refused():
+    leaky = JoinSpec("tennis", "event_id", "date", "psw", "psl", "b365w", "b365l",
+                     "p1_win", "p2_win", price_suffixes=("_p1", "_p2"))
+    frame = pd.DataFrame({"psw": [2.0], "psl": [2.0], "b365w": [2.0], "b365l": [2.0]})
+    with pytest.raises(ValueError, match="leaky winner/loser"):
+        close_column(frame, leaky)
+
+
+def test_non_p1_p2_suffix_is_refused():
+    odd = JoinSpec("tennis", "event_id", "date", "ps_home", "ps_p2", "b365_p1", "b365_p2",
+                   "p1_win", "p2_win", price_suffixes=("_p1", "_p2"))
+    with pytest.raises(ValueError, match="must end with"):
+        close_column(pd.DataFrame({"ps_home": [2.0], "ps_p2": [2.0]}), odd)
+
+
+def test_null_pinnacle_price_joins_through_the_b365_fallback():
+    frame = pd.DataFrame({
+        "ps_p1": [2.0, np.nan], "ps_p2": [2.0, np.nan],
+        "b365_p1": [5.0, 2.0], "b365_p2": [5.0, 4.0],
+    })
+    result = close_column(frame, _SPEC)
+    assert result.iloc[0] == 0.5              # ps_* wins when present
+    assert result.iloc[1] == 2.0 / 3.0        # b365_* fallback carries the null row
+    assert result.attrs["null_close_count"] == 0
+    assert result.attrs["valid_close_count"] == 2
+
+
+def test_bad_tennis_prices_are_dropped_and_counted():
+    frame = pd.DataFrame({
+        "ps_p1": [2.0, 1.0, np.nan], "ps_p2": [2.0, 2.0, 2.0],
+        "b365_p1": [np.nan, np.nan, np.nan], "b365_p2": [np.nan, np.nan, np.nan],
+    })
+    result = close_column(frame, _SPEC)
+    assert result.notna().sum() == 1
+    assert result.attrs["bad_price_drop_count"] == 1
+    assert result.attrs["null_close_count"] == 1
+
+
+def test_coverage_report_keys_and_full_spine_denominators():
+    report = coverage_report("tennis")
+    assert report["vintage"] == "SYNTHETIC"          # S34
+    assert report["by_year"] and report["by_corpus_unit"]
+    assert set(report["by_corpus_unit"]) == set(_SPINE)
+    assert report["unjoined"] > 0
+    for unit, spine_rows in _SPINE.items():
+        block = report["by_corpus_unit"][unit]
+        # S35: the FULL spine is the denominator, so a 1.0 rate is impossible here.
+        assert block["denominator"] == spine_rows
+        assert block["joined"] < spine_rows
+        assert block["join_rate"] < 1.0
+        assert block["brier_devig_close"] < block["brier_p_base"]
+    assert sum(b["denominator"] for b in report["by_corpus_unit"].values()) == report["denominator"]
+    assert sum(b["denominator"] for b in report["by_year"].values()) == report["denominator"]
