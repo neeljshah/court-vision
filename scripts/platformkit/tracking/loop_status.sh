@@ -28,3 +28,4 @@ ssh -o ConnectTimeout=15 -p "${POD_PORT:-40193}" "root@${POD_HOST:-213.192.2.83}
    for p in /proc/[0-9]*/cmdline; do c=$(tr "\0" " " < $p 2>/dev/null); case "$c" in *run_pod_capture*) echo "  capture_alive";; esac; done | head -1; \
    nvidia-smi --query-gpu=utilization.gpu,memory.used --format=csv,noheader | sed "s/^/  gpu /"; \
    tail -1 /workspace/track_daemon_ledger.jsonl 2>/dev/null | cut -c1-120' 2>/dev/null || echo "  pod unreachable"
+python "$REPO/scripts/platformkit/tracking/pod_drift.py" --repo "$REPO"
