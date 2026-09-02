@@ -125,12 +125,14 @@ class MlbOutcomeResolver:
     """
 
     def __init__(self, box_df: Any = None,
-                 box_parquet: Optional[Path] = None) -> None:
+                 box_parquet: Optional[Path] = None,
+                 games_fallback: bool = True) -> None:
         self._ok = False
         self._abbrs: set = set()
         # (date, away, home) -> [(start_time_iso_str, (home_score, away_score)), ...]
         # A list because a doubleheader legitimately has 2 rows for one key.
         self._rows: Dict[Tuple[Any, str, str], list] = {}
+        self._fb: Dict[Tuple[Any, str, str], list] = {}  # S91 second source
         try:
             df = box_df
             if df is None:
@@ -143,12 +145,25 @@ class MlbOutcomeResolver:
             self._ok = True
         except Exception as exc:  # noqa: BLE001 -- no parquet -> resolver is inert, not fatal
             logger.debug("MlbOutcomeResolver init failed: %s", exc)
+        if games_fallback and box_df is None:
+            self._load_fallback()
 
-    def _ingest(self, df: Any) -> None:
+    def _load_fallback(self) -> None:
+        """S91: games{,_current}.parquet finals -> _fb. Never raises."""
+        try:
+            from scripts.platformkit.ingame import mlb_games_outcome_fallback as _g
+            if (df := _g.load_games_box_frame()) is not None:
+                self._ingest(df, into=self._fb)
+            self._ok = self._ok or bool(self._fb)
+        except Exception as exc:  # noqa: BLE001 -- no fallback is not fatal
+            logger.debug("MlbOutcomeResolver fallback load failed: %s", exc)
+
+    def _ingest(self, df: Any, into: Optional[Dict] = None) -> None:
         import pandas as pd
+        target = self._rows if into is None else into
         d = df[df["status"].astype(str).str.upper().str.endswith("FINAL")].copy()
         d["date"] = pd.to_datetime(d["date"], errors="coerce")
-        self._abbrs = set(d["home_abbr"].astype(str)) | set(d["away_abbr"].astype(str))
+        self._abbrs |= set(d["home_abbr"].astype(str)) | set(d["away_abbr"].astype(str))
         has_st = "start_time" in d.columns
         for _, r in d.iterrows():
             try:
@@ -159,14 +174,15 @@ class MlbOutcomeResolver:
                 continue
             key = (r["date"].date(), str(r["away_abbr"]), str(r["home_abbr"]))
             st = str(r["start_time"]) if has_st and pd.notna(r["start_time"]) else ""
-            self._rows.setdefault(key, []).append((st, (int(hs), int(as_))))
+            target.setdefault(key, []).append((st, (int(hs), int(as_))))
 
     @property
     def available(self) -> bool:
-        return self._ok and bool(self._rows)
+        return self._ok and bool(self._rows or self._fb)
 
     def _pick(self, key: Tuple[Any, str, str], game_number: Optional[int],
-              ticker_hhmm: Optional[str] = None) -> Optional[Tuple[int, int]]:
+              ticker_hhmm: Optional[str] = None,
+              rows_map: Optional[Dict] = None) -> Optional[Tuple[int, int]]:
         """Pick ONE final score for a (date, away, home) key, doubleheader-aware.
 
         game_number None + exactly 1 row -> that row (the pre-doubleheader path).
@@ -175,7 +191,7 @@ class MlbOutcomeResolver:
         game_number N -> rows ordered by start_time (ISO strings sort correctly),
         G1 = earliest; N beyond the finals on disk, or 2+ rows we cannot order
         (missing start_time), -> None (fail closed, never a guess)."""
-        rows = self._rows.get(key)
+        rows = (self._rows if rows_map is None else rows_map).get(key)
         if not rows:
             return None
         if game_number is None:
@@ -238,6 +254,10 @@ class MlbOutcomeResolver:
             score = self._pick((date + _dt.timedelta(days=delta), away, home), gnum, hhmm)
             if score is not None:
                 return score
+        # S91: games.parquet finals, EXACT date only (+/-1 mislabels, 1 in 225).
+        fb = self._pick((date, away, home), gnum, hhmm, self._fb)
+        if fb is not None:
+            return fb
         # delta=-1 is RISK-SCOPED, not forbidden outright: a naive -1 caused a live
         # 2026-07-07 wrong-match (a bet on the 07-08 MIL@STL game settled against
         # 07-07's just-final G1 score). Reinstated ONLY when (a) delta 0 AND +1
