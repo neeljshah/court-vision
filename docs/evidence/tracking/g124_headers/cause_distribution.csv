@@ -1,0 +1,8 @@
+cause_class,opened_thin_outcomes,share
+source_missing_or_historically_unattributable,13,0.8667
+non_game_footage,1,0.0667
+decode_failure_after_open,1,0.0667
+adapter_exception_after_header,0,0.0000
+detector_no_observations_on_usable_game,0,0.0000
+source_corrupt_or_truncated,0,0.0000
+insufficient_retained_evidence,0,0.0000

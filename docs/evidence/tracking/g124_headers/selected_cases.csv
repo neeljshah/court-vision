@@ -1,0 +1,16 @@
+selection_group,sport,ledger_line,game_id,historical_rows,job_seconds,current_csv_rows,current_csv_bytes,input_presence,input_bytes,log_tail_summary,cause_class,eye_check
+systematic,baseball,62,npb_02,184,833,43025,3255953,absent,,,source_missing_or_historically_unattributable,
+systematic,baseball,94,npb_10,7,819,43625,3291500,absent,,,source_missing_or_historically_unattributable,
+systematic,baseball,139,kbo_10,150,2388,82967,6267198,absent,,,source_missing_or_historically_unattributable,
+systematic,football,14,football_17DHInPNTnY,0,45,0,23,absent,,empty harness tail,source_missing_or_historically_unattributable,
+systematic,football,56,football_lsYEcWf4Zbg,0,2228,16305,1203408,absent,,NMS warning then empty harness tail,source_missing_or_historically_unattributable,
+systematic,football,138,football_owXX5PI64gU,0,2297,9635,710691,absent,,empty harness tail,source_missing_or_historically_unattributable,
+systematic,kbo,118,kbo_hl_xGuMseB8,0,732,9950,738520,absent,,empty harness tail,source_missing_or_historically_unattributable,
+systematic,kbo,169,kbo_hl_xGuMseB8,0,15,9950,738520,absent,,ModuleNotFoundError domains.baseball.tracking.field_mask,source_missing_or_historically_unattributable,
+systematic,mlb,163,mlb_nLoG6gvC-Nk,393,30,23345,1769353,absent,,,source_missing_or_historically_unattributable,
+systematic,mlb,212,mlb_A5AkcaXA2fk,0,30,15889,1190870,absent,,empty harness tail,source_missing_or_historically_unattributable,
+systematic,soccer,68,soccer_HxBqMbI5kqQ,256,4304,91744,6950503,absent,,,source_missing_or_historically_unattributable,
+systematic,tennis,360,tennis_nyYk2nPZAwY,415,317,415,36992,present,68996181,adapter completed with 415 rows,source_missing_or_historically_unattributable,g113_content/renders/tennis/tennis__tennis_nyYk2nPZAwY__s1_f008275.jpg|g113_content/renders/tennis/tennis__tennis_nyYk2nPZAwY__s2_f011066.jpg|g113_content/renders/tennis/tennis__tennis_nyYk2nPZAwY__s3_f021086.jpg
+g100_spot_check,football,3,football_a7OUF22mt-I,0,40,0,23,absent,,empty harness tail,source_missing_or_historically_unattributable,
+g100_spot_check,mlb,225,mlb_FGtFanovws4,0,255,0,64,present,23277425,empty harness tail,non_game_footage,g113_content/renders/mlb/mlb__mlb_FGtFanovws4__s1_f007653.jpg|g113_content/renders/mlb/mlb__mlb_FGtFanovws4__s2_f033044.jpg|g113_content/renders/mlb/mlb__mlb_FGtFanovws4__s3_f039499.jpg
+g100_spot_check,tennis,128,tennis_10,0,90,0,87,present,97325005,FileNotFoundError Could not open video,decode_failure_after_open,g113_content/renders/tennis/tennis__tennis_10__s1_f000937.jpg|g113_content/renders/tennis/tennis__tennis_10__s2_f003736.jpg|g113_content/renders/tennis/tennis__tennis_10__s3_f006258.jpg
