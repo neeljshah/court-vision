@@ -1,0 +1,61 @@
+{
+  "contract": "docs/evidence/tracking/VERIFIER_CONTRACT.md",
+  "g47_snapshot_recompute": {
+    "football": {
+      "before": {"contract_only": 30, "reports": 42},
+      "moved_contract_only": 4,
+      "after": {"contract_only": 26, "reports": 38}
+    },
+    "soccer": {
+      "before": {"contract_only": 15, "reports": 25},
+      "moved_contract_only": 4,
+      "after": {"contract_only": 19, "reports": 29}
+    }
+  },
+  "clips": [
+    {
+      "game_id": "football_34GmmlakBYU",
+      "g99_contact_sheet": "docs/evidence/tracking/g99_corpus_audit/clip_002.jpg",
+      "corpus_after": "data/footage_corpus/soccer__football_34GmmlakBYU.mp4",
+      "report_after": "data/tracking_reports/soccer/football_34GmmlakBYU.json",
+      "content_sha256": "336312ed55680f51423c8e245c6fed63c54f1d336976388ca9fb7581acadc317",
+      "before_sport": "football",
+      "after_sport": "soccer",
+      "before_verdict": "coordinate_contract",
+      "after_verdict": "coordinate_contract"
+    },
+    {
+      "game_id": "football_B7znSVfBnM4",
+      "g99_contact_sheet": "docs/evidence/tracking/g99_corpus_audit/clip_004.jpg",
+      "corpus_after": "data/footage_corpus/soccer__football_B7znSVfBnM4.mp4",
+      "report_after": "data/tracking_reports/soccer/football_B7znSVfBnM4.json",
+      "content_sha256": "b63b668913ae71c52a98f460a240ad6cbb0bf8ab46b19bf4e472bf6eeeb849d8",
+      "before_sport": "football",
+      "after_sport": "soccer",
+      "before_verdict": "coordinate_contract",
+      "after_verdict": "coordinate_contract"
+    },
+    {
+      "game_id": "football_gek9fXGlwas",
+      "g99_contact_sheet": "docs/evidence/tracking/g99_corpus_audit/clip_005.jpg",
+      "corpus_after": "data/footage_corpus/soccer__football_gek9fXGlwas.mp4",
+      "report_after": "data/tracking_reports/soccer/football_gek9fXGlwas.json",
+      "content_sha256": "775d88c7e0a483fc57b32ff9d117ee2b60df84fe5fab7a5dec8e1e7a1ba70e37",
+      "before_sport": "football",
+      "after_sport": "soccer",
+      "before_verdict": "coordinate_contract",
+      "after_verdict": "coordinate_contract"
+    },
+    {
+      "game_id": "football_h-_3BmAh9po",
+      "g99_contact_sheet": "docs/evidence/tracking/g99_corpus_audit/clip_006.jpg",
+      "corpus_after": "data/footage_corpus/soccer__football_h-_3BmAh9po.mp4",
+      "report_after": "data/tracking_reports/soccer/football_h-_3BmAh9po.json",
+      "content_sha256": "e55c700ce96aa5e069638dae0ce21f50b601f7b80c2a4cbf1f89bfba7d497696",
+      "before_sport": "football",
+      "after_sport": "soccer",
+      "before_verdict": "coordinate_contract",
+      "after_verdict": "coordinate_contract"
+    }
+  ]
+}
