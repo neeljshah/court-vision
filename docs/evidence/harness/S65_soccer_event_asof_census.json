@@ -1,0 +1,54 @@
+{
+  "label": "DESCRIPTIVE_ONLY",
+  "gap": "S65",
+  "licence": "docs/evidence/harness/LICENCE_statsbomb_open_data.md",
+  "verdict": "CLOSED AT LIMIT",
+  "n_spine_rows": 25834,
+  "n_scored_rows": 16322,
+  "n_statsbomb_in_league_in_window": 1815,
+  "n_unmapped_team_names": 0,
+  "unmapped_team_names": [],
+  "n_overlap_spine": 1740,
+  "n_overlap_spine_distinct_event_ids": 1740,
+  "n_overlap_spine_distinct_match_ids": 1740,
+  "join_label_agreement": 1.0,
+  "overlap_spine_share": 0.067353,
+  "overlap_spine_by_unit": {
+    "SP1": 552,
+    "F1": 398,
+    "E0": 380,
+    "I1": 342,
+    "D1": 68
+  },
+  "n_overlap_scored": 160,
+  "coverage_ceiling_scored": 0.009803,
+  "coverage_ceiling_by_unit": {
+    "SP1": 68,
+    "F1": 58,
+    "D1": 34
+  },
+  "coverage_ceiling_by_competition": {
+    "La_Liga_2020_2021": 35,
+    "1__Bundesliga_2023_2024": 34,
+    "La_Liga_2019_2020": 33,
+    "Ligue_1_2022_2023": 32,
+    "Ligue_1_2021_2022": 26
+  },
+  "min_coverage_bar": 0.25,
+  "bar_shortfall_factor": 25.5,
+  "bar_moved": false,
+  "event_grain_ingredients_present_but_unusable": {
+    "team_time_score_state_conditioned_shot_model": "score state from goal events + minute",
+    "first_goal_timing_predicts_final_result": "minute of the first Shot with outcome Goal",
+    "leading_team_defensive_shell": "score state + shots per minute",
+    "set_piece_vs_open_play_shot_conversion": "shot.type.name",
+    "pressing_intensity_ppda_proxy": "opponent Pass count / own Pressure+Duel+Interception",
+    "goalkeeper_distribution_style": "pass.height.name where pass.type.name == Goal Kick",
+    "formation_change_mid_match_impact": "Tactical Shift event",
+    "first_substitution_timing": "Substitution.minute",
+    "trailing_team_shot_rate_vs_tied": "score state + shots per minute",
+    "xg_additivity_shot_rebound_clusters": "possession id + shot.statsbomb_xg",
+    "defensive_block_depth_counterattack_share": "play_pattern + defensive-action location"
+  },
+  "why": "StatsBomb's full league seasons are 2015/16; the soccer close starts 2019-08-02, so the four full seasons contribute 0 scored rows and only three partial single-team seasons remain."
+}
