@@ -12,7 +12,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from scripts.platformkit.analytics_showcase import mechanism_wiring_mlb
+from scripts.platformkit.analytics_showcase import (
+    mechanism_wiring_mlb, mechanism_wiring_soccer, mechanism_wiring_tennis)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DOMAIN = "data/domains/basketball_nba"
@@ -112,13 +113,15 @@ WIRING: dict[str, dict] = dict([
        "no as-of streak column is persisted at game grain"),
 ])
 
-# Per-sport wiring. Only basketball_nba currently declares trigger columns; the
-# other sports' rows are NOT_TESTABLE, so the corpus machinery below (which reads
-# the NBA game_id-keyed parquets) stays deliberately single-sport until a sport
-# other than NBA actually has a testable row to run.
+# Per-sport wiring. The corpus machinery below (value_table / coverage /
+# column_exposures) reads the NBA game_id-keyed parquets and stays NBA-only on
+# purpose; soccer and tennis triggers are measured against the devigged close by
+# mechanism_close_effect.py, which reads the gate corpora instead.
 WIRING_BY_SPORT: dict[str, dict[str, dict]] = {
     "basketball_nba": WIRING,
     "mlb": mechanism_wiring_mlb.WIRING,
+    "soccer": mechanism_wiring_soccer.WIRING,
+    "tennis": mechanism_wiring_tennis.WIRING,
 }
 TESTABLE_BY_SPORT = {sport: tuple(slug for slug, row in rows.items() if row["expr"])
                      for sport, rows in WIRING_BY_SPORT.items()}

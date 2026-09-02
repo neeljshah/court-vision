@@ -1,0 +1,185 @@
+{
+  "label": "DESCRIPTIVE_ONLY",
+  "edge_claimed": false,
+  "not_a_claim": "CONFIRMED_LOCAL is a descriptive local effect on a frozen corpus with a SYNTHETIC-vintage close (S34); it is uncharged and not walk-forward, so it is not a scored claim.",
+  "generated_at": "2026-09-02T14:39:26.113510+00:00",
+  "as_of": "2026-05-24",
+  "vintage": [
+    "SYNTHETIC"
+  ],
+  "prereg_sha256": "e8d215adbecfacbe363791f2e06f97fb60654395a63128212a3c7cd52a64f02a",
+  "corpus": {
+    "sport": "soccer",
+    "description": "data/cache/combo/gate_corpus_soccer.parquet x close_join, 16322 states 2019-08-02..2026-05-24, outcome = over 2.5 goals",
+    "start": "2015-01-01",
+    "end": "2026-12-31",
+    "n_scored_rows": 16322
+  },
+  "bars": {
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25,
+    "min_unit_rows": 30
+  },
+  "counts": {
+    "mechanisms": 15,
+    "wired": 15,
+    "with_trigger": 0,
+    "not_testable": 15,
+    "by_verdict": {
+      "NOT_TESTABLE": 15
+    }
+  },
+  "rows": [
+    {
+      "mechanism_id": "team_time_score_state_conditioned_shot_model_replicated_null_vs_naive_baseline",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the ingredient is a live (team, time-bucket, score-bucket) cell from the StatsBomb event cache; data/cache/combo/gate_corpus_soccer.parquet has no score_state or time_bucket column -- its eleven feature columns are pregame shot/SOT as-of aggregates. The section's own ledger status is a REPLICATED NULL; it parses as wired here only because the status string contains 'REPLICATED'"
+    },
+    {
+      "mechanism_id": "first_goal_timing_predicts_final_result",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is the in-match first-goal event and the outcome is the match result; data/cache/combo/gate_corpus_soccer.parquet carries no first_goal column, holds no in-match states, and its scored label is the over-2.5-total-goals indicator, not a result label"
+    },
+    {
+      "mechanism_id": "leading_team_defensive_shell_game_state_shot_suppression",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is a live leading-versus-tied score state at StatsBomb event grain and the outcome is shots per minute; data/cache/combo/gate_corpus_soccer.parquet has no score-state column and no shot-rate outcome, only pregame as-of shot/SOT differentials"
+    },
+    {
+      "mechanism_id": "set_piece_vs_open_play_shot_conversion",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the ingredient is shot-grain shot.type.name (Corner / Free Kick versus Open Play); no set-piece share column exists in data/cache/combo/gate_corpus_soccer.parquet -- diff_shots_for_asof and diff_sot_for_asof pool every shot type and cannot be split by origin"
+    },
+    {
+      "mechanism_id": "pressing_intensity_ppda_proxy_vs_opponent_turnover_rate",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the PPDA proxy (opponent passes divided by own Pressure+Duel+Interception count) is an event-grain quantity recomputed in memory by validate_pressing_defense.py; no ppda column is persisted in data/cache/combo/gate_corpus_soccer.parquet and the outcome is an opponent turnover rate, not the corpus over-2.5 label"
+    },
+    {
+      "mechanism_id": "goalkeeper_distribution_style_vs_possession_retention",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is goal-kick pass height at StatsBomb event grain and the outcome is possession retention on that pass; data/cache/combo/gate_corpus_soccer.parquet carries no goal_kick or distribution column and scores a pregame match-total label"
+    },
+    {
+      "mechanism_id": "formation_change_mid_match_impact",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is an in-match Tactical Shift event with pre/post shot-rate windows; data/cache/combo/gate_corpus_soccer.parquet carries no tactical_shift column and holds no in-match states"
+    },
+    {
+      "mechanism_id": "home_advantage_magnitude_collapses_at_neutral_venues",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is a neutral_venue flag measured on data/domains/soccer_intl/results.parquet (49,425 played matches, 1872-2026); data/cache/combo/gate_corpus_soccer.parquet is six domestic league corpus_units with no neutral column, and none of those international matches is a corpus row"
+    },
+    {
+      "mechanism_id": "neutral_venue_split_replicates_across_era_split_half_stability",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the same neutral_venue ingredient as the row above, split by era on the soccer_intl corpus; data/cache/combo/gate_corpus_soccer.parquet carries no neutral column and does not contain those matches, so neither the trigger nor the era split can be built at corpus grain"
+    },
+    {
+      "mechanism_id": "tournament_competitive_context_lifts_the_scoring_environment_vs_friendlies",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is a competitive-versus-friendly competition label on data/domains/soccer_intl/results.parquet; data/cache/combo/gate_corpus_soccer.parquet holds only the six domestic league corpus_units (E0, E1, D1, F1, I1, SP1) and carries no competition-type column, so the friendly arm of the contrast does not exist in it at all"
+    },
+    {
+      "mechanism_id": "trailing_xg_supremacy_is_a_stable_team_trait_persistence_not_incremental_brier",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the ingredient is diff_xg_supremacy_asof from the data/domains/soccer as-of xG family; data/cache/combo/gate_corpus_soccer.parquet carries no xG column at all -- its as-of family is shots and shots-on-target (diff_shots_for_asof, diff_sot_for_asof), a different quantity, and the claim is a split-half persistence property of the trait rather than a per-match trigger"
+    },
+    {
+      "mechanism_id": "first_substitution_timing_early_vs_late_moderates_the_shot_rate_shift",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is the in-match minute of a team's first substitution and the outcome is a shots-per-minute shift around it; data/cache/combo/gate_corpus_soccer.parquet carries no substitution column and holds no in-match windows"
+    },
+    {
+      "mechanism_id": "trailing_team_shot_rate_vs_tied_extends_9_s_leading_tied_state_machine_to_the_previously_discarded_trailing_case",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is a live trailing-versus-tied score state, the same absence as the leading/tied row; data/cache/combo/gate_corpus_soccer.parquet has no score-state column and no shots-per-minute outcome"
+    },
+    {
+      "mechanism_id": "xg_additivity_breaks_down_in_same_team_shot_rebound_clusters_multi_shot_possessions_overstate_combined_scoring_probability",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the unit is a within-match possession id carrying per-shot statsbomb_xg; data/cache/combo/gate_corpus_soccer.parquet is match-grain with neither a possession nor an xG column, and the claim is a calibration property of summed shot xG rather than a pregame trigger on the match label"
+    },
+    {
+      "mechanism_id": "defensive_block_depth_predicts_a_team_s_own_counterattack_shot_share_distinct_outcome_from_the_closed_26_opponent_shot_quality_null",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the predictor is an event-grain compactness proxy (own defensive-action mean x minus own shot mean x) and the outcome is the play_pattern=='From Counter' share of a team's own shots; neither exists as a column in data/cache/combo/gate_corpus_soccer.parquet"
+    }
+  ]
+}

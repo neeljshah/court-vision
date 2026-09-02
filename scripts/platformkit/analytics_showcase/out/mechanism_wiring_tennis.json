@@ -1,0 +1,348 @@
+{
+  "label": "DESCRIPTIVE_ONLY",
+  "edge_claimed": false,
+  "not_a_claim": "CONFIRMED_LOCAL is a descriptive local effect on a frozen corpus with a SYNTHETIC-vintage close (S34); it is uncharged and not walk-forward, so it is not a scored claim.",
+  "generated_at": "2026-09-02T14:39:29.250361+00:00",
+  "as_of": "2025-11-09",
+  "vintage": [
+    "SYNTHETIC"
+  ],
+  "prereg_sha256": "b8eed7131b71c4a607d4fd77ddc469db7f8a4a4e88bb5904d464f31eb551ccb8",
+  "corpus": {
+    "sport": "tennis",
+    "description": "data/cache/combo/gate_corpus_tennis.parquet x close_join, 33685 states 2015-01-04..2025-12-17, ATP + WTA kept separate",
+    "start": "2014-01-01",
+    "end": "2026-12-31",
+    "n_scored_rows": 33685
+  },
+  "bars": {
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25,
+    "min_unit_rows": 30
+  },
+  "counts": {
+    "mechanisms": 23,
+    "wired": 23,
+    "with_trigger": 3,
+    "not_testable": 20,
+    "by_verdict": {
+      "NULL_LOCAL": 3,
+      "NOT_TESTABLE": 20
+    }
+  },
+  "rows": [
+    {
+      "mechanism_id": "serve_tier_x_return_tier_style_pairing_the_one_real_survivor",
+      "trigger": "(p1_hold_pct_asof - p2_hold_pct_asof) * diff_return_won_asof",
+      "mask": null,
+      "source_artifact": "data/cache/combo/gate_corpus_tennis.parquet",
+      "corpus_units": {
+        "ATP": {
+          "n": 25115,
+          "date_range": [
+            "2015-01-04",
+            "2025-11-09"
+          ],
+          "n_high": 12557,
+          "n_low": 12558,
+          "effect": 0.001945,
+          "p_value": 0.7300396542717006,
+          "verdict": "NULL_LOCAL"
+        },
+        "WTA": {
+          "n": 0,
+          "verdict": "NOT_TESTABLE",
+          "reason": "the declared trigger column is entirely null in this corpus_unit"
+        }
+      },
+      "n": 25115,
+      "coverage_share": 0.7456,
+      "note": "the mechanism's ingredient is a serve-tier x return-tier PAIRING cell; the scored corpus carries the serve side per player (p1/p2_hold_pct_asof) and the return side as a differential (diff_return_won_asof), so the pairing is rendered at corpus grain as the product of the two as-of differentials -- a declared rendering of the interaction, not a per-player tercile cell",
+      "verdict": "NULL_LOCAL",
+      "corpus_units_scored": 1,
+      "single_corpus_unit": true,
+      "n_by_corpus_unit": {
+        "ATP": 25115,
+        "WTA": 0
+      }
+    },
+    {
+      "mechanism_id": "pressure_point_population_dip_break_game_set_tiebreak_deuce_confirmed",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the ingredient is a point-level score state (break / game / set / tiebreak / deuce) from data/cache/sackmann_pbp/slam_points.parquet; data/cache/combo/gate_corpus_tennis.parquet is match-grain and carries no point-state column, and the claim's outcome is a per-point rate, not the p1-win label"
+    },
+    {
+      "mechanism_id": "serve_advantage_erodes_on_clay",
+      "trigger": "p1_hold_pct_asof - p2_hold_pct_asof",
+      "mask": "surface == 'Clay'",
+      "source_artifact": "data/cache/combo/gate_corpus_tennis.parquet",
+      "corpus_units": {
+        "ATP": {
+          "n": 7582,
+          "date_range": [
+            "2015-02-02",
+            "2025-07-21"
+          ],
+          "n_high": 3791,
+          "n_low": 3791,
+          "effect": -0.001788,
+          "p_value": 0.8627133547290208,
+          "verdict": "NULL_LOCAL"
+        },
+        "WTA": {
+          "n": 1804,
+          "date_range": [
+            "2015-05-04",
+            "2025-05-26"
+          ],
+          "n_high": 902,
+          "n_low": 902,
+          "effect": 0.045021,
+          "p_value": 0.02801940981498039,
+          "verdict": "NULL_LOCAL"
+        }
+      },
+      "n": 9386,
+      "coverage_share": 0.2786,
+      "note": "the mechanism is a surface x serve-advantage interaction; both ingredients are corpus columns, so the trigger is the as-of serve-advantage differential MASKED to clay matches (surface is a native corpus column, 12,191 of 41,886 rows)",
+      "verdict": "NULL_LOCAL",
+      "corpus_units_scored": 2,
+      "single_corpus_unit": false,
+      "n_by_corpus_unit": {
+        "ATP": 7582,
+        "WTA": 1804
+      }
+    },
+    {
+      "mechanism_id": "serve_speed_decays_within_a_match",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the ingredient is per-point serve speed from the charting corpus, compared across an ordinal within-match point split; data/cache/combo/gate_corpus_tennis.parquet holds no point rows and no serve-speed column, and the outcome is a within-match decay, not the p1-win label"
+    },
+    {
+      "mechanism_id": "double_fault_rate_falls_not_rises_by_set_3_local_null_of_the_fatigue_df_story",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the ingredient is a per-point double-fault indicator bucketed by set number; data/cache/combo/gate_corpus_tennis.parquet carries neither a set-number nor a double-fault column. The section's own status is REJECTED; it parses as wired here only because the text contains CONFIRMED_LOCAL"
+    },
+    {
+      "mechanism_id": "right_handed_players_outperform_left_handed_opponents_rank_controlled_confirmed_folklore_reversing",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is player handedness from data/domains/tennis/players.parquet; data/cache/combo/gate_corpus_tennis.parquet carries no hand column, so the right-versus-left contrast cannot be formed at corpus grain"
+    },
+    {
+      "mechanism_id": "recent_match_load_correlates_with_in_match_retirement",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is matches_last_7d from data/domains/tennis/schedule_density.parquet and the outcome is an in-match retirement; data/cache/combo/gate_corpus_tennis.parquet carries no schedule-density column and its label is the p1-win indicator, not a retirement indicator"
+    },
+    {
+      "mechanism_id": "first_set_winner_wins_the_match_classic_population_claim_replicated_locally",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is the realized first-set winner, an in-match state; data/cache/combo/gate_corpus_tennis.parquet holds only pregame as-of columns and no set-level state, so the conditioning event does not exist in it"
+    },
+    {
+      "mechanism_id": "momentum_streak_myth_last_set_game_win_predicts_next_point",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the ingredient is a point-to-point sequence within a service game from slam_points.parquet; data/cache/combo/gate_corpus_tennis.parquet is match-grain with no point rows and no streak column"
+    },
+    {
+      "mechanism_id": "fatigue_from_prior_match_duration_minutes_not_just_count_local_null",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is prior-match duration in minutes; data/cache/combo/gate_corpus_tennis.parquet carries no minutes or prior-match-duration as-of column -- the only load-shaped columns anywhere local are in schedule_density.parquet, which is not joined into the scored corpus"
+    },
+    {
+      "mechanism_id": "clay_grass_specialization_persistence",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the ingredient is a per-player surface-specific as-of win rate; data/cache/combo/gate_corpus_tennis.parquet carries a native surface column but its as-of player columns (p1/p2_hold_pct_asof, diff_return_won_asof, diff_break_pct_asof) are surface-blind, so no specialization quantity exists at corpus grain and the claim is a split-half persistence property"
+    },
+    {
+      "mechanism_id": "deuce_game_length_effect_on_next_game_server_fatigue",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the ingredient is game-grain deuce length and the outcome is the next game's serve result; data/cache/combo/gate_corpus_tennis.parquet holds neither game rows nor a deuce-length column"
+    },
+    {
+      "mechanism_id": "seed_ranking_upset_rate_by_round_confirmed_direction_opposite_the_seeded_claim",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is the tournament round crossed with seeding; data/cache/combo/gate_corpus_tennis.parquet carries neither a round nor a seed column, so the by-round upset contrast cannot be formed"
+    },
+    {
+      "mechanism_id": "retirement_rate_by_round_and_surface_partial",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is round crossed with surface and the outcome is a retirement rate; data/cache/combo/gate_corpus_tennis.parquet carries surface but no round column, and its label is the p1-win indicator rather than a retirement indicator"
+    },
+    {
+      "mechanism_id": "head_to_head_recency_bias_vs_current_ranking",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is a recency-weighted head-to-head record between the two players; data/cache/combo/gate_corpus_tennis.parquet carries no head-to-head column and no ranking column -- p_elo is a rating built by the walk-forward Elo, a different quantity from the ranking this claim controls for"
+    },
+    {
+      "mechanism_id": "height_advantage_on_serve_surface_interacted",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is player height from data/domains/tennis/players.parquet (ATP-only); data/cache/combo/gate_corpus_tennis.parquet carries no height column, so the height x surface interaction cannot be formed at corpus grain"
+    },
+    {
+      "mechanism_id": "break_point_conversion_rate_by_set_number",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the ingredient is a break-point conversion rate bucketed by set number; data/cache/combo/gate_corpus_tennis.parquet carries diff_break_pct_asof as a single pregame differential and no set-number axis, so the by-set contrast this claim rests on does not exist in it"
+    },
+    {
+      "mechanism_id": "best_of_5_vs_best_of_3_upset_rate_difference",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is the match format (best-of-5 versus best-of-3); data/cache/combo/gate_corpus_tennis.parquet carries no best_of column, and its two corpus_units are tours (ATP / WTA), not formats"
+    },
+    {
+      "mechanism_id": "altitude_effect_on_serve_ace_rate_confirmed_folklore_reversing",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is venue altitude from data/domains/tennis/travel_scouting.parquet (100 percent ATP event_ids) and the outcome is a combined ace rate; data/cache/combo/gate_corpus_tennis.parquet carries neither an altitude nor an ace-rate column"
+    },
+    {
+      "mechanism_id": "long_travel_lowers_win_probability_net_of_ranking_confirmed",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is travel_diff_1000mi from travel_scouting.parquet; data/cache/combo/gate_corpus_tennis.parquet carries no travel column, so the effect cannot be measured net of ranking at corpus grain"
+    },
+    {
+      "mechanism_id": "break_point_save_differential_predicts_outcome_controlling_for_serve_differential_confirmed_modest_relative_magnitude",
+      "trigger": "diff_break_pct_asof",
+      "mask": null,
+      "source_artifact": "data/cache/combo/gate_corpus_tennis.parquet",
+      "corpus_units": {
+        "ATP": {
+          "n": 25115,
+          "date_range": [
+            "2015-01-04",
+            "2025-11-09"
+          ],
+          "n_high": 12557,
+          "n_low": 12558,
+          "effect": 0.011585,
+          "p_value": 0.03980780377654356,
+          "verdict": "NULL_LOCAL"
+        },
+        "WTA": {
+          "n": 0,
+          "verdict": "NOT_TESTABLE",
+          "reason": "the declared trigger column is entirely null in this corpus_unit"
+        }
+      },
+      "n": 25115,
+      "coverage_share": 0.7456,
+      "note": "the mechanism's own ingredient is a pregame break-point differential and diff_break_pct_asof is exactly that column at corpus grain, as-of and leak-free",
+      "verdict": "NULL_LOCAL",
+      "corpus_units_scored": 1,
+      "single_corpus_unit": true,
+      "n_by_corpus_unit": {
+        "ATP": 25115,
+        "WTA": 0
+      }
+    },
+    {
+      "mechanism_id": "set_margin_dominance_metric_predicts_outcome_beyond_ranking_gap",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the ingredient is avg_games_per_set_asof_diff from data/domains/tennis/asof_setdetail.parquet; that column is not carried into data/cache/combo/gate_corpus_tennis.parquet, whose as-of family is hold, return and break-point percentages only"
+    },
+    {
+      "mechanism_id": "new_ball_cycle_position_predicts_serve_execution_ace_rate_serve_speed_mixed_ace_rate_local_null_serve_speed_confirmed_but_reversed",
+      "trigger": null,
+      "mask": null,
+      "source_artifact": "(none)",
+      "corpus_units": {},
+      "verdict": "NOT_TESTABLE",
+      "n": 0,
+      "reason": "the trigger is a within-match cumulative game index mapped to a ball-age cycle and the outcome is ace rate or serve speed; data/cache/combo/gate_corpus_tennis.parquet holds no point or game rows and none of those three quantities"
+    }
+  ]
+}

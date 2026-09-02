@@ -28,6 +28,10 @@ OUT_JSON = OUT_DIR / "mechanism_wiring.json"
 PREREG_JSON = OUT_DIR / "mechanism_wiring_prereg.json"
 LEDGER_PATH = REPO / "data" / "cache" / "eval_gate" / "backtest_fwer.jsonl"
 SPORT = "basketball_nba"
+# The foundry's corpus machinery is NBA game_id-keyed. Soccer and tennis rows are
+# declared in the same registry but measured by mechanism_close_effect.py against
+# the devigged close, so they are not offered here.
+FOUNDRY_SPORTS = ("basketball_nba", "mlb")
 MODULE = "scripts.platformkit.analytics_showcase.mechanism_foundry"
 _MIN_FIT_ROWS = 30
 
@@ -81,6 +85,7 @@ for _i, _slug in enumerate(wiring.TESTABLE):
 
 def prereg_rows(sport: str = SPORT) -> list[dict]:
     """Declare every mechanism row and its trigger BEFORE any result is read."""
+    assert sport in FOUNDRY_SPORTS, "foundry corpus machinery is NBA-keyed: " + sport
     rows = []
     for slug, spec in wiring.WIRING_BY_SPORT[sport].items():
         row = {"mechanism_id": slug, "trigger": spec["expr"],
@@ -146,7 +151,7 @@ def build(rows: list[dict] | None = None, run_trials: bool = True,
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="mechanism wiring foundry (per sport)")
-    parser.add_argument("--sport", default=SPORT, choices=sorted(wiring.WIRING_BY_SPORT))
+    parser.add_argument("--sport", default=SPORT, choices=sorted(FOUNDRY_SPORTS))
     parser.add_argument("--dry-run", action="store_true",
                         help="declare and queue rows without charging any ledger trial")
     args = parser.parse_args(argv)

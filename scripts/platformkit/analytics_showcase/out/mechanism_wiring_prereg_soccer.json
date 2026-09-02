@@ -1,0 +1,167 @@
+[
+  {
+    "mechanism_id": "team_time_score_state_conditioned_shot_model_replicated_null_vs_naive_baseline",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "first_goal_timing_predicts_final_result",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "leading_team_defensive_shell_game_state_shot_suppression",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "set_piece_vs_open_play_shot_conversion",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "pressing_intensity_ppda_proxy_vs_opponent_turnover_rate",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "goalkeeper_distribution_style_vs_possession_retention",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "formation_change_mid_match_impact",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "home_advantage_magnitude_collapses_at_neutral_venues",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "neutral_venue_split_replicates_across_era_split_half_stability",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "tournament_competitive_context_lifts_the_scoring_environment_vs_friendlies",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "trailing_xg_supremacy_is_a_stable_team_trait_persistence_not_incremental_brier",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "first_substitution_timing_early_vs_late_moderates_the_shot_rate_shift",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "trailing_team_shot_rate_vs_tied_extends_9_s_leading_tied_state_machine_to_the_previously_discarded_trailing_case",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "xg_additivity_breaks_down_in_same_team_shot_rebound_clusters_multi_shot_possessions_overstate_combined_scoring_probability",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "defensive_block_depth_predicts_a_team_s_own_counterattack_shot_share_distinct_outcome_from_the_closed_26_opponent_shot_quality_null",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  }
+]

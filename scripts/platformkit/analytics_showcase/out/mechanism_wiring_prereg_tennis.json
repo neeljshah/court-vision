@@ -1,0 +1,265 @@
+[
+  {
+    "mechanism_id": "serve_tier_x_return_tier_style_pairing_the_one_real_survivor",
+    "trigger": "(p1_hold_pct_asof - p2_hold_pct_asof) * diff_return_won_asof",
+    "mask": null,
+    "columns": [
+      "p1_hold_pct_asof",
+      "p2_hold_pct_asof",
+      "diff_return_won_asof"
+    ],
+    "source_artifact": "data/cache/combo/gate_corpus_tennis.parquet",
+    "planned": "descriptive_effect",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "pressure_point_population_dip_break_game_set_tiebreak_deuce_confirmed",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "serve_advantage_erodes_on_clay",
+    "trigger": "p1_hold_pct_asof - p2_hold_pct_asof",
+    "mask": "surface == 'Clay'",
+    "columns": [
+      "p1_hold_pct_asof",
+      "p2_hold_pct_asof",
+      "surface"
+    ],
+    "source_artifact": "data/cache/combo/gate_corpus_tennis.parquet",
+    "planned": "descriptive_effect",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "serve_speed_decays_within_a_match",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "double_fault_rate_falls_not_rises_by_set_3_local_null_of_the_fatigue_df_story",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "right_handed_players_outperform_left_handed_opponents_rank_controlled_confirmed_folklore_reversing",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "recent_match_load_correlates_with_in_match_retirement",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "first_set_winner_wins_the_match_classic_population_claim_replicated_locally",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "momentum_streak_myth_last_set_game_win_predicts_next_point",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "fatigue_from_prior_match_duration_minutes_not_just_count_local_null",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "clay_grass_specialization_persistence",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "deuce_game_length_effect_on_next_game_server_fatigue",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "seed_ranking_upset_rate_by_round_confirmed_direction_opposite_the_seeded_claim",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "retirement_rate_by_round_and_surface_partial",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "head_to_head_recency_bias_vs_current_ranking",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "height_advantage_on_serve_surface_interacted",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "break_point_conversion_rate_by_set_number",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "best_of_5_vs_best_of_3_upset_rate_difference",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "altitude_effect_on_serve_ace_rate_confirmed_folklore_reversing",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "long_travel_lowers_win_probability_net_of_ranking_confirmed",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "break_point_save_differential_predicts_outcome_controlling_for_serve_differential_confirmed_modest_relative_magnitude",
+    "trigger": "diff_break_pct_asof",
+    "mask": null,
+    "columns": [
+      "diff_break_pct_asof"
+    ],
+    "source_artifact": "data/cache/combo/gate_corpus_tennis.parquet",
+    "planned": "descriptive_effect",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "set_margin_dominance_metric_predicts_outcome_beyond_ranking_gap",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  },
+  {
+    "mechanism_id": "new_ball_cycle_position_predicts_serve_execution_ace_rate_serve_speed_mixed_ace_rate_local_null_serve_speed_confirmed_but_reversed",
+    "trigger": null,
+    "mask": null,
+    "columns": [],
+    "source_artifact": "(none)",
+    "planned": "NOT_TESTABLE",
+    "alpha": 0.01,
+    "min_effect": 0.02,
+    "min_coverage": 0.25
+  }
+]
