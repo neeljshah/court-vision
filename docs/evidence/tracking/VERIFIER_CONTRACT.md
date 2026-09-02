@@ -14,6 +14,7 @@ A3 Sample renders EVENLY over the decision set. Head slices are how G11 v1 showe
 A4 Count uniqueness -- G23 reported 2,209 rows that were 2,013 unique frames.
 A5 Grep every reader of any field the diff touches (G15 broke night_report).
 A6 Land by `git -C <wt> archive <sha> -- <paths> | tar -x -C <repo>`, explicit pathspec commit, then append the RESULTS_LEDGER line and the register row.
+A7 Confirm that every evidence path named by the memo exists at verification time; a missing path is NOT VALIDATED, never a silent pass.
 
 ## B. Automatic reject conditions (codex: check before you report)
 B1  CIRCULAR METRIC -- computed after excluding the rows that would fail it, or the excluded set is unnamed. (G19)
