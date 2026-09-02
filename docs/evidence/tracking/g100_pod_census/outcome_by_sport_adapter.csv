@@ -1,0 +1,16 @@
+status,sport,adapter_path,job_timeout_seconds,count,seconds,estimated_job_hours
+thin,baseball,adapter registry,12000,53,46128,12.8133
+thin,football,adapter registry,12000,32,40221,11.1725
+thin,handball,adapter registry,12000,1,20,0.0056
+thin,kbo,adapter registry,12000,18,9625,2.6736
+thin,mlb,adapter registry,12000,32,17865,4.9625
+thin,ncaa_basketball,run_clip.py,5400,5,3213,0.8925
+thin,soccer,adapter registry,12000,7,26165,7.2681
+thin,tennis,adapter registry,12000,15,5678,1.5772
+thin,wnba,run_clip.py,5400,2,376,0.1044
+timeout,baseball,adapter registry,12000,1,2702,0.7506
+timeout,football,adapter registry,12000,7,21625,6.0069
+timeout,ncaa_basketball,run_clip.py,5400,18,65846,18.2906
+timeout,soccer,adapter registry,12000,7,18962,5.2672
+timeout,tennis,adapter registry,12000,9,25270,7.0194
+timeout,wnba,run_clip.py,5400,8,21683,6.0231

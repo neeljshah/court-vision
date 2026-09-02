@@ -1,0 +1,4 @@
+ledger_line,thin_ordinal_band,sport,game_id,recorded_rows,current_data_rows,csv_bytes,verdict_sidecar_present,header
+17,0-54,football,football_a7OUF22mt-I,0,0,23,false,"frame,track_id,cls,x,y"
+128,55-109,tennis,tennis_10,0,0,87,false,"frame,track_id,cls,x,y,calibration_provenance,coordinate_space,observation,calibration"
+225,110-164,mlb,mlb_FGtFanovws4,0,0,64,false,"frame,track_id,cls,x,y,coordinate_space,observation,calibration"

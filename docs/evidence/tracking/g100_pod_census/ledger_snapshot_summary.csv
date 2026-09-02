@@ -1,0 +1,9 @@
+metric,value
+ledger_rows,401
+valid_json_rows,401
+malformed_json_rows,0
+distinct_game_ids,187
+tracked,183
+thin,165
+timeout,50
+corrupt,3
