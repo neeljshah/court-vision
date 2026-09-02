@@ -14,6 +14,8 @@ real calibration claim. The gate blocks ONLY on regression / leak / select-insid
 empty-set, NEVER on "fails to beat the close".
 """
 from __future__ import annotations
+import os as _os, sys as _sys  # noqa: E402
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))  # blueprint uses bare sibling imports; make them work under "python -m pytest" from the repo root too
 import numpy as np
 
 from run_gate import (run_gate_in_process, gate_exit_code, evaluate_corpus,

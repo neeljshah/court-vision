@@ -1,5 +1,7 @@
 """Tests for the Shin devig reference. numpy + stdlib only; runs standalone or via pytest."""
 from __future__ import annotations
+import os as _os, sys as _sys  # noqa: E402
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))  # blueprint uses bare sibling imports; make them work under "python -m pytest" from the repo root too
 import numpy as np
 from shin import shin_devig, shin_devig_decimal, implied_from_decimal
 

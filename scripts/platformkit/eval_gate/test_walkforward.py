@@ -1,5 +1,7 @@
 """Tests for the leak-free walk-forward harness. stdlib only; standalone or pytest."""
 from __future__ import annotations
+import os as _os, sys as _sys  # noqa: E402
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))  # blueprint uses bare sibling imports; make them work under "python -m pytest" from the repo root too
 from walkforward import walk_forward, assert_vintage
 
 

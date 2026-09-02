@@ -11,6 +11,8 @@ CONTRACT: (1) BEHIND + regressed=False -> 0. (2) MATCHES_CLOSE + regressed=False
 Run: python test_behind_is_not_blocked.py  OR  python -m pytest test_behind_is_not_blocked.py -q
 """
 from __future__ import annotations
+import os as _os, sys as _sys  # noqa: E402
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))  # blueprint uses bare sibling imports; make them work under "python -m pytest" from the repo root too
 
 import numpy as np
 

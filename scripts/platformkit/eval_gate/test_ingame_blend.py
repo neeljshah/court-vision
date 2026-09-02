@@ -5,6 +5,8 @@ season, EVALUATE on a DIFFERENT one, and show the blend beats pregame-only OOS -
 because the live signal carries information (it sharpens late) the pregame prior lacks.
 """
 from __future__ import annotations
+import os as _os, sys as _sys  # noqa: E402
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))  # blueprint uses bare sibling imports; make them work under "python -m pytest" from the repo root too
 import numpy as np
 
 from ingame_blend import (
