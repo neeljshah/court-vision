@@ -209,6 +209,12 @@ LOW behind G25b.
 |---|---|---|---|---|
 | G33B attempt 2 | baseball | Both inventory-named DAY clips exist on the pod, but the transient historic-function run returns 32 segments (19 plus 13) where the retained source artifact defines 30 (19 plus 11). The 21 historical failures cannot be reconstructed; no 23-failure substitute or render was claimed. | `g33b_baseball_scale_bins_2026-09-02.md` | NOT VALIDATED; G36 remains unreleased. |
 | G94 | all | A status file with seven cached alive lanes and no write time/PID could hide a dead supervisor. The local supervisor now publishes a PID plus `written_at`; PID liveness distinguishes DOWN, UP, and stale-to-UNKNOWN at 300 seconds. The restart path starts only a known-DOWN local supervisor and is a healthy no-op. | `g94_pipeline_liveness_2026-09-02.md` | ACCEPT (local evidence; no production supervisor restart, no pod action, no `.part` reaper). |
+
+## G95 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G95 | football | Fixed-seed 108-frame eye survey across the specified nine football-labelled clips: yard stripes and hashes are visible in 28/108 frames; a legible painted yard number in 18/108. Four labelled clips (48 frames) are soccer content and remain in the denominator. Football has no shared canonical landmark set or named detector; its separate line path deliberately blocks a transform without a numeral-plus-arrow absolute identity and independent scale proof. | `g95_football_calibration_survey_2026-09-02.md`; `g95_football_survey/` | ACCEPT WITH CORRECTIONS; no solver or coordinate change. |
 ## G61 result register
 
 | Gap | Sport | Finding | Evidence | Status |
