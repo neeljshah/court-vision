@@ -3,6 +3,8 @@
 Format: date | sport | gap | metric before -> after (n, denominator) | verdict | commit
 Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too.
 
+2026-09-02 | basketball | G103 | Durable 33-tile G68 recipe reconstruction from read-only pod clips produced 0/33 source-tile pixel-checksum matches across 33 unique fixed G84 frames and 11 clips. This is the specified checksum stopping point; G93 recall was not run and no substitute metric is claimed. No contact sheets, full clips, detector parameter, calibration, protocol, or threshold changed. | CLOSED AT LIMIT | g103_g68_recipe_and_g93_recall_2026-09-02.md; g103_recall/
+
 2026-09-02 | all | G94 | bridge-supervisor liveness: a seven-lane cached `alive: true` snapshot with no timestamp/PID -> PID + timestamped snapshot; actual isolated supervisor demonstrated DOWN, UP, and 301.4 s stale -> UNKNOWN at the documented 300 s budget; healthy restart no-op demonstrated | ACCEPT (local evidence; production supervisor and pod untouched) | this evidence commit
 
 2026-09-02 | tennis | G44B | ATTEMPT 2 CONFIRMED the named nyYk source locally and on the pod, and re-viewed the complete evenly-spaced G39 set at 0/12 ball candidates (Wilson 95 pct 0.0--24.2). The original G44 32/50 visibility and 16/31 window decisions have no surviving per-frame label/coordinate artifact, so neither aggregate can provide the required >=150 three-clip disjoint fit/held-out corpus or tolerance metric. No rule, code, threshold, deployment or teacher was created. | NOT VALIDATED (correct premise stop; label durability gap) | this evidence commit

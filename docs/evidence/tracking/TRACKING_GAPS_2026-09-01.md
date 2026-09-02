@@ -1,5 +1,11 @@
 # Tracking gap register -- 2026-09-01 (living; one gap = one lane)
 
+## G103 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G103 | basketball | The 33 fixed G84 source-sheet tiles cannot yet be rebuilt identically from their read-only pod clips: 0/33 decoded BGR tile checksums match, across 11 clips. The required durable-input check therefore stops before the unchanged G93 protocol, leaving recall, visible-line denominator, role intervals, miss reasons, and overlays unmeasured. | `g103_g68_recipe_and_g93_recall_2026-09-02.md`; `g103_recall/tile_manifest.csv`; `g103_recall/tile_checksum_verification.csv` | CLOSED AT LIMIT (specified checksum stop; no detector or protocol change). |
+
 ## G44B attempt-2 disposition
 
 | Gap | sport | finding | evidence | status |
