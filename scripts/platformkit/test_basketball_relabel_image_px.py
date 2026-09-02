@@ -10,6 +10,9 @@ def _source_rows() -> pd.DataFrame:
         "player_id": [1, 2, 1, 2], "team": ["a", "b", "a", "b"],
         "x_position": [100, 200, 110, 210], "y_position": [300, 400, 310, 410],
         "ft_x": [1.0, 2.0, 1.1, 2.1], "ft_y": [3.0, 4.0, 3.1, 4.1],
+        # Source-plane bbox, stored by the pipeline as x1,y1,x2,y2.
+        "bbox_x1": [10.0, 20.0, 12.0, 22.0], "bbox_y1": [5.0, 6.0, 7.0, 8.0],
+        "bbox_x2": [30.0, 40.0, 32.0, 42.0], "bbox_y2": [50.0, 60.0, 52.0, 62.0],
     })
 
 
@@ -33,9 +36,14 @@ def test_relabel_all_preserves_pixels_and_fails_harness(tmp_path):
     relabeled = pd.read_csv(result_path)
     assert relabeled.columns.tolist() == [
         "frame", "track_id", "cls", "x", "y", "coordinate_calibration_reason",
-        "coordinate_space", "observation", "calibration",
+        "map2d_x", "map2d_y", "coordinate_space", "observation", "calibration",
     ]
-    assert relabeled[["x", "y"]].values.tolist() == [[100, 300], [200, 400], [110, 310], [210, 410]]
+    # x/y are the SOURCE-PLANE bbox foot point; the minimap canvas that used to
+    # masquerade as x/y now rides under its own name.
+    assert relabeled[["x", "y"]].values.tolist() == [
+        [20.0, 50.0], [30.0, 60.0], [22.0, 52.0], [32.0, 62.0]]
+    assert relabeled[["map2d_x", "map2d_y"]].values.tolist() == [
+        [100, 300], [200, 400], [110, 310], [210, 410]]
     assert set(relabeled["coordinate_space"]) == {"image_px"}
     assert set(relabeled["coordinate_calibration_reason"]) == {"no_court_calibration_sidecar"}
     assert (tracking / "wnba_01" / "tracking_data.csv.pre_relabel").exists()

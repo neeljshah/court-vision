@@ -37,6 +37,11 @@ COORDINATE_SPACE_COLUMN = "coordinate_space"
 COURT_SPACES = frozenset().union(*SPORT_COORDINATE_SPACES.values())
 IMAGE_SPACE = "image_px"
 
+# The decoded frame size, written by the producer alongside the rows it decoded.
+FRAME_WIDTH_COLUMN, FRAME_HEIGHT_COLUMN = "frame_width", "frame_height"
+# Share of declared image_px points that must land inside the decoded frame.
+IMAGE_PX_CONTAINMENT_MIN = 0.95
+
 
 @dataclass(frozen=True)
 class TrackingSchema:
@@ -81,6 +86,42 @@ CANONICAL_COORDINATE_CONTRACT = {
 }
 
 
+def _validate_image_px_containment(df: pd.DataFrame) -> None:
+    """A table declaring image_px must lie in the source image plane.
+
+    The declaration check below is magnitude-blind on purpose, so it cannot see
+    the difference between the decoded frame and a derived canvas.  That is how
+    103,009 basketball rows shipped carrying map_2d minimap pixels under an
+    ``image_px`` label: every contract check passed on the declaration alone
+    while 76.8% of the points fell outside their own frame.
+
+    Checkable only when the producer declares the frame size it decoded, which
+    is why the fixed producer now writes ``frame_width``/``frame_height``.  A
+    table without those columns is left to the declaration check, which already
+    rejects image_px as unscorable -- this gate adds a rejection, never a pass.
+    """
+    if COORDINATE_SPACE_COLUMN not in df.columns:
+        return
+    declared = df[df[COORDINATE_SPACE_COLUMN] == IMAGE_SPACE]
+    dimensions = {FRAME_WIDTH_COLUMN, FRAME_HEIGHT_COLUMN}
+    if declared.empty or not dimensions <= set(df.columns):
+        return
+    numeric = {name: pd.to_numeric(declared[name], errors="coerce")
+               for name in ("x", "y", FRAME_WIDTH_COLUMN, FRAME_HEIGHT_COLUMN)}
+    width, height = numeric[FRAME_WIDTH_COLUMN], numeric[FRAME_HEIGHT_COLUMN]
+    x, y = numeric["x"], numeric["y"]
+    # An unusable or missing dimension counts as outside: a point that cannot be
+    # checked has not been shown to be in the image plane.
+    inside = ((width > 0) & (height > 0)
+              & (x >= 0) & (x <= width - 1) & (y >= 0) & (y <= height - 1))
+    share = float(inside.sum()) / len(declared)
+    if share < IMAGE_PX_CONTAINMENT_MIN:
+        raise CoordinateTransformUnavailable(
+            "image_px_containment: {:.4f} of {} declared image_px points lie "
+            "inside the decoded frame, below {:.2f}; x/y are not source-image "
+            "pixels".format(share, len(declared), IMAGE_PX_CONTAINMENT_MIN))
+
+
 def _validate_coordinate_space(df: pd.DataFrame, sport: str | None,
                                allow_legacy_undeclared: bool) -> None:
     """Fail closed unless a declared surface space belongs to this sport.
@@ -94,6 +135,7 @@ def _validate_coordinate_space(df: pd.DataFrame, sport: str | None,
         if not allow_legacy_undeclared:
             raise CoordinateTransformUnavailable(_UNDECLARED_SPACE)
         return
+    _validate_image_px_containment(df)
     declared = {"(null)" if pd.isna(value) else str(value)
                 for value in df[COORDINATE_SPACE_COLUMN].unique()}
     accepted = SPORT_COORDINATE_SPACES.get(sport, frozenset())
