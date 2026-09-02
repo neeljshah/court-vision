@@ -23,3 +23,18 @@ Calibration language only. Every lever below is a register row with a SCREEN-sid
 
 Order (user: in-game first, slowly): L1 L2 (running) -> L4 L5 (corpus + quality, they gate every CI) ->
 L3 L6 (structure + calibration) -> L7 L10 (freshness) -> L9 L11 (housekeeping) -> L8 (breadth).
+
+## New territory (user 2026-09-03: "better than any quant for sports") -- levers no sports shop ships
+
+| lever | idea | why it is new | premise to verify | screen-side bar |
+|---|---|---|---|---|
+| L13 sensor fusion | treat the in-play line as a NOISY SENSOR of the true state and the event-driven model as another; a Kalman / Bayesian filter with learned per-phase observation noise and the market's measured latency gives a posterior that is neither the model nor the market | sports models blend a model with a market at one weight; nobody filters the market's tick SERIES with its latency as a noise model | tick series + model series per game on disk (ingame corpus); latency p50 15 s measured | +0.004 vs e4 on ticks, and coverage of the posterior interval within 2 pts of nominal |
+| L14 market-consistent sim | fit the rest-of-game score distribution JOINTLY to every in-play market on the same game (moneyline, total, run line, on Kalshi and Polymarket); a single consistent distribution is sharper than any one market | cross-market consistency is used for arbitrage, never as a calibration prior | ingame_book_depth_kalshi/poly: which secondary in-play markets were captured, n games | +0.004 vs the moneyline alone on ticks; totals scored too |
+| L15 microstructure state | order-book depth imbalance, queue at the touch, last-trade direction, spread as features for the NEXT-tick move and for the outcome | sports models ignore the book; equities microstructure never met a base-out state | ingame_book_depth_* retention: rows, games, fields | next-tick sign accuracy > 50 pct with clustered CI; outcome Brier +0.004 |
+| L16 overreaction residual | after a scoring event, does the market overshoot? score the market's post-event change against the eventual outcome; a mean-reversion arm on the market's own reaction | inverts the usual 'chase the event' framing; tests the market not the game | GUMBO events with timestamps joined to ticks within +/- 120 s | measured overshoot with CI; arm +0.004 if it exists, honest NULL if not |
+| L17 adaptive conformal | ACI on ticks so per-tick intervals keep nominal coverage under regime drift; the metric is COVERAGE, which a Brier never shows | aci_online.py exists; never reported as a coverage series per phase | aci_online.py scored on ticks? | coverage 90 +/- 2 per phase on the screen side |
+| L18 hierarchical pooling | one sport-blind in-game blend with partial pooling across sports and phases (Bayesian hierarchical logistic); low-n phases borrow strength | matches the kernel/ direction; nobody pools in-game across sports | needs a second sport with ticks (L8) | +0.004 on the low-n phases without hurting MLB |
+| L19 momentum-as-null | preregister the hot-hand / momentum family as a PUBLIC null test; the market may overweight it | an honest public null is a moat: it says what we refuse to trade | momentum features in the grammar | verdict recorded either way |
+| L20 rest-of-game distribution | predict the full run/point distribution per tick and score EVERY in-play market (win, total, spread) with CRPS, not just win Brier | triples the surface where calibration is verified; totals in-game are thinner | rest_of_game_sim.py; totals ticks captured? | CRPS vs market-implied distribution on the screen side |
+
+Order after L1-L2: L4 L5 (corpus + quality) -> L13 L16 (fusion, overreaction: data on disk) -> L14 L15 L20 (need the secondary-market and book-depth captures) -> L17 L19 -> L18 (needs L8).
