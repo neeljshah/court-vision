@@ -21,6 +21,7 @@ import pandas as pd
 from scripts.platformkit.clv_ledger_io import ledger_lock
 from scripts.platformkit.combo.fwer_budget import cumulative_k, eps_eff
 from scripts.platformkit.eval_gate.dm_test import diebold_mariano
+from scripts.platformkit.eval_gate.ledger import FWER_TIERS, load_fwer, next_k_family
 from scripts.platformkit.eval_gate.scoring import brier, log_loss
 from scripts.platformkit.eval_gate.walkforward import walk_forward
 
@@ -128,17 +129,25 @@ def _phase_metrics(records: list[dict]) -> dict:
     return out
 
 
-def _charge_ledger(path: Path, spec: str, sport: str, start: str, end: str) -> dict:
+def _charge_ledger(path: Path, spec: str, sport: str, start: str, end: str, *,
+                   family: str | None = None, hypothesis_hash: str | None = None,
+                   tier: str | None = None, prereg_sha256: str | None = None) -> dict:
     # Read-max + append run under one cross-process lock: concurrent charges must
     # neither interleave bytes nor lose updates (K undercount loosens eps_eff).
+    # S13: the four caller-supplied fields and the derived k_family are ADDITIVE and
+    # keyword-only -- written only when given, so a legacy call still writes exactly the
+    # pre-S13 six keys and k_cumulative keeps its global cumulative_k semantics.
+    if tier is not None and tier not in FWER_TIERS:
+        raise ValueError("tier must be one of %s, got %r" % (list(FWER_TIERS), tier))
     path.parent.mkdir(parents=True, exist_ok=True)
     with ledger_lock(path):
-        rows = []
-        if path.exists():
-            rows = [json.loads(line) for line in path.read_text(encoding="ascii").splitlines() if line.strip()]
+        rows = load_fwer(path)
         prior = max((int(r.get("k_cumulative", 0)) for r in rows), default=0)
         row = {"at": datetime.now(timezone.utc).isoformat(), "predictor": spec, "sport": sport,
                "start": start, "end": end, "k_cumulative": cumulative_k(prior, 1)}
+        row.update({k: v for k, v in (("family", family), ("k_family", next_k_family(rows, family)),
+                                      ("hypothesis_hash", hypothesis_hash), ("tier", tier),
+                                      ("prereg_sha256", prereg_sha256)) if v is not None})
         with path.open("a", encoding="ascii") as fh:
             fh.write(json.dumps(row, ensure_ascii=True, sort_keys=True) + "\n")
     return row

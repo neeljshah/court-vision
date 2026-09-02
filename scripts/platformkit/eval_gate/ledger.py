@@ -111,3 +111,39 @@ def drift_report(rows: List[LedgerRow], now_iso: str, recent_days: float = 7.0,
     threshold = bb + k_sigma * se
     delta = rb - bb
     return DriftReport(rb, bb, delta, threshold, bool(rb > threshold), len(recent), len(baseline))
+
+
+# --- FWER charge-ledger schema (S13) -------------------------------------------------
+# A DIFFERENT file from the LedgerRow track-record above: data/cache/eval_gate/backtest_fwer.jsonl
+# holds the cumulative-K charge rows written by backtest_runner._charge_ledger. Kept here so the
+# writer, the loader and any future reader (results index, nightly backup) share one shape.
+
+FWER_OPTIONAL_FIELDS = ("family", "k_family", "hypothesis_hash", "tier", "prereg_sha256")
+FWER_TIERS = ("T2", "T3")
+
+
+def load_fwer(path) -> List[dict]:
+    """Load the FWER charge ledger; absent optional fields read back as None.
+
+    Additive by construction: a pre-S13 row is returned exactly as written except that the
+    five optional keys appear with value None, so old and new rows present one shape to readers.
+    """
+    rows: List[dict] = []
+    try:
+        with open(path, encoding="ascii") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    rows.append({**dict.fromkeys(FWER_OPTIONAL_FIELDS), **json.loads(line)})
+    except FileNotFoundError:
+        pass
+    return rows
+
+
+def next_k_family(rows: List[dict], family: Optional[str]) -> Optional[int]:
+    """1 + the max k_family already charged to `family`; first row of a family = 1, no family -> None."""
+    if family is None:
+        return None
+    seen = [int(r["k_family"]) for r in rows
+            if r.get("family") == family and r.get("k_family") is not None]
+    return max(seen, default=0) + 1
