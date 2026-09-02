@@ -100,6 +100,12 @@ class QualityReport:
     # report whose metrics rest on too little data to mean anything. Additive
     # and informational -- `passed` deliberately does not read it.
     insufficient_data: bool = False
+    # G48: a raw per-step jump has no stable time unit unless the producing
+    # run records its configured stride and the source frame rate. These are
+    # informational only; `passed` deliberately does not read them.
+    sampling_interval_s: float | None = None
+    sampling_interval_reason: str | None = None
+    jump_p95_ft_per_s: float | None = None
 
     def to_json(self) -> str:
         return json.dumps(asdict(self), indent=2)
@@ -114,10 +120,33 @@ def _source_fields(metadata: Mapping[str, object] | None) -> tuple[str | None, f
             float(frame_rate) if frame_rate is not None else None)
 
 
+def _sampling_fields(metadata: Mapping[str, object] | None) -> tuple[float | None, str | None]:
+    """Return the configured sampling interval, never inferring it from rows."""
+    if not metadata:
+        return None, "source metadata unavailable"
+    frame_rate = metadata.get("frame_rate")
+    stride = metadata.get("frame_stride", metadata.get("stride"))
+    if frame_rate is None:
+        return None, "source frame rate unavailable"
+    if stride is None:
+        return None, "frame stride unavailable"
+    try:
+        frame_rate = float(frame_rate)
+        stride = int(stride)
+    except (TypeError, ValueError):
+        return None, "source frame rate or frame stride is invalid"
+    if frame_rate <= 0:
+        return None, "source frame rate is not positive"
+    if stride <= 0:
+        return None, "frame stride is not positive"
+    return round(stride / frame_rate, 4), None
+
+
 def _failed_report(sport: str, config_version: str, failure: str,
                    metadata: Mapping[str, object] | None = None,
                    schema=None) -> QualityReport:
     resolution, frame_rate = _source_fields(metadata)
+    interval, interval_reason = _sampling_fields(metadata)
     available = schema.ball_telemetry_available if schema is not None else None
     rule = schema.ball_telemetry_rule if schema is not None else "not_normalized"
     return QualityReport(
@@ -130,7 +159,9 @@ def _failed_report(sport: str, config_version: str, failure: str,
         median_step_distance=0.0, distinct_position_ratio=0.0,
         stationary_track_share=0.0, liveness_verdict="SUSPECT",
         source_resolution=resolution, source_frame_rate=frame_rate,
-        self_consistency_only=True, passed=False, verdict="FAIL", failures=[failure])
+        self_consistency_only=True, passed=False, verdict="FAIL", failures=[failure],
+        sampling_interval_s=interval, sampling_interval_reason=interval_reason,
+        jump_p95_ft_per_s=(0.0 if interval is not None else None))
 
 
 def evaluate(df: pd.DataFrame, sport: str,
@@ -157,6 +188,7 @@ def evaluate(df: pd.DataFrame, sport: str,
         return _failed_report(sport, config_version, "coordinate_contract: {}".format(exc),
                               source_metadata, schema)
     resolution, frame_rate = _source_fields(source_metadata)
+    sampling_interval, sampling_interval_reason = _sampling_fields(source_metadata)
     n_frames = int(df["frame"].nunique())
     n_unique_games = (int(df["game_id"].dropna().nunique()) if "game_id" in df
                       else int(n_frames > 0))
@@ -217,6 +249,9 @@ def evaluate(df: pd.DataFrame, sport: str,
     verdict = "PASS_NO_BALL" if passed and schema.ball_telemetry_available is False else (
         "PASS" if passed else "FAIL"
     )
+    reported_jump_p95 = round(jump_p95, 2)
+    jump_p95_ft_per_s = (round(reported_jump_p95 / sampling_interval, 2)
+                          if sampling_interval is not None else None)
     return QualityReport(sport, config_version, n_frames, n_unique_games,
                          duplicates, ball_rows, round(coverage, 4),
                          round(det_per_frame, 2), track_len,
@@ -224,7 +259,7 @@ def evaluate(df: pd.DataFrame, sport: str,
                          "evaluated" if ball_valid is not None else "not_evaluated",
                          schema.ball_telemetry_available is not False,
                          schema.ball_telemetry_available, schema.ball_telemetry_rule,
-                         round(jump_p95, 2), round(oob_pct, 4),
+                         reported_jump_p95, round(oob_pct, 4),
                          round(liveness.zero_step_share, 4),
                          round(liveness.median_step_distance, 4),
                          round(liveness.distinct_position_ratio, 4),
@@ -232,7 +267,8 @@ def evaluate(df: pd.DataFrame, sport: str,
                          liveness.verdict, resolution,
                          frame_rate, True, passed, verdict, failures,
                          round(ball_in_bounds, 4) if ball_in_bounds is not None else None,
-                         n_frames < MIN_FRAMES_FOR_METRICS)
+                         n_frames < MIN_FRAMES_FOR_METRICS, sampling_interval,
+                         sampling_interval_reason, jump_p95_ft_per_s)
 
 
 if __name__ == "__main__":
