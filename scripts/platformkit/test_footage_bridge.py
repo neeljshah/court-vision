@@ -32,8 +32,8 @@ def test_thin_tracking_output_is_not_reported_as_tracked(monkeypatch, tmp_path):
     # track_staged loop would delete it mid-transfer.
     assert any("data/footage_bridge/kbo_01.mp4" in c for c in commands)
     assert not any("/data/footage/kbo_01" in c for c in commands)
-    # And the remote copy is always reclaimed.
-    assert any(c.startswith("rm -f") for c in commands)
+    # The source leaves the watched stage for the retained corpus.
+    assert any("data/footage_corpus" in c and "mv " in c for c in commands)
 
 
 def test_basketball_track_command_writes_where_tracking_rows_reads(monkeypatch, tmp_path):
@@ -62,12 +62,12 @@ def test_basketball_track_command_writes_where_tracking_rows_reads(monkeypatch, 
     assert "--frames 18000" not in track[0]
 
 
-def test_remote_copy_deleted_even_when_tracking_raises(monkeypatch, tmp_path):
-    removed: list[str] = []
+def test_remote_copy_retained_even_when_tracking_raises(monkeypatch, tmp_path):
+    retained: list[str] = []
 
     def fake_ssh(command, timeout=7200):
-        if command.startswith("rm -f"):
-            removed.append(command)
+        if "data/footage_corpus" in command:
+            retained.append(command)
             return subprocess.CompletedProcess(command, 0, stdout="", stderr="")
         if command.startswith("wc -l"):
             return subprocess.CompletedProcess(command, 0, stdout="0\n", stderr="")
@@ -86,7 +86,7 @@ def test_remote_copy_deleted_even_when_tracking_raises(monkeypatch, tmp_path):
         pass
     else:
         raise AssertionError("expected the tracking failure to propagate")
-    assert removed, "pod disk must be reclaimed even when tracking raises"
+    assert retained, "pod source must be retained even when tracking raises"
 
 
 def test_download_resolves_mkv_fallback_and_skips_fragments(monkeypatch, tmp_path):

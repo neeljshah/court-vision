@@ -1,10 +1,10 @@
-"""Download footage on the local (residential) IP, track it on the pod, delete both copies.
+"""Download footage on the local (residential) IP and retain the pod source after tracking.
 
 Why this exists: YouTube blocks the pod datacenter IP ("Sign in to confirm
 you are not a bot") for every league, while the same cookies work from the local
 machine. The pod has the GPU. So the local box is used ONLY as a network hop:
-download -> scp -> track on pod -> delete local AND remote copies immediately.
-Neither disk ever accumulates video.
+download -> scp -> track on pod -> retain the pod source in the corpus.
+The local staging copy is still cleaned up after the bridge pass.
 
 Two landmines this module is built around:
   1. Remote staging lives in data/footage_bridge/, NOT data/footage/. The pod
@@ -62,6 +62,7 @@ POD = ["-o", "StrictHostKeyChecking=no", "-o", "ConnectTimeout=30", "-p", POD_PO
 POD_HOST = "root@213.192.2.83"
 POD_ROOT = "/workspace/nba-ai-system"
 REMOTE_STAGE = POD_ROOT + "/data/footage_bridge"
+REMOTE_CORPUS = POD_ROOT + "/data/footage_corpus"
 LOCAL_STAGE = Path("data/videos/bridge")
 COOKIES = Path("data/videos/youtube_cookies.txt")
 LEDGER = Path("data/tracking/footage_bridge_ledger.jsonl")
@@ -392,9 +393,10 @@ def wait_for_capacity(limit: int = MAX_POD_BACKLOG, sleep_seconds: int = 120,
 
 
 def push_and_track(local: Path, item: dict) -> str:
-    """Upload to the private stage, track on the pod, then delete the remote copy."""
+    """Upload to the private stage, track on the pod, then retain its source."""
     game_id, sport = item["game_id"], item["sport"]
     remote = "%s/%s%s" % (REMOTE_STAGE, game_id, local.suffix)
+    remote_name = game_id + local.suffix
     _ssh("mkdir -p %s" % REMOTE_STAGE, timeout=120)
     result = None
     try:
@@ -415,8 +417,17 @@ def push_and_track(local: Path, item: dict) -> str:
                      % (POD_ROOT, POD_ROOT, adapter, remote, game_id))
         result = _ssh(track)
     finally:
-        # Always reclaim pod disk, even when tracking raised. The pod filled twice.
-        _ssh("rm -f %s" % remote, timeout=300)
+        # The daemon watches plain .mp4 files in REMOTE_STAGE. Moving a newly
+        # tracked inline source to the corpus keeps it reproducible without
+        # re-queuing it. If the source already exists, leave that corpus file
+        # untouched and remove only this duplicate staged upload.
+        retained = _ssh(
+            "mkdir -p %s && if [ -e %s/%s ]; then rm -f %s; else mv %s %s/; fi"
+            % (REMOTE_CORPUS, REMOTE_CORPUS, remote_name, remote, remote, REMOTE_CORPUS),
+            timeout=300)
+        if retained.returncode != 0:
+            print("pod source retention failed for %s: %s" %
+                  (game_id, (retained.stderr or "")[-160:]), flush=True)
     rows = tracking_rows(game_id)
     if rows >= MIN_TRACKING_ROWS:
         return "tracked rows=%d %s" % (rows, grade(game_id, sport))
