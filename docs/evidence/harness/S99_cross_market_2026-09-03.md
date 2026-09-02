@@ -8,7 +8,7 @@ Row: `docs/evidence/HARNESS_GAPS_2026-09-03.md` S99 (premises L14 + L20 of
 Artifacts: `data/cache/eval_gate/s99_cross_market_2026-09-03.json`,
 `data/cache/eval_gate/s99_game_keys.parquet`,
 `data/cache/eval_gate/s99_cross_market_2026-09-03_{mlb,soccer_intl}_series.csv`.
-Code: `scripts/platformkit/eval_gate/s99_cross_market.py` (218 LOC) +
+Code: `scripts/platformkit/eval_gate/s99_cross_market.py` (234 LOC) +
 `scripts/platformkit/eval_gate/s99_corpus.py` (274 LOC) +
 `tests/platformkit/ingame/test_s99_cross_market.py` (9 passed).
 
