@@ -85,3 +85,12 @@ Downstream callers, run as an A5 safety check (not part of the bar):
   lock as `k_cumulative`, whose concurrent behaviour `test_redteam2.py` covers.
 - On a clean clone `data/` is absent and all five cases SKIP -- the bar is only measurable where
   the real 13-row ledger exists.
+
+## Addendum (append-only, after the S13 commit 6a70efcba)
+
+A sixth reader landed after this memo was committed: `eval_gate/ledger_backup.py` (S29, commit
+a9a3a74a0). It opens the ledger `"rb"` for its sha256 and otherwise does
+`json.loads(line).get("k_cumulative")` on one key only -- tolerant of the five optional keys, and it
+never calls `_charge_ledger`. No S13 change is needed for it. Re-checked against current master:
+`backtest_fwer.jsonl` still sha256 `52785ad2...7bb24cb7` at 13 rows, and
+`test_ledger_schema_s13.py` still 5 passed (8.28s).
