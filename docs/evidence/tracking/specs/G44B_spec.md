@@ -51,7 +51,18 @@ EVIDENCE: docs/evidence/tracking/g44b_ball_spatial_gate_2026-09-0X.md with the r
 the labelling method, the fit and held-out numbers with intervals, the renders, and a NOT VERIFIED
 list.
 TEST: exactly one new per-file test; run only that file. Never a full pytest -- it freezes the box.
-POD: read-only. NO scp and no deploy -- the verifier lands code on the pod, not the lane.
+FOOTAGE -- READ THIS, attempt 1 died here. Attempt 1 returned NOT VALIDATED because it could not
+find the source clip. That was an infrastructure gap and it is now FIXED: worktree_data_links.py
+did not link data/footage_corpus, and now does. Your worktree sees the local corpus (4 clips,
+including tennis__tennis_09.mp4 and tennis__tennis_nyYk2nPZAwY_720p.mp4). The FULL corpus is 63
+clips on the pod at /workspace/nba-ai-system/data/footage_corpus/ -- see
+docs/evidence/tracking/FOOTAGE_CORPUS_INVENTORY.md for every clip by name. If the clips you need
+are the two local tennis ones, work locally. If you need any other tennis clip, run the frame work
+ON THE POD, read-only, where the video already is. Do NOT report "source unavailable" without
+first checking the inventory and the pod.
+POD: read-only, and you MAY run read-only frame measurement there because that is where the
+footage is. NO scp of any module and no deploy -- the verifier lands code on the pod, not the
+lane. Never restart the daemon, never kill anything.
 COMMIT: explicit pathspec only (never the whole tree, never the gitignored local trees), in a3,
 no push. Report the sha.
 SHARED MODULE: none expected. If you find yourself editing tracking_harness.py, STOP.
