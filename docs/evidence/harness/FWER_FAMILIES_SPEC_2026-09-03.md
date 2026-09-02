@@ -1,18 +1,21 @@
 # FWER families -- FROZEN prereg (S14)
 
-spec_version: s89-families-v2
+spec_version: s102-families-v3
 frozen_on: 2026-09-03
 amended_on: 2026-09-03 (S89 -- two in-game ARM families added; nothing removed, no bar moved)
+amended_on: 2026-09-03 (S102 -- one NBA in-game TICK-GRID family added; nothing removed, no bar moved)
 q_within_family: 0.05
 alpha_global: 0.05
-families: 39
+families: 40
 feature_grid_families: 37
 arm_families: 2
-features: 407
-hypotheses: 3575
+tick_grid_families: 1
+features: 423
+hypotheses: 4151
 transform_grid: raw, ew(halflife=3), ew(halflife=5), ew(halflife=10), ew(halflife=20), rank_in_league, z_vs_league, delta_vs_prior, ratio_to_opponent
 transform_instances: 9
-conditioning: empty set (SF-16 freezes v1 conditioning to {})
+conditioning: empty set (SF-16 freezes v1 conditioning to {}) for the 37 feature grids; the
+  S102 tick grid declares its own closed conditioning alphabet in its block below
 
 THIS FILE IS FROZEN. It is the family partition used by
 `scripts/platformkit/eval_gate/family_bars.py`, which pins it by `git hash-object`
@@ -62,6 +65,17 @@ checkpoint pricer), so the 9-transform grid does not apply to it and
 An enumerator that walks members as COLUMNS (`foundry/seed_queue.frozen_hypotheses`) skips
 `kind: arm`, so the frozen 9-transform grammar still enumerates exactly 3,564 hypotheses.
 
+S102 adds ONE `kind: tickgrid` family, `ingame_nba_tickgrid`. The NBA in-play tick corpus
+carries only score / period / clock / margin / market / outcome per tick, so its hypotheses
+are DERIVED state, not stored columns, and the 9-transform pregame alphabet does not apply:
+three of its nine transforms (rank_in_league, z_vs_league, ratio_to_opponent) need league or
+opponent tables that do not exist at tick grain. The tick grid therefore declares its own
+CLOSED construction rule in its block -- 16 base columns x 6 transforms x 6 conditionings =
+576 -- enumerated by `foundry/ingame_grammar_nba.enumerate_hypotheses` and deduped by
+`grammar.semantic_hash`. Like `kind: arm`, it is SKIPPED by
+`foundry/seed_queue.frozen_hypotheses`, so the frozen 9-transform grammar still enumerates
+exactly 3,564 pregame hypotheses. It is committed BEFORE the S102 screen is run.
+
 S89 adds ONE arm family per sport that has an in-game arm on disk. Two qualify:
 `ingame_arms_mlb` and `ingame_arms_nba`. There is NO soccer arm family: no soccer in-game
 arm exists in `scripts/platformkit/ingame/` and none has ever been charged, and a family
@@ -98,6 +112,7 @@ by eye rather than by the dtype rule above.
 |---|---|---|---|---|---|
 | ingame_arms_mlb | mlb | live_tick | inplay | 10 | 10 |
 | ingame_arms_nba | nba | live_tick | inplay | 1 | 1 |
+| ingame_nba_tickgrid | nba | live_tick | inplay | 16 | 576 |
 | mlb_atbat_states | mlb | live_tick | inplay | 10 | 90 |
 | mlb_bullpen_relief_chains | mlb | pregame | ml | 6 | 54 |
 | mlb_catcher_framing_index | mlb | pregame | ml | 3 | 27 |
@@ -157,6 +172,18 @@ features: 1
 hypotheses: 1
 sources: scripts/platformkit/eval_gate/s58_nba_halftime_asof_trial.py
 members: nba_halftime_asof
+
+### fam: ingame_nba_tickgrid
+kind: tickgrid
+sport: nba
+horizon: live_tick
+market: inplay
+features: 16
+hypotheses: 576
+sources: data/cache/inplay_odds/nba_checkpoints_full.parquet, data/cache/eval_gate/s86_nba_every_tick_2026-09-03.csv
+members: margin, rem, dmargin_k3, dmargin_k5, dmargin_k10, dmargin_k20, run_len_signed, lead_changes, lead_change_rate, pace_total, pace_ratio_p1, tdm_h60, tdm_h180, tdm_h600, margin_x_rem, margin_over_sqrt_rem
+construction: 16 base columns x 6 transforms (raw, ew(halflife=3,5,10,20), delta_vs_prior) x 6 conditionings (unconditional, phase=1..5) = 576, deduped by grammar.semantic_hash
+enumerator: scripts/platformkit/foundry/ingame_grammar_nba.enumerate_hypotheses
 
 ### fam: mlb_atbat_states
 sport: mlb

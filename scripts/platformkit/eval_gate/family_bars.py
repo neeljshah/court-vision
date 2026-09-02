@@ -61,7 +61,7 @@ FAMILY_ALIASES = {
 # picked after the p-values are in. Both are computed and printed on every verdict.
 Q_RULES = ("fdr_bh", "fdr_by")
 DEFAULT_Q_RULE = "fdr_bh"
-KINDS = ("grid", "arm")
+KINDS = ("grid", "arm", "tickgrid")
 DEFAULT_KIND = "grid"
 _BLOCK = re.compile(r"^### fam: (\S+)\s*$", re.M)
 
@@ -85,6 +85,9 @@ class Family:
     q_rule: str = DEFAULT_Q_RULE
     # S89. "grid": members are columns the 9-transform grammar enumerates. "arm": members
     # are whole predictors, which nothing transforms, so a feature enumerator SKIPS them.
+    # S102. "tickgrid": members are BASE columns of a derived in-game grammar whose closed
+    # construction rule lives in its own spec block, not in the 9-transform alphabet. Like
+    # "arm" it is skipped by the pregame feature enumerator.
     kind: str = DEFAULT_KIND
 
 

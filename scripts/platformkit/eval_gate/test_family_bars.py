@@ -86,38 +86,59 @@ def test_unknown_family_name_is_refused():
 
 
 ARM_FAMILIES = ("ingame_arms_mlb", "ingame_arms_nba")
+TICK_GRID_FAMILIES = ("ingame_nba_tickgrid",)
 
 
 def test_frozen_spec_loads_and_pins_itself_into_every_verdict():
-    """S89 amended the frozen partition: 37 feature grids + 2 in-game ARM families = 39.
+    """S102 amended the partition again: 37 grids + 2 ARM + 1 NBA TICK GRID = 40.
 
-    The counts below moved DELIBERATELY and once. Old pin (37 / 396 / 3564,
-    s14-families-v1) 62702554f6e57ec9f3182e8edc1e4d6a109a3b41; the new pin is whatever
+    The counts moved DELIBERATELY and once per amendment. S14 pin (37 / 396 / 3564,
+    s14-families-v1) 62702554f6e57ec9f3182e8edc1e4d6a109a3b41; S89 pin (39 / 407 / 3575,
+    s89-families-v2) 9d6cb98c43c74d04b7f995fe380e33705ffb7c0b; the current pin is whatever
     `git hash-object` says now and is asserted against the spec's own stamp, so an
-    UNDECLARED edit still fails here. An arm is a whole scored predictor, not a column,
-    so the 9-transform grid applies to the 37 grids only and an arm family carries
-    hypotheses == features.
+    UNDECLARED edit still fails here. An arm is a whole scored predictor, not a column, and
+    a tick grid's members are BASE columns of a derived in-game grammar whose construction
+    rule is in its own block, so the 9-transform grid applies to the 37 grids only.
     """
     spec = load_families()
-    assert spec.spec_version == "s89-families-v2"
+    assert spec.spec_version == "s102-families-v3"
     assert spec.q_within_family == 0.05
-    assert len(spec.families) == 39
-    grids = [f for f in spec.families if f.name not in ARM_FAMILIES]
+    assert len(spec.families) == 40
+    special = set(ARM_FAMILIES) | set(TICK_GRID_FAMILIES)
+    grids = [f for f in spec.families if f.name not in special]
     arms = [f for f in spec.families if f.name in ARM_FAMILIES]
-    assert len(grids) == 37 and len(arms) == 2
+    ticks = [f for f in spec.families if f.name in TICK_GRID_FAMILIES]
+    assert len(grids) == 37 and len(arms) == 2 and len(ticks) == 1
     assert sum(f.features for f in grids) == 396
     assert sum(f.hypotheses for f in grids) == 3564
     assert all(f.hypotheses == f.features * 9 for f in grids)
     assert sum(f.features for f in arms) == 11
     assert all(f.hypotheses == f.features for f in arms)
-    assert all(f.horizon == "live_tick" and f.market == "inplay" for f in arms)
+    assert all(f.horizon == "live_tick" and f.market == "inplay" for f in arms + ticks)
     assert all(f.kind == "arm" for f in arms) and all(f.kind == "grid" for f in grids)
+    assert all(f.kind == "tickgrid" for f in ticks)
+    # 16 base columns x 6 transforms x 6 conditionings, and the enumerator agrees.
+    assert ticks[0].features == 16 and ticks[0].hypotheses == 576
+    assert sum(f.features for f in spec.families) == 423
+    assert sum(f.hypotheses for f in spec.families) == 4151
     assert len({f.name for f in spec.families}) == len(spec.families)
     assert spec.prereg_sha256 == git_blob_id(SPEC_PATH)
     result = dual_bar_verdict(0.001, 1, [0.001, 0.9], family="nba_gate")
     assert result["families_spec_sha"] == spec.prereg_sha256
-    assert result["n_families"] == 39
+    assert result["n_families"] == 40
     assert "GLOBAL" in render_bars(result) and "FAMILY" in render_bars(result)
+
+
+def test_the_tick_grid_family_matches_its_frozen_enumerator():
+    """S102: the spec block and `ingame_grammar_nba` must not be able to drift apart."""
+    from scripts.platformkit.foundry.ingame_grammar_nba import (BASE, FAMILY,
+                                                                enumerate_hypotheses)
+
+    family = load_families().get(FAMILY)
+    assert family.kind == "tickgrid" and family.sport == "nba"
+    assert tuple(family.members) == BASE
+    assert family.features == len(BASE)
+    assert family.hypotheses == len(enumerate_hypotheses()) == 576
 
 
 def test_historical_ingame_family_strings_resolve_into_the_frozen_arm_families():
