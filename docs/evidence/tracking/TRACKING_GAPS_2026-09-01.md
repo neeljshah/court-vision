@@ -6,6 +6,12 @@
 |---|---|---|---|---|
 | G44B | tennis | Attempt 3 uses G65's durable independent labels: 150 unique seeded frames across 3 rally-view clips, 41 resolved visible and 109 explicitly uncertain. G65 supports 32/41 = 78.0% inside `y < 2/3*height`, conflicting with G44's 16/31 = 52%; the 41/150 denominator is not comparable with G44's 32/50. With only 20/21 positives in a split and no known non-ball labels, held-out recall and precision cannot be measured, so no spatial rule was fitted or changed. Resolve all 109 uncertain rows and obtain at least 59 additional resolved positives (100 total) before retry. No downstream teacher may be built. | `g44b_ball_spatial_gate_2026-09-02.md`, `g65_ball_label_set_2026-09-02.md`, `g65_ball_labels/labels.csv` | REJECT (insufficient ground truth to size or score the rule) |
 
++## G38B attempt-2 disposition
+
+| Gap | sport | finding | evidence | status |
+|---|---|---|---|---|
+| G38B | tennis | **NOT VALIDATED 2026-09-02.** G66 labels cover tennis_09, tennis_10 and nyYk 720p, while G38 used tennis_02-05. The G38 source tables are gone, and the three exact G66 clips have zero retained selected-player tracking tables locally and on the pod. Therefore n = 0 observed stride-adjacent >8 ft endpoint pairs: no endpoint-label fraction or Wilson interval is constructible. G66 remains candidate-level evidence: 155 non_player_person, 51 player, 4 uncertain; duplicate_of_player and not_a_person are empty. A 360p nyYk sibling is 239.00 ft/s at 0.0800 s, inside the 125.00-362.50 ft/s equivalent historical signature, but it is not joinable to the exact 720p labels. Twelve balanced seeded renders were reviewed; 11 agree with stored labels and G66_175 appears courtside despite stored player. | `g38b_jump_cause_2026-09-02.md`; G66 labels and renders | NOT VALIDATED. Do not replace the endpoint denominator with the candidate proxy or 360p sibling. A retry needs a retained selected-endpoint table for an exact G66 clip. |
+
 Rule: a gap is closed only by a measured artifact (n, denominator = decoded
 frames, render-and-look). Harness thresholds never move. Broadcast footage
 only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
