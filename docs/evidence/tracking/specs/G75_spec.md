@@ -1,11 +1,16 @@
 GAP G75 | sport basketball | worktree a2 | log cx_g75_paint_role_assignment
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it, including A7; self-check every
 line of section B before you report.
-GATED ON G68D. Do not start until the G68 census verdict is recorded. If G68D reports pooled
-`paint_solvable_share` below the pre-registered ~0.10, or reports that solvable tiles CLUSTER into
-a handful of static half-court stretches, then this row is CANCELLED and the per-frame paint route
-is a limit result. Read docs/evidence/tracking/g68_paint_solvable_share_2026-09-0X.md first and
-state its verdict in your first paragraph.
+GATES CLEARED 2026-09-02, and you must restate these numbers in your first paragraph. The G68
+census computed pooled paint_solvable_share = 0.6236, but an orchestrator spot-check found a
+mislabel, so G76 re-labelled 121 tiles BLIND against a definition committed beforehand. The
+CORRECTED share is **0.5732, Wilson 95 pct [0.5491, 0.5968]** -- use that number, not 0.6236.
+It is 5.7x the pre-registered 0.10 rule and the interval is nowhere near it, and solvable tiles
+appear in all ten temporal deciles of every clip, so neither pre-registered failure mode fires.
+CARRY THIS CAVEAT: raw agreement between the two labellings was only 83/121 = 68.6 pct, so the
+criterion is AMBIGUOUS and the point estimate is imprecise even though the decision is robust.
+Never quote 0.5732 as though it were accurate to four figures, and do not build anything whose
+correctness depends on the exact share.
 WHY THIS ROW: G47 established that the blocker for 4 of 8 sports is CALIBRATION, not tracking
 quality. The calibration strategy (docs/evidence/tracking/CALIBRATION_STRATEGY_2026-09-02.md --
 READ IT, section 1.2) found basketball's paint is a known APERIODIC rectangle -- structurally the
