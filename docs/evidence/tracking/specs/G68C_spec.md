@@ -1,4 +1,4 @@
-GAP G68C | sport basketball | worktree a9 | log cx_g68c_paint_labels  (CHUNK of G68 -- label ONLY the clips named below)
+GAP G68C | sport basketball | worktree a3 | log cx_g68c_paint_labels  (CHUNK of G68 -- label ONLY the clips named below)
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it, including A7; self-check every
 line of section B before you report. PURE CENSUS. No detector runs. No solver is written.
 WHY THIS ROW EXISTS: G47 established that the blocker for 4 of 8 sports is CALIBRATION, not tracking
@@ -76,7 +76,7 @@ COURT_NO_PAINT share as its own finding, the re-read flip count, whether solvabl
 the decision-rule verdict stated explicitly, and a NOT VERIFIED list.
 TEST: exactly one new per-file test if you add code; run only that file. Never a full pytest.
 POD: READ-ONLY. No scp, no deploy, no daemon restart, never kill anything.
-COMMIT: explicit pathspec only (never the whole tree, never the gitignored local trees), in a9,
+COMMIT: explicit pathspec only (never the whole tree, never the gitignored local trees), in a3,
 no push. Report the sha.
 SHARED MODULE: none.
 NEVER PARK: do not poll your own jobs in a blocking loop; never end waiting.
