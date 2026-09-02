@@ -1,8 +1,9 @@
 {
-  "status": "unavailable",
+  "status": "premise_stop_missing_per_frame_labels",
   "required_source": "data/footage_corpus/tennis__tennis_nyYk2nPZAwY_720p.mp4",
-  "source_present_in_worktree": false,
+  "source_present_in_worktree": true,
+  "source_present_on_pod": true,
   "published_g44_per_frame_labels_present": false,
   "labels_copied": 0,
-  "reason": "The original source and the G44 hand-label file are absent from this worktree. Creating labels or asserting a 150-frame disjoint split without source frames would be fabricated evidence."
+  "reason": "Attempt 2 confirmed the source locally and on the pod, but the original G44 per-frame hand-label artifact is absent in both places. Aggregate counts cannot be expanded into coordinates, a tolerance match, or a disjoint 150-frame split without fabricating evidence."
 }

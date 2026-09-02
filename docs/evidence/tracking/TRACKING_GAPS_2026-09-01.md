@@ -1,5 +1,11 @@
 # Tracking gap register -- 2026-09-01 (living; one gap = one lane)
 
+## G44B attempt-2 disposition
+
+| Gap | sport | finding | evidence | status |
+|---|---|---|---|---|
+| G44B | tennis | Attempt 2 confirms the named nyYk footage is available locally and on the pod, so source availability is no longer a blocker. The G39 0/12 candidate result reproduces. But the G44 32/50 visibility and 16/31 window results have no surviving per-frame labels or ball coordinates, so a >=150 three-clip disjoint fit/held-out evaluation cannot be built honestly from the aggregate memo. No detector rule was fitted or changed; no downstream teacher may be built. | `g44b_ball_spatial_gate_2026-09-02.md`, `g44b_premise_review_2026-09-02/`, `g44b_label_artifact_status_2026-09-02.json` | NOT VALIDATED (label-durability gap; re-label before retry) |
+
 Rule: a gap is closed only by a measured artifact (n, denominator = decoded
 frames, render-and-look). Harness thresholds never move. Broadcast footage
 only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
