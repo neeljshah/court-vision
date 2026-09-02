@@ -115,8 +115,10 @@ function, not this one.
 
 ## NOT VERIFIED
 
-- The CANONICAL ledger was never opened by this lane. `wc -l` reports 14 rows before and
-  after every step, and that is the only thing read from it. `--k-source ledger` against
+- The CANONICAL ledger was never opened by this lane. `wc -l` reported 14 rows at every
+  step of this lane's work, and that is the only thing read from it. (It reads 15
+  immediately AFTER this lane's commits: the sibling S58 lane charged a trial serially
+  while this lane was running. Nothing here charged it.) `--k-source ledger` against
   the real ledger was NOT run (a sibling lane is charging it serially), so the claim
   "it would price at K=14" is an inference from `max(k_cumulative)` over 14 rows, not a
   measurement. Every test uses a tmp ledger.
