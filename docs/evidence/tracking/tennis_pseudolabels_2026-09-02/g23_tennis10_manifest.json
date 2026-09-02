@@ -1,0 +1,16 @@
+{
+  "video": "data/footage_corpus/tennis__tennis_10.mp4",
+  "ranges": {
+    "3585-3884": 138,
+    "3930-4229": 203,
+    "6345-6644": 253,
+    "6405-6704": 196
+  },
+  "labeled_frames": 790,
+  "solve_type_counts": {
+    "fresh": 754,
+    "reuse": 36
+  },
+  "invisible_keypoints": 0,
+  "canonical_keypoints_per_frame": 14
+}

@@ -1,0 +1,17 @@
+{
+  "video": "data/footage_corpus/tennis__tennis_nyYk2nPZAwY_720p.mp4",
+  "ranges": {
+    "5715-6014": 183,
+    "33105-33404": 297,
+    "33855-34154": 299,
+    "41985-42284": 172,
+    "43830-44129": 168
+  },
+  "labeled_frames": 1119,
+  "solve_type_counts": {
+    "fresh": 998,
+    "reuse": 121
+  },
+  "invisible_keypoints": 0,
+  "canonical_keypoints_per_frame": 14
+}
