@@ -1,0 +1,13 @@
+frame,candidate_x,candidate_y,candidate_is_ball,ball_visible_elsewhere,observed_candidate
+5501,1196,73,false,false,scoreboard_speed_graphic
+5561,1054,97,false,false,crowd_or_staff
+5644,387,149,false,false,far_player_head
+5662,367,164,false,false,far_player_head_and_racket
+5687,320,178,false,true,far_player_legs
+5711,329,209,false,true,far_player_leg_or_shoe
+5727,368,150,false,true,far_player_head_and_racket
+5767,415,155,false,false,far_player_head_and_racket
+5794,451,150,false,true,far_player_head
+5870,1030,156,false,false,crowd_or_staff
+5888,580,122,false,false,far_player_head_and_racket
+5902,597,148,false,false,far_player_torso_and_racket
