@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "gap": "G71",
+  "sport": "tennis",
+  "status": "CENSUS_COMPLETE_NO_AFFECTED_OBJECTS",
+  "window_utc": {
+    "start_inclusive": "2026-09-02T02:23:00Z",
+    "end_inclusive": "2026-09-02T18:27:55Z",
+    "start_event": "G59 DEPLOY recorded in RESULTS_LEDGER and TRACKING_GAPS register; preserved rejected adapter/player_select files have 2026-09-02T02:23:12Z and 2026-09-02T02:23:13Z mtimes.",
+    "end_event": "G59 REMEDIATION register-record commit 4de9a81288e645effbf2b53a398f421d2c0abea5 at 2026-09-02T18:27:55Z; the record says master adapter deployed and rejected files removed. G52 independently records the selector-removed control arm immediately afterward."
+  },
+  "pod_snapshot": {
+    "table_root": "/workspace/nba-ai-system/data/tracking",
+    "report_root": "/workspace/nba-ai-system/data/tracking_reports",
+    "tracking_tables_total": 184,
+    "tennis_tracking_tables_total": 13,
+    "tennis_tracking_tables_in_window": 0,
+    "harness_reports_total": 187,
+    "tennis_harness_reports_total": 15,
+    "tennis_harness_reports_in_window": 0
+  },
+  "affected_tracking_tables": [],
+  "affected_harness_reports": [],
+  "marking_reason": "Any tennis tracking table or harness report written in the window was produced while the rejected G26 attempt-1 player selector was deployed. The exhaustive read-only mtime census found none in the window, so no existing pod object receives an individual mark.",
+  "landed_claims_quoting_affected_table": [],
+  "landed_claims_quoting_affected_table_count": 0,
+  "evidence_memo": "docs/evidence/tracking/g71_rejected_code_table_census_2026-09-02.md"
+}
