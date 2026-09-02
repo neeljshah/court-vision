@@ -1,4 +1,8 @@
 GAP S15 | sport all (signals) | worktree a13 AFTER S11 LANDS (same new package) | log cx_s15_results_db
+REDTEAM PREREQUISITES (2026-09-03, REDTEAM_SIGNAL_FACTORY memo 187101ea -- binding for this pass):
+- SF-13: the result row carries corpus_sha (from the corpus_cache sidecar) and the UNIQUE key includes it -- a changed corpus is a fresh trial, never a lookup hit.
+- SF-14: a lookup hit returns its stored k_global as k_at_run and the caller-facing helper RECOMPUTES deflated_p at the CURRENT ledger K before serving any verdict; serving the stale p is an automatic self-REJECT.
+- SF-12: the db refuses (IntegrityError surfaced, not swallowed) an insert whose hash exists with different raw params -- grid-snap collisions are surfaced, not merged.
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it; self-check every line of section B AND section Q (Q1-Q8) before you report. Template: docs/evidence/tracking/CODEX_SPEC_TEMPLATE.md.
 GAP (verbatim from the register): no results DB: a re-proposed hypothesis is a fresh trial rather than a lookup, and nothing indexes the trial artifacts.
 READ (read every signature on disk; line numbers drift): scripts/platformkit/foundry/grammar.py as landed by S11 (`Hypothesis`, `semantic_hash`) -- if absent, S11 has not landed: STOP and report BLOCKED; scripts/platformkit/foundry/tiers.py `TierResult` if S12 has landed (if not, define the DB against the field list below and say so); scripts/platformkit/eval_gate/backtest_runner.py `_charge_ledger` (THE only ledger writer). Library: STDLIB `sqlite3` only -- no new dependency; MLflow / DVC / Arize Phoenix are REJECTED (one more service to keep alive on the pod for a job one stdlib file does).
