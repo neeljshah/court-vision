@@ -154,6 +154,16 @@ def _process_one_game(game_id: str, verbose: bool = False,
             print(f"  [{game_id}] too small ({len(df)} rows), skip")
         return []
 
+    if "player_id" not in df.columns:
+        # S69: sport-blind tracking runs (tracking_schema columns
+        # track_id/cls/x/y -- e.g. an MLB teacher run) now land under
+        # data/tracking/ too. A foreign-schema directory is SKIPPED, never
+        # aliased onto player_id: its track ids are not NBA players and it
+        # carries none of the CV feature columns below.
+        if verbose:
+            print(f"  [{game_id}] no player_id column (non-NBA tracking schema), skipping")
+        return []
+
     # Coerce frame column to numeric
     df = df.copy()
     df["_frame_num"] = pd.to_numeric(df["frame"], errors="coerce")
@@ -296,7 +306,8 @@ def _compute_correlations(all_rows: list[dict], min_n: int = MIN_N_FOR_CORR) -> 
 def _build_signals_json(corr_df: pd.DataFrame) -> dict:
     """Extract features that pass r >= R_THRESHOLD at the 100-frame window."""
     if corr_df.empty:
-        return {"threshold_r": R_THRESHOLD, "window": "w100", "signals": [], "generated": ""}
+        return {"threshold_r": R_THRESHOLD, "window": "w100", "signals": [],
+                "generated": "", "generated_at": ""}
 
     w100 = corr_df[corr_df["window"] == "w100"].copy()
     w100 = w100.dropna(subset=["r_pearson"])
@@ -332,6 +343,12 @@ def _build_signals_json(corr_df: pd.DataFrame) -> dict:
         "window_100_signals": signals,
         "window_summary": window_summary,
         "generated":      pd.Timestamp.now().isoformat(),
+        # S69: additive sibling of "generated". gate_manifest._row_for reads
+        # `generated_at` only, so without it this artifact registers as
+        # mtime-sourced even though the producer knows its own write time.
+        # "generated" is KEPT for every existing reader. UTC-aware, because
+        # the naive local value reads 5 h stale to a UTC-based freshness check.
+        "generated_at":   pd.Timestamp.now(tz="UTC").isoformat(),
     }
 
 

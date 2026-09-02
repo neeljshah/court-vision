@@ -103,6 +103,13 @@ def _load_features(game_dir: Path) -> Optional[pd.DataFrame]:
             warnings.warn(f"Cannot read {fp}: {e}")
             continue
 
+        if "player_id" not in df.columns or "velocity" not in df.columns:
+            # S69: sport-blind tracking runs (tracking_schema columns
+            # track_id/cls/x/y -- e.g. an MLB teacher run) now land under
+            # data/tracking/ too. A foreign-schema source is SKIPPED, never
+            # aliased onto player_id: its track ids are not NBA players.
+            continue
+
         # Drop homography-invalid rows when column present
         if "homography_valid" in df.columns:
             df = df[df["homography_valid"].astype(str).isin(["1", "True", "1.0"])]

@@ -232,7 +232,7 @@ served model, and produces **no** betting edge versus closing lines.
 
 | Artifact | Rows | What it encodes |
 |---|---:|---|
-| `lineup_chemistry.parquet` + `lineup_signatures.json` | 4,760 + 1,175 lineups | Per-player tracking delta within each 5-man lineup vs. their own baseline |
+| `lineup_chemistry.parquet` + `lineup_signatures.json` | 6,123 + 1,595 lineups | Per-player tracking delta within each 5-man lineup vs. their own baseline |
 | `pair_chemistry.parquet` + `pair_signatures.json` | 998 pairs | Per-2-man chemistry (with-vs-without partner) |
 | `bench_starter_split.parquet` + `bench_starter_signatures.json` | 81 / 27 | Per-player starter-vs-bench feature delta with significance test |
 | `absence_cv_impact.parquet` + `star_absence_effects.json` | 5 | Beneficiary effects when a star is out (early; sparse — see Limitations) |
@@ -242,12 +242,12 @@ served model, and produces **no** betting edge versus closing lines.
 | Artifact | Rows | What it encodes |
 |---|---:|---|
 | `clutch_cv_split.parquet` + `clutch_rankings.json` | 188 | Clutch-vs-non-clutch tracking delta — *elevators*, *shrinkers*, *neutrals* |
-| `quarter_profiles.parquet` + `quarter_signatures.json` | 528 | Per-player per-quarter baseline velocity/usage |
+| `quarter_profiles.parquet` + `quarter_signatures.json` | 559 | Per-player per-quarter baseline velocity/usage |
 | `shot_clock_buckets.parquet` + `shot_clock_player_profiles.json` | 8,514 | Per-player behavior by shot-clock bucket (early/mid/late) |
 | `possession_type_profiles.parquet` + `possession_type_signatures.json` | 503 | Per-player behavior by possession type (transition, halfcourt, ATO, etc.) |
 | `tipoff_predictability.parquet` + `tipoff_predictability_signals.json` | 45 | How much the opening minutes predict the full-game pattern |
 | `sequential_patterns.parquet` + `sequential_signatures.json` | 144 | Rhythm/sequence features (vel after make vs. vel after miss, etc.) |
-| `ingame_momentum.parquet` | 775 | Per-player H1 → H2 feature delta (momentum carry) |
+| `ingame_momentum.parquet` | 878 | Per-player H1 → H2 feature delta (momentum carry) |
 | `h1_h2_projections.parquet` + `h2_projection_signals.json` | 497 | H2 projection from H1 state with clutch/closer multipliers |
 | `compound_candidates.parquet` | 10 | Compound atlas-pair candidates (player + situation combinations with shift signal) |
 

@@ -249,19 +249,44 @@ def _build_slot_info(tracking_df: pd.DataFrame, shot_log_path: Optional[Path]) -
     slot_jersey: Dict[int, Counter] = defaultdict(Counter)
     slot_team: Dict[int, Counter] = defaultdict(Counter)
 
-    for _, row in tracking_df.iterrows():
-        slot = int(row.get("player_id") or 0)
-        if not slot:
-            continue
-        jn = str(row.get("jersey_number", "")).strip()
-        if jn and jn not in ("nan", "") and jn != "nan":
-            try:
-                slot_jersey[slot][str(int(float(jn)))] += 1
-            except (ValueError, TypeError):
-                pass
-        abbrev = str(row.get("team_abbrev", "") or row.get("team", "")).strip()
-        if abbrev and abbrev not in ("nan", ""):
-            slot_team[slot][abbrev] += 1
+    # S69: this was `for _, row in tracking_df.iterrows()`, which built one
+    # pandas Series per frame-row and was 89 percent of the per-game profile
+    # (2.10 s of 2.35 s on game 0022400625, cProfile) -- 195 games past the
+    # 300 s refresh timeout. The columns are prepared once here and the counting
+    # stays a Counter loop over plain numpy values, so tie-breaking (Counter
+    # insertion order) is byte-identical to the row loop it replaces.
+    n_rows = len(tracking_df)
+    if n_rows:
+        slots = (pd.to_numeric(tracking_df.get("player_id"), errors="coerce")
+                 if "player_id" in tracking_df.columns else pd.Series([0] * n_rows))
+        slots = slots.fillna(0).astype("int64").to_numpy()
+
+        jn_num = (pd.to_numeric(tracking_df["jersey_number"], errors="coerce")
+                  if "jersey_number" in tracking_df.columns else pd.Series([float("nan")] * n_rows))
+        jn_ok = jn_num.notna().to_numpy()
+        jerseys = jn_num.fillna(0).astype("int64").astype(str).to_numpy()
+
+        if "team_abbrev" in tracking_df.columns:
+            primary = tracking_df["team_abbrev"]
+            fallback = tracking_df["team"] if "team" in tracking_df.columns else ""
+            # `row["team_abbrev"] or row["team"]`: NaN is truthy in Python, so a
+            # NaN abbrev does NOT fall back -- it stringifies to "nan" and is
+            # dropped below, exactly as the row loop did.
+            chosen = primary.where(primary.map(bool), fallback)
+        elif "team" in tracking_df.columns:
+            chosen = tracking_df["team"]
+        else:
+            chosen = pd.Series([""] * n_rows)
+        abbrevs = chosen.astype(str).str.strip().to_numpy()
+
+        for slot, jersey, use_jersey, abbrev in zip(slots, jerseys, jn_ok, abbrevs):
+            if not slot:
+                continue
+            slot = int(slot)
+            if use_jersey:
+                slot_jersey[slot][jersey] += 1
+            if abbrev and abbrev not in ("nan", ""):
+                slot_team[slot][abbrev] += 1
 
     slot_jersey_mode = {s: c.most_common(1)[0][0] for s, c in slot_jersey.items() if c}
     slot_team_mode = {s: c.most_common(1)[0][0] for s, c in slot_team.items() if c}
