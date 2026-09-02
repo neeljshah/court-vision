@@ -1,0 +1,33 @@
+clip,source_frame,ball_visible,center_x_image_px,center_y_image_px,frame_width_image_px,frame_height_image_px,ball_radius_image_px,uncertain,uncertain_reason,render
+tennis__tennis_09.mp4,6962,,,,1920,1080,,true,"no ball distinguishable after court-band 2x tile review",renders/tennis__tennis_09_001.jpg
+tennis__tennis_09.mp4,6980,,,,1920,1080,,true,"no ball distinguishable after court-band 2x tile review",renders/tennis__tennis_09_004.jpg
+tennis__tennis_09.mp4,7022,true,1042,609,1920,1080,4,false,,renders/tennis__tennis_09_011.jpg
+tennis__tennis_09.mp4,7028,true,673,372,1920,1080,3,false,,renders/tennis__tennis_09_012.jpg
+tennis__tennis_09.mp4,7034,true,602,232,1920,1080,3,false,,renders/tennis__tennis_09_013.jpg
+tennis__tennis_09.mp4,7040,true,577,166,1920,1080,4,false,,renders/tennis__tennis_09_014.jpg
+tennis__tennis_09.mp4,7076,true,994,543,1920,1080,4,false,,renders/tennis__tennis_09_020.jpg
+tennis__tennis_09.mp4,7082,,,,1920,1080,,true,"no ball distinguishable after court-band 2x tile review",renders/tennis__tennis_09_021.jpg
+tennis__tennis_09.mp4,7100,true,1031,472,1920,1080,3,false,,renders/tennis__tennis_09_024.jpg
+tennis__tennis_09.mp4,7106,true,908,337,1920,1080,4,false,,renders/tennis__tennis_09_025.jpg
+tennis__tennis_09.mp4,7112,true,836,324,1920,1080,3,false,,renders/tennis__tennis_09_026.jpg
+tennis__tennis_09.mp4,7118,true,796,239,1920,1080,3,false,,renders/tennis__tennis_09_027.jpg
+tennis__tennis_09.mp4,7124,true,766,162,1920,1080,3,false,,renders/tennis__tennis_09_028.jpg
+tennis__tennis_09.mp4,7148,,,,1920,1080,,true,"no ball distinguishable after court-band 2x tile review",renders/tennis__tennis_09_032.jpg
+tennis__tennis_09.mp4,7154,true,1237,508,1920,1080,3,false,,renders/tennis__tennis_09_033.jpg
+tennis__tennis_09.mp4,7160,,,,1920,1080,,true,"no ball distinguishable after court-band 2x tile review",renders/tennis__tennis_09_034.jpg
+tennis__tennis_09.mp4,7166,true,1394,682,1920,1080,5,false,,renders/tennis__tennis_09_035.jpg
+tennis__tennis_09.mp4,7172,true,1411,686,1920,1080,3,false,,renders/tennis__tennis_09_036.jpg
+tennis__tennis_09.mp4,7178,true,1239,350,1920,1080,2,false,,renders/tennis__tennis_09_037.jpg
+tennis__tennis_09.mp4,7184,true,1180,330,1920,1080,3,false,,renders/tennis__tennis_09_038.jpg
+tennis__tennis_09.mp4,7190,true,1144,316,1920,1080,4,false,,renders/tennis__tennis_09_039.jpg
+tennis__tennis_09.mp4,7196,true,1116,233,1920,1080,4,false,,renders/tennis__tennis_09_040.jpg
+tennis__tennis_09.mp4,7202,true,1090,199,1920,1080,4,false,,renders/tennis__tennis_09_041.jpg
+tennis__tennis_09.mp4,7208,true,1004,246,1920,1080,4,false,,renders/tennis__tennis_09_042.jpg
+tennis__tennis_09.mp4,7214,true,903,366,1920,1080,6,false,,renders/tennis__tennis_09_043.jpg
+tennis__tennis_09.mp4,7220,true,815,726,1920,1080,5,false,,renders/tennis__tennis_09_044.jpg
+tennis__tennis_09.mp4,7226,true,704,740,1920,1080,6,false,,renders/tennis__tennis_09_045.jpg
+tennis__tennis_09.mp4,7232,true,646,684,1920,1080,7,false,,renders/tennis__tennis_09_046.jpg
+tennis__tennis_09.mp4,7238,true,752,393,1920,1080,6,false,,renders/tennis__tennis_09_047.jpg
+tennis__tennis_09.mp4,7244,true,835,309,1920,1080,5,false,,renders/tennis__tennis_09_048.jpg
+tennis__tennis_09.mp4,7250,true,955,288,1920,1080,3,false,,renders/tennis__tennis_09_049.jpg
+tennis__tennis_09.mp4,7256,true,939,262,1920,1080,5,false,,renders/tennis__tennis_09_050.jpg
