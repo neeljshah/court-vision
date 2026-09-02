@@ -45,7 +45,18 @@ GATED_PREFIXES = ("src/", "kernel/", "api/", "intel/", "scripts/team_system/")
 
 # A producer gets this long before it is recorded as a FAILED row. Knob, not a
 # bar: these are batch builders, not services.
-PRODUCER_TIMEOUT_S = 300.0
+#
+# S69 raised it 300 -> 900 on MEASURED walls, after the five S57 failures were
+# repaired (build_quarter_momentum 132 s, build_tipoff_predictability 108 s,
+# build_cv_fatigue_trajectories 275 s, build_ingame_momentum 77 s,
+# build_lineup_chemistry 179 s -- all one full pass over the 357-game,
+# 4.56 GB data/tracking corpus). The slowest sits 25 s under the old 300 s, and
+# this box's read throughput varies by more than an order of magnitude with
+# antivirus scanning, so 300 s was killing runs that were merely slow.
+# ponytail: one global knob. The ceiling is that a genuinely hung builder now
+# wastes 15 min instead of 5 -- give a per-producer timeout only if one of these
+# ever hangs rather than crawls.
+PRODUCER_TIMEOUT_S = 900.0
 
 PRODUCERS = {
     "scripts/audit_retro_bets.py": ("retro_bet_audit.parquet",),

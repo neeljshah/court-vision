@@ -217,6 +217,16 @@ def _process_one_game(game_id: str, verbose: bool = False) -> list[dict]:
             print(f"  [{game_id}] too small ({len(df)} rows), skipping")
         return []
 
+    if "player_id" not in df.columns:
+        # S69: sport-blind tracking runs (tracking_schema columns
+        # track_id/cls/x/y -- e.g. an MLB teacher run) now land under
+        # data/tracking/ too. A foreign-schema directory is SKIPPED, never
+        # aliased onto player_id: its track ids are not NBA players and it
+        # carries none of the CV feature columns below.
+        if verbose:
+            print(f"  [{game_id}] no player_id column (non-NBA tracking schema), skipping")
+        return []
+
     # Load possessions for pbp_period quarter map
     intervals = None
     if poss_path.exists():
@@ -514,6 +524,12 @@ def _write_json(wide_df: pd.DataFrame, league_patterns: dict) -> None:
     """Write quarter_signatures.json."""
     signatures: dict = {
         "generated": pd.Timestamp.now().isoformat(),
+        # S69: additive sibling of "generated". gate_manifest._row_for reads
+        # `generated_at` only, so without it this artifact registers as
+        # mtime-sourced even though the producer knows its own write time.
+        # "generated" is KEPT for every existing reader. UTC-aware, because
+        # the naive local value reads 5 h stale to a UTC-based freshness check.
+        "generated_at": pd.Timestamp.now(tz="UTC").isoformat(),
         "league_patterns": league_patterns,
         "players": {},
     }

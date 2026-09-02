@@ -162,19 +162,29 @@ def resolve_slots(
     # Build per-slot jersey counters and name counters from tracking_data
     slot_jerseys: Dict[int, Counter] = {}
     slot_names: Dict[int, Counter] = {}
-    for _, row in df[["player_id", "jersey_number", "player_name"]].iterrows():
-        slot = int(row["player_id"]) if not pd.isna(row["player_id"]) else 0
+    # S69: this was `for _, row in df[[...]].iterrows()`, one pandas Series per
+    # frame-row over every game's full tracking table. The columns are prepared
+    # once here and the tally stays a Counter loop over plain numpy values, so
+    # tie-breaking (Counter insertion order) is byte-identical to the row loop.
+    sub = df[["player_id", "jersey_number", "player_name"]]
+    slots_arr = pd.to_numeric(sub["player_id"], errors="coerce").fillna(0).astype("int64").to_numpy()
+
+    jn_num = pd.to_numeric(sub["jersey_number"], errors="coerce")
+    jn_ok = jn_num.notna().to_numpy()
+    jerseys_arr = jn_num.fillna(0).astype("int64").astype(str).to_numpy()
+
+    names = sub["player_name"].astype(str).str.strip()
+    name_ok = (~names.isin(("nan", "", "None")) & ~names.str.contains("?", regex=False)).to_numpy()
+    names_arr = names.to_numpy()
+
+    for slot, jersey, use_jersey, pname, use_name in zip(
+            slots_arr, jerseys_arr, jn_ok, names_arr, name_ok):
         if not slot:
             continue
-        jersey_raw = str(row.get("jersey_number", "")).strip()
-        if jersey_raw and jersey_raw not in ("nan", "", "None"):
-            try:
-                jersey = str(int(float(jersey_raw)))
-                slot_jerseys.setdefault(slot, Counter())[jersey] += 1
-            except (ValueError, TypeError):
-                pass
-        pname = str(row.get("player_name", "")).strip()
-        if pname and pname not in ("nan", "", "None") and "#?" not in pname and "?" not in pname:
+        slot = int(slot)
+        if use_jersey:
+            slot_jerseys.setdefault(slot, Counter())[jersey] += 1
+        if use_name:
             slot_names.setdefault(slot, Counter())[pname] += 1
 
     all_slots = set(df["player_id"].dropna().astype(int).unique())
