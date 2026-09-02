@@ -1,0 +1,32 @@
+{
+ "cv2": "4.11.0",
+ "cases": [
+  {
+   "start": 43830,
+   "coverage": 0.56,
+   "control": 0.56,
+   "pod": 0.53,
+   "matches_control": true,
+   "matches_pod": false,
+   "elapsed_s": 53.9
+  },
+  {
+   "start": 33105,
+   "coverage": 0.99,
+   "control": 0.99,
+   "pod": 0.9933333333333333,
+   "matches_control": true,
+   "matches_pod": false,
+   "elapsed_s": 92.2
+  },
+  {
+   "start": 41985,
+   "coverage": 0.5733333333333334,
+   "control": 0.5733333333333334,
+   "pod": 0.5733333333333334,
+   "matches_control": true,
+   "matches_pod": true,
+   "elapsed_s": 74.3
+  }
+ ]
+}
