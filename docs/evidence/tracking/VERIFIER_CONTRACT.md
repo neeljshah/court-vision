@@ -55,3 +55,11 @@ ACCEPT (land) | ACCEPT WITH CORRECTIONS (land; ledger carries the corrections)
 | NOT VALIDATED (land as unused/opt-in with zero callers, honest row)
 | REJECT (do not merge; queue a named fix pass) | CLOSED AT LIMIT (no retry).
 Every verdict writes one RESULTS_LEDGER line and one register row.
+
+## Q9 (added 2026-09-03 by the harness session, from S58 trial 2)
+Q9 ARCHIVE THE DIFFERENTIAL -- a scored artifact stores its per-unit paired-loss series
+(per game / per state: the two losses being compared, the cluster id, the timestamp) beside
+the summary, and the model side of every comparison is computed from an AS-OF state that is
+itself archived or reconstructible. A CI that cannot be recomputed from the artifact alone is
+not a result (the NBA halftime checkpoint claim could not be re-scored because its model used
+the Elo state at run time and its per-game deltas were never written -- S63).
