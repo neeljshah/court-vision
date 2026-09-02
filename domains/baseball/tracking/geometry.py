@@ -16,6 +16,11 @@ from domains.baseball.tracking.field_mask import (
     infield_band_present,
     mound_chord,
 )
+from domains.baseball.tracking.pitch_view_gate import (
+    DEFAULT_MODE,
+    GateMode,
+    classify_pitch_view,
+)
 
 _CENTER_CROP_FRACTION = 0.70
 
@@ -52,9 +57,18 @@ def dominant_green(frame: np.ndarray) -> bool:
 
 def detect_pitch_geometry(
     frame: np.ndarray, min_chord_fraction: float = MIN_CHORD_FRACTION,
+    gate_mode: GateMode = DEFAULT_MODE,
 ) -> Optional[PitchGeometry]:
-    """Identify a mound positively and measure its lateral scale."""
-    if not dominant_green(center_crop(frame)):
+    """Identify a mound positively after the selected field precondition.
+
+    The opt-in hue path is a lighting-robust precondition only.  Both modes
+    still require a grass-bounded mound chord and an upper infield dirt band.
+    """
+    if gate_mode == DEFAULT_MODE:
+        field_precondition = dominant_green(center_crop(frame))
+    else:
+        field_precondition = classify_pitch_view(frame, gate_mode).is_pitch_view
+    if not field_precondition:
         return None
     chord = mound_chord(frame, min_chord_fraction)
     if chord is None or not infield_band_present(frame, chord.row):
