@@ -47,6 +47,7 @@ from domains.basketball_wnba.ingest_espn import (
     _SCOREBOARD_URL,
     season_calendar,
 )
+from scripts.platformkit.ops.safe_parquet_write import write_parquet_atomic
 
 log = logging.getLogger(__name__)
 
@@ -174,12 +175,12 @@ def ingest_season_linescores(
             new_df = (pd.concat([existing, new_df], ignore_index=True)
                       .drop_duplicates(subset=["event_id"], keep="last"))
         except Exception as exc:  # noqa: BLE001
-            log.warning("Could not read existing linescores parquet %s: %s -- overwriting", out, exc)
+            raise RuntimeError("S95: unreadable existing parquet %s" % out) from exc
 
     out.parent.mkdir(parents=True, exist_ok=True)
     if not new_df.empty:
         new_df = new_df.sort_values(["date", "event_id"], kind="mergesort").reset_index(drop=True)
-        new_df.to_parquet(out, index=False)
+        write_parquet_atomic(new_df, out)
     log.info("Wrote %d linescore rows to %s", len(new_df), out)
     return out
 

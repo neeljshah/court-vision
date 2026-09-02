@@ -47,6 +47,7 @@ import pandas as pd
 
 # ponytail: reuse the probables fetch layer -- same endpoint, same UA/timeout.
 from domains.mlb.ingest_probables import _SCHEDULE_URL, _default_http_get
+from scripts.platformkit.ops.safe_parquet_write import write_parquet_atomic
 
 log = logging.getLogger(__name__)
 
@@ -160,14 +161,13 @@ def ingest_range(
             combined = pd.concat([existing, new_df], ignore_index=True)
             combined = combined.drop_duplicates(subset=_DEDUP_KEYS, keep="last")
         except Exception as exc:  # noqa: BLE001
-            log.warning("Could not read existing parquet %s: %s -- overwriting", out, exc)
-            combined = new_df
+            raise RuntimeError("S95: unreadable existing parquet %s" % out) from exc
     else:
         combined = new_df
 
     out.parent.mkdir(parents=True, exist_ok=True)
     if not combined.empty:
-        combined.to_parquet(out, index=False)
+        write_parquet_atomic(combined, out)
     log.info("Wrote %d rows to %s", len(combined), out)
     return out
 

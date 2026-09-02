@@ -153,6 +153,12 @@ def _split_tail(tail: str, abbr_index: set) -> Optional[Tuple[str, str]]:
     return uniq[0]
 
 
+def _home_win(score: Tuple[float, float]) -> Optional[int]:
+    """1/0 from (home_score, away_score); None on a tie (not a binary label)."""
+    hs, aws = score
+    return None if hs == aws else (1 if hs > aws else 0)
+
+
 class MlbTickerOutcomeResolver:
     """Resolve home_win for a Kalshi MLB in-play ticker from the local ESPN
     boxscore parquet. Loads ONCE (final rows only) and caches an abbr index +
@@ -160,9 +166,15 @@ class MlbTickerOutcomeResolver:
     per-file test can inject an in-memory frame instead of touching disk."""
 
     def __init__(self, boxscore_df: Any = None,
-                 boxscore_parquet: Optional[Path] = None) -> None:
+                 boxscore_parquet: Optional[Path] = None,
+                 games_fallback: bool = False) -> None:
         self._ok = False
         self._abbr_index: set = set()
+        # S95: games{,_current}.parquet finals as a SECOND map, OFF by default.
+        # Kept separate from _final (never merged) so the ESPN corpus always
+        # answers first and the fallback is exact-date only -- the +/-1 hop
+        # mislabelled a postponement doubleheader in S91.
+        self._fb: Dict[Tuple[Any, str, str], list] = {}
         # (date, away, home) -> [(start_time_iso_str, (home_score, away_score)), ...]
         # A list because a doubleheader legitimately has 2 rows for one key --
         # NEVER a scalar overwrite (that was the bug: dict-assign silently
@@ -181,15 +193,29 @@ class MlbTickerOutcomeResolver:
             self._ok = True
         except Exception as exc:  # noqa: BLE001 -- no parquet -> resolver is inert
             logger.debug("MlbTickerOutcomeResolver init failed: %s", exc)
+        if games_fallback and boxscore_df is None:
+            self._load_fallback()
 
-    def _ingest(self, df: Any) -> None:
+    def _load_fallback(self) -> None:
+        """S95: games{,_current}.parquet finals -> _fb. Never raises."""
+        try:
+            from scripts.platformkit.ingame import mlb_games_outcome_fallback as _g
+            df = _g.load_games_box_frame()
+            if df is not None:
+                self._ingest(df, into=self._fb)
+            self._ok = self._ok or bool(self._fb)
+        except Exception as exc:  # noqa: BLE001 -- no fallback is not fatal
+            logger.debug("MlbTickerOutcomeResolver fallback load failed: %s", exc)
+
+    def _ingest(self, df: Any, into: Optional[Dict] = None) -> None:
         import pandas as pd
+        target = self._final if into is None else into
         d = df
         if "status" in d.columns:
             d = d[d["status"].astype(str).str.upper().str.contains("FINAL")]
         d = d.copy()
         d["date"] = pd.to_datetime(d["date"], errors="coerce")
-        self._abbr_index = _build_abbr_index(
+        self._abbr_index |= _build_abbr_index(
             set(d["home_abbr"].astype(str)) | set(d["away_abbr"].astype(str)))
         has_st = "start_time" in d.columns
         for _, r in d.iterrows():
@@ -202,14 +228,14 @@ class MlbTickerOutcomeResolver:
                 continue
             key = (r["date"].date(), away, home)
             st = str(r["start_time"]) if has_st and pd.notna(r["start_time"]) else ""
-            self._final.setdefault(key, []).append((st, (hs, aws)))
+            target.setdefault(key, []).append((st, (hs, aws)))
 
     @property
     def available(self) -> bool:
-        return self._ok and bool(self._final)
+        return self._ok and bool(self._final or self._fb)
 
-    def _pick(self, key: Tuple[Any, str, str],
-              game_number: Optional[int]) -> Optional[Tuple[float, float]]:
+    def _pick(self, key: Tuple[Any, str, str], game_number: Optional[int],
+              rows_map: Optional[Dict] = None) -> Optional[Tuple[float, float]]:
         """Pick ONE (home_score, away_score) for a (date, away, home) key,
         doubleheader-aware -- mirrors ingame_outcome_label.MlbOutcomeResolver._pick.
 
@@ -218,7 +244,7 @@ class MlbTickerOutcomeResolver:
         game_number N -> rows ordered by start_time (ISO strings sort correctly),
         G1 = earliest; N beyond the finals on disk, or 2+ rows we cannot order
         (missing start_time), -> None (fail closed, never a guess)."""
-        rows = self._final.get(key)
+        rows = (self._final if rows_map is None else rows_map).get(key)
         if not rows:
             return None
         if game_number is None:
@@ -251,11 +277,10 @@ class MlbTickerOutcomeResolver:
         for delta in (0, 1):
             score = self._pick((date + _dt.timedelta(days=delta), away, home), gnum)
             if score is not None:
-                hs, aws = score
-                if hs == aws:
-                    return None  # ties are not a binary home_win label
-                return 1 if hs > aws else 0
-        return None
+                return _home_win(score)
+        # S95 (opt-in, empty unless games_fallback=True): EXACT date only.
+        fb = self._pick((date, away, home), gnum, self._fb)
+        return _home_win(fb) if fb is not None else None
 
 
 __all__ = [

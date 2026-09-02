@@ -65,6 +65,7 @@ from pathlib import Path
 from typing import Callable, Dict, List, Optional, Sequence
 
 import pandas as pd
+from scripts.platformkit.ops.safe_parquet_write import write_parquet_atomic
 
 log = logging.getLogger(__name__)
 
@@ -223,14 +224,14 @@ def ingest_season(
             new_df = (pd.concat([existing, new_df], ignore_index=True)
                       .drop_duplicates(subset=["date", "home_team", "away_team"], keep="last"))
         except Exception as exc:  # noqa: BLE001
-            log.warning("Could not read existing parquet %s: %s -- overwriting", out, exc)
+            raise RuntimeError("S95: unreadable existing parquet %s" % out) from exc
 
     out.parent.mkdir(parents=True, exist_ok=True)
     if not new_df.empty:
         new_df = new_df.sort_values(
             ["date", "home_team", "away_team"], kind="mergesort"
         ).reset_index(drop=True)
-        new_df.to_parquet(out, index=False)
+        write_parquet_atomic(new_df, out)
     log.info("Wrote %d rows to %s", len(new_df), out)
     return out
 

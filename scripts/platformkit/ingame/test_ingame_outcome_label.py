@@ -245,3 +245,18 @@ def test_doubleheader_fails_closed_without_start_times():
     # 2 rows but no ordering info -> cannot prove which is G1 -> no settle
     assert res.final_score("KXMLBGAME-26JUL071415MILSTLG1") is None
     assert res.final_score("KXMLBGAME-26JUL071915MILSTLG2") is None
+
+
+def test_last_source_names_the_map_that_answered():
+    """S95: the joined row's outcome_source comes from this attribute."""
+    res = ol.MlbOutcomeResolver(box_df=_box_df())
+    assert res.home_win("KXMLBGAME-26JUN241845PHIWSH") == 1
+    assert res.last_source == "espn_boxscores_parquet"
+
+    # a game the ESPN map does not have, present only in the games.parquet map
+    res._ingest(pd.DataFrame([
+        {"event_id": "9", "date": "2026-06-29", "home_abbr": "BAL", "away_abbr": "CHW",
+         "home_score": 6.0, "away_score": 1.0, "status": "STATUS_FINAL"},
+    ]), into=res._fb)
+    assert res.home_win("KXMLBGAME-26JUN291235CWSBAL") == 1
+    assert res.last_source == "games_parquet_fallback"

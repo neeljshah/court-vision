@@ -153,3 +153,23 @@ def test_real_corpus_smoke():
     assert isinstance(r.available, bool)
     # A garbage ticker must never raise regardless of corpus state.
     assert r.home_win("not-a-real-ticker") is None
+
+
+def test_games_fallback_is_off_by_default():
+    """S95: the second outcome map stays EMPTY unless explicitly asked for."""
+    r = MlbTickerOutcomeResolver(boxscore_df=_synthetic_boxscores())
+    assert r._fb == {}
+    assert r.home_win("KXMLBGAME-26JUL051235CWSBAL") is None
+
+
+def test_games_fallback_map_answers_only_on_the_exact_date():
+    """ESPN first; the fallback map resolves the exact ticker date and no other."""
+    r = MlbTickerOutcomeResolver(boxscore_df=_synthetic_boxscores())
+    r._ingest(pd.DataFrame([
+        {"date": "2026-07-05", "home_abbr": "BAL", "away_abbr": "CHW",
+         "home_score": 2.0, "away_score": 7.0, "status": "STATUS_FINAL"},
+    ]), into=r._fb)
+    assert r.home_win("KXMLBGAME-26JUL051235CWSBAL") == 0     # exact date
+    assert r.home_win("KXMLBGAME-26JUL041235CWSBAL") is None  # +1 hop not taken
+    # the ESPN map still wins where it has the game
+    assert r.home_win("KXMLBGAME-26JUL011235CWSBAL") == 1

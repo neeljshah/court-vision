@@ -191,6 +191,8 @@ class MlbOutcomeResolver:
         game_number N -> rows ordered by start_time (ISO strings sort correctly),
         G1 = earliest; N beyond the finals on disk, or 2+ rows we cannot order
         (missing start_time), -> None (fail closed, never a guess)."""
+        # S95: caller returns the FIRST non-None _pick -> the map read here answered.
+        self.last_source = "espn_boxscores_parquet" if rows_map is None else "games_parquet_fallback"
         rows = (self._rows if rows_map is None else rows_map).get(key)
         if not rows:
             return None
@@ -295,6 +297,4 @@ class MlbOutcomeResolver:
         return self._resolve(ticker, today)
 
 
-__all__ = [
-    "DEFAULT_BOX_PARQUET", "MlbOutcomeResolver", "parse_mlb_ticker",
-]
+__all__ = ["DEFAULT_BOX_PARQUET", "MlbOutcomeResolver", "parse_mlb_ticker"]

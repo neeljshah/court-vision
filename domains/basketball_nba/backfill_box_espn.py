@@ -34,6 +34,7 @@ import pandas as pd
 from domains.basketball_nba.ingest_espn_box import (
     _default_http_get, fetch_box, fetch_scoreboard,
 )
+from scripts.platformkit.ops.safe_parquet_write import write_parquet_atomic
 
 log = logging.getLogger(__name__)
 
@@ -91,9 +92,9 @@ def _append_rows(out_path: Path, rows: List[dict]) -> None:
                 subset=["event_id"], keep="last"
             )
         except Exception as exc:  # noqa: BLE001
-            log.warning("could not read existing %s: %s -- overwriting", out_path, exc)
+            raise RuntimeError("S95: unreadable existing parquet %s" % out_path) from exc
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    new_df.to_parquet(out_path, index=False)
+    write_parquet_atomic(new_df, out_path)
 
 
 def backfill(season: str, out_path: Path, sleep_s: float = 1.0, limit: int = 0,

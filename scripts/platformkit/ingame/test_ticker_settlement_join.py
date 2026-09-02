@@ -180,8 +180,34 @@ def test_player_identity_carried_through_and_other_fields_unchanged(tmp_path):
                           "market_prob": 0.55, "side": "home",
                           "state_summary": "inning=5", "outcome": 1.0,
                           "close_source": J._CLOSE_SOURCE_LABEL["mlb"],
+                          "outcome_source": J._CLOSE_SOURCE_LABEL["mlb"],
                           "close_prob": non_player["close_prob"],
                           "close_ts": non_player["close_ts"], "edge_claimed": False}
+
+
+class _SourcedResolver:
+    """Resolver that reports WHICH map answered (the S95 contract)."""
+
+    def __init__(self, source):
+        self.last_source = source
+
+    def home_win(self, ticker):
+        return 1
+
+
+@pytest.mark.parametrize("source", ["espn_boxscores_parquet", "games_parquet_fallback"])
+def test_outcome_source_is_per_row_from_the_resolver(tmp_path, source):
+    grade_dir = tmp_path / "grade" / "mlb"
+    grade_dir.mkdir(parents=True)
+    p = grade_dir / "KXMLBGAME-26JUL011235CWSBAL.jsonl"
+    _write_ticks(p, [_tick(p.stem, "2026-07-01T17:00:00Z", 0.58, 0.55)])
+    J.join_ticker_file("mlb", p, _SourcedResolver(source),
+                       joined_dir=tmp_path / "joined", grade_dir=grade_dir)
+    row = json.loads((tmp_path / "joined" / "mlb" / p.name).read_text(
+        encoding="utf-8").strip())
+    assert row["outcome_source"] == source
+    # close_source is the resolver-family label and is NOT rewritten
+    assert row["close_source"] == J._CLOSE_SOURCE_LABEL["mlb"]
 
 
 def test_backfill_sport_unknown_sport_is_honest_empty(tmp_path):

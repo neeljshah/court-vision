@@ -28,6 +28,7 @@ from pathlib import Path
 from typing import Callable, Dict, List, Optional
 
 import pandas as pd
+from scripts.platformkit.ops.safe_parquet_write import write_parquet_atomic
 
 log = logging.getLogger(__name__)
 
@@ -169,8 +170,7 @@ def ingest_snapshot(
             existing = pd.read_parquet(out)
             new_df = pd.concat([existing, new_df], ignore_index=True)
         except Exception as exc:  # noqa: BLE001
-            log.warning("Could not read existing parquet %s: %s -- overwriting", out, exc)
-
+            raise RuntimeError("S95: unreadable existing parquet %s" % out) from exc
     if not new_df.empty:
         has_id = new_df["athlete_id"].notna()
         keyed = new_df[has_id].drop_duplicates(subset=["snapshot_date", "athlete_id"], keep="last")
@@ -181,7 +181,7 @@ def ingest_snapshot(
 
     out.parent.mkdir(parents=True, exist_ok=True)
     if not new_df.empty:
-        new_df.to_parquet(out, index=False)
+        write_parquet_atomic(new_df, out)
     log.info("injuries snapshot: %d rows -> %s", len(new_df), out)
     return new_df
 
@@ -258,14 +258,14 @@ def write_edge_facts(facts: List[dict], out_path: Optional[Path] = None) -> pd.D
             existing = pd.read_parquet(out)
             new_df = pd.concat([existing, new_df], ignore_index=True)
         except Exception as exc:  # noqa: BLE001
-            log.warning("Could not read existing facts parquet %s: %s -- overwriting", out, exc)
+            raise RuntimeError("S95: unreadable existing parquet %s" % out) from exc
 
     if not new_df.empty:
         new_df = new_df.drop_duplicates(subset=["game_date", "subject_id", "fact_kind"], keep="last")
 
     out.parent.mkdir(parents=True, exist_ok=True)
     if not new_df.empty:
-        new_df.to_parquet(out, index=False)
+        write_parquet_atomic(new_df, out)
     log.info("edge facts: %d rows -> %s", len(new_df), out)
     return new_df
 

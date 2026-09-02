@@ -41,6 +41,7 @@ from pathlib import Path
 from typing import Callable, List, Optional
 
 import pandas as pd
+from scripts.platformkit.ops.safe_parquet_write import write_parquet_atomic
 
 log = logging.getLogger(__name__)
 
@@ -186,7 +187,7 @@ def ingest_snapshot(
             existing = pd.read_parquet(out)
             new_df = pd.concat([existing, new_df], ignore_index=True)
         except Exception as exc:  # noqa: BLE001
-            log.warning("Could not read existing parquet %s: %s -- overwriting", out, exc)
+            raise RuntimeError("S95: unreadable existing parquet %s" % out) from exc
 
     if not new_df.empty:
         has_id = new_df["athlete_id"].notna()
@@ -198,9 +199,7 @@ def ingest_snapshot(
 
     out.parent.mkdir(parents=True, exist_ok=True)
     if not new_df.empty:
-        tmp = out.with_suffix(".parquet.tmp")
-        new_df.to_parquet(tmp, index=False)
-        tmp.replace(out)
+        write_parquet_atomic(new_df, out)
     log.info("wnba injuries snapshot: %d rows -> %s", len(new_df), out)
     return new_df
 

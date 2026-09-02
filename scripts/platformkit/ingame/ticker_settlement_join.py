@@ -55,8 +55,9 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_GRADE_DIR = _REPO_ROOT / "data" / "cache" / "ingame_grade"
 DEFAULT_JOINED_DIR = _REPO_ROOT / "data" / "cache" / "ingame_grade_joined"
 
-# provenance label per sport's resolver -- purely descriptive, recorded in
-# close_source so a joined row can be traced back to its outcome corpus.
+# RESOLVER-FAMILY label per sport, recorded in close_source (value unchanged, every
+# reader keeps it). S95: it names the resolver's PRIMARY corpus, not necessarily the
+# map that answered -- the per-row truth is the additive outcome_source column.
 _CLOSE_SOURCE_LABEL: Dict[str, str] = {
     "mlb": "ingame_outcome_label:espn_boxscores_parquet",
     "soccer_intl": "soccer_outcome:espn_finals_parquet",
@@ -71,9 +72,8 @@ _CLOSE_SOURCE_LABEL: Dict[str, str] = {
 # Player/lineup identity already resolved onto the grade row (inplay_capture_loop.py:
 # 975-979), carried through UNCHANGED so the joined store keeps player grain. Absent
 # key -> absent, never fabricated. ponytail: explicit list, schema stays enumerable.
-_CARRY_KEYS: Tuple[str, ...] = ("mlb_batter_id", "mlb_pitcher_id",
-                                "mlb_pitcher_pitch_count", "mlb_ondeck_id",
-                                "mlb_bullpen_used")
+_CARRY_KEYS: Tuple[str, ...] = ("mlb_batter_id", "mlb_pitcher_id", "mlb_ondeck_id",
+                                "mlb_pitcher_pitch_count", "mlb_bullpen_used")
 # sport -> (module under scripts.platformkit.ingame, resolver class name). Every
 # resolver here already exists and shares the ticker-in/label-out contract; this
 # table is the only per-sport code a new sport needs to add.
@@ -187,6 +187,7 @@ def join_ticker_file(sport: str, path: Path, resolver: Any, *,
         summary["reason"] = "unresolved_outcome"
         return summary
     close_source = _CLOSE_SOURCE_LABEL.get(sport, "%s_outcome_resolver" % sport)
+    outcome_source = getattr(resolver, "last_source", None) or close_source
     close = _kx.derive_close(path)  # reused last-tick close proxy
 
     out_lines = []
@@ -196,6 +197,7 @@ def join_ticker_file(sport: str, path: Path, resolver: Any, *,
             "model_prob": r["model_prob"], "market_prob": r["market_prob"],
             "side": r.get("side", _lg.PAIR_SIDE), "state_summary": r.get("state_summary", ""),
             "outcome": outcome, "close_source": close_source,
+            "outcome_source": outcome_source,
             "close_prob": close["close_prob"] if close else None,
             "close_ts": close["close_ts"] if close else None,
             "edge_claimed": False,
@@ -294,7 +296,5 @@ if __name__ == "__main__":  # pragma: no cover
     demo()
 
 
-__all__ = [
-    "DEFAULT_GRADE_DIR", "DEFAULT_JOINED_DIR", "join_ticker_file",
-    "backfill_sport", "backfill_all",
-]
+__all__ = ["DEFAULT_GRADE_DIR", "DEFAULT_JOINED_DIR", "join_ticker_file",
+           "backfill_sport", "backfill_all"]
