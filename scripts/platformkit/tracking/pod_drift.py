@@ -17,6 +17,14 @@ SCOPE_GLOBS = (
     "scripts/platformkit/track_daemon*.py",
     "scripts/platformkit/tracking_harness.py",
 )
+# Local-only tooling that never runs on the pod. It is in the scope globs by
+# path but is not a tracking-number producer, so leaving it in reports a
+# permanent DIFFERS and trains the reader to ignore the check. Anything added
+# here needs the same justification: it cannot affect a pod-produced number.
+LOCAL_ONLY_MODULES = frozenset((
+    "scripts/platformkit/tracking/worktree_data_links.py",  # Windows junctions
+    "scripts/platformkit/tracking/pod_drift.py",            # the checker itself
+))
 POD_ROOT = "/workspace/nba-ai-system"
 DEFAULT_HOST = "213.192.2.83"
 DEFAULT_PORT = "40193"
@@ -26,6 +34,8 @@ _POD_LINE = re.compile(r"^([0-9a-fA-F]{32})\s+/workspace/nba-ai-system/(.+)$")
 def _is_scoped_module(path: str) -> bool:
     """Return whether a repository-relative path is a production scope member."""
     if not path.endswith(".py") or Path(path).name.startswith("test_"):
+        return False
+    if path in LOCAL_ONLY_MODULES:
         return False
     parts = path.split("/")
     return (
