@@ -123,13 +123,41 @@ def decode_source(rows: list[dict[str, str]]) -> None:
         cv2.imwrite(str(destination / f"contact_sheet_{page:02d}.jpg"), sheet)
 
 
+def render_review_sheets(rows: list[dict[str, str]]) -> None:
+    """Make ID-keyed sheets from the already-committed G111 renders."""
+    labels = {(row["clip"], row["source_frame"], row["slot"]): row for row in read_labels()}
+    destination = OUT / "committed_render_review"
+    destination.mkdir(parents=True, exist_ok=True)
+    images: list[np.ndarray] = []
+    for row in rows:
+        label = labels[(row["clip"], row["source_frame"], row["slot"])]
+        image = cv2.imread(str(ROOT / "g111_basketball_reach" / label["render"]))
+        if image is None:
+            raise FileNotFoundError(label["render"])
+        images.append(image)
+    for page, start in enumerate(range(0, len(images), 9), 1):
+        tiles = []
+        for index, image in enumerate(images[start:start + 9], start):
+            tile = cv2.resize(image, (640, 360), interpolation=cv2.INTER_AREA)
+            cv2.putText(tile, rows[index]["audit_id"], (12, 28), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.8, (0, 255, 255), 2)
+            tiles.append(tile)
+        while len(tiles) < 9:
+            tiles.append(np.zeros_like(tiles[0]))
+        sheet = cv2.vconcat([cv2.hconcat(tiles[i:i + 3]) for i in range(0, 9, 3)])
+        cv2.imwrite(str(destination / f"contact_sheet_{page:02d}.jpg"), sheet)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--decode", action="store_true")
+    parser.add_argument("--render-sheets", action="store_true")
     args = parser.parse_args()
     selected = write_blind_manifest(read_labels())
     if args.decode:
         decode_source(selected)
+    if args.render_sheets:
+        render_review_sheets(selected)
     print(f"g126_blind_frames={len(selected)}")
 
 
