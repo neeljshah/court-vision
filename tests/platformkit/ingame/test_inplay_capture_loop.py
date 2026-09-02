@@ -23,6 +23,24 @@ from scripts.platformkit.ingame import inplay_capture_loop as loop
 # --------------------------------------------------------------------------------------- #
 # injected offline chains                                                                  #
 # --------------------------------------------------------------------------------------- #
+def _assert_enter_decision(g):
+    """The paper day-trader's ENTER decision, asserted in ONE place.
+
+    Since a1fb821c6 (2026-09-01, "Wire paper maker lifecycle into day-trader") an
+    ENTER no longer crosses the book on the deciding tick: it SUBMITS a resting
+    maker quote and fills on a later cross or TTL cancel. So the tick that decides
+    to enter reports bet=False / action="resting" / reason="maker_quote_submitted",
+    and the heartbeat's n_bets (which counts filled rows) stays 0 for that tick.
+
+    Every test below that asserts "the decision path is unaffected by X" routes
+    through here, so the contract moves in one edit if the lifecycle changes again.
+    """
+    assert g["bet"] is False
+    assert g["action"] == "resting"
+    assert g["reason"] == "maker_quote_submitted"
+    assert g["model_prob"] == 0.65
+
+
 def _state_fn_prior(sport, gid):
     # Live state carrying the PROVEN pregame prior (P1 wire -> p0_source PRIOR).
     return {"sport": sport, "game_id": gid, "home": "DET", "away": "CWS",
@@ -142,9 +160,11 @@ def test_one_cycle_captures_pair_with_prior_and_paper_decides(tmp_path):
     assert g["p0_source"] == "PRIOR"                 # the PROVEN prior, not BASE
     assert g["model_prob"] == 0.65
     assert g["devigged_price"] is not None and 0.0 < g["devigged_price"] < 1.0
-    # model (0.65) is above the ~0.54 devigged price -> a paper ENTER fires.
-    assert g["bet"] is True and g["action"] == "bet"
-    assert hb["n_bets"] == 1
+    # model (0.65) is above the ~0.54 devigged price -> a paper ENTER fires. Since the
+    # maker lifecycle wire the ENTER rests a quote rather than crossing (see
+    # _assert_enter_decision), so no row has FILLED yet on this tick.
+    _assert_enter_decision(g)
+    assert hb["n_bets"] == 0
     # The leak-free grade pair was captured to the per-game file.
     path = grade_dir / "mlb" / "KXMLBGAME-26JUN191840CWSDET.jsonl"
     rows = [json.loads(x) for x in path.read_text(encoding="ascii").splitlines() if x.strip()]
@@ -612,7 +632,7 @@ def test_wnba_shadow_field_present_and_none_safe(tmp_path, monkeypatch):
     g = hb["games"][0]
     # additive field present; decision (bet/action/model_prob) is UNCHANGED by it.
     assert g["model_prob_wnba_shadow"] == 0.71
-    assert g["bet"] is True and g["model_prob"] == 0.65
+    _assert_enter_decision(g)
 
 
 def test_wnba_shadow_poisoned_get_shadow_is_none_never_raises(tmp_path, monkeypatch):
@@ -631,7 +651,7 @@ def test_wnba_shadow_poisoned_get_shadow_is_none_never_raises(tmp_path, monkeypa
     g = hb["games"][0]
     assert g["model_prob_wnba_shadow"] is None
     # decision path fully unaffected by the poisoned shadow prober.
-    assert g["bet"] is True and g["model_prob"] == 0.65
+    _assert_enter_decision(g)
 
 
 # --------------------------------------------------------------------------------------- #
@@ -657,7 +677,7 @@ def test_nba_ladder_shadow_field_present_and_none_safe(tmp_path, monkeypatch):
     # additive field present; the EXISTING nba shadow field + decision are untouched by it.
     assert g["model_prob_nba_ladder_shadow"] == 0.63
     assert "model_prob_nba_shadow" in g
-    assert g["bet"] is True and g["model_prob"] == 0.65
+    _assert_enter_decision(g)
 
 
 def test_nba_ladder_shadow_poisoned_pricer_is_none_never_raises(tmp_path, monkeypatch):
@@ -675,7 +695,7 @@ def test_nba_ladder_shadow_poisoned_pricer_is_none_never_raises(tmp_path, monkey
                         heartbeat_path=tmp_path / "hb.json")
     g = hb["games"][0]
     assert g["model_prob_nba_ladder_shadow"] is None
-    assert g["bet"] is True and g["model_prob"] == 0.65
+    _assert_enter_decision(g)
 
 
 def test_nba_ladder_shadow_non_nba_sport_is_none():
@@ -712,7 +732,7 @@ def test_enrichment_fields_present_and_none_safe_with_no_sidecars(tmp_path):
     for key in ("xg_home", "xg_away", "xg_asof_min", "spread_bp", "book_thinness",
                "stale_quote", "espn_wp"):
         assert key in g and g[key] is None
-    assert g["bet"] is True and g["model_prob"] == 0.65
+    _assert_enter_decision(g)
 
 
 def test_enrichment_on_vs_off_decision_output_identical(tmp_path, monkeypatch):
@@ -770,7 +790,7 @@ def test_enrichment_poisoned_facade_never_raises_decision_unaffected(tmp_path, m
                "stale_quote", "espn_wp"):
         assert g.get(key) is None
     # decision path fully unaffected by the poisoned enrichment facade.
-    assert g["bet"] is True and g["model_prob"] == 0.65
+    _assert_enter_decision(g)
 
 
 # --------------------------------------------------------------------------------------- #
@@ -859,7 +879,7 @@ def test_mlb_identity_fields_none_safe_when_unresolved(tmp_path):
     for key in ("mlb_batter_id", "mlb_pitcher_id", "mlb_pitcher_pitch_count",
                "mlb_ondeck_id", "mlb_bullpen_used"):
         assert key in g and g[key] is None
-    assert g["bet"] is True and g["model_prob"] == 0.65
+    _assert_enter_decision(g)
 
 
 # --------------------------------------------------------------------------------------- #
@@ -949,7 +969,7 @@ def test_heartbeat_carries_pacing_counters_zero_for_legacy_1arg_fetch_fn(tmp_pat
     assert hb["n_429_total"] == 0
     assert "cycle_duration_sec" in hb and hb["cycle_duration_sec"] >= 0.0
     g = hb["games"][0]
-    assert g["bet"] is True and g["model_prob"] == 0.65  # decision path unaffected
+    _assert_enter_decision(g)  # decision path unaffected
 
 
 def test_heartbeat_aggregates_stats_from_a_pacing_aware_fetch_fn(tmp_path):
@@ -1194,7 +1214,7 @@ def test_shadow_history_poisoned_module_never_raises_into_poll_once(tmp_path, mo
                        heartbeat_path=tmp_path / "hb.json")
     # the heartbeat write (which happens before the hook) still succeeded, and the
     # decision path is fully unaffected by the poisoned shadow_history module.
-    assert hb["games"][0]["bet"] is True and hb["games"][0]["model_prob"] == 0.65
+    _assert_enter_decision(hb["games"][0])
     assert (tmp_path / "hb.json").is_file()
 
 
