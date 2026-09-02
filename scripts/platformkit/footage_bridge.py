@@ -269,12 +269,14 @@ def download_local(item: dict) -> Path:
         # 600s, which lands inside the pregame show on a 4-hour live stream.
         section = item.get("section") or plan_section(probe_duration(item["url"]))
     last_error = "no attempt made"
-    # Cookies LAST, not first. With cookies yt-dlp picks the tv client and gets
-    # HLS (format 96, ~1100 fragments, very slow); without them it gets clean
-    # DASH (137+251). The residential IP is not bot-blocked, so cookies are only
-    # a fallback for the occasional video that demands them.
+    # For a bounded section, cookie-backed HLS has the needed 720p/1080p
+    # pre-muxed formats and fetches only the requested fragments. Prefer it
+    # before the no-cookie web client, which exposes only 360p and can force an
+    # expensive full-file fallback. Whole-file downloads still prefer clean
+    # DASH before cookies.
+    cookie_order = (True, False) if section else (False, True)
     attempts = [(r, c, sec) for sec in ([section, None] if section else [None])
-                for c in (False, True) for r in rungs]
+                for c in cookie_order for r in rungs]
     for rung, use_cookies, use_section in attempts:
         # Build positionally rather than splicing into the list. Inserting at
         # command[-2:-2] once landed "-f <rung>" BETWEEN "-o" and its filename,

@@ -255,6 +255,29 @@ def test_first_download_attempt_does_not_use_cookies(monkeypatch, tmp_path):
     assert "--cookies" not in commands[0]
 
 
+def test_explicit_section_prefers_cookie_backed_hls(monkeypatch, tmp_path):
+    """A bounded slice must try HLS before a 360p web-client attempt."""
+    commands = []
+    cookies = tmp_path / "cookies.txt"
+    cookies.write_text("# Netscape HTTP Cookie File\n", encoding="utf-8")
+    monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
+    monkeypatch.setattr(footage_bridge, "COOKIES", cookies)
+    monkeypatch.setattr(footage_bridge, "video_height", lambda path: 720)
+
+    def fake_run(command, **kwargs):
+        commands.append(command)
+        (tmp_path / "g.mp4").write_bytes(b"video")
+        return subprocess.CompletedProcess(command, 0)
+
+    monkeypatch.setattr(footage_bridge.subprocess, "run", fake_run)
+    footage_bridge.download_local(
+        {"game_id": "g", "url": "https://www.youtube.com/watch?v=abc",
+         "section": "*00:20:00-00:30:00"})
+
+    assert "--cookies" in commands[0]
+    assert "youtube:player_client=web" not in commands[0]
+
+
 def test_output_flag_is_immediately_followed_by_its_filename(monkeypatch, tmp_path):
     """Splicing -f between -o and its value made yt-dlp treat "-f" as the name."""
     commands = []
@@ -445,6 +468,7 @@ def test_section_attempt_is_tried_first_and_falls_back_to_full_download(
 def test_section_download_uses_the_web_client(monkeypatch, tmp_path):
     """ffmpeg gets 403 from the default client's URL; only web works."""
     monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
+    monkeypatch.setattr(footage_bridge, "COOKIES", tmp_path / "absent.txt")
     monkeypatch.setattr(footage_bridge, "probe_duration", lambda url: 85 * 60)
     monkeypatch.setattr(footage_bridge, "video_height", lambda path: 720)
     seen = []
