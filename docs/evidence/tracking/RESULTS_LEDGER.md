@@ -3,6 +3,8 @@
 Format: date | sport | gap | metric before -> after (n, denominator) | verdict | commit
 Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too.
 
+2026-09-02 | tennis | G44B | ATTEMPT 2 CONFIRMED the named nyYk source locally and on the pod, and re-viewed the complete evenly-spaced G39 set at 0/12 ball candidates (Wilson 95 pct 0.0--24.2). The original G44 32/50 visibility and 16/31 window decisions have no surviving per-frame label/coordinate artifact, so neither aggregate can provide the required >=150 three-clip disjoint fit/held-out corpus or tolerance metric. No rule, code, threshold, deployment or teacher was created. | NOT VALIDATED (correct premise stop; label durability gap) | this evidence commit
+
 2026-09-01 | tennis | G05 | camera-lock coverage 0.1018 -> 0.1987 (599 decoded, linspace plan); sequential 15300-15600: 0/31 -> 270/301 = 0.897, harness PASS; 1080p control 5/71 -> 58/71 PASS | LANDED | 1c5f1e6b7
 2026-09-01 | tennis | G06 | synthcal W7 keypoints: no checkpoint (synthetic PCK 0.13); v1 arm 29-34 ft vs classical 5.28 ft anchor (n=259) | FAIL (classical stands) | 8f8db7c8d
 2026-09-01 | basketball | G02/G03 | image_px containment 0.00-0.81 -> 0.94-0.98 on 8 games (32,355 pts); containment gate at intake 0.95 fail-closed | LANDED (producer fix PROPOSED in src) | beb8e4c6d
