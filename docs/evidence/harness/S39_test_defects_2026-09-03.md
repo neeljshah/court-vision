@@ -89,12 +89,29 @@ expectations. Two test files, one module, contradictory contracts.
 concern would be no-close rows inflating a CLV denominator. They do not:
 `pct_beat_close` divides by `n_clv_rows` (scoreboard.py:233), `mean_clv_pct`
 averages only true closes, and `flat_unit_clv` averages only decided rows that
-carry a close. The real-money gate does not read this file at all --
-`realmoney_gate.evaluate` recomputes eligibility from the ledger rows themselves
-via `_settled_clv_rows` (realmoney_gate.py:57-62), which requires
-`clv_pct is not None`. `GATE_MIN_N` has NO production reader anywhere in
-`scripts/`, `tests/` or `api/` (grepped): it is an advisory constant plus one
-test that pins its value.
+carry a close.
+
+The real-money gate DOES open this file, but no value in it reaches a decision.
+`realmoney_gate.evaluate` loads the blob at `realmoney_gate.py:159` via
+`_load_summary` (default `DEFAULT_SUMMARY_PATH`, :52-54) and its own docstring
+at :141-144 states the blob is "advisory only ... read for context but never
+trusted", precisely so a stale or hand-edited summary cannot move the gate. Every
+gate metric is recomputed from the settled ledger rows by `_metrics` (:110,
+"NOT from any summary blob") over `_settled_clv_rows` (:57-62), which requires
+`clv_pct is not None`. The ONLY thing the blob contributes to the output is the
+boolean `"summary_seen": (summary_blob is not None)` at :206 -- a presence flag,
+not a number. So `n_settled` counting no-close rows cannot inflate any gate
+denominator. `GATE_MIN_N` has NO production reader anywhere in `scripts/`,
+`tests/` or `api/` (grepped): it is an advisory constant plus one test that pins
+its value.
+
+> CORRECTION (same session, before hand-off): an earlier revision of this memo
+> and the commit message of `d9e91049b` both assert that the real-money gate
+> "does not read this file at all" / "never reads this file". That is WRONG as
+> written -- `_load_summary` does read it. The substantive finding is unchanged
+> and is if anything stronger: the read is explicitly advisory and only sets
+> `summary_seen`. The commit message cannot be amended (no `--amend` under the
+> shared-index rules), so the correction is recorded here and in a ledger line.
 
 **What WAS wrong beyond the tests: the module docstring drifted.** Two lines still
 described the pre-fix semantics -- the field shape said `n_settled` is the "count
