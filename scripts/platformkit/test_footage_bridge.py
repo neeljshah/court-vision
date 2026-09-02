@@ -696,3 +696,29 @@ def test_explicit_section_overrides_plan_section(monkeypatch, tmp_path):
 
     assert produced.name == "g1.mp4"
     assert "*01:00:00-01:10:00" in seen[-1]
+
+
+def test_pod_port_is_read_from_ssh_config_not_hardcoded(tmp_path, monkeypatch):
+    """The port must follow ~/.ssh/config.pod, which is what actually drifts.
+
+    The regression this guards: RunPod moved the proxy port, the three
+    hardcoded scp/ssh call sites kept pointing at the old one, and every upload
+    failed at the wire while downloads kept succeeding. The GPU idled for a day
+    with full queues because nothing compared the two numbers.
+    """
+    config = tmp_path / ".ssh"
+    config.mkdir()
+    (config / "config.pod").write_text(
+        "Host pod\n    HostName 1.2.3.4\n    Port 40193\n    User root\n",
+        encoding="utf-8")
+    monkeypatch.setattr(footage_bridge.Path, "home", staticmethod(lambda: tmp_path))
+    assert footage_bridge._pod_port() == "40193"
+
+    (config / "config.pod").write_text(
+        "Host pod\n    HostName 1.2.3.4\n    Port 45678\n", encoding="utf-8")
+    assert footage_bridge._pod_port() == "45678"
+
+    # A missing config must not raise: the bridge still runs on the last known
+    # port rather than taking every lane down with it.
+    (config / "config.pod").unlink()
+    assert footage_bridge._pod_port() == "40193"

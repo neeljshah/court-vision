@@ -36,7 +36,28 @@ from scripts.platformkit.section_fallback import (
     video_height,
 )
 
-POD = ["-o", "StrictHostKeyChecking=no", "-o", "ConnectTimeout=30", "-p", "40048",
+def _pod_port() -> str:
+    """The pod SSH port, read from ~/.ssh/config.pod rather than hardcoded.
+
+    RunPod reassigns the proxy port on every restart, a drift that
+    ops_healthcheck.py:32 already documents with the history. The port was
+    hardcoded here at three call sites, so when the pod last moved every upload
+    failed at the wire while the downloads kept succeeding: the GPU sat at 0 pct
+    for a day with full queues, and the failure surfaced only as an scp exit
+    code inside a per-lane log. The ssh config is the one place the live port is
+    already correct, so read it there. Falling back to the last known value
+    keeps this a no-op when the config is missing.
+    """
+    try:
+        config = (Path.home() / ".ssh/config.pod").read_text(encoding="utf-8")
+    except OSError:
+        return "40193"
+    found = re.search(r"(?im)^\s*Port\s+(\d+)", config)
+    return found.group(1) if found else "40193"
+
+
+POD_PORT = _pod_port()
+POD = ["-o", "StrictHostKeyChecking=no", "-o", "ConnectTimeout=30", "-p", POD_PORT,
        "root@213.192.2.83"]
 POD_HOST = "root@213.192.2.83"
 POD_ROOT = "/workspace/nba-ai-system"
@@ -377,7 +398,7 @@ def push_and_track(local: Path, item: dict) -> str:
     _ssh("mkdir -p %s" % REMOTE_STAGE, timeout=120)
     result = None
     try:
-        subprocess.run(["scp", "-o", "StrictHostKeyChecking=no", "-P", "40048",
+        subprocess.run(["scp", "-o", "StrictHostKeyChecking=no", "-P", POD_PORT,
                         str(local), "%s:%s" % (POD_HOST, remote)],
                        check=True, timeout=7200, capture_output=True, text=True)
         adapter = SPORT_ADAPTER.get(sport, sport)
@@ -419,7 +440,7 @@ def push_staged(local: Path, item: dict) -> str:
     game_id, sport = item["game_id"], item["sport"]
     remote = "%s/%s__%s%s" % (REMOTE_STAGE, sport, game_id, local.suffix)
     _ssh("mkdir -p %s" % REMOTE_STAGE, timeout=120)
-    subprocess.run(["scp", "-o", "StrictHostKeyChecking=no", "-P", "40048",
+    subprocess.run(["scp", "-o", "StrictHostKeyChecking=no", "-P", POD_PORT,
                     str(local), "%s:%s.part" % (POD_HOST, remote)],
                    check=True, timeout=7200, capture_output=True, text=True)
     moved = _ssh("mv %s.part %s" % (remote, remote), timeout=300)
