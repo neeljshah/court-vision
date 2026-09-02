@@ -1,0 +1,13 @@
+{
+  "source_manifest": "../g91_soccer_landmarks/sample_manifest.json",
+  "seed": 9102026,
+  "unit_order": "each array is slots 1 through 20 for the named clip",
+  "rule": "3 denotes a visibly identifiable penalty-area front with its two side lines; 1 denotes a visibly identifiable halfway line; 0 denotes no named straight-line correspondence under label_protocol.md. direction_count is the number of occupied canonical straight-line direction families. circle is the separate visible-centre-circle flag.",
+  "clips": {
+    "soccer__soccer_AgspyOj5BPk.mp4": {"line_count":[3,0,3,0,1,0,3,0,0,3,1,1,0,1,1,0,0,3,1,1],"direction_count":[2,0,2,0,1,0,2,0,0,2,1,1,0,1,1,0,0,2,1,1],"circle":[false,false,false,false,true,false,false,false,false,false,true,true,false,true,true,false,false,false,true,true]},
+    "soccer__soccer_cKXZysISV4w.mp4": {"line_count":[0,0,3,0,3,1,0,0,1,0,3,1,0,0,3,1,1,0,0,1],"direction_count":[0,0,2,0,2,1,0,0,1,0,2,1,0,0,2,1,1,0,0,1],"circle":[false,false,false,false,false,true,false,false,true,false,false,true,false,false,false,true,true,false,false,true]},
+    "soccer__soccer_DdnvC6-PGYY.mp4": {"line_count":[3,0,3,1,0,1,1,3,0,0,0,0,1,0,3,3,3,3,1,1],"direction_count":[2,0,2,1,0,1,1,2,0,0,0,0,1,0,2,2,2,2,1,1],"circle":[false,false,false,true,false,true,true,false,false,false,false,false,true,false,false,false,false,false,true,true]},
+    "soccer__soccer_EKhrdU9bVZA.mp4": {"line_count":[0,3,3,1,1,3,0,3,0,0,0,0,3,0,0,0,1,0,3,3],"direction_count":[0,2,2,1,1,2,0,2,0,0,0,0,2,0,0,0,1,0,2,2],"circle":[false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false]},
+    "soccer__soccer_kSgNjoaqCpI_1080p.mp4": {"line_count":[1,0,1,0,1,1,1,1,3,1,1,3,1,1,1,0,1,0,0,0],"direction_count":[1,0,1,0,1,1,1,1,2,1,1,2,1,1,1,0,1,0,0,0],"circle":[true,false,true,false,true,true,true,true,false,true,true,false,true,true,true,false,true,false,false,false]}
+  }
+}
