@@ -49,6 +49,20 @@ def _is_full_pytest(cmd):
     return False
 
 
+_PRIVATE_RE = re.compile(
+    r"\bgit\b[^\n;&|]*\b(add|commit)\b[^\n;&|]*"
+    r"((^|[\s'\"=])data/|(^|[\s'\"=])vault/|youtube_cookies|\.codex-a[0-9]|auth\.json)")
+_SWEEP_RE = re.compile(r"\bgit\b[^\n;&|]*\badd\b[^\n;&|]*\s(-A|--all|\.)(\s|$)")
+
+
+def _stages_private_paths(cmd):
+    return bool(_PRIVATE_RE.search(cmd))
+
+
+def _is_sweeping_add(cmd):
+    return bool(_SWEEP_RE.search(cmd))
+
+
 def main():
     raw = sys.stdin.read()
     try:
@@ -64,6 +78,15 @@ def main():
 
     if "--force" in cmd:
         _block("`--force` detected -- destructive. Human-gated; refusing.")
+
+    # 2026-09-03 (PLAN_AI_ENGINEERING s2b): the public origin must never see data/, vault/,
+    # the cookie jar, a codex home or auth.json; and `git add -A` / `git add .` sweep them in.
+    if _stages_private_paths(cmd):
+        _block("staging/committing data/, vault/, youtube_cookies, .codex-a*/ or auth.json "
+               "is forbidden (public origin). Stage an explicit pathspec.")
+    if _is_sweeping_add(cmd):
+        _block("`git add -A` / `git add .` sweeps gitignored-intent files into the commit. "
+               "Stage an explicit pathspec instead.")
 
     if _is_full_pytest(cmd):
         _block("full `pytest tests/` freezes this box. Run a single test "

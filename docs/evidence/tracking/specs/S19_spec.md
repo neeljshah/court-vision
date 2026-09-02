@@ -1,0 +1,20 @@
+GAP S19 | sport mlb (execution) | worktree a11 | log cx_s19_request_governor
+CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it; self-check every line of section B AND section Q (Q1-Q8) before you report. Template: docs/evidence/tracking/CODEX_SPEC_TEMPLATE.md.
+GAP (verbatim from the register): book capture pass wall ~105 s at 9 games x 2 sides vs a 5 s target; governed orderbook fetches ~3.6 s each.
+READ (read every signature on disk): scripts/platformkit/ingame/mlb_book_capture.py `GovernedClient.get(url)` and `capture_once(*, client, date_str, now, state, live_games_fn, output)` (serial games x tickers loop); scripts/platformkit/odds_provider/kalshi_rate_governor.py `BASE_RPS`, `get_governor("depth_capture")`, `before_request`, `report_429`; tests/platformkit/ingame/test_mlb_book_capture.py (existing -- must stay green).
+PREMISE (step 0): with a mocked opener that sleeps 3.6 s per fetch and 9 games x 2 tickers, `capture_once` wall >= ~60 s (serial loop). Print the measured wall. If capture_once already fans out concurrently, STOP and report FALSIFIED.
+LIMIT (step 1): the depth_capture governor share times BASE_RPS is the rps ceiling; 18 requests / that ceiling is the floor on the pass wall. Print the arithmetic. If that floor alone exceeds 15 s, STOP and report CLOSED AT LIMIT (the venue limits MUST NOT move; the plan allows a pod-only env override of the share as a LATER row, not this one).
+CHANGE (step 2): additive `capture_once(..., max_concurrency: int = 4)` using `concurrent.futures.ThreadPoolExecutor` over the per-ticker fetches ONLY (discovery stays single); every worker goes through the SAME governor instance (`before_request` / `report_429`; no second rate path, no new bucket); output row order preserved by index; `max_concurrency=1` reproduces today's serial behaviour byte-for-byte. The cap is a module constant (a `ponytail:` comment names 8 as the upgrade). No new dependency. Additive only: no existing parameter, field or row shape changes.
+TEST: NEW tests/platformkit/ingame/test_mlb_book_capture_governor.py: mocked opener with a 0.2 s sleep, 18 tickers; wall < serial/2; in-flight never exceeds the cap (counter under a lock); before_request called exactly 18 times; a mocked 429 still doubles the cadence via report_429; output with max_concurrency=1 equals output with max_concurrency=4. Run ONLY that file, then ALSO rerun `python -m pytest tests/platformkit/ingame/test_mlb_book_capture.py -q` (must stay green) -- two files, nothing broader.
+ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
+  metric        = capture pass wall seconds; denominator = one full pass at 9 games x 2 sides
+  before        = ~105 s (pod, measured 2026-09-01); plus the mocked-serial wall you print
+  bar           = <= 15 s median AND p90 over n = 30 pod passes (5 s is NOT promised); the mocked-test bar is wall < serial/2 with the cap never exceeded
+  n             = 30 pod passes (scored) -- the pod measurement is the VERIFIER'S step after landing and deploy; you deliver the module, the mocked test and the exact pod command that logs 30 passes
+  eye check     = n/a (S-row); reproduction = verifier recomputes median/p90 from the 30-pass pod log
+  must not move = BASE_RPS, every governor share, report_429 semantics, the CLV ledger, every gate threshold under scripts/platformkit/eval_gate/, data/registry/**, data/cache/eval_gate/backtest_fwer.jsonl (no `_charge_ledger` call)
+NON-TAUTOLOGY: all 18 requests per pass are counted; a failed fetch is a row carrying its error, never dropped from the wall.
+EVIDENCE: docs/evidence/harness/S19_request_governor_2026-09-03.md -- premise wall, limit arithmetic, test output for both files, the exact pod command; the NOT VERIFIED list must say "30 pod passes not yet run". Calibration language only (Q6).
+POD: none for you -- no deploy before ACCEPT (B5). Report the files you would deploy; do not deploy.
+COMMIT: explicit pathspec (module, test, memo), in this worktree, no push. Last line of your report: `SHA: <sha>`.
+NEVER PARK: run everything to completion this turn; never end waiting.
