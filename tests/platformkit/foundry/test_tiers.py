@@ -256,3 +256,19 @@ def test_the_artifact_json_prints_both_bars_and_both_q_rules(tmp_path, monkeypat
     assert printed["families_spec_sha"] == result.families_spec_sha256
     assert "GLOBAL" in printed["bars_line"] and "FAMILY" in printed["bars_line"]
     assert "fdr_bh_adj_p" in printed["bars_line"] and "fdr_by_adj_p" in printed["bars_line"]
+
+
+def test_t0_passes_portable_only_when_the_env_flag_is_set(tmp_path, monkeypatch):
+    """S16b: FOUNDRY_PORTABLE_CORPUS=1 is the only way T0 asks for the S68 portable load."""
+    seen = []
+    monkeypatch.setattr(tiers, "load_gate_corpus", lambda sport, portable=False: seen.append(portable))
+    rule, ledger = _rule(tmp_path), tmp_path / "fwer.jsonl"
+    part, screen, _ = _sides(_corpus("a"), rule)
+    for value, expected in (("1", True), ("0", False), (None, False)):
+        monkeypatch.delenv("FOUNDRY_PORTABLE_CORPUS", raising=False)
+        if value is not None:
+            monkeypatch.setenv("FOUNDRY_PORTABLE_CORPUS", value)
+        run_tier(_hypothesis(), "T0", states=screen, predict_fn=_predict, ledger_path=ledger,
+                 partition=part, rule=rule, family=FAMILY)
+        assert seen[-1] is expected
+    assert len(seen) == 3

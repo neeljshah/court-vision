@@ -11,6 +11,7 @@ is verdict NOT_IN_FROZEN_FAMILIES and is never charged. Calibration language onl
 from __future__ import annotations
 
 import hashlib
+import os
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -211,8 +212,8 @@ def run_tier(hypothesis: Hypothesis, tier: str, *, states: Sequence[dict], predi
                   prereg_sha256=rule.prereg_sha256, spec_version=rule.spec_version,
                   hypothesis=hypothesis)
     if tier == "T0":
-        if sport in SPORTS:
-            load_gate_corpus(sport)                            # raises StaleCorpusError
+        if sport in SPORTS:   # S68 opt-in on a host with no domain sources (the pod): verify the bytes
+            load_gate_corpus(sport, portable=os.environ.get("FOUNDRY_PORTABLE_CORPUS") == "1")
         step = max(1, len(states) // _VINTAGE_SAMPLE)
         for state in list(states)[::step][:_VINTAGE_SAMPLE]:   # EVEN sample, never a head slice
             assert_vintage(state)
