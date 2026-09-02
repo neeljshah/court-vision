@@ -1,7 +1,22 @@
-GAP G44B | sport tennis | worktree a3 | log cx_g44b_ball_spatial_gate
+GAP G44B | sport tennis | worktree a2 | log cx_g44b_ball_spatial_gate  (ATTEMPT 3 -- the label set now EXISTS)
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it, including the NEW A7 clause (a
 memo naming an evidence path that no longer exists is NOT VALIDATED); self-check every line of
 section B before you report. THIS ROW IS THE FIX. The limit measurement is already done.
+UNBLOCKED 2026-09-02. Attempts 1 and 2 stopped at the premise gate, correctly both times, because
+the per-frame ball labels did not exist. **They exist now.** G65 attempt 2 delivered them at
+docs/evidence/tracking/g65_ball_labels/ -- 150 labelled frames across 3 clips, of which **41 are
+ball-visible and 109 are explicitly uncertain**, produced by court-band crop at 1.3x plus a tiled
+2x fallback, with a documented second-pass recheck that flipped 8 of 30 calls. Use THAT file as
+ground truth. Do NOT relabel and do NOT use detector output as truth.
+TWO CAUTIONS that must shape your denominators, both recorded in the G65 register row:
+  - 41/150 is NOT comparable to G44's 64 pct. G44's denominator was 50 CONFIRMED LIVE-RALLY frames;
+    G65's is all sampled frames. Do not difference them.
+  - Of the 41 visible, 32 fall inside `y < 2/3 * height` = 78 pct, which DISAGREES with G44's
+    ~52 pct of sightings. That disagreement is unresolved and it is the difference between the
+    spatial gate being the main problem and a minor one. Report BOTH figures and say which your
+    own numbers support; resolving it is part of this row's value.
+n=41 positives is small. If the honest conclusion is that 41 is too few to size a gate change, say
+so and state how many more labels would be needed.
 PREMISE (step 0, reproduce it): G44's limit measurement established, and you must confirm, that
 this is NOT a resolution wall. The tennis ball is 6-8 px near the net and 15-30 px in cutaways, so
 it is above the detectability floor. 64 pct of rally frames show a ball. But only 52 pct of those
@@ -63,7 +78,7 @@ first checking the inventory and the pod.
 POD: read-only, and you MAY run read-only frame measurement there because that is where the
 footage is. NO scp of any module and no deploy -- the verifier lands code on the pod, not the
 lane. Never restart the daemon, never kill anything.
-COMMIT: explicit pathspec only (never the whole tree, never the gitignored local trees), in a3,
+COMMIT: explicit pathspec only (never the whole tree, never the gitignored local trees), in a2,
 no push. Report the sha.
 SHARED MODULE: none expected. If you find yourself editing tracking_harness.py, STOP.
 NEVER PARK: do not poll your own jobs in a blocking loop; never end waiting.
