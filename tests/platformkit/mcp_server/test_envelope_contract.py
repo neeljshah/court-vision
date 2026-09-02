@@ -4,7 +4,7 @@ Drives `docs/evidence/answer_probe_50.json` through the SAME
 `tools.handler_for(name)` the live MCP server uses and checks the envelope
 contract from PLAN_EXECUTION_ANSWER_LAYER_2026-09-03.md section 3:
 
-  status is EXACTLY one of {ok, no_data, not_supported, refused};
+  status is EXACTLY one of {ok, no_data, not_supported, refused, ambiguous};
   ok            -> source_artifact and as_of non-empty, plus staleness_days
                    whenever source_artifact names a file that exists on disk;
   not ok        -> a note, and no numeric answer payload;
@@ -44,7 +44,15 @@ _TOOLS_UNDER_TEST = {
     "injury_report", "analytics_receipts", "system_health", "strength_atlas",
     "mechanism_exposure", "tracking_program_status", "harness_health", "execution_status",
 }
-_STATUSES = ("ok", "no_data", "not_supported", "refused")
+# S38(c): `ambiguous` is the contract's FIFTH status, documented in
+# docs/AI_CONSUMER_CONTRACT.md ("Multiple DIFFERENT mechanisms match a fuzzy query
+# -> status: 'ambiguous' with a candidates list"). S27 measured 4 statuses and so
+# scored every real `ambiguous` as BAD_STATUS. Admitting it is a correction to the
+# envelope, not a weakened assert: an ambiguous answer must still carry a `note` AND
+# a `source_artifact` (see _AMBIGUOUS below), which is STRICTER than the other
+# not-ok statuses, which need only a note.
+_STATUSES = ("ok", "no_data", "not_supported", "refused", "ambiguous")
+_AMBIGUOUS = "ambiguous"
 # Numbers that are metadata about the answer, not the answer -- a fail-closed
 # envelope may carry these while still returning no number.
 _META_NUMERIC = {"staleness_days", "k", "top_n", "corpus_staleness_days"}
@@ -81,6 +89,10 @@ def _violations(env: Dict[str, Any], probe: Dict[str, Any]) -> List[str]:
     else:
         if not env.get("note"):
             out.append("NOTOK_NO_NOTE")
+        if status == _AMBIGUOUS and not env.get("source_artifact"):
+            # An ambiguous answer names candidates, so it MUST say what it read them
+            # from -- otherwise the consumer cannot narrow the query against anything.
+            out.append("AMBIGUOUS_NO_SOURCE_ARTIFACT")
         numeric = sorted(k for k, v in env.items()
                          if isinstance(v, (int, float)) and not isinstance(v, bool)
                          and k not in _META_NUMERIC)

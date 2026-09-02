@@ -754,7 +754,8 @@ def mechanism_effect(sport: str, mechanism: str) -> dict:
                 "note": f"mechanism_effect not wired for sport '{sport}'. Available: {sorted(_LEDGER_PATHS)}"}
     rows = _load_ledger(sport)
     if not rows:
-        return {"status": "no_data", "category": "mechanism_effect", "sport": sport, "source_artifact": path}
+        return {"status": "no_data", "category": "mechanism_effect", "sport": sport, "source_artifact": path,
+                "note": f"the {sport} validation ledger {path} has zero readable rows in this clone"}
     by_name: dict[str, list[dict]] = {}
     for r in rows:
         by_name.setdefault(r["hypothesis"], []).append(r)
@@ -771,7 +772,12 @@ def mechanism_effect(sport: str, mechanism: str) -> dict:
         return {"status": "not_supported", "category": "mechanism_effect", "sport": sport,
                 "note": f"no mechanism matched '{mechanism}' in {path}. Registered hypotheses: {names}"}
     if len(matches) > 1:
-        return {"status": "ambiguous", "category": "mechanism_effect", "sport": sport, "candidates": matches}
+        # S38(c): `ambiguous` is the contract's fifth status, so it obeys the same
+        # not-ok rules as no_data -- cite what was read and say why it is ambiguous.
+        return {"status": "ambiguous", "category": "mechanism_effect", "sport": sport,
+                "source_artifact": path, "candidates": matches,
+                "note": f"{len(matches)} distinct registered hypotheses match "
+                        f"'{mechanism}' in {path} -- name one of {matches}"}
     name = matches[0]
     as_of = datetime.fromtimestamp(os.path.getmtime(path), tz=timezone.utc).isoformat()
     findings = [{"verdict": r["verdict"], "effect_local": r["effect"], "n": r["n"], "p": r.get("p"),
@@ -794,6 +800,41 @@ _SUPERLATIVE_LEAD_RE = re.compile(
     r"what\s+is\s+(?:the\s+)?|which\s+player\s+(?:is|shoots?)\s+(?:the\s+)?)?"
     r"(?:best|sharpest|highest|lowest)\s+(?:from\s+(?:the\s+)?)?", re.I)
 _SUPERLATIVE_TRAIL_RE = re.compile(r"\s+in\s+the\s+(?:nba|league)\s*$", re.I)
+
+
+def _ask_profiles_source(sport: str) -> str:
+    """What a profile lookup READ, so a fail-closed answer can cite it (S38 b/c).
+
+    `answer_lookup` loads every `<sport>_*_profiles.parquet` under PROFILES_DIR, so
+    the honest citation is the directory glob, not one file. Returned even when the
+    directory is absent -- naming what was looked for is the point of the citation.
+    """
+    return os.path.join(_ask.PROFILES_DIR, f"{sport}_*_profiles.parquet").replace("\\", "/")
+
+
+def _ask_lookup_note(r: dict, query: str, sport: str) -> str:
+    """The zero-row REASON for a non-ok `answer_lookup`, per its four statuses.
+
+    AI_CONSUMER_CONTRACT rule 4: a consumer told NO_DATA must be told WHY. Missing
+    is not bad -- each branch below names exactly what was checked and missed.
+    """
+    status = r.get("status")
+    if status == "no_data":
+        return (f"no profile rows built for sport '{sport}' in this clone -- "
+                f"run domains/<sport>/profiles/build_profiles.py to populate "
+                f"{_ask.PROFILES_DIR}")
+    if status == "no_entity":
+        return f"no entity in the {sport} profiles matched the names in this query"
+    if status == "no_attribute":
+        available = r.get("available") or []
+        return (f"'{r.get('entity_name', query)}' resolved, but no registered "
+                f"{r.get('sport', sport)} attribute matched this query. "
+                f"{len(available)} attributes on file: {sorted(available)[:12]}")
+    if status == "ambiguous":
+        candidates = r.get("candidates") or []
+        return (f"{len(candidates)} distinct entities match this name -- "
+                f"narrow your query. Candidates: {candidates}")
+    return f"profile lookup returned status '{status}' with no rows to report"
 
 
 def _superlative_category(query: str) -> str | None:
@@ -1174,8 +1215,12 @@ def resolve(query: str, sport: str = "nba", category: str | None = None, **kwarg
                     "note": f"sport not wired for profile lookups. Available: {_ask.SPORTS}"}
         r = _ask.answer_lookup(query, sport, kwargs.get("window"))
         if r["status"] != "ok":
+            # S38(b)/(c): a fail-closed answer must name the zero-row reason and
+            # cite what was read. `detail` is kept verbatim (additive, B2).
             return {"status": "no_data" if r["status"] in ("no_entity", "no_attribute", "no_data") else r["status"],
-                     "category": cat, "sport": sport, "detail": r}
+                     "category": cat, "sport": sport,
+                     "source_artifact": _ask_profiles_source(sport),
+                     "note": _ask_lookup_note(r, query, sport), "detail": r}
         row = r["row"]
         return {"status": "ok", "category": cat, "sport": sport,
                  "source_artifact": str(row["sources"]), "as_of": str(row["window"]),

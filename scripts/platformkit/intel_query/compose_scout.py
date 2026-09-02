@@ -261,6 +261,12 @@ def compose_scout(sport: str, player: str, kind: str = "player", top_n: int = 8)
                     f"player found on NO scouting axis: 0/{len(reg.list_concepts())} concept ratings, "
                     "no VERIFIED shooter-profile facet, no raw attribute rows "
                     "(name mismatch, or below every floor)"],
+                # S38(b): `missing` is a list a consumer must unpack; `note` is the
+                # flat zero-row reason AI_CONSUMER_CONTRACT rule 4 requires.
+                "note": (f"'{entity_name}' resolved on 0 of "
+                         f"{len(reg.list_concepts())} {sport} concept axes, has no VERIFIED "
+                         f"shooter-profile facet and no raw attribute rows in "
+                         f"{source_artifact} -- name mismatch, or below every floor"),
                 "edge_claimed": False}
 
     return {

@@ -54,13 +54,28 @@ CATEGORY = "player_comparables"
 _DOMAIN = {"nba": "basketball_nba", "wnba": "basketball_wnba"}
 
 
-def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
 def _envelope(status: str, sport: str, source_artifact: str, **extra) -> dict:
+    """S38(d): `as_of` describes the DATA, not the call.
+
+    This module answers off a pinned profile snapshot (e.g. the 2026-07-26
+    nba_player_profiles.parquet), so stamping the wall clock as `as_of` told a
+    consumer the answer was seconds old when the corpus was months old. `as_of`
+    is now the corpus's own date (the parquet mtime, the same basis
+    compose_scout._as_of uses), `corpus_staleness_days` is how far that sits from
+    now, and the wall clock keeps its own separate key `computed_at`. A pinned
+    corpus is NOT refused on age -- it reports its age honestly.
+    Corpus absent -> `as_of` falls back to the call time and staleness is None
+    (an unbuilt corpus has no date to report).
+    """
+    corpus_as_of = _scout._as_of(source_artifact)
+    now = datetime.now(timezone.utc)
+    staleness = None
+    if corpus_as_of is not None:
+        staleness = round((now - datetime.fromisoformat(corpus_as_of)).total_seconds() / 86400.0, 2)
     return {"status": status, "category": CATEGORY, "sport": sport,
-            "source_artifact": source_artifact, "as_of": _now(), **extra}
+            "source_artifact": source_artifact,
+            "as_of": corpus_as_of if corpus_as_of is not None else now.isoformat(),
+            "corpus_staleness_days": staleness, "computed_at": now.isoformat(), **extra}
 
 
 def _load_attribute_descriptions(sport: str) -> dict:
