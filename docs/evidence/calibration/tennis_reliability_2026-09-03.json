@@ -1,6 +1,7 @@
 {
   "base_rate": 0.5112686816597432,
   "bin_edge_rule": "np.linspace(0, 1, bins + 1) equal-width edges, bin k = [lo, hi) except the last = [lo, hi] -- the SAME rule eval_gate.scoring.ece and calib_decomp.decompose bin by (gap S42)",
+  "corpus_date_column": "event_date",
   "devigged_close_column": null,
   "diagnostic_in_sample_isotonic": {
     "brier_after": 0.21710634856574842,

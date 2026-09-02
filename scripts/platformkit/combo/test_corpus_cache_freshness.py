@@ -72,3 +72,23 @@ def test_unknown_sport_rejected(tmp_path, monkeypatch):
     monkeypatch.setattr(cc, "_CACHE_DIR", tmp_path)
     with pytest.raises(ValueError):
         cc.freshness_report("cricket")
+
+
+@pytest.mark.parametrize("sport", cc.SPORTS)
+def test_real_corpus_carries_a_usable_date(sport):
+    """S44: every gate corpus surfaces event_date, chronological within corpus_unit.
+
+    Skipped where data/ is absent (a git worktree has no data tree).
+    """
+    if not cc._corpus_path(sport).exists():
+        pytest.skip("no cached corpus for %s" % sport)
+    df = pd.read_parquet(cc._corpus_path(sport))
+    assert cc.DATE_COL in df.columns
+    dates = pd.to_datetime(df[cc.DATE_COL], errors="coerce")
+    assert dates.notna().all()
+    # Chronological WITHIN a corpus_unit; tennis is NOT monotonic across units
+    # (ATP is concatenated before WTA), which is exactly why a positional
+    # walk-forward over the whole frame is not a chronological one.
+    for _, group in df.assign(_d=dates).groupby("corpus_unit"):
+        assert group["_d"].is_monotonic_increasing
+    assert cc.freshness_report(sport)["order_basis"] == cc.DATE_COL

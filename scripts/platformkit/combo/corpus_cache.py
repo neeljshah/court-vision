@@ -110,7 +110,8 @@ def _build_mlb() -> Tuple[pd.DataFrame, List[Path]]:
     # -- caching a FIT would freeze a standardizer across candidates, which the
     # prereg forbids. This module caches the INGREDIENT columns, not a frozen fit.
     df["p_base"] = df["p_home_elo"].astype(float)
-    return df[["event_id", "corpus_unit", "y", "p_base", "p_home_elo",
+    df[DATE_COL] = df["date"]  # S44: surface the builder's own date, renaming nothing
+    return df[["event_id", "corpus_unit", DATE_COL, "y", "p_base", "p_home_elo",
               "sp_first6_diff_ew", "park_factor", "sp_ra_diff_asof"]], sources
 
 
@@ -173,7 +174,8 @@ def _build_nba() -> Tuple[pd.DataFrame, List[Path]]:
     # A2 K_new product terms (raw, pre-standardization -- z() happens at fit time).
     out["dreb_x_pace_asof"] = out["dreb_diff_asof"] * out["pace_diff_asof"]
     out["stl_x_fg3m_asof"] = out["stl_diff_asof"] * out["fg3m_diff_asof"]
-    cols = (["event_id", "corpus_unit", "y", "p_base", "p_elo"] + box_keep
+    out[DATE_COL] = out["date"]  # S44: surface the builder's own date, renaming nothing
+    cols = (["event_id", "corpus_unit", DATE_COL, "y", "p_base", "p_elo"] + box_keep
            + list(_NBA_PAIR_DIFFS.keys()) + ["dreb_x_pace_asof", "stl_x_fg3m_asof"])
     return out[cols], sources
 
@@ -207,7 +209,9 @@ def _build_soccer() -> Tuple[pd.DataFrame, List[Path]]:
     out["corpus_unit"] = out["div"].astype(str) if "div" in out.columns else "unknown_league"
     out["y"] = out["target_over25"].astype(float)
     out["p_base"] = out["p_over25"].astype(float)
-    return out[["event_id", "corpus_unit", "y", "p_base", "p_over25"] + ing_cols], sources
+    out[DATE_COL] = out["date"]  # S44: surface the builder's own date, renaming nothing
+    return out[["event_id", "corpus_unit", DATE_COL, "y", "p_base", "p_over25"]
+              + ing_cols], sources
 
 
 def _build_tennis() -> Tuple[pd.DataFrame, List[Path]]:
@@ -248,7 +252,8 @@ def _build_tennis() -> Tuple[pd.DataFrame, List[Path]]:
         out["p_base"] = out["p_elo"].astype(float)
         frames.append(out)
     df = pd.concat(frames, ignore_index=True)
-    keep = ["event_id", "corpus_unit", "y", "p_base", "p_elo", "surface",
+    df[DATE_COL] = df["date"]  # S44: surface the builder's own date, renaming nothing
+    keep = ["event_id", "corpus_unit", DATE_COL, "y", "p_base", "p_elo", "surface",
            "p1_hold_pct_asof", "p2_hold_pct_asof", "diff_return_won_asof", "diff_break_pct_asof"]
     return df[[c for c in keep if c in df.columns]], sources
 

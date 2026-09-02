@@ -147,10 +147,15 @@ def _stamp(report: dict[str, Any], sport: str) -> dict[str, Any]:
     report["prereg_seal_sha256"] = PREREG_SEAL
     report["bin_edge_rule"] = BIN_EDGE_RULE
     report["reproduction"] = REPRODUCTION
+    # walk_forward_recalibrate consumes ROW ORDER, never a date, so the scoring
+    # order is positional whatever the corpus carries (gap S44). The date column
+    # is reported separately so the two facts are never conflated.
+    report["order_basis"] = "POSITIONAL-ORDER"
     try:
-        report["order_basis"] = freshness_report(sport)["order_basis"]
+        basis = freshness_report(sport)["order_basis"]
     except ValueError:
-        report["order_basis"] = "POSITIONAL-ORDER"
+        basis = "POSITIONAL-ORDER"
+    report["corpus_date_column"] = None if basis == "POSITIONAL-ORDER" else basis
     return report
 
 
