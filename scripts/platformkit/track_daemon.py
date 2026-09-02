@@ -21,6 +21,12 @@ from scripts.platformkit.track_daemon_done import (
     tracking_rows,
 )
 from scripts.platformkit.track_daemon_ledger import corrupt_entry
+from scripts.platformkit.track_daemon_sources import (
+    claimable as _claimable_sources,
+    reap_orphans as _reap_orphans,
+    sibling_paths,
+)
+from scripts.platformkit.tracking.source_timebase import probe_source, stamp_tracking_csv
 
 STAGE = Path("data/footage_bridge")
 # Where a tracked video goes instead of being deleted. Re-staging one game is
@@ -70,17 +76,6 @@ SPORT_ADAPTER = {"tennis": "tennis", "soccer": "soccer", "npb": "baseball",
 CLIP_SPORTS = {"wnba", "basketball", "ncaa_basketball", "nba"}
 
 
-def parse_name(path: Path) -> tuple:
-    """Split <sport>__<game_id>.mp4. Returns (sport, game_id) or (None, None)."""
-    stem = path.stem
-    if "__" not in stem:
-        return None, None
-    sport, _, game_id = stem.partition("__")
-    if not sport or not game_id:
-        return None, None
-    return sport, game_id
-
-
 def build_command(sport: str, video: Path, game_id: str) -> list:
     """The tracking command for a sport. Mirrors footage_bridge's routing."""
     if sport in CLIP_SPORTS:
@@ -110,37 +105,9 @@ def job_timeout(sport: str) -> int:
 
 
 def claimable(active: dict) -> list:
-    """Complete staged videos not already being tracked.
-
-    `.part` files are in-flight uploads and are invisible to glob('*.mp4'),
-    which is the whole point of the atomic-rename protocol.
-    """
-    ready = []
-    for path in sorted(STAGE.glob("*.mp4")):
-        if path.name in active:
-            continue
-        sport, game_id = parse_name(path)
-        if sport is None:
-            continue
-        # Atomic rename proves the upload COMPLETED, not that it carries a
-        # video. A 262-byte tennis__tennis_10.mp4 sat in the stage being
-        # claimed, failing, and being re-claimed; it also read as "the corpus
-        # has a tennis clip" to a sport agent that then could not measure
-        # anything. The smallest real staged game measured 29.3 MB, so 1 MB is
-        # far below any true positive.
-        try:
-            if path.stat().st_size < MIN_VIDEO_BYTES:
-                size = path.stat().st_size
-                print("%s is %d bytes -- not a video, quarantining"
-                      % (game_id, size), flush=True)
-                retained = retain(path, QUARANTINE,
-                                  lambda message: print(message, flush=True))
-                _record(corrupt_entry(game_id, sport, size, retained))
-                continue
-        except OSError:
-            continue
-        ready.append((path, sport, game_id))
-    return ready
+    """Return complete staged videos, one longest source per sibling group."""
+    return _claimable_sources(STAGE, active, MIN_VIDEO_BYTES, QUARANTINE,
+                              retain, _record, corrupt_entry)
 
 
 def verdict(sport: str, game_id: str, video: Path) -> dict | None:
@@ -157,6 +124,9 @@ def _record(entry: dict) -> None:
 def _finish(name: str, job: dict, timed_out: bool = False) -> None:
     """Record a finished job; only a durable verdict is a done game."""
     rows = tracking_rows(TRACKING, job["game_id"])
+    source = job.get("source")
+    if source:
+        stamp_tracking_csv(TRACKING / job["game_id"] / "tracking_data.csv", source)
     if rows and job["sport"] in CLIP_SPORTS:  # declare before verdict() adjudicates
         from scripts.platformkit.adapter_run import BALL_TELEMETRY_AVAILABLE as _BALL
         from scripts.platformkit.tracking_schema import write_ball_telemetry_declaration
@@ -181,6 +151,10 @@ def _finish(name: str, job: dict, timed_out: bool = False) -> None:
               "evaluated_at": (graded or {}).get("evaluated_at"),
               "seconds": int(finished - job["started"]),
               "finished_at": int(finished)}
+    if source:
+        entry.update(source_fps=source["source_fps"], source_height=source["source_height"],
+                     source_duration=source["source_duration"],
+                     source_variants=job.get("source_variants", []))
     if status != "tracked":
         # Without the tail, every failure looks identical in the ledger.
         try:
@@ -192,7 +166,8 @@ def _finish(name: str, job: dict, timed_out: bool = False) -> None:
     print("%s %s %s rows=%d passed=%s %s"
           % (job["game_id"], job["sport"], status, rows, entry["passed"],
              ";".join(entry["failure_heads"])[:90]), flush=True)
-    retain(job["video"], CORPUS, lambda message: print(message, flush=True))
+    for video in job.get("retained_videos", [job["video"]]):
+        retain(video, CORPUS, lambda message: print(message, flush=True))
     try:
         job["log"].unlink(missing_ok=True)
     except OSError as exc:
@@ -219,7 +194,8 @@ def tick(active: dict, workers: int) -> None:
         if read_adjudicated(TRACKING, game_id) and (CORPUS / path.name).exists():
             print("%s already adjudicated, dropping staged duplicate"
                   % game_id, flush=True)
-            path.unlink(missing_ok=True)
+            for video in sibling_paths(STAGE, sport, game_id):
+                retain(video, CORPUS, lambda message: print(message, flush=True))
             continue
         log_path = path.with_suffix(".log")
         try:
@@ -229,9 +205,12 @@ def tick(active: dict, workers: int) -> None:
         except OSError as exc:
             print("launch failed %s: %s" % (game_id, exc), flush=True)
             continue
+        siblings = sibling_paths(STAGE, sport, game_id)
         active[path.name] = {"proc": proc, "video": path, "log": log_path,
                              "sport": sport, "game_id": game_id,
-                             "started": time.time()}
+                             "started": time.time(), "source": probe_source(path),
+                             "source_variants": [item.name for item in siblings if item != path],
+                             "retained_videos": siblings}
         print("tracking %s (%s), %d active" % (game_id, sport, len(active)),
               flush=True)
 
@@ -247,23 +226,7 @@ def reap_orphans() -> int:
     adapter_run and run_clip are only ever daemon children, so a parent of 1
     means orphaned -- no live daemon owns it.
     """
-    try:
-        listing = subprocess.run(["ps", "-eo", "ppid,pid,args"],
-                                 capture_output=True, text=True, timeout=60).stdout
-    except (OSError, subprocess.SubprocessError):
-        return 0
-    killed = 0
-    for line in listing.splitlines():
-        fields = line.split(None, 2)
-        if len(fields) < 3 or fields[0] != "1":
-            continue
-        if "adapter_run" not in fields[2] and "run_clip" not in fields[2]:
-            continue
-        try:
-            os.kill(int(fields[1]), 9)
-            killed += 1
-        except (OSError, ValueError):
-            pass
+    killed = _reap_orphans(subprocess.run, os.kill)
     if killed:
         print("reaped %d orphaned tracking jobs from a previous daemon" % killed,
               flush=True)

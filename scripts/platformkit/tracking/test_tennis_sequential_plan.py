@@ -35,7 +35,7 @@ def test_deterministic_selection_and_fail_reporting(tmp_path, monkeypatch) -> No
     second = plan.select_ranges(tmp_path / "fake.mp4", 5, 300, 9, FakeCapture, gate)
     assert first == second
 
-    def fake_run(_: object, start: int, stop: int) -> dict[str, object]:
+    def fake_run(_: object, start: int, stop: int, __: object = None) -> dict[str, object]:
         failed = start == first[0][0]
         return {"source_frame_range": {"start": start, "stop": stop}, "decoded_frames": 300,
                 "solved_frame_coverage": 0.9, "drift_checked_reuses": 4,
@@ -53,3 +53,8 @@ def test_deterministic_selection_and_fail_reporting(tmp_path, monkeypatch) -> No
     assert len(loaded["ranges"]) == len(first)
     assert loaded["ranges"][0]["harness_verdict"] == "FAIL"
     assert loaded["ranges"][0]["harness_failures"]
+
+
+def test_seconds_ranges_convert_for_each_source_fps() -> None:
+    assert plan.seconds_to_frames(306.0, 312.0, 25.0) == (7650, 7800)
+    assert plan.seconds_to_frames(306.0, 312.0, 50.0) == (15300, 15600)

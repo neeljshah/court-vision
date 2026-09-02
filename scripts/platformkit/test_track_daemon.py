@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 
 from scripts.platformkit import track_daemon
+from scripts.platformkit import track_daemon_sources
 
 
 # claimable() drops anything too small to be a video, so fixtures that
@@ -35,6 +36,9 @@ def _stage(tmp_path, monkeypatch):
     monkeypatch.setattr(track_daemon, "QUARANTINE", tmp_path / "quarantine")
     monkeypatch.setattr(track_daemon, "TRACKING", tmp_path / "tracking")
     monkeypatch.setattr(track_daemon, "LEDGER", tmp_path / "ledger.jsonl")
+    source = {"source_fps": None, "source_height": None, "source_duration": None}
+    monkeypatch.setattr(track_daemon_sources, "probe_source", lambda _: source)
+    monkeypatch.setattr(track_daemon, "probe_source", lambda _: source)
     return stage
 
 
@@ -57,11 +61,41 @@ def test_unparseable_names_are_skipped_not_guessed(tmp_path, monkeypatch):
     assert track_daemon.claimable({}) == []
 
 
-def test_active_jobs_are_not_launched_twice(tmp_path, monkeypatch):
+def test_sibling_duration_selection_and_singleton_identity(tmp_path, monkeypatch):
     stage = _stage(tmp_path, monkeypatch)
-    (stage / "soccer__s1.mp4").write_bytes(_VIDEO)
+    groups = {
+        "football__football_wHZt1eY3A9s.mp4": (964.466133, 720),
+        "football__football_wHZt1eY3A9s_1080p.mp4": (300.066, 1080),
+        "wnba__wnba_01.mp4": (962.082333, 720),
+        "wnba__wnba_01_1080p.mp4": (600.067, 1080),
+        "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4": (960.158, 360),
+        "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4": (600.099, 1080),
+        "tennis__tennis_nyYk2nPZAwY.mp4": (960.010, 360),
+        "tennis__tennis_nyYk2nPZAwY_720p.mp4": (960.040, 720),
+    }
+    for name in groups:
+        (stage / name).write_bytes(_VIDEO)
+    monkeypatch.setattr(track_daemon_sources, "probe_source", lambda path: {
+        "source_fps": 30.0, "source_duration": groups[path.name][0],
+        "source_height": groups[path.name][1],
+    })
 
-    assert track_daemon.claimable({"soccer__s1.mp4": {}}) == []
+    selected = {(sport, game_id): path.name for path, sport, game_id in track_daemon.claimable({})}
+
+    assert selected == {
+        ("football", "football_wHZt1eY3A9s"): "football__football_wHZt1eY3A9s.mp4",
+        ("wnba", "wnba_01"): "wnba__wnba_01.mp4",
+        ("ncaa_basketball", "ncaa_basketball_IB-_u4gW3ds"): "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+        ("tennis", "tennis_nyYk2nPZAwY"): "tennis__tennis_nyYk2nPZAwY_720p.mp4",
+    }
+    for suffix in ("football__football_wHZt1eY3A9s_1080p.mp4",
+                   "wnba__wnba_01_1080p.mp4",
+                   "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+                   "tennis__tennis_nyYk2nPZAwY_720p.mp4"):
+        for path in stage.glob("*.mp4"):
+            path.unlink()
+        (stage / suffix).write_bytes(_VIDEO)
+        assert track_daemon.claimable({})[0][2] == Path(suffix).stem.partition("__")[2]
 
 
 def test_worker_cap_is_respected(tmp_path, monkeypatch):

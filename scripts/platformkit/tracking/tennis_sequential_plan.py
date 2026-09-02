@@ -11,6 +11,10 @@ import cv2
 import numpy as np
 import pandas as pd
 
+from scripts.platformkit.tracking.source_timebase import (
+    frames_to_seconds, probe_source, seconds_to_frames,
+)
+
 
 CaptureFactory = Callable[[str], object]
 Gate = Callable[[np.ndarray], str]
@@ -72,7 +76,8 @@ def select_ranges(video: Path, count: int, frames: int, seed: int = 20260901,
     return sorted((start, min(start + frames - 1, total - 1)) for start in chosen)
 
 
-def run_range(video: Path, start: int, stop: int) -> dict[str, object]:
+def run_range(video: Path, start: int, stop: int,
+              source_fps: float | None = None) -> dict[str, object]:
     """Run the production adapter/camera lock and unchanged frozen harness."""
     from domains.tennis.tracking.adapter import TennisAdapter
     from scripts.platformkit.tracking_harness import evaluate
@@ -94,7 +99,7 @@ def run_range(video: Path, start: int, stop: int) -> dict[str, object]:
     metrics = {name: getattr(report, name) for name in (
         "coverage_pct", "median_track_len", "ball_valid_pct", "jump_p95", "oob_pct"
     )}
-    return {
+    result: dict[str, object] = {
         "source_frame_range": {"start": start, "stop": stop, "count": len(indices)},
         "decoded_frames": decoded,
         "fresh_solves": fresh,
@@ -104,16 +109,25 @@ def run_range(video: Path, start: int, stop: int) -> dict[str, object]:
         "harness_failures": report.failures,
         "harness_metrics": metrics,
     }
+    if source_fps:
+        seconds = frames_to_seconds(start, stop, source_fps)
+        result["source_seconds_range"] = {"start": seconds[0], "stop": seconds[1]}
+    return result
 
 
 def build_report(video: Path, ranges: int = 5, frames: int = 300,
-                 seed: int = 20260901) -> dict[str, object]:
+                 seed: int = 20260901,
+                 selected: list[tuple[int, int]] | None = None) -> dict[str, object]:
     """Build the one-video evidence report without altering selection gates."""
-    selected = select_ranges(video, ranges, frames, seed)
-    results = [run_range(video, start, stop) for start, stop in selected]
+    source = probe_source(video)
+    selected = selected if selected is not None else select_ranges(video, ranges, frames, seed)
+    source_fps = source["source_fps"]
+    results = [run_range(video, start, stop, source_fps if isinstance(source_fps, float) else None)
+               for start, stop in selected]
     passed = sum(item["harness_verdict"] == "PASS" for item in results)
     return {
         "video": str(video),
+        "source": source,
         "selection": {
             "requested_ranges": ranges,
             "frames_per_range": frames,
@@ -138,8 +152,26 @@ def main() -> int:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--ranges", type=int, default=5)
     parser.add_argument("--frames", type=int, default=300)
+    explicit = parser.add_mutually_exclusive_group()
+    explicit.add_argument("--range", nargs=2, type=int, metavar=("START", "STOP"))
+    explicit.add_argument("--range-seconds", nargs=2, type=float, metavar=("START", "STOP"))
     args = parser.parse_args()
-    report = build_report(args.video, args.ranges, args.frames)
+    source = probe_source(args.video)
+    selected = None
+    fps = source["source_fps"]
+    if args.range_seconds:
+        if not isinstance(fps, float):
+            parser.error("--range-seconds requires a readable source fps")
+        selected = [seconds_to_frames(*args.range_seconds, fps)]
+        print("range seconds %.3f-%.3f equals frames %d-%d at %.3f fps" % (
+            *args.range_seconds, *selected[0], fps))
+    elif args.range:
+        selected = [tuple(args.range)]
+        if isinstance(fps, float):
+            seconds = frames_to_seconds(*selected[0], fps)
+            print("range frames %d-%d equals seconds %.3f-%.3f at %.3f fps" % (
+                *selected[0], *seconds, fps))
+    report = build_report(args.video, args.ranges, args.frames, selected=selected)
     args.out.mkdir(parents=True, exist_ok=True)
     path = args.out / "sequential_plan.json"
     path.write_text(json.dumps(report, indent=2, allow_nan=False) + "\n", encoding="utf-8")
