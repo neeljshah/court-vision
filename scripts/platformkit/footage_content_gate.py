@@ -154,12 +154,20 @@ def _quarantine_file(video: Path, reason: str, payload: dict,
     if target.exists():
         target = destination / (video.stem + ".duplicate" + video.suffix)
     shutil.move(str(video), str(target))
-    target.with_suffix(target.suffix + ".json").write_text(
+    write_quarantine_sidecar(target.with_suffix(target.suffix + ".json"), reason,
+                             payload)
+    return target
+
+
+def write_quarantine_sidecar(sidecar: Path, reason: str, payload: dict) -> Path:
+    """Write a reversible quarantine record without deleting its source video."""
+    sidecar.parent.mkdir(parents=True, exist_ok=True)
+    sidecar.write_text(
         json.dumps({"reason": reason, "quarantine_reason": reason,
                     "sport_verified": False, **payload}, indent=2) + "\n",
         encoding="utf-8",
     )
-    return target
+    return sidecar
 
 
 def quarantine(video: Path, verdict: GateVerdict,
