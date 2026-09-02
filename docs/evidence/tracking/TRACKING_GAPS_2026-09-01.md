@@ -4,7 +4,7 @@
 
 | Gap | sport | finding | evidence | status |
 |---|---|---|---|---|
-| G44B | tennis | Attempt 2 confirms the named nyYk footage is available locally and on the pod, so source availability is no longer a blocker. The G39 0/12 candidate result reproduces. But the G44 32/50 visibility and 16/31 window results have no surviving per-frame labels or ball coordinates, so a >=150 three-clip disjoint fit/held-out evaluation cannot be built honestly from the aggregate memo. No detector rule was fitted or changed; no downstream teacher may be built. | `g44b_ball_spatial_gate_2026-09-02.md`, `g44b_premise_review_2026-09-02/`, `g44b_label_artifact_status_2026-09-02.json` | NOT VALIDATED (label-durability gap; re-label before retry) |
+| G44B | tennis | Attempt 3 uses G65's durable independent labels: 150 unique seeded frames across 3 rally-view clips, 41 resolved visible and 109 explicitly uncertain. G65 supports 32/41 = 78.0% inside `y < 2/3*height`, conflicting with G44's 16/31 = 52%; the 41/150 denominator is not comparable with G44's 32/50. With only 20/21 positives in a split and no known non-ball labels, held-out recall and precision cannot be measured, so no spatial rule was fitted or changed. Resolve all 109 uncertain rows and obtain at least 59 additional resolved positives (100 total) before retry. No downstream teacher may be built. | `g44b_ball_spatial_gate_2026-09-02.md`, `g65_ball_label_set_2026-09-02.md`, `g65_ball_labels/labels.csv` | REJECT (insufficient ground truth to size or score the rule) |
 
 Rule: a gap is closed only by a measured artifact (n, denominator = decoded
 frames, render-and-look). Harness thresholds never move. Broadcast footage
