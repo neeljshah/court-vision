@@ -73,12 +73,16 @@ def _number(value: Any) -> int:
         return 0
 
 
+def _failures(record: dict[str, Any]) -> list[Any]:
+    """Read legacy failures or the additive G15b failure-head alias."""
+    values = record.get("failure_heads", record.get("failures", []))
+    return values if isinstance(values, list) else []
+
+
 def _coordinate_contract_items(records: Iterable[dict[str, Any]]) -> list[str]:
     items: list[str] = []
     for record in records:
-        failures = record.get("failures")
-        if not isinstance(failures, list):
-            continue
+        failures = _failures(record)
         matched = [str(item) for item in failures if "coordinate_contract" in str(item).lower()]
         if matched:
             game_id = _ascii(record.get("game_id") or "unknown-game")
@@ -98,7 +102,7 @@ def _preserved_corpus(records: Iterable[dict[str, Any]]) -> tuple[int, int, Coun
     games, rows, by_sport = 0, 0, Counter()
     for record in records:
         if any("image_px" in str(failure)
-               for failure in (record.get("failures") or [])):
+               for failure in _failures(record)):
             games += 1
             rows += _number(record.get("rows"))
             by_sport[_sport(record)] += 1
@@ -130,8 +134,7 @@ def build_report(
         if item.get("passed") is True:
             passing[sport] += 1
         best_rows[sport] = max(best_rows[sport], _number(item.get("rows")))
-        if isinstance(item.get("failures"), list):
-            failures[sport].update(_ascii(reason) for reason in item["failures"])
+        failures[sport].update(_ascii(reason) for reason in _failures(item))
 
     staged: dict[str, int] = defaultdict(int)
     bridge_failed: dict[str, int] = defaultdict(int)

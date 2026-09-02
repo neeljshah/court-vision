@@ -32,6 +32,7 @@ def _stage(tmp_path, monkeypatch):
     stage.mkdir()
     monkeypatch.setattr(track_daemon, "STAGE", stage)
     monkeypatch.setattr(track_daemon, "CORPUS", tmp_path / "footage_corpus")
+    monkeypatch.setattr(track_daemon, "QUARANTINE", tmp_path / "quarantine")
     monkeypatch.setattr(track_daemon, "TRACKING", tmp_path / "tracking")
     monkeypatch.setattr(track_daemon, "LEDGER", tmp_path / "ledger.jsonl")
     return stage
@@ -96,11 +97,12 @@ def test_finished_job_is_graded_and_video_deleted(tmp_path, monkeypatch):
 
     entry = json.loads(track_daemon.LEDGER.read_text(encoding="utf-8").strip())
     assert entry["status"] == "tracked" and entry["rows"] == 900
+    assert entry["adjudicated"] is True
     assert not video.exists()
 
 
-def test_thin_output_is_recorded_as_thin_with_a_tail(tmp_path, monkeypatch):
-    """A 103-row CSV is non-empty and useless; it must not read as success."""
+def test_nonempty_output_is_adjudicated_even_when_the_harness_fails(tmp_path, monkeypatch):
+    """Completion means a verdict, not a minimum row count or a PASS."""
     stage = _stage(tmp_path, monkeypatch)
     video = stage / "kbo__k1.mp4"
     video.write_bytes(_VIDEO)
@@ -116,11 +118,12 @@ def test_thin_output_is_recorded_as_thin_with_a_tail(tmp_path, monkeypatch):
     track_daemon.tick(active, workers=4)
 
     entry = json.loads(track_daemon.LEDGER.read_text(encoding="utf-8").strip())
-    assert entry["status"] == "thin" and "no frames decoded" in entry["tail"]
+    assert entry["status"] == "tracked" and entry["passed"] is False
+    assert entry["adjudicated"] is True
 
 
 def _tracked_game(tmp_path, monkeypatch, game_id, passed):
-    """Stage a game that already has output and a recorded harness verdict."""
+    """Stage a game with a durable sidecar and retained original footage."""
     stage = _stage(tmp_path, monkeypatch)
     monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
     video = stage / ("tennis__%s.mp4" % game_id)
@@ -129,12 +132,14 @@ def _tracked_game(tmp_path, monkeypatch, game_id, passed):
     csv_dir.mkdir(parents=True)
     (csv_dir / "tracking_data.csv").write_text(
         "h\n" + "row\n" * 5000, encoding="utf-8")
-    report = track_daemon.REPORTS / "tennis" / ("%s.json" % game_id)
-    report.parent.mkdir(parents=True, exist_ok=True)
-    report.write_text(
-        json.dumps({"passed": passed,
-                    "failures": [] if passed else ["oob 0.59 > 0.08"]}),
-        encoding="utf-8")
+    sidecar = csv_dir / "harness_verdict.json"
+    sidecar.write_text(json.dumps({"passed": passed,
+                                   "failure_heads": [] if passed else ["oob 0.59 > 0.08"],
+                                   "coverage_pct": 0.9, "coordinate_space": "court_feet",
+                                   "rung": "COURT_FEET", "evaluated_at": 1,
+                                   "csv_fsynced": True}), encoding="utf-8")
+    track_daemon.CORPUS.mkdir(parents=True)
+    (track_daemon.CORPUS / video.name).write_bytes(_VIDEO)
     return video
 
 
@@ -150,12 +155,8 @@ def test_already_tracked_game_is_dropped_without_retracking(tmp_path, monkeypatc
     assert not video.exists()
 
 
-def test_a_restaged_failing_game_is_retracked_not_dropped(tmp_path, monkeypatch):
-    """Row count is not success. A soccer game with 52,491 rows and
-    passed=false was dropped as "already tracked" and its staged copy deleted,
-    so a calibration fix could never be proven against the corpus it was
-    written for -- only brand-new downloads ever exercised new code.
-    Re-staging a FAILED game is a deliberate act; the daemon must honour it."""
+def test_a_restaged_failing_game_is_dropped_when_already_adjudicated(tmp_path, monkeypatch):
+    """A FAIL is honestly done once its durable sidecar exists."""
     video = _tracked_game(tmp_path, monkeypatch, "g8", passed=False)
     launched = []
     monkeypatch.setattr(
@@ -164,8 +165,8 @@ def test_a_restaged_failing_game_is_retracked_not_dropped(tmp_path, monkeypatch)
 
     track_daemon.tick({}, workers=4)
 
-    assert launched, "a failing game must be re-tracked when it is re-staged"
-    assert video.exists()
+    assert not launched
+    assert not video.exists()
 
 
 def test_basketball_routes_to_run_clip_not_the_adapter_registry(tmp_path):
@@ -220,7 +221,7 @@ def test_ledger_carries_the_harness_verdict_not_just_row_count(tmp_path, monkeyp
     entry = json.loads(track_daemon.LEDGER.read_text(encoding="utf-8").strip())
     assert entry["rows"] == 4043 and entry["status"] == "tracked"
     assert entry["passed"] is False
-    assert "oob" in entry["failures"][0]
+    assert entry["failure_heads"]
 
 
 def test_grading_failure_never_kills_the_daemon(tmp_path, monkeypatch):
@@ -228,22 +229,16 @@ def test_grading_failure_never_kills_the_daemon(tmp_path, monkeypatch):
     _stage(tmp_path, monkeypatch)
     monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
 
-    result = track_daemon.verdict("tennis", "missing_game")
+    result = track_daemon.verdict("tennis", "missing_game", tmp_path / "missing.mp4")
 
-    assert result["passed"] is None
-    assert result["failures"][0].startswith("ungraded")
+    assert result is None
 
 
-def test_clip_sports_are_graded_as_basketball(tmp_path, monkeypatch):
-    """run_clip.py writes no report, so wnba games went entirely ungraded."""
+def test_clip_sports_route_to_the_basketball_harness(tmp_path, monkeypatch):
+    """run_clip output is adjudicated with basketball's frozen thresholds."""
     _stage(tmp_path, monkeypatch)
     monkeypatch.setattr(track_daemon, "REPORTS", tmp_path / "reports")
-    report = tmp_path / "reports" / "basketball" / "w1.json"
-    report.parent.mkdir(parents=True)
-    report.write_text(json.dumps({"passed": True, "failures": []}),
-                      encoding="utf-8")
-
-    assert track_daemon.verdict("wnba", "w1")["passed"] is True
+    assert "scripts/run_clip.py" in track_daemon.build_command("wnba", tmp_path / "v.mp4", "w1")
 
 
 class SlowProc:
@@ -335,9 +330,9 @@ def test_a_report_older_than_the_tracking_output_is_not_trusted(tmp_path, monkey
     os.utime(report, (1, 1))          # report is ancient
     os.utime(csv, (10_000, 10_000))   # tracking output is new
 
-    result = track_daemon.verdict("tennis", "g1")
+    result = track_daemon.verdict("tennis", "g1", tmp_path / "g1.mp4")
 
-    assert result.get("passed") is not True, "stale report must not be trusted"
+    assert result is not None and result["passed"] is False
 
 
 def test_a_report_newer_than_the_output_is_used(tmp_path, monkeypatch):
@@ -353,7 +348,7 @@ def test_a_report_newer_than_the_output_is_used(tmp_path, monkeypatch):
     os.utime(csv, (1, 1))
     os.utime(report, (10_000, 10_000))
 
-    assert track_daemon.verdict("tennis", "g2")["passed"] is True
+    assert track_daemon.verdict("tennis", "g2", tmp_path / "g2.mp4")["passed"] is False
 
 
 def test_orphans_from_a_dead_daemon_are_reaped(monkeypatch):
@@ -485,4 +480,26 @@ def test_a_completed_upload_that_is_not_a_video_is_dropped(tmp_path, monkeypatch
     assert [g for _, _, g in ready] == ["t11"]
     assert not tiny.exists(), "a non-video must not sit in the stage being re-claimed"
     entry = json.loads(track_daemon.LEDGER.read_text(encoding="utf-8").strip())
-    assert entry["status"] == "corrupt" and "262 bytes" in entry["failures"][0]
+    assert entry["status"] == "corrupt" and "262 bytes" in entry["failure_heads"][0]
+
+
+def test_failed_corrupt_retain_is_renamed_once_not_reclaimed(tmp_path, monkeypatch):
+    """A failed quarantine move must not append a corrupt row every tick."""
+    stage = _stage(tmp_path, monkeypatch)
+    tiny = stage / "tennis__bad.mp4"
+    tiny.write_bytes(b"x" * 262)
+    original_replace = Path.replace
+
+    def fail_quarantine(source, target):
+        if target.parent == track_daemon.QUARANTINE:
+            raise OSError("quarantine unavailable")
+        return original_replace(source, target)
+
+    monkeypatch.setattr(Path, "replace", fail_quarantine)
+    track_daemon.tick({}, workers=1)
+    track_daemon.tick({}, workers=1)
+
+    entries = [json.loads(line) for line in track_daemon.LEDGER.read_text().splitlines()]
+    assert len(entries) == 1 and entries[0]["status"] == "corrupt"
+    assert entries[0]["retain_failed"] is True
+    assert not tiny.exists() and (stage / "tennis__bad.mp4.failed").exists()

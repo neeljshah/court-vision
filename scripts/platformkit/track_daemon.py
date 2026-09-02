@@ -1,22 +1,8 @@
-"""Track everything the footage bridge stages on the pod, many games at once.
+"""Consume atomically staged videos with concurrent, pod-side tracking.
 
-Why this exists: the pod has 256 cores, 1TB of RAM and a 3090, but the bridge
-ran tracking INLINE inside each download worker (download -> scp -> track ->
-next). Concurrency was therefore capped at the lane count, and because all
-lanes start by downloading it sat at ONE tracking process with the GPU at 11%.
-
-A single adapter run is video-decode bound: about one core and ~350 MiB of
-VRAM. Nothing about this box justifies running one at a time. This daemon is
-the consumer half of the split -- workers now only download and upload.
-
-The upload race is closed by naming, not by guessing: the bridge scp's to
-<sport>__<game_id>.mp4.part and renames atomically, so any file this daemon
-sees with a plain .mp4 suffix is complete. Never add size-stability polling
-here; that is the heuristic that once handed a half-transferred video to the
-tracker.
-
-Run on the pod:
-    python -m scripts.platformkit.track_daemon --workers 12 --forever
+The bridge writes ``<sport>__<game_id>.mp4.part`` then atomically renames it.
+Only plain ``.mp4`` files are complete uploads; never add size-stability polling.
+Run: ``python -m scripts.platformkit.track_daemon --workers 12 --forever``.
 """
 from __future__ import annotations
 
@@ -28,11 +14,21 @@ import sys
 import time
 from pathlib import Path
 
+from scripts.platformkit.track_daemon_done import (
+    adjudicate,
+    read_adjudicated,
+    retain,
+    tracking_rows,
+)
+from scripts.platformkit.track_daemon_ledger import corrupt_entry
+
 STAGE = Path("data/footage_bridge")
 # Where a tracked video goes instead of being deleted. Re-staging one game is
 # then `cp data/footage_corpus/<sport>__<game>.mp4 data/footage_bridge/`, which
 # is the whole cost of re-measuring a fix against the corpus it targets.
 CORPUS = Path("data/footage_corpus")
+QUARANTINE = Path("data/footage_quarantine")
+# Retained only for old external probes; completion never reads this report path.
 REPORTS = Path("data/tracking_reports")
 # A watchdog cannot use pgrep to tell whether this is alive: any command line
 # mentioning the daemon (including the watchdog's own check, or an operator's
@@ -41,9 +37,6 @@ REPORTS = Path("data/tracking_reports")
 PID_FILE = Path("/workspace/track_daemon.pid")
 LEDGER = Path("data/tracking/track_daemon_ledger.jsonl")
 TRACKING = Path("data/tracking")
-# Matches footage_bridge: a real tracked game has thousands of rows, and a
-# non-empty CSV is not evidence of anything.
-MIN_TRACKING_ROWS = 500
 # A completed upload is not automatically a video. Smallest real staged game
 # measured 29.3 MB; this floor is two orders of magnitude below that.
 MIN_VIDEO_BYTES = 1_000_000
@@ -86,16 +79,6 @@ def parse_name(path: Path) -> tuple:
     if not sport or not game_id:
         return None, None
     return sport, game_id
-
-
-def tracking_rows(game_id: str) -> int:
-    """Row count of a tracked game, excluding the header. 0 when absent."""
-    csv_path = TRACKING / game_id / "tracking_data.csv"
-    try:
-        with csv_path.open("r", encoding="utf-8", errors="replace") as handle:
-            return max(0, sum(1 for _ in handle) - 1)
-    except OSError:
-        return 0
 
 
 def build_command(sport: str, video: Path, game_id: str) -> list:
@@ -147,14 +130,12 @@ def claimable(active: dict) -> list:
         # far below any true positive.
         try:
             if path.stat().st_size < MIN_VIDEO_BYTES:
-                _record({"game_id": game_id, "sport": sport, "status": "corrupt",
-                         "rows": 0, "passed": None,
-                         "failures": ["staged file is %d bytes, not a video"
-                                      % path.stat().st_size],
-                         "seconds": 0, "finished_at": int(time.time())})
-                print("%s is %d bytes -- not a video, dropping"
-                      % (game_id, path.stat().st_size), flush=True)
-                path.unlink(missing_ok=True)
+                size = path.stat().st_size
+                print("%s is %d bytes -- not a video, quarantining"
+                      % (game_id, size), flush=True)
+                retained = retain(path, QUARANTINE,
+                                  lambda message: print(message, flush=True))
+                _record(corrupt_entry(game_id, sport, size, retained))
                 continue
         except OSError:
             continue
@@ -162,46 +143,9 @@ def claimable(active: dict) -> list:
     return ready
 
 
-def verdict(sport: str, game_id: str) -> dict:
-    """Harness verdict for a finished game: {"passed": bool, "failures": [...]}.
-
-    Row count alone is NOT quality. The baseball adapter can now emit 4000+ rows
-    whose coordinates are untrustworthy (oob 0.65), which by row count is
-    indistinguishable from a good 38,000-row tennis game. The ledger has to
-    carry the verdict or "tracked" silently comes to mean "big".
-
-    adapter_run writes this report itself; run_clip.py does not, so the
-    basketball family is graded here instead of going unscored.
-    """
-    harness_sport = "basketball" if sport in CLIP_SPORTS else SPORT_ADAPTER.get(sport, sport)
-    report_path = REPORTS / harness_sport / ("%s.json" % game_id)
-    csv_path = TRACKING / game_id / "tracking_data.csv"
-    # Only trust a report NEWER than the tracking output it claims to describe.
-    # A re-tracked game keeps its old report when adapter_run fails to rewrite
-    # it, and this returned an hour-stale verdict of "empty" for a game that had
-    # just produced 18,736 rows -- corrupting the one signal the ledger carries.
-    try:
-        report_mtime = report_path.stat().st_mtime
-        try:
-            fresh = report_mtime >= csv_path.stat().st_mtime
-        except OSError:
-            fresh = True  # no tracking output to be stale against
-        if fresh:
-            return json.loads(report_path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        pass
-    try:
-        import pandas as pd
-
-        from scripts.platformkit.tracking_harness import evaluate
-
-        report = evaluate(pd.read_csv(TRACKING / game_id / "tracking_data.csv"),
-                          harness_sport)
-        report_path.parent.mkdir(parents=True, exist_ok=True)
-        report_path.write_text(report.to_json(), encoding="utf-8")
-        return json.loads(report.to_json())
-    except Exception as exc:  # grading must never kill the daemon
-        return {"passed": None, "failures": ["ungraded: %s" % str(exc)[:120]]}
+def verdict(sport: str, game_id: str, video: Path) -> dict | None:
+    """Publish the frozen-harness verdict for a nonempty emitted CSV."""
+    return adjudicate(video, sport, game_id, TRACKING)
 
 
 def _record(entry: dict) -> None:
@@ -211,16 +155,10 @@ def _record(entry: dict) -> None:
 
 
 def _finish(name: str, job: dict, timed_out: bool = False) -> None:
-    """Grade one finished job, record it, and always reclaim the disk.
-
-    A timed-out job is recorded as "timeout" even when its partial CSV happens
-    to clear the row bar: half a game is not a tracked game, and calling it one
-    would put untrustworthy partial output into the usable corpus.
-    """
-    rows = tracking_rows(job["game_id"])
-    status = "timeout" if timed_out else (
-        "tracked" if rows >= MIN_TRACKING_ROWS else "thin")
-    graded = verdict(job["sport"], job["game_id"]) if rows else {}
+    """Record a finished job; only a durable verdict is a done game."""
+    rows = tracking_rows(TRACKING, job["game_id"])
+    graded = None if timed_out else verdict(job["sport"], job["game_id"], job["video"])
+    status = "timeout" if timed_out else "tracked" if graded is not None else "thin"
     # finished_at, because without it the ledger cannot be read. Diagnosing this
     # file meant guessing whether a "timeout at 2707s" predated the current
     # 3600s budget, and a stale entry is indistinguishable from a fresh one.
@@ -228,12 +166,17 @@ def _finish(name: str, job: dict, timed_out: bool = False) -> None:
     # inference.
     finished = time.time()
     entry = {"game_id": job["game_id"], "sport": job["sport"],
-             "status": status, "rows": rows,
-             "passed": graded.get("passed"),
-             "failures": (graded.get("failures") or [])[:4],
-             "seconds": int(finished - job["started"]),
-             "finished_at": int(finished)}
-    if status == "thin":
+              "status": status, "adjudicated": graded is not None, "rows": rows,
+              "passed": graded.get("passed") if graded else None,
+              "failure_heads": (graded or {}).get("failure_heads", [])[:4],
+              "failures": (graded or {}).get("failure_heads", [])[:4],
+              "coverage_pct": (graded or {}).get("coverage_pct"),
+              "coordinate_space": (graded or {}).get("coordinate_space"),
+              "rung": (graded or {}).get("rung"),
+              "evaluated_at": (graded or {}).get("evaluated_at"),
+              "seconds": int(finished - job["started"]),
+              "finished_at": int(finished)}
+    if status != "tracked":
         # Without the tail, every failure looks identical in the ledger.
         try:
             output = job["log"].read_text(encoding="utf-8", errors="replace")
@@ -243,40 +186,12 @@ def _finish(name: str, job: dict, timed_out: bool = False) -> None:
     _record(entry)
     print("%s %s %s rows=%d passed=%s %s"
           % (job["game_id"], job["sport"], status, rows, entry["passed"],
-             ";".join(entry["failures"])[:90]), flush=True)
-    _retain(job["video"])
+             ";".join(entry["failure_heads"])[:90]), flush=True)
+    retain(job["video"], CORPUS, lambda message: print(message, flush=True))
     try:
         job["log"].unlink(missing_ok=True)
     except OSError as exc:
         print("cleanup failed %s: %s" % (job["log"], exc), flush=True)
-
-
-def _retain(video: Path) -> None:
-    """Move a finished video out of the stage into the retained corpus.
-
-    This used to delete it, and deletion is what made a 0%-pass corpus
-    unrecoverable: 133 games were tracked once, graded failed, and had their
-    source footage destroyed, so no later fix could ever be measured against
-    the footage it was written for -- re-running a game meant re-downloading it
-    over an 88.6 Mbps upload ceiling.
-    Staged videos average 67 MB (16-minute section downloads) against 334 TB
-    free on /workspace. Deleting the source to reclaim 0.02% of a disk, while
-    nothing passes, is a false economy.
-    CORPUS must not be inside STAGE: claimable() globs STAGE for *.mp4, so a
-    retained file left there would be re-claimed forever.
-    """
-    try:
-        CORPUS.mkdir(parents=True, exist_ok=True)
-        video.replace(CORPUS / video.name)
-    except OSError as exc:
-        # Never leave it in the stage on failure -- claimable() would loop on it.
-        print("retain failed %s: %s -- deleting" % (video, exc), flush=True)
-        try:
-            video.unlink(missing_ok=True)
-        except OSError as unlink_exc:
-            print("cleanup failed %s: %s" % (video, unlink_exc), flush=True)
-
-
 def tick(active: dict, workers: int) -> None:
     """Reap finished jobs, then fill free slots. One pass, never blocking."""
     for name, job in list(active.items()):
@@ -293,21 +208,11 @@ def tick(active: dict, workers: int) -> None:
     for path, sport, game_id in claimable(active):
         if len(active) >= workers:
             break
-        # "Already tracked" has to mean already tracked SUCCESSFULLY. Judged by
-        # row count alone, a soccer game with 52,491 rows and passed=false was
-        # indistinguishable from a good one, so the daemon deleted its staged
-        # copy and refused to run it again -- forever. Across 133 tracked games
-        # and zero passes, that meant a calibration fix could never be proven on
-        # the corpus it was written for: only brand-new downloads would ever
-        # exercise new code.
-        # Re-staging a failed game is a deliberate act (an operator after a
-        # deploy, or the supervisor). The daemon's job is to honour it, not veto
-        # it. Churn is bounded on the other side: the supervisor still decides
-        # what to stage by row count, so a game that can never pass is not
-        # re-queued in a loop.
-        if tracking_rows(game_id) >= MIN_TRACKING_ROWS \
-                and verdict(sport, game_id).get("passed"):
-            print("%s already tracked and passing, dropping stage copy"
+        # PASS and FAIL are both done once the frozen harness sidecar has been
+        # atomically written after fsyncing a nonempty CSV.  A missing verdict
+        # is never inferred from rows, so it is re-tracked rather than erased.
+        if read_adjudicated(TRACKING, game_id) and (CORPUS / path.name).exists():
+            print("%s already adjudicated, dropping staged duplicate"
                   % game_id, flush=True)
             path.unlink(missing_ok=True)
             continue

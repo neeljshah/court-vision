@@ -81,3 +81,19 @@ def test_preserved_image_corpus_is_reported_separately(tmp_path):
     assert "PRESERVED DETECTION CORPUS" in report
     assert "1 games, 58,652 rows" in report
     assert "NOT broken runs" in report
+
+
+def test_report_counts_old_and_g15b_rows_and_keeps_escalation(tmp_path):
+    tracking = tmp_path / "track.jsonl"
+    _write_jsonl(tracking, [
+        {"game_id": "old", "sport": "nba", "status": "tracked", "rows": 700,
+         "passed": True, "failures": []},
+        {"game_id": "new", "sport": "nba", "status": "tracked", "adjudicated": True,
+         "rows": 900, "passed": False,
+         "failure_heads": ["coordinate_contract missing"]},
+    ])
+
+    report = build_report(tracking, tmp_path / "missing.jsonl", tmp_path / "missing.json")
+
+    assert "nba: tracked=2 thin=0 PASSING=1 best_rows=900" in report
+    assert "- coordinate_contract: new (coordinate_contract missing)" in report
