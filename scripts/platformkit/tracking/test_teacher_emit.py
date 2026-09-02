@@ -32,8 +32,9 @@ def test_target_round_trips(tmp_path) -> None:
     segment = saved["segments"][0]
     assert set(segment) == {
         "segment_id", "target_px", "target_confidence", "scale_px_per_ft",
-        "mound_centerline",
+        "scale_status", "mound_centerline",
     }
+    assert segment["scale_status"] is None  # absent upstream, carried as unknown
     assert segment["target_px"] == [10.0, 20.0]
     assert segment["target_confidence"] == 0.8
 

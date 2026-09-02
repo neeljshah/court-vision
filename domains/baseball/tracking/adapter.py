@@ -46,6 +46,9 @@ from domains.baseball.tracking.geometry import (
     detect_pitch_geometry as _detect_pitch_geometry,
 )
 from domains.baseball.tracking.identity import BaseballIdentityTracker
+from domains.baseball.tracking.plate_landmark import (
+    ScaleValidation, segment_status, validate_geometry,
+)
 from domains.baseball.tracking.scale_anchor import anchor_calibrations
 from domains.baseball.tracking.segmenter import detect_cut, small_gray
 from scripts.platformkit.coordinate_provenance import IMAGE_SCHEMA, write_tracking_csv
@@ -167,6 +170,7 @@ class BaseballAdapter:
         command_events: list[dict[str, object]] = []
         pitch_frames: list[np.ndarray] = []
         pitch_scales: list[float] = []
+        pitch_validations: list[ScaleValidation] = []
         segment_id = 0
         in_pitch_view = False
         source_frame = processed = players_seen = occluded_frames = 0
@@ -185,6 +189,9 @@ class BaseballAdapter:
                 # Ball tracking is intentionally not fabricated from plate geometry.
                 "crossing_px": None,
                 "scale_px_per_ft": float(np.median(pitch_scales)) if pitch_scales else None,
+                # ADDED column, not a filter: the mound-chord scale above is
+                # emitted unchanged whatever this says.  See plate_landmark.py.
+                "scale_status": segment_status(pitch_validations),
             })
 
         try:
@@ -220,15 +227,18 @@ class BaseballAdapter:
                             segment_id += 1
                             in_pitch_view = True
                         occluded_frames += int(self._geometry.near_edge_occluded)
+                        validation = validate_geometry(frame, self._geometry)
                         calibrations.append({
                             "frame": source_frame,
                             "segment_id": segment_id,
                             "pixels_per_foot": self._geometry.pixels_per_foot,
                             "mound_centerline": float(self._geometry.mound[0]),
+                            **validation.as_dict(),
                         })
                         if compute_command:
                             pitch_frames.append(frame.copy())
                             pitch_scales.append(self._geometry.pixels_per_foot)
+                            pitch_validations.append(validation)
                         if not image_space:
                             players_seen += self.count_players(frame, self._geometry)
                     else:
@@ -236,6 +246,7 @@ class BaseballAdapter:
                             close_pitch_segment()
                             pitch_frames.clear()
                             pitch_scales.clear()
+                            pitch_validations.clear()
                         in_pitch_view = False
                     processed += 1
                 source_frame += 1

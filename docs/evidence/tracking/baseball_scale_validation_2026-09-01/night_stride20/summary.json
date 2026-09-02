@@ -1,0 +1,38 @@
+[
+  {
+    "game_id": "mlb_gMm3EODDb6w",
+    "frames_processed": 600,
+    "pitch_view_frames": 1,
+    "plate_detection_rate": 0.0,
+    "rubber_detection_rate": 0.0,
+    "frame_agreement_rate": 0.0,
+    "segments": 1,
+    "segments_validated": 0,
+    "segment_agreement_rate": 0.0,
+    "scale_median_all": 19.0,
+    "scale_median_validated": null,
+    "scale_min_all": 19.0,
+    "scale_max_all": 19.0,
+    "scale_min_validated": null,
+    "scale_max_validated": null,
+    "perspective_ratio_median": null
+  },
+  {
+    "game_id": "mlb_3Oc4S_1np98",
+    "frames_processed": 600,
+    "pitch_view_frames": 9,
+    "plate_detection_rate": 0.333,
+    "rubber_detection_rate": 1.0,
+    "frame_agreement_rate": 0.0,
+    "segments": 5,
+    "segments_validated": 0,
+    "segment_agreement_rate": 0.0,
+    "scale_median_all": 19.6,
+    "scale_median_validated": null,
+    "scale_min_all": 17.9,
+    "scale_max_all": 40.8,
+    "scale_min_validated": null,
+    "scale_max_validated": null,
+    "perspective_ratio_median": 2.11
+  }
+]

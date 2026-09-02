@@ -33,6 +33,9 @@ def _segment_rows(metadata: Mapping[str, object]) -> list[dict[str, object]]:
             "target_confidence": source.get("target_confidence") if confident else None,
             "scale_px_per_ft": source.get("scale_px_per_ft",
                                             calibration.get("pixels_per_foot")),
+            # Additive column: whether an independent landmark agreed with the
+            # mound-chord scale. Absent on metadata written before 2026-09-01.
+            "scale_status": source.get("scale_status", calibration.get("scale_status")),
             "mound_centerline": calibration.get("mound_centerline"),
         })
     return rows
