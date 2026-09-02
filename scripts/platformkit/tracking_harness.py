@@ -57,6 +57,11 @@ CONFIG_VERSIONS: dict[str, dict[str, dict]] = {
 SPORTS = CONFIG_VERSIONS[DEFAULT_CONFIG_VERSION]
 
 
+# G50: below this many frames the metrics are not meaningful. NEW constant --
+# it gates nothing today and no existing threshold was touched.
+MIN_FRAMES_FOR_METRICS = 30
+
+
 @dataclass
 class QualityReport:
     sport: str
@@ -86,6 +91,15 @@ class QualityReport:
     passed: bool
     verdict: str
     failures: list[str]
+    # G43: ball_valid_pct measures ball-row PRESENCE, so a row projecting to
+    # 106,853 ft counts as valid telemetry. This reports how many of those rows
+    # actually land on the court. Additive and informational -- it does NOT
+    # gate, and no threshold reads it.
+    ball_in_bounds_pct: float | None = None
+    # G50: coverage_pct 1.0 has been published on a 2-frame table. This flags a
+    # report whose metrics rest on too little data to mean anything. Additive
+    # and informational -- `passed` deliberately does not read it.
+    insufficient_data: bool = False
 
     def to_json(self) -> str:
         return json.dumps(asdict(self), indent=2)
@@ -168,6 +182,9 @@ def evaluate(df: pd.DataFrame, sport: str,
     oob_pct = float(oob.mean()) if len(players) else 1.0
     ball_valid = (float(df[df["cls"] == "ball"]["frame"].nunique() / n_frames)
                   if schema.ball_telemetry_available is not False else None)
+    balls = df[df["cls"] == "ball"]
+    ball_in_bounds = (float((balls["x"].between(x0, x1) & balls["y"].between(y0, y1)).mean())
+                      if len(balls) else None)
     grouped = players.sort_values(["track_id", "frame"]).groupby("track_id")
     jump = ((grouped["x"].diff() ** 2 + grouped["y"].diff() ** 2) ** 0.5).dropna()
     jump_p95 = float(jump.quantile(0.95)) if len(jump) else 0.0
@@ -213,7 +230,9 @@ def evaluate(df: pd.DataFrame, sport: str,
                          round(liveness.distinct_position_ratio, 4),
                          round(liveness.stationary_track_share, 4),
                          liveness.verdict, resolution,
-                         frame_rate, True, passed, verdict, failures)
+                         frame_rate, True, passed, verdict, failures,
+                         round(ball_in_bounds, 4) if ball_in_bounds is not None else None,
+                         n_frames < MIN_FRAMES_FOR_METRICS)
 
 
 if __name__ == "__main__":
