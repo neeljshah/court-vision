@@ -4,7 +4,7 @@ Rule: a gap is closed only by a measured artifact (metric, exact denominator, n,
 and for any scored claim a prereg sealed before the metric). Harness thresholds
 and gate values NEVER move. Calibration language only -- no dollar, ROI or edge
 claim ever appears in a row, an artifact or a memo.
-NEXT_GAP_ID: S53  (allocated by the orchestrator ONLY; lanes never invent ids.
+NEXT_GAP_ID: S54  (allocated by the orchestrator ONLY; lanes never invent ids.
 OWNERSHIP IN FORCE 2026-09-03: account 1 = this harness session holds THIS counter (S); account 2 = the tracking session holds G (G33). Account 1 dispatches codex ONLY into worktrees a10-a12.
 S-ids start at S01 so they can never collide with the tracking register's G-ids.
 S28/S29 allocated 2026-09-03 by the roadmap-audit lane.)
@@ -104,6 +104,8 @@ CLOSED with no S-row; S11-S18 and S27-S29 are new.
 | S51 | harness | two S40b leftovers: (a) run_gate.n_trials = len(CORPORA) = 2 prices its deflation as if two trials ever ran; reading the ledger there breaks --golden's offline contract, so it needs an explicit --k-from-ledger mode; (b) gen_golden does not emit the new GOLDEN_SHA256 digest, so a legitimate fixture regeneration fails the gate until the constant is hand-updated | S40b memo 7ef4d6c6c | OPEN (new 2026-09-03) |
 
 | S52 | corpus | no local historical MLB moneyline CLOSE exists for 2022-2025 (S10 measured: local price series covers only Kalshi 2026 two-sided with a first-pitch clock; 2023/2025 Polymarket one-sided without one; 2022/2024 absent), so 22 MLB mechanisms and every modern MLB market-relative test stay NOT_TESTABLE until an external historical close source (the same free-odds family the soccer/tennis odds.parquet came from, or a Kalshi history pull for 2023-2025) is acquired, licence recorded, and joined through close_join_mlb | S10 lane 161d87c43 | OPEN (new 2026-09-03) -- data acquisition, not a join |
+
+| S53 | corpus | the soccer gate corpus carries only 11 pregame shots/SOT as-of columns, so all 15 soccer mechanisms are NOT_TESTABLE against the close (S22): the ingredients exist on disk (data/domains/soccer/asof_xg_proxy.parquet x 12, style_fingerprints, referee_card_foul_profiles, StatsBomb event grain) but are not joined into the gate spine; enrich the spine (additive columns, same 25,834 rows, event_date order) so the mechanisms score, then re-run S22's soccer engine | S22 lane c35de372a | OPEN (new 2026-09-03) -- corpus_cache builder, LANE-A pattern (additive, DataFrame.equals on every existing column) |
 
 ## Quant additions to the verifier contract (Q1-Q6)
 
