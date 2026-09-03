@@ -1,0 +1,322 @@
+{
+  "code_sha256": {
+    "C:\\Users\\neelj\\nba-track-a10\\scripts\\platformkit\\eval_gate\\calibration_report.py": "05f02708ac72f241c083c4f3b6a7f0efde8e47ef37d4bc282b826f567cc56aab",
+    "C:\\Users\\neelj\\nba-track-a10\\scripts\\platformkit\\eval_gate\\s202_two_way_neff.py": "8c98897dec36e6b32e47261b9b6ccfec2818c5aa9b2882949f0a5bf9321c80cc",
+    "C:\\Users\\neelj\\nba-track-a10\\scripts\\platformkit\\ingame\\gap_effective_n.py": "279784beec45df5b91243e18b1c16f3064af36862c7b75e95237bdfa288536d3"
+  },
+  "corpora": {
+    "mlb": {
+      "crossed_labels": {
+        "first": "away_team",
+        "first_clusters": 32,
+        "second": "home_team",
+        "second_clusters": 34
+      },
+      "inputs": [
+        {
+          "bytes": 1645142,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\combo\\gate_corpus_mlb.parquet",
+          "resolution": "not_applicable_tabular",
+          "sha256": "ac60c9cb18958c20ff53d7d0b698700375b6a0ce15e7ef0ecd20fb730e0903bd"
+        },
+        {
+          "bytes": 343723,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\games.parquet",
+          "resolution": "not_applicable_tabular",
+          "sha256": "ddc69f4a3b0657a1d4011cb038443a5a3faa22552d7d81c4cb9b1af783700c31"
+        },
+        {
+          "bytes": 164496,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\games_current.parquet",
+          "resolution": "not_applicable_tabular",
+          "sha256": "2d44bf48962ffdbfab5ffc150aef79c3bf2b26e870c132a4b6d333f4c0d33002"
+        }
+      ],
+      "metrics": {
+        "paired_loss_differential": {
+          "one_way": {
+            "design_effect": 1.3715815352863303,
+            "n_eff": 28552.440370834076,
+            "n_eff_bound_ok": true,
+            "n_games": 32,
+            "n_ticks": 39162,
+            "rho": 0.0003038744985730277
+          },
+          "two_way": {
+            "bootstrap_mean_max": 0.0016701763491713943,
+            "bootstrap_mean_min": -7.740174864881105e-05,
+            "bootstrap_mean_variance": 8.507544378258356e-08,
+            "first_clusters": 32,
+            "iterations": 1000,
+            "n_eff": 12052.589125843342,
+            "n_rows": 39162,
+            "sample_variance": 0.0010253793686102633,
+            "second_clusters": 34,
+            "seed": 20260904
+          }
+        },
+        "standin_loss": {
+          "one_way": {
+            "design_effect": 3.625244294167041,
+            "n_eff": 10802.58234266061,
+            "n_eff_bound_ok": true,
+            "n_games": 32,
+            "n_ticks": 39162,
+            "rho": 0.002146890299344373
+          },
+          "two_way": {
+            "bootstrap_mean_max": 0.24680839461170834,
+            "bootstrap_mean_min": 0.24093504018991752,
+            "bootstrap_mean_variance": 8.177209941792472e-07,
+            "first_clusters": 32,
+            "iterations": 1000,
+            "n_eff": 5704.783741258881,
+            "n_rows": 39162,
+            "sample_variance": 0.0046649214324798165,
+            "second_clusters": 34,
+            "seed": 20260904
+          }
+        }
+      },
+      "n_rows": 39162,
+      "one_way_key": "away_team",
+      "paired_loss_series_path": "docs/evidence/S202_two_way_neff_2026-09-04/mlb_paired_losses.csv",
+      "paired_loss_series_sha256": "c86daa511bf9dc0d9d5e5563ad42e79f419d554304406e88b0f1d6fc599a0f2b",
+      "sport": "mlb"
+    },
+    "nba": {
+      "crossed_labels": {
+        "first": "away_team",
+        "first_clusters": 30,
+        "second": "home_team",
+        "second_clusters": 30
+      },
+      "inputs": [
+        {
+          "bytes": 201706,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\combo\\gate_corpus_nba.parquet",
+          "resolution": "not_applicable_tabular",
+          "sha256": "716f6f5f3f2181051e352936efa60d616c9de029a026b85cc585d6ed20cb0aaf"
+        },
+        {
+          "bytes": 69063,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\games.parquet",
+          "resolution": "not_applicable_tabular",
+          "sha256": "7d5d049a41b25fc52e0f9260b3c924035cca8eae15ebc9bfd8a9d1f4bd594ce5"
+        }
+      ],
+      "metrics": {
+        "paired_loss_differential": {
+          "one_way": {
+            "design_effect": 1.127632624399929,
+            "n_eff": 1608.6799554645042,
+            "n_eff_bound_ok": true,
+            "n_games": 30,
+            "n_ticks": 1814,
+            "rho": 0.002146288526904635
+          },
+          "two_way": {
+            "bootstrap_mean_max": 0.011660328619607146,
+            "bootstrap_mean_min": -0.008677375984654685,
+            "bootstrap_mean_variance": 8.346721150367046e-06,
+            "first_clusters": 30,
+            "iterations": 1000,
+            "n_eff": 533.1016735085981,
+            "n_rows": 1814,
+            "sample_variance": 0.004449651013570283,
+            "second_clusters": 30,
+            "seed": 20260904
+          }
+        },
+        "standin_loss": {
+          "one_way": {
+            "design_effect": 2.4136612629749625,
+            "n_eff": 751.5553353846144,
+            "n_eff_bound_ok": true,
+            "n_games": 30,
+            "n_ticks": 1814,
+            "rho": 0.023772330655408562
+          },
+          "two_way": {
+            "bootstrap_mean_max": 0.24039927430090358,
+            "bootstrap_mean_min": 0.1812444878066646,
+            "bootstrap_mean_variance": 7.602991745348056e-05,
+            "first_clusters": 30,
+            "iterations": 1000,
+            "n_eff": 399.988033366185,
+            "n_rows": 1814,
+            "sample_variance": 0.030411057159211073,
+            "second_clusters": 30,
+            "seed": 20260904
+          }
+        }
+      },
+      "n_rows": 1814,
+      "one_way_key": "away_team",
+      "paired_loss_series_path": "docs/evidence/S202_two_way_neff_2026-09-04/nba_paired_losses.csv",
+      "paired_loss_series_sha256": "297b65180772567883aa55852818f3045756b7e0fa43baf31ddd22b60cbfce9e",
+      "sport": "nba"
+    },
+    "soccer": {
+      "crossed_labels": {
+        "first": "home_team",
+        "first_clusters": 187,
+        "second": "away_team",
+        "second_clusters": 187
+      },
+      "inputs": [
+        {
+          "bytes": 6053712,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\combo\\gate_corpus_soccer.parquet",
+          "resolution": "not_applicable_tabular",
+          "sha256": "e0d2f13e7a53b3ed578e81e38db82f14bb6d3a71e31a9c7cb636d5b4c7e92bc6"
+        },
+        {
+          "bytes": 467254,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\soccer\\matches.parquet",
+          "resolution": "not_applicable_tabular",
+          "sha256": "63cd075df7bbedd1892f17140ea0e4b8cf6038e846460d5efecbb31cd3838838"
+        }
+      ],
+      "metrics": {
+        "paired_loss_differential": {
+          "one_way": {
+            "design_effect": 1.4155740082297688,
+            "n_eff": 18249.840594563077,
+            "n_eff_bound_ok": true,
+            "n_games": 6,
+            "n_ticks": 25834,
+            "rho": 9.654034572474108e-05
+          },
+          "two_way": {
+            "bootstrap_mean_max": -0.010659751357538492,
+            "bootstrap_mean_min": -0.019930849727396713,
+            "bootstrap_mean_variance": 2.0203263249319744e-06,
+            "first_clusters": 187,
+            "iterations": 1000,
+            "n_eff": 8306.716555626794,
+            "n_rows": 25834,
+            "sample_variance": 0.016782278131081067,
+            "second_clusters": 187,
+            "seed": 20260904
+          }
+        },
+        "standin_loss": {
+          "one_way": {
+            "design_effect": 2.654159411454796,
+            "n_eff": 9733.40180265958,
+            "n_eff_bound_ok": true,
+            "n_games": 6,
+            "n_ticks": 25834,
+            "rho": 0.00038427119671398385
+          },
+          "two_way": {
+            "bootstrap_mean_max": 0.2696722381414383,
+            "bootstrap_mean_min": 0.2560050646303275,
+            "bootstrap_mean_variance": 4.426958030774294e-06,
+            "first_clusters": 187,
+            "iterations": 1000,
+            "n_eff": 7052.575352274797,
+            "n_rows": 25834,
+            "sample_variance": 0.031221455093393757,
+            "second_clusters": 187,
+            "seed": 20260904
+          }
+        }
+      },
+      "n_rows": 25834,
+      "one_way_key": "div",
+      "paired_loss_series_path": "docs/evidence/S202_two_way_neff_2026-09-04/soccer_paired_losses.csv",
+      "paired_loss_series_sha256": "f7d68492a7ec796dab4f61065d2419da21865f373019273ddbda9046f2090957",
+      "sport": "soccer"
+    },
+    "tennis": {
+      "crossed_labels": {
+        "first": "p1_id",
+        "first_clusters": 1613,
+        "second": "p2_id",
+        "second_clusters": 1970
+      },
+      "inputs": [
+        {
+          "bytes": 2745405,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\combo\\gate_corpus_tennis.parquet",
+          "resolution": "not_applicable_tabular",
+          "sha256": "22d006f2b4f7a7186876e133508e1e9ddf14af3570f1d20a73d73d1d3669d700"
+        },
+        {
+          "bytes": 1327492,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\tennis\\matches.parquet",
+          "resolution": "not_applicable_tabular",
+          "sha256": "d96c9774a639a0a8a60fe84bb65f2ac3093dc6e88f006e6251deb3335d4cab77"
+        },
+        {
+          "bytes": 525478,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\tennis\\wta_matches.parquet",
+          "resolution": "not_applicable_tabular",
+          "sha256": "931b975578729f2e82e7fac01b497e05c85ab42de54fbee1e1eefb0d7acda787"
+        }
+      ],
+      "metrics": {
+        "paired_loss_differential": {
+          "one_way": {
+            "design_effect": 1.0,
+            "n_eff": 41886.0,
+            "n_eff_bound_ok": true,
+            "n_games": 1613,
+            "n_ticks": 41886,
+            "rho": 0.0
+          },
+          "two_way": {
+            "bootstrap_mean_max": 0.00043184864891278416,
+            "bootstrap_mean_min": -0.002444293931217412,
+            "bootstrap_mean_variance": 1.4723724356060644e-07,
+            "first_clusters": 1613,
+            "iterations": 1000,
+            "n_eff": 12884.42920872849,
+            "n_rows": 41886,
+            "sample_variance": 0.0018970678415449484,
+            "second_clusters": 1970,
+            "seed": 20260904
+          }
+        },
+        "standin_loss": {
+          "one_way": {
+            "design_effect": 1.1033715315138453,
+            "n_eff": 37961.82772862706,
+            "n_eff_bound_ok": true,
+            "n_games": 1613,
+            "n_ticks": 41886,
+            "rho": 0.004140200142324444
+          },
+          "two_way": {
+            "bootstrap_mean_max": 0.227514924681365,
+            "bootstrap_mean_min": 0.2101730901409791,
+            "bootstrap_mean_variance": 8.222172300934798e-06,
+            "first_clusters": 1613,
+            "iterations": 1000,
+            "n_eff": 4241.907318808643,
+            "n_rows": 41886,
+            "sample_variance": 0.03487769285984102,
+            "second_clusters": 1970,
+            "seed": 20260904
+          }
+        }
+      },
+      "n_rows": 41886,
+      "one_way_key": "p1_id",
+      "paired_loss_series_path": "docs/evidence/S202_two_way_neff_2026-09-04/tennis_paired_losses.csv",
+      "paired_loss_series_sha256": "c1789ebdd95f48342dc88093de68a7802a47aca78f6a99f9016aca99a840d3ab",
+      "sport": "tennis"
+    }
+  },
+  "gap": "S202",
+  "iterations": 1000,
+  "method": "crossed pigeonhole bootstrap of both label dimensions",
+  "recalibrated_arm": {
+    "prereg_path": "docs/evidence/harness/S05_calibration_prereg_2026-09-03.md",
+    "prereg_seal_sha256": "9051BB6E3BD89F7309A799F9739C8E61EA6DB3530E52AD87666568220591DF8A"
+  },
+  "row_policy": "all corpus rows retained; no size filter or dropped cluster",
+  "seed": 20260904
+}
