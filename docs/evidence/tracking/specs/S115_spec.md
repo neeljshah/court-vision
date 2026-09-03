@@ -1,0 +1,20 @@
+GAP S115 | sport nba (in-game) | worktree a10 | log cx_s115_ingame_models
+CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it; self-check every line of section B AND section Q before you report. Template: docs/evidence/tracking/CODEX_SPEC_TEMPLATE.md. Calibration language only: no dollar, ROI, profit or edge words.
+GAP (verbatim from the register): MORE MODELS, SAME OFFSET: every in-game arm is a single logistic term; untested are non-linear residual models over the tick state with logit(market) as OFFSET so the model learns only what the line misses.
+READ (every signature on disk): scripts/platformkit/eval_gate/s86_nba_every_tick.py (loader, partition foundry.tiers.partition_corpus(seed=0) on game blocks, screen 797 games), s94_nba_early_shrinkage.py (the global recalibration null [1, logit(market)], `_dm`, `_p`, fold windows), s108_pregame_full_model.py (the offset-as-fixed-column trick and the single-Newton-step HGB), eval_gate/tick_informative.py (attach_informative_summary), the archived per-tick CSV data/cache/eval_gate/s86_nba_every_tick_2026-09-03.csv (model, market, outcome, period, clock, margin, score per screen tick; game_id, ts). data/ is provisioned in this worktree by junction; if the CSV is absent STOP and report NO STORE.
+PREMISE (step 0): print the CSV shape, n games, and confirm no module under scripts/platformkit/eval_gate fits HistGradientBoosting / MLP on the NBA tick CSV with the market as offset (grep). If one exists, STOP and report FALSIFIED.
+LIMIT (step 1): n/a (screen row).
+CHANGE (step 2): NEW scripts/platformkit/eval_gate/s115_ingame_models.py (<= 300 LOC; a helper module if needed): features = period, clock fraction, margin, margin change over 3/5/10 ticks (strictly past ticks of the same game; a guard that raises on a same-tick or later read), logit(market), logit(prior); three arms with logit(market) as OFFSET: (a) HistGradientBoostingRegressor single Newton step on the working response (as S108), max_depth 3, strong l2, small grid; (b) sklearn MLPClassifier over [features] predicting the residual via the same working-response trick, tiny (16,) hidden, early stopping on a TRAIN-internal split; (c) HGB with monotonic_cst margin increasing. Null = S94 global recalibration on identical rows. Expanding walk-forward by game-first date, purge by game, 1-day embargo, 5 folds, inner folds pick the grid; tick-weighted Brier vs raw market and vs the null, game-clustered DM CI, n / n_informative / n_eff, PBO across the grid, per-fold chosen config. Archive per-tick series (Q9) under data/cache/eval_gate/s115_*. No charge, no seal, no ledger read; verdict side never read.
+TEST: NEW tests/platformkit/ingame/test_s115_ingame_models.py: leak guard raises; offset arm with zero-capacity model reproduces the null exactly; fold windows equal S94's; series length = n screen ticks. Run ONLY `python -m pytest tests/platformkit/ingame/test_s115_ingame_models.py -q`.
+ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
+  metric        = tick-weighted Brier improvement of the best arm vs the RAW market on the held-out folds; denominator = 3 arms
+  before        = no non-linear in-game arm exists (0/3)
+  bar           = +0.004 with the game-clustered CI excluding zero AND beating the recal null; else NULL (a NULL is a PASS of the process)
+  n             = 3 arms x 5 folds
+  eye check     = n/a; reproduction = verifier recomputes the headline from the archived CSV alone
+  must not move = BAR 0.004, the S86 partition, purge/embargo, the ledger (18 rows), data/registry/**
+NON-TAUTOLOGY: the null is fit on the identical rows; a zero-capacity arm equals the null to 1e-12.
+EVIDENCE: docs/evidence/harness/S115_ingame_models_2026-09-03.md (premise, method, result table, PBO, verdict, NOT VERIFIED). Language rail (Q6).
+POD: none. Do not ssh anywhere.
+COMMIT: explicit pathspec (module, test, memo), in this worktree, no push. Last line of your report: `SHA: <sha>`.
+NEVER PARK: run everything to completion; never end waiting.
