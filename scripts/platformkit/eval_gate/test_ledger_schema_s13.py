@@ -12,18 +12,26 @@ from pathlib import Path
 
 import pytest
 
-from scripts.platformkit.eval_gate import backtest_runner
+from scripts.platformkit.eval_gate import backtest_runner, worktree_marker
 from scripts.platformkit.eval_gate.ledger import FWER_OPTIONAL_FIELDS, load_fwer
 
 REAL_LEDGER = (Path(__file__).resolve().parents[3] / "data" / "cache" / "eval_gate"
                / "backtest_fwer.jsonl")
 
 
+def _require_real_ledger(path: Path = REAL_LEDGER) -> None:
+    """S154: absent real ledger -- SKIP in a worktree (never junctioned there), FAIL in the main repo."""
+    if path.is_file():
+        return
+    if worktree_marker.is_worktree_checkout():
+        pytest.skip("real ledger absent (worktree checkout, data/cache/eval_gate never junctioned): %s" % path)
+    pytest.fail(f"charge ledger absent in the main repo: {path}")
+
+
 @pytest.fixture()
 def ledger_copy(tmp_path: Path) -> Path:
     """A per-test scratch copy of the real ledger; the original is never the write target."""
-    if not REAL_LEDGER.is_file():
-        pytest.skip("real ledger absent (data/ is gitignored): %s" % REAL_LEDGER)
+    _require_real_ledger()
     dest = tmp_path / "backtest_fwer.jsonl"
     shutil.copyfile(REAL_LEDGER, dest)
     return dest
@@ -101,3 +109,22 @@ def test_next_k_family_counts_aliased_rows_s89():
     assert next_k_family(rows, "ingame_arms_mlb") == 3
     assert next_k_family(rows, "soccer_gate") == 2
     assert next_k_family(rows, None) is None
+
+
+# --- S154: absent real ledger must not read as a pass in the main repo ---------
+
+def test_a_worktree_checkout_skips_when_ledger_absent(monkeypatch, tmp_path):
+    """Worktree mode -> Skipped, because data/cache/eval_gate is never junctioned."""
+    monkeypatch.setenv("FOUNDRY_WORKTREE", "1")
+    assert worktree_marker.is_worktree_checkout() is True
+    absent = tmp_path / "backtest_fwer.jsonl"
+    with pytest.raises(pytest.skip.Exception):
+        _require_real_ledger(absent)
+
+
+def test_a_missing_ledger_in_the_main_repo_fails_instead_of_skipping(monkeypatch, tmp_path):
+    """Main-repo mode -> pytest.fail naming the path. This is the S154 bar."""
+    monkeypatch.setattr(worktree_marker, "is_worktree_checkout", lambda *a, **k: False)
+    absent = tmp_path / "backtest_fwer.jsonl"
+    with pytest.raises(pytest.fail.Exception, match="charge ledger absent"):
+        _require_real_ledger(absent)
