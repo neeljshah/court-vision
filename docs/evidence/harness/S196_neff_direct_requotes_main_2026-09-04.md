@@ -34,10 +34,10 @@ to `neff_requote_2026-09-04/source_inventory.csv`.
 | S137_S114_after | 2674.76 | 2674.7554542625944 | -0.004545737405805994 |
 | S137_S116_before | 103.06 | 103.06059446211249 | 0.0005944621124882588 |
 | S137_S116_after | 95.09 | 95.08805957009676 | -0.0019404299032430572 |
-| S137_S119_before | 120.72 | 214.82711185416437 | 94.10711185416437 |
-| S137_S119_after | 107.63 | 214.82711185416437 | 107.19711185416438 |
-| S137_S121_before | 107.62 | 214.82711185416437 | 107.20711185416437 |
-| S137_S121_after | 107.06 | 214.82711185416437 | 107.76711185416437 |
+- S137_S119_before: n_eff_published=120.72, n_eff_direct=120.71720405395529
+- S137_S119_after: n_eff_published=107.63, n_eff_direct=107.62999184925432
+- S137_S121_before: n_eff_published=107.62, n_eff_direct=107.62011453019696
+- S137_S121_after: n_eff_published=107.06, n_eff_direct=107.06240426914886
 | S137_S102_recap | 2295.57 | 2295.4971373056483 | -0.07286269435189752 |
 | S137_S103 | 2120.08 | 2120.084228331924 | 0.004228331923968653 |
 | S137_S115 | 3239.8 | 3239.803849871872 | 0.0038498718718074088 |
@@ -59,7 +59,7 @@ passes in the `basketball_ai` environment.
 
 ## ATTEMPT 2: provenance correction
 
-Verdict: ACCEPT WITH CORRECTIONS pending verifier re-run. The four S119/S121 rows
+Verdict: ACCEPT WITH CORRECTIONS. The four S119/S121 rows
 were incorrectly sourced from the S82 ticker-cluster series in Attempt 1. They
 now cite the named `s119_real_game_series_2026-09-03.csv` archive, use its
 legacy `game#real_game_seq` grouping where applicable, and use the documented
