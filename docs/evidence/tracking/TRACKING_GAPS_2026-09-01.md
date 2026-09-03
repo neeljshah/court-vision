@@ -16,6 +16,12 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G156a result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G156a | all | `decoded_frame_count` costs 149.5-241.5 sec/GB on 4 real clips (broadcast-like ones 227.0 and 241.5), 457-507 frames/s. Extrapolated to the 2.0-3.7 GB broadcasts the bridge delivers, that is ~450-900 s of global poll-loop stall per completed job, against measured job runtimes of 296, 791, 368 and 301 s. Observed live: daemon in `do_poll` with an ffprobe child; later zero tracking jobs with two ffprobes at 129 s and 85 s. `decoded_frames` present on 4 of 4 real ledger rows. | `g156a_ffprobe_stall_cost_2026-09-03.md` | **ACCEPT -- MEASUREMENT ONLY. No fix is landed. The lane's partial patch is preserved outside the repo, unreviewed, and already shows an untimed adjudication thread. The exact count must not be replaced by a cheaper estimate (B10/Q3). The per-game stall is an EXTRAPOLATION from smaller clips.** |
+
 ## G157 / G160 result register
 
 | Gap | Sport | Finding | Evidence | Status |
