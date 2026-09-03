@@ -1,4 +1,4 @@
-GAP S208 | sport nba (in-game) | worktree aXX | log cx_s208_nba_phase_recal
+GAP S208 | sport nba (in-game) | worktree a16 | log cx_s208_nba_phase_recal
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S88_phase_recal_2026-09-04.md section 5, verbatim: "NBA (`probe_R12_B32*`) is untouched: no S06-equivalent
 leak-free partition or incumbent exists for it, so it stays an unreviewed cache artifact". That was the only reason
