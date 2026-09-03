@@ -2,14 +2,13 @@
 
 For hypothesis h on sport corpus C the screen is ONE walk-forward logistic on
 [1, logit(p_ref), z(transform(feature))], fit strictly inside `eval_gate.walk_forward`'s
-expanding window (purged and embargoed by the harness, select_inside only) and scored by
-Brier against the corpus's INCUMBENT: the devigged close where the corpus carries one
-(soccer, tennis via close_join), else p_base -- always LABELLED. The feature is as-of by
-construction: a gate-corpus column is as-of because corpus_cache built it so; a column
-joined from a frozen family's source parquet must say `asof` in its name and be one row per
-event; a same-game column is refused BY NAME before any value is read (S53's pattern, lifted
-to every sport). Transforms use PRIOR rows only (shift(1)) or the same-day cross-section of
-as-of values. A SCREEN is a NON-FINDING. Calibration language only.
+expanding window (purged, embargoed, select_inside only) and scored by Brier against the
+corpus's LABELLED incumbent: the devigged close where close_join carries one (soccer,
+tennis), else p_base. The feature is as-of by construction -- a gate-corpus column because
+corpus_cache built it so, a family-source column because it says `asof` and is one row per
+event, or because it carries a DECLARED S85 bridge (`foundry.asof_supply`). A same-game
+column is refused BY NAME before any value is read (S53, lifted to every sport). Transforms
+use PRIOR rows only. A SCREEN is a NON-FINDING. Calibration language only.
 """
 from __future__ import annotations
 
@@ -25,6 +24,7 @@ import pandas as pd
 
 from scripts.platformkit.combo.corpus_cache import SOCCER_LEAKY_COLUMNS, load_gate_corpus
 from scripts.platformkit.eval_gate.family_bars import load_families
+from scripts.platformkit.foundry import asof_supply
 from scripts.platformkit.foundry.grammar import Hypothesis
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -70,8 +70,7 @@ def _clip(p: float) -> float:
 
 
 def _logit(p: float) -> float:
-    p = _clip(p)
-    return math.log(p / (1.0 - p))
+    return math.log(_clip(p) / (1.0 - _clip(p)))
 
 
 def _logistic(X: np.ndarray, y: np.ndarray, ridge: float = RIDGE, iters: int = 25) -> np.ndarray:
@@ -147,9 +146,18 @@ def _families_of(hypothesis: Hypothesis) -> list:
             and f.market == hypothesis.market and hypothesis.feature in f.members]
 
 
-def source_column(hypothesis: Hypothesis, name: str, table: pd.DataFrame) -> pd.Series:
-    """The feature as a Series indexed by event_id: a gate-corpus column, else a one-row-per-event
-    join from the frozen family's own sources. Never a multi-row (player / tick) source."""
+def source_column(hypothesis: Hypothesis, name: str, table: pd.DataFrame,
+                  context: Optional[pd.DataFrame] = None) -> pd.Series:
+    """The feature as a Series indexed by event_id: a gate-corpus column, the S85 declared as-of
+    bridge for this (family, column) pair, else a one-row-per-event join from the frozen family's
+    own sources. Never an undeclared multi-row (player / tick) source."""
+    names = [hypothesis.family] + [f.name for f in _families_of(hypothesis)]
+    declared = next((n for n in names if n and asof_supply.declared(n, name)), None)
+    if declared is not None:                    # S85: a NAMED table + event-level as-of rule
+        try:
+            return asof_supply.supply(declared, name, table.index, context)
+        except asof_supply.SupplyUnavailable as exc:
+            raise ScreenRefused("unavailable: %s" % exc)
     check_feature_name(name, table.columns)
     if name in table.columns:
         return pd.to_numeric(table[name], errors="coerce")
@@ -176,10 +184,8 @@ def source_column(hypothesis: Hypothesis, name: str, table: pd.DataFrame) -> pd.
 
 
 def _twin(name: str) -> Optional[str]:
-    for a, b in (("home_", "away_"), ("p1_", "p2_")):
-        if name.startswith(a):
-            return b + name[len(a):]
-    return None
+    return next((b + name[len(a):] for a, b in (("home_", "away_"), ("p1_", "p2_"))
+                 if name.startswith(a)), None)
 
 
 def transform(x: pd.Series, name: str, params: tuple, frame: pd.DataFrame,
@@ -207,10 +213,11 @@ def transform(x: pd.Series, name: str, params: tuple, frame: pd.DataFrame,
 class ScreenBinder:
     """Per-hypothesis (states, predict_fn) for the runner over ONE partition side.
 
-    `states` are the SCREEN-side base states in date order (each carries `devig_close_prob`
-    = the incumbent, `home`/`away`, and `div` for soccer); `table` is the gate corpus indexed by
-    event_id. Transforms run over the whole side so the first served row has a real prior; the
-    served window is the LAST `rows` states, as the runner's `--screen-rows` always was.
+    `states` are the SCREEN-side base states in date order (each carries `devig_close_prob` =
+    the incumbent, `home`/`away`, `div` for soccer); `table` is the gate corpus indexed by
+    event_id and `frame` the (date, home, away, cluster) context the S85 bridge joins on.
+    Transforms run over the whole side so the first served row has a real prior; the served
+    window is the LAST `rows` states, as the runner's `--screen-rows` always was.
     """
 
     def __init__(self, sport: str, states: Sequence[dict], table: pd.DataFrame, rows: int,
@@ -219,15 +226,17 @@ class ScreenBinder:
         self.table = table.loc[[s["game_id"] for s in self.states]]
         self.frame = pd.DataFrame({
             "date": [s["game_date"] for s in self.states],
+            "home": [s["home"] for s in self.states], "away": [s["away"] for s in self.states],
             "cluster": [s.get("div") or s["home"] for s in self.states]}, index=self.table.index)
+        self.frame.attrs["sport"] = sport       # S85: the MLB abbreviation alias keys off this
 
     def feature_values(self, hypothesis: Hypothesis) -> pd.Series:
-        x = source_column(hypothesis, hypothesis.feature, self.table)
+        x = source_column(hypothesis, hypothesis.feature, self.table, self.frame)
         twin_name = _twin(hypothesis.feature) if hypothesis.transform == "ratio_to_opponent" else None
         twin = None
         if twin_name is not None:
             try:
-                twin = source_column(hypothesis, twin_name, self.table)
+                twin = source_column(hypothesis, twin_name, self.table, self.frame)
             except ScreenRefused:
                 twin = None
         return transform(x, hypothesis.transform, hypothesis.params, self.frame, twin)
@@ -258,10 +267,9 @@ def _teams(sport: str) -> pd.DataFrame:
 
 
 def corpus_states(sport: str) -> tuple:
-    """(states, table, incumbent_label) for one gate corpus. soccer/tennis: close_join states with
-    the devigged close as incumbent; nba/mlb: p_base as incumbent, LABELLED. corpus_unit is carried
-    only where the spec's SF-1 basis is corpus_unit (>= 3 units: soccer); the two-unit corpora
-    partition by ISO week per the spec's SF-11 caveat."""
+    """(states, table, incumbent_label) for one gate corpus. soccer/tennis: close_join states,
+    devigged close as incumbent; nba/mlb: p_base, LABELLED. corpus_unit is carried only where the
+    spec's SF-1 basis is corpus_unit (soccer); two-unit corpora partition by ISO week (SF-11)."""
     from scripts.platformkit.eval_gate.close_join import gate_corpus_states
 
     # S75: honour the same portable flag tiers.run_tier passes (pod hosts lack the domain sources)

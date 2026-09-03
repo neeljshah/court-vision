@@ -1,0 +1,296 @@
+"""S85 -- NAMED as-of supply for frozen family columns the gate corpus cannot serve.
+
+`screen_predictor.source_column` serves a member column only when it is already a gate-corpus
+column or a one-row-per-event column of the family's own frozen source. 14 pregame families fail
+both tests: their source is player / pitcher / referee / team-season grain, or its column name
+carries no `asof` token. This module is the DECLARED bridge: for one (family, column) pair it
+names the table, the join and the event-level aggregation rule, and nothing else. A pair that is
+not declared here is refused exactly as before -- the registry is additive and consulted only for
+what it lists, so no already-screened family's values move.
+
+Three rules, and the whole leak contract lives in them:
+
+  event  one row per event in the source; the value is served as-is. Legal ONLY for a column
+         settled BEFORE the event (entry rank points, seed, draw size, height, and `*_asof`
+         columns the producer already built as-of).
+  side   two rows per event, one per side (a team abbreviation, or an is_p1 flag); the
+         event-level value is home-minus-away (p1-minus-p2), or one declared side.
+  prior  (entity, date) grain; the served value is the expanding mean over rows of that entity
+         with date STRICTLY BEFORE the event's own date -- `merge_asof(allow_exact_matches=False)`.
+         Under this rule EVERY column of the source becomes as-of by construction, including a
+         same-game total, because the event's own row is unreachable.
+
+`prior` is what makes a referee's card total or a reliever's batters-faced honest: the served
+value is that entity's history, never this match. The referee ASSIGNMENT is read from the event's
+own row (it is published before kickoff); that row's card totals are not.
+
+A SCREEN is a NON-FINDING. Calibration language only.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass
+from functools import lru_cache
+from pathlib import Path
+from typing import Optional
+
+import numpy as np
+import pandas as pd
+
+ROOT = Path(__file__).resolve().parents[3]
+# The gate corpus's MLB abbreviations predate two relocations and several style choices; the
+# bullpen table uses the modern set. The EVENT side is mapped into the source vocabulary so the
+# source stays untouched. 24 of the 34 corpus abbreviations already match verbatim.
+MLB_ALIAS = {"ARI": "AZ", "BRS": "BOS", "CUB": "CHC", "KAN": "KC", "LOS": "LAD", "OAK": "ATH",
+             "SDG": "SD", "SFG": "SF", "SFO": "SF", "TAM": "TB", "WAS": "WSH"}
+# Named, and deliberately NOT supplied: an identifier is not a signal, and a prior-mean of one
+# would be noise wearing a plausible name.
+IDENTIFIERS = frozenset(("year", "season", "game_pk", "is_p1", "player_id", "catcher_id"))
+
+
+class SupplyUnavailable(ValueError):
+    """A declared pair could not be resolved on this corpus; the reason is the message."""
+
+
+@dataclass(frozen=True)
+class Supply:
+    """One family's declared bridge. `columns` is the closed list this entry may serve."""
+
+    source: str                 # repo-relative parquet path, or a glob for a sharded table
+    rule: str                   # "event" | "side" | "prior"
+    columns: tuple
+    key: str = "event_id"       # event key column (event / side rules, and the "row" assignment)
+    side: str = ""              # side column (side rule), or the assignment column (entity "row")
+    entity: str = ""            # entity column (prior rule)
+    date: str = ""              # date column (prior rule)
+    entity_from: str = "team"   # "team" | "player" | "row" -- how the event names its entity
+    grain: str = "date"         # "date" (calendar) or "season" (integer year)
+    combine: str = "diff"       # "diff" (a - b) | "a" (the home / p1 side only)
+    loader: str = ""            # optional reshaper in _LOADERS
+    overrides: tuple = ()       # ((column, combine), ...) where one column combines differently
+
+
+# ------------------------------------------------------------------ loaders (reshape only)
+def _load_glob(pattern: str) -> pd.DataFrame:
+    paths = sorted(ROOT.glob(pattern))
+    if not paths:
+        raise SupplyUnavailable("no table matches %s" % pattern)
+    return pd.concat([pd.read_parquet(p) for p in paths], ignore_index=True)
+
+
+def _load_referee(path: str) -> pd.DataFrame:
+    """The soccer event_id carries its own date (YYYYMMDD prefix); the table carries no date."""
+    frame = _read(path).copy()
+    frame["_date"] = pd.to_datetime(frame["event_id"].astype(str).str[:8], format="%Y%m%d",
+                                    errors="coerce")
+    return frame
+
+
+def _load_tennis_sides(path: str) -> pd.DataFrame:
+    """A tennis event_id is <date>-<tour>-<year>-<tourney>-<p1_id>-<p2_id>-<match>; the long
+    tables carry player_id but no side flag, so the side is read off the id itself."""
+    frame = _read(path).copy()
+    frame["_is_p1"] = frame["player_id"].astype(str) == frame["event_id"].astype(str).str.split("-").str[4]
+    return frame
+
+
+def _load_player_adv(path: str) -> pd.DataFrame:
+    """Player-grain as-of stats rolled to (team, date) through the boxscore's own roster.
+
+    The roster belongs to the game the row is from, which is same-game knowledge -- so this frame
+    is served ONLY through the `prior` rule, where the event's own game is unreachable.
+    """
+    frame, box = _read(path).copy(), _read("data/domains/basketball_nba/player_boxscores.parquet")
+    box = box[["game_id", "player_id", "team"]].astype(str).drop_duplicates(["game_id", "player_id"])
+    frame["game_id"] = frame["game_id"].astype(str)
+    frame["player_id"] = frame["player_id"].astype(str)
+    merged = frame.merge(box, on=["game_id", "player_id"], how="inner")
+    values = [c for c in merged.columns if c not in ("game_id", "player_id", "date", "team")]
+    return merged.groupby(["team", "date"], as_index=False)[values].mean()
+
+
+_LOADERS = {"glob": _load_glob, "referee": _load_referee, "tennis_sides": _load_tennis_sides,
+            "player_adv": _load_player_adv}
+
+# ------------------------------------------------------------------ the registry
+_NBA_QUARTER = ("home_q1_margin_asof", "away_q1_margin_asof", "diff_q1_margin_asof",
+                "home_first_half_margin_asof", "away_first_half_margin_asof",
+                "diff_first_half_margin_asof", "home_second_half_margin_asof",
+                "away_second_half_margin_asof", "diff_second_half_margin_asof",
+                "home_q4_margin_asof", "away_q4_margin_asof", "diff_q4_margin_asof",
+                "home_quarter_volatility_asof", "away_quarter_volatility_asof",
+                "diff_quarter_volatility_asof")
+_PIT = ("opp_pts_allowed_asof", "opp_reb_allowed_asof", "opp_ast_allowed_asof",
+        "opp_fg3m_allowed_asof", "opp_stl_allowed_asof", "opp_blk_allowed_asof",
+        "opp_tov_allowed_asof", "n_games_asof", "opp_pts_allowed_vs_league",
+        "opp_reb_allowed_vs_league", "opp_ast_allowed_vs_league", "opp_fg3m_allowed_vs_league",
+        "opp_stl_allowed_vs_league", "opp_blk_allowed_vs_league", "opp_tov_allowed_vs_league")
+_STYLE = ("shot_share", "sot_ratio", "fouls_committed_pm", "fouls_drawn_pm", "corners_pm",
+          "cards_pm", "ppg", "n_matches", "z_shot_share", "z_sot_ratio", "z_fouls_committed_pm",
+          "z_fouls_drawn_pm", "z_corners_pm", "z_cards_pm")
+
+REGISTRY = {
+    # This table's frozen event_id is an ESPN id; its game_id is the NBA id the gate corpus uses.
+    "nba_quarter_shape": Supply("data/domains/basketball_nba/asof_quarter_shape.parquet", "event",
+                                _NBA_QUARTER, key="game_id"),
+    # Two rows per game, one per team; the producer builds every column off the team's PREVIOUS game.
+    "nba_player_value_features": Supply("data/domains/basketball_nba/player_value_features.parquet",
+                                        "side", ("roster_value_asof", "star_absence_delta",
+                                                 "continuity", "top_heavy"),
+                                        key="game_id", side="team_abbr"),
+    "nba_opp_allowed": Supply("data/cache/pit/opp_allowed_asof_*.parquet", "prior", _PIT,
+                              entity="team", date="game_date", loader="glob"),
+    "nba_player_adv": Supply("data/domains/basketball_nba/asof_player_adv.parquet", "prior",
+                             ("usagepercentage_asof", "offensiverating_asof",
+                              "defensiverating_asof", "pie_asof", "possessions_asof", "n_prior"),
+                             entity="team", date="date", loader="player_adv"),
+    "mlb_bullpen_relief_chains": Supply("data/domains/mlb/bullpen_relief_chains.parquet", "prior",
+                                        ("battersFaced", "rest_days", "is_b2b",
+                                         "appearances_last_3d"), entity="team", date="date"),
+    "soccer_referee_card_foul_profiles": Supply(
+        "data/domains/soccer/referee_card_foul_profiles.parquet", "prior",
+        ("total_fouls", "total_yellow", "total_red", "total_cards"),
+        entity="referee", date="_date", entity_from="row", side="referee", combine="a",
+        loader="referee"),
+    "soccer_style_fingerprints": Supply("data/domains/soccer/style_fingerprints.parquet", "prior",
+                                        _STYLE, entity="team", date="season", grain="season"),
+    "tennis_meta": Supply("data/domains/tennis/asof_meta.parquet", "event",
+                          ("p1_ht", "p2_ht", "diff_ht", "p1_rank_points", "p2_rank_points",
+                           "diff_rank_points", "p1_seed", "p2_seed", "draw_size")),
+    "tennis_schedule_density": Supply("data/domains/tennis/schedule_density.parquet", "side",
+                                      ("rest_days", "matches_last_7d", "matches_last_14d"),
+                                      side="_is_p1", entity_from="player", loader="tennis_sides"),
+    "tennis_serve_return_profiles": Supply("data/domains/tennis/serve_return_profiles.parquet",
+                                           "prior", ("serve_strength", "return_strength",
+                                                     "n_matches", "z_serve_strength",
+                                                     "z_return_strength"),
+                                           entity="player_id", date="season", grain="season",
+                                           entity_from="player"),
+    "tennis_travel_scouting": Supply("data/domains/tennis/travel_scouting.parquet", "side",
+                                     ("miles_flown_in", "venue_altitude_m"), side="is_p1",
+                                     entity_from="player",
+                                     overrides=(("venue_altitude_m", "a"),)),
+}
+
+
+def declared(family: Optional[str], name: str) -> bool:
+    """True when this exact (family, column) pair has a declared bridge."""
+    spec = REGISTRY.get(family or "")
+    return spec is not None and name in spec.columns and name not in IDENTIFIERS
+
+
+@lru_cache(maxsize=32)
+def _read(path: str) -> pd.DataFrame:
+    full = ROOT / path
+    if not full.exists():
+        raise SupplyUnavailable("source %s is not on disk" % path)
+    return pd.read_parquet(full)
+
+
+@lru_cache(maxsize=32)
+def _frame(family: str) -> pd.DataFrame:
+    spec = REGISTRY[family]
+    return _LOADERS[spec.loader](spec.source) if spec.loader else _read(spec.source)
+
+
+def _sides(spec: Supply, context: pd.DataFrame) -> tuple:
+    """(a_key, b_key) string arrays aligned to `context.index` -- home/away, or p1/p2."""
+    if spec.entity_from == "player":
+        parts = pd.Series(context.index.astype(str), index=context.index).str.split("-")
+        return parts.str[4].to_numpy(), parts.str[5].to_numpy()
+    alias = MLB_ALIAS if str(context.attrs.get("sport", "")) == "mlb" else {}
+    for column in ("home", "away"):
+        if column not in context.columns:
+            raise SupplyUnavailable("the corpus context carries no %r column" % column)
+    return tuple(context[c].astype(str).map(lambda t: alias.get(t, t)).to_numpy()
+                 for c in ("home", "away"))
+
+
+def _combine(spec: Supply, name: str, a: np.ndarray, b: Optional[np.ndarray]) -> np.ndarray:
+    return a if b is None or dict(spec.overrides).get(name, spec.combine) == "a" else a - b
+
+
+def _column(family: str, name: str) -> pd.DataFrame:
+    frame = _frame(family)
+    if name not in frame.columns:
+        raise SupplyUnavailable("%s is not a column of %s" % (name, REGISTRY[family].source))
+    return frame
+
+
+def _event_rule(family: str, name: str, index: pd.Index) -> np.ndarray:
+    spec, frame = REGISTRY[family], _column(family, name)
+    keyed = frame.dropna(subset=[spec.key]).copy()
+    keyed[spec.key] = keyed[spec.key].astype(str)
+    keyed = keyed.drop_duplicates(spec.key).set_index(spec.key)
+    return pd.to_numeric(keyed[name], errors="coerce").reindex(index.astype(str)).to_numpy(float)
+
+
+def _side_rule(family: str, name: str, index: pd.Index, context: pd.DataFrame) -> np.ndarray:
+    spec, frame = REGISTRY[family], _column(family, name)
+    keyed = frame.dropna(subset=[spec.key, spec.side]).copy()
+    keyed[spec.key] = keyed[spec.key].astype(str)
+    boolean = keyed[spec.side].dtype == bool
+    keyed["_side"] = keyed[spec.side].astype(str)
+    series = pd.to_numeric(
+        keyed.drop_duplicates([spec.key, "_side"]).set_index([spec.key, "_side"])[name],
+        errors="coerce")
+    if boolean:                      # an is_p1 flag: side "True" is p1, "False" is p2
+        a_key, b_key = np.full(len(index), "True"), np.full(len(index), "False")
+    else:
+        a_key, b_key = _sides(spec, context)
+    ids = index.astype(str)
+    a = series.reindex(pd.MultiIndex.from_arrays([ids, a_key])).to_numpy(float)
+    b = series.reindex(pd.MultiIndex.from_arrays([ids, b_key])).to_numpy(float)
+    return _combine(spec, name, a, b)
+
+
+def _prior_one(src: pd.DataFrame, entity: np.ndarray, when: pd.Series) -> np.ndarray:
+    """The entity's expanding mean over rows STRICTLY BEFORE `when` -- the as-of guard itself."""
+    left = pd.DataFrame({"_e": pd.Series(entity, index=when.index).astype(str), "_d": when})
+    left = left.dropna(subset=["_d"]).sort_values("_d", kind="mergesort")
+    if left.empty or src.empty:
+        return np.full(len(when), np.nan)
+    merged = pd.merge_asof(left, src, on="_d", by="_e", direction="backward",
+                           allow_exact_matches=False)
+    merged.index = left.index
+    return merged["_v"].reindex(when.index).to_numpy(float)
+
+
+def _prior_rule(family: str, name: str, index: pd.Index, context: pd.DataFrame) -> np.ndarray:
+    spec, frame = REGISTRY[family], _column(family, name)
+    src = frame[[spec.entity, spec.date, name]].dropna(subset=[spec.entity, spec.date]).copy()
+    src["_e"] = src[spec.entity].astype(str)
+    src["_d"] = (src[spec.date].astype(float) if spec.grain == "season"
+                 else pd.to_datetime(src[spec.date], errors="coerce"))
+    src = src.dropna(subset=["_d"]).sort_values("_d", kind="mergesort")
+    src["_v"] = pd.to_numeric(src[name], errors="coerce").groupby(src["_e"]).transform(
+        lambda s: s.expanding().mean())
+    src = src.dropna(subset=["_v"])[["_e", "_d", "_v"]]
+    when = pd.to_datetime(context["date"], errors="coerce")
+    if spec.grain == "season":
+        when = when.dt.year.astype(float)
+    if spec.entity_from == "row":
+        assign = _frame(family).dropna(subset=[spec.key]).copy()
+        assign[spec.key] = assign[spec.key].astype(str)
+        a_key = assign.drop_duplicates(spec.key).set_index(spec.key)[spec.side].reindex(
+            index.astype(str)).astype(str).to_numpy()
+        b_key = None
+    else:
+        a_key, b_key = _sides(spec, context)
+    a = _prior_one(src, a_key, when)
+    return _combine(spec, name, a, None if b_key is None else _prior_one(src, b_key, when))
+
+
+def supply(family: str, name: str, index: pd.Index, context: Optional[pd.DataFrame]) -> pd.Series:
+    """The declared as-of value for one (family, column) pair, aligned to the corpus `index`."""
+    if not declared(family, name):
+        raise SupplyUnavailable("%s/%s is not declared" % (family, name))
+    spec = REGISTRY[family]
+    if spec.rule == "event":
+        values = _event_rule(family, name, index)
+    elif context is None:
+        raise SupplyUnavailable("rule %r needs the corpus context (date, home, away)" % spec.rule)
+    elif spec.rule == "side":
+        values = _side_rule(family, name, index, context)
+    else:
+        values = _prior_rule(family, name, index, context)
+    return pd.Series(values, index=index, name=name)

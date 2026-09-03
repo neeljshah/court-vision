@@ -49,10 +49,18 @@ class PromotionRule:
                    path.as_posix(), git_blob_id(path))
 
 
-def promote(t1_results: Sequence[Any], rule: PromotionRule) -> list:
+def promote(t1_results: Sequence[Any], rule: PromotionRule,
+            distinct_source_columns: bool = False) -> list:
     """Promote the rule's frozen top_n by T1 Brier improvement within ONE family/ISO-week group.
 
     The caller supplies the group (rule.group_by names it); the WIDTH comes only off the rule.
+
+    S85 adds `distinct_source_columns` as an OPT-IN pick rule and nothing else: default False
+    keeps the ranking byte-identical. S79 measured that in 6 of 12 families the top-5 by screen
+    improvement are ONE source column at several `ew` halflives, so a k=5 combination spent its
+    parameters on redundancy; with the flag ON the walk takes at most one hypothesis per source
+    column, still in improvement order, so k picks come from k distinct columns. It changes which
+    hypotheses are promoted, never how many, and never a bar.
     """
     screens = [r for r in t1_results if r.tier == "T1" and r.brier_model is not None]
     if len(screens) != len(t1_results):
@@ -63,4 +71,12 @@ def promote(t1_results: Sequence[Any], rule: PromotionRule) -> list:
         raise ValueError("promote takes one %s group; got families %s"
                          % ("/".join(rule.group_by), sorted(families)))
     ranked = sorted(screens, key=lambda r: (r.brier_model - r.brier_close, r.hash))
-    return [r.hypothesis for r in ranked[:rule.top_n]]
+    if not distinct_source_columns:
+        return [r.hypothesis for r in ranked[:rule.top_n]]
+    picked, seen = [], set()
+    for result in ranked:
+        column = result.hypothesis.feature
+        if column not in seen and len(picked) < rule.top_n:
+            seen.add(column)
+            picked.append(result.hypothesis)
+    return picked
