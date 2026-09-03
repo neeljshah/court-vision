@@ -403,3 +403,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-03 | hook | S173 | docs(harness): register -- S173 CLOSED AT LIMIT, S196 allocated (main-repo continuation); spec; ledger line | LANDED (auto; verifier line pending) | 97cbf460c
 2026-09-04 | harness | S191 | ledger sha trace: 66 of 390 RESULTS_LEDGER_SYSTEM data lines carry no resolvable landing token; audit utility + evidence LANDED fcc0b9958; the 0 bar needs orchestrator-only ledger edits -> S197 | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q)
 2026-09-03 | MLB calibration | S177 | 11,087 informative ticks; ticker mid|trailing WORSE at 66 clusters, real-game mid|trailing NO_CHANGE at 76 of 234 clusters; LANDED e9a2af412 | ACCEPT (verified: codex-sol, contract A/B/Q)
+2026-09-03 | mlb fold-key purge premise | S179 | required S06 corpus absent; S88 archive present at 4,311,731 bytes; LANDED 38c8bd5a3 | FALSIFIED (verified: codex-sol, contract A/B/Q)
