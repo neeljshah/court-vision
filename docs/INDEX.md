@@ -55,16 +55,24 @@ reprice. Follow the links to go as deep as you want at any stage.
 ### Front door / orientation
 - **[CourtVision Analytics -- the Reading Room](https://neeljshah.github.io/court-vision/analytics)** -- **the flagship product** (live): 54 analytics modules, 1,549 entity atlas cards, 6 prior-art-gated novel stats, Scout AI in 3 honest tiers, every number carrying its artifact path
 - [The quant terminal](https://neeljshah.github.io/court-vision) -- product 2, the dense operator surface (scoreboard, evidence spine, receipts drill, labs)
+- [INDEX](INDEX.md) -- this exhaustive documentation map
+- [docs/README](README.md) -- the shorter landing page GitHub shows for the docs directory
 - [README](../README.md) -- the funnel narrative end-to-end with honest numbers
+- [START_HERE](START_HERE.md) -- stale origin-era orientation retained with its supersession warning
+- [USE_WITH_CLAUDE](USE_WITH_CLAUDE.md) -- local fail-closed Claude client setup
 - [ARCHITECTURE](../ARCHITECTURE.md) -- end-to-end technical map (root)
 - [VISION](../VISION.md) -- the long-form thesis: what it is, what it is not
 - [CLAUDE](../CLAUDE.md) / [AGENTS](../AGENTS.md) -- agent-onboarding (how an AI picks up the repo cold)
 - [PROJECT_INDEX](PROJECT_INDEX.md) -- the older role-based doc hub (this INDEX supersedes it)
+- [repository_structure](repository_structure.md) -- historical target structure notes and canonical-path guidance
+- [ROADMAP](ROADMAP.md) -- historical development phase log
 - [SYSTEM_OVERVIEW](SYSTEM_OVERVIEW.md) -- one-screen system summary
 - [GLOSSARY](GLOSSARY.md) -- every term defined once
 - [CHANGELOG](../CHANGELOG.md) -- version history
 
 ### Honesty truth-sources (read these before trusting any number)
+- [AI_CONSUMER_CONTRACT](AI_CONSUMER_CONTRACT.md) -- binding answer-envelope and refusal contract for LLM clients
+- [ANALYTICS_CONTRACT](ANALYTICS_CONTRACT.md) -- binding verification contract for the analytics layer
 - [JOB_EVIDENCE_PACKET](JOB_EVIDENCE_PACKET.md) -- **the single truth-source**: every number's proof + the do-not-claim list
 - [HONESTY_SYSTEM](HONESTY_SYSTEM.md) -- the discipline stack itself: lint -> gates -> independent validators -> preregistration -> retraction list -> ops detectors -> git guards, with a worked REJECT
 - [KNOWN_LIMITATIONS](KNOWN_LIMITATIONS.md) -- open gaps, unproven claims, honest nulls
@@ -153,6 +161,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [PAPER_TRADING_STACK](PAPER_TRADING_STACK.md) -- the paper-trading ledger + fill-sim + analytics stack (never real money)
 
 ### Live / in-game
+- [IN_GAME_SHOWCASE](IN_GAME_SHOWCASE.md) -- honest pregame and in-game model evidence and limitations
 - [LIVE_ENGINE_V2](LIVE_ENGINE_V2.md) -- in-game repricer architecture
 - [LIVE_ENGINE_V2_WEB](LIVE_ENGINE_V2_WEB.md) -- web surface for live predictions
 - [LIVE_OPERATOR_RUNBOOK](LIVE_OPERATOR_RUNBOOK.md) / [operator_runbook](operator_runbook.md) -- live ops
@@ -170,6 +179,7 @@ reprice. Follow the links to go as deep as you want at any stage.
 - [ASK_SURFACES](ASK_SURFACES.md) -- the question-answering layer: ask() families, composers, trait profiles, paper analytics (VERIFIED claims only, honest UNANSWERABLE)
 - [MCP_QUICKSTART](MCP_QUICKSTART.md) -- connect the fail-closed MCP server to Claude Code / Desktop in 5 min; what ships in a bare clone vs what returns NO_DATA
 - [MCP_TOOLS](MCP_TOOLS.md) -- per-tool reference for the 9 MCP tools + the envelope contract (ok / no_data / not_supported / refused)
+- [MCP_SERVER](MCP_SERVER.md) -- MCP server overview, entry point, and client setup
 - [FRONTEND_OVERVIEW](FRONTEND_OVERVIEW.md) -- the dashboard surfaces
 
 ### Operations / deployment
@@ -189,6 +199,8 @@ reprice. Follow the links to go as deep as you want at any stage.
 
 ### Research
 - [research/validation-methodology](research/validation-methodology.md) -- the CLV-over-ROI validation doctrine (the one public research note)
+- [experiments](experiments.md) -- historical model-experiment log
+- [improvements](improvements.md) -- historical CV/tracking improvement log
 
 *(Other internal research -- competitive landscape, market microstructure, edge taxonomy, the organization-sprint and betting-product folders -- is kept LOCAL-ONLY and gitignored, so it is intentionally not linked from this public index.)*
 

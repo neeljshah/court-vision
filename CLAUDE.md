@@ -12,7 +12,7 @@
 
 Read these files in order, nothing else, before doing anything else:
 
-0. **[.planning/NOW.md](.planning/NOW.md)** — the SINGLE SOURCE OF TRUTH for what's done / what's next (read first, 30s; update before you finish). Don't re-derive state from scattered docs.
+0. **Local planning state (`.planning/NOW.md`)** — the SINGLE SOURCE OF TRUTH for what's done / what's next when that gitignored file is present (read first, 30s; update before you finish). Don't re-derive state from scattered docs.
 1. **[docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)** — the honest, adversarially-audited account: every claim's proof artifact + the do-not-claim list. **This is the truth source for any number.**
 2. **[README.md](README.md)** — funnel narrative end-to-end with honest numbers + architecture.
 3. **[docs/PUBLIC_EVIDENCE.md](docs/PUBLIC_EVIDENCE.md)** — 60-second funnel scan · **[docs/INTELLIGENCE.md](docs/INTELLIGENCE.md)** — 151-file intelligence-layer manifest.

@@ -260,7 +260,7 @@ are real.
 
 ## The deep-intelligence layer
 
-Beyond the models sits a living **edge-intelligence corpus** (~100 markdown + structured files)
+Beyond the models sits a living **edge-intelligence corpus** (151 markdown + structured files)
 that makes the breadth and depth navigable and actionable -- the brain's own map of where to
 push and where to stop:
 
@@ -481,7 +481,7 @@ leak tests, CLV ledger. **CV lineage:** YOLOv8n, OpenCV, SIFT homography, OSNet 
 so a paper fill is priced against real liquidity, not a snapshot mid. **Serving:** FastAPI,
 uvicorn, SSE, parquet feature store, compute-once snapshot service. **AI agents:** Claude Code --
 Opus orchestrator + parallel Sonnet/Opus executors under hard ship gates (this codebase, including
-the ~100-file intelligence corpus, was built by that pipeline under human direction). The runtime
+the 151-file intelligence corpus, was built by that pipeline under human direction). The runtime
 is **Claude-free** -- classical models + a deterministic self-improve loop, no LLM on the
 prediction path. **The build harness itself is live**: an autonomous probe-plan-spawn-gate-merge
 loop (`scripts/platform_harness/`) has planned, executed, gated, and merged **53 backlog tasks
