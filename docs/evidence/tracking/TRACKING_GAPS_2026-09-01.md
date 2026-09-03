@@ -16,6 +16,12 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G161 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G161 | tennis | Seeded, evenly spaced 300-frame hand census of the local reference tennis clip against a pre-committed labelling rule: rally-view share **113/300 = 0.3767**, Wilson 95 pct [0.3237, 0.4327]. Blind second pass over 50 frames agreed **49/50 = 0.980**, Wilson [0.8950, 0.9965]. Orchestrator A2 recompute from the committed labels is identical. Consistent with G34's 41.7 pct on a different clip; the intervals overlap. | `g161_rally/` | **ACCEPT -- the first rally denominator measured on a clip we hold, WITH its label agreement. Position, not argument: whole-clip coverage caps near 0.38 here, so 0.90 is unreachable against a whole-clip denominator by more than 2x. NO BAR MOVED; the lane declined to propose lowering it.** |
+
 ## G156b result register
 
 | Gap | Sport | Finding | Evidence | Status |
