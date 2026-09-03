@@ -51,7 +51,7 @@
 Rule: a gap is closed only by a measured artifact (n, denominator = decoded
 frames, render-and-look). Harness thresholds never move. Broadcast footage
 only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
-NEXT_GAP_ID: G138  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G139  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G33-G36 were allocated by the tracking orchestrator in the 2026-09-03 planning session; G37+ are reserved for the G35 gap-finder rows.
 ONE COUNTER, ONE HOLDER: if two sessions run (the two-account split in
 HANDOFF_TRACKING_ACCOUNT2_2026-09-02.md), exactly one may increment this header.
