@@ -65,6 +65,8 @@
 
 | G190 | wnba | **`cudnn.benchmark=False` ALONE makes the detector bit-exact.** Four conditions x 3 fresh pod processes on frame 474 of the 1080p wnba_01: route default (`benchmark=True`) gave 3 DISTINCT tensors (max coord delta 0.75 px, max conf delta 0.00146); tuner-off gave 1; tuner-off+seeded was BYTE-IDENTICAL to tuner-off, so seeds add nothing; FP32 was stable but produced DIFFERENT values. | `g190_determinism_cause_2026-09-03.md`, `g190_determinism_cause_records.json` | **ACCEPT. Verified in master: test 2 passed; all 12 runs recomputed by independent canonical-JSON hashing rather than the lane's own hash, and every condition reproduces. Makes the human-gated proposal a ONE-LINE change. Does NOT establish whole-route determinism -- this is the detector in isolation on one frame; the stateful tracker is unmeasured.** |
 
+| G193 | wnba | OPEN -- allocated 2026-09-03. Does `cudnn.benchmark=False` make the WHOLE ROUTE deterministic, or does the stateful tracker still vary? G190 settled the detector; the tracker is unmeasured. 3 runs tuner-ON as control vs 3 tuner-OFF. Highest-value open row: it decides whether quality measurement is unblocked. | pending | OPEN. The flag is set inside `UnifiedPipeline.__init__` so it must be WRAPPED in the measurement process (G182's sanctioned pattern), never edited. "Tuner off is not sufficient" is the more informative full success. |
+
 ## G175 result register
 
 | Gap | Sport | Finding | Evidence | Status |
@@ -276,7 +278,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G192  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G194  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
