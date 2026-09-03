@@ -199,7 +199,8 @@ def _dm(delta: np.ndarray, games: Sequence[str]) -> tuple:
     return float(res.dm_stat), float(res.p_value), [float(res.ci95[0]), float(res.ci95[1])]
 
 
-def score_feature(rows: pd.DataFrame, candidate: pd.Series, null: pd.Series, column: str) -> dict:
+def score_feature(rows: pd.DataFrame, candidate: pd.Series, null: pd.Series, column: str,
+                  *, cluster_column: str = "game") -> dict:
     """Tick-weighted paired comparison on the rows the candidate actually scored.
 
     The BAR is applied to `improvement_vs_null`: the null carries the same walk-forward
@@ -211,7 +212,7 @@ def score_feature(rows: pd.DataFrame, candidate: pd.Series, null: pd.Series, col
     p_i, mkt = sub["p_e4"].to_numpy(dtype=float), sub["market"].to_numpy(dtype=float)
     loss_c, loss_n = (p_c - y) ** 2, (p_n - y) ** 2
     loss_i, loss_m = (p_i - y) ** 2, (mkt - y) ** 2
-    games = [str(g) for g in sub["game"]]
+    games = [str(g) for g in sub[cluster_column]]
     stat, p_raw, ci = _dm(loss_n - loss_c, games)          # > 0 means the feature helped
     stat_e4, p_e4, ci_e4 = _dm(loss_i - loss_c, games)
     phase = sub["inning_progress"] if "inning_progress" in sub else pd.Series(dtype=float)

@@ -134,8 +134,10 @@ def walk_forward_inner_selected(records: List[Dict[str, Any]], *,
     return out, sorted(burn_dates), fold_choices
 
 
-def score_bucket(records: List[Dict[str, Any]]) -> Dict[str, Any]:
+def score_bucket(records: List[Dict[str, Any]], *, cluster_column: str = "game_id") -> Dict[str, Any]:
     """Incumbent(e4)/recal/market Brier + game-clustered CIs, INFORMATIVE ticks only."""
+    if cluster_column != "game_id":
+        records = [dict(r, game_id=str(r[cluster_column])) for r in records]
     n_games = len({r["game_id"] for r in records})
     informative = [r for r in records if r["is_informative"]]
     n_games_inf = len({r["game_id"] for r in informative})
