@@ -72,8 +72,10 @@ n_burn_in_dates=3, n_eval_ticks=33,920 of 47,104, n_informative_ticks=11,087 (32
 
 ## 4. Honest verdict per phase (calibration only)
 
-- **late\|leading_big: IMPROVED**, CI excludes 0 (+0.0088 to +0.0572), clears the L6
-  memo's stated bar (>= +0.004). This is the ONE bucket the row's cited artifact also
+- **late\|leading_big: IMPROVED**, CI excludes 0 (+0.0088 to +0.0572), clears the FIRST clause of the L6
+  memo's bar (>= +0.004 on late|leading_big) but NOT its second clause
+  (INGAME_GAP_PREMISES_2026-09-03.md:717: no phase degraded by more than 0.001) --
+  mid|trailing at -0.0120 fails it, so the L6 bar is NOT cleared as a whole. This is the ONE bucket the row's cited artifact also
   flagged -- it reproduces here OOF, with the spec chosen inside the folds and on a
   different (S06, informative-only) partition. Confirms the row's central claim.
 - **mid\|trailing: WORSE**, CI excludes 0 in the negative direction (-0.0232 to
