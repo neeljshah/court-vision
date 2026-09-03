@@ -37,7 +37,7 @@ ALLOWLIST: dict[str, int] = {
     "scripts/platformkit/eval_gate/calibration_report.py": 358,
     "scripts/platformkit/eval_gate/close_join.py": 315,
     "scripts/platformkit/eval_gate/close_join_nba_mlb.py": 337,
-    "scripts/platformkit/eval_gate/family_bars.py": 324,
+    "scripts/platformkit/eval_gate/family_bars.py": 355,  # 324 -> 355 via S174 (frozen spec v2 support, verified landing 2cc58675e); raised by the orchestrator 2026-09-04
     "scripts/platformkit/eval_gate/run_gate.py": 314,
     "scripts/platformkit/eval_gate/s116_pooled_ingame.py": 302,
     "scripts/platformkit/eval_gate/s137_rebaseline.py": 379,
