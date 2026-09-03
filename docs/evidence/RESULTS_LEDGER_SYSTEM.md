@@ -418,3 +418,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-03 | sport harness | S188 | tree-absence construct: 2/8 before, 8/8 after, control 1/1; LANDED 709ad418c | ACCEPT (verified: codex-sol, contract A/B/Q)
 2026-09-04 | signals-ingame | S192 | 18,650/186,736 state-joined ticks across 85 games; median age 15 s; LANDED 15a97fa56 | ACCEPT (verified: codex-sol, contract A/B/Q)
 2026-09-03 | ops | S189 | explicit-floor census 3/7 -> 6/7; premise matrix 9/9 and post-change matrix 7/7; LANDED 45fed2287 | ACCEPT (verified: codex-sol, contract A/B/Q)
+2026-09-03 | in-play regression | S198 | before 1/16 failing; candidate 0/16; first bad c1b3f4358; 58 required tests passed; LANDED 0ae6c290d6329b1c1e01e21b41a765ff05913b49 | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q)
