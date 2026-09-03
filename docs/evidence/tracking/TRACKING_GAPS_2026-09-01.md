@@ -44,6 +44,9 @@
 | G186c | all | The pod is **not a git repository** -- seeded from a `git archive` tarball, no metadata, no remote. Every code fix landed today was ABSENT from its files, not merely awaiting a daemon restart; three sampled modules all differed. 4,327 `.py` files deployed under the two non-gated trees, hashes now match local, import smoke test passes. | `g186c_pod_code_drift_2026-09-03.md` | **ACCEPT. Consequence recorded: every pod measurement before this was against the bootstrap snapshot. G184 kept its populations separate for exactly that reason. `adapter_run` picks up new code per job; daemon-level fixes stay inert until it cycles, and nothing was killed.** |
 | G187 | wnba/ncaa_basketball | OPEN -- allocated 2026-09-03. With the court-map asset restored (G186b) and code at parity (G186c), does a basketball clip produce rows end to end, and if not where does it stop NOW? Also measures GPU utilization during the run, which is unknown. | pending | OPEN. A new failure point is a FULL SUCCESS. Runs a bounded job on the pod; must not wait on or unstick the stalled daemon. |
 
+| G187 | wnba | **The basketball crash is GONE.** One bounded WNBA clip ran end to end through the same `run_clip` route: 1,104 rows over 394 of 400 attempted gameplay frames, exit 0, 125.8 s. Rows declare `image_px`, so they land in the same coordinate_contract class failing 24/34. GPU allocated up to 964 MiB but utilization stayed 0-2 pct across 14 samples. | `g187_basketball_end_to_end_2026-09-03.md` + 5 overlays | **ACCEPT WITH CORRECTIONS. The lane UNDERSTATED the quality problem and the orchestrator viewed the renders directly: at frame 1377, of 4 boxes one is a spectator and three are bench/staff while NOT ONE of ~10 clearly visible on-court players is detected; frame 474 is the same. 2.80 rows/frame against ~10 players. 'It runs' is not 'it works'. No rate claimed from 2 inspected frames.** |
+| G188 | wnba/tennis | OPEN -- allocated 2026-09-03. Is the person detector FINDING the on-court players and selection discarding them, or not finding them at all? Opposite fixes; current evidence cannot separate them. Same defect shape as G18's tennis finding (chair umpire and ball kid emitted while neither real player was), so this is cross-sport. | pending | OPEN. Diagnosis only. Must record raw AND surviving boxes per frame; aggregate-only artifacts are downgraded. |
+
 ## G175 result register
 
 | Gap | Sport | Finding | Evidence | Status |
@@ -255,7 +258,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G188  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G189  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
