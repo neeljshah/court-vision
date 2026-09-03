@@ -436,3 +436,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-03 | calibration dependence | S202 | 4/4 archived one-way/two-way stand-in+paired n_eff pairs reproduced at seed 20260904; n=1814/39162/25834/41886 | ACCEPT (verified: codex-sol, contract A/B/Q) | 791edd270
 2026-09-03 | hook | S201 | S201: CLOSED AT LIMIT -- required S92 archive absent | LANDED (auto; verifier line pending) | 4b27ec7f4
 2026-09-03 | NBA fatigue-conditioned forms | S201 | required S92 archive absent; 0/2 files available and no scored comparison | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 4b27ec7f4
+2026-09-03 | in-game cycle observability | S186 | 30/30 driven cycles retained all required counters and the full failure map; cycle 1 remained readable after cycle 30 | ACCEPT (verified: codex-sol, contract A/B/Q) | 331837c03
