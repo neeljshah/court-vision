@@ -16,6 +16,14 @@ S82/S102/S114 production path, whose `causal_source` frame carries game/timestam
 state_summary/_row_id only -- it reports the empty list and changes nothing, so those archives
 reproduce byte-identically; a caller holding the labels passes them as `labels=`.
 
+THE SECOND GATE (S124, the row's other half): `assert_label_blind` binds on a BUILDER, and
+`run()` / `sweep()` are handed ALREADY-BUILT columns.  `gate_features` refuses any served name
+outside the sport's frozen grammar unless the caller passes `allow_adhoc=True`, and each ad-hoc
+column then goes through `assert_column_blind`, the materialised-column statement of the same
+contract (constant within a game AND its few distinct per-game values determine the label).
+On the frozen path `gate_features` returns [] and nothing else runs, so every landed screen
+re-runs byte-identically.
+
 UTC STAMPS (S125): `utc_stamps` parses tick stamps ONCE to tz-aware UTC.  String ordering is
 not a time ordering -- ' ' (0x20) sorts before 'T' (0x54), so a space-separated stamp read as
 EARLIER than an ISO-Z embargo cut and admitted a train game that settled 2 h before the fold
@@ -28,7 +36,7 @@ Per-file test: python -m pytest tests/platformkit/foundry/test_ingame_guards.py 
 """
 from __future__ import annotations
 
-from typing import Any, Callable, List, Optional, Sequence
+from typing import Any, Callable, Iterable, List, Optional, Sequence
 
 import numpy as np
 import pandas as pd
@@ -46,7 +54,7 @@ def utc_stamps(values: Any) -> pd.Series:
     """Tick stamps as tz-aware UTC datetimes, index preserved (S125)."""
     series = values if isinstance(values, pd.Series) else pd.Series(list(values))
     out = pd.to_datetime(series, utc=True, format="mixed")
-    assert str(out.dtype) == "datetime64[ns, UTC]", (
+    assert isinstance(out.dtype, pd.DatetimeTZDtype) and str(out.dtype.tz) == "UTC", (
         "tick stamps did not parse to UTC datetimes: %s" % out.dtype)
     return out
 
@@ -114,5 +122,53 @@ def assert_tick_asof(src: pd.DataFrame, builder: Callable[[pd.DataFrame], pd.Dat
     return checked
 
 
-__all__ = ["LABEL_COLUMNS", "TickTimeLeak", "assert_label_blind", "assert_tick_asof",
-           "utc_stamps"]
+class AdHocFeature(AssertionError):
+    """A served feature is not a member of the frozen grammar and was not opted in."""
+
+
+def gate_features(served: Iterable[Any], frozen: Iterable[Any],
+                  allow_adhoc: bool = False) -> List[Any]:
+    """S124's FIRST half: the served set must be a SUBSET of the frozen grammar.
+
+    Returns the ad-hoc names, so the frozen path returns [] and is a pure no-op -- every
+    landed screen re-runs byte-identically.  `allow_adhoc=True` is the explicit opt-in, and
+    the caller must then put each returned name through `assert_column_blind`."""
+    adhoc = sorted(set(served) - set(frozen), key=str)
+    if adhoc and not allow_adhoc:
+        raise AdHocFeature(
+            "%d served feature(s) are not members of the frozen grammar: %s -- the production "
+            "path serves the frozen set only; pass allow_adhoc=True to screen an ad-hoc "
+            "feature, which then goes through the label-blindness guard"
+            % (len(adhoc), [str(a) for a in adhoc[:5]]))
+    return adhoc
+
+
+def assert_column_blind(values: Any, labels: Any, column: str = "feature") -> bool:
+    """S124's SECOND half on an ALREADY-BUILT column: it may not track the tick's own label.
+
+    `assert_label_blind` binds on a BUILDER -- it permutes the label and rebuilds.  A column
+    handed to `run()` / `sweep()` is already materialised, so nothing can be rebuilt and that
+    guard would be a tautology here.  The binding statement of the SAME contract is the S124
+    row's rule, stated at tick grain: a column that DETERMINES the tick's label -- every one
+    of its distinct values maps to exactly one label -- is a same-tick label reader.  (The
+    row's "per-game variance zero AND the per-game value tracks the game's label" case is
+    this one whenever the label is constant within a game, which it is on every corpus this
+    tier runs on.)  An honest CONTINUOUS column determines the label trivially, one row per
+    value, so the rule binds only while the column carries no more distinct values than the
+    label does.  Returns False when the rule did not bind -- honest, not a pass.
+    """
+    frame = pd.DataFrame({"x": np.asarray(values, dtype=float),
+                          "y": np.asarray(labels, dtype=float)}).dropna()
+    n_labels = int(frame["y"].nunique())
+    if len(frame) < 2 or n_labels < 2 or int(frame["x"].nunique()) > n_labels:
+        return False
+    if int(frame.groupby("x")["y"].nunique().max()) == 1:
+        raise TickTimeLeak(
+            "%s takes %d distinct values over %d rows and each one determines the tick's "
+            "label exactly: it reads its own tick's label"
+            % (column, int(frame["x"].nunique()), len(frame)))
+    return True
+
+
+__all__ = ["AdHocFeature", "LABEL_COLUMNS", "TickTimeLeak", "assert_column_blind",
+           "assert_label_blind", "assert_tick_asof", "gate_features", "utc_stamps"]

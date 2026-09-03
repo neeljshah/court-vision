@@ -15,6 +15,7 @@ from scripts.platformkit.eval_gate.dm_test import diebold_mariano
 from scripts.platformkit.foundry import ingame_grammar_nba as G
 from scripts.platformkit.foundry import ingame_incumbent_nba as I
 from scripts.platformkit.foundry import ingame_screen_nba as N
+from scripts.platformkit.foundry import ingame_screen as S
 from scripts.platformkit.foundry.ingame_screen import score_feature, walk_forward_feature
 
 LEDGER = Path("data/cache/eval_gate/backtest_fwer.jsonl")
@@ -213,3 +214,34 @@ def test_ladder_base_anchor_is_out_of_fold_and_finite(tmp_path):
     columns = I.ladder_base_columns(base)
     assert list(columns.columns) == I.LADDER_BASE_COLS
     assert np.isfinite(columns.to_numpy()).all()
+
+
+# --- S124: the second gate on the served hypothesis set --------------------------------
+
+def _adhoc(label: str = "adhoc_leak"):
+    """A hypothesis that is NOT a member of the frozen grammar, so its semantic_hash is not."""
+    return G.Hypothesis(family=G.FAMILY, sport=G.SPORT, horizon=G.HORIZON, market=G.MARKET,
+                        feature=label, transform="raw", params=(), conditioning=frozenset())
+
+
+def test_an_ad_hoc_hypothesis_is_refused_unless_it_is_opted_in(small, tmp_path):
+    """The frozen 576 are a pure no-op through the gate; anything else needs allow_adhoc."""
+    grid = G.build_grid(N.causal_source(small))
+    frozen = G.enumerate_hypotheses()[:2]
+    assert N.sweep(small, grid, frozen, tmp_path / "frozen.sqlite",
+                   verbose=False)["n_scored_this_run"] == 2
+    with pytest.raises(S.AdHocFeature) as exc:
+        N.sweep(small, grid.assign(**{"adhoc_leak|raw": 0.0}), list(frozen) + [_adhoc()],
+                tmp_path / "adhoc.sqlite", verbose=False)
+    assert "frozen grammar" in str(exc.value)
+
+
+def test_an_opted_in_ad_hoc_hypothesis_that_reads_the_label_is_still_refused(small, tmp_path):
+    """The reproduced S124 leak on the SWEEP path: the served column IS the tick's label, so
+    it is truncation-invariant and `assert_tick_asof` cannot see it -- this gate can."""
+    grid = G.build_grid(N.causal_source(small)).assign(
+        **{"adhoc_leak|raw": small["y"].to_numpy()})
+    with pytest.raises(S.TickTimeLeak) as exc:
+        N.sweep(small, grid, [_adhoc()], tmp_path / "leak.sqlite", verbose=False,
+                allow_adhoc=True)
+    assert "reads its own tick's label" in str(exc.value)

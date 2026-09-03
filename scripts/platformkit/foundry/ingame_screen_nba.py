@@ -53,7 +53,8 @@ from scripts.platformkit.eval_gate.dm_test import (_student_t_two_tailed_pvalue,
 from scripts.platformkit.foundry import ingame_grammar_nba as grammar
 from scripts.platformkit.foundry.grammar import semantic_hash
 from scripts.platformkit.foundry.ingame_incumbent_nba import INCUMBENTS, apply_incumbent
-from scripts.platformkit.foundry.ingame_screen import BAR, ROOT, walk_forward_feature
+from scripts.platformkit.foundry.ingame_screen import (BAR, ROOT, assert_column_blind,
+                                                       gate_features, walk_forward_feature)
 
 S86_CSV = ROOT / "data" / "cache" / "eval_gate" / "s86_nba_every_tick_2026-09-03.csv"
 OUT_DIR = ROOT / "data" / "cache" / "eval_gate"
@@ -216,8 +217,10 @@ def _icc(values: np.ndarray, codes: np.ndarray, n_clusters: int) -> float:
 
 
 def sweep(rows: pd.DataFrame, grid: pd.DataFrame, hypotheses: Sequence, db: Path,
-          *, limit: int = 0, verbose: bool = True) -> Dict[str, object]:
+          *, limit: int = 0, verbose: bool = True, allow_adhoc: bool = False) -> Dict[str, object]:
     """Screen every frozen hypothesis; one committed sqlite row each, so a kill is readable."""
+    adhoc = set(gate_features([semantic_hash(h) for h in hypotheses],   # S124's second gate
+                              map(semantic_hash, grammar.enumerate_hypotheses()), allow_adhoc))
     connection = sqlite3.connect(str(db))
     connection.executescript(SCHEMA)
     done = {row[0] for row in connection.execute("SELECT hypothesis_id FROM screen")}
@@ -234,6 +237,8 @@ def sweep(rows: pd.DataFrame, grid: pd.DataFrame, hypotheses: Sequence, db: Path
         values = grid[column]
         if phase:
             values = grammar.conditioned(values, period, phase)
+        if key in adhoc:
+            assert_column_blind(values, rows["y"], column)                  # S124
         tick = time.time()
         frame = slim.assign(**{column: values.to_numpy()})
         candidate, null, folds = walk_forward_feature(frame, column,

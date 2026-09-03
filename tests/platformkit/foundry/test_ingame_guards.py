@@ -75,6 +75,43 @@ def test_utc_stamps_orders_the_three_spellings_identically():
     assert str(early) < "2026-07-05T01:00:00Z"   # the defect: 21:00 reads as BEFORE the 01:00 cut
     for fmt in (lambda s: s.strftime("%Y-%m-%dT%H:%M:%SZ"), str, lambda s: s.isoformat()):
         parsed = G.utc_stamps([fmt(early), fmt(late)])
-        assert str(parsed.dtype) == "datetime64[ns, UTC]"
+        assert isinstance(parsed.dtype, pd.DatetimeTZDtype)   # pandas 3 parses to [us, UTC]
+        assert str(parsed.dtype.tz) == "UTC"
         assert parsed.iloc[0] < parsed.iloc[1]
         assert parsed.iloc[0] == pd.Timestamp("2026-07-05T21:00:00", tz="UTC")
+
+
+def _served(n_games: int = 6, ticks: int = 20):
+    """(x, y) at tick grain: `y` is the game outcome, constant within a game."""
+    rng = np.random.default_rng(3)
+    y = np.repeat((np.arange(n_games) % 2).astype(float), ticks)
+    return rng.normal(size=n_games * ticks), y
+
+
+def test_the_frozen_grammar_path_is_a_pure_no_op_and_an_ad_hoc_name_is_refused():
+    frozen = {"state_diff": "score_diff", "outs": "outs"}
+    assert G.gate_features(frozen, frozen) == []
+    assert G.gate_features({"outs": "outs"}, frozen) == []
+    with pytest.raises(G.AdHocFeature) as exc:
+        G.gate_features({"outs": "outs", "mine": "x"}, frozen)
+    assert "mine" in str(exc.value) and "allow_adhoc=True" in str(exc.value)
+    assert G.gate_features({"mine": "x"}, frozen, allow_adhoc=True) == ["mine"]
+
+
+def test_a_materialised_same_tick_label_reader_is_refused_on_the_served_path():
+    """S124: `assert_label_blind` cannot bind on an already-built column -- this is the rule
+    that does. The column IS the tick's label, so every value determines it exactly."""
+    x, y = _served()
+    with pytest.raises(G.TickTimeLeak) as exc:
+        G.assert_column_blind(y, y, "label_now")
+    assert "reads its own tick's label" in str(exc.value) and "label_now" in str(exc.value)
+    with pytest.raises(G.TickTimeLeak):          # an INVERTED label is the same leak
+        G.assert_column_blind(1.0 - y, y, "inverted_label")
+
+
+def test_the_rule_does_not_bind_on_an_honest_column_and_says_so():
+    x, y = _served()
+    assert G.assert_column_blind(x, y, "state") is False                 # continuous: 120 > 2
+    flag = np.repeat([0.0, 1.0, 0.0, 1.0, 1.0, 0.0], 20)                 # 2 values that do NOT
+    assert G.assert_column_blind(flag, y, "flag") is True                # determine the label
+    assert G.assert_column_blind(np.zeros(len(y)), y, "const") is True   # 1 value, 2 labels

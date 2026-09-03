@@ -97,7 +97,7 @@ def test_paired_loss_series_length_equals_the_scored_screen_ticks(tmp_path):
     ticks, e4, table, first = _corpus()
     csv = tmp_path / "series.csv"
     report = S.run(ticks, e4, table, first, out_json=tmp_path / "r.json", out_csv=csv,
-                   features={"member": "x"})
+                   features={"member": "x"}, allow_adhoc=True)
     assert report["partition"]["basis"] == "iso_week"
     assert report["partition"]["n_screen_games"] == 3
     row = report["results"][0]
@@ -118,7 +118,7 @@ def test_the_screen_touches_no_ledger_and_no_prereg(tmp_path):
         assert banned not in body, "the screen tier must never reach the FWER ledger"
     before = LEDGER.read_bytes() if LEDGER.exists() else None
     ticks, e4, table, first = _corpus()
-    S.run(ticks, e4, table, first, out_json=tmp_path / "r.json", features={"member": "x"})
+    S.run(ticks, e4, table, first, out_json=tmp_path / "r.json", features={"member": "x"}, allow_adhoc=True)
     assert (LEDGER.read_bytes() if LEDGER.exists() else None) == before
 
 
@@ -142,3 +142,23 @@ def test_the_embargo_holds_in_every_timestamp_spelling():
         fold = S.walk_forward_feature(_frame(fmt), "x")[2][0]
         assert (fold["status"], fold["n_train"]) == ("NO_TRAIN", 0), fold
         assert fold["cut"] == "2026-07-05T01:00:00Z", fold
+
+
+def test_an_ad_hoc_feature_is_refused_unless_it_is_opted_in(tmp_path):
+    """S124's second gate: `member` is not a frozen-grammar member, so the served mapping is
+    not a subset and the run is refused. The frozen default path never reaches the gate."""
+    ticks, e4, table, first = _corpus()
+    with pytest.raises(S.AdHocFeature) as exc:
+        S.run(ticks, e4, table, first, out_json=tmp_path / "r.json", features={"member": "x"})
+    assert "frozen grammar" in str(exc.value) and "member" in str(exc.value)
+
+
+def test_an_opted_in_ad_hoc_feature_that_reads_the_label_is_still_refused(tmp_path):
+    """The reproduced S124 leak on the SERVED path: a column that is the game's own outcome
+    is truncation-invariant, so `assert_tick_asof` cannot see it -- this gate can."""
+    ticks, e4, table, first = _corpus()
+    table = table.assign(label_now=[float(t["outcome"]) for t in ticks])
+    with pytest.raises(S.TickTimeLeak) as exc:
+        S.run(ticks, e4, table, first, out_json=tmp_path / "r.json",
+              features={"member": "label_now"}, allow_adhoc=True)
+    assert "reads its own tick's label" in str(exc.value)

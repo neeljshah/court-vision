@@ -13,7 +13,10 @@ than the tick's own is a leak, and so is reading the tick's OWN label. Both are 
 k to equal row k of the full build (truncation invariance), and then `assert_label_blind`
 (S124) rebuilds with the label permuted and requires every feature column to be unchanged --
 truncation invariance alone cannot see a SAME-TICK label reader. Either raises TickTimeLeak.
-Both are re-exported here, so every existing import site is unchanged (A5/B6).
+A THIRD gate stands in `run` itself (S124's other half): a served `features=` mapping must be
+a SUBSET of the frozen grammar `FEATURES` unless `allow_adhoc=True`, and each ad-hoc column is
+then put through `assert_column_blind` (a builder cannot be permuted once its column is
+materialised). All are re-exported here, so every existing import site is unchanged (A5/B6).
 
 The hypothesis is ONE extra logistic term on the incumbent e4 blend,
 p = sigmoid(a + b*logit(p_e4_gd) + c*z(x)), fitted walk-forward over GAME-FIRST-DATE folds
@@ -37,7 +40,8 @@ import pandas as pd
 
 from scripts.platformkit.eval_gate.dm_test import diebold_mariano
 from scripts.platformkit.foundry.ingame_guards import (  # re-exported (A5/B6)
-    TickTimeLeak, assert_label_blind, assert_tick_asof, utc_stamps)
+    AdHocFeature, TickTimeLeak, assert_column_blind, assert_label_blind, assert_tick_asof,
+    gate_features, utc_stamps)
 from scripts.platformkit.foundry.screen_predictor import RIDGE, _logistic, _logit
 from scripts.platformkit.foundry.tick_partition import screen_side
 from scripts.platformkit.foundry.tiers import partition_corpus
@@ -234,13 +238,21 @@ def _summaries(ticks, rows: pd.DataFrame) -> List[Any]:
 
 def run(ticks, e4, table, first_dates, *, out_json: Optional[Path] = None,
         out_csv: Optional[Path] = None, features: Optional[Mapping[str, str]] = None,
-        mode: Optional[str] = None) -> dict:
+        mode: Optional[str] = None, allow_adhoc: bool = False) -> dict:
     """Screen every supplied in-game state feature on the SCREEN side; archive the differential.
 
     `mode` (or FOUNDRY_INGAME_PARTITION) selects the S121 partition grain; the default stays
-    the frozen ticker-week rule so this artifact reproduces S82 byte-identically."""
+    the frozen ticker-week rule so this artifact reproduces S82 byte-identically.
+
+    S124's second gate: a served `features=` mapping must be a SUBSET of the frozen grammar
+    `FEATURES`; an ad-hoc member is refused unless `allow_adhoc=True`, and is then put through
+    `assert_column_blind`. On the frozen default `gate_features` returns [] -- a pure no-op."""
     features = dict(FEATURES if features is None else features)
+    adhoc = gate_features(features, FEATURES, allow_adhoc)              # S124
     rows = screen_rows(ticks, e4, table, first_dates)
+    for member in adhoc:
+        if features[member] in rows.columns:
+            assert_column_blind(rows[features[member]], rows["y"], features[member])
     part = partition(rows)
     side, side_meta = screen_side(rows, part, mode=mode, state_summary=_summaries(ticks, rows))
     results: List[dict] = []
