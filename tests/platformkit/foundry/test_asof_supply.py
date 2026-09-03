@@ -81,6 +81,23 @@ def test_side_rule_is_home_minus_away_and_event_rule_uses_the_declared_key(monke
     assert list(got) == [7.0, 1.0]                  # keyed on `gid`, not on the index name
 
 
+def test_all_nan_on_the_served_window_is_refused_as_unavailable(monkeypatch, tmp_path):
+    """S111 (c). `nba_quarter_shape` served 0 non-null of 1,814 (an ESPN event_id read against
+    the corpus's NBA game_id) and still passed the name guard AND the grain guard, landing as a
+    silent UNCOVERED. A pair that supplies nothing on the window it will be SCORED on is
+    unavailable. `served_rows` is that window: the last two rows here carry no value, so the
+    supply is refused even though the first row does.
+    """
+    src = pd.DataFrame({"gid": ["e1", "e2", "e3"], "v": [7.0, None, None]})
+    _register(monkeypatch, tmp_path, src, asof_supply.Supply("", "event", ("v",), key="gid"))
+    context = _context([{"event_id": "e%d" % i, "date": "2024-01-0%d" % i, "home": "H", "away": "A"}
+                        for i in (1, 2, 3)])
+    assert list(asof_supply.supply("unit_family", "v", context.index, None))[0] == 7.0
+    context.attrs["served_rows"] = 2
+    with pytest.raises(asof_supply.SupplyUnavailable, match="all-NaN on the served window"):
+        asof_supply.supply("unit_family", "v", context.index, context)
+
+
 def test_registry_is_additive_and_well_formed():
     """No declared pair may touch an already-screened family, and every pair must be a frozen
     family member of a table that is on disk -- otherwise the bridge is fiction."""
@@ -91,7 +108,8 @@ def test_registry_is_additive_and_well_formed():
         assert spec.rule in ("event", "side", "prior")
         assert set(spec.columns) <= set(family.members), name
         assert not (set(spec.columns) & asof_supply.IDENTIFIERS), name
-        assert list(asof_supply.ROOT.glob(spec.source)), spec.source
+        for part in spec.source.split(","):     # S111: a comma lists several patterns
+            assert list(asof_supply.ROOT.glob(part.strip())), part
         assert not asof_supply.declared(name, "y")
     assert not asof_supply.declared(None, "total_cards")
     assert not asof_supply.declared("nba_gate", "p_base")

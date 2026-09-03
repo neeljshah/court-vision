@@ -36,6 +36,9 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
+from scripts.platformkit.foundry.asof_supply_columns import (
+    ATP_WTA, TENNIS_FEATURES, TENNIS_META, TENNIS_RETURN, _NBA_QUARTER, _PIT, _STYLE)
+
 ROOT = Path(__file__).resolve().parents[3]
 # The gate corpus's MLB abbreviations predate two relocations and several style choices; the
 # bullpen table uses the modern set. The EVENT side is mapped into the source vocabulary so the
@@ -71,10 +74,12 @@ class Supply:
 
 # ------------------------------------------------------------------ loaders (reshape only)
 def _load_glob(pattern: str) -> pd.DataFrame:
-    paths = sorted(ROOT.glob(pattern))
+    # S111: a COMMA lists several patterns -- the ATP table and its `_wta` sibling are two
+    # frozen files, and one glob wide enough for both also catches the unrelated `_ext2026`.
+    paths = [q for part in pattern.split(",") for q in sorted(ROOT.glob(part.strip()))]
     if not paths:
         raise SupplyUnavailable("no table matches %s" % pattern)
-    return pd.concat([pd.read_parquet(p) for p in paths], ignore_index=True)
+    return pd.concat([pd.read_parquet(q) for q in paths], ignore_index=True)
 
 
 def _load_referee(path: str) -> pd.DataFrame:
@@ -112,22 +117,6 @@ _LOADERS = {"glob": _load_glob, "referee": _load_referee, "tennis_sides": _load_
             "player_adv": _load_player_adv}
 
 # ------------------------------------------------------------------ the registry
-_NBA_QUARTER = ("home_q1_margin_asof", "away_q1_margin_asof", "diff_q1_margin_asof",
-                "home_first_half_margin_asof", "away_first_half_margin_asof",
-                "diff_first_half_margin_asof", "home_second_half_margin_asof",
-                "away_second_half_margin_asof", "diff_second_half_margin_asof",
-                "home_q4_margin_asof", "away_q4_margin_asof", "diff_q4_margin_asof",
-                "home_quarter_volatility_asof", "away_quarter_volatility_asof",
-                "diff_quarter_volatility_asof")
-_PIT = ("opp_pts_allowed_asof", "opp_reb_allowed_asof", "opp_ast_allowed_asof",
-        "opp_fg3m_allowed_asof", "opp_stl_allowed_asof", "opp_blk_allowed_asof",
-        "opp_tov_allowed_asof", "n_games_asof", "opp_pts_allowed_vs_league",
-        "opp_reb_allowed_vs_league", "opp_ast_allowed_vs_league", "opp_fg3m_allowed_vs_league",
-        "opp_stl_allowed_vs_league", "opp_blk_allowed_vs_league", "opp_tov_allowed_vs_league")
-_STYLE = ("shot_share", "sot_ratio", "fouls_committed_pm", "fouls_drawn_pm", "corners_pm",
-          "cards_pm", "ppg", "n_matches", "z_shot_share", "z_sot_ratio", "z_fouls_committed_pm",
-          "z_fouls_drawn_pm", "z_corners_pm", "z_cards_pm")
-
 REGISTRY = {
     # This table's frozen event_id is an ESPN id; its game_id is the NBA id the gate corpus uses.
     "nba_quarter_shape": Supply("data/domains/basketball_nba/asof_quarter_shape.parquet", "event",
@@ -153,9 +142,9 @@ REGISTRY = {
         loader="referee"),
     "soccer_style_fingerprints": Supply("data/domains/soccer/style_fingerprints.parquet", "prior",
                                         _STYLE, entity="team", date="season", grain="season"),
-    "tennis_meta": Supply("data/domains/tennis/asof_meta.parquet", "event",
-                          ("p1_ht", "p2_ht", "diff_ht", "p1_rank_points", "p2_rank_points",
-                           "diff_rank_points", "p1_seed", "p2_seed", "draw_size")),
+    "tennis_features": Supply(ATP_WTA.format("features"), "event", TENNIS_FEATURES, loader="glob"),
+    "tennis_return": Supply(ATP_WTA.format("return"), "event", TENNIS_RETURN, loader="glob"),
+    "tennis_meta": Supply(ATP_WTA.format("meta"), "event", TENNIS_META, loader="glob"),
     "tennis_schedule_density": Supply("data/domains/tennis/schedule_density.parquet", "side",
                                       ("rest_days", "matches_last_7d", "matches_last_14d"),
                                       side="_is_p1", entity_from="player", loader="tennis_sides"),
@@ -280,6 +269,19 @@ def _prior_rule(family: str, name: str, index: pd.Index, context: pd.DataFrame) 
     return _combine(spec, name, a, None if b_key is None else _prior_one(src, b_key, when))
 
 
+def _refuse_all_nan(values: pd.Series, context: Optional[pd.DataFrame]) -> pd.Series:
+    """S111 (c): a pair that supplies ENTIRELY NaN on the window it will be SCORED on is
+    UNAVAILABLE, not merely under-covered. `nba_quarter_shape` served 0 non-null of 1,814 (an
+    ESPN event_id read against the corpus's NBA game_id) and still passed the name guard and
+    the grain guard on its way to a silent UNCOVERED. `served_rows` is the last-N window the
+    screen binder actually scores; absent -> the whole supplied index."""
+    rows = None if context is None else context.attrs.get("served_rows")
+    window = values if not rows else values.iloc[-int(rows):]
+    if len(window) and not np.isfinite(pd.to_numeric(window, errors="coerce").to_numpy(float)).any():
+        raise SupplyUnavailable("all-NaN on the served window")
+    return values
+
+
 def supply(family: str, name: str, index: pd.Index, context: Optional[pd.DataFrame]) -> pd.Series:
     """The declared as-of value for one (family, column) pair, aligned to the corpus `index`."""
     if not declared(family, name):
@@ -293,4 +295,4 @@ def supply(family: str, name: str, index: pd.Index, context: Optional[pd.DataFra
         values = _side_rule(family, name, index, context)
     else:
         values = _prior_rule(family, name, index, context)
-    return pd.Series(values, index=index, name=name)
+    return _refuse_all_nan(pd.Series(values, index=index, name=name), context)

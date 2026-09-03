@@ -228,7 +228,7 @@ class ScreenBinder:
             "date": [s["game_date"] for s in self.states],
             "home": [s["home"] for s in self.states], "away": [s["away"] for s in self.states],
             "cluster": [s.get("div") or s["home"] for s in self.states]}, index=self.table.index)
-        self.frame.attrs["sport"] = sport       # S85: the MLB abbreviation alias keys off this
+        self.frame.attrs.update(sport=sport, served_rows=self.rows)  # S85 alias key; S111 window
 
     def feature_values(self, hypothesis: Hypothesis) -> pd.Series:
         x = source_column(hypothesis, hypothesis.feature, self.table, self.frame)

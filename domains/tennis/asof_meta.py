@@ -57,12 +57,20 @@ OUT_COLS: list[str] = [
 ]
 
 
-def _read_raw_year_csvs(raw_dir: str) -> pd.DataFrame:
-    """Concat every cached atp_matches_*.csv (ATP-only; matches.parquet is ATP-only)."""
+_PATTERN_DEFAULT = "atp_matches_*.csv"
+
+
+def _read_raw_year_csvs(raw_dir: str, pattern: str = _PATTERN_DEFAULT) -> pd.DataFrame:
+    """Concat every cached year CSV matching ``pattern``.
+
+    Default is the ATP glob (matches.parquet's spine is ATP-only). S111 passes the WTA
+    glob with the WTA spine to build the asof_meta_wta sibling; the raw schema is the
+    same Sackmann one, so the orientation and the trailing-minutes walk are unchanged.
+    """
     raw = Path(raw_dir)
-    frames = [pd.read_csv(p, dtype=str, low_memory=False) for p in sorted(raw.glob("atp_matches_*.csv"))]
+    frames = [pd.read_csv(p, dtype=str, low_memory=False) for p in sorted(raw.glob(pattern))]
     if not frames:
-        raise FileNotFoundError(f"No atp_matches_*.csv found under {raw_dir}/")
+        raise FileNotFoundError(f"No {pattern} found under {raw_dir}/")
     return pd.concat(frames, ignore_index=True)
 
 
@@ -127,6 +135,7 @@ def build_asof_meta(
     raw_dir: Optional[str] = None,
     matches: Optional[pd.DataFrame] = None,
     out_path: Optional[str] = None,
+    pattern: str = _PATTERN_DEFAULT,
 ) -> Path:
     """Build leak-free tennis match-meta covariates keyed by ``event_id``.
 
@@ -137,7 +146,7 @@ def build_asof_meta(
     """
     if matches is None:
         matches = pd.read_parquet(_MATCHES_DEFAULT)
-    raw = _read_raw_year_csvs(raw_dir or _RAW_DIR_DEFAULT)
+    raw = _read_raw_year_csvs(raw_dir or _RAW_DIR_DEFAULT, pattern)
     oriented = _orient_raw(raw)
 
     spine = matches[["event_id", "date", "tour", "tourney_id", "round", "match_num",
@@ -210,8 +219,9 @@ def _cli() -> None:
     parser.add_argument("--raw-dir", default=_RAW_DIR_DEFAULT)
     parser.add_argument("--matches", default=_MATCHES_DEFAULT)
     parser.add_argument("--out-path", default=_OUT_DEFAULT)
+    parser.add_argument("--pattern", default=_PATTERN_DEFAULT)
     args = parser.parse_args()
-    dest = build_asof_meta(raw_dir=args.raw_dir, out_path=args.out_path)
+    dest = build_asof_meta(raw_dir=args.raw_dir, out_path=args.out_path, pattern=args.pattern)
     df = pd.read_parquet(dest)
     print(f"asof_meta: {len(df)} rows -> {dest}")
     print(f"  ht coverage: {df['diff_ht'].notna().mean():.1%}")
