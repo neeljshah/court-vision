@@ -16,6 +16,13 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G162 / G163 / G165 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G162+G163 | tennis | Over 586 distinct player track ids: 50.51 pct last one frame, median 1.0, mean 2.44, all-class max 435. `assign_epoch` DOES associate (direct versus crossed pairing); continuity is scoped to an epoch and `_end_track_ids` fires on calibration loss (`adapter.py:142`) and every shot cut (`adapter.py:220-229`), implying 293 epochs over 726 emitted frames. 844 consecutive same-track player pairs, so `jump_max` is NOT degenerate. The 4 duplicates are one track id (99) at four frames. | `g162_g163_epoch_churn_2026-09-03.md` | **ACCEPT, measurement half only -- BOTH ROWS REMAIN OPEN for their required eye checks, which were not produced. My own G163 hypothesis (jump as an artefact of track length) is FALSIFIED. Unexplained: this clip emitted 726 distinct frames here against G152b's 2,597.** |
+| G165 | all | `tracking_schema.py:175-178` and `track_daemon_done.py:155` both write unguarded above retention, on a path with no handler in `tick` or `main`, reproducing the strand-and-retrack loop on a full volume. Verified PRE-EXISTING, present before this session. | `docs/evidence/tracking/specs/G165_spec.md` | **SPECCED, NOT FIXED. The obvious `finally: retain(...)` patch is an automatic B3 reject: it would trade an unbounded retry for permanent silent loss of an unadjudicated game. Named in the spec so nobody writes it.** |
+
 ## G164 result register
 
 | Gap | Sport | Finding | Evidence | Status |
@@ -127,7 +134,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G165  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G166  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
