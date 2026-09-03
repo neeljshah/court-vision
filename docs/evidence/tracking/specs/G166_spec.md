@@ -75,6 +75,13 @@ docs/evidence/tracking/g166_epochs/, the uncommitted instrumentation diff, and a
 Commit BEFORE reporting (A7).
 CAUTION: another session commits into main concurrently. Work in your worktree, explicit pathspecs.
 TEST: exactly one new per-file test if you add code; run only that file. NEVER a full pytest.
-POD: DO NOT TOUCH -- LOCAL ONLY. A daemon and a footage bridge are live there.
+POD: **RUN THE DECODE ON THE POD, NOT LOCALLY.** This corrects the original spec, which said LOCAL
+ONLY and was wrong. A local run of this measurement was KILLED at 10:57 by the machine's RAM guard at
+1,400 MB with system RAM at 92 pct (15.5 of 16.2 GB); this box has crashed twice under that shape and
+the standing user rule is that nothing runs hard locally and heavy work goes to RunPod. Copy your
+instrumented adapter to the pod, run it under `nohup ... > log 2>&1 &`, and collect the counts in ONE
+batched ssh afterwards rather than polling. NEVER kill, restart or deploy over the running track
+daemon or its keeper. If you measure locally instead, subsample so the process stays under ~300 MB
+resident and say so in the memo.
 COMMIT: explicit pathspec only, in a7, no push. Report the sha.
 NEVER PARK: do not poll your own jobs in a blocking loop; never end waiting.
