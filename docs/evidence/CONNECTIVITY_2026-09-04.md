@@ -57,3 +57,32 @@ inference.
   not a pod- or ledger-only reason; the same computation is reachable read-only via build_calibration_scoreboard(write=False).
 - Verifier reproductions (3/3 in the worktree): L1 47/47 ALL GREEN; L7 status=ok predictions=31 (attribute access on the
   SnapshotEnvelope, not .get()); L9 14/14 unique paths.
+
+## S167 Connectivity Follow-ups - 2026-09-04
+
+This additive re-measurement preserves every landed S160 row above. The L9 scope is
+local Markdown targets plus inline-code repository-relative paths containing a slash;
+brace groups expand to individual paths; external URLs, anchors, prose, and bare
+filenames are excluded. The denominator is the four S167 follow-up links, and all
+four rows below are re-quoted (4/4).
+
+| Link | Command | Exit | Number | Verdict | Denominator / notes |
+|---|---|---:|---|---|---|
+| L4 (S167) | `python scripts/platformkit/proof_mlb/run_proof.py --corpus data/domains/mlb --report <temp>/PROOF_RESULT.md --paper-book-dir <temp>/paper_book` | 1 | V3 expected REJECT=actual REJECT: 6/6; overall PARTIAL/FAIL | FAIL | 2 corpora x 3 signals. The gitignored `src/prediction/bet_grades.py` was copied read-only from `C:/Users/neelj/nba-ai-system` before measurement. Temp overrides prevented all report and paper-book writes under `data/`. |
+| L8 (S167) | `from scripts.platformkit.mcp_server.artifact_tools import harness_health; from scripts.platformkit.mcp_server.tools import _system_health; harness_health({}); _system_health({})` | 0 | harness_health status=no_data; system_health status=ok | PASS | 2/2 located in-process handlers. This corrects the prior wrong path; the calls are read-only envelopes, not a live probe. |
+| L9 (S167) | `parse docs/PUBLIC_EVIDENCE.md local Markdown and scoped inline-code paths; assert Path.exists()` | 0 | 31/34 unique paths exist | FAIL | 34 unique scoped artifact paths. Missing: `.claude/commands/workday-loop.md`, `data/intelligence`, `data/nba_ai.db`. This replaces the prior 23 occurrence count with a unique-path denominator. |
+| L2 (S167) | `python -m scripts.platformkit.calibration_scoreboard --no-write` | 0 | NBA n=4,846 ECE 0.02614 -> 0.01755; TENNIS n=9,006 0.04951 -> 0.01856; MLB n=8,395 0.01732 -> 0.01379; SOCCER n=25,834 0.03294 -> 0.03128 | PASS | 4/4 scoreboard sport rows. `--no-write` printed `Artifact not written (--no-write).`; default CLI behavior remains the writer path. |
+| L9 correction (S167, 2026-09-04) | `python os.path.exists over the 34 unique scoped paths from C:/Users/neelj/nba-ai-system` | 0 | main repo 34/34; worktree 31/34 | PASS / FAIL | Main-repo measurement was read-only. Worktree absences are `.claude/commands/workday-loop.md`, `data/intelligence`, and `data/nba_ai.db`; all are gitignored there. |
+
+## S167 Contract self-check
+
+Sections B and Q: PASS. This section is additive. No threshold, landed S160 row,
+FWER ledger, feature flag, or `data/` path was written. L4 records the observed
+partial/fail result; L9 records the three absent paths rather than treating the
+old occurrence count as a pass. All language is calibration and connectivity only.
+
+## S167 NOT VERIFIED
+
+- L8 verifies local handler reachability only; it does not perform a live-system probe.
+- The three absent L9 paths are not substituted or inferred to exist.
+- L4 is a local corpus re-measurement only; its V1 calibration failure remains reported.

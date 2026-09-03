@@ -12,7 +12,7 @@ claiming any market or betting edge.  The improved forecasters are:
 
 HONESTY: calibration metric (Brier/ECE), NOT a market edge.  No edge claimed.
 
-CLI: python -m scripts.platformkit.calibration_scoreboard
+CLI: python -m scripts.platformkit.calibration_scoreboard [--no-write]
 """
 from __future__ import annotations
 
@@ -269,25 +269,13 @@ def _both_finite(a: float, b: float) -> bool:
     return math.isfinite(a) and math.isfinite(b)
 
 
-# ---------------------------------------------------------------------------
-# CLI entry point
-# ---------------------------------------------------------------------------
+
+def main(argv: Optional[List[str]] = None) -> int:
+    """Delegate to the split CLI while preserving the importable API (S167 verifier B2)."""
+    from scripts.platformkit.calibration_scoreboard_cli import main as cli_main
+    return cli_main(argv)
 
 if __name__ == "__main__":
-    import sys
-    print("Building calibration scoreboard (real providers) ...")
-    results = build_calibration_scoreboard(write=True)
-    for r in results:
-        if "error" in r:
-            print(f"  {r['sport']}: ERROR — {r['error']}")
-        else:
-            bl = r.get("baseline", {})
-            im = r.get("improved", {})
-            print(
-                f"  {r['sport']:6s}  n={im.get('n', bl.get('n', 0)):,}  "
-                f"baseline ECE={bl.get('ece', float('nan')):.5f}  "
-                f"improved ECE={im.get('ece', float('nan')):.5f}  "
-                f"method={r.get('method','?')}"
-            )
-    print("Artifact written.")
-    sys.exit(0)
+    from scripts.platformkit.calibration_scoreboard_cli import main
+
+    raise SystemExit(main())
