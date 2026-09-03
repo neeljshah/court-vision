@@ -36,8 +36,8 @@ from scripts.platformkit.section_fallback import (
     video_height,
 )
 
-def _pod_port() -> str:
-    """The pod SSH port, read from ~/.ssh/config.pod rather than hardcoded.
+def _pod_cfg(key: str, fallback: str) -> str:
+    """One pod SSH setting, read from ~/.ssh/config.pod rather than hardcoded.
 
     RunPod reassigns the proxy port on every restart, a drift that
     ops_healthcheck.py:32 already documents with the history. The port was
@@ -47,19 +47,23 @@ def _pod_port() -> str:
     code inside a per-lane log. The ssh config is the one place the live port is
     already correct, so read it there. Falling back to the last known value
     keeps this a no-op when the config is missing.
+
+    2026-09-03: the HOST drifts too. The port fix landed but the address stayed
+    hardcoded, so when the old pod died and was replaced every upload aimed at a
+    machine that no longer answers. Both settings now come from the same file.
     """
     try:
         config = (Path.home() / ".ssh/config.pod").read_text(encoding="utf-8")
     except OSError:
-        return "40193"
-    found = re.search(r"(?im)^\s*Port\s+(\d+)", config)
-    return found.group(1) if found else "40193"
+        return fallback
+    found = re.search(r"(?im)^\s*%s\s+(\S+)" % key, config)
+    return found.group(1) if found else fallback
 
 
-POD_PORT = _pod_port()
+POD_PORT = _pod_cfg("Port", "40034")
+POD_HOST = "root@" + _pod_cfg("HostName", "213.192.2.123")
 POD = ["-o", "StrictHostKeyChecking=no", "-o", "ConnectTimeout=30", "-p", POD_PORT,
-       "root@213.192.2.83"]
-POD_HOST = "root@213.192.2.83"
+       POD_HOST]
 POD_ROOT = "/workspace/nba-ai-system"
 REMOTE_STAGE = POD_ROOT + "/data/footage_bridge"
 REMOTE_CORPUS = POD_ROOT + "/data/footage_corpus"

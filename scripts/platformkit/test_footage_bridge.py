@@ -719,12 +719,14 @@ def test_explicit_section_overrides_plan_section(monkeypatch, tmp_path):
 
 
 def test_pod_port_is_read_from_ssh_config_not_hardcoded(tmp_path, monkeypatch):
-    """The port must follow ~/.ssh/config.pod, which is what actually drifts.
+    """Port AND host must follow ~/.ssh/config.pod, which is what drifts.
 
     The regression this guards: RunPod moved the proxy port, the three
     hardcoded scp/ssh call sites kept pointing at the old one, and every upload
     failed at the wire while downloads kept succeeding. The GPU idled for a day
-    with full queues because nothing compared the two numbers.
+    with full queues because nothing compared the two numbers. The 2026-09-03
+    repeat was the HOST: the pod was replaced, the port fix read the new port
+    out of the config, and the address stayed pinned to a dead machine.
     """
     config = tmp_path / ".ssh"
     config.mkdir()
@@ -732,16 +734,19 @@ def test_pod_port_is_read_from_ssh_config_not_hardcoded(tmp_path, monkeypatch):
         "Host pod\n    HostName 1.2.3.4\n    Port 40193\n    User root\n",
         encoding="utf-8")
     monkeypatch.setattr(footage_bridge.Path, "home", staticmethod(lambda: tmp_path))
-    assert footage_bridge._pod_port() == "40193"
+    assert footage_bridge._pod_cfg("Port", "40034") == "40193"
+    assert footage_bridge._pod_cfg("HostName", "9.9.9.9") == "1.2.3.4"
 
     (config / "config.pod").write_text(
-        "Host pod\n    HostName 1.2.3.4\n    Port 45678\n", encoding="utf-8")
-    assert footage_bridge._pod_port() == "45678"
+        "Host pod\n    HostName 5.6.7.8\n    Port 45678\n", encoding="utf-8")
+    assert footage_bridge._pod_cfg("Port", "40034") == "45678"
+    assert footage_bridge._pod_cfg("HostName", "9.9.9.9") == "5.6.7.8"
 
     # A missing config must not raise: the bridge still runs on the last known
-    # port rather than taking every lane down with it.
+    # address rather than taking every lane down with it.
     (config / "config.pod").unlink()
-    assert footage_bridge._pod_port() == "40193"
+    assert footage_bridge._pod_cfg("Port", "40034") == "40034"
+    assert footage_bridge._pod_cfg("HostName", "9.9.9.9") == "9.9.9.9"
 
 
 def test_tracked_row_counts_refuses_to_fail_open(monkeypatch):
