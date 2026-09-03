@@ -1,0 +1,446 @@
+{
+ "charge": null,
+ "edge_claimed": false,
+ "fold_choices": [
+  {
+   "date": "2026-07-03",
+   "n_test": 6033,
+   "n_train": 13184,
+   "spec": "phase_platt"
+  },
+  {
+   "date": "2026-07-04",
+   "n_test": 7972,
+   "n_train": 19217,
+   "spec": "phase_platt"
+  },
+  {
+   "date": "2026-07-05",
+   "n_test": 1697,
+   "n_train": 27189,
+   "spec": "phase_platt"
+  },
+  {
+   "date": "2026-07-06",
+   "n_test": 1006,
+   "n_train": 28886,
+   "spec": "phase_platt"
+  },
+  {
+   "date": "2026-07-07",
+   "n_test": 4265,
+   "n_train": 29892,
+   "spec": "phase_platt_margin"
+  },
+  {
+   "date": "2026-07-08",
+   "n_test": 2738,
+   "n_train": 34157,
+   "spec": "phase_platt_margin"
+  },
+  {
+   "date": "2026-07-09",
+   "n_test": 674,
+   "n_train": 36895,
+   "spec": "phase_platt_margin"
+  },
+  {
+   "date": "2026-07-10",
+   "n_test": 3826,
+   "n_train": 37569,
+   "spec": "phase_platt_margin"
+  },
+  {
+   "date": "2026-07-11",
+   "n_test": 5471,
+   "n_train": 41395,
+   "spec": "phase_platt_margin"
+  },
+  {
+   "date": "2026-07-12",
+   "n_test": 238,
+   "n_train": 46866,
+   "spec": "phase_platt_margin"
+  }
+ ],
+ "generated_at": "2026-09-03T15:15:27.112095+00:00",
+ "n_burn_in_dates": 3,
+ "n_eval_ticks": 33920,
+ "n_informative_ticks": 11087,
+ "partition": "S06 e4-blend incumbent, game-first-date leak-free, 47104 ticks / 158 games",
+ "per_phase_bucket": [
+  {
+   "brier_incumbent": 0.22325963075615118,
+   "brier_market": 0.22225780601660122,
+   "brier_recal": 0.22604893272210708,
+   "delta_vs_incumbent_ci95": [
+    -0.016389745506285764,
+    0.017841330510334933
+   ],
+   "delta_vs_incumbent_mean": 0.0008983705086411892,
+   "delta_vs_market_ci95": [
+    -0.030139271010666557,
+    0.008853645513812156
+   ],
+   "delta_vs_market_mean": -0.010815707354339413,
+   "n": 2281,
+   "n_eff": 83.68136799796825,
+   "n_games": 84,
+   "n_games_informative": 83,
+   "n_informative": 964,
+   "phase_bucket": "early|leading",
+   "verdict_vs_incumbent": "NO_CHANGE",
+   "verdict_vs_market": "NO_CHANGE"
+  },
+  {
+   "brier_incumbent": 0.09267514153852068,
+   "brier_market": 0.0846091787439722,
+   "brier_recal": 0.1062772426704121,
+   "delta_vs_incumbent_ci95": [
+    -0.020217096684961515,
+    0.026725509675995844
+   ],
+   "delta_vs_incumbent_mean": 0.0018699011668405496,
+   "delta_vs_market_ci95": [
+    -0.030221760754226563,
+    0.012311616575505056
+   ],
+   "delta_vs_market_mean": -0.009225107933942824,
+   "n": 643,
+   "n_eff": 27.840572875470198,
+   "n_games": 31,
+   "n_games_informative": 26,
+   "n_informative": 207,
+   "phase_bucket": "early|leading_big",
+   "verdict_vs_incumbent": "NO_CHANGE",
+   "verdict_vs_market": "NO_CHANGE"
+  },
+  {
+   "brier_incumbent": 0.24591444931437498,
+   "brier_market": 0.24051352984706842,
+   "brier_recal": 0.24761602920971212,
+   "delta_vs_incumbent_ci95": [
+    -0.014795618144011802,
+    0.011602659832529963
+   ],
+   "delta_vs_incumbent_mean": -0.001826174772602745,
+   "delta_vs_market_ci95": [
+    -0.03013051369110217,
+    0.010178251052581718
+   ],
+   "delta_vs_market_mean": -0.010156461406518767,
+   "n": 6970,
+   "n_eff": 126.12746833143868,
+   "n_games": 126,
+   "n_games_informative": 126,
+   "n_informative": 2027,
+   "phase_bucket": "early|tied",
+   "verdict_vs_incumbent": "NO_CHANGE",
+   "verdict_vs_market": "NO_CHANGE"
+  },
+  {
+   "brier_incumbent": 0.20402177797371263,
+   "brier_market": 0.19666643757158514,
+   "brier_recal": 0.2016951988857925,
+   "delta_vs_incumbent_ci95": [
+    -0.02230754311253195,
+    0.0035692603516160443
+   ],
+   "delta_vs_incumbent_mean": -0.009335480109468644,
+   "delta_vs_market_ci95": [
+    -0.0528464695247957,
+    0.006054368395195007
+   ],
+   "delta_vs_market_mean": -0.023003297073856926,
+   "n": 2228,
+   "n_eff": 85.04458456881154,
+   "n_games": 84,
+   "n_games_informative": 84,
+   "n_informative": 873,
+   "phase_bucket": "early|trailing",
+   "verdict_vs_incumbent": "NO_CHANGE",
+   "verdict_vs_market": "NO_CHANGE"
+  },
+  {
+   "brier_incumbent": 0.1486012433476526,
+   "brier_market": 0.14209593663911557,
+   "brier_recal": 0.1475032305904502,
+   "delta_vs_incumbent_ci95": [
+    -0.02266813464436848,
+    0.009844921162657477
+   ],
+   "delta_vs_incumbent_mean": -0.005454223041587818,
+   "delta_vs_market_ci95": [
+    -0.05611300559847245,
+    0.032528763428109876
+   ],
+   "delta_vs_market_mean": -0.010925046372155361,
+   "n": 1243,
+   "n_eff": 35.67703955324406,
+   "n_games": 37,
+   "n_games_informative": 33,
+   "n_informative": 363,
+   "phase_bucket": "early|trailing_big",
+   "verdict_vs_incumbent": "NO_CHANGE",
+   "verdict_vs_market": "NO_CHANGE"
+  },
+  {
+   "brier_incumbent": 0.18161884728508956,
+   "brier_market": 0.17257840909091615,
+   "brier_recal": 0.17440016743750325,
+   "delta_vs_incumbent_ci95": [
+    -0.011561065581727027,
+    0.02321876074968812
+   ],
+   "delta_vs_incumbent_mean": 0.005425788536853565,
+   "delta_vs_market_ci95": [
+    -0.01023981914051875,
+    0.007192239616400431
+   ],
+   "delta_vs_market_mean": -0.0018723321045030147,
+   "n": 1729,
+   "n_eff": 59.58127928994695,
+   "n_games": 64,
+   "n_games_informative": 54,
+   "n_informative": 660,
+   "phase_bucket": "late|leading",
+   "verdict_vs_incumbent": "NO_CHANGE",
+   "verdict_vs_market": "NO_CHANGE"
+  },
+  {
+   "brier_incumbent": 0.03709796876191086,
+   "brier_market": 0.030465401146136765,
+   "brier_recal": 0.028937218100996184,
+   "delta_vs_incumbent_ci95": [
+    0.008761613159179244,
+    0.05720416840640121
+   ],
+   "delta_vs_incumbent_mean": 0.03164308979045023,
+   "delta_vs_market_ci95": [
+    -0.0034203781712706695,
+    0.010661966015238142
+   ],
+   "delta_vs_market_mean": 0.002830484890738818,
+   "n": 2084,
+   "n_eff": 51.13702496101162,
+   "n_games": 66,
+   "n_games_informative": 50,
+   "n_informative": 349,
+   "phase_bucket": "late|leading_big",
+   "verdict_vs_incumbent": "IMPROVED",
+   "verdict_vs_market": "NO_CHANGE"
+  },
+  {
+   "brier_incumbent": 0.23747500149451284,
+   "brier_market": 0.2120786830357077,
+   "brier_recal": 0.26364961211073773,
+   "delta_vs_incumbent_ci95": [
+    -0.03747617200576163,
+    0.013282819996811406
+   ],
+   "delta_vs_incumbent_mean": -0.012826060429585373,
+   "delta_vs_market_ci95": [
+    -0.06365010739913628,
+    0.005954867590165676
+   ],
+   "delta_vs_market_mean": -0.028581339007439564,
+   "n": 1028,
+   "n_eff": 41.17631778848315,
+   "n_games": 43,
+   "n_games_informative": 41,
+   "n_informative": 448,
+   "phase_bucket": "late|tied",
+   "verdict_vs_incumbent": "NO_CHANGE",
+   "verdict_vs_market": "NO_CHANGE"
+  },
+  {
+   "brier_incumbent": 0.10020134426499615,
+   "brier_market": 0.10460811373093862,
+   "brier_recal": 0.1015023272203303,
+   "delta_vs_incumbent_ci95": [
+    -0.017490917108206536,
+    4.455775964405955e-05
+   ],
+   "delta_vs_incumbent_mean": -0.007924329139610534,
+   "delta_vs_market_ci95": [
+    -0.05728786619360982,
+    0.00016521914926799638
+   ],
+   "delta_vs_market_mean": -0.026761414473942674,
+   "n": 1640,
+   "n_eff": 62.31340683192244,
+   "n_games": 64,
+   "n_games_informative": 54,
+   "n_informative": 721,
+   "phase_bucket": "late|trailing",
+   "verdict_vs_incumbent": "NO_CHANGE",
+   "verdict_vs_market": "NO_CHANGE"
+  },
+  {
+   "brier_incumbent": 0.05833785507926718,
+   "brier_market": 0.052864583333332126,
+   "brier_recal": 0.0641731830004066,
+   "delta_vs_incumbent_ci95": [
+    -0.020164605435876125,
+    0.004547269502329973
+   ],
+   "delta_vs_incumbent_mean": -0.007126109296682244,
+   "delta_vs_market_ci95": [
+    -0.04745592490486717,
+    0.00572757887200405
+   ],
+   "delta_vs_market_mean": -0.019814365152367053,
+   "n": 2382,
+   "n_eff": 64.53216475683494,
+   "n_games": 66,
+   "n_games_informative": 48,
+   "n_informative": 492,
+   "phase_bucket": "late|trailing_big",
+   "verdict_vs_incumbent": "NO_CHANGE",
+   "verdict_vs_market": "NO_CHANGE"
+  },
+  {
+   "brier_incumbent": 0.21352973476812992,
+   "brier_market": 0.20306108470181725,
+   "brier_recal": 0.21400403231893103,
+   "delta_vs_incumbent_ci95": [
+    -0.009143003391717185,
+    0.020691199812472482
+   ],
+   "delta_vs_incumbent_mean": 0.004965093932220492,
+   "delta_vs_market_ci95": [
+    -0.028187327450915532,
+    -0.004047008915572695
+   ],
+   "delta_vs_market_mean": -0.016288705164462385,
+   "n": 2930,
+   "n_eff": 78.94609511890532,
+   "n_games": 81,
+   "n_games_informative": 77,
+   "n_informative": 1157,
+   "phase_bucket": "mid|leading",
+   "verdict_vs_incumbent": "NO_CHANGE",
+   "verdict_vs_market": "MODEL_BEHIND"
+  },
+  {
+   "brier_incumbent": 0.050122117815120985,
+   "brier_market": 0.048948513011167205,
+   "brier_recal": 0.05192068782455047,
+   "delta_vs_incumbent_ci95": [
+    -0.004688703053867249,
+    0.016524145928002294
+   ],
+   "delta_vs_incumbent_mean": 0.0051573212847367544,
+   "delta_vs_market_ci95": [
+    -0.010326475539599521,
+    0.0038650503123323255
+   ],
+   "delta_vs_market_mean": -0.0031444990941271694,
+   "n": 2111,
+   "n_eff": 46.85890422501513,
+   "n_games": 63,
+   "n_games_informative": 42,
+   "n_informative": 538,
+   "phase_bucket": "mid|leading_big",
+   "verdict_vs_incumbent": "NO_CHANGE",
+   "verdict_vs_market": "NO_CHANGE"
+  },
+  {
+   "brier_incumbent": 0.239524339287496,
+   "brier_market": 0.23388765060240724,
+   "brier_recal": 0.24473650774276487,
+   "delta_vs_incumbent_ci95": [
+    -0.02407989751318558,
+    0.008717050432792596
+   ],
+   "delta_vs_incumbent_mean": -0.0076854722913528815,
+   "delta_vs_market_ci95": [
+    -0.0431178956345953,
+    0.0086312798130422
+   ],
+   "delta_vs_market_mean": -0.016956000135319803,
+   "n": 1894,
+   "n_eff": 69.16292294928658,
+   "n_games": 73,
+   "n_games_informative": 69,
+   "n_informative": 664,
+   "phase_bucket": "mid|tied",
+   "verdict_vs_incumbent": "NO_CHANGE",
+   "verdict_vs_market": "NO_CHANGE"
+  },
+  {
+   "brier_incumbent": 0.16153105471054405,
+   "brier_market": 0.17555978712357181,
+   "brier_recal": 0.1575509410204884,
+   "delta_vs_incumbent_ci95": [
+    -0.02318618582189114,
+    -0.0010326446577010283
+   ],
+   "delta_vs_incumbent_mean": -0.011963636030126462,
+   "delta_vs_market_ci95": [
+    -0.06691789112635632,
+    -0.0007215233310554486
+   ],
+   "delta_vs_market_mean": -0.03319900377143829,
+   "n": 2383,
+   "n_eff": 68.76830016634068,
+   "n_games": 69,
+   "n_games_informative": 66,
+   "n_informative": 963,
+   "phase_bucket": "mid|trailing",
+   "verdict_vs_incumbent": "WORSE",
+   "verdict_vs_market": "NO_CHANGE"
+  },
+  {
+   "brier_incumbent": 0.06373598864362783,
+   "brier_market": 0.06817832829047636,
+   "brier_recal": 0.06491413171363206,
+   "delta_vs_incumbent_ci95": [
+    -0.01564046532835885,
+    0.00046782603463295874
+   ],
+   "delta_vs_incumbent_mean": -0.007030787717877325,
+   "delta_vs_market_ci95": [
+    -0.04408231756900284,
+    0.009615298906615787
+   ],
+   "delta_vs_market_mean": -0.016419300872530483,
+   "n": 2374,
+   "n_eff": 45.34163962353402,
+   "n_games": 59,
+   "n_games_informative": 41,
+   "n_informative": 661,
+   "phase_bucket": "mid|trailing_big",
+   "verdict_vs_incumbent": "NO_CHANGE",
+   "verdict_vs_market": "NO_CHANGE"
+  }
+ ],
+ "pooled": {
+  "brier_incumbent": 0.17460335288909629,
+  "brier_market": 0.17085295841977355,
+  "brier_recal": 0.17607984816266978,
+  "delta_vs_incumbent_ci95": [
+   -0.011405036929259288,
+   0.005215357341008112
+  ],
+  "delta_vs_incumbent_mean": -0.002889991600398372,
+  "delta_vs_market_ci95": [
+   -0.019286686108280972,
+   0.004950360973310892
+  ],
+  "delta_vs_market_mean": -0.006932659148642877,
+  "n": 33920,
+  "n_eff": 179.76003834479206,
+  "n_games": 127,
+  "n_games_informative": 127,
+  "n_informative": 11087,
+  "verdict_vs_incumbent": "NO_CHANGE",
+  "verdict_vs_market": "NO_CHANGE"
+ },
+ "spec_choice_counts": {
+  "phase_platt": 4,
+  "phase_platt_margin": 6
+ },
+ "spec_selection": "inner holdout = last 20 pct of outer-train dates; never the scored fold",
+ "sport": "mlb"
+}
