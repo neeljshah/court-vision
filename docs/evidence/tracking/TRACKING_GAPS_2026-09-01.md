@@ -67,6 +67,8 @@
 
 | G193 | wnba | **TUNER-OFF IS NOT SUFFICIENT FOR THE ROUTE.** Three tuner-off runs gave **1,246 / 1,348 / 1,268** player rows with differing survivor sets at both premise frames; the tuner-on control gave 1,400 / 1,342 / 1,322, reproducing G189. Wrapper was in-memory in the measurement process only; nothing edited or deployed. | `g193_route_determinism_with_tuner_off_2026-09-03.md` | **ACCEPT (full-success negative). A2: all six runs recounted from the pod CSVs, exact. CONSEQUENCE: G190's one-line fix makes the DETECTOR bit-exact but would NOT have unblocked quality measurement -- G190 and G193 must be read together or G190 alone misleads. NEXT CANDIDATE, code-grounded: `color_reid.py:77-79` runs `cv2.kmeans` with `KMEANS_PP_CENTERS` and no `cv2.setRNGSeed`; G190's "seeds add nothing" does NOT cover it, because that test never reached the re-ID path. Also: out-of-frame survivor coordinates (y=-1699, x=-646) now seen in two independent rows and still unowned.** |
 
+| G195 | wnba | OPEN -- allocated 2026-09-03. Is the residual route variance OpenCV's global RNG? Enumerated over the WHOLE route: numpy (`default_rng(0)`) and sklearn (`random_state=0`) are already SEEDED; **six sites are not, and all share cv2's single global RNG** -- `color_reid.py:78` `cv2.kmeans(KMEANS_PP_CENTERS)` plus `cv2.findHomography(..., cv2.RANSAC)` at `rectify_court.py:56,90`, `video_handler.py:145`, `unified_pipeline.py:1228,1299`. RANSAC decides the HOMOGRAPHY, so a different consensus set moves every projected coordinate -- consistent with the out-of-frame survivors seen in G189 and G193. | pending | OPEN. Four arms x 3 runs: tuner on/off crossed with `cv2.setRNGSeed` on/off. "Seeding OpenCV changes nothing" is a full success. |
+
 ## G175 result register
 
 | Gap | Sport | Finding | Evidence | Status |
@@ -278,7 +280,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G195  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G196  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
