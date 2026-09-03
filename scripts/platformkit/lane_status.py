@@ -27,6 +27,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 TEMP = Path(r"C:\Users\neelj\AppData\Local\Temp")
@@ -55,6 +56,12 @@ def lane_logs() -> dict:
             continue
         out[name] = {
             "path": path,
+            # A lane can DIE without ever writing EXIT -- the codex process
+            # vanishes and the log simply stops. Comparing dispatched vs exited
+            # then reads "running" forever. On 2026-09-03 G186 died this way and
+            # sat unnoticed for 18 minutes with uncommitted work in its worktree
+            # that freeing would have destroyed. Staleness is the only signal.
+            "stale_minutes": (time.time() - os.path.getmtime(path)) / 60.0,
             # Anchored, and the exit code digit is required. A lane memo that quotes
             # the string EXIT: mid-document (G181 did) otherwise counts as a second
             # exit and makes a running lane look finished -- exactly the false signal
@@ -156,7 +163,11 @@ def main(homes: list) -> int:
         if info["dispatched"] == 0:
             state = "NEVER DISPATCHED"
         elif info["dispatched"] > info["exited"]:
-            state = "running"
+            # 10 minutes of silence from a lane that never exited means the
+            # process is probably gone. Check the worktree for uncommitted work
+            # BEFORE freeing it -- that is where a dead lane leaves its output.
+            state = ("DIED? no output %dm" % info["stale_minutes"]
+                     if info["stale_minutes"] > 10 else "running")
         else:
             state = "finished"
         print("  %-42s %-16s dispatched=%d exited=%d"
