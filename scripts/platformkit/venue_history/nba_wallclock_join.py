@@ -50,6 +50,7 @@ import pandas as pd
 
 from domains.basketball_nba.espn_nba_bridge import _norm_abbr
 from domains.basketball_nba.ingest_pbp_states import _clock_seconds
+from scripts.platformkit.eval_gate.asof_join import asof_join_state
 from scripts.platformkit.ingame.nba_outcome_resolver import parse_nba_ticker
 
 log = logging.getLogger(__name__)
@@ -102,26 +103,38 @@ def _epoch(ts: Any) -> Optional[int]:
         return None
 
 
-def join_game_states(states: List[dict], candles: List[dict]) -> pd.DataFrame:
+def join_game_states(states: List[dict], candles: List[dict], *,
+                     max_staleness_s: float = 300.0) -> pd.DataFrame:
     """merge_asof(candles, states, direction='backward') -- each candle gets
-    the LATEST state with ts<=candle_ts (no future leak). Candles before the
-    first state (pre-tipoff / broadcast-delay ticks) are dropped. Empty input
-    -> empty frame with the right columns (never raises). *candles* items use
-    the raw Kalshi shape {ts: ISO8601|epoch, prob: float, traded: bool}."""
+    the LATEST state with ts<=candle_ts (no future leak), provided that state
+    is no more than ``max_staleness_s`` old. Candles without a usable state
+    are dropped. The returned frame records ``stale_share`` and the rail in
+    ``DataFrame.attrs``. Empty input -> empty frame with the right columns
+    (never raises). *candles* items use the raw Kalshi shape
+    {ts: ISO8601|epoch, prob: float, traded: bool}."""
     cols = ["ts", "period", "game_clock_s", "score_home", "score_away", "margin",
             "market_prob", "traded"]
     if not states or not candles:
-        return pd.DataFrame(columns=cols)
+        empty = pd.DataFrame(columns=cols)
+        empty.attrs.update({"stale_share": 0.0, "max_staleness_s": max_staleness_s})
+        return empty
     st = pd.DataFrame(states).sort_values("ts").reset_index(drop=True)
     cd_rows = [{"ts": _epoch(c.get("ts")), "market_prob": c.get("prob"), "traded": bool(c.get("traded"))}
                for c in candles]
     cd = pd.DataFrame([r for r in cd_rows if r["ts"] is not None])
     if cd.empty:
-        return pd.DataFrame(columns=cols)
+        empty = pd.DataFrame(columns=cols)
+        empty.attrs.update({"stale_share": 0.0, "max_staleness_s": max_staleness_s})
+        return empty
     cd = cd.sort_values("ts").reset_index(drop=True)
-    merged = pd.merge_asof(cd, st, on="ts", direction="backward")
+    merged, stale_share = asof_join_state(
+        cd, st, key="ts", max_staleness_s=max_staleness_s)
     merged = merged.dropna(subset=["margin"]).reset_index(drop=True)
-    return merged[cols]
+    out = merged[cols]
+    out.attrs.update({"stale_share": stale_share, "max_staleness_s": max_staleness_s})
+    log.info("wallclock_join ticks=%d retained=%d stale_share=%.6f rail_s=%s",
+             len(cd), len(out), stale_share, max_staleness_s)
+    return out
 
 
 # -- Kalshi-side game enumeration (read-only; games.parquet has no playoff rows) --

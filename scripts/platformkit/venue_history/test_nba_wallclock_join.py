@@ -45,9 +45,9 @@ def test_join_empty_inputs_never_raises() -> None:
 
 def test_join_accepts_iso_candle_ts() -> None:
     state_ts = wj._epoch("2026-06-14T11:00:00Z")
-    candle_ts = wj._epoch("2026-06-14T12:00:00Z")
+    candle_ts = wj._epoch("2026-06-14T11:01:00Z")
     states = _states([(state_ts, 1, 2)])
-    candles = [_candle("2026-06-14T12:00:00Z", 0.55)]
+    candles = [_candle("2026-06-14T11:01:00Z", 0.55)]
     out = wj.join_game_states(states, candles)
     assert len(out) == 1
     assert out.iloc[0]["ts"] == candle_ts

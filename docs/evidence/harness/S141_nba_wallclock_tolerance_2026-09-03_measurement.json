@@ -1,0 +1,17 @@
+{
+  "base_commit": "4b7169973ba7de5701942fed14334a2bb77f0b12",
+  "games_enumerated": 53,
+  "games_resolved": 53,
+  "games_with_states": 53,
+  "max_age_s": 1026.0,
+  "p50_age_s": 18.0,
+  "p90_age_s": 196.0,
+  "pre_change_within_300_sha256": "839911afd165959248e9cc47e93f8eb9d86e145ef5c80bf4dd66d71a4ae48d9f",
+  "share_over_300_all_input_ticks": 0.003258820835315049,
+  "stale_share_including_no_prior": 0.9545585325324267,
+  "ticks_input": 170307,
+  "ticks_no_prior_state": 162013,
+  "ticks_stale_over_300": 555,
+  "within_300_rows": 7739,
+  "within_300_sha256": "839911afd165959248e9cc47e93f8eb9d86e145ef5c80bf4dd66d71a4ae48d9f"
+}
