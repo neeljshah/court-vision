@@ -429,3 +429,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-03 | sport harness | S195 | paired Brier source quotes 8/8; WNBA n=25 delta +0.000945; soccer_intl n=7 delta -0.021289 | ACCEPT (verified: codex-sol, contract A/B/Q) | 490522427
 
 2026-09-04 | MLB close bridge | S194 | 641 raw in-window ids; 337 settled event capacity below fixed 400 bar; memo + json landed with S195 | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 490522427
+2026-09-03 | close-reference calibration | S204 | NBA n=220 delta=-0.015620 n_eff=2; MLB n=910 delta=-0.003557 n_eff=1; soccer n=16322 delta=-0.007546 n_eff=6; tennis n=0; all NOT SCORABLE | ACCEPT (verified: codex-sol, contract A/B/Q) | 4a81fce8f
