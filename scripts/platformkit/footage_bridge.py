@@ -143,6 +143,14 @@ def tracking_rows(game_id: str) -> int:
         return 0
 
 
+class PodProbeUnavailable(RuntimeError):
+    """The pod could not be asked what is already tracked.
+
+    Distinct from "nothing is tracked". A caller that cannot tell the
+    difference will re-download work it already has.
+    """
+
+
 def tracked_row_counts() -> dict:
     """Row count for every pod-side tracking CSV in ONE ssh round trip.
 
@@ -151,6 +159,17 @@ def tracked_row_counts() -> dict:
     """
     probe = _ssh("cd %s/data/tracking 2>/dev/null && wc -l */tracking_data.csv "
                  "2>/dev/null || true" % POD_ROOT, timeout=300)
+    # _ssh never raises: a hung or failed ssh comes back as returncode 255 with
+    # empty stdout. Returning {} for that is a FAIL-OPEN -- every game then looks
+    # untracked and the whole corpus is re-downloaded and re-uploaded. Three of
+    # four games in flight on 2026-09-02 were already tracked (162,558 / 9,548 /
+    # 8,579 rows), roughly 3.4 GB of transfer that bought nothing. Whether that
+    # run was caused by this path was never proven, but an empty result must not
+    # be indistinguishable from "nothing is tracked", so the caller is told.
+    if probe.returncode != 0:
+        raise PodProbeUnavailable(
+            "tracked-row probe failed (rc=%s): %s"
+            % (probe.returncode, (probe.stderr or "")[-160:]))
     counts = {}
     for line in (probe.stdout or "").splitlines():
         parts = line.split()
@@ -593,7 +612,14 @@ def run_queue(queue_path: Path, limit: int, decouple: bool = False) -> int:
         print("queue unreadable %s: %s" % (queue_path, exc), flush=True)
         return 0
     done = tracked = 0
-    known = tracked_row_counts()
+    try:
+        known = tracked_row_counts()
+    except PodProbeUnavailable as exc:
+        # Skip the pass rather than re-fetch the corpus. The next pass retries in
+        # --sleep seconds, so a transient ssh failure costs one cycle, not a
+        # re-download of everything already tracked.
+        print("skipping pass: %s" % exc, flush=True)
+        return 0
     for item in items:
         if done >= limit:
             break

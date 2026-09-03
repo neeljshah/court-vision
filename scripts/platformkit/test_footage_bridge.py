@@ -722,3 +722,31 @@ def test_pod_port_is_read_from_ssh_config_not_hardcoded(tmp_path, monkeypatch):
     # port rather than taking every lane down with it.
     (config / "config.pod").unlink()
     assert footage_bridge._pod_port() == "40193"
+
+
+def test_tracked_row_counts_refuses_to_fail_open(monkeypatch):
+    """A failed pod probe must raise, not report an empty world.
+
+    _ssh never raises -- a hung or failed ssh returns rc=255 with empty stdout.
+    Returning {} for that made every game look untracked, so a single ssh hiccup
+    would re-download and re-upload the entire corpus. On 2026-09-02 three of
+    four games in flight were already tracked (162,558 / 9,548 / 8,579 rows),
+    about 3.4 GB of transfer that bought nothing.
+    """
+    def failed_ssh(command, timeout=7200):
+        return subprocess.CompletedProcess(command, 255, stdout="", stderr="ssh failed: timeout")
+
+    monkeypatch.setattr(footage_bridge, "_ssh", failed_ssh)
+    with pytest.raises(footage_bridge.PodProbeUnavailable):
+        footage_bridge.tracked_row_counts()
+
+
+def test_tracked_row_counts_parses_a_healthy_probe(monkeypatch):
+    """A successful probe still returns the per-game counts it always did."""
+    def ok_ssh(command, timeout=7200):
+        out = "  5301 kbo_01/tracking_data.csv\n  9548 tennis_01/tracking_data.csv\n 14849 total\n"
+        return subprocess.CompletedProcess(command, 0, stdout=out, stderr="")
+
+    monkeypatch.setattr(footage_bridge, "_ssh", ok_ssh)
+    counts = footage_bridge.tracked_row_counts()
+    assert counts == {"kbo_01": 5301, "tennis_01": 9548}
