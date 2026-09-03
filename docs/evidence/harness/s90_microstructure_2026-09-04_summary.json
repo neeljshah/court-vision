@@ -1,0 +1,52 @@
+{
+ "arm_run": false,
+ "duplicate_of": "S100 (scripts.platformkit.eval_gate.s100_microstructure, CLOSED 2026-09-03 c8acbd78c, memo docs/evidence/harness/S100_microstructure_2026-09-03.md)",
+ "generated_at": "2026-09-03T15:14:00.972147+00:00",
+ "l14_side_measurement": {
+  "mlb_moneyline_total": {
+   "matched_game_suffixes_sample": [
+    "26JUL011235CWSBAL",
+    "26JUL011310TEXCLE",
+    "26JUL011420SDCHC",
+    "26JUL011840PITPHI",
+    "26JUL012010CINMIL"
+   ],
+   "n_games_matched": 99,
+   "n_games_total": 3792,
+   "required_types": [
+    "moneyline",
+    "total"
+   ]
+  },
+  "soccer_intl_all_three": {
+   "matched_game_suffixes_sample": [
+    "26JUL01BELSEN",
+    "26JUL01ENGCOD",
+    "26JUL01USABIH",
+    "26JUL02ESPAUT",
+    "26JUL02PORCRO"
+   ],
+   "n_games_matched": 96,
+   "n_games_total": 96,
+   "required_types": [
+    "moneyline",
+    "spread",
+    "team_total"
+   ]
+  }
+ },
+ "n_screen_games_any_feature": 18,
+ "next_tick_sign_accuracy_computed": true,
+ "not_verified": [
+  "no arm was fit (premise below this row's n>=30 sampling rail); no outcome Brier of e4 vs e4+adjustment was computed",
+  "L14 re-key produces overlap counts only; no joint distribution fit or CRPS score was run (out of this row's bar)",
+  "pod-side ingame_books/mlb (S105, mlb_book_capture, median 30 s cadence) is not joined here -- it is not synced locally and joining it is a separate row"
+ ],
+ "outcome_brier_computed": false,
+ "row": "S90",
+ "s100_min_games_to_arm": 20,
+ "s100_reproduction_artifact": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\eval_gate\\s90_microstructure_2026-09-04_series.csv",
+ "s100_reproduction_summary_json": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\eval_gate\\s90_microstructure_2026-09-04.json",
+ "screen_games_bar": 30,
+ "verdict": "PREMISE FALSIFIED / INSUFFICIENT (n_screen_games=18 < bar=30)"
+}

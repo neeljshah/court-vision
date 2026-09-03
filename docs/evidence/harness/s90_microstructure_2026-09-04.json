@@ -1,0 +1,258 @@
+{
+ "arm_run": false,
+ "edge_claimed": false,
+ "features": "home-oriented, read strictly before the tick: depth_imbalance = (size at best YES bid - size at best YES ask) / their sum from the depth_history ladders; spread_bp / book_thinness / stale_quote = the last book_depth snapshot; last_trade_dir = +1 yes / -1 no; flow_w = the signed trade COUNT in (t-w, t), never a size (`count` null on 2.8 pct of rows)",
+ "generated_at": "2026-09-03T15:13:36.504626+00:00",
+ "improvement_bar": 0.004,
+ "label": "SINGLE-WINDOW",
+ "max_games_screen_side": 18,
+ "min_games_to_arm": 20,
+ "next_tick_sign": {
+  "300": {
+   "depth_imbalance": {
+    "accuracy": 0.5508196721311476,
+    "ci95_minus_half": [
+     3.0357045826691353e-05,
+     0.10160898721646838
+    ],
+    "excludes_half": true,
+    "n": 305,
+    "n_games": 25,
+    "n_zero_move_dropped": 1037,
+    "p_value": 0.0498737723652093
+   },
+   "flow_300": {
+    "accuracy": 0.5308641975308642,
+    "ci95_minus_half": [
+     -0.9103361532968909,
+     0.9720645483586193
+    ],
+    "excludes_half": false,
+    "n": 162,
+    "n_games": 2,
+    "n_zero_move_dropped": 291,
+    "p_value": 0.7486681672439954
+   },
+   "flow_60": {
+    "accuracy": 0.5,
+    "ci95_minus_half": [
+     -0.44740157521741886,
+     0.44740157521741886
+    ],
+    "excludes_half": false,
+    "n": 142,
+    "n_games": 2,
+    "n_zero_move_dropped": 147,
+    "p_value": 1.0
+   },
+   "last_trade_dir": {
+    "accuracy": 0.5370370370370371,
+    "ci95_minus_half": [
+     -0.51199650094582,
+     0.586070575019894
+    ],
+    "excludes_half": false,
+    "n": 162,
+    "n_games": 2,
+    "n_zero_move_dropped": 291,
+    "p_value": 0.5488745039443953
+   }
+  },
+  "60": {
+   "depth_imbalance": {
+    "accuracy": 0.55,
+    "ci95_minus_half": [
+     -0.23245912397037227,
+     0.33245912397037225
+    ],
+    "excludes_half": false,
+    "n": 20,
+    "n_games": 15,
+    "n_zero_move_dropped": 45,
+    "p_value": 0.7098924709933374
+   },
+   "flow_300": {
+    "accuracy": 0.5308641975308642,
+    "ci95_minus_half": [
+     -0.9103361532968909,
+     0.9720645483586193
+    ],
+    "excludes_half": false,
+    "n": 162,
+    "n_games": 2,
+    "n_zero_move_dropped": 291,
+    "p_value": 0.7486681672439954
+   },
+   "flow_60": {
+    "accuracy": 0.5,
+    "ci95_minus_half": [
+     -0.44740157521741886,
+     0.44740157521741886
+    ],
+    "excludes_half": false,
+    "n": 142,
+    "n_games": 2,
+    "n_zero_move_dropped": 147,
+    "p_value": 1.0
+   },
+   "last_trade_dir": {
+    "accuracy": 0.5138888888888888,
+    "ci95_minus_half": [
+     -0.7876020348628713,
+     0.815379812640649
+    ],
+    "excludes_half": false,
+    "n": 144,
+    "n_games": 2,
+    "n_zero_move_dropped": 147,
+    "p_value": 0.8620283801102633
+   }
+  }
+ },
+ "per_tick_series": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\eval_gate\\s90_microstructure_2026-09-04_series.csv",
+ "premise": {
+  "home_side_resolved_events": 195,
+  "scored_ticks": {
+   "n_games": 227,
+   "n_ticks": 78986,
+   "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame_grade_joined\\mlb",
+   "ts_max": "2026-07-12T23:02:46Z",
+   "ts_min": "2026-06-20T00:51:03Z"
+  },
+  "screen_partition": {
+   "basis": "corpus_unit",
+   "n_screen_games": 114,
+   "n_verdict_games": 113,
+   "screen_sha256": "aa8f24af259299d1173b4b40c6070b932f019fe9fd8a985e5560c2f568c54c84",
+   "seed": 0,
+   "verdict_sha256": "8429a7b3d12cafd34595850e9e8e9e2064459937c58732f11f25cc3b5278f1c7"
+  },
+  "screen_side_coverage_by_freshness_cap_s": {
+   "300": {
+    "depth_imbalance": {
+     "n_games": 18,
+     "n_ticks": 649
+    },
+    "flow_300": {
+     "n_games": 2,
+     "n_ticks": 194
+    },
+    "flow_60": {
+     "n_games": 2,
+     "n_ticks": 124
+    },
+    "last_trade_dir": {
+     "n_games": 2,
+     "n_ticks": 194
+    },
+    "spread_bp": {
+     "n_games": 2,
+     "n_ticks": 394
+    }
+   },
+   "60": {
+    "depth_imbalance": {
+     "n_games": 13,
+     "n_ticks": 30
+    },
+    "flow_300": {
+     "n_games": 2,
+     "n_ticks": 194
+    },
+    "flow_60": {
+     "n_games": 2,
+     "n_ticks": 124
+    },
+    "last_trade_dir": {
+     "n_games": 2,
+     "n_ticks": 124
+    },
+    "spread_bp": {
+     "n_games": 2,
+     "n_ticks": 364
+    }
+   }
+  },
+  "stores": [
+   {
+    "n_event_tickers": 123,
+    "n_events_sharing_a_scored_game": 68,
+    "n_market_tickers": 231,
+    "n_rows": 119574,
+    "store": "book_depth/_archive/kalshi",
+    "ts_max": "2026-07-17T05:16:03.482844",
+    "ts_min": "2026-07-04T03:05:24.417587"
+   },
+   {
+    "n_event_tickers": 56,
+    "n_events_sharing_a_scored_game": 9,
+    "n_market_tickers": 105,
+    "n_rows": 940765,
+    "store": "book_depth/_archive/kalshi_trades",
+    "ts_max": "2026-07-17T05:15:48.285898",
+    "ts_min": "2026-07-09T01:05:13.244083"
+   },
+   {
+    "n_event_tickers": 195,
+    "n_events_sharing_a_scored_game": 89,
+    "n_market_tickers": 390,
+    "n_rows": 19789,
+    "store": "depth_history/mlb",
+    "ts_max": "2026-09-02T04:50:26",
+    "ts_min": "2026-07-05T03:32:50"
+   }
+  ],
+  "tick_grain_coverage_by_freshness_cap_s": {
+   "300": {
+    "depth_imbalance": {
+     "n_games": 35,
+     "n_ticks": 1346
+    },
+    "flow_300": {
+     "n_games": 3,
+     "n_ticks": 455
+    },
+    "flow_60": {
+     "n_games": 3,
+     "n_ticks": 293
+    },
+    "last_trade_dir": {
+     "n_games": 3,
+     "n_ticks": 455
+    },
+    "spread_bp": {
+     "n_games": 3,
+     "n_ticks": 793
+    }
+   },
+   "60": {
+    "depth_imbalance": {
+     "n_games": 26,
+     "n_ticks": 65
+    },
+    "flow_300": {
+     "n_games": 3,
+     "n_ticks": 455
+    },
+    "flow_60": {
+     "n_games": 3,
+     "n_ticks": 293
+    },
+    "last_trade_dir": {
+     "n_games": 3,
+     "n_ticks": 293
+    },
+    "spread_bp": {
+     "n_games": 3,
+     "n_ticks": 734
+    }
+   }
+  }
+ },
+ "prereg_draft_warranted": false,
+ "spec_id": "scripts.platformkit.eval_gate.s100_microstructure:mlb_microstructure_asof_v1",
+ "sport": "mlb",
+ "stop_rule": "STEP 0: fewer than 20 SCREEN-side games carry an as-of feature -- descriptive only, no arm, no outcome Brier, no recal null, no charge",
+ "tier": "STEP 0 PREMISE + descriptive (uncharged, no seal, no K read)",
+ "verdict": "PREMISE FALSIFIED AT TICK GRAIN"
+}
