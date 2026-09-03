@@ -141,7 +141,7 @@ ALLOWLIST: dict[str, int] = {
     "scripts/platformkit/specs/predictabilitytendencies_nba.py": 732,
     "scripts/platformkit/specs/predictabilitytendencies_tennis.py": 678,
     "scripts/platformkit/tracking_harness.py": 331,
-    "scripts/platformkit/track_daemon.py": 437,
+    "scripts/platformkit/track_daemon.py": 440,  # 437 -> 440 via tracking-session landings 2026-09-04 (their G rows); raised by the harness orchestrator
     "scripts/platformkit/venue_history/nba_close_corpus.py": 326,
 }
 DATA_MODULES = frozenset(
