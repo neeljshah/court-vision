@@ -1,0 +1,41 @@
+{
+  "ambiguous_event_id_drop_count": 186,
+  "bad_price_drop_count": 6,
+  "brier_devig_close": 0.19736835157376564,
+  "brier_p_base": 0.21620174524743463,
+  "by_corpus_unit": {
+    "ATP": {"brier_devig_close": 0.1985573735711926, "brier_p_base": 0.21635801346215153, "denominator": 30616, "join_rate": 0.8415207734517899, "joined": 25764, "scored": 25693},
+    "WTA": {"brier_devig_close": 0.19354583628599142, "brier_p_base": 0.21569936796506214, "denominator": 11270, "join_rate": 0.7100266193433895, "joined": 8002, "scored": 7992}
+  },
+  "by_corpus_unit_spine": {
+    "ATP": {"corpus_denominator": 30616, "corpus_join_rate": 0.8415207734517899, "corpus_joined": 25764},
+    "WTA": {"corpus_denominator": 11270, "corpus_join_rate": 0.7100266193433895, "corpus_joined": 8002}
+  },
+  "by_year": {
+    "2015": {"brier_devig_close": 0.1835813970989207, "brier_p_base": 0.21703637954438687, "denominator": 3893, "join_rate": 0.8127408168507577, "joined": 3164, "scored": 3157},
+    "2016": {"brier_devig_close": 0.18844049760879092, "brier_p_base": 0.20971442982406435, "denominator": 3849, "join_rate": 0.7653936087295401, "joined": 2946, "scored": 2943},
+    "2017": {"brier_devig_close": 0.20003572463432867, "brier_p_base": 0.21638569055730558, "denominator": 4062, "join_rate": 0.7767109798129, "joined": 3155, "scored": 3148},
+    "2018": {"brier_devig_close": 0.2033498056083485, "brier_p_base": 0.2216280034205351, "denominator": 4175, "join_rate": 0.8043113772455089, "joined": 3358, "scored": 3347},
+    "2019": {"brier_devig_close": 0.2005419288900443, "brier_p_base": 0.21689973769083412, "denominator": 3811, "join_rate": 0.8194699553922855, "joined": 3123, "scored": 3114},
+    "2020": {"brier_devig_close": 0.19336089935083461, "brier_p_base": 0.216017667660336, "denominator": 2033, "join_rate": 0.7540580423020167, "joined": 1533, "scored": 1527},
+    "2021": {"brier_devig_close": 0.19961930090317906, "brier_p_base": 0.21506534118695383, "denominator": 3434, "join_rate": 0.8363424577751892, "joined": 2872, "scored": 2866},
+    "2022": {"brier_devig_close": 0.19726730622042454, "brier_p_base": 0.21265909625652665, "denominator": 3665, "join_rate": 0.8076398362892224, "joined": 2960, "scored": 2951},
+    "2023": {"brier_devig_close": 0.19943313548025987, "brier_p_base": 0.21892852160309673, "denominator": 4235, "join_rate": 0.8106257378984651, "joined": 3433, "scored": 3430},
+    "2024": {"brier_devig_close": 0.19812092530100453, "brier_p_base": 0.21710495836029434, "denominator": 4464, "join_rate": 0.8149641577060932, "joined": 3638, "scored": 3631},
+    "2025": {"brier_devig_close": 0.2034317210181397, "brier_p_base": 0.21533445383836325, "denominator": 4265, "join_rate": 0.8403282532239156, "joined": 3584, "scored": 3571}
+  },
+  "corpus_denominator": 41886,
+  "corpus_join_rate": 0.806140476531538,
+  "corpus_joined": 33766,
+  "corpus_unjoined": 8120,
+  "denominator": 41886,
+  "join_key": "event_id",
+  "join_rate": 0.806140476531538,
+  "joined": 33766,
+  "null_close_count": 75,
+  "scored": 33685,
+  "sport": "tennis",
+  "unjoined": 8120,
+  "valid_close_count": 33685,
+  "vintage": "SYNTHETIC"
+}

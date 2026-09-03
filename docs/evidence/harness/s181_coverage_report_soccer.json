@@ -1,0 +1,45 @@
+{
+  "bad_price_drop_count": 0,
+  "brier_devig_close": 0.23946005675766663,
+  "brier_p_base": 0.2627028248079339,
+  "by_corpus_unit": {
+    "D1": {"brier_devig_close": 0.22665372264690867, "brier_p_base": 0.2522354555314701, "denominator": 2142, "join_rate": 1.0, "joined": 2142, "scored": 2142},
+    "E0": {"brier_devig_close": 0.24020534339908095, "brier_p_base": 0.2661474145653112, "denominator": 2660, "join_rate": 1.0, "joined": 2660, "scored": 2660},
+    "E1": {"brier_devig_close": 0.24493794391454562, "brier_p_base": 0.26504983243278313, "denominator": 3864, "join_rate": 1.0, "joined": 3864, "scored": 3864},
+    "F1": {"brier_devig_close": 0.2393288436403843, "brier_p_base": 0.26541259235955206, "denominator": 2336, "join_rate": 1.0, "joined": 2336, "scored": 2336},
+    "I1": {"brier_devig_close": 0.242875122720862, "brier_p_base": 0.263019109049767, "denominator": 2660, "join_rate": 1.0, "joined": 2660, "scored": 2660},
+    "SP1": {"brier_devig_close": 0.23777005209780688, "brier_p_base": 0.26158189461593684, "denominator": 2660, "join_rate": 1.0, "joined": 2660, "scored": 2660}
+  },
+  "by_corpus_unit_spine": {
+    "D1": {"corpus_denominator": 3366, "corpus_join_rate": 0.6363636363636364, "corpus_joined": 2142},
+    "E0": {"corpus_denominator": 4180, "corpus_join_rate": 0.6363636363636364, "corpus_joined": 2660},
+    "E1": {"corpus_denominator": 6072, "corpus_join_rate": 0.6363636363636364, "corpus_joined": 3864},
+    "F1": {"corpus_denominator": 3856, "corpus_join_rate": 0.6058091286307054, "corpus_joined": 2336},
+    "I1": {"corpus_denominator": 4180, "corpus_join_rate": 0.6363636363636364, "corpus_joined": 2660},
+    "SP1": {"corpus_denominator": 4180, "corpus_join_rate": 0.6363636363636364, "corpus_joined": 2660}
+  },
+  "by_year": {
+    "2019": {"brier_devig_close": 0.23371834465638888, "brier_p_base": 0.25745301155706557, "denominator": 1187, "join_rate": 1.0, "joined": 1187, "scored": 1187},
+    "2020": {"brier_devig_close": 0.23961518792782854, "brier_p_base": 0.25984506031626897, "denominator": 2083, "join_rate": 1.0, "joined": 2083, "scored": 2083},
+    "2021": {"brier_devig_close": 0.24265642830352757, "brier_p_base": 0.2620591668602535, "denominator": 2561, "join_rate": 1.0, "joined": 2561, "scored": 2561},
+    "2022": {"brier_devig_close": 0.24181999530900203, "brier_p_base": 0.2700204597421258, "denominator": 2259, "join_rate": 1.0, "joined": 2259, "scored": 2259},
+    "2023": {"brier_devig_close": 0.2377788991793308, "brier_p_base": 0.2574123186005432, "denominator": 2473, "join_rate": 1.0, "joined": 2473, "scored": 2473},
+    "2024": {"brier_devig_close": 0.23534044963781797, "brier_p_base": 0.25975394064313306, "denominator": 2254, "join_rate": 1.0, "joined": 2254, "scored": 2254},
+    "2025": {"brier_devig_close": 0.240728903349828, "brier_p_base": 0.26673439266365206, "denominator": 2290, "join_rate": 1.0, "joined": 2290, "scored": 2290},
+    "2026": {"brier_devig_close": 0.24235117096644596, "brier_p_base": 0.2691226098460673, "denominator": 1215, "join_rate": 1.0, "joined": 1215, "scored": 1215}
+  },
+  "corpus_denominator": 25834,
+  "corpus_join_rate": 0.6318030502438646,
+  "corpus_joined": 16322,
+  "corpus_unjoined": 9512,
+  "denominator": 16322,
+  "join_key": "event_id",
+  "join_rate": 1.0,
+  "joined": 16322,
+  "null_close_count": 0,
+  "scored": 16322,
+  "sport": "soccer",
+  "unjoined": 0,
+  "valid_close_count": 16322,
+  "vintage": "SYNTHETIC"
+}

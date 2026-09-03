@@ -1,19 +1,13 @@
 """Read-only decimal-close join for gate corpora; calibration evidence only."""
 from __future__ import annotations
-
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-
 import numpy as np
 import pandas as pd
-
 from kernel.validation.proof_metrics import devig2
 from scripts.platformkit.combo.corpus_cache import load_gate_corpus
-
 _ROOT = Path(__file__).resolve().parents[3]
-
-
 @dataclass(frozen=True)
 class JoinSpec:
     """Columns and outcome orientation for one sport's two-sided close."""
@@ -27,12 +21,8 @@ class JoinSpec:
     fallback_b: str
     name_a: str
     name_b: str
-    # ponytail: two optional knobs cover tennis; add a third only if a third
-    # sport actually needs one.
     price_suffixes: tuple[str, ...] = ()
     spine_files: tuple[str, ...] = ()
-
-
 _SPECS = {
     "soccer": JoinSpec(
         sport="soccer", spine="event_id", date_col="date",
@@ -40,8 +30,6 @@ _SPECS = {
         fallback_a="avgc_over", fallback_b="avgc_under",
         name_a="over25", name_b="under25",
     ),
-    # ATP/WTA stay two corpus_units and are never pooled. `ps_*`/`b365_*` are the
-    # de-leaked p1/p2 columns; the winner/loser `*w`/`*l` columns are LEAKY.
     "tennis": JoinSpec(
         sport="tennis", spine="event_id", date_col="date",
         side_a="ps_p1", side_b="ps_p2",
@@ -51,15 +39,11 @@ _SPECS = {
         spine_files=("matches.parquet", "wta_matches.parquet"),
     ),
 }
-
-
 def _spec(sport: str) -> JoinSpec:
     try:
         return _SPECS[sport]
     except KeyError as exc:
         raise ValueError(f"unsupported close join sport: {sport!r}") from exc
-
-
 def _number(frame: pd.DataFrame, primary: str, fallback: str) -> pd.Series:
     if primary not in frame:
         raise KeyError(f"missing close column: {primary}")
@@ -67,17 +51,8 @@ def _number(frame: pd.DataFrame, primary: str, fallback: str) -> pd.Series:
     if fallback in frame:
         value = value.where(value.notna(), pd.to_numeric(frame[fallback], errors="coerce"))
     return value.astype(float)
-
-
 def _check_orientation(spec: JoinSpec) -> None:
-    """Refuse leaky winner/loser price columns; enforce declared side suffixes.
-
-    A winner/loser oriented column knows the outcome and can never be a legal
-    close column: ``*_w``/``*_l`` is refused for every sport, and where a spec
-    declares ``price_suffixes`` the bare bookmaker form (``psw``, ``b365l``) is
-    refused too. Those suffixes also pin the tennis de-leaked ``_p1``/``_p2``
-    pair positively -- anything else raises.
-    """
+    """Refuse outcome-oriented or off-spec close columns."""
     for column in (spec.side_a, spec.side_b, spec.fallback_a, spec.fallback_b):
         off_spec = bool(spec.price_suffixes) and not column.endswith(spec.price_suffixes)
         if column.endswith(("_w", "_l")) or (off_spec and column.endswith(("w", "l"))):
@@ -86,8 +61,6 @@ def _check_orientation(spec: JoinSpec) -> None:
         if off_spec:
             raise ValueError(
                 f"close column {column!r} must end with one of {spec.price_suffixes}")
-
-
 def close_column(odds: pd.DataFrame, spec: JoinSpec) -> pd.Series:
     """Return fair probability for ``name_a`` and expose all close-drop counts."""
     _check_orientation(spec)
@@ -108,13 +81,9 @@ def close_column(odds: pd.DataFrame, spec: JoinSpec) -> pd.Series:
         "valid_close_count": int(valid.sum()),
     }
     return result
-
-
 def _paths(sport: str) -> tuple[Path, Path]:
     base = _ROOT / "data" / "domains" / sport
     return base / "odds.parquet", base / "matches.parquet"
-
-
 def _named_spine(spec: JoinSpec, key: str) -> pd.DataFrame:
     """Union the per-unit spine files, exposing date + the two side names."""
     base = _ROOT / "data" / "domains" / spec.sport
@@ -136,8 +105,6 @@ def _named_spine(spec: JoinSpec, key: str) -> pd.DataFrame:
     for column in {spec.spine, key}:
         spine[column] = spine[column].astype(str)
     return spine
-
-
 def _joined_spine_first(spec: JoinSpec, start: str | None, end: str | None, key: str):
     """Join odds ONTO the full corpus spine: every spine row stays in the denominator."""
     odds_path = _ROOT / "data" / "domains" / spec.sport / "odds.parquet"
@@ -147,10 +114,6 @@ def _joined_spine_first(spec: JoinSpec, start: str | None, end: str | None, key:
     if key not in odds.columns:
         raise KeyError(f"odds.parquet lacks join column: {key}")
     odds[key] = odds[key].astype(str)
-    # A colliding key names two DIFFERENT real matches while the spine holds one
-    # row for it; attaching either price set would mislabel that row, so both
-    # sides are dropped and counted rather than silently kept-first. Under the
-    # S48 `event_uid` key the collision cannot arise and this count is 0.
     ambiguous = odds[key].duplicated(keep=False)
     odds = odds.loc[~ambiguous].copy()
     close = close_column(odds, spec)
@@ -177,10 +140,7 @@ def _joined_spine_first(spec: JoinSpec, start: str | None, end: str | None, key:
     joined = joined.merge(
         odds, on=key, how="left", validate="one_to_one", indicator="_spine_join")
     return joined, counts
-
-
-def _joined(sport: str, start: str | None = None, end: str | None = None,
-            key: str | None = None) -> tuple[pd.DataFrame, dict[str, int]]:
+def _joined(sport: str, start: str | None = None, end: str | None = None, key: str | None = None) -> tuple[pd.DataFrame, dict[str, int]]:
     spec = _spec(sport)
     if spec.spine_files:
         return _joined_spine_first(spec, start, end, key or spec.spine)
@@ -211,20 +171,8 @@ def _joined(sport: str, start: str | None = None, end: str | None = None,
         how="left", validate="one_to_one", indicator="_spine_join",
     )
     return joined, counts
-
-
-def gate_corpus_states(sport: str, start: str, end: str,
-                       counts: dict[str, int] | None = None) -> list[dict]:
-    """Build vintage-safe pregame states carrying a devigged decimal close.
-
-    RT-17: this DISCARDED ``_joined``'s close-drop counts and then applied its own
-    four-way filter with nothing counting what that removed, so the scored
-    denominator was not the corpus denominator (MEASURED on a 10-row synthetic
-    join: 6 states out, 4 rows dropped, no drop named anywhere in the return).
-    Pass a dict as ``counts`` and it is filled IN PLACE with the close counts plus
-    this filter's own ``spine_unmatched`` / ``null_close`` / ``null_target`` --
-    additive, so the existing callers read exactly what they read before.
-    """
+def gate_corpus_states(sport: str, start: str, end: str, counts: dict[str, int] | None = None) -> list[dict]:
+    """Build vintage-safe states and account for every discarded input row."""
     joined, close_counts = _joined(sport, start, end)
     matched = joined["_spine_join"].eq("both")
     priced = joined["devig_close_prob"].notna()
@@ -253,20 +201,27 @@ def gate_corpus_states(sport: str, start: str, end: str,
             "vintage": "SYNTHETIC",
         })
     return states
-
-
 def _rate(numerator: int, denominator: int) -> float:
     return float(numerator / denominator) if denominator else 0.0
+def _spine_coverage(sport: str, joined: pd.DataFrame) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
+    """Summarize the gate-corpus spine, including corpus rows without odds."""
+    spec = _spec(sport)
+    corpus = load_gate_corpus(sport)
+    joined_ids = set(joined.loc[joined["_spine_join"].eq("both"), spec.spine].astype(str))
+    spine = corpus.assign(_corpus_joined=corpus[spec.spine].astype(str).isin(joined_ids))
 
+    def summary(frame: pd.DataFrame) -> dict[str, Any]:
+        denominator = len(frame)
+        matched = int(frame["_corpus_joined"].sum())
+        return {"corpus_denominator": denominator, "corpus_joined": matched,
+                "corpus_join_rate": _rate(matched, denominator)}
 
+    overall = summary(spine)
+    return overall, {str(unit): summary(frame) for unit, frame in spine.groupby("corpus_unit", sort=True)}
 def coverage_report(sport: str, key: str | None = None) -> dict[str, Any]:
-    """Report join coverage with all odds rows retained in its denominator.
-
-    ``key`` is OPT-IN and defaults to the spec's ``spine`` column, so every
-    existing caller reads exactly the number it read before. Tennis additionally
-    accepts ``key="event_uid"`` (S48), the collision-free odds key.
-    """
+    """Report existing odds-side coverage plus additive corpus-spine coverage."""
     joined, drops = _joined(sport, key=key)
+    corpus, by_corpus_unit_spine = _spine_coverage(sport, joined)
     denominator = len(joined)
     matched = joined["_spine_join"].eq("both")
     scored = matched & joined["devig_close_prob"].notna() & joined["y"].notna() & joined["p_base"].notna()
@@ -291,25 +246,25 @@ def coverage_report(sport: str, key: str | None = None) -> dict[str, Any]:
     by_year = {
         str(year): summary(frame) for year, frame in joined.groupby(joined["date"].dt.year, sort=True)
     }
-    # S35: the FULL spine per unit is the denominator -- never `joined.loc[matched]`,
-    # which would make every per-unit join_rate a tautological 1.0.
     by_unit = {
         str(unit): summary(frame) for unit, frame in joined.groupby("corpus_unit", sort=True)
     }
     unjoined = int((~matched).sum())
     if unjoined and any(u["join_rate"] == 1.0 for u in by_unit.values()):
         raise ValueError("degenerate by_corpus_unit denominator: per-unit rate 1.0 with unjoined rows")
+    corpus_unjoined = corpus["corpus_denominator"] - corpus["corpus_joined"]
+    if corpus_unjoined and any(u["corpus_join_rate"] == 1.0 for u in by_corpus_unit_spine.values()):
+        raise ValueError("degenerate by_corpus_unit_spine denominator: per-unit rate 1.0 with unjoined rows")
     return {
         "sport": sport, "join_key": key or _spec(sport).spine,
         "denominator": denominator, "joined": int(matched.sum()),
         "unjoined": unjoined, "join_rate": _rate(int(matched.sum()), denominator),
-        # S34: states/close rows carry no real odds timestamp yet.
+        **corpus, "corpus_unjoined": corpus_unjoined,
         "vintage": "SYNTHETIC",
         **drops, "scored": int(scored.sum()),
         "brier_devig_close": float(np.mean((close - y) ** 2)) if len(y) else None,
         "brier_p_base": float(np.mean((base - y) ** 2)) if len(y) else None,
         "by_year": by_year, "by_corpus_unit": by_unit,
+        "by_corpus_unit_spine": by_corpus_unit_spine,
     }
-
-
 __all__ = ["JoinSpec", "close_column", "coverage_report", "gate_corpus_states"]
