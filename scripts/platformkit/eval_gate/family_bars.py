@@ -43,6 +43,7 @@ from statsmodels.stats.multitest import multipletests
 
 from scripts.platformkit.combo.fwer_budget import DEFAULT_Q, BHResult, bh_within_family
 from scripts.platformkit.eval_gate.deflated_metrics import deflated_p
+from scripts.platformkit.eval_gate import frozen_family_versions
 
 SPEC_PATH = Path("docs/evidence/harness/FWER_FAMILIES_SPEC_2026-09-03.md")
 LEDGER_PATH = Path("data/cache/eval_gate/backtest_fwer.jsonl")
@@ -190,12 +191,8 @@ def _by_within_family(p_values: Sequence[float], q: float) -> BHResult:
                     tuple(float(a) for a in adjusted), max(hits) if hits else 0.0)
 
 
-@lru_cache(maxsize=4)
-def load_families(path: Any = SPEC_PATH) -> FamiliesSpec:
-    """Read the FROZEN family partition. This never consults disk state or a corpus:
-    the families are whatever the committed spec says they are, which is the point."""
-    path = Path(path)
-    text = path.read_text(encoding="ascii")
+def _parse_families_spec(text: str, path: str, pin: str) -> FamiliesSpec:
+    """Parse one sealed family payload without consulting a corpus or ledger."""
     head, *blocks = _BLOCK.split(text)
     families = []
     for name, body in zip(blocks[0::2], blocks[1::2]):
@@ -220,7 +217,41 @@ def load_families(path: Any = SPEC_PATH) -> FamiliesSpec:
     if not families:
         raise ValueError("families spec %s froze no families" % path)
     return FamiliesSpec(_field(head, "spec_version"), float(_field(head, "q_within_family")),
-                        path.as_posix(), git_blob_id(path), tuple(families))
+                        path, pin, tuple(families))
+
+
+@lru_cache(maxsize=8)
+def load_families(path: Any = SPEC_PATH, version: Optional[str] = None,
+                  dropped: bool = False) -> FamiliesSpec:
+    """Read the default partition, or an explicit immutable historical S14 view.
+
+    Existing callers receive the same current-file parse because `version` defaults to
+    None.  S174's v2 view is opt-in and retains both dropped records when requested.
+    """
+    path = Path(path)
+    if version is None:
+        if dropped:
+            raise ValueError("dropped=True requires an explicit versioned family view")
+        return _parse_families_spec(path.read_text(encoding="ascii"), path.as_posix(),
+                                    git_blob_id(path))
+    if path != SPEC_PATH:
+        raise ValueError("historical family versions use the sealed S14 payload only")
+    if version not in (frozen_family_versions.S14_V1, frozen_family_versions.S14_V2):
+        raise ValueError("unknown frozen family version %r" % version)
+    v1 = _parse_families_spec(frozen_family_versions.s14_v1_text(),
+                              "embedded:s14-families-v1",
+                              frozen_family_versions.S14_V1_PIN)
+    if version == frozen_family_versions.S14_V1:
+        if dropped:
+            raise ValueError("dropped=True is available only for s14-families-v2")
+        return v1
+    all_families = tuple(frozen_family_versions.mark_dropped(family)
+                         for family in v1.families)
+    view = all_families if dropped else tuple(
+        family for family in all_families if getattr(family, "status", "ACTIVE") != "DROPPED")
+    return FamiliesSpec(frozen_family_versions.S14_V2, v1.q_within_family,
+                        "embedded:s14-families-v2",
+                        frozen_family_versions.s14_v2_pin(v1.families), view)
 
 
 def dual_bar_verdict(raw_p: float, k_global: int, family_p_values: Sequence[float],
