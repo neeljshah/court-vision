@@ -8,9 +8,12 @@ TICK-TIME AS-OF CONTRACT (this tier's leak rule; NOT the pregame game-as-of rule
 -------------------------------------------------------------------------------
 A hypothesis is ONE state feature x(g, t) whose value at tick time t of game g is a function
 of events of g with timestamp <= t ONLY, plus pregame as-of tables. Reading any event later
-than the tick's own is a leak. ENFORCED, not asserted: `assert_tick_asof` rebuilds the table
-from the causal prefix src[:k+1] and requires row k to equal row k of the full build
-(truncation invariance); a feature that peeks at a later tick raises TickTimeLeak.
+than the tick's own is a leak, and so is reading the tick's OWN label. Both are ENFORCED in
+`ingame_guards`: `assert_tick_asof` rebuilds from the causal prefix src[:k+1] and requires row
+k to equal row k of the full build (truncation invariance), and then `assert_label_blind`
+(S124) rebuilds with the label permuted and requires every feature column to be unchanged --
+truncation invariance alone cannot see a SAME-TICK label reader. Either raises TickTimeLeak.
+Both are re-exported here, so every existing import site is unchanged (A5/B6).
 
 The hypothesis is ONE extra logistic term on the incumbent e4 blend,
 p = sigmoid(a + b*logit(p_e4_gd) + c*z(x)), fitted walk-forward over GAME-FIRST-DATE folds
@@ -27,12 +30,14 @@ from __future__ import annotations
 import json
 import math
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Mapping, Optional, Sequence
+from typing import Any, Dict, List, Mapping, Optional, Sequence
 
 import numpy as np
 import pandas as pd
 
 from scripts.platformkit.eval_gate.dm_test import diebold_mariano
+from scripts.platformkit.foundry.ingame_guards import (  # re-exported (A5/B6)
+    TickTimeLeak, assert_label_blind, assert_tick_asof, utc_stamps)
 from scripts.platformkit.foundry.screen_predictor import RIDGE, _logistic, _logit
 from scripts.platformkit.foundry.tick_partition import screen_side
 from scripts.platformkit.foundry.tiers import partition_corpus
@@ -59,10 +64,6 @@ NOT_SUPPLIED = ("pitch_velocity", "pitch_loc_x", "pitch_loc_y", "velo_decline_vs
                 "atbat_pitch_number", "bullpen_usage_asof", "p0", "outcome")
 
 
-class TickTimeLeak(AssertionError):
-    """A feature's value at tick t changed when the ticks after t were withheld."""
-
-
 def causal_source(ticks: Sequence[Mapping[str, Any]]) -> pd.DataFrame:
     """The loader's own causal ordering: ticks sorted by (timestamp, game), stable."""
     frame = pd.DataFrame([{"game": t["game"], "timestamp": t["timestamp"],
@@ -83,26 +84,6 @@ def build_features(src: pd.DataFrame) -> pd.DataFrame:
     out["base_state"] = ordinal // 3.0
     out["tick_index_in_game"] = out.groupby("game").cumcount().astype(float)
     return out[["game", "timestamp", "_row_id"] + sorted(set(FEATURES.values()))]
-
-
-def assert_tick_asof(src: pd.DataFrame, builder: Callable[[pd.DataFrame], pd.DataFrame],
-                     probes: int = 8) -> List[int]:
-    """Truncation invariance at EVENLY spaced probe rows (A3: never a head slice)."""
-    full = builder(src)
-    columns = [c for c in full.columns if c not in ("game", "timestamp", "_row_id")]
-    step, checked = max(1, len(src) // (probes + 1)), []
-    for k in range(step, len(src), step):
-        if len(checked) >= probes:
-            break
-        row, want = builder(src.iloc[:k + 1]).iloc[k][columns], full.iloc[k][columns]
-        for column in columns:
-            a, b = row[column], want[column]
-            if not ((a != a and b != b) or a == b):
-                raise TickTimeLeak("%s at row %d is %r on the causal prefix but %r on the full "
-                                   "corpus: it reads an event later than its own tick"
-                                   % (column, k, a, b))
-        checked.append(k)
-    return checked
 
 
 def screen_rows(ticks: Sequence[Mapping[str, Any]], e4: Sequence[Optional[float]],
@@ -162,24 +143,30 @@ def walk_forward_feature(rows: pd.DataFrame, column: str,
     first pitch, so a game whose first date is earlier can still be ticking during the fold. A
     train game must have produced its LAST tick at least `embargo_days` before the fold's first
     tick. That is stricter than the incumbent's own game-first-date fold rule, so the candidate
-    always trains on less than the incumbent did -- conservative, never the other way."""
+    always trains on less than the incumbent did -- conservative, never the other way.
+
+    S125: every stamp is parsed to tz-aware UTC before it is compared. The old code compared
+    the stamp STRINGS to a strftime'd cut, and ' ' sorts before 'T', so a space-separated
+    spelling admitted a game settling 2 h before the fold and both asserts passed with it."""
     out = pd.Series(np.nan, index=rows.index)
     null_out = pd.Series(np.nan, index=rows.index)
     folds: List[dict] = []
-    last_ts = rows.groupby("game")["ts"].max()
+    stamps = utc_stamps(rows["ts"])   # S125: parse ONCE; `<` on stamp strings is not a time order
+    last_ts = stamps.groupby(rows["game"].to_numpy()).max()
     dates = sorted(rows["game_date"].unique())
     for date in dates[1:]:
         test = rows[rows["game_date"] == date]
         if test.empty:
             continue
-        cut = (pd.Timestamp(test["ts"].min()) - pd.Timedelta(days=embargo_days)).strftime(
-            "%Y-%m-%dT%H:%M:%SZ")     # same layout as the tick stamps, so `<` is a real ordering
-        train = rows[rows["game"].isin(last_ts.index[last_ts < cut])]
+        first = stamps[test.index].min()
+        edge = first - pd.Timedelta(days=embargo_days)
+        cut = edge.strftime("%Y-%m-%dT%H:%M:%SZ")     # the archived spelling, unchanged
+        train = rows[rows["game"].isin(last_ts.index[last_ts < edge])]
         if train.empty:
             folds.append({"date": date, "status": "NO_TRAIN", "n_train": 0, "cut": cut})
             continue
         assert not (set(train["game"]) & set(test["game"])), "fold not game-disjoint"
-        assert train["ts"].max() < test["ts"].min(), "purge violated: train outlives the fold"
+        assert stamps[train.index].max() < first, "purge violated: train outlives the fold"
         fit = _fit(train, column)
         if fit is None:
             folds.append({"date": date, "status": "UNFITTABLE", "n_train": int(len(train))})

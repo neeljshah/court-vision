@@ -120,3 +120,25 @@ def test_the_screen_touches_no_ledger_and_no_prereg(tmp_path):
     ticks, e4, table, first = _corpus()
     S.run(ticks, e4, table, first, out_json=tmp_path / "r.json", features={"member": "x"})
     assert (LEDGER.read_bytes() if LEDGER.exists() else None) == before
+
+
+def test_the_embargo_holds_in_every_timestamp_spelling():
+    """S125: the purge compared stamp STRINGS to a strftime'd cut, and ' ' (0x20) sorts before
+    'T', so a space-separated spelling admitted a train game that settled 2 h before the fold
+    (n_train 8 where 0 is correct) -- and BOTH asserts passed because they shared the order."""
+    train_ts = [pd.Timestamp("2026-07-05T21:00:00") + pd.Timedelta(minutes=15 * i) for i in range(8)]
+    test_ts = [pd.Timestamp("2026-07-06T01:00:00") + pd.Timedelta(minutes=15 * i) for i in range(8)]
+    rng = np.random.default_rng(0)
+
+    def _frame(fmt):
+        return pd.DataFrame([
+            {"game": game, "ts": fmt(stamp), "game_date": date, "y": float(rng.integers(0, 2)),
+             "p_e4": 0.5, "market": 0.5, "x": float(rng.normal())}
+            for game, stamps, date in (("TRAIN", train_ts, "2026-07-05"),
+                                       ("TEST", test_ts, "2026-07-06"))
+            for stamp in stamps])
+
+    for fmt in (lambda s: s.strftime("%Y-%m-%dT%H:%M:%SZ"), str, lambda s: s.isoformat()):
+        fold = S.walk_forward_feature(_frame(fmt), "x")[2][0]
+        assert (fold["status"], fold["n_train"]) == ("NO_TRAIN", 0), fold
+        assert fold["cut"] == "2026-07-05T01:00:00Z", fold

@@ -1,13 +1,15 @@
 """S114 -- NESTED-selection ensemble of NBA in-game hypotheses, scored OUT of sample.
 
-S102 screened 564 NBA derived-state hypotheses ONE AT A TIME; S79 showed a family's top-k
-picked IN SAMPLE is worse than k=1 in 11 of 12 families. In-game hypotheses have never been
-COMBINED with the selection INSIDE the walk-forward. Per OUTER fold (game-first-date blocks
-on the S86 SCREEN side, settlement purge, 1-day embargo, 5 scored folds): split the outer
-TRAIN window again by game-first date; screen EVERY frozen hypothesis on that inner split
-ONLY; rank by the TRAIN-ONLY DM p; take the top-k by DISTINCT SOURCE COLUMN (S79's pick
-rule); fit ONE L2 logistic over them on the full outer train window with logit(market) as
-an OFFSET of FIXED coefficient 1; score the held-out fold, which the selection never saw.
+Per OUTER fold (game-first-date blocks on the S86 SCREEN side, settlement purge, 1-day
+embargo, 5 scored folds): split the outer TRAIN window again by game-first date; screen every
+frozen hypothesis on that inner split ONLY; rank by the TRAIN-ONLY DM p; take the top-k by
+DISTINCT SOURCE COLUMN (S79); fit ONE L2 logistic over them with logit(market) as an OFFSET
+of FIXED coefficient 1; score the held-out fold, which the selection never saw.
+
+S125: `purge` parses stamps to UTC before comparing -- string order is not time order. S126:
+the recalibration NULL is re-fit on each k-arm's OWN rows, so the ladder compares k and not
+row sets; n_fit / n_null_fit / n_scored are published per k per fold. The archived per-k table
+PREDATES both fixes and must be RE-RUN before it is quoted.
 
 A SCREEN IS A NON-FINDING: no ledger row, no prereg seal, no charge, no K consumed, and the
 VERDICT side is never opened. Calibration language only. BAR = 0.004 is IMPORTED from the
@@ -17,17 +19,19 @@ python -m pytest tests/platformkit/ingame/test_s114_ingame_ensemble.py -q
 """
 from __future__ import annotations
 
-import argparse, itertools, json, math, time     # one line to stay inside the 300-LOC rail
+import argparse, json, time
 from typing import Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 import pandas as pd
 
 from scripts.platformkit.combo.fwer_budget import bh_within_family
+from scripts.platformkit.eval_gate.s114_ladder_stats import paired, pbo
 from scripts.platformkit.eval_gate.tick_informative import attach_informative_summary
 from scripts.platformkit.foundry import ingame_grammar_nba as grammar
-from scripts.platformkit.foundry.ingame_screen import BAR, EMBARGO_DAYS, MIN_TRAIN, ROOT, _fit
-from scripts.platformkit.foundry.ingame_screen_nba import (N_FOLDS, _dm_fast, _icc,
+from scripts.platformkit.foundry.ingame_screen import (BAR, EMBARGO_DAYS, MIN_TRAIN,
+                                                       ROOT, _fit, utc_stamps)  # re-exported
+from scripts.platformkit.foundry.ingame_screen_nba import (N_FOLDS, _dm_fast,
                                                            causal_source, load_screen)
 from scripts.platformkit.foundry.screen_predictor import RIDGE, _logistic, _logit
 
@@ -51,15 +55,16 @@ def masked(grid: pd.DataFrame, period: pd.Series, hypothesis) -> pd.Series:
     return grammar.conditioned(values, period, phase) if phase else values
 
 def purge(rows: pd.DataFrame, test: pd.DataFrame, embargo_days: int = EMBARGO_DAYS):
-    """S82's rule, unchanged: a train game's LAST tick precedes the fold by `embargo_days`."""
-    last_ts = rows.groupby("game")["ts"].max()
-    cut = (pd.Timestamp(test["ts"].min()) - pd.Timedelta(days=embargo_days)).strftime(
-        "%Y-%m-%dT%H:%M:%SZ")
-    train = rows[rows["game"].isin(last_ts.index[last_ts < cut])]
+    """S82's rule, unchanged: a train game's LAST tick precedes the fold by `embargo_days`.
+    S125: parsed to UTC first -- string order is not time order, and both asserts shared it."""
+    stamps, first = utc_stamps(rows["ts"]), utc_stamps(test["ts"]).min()
+    last_ts = stamps.groupby(rows["game"].to_numpy()).max()
+    edge = first - pd.Timedelta(days=embargo_days)
+    train = rows[rows["game"].isin(last_ts.index[last_ts < edge])]
     if not train.empty:
         assert not (set(train["game"]) & set(test["game"])), "fold not game-disjoint"
-        assert train["ts"].max() < test["ts"].min(), "purge violated: train outlives the fold"
-    return train, cut
+        assert stamps[train.index].max() < first, "purge violated: train outlives the fold"
+    return train, edge.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 def inner_split(train: pd.DataFrame, frac: float = INNER_FRAC):
     """Split the outer TRAIN window by game-first date at `frac` of its ticks -- whole games
@@ -125,21 +130,28 @@ def fit_offset(design: np.ndarray, y: np.ndarray, offset: np.ndarray,
     return weights
 
 def ensemble_fold(train: pd.DataFrame, test: pd.DataFrame, columns: Sequence[str],
-                  p_null_test: np.ndarray) -> Tuple[np.ndarray, dict]:
-    """One L2 logistic over `columns` on top of the fixed market offset; scores `test`."""
+                  p_null_test: np.ndarray) -> Tuple[np.ndarray, np.ndarray, dict]:
+    """One L2 logistic over `columns` on the fixed market offset; scores `test`. S126: the
+    NULL is RE-FIT on the k-arm's own `keep` rows and returned beside it, so the arms differ
+    only by the candidate terms (fold F1 fit the null on 38,966 rows against k3/k5's 25,722,
+    which made the published ladder a comparison of ROW SETS as well as of k)."""
     stack = np.column_stack([train[c].to_numpy(dtype=float) for c in columns])
     keep = np.isfinite(stack).all(axis=1)
     if int(keep.sum()) < MIN_TRAIN or train["y"][keep].nunique() < 2:
-        return p_null_test, {"status": "UNFITTABLE", "n_fit": int(keep.sum())}
+        return p_null_test, p_null_test, {"status": "UNFITTABLE", "n_fit": int(keep.sum()),
+                                          "n_null_fit": int(len(train)), "n_scored": 0}
     stack, sub = stack[keep], train[keep]
+    anchor = _anchor(test)
+    p_null_k = recal_null(sub, anchor)               # the SAME rows the k-arm is fit on (S126)
     mu, sd = stack.mean(axis=0), np.where(stack.std(axis=0) > 0, stack.std(axis=0), 1.0)
     weights = fit_offset(np.column_stack([np.ones(len(sub)), (stack - mu) / sd]),
                          sub["y"].to_numpy(dtype=float), _anchor(sub))
     x_test = np.column_stack([test[c].to_numpy(dtype=float) for c in columns])
     finite = np.isfinite(x_test).all(axis=1)
-    eta = _anchor(test) + weights[0] + np.nan_to_num((x_test - mu) / sd) @ weights[1:]
-    return (np.where(finite, _sigmoid(eta), p_null_test),
-            {"status": "OK", "n_fit": int(keep.sum()), "coef": [float(w) for w in weights],
+    eta = anchor + weights[0] + np.nan_to_num((x_test - mu) / sd) @ weights[1:]
+    return (np.where(finite, _sigmoid(eta), p_null_k), p_null_k,
+            {"status": "OK", "n_fit": int(keep.sum()), "n_null_fit": int(keep.sum()),
+             "n_scored": int(finite.sum()), "coef": [float(w) for w in weights],
              "mu": [float(v) for v in mu], "sd": [float(v) for v in sd],
              "test_coverage": float(finite.mean())})
 
@@ -181,9 +193,12 @@ def run(rows: pd.DataFrame, grid: pd.DataFrame, hypotheses: Dict[str, object],
             labels = [s["label"] for s in select_topk(screens, k)]
             record["selected"]["k%d" % k] = labels
             columns = pd.DataFrame({l: masked(grid, period, hypotheses[l]) for l in labels})
-            probs, meta = ((p_null, {"status": "NO_SELECTION"}) if not labels else
-                           ensemble_fold(train.join(columns), test.join(columns), labels, p_null))
-            piece["p_k%d" % k], record["fits"]["k%d" % k] = probs, meta
+            none = {"status": "NO_SELECTION", "n_fit": 0, "n_null_fit": len(train),
+                    "n_scored": 0}
+            probs, null_k, meta = ((p_null, p_null, none) if not labels else ensemble_fold(
+                train.join(columns), test.join(columns), labels, p_null))
+            piece["p_k%d" % k], piece["p_null_k%d" % k] = probs, null_k
+            record["fits"]["k%d" % k] = meta
         fold_records.append(dict(record, seconds=time.time() - started))
         pieces.append(piece)
         if verbose:
@@ -192,34 +207,6 @@ def run(rows: pd.DataFrame, grid: pd.DataFrame, hypotheses: Dict[str, object],
                 len(inner_test), len(screens), time.time() - started), flush=True)
     return {"folds": fold_records, "screens": pd.DataFrame(screen_records),
             "series": pd.concat(pieces).sort_values(["game", "ts"], kind="stable")}
-
-def paired(series: pd.DataFrame, worse: str, better: str) -> dict:
-    """Game-clustered DM on `loss(worse) - loss(better)`; positive means `better` won."""
-    y = series["y"].to_numpy(dtype=float)
-    delta = ((series[worse].to_numpy(dtype=float) - y) ** 2
-             - (series[better].to_numpy(dtype=float) - y) ** 2)
-    codes, uniques = pd.factorize(series["game"], sort=False)
-    stat, p_raw, ci = _dm_fast(delta, codes, len(uniques))
-    rho, size = _icc(delta, codes, len(uniques)), len(series) / max(1, len(uniques))
-    return {"improvement": float(delta.mean()), "dm_stat": stat, "dm_p_raw": p_raw, "ci95": ci,
-            "icc_game": float(rho), "n_games": int(len(uniques)), "n_eff": float(
-                len(series) / max(1.0, 1.0 + (size - 1.0) * rho))}
-
-def pbo(matrix: Dict[str, Dict[int, float]], keys: Sequence[int]) -> dict:
-    """CSCV probability of backtest overfitting over k (Bailey et al.). Five folds do not
-    split evenly: each 2-fold IS subset is paired with its 3-fold complement, stated here."""
-    folds, logits = sorted(matrix), []
-    for combo in itertools.combinations(folds, 2):
-        rest = [f for f in folds if f not in combo]
-        best = max(keys, key=lambda k: float(np.mean([matrix[f][k] for f in combo])))
-        held = {k: float(np.mean([matrix[f][k] for f in rest])) for k in keys}
-        w = (sorted(keys, key=held.get).index(best) + 1) / (len(keys) + 1.0)
-        logits.append(math.log(w / (1.0 - w)))
-    if not logits:
-        return {"pbo": None, "n_splits": 0}
-    return {"pbo": float(sum(1 for v in logits if v <= 0.0) / len(logits)),
-            "n_splits": len(logits), "median_logit": float(np.median(logits)),
-            "is_size": 2, "oos_size": len(folds) - 2, "configs": list(keys)}
 
 def summarise(result: dict) -> dict:
     """The per-k table, the selection stability, the PBO over k, and the verdict."""
@@ -243,9 +230,11 @@ def summarise(result: dict) -> dict:
         jaccard = [len(set(a) & set(b)) / len(set(a) | set(b)) if (set(a) | set(b)) else None
                    for a, b in zip(chosen, chosen[1:])]
         stable = [j for j in jaccard if j is not None]
-        block = {"brier": float(((series[column] - y) ** 2).mean()),
+        arms = {"n_%s_per_fold" % n: {f["fold"]: f["fits"][key].get(n) for f in scored}
+                for n in ("fit", "null_fit", "scored")}
+        block = {"brier": float(((series[column] - y) ** 2).mean()), **arms,
                  "vs_market": paired(series, "market", column),
-                 "vs_recal_null": paired(series, "p_null", column),
+                 "vs_recal_null": paired(series, "p_null_%s" % key, column),   # same rows (S126)
                  "vs_k1": paired(series, "p_k1", column),
                  "selected_per_fold": {f["fold"]: s for f, s in zip(scored, chosen)},
                  "jaccard_consecutive": jaccard,
@@ -260,9 +249,8 @@ def summarise(result: dict) -> dict:
     artifact["pbo_over_k"] = pbo(matrix, K_VALUES) if len(matrix) >= 3 else {"pbo": None}
     artifact["per_fold_improvement_vs_market"] = matrix
     best = max(K_VALUES, key=lambda k: artifact["per_k"]["k%d" % k]["vs_market"]["improvement"])
-    attach_informative_summary(
-        artifact, series.assign(d=((series["market"] - y) ** 2
-                                   - (series["p_k%d" % best] - y) ** 2)), "d", ts_col="ts")
+    delta = (series["market"] - y) ** 2 - (series["p_k%d" % best] - y) ** 2
+    attach_informative_summary(artifact, series.assign(d=delta), "d", ts_col="ts")
     artifact["best_k"] = best
     artifact["any_prereg_draft"] = any(b["prereg_draft_condition"]
                                        for b in artifact["per_k"].values())

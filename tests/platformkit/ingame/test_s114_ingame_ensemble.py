@@ -131,3 +131,46 @@ def test_pbo_is_one_when_the_in_sample_winner_is_always_the_out_of_sample_loser(
     assert s114.pbo(matrix, (1, 3))["pbo"] == pytest.approx(1.0)
     agree = {f: {1: 1.0, 3: 0.0} for f in matrix}
     assert s114.pbo(agree, (1, 3))["pbo"] == pytest.approx(0.0)
+
+
+def test_the_purge_holds_in_every_timestamp_spelling():
+    """S125: `purge` compared stamp STRINGS to a strftime'd cut and ' ' sorts before 'T', so a
+    space-separated spelling admitted a train game that settled 2 h before the fold."""
+    train_ts = [pd.Timestamp("2026-07-05T21:00:00") + pd.Timedelta(minutes=15 * i) for i in range(8)]
+    test_ts = [pd.Timestamp("2026-07-06T01:00:00") + pd.Timedelta(minutes=15 * i) for i in range(8)]
+
+    def _frame(fmt):
+        return pd.DataFrame([{"game": game, "ts": fmt(stamp), "y": 1.0, "p_e4": 0.5}
+                             for game, stamps in (("TRAIN", train_ts), ("TEST", test_ts))
+                             for stamp in stamps])
+
+    for fmt in (lambda s: s.strftime("%Y-%m-%dT%H:%M:%SZ"), str, lambda s: s.isoformat()):
+        rows = _frame(fmt)
+        train, cut = s114.purge(rows, rows[rows["game"] == "TEST"])
+        assert len(train) == 0 and cut == "2026-07-05T01:00:00Z", (fmt(train_ts[0]), cut)
+
+
+def test_the_null_arm_is_fit_on_the_same_rows_as_the_k_arm(scored):
+    """S126: `recal_null` was fit on the whole outer train window while `ensemble_fold` fit on
+    the all-finite subset, so the published ladder compared ROW SETS as well as k. Every
+    scored fold now publishes n_fit / n_null_fit / n_scored, and the two fit counts agree."""
+    _rows, result = scored
+    folds = [f for f in result["folds"] if f["status"] == "OK"]
+    assert folds, "the walk-forward produced no scored fold"
+    for fold in folds:
+        for key, meta in fold["fits"].items():
+            assert {"n_fit", "n_null_fit", "n_scored"} <= set(meta), (key, meta)
+            if meta["status"] == "OK":
+                assert meta["n_fit"] == meta["n_null_fit"], (fold["fold"], key, meta)
+
+
+def test_every_k_arm_carries_its_own_null_series(scored):
+    """The same-rows null must reach the archived differential, or the re-quote cannot see it."""
+    _rows, result = scored
+    series = result["series"]
+    for k in s114.K_VALUES:
+        assert "p_null_k%d" % k in series.columns
+        arm, null = series["p_k%d" % k].to_numpy(), series["p_null_k%d" % k].to_numpy()
+        fallback = arm == null            # the rows the arm could not score natively
+        assert bool(fallback.any()) or bool((~fallback).any())
+        assert np.isfinite(null).all()

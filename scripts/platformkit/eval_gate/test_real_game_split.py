@@ -106,3 +106,43 @@ def test_gap_hours_is_a_knob_not_a_constant():
     assert list(rgs.assign_real_game_seq(frame)[0]["real_game_seq"]) == [1, 2]
     out, _ = rgs.assign_real_game_seq(frame, gap_hours=12.0)
     assert list(out["real_game_seq"]) == [1, 1]
+
+
+def test_a_near_instant_inning_decrease_is_a_feed_regression_not_a_new_game():
+    """S131: 32 of the live store's 165 boundaries fired 1-13 SECONDS after the previous
+    in-play tick. A real game cannot begin then; the drop is a scoreboard regression."""
+    frame = _rows([("T", "2026-07-05T00:00:00Z", _state(4, 2, 1)),
+                   ("T", "2026-07-05T00:00:01Z", _state(3, 2, 1)),      # 1 second later
+                   ("T", "2026-07-05T00:30:00Z", _state(5, 3, 1))])
+    out, summary = rgs.assign_real_game_seq(frame)
+    assert list(out["real_game_seq"]) == [1, 1, 1]
+    assert summary["n_real_games"] == 1 and summary["boundary_reasons"] == {}
+
+
+def test_an_inning_decrease_outside_the_floor_still_opens_a_segment():
+    frame = _rows([("T", "2026-07-05T00:00:00Z", _state(4, 2, 1)),
+                   ("T", "2026-07-05T00:25:00Z", _state(1, 0, 0))])     # 25 min > 20 min floor
+    out, summary = rgs.assign_real_game_seq(frame)
+    assert list(out["real_game_seq"]) == [1, 2]
+    assert summary["boundary_reasons"] == {"inning_decrease": 1}
+
+
+def test_a_score_reset_corroborates_an_inning_decrease_inside_the_floor():
+    frame = _rows([("T", "2026-07-05T00:00:00Z", _state(9, 4, 3)),
+                   ("T", "2026-07-05T00:01:00Z", _state(1, 0, 0))])     # 1 min, but 0-0 again
+    out, _ = rgs.assign_real_game_seq(frame)
+    assert list(out["real_game_seq"]) == [1, 2]
+
+
+def test_ts_parses_epoch_seconds_and_milliseconds():
+    """S131: `_ts` returned None on the numeric ts the NBA stores use, which silently
+    disabled the gap rule -- `boundary_reasons` simply carried no `ts_gap` key."""
+    assert rgs._ts("1751328000") == rgs._ts(1751328000.0) != None      # noqa: E711
+    assert rgs._ts("1751328000000") == rgs._ts("1751328000")           # milliseconds
+    assert rgs._ts("not a stamp") is None and rgs._ts("") is None
+
+
+def test_a_wholly_unparseable_ts_column_raises():
+    frame = _rows([("T", "nope", _state(1)), ("T", "also nope", _state(2))])
+    with pytest.raises(ValueError, match="parsed as a timestamp"):
+        rgs.assign_real_game_seq(frame)
