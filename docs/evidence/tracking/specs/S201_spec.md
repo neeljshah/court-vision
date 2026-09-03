@@ -1,4 +1,4 @@
-GAP S201 | sport nba (in-game) | worktree aXX | log cx_s201_nba_fatigue_conditioned
+GAP S201 | sport nba (in-game) | worktree a14 | log cx_s201_nba_fatigue_conditioned
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: docs/evidence/harness/S92_nba_lineup_dynamic_2026-09-03.md:205, verbatim: "* Fatigue is entered as a
 raw home-minus-away minutes difference with no interaction (period, remaining time, margin, rest days,
