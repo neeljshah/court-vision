@@ -24,6 +24,12 @@
 |---|---|---|---|---|
 | G132 | basketball | The preregistered original-plus-CLAHE segment union lifts frozen recall from 25/68 to 28/68 but fails its defining direct check: only 24/25 baseline-matched roles survive one grouping pass over the union. The lost `IB-_u4gW3ds_1080p:11760:lane_right` candidate is altered by union group fitting. Paired fixed-label precision falls from 212/1,581 = 13.41 pct to 225/2,014 = 11.17 pct as volume rises 27.4 pct. | `g132_additive_candidate_union_2026-09-02.md`; `g132_union/` | REJECT. Do not claim the apparent recall rise as additive; no tuning or production change. |
 
+## G134 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G134 | basketball | G132's original enlarged grouping distributes 25 baseline matches as 14 SURVIVED and 11 ABSORBED; the lost `IB-_u4gW3ds_1080p:11760:lane_right` is ABSORBED. Preregistered immutable baseline groups plus supplementary-only groups retain all 25/25 baseline matches while the same enlarged proposal set measures 30/68 recall and paired fixed-label precision 368/2,922 = 12.59 pct. No detector, acceptance value, calibration, label, coordinate contract, pod state, or production caller changed. | `g134_grouping_stability_2026-09-02.md`; `g134_grouping/` | ACCEPT (bounded frozen-protocol grouping evidence; no runtime integration). |
+
 ## G44B attempt-2 disposition
 
 | Gap | sport | finding | evidence | status |

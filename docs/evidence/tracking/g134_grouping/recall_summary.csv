@@ -1,0 +1,4 @@
+variant,detected,visible,recall,wilson_95_low,wilson_95_high
+baseline,25,68,0.367647,0.263005,0.486444
+enlarged,28,68,0.411765,0.302580,0.530385
+stable,30,68,0.441176,0.329462,0.559181

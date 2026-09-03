@@ -1,0 +1,42 @@
+{
+  "gap": "G134",
+  "population": {
+    "frames": 30,
+    "visible_lines": 68,
+    "baseline_matches": 25,
+    "manifest": "G115 valid_manifest()",
+    "labels": "G115 hand_marks.json"
+  },
+  "frozen_parameters": {
+    "lsd_threshold": 28.0,
+    "group_angle_deg": 5.0,
+    "group_offset_px": 10.0,
+    "correspondence_angle_deg": 12.0,
+    "correspondence_perpendicular_px": 12.0,
+    "correspondence_endpoint_extension_px": 20.0,
+    "clahe_clip_limit": 2.0,
+    "clahe_tile_grid": [8, 8],
+    "duplicate_endpoint_tolerance_px": 1.0
+  },
+  "outcome_rule": {
+    "unit": "unique visible (clip, frame_index, role) with a baseline match",
+    "survived": "an unchanged baseline candidate group still matches the fixed hand line",
+    "moved": "the baseline group has the same member segment identities in the enlarged grouping but its refit candidate no longer matches",
+    "absorbed": "a baseline group's segment identities are contained in an enlarged group with additional segment identities",
+    "fragmented": "the baseline group's segment identities occur across two or more enlarged groups",
+    "precedence": ["survived", "moved", "absorbed", "fragmented"]
+  },
+  "proposal": {
+    "name": "immutable baseline groups plus supplementary-only groups",
+    "method": "Group the frozen baseline proposal set with candidate_line_group_details(..., 5.0, 10.0) and retain each resulting CandidateLineGroup and fit unchanged. Determine added proposals by G132's existing baseline-first one-pixel endpoint deduplication. Group only those added proposals with the same candidate_line_group_details(..., 5.0, 10.0) call, then append those supplementary groups after the immutable baseline groups. No baseline group is refit, merged, replaced, or re-ordered, and no threshold, detector, calibration, correspondence, label, manifest, or coordinate-contract value changes.",
+    "stability_claim_to_test": "Every baseline match survives because baseline candidates are preserved verbatim; recall and paired precision remain measured rather than assumed."
+  },
+  "measurement_plan": {
+    "before": "baseline and original G132 single-pass enlarged grouping",
+    "after": "immutable-baseline-plus-supplementary grouping",
+    "metrics": ["recall", "paired_precision", "baseline_match_survival"],
+    "required_survival": "25/25",
+    "union_follow_on": "If and only if survival is 25/25, report the enlarged-set result from the stable grouping.",
+    "renders": "side-by-side baseline versus original enlarged grouping for at least five affected lines, selected from all non-SURVIVED baseline-match outcomes"
+  }
+}
