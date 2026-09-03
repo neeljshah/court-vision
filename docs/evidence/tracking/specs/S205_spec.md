@@ -1,4 +1,4 @@
-GAP S205 | sport all (pregame) | worktree aXX | log cx_s205_calib_bakeoff
+GAP S205 | sport all (pregame) | worktree a18 | log cx_s205_calib_bakeoff
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S05_calibration_report_2026-09-03.md section 2, verbatim: "On nba, soccer and tennis per-regime isotonic buys
 a large calibration gain and pays for it in resolution every time (nba -0.0026823, soccer -0.0005781, tennis
