@@ -427,3 +427,5 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-04 | nba | S182 | full spine 4846/4846 rows (100%; seasons 1230/1230/1230/1156), legacy 1814/4846 (37.4329%), holes 3032/4846, 44/44 coverage rows reproduced; attempt 2 REJECTED: focused test failed on missing worktree FWER and B2 removed built_at; rejected code NOT landed, memos landed | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | fbd10efe0
 2026-09-03 | foundry screen_p indexing | S175 | before 0/344; rerun 344/344; 5/5 ordered families; LOC rail passed | ACCEPT (verified: codex-sol, contract A/B/Q) | d6f85a7cb
 2026-09-03 | sport harness | S195 | paired Brier source quotes 8/8; WNBA n=25 delta +0.000945; soccer_intl n=7 delta -0.021289 | ACCEPT (verified: codex-sol, contract A/B/Q) | 490522427
+
+2026-09-04 | MLB close bridge | S194 | 641 raw in-window ids; 337 settled event capacity below fixed 400 bar; memo + json landed with S195 | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 490522427
