@@ -80,7 +80,8 @@ def _run_gumbo() -> Dict[str, Any]:
     report = run_once()
     try:
         from scripts.platformkit.ingame.game_pk_bridge_live import build_bridge, summarize
-        bridge_rows = build_bridge()
+        from scripts.platformkit.ingame.slate_date import slate_date
+        bridge_rows = build_bridge(slate_date())
         report["bridge_summary"] = summarize(bridge_rows)
     except Exception as exc:  # noqa: BLE001 -- bridge context is additive, never fatal
         logger.debug("ingame_enrichment gumbo bridge context failed: %s", exc)

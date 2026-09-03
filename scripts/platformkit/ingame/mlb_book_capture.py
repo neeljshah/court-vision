@@ -23,6 +23,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional
 
 from scripts.platformkit.ingame import game_pk_bridge_live as _bridge
 from scripts.platformkit.ingame import gumbo_mlb_poller as _gumbo
+from scripts.platformkit.ingame.slate_date import slate_date
 from scripts.platformkit.odds_provider.kalshi_rate_governor import (
     before_request, get_governor, report_429,
 )
@@ -201,7 +202,7 @@ def capture_once(*, client: Optional[GovernedClient] = None, date_str: Optional[
     client = client or GovernedClient()
     state = state if state is not None else {}
     now = now or datetime.now(timezone.utc)
-    date_str = date_str or now.strftime("%Y-%m-%d")
+    date_str = date_str or slate_date(now)
     prior_429 = client.n_429
     rows: List[Dict[str, Any]] = []
     fetches = [(game, str(ticker)) for game in live_games_fn(client, date_str, state)
