@@ -16,6 +16,12 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G168 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G168 | tennis | Against the unchanged 0.90 bar, G161's measured rally share of 0.3767 caps whole-clip coverage even under perfect rally solving: **margin -0.5233, Wilson range -0.5763 to -0.4673**, for both the harness decoded-frame quantity and the ledger completeness. The pod ledger holds 12 rows and ZERO tennis rows, so no tennis table has a `decoded_frames` partner and the per-table three-column reproduction could not be computed. | `g168_coverage_adjudication_2026-09-03.md` | **ACCEPT -- CLOSED AT LIMIT on whole-clip denominators. NO bar moved and no alternate/rally-scoped/corrected bar proposed; which denominator the bar should use is left open for the orchestrator. The per-table comparison remains blocked on one daemon-produced tennis row, named as a specific artefact rather than a "just wait".** |
+
 ## G158b / G163b / G165 result register
 
 | Gap | Sport | Finding | Evidence | Status |
