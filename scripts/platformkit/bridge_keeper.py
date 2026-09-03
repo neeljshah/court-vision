@@ -39,6 +39,9 @@ from scripts.platformkit.bridge_supervisor import DATA_DIR, LANES, LOG_DIR
 # The supervisor used to do this inline with subprocess.run(timeout=1800), which
 # blocked its poll loop behind a network call for as long as yt-dlp took.
 REFILL_THRESHOLD = 6
+# Seven lanes at --per-lane 1 run about one yt-dlp and one ffmpeg each. Well
+# above that means orphans, not throughput.
+FETCHER_ALARM = 24
 
 
 def running_lane_names() -> set:
@@ -71,6 +74,18 @@ def running_lane_names() -> set:
     return live
 
 
+def fetcher_count() -> int:
+    """How many yt-dlp/ffmpeg processes exist, orphaned or not."""
+    script = ("(Get-Process -Name 'yt-dlp','ffmpeg' -ErrorAction SilentlyContinue)"
+              ".Count")
+    try:
+        result = subprocess.run(["powershell", "-NoProfile", "-Command", script],
+                                capture_output=True, text=True, timeout=120)
+        return int((result.stdout or "0").strip() or 0)
+    except (subprocess.SubprocessError, OSError, ValueError):
+        return 0
+
+
 def start_lane(name: str, queues: list, per_lane: int) -> int | None:
     """Launch one detached lane worker and return its pid.
 
@@ -101,10 +116,20 @@ def start_lane(name: str, queues: list, per_lane: int) -> int | None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Ensure footage bridge lanes are running")
-    parser.add_argument("--per-lane", type=int, default=2)
+    parser.add_argument("--per-lane", type=int, default=1)
     parser.add_argument("--status", action="store_true", help="report only, start nothing")
     args = parser.parse_args()
 
+    fetchers = fetcher_count()
+    if fetchers > FETCHER_ALARM:
+        # footage_bridge.py:85 records that this box has crashed twice from a
+        # yt-dlp pileup. Seven lanes at --per-lane 1 should show roughly one
+        # yt-dlp and one ffmpeg each; 80 were counted on 2026-09-02 after
+        # repeated worker kills orphaned their children, with no file growing
+        # for an hour. Report it loudly rather than starting more work on top.
+        print("WARNING: %d yt-dlp/ffmpeg processes running (alarm above %d) -- "
+              "likely orphans from killed workers; downloads may be stalled"
+              % (fetchers, FETCHER_ALARM))
     live = running_lane_names()
     lanes = [(n, [q for q in qs if (DATA_DIR / q).is_file()]) for n, qs in LANES]
     lanes = [(n, qs) for n, qs in lanes if qs]

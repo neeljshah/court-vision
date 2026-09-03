@@ -15,4 +15,4 @@ REM nothing. That is what prevents the worker accumulation seen earlier, when a
 REM blocked heartbeat made a healthy supervisor look dead and a second one was
 REM started alongside it.
 cd /d C:\Users\neelj\nba-ai-system
-python -m scripts.platformkit.bridge_keeper --per-lane 2 >> logs\bridge_watchdog.log 2>&1
+python -m scripts.platformkit.bridge_keeper --per-lane 1 >> logs\bridge_watchdog.log 2>&1
