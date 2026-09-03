@@ -16,6 +16,12 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G178 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G178 | all | The manifest route is unavailable: 21 tracked CSV jobs on the pod, exactly **1** `frame_manifest.csv`. The lane verified the STOP condition and made no change, ran no tests and created no commit. The arithmetic route (`evaluated = ceil(decoded/stride)`) reproduces tennis at **0.0757** but `--max-frames` defaults to 30000 and `mlb` decodes 39,035, so truncation makes the naive figure impossible (>1.0) for over-cap rows. | `g178_evaluated_denominator_blocked_2026-09-03.md` | **BLOCKED -- the lane was RIGHT to stop; my spec named a mechanism that does not exist for 20 of 21 jobs. The naive 0.9390 for baseball is NOT a result. Adjudication untouched: tennis 0.0757 vs 0.90 stays CLOSED AT LIMIT. Re-spec must handle max_frames truncation.** |
+
 ## G166 result register
 
 | Gap | Sport | Finding | Evidence | Status |

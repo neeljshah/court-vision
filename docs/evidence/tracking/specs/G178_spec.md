@@ -1,4 +1,4 @@
-GAP G178 | sport all | worktree TBD | log cx_g178_evaluated_denominator
+GAP G178 | sport all | worktree a8 | log cx_g178_evaluated_denominator
 **EVERY BAR VALUE STAYS BYTE-IDENTICAL. This row corrects a DENOMINATOR, never a threshold.** If you
 find yourself editing a number in `SPORTS[...]["coverage_min"]` or any other bar, stop -- that is an
 automatic REJECT under B10/Q3 and it is the exact failure that forced a retraction in this program.
