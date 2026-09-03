@@ -30,6 +30,12 @@
 |---|---|---|---|---|
 | G134 | basketball | G132's original enlarged grouping distributes 25 baseline matches as 14 SURVIVED and 11 ABSORBED; the lost `IB-_u4gW3ds_1080p:11760:lane_right` is ABSORBED. Preregistered immutable baseline groups plus supplementary-only groups retain all 25/25 baseline matches while the same enlarged proposal set measures 30/68 recall and paired fixed-label precision 368/2,922 = 12.59 pct. No detector, acceptance value, calibration, label, coordinate contract, pod state, or production caller changed. | `g134_grouping_stability_2026-09-02.md`; `g134_grouping/` | ACCEPT (bounded frozen-protocol grouping evidence; no runtime integration). |
 
+## G135 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G135 | basketball | On every one of the 30 frozen G84/G115 frames under unchanged G134 stable grouping plus G132 union, there are 120 unique role rows and 30 stable matched roles but **0 frames with all four paint roles matched**. Therefore no correspondence set, homography, independent physical-distance error, or solved-model overlay exists. | `g135_end_to_end_solve_2026-09-02.md`; `g135_solve/frame_role_matches.csv`; `g135_solve/qualifying_frames.csv`; `g135_solve/summary.json` | **NOT VALIDATED -- terminal zero-qualifier result; no court-feet claim or runtime integration.** |
+
 ## G44B attempt-2 disposition
 
 | Gap | sport | finding | evidence | status |

@@ -1,0 +1,9 @@
+{
+  "frozen_frames": 30,
+  "unique_role_rows": 120,
+  "stable_matched_roles": 30,
+  "all_four_qualifying_frames": 0,
+  "renders_written": 0,
+  "external_distance_measurements": 0,
+  "terminal_reason": "no_all_four_frame"
+}
