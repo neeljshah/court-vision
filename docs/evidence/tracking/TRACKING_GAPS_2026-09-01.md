@@ -16,6 +16,16 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G150-G155 result register (post-pod-loss rebuild wave)
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G154 | all | Reproducible census of the ELIGIBLE DENOMINATOR of 361 local tracking-table directories: reaches gate 1 (0.2770 pct), coordinate-contract rejection 1, INSUFFICIENT_DATA 0, empty or header-only 0, other 359 (99.4460 pct). Tennis sub-table 1/1 gate-reaching. Orchestrator recompute identical; the named table `G83_tennis_09` hand-checked at 87 rows, `court_feet`, `solved`, `homography`. | `g154_local_table_census_2026-09-03.md`; `g154_census/`; `scripts/platformkit/g154_local_table_census.py` | **ACCEPT -- PREMISE FALSIFIED (Q8). The eligible count is 1, not 0. "0 eligible" must not be quoted as current.** |
+| G150 | all | 0 of 361 local tables carry a recoverable decoded-frame denominator, so G147's current-versus-corrected coverage comparison is not computable from anything that survived the pod loss. No denominator was estimated to fill the gap. Independently reproduced G154's premise correction. | `g150_local_denominator_reach_2026-09-03.md`; `g150_denominator/` | **ACCEPT -- honest zero; scope is what survived, not new rows.** |
+| G153 | all | A real local end-to-end reproduction produced a ledger row carrying `decoded_frames: 150` against 71 emitted rows, answering the question G149 could not. | `g153_decoded_frames_producer_2026-09-03.md` | **ACCEPT WITH CORRECTIONS -- the lane called deployment outstanding; it is not. The new pod's first real daemon row reads `decoded_frames = 39035`, `coverage_pct = 0.1565`. That is 1 row of 1 completed job, not a rate.** |
+| G151 | all | Write probes (write, flush, fsync, read back, delete) added before the ledger append and the staged upload, plus an fsync on the append and a stranded-`.part` diagnostic. Guard-removal reproduction fails 2 of 2. Live pod probe passed at 2.5G usage. | `g151_quota_fails_loud_2026-09-03.md`; `footage_bridge.py`; `track_daemon.py`; `tests/platformkit/test_g151_quota_fails_loud.py` | **ACCEPT WITH CORRECTIONS -- premise partly FALSIFIED: scp already raised and ledger errors already propagated; the real gap was durability, not propagation. No threshold, gate, schema or field moved; 43 + 28 pre-existing tests still pass in master.** |
+| G155 | all | Timestamped snapshot of the replacement pod at 2026-09-03T14:14:47Z-14:15:02Z: RTX 3090 24 GiB, 256 CPUs, 1 TiB RAM; no detector weight artifact, 0 eligible staged MP4s, empty corpus/tracking/ledger. One probe file created and deleted. | `g155_pod_readiness_census_2026-09-03.md` | **ACCEPT -- a SNAPSHOT, never a standing claim: the "no detector weight" observation was already false by 14:19Z when the first tennis job pulled yolov8n.pt.** |
+
 ## G144 result register
 
 | Gap | Sport | Finding | Evidence | Status |
@@ -75,7 +85,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G156  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G157  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |

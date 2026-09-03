@@ -1,0 +1,6 @@
+first_blocker,tables,census_denominator_local_tables,share_of_census_denominator
+reaches_gate,1,361,0.002770
+coordinate_contract_rejection,1,361,0.002770
+INSUFFICIENT_DATA,0,361,0.000000
+empty_or_header_only,0,361,0.000000
+other,359,361,0.994460

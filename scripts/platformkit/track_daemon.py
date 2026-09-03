@@ -115,10 +115,37 @@ def verdict(sport: str, game_id: str, video: Path) -> dict | None:
     return adjudicate(video, sport, game_id, TRACKING)
 
 
+def _write_probe(directory: Path, name: str) -> None:
+    """Write, fsync, read, and remove one small local durability probe."""
+    probe = directory / (".%s_write_probe_%d" % (name, os.getpid()))
+    data = b"track-daemon-write-probe\n"
+    try:
+        with probe.open("wb") as handle:
+            handle.write(data)
+            handle.flush()
+            os.fsync(handle.fileno())
+        if probe.read_bytes() != data:
+            raise OSError("ledger write probe readback mismatch")
+    except OSError as exc:
+        raise RuntimeError("ledger write probe failed for %s: %s" %
+                           (LEDGER.parent, exc)) from exc
+    finally:
+        try:
+            probe.unlink(missing_ok=True)
+        except OSError:
+            pass
+
+
 def _record(entry: dict) -> None:
     LEDGER.parent.mkdir(parents=True, exist_ok=True)
-    with LEDGER.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(entry) + "\n")
+    _write_probe(LEDGER.parent, "track_daemon")
+    try:
+        with LEDGER.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(entry) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+    except OSError as exc:
+        raise RuntimeError("ledger append failed for %s: %s" % (LEDGER, exc)) from exc
 
 
 def _fresh_solve_summary(game_id: str) -> tuple[int | None, int | None]:

@@ -1,4 +1,4 @@
-GAP G151 | sport all | worktree a4 | log cx_g151_quota_fails_loud
+GAP G151 | sport all | worktree a3 | log cx_g151_quota_fails_loud
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it, including A7; self-check section B
 before reporting. This row MAY change code, and the change is narrow: make an existing SILENT failure
 LOUD. It changes no threshold, no bar, no gate, no verdict, and no coordinate contract.
@@ -50,7 +50,7 @@ quotes, the live headroom observation, and a NOT VERIFIED list. Commit BEFORE re
 CAUTION: another session commits into main concurrently. Work in your worktree, explicit pathspecs.
 TEST: exactly one new per-file test. Run ONLY that file. NEVER a full pytest -- it freezes the box.
 POD: READ-ONLY plus a single probe file you delete. NEVER kill or restart anything on the pod.
-COMMIT: explicit pathspec only, in a4, no push. Report the sha.
+COMMIT: explicit pathspec only, in a3, no push. Report the sha.
 SHARED MODULE: track_daemon.py and footage_bridge.py are both live -- the daemon may be RUNNING while
 you work. Do not restart it. Your change lands in git only; the orchestrator deploys.
 NEVER PARK: do not poll your own jobs in a blocking loop; never end waiting.

@@ -1,0 +1,4 @@
+table,selection_reason,raw_csv_arithmetic,observed_first_blocker
+0022400625,one table from the largest other bucket,"nonempty first data row; coordinate_space column absent; canonical columns present = frame only = 1/5",missing_required_coordinate_or_schema
+mlb_2iosUkpL0Bc,awkward declared-coordinate case,"nonempty first data row; coordinate_space column present; first data-row coordinate_space = image_px; canonical columns present = 5/5",coordinate_contract_rejection
+G83_tennis_09,awkward only gate-reaching table,"87 data rows; 38 distinct frames; 2 player tracks; 74 positive same-track gaps; modal gap 2 occurs 74 times with no tied mode; coordinate_space = court_feet",reaches_gate

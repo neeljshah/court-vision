@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shlex
 import subprocess
 import sys
 import time
@@ -135,6 +136,50 @@ def _ssh(command: str, timeout: int = 7200) -> subprocess.CompletedProcess:
     except (subprocess.TimeoutExpired, OSError) as exc:
         return subprocess.CompletedProcess(command, 255, stdout="",
                                            stderr="ssh failed: %s" % exc)
+
+
+def _pod_write_probe() -> None:
+    """Raise when the pod stage cannot durably write a tiny file."""
+    path = REMOTE_STAGE + "/.footage_bridge_write_probe"
+    script = ("import os; p=%r; d=b'footage-bridge-write-probe\\n'; "
+              "h=open(p,'wb'); h.write(d); h.flush(); os.fsync(h.fileno()); h.close(); "
+              "r=open(p,'rb'); assert r.read()==d; r.close()") % path
+    result = _ssh("python3 -c %s; status=$?; rm -f %s; cleanup=$?; "
+                  "[ $status -ne 0 ] && exit $status; exit $cleanup" %
+                  (shlex.quote(script), shlex.quote(path)), timeout=120)
+    if result.returncode:
+        detail = (result.stderr or result.stdout or "no pod output").strip()[-160:]
+        raise RuntimeError("pod write probe failed for %s: %s" % (REMOTE_STAGE, detail))
+
+
+def _part_report(remote: str) -> str:
+    """Report whether a failed staged upload left its remote partial behind."""
+    if not remote.endswith(".part"):
+        return ""
+    result = _ssh("test -e %s" % shlex.quote(remote), timeout=120)
+    if result.returncode == 0:
+        return "; stranded .part remains at %s" % remote
+    if result.returncode == 1:
+        return "; no .part remains at %s" % remote
+    return "; could not verify .part at %s: %s" % (
+        remote, (result.stderr or result.stdout or "no pod output").strip()[-160:])
+
+
+def _upload_to_pod(local: Path, remote: str) -> None:
+    """Probe the pod stage, then upload while preserving a loud failure path."""
+    try:
+        _pod_write_probe()
+    except RuntimeError as exc:
+        raise RuntimeError("pod upload blocked before scp: %s%s" %
+                           (exc, _part_report(remote))) from exc
+    try:
+        subprocess.run(["scp", "-o", "StrictHostKeyChecking=no", "-P", POD_PORT,
+                        str(local), "%s:%s" % (POD_HOST, remote)],
+                       check=True, timeout=7200, capture_output=True, text=True)
+    except subprocess.CalledProcessError as exc:
+        detail = (exc.stderr or exc.stdout or str(exc)).strip()[-160:]
+        raise RuntimeError("pod scp failed for %s: %s%s" %
+                           (remote, detail, _part_report(remote))) from exc
 
 
 def tracking_rows(game_id: str) -> int:
@@ -438,9 +483,7 @@ def push_and_track(local: Path, item: dict) -> str:
     _ssh("mkdir -p %s" % REMOTE_STAGE, timeout=120)
     result = None
     try:
-        subprocess.run(["scp", "-o", "StrictHostKeyChecking=no", "-P", POD_PORT,
-                        str(local), "%s:%s" % (POD_HOST, remote)],
-                       check=True, timeout=7200, capture_output=True, text=True)
+        _upload_to_pod(local, remote)
         adapter = SPORT_ADAPTER.get(sport, sport)
         if adapter in ("wnba", "basketball"):
             # Same defect as track_daemon had: without --data-dir run_clip writes
@@ -489,9 +532,7 @@ def push_staged(local: Path, item: dict) -> str:
     game_id, sport = item["game_id"], item["sport"]
     remote = "%s/%s__%s%s" % (REMOTE_STAGE, sport, game_id, local.suffix)
     _ssh("mkdir -p %s" % REMOTE_STAGE, timeout=120)
-    subprocess.run(["scp", "-o", "StrictHostKeyChecking=no", "-P", POD_PORT,
-                    str(local), "%s:%s.part" % (POD_HOST, remote)],
-                   check=True, timeout=7200, capture_output=True, text=True)
+    _upload_to_pod(local, remote + ".part")
     moved = _ssh("mv %s.part %s" % (remote, remote), timeout=300)
     if moved.returncode != 0:
         _ssh("rm -f %s.part" % remote, timeout=300)
