@@ -81,6 +81,23 @@ def test_build_all_missing_dirs_returns_empty(tmp_path: Path) -> None:
     assert frames == {}
 
 
+def test_add_game_key_construct_merges_three_market_types() -> None:
+    frame = pd.DataFrame({
+        "event_key": [
+            "KXMLBGAME-26JUN01KCBOS", "KXMLBGAME-26JUN01KCBOS",
+            "KXMLBTOTAL-26JUN01KCBOS", "KXMLBTOTAL-26JUN01KCBOS",
+            "KXMLBSPREAD-26JUN01KCBOS",
+        ],
+        "market_type": ["moneyline", "moneyline", "total", "total", "spread"],
+    })
+    before_event_key = frame["event_key"].copy()  # S157 verifier: compare against a COPY, not the mutated object
+    keyed = bps.add_game_key(frame)
+    assert len(keyed) == 5
+    assert keyed["event_key"].equals(before_event_key)
+    assert keyed["game_key"].tolist() == ["26JUN01KCBOS"] * 5
+    assert keyed.groupby("game_key")["market_type"].nunique().to_dict() == {"26JUN01KCBOS": 3}
+
+
 def test_write_all_emits_one_parquet_per_sport_with_int64_ts(tmp_path: Path) -> None:
     kalshi_dir = tmp_path / "kalshi"
     _write_jsonl(kalshi_dir / "nba" / "A.jsonl", [{

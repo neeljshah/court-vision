@@ -25,6 +25,7 @@ Per-file test:
 """
 from __future__ import annotations
 
+import argparse
 import json
 from collections import defaultdict
 from datetime import datetime, timezone
@@ -45,6 +46,7 @@ DEFAULT_OUT_DIR = _REPO_ROOT / "data" / "cache" / "inplay_odds"
 COLUMNS = ["sport", "venue", "game_date", "ticker_or_slug", "event_key",
            "market_type", "side", "ts", "prob", "traded", "close_time",
            "result_where_known"]
+GAMEKEYED_COLUMNS = COLUMNS + ["game_key"]
 
 PARQUET_SCHEMA = pa.schema([
     ("sport", pa.string()), ("venue", pa.string()), ("game_date", pa.string()),
@@ -53,6 +55,7 @@ PARQUET_SCHEMA = pa.schema([
     ("ts", pa.int64()), ("prob", pa.float64()), ("traded", pa.bool_()),
     ("close_time", pa.string()), ("result_where_known", pa.string()),
 ])
+GAMEKEYED_PARQUET_SCHEMA = PARQUET_SCHEMA.append(pa.field("game_key", pa.string()))
 
 # The corpus (kalshi settled candles + polymarket price ticks, growing daily
 # across every sport) is tens of millions of rows -- converting a whole
@@ -68,6 +71,12 @@ def series_to_market_type() -> Dict[str, str]:
     every pair). A series absent here (future spec addition) degrades to
     "unknown" at read time, never raises."""
     return {series: mt for pairs in SERIES_SPEC.values() for series, mt in pairs}
+
+
+def add_game_key(frame: pd.DataFrame) -> pd.DataFrame:
+    """Add game_key by stripping event_key's series prefix and return frame."""
+    frame["game_key"] = frame["event_key"].astype(str).str.split("-", n=1).str[1]
+    return frame
 
 
 def _iter_jsonl(fp: Path) -> Iterator[Dict[str, Any]]:
@@ -180,7 +189,7 @@ def build_all(kalshi_dir: Path = DEFAULT_KALSHI_DIR,
 
 def write_all(out_dir: Path = DEFAULT_OUT_DIR, kalshi_dir: Path = DEFAULT_KALSHI_DIR,
              polymarket_dir: Path = DEFAULT_POLYMARKET_DIR,
-             batch_size: int = BATCH_SIZE) -> Dict[str, int]:
+             batch_size: int = BATCH_SIZE, game_keyed: bool = False) -> Dict[str, int]:
     """Stream every row straight to its sport's parquet in bounded batches
     (never holds a whole sport's rows in memory -- see BATCH_SIZE). One
     ParquetWriter per sport, opened lazily on that sport's first flush.
@@ -190,15 +199,21 @@ def write_all(out_dir: Path = DEFAULT_OUT_DIR, kalshi_dir: Path = DEFAULT_KALSHI
     buffers: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
     writers: Dict[str, pq.ParquetWriter] = {}
     counts: Dict[str, int] = defaultdict(int)
+    schema = GAMEKEYED_PARQUET_SCHEMA if game_keyed else PARQUET_SCHEMA
 
     def _flush(sport: str) -> None:
         rows = buffers[sport]
         if not rows:
             return
-        table = pa.Table.from_pylist(rows, schema=PARQUET_SCHEMA)
+        if game_keyed:
+            frame = add_game_key(pd.DataFrame(rows, columns=COLUMNS))
+            table = pa.Table.from_pandas(frame, schema=schema, preserve_index=False)
+        else:
+            table = pa.Table.from_pylist(rows, schema=schema)
         if sport not in writers:
-            path = out_dir / ("%s_price_series.parquet" % sport)
-            writers[sport] = pq.ParquetWriter(str(path), PARQUET_SCHEMA)
+            suffix = "_price_series_gamekeyed.parquet" if game_keyed else "_price_series.parquet"
+            path = out_dir / ("%s%s" % (sport, suffix))
+            writers[sport] = pq.ParquetWriter(str(path), schema)
         writers[sport].write_table(table)
         counts[sport] += len(rows)
         buffers[sport] = []
@@ -228,7 +243,11 @@ def write_all(out_dir: Path = DEFAULT_OUT_DIR, kalshi_dir: Path = DEFAULT_KALSHI
 
 
 def main() -> None:
-    counts = write_all()
+    parser = argparse.ArgumentParser(description="Build bounded in-play price series.")
+    parser.add_argument("--game-keyed", action="store_true",
+                        help="write additive *_price_series_gamekeyed.parquet files")
+    args = parser.parse_args()
+    counts = write_all(game_keyed=args.game_keyed)
     print(json.dumps(counts, indent=1))
 
 
@@ -238,6 +257,7 @@ if __name__ == "__main__":
 
 __all__ = [
     "series_to_market_type", "kalshi_doc_to_rows", "polymarket_doc_to_rows",
-    "build_all", "write_all", "COLUMNS", "PARQUET_SCHEMA", "BATCH_SIZE",
+    "add_game_key", "build_all", "write_all", "COLUMNS", "GAMEKEYED_COLUMNS",
+    "PARQUET_SCHEMA", "GAMEKEYED_PARQUET_SCHEMA", "BATCH_SIZE",
     "DEFAULT_KALSHI_DIR", "DEFAULT_POLYMARKET_DIR", "DEFAULT_OUT_DIR",
 ]
