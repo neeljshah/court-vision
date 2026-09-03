@@ -1,0 +1,23 @@
+GAP S155 | sport all | worktree a10 | log cx_s155_split_test_results_db_a10
+CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it; self-check against every line of section B AND section Q (Q1-Q9) before you report. Template: docs/evidence/tracking/CODEX_SPEC_TEMPLATE.md.
+GAP (verbatim): tests/platformkit/foundry/test_results_db.py is 391 LOC against the 300-LOC rail (359 on master before S74; pre-existing, filed by the S74 verifier). Split into two files by topic with the same 22 tests passing and 0 dropped; no module change.
+PREMISE (step 0): `wc -l tests/platformkit/foundry/test_results_db.py` = 391; `grep -c "^def test_" tests/platformkit/foundry/test_results_db.py` = 22; `python -m pytest tests/platformkit/foundry/test_results_db.py -q` = 22 passed. If any of the three differs, STOP, write the memo, commit, report FALSIFIED.
+LIMIT (step 1): n/a -- CONSTRUCT row; the file's own section markers (`# --- S66`, `# --- S75`, `# --- S135`, line 217/296/319) already partition claims/leases (15 tests, lines 217-391) from archive/p-values (7 tests, lines 62-216), so the split is a pure move, not a design decision.
+CHANGE (step 2), additive-only file split, tests/ ONLY (scripts/platformkit/foundry/results_db.py and results_db_sql.py are READ-ONLY, byte-identical after):
+  1. tests/platformkit/foundry/test_results_db.py (kept name) keeps: imports, `_db`, `_plus`, `_queued`, `_queued_hashes`, and the 15 claim/lease/reap tests (lines 235-391 today: expired_claim, claim_reaps_expired_rows_itself, release_frees_a_claim, pre_lease_claim_never_auto_reaped, claimed_hypothesis_round_trips_its_family, mixed_queue_claims_group_per_family, claim_with_a_sport, an_unfiltered_claim, a_renewed_lease_is_not_double_claimed, the_default_lease_scales_with_the_batch, a_reap_never_frees_the_callers_own_expired_claim, renew_does_not_resurrect_a_released_row, a_sport_null_hypothesis_is_refused_at_seed_time, undrainable_queued_reports_a_pre_s135_row) plus `test_claim_is_atomic` (line 186, queue/claim topic).
+  2. new tests/platformkit/foundry/test_results_db_archive.py takes: imports, `_db`, `_k`, `_propose`, `_result`, and the 7 archive/p-values/schema/migration tests (reproposal_is_a_lookup_and_charges_nothing, changed_corpus_sha_is_a_fresh_trial, stale_k_lookup_flags_rescore, same_hash_different_raw_params_raises, round_trip_every_column, unique_constraint_rejects_a_duplicate_trial, family_p_values_tier_filter_and_screen_p_column).
+  3. `_db` is used by both groups -- either move it to a new tests/platformkit/foundry/conftest.py fixture or duplicate the 2-line helper verbatim in both files; no other helper is shared across the split.
+  4. No assertion text, fixture value, or import target changes; only which file a test/helper lives in.
+TEST: run both split files, nothing else: `python -m pytest tests/platformkit/foundry/test_results_db.py tests/platformkit/foundry/test_results_db_archive.py -q`.
+ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
+  metric        = test count across the two files, by name, via `pytest --collect-only -q` on both paths together
+  before        = 22 tests in one 391-LOC file (test_results_db.py)
+  bar           = 22 tests total: test_results_db.py (kept name, claims/leases/reap, <=300 LOC) + test_results_db_archive.py (archive/p-values/schema/migration, <=300 LOC); every test name preserved verbatim; 0 dropped; 0 added; both files pass
+  n             = 22 (CONSTRUCT) -- every test enumerated by name above, none sampled
+  eye check     = n/a (S-row); reproduction = verifier runs both files in master, diffs the sorted `pytest --collect-only -q` names against today's 22-name before-list (byte-identical set), and re-runs `wc -l` on both new files
+  must not move = scripts/platformkit/foundry/results_db.py and results_db_sql.py byte-identical (diff against master); no assertion text changed in any moved test
+NON-TAUTOLOGY: the metric covers all 22 pre-existing tests with none excluded; a shrinking count or a renamed test is a REJECT, not a pass.
+EVIDENCE: docs/evidence/harness/S155_split_test_results_db_2026-09-04.md -- before/after test-name list (22 vs 22), LOC of each new file, `wc -l` and pytest output for both, a NOT VERIFIED list. Calibration language only: no dollar, ROI, profit or edge word; none of +18.38/0.119/+54/78.11/8.94/54.57 outside retraction context.
+POD: none. Local per-file test only.
+COMMIT: explicit pathspec (test_results_db.py, test_results_db_archive.py, conftest.py if used, the memo), in this worktree, no push. Report the sha as the LAST line: `SHA: <sha>`.
+NEVER PARK: run both test files to completion this turn; never end waiting.
