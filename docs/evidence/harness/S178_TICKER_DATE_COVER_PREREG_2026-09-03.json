@@ -1,0 +1,29 @@
+{
+  "artifact": "docs/evidence/harness/S178_TICKER_DATE_COVER_PREREG_2026-09-03.json",
+  "bars": {
+    "S06": 0.004,
+    "S88": 0.001
+  },
+  "denominators": {
+    "joined_store_unique_ticks": 77327,
+    "s06_scored_ticks": 47104,
+    "s88_informative_ticks": 11087,
+    "s88_scored_ticks": 33920
+  },
+  "fixed_method": "Enumerate all unique joined-store ticks and all real-game segments before applying the covering-only sensitivity subset. Join archived S06 and S88 series on (game_id, ts), reproduce each archived headline before computing covering-only results, do not relabel ticks, and do not refit a model.",
+  "gap": "S178",
+  "generated_artifacts": [
+    "docs/evidence/harness/ticker_date_cover_2026-09-04.json",
+    "docs/evidence/harness/ticker_date_cover_2026-09-04.md",
+    "docs/evidence/harness/ticker_date_cover_segments_2026-09-04.csv",
+    "docs/evidence/harness/ticker_date_cover_s06_paired_losses_2026-09-04.csv",
+    "docs/evidence/harness/ticker_date_cover_s88_paired_losses_2026-09-04.csv"
+  ],
+  "metric": "Share of scored MLB in-game ticks whose real-game segment does not cover its ticker's encoded ET date. Date-unknown rows stay in each readout population and are reported separately.",
+  "preregistration_version": 1,
+  "scoring_command": "python -m scripts.platformkit.eval_gate.ticker_date_cover --requote",
+  "seal_canonicalization": "SHA-256 of UTF-8 JSON serialized with sort_keys=true and separators=(comma,colon), after removing seal_sha256.",
+  "seal_sha256": "9082d583053c6b90f4eebd590a2a66b9dd105af8c7ec0834b7e43f17735a41bb",
+  "sealed_at_utc": "2026-09-03T00:00:00Z",
+  "written_before_scoring": true
+}

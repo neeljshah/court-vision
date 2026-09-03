@@ -1,0 +1,143 @@
+{
+  "gap": "S178",
+  "generated_at": "2026-09-03T18:29:47.918607+00:00",
+  "calibration_scope": "RE-QUOTE; no charge; no model refit",
+  "preregistration": {
+    "path": "docs/evidence/harness/S178_TICKER_DATE_COVER_PREREG_2026-09-03.json",
+    "seal_sha256": "9082d583053c6b90f4eebd590a2a66b9dd105af8c7ec0834b7e43f17735a41bb"
+  },
+  "store": {
+    "raw_ticks": 78986,
+    "unique_ticks": 77327,
+    "segments": 360,
+    "covering_segments": 247,
+    "noncovering_segments": 113,
+    "noncovering_ticks": 18776,
+    "noncovering_tickers": 98,
+    "date_unknown_segments": 0,
+    "date_unknown_ticks": 0,
+    "date_unknown_tickers": [],
+    "split": {
+      "n_game_ids": 227,
+      "n_real_games": 360,
+      "n_multi": 112,
+      "n_ticks": 77327,
+      "n_ticks_reassigned": 21284,
+      "gap_hours": 5.0,
+      "min_gap_minutes": 20.0,
+      "boundary_reasons": {
+        "ts_gap": 129,
+        "inning_decrease": 4
+      }
+    }
+  },
+  "archive_reproduction": {
+    "s06_max_abs_error": 2.7755575615628914e-17,
+    "s88_max_abs_error": 1.0408340855860843e-17,
+    "s06": {
+      "n": 47104,
+      "n_clusters": 158,
+      "brier_baseline": 0.20678577821271302,
+      "brier_candidate": 0.2969426140234188,
+      "improvement": -0.0901568358107058,
+      "ci95": [
+        -0.13192744799390596,
+        -0.04838622362750564
+      ],
+      "verdict": "BEHIND"
+    },
+    "s88": {
+      "n": 11087,
+      "n_clusters": 127,
+      "brier_baseline": 0.17460335288909629,
+      "brier_candidate": 0.17607984816266978,
+      "improvement": -0.002889991600398369,
+      "ci95": [
+        -0.011405036929259278,
+        0.005215357341008108
+      ],
+      "verdict": "NO_CHANGE"
+    }
+  },
+  "direct_label_check": {
+    "all_store_sides_home": true,
+    "decisive_noncover": [
+      94,
+      47
+    ],
+    "decisive_cover": [
+      172,
+      10
+    ],
+    "noncover_unsettled_terminal": 112,
+    "cover_settled_looking_terminal": 141,
+    "noncover_inning_ge5": 106,
+    "noncover_inning_ge5_ticks": 18513
+  },
+  "readouts": [
+    {
+      "name": "S06",
+      "all_tick_noncover_share": 0.3499915081521739,
+      "informative_noncover_share": null,
+      "date_unknown_ticks": 0,
+      "all_segments": {
+        "n": 47104,
+        "n_clusters": 284,
+        "brier_baseline": 0.20678577821271302,
+        "brier_candidate": 0.2969426140234188,
+        "improvement": -0.0901568358107058,
+        "ci95": [
+          -0.12511094959875121,
+          -0.05520272202266038
+        ],
+        "verdict": "BEHIND"
+      },
+      "readout_included": {
+        "n": 30618,
+        "n_clusters": 180,
+        "brier_baseline": 0.1691638111443237,
+        "brier_candidate": 0.2804791775430788,
+        "improvement": -0.11131536639875506,
+        "ci95": [
+          -0.15349041558729265,
+          -0.06914031721021746
+        ],
+        "verdict": "BEHIND"
+      }
+    },
+    {
+      "name": "S88",
+      "all_tick_noncover_share": 0.3429834905660377,
+      "informative_noncover_share": 0.05447821773247948,
+      "date_unknown_ticks": 0,
+      "all_segments": {
+        "n": 11087,
+        "n_clusters": 234,
+        "brier_baseline": 0.17460335288909629,
+        "brier_candidate": 0.17607984816266978,
+        "improvement": 0.000364980684985732,
+        "ci95": [
+          -0.0074878158026628165,
+          0.008318432066568902
+        ],
+        "verdict": "NO_CHANGE"
+      },
+      "readout_included": {
+        "n": 10483,
+        "n_clusters": 149,
+        "brier_baseline": 0.16878927654060608,
+        "brier_candidate": 0.1700711321556816,
+        "improvement": -0.0050739398632676435,
+        "ci95": [
+          -0.013236421336619836,
+          0.003018957243788043
+        ],
+        "verdict": "NO_CHANGE"
+      }
+    }
+  ],
+  "join_unmatched_rows": {
+    "s06": 0,
+    "s88": 0
+  }
+}
