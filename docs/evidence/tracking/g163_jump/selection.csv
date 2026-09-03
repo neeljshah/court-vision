@@ -1,0 +1,6 @@
+sample_ordinal,equal_processed_window_target,selected_anomaly_frame,anomaly_type,reason
+1,0,5676,duplicate,duplicate player-ball track_id collision
+2,7193,5691,duplicate,duplicate player-ball track_id collision
+3,14386,18792,jump,existing over-threshold player jump
+4,21579,21303,jump,existing over-threshold player jump
+5,28772,25437,jump,existing over-threshold player jump

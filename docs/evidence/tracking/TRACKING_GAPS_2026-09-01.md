@@ -16,6 +16,14 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G158b / G163b / G165 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G163b | tennis | The four "duplicate frame-track rows" all share `track_id=99` at frames 5676, 5679, 5688, 5691 and are NOT byte-identical: each pair is one `player` row and one `ball` row. The id spaces are not disjoint across `cls`. 5 evenly spaced renders committed (2 duplicates, 3 jumps on tracks 399/462/510). | `g163b_duplicates_and_renders_2026-09-03.md`; `g163_jump/` | **ACCEPT -- an id-allocation defect, not a double-detection defect. Closes the eye check G162 and G163 both left open. 8.00 jump bar untouched.** |
+| G158b | all | All 359 frozen targets present and readable (attempt 1 saw 1 through a stale store): 358 basketball (0.9972), 1 UNKNOWN, exactly two header shapes, 359 carrying coordinate columns with one header-only. Timeline consistent with the legacy population. | `g158b_other_359_availability_2026-09-03.md`; `g158b_availability/` | **ACCEPT -- coherent with G158's single unstamped basketball writer. Geometry columns present is a fact about the FILES, not a licence to re-stamp; nothing modified, `src/` untouched.** |
+| G165 | all | Exhaustive reap-path raise enumeration plus the A5 reader survey, and two temp-only simulated ENOSPC reproductions confirming `active` is popped, zero retention calls occur, the source stays staged and no verdict is written. | `g165_full_volume_reap_2026-09-03.md` | **ACCEPT -- the lane REFUSED the `finally: retain(...)` trap the spec named as a B3 automatic reject, and reported that a safe fix needs a loud storage-unwritable pause design. No runtime code changed, which the spec declared a full success.** |
+
 ## G156c result register
 
 | Gap | Sport | Finding | Evidence | Status |
