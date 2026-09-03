@@ -12,7 +12,9 @@ then scored on that SAME screen partition. Every number here is a CEILING, not a
 verdict side (E1/I1/D1 for soccer, the odd ISO-week blocks elsewhere) is never opened, nothing
 is charged, no prereg is sealed and the FWER ledger is never read or written.
 
-nba/mlb carry NO close: their incumbent is `p_base` (Elo), LABELLED in every row of output.
+nba/mlb default to `p_base` (Elo) as the incumbent, LABELLED in every row of output; with
+S113's FOUNDRY_CLOSE_INCUMBENT=1 they take the S112 market close instead (label per
+close_source) and the window narrows to the close-covered rows.
 Calibration language only. ASCII.
 
 Per-file test: python -m pytest tests/platformkit/foundry/test_family_combo_screen.py -q

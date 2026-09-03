@@ -35,6 +35,16 @@ REFIT_EVERY, MIN_FIT_ROWS, RIDGE = 50, 30, 1e-3
 # base is a frozen member of every *_gate family ("does the base still add to the close?").
 SPINE = frozenset(("event_id", "game_id", "corpus_unit", "event_date", "date", "season", "y", "index"))
 INCUMBENT = {"soccer": "devig_close", "tennis": "devig_close", "nba": "p_base", "mlb": "p_base"}
+# S113: nba/mlb OPT-IN market-relative incumbent. Default OFF -- the pod run is unchanged until the
+# orchestrator exports FOUNDRY_CLOSE_INCUMBENT=1. ON: the incumbent is `p_close` from
+# gate_corpus_{nba,mlb}_close and the served window is RESTRICTED to close-covered rows.
+CLOSE_INCUMBENT_ENV = "FOUNDRY_CLOSE_INCUMBENT"
+# The label is per close_source and never overstates what the source is: mlb's is a devigged
+# two-sided close; nba's pregame source is a ONE-SIDED venue probability (close_join_nba_mlb
+# forbids calling it a devigged close) and its fallback source is the first in-play tick.
+CLOSE_LABEL = {"pre_first_pitch_two_sided": "devigged_close",
+               "pregame_last_tick_before_commence": "pregame_venue_close",
+               "first_inplay_tick": "first_inplay_tick"}
 # S53's rule for every sport: a same-game or in-game column is refused by NAME. In-game state
 # columns (`asof_idx`, `p0`, `state_diff`, ...) are as-of WITHIN a game, which is same-game
 # relative to a pregame state, so they are named here even though some say `asof`.
@@ -266,17 +276,34 @@ def _teams(sport: str) -> pd.DataFrame:
     return games.drop_duplicates("event_id").set_index("event_id")[["home_team", "away_team"]]
 
 
-def corpus_states(sport: str) -> tuple:
+def corpus_states(sport: str, close_incumbent: Optional[bool] = None) -> tuple:
     """(states, table, incumbent_label) for one gate corpus. soccer/tennis: close_join states,
     devigged close as incumbent; nba/mlb: p_base, LABELLED. corpus_unit is carried only where the
-    spec's SF-1 basis is corpus_unit (soccer); two-unit corpora partition by ISO week (SF-11)."""
+    spec's SF-1 basis is corpus_unit (soccer); two-unit corpora partition by ISO week (SF-11).
+
+    S113: with `close_incumbent` (or FOUNDRY_CLOSE_INCUMBENT=1) the nba/mlb incumbent is the S112
+    market close instead of Elo -- the corpus becomes gate_corpus_<sport>_close, the served rows are
+    RESTRICTED to the close-covered ones, and the six close columns are dropped from the feature
+    table so the incumbent can never be screened against itself. Default OFF = byte-identical.
+    """
     from scripts.platformkit.eval_gate.close_join import gate_corpus_states
 
     # S75: honour the same portable flag tiers.run_tier passes (pod hosts lack the domain sources)
-    corpus = load_gate_corpus(sport, portable=os.environ.get("FOUNDRY_PORTABLE_CORPUS") == "1").copy()
+    portable = os.environ.get("FOUNDRY_PORTABLE_CORPUS") == "1"
+    use_close = sport in ("nba", "mlb") and (os.environ.get(CLOSE_INCUMBENT_ENV) == "1"
+                                             if close_incumbent is None else bool(close_incumbent))
+    if use_close:
+        from scripts.platformkit.eval_gate.close_join_nba_mlb import (CLOSE_COLUMNS,
+                                                                      load_close_corpus)
+        corpus = load_close_corpus(sport, portable=portable).copy()
+        corpus = corpus[corpus["p_close"].notna()]
+    else:
+        CLOSE_COLUMNS = ()
+        corpus = load_gate_corpus(sport, portable=portable).copy()
     corpus["event_id"] = corpus["event_id"].astype(str)
     table = corpus.drop_duplicates("event_id").set_index("event_id")
     units = table["corpus_unit"].astype(str)
+    incumbent = INCUMBENT[sport]
     if sport in ("soccer", "tennis"):
         states = gate_corpus_states(sport, "1900-01-01", "2999-01-01")
         for state in states:
@@ -286,6 +313,10 @@ def corpus_states(sport: str) -> tuple:
         teams = _teams(sport)
         rows = table.join(teams, how="inner").assign(event_date=lambda t: pd.to_datetime(t["event_date"]))
         rows = rows[rows["y"].notna() & rows["p_base"].notna()].sort_values("event_date")
+        reference = "p_close" if use_close else "p_base"
+        if use_close:
+            incumbent = "+".join(sorted({CLOSE_LABEL.get(str(s), "close:%s" % s)
+                                         for s in rows["close_source"]})) or INCUMBENT[sport]
         states = []
         for event_id, row in rows.iterrows():
             day = row["event_date"].date().isoformat()
@@ -294,7 +325,8 @@ def corpus_states(sport: str) -> tuple:
                            "home": str(row["home_team"]), "away": str(row["away_team"]),
                            "features": {"p_base": float(row["p_base"])},
                            "feature_avail": {"p_base": "%sT00:00:00" % day},
-                           "devig_close_prob": float(row["p_base"]), "truth_wp": float(row["y"]),
+                           "devig_close_prob": float(row[reference]), "truth_wp": float(row["y"]),
                            "outcome": int(row["y"]), "vintage": "SYNTHETIC"})
     numeric = table.select_dtypes(include="number")
-    return states, numeric.loc[:, [c for c in numeric.columns if c not in SPINE]], INCUMBENT[sport]
+    drop = SPINE | frozenset(CLOSE_COLUMNS)
+    return states, numeric.loc[:, [c for c in numeric.columns if c not in drop]], incumbent

@@ -92,3 +92,72 @@ def test_transforms_use_prior_rows_only_and_ratio_needs_a_twin():
     assert ew.groupby(binder.frame["cluster"].values).head(1).isna().all()
     with pytest.raises(sp.ScreenRefused, match="twin"):
         binder(_hyp("x_asof", "ratio_to_opponent"))
+
+
+# --- S113: the opt-in market-relative incumbent for nba/mlb ------------------------------- #
+
+def _synthetic_corpora(rows: int = 40, covered: int = 12):
+    """A gate corpus and its _close twin: the close covers only the LAST `covered` events."""
+    frame = pd.DataFrame({
+        "event_id": ["e%03d" % i for i in range(rows)],
+        "corpus_unit": ["2026-W36"] * rows,
+        "event_date": pd.date_range("2026-01-01", periods=rows, freq="D").astype(str),
+        "y": [i % 2 for i in range(rows)],
+        "p_base": [0.40 + 0.002 * i for i in range(rows)],
+        "feat_asof": [float(i) for i in range(rows)],
+    })
+    close = frame.copy()
+    p_close = [None] * (rows - covered) + [0.70 - 0.001 * i for i in range(covered)]
+    source = [None] * (rows - covered) + [
+        "first_inplay_tick" if i % 2 else "pregame_last_tick_before_commence" for i in range(covered)]
+    close["p_close"] = p_close
+    close["close_ts"] = ["2026-01-01T00:00:00"] * rows
+    close["close_source"] = source
+    close["close_kind"] = ["VENUE_PROB_ONE_SIDED" if s else None for s in source]
+    close["close_sec_after_tip"] = [0.0 if s else None for s in source]
+    close["close_within_30s"] = [True if s else None for s in source]
+    teams = pd.DataFrame({"home_team": [TEAMS[i % 12] for i in range(rows)],
+                          "away_team": [TEAMS[(i + 5) % 12] for i in range(rows)]},
+                         index=pd.Index(frame["event_id"], name="event_id"))
+    return frame, close, teams
+
+
+def _bind_corpora(monkeypatch, frame, close, teams):
+    from scripts.platformkit.eval_gate import close_join_nba_mlb as cjn
+    monkeypatch.setenv("FOUNDRY_PORTABLE_CORPUS", "0")
+    monkeypatch.delenv(sp.CLOSE_INCUMBENT_ENV, raising=False)
+    monkeypatch.setattr(sp, "load_gate_corpus", lambda sport, portable=None: frame.copy())
+    monkeypatch.setattr(cjn, "load_close_corpus", lambda sport, portable=None: close.copy())
+    monkeypatch.setattr(sp, "_teams", lambda sport: teams)
+
+
+def test_close_incumbent_off_is_byte_identical_and_never_sees_the_close(monkeypatch):
+    frame, close, teams = _synthetic_corpora()
+    _bind_corpora(monkeypatch, frame, close, teams)
+    states, table, incumbent = sp.corpus_states("nba")
+    assert incumbent == "p_base" and len(states) == len(frame)
+    assert all(s["devig_close_prob"] == s["features"]["p_base"] for s in states)
+    assert not [c for c in table.columns if c.startswith("close_") or c == "p_close"]
+    # the env flag is the ONLY switch; an explicit False keeps Elo even with the env on
+    monkeypatch.setenv(sp.CLOSE_INCUMBENT_ENV, "1")
+    assert sp.corpus_states("nba", close_incumbent=False)[2] == "p_base"
+
+
+def test_close_incumbent_on_uses_p_close_labels_it_and_restricts_the_window(monkeypatch):
+    frame, close, teams = _synthetic_corpora(rows=40, covered=12)
+    _bind_corpora(monkeypatch, frame, close, teams)
+    off_states, _, _ = sp.corpus_states("nba")
+    monkeypatch.setenv(sp.CLOSE_INCUMBENT_ENV, "1")
+    states, table, incumbent = sp.corpus_states("nba")
+    # the window is RESTRICTED to close-covered rows, and they are a subset of the Elo window
+    assert len(states) == 12 < len(off_states)
+    assert {s["game_id"] for s in states} < {s["game_id"] for s in off_states}
+    # the incumbent served to the screen is p_close, not p_base
+    by_id = close.set_index("event_id")["p_close"]
+    assert all(s["devig_close_prob"] == by_id[s["game_id"]] for s in states)
+    assert all(s["devig_close_prob"] != s["features"]["p_base"] for s in states)
+    # labelled per close_source, and never as a devigged close for a one-sided venue quote
+    assert incumbent == "first_inplay_tick+pregame_venue_close"
+    # the incumbent can never be screened against itself
+    assert not [c for c in table.columns if c.startswith("close_") or c == "p_close"]
+    assert "feat_asof" in table.columns
