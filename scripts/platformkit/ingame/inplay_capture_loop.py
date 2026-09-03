@@ -794,9 +794,13 @@ def poll_once(*, sports: Optional[List[str]] = None,
     # the real DEFAULT_HISTORY_DIR.
     try:
         from scripts.platformkit.ingame import shadow_history as _sh
+        from scripts.platformkit.ingame import cycle_history as _ch
         hist_dir = (Path(heartbeat_path).parent / "ingame_shadow_history"
                    if heartbeat_path is not None else None)
         _sh.append_shadow_rows(games_seen, now=nowdt, history_dir=hist_dir)
+        cycle_dir = (Path(heartbeat_path).parent / "ingame_cycle_history"
+                     if heartbeat_path is not None else None)
+        _ch.append_cycle_row(heartbeat, now=nowdt, history_dir=cycle_dir)
     except Exception as exc:  # noqa: BLE001 -- shadow history is observability, not critical
         logger.warning("inplay_capture_loop shadow_history append failed: %s", exc)
     return heartbeat
