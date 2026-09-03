@@ -1,0 +1,199 @@
+{
+  "rail_s": 300.0,
+  "prerail_rows": 465249,
+  "prerail_games": 1593,
+  "landed_rows": 465249,
+  "equal_on_shared_cols": true,
+  "sha256_prerail": "4b6fe0ac38cb5cebef41c3915ab457345e78b7bc986bb4dfcd67478eb9f51ffc",
+  "sha256_landed": "4b6fe0ac38cb5cebef41c3915ab457345e78b7bc986bb4dfcd67478eb9f51ffc",
+  "overall": {
+    "p50": 646.0,
+    "p90": 7684.0,
+    "max": 62977,
+    "mean": 2958.6814759408403,
+    "rows_over_rail": 250989,
+    "share_over_rail": 0.5394724115473649,
+    "rows_retained_after_rail": 214260
+  },
+  "per_period": [
+    {
+      "period": 1,
+      "rows": 44428,
+      "p50": 12.0,
+      "p90": 97.0,
+      "max": 482,
+      "rows_over_rail": 4,
+      "share_over_rail": 9.003331232556046e-05
+    },
+    {
+      "period": 2,
+      "rows": 68825,
+      "p50": 24.0,
+      "p90": 587.0,
+      "max": 2691,
+      "rows_over_rail": 13775,
+      "share_over_rail": 0.2001452960406829
+    },
+    {
+      "period": 3,
+      "rows": 52645,
+      "p50": 14.0,
+      "p90": 125.0,
+      "max": 8036,
+      "rows_over_rail": 1626,
+      "share_over_rail": 0.030886124038370214
+    },
+    {
+      "period": 4,
+      "rows": 284586,
+      "p50": 3545.0,
+      "p90": 8888.0,
+      "max": 62977,
+      "rows_over_rail": 222799,
+      "share_over_rail": 0.7828881252064402
+    },
+    {
+      "period": 5,
+      "rows": 13152,
+      "p50": 4314.0,
+      "p90": 10763.8,
+      "max": 28167,
+      "rows_over_rail": 11358,
+      "share_over_rail": 0.863594890510949
+    },
+    {
+      "period": 6,
+      "rows": 1613,
+      "p50": 4444.0,
+      "p90": 9634.0,
+      "max": 16317,
+      "rows_over_rail": 1427,
+      "share_over_rail": 0.8846869187848729
+    }
+  ],
+  "per_game": {
+    "games": 1593,
+    "games_losing_any": 1593,
+    "games_losing_all": 0,
+    "lost_rows_p50": 142.0,
+    "lost_rows_p90": 205.79999999999995,
+    "lost_rows_max": 1055,
+    "lost_share_p50": 0.518796992481203,
+    "lost_share_p90": 0.6052479902927347,
+    "lost_share_max": 0.8850671140939598,
+    "worst_games": [
+      {
+        "game_id": 401810349,
+        "rows": 1192,
+        "lost": 1055,
+        "lost_share": 0.8850671140939598
+      },
+      {
+        "game_id": 401812680,
+        "rows": 1119,
+        "lost": 988,
+        "lost_share": 0.8829311885612153
+      },
+      {
+        "game_id": 401704691,
+        "rows": 913,
+        "lost": 796,
+        "lost_share": 0.8718510405257394
+      },
+      {
+        "game_id": 401704701,
+        "rows": 864,
+        "lost": 731,
+        "lost_share": 0.8460648148148148
+      },
+      {
+        "game_id": 401704693,
+        "rows": 856,
+        "lost": 727,
+        "lost_share": 0.8492990654205608
+      }
+    ]
+  },
+  "all_input_ticks_joined_games": 4786851,
+  "no_prior_state_ticks": 4321602,
+  "helper_stale_share_all_input_ticks": 0.955239885260686,
+  "sample_games": [
+    {
+      "game_id": 401703370,
+      "rows": 270,
+      "lost": 140,
+      "lost_share": 0.5185185185185185
+    },
+    {
+      "game_id": 401705109,
+      "rows": 283,
+      "lost": 160,
+      "lost_share": 0.5653710247349824
+    },
+    {
+      "game_id": 401810052,
+      "rows": 256,
+      "lost": 127,
+      "lost_share": 0.49609375
+    },
+    {
+      "game_id": 401810674,
+      "rows": 284,
+      "lost": 150,
+      "lost_share": 0.528169014084507
+    },
+    {
+      "game_id": 401873344,
+      "rows": 156,
+      "lost": 24,
+      "lost_share": 0.15384615384615385
+    }
+  ],
+  "railed_rows": 214260,
+  "railed_games": 1593,
+  "over_rail_post_final_play": 235513,
+  "over_rail_midgame_gap": 15476,
+  "midgame_gap_share_of_prerail": 0.033263908143811166,
+  "checkpoint_bucket_impact": {
+    "end_q1": {
+      "games_prerail": 1592,
+      "games_railed": 1592,
+      "games_lost": 0,
+      "same_row_selected": 1590,
+      "row_changed": 2,
+      "median_abs_prob_shift": 0.0,
+      "p90_abs_prob_shift": 0.0,
+      "margin_changed": 0
+    },
+    "halftime": {
+      "games_prerail": 1593,
+      "games_railed": 1593,
+      "games_lost": 0,
+      "same_row_selected": 1242,
+      "row_changed": 351,
+      "median_abs_prob_shift": 0.0,
+      "p90_abs_prob_shift": 0.0050000000000000044,
+      "margin_changed": 0
+    },
+    "end_q3": {
+      "games_prerail": 1593,
+      "games_railed": 1593,
+      "games_lost": 0,
+      "same_row_selected": 1592,
+      "row_changed": 1,
+      "median_abs_prob_shift": 0.0,
+      "p90_abs_prob_shift": 0.0,
+      "margin_changed": 0
+    },
+    "q4_under5": {
+      "games_prerail": 1593,
+      "games_railed": 1593,
+      "games_lost": 0,
+      "same_row_selected": 1593,
+      "row_changed": 0,
+      "median_abs_prob_shift": 0.0,
+      "p90_abs_prob_shift": 0.0,
+      "margin_changed": 0
+    }
+  }
+}
