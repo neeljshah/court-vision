@@ -269,8 +269,6 @@ def test_the_frozen_39_family_counts_are_unchanged_by_s134():
         "ingame_arms_mlb": 2, "ingame_arms_nba": 1, "soccer_gate": 1}
 
 
-@pytest.mark.xfail(strict=True, reason="pending the PROPOSED-S134 ledger.py patch "
-                                       "(eval_gate/ledger.py is token-locked)")
 def test_the_two_counters_also_agree_on_a_pre_s13_row():
     """The remaining half of S134: a row carrying `family` with `k_family` None.
 
