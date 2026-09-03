@@ -1,5 +1,15 @@
 # Tracking architecture: consolidated diagnosis and the plan that follows from it
 
+> **SUPERSEDED IN PART -- READ THE ADJUDICATION FIRST.**
+> `G_ADJUDICATION_fable_review_2026-09-03.md` REFUTES this document's keystone
+> (calibration-first), withdraws its SOTA claims on association and detection,
+> withdraws G140's 17 frames as a "training set", and corrects the determinism
+> spread from 40 pct to a verified 9 pct on n=3. Its sequencing replaces section 3
+> and its rule set replaces section 5. What survives here: the consolidated
+> findings table (section 1), the licence constraint, and section 6's argument
+> that throughput was never the constraint.
+
+
 Written by the orchestrator 2026-09-03 after a day of measurement rows and an
 external survey of the published state of the art. **Nothing here is a result.**
 Every number cited is a landed row named in the text; the architecture section is
