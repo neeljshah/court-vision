@@ -71,6 +71,8 @@
 
 | G194 | wnba | **BASKETBALL PROJECTS THROUGH A DEGENERATE STATIC MATRIX.** 3 of 3 runs took the `Rectify1.npy_fallback` branch: 5 fresh-solve attempts each, **0 successes**, `_M1_raw_clip` never set, final M1 elementwise identical to the static file (max delta 0.0). **Orchestrator eye check on the committed render: the projected court is a single diagonal LINE across the crowd, unrelated to the plainly visible painted court -- degenerate, not inaccurate.** | `g194_which_M1_2026-09-03.md` + 6 renders + 3 per-run JSON | **ACCEPT. Test passes. TWO CONSEQUENCES. (1) `run_clip.py:581`'s "a per-clip one is solved in memory and discarded" is FALSE -- nothing is solved -- and that comment misled both the Fable review and me toward a "just persist it" fix that does not exist. It needs a human-gated correction. (2) It explains the out-of-frame survivor coordinates G189 and G193 both flagged and neither could own: a degenerate projection maps the image onto a line. `unified_pipeline.py:885-887` predicted exactly this and has been firing silently on every basketball clip. NOT claimed: that basketball cannot be calibrated (G136: 46.2 pct four-corner visibility).** |
 
+| G196 | ncaa_basketball/wnba | OPEN -- allocated 2026-09-03. **Is basketball court geometry recoverable AT ALL?** Build a homography per frame from G140's four HAND-LABELLED paint corners (all 17 frames carry all 4 roles -- verified over the whole file) and render the projected court. Decides where basketball effort goes: if hand labels project correctly the ceiling is DETECTION; if they do not, the court model or role semantics are wrong and a detector would be wasted. | pending | OPEN. 4 points is the exact minimum, so no redundancy and no outlier rejection; G140's 11.39 px label floor propagates straight into the matrix. The eye check is the deliverable, not the round-trip residual, which is exact by construction and proves nothing. |
+
 ## G175 result register
 
 | Gap | Sport | Finding | Evidence | Status |
@@ -282,7 +284,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G196  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G197  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
