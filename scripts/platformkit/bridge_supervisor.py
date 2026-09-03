@@ -73,7 +73,11 @@ def spawn(lane: str, queues: list, per_lane: int) -> subprocess.Popen:
     for queue in queues:
         command += ["--queue", str(DATA_DIR / queue)]
     handle = (LOG_DIR / ("bridge_%s.log" % lane)).open("a", encoding="utf-8")
-    return subprocess.Popen(command, stdout=handle, stderr=subprocess.STDOUT)
+    # CREATE_NO_WINDOW: see bridge_keeper._NO_WINDOW. A spawned console app that
+    # has no console to inherit allocates its own, and seven of them plus a
+    # five-minute watchdog put a stream of terminal windows on the desktop.
+    return subprocess.Popen(command, stdout=handle, stderr=subprocess.STDOUT,
+                            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
 
 
 # Refills run detached, one at a time per sport. A refill is a network call and
@@ -111,7 +115,8 @@ def refill(sport: str) -> None:
         _REFILLS_IN_FLIGHT[sport] = subprocess.Popen(
             [sys.executable, "-m", "scripts.platformkit.queue_expander",
              "--sports", sport, "--target", "60"],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
     except (subprocess.SubprocessError, OSError) as exc:
         print("refill %s failed: %s" % (sport, exc), flush=True)
 

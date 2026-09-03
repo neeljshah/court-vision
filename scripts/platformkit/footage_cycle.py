@@ -26,6 +26,12 @@ from scripts.platformkit.provenance import record_provenance
 from scripts.platformkit.demo_render import render_csv
 from scripts.platformkit.tracking_harness import evaluate
 
+# CREATE_NO_WINDOW: every console child of the console-less agent Bash tool
+# (ssh, scp, yt-dlp, ffprobe) allocates its OWN console on Windows and pops a
+# terminal window. Seven lanes plus a five-minute watchdog made that a stream of
+# windows across the desktop; the user asked three times for it to stop.
+_NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+
 DATA_DIR = Path("data")
 DOWNLOAD_DIR = DATA_DIR / "footage"
 TRACKING_DIR = DATA_DIR / "tracking"
@@ -75,6 +81,7 @@ def download_item(item: dict[str, str], destination: Path) -> Path:
                 capture_output=True,
                 text=True,
                 timeout=MAX_ITEM_SECONDS,
+                creationflags=_NO_WINDOW,
             )
             if destination.exists():
                 return destination
@@ -146,7 +153,7 @@ def track_item(item: dict[str, str], video: Path) -> Path:
             sys.executable, "scripts/run_clip.py", "--video", str(video),
             "--game-id", item["game_id"], "--no-show", "--frames", "18000",
             "--data-dir", str(output_dir),
-        ], check=True)
+        ], check=True, creationflags=_NO_WINDOW)
         if not output.is_file():
             raise FileNotFoundError("Basketball runner did not write %s" % output)
         from scripts.platformkit.adapter_run import BALL_TELEMETRY_AVAILABLE

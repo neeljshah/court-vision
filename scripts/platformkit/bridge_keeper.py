@@ -31,6 +31,8 @@ from __future__ import annotations
 import argparse
 import subprocess
 import sys
+
+import psutil
 from pathlib import Path
 
 from scripts.platformkit.bridge_supervisor import DATA_DIR, LANES, LOG_DIR
@@ -42,6 +44,43 @@ REFILL_THRESHOLD = 6
 # Seven lanes at --per-lane 1 run about one yt-dlp and one ffmpeg each. Well
 # above that means orphans, not throughput.
 FETCHER_ALARM = 24
+
+
+# DETACHED_PROCESS alone is not enough on Windows: a detached console app has no
+# console to inherit, so it ALLOCATES ITS OWN and a terminal window pops up. With
+# seven lanes plus a watchdog that re-runs every five minutes and restarts
+# whatever is missing, that is a stream of windows across the user's desktop.
+# CREATE_NO_WINDOW suppresses the allocation; the workers still run detached and
+# still survive their parent, which is the whole point of the keeper.
+_NO_WINDOW = (getattr(subprocess, "DETACHED_PROCESS", 0)
+              | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
+              | getattr(subprocess, "CREATE_NO_WINDOW", 0))
+
+
+def _python_command_lines() -> list:
+    """Command lines of every live python process, without spawning anything.
+
+    Deliberately psutil rather than a shell-out. This module runs from a
+    scheduled task every few minutes, and each `powershell -Command` it used to
+    launch was a console child that surfaced a Windows Terminal window -- the
+    user asked three times for that to stop. Worse, on 2026-09-03 Windows
+    Defender flagged the pattern as Trojan:Win32/PowhidSubExec.B: a hidden,
+    repeated PowerShell sub-execution issuing Get-CimInstance / Get-Process
+    looks exactly like process-enumeration malware. Never launch powershell.exe
+    for process work here.
+    """
+    lines = []
+    try:
+        for proc in psutil.process_iter(["name", "cmdline"]):
+            name = (proc.info.get("name") or "").lower()
+            if not name.startswith("python"):
+                continue
+            cmdline = proc.info.get("cmdline") or []
+            if cmdline:
+                lines.append(" ".join(cmdline))
+    except Exception:
+        return []
+    return lines
 
 
 def running_lane_names() -> set:
@@ -56,18 +95,8 @@ def running_lane_names() -> set:
     operator's ssh, a grep -- would otherwise match and report a phantom worker.
     track_daemon.py:38-44 documents that exact trap for the pod daemon.
     """
-    script = (
-        "Get-CimInstance Win32_Process -Filter \"Name='python.exe'\" | "
-        "Where-Object { $_.CommandLine -like '*platformkit.footage_bridge*' } | "
-        "ForEach-Object { $_.CommandLine }"
-    )
-    try:
-        result = subprocess.run(["powershell", "-NoProfile", "-Command", script],
-                                capture_output=True, text=True, timeout=120)
-    except (subprocess.SubprocessError, OSError):
-        return set()
     live = set()
-    for line in result.stdout.splitlines():
+    for line in _python_command_lines():
         for name, queues in LANES:
             if any(queue in line for queue in queues):
                 live.add(name)
@@ -76,13 +105,11 @@ def running_lane_names() -> set:
 
 def fetcher_count() -> int:
     """How many yt-dlp/ffmpeg processes exist, orphaned or not."""
-    script = ("(Get-Process -Name 'yt-dlp','ffmpeg' -ErrorAction SilentlyContinue)"
-              ".Count")
+    wanted = {"yt-dlp.exe", "ffmpeg.exe", "yt-dlp", "ffmpeg"}
     try:
-        result = subprocess.run(["powershell", "-NoProfile", "-Command", script],
-                                capture_output=True, text=True, timeout=120)
-        return int((result.stdout or "0").strip() or 0)
-    except (subprocess.SubprocessError, OSError, ValueError):
+        return sum(1 for proc in psutil.process_iter(["name"])
+                   if (proc.info.get("name") or "") in wanted)
+    except Exception:
         return 0
 
 
@@ -106,8 +133,7 @@ def start_lane(name: str, queues: list, per_lane: int) -> int | None:
         handle = log.open("a", encoding="utf-8")
         process = subprocess.Popen(
             command, stdout=handle, stderr=subprocess.STDOUT,
-            creationflags=getattr(subprocess, "DETACHED_PROCESS", 0)
-            | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0))
+            creationflags=_NO_WINDOW)
         return process.pid
     except (subprocess.SubprocessError, OSError) as exc:
         print("lane %s failed to start: %s" % (name, exc))

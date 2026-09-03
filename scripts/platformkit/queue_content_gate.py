@@ -16,6 +16,12 @@ from pathlib import Path
 from scripts.platformkit import footage_content_gate
 from scripts.platformkit.tracking import footage_census
 
+# CREATE_NO_WINDOW: every console child of the console-less agent Bash tool
+# (ssh, scp, yt-dlp, ffprobe) allocates its OWN console on Windows and pops a
+# terminal window. Seven lanes plus a five-minute watchdog made that a stream of
+# windows across the desktop; the user asked three times for it to stop.
+_NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+
 
 PROBE_SECONDS = 90
 GATE_VERSION = 3
@@ -111,6 +117,7 @@ def fetch_metadata(url: str) -> tuple[str, str]:
         result = subprocess.run(
             ["yt-dlp", "--skip-download", "--no-playlist", "--dump-single-json", url],
             check=True, capture_output=True, text=True, timeout=90,
+            creationflags=_NO_WINDOW,
         )
         payload = json.loads(result.stdout)
     except (OSError, ValueError, subprocess.SubprocessError):
@@ -135,7 +142,8 @@ def _probe_download(url: str, output: Path, cookies_file: Path) -> bool:
     if cookies_file.is_file():
         command[1:1] = ["--cookies", str(cookies_file)]
     try:
-        subprocess.run(command, check=True, capture_output=True, text=True, timeout=240)
+        subprocess.run(command, check=True, capture_output=True, text=True, timeout=240,
+                       creationflags=_NO_WINDOW)
     except (OSError, subprocess.SubprocessError):
         return False
     return output.is_file()
