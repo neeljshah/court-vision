@@ -429,7 +429,10 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-03 | sport harness | S195 | paired Brier source quotes 8/8; WNBA n=25 delta +0.000945; soccer_intl n=7 delta -0.021289 | ACCEPT (verified: codex-sol, contract A/B/Q) | 490522427
 
 2026-09-04 | MLB close bridge | S194 | 641 raw in-window ids; 337 settled event capacity below fixed 400 bar; memo + json landed with S195 | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 490522427
+2026-09-03 | hook | S194 | docs(harness): register -- S194 CLOSED AT LIMIT (files landed with S195 490522427); ledger line | LANDED (auto; verifier line pending) | 28efbe03d
 2026-09-03 | close-reference calibration | S204 | NBA n=220 delta=-0.015620 n_eff=2; MLB n=910 delta=-0.003557 n_eff=1; soccer n=16322 delta=-0.007546 n_eff=6; tennis n=0; all NOT SCORABLE | ACCEPT (verified: codex-sol, contract A/B/Q) | 4a81fce8f
 2026-09-04 | all | S200 | regime-key OOF leak: date-group train-only keys; clean-rerun after-ECE nba 0.022205 / mlb 0.009672 / soccer 0.009192 / tennis 0.016928 vs published leaked-key 0.024843 / 0.008077 / 0.009302 / 0.008403 (tennis was flattered ~2x); archive not reproducible (mutable cache) -> code NOT landed, memos landed, continuation S212 | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 0c4468c5b .
 2026-09-03 | signals-ingame | S206 | 16,571 ticks/75 games; candidate-null Brier +0.000384828, CI [-0.000210271,+0.000979927], SCREEN NULL | SCREEN_NULL (verified: codex-sol, contract A/B/Q) | b2b634bec
 2026-09-03 | calibration dependence | S202 | 4/4 archived one-way/two-way stand-in+paired n_eff pairs reproduced at seed 20260904; n=1814/39162/25834/41886 | ACCEPT (verified: codex-sol, contract A/B/Q) | 791edd270
+2026-09-03 | hook | S201 | S201: CLOSED AT LIMIT -- required S92 archive absent | LANDED (auto; verifier line pending) | 4b27ec7f4
+2026-09-03 | NBA fatigue-conditioned forms | S201 | required S92 archive absent; 0/2 files available and no scored comparison | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 4b27ec7f4
