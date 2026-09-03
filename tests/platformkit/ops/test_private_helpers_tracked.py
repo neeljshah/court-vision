@@ -14,6 +14,10 @@ import re
 import subprocess
 from pathlib import Path
 
+import pytest
+
+from scripts.platformkit.eval_gate import worktree_marker
+
 ROOT = Path(__file__).resolve().parents[3]
 
 
@@ -50,7 +54,11 @@ def _importers(stems: list[str]) -> list[str]:
 
 def test_private_helpers_imported_by_tracked_modules_are_tracked() -> None:
     by_stem = _untracked_helpers()
-    assert by_stem, "expected some untracked scripts/**/_*.py (the rule is live)"
+    if not by_stem:
+        helper_glob = ROOT / "scripts" / "**" / "_*.py"
+        if worktree_marker.is_worktree_checkout():
+            pytest.skip("worktree checkout: untracked private-helper precondition absent: %s" % helper_glob)
+        pytest.fail("main-repo checkout: untracked private-helper precondition absent: %s" % helper_glob)
 
     offenders: list[str] = []
     for hit in _importers(sorted(by_stem)):

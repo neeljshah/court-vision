@@ -60,9 +60,22 @@ def design_effect(rho: float, mean_ticks_per_game: float) -> float:
 
 
 def effective_sample_size(
-    rows: pd.DataFrame, game_column: str = "game", loss_column: str = "loss_differential"
+    rows: pd.DataFrame,
+    game_column: str = "game",
+    loss_column: str = "loss_differential",
+    *,
+    empty_ok: bool = False,
 ) -> dict[str, float | int | bool]:
     """Return tick and game counts, ICC, design effect, and clustered ESS."""
+    if empty_ok and rows.empty:
+        return {
+            "n_ticks": 0,
+            "n_games": 0,
+            "rho": 0.0,
+            "design_effect": 1.0,
+            "n_eff": 0.0,
+            "n_eff_bound_ok": True,
+        }
     usable = _require_columns(rows, game_column, loss_column)
     n_ticks = len(usable)
     n_games = int(usable[game_column].nunique())

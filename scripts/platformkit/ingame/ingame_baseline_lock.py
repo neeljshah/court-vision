@@ -128,9 +128,9 @@ def summarize(store: Path) -> Dict[str, Any]:
                    len(paired) if paired else None)
     market_brier = (sum((row["market_prob"] - row["outcome"]) ** 2 for row in paired) /
                     len(paired) if paired else None)
-    ess_summary = (effective_sample_size(pd.DataFrame({"game": games,
-                                                        "loss_differential": losses}))
-                   if paired else {"n_games": 0, "n_eff": 0.0, "n_eff_bound_ok": True})
+    ess_summary = effective_sample_size(
+        pd.DataFrame({"game": games, "loss_differential": losses}), empty_ok=True
+    )
     dm = diebold_mariano(losses, games) if len(set(games)) >= 2 else None
     ci95 = dm.ci95 if dm is not None else None
     ess = float(ess_summary["n_eff"])
