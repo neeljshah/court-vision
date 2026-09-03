@@ -74,3 +74,39 @@ POD: read-only and batched, except running your own bounded measurement job THER
 deploy over the daemon or keeper; do not wait on the daemon, it is slow by a known defect (G186).
 COMMIT: explicit pathspec only, no push. Report the sha.
 NEVER PARK.
+
+## RE-DISPATCH 2026-09-03, read this before anything else
+
+The first attempt STOPPED at Q8 and was RIGHT to. Two things it hit are now fixed
+in this spec; a third is your job.
+
+1. **THE SOURCE IS AMBIGUOUS AND THAT IS WHAT BROKE THE FIRST RUN.** Two different
+   videos both answer to `wnba_01`:
+   - `data/footage_corpus/wnba__wnba_01.mp4` on the POD -- 1920x1080,
+     2,931,985,407 bytes. **THIS ONE. G187 measured it and it is authoritative.**
+   - `data/footage_corpus/g130_recensus/wnba__wnba_01.mp4` locally -- a 1280x720
+     DERIVATIVE. Not interchangeable.
+   State the full path, byte size and resolution of whatever you open, in the memo
+   and in the artifact. If you cannot reach the 1080p pod file, STOP and say so.
+2. **RUN ON THE POD.** Stated above and repeated here because the first run did
+   not: two RAM guards fired on the 16 GB local box at 95 and 96 pct with other
+   lanes live. The pod has an idle RTX 3090 and 24 GB.
+3. **The first run found something you must engage with, not repeat.** On the
+   720p derivative's frame 474, the existing survivor path retained **6 on-court
+   players from 11 raw person detections** -- while G187's 1080p run at the same
+   frame retained 3, including a foreground spectator. Same code, different input,
+   materially different answer. So the live question is now sharper than the
+   original one:
+
+   **Does the 1080p pod source reproduce G187's 3 non-court survivors, or does it
+   behave like the derivative?** Answer that FIRST, on frame 474, before any
+   20-frame table. If it reproduces, the cause is in the input or the route, not
+   the detector. If it does not reproduce, then G187's own run is not reproducible
+   and THAT is the finding -- report it and stop.
+
+Carry the `TOPCUT=60` crop question explicitly: the first run applied the normal
+crop before detection. Say whether G187's route did, since a different crop is a
+sufficient explanation on its own and would make this a route difference rather
+than a selection defect.
+
+Everything else in the spec above stands unchanged.
