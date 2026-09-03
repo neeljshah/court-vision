@@ -1,4 +1,4 @@
-GAP S184 | sport mlb | worktree a10 | log cx_s184_mlb_slate_date
+GAP S184 | sport mlb | worktree a13 | log cx_s184_mlb_slate_date
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- self-check section B (B1-B10) AND section Q (Q1-Q9) before reporting. S-row: eye check = n/a, REPRODUCTION replaces render (A2 applies, A3 does not); n = 24 (CONSTRUCT) is exempt from the n>=30 rail.
 DEFECT: mlb_book_capture.py:204 resolves the slate as UTC-today and passes that one string EXPLICITLY to :177 list_live_game_pks and to :181 -> :170 build_bridge, overriding the baseball-date default (UTC minus 10 h) that gumbo_mlb_poller.py:107-116 documents precisely because today-UTC "went blind every evening". Second blind caller, same shape: ingame_enrichment_runner.py:83 calls build_bridge() with no date.
 PREMISE (step 0, re-measure before anything else): offline 24 h sweep over 2026-09-02 hours 00..23, fake live_games_fn, no network -- count hours where capture_once's resolved date differs from (now - 10 h). Re-measured 2026-09-04 = 10 of 24 (hours 00Z-09Z). If it is not 10, STOP, write the memo, report FALSIFIED.
