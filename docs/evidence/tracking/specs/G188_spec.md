@@ -65,7 +65,12 @@ ACCEPTANCE RULE:
 EVIDENCE: docs/evidence/tracking/g188_player_selection_defect_2026-09-03.md with the per-frame table,
 the dual-colour renders, the stated cause verdict, and a NOT VERIFIED list. Commit BEFORE reporting.
 TEST: your per-file test, pasted. NEVER a full pytest.
-POD: read-only and batched, except running your own bounded measurement job. Never kill, restart or
+**RUN EVERY MEASUREMENT ON THE POD, NOT LOCALLY.** This was missing from the first dispatch and a
+local `run_clip.py` was killed at 95 pct box RAM on 2026-09-03; the local box has 16 GB and other
+lanes run on it, so a local decode job risks taking them down with it. The pod has an idle RTX 3090
+and 24 GB. Copy nothing INTO the pod checkout; run your measurement as its own process there and pull
+results back.
+POD: read-only and batched, except running your own bounded measurement job THERE. Never kill, restart or
 deploy over the daemon or keeper; do not wait on the daemon, it is slow by a known defect (G186).
 COMMIT: explicit pathspec only, no push. Report the sha.
 NEVER PARK.
