@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import glob
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -54,8 +55,12 @@ def lane_logs() -> dict:
             continue
         out[name] = {
             "path": path,
-            "dispatched": text.count("\nDISPATCHED") + text.startswith("DISPATCHED"),
-            "exited": text.count("\nEXIT:") + text.startswith("EXIT:"),
+            # Anchored, and the exit code digit is required. A lane memo that quotes
+            # the string EXIT: mid-document (G181 did) otherwise counts as a second
+            # exit and makes a running lane look finished -- exactly the false signal
+            # this tool exists to remove.
+            "dispatched": len(re.findall(r"(?m)^DISPATCHED ", text)),
+            "exited": len(re.findall(r"(?m)^EXIT:\d", text)),
             "mtime": os.path.getmtime(path),
         }
     return out
