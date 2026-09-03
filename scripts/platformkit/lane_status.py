@@ -94,7 +94,15 @@ def worktree_state(home: str) -> dict:
             name = name.strip()
             if not name or any(s in name for s in SHARED):
                 continue
-            if not (MAIN / name).exists():
+            # Compare CONTENT, not path existence. Two lanes dispatched on the
+            # same gap write the same paths with different bytes, so an
+            # existence test calls the second one "safe to free" and freeing it
+            # silently discards a distinct implementation. Seen for real on
+            # 2026-09-03: G182 ran twice and a7's harness differed from the a5
+            # version that landed at the identical path.
+            here = _git(repo, "rev-parse", "HEAD:" + name)
+            there = _git(MAIN.as_posix(), "rev-parse", "HEAD:" + name)
+            if not there or here != there:
                 unlanded_files.append(name)
     # A junction that is a stale real directory reads as a near-empty store; the
     # main repo's count is the only honest comparison.

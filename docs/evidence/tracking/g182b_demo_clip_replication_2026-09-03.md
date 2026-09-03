@@ -95,3 +95,15 @@ withdrawn here. The 90.755% measurement itself is untouched and stands.
   Answering it needs a labelling pass, not a five-frame eye check.
 - Whether the demo clip's burned-in overlays contribute to its 0/150.
 - Any downstream tracking-quality, coverage or prediction conclusion.
+
+## What was deliberately not landed
+
+a7 wrote its own `scripts/platformkit/tracking/g182_calibration_funnel.py` and a
+matching test, a second implementation at the identical path a5's landed harness
+occupies. **a7's version was NOT landed and is not preserved.** a5's was kept
+because it records per-frame observations, which made its headline independently
+reproducible, while a7's records aggregates only. Keeping two harnesses for one
+measurement is not worth the duplication. This is recorded rather than left
+silent because the two files differ at a path that exists in master, which is
+precisely the case a path-existence check would mis-report as already landed.
+a7's memo, renders and aggregate artifact ARE landed, renamed to `g182b_*`.
