@@ -273,3 +273,8 @@ LOW behind G25b.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G139 | all | Read all 426 daemon-ledger rows: six distinct games ever have `decoded_frame_denominator` as first failure (KBO 2; NCAA basketball, soccer, tennis and WNBA 1 each), concentrated from 2026-09-02 21:52 UTC through 2026-09-03 01:30 UTC. Read-only ffprobe on affected `soccer_cS4OpYJ0Pps` exits 0 but prints the identical `39000` count twice for its one normal H.264 video stream represented in both MPEG-TS program and global stream sections. The old exactly-one-line check is too strict. The landed change accepts only one unique count value and preserves rejection of distinct values; tennis_08's out-of-range emitted-frame cause remains separate. | `g139_decoded_frame_denominator_2026-09-02.md`; `g139_denominator/` | ACCEPT; no pod deployment, daemon action, threshold, coordinate-contract, or existing verdict change. |
+## G145 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G145 | all | Full 2026-09-02 G80-G143 NOT VERIFIED inventory: 56 memos read, 55 explicit sections, 214 bullet items. Classified 6 CHEAP / 165 EXPENSIVE / 43 PERMANENT; six read-only checks performed. G121's cause caveat is overturned on G126's audit sample as a G111 label error, while G107's 6-table snapshot is merely later superseded by an 8-table snapshot. No threshold, verdict, coordinate contract, published number, pod file, or process changed. | `g145_not_verified_sweep_2026-09-0X.md`; `g145_sweep/README.md` | ACCEPT (debt sweep complete; expensive queue and permanent exclusions named). |
