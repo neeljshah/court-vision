@@ -1,0 +1,1345 @@
+[
+  {
+    "audit_id": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s03__f003973",
+    "sport": "ncaa_basketball",
+    "source_jpeg_absolute_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s03__f003973.jpg",
+    "native_resolution_px": [
+      1920,
+      1080
+    ],
+    "image_points_px_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "image_points_px": [
+      [
+        780.0,
+        734.0
+      ],
+      [
+        1420.0,
+        780.0
+      ],
+      [
+        804.0,
+        930.0
+      ],
+      [
+        1470.0,
+        884.0
+      ]
+    ],
+    "court_points_ft_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "court_points_ft": [
+      [
+        19.0,
+        0.0
+      ],
+      [
+        31.0,
+        0.0
+      ],
+      [
+        19.0,
+        19.0
+      ],
+      [
+        31.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        -0.003804181662586823,
+        0.010483983691484308,
+        12.547263300837416
+      ],
+      [
+        -0.007117689804651169,
+        0.09902872771688599,
+        -67.13528809656641
+      ],
+      [
+        -0.0006923323518001491,
+        0.0006120472599489018,
+        1.0
+      ]
+    ],
+    "round_trip_residual_px": {
+      "rms_px": 0.0,
+      "max_px": 0.0
+    },
+    "render_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g196_homography_from_labelled_corners_artifact\\renders\\ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s03__f003973.jpg"
+  },
+  {
+    "audit_id": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s13__f015785",
+    "sport": "ncaa_basketball",
+    "source_jpeg_absolute_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s13__f015785.jpg",
+    "native_resolution_px": [
+      1920,
+      1080
+    ],
+    "image_points_px_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "image_points_px": [
+      [
+        1376.0,
+        679.0
+      ],
+      [
+        1681.0,
+        714.0
+      ],
+      [
+        1353.0,
+        831.0
+      ],
+      [
+        1720.0,
+        846.0
+      ]
+    ],
+    "court_points_ft_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "court_points_ft": [
+      [
+        19.0,
+        0.0
+      ],
+      [
+        31.0,
+        0.0
+      ],
+      [
+        19.0,
+        19.0
+      ],
+      [
+        31.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        0.022369050649801242,
+        0.03451078383067323,
+        -33.68406415447304
+      ],
+      [
+        -0.018744626223468945,
+        0.16334602851880073,
+        -85.11934768077242
+      ],
+      [
+        -0.0006978178546289336,
+        0.0015326193126191333,
+        1.0
+      ]
+    ],
+    "round_trip_residual_px": {
+      "rms_px": 0.0,
+      "max_px": 0.0
+    },
+    "render_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g196_homography_from_labelled_corners_artifact\\renders\\ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s13__f015785.jpg"
+  },
+  {
+    "audit_id": "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s14__f028171",
+    "sport": "ncaa_basketball",
+    "source_jpeg_absolute_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s14__f028171.jpg",
+    "native_resolution_px": [
+      640,
+      360
+    ],
+    "image_points_px_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "image_points_px": [
+      [
+        38.0,
+        223.0
+      ],
+      [
+        39.0,
+        289.0
+      ],
+      [
+        274.0,
+        224.0
+      ],
+      [
+        273.0,
+        282.0
+      ]
+    ],
+    "court_points_ft_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "court_points_ft": [
+      [
+        19.0,
+        0.0
+      ],
+      [
+        31.0,
+        0.0
+      ],
+      [
+        19.0,
+        19.0
+      ],
+      [
+        31.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        -0.010090850952840812,
+        0.1695038770779496,
+        -19.294683312439048
+      ],
+      [
+        0.06741658243776927,
+        -0.0010214633702692285,
+        -2.334043801065194
+      ],
+      [
+        -0.0004927724585397042,
+        -0.00012343387897063474,
+        1.0
+      ]
+    ],
+    "round_trip_residual_px": {
+      "rms_px": 0.0,
+      "max_px": 0.0
+    },
+    "render_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g196_homography_from_labelled_corners_artifact\\renders\\ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s14__f028171.jpg"
+  },
+  {
+    "audit_id": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__s08__f016871",
+    "sport": "ncaa_basketball",
+    "source_jpeg_absolute_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\ncaa_basketball__ncaa_basketball_mRkuGgeECak__s08__f016871.jpg",
+    "native_resolution_px": [
+      1920,
+      1080
+    ],
+    "image_points_px_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "image_points_px": [
+      [
+        530.0,
+        420.0
+      ],
+      [
+        1100.0,
+        435.0
+      ],
+      [
+        550.0,
+        680.0
+      ],
+      [
+        1110.0,
+        690.0
+      ]
+    ],
+    "court_points_ft_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "court_points_ft": [
+      [
+        19.0,
+        0.0
+      ],
+      [
+        31.0,
+        0.0
+      ],
+      [
+        19.0,
+        19.0
+      ],
+      [
+        31.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        0.019283670140849134,
+        -0.0026894775927726318,
+        9.122587411644975
+      ],
+      [
+        -0.0018153916050736903,
+        0.0689848809928003,
+        -28.01149246628707
+      ],
+      [
+        -2.9618627164414193e-05,
+        -6.120155728368902e-05,
+        1.0
+      ]
+    ],
+    "round_trip_residual_px": {
+      "rms_px": 0.0,
+      "max_px": 0.0
+    },
+    "render_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g196_homography_from_labelled_corners_artifact\\renders\\ncaa_basketball__ncaa_basketball_mRkuGgeECak__s08__f016871.jpg"
+  },
+  {
+    "audit_id": "ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s03__f006925",
+    "sport": "ncaa_basketball",
+    "source_jpeg_absolute_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s03__f006925.jpg",
+    "native_resolution_px": [
+      1280,
+      720
+    ],
+    "image_points_px_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "image_points_px": [
+      [
+        123.0,
+        396.0
+      ],
+      [
+        135.0,
+        558.0
+      ],
+      [
+        596.0,
+        443.0
+      ],
+      [
+        596.0,
+        513.0
+      ]
+    ],
+    "court_points_ft_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "court_points_ft": [
+      [
+        19.0,
+        0.0
+      ],
+      [
+        31.0,
+        0.0
+      ],
+      [
+        19.0,
+        19.0
+      ],
+      [
+        31.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        -0.025574154566957254,
+        0.06083155699392704,
+        -4.7660210116682915
+      ],
+      [
+        0.014781445972851725,
+        -0.0010949219239149406,
+        -1.3845287727904458
+      ],
+      [
+        -0.001022146500615579,
+        -5.76274696797338e-05,
+        1.0
+      ]
+    ],
+    "round_trip_residual_px": {
+      "rms_px": 0.0,
+      "max_px": 0.0
+    },
+    "render_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g196_homography_from_labelled_corners_artifact\\renders\\ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s03__f006925.jpg"
+  },
+  {
+    "audit_id": "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s01__f002920",
+    "sport": "ncaa_basketball",
+    "source_jpeg_absolute_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s01__f002920.jpg",
+    "native_resolution_px": [
+      1280,
+      720
+    ],
+    "image_points_px_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "image_points_px": [
+      [
+        1015.0,
+        338.0
+      ],
+      [
+        1006.0,
+        620.0
+      ],
+      [
+        580.0,
+        423.0
+      ],
+      [
+        580.0,
+        520.0
+      ]
+    ],
+    "court_points_ft_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "court_points_ft": [
+      [
+        19.0,
+        0.0
+      ],
+      [
+        31.0,
+        0.0
+      ],
+      [
+        19.0,
+        19.0
+      ],
+      [
+        31.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        -0.07046551587990957,
+        -0.0792369752903317,
+        61.988381326003996
+      ],
+      [
+        0.028681990712992832,
+        0.0009153826823295672,
+        -29.42161992031512
+      ],
+      [
+        -0.0028843979407240728,
+        4.817803591208288e-05,
+        1.0
+      ]
+    ],
+    "round_trip_residual_px": {
+      "rms_px": 0.0,
+      "max_px": 0.0
+    },
+    "render_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g196_homography_from_labelled_corners_artifact\\renders\\ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s01__f002920.jpg"
+  },
+  {
+    "audit_id": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s02__f005760",
+    "sport": "ncaa_basketball",
+    "source_jpeg_absolute_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s02__f005760.jpg",
+    "native_resolution_px": [
+      1920,
+      1080
+    ],
+    "image_points_px_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "image_points_px": [
+      [
+        250.0,
+        360.0
+      ],
+      [
+        286.0,
+        645.0
+      ],
+      [
+        720.0,
+        535.0
+      ],
+      [
+        725.0,
+        700.0
+      ]
+    ],
+    "court_points_ft_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "court_points_ft": [
+      [
+        19.0,
+        0.0
+      ],
+      [
+        31.0,
+        0.0
+      ],
+      [
+        19.0,
+        19.0
+      ],
+      [
+        31.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        -0.02527038903151427,
+        0.03182306219563426,
+        10.09898711836713
+      ],
+      [
+        0.019936928380315227,
+        -0.0025183488480398195,
+        -4.077626509784469
+      ],
+      [
+        -0.0006765090095520174,
+        -8.024706925599741e-05,
+        1.0
+      ]
+    ],
+    "round_trip_residual_px": {
+      "rms_px": 0.0,
+      "max_px": 0.0
+    },
+    "render_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g196_homography_from_labelled_corners_artifact\\renders\\ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s02__f005760.jpg"
+  },
+  {
+    "audit_id": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s10__f020340",
+    "sport": "ncaa_basketball",
+    "source_jpeg_absolute_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s10__f020340.jpg",
+    "native_resolution_px": [
+      1920,
+      1080
+    ],
+    "image_points_px_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "image_points_px": [
+      [
+        1600.0,
+        380.0
+      ],
+      [
+        1620.0,
+        640.0
+      ],
+      [
+        865.0,
+        475.0
+      ],
+      [
+        900.0,
+        620.0
+      ]
+    ],
+    "court_points_ft_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "court_points_ft": [
+      [
+        19.0,
+        0.0
+      ],
+      [
+        31.0,
+        0.0
+      ],
+      [
+        19.0,
+        19.0
+      ],
+      [
+        31.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        0.08895980679261233,
+        0.20660350496773452,
+        -117.98560333528509
+      ],
+      [
+        -0.07692402354403939,
+        0.005917232580310716,
+        120.82988928994496
+      ],
+      [
+        0.0030940403373889954,
+        -0.0014126602265916533,
+        1.0
+      ]
+    ],
+    "round_trip_residual_px": {
+      "rms_px": 0.0,
+      "max_px": 0.0
+    },
+    "render_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g196_homography_from_labelled_corners_artifact\\renders\\ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s10__f020340.jpg"
+  },
+  {
+    "audit_id": "wnba__wnba_01_1080p__s01__f001600",
+    "sport": "wnba",
+    "source_jpeg_absolute_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\wnba__wnba_01_1080p__s01__f001600.jpg",
+    "native_resolution_px": [
+      1920,
+      1080
+    ],
+    "image_points_px_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "image_points_px": [
+      [
+        350.0,
+        400.0
+      ],
+      [
+        835.0,
+        420.0
+      ],
+      [
+        390.0,
+        696.0
+      ],
+      [
+        990.0,
+        730.0
+      ]
+    ],
+    "court_points_ft_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "court_points_ft": [
+      [
+        17.0,
+        0.0
+      ],
+      [
+        33.0,
+        0.0
+      ],
+      [
+        17.0,
+        19.0
+      ],
+      [
+        33.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        0.050071754999888064,
+        0.01225404716365722,
+        2.3351407383547964
+      ],
+      [
+        -0.0047586809476217904,
+        0.1153980129798286,
+        -44.493666860263815
+      ],
+      [
+        3.054485397744623e-05,
+        0.0011147252900901028,
+        1.0
+      ]
+    ],
+    "round_trip_residual_px": {
+      "rms_px": 0.0,
+      "max_px": 0.0
+    },
+    "render_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g196_homography_from_labelled_corners_artifact\\renders\\wnba__wnba_01_1080p__s01__f001600.jpg"
+  },
+  {
+    "audit_id": "wnba__wnba_01_1080p__s03__f004062",
+    "sport": "wnba",
+    "source_jpeg_absolute_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\wnba__wnba_01_1080p__s03__f004062.jpg",
+    "native_resolution_px": [
+      1920,
+      1080
+    ],
+    "image_points_px_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "image_points_px": [
+      [
+        1700.0,
+        430.0
+      ],
+      [
+        1700.0,
+        595.0
+      ],
+      [
+        950.0,
+        483.0
+      ],
+      [
+        1010.0,
+        610.0
+      ]
+    ],
+    "court_points_ft_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "court_points_ft": [
+      [
+        17.0,
+        0.0
+      ],
+      [
+        33.0,
+        0.0
+      ],
+      [
+        17.0,
+        19.0
+      ],
+      [
+        33.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        0.012598032068231417,
+        0.09245656944039009,
+        -40.721679991699034
+      ],
+      [
+        -0.023698548764216096,
+        -2.505231978580078e-17,
+        40.28753289916738
+      ],
+      [
+        0.0003049098958957877,
+        -0.0007333237493469423,
+        1.0
+      ]
+    ],
+    "round_trip_residual_px": {
+      "rms_px": 0.0,
+      "max_px": 0.0
+    },
+    "render_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g196_homography_from_labelled_corners_artifact\\renders\\wnba__wnba_01_1080p__s03__f004062.jpg"
+  },
+  {
+    "audit_id": "wnba__wnba_01_1080p__s06__f007539",
+    "sport": "wnba",
+    "source_jpeg_absolute_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\wnba__wnba_01_1080p__s06__f007539.jpg",
+    "native_resolution_px": [
+      1920,
+      1080
+    ],
+    "image_points_px_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "image_points_px": [
+      [
+        90.0,
+        330.0
+      ],
+      [
+        75.0,
+        579.0
+      ],
+      [
+        795.0,
+        426.0
+      ],
+      [
+        795.0,
+        580.0
+      ]
+    ],
+    "court_points_ft_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "court_points_ft": [
+      [
+        17.0,
+        0.0
+      ],
+      [
+        33.0,
+        0.0
+      ],
+      [
+        17.0,
+        19.0
+      ],
+      [
+        33.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        -0.017620959327771604,
+        0.06393175510990855,
+        -3.0396516895541277
+      ],
+      [
+        0.01601759791039395,
+        0.000964915536770721,
+        -1.7600059390697935
+      ],
+      [
+        -0.0005313482688054686,
+        5.0785028251090604e-05,
+        1.0
+      ]
+    ],
+    "round_trip_residual_px": {
+      "rms_px": 0.0,
+      "max_px": 0.0
+    },
+    "render_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g196_homography_from_labelled_corners_artifact\\renders\\wnba__wnba_01_1080p__s06__f007539.jpg"
+  },
+  {
+    "audit_id": "wnba__wnba_02__s11__f021983",
+    "sport": "wnba",
+    "source_jpeg_absolute_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\wnba__wnba_02__s11__f021983.jpg",
+    "native_resolution_px": [
+      1280,
+      720
+    ],
+    "image_points_px_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "image_points_px": [
+      [
+        300.0,
+        255.0
+      ],
+      [
+        960.0,
+        265.0
+      ],
+      [
+        330.0,
+        620.0
+      ],
+      [
+        1020.0,
+        650.0
+      ]
+    ],
+    "court_points_ft_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "court_points_ft": [
+      [
+        17.0,
+        0.0
+      ],
+      [
+        33.0,
+        0.0
+      ],
+      [
+        17.0,
+        19.0
+      ],
+      [
+        33.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        0.02822305715125253,
+        -0.0003184208464840967,
+        9.505455509822475
+      ],
+      [
+        -0.0008650218215573794,
+        0.05709144022278679,
+        -14.298810710343416
+      ],
+      [
+        8.028509742717018e-05,
+        0.00011112372375230044,
+        1.0
+      ]
+    ],
+    "round_trip_residual_px": {
+      "rms_px": 0.0,
+      "max_px": 0.0
+    },
+    "render_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g196_homography_from_labelled_corners_artifact\\renders\\wnba__wnba_02__s11__f021983.jpg"
+  },
+  {
+    "audit_id": "wnba__wnba_04__s06__f012223",
+    "sport": "wnba",
+    "source_jpeg_absolute_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\wnba__wnba_04__s06__f012223.jpg",
+    "native_resolution_px": [
+      1280,
+      720
+    ],
+    "image_points_px_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "image_points_px": [
+      [
+        100.0,
+        280.0
+      ],
+      [
+        670.0,
+        300.0
+      ],
+      [
+        140.0,
+        600.0
+      ],
+      [
+        690.0,
+        620.0
+      ]
+    ],
+    "court_points_ft_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "court_points_ft": [
+      [
+        17.0,
+        0.0
+      ],
+      [
+        33.0,
+        0.0
+      ],
+      [
+        17.0,
+        19.0
+      ],
+      [
+        33.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        0.027558618367108396,
+        -0.005258096881073581,
+        15.217158515173585
+      ],
+      [
+        -0.0019596374203198104,
+        0.0558496664791149,
+        -15.44194287212019
+      ],
+      [
+        7.663990077493238e-06,
+        -0.00010762091553527666,
+        1.0
+      ]
+    ],
+    "round_trip_residual_px": {
+      "rms_px": 0.0,
+      "max_px": 0.0
+    },
+    "render_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g196_homography_from_labelled_corners_artifact\\renders\\wnba__wnba_04__s06__f012223.jpg"
+  },
+  {
+    "audit_id": "wnba__wnba_06__s03__f007237",
+    "sport": "wnba",
+    "source_jpeg_absolute_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\wnba__wnba_06__s03__f007237.jpg",
+    "native_resolution_px": [
+      1920,
+      1080
+    ],
+    "image_points_px_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "image_points_px": [
+      [
+        1740.0,
+        420.0
+      ],
+      [
+        1740.0,
+        710.0
+      ],
+      [
+        995.0,
+        520.0
+      ],
+      [
+        1010.0,
+        680.0
+      ]
+    ],
+    "court_points_ft_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "court_points_ft": [
+      [
+        17.0,
+        0.0
+      ],
+      [
+        33.0,
+        0.0
+      ],
+      [
+        17.0,
+        19.0
+      ],
+      [
+        33.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        0.5852101822986631,
+        1.7444557550991593,
+        -1170.2641046501
+      ],
+      [
+        -0.47876852494149363,
+        -1.7918034206124266e-16,
+        833.0572333981991
+      ],
+      [
+        0.020080512642553616,
+        -0.004244892755674422,
+        1.0
+      ]
+    ],
+    "round_trip_residual_px": {
+      "rms_px": 0.0,
+      "max_px": 0.0
+    },
+    "render_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g196_homography_from_labelled_corners_artifact\\renders\\wnba__wnba_06__s03__f007237.jpg"
+  },
+  {
+    "audit_id": "wnba__wnba_06__s07__f014099",
+    "sport": "wnba",
+    "source_jpeg_absolute_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\wnba__wnba_06__s07__f014099.jpg",
+    "native_resolution_px": [
+      1920,
+      1080
+    ],
+    "image_points_px_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "image_points_px": [
+      [
+        300.0,
+        450.0
+      ],
+      [
+        300.0,
+        730.0
+      ],
+      [
+        1070.0,
+        500.0
+      ],
+      [
+        1080.0,
+        705.0
+      ]
+    ],
+    "court_points_ft_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "court_points_ft": [
+      [
+        17.0,
+        0.0
+      ],
+      [
+        33.0,
+        0.0
+      ],
+      [
+        17.0,
+        19.0
+      ],
+      [
+        33.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        -0.009042948364314884,
+        0.05502755113480539,
+        -6.258377327324529
+      ],
+      [
+        0.016807442804810054,
+        -2.5980257986548126e-19,
+        -5.042232841443015
+      ],
+      [
+        -0.0003255822050224748,
+        5.903338819059515e-05,
+        1.0
+      ]
+    ],
+    "round_trip_residual_px": {
+      "rms_px": 0.0,
+      "max_px": 0.0
+    },
+    "render_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g196_homography_from_labelled_corners_artifact\\renders\\wnba__wnba_06__s07__f014099.jpg"
+  },
+  {
+    "audit_id": "wnba__wnba_06__s09__f018997",
+    "sport": "wnba",
+    "source_jpeg_absolute_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\wnba__wnba_06__s09__f018997.jpg",
+    "native_resolution_px": [
+      1920,
+      1080
+    ],
+    "image_points_px_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "image_points_px": [
+      [
+        1800.0,
+        400.0
+      ],
+      [
+        1800.0,
+        720.0
+      ],
+      [
+        740.0,
+        510.0
+      ],
+      [
+        740.0,
+        700.0
+      ]
+    ],
+    "court_points_ft_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "court_points_ft": [
+      [
+        17.0,
+        0.0
+      ],
+      [
+        33.0,
+        0.0
+      ],
+      [
+        17.0,
+        19.0
+      ],
+      [
+        33.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        0.03773764258555138,
+        0.16121673003802295,
+        -77.60076045627386
+      ],
+      [
+        -0.03431558935361219,
+        1.097872329676327e-18,
+        61.76806083650194
+      ],
+      [
+        0.0012357414448669216,
+        3.113297221240134e-19,
+        1.0
+      ]
+    ],
+    "round_trip_residual_px": {
+      "rms_px": 0.0,
+      "max_px": 0.0
+    },
+    "render_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g196_homography_from_labelled_corners_artifact\\renders\\wnba__wnba_06__s09__f018997.jpg"
+  },
+  {
+    "audit_id": "wnba__wnba_07__s08__f016801",
+    "sport": "wnba",
+    "source_jpeg_absolute_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\wnba__wnba_07__s08__f016801.jpg",
+    "native_resolution_px": [
+      1920,
+      1080
+    ],
+    "image_points_px_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "image_points_px": [
+      [
+        200.0,
+        440.0
+      ],
+      [
+        200.0,
+        750.0
+      ],
+      [
+        1100.0,
+        480.0
+      ],
+      [
+        1100.0,
+        740.0
+      ]
+    ],
+    "court_points_ft_role_order": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "court_points_ft": [
+      [
+        17.0,
+        0.0
+      ],
+      [
+        33.0,
+        0.0
+      ],
+      [
+        17.0,
+        19.0
+      ],
+      [
+        33.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        -0.005155709342560545,
+        0.04982698961937716,
+        -4.4809688581314955
+      ],
+      [
+        0.017093425605536335,
+        6.700934579356226e-19,
+        -3.4186851211072677
+      ],
+      [
+        -0.00017301038062283723,
+        -0.0,
+        1.0
+      ]
+    ],
+    "round_trip_residual_px": {
+      "rms_px": 0.0,
+      "max_px": 0.0
+    },
+    "render_path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g196_homography_from_labelled_corners_artifact\\renders\\wnba__wnba_07__s08__f016801.jpg"
+  }
+]
