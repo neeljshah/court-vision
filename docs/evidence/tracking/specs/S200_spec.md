@@ -1,4 +1,4 @@
-GAP S200 | sport all (harness) | worktree aXX | log cx_s200_regime_key_oof
+GAP S200 | sport all (harness) | worktree a13 | log cx_s200_regime_key_oof
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: docs/evidence/harness/S05_calibration_report_2026-09-03.md:144, verbatim: "- `regime_calibration.buckets`
 assigns confidence terciles from a whole-corpus ranking, so the regime KEY is fitted on all rows including the
