@@ -64,3 +64,22 @@ Verified on the pod by running the exact call that was failing, not by `ls`:
 - Whether the remaining absent assets block a different route.
 - Whether the same bootstrap trim dropped anything else the pod needs; the file
   COUNT gap of 93 vs 3 was closed only for the eight assets shipped.
+
+## The null-verdict class is fully explained by this one cause
+
+G177's NOT VERIFIED list left an open item: "The wnba and ncaa_basketball rows
+carry `coverage_pct = None` and were excluded; why they are null is unexamined."
+Answered by exhaustive inspection of the live pod ledger, 2026-09-03:
+
+**8 of 36 rows have `passed: null`, and all 8 are the same two games** --
+`wnba_01` five times and `ncaa_basketball_IB-_u4gW3ds` three times. Every one is
+`status: thin`, `rows: 0`, `adjudicated: false`, and every one carries the
+identical `_build_court` / `cv2.resize` traceback quoted above.
+
+So there is **no separate silent-failure class**: the entire null-verdict
+category is this single missing-asset crash, retried. That is a construct check
+over all 8 eligible rows, not a sample.
+
+**Still not claimed:** that fixing the asset resolves them. These 8 rows keep
+their existing ledger entries; whether a fresh attempt now produces rows is
+G187's measurement, not an inference to make here.
