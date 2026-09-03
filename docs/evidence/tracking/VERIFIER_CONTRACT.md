@@ -64,3 +64,53 @@ the summary, and the model side of every comparison is computed from an AS-OF st
 itself archived or reconstructible. A CI that cannot be recomputed from the artifact alone is
 not a result (the NBA halftime checkpoint claim could not be re-scored because its model used
 the Elo state at run time and its per-game deltas were never written -- S63).
+
+## Contract v2 (added 2026-09-03, adjudicated by Fable review)
+Proposed by the orchestrator after a day in which four specs carried unverified premises, three
+worktrees were nearly freed with unlanded work in them, a lane died silently holding an uncommitted
+fix, 2.94 GB of reader-required footage was deleted before the survey that named it, and three
+quality rows were landed on a route nobody had checked repeats. **Five further clauses were proposed
+and CUT in review** for having no incident behind them, duplicating Q9, or conflicting with Q8.
+Record: `G_ADJUDICATION_fable_review_2026-09-03.md`.
+
+A9  NAME THE EXACT SOURCE -- every artifact and memo states the full path, byte size and resolution
+    of each input opened, never a game_id alone. Two different videos answer to `wnba_01`: a
+    1920x1080 pod file and a 1280x720 `g130_recensus/` derivative, and the same code gives materially
+    different answers on them.
+A11 CODE IDENTITY -- every row measured on the pod records the SHA-256 of each route file it
+    exercised, or the deploy-manifest hash. The pod is not a git checkout, so its revision cannot
+    otherwise be named; G184 recorded hashes voluntarily and that is what caught the drift, while
+    G187 did not and its non-reproduction could not be attributed.
+B11 SINGLE-RUN CLAIM ON AN UNREPRODUCED ROUTE -- quoting n=1 through a route whose repeatability is
+    unestablished, as a property of the system. Binds EYE CHECKS equally: rendered overlays come from
+    one run. Determinism ships as ENVIRONMENT and seeds in the spec command line, never as a file
+    copied to the pod, which would collide with B5.
+S1  NAME THE MACHINE -- every spec that runs anything says where, in its own line, with the reason.
+    "Pod is read-only" plus "do not wait on the daemon" reads as "work locally" unless stated.
+S2  VERIFY THE PREMISE BEFORE DISPATCH -- the orchestrator checks each premise against the code or
+    the live system before sending the spec. Q8 makes the LANE re-measure; S2 makes the AUTHOR
+    measure first. A lane that STOPS on a false premise is correct and the author owns the cost.
+S4  NAME THE LEDGER AND THE FIELD -- a spec citing a count says which ledger file and which field.
+    The pod ledger carries diagnostics in `failure_heads` over 40 rows; the local one carries them in
+    `failures` over 300. Two correct answers to one question came from this.
+S5  ONE ROW, ONE LANE -- a gap id is dispatched to exactly one worktree. G182 was double-dispatched
+    by orchestrator error; the duplicate happened to be useful, which is not a reason to repeat it.
+D1  CONTENT, NOT PATHS, BEFORE FREEING A WORKTREE -- `git log master..<branch>` non-empty means
+    unlanded. Never free on dispatched-vs-exited or on path existence.
+D2  SURVEY READERS BEFORE DELETING ANY DATA -- run a FILE-READER survey first (this is not A5, which
+    is a schema-reader rule). A durable derived artifact is not evidence its source is spent, and a
+    reader that tests non-reproducibility makes its sources irreplaceable by construction. Write a
+    per-file deletion manifest BEFORE deleting.
+D3  A LANE THAT STOPS SPEAKING IS NOT A LANE THAT FINISHED -- trigger on log/worktree mtime PLUS a
+    CPU check, never on wall-clock silence alone: G186 records a legitimate 22-minute decode at 99
+    pct CPU. On a dead lane, commit its uncommitted work BEFORE any cleanup.
+D4  MATCH PROCESSES BY EXECUTABLE AND ARGUMENT, NEVER BY SUBSTRING -- a substring match on a command
+    line catches the tools doing the matching, including this session's own monitor.
+D5  NO DEPLOY WHILE A POD MEASUREMENT LANE IS LIVE -- G188 spent a section disproving the
+    orchestrator's own mid-flight deploy of 4,327 files as a cause. Timing cleared it once; the
+    practice is what made it plausible.
+H1  NAMED DENOMINATOR -- coverage and ball_valid divide by decoded or segmented frames, named in the
+    artifact, NEVER by the count of frames that happen to have rows. `tracking_harness.py:234` sets
+    `n_frames` from frames that HAVE rows and `:250` divides coverage by it, so frames the tracker
+    emitted nothing on are excluded from the denominator. That is B1 inside the harness that
+    adjudicates every row; G34 measured 4.9x inflation on 2026-09-02.
