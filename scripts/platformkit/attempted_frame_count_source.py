@@ -1,0 +1,113 @@
+"""Read a non-circular attempted-frame denominator from a sibling ball table."""
+from __future__ import annotations
+
+import csv
+from dataclasses import dataclass
+from decimal import Decimal, InvalidOperation
+from pathlib import Path
+
+
+@dataclass(frozen=True)
+class PairedFrameAudit:
+    """Frame-set facts needed to accept or reject a sibling ball table."""
+
+    ball_table: Path | None
+    attempted_frames: int | None
+    reason: str | None
+    tracking_frame_count: int
+    ball_frame_count: int
+    missing_tracking_frames: int
+    tracking_modal_stride: int | None
+    ball_modal_stride: int | None
+    tracking_last_frame: int | None
+    ball_last_frame: int | None
+
+
+def _frame_value(value: str | None) -> int | None:
+    """Return one integral frame identifier, rejecting blank and fractional values."""
+    if value is None or not value.strip():
+        return None
+    try:
+        number = Decimal(value)
+    except InvalidOperation:
+        return None
+    if not number.is_finite() or number != number.to_integral_value():
+        return None
+    return int(number)
+
+
+def _read_frame_values(path: Path, require_detected: bool = False) -> tuple[set[int] | None, int, str | None]:
+    """Read the complete frame column without inspecting tracking payload fields."""
+    try:
+        with path.open("r", newline="", encoding="utf-8-sig") as handle:
+            reader = csv.DictReader(handle)
+            if not reader.fieldnames or "frame" not in reader.fieldnames:
+                return None, 0, "frame column unavailable"
+            if require_detected and "detected" not in reader.fieldnames:
+                return None, 0, "paired ball detection flag unavailable"
+            values: set[int] = set()
+            rows = 0
+            for row in reader:
+                rows += 1
+                frame = _frame_value(row.get("frame"))
+                if frame is None:
+                    return None, rows, "invalid frame value"
+                values.add(frame)
+    except (OSError, csv.Error, UnicodeDecodeError):
+        return None, 0, "ball table unreadable"
+    return values, rows, None
+
+
+def _modal_stride(frames: set[int]) -> int | None:
+    """Return the unique modal positive spacing, without inferring a configured stride."""
+    ordered = sorted(frames)
+    if len(ordered) < 2:
+        return None
+    counts: dict[int, int] = {}
+    for previous, current in zip(ordered, ordered[1:]):
+        gap = current - previous
+        counts[gap] = counts.get(gap, 0) + 1
+    high = max(counts.values())
+    modes = [gap for gap, count in counts.items() if count == high]
+    return modes[0] if len(modes) == 1 else None
+
+
+def audit_paired_ball_table(tracking_table_path: str | Path) -> PairedFrameAudit:
+    """Audit the sibling ball table before treating its rows as attempts."""
+    tracking_path = Path(tracking_table_path)
+    ball_path = tracking_path.with_name("ball_tracking.csv")
+    if not ball_path.is_file():
+        return PairedFrameAudit(None, None, "paired ball table unavailable", 0, 0, 0,
+                                None, None, None, None)
+    tracking_frames, _, tracking_error = _read_frame_values(tracking_path)
+    if tracking_error is not None or tracking_frames is None:
+        return PairedFrameAudit(ball_path, None, tracking_error or "tracking table unreadable",
+                                0, 0, 0, None, None, None, None)
+    ball_frames, ball_rows, ball_error = _read_frame_values(ball_path, require_detected=True)
+    if ball_error is not None or ball_frames is None:
+        return PairedFrameAudit(ball_path, None, ball_error or "ball table unreadable",
+                                len(tracking_frames), 0, 0, _modal_stride(tracking_frames),
+                                None, max(tracking_frames, default=None), None)
+    missing = tracking_frames - ball_frames
+    tracking_stride = _modal_stride(tracking_frames)
+    ball_stride = _modal_stride(ball_frames)
+    if not tracking_frames:
+        reason = "tracking frame set unavailable"
+    elif not ball_frames:
+        reason = "paired ball frame set empty"
+    elif ball_rows != len(ball_frames):
+        reason = "paired ball table has duplicate frame rows"
+    elif missing:
+        reason = "paired ball frames are not a superset"
+    else:
+        reason = None
+    return PairedFrameAudit(
+        ball_path, len(ball_frames) if reason is None else None, reason,
+        len(tracking_frames), len(ball_frames), len(missing), tracking_stride, ball_stride,
+        max(tracking_frames, default=None), max(ball_frames, default=None),
+    )
+
+
+def attempted_frames_from_paired_ball_table(tracking_table_path: str | Path) -> int | None:
+    """Return a verified sibling ball-frame count, otherwise fail closed with ``None``."""
+    return audit_paired_ball_table(tracking_table_path).attempted_frames
