@@ -1,0 +1,6 @@
+selection_rank,clip,frame_index,render,four_claimed_roles_are_real_paint_lines,decision,note
+1,ncaa_basketball__ncaa_basketball_4Drw9t7xqgg,3185,renders/ncaa_basketball__ncaa_basketball_4Drw9t7xqgg__f3185.jpg,false,REJECT,player-and-crowd close-up; overlaid lines are not four paint lines
+2,ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss,14543,renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__f14543.jpg,false,REJECT,wide view but the four assigned supports do not correspond to the four physical paint roles
+3,wnba__wnba_01,688,renders/wnba__wnba_01__f688.jpg,false,REJECT,player close-up; overlaid lines are broadcast and image structure
+4,wnba__wnba_05,27998,renders/wnba__wnba_05__f27998.jpg,false,REJECT,player close-up; no four physical paint lines are visible
+5,wnba__wnba_09,23825,renders/wnba__wnba_09__f23825.jpg,false,REJECT,player close-up; no four physical paint lines are visible

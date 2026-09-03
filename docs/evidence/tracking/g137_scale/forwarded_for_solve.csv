@@ -1,0 +1,6 @@
+clip,source_clip,frame_index,stratum,roles_detected,qualifying_frame,selection_rank,render,eye_check,solve_handoff
+ncaa_basketball__ncaa_basketball_4Drw9t7xqgg,ncaa_basketball__ncaa_basketball_4Drw9t7xqgg.mp4,3185,1,4,true,1,renders/ncaa_basketball__ncaa_basketball_4Drw9t7xqgg__f3185.jpg,REJECT,blocked_false_role_claim
+ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss,ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4,14543,6,4,true,2,renders/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss__f14543.jpg,REJECT,blocked_false_role_claim
+wnba__wnba_01,wnba__wnba_01.mp4,688,0,4,true,3,renders/wnba__wnba_01__f688.jpg,REJECT,blocked_false_role_claim
+wnba__wnba_05,wnba__wnba_05.mp4,27998,11,4,true,4,renders/wnba__wnba_05__f27998.jpg,REJECT,blocked_false_role_claim
+wnba__wnba_09,wnba__wnba_09.mp4,23825,9,4,true,5,renders/wnba__wnba_09__f23825.jpg,REJECT,blocked_false_role_claim

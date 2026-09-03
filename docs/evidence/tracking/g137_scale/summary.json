@@ -1,0 +1,18 @@
+{
+  "seed": 137092026,
+  "frames_per_clip": 12,
+  "drawn_frames": 216,
+  "sampled_frames": 215,
+  "unreadable_sample_frames": 1,
+  "qualifying_frames": 42,
+  "qualifying_rate": 0.19534883720930232,
+  "wilson_95_low": 0.14789684962408026,
+  "wilson_95_high": 0.2534962835329522,
+  "independence_reference_rate": 0.0379,
+  "g135_reference_zero_of_30_probability": 0.321,
+  "g84_overlap_count": 0,
+  "role_assignment_constraint": "assign_paint_roles returns four roles or none; 1/2/3 cells are structurally unavailable",
+  "eye_checked_qualifiers": 5,
+  "eye_check_confirmed": 0,
+  "solve_handoff_count": 0
+}
