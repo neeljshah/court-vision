@@ -16,6 +16,12 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G173 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G173 | tennis | First daemon-produced tennis ledger row: `tennis_ref01`, 1,861 rows, 28,773 decoded frames, `coverage_pct=0.0252`, 223 s, `passed=False`. The three quantities on ONE table: harness/emitted **715/726 = 0.9848**, harness/decoded **715/28,773 = 0.0249**, ledger completeness **726/28,773 = 0.0252** -- a 39.6x spread, and the daemon's gate used the decoded one. `court_feet` on 1,861/1,861 rows but strict solved-and-raw geometry only **358/1,861 = 0.1924**. | `g173_first_tennis_ledger_row_2026-09-03.md`; `g173_tennis/` | **ACCEPT -- unblocks G168's per-table comparison and confirms G164 from a production artefact. No bar moved, no alternate bar proposed; the denominator question stays open for the orchestrator.** |
+
 ## G171 result register
 
 | Gap | Sport | Finding | Evidence | Status |
