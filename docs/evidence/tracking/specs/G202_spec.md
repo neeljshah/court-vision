@@ -1,0 +1,80 @@
+GAP G202 | sport wnba / ncaa_basketball | worktree a6 | log g202_basketball_selection_census
+**HELD -- DO NOT DISPATCH UNTIL G198 HAS REPORTED.** This row measures QUALITY, and quality on a
+non-reproducible route is unrepeatable (G189). Dispatch only after G198, and **run it under whatever
+determinism configuration G198 establishes**; if G198 finds none, run n=3 and report DISTRIBUTIONS,
+never a single number.
+
+**MEASUREMENT ONLY for the census half. Change NO production code in `src/`** -- human-gated, READ and
+wrap in your own process only. Deploy nothing into the pod checkout (B5).
+
+**S1 MACHINE: RUN ON THE POD.** RTX 3090.
+
+**S3 DEPENDENCY, and this row exists because a previous framing was WITHDRAWN.**
+Fable's adjudication (`G_ADJUDICATION_fable_review_2026-09-03.md:44-51`) established, and the
+orchestrator re-read to confirm: at source frame 474, where roughly ten players are visible, **the raw
+detector emitted 15 person boxes, three times out of three, and the route kept 2 or 3.** G188: 6
+on-court players retained from 11 raw. **"The detector is emitting spectators" was withdrawn as
+externalisation** -- a person detector is supposed to emit every person; **the SELECTOR is supposed to
+keep players, and the selector is ours.**
+
+WHY THIS IS THE FIRST ROW THAT COULD LEGITIMATELY PASS ANYTHING. Per
+`TRACKING_TARGET_SPEC_2026-09-03.md`: `team_spacing` is a convex hull over a team and needs five
+players. **At 2-3 survivors a hull has zero area**, which is precisely the `team_spacing == 0.0` that
+`feature_engineering.py:92` scrubs as "invalid hull area". So thin coverage does not degrade the
+primary spacing feature, it makes it UNDEFINED. `min_players = 6` for basketball encodes the same
+requirement.
+
+PART 1 -- THE CENSUS (this is the deliverable; do this first and completely):
+  Instrument in your own process to record, per frame, over a bounded run:
+    a. raw detector box count;
+    b. how many survived to the emitted table, and **at which stage each dropped** -- name the stages
+       from the code rather than guessing, and report an exhaustive per-stage attribution so the
+       counts add up;
+    c. for a sample of dropped boxes, whether they were on-court players or not.
+  **Report the whole-run DISTRIBUTION of raw and survivor counts (S2), not frame 474 alone.** Frame
+  474 is one anecdote and this row exists because anecdotes were over-read.
+  **Name the ELIGIBLE DENOMINATOR explicitly**: attempted gameplay frames, never `--frames`.
+
+PART 2 -- TWO BOUNDED PROBES, each measured against Part 1's baseline, each reported separately:
+  (i) `yolo_imgsz` at 960 and at 1280 against the current 640 (`unified_pipeline.py:1007` comments
+      that players are about 25 px at 640). Set it through config in YOUR OWN process; do not edit
+      `src/`. Report raw and survivor counts and wall time at each size.
+  (ii) A polygon filter on projected feet, as a POST-HOC filter in your own analysis over the emitted
+      rows. **You cannot do this honestly for basketball unless a valid court polygon exists** --
+      G194 measured the basketball projection as DEGENERATE, so projected feet are meaningless
+      through the production path. **If you cannot obtain a valid per-clip homography, SKIP (ii),
+      say why, and report Part 1 and (i) only.** Do NOT substitute an image-space box as if it were a
+      court polygon; that is a different filter with a different meaning.
+
+**DO NOT change any threshold, `conf`, `min_players`, or any gate value to improve a count.** The
+deliverable is an attribution of where players are lost, not a better number.
+
+**A9:** `/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4`, 2,931,985,407 bytes,
+1920x1080, 174,430 frames. `--frames 1200 --no-show --skip-features`.
+**A11:** pod SHA-256 for `unified_pipeline.py` and `advanced_tracker.py`.
+**B11:** the route is non-deterministic -- n=3 minimum per configuration unless G198 established a
+deterministic mode, in which case use it and SAY SO.
+**B13/Q9:** per-frame and per-stage records in the artifact.
+
+ACCEPTANCE RULE:
+  metric        = whole-run distribution of raw boxes and survivors; exhaustive per-stage drop
+                  attribution; raw/survivor counts and wall time at imgsz 640 / 960 / 1280
+  before        = the raw detector emits about 15 person boxes where about 10 players are visible and
+                  the route keeps 2-3; WHERE the other boxes are lost is unattributed
+  bar           = NO pass bar. **"The losses are attributed to stage X" is the success.** A probe that
+                  does NOT improve survivor counts is a full success and must be reported as such --
+                  it retires an option. Do not tune to make a probe look good.
+  n             = one clip, bounded run, n=3 per configuration (or 1 if a deterministic mode exists)
+  eye check     = for 3 evenly spaced frames, render raw boxes and survivors side by side and state
+                  whether the dropped boxes were on-court players
+  must not move = every threshold, `conf`, `min_players`, every bar and verdict, the coordinate
+                  contract, `src/` (READ ONLY), the pod daemon and keeper, the corpus (delete NOTHING)
+EVIDENCE: docs/evidence/tracking/g202_basketball_selection_census_2026-09-03.md with the distribution,
+the per-stage attribution, the probe table, the renders, and a NOT VERIFIED list. Commit BEFORE
+reporting (A7).
+TEST: a per-file test for any harness added under `scripts/platformkit/tracking/`, pasted. NEVER a
+full pytest. **If a commit grows an allowlisted file, raise its entry in
+`tests/platformkit/test_loc_rail_scope.py` in the SAME commit (contract A12) and run that rail test.**
+POD: run there. Never kill, restart or deploy over the daemon or keeper.
+COMMIT: explicit pathspec only, no push. Report the sha.
+NEVER PARK.
