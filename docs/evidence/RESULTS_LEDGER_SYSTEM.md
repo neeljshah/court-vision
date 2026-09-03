@@ -414,4 +414,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-03 | nba teacher census premise | S193 | required worktree sources absent; census unavailable; LANDED 684c63fbc | FALSIFIED (verified: codex-sol, contract A/B/Q)
 2026-09-04 | ops | S185 | pod pull sync failure hardening landed; LANDED a56c793f2 | ACCEPT (verified: codex-sol, contract A/B/Q)
 2026-09-03 | tracking teacher census | S193 | required worktree inputs absent; census and 158-row output unavailable; LANDED 1c3a08ea3 | FALSIFIED (verified: codex-sol, contract A/B/Q)
-2026-09-03 | deploy pathspec | S187 | paper closure 11/11; bootstrap 4/11; S21b/S21c 3/11 (corrected from 4/11); 7 trees hold 56/524 modules (10.69%); LANDED 623fcf1d9bb878406a64fdafe27e6bf4975bd73d | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q)
+2026-09-03 | deploy pathspec | S187 | paper closure 11/11; bootstrap 4/11; S21b/S21c 3/11 (corrected from 4/11); 7 trees hold 56/524 modules (10.69%); LANDED 6a664db0248194d026617a39f444fb9009905253 | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q)
