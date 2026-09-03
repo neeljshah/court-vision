@@ -56,3 +56,37 @@ they do not establish any performance claim.
 
 Test: `python -m pytest tests/platformkit/ingame/test_s161_neff_requote_manifest.py -q`
 passes in the `basketball_ai` environment.
+
+## ATTEMPT 2: provenance correction
+
+Verdict: ACCEPT WITH CORRECTIONS pending verifier re-run. The four S119/S121 rows
+were incorrectly sourced from the S82 ticker-cluster series in Attempt 1. They
+now cite the named `s119_real_game_series_2026-09-03.csv` archive, use its
+legacy `game#real_game_seq` grouping where applicable, and use the documented
+S131 current real-game grouping and S121 tick-clean partition where applicable.
+No verdict moved.
+
+| Readout | Attempt 1 source / direct n_eff | Attempt 2 source / direct n_eff |
+| --- | --- | --- |
+| S137_S119_before | S82 ticker source / 214.82711185416437 | S119 archive, legacy 88 real games / 120.71720405395529 |
+| S137_S119_after | S82 ticker source / 214.82711185416437 | S119 archive, corrected 76 real games / 107.62999184925432 |
+| S137_S121_before | S82 ticker source / 214.82711185416437 | S119 archive, 15,528 informative ticks over 76 real games / 107.62011453019696 |
+| S137_S121_after | S82 ticker source / 214.82711185416437 | S119 archive, tick-clean then informative 15,162 ticks over 73 real games / 107.06240426914886 |
+
+`source_row_count` and `source_file_rows` now mean full pre-filter source
+file rows; `n_ticks` remains the selected count used by the direct quote.
+`source_inventory.csv` carries the same full file count and raw source columns.
+
+| Source record | Attempt 1 recorded rows | Attempt 2 full file rows |
+| --- | ---: | ---: |
+| s80_player_grain_2026-09-03_s83.csv | 1,106 selected | 2,262 |
+| s80_player_grain_2026-09-03_embargo0_s83.csv | 1,957 selected | 3,707 |
+| s102_nba_sweep_top10_series.parquet | 192,635 selected | 1,926,350 |
+| s82_ingame_screen_series_2026-09-03.csv | 15,702 selected | 219,828 |
+| s116_pooled_ingame_2026-09-03.csv | 9,669 selected | 202,304 |
+| s116_pooled_ingame_2026-09-03_rerun.csv | 9,669 selected | 202,304 |
+| s119_real_game_series_2026-09-03.csv | absent; S82 was cited | 219,828 |
+
+The manifest test now asserts all 23 S196 transitions, direct-table source
+SHA-256 and manifest consistency, full-file versus selected counts, inventory
+consistency, and the four S119/S121 source/grouping transitions.

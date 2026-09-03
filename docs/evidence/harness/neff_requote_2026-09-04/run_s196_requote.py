@@ -10,6 +10,9 @@ from pathlib import Path
 import pandas as pd
 import pyarrow.parquet as pq
 
+from scripts.platformkit.eval_gate.s121_requote import clean_tick_ids
+from scripts.platformkit.eval_gate.tick_informative import flag_ticks
+from scripts.platformkit.foundry.ingame_supply_mlb import joined_ticks, real_game_map
 from scripts.platformkit.ingame.gap_effective_n import effective_sample_size
 
 
@@ -38,14 +41,18 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def read_csv(path: Path, selector=None) -> pd.DataFrame:
+def read_csv(path: Path, selector=None) -> tuple[pd.DataFrame, int, list[str]]:
     parts = []
+    full_rows = 0
+    columns: list[str] = []
     for chunk in pd.read_csv(path, chunksize=CHUNK):
+        full_rows += len(chunk)
+        columns = list(chunk.columns)
         if selector is not None:
             chunk = selector(chunk)
         if not chunk.empty:
             parts.append(chunk)
-    return pd.concat(parts, ignore_index=True)
+    return pd.concat(parts, ignore_index=True), full_rows, columns
 
 
 def report(rows: pd.DataFrame, game: str, loss: str) -> dict[str, float | int | bool]:
@@ -58,25 +65,28 @@ def brier_difference(rows: pd.DataFrame, candidate: str, baseline: str) -> pd.Da
     return result
 
 
-def s80_informative(path: Path) -> tuple[dict[str, float | int | bool], list[str]]:
-    rows = read_csv(path).sort_values(["game", "timestamp"], kind="stable")
+def s80_informative(path: Path) -> tuple[dict[str, float | int | bool], int, list[str]]:
+    rows, full_rows, columns = read_csv(path)
+    rows = rows.sort_values(["game", "timestamp"], kind="stable")
     duplicate = rows.duplicated(["game", "timestamp"], keep="first")
     rows = rows.loc[~duplicate].copy()
     held_model = rows["p_candidate"].sub(rows.groupby("game")["p_candidate"].shift()).abs().le(1e-9)
     held_market = rows["market_prob"].sub(rows.groupby("game")["market_prob"].shift()).abs().le(1e-9)
     selected = rows.loc[~(held_model & held_market)].copy()
-    return report(selected, "game", "loss_differential"), list(rows.columns)
+    return report(selected, "game", "loss_differential"), full_rows, columns
 
 
 def parquet_s102(path: Path) -> tuple[dict[str, float | int | bool], list[str], int]:
     parts = []
     columns = None
+    full_rows = 0
     for batch in pq.ParquetFile(path).iter_batches(batch_size=CHUNK):
         frame = batch.to_pandas()
+        full_rows += len(frame)
         columns = list(frame.columns)
         parts.append(frame.loc[frame["hypothesis"].eq("margin_over_sqrt_rem|raw")])
     rows = pd.concat(parts, ignore_index=True)
-    return report(rows, "game", "d"), columns or [], len(rows)
+    return report(rows, "game", "d"), columns or [], full_rows
 
 
 def source_record(path: Path, row_count: int, columns: list[str], copied: bool) -> dict[str, str]:
@@ -100,6 +110,32 @@ def source_record(path: Path, row_count: int, columns: list[str], copied: bool) 
     }
 
 
+def s119_quotes(path: Path) -> tuple[dict[str, tuple[dict[str, float | int | bool], str]], int, list[str]]:
+    """Re-quote S119/S121 from their named archive and documented cluster rules."""
+    rows, full_rows, columns = read_csv(path, lambda frame: frame.loc[frame["feature"].eq("tick_index_in_game")])
+    rows = brier_difference(rows, "p_candidate", "p_null")
+    rows["legacy_cluster"] = rows["game"].astype(str) + "#" + rows["real_game_seq"].astype(str)
+
+    ticks = joined_ticks()
+    states = dict(zip(zip(ticks["game_id"].astype(str), ticks["ts"].astype(str)), ticks["state_summary"]))
+    clean = clean_tick_ids(rows, [states.get((str(game), str(stamp))) for game, stamp in zip(rows["game"], rows["timestamp"])])
+    current = real_game_map(ticks)
+    rows["current_cluster"] = [
+        str(game) + "#" + str(current.get((str(game), str(stamp)), 1))
+        for game, stamp in zip(rows["game"], rows["timestamp"])
+    ]
+    flagged, _ = flag_ticks(rows, market_col="market", model_col="p_candidate", loss_col="loss_differential")
+    informative = flagged.loc[flagged["is_informative"]]
+    partitioned = informative.loc[informative["tick_index"].isin(clean["keep"])]
+    assert len(rows) == 15_702 and len(partitioned) == 15_162
+    return {
+        "S137_S119_before": (report(rows, "legacy_cluster", "loss_differential"), "all ticks; legacy S106 real-game cluster=game#real_game_seq"),
+        "S137_S119_after": (report(rows, "current_cluster", "loss_differential"), "all ticks; corrected S131 real-game cluster=game#real_game_seq"),
+        "S137_S121_before": (report(informative, "current_cluster", "loss_differential"), "informative ticks; corrected S131 real-game cluster; flag_ticks eps=1e-9, game,timestamp keep-first duplicates"),
+        "S137_S121_after": (report(partitioned, "current_cluster", "loss_differential"), "tick-clean partition (15,336 raw ticks, 366 dropped), then informative ticks; corrected S131 real-game cluster; flag_ticks eps=1e-9, game,timestamp keep-first duplicates"),
+    }, full_rows, columns
+
+
 def main() -> None:
     manifest_rows = list(csv.DictReader(MANIFEST.open(newline="", encoding="utf-8")))
     relabelled = [row for row in manifest_rows if row["readout_id"] in TARGET_IDS]
@@ -116,27 +152,33 @@ def main() -> None:
         source_rows[path] = source_record(source, count, columns, source.stat().st_size < 2_000_000)
 
     path = "data/cache/eval_gate/s80_player_grain_2026-09-03_s83.csv"
-    result, columns = s80_informative(ROOT / path)
-    add(["S87b_S80_embargo1_precise", "S87b_S80_embargo1_rounded"], result, path, int(result["n_ticks"]), columns, "informative per-game adjacent p_candidate or market_prob change, eps=1e-9; duplicate game,timestamp keep-first")
+    result, full_rows, columns = s80_informative(ROOT / path)
+    add(["S87b_S80_embargo1_precise", "S87b_S80_embargo1_rounded"], result, path, full_rows, columns, "informative per-game adjacent p_candidate or market_prob change, eps=1e-9; duplicate game,timestamp keep-first")
 
     path = "data/cache/eval_gate/s80_player_grain_2026-09-03_embargo0_s83.csv"
-    result, columns = s80_informative(ROOT / path)
-    add(["S87b_S80_embargo0"], result, path, int(result["n_ticks"]), columns, "informative per-game adjacent p_candidate or market_prob change, eps=1e-9; duplicate game,timestamp keep-first")
+    result, full_rows, columns = s80_informative(ROOT / path)
+    add(["S87b_S80_embargo0"], result, path, full_rows, columns, "informative per-game adjacent p_candidate or market_prob change, eps=1e-9; duplicate game,timestamp keep-first")
 
     path = "data/cache/eval_gate/s102_nba_sweep_top10_series.parquet"
-    result, columns, count = parquet_s102(ROOT / path)
-    add(["S137_S102", "S137_S102_recap"], result, path, count, columns, "all ticks; hypothesis=margin_over_sqrt_rem|raw; cluster=game; loss=d")
+    result, columns, full_rows = parquet_s102(ROOT / path)
+    add(["S137_S102", "S137_S102_recap"], result, path, full_rows, columns, "all ticks; hypothesis=margin_over_sqrt_rem|raw; cluster=game; loss=d")
 
     path = "data/cache/eval_gate/s82_ingame_screen_series_2026-09-03.csv"
-    rows = read_csv(ROOT / path, lambda frame: frame.loc[frame["feature"].eq("tick_index_in_game")])
+    rows, full_rows, columns = read_csv(ROOT / path, lambda frame: frame.loc[frame["feature"].eq("tick_index_in_game")])
     rows = brier_difference(rows, "p_candidate", "p_null")
     result = report(rows, "game", "loss_differential")
-    add(["S137_S82_before", "S137_S82_after", "S137_S119_before", "S137_S119_after", "S137_S121_before", "S137_S121_after"], result, path, len(rows), list(rows.columns), "all ticks; feature=tick_index_in_game; cluster=game; loss=(y-p_candidate)^2-(y-p_null)^2")
+    add(["S137_S82_before", "S137_S82_after"], result, path, full_rows, columns, "all ticks; feature=tick_index_in_game; cluster=game; loss=(y-p_candidate)^2-(y-p_null)^2")
+
+    path = "data/cache/eval_gate/s119_real_game_series_2026-09-03.csv"
+    s119, full_rows, columns = s119_quotes(ROOT / path)
+    for readout_id, (result, rule) in s119.items():
+        add([readout_id], result, path, full_rows, columns, rule)
 
     path = "data/cache/eval_gate/s58_trialA_clamp_family_series_2026-09-03.csv"
-    rows = brier_difference(read_csv(ROOT / path), "candidate", "incumbent_e4_gd")
+    rows, full_rows, columns = read_csv(ROOT / path)
+    rows = brier_difference(rows, "candidate", "incumbent_e4_gd")
     result = report(rows, "game", "loss_differential")
-    add(["S137_S87_before", "S137_S87_after"], result, path, len(rows), list(rows.columns), "all ticks; cluster=game; loss=(y-candidate)^2-(y-incumbent_e4_gd)^2")
+    add(["S137_S87_before", "S137_S87_after"], result, path, full_rows, columns, "all ticks; cluster=game; loss=(y-candidate)^2-(y-incumbent_e4_gd)^2")
 
     for sport, state, ids in [
         ("nba", "pre_s132", ["S137_S112_nba_before"]),
@@ -146,34 +188,35 @@ def main() -> None:
     ]:
         suffix = "_pre_s132" if state == "pre_s132" else ""
         path = "data/cache/eval_gate/s112_rescore_2026-09-03_%s_fullmodel%s.csv" % (sport, suffix)
-        rows = read_csv(ROOT / path)
+        rows, full_rows, columns = read_csv(ROOT / path)
         rows["loss_differential"] = rows["loss_close"] - rows["loss_elo"]
         result = report(rows, "cluster_id", "loss_differential")
-        add(ids, result, path, len(rows), list(rows.columns), "all ticks; cluster=cluster_id; loss=loss_close-loss_elo")
+        add(ids, result, path, full_rows, columns, "all ticks; cluster=cluster_id; loss=loss_close-loss_elo")
 
     path = "data/cache/eval_gate/s114_ingame_ensemble_series.csv"
-    rows = brier_difference(read_csv(ROOT / path), "p_k5", "market")
+    rows, full_rows, columns = read_csv(ROOT / path)
+    rows = brier_difference(rows, "p_k5", "market")
     result = report(rows, "game", "loss_differential")
-    add(["S137_S114_before", "S137_S114_after"], result, path, len(rows), list(rows.columns), "all ticks; cluster=game; loss=(y-p_k5)^2-(y-market)^2")
+    add(["S137_S114_before", "S137_S114_after"], result, path, full_rows, columns, "all ticks; cluster=game; loss=(y-p_k5)^2-(y-market)^2")
 
     for name, ids in [
         ("s116_pooled_ingame_2026-09-03.csv", ["S137_S116_before"]),
         ("s116_pooled_ingame_2026-09-03_rerun.csv", ["S137_S116_after"]),
     ]:
         path = "data/cache/eval_gate/" + name
-        rows = read_csv(ROOT / path, lambda frame: frame.loc[frame["sport"].eq("mlb")])
+        rows, full_rows, columns = read_csv(ROOT / path, lambda frame: frame.loc[frame["sport"].eq("mlb")])
         result = report(rows, "cluster", "d_partial_vs_line")
-        add(ids, result, path, len(rows), list(rows.columns), "all ticks; sport=mlb; cluster=cluster; loss=d_partial_vs_line")
+        add(ids, result, path, full_rows, columns, "all ticks; sport=mlb; cluster=cluster; loss=d_partial_vs_line")
 
     path = "data/cache/eval_gate/s103_nba_sigma_2026-09-03.csv"
-    rows = read_csv(ROOT / path)
+    rows, full_rows, columns = read_csv(ROOT / path)
     result = report(rows, "game", "d_wide_vs_market")
-    add(["S137_S103"], result, path, len(rows), list(rows.columns), "all ticks; cluster=game; loss=d_wide_vs_market")
+    add(["S137_S103"], result, path, full_rows, columns, "all ticks; cluster=game; loss=d_wide_vs_market")
 
     path = "data/cache/eval_gate/s115_ingame_models_2026-09-03.csv"
-    rows = read_csv(ROOT / path)
+    rows, full_rows, columns = read_csv(ROOT / path)
     result = report(rows, "game", "d_mlp_vs_market")
-    add(["S137_S115"], result, path, len(rows), list(rows.columns), "all ticks; cluster=game; loss=d_mlp_vs_market")
+    add(["S137_S115"], result, path, full_rows, columns, "all ticks; cluster=game; loss=d_mlp_vs_market")
 
     assert set(row["readout_id"] for row in relabelled) == set(computed)
     direct_rows = []
@@ -205,6 +248,7 @@ def main() -> None:
             "source_sha256": row["sha256"],
             "source_bytes": row["bytes"],
             "source_row_count": row_count,
+            "source_file_rows": row_count,
             "source_columns": "|".join(columns),
             "selection_rule": rule,
             "n_ticks": result["n_ticks"],
@@ -217,21 +261,27 @@ def main() -> None:
         })
 
     with MANIFEST.open("w", newline="", encoding="utf-8") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(manifest_rows[0]))
+        writer = csv.DictWriter(stream, fieldnames=list(manifest_rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(manifest_rows)
     with DIRECT.open("w", newline="", encoding="utf-8") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(direct_rows[0]))
+        writer = csv.DictWriter(stream, fieldnames=list(direct_rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(direct_rows)
 
     inventory_rows = list(csv.DictReader(INVENTORY.open(newline="", encoding="utf-8")))
     fields = list(inventory_rows[0])
+    for field in ("row_count", "columns", "copied_artifact"):
+        if field not in fields:
+            fields.append(field)
     for source in source_rows.values():
-        if source["source_path"] not in {row["source_path"] for row in inventory_rows}:
+        existing = next((row for row in inventory_rows if row["source_path"] == source["source_path"]), None)
+        if existing is None:
             inventory_rows.append({field: source.get(field, "") for field in fields})
+        else:
+            existing.update({field: source.get(field, existing.get(field, "")) for field in fields})
     with INVENTORY.open("w", newline="", encoding="utf-8") as stream:
-        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer = csv.DictWriter(stream, fieldnames=fields, lineterminator="\n")
         writer.writeheader()
         writer.writerows(inventory_rows)
 
