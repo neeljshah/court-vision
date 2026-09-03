@@ -118,3 +118,18 @@ H1  NAMED DENOMINATOR -- coverage and ball_valid divide by decoded or segmented 
     `n_frames` from frames that HAVE rows and `:250` divides coverage by it, so frames the tracker
     emitted nothing on are excluded from the denominator. That is B1 inside the harness that
     adjudicates every row; G34 measured 4.9x inflation on 2026-09-02.
+
+## A12 (added 2026-09-03, from a cross-session collision)
+
+A12 SHARED RAILS ARE PART OF THE LANDING. `tests/platformkit/test_loc_rail_scope.py`
+    carries a per-file LOC allowlist. When a verified landing GROWS an allowlisted
+    file, the verifier raises that file's entry **in the same commit**, with a
+    one-line reason naming the commit, and runs that rail test as part of the
+    per-file test list before reporting.
+    Why this exists: G197 grew `scripts/platformkit/tracking_harness.py` from 331
+    to 416 lines without raising its entry. Master's rail went red and BLOCKED THE
+    PEER SESSION'S LANDINGS for about 15 minutes. The peer raised it and told us.
+    A green per-file test in the lane's own worktree does not prove master is green
+    for everyone else -- this repo is shared, and a rail is a shared surface.
+    A file pushed over the 300-line rail is also a split candidate the next time it
+    is touched; note it, do not split it opportunistically inside an unrelated row.
