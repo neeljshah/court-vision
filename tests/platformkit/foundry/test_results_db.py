@@ -282,3 +282,78 @@ def test_an_unfiltered_claim_is_unchanged_by_the_sport_argument(tmp_path):
         _queued(db, halflives=(3,), sport="nba", family="nba_pace")
         _queued(db, halflives=(10,), sport="soccer", family="soccer_form")
         assert sorted(h.sport for h in db.claim(10, tier=TIER)) == ["nba", "soccer"]
+
+
+# --- S135: lease renewal, owner-scoped reaping, no undrainable queue row ---------
+
+def test_a_renewed_lease_is_not_double_claimed_at_901_seconds(tmp_path):
+    """The S135 probe: runner B claimed A's 3 rows at +901 s while A was still working."""
+    with _db(tmp_path) as db:
+        _queued(db)
+        assert len(db.claim(3, tier=TIER, lease_seconds=900, owner="A")) == 3
+        assert db.renew(_queued_hashes(db), lease_seconds=900, now=_plus(800)) == 3
+        db.reap_expired(_plus(901))
+        assert db.claim(3, tier=TIER, owner="B") == []       # the probe: 0 rows for B
+        assert db.reap_expired(_plus(1701)) == 3             # 800 + 900, then it frees
+
+
+def test_the_default_lease_scales_with_the_batch(tmp_path):
+    """A claimer screens its batch serially, so 3 rows hold 3 x LEASE_SECONDS.
+
+    An explicit lease_seconds is honoured exactly -- every pre-S135 caller unchanged.
+    """
+    with _db(tmp_path) as db:
+        _queued(db)
+        assert len(db.claim(3, tier=TIER)) == 3
+        assert db.reap_expired(_plus(901)) == 0              # was 3 before S135
+        assert db.reap_expired(_plus(2701)) == 3
+
+
+def test_a_reap_never_frees_the_callers_own_expired_claim(tmp_path):
+    """reap_expired was global: a runner whose batch outran its lease reaped and
+    then re-claimed the very rows it was still screening."""
+    with _db(tmp_path) as db:
+        _queued(db)
+        db.claim(3, tier=TIER, lease_seconds=-1, owner="A")  # already expired
+        assert db.reap_expired(owner="A") == 0               # A never reaps A
+        assert db.claim(3, tier=TIER, owner="A") == []
+        assert db.reap_expired(owner="B") == 3               # another claimer may
+
+
+def test_renew_does_not_resurrect_a_released_row(tmp_path):
+    """B4: a heartbeat must not silently re-take a row somebody else now owns."""
+    with _db(tmp_path) as db:
+        hashes = _queued(db)
+        db.claim(3, tier=TIER, owner="A")
+        db.release(hashes)
+        assert db.renew(hashes) == 0
+        assert len(db.claim(3, tier=TIER, owner="B")) == 3
+
+
+def test_a_sport_null_hypothesis_is_refused_at_seed_time(tmp_path):
+    """Reproduced: claim(sport="mlb") -> 0 while claim(sport=None) -> 1, so a
+    sport-bound pod runner could never drain it. Refused with a named reason."""
+    with _db(tmp_path) as db:
+        hypothesis = Hypothesis("nba", "pace_diff_asof", "ew", (("halflife", 3),),
+                                CONDITIONING, "pregame", "ml", family="pace")
+        digest = db.upsert_hypothesis(hypothesis)
+        db._c.execute("UPDATE hypothesis SET sport=NULL WHERE hash=?", (digest,))
+        with pytest.raises(ValueError, match="no claimable sport"):
+            db.enqueue([digest], TIER)
+        assert db._c.execute("SELECT COUNT(*) FROM queue").fetchone()[0] == 0
+        with pytest.raises(ValueError, match="no claimable sport"):
+            db.enqueue(["a_hash_with_no_hypothesis_row"], TIER)
+        assert db.undrainable_queued() == []
+
+
+def test_undrainable_queued_reports_a_pre_s135_row(tmp_path):
+    """A queue seeded before S135 may already hold one; the fix reports, never hides."""
+    with _db(tmp_path) as db:
+        hashes = _queued(db, halflives=(3,))
+        db._c.execute("UPDATE hypothesis SET sport='' WHERE hash=?", (hashes[0],))
+        assert db.undrainable_queued() == hashes
+        assert db.claim(5, tier=TIER, sport="nba") == []
+
+
+def _queued_hashes(db):
+    return [row[0] for row in db._c.execute("SELECT hash FROM queue ORDER BY hash")]

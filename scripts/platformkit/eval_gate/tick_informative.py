@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import warnings
 from collections.abc import Mapping, Sequence
 from datetime import datetime, timezone
 from pathlib import Path
@@ -28,6 +29,22 @@ from scripts.platformkit.ingame.gap_effective_n import effective_sample_size
 
 EPS = 1e-9
 FLAG_COLUMNS = ("is_dup", "is_held_market", "is_held_model", "is_informative")
+_TS_KEY = "_tick_ts_key"    # S130 scratch column, dropped before the frame is returned
+
+
+def _ts_key(values: pd.Series) -> pd.Series:
+    """The COMPARABLE form of a timestamp column: UTC datetimes when it parses as one.
+
+    S130: `2026-09-03T00:00:00Z` and `2026-09-03T00:00:00+00:00` are the same instant,
+    but as raw strings they are two ticks, so a duplicate read as informative. A column
+    that is not a timestamp at all (a synthetic `t0`/`t1`, or an integer sequence number)
+    falls back to its own values rather than becoming NaT -- a partial parse is not
+    trusted, because half a column of NaT would collapse every unparsed row into one dup.
+    """
+    with warnings.catch_warnings():          # "could not infer format" is expected here
+        warnings.simplefilter("ignore", UserWarning)
+        parsed = pd.to_datetime(values, utc=True, errors="coerce")
+    return parsed if parsed.notna().all() else values
 
 
 def _held(frame: pd.DataFrame, game_col: str, value_col: str, eps: float) -> pd.Series:
@@ -55,9 +72,11 @@ def flag_ticks(
 ) -> tuple[pd.DataFrame, Dict[str, Any]]:
     """Return (frame + flag columns, summary counts).
 
-    Rows MUST already be in tick order within each game (the callers read stores
-    that are written in tick order, and the CLI sorts).  Pure: the input frame is
-    not modified.
+    S130: the rows are normalised HERE, not by one of the two callers -- the frame is
+    stably sorted by (game, ts) and `ts` is compared as a UTC instant, so the flags no
+    longer depend on the order the writer happened to score in or on how it spelled a
+    timezone.  The returned frame carries that sorted order (its index is preserved, so
+    a caller can restore its own).  Pure: the input frame is not modified.
 
     `is_dup`      -- a later row with a (game_col, ts_col) pair already seen.
     `is_held_*`   -- the quote repeats the previous tick of the same game.
@@ -72,10 +91,15 @@ def flag_ticks(
     if missing:
         raise ValueError("missing required columns: %s" % ", ".join(missing))
     out = frame.copy()
-    out["is_dup"] = out.duplicated(subset=[game_col, ts_col], keep="first")
+    if _TS_KEY in out.columns:
+        raise ValueError("column %r is reserved by flag_ticks" % _TS_KEY)
+    out[_TS_KEY] = _ts_key(out[ts_col])
+    out = out.sort_values([game_col, _TS_KEY], kind="mergesort")   # stable: ties keep input order
+    out["is_dup"] = out.duplicated(subset=[game_col, _TS_KEY], keep="first")
     out["is_held_market"] = _held(out, game_col, market_col, eps)
     out["is_held_model"] = _held(out, game_col, model_col, eps)
     out["is_informative"] = ~out["is_dup"] & ~(out["is_held_market"] & out["is_held_model"])
+    out = out.drop(columns=[_TS_KEY])
 
     n_eff_icc = None
     if loss_col is not None:
@@ -115,14 +139,13 @@ def attach_informative_summary(
     `ci95_informative`, computed from the SAME per-tick paired losses on the
     informative rows only, beside the full-series CI the writer already publishes.
 
-    Rows are stably sorted by (game, ts) first so a writer that scored in some
-    other order still gets per-game tick order, which `flag_ticks` requires.
-    `ci95_informative` is None when the informative subset has fewer than two
+    S130: the (game, ts) sort moved INTO `flag_ticks`, which is where it has to be --
+    `requote` called the same function without it and got different flags on the same
+    rows.  `ci95_informative` is None when the informative subset has fewer than two
     game clusters (a DM CI needs two).
     """
     flagged, summary = flag_ticks(
-        frame.sort_values([game_col, ts_col], kind="mergesort"),
-        game_col=game_col, ts_col=ts_col, market_col=market_col, model_col=model_col,
+        frame, game_col=game_col, ts_col=ts_col, market_col=market_col, model_col=model_col,
         loss_col=loss_col, eps=eps,
     )
     informative = flagged[flagged["is_informative"]]

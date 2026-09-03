@@ -49,10 +49,15 @@ CREATE TABLE IF NOT EXISTS result(
     deflated_p REAL, pbo REAL, verdict TEXT, artifact_path TEXT, prereg_sha256 TEXT,
     run_at TEXT, UNIQUE(hash, tier, corpus, corpus_unit, corpus_sha));
 CREATE TABLE IF NOT EXISTS queue(
-    hash TEXT PRIMARY KEY, tier TEXT, enqueued_at TEXT, claimed_at TEXT, lease_until TEXT);
+    hash TEXT PRIMARY KEY, tier TEXT, enqueued_at TEXT, claimed_at TEXT, lease_until TEXT,
+    claimer TEXT);
 """
 
 LEASE_SECONDS = 900.0  # S66: how long a claim is held before reap_expired frees it
+# S135: the DEFAULT lease is LEASE_SECONDS per claimed row -- a claimer screens its batch
+# serially, so a flat 900 s expired mid-batch and the next runner claimed rows still being
+# screened. ponytail: a per-row multiple, not a scheduler; renew() is the knob above it.
+_SQL_VARS = 500  # chunk for an IN (...) list; sqlite's default parameter limit is 999
 
 
 @dataclass(frozen=True)
@@ -126,10 +131,11 @@ class ResultsDB:
         self._c.row_factory = sqlite3.Row
         self._c.execute("PRAGMA foreign_keys=ON")
         self._c.executescript(_SCHEMA)
-        # Additive migration for a DB created before S66 (see reap_expired).
+        # Additive migration for a DB created before S66 / S135 (see reap_expired).
         columns = {row[1] for row in self._c.execute("PRAGMA table_info(queue)")}
-        if "lease_until" not in columns:
-            self._c.execute("ALTER TABLE queue ADD COLUMN lease_until TEXT")
+        for column in ("lease_until", "claimer"):
+            if column not in columns:
+                self._c.execute("ALTER TABLE queue ADD COLUMN {0} TEXT".format(column))
 
     def close(self) -> None:
         self._c.close()
@@ -231,38 +237,96 @@ class ResultsDB:
         return [float(row[0]) for row in rows]
 
     # -- queue ------------------------------------------------------------------
+    def undrainable_queued(self) -> list:
+        """Queued hashes no SPORT-BOUND runner can ever claim (S135). Should be empty.
+
+        `claim(sport=...)` joins hypothesis and filters h.sport, so a row with a
+        NULL/empty sport (or no hypothesis row) is invisible to every pod screener.
+        `enqueue` refuses to create one; this reports what a pre-S135 seed left behind.
+        """
+        return [row[0] for row in self._c.execute(
+            "SELECT q.hash FROM queue q LEFT JOIN hypothesis h ON h.hash = q.hash "
+            "WHERE h.hash IS NULL OR h.sport IS NULL OR h.sport = '' ORDER BY q.hash")]
+
+    def _undrainable(self, hashes: list) -> list:
+        """Which of `hashes` have no claimable sport. Chunked: a pod seed queues thousands."""
+        bad = []
+        for start in range(0, len(hashes), _SQL_VARS):
+            chunk = hashes[start:start + _SQL_VARS]
+            ok = {row[0] for row in self._c.execute(
+                "SELECT hash FROM hypothesis WHERE sport IS NOT NULL AND sport <> '' "
+                "AND hash IN ({0})".format(",".join("?" * len(chunk))), chunk)}
+            bad.extend(h for h in chunk if h not in ok)
+        return bad
+
     def enqueue(self, hashes: Iterable[str], tier: str) -> int:
-        """Queue hypotheses for a tier. Already-queued hashes are left alone."""
+        """Queue hypotheses for a tier. Already-queued hashes are left alone.
+
+        S135: REFUSED AT SEED TIME, reason named, if any hypothesis has no claimable
+        sport -- that row would be one a sport-bound runner can NEVER drain. Fix the
+        seed, not the queue.
+        """
         now = _now()
+        hashes = list(hashes)
+        undrainable = self._undrainable(hashes)
+        if undrainable:
+            raise ValueError(
+                "refusing to queue {0} of {1} hypotheses with no claimable sport (NULL/empty "
+                "sport, or no hypothesis row): claim() filters on h.sport, so a sport-bound "
+                "runner could never drain them. First: {2}".format(
+                    len(undrainable), len(hashes), ", ".join(sorted(undrainable)[:5])))
         rows = [(h, tier, now) for h in hashes]
         self._c.executemany(
             "INSERT OR IGNORE INTO queue(hash, tier, enqueued_at, claimed_at) "
             "VALUES(?,?,?,NULL)", rows)
         return len(rows)
 
-    def reap_expired(self, now: Optional[str] = None) -> int:
-        """Hand every EXPIRED claim back to the queue. Returns the row count.
+    def reap_expired(self, now: Optional[str] = None, owner: Optional[str] = None) -> int:
+        """Hand EXPIRED claims back to the queue. Returns the row count.
 
         B4: a claimer that dies mid-tier must not strand its rows. `claim()` calls
         this inside its own transaction, so every claimer reaps by construction; it
         is public because the runner may also reap on a pass that claims nothing.
         A row claimed BEFORE S66 has lease_until NULL and is NEVER auto-reaped --
         nothing can tell a live pre-lease claimer from a dead one, so only
-        `release()` frees those."""
-        cursor = self._c.execute(
-            "UPDATE queue SET claimed_at=NULL, lease_until=NULL WHERE claimed_at IS NOT NULL "
-            "AND lease_until IS NOT NULL AND lease_until <= ?", (now or _now(),))
-        return int(cursor.rowcount)
+        `release()` frees those.
+
+        S135: `owner` scopes the reap AWAY from the caller's own rows -- it was global,
+        so a runner whose batch outran its lease reaped and re-claimed the hypotheses it
+        was still screening. ponytail ceiling: a restarted runner reusing the same owner
+        id will not self-reap either; it calls release(), the deliberate act.
+        """
+        sql = ("UPDATE queue SET claimed_at=NULL, lease_until=NULL, claimer=NULL "
+               "WHERE claimed_at IS NOT NULL AND lease_until IS NOT NULL AND lease_until <= ?")
+        args = [now or _now()]
+        if owner is not None:
+            sql += " AND (claimer IS NULL OR claimer <> ?)"
+            args.append(owner)
+        return int(self._c.execute(sql, args).rowcount)
+
+    def renew(self, hashes: Iterable[str], lease_seconds: float = LEASE_SECONDS,
+              now: Optional[str] = None) -> int:
+        """Push a still-claimed row's lease forward -- the heartbeat (S135).
+
+        Only STILL-CLAIMED rows move: a reaped or released row is not silently
+        re-taken, which would be a re-claim loop wearing a heartbeat's clothes.
+        """
+        stamp = now or _now()
+        until = (datetime.fromisoformat(stamp) + timedelta(seconds=float(lease_seconds))).isoformat()
+        return int(self._c.executemany(
+            "UPDATE queue SET lease_until=? WHERE hash=? AND claimed_at IS NOT NULL",
+            [(until, h) for h in hashes]).rowcount)
 
     def release(self, hashes: Iterable[str]) -> int:
         """Hand claimed rows back on a FAILURE path, without waiting out the lease."""
         cursor = self._c.executemany(
-            "UPDATE queue SET claimed_at=NULL, lease_until=NULL WHERE hash=?",
+            "UPDATE queue SET claimed_at=NULL, lease_until=NULL, claimer=NULL WHERE hash=?",
             [(h,) for h in hashes])
         return int(cursor.rowcount)
 
     def claim(self, n: int, tier: Optional[str] = None,
-              lease_seconds: float = LEASE_SECONDS, sport: Optional[str] = None) -> list:
+              lease_seconds: Optional[float] = None, sport: Optional[str] = None,
+              owner: Optional[str] = None) -> list:
         """Claim up to n queued hypotheses in ONE transaction, holding a lease.
 
         BEGIN IMMEDIATE takes the write lock before the SELECT, so two claimers can
@@ -271,6 +335,11 @@ class ResultsDB:
         an expired claim is reclaimable on the NEXT claim and never before it.
         S75: `sport` filters the hypothesis's OWN sport, so a screener bound to one
         corpus cannot claim a row it would screen on foreign states. None = as before.
+
+        S135: `lease_seconds=None` (the new default) leases LEASE_SECONDS PER CLAIMED
+        ROW; an explicit value is honoured exactly, so every pre-S135 caller is
+        unchanged. `owner` is stored on the row and scopes this claim's own reap away
+        from its own claims; `renew()` extends a live lease.
         """
         sql = ("SELECT q.hash FROM queue q JOIN hypothesis h ON h.hash=q.hash "
                "WHERE q.claimed_at IS NULL")
@@ -284,14 +353,16 @@ class ResultsDB:
         self._c.execute("BEGIN IMMEDIATE")
         try:
             stamp = _now()
-            self.reap_expired(stamp)
+            self.reap_expired(stamp, owner=owner)
             hashes = [row[0] for row in self._c.execute(sql, args).fetchall()]
             if hashes:
+                lease = (LEASE_SECONDS * len(hashes) if lease_seconds is None
+                         else float(lease_seconds))
                 until = (datetime.fromisoformat(stamp)          # all stamps are UTC,
-                         + timedelta(seconds=float(lease_seconds))).isoformat()
+                         + timedelta(seconds=lease)).isoformat()
                 self._c.executemany(
-                    "UPDATE queue SET claimed_at=?, lease_until=? WHERE hash=?",
-                    [(stamp, until, h) for h in hashes])
+                    "UPDATE queue SET claimed_at=?, lease_until=?, claimer=? WHERE hash=?",
+                    [(stamp, until, owner, h) for h in hashes])
             rows = [self._c.execute("SELECT * FROM hypothesis WHERE hash=?", (h,)).fetchone()
                     for h in hashes]
             self._c.execute("COMMIT")

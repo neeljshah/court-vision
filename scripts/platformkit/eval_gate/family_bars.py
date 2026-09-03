@@ -112,16 +112,37 @@ class FamiliesSpec:
 
 
 def resolve_family(name: Optional[str]) -> Optional[str]:
-    """The frozen family a (possibly historical) ledger family string belongs to (S89)."""
-    return None if name is None else FAMILY_ALIASES.get(name, name)
+    """The frozen family a (possibly historical) ledger family string belongs to (S89).
+
+    S134: aliases resolve to a FIXED POINT. A single `dict.get` stopped one hop short,
+    so a second alias hop (a -> b -> c, which is what a rename ON TOP of an existing
+    alias writes) resolved to `b`, matched no ledger row, and re-zeroed that family's
+    K. A cycle raises instead of spinning -- an alias map that loops is a bug, not a
+    family. `None` is not a key, so the no-family contract is unchanged.
+    """
+    seen = []
+    while name in FAMILY_ALIASES:
+        seen.append(name)
+        name = FAMILY_ALIASES[name]
+        if name in seen:
+            raise ValueError("FAMILY_ALIASES has a cycle: %s -> %s"
+                             % (" -> ".join(seen), name))
+    return name
 
 
 def k_family(family: str, ledger_path: Any = LEDGER_PATH) -> int:
     """How many charges the ledger ALREADY carries for a frozen family, aliases resolved.
 
     READ-ONLY: it never appends, so it is not a charge and cannot move k_cumulative.
-    `ledger.next_k_family` (the WRITE path) still matches the string exactly -- PROPOSED
-    patch in docs/research/organization-sprint/ (eval_gate/ledger.py is token-locked).
+
+    S134 -- THE COUNT RULE, shared with `ledger.next_k_family` (the WRITE path): a row
+    counts iff its `family`, aliases resolved, is this family. `k_family` is absent from
+    the rule on purpose; a pre-S13 row carries `family` with `k_family` None and is still
+    a charge against that family. The write path additionally filters on
+    `k_family is not None`, so on such a row the two counters disagree by one -- PROPOSED
+    patch in docs/research/organization-sprint/PROPOSED-S134-ledger-alias-transitive.md
+    (eval_gate/ledger.py is token-locked). The transitive resolution above is shared
+    already, because the write path imports THIS function.
     """
     target = resolve_family(family)
     path = Path(ledger_path)

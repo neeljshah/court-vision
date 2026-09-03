@@ -135,3 +135,65 @@ def test_s80_writer_reports_the_triple_on_a_synthetic_scored_frame():
     assert len(block["ci95_informative"]) == 2
     # the published CI is untouched -- the informative one is a SECOND number beside it
     assert summary["dm"]["ci95"] != block["ci95_informative"]
+
+
+# --- S130: the flags are neither string-exact nor order-dependent ----------------
+
+def test_the_same_instant_spelled_two_ways_is_one_tick():
+    """Reproduced: `...Z` and `...+00:00` read as two ticks, n_dup 1 where 2 is right."""
+    frame = pd.DataFrame({
+        "game": ["g1", "g1", "g1"],
+        "timestamp": ["2026-09-03T00:00:00Z", "2026-09-03T00:00:00+00:00",
+                      "2026-09-03T00:01:00Z"],
+        "market": [0.5, 0.5, 0.6], "model": [0.5, 0.6, 0.7]})
+    _, summary = flag_ticks(frame)
+    assert summary["n_dup"] == 1 and summary["n_informative"] == 2
+
+
+def test_a_partly_parsing_ts_column_falls_back_rather_than_inventing_dups():
+    """All-or-nothing on purpose: half a column of NaT would collapse every unparsed
+    row into ONE tick, which deletes real ticks instead of merging spellings."""
+    frame = pd.DataFrame({
+        "game": ["g1", "g1", "g1"],
+        "timestamp": ["2026-09-03T00:00:00Z", "not-a-timestamp", "also-not-one"],
+        "market": [0.5, 0.5, 0.5], "model": [0.5, 0.6, 0.7]})
+    _, summary = flag_ticks(frame)
+    assert summary["n_dup"] == 0 and summary["n_informative"] == 3
+
+
+def test_a_non_timestamp_ts_column_still_works():
+    """A synthetic t0/t1 column must not collapse to NaT and become one big duplicate."""
+    frame = pd.DataFrame({"game": ["g1"] * 3, "timestamp": ["t0", "t1", "t2"],
+                          "market": [0.5, 0.6, 0.7], "model": [0.5, 0.6, 0.7]})
+    _, summary = flag_ticks(frame)
+    assert summary["n_dup"] == 0 and summary["n_informative"] == 3
+
+
+def test_flag_ticks_is_row_order_independent():
+    """Reproduced: the same six rows gave n_informative 6 in tick order and 2 reordered,
+    because `requote` -- unlike `attach_informative_summary` -- never sorted."""
+    frame = pd.DataFrame({
+        "game": ["g1"] * 6, "timestamp": ["t0", "t1", "t2", "t3", "t4", "t5"],
+        "market": [0.5, 0.6, 0.5, 0.6, 0.5, 0.6],
+        "model": [0.5, 0.6, 0.5, 0.6, 0.5, 0.6],
+        "loss_differential": [0.01, -0.02, 0.03, -0.01, 0.02, 0.0]})
+    _, ordered = flag_ticks(frame, loss_col="loss_differential")
+    _, scrambled = flag_ticks(frame.iloc[[0, 2, 4, 1, 3, 5]].reset_index(drop=True),
+                              loss_col="loss_differential")
+    assert ordered == scrambled and ordered["n_informative"] == 6
+
+
+def test_interleaved_games_are_grouped_before_the_held_test():
+    frame = pd.DataFrame({
+        "game": ["g1", "g2", "g1", "g2"], "timestamp": ["t0", "t0", "t1", "t1"],
+        "market": [0.5, 0.4, 0.6, 0.4], "model": [0.5, 0.4, 0.6, 0.4]})
+    flagged, summary = flag_ticks(frame)
+    assert list(flagged["game"]) == ["g1", "g1", "g2", "g2"]
+    assert summary["n_informative"] == 3 and summary["n_held_market"] == 1
+
+
+def test_the_reserved_scratch_column_is_refused_not_clobbered():
+    frame = pd.DataFrame({"game": ["g1"], "timestamp": ["t0"], "market": [0.5],
+                          "model": [0.5], "_tick_ts_key": ["mine"]})
+    with pytest.raises(ValueError, match="reserved"):
+        flag_ticks(frame)

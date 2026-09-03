@@ -9,10 +9,13 @@ Run ONLY this file: python -m pytest scripts/platformkit/eval_gate/test_family_b
 """
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import numpy as np
 import pytest
+
+from scripts.platformkit.eval_gate import family_bars
 
 from scripts.platformkit.eval_gate.family_bars import (
     FAMILY_ALIASES, SPEC_PATH, dual_bar_verdict, git_blob_id, k_family, load_families,
@@ -192,3 +195,91 @@ def test_verdict_reads_no_ledger_and_no_stored_result(monkeypatch):
     load_families.cache_clear()
     dual_bar_verdict(0.001, 5, [0.001, 0.5, 0.9], family="nba_gate")
     assert not [p for p in opened if "backtest_fwer" in p or "hypotheses.sqlite" in p], opened
+
+
+# --- S134: alias chains resolve transitively and the two K counters agree -------
+
+def test_alias_chains_resolve_to_a_fixed_point(monkeypatch):
+    """A rename ON TOP of an existing alias (a -> b -> c) must still reach `c`.
+
+    Reproduced before the fix: resolve_family("a") stopped at "b", so no ledger row
+    matched "c" and next_k_family returned 1 instead of 3 -- the family's K re-zeroed.
+    """
+    from scripts.platformkit.eval_gate.ledger import next_k_family
+
+    monkeypatch.setitem(family_bars.FAMILY_ALIASES, "a", "b")
+    monkeypatch.setitem(family_bars.FAMILY_ALIASES, "b", "c")
+    assert resolve_family("a") == "c"
+    assert resolve_family("b") == "c"
+    assert resolve_family("c") == "c"
+    rows = [{"family": "a", "k_family": 1}, {"family": "a", "k_family": 2}]
+    assert next_k_family(rows, "c") == 3
+
+
+def test_a_rename_preserves_k_once_its_alias_is_added(monkeypatch, tmp_path):
+    """The rename test: K survives a rename iff the alias is added with it."""
+    from scripts.platformkit.eval_gate.ledger import next_k_family
+
+    ledger = tmp_path / "renamed.jsonl"
+    rows = [{"family": "old_fam", "k_family": 1}, {"family": "old_fam", "k_family": 2}]
+    ledger.write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="ascii")
+    assert next_k_family(rows, "new_fam") == 1 and k_family("new_fam", ledger) == 0
+    monkeypatch.setitem(family_bars.FAMILY_ALIASES, "old_fam", "new_fam")
+    assert next_k_family(rows, "new_fam") == 3      # K preserved across the rename
+    assert k_family("new_fam", ledger) == 2
+
+
+def test_an_alias_cycle_raises_instead_of_looping(monkeypatch):
+    monkeypatch.setitem(family_bars.FAMILY_ALIASES, "p", "q")
+    monkeypatch.setitem(family_bars.FAMILY_ALIASES, "q", "p")
+    with pytest.raises(ValueError, match="cycle"):
+        resolve_family("p")
+
+
+def test_the_two_k_counters_agree_on_every_family_of_the_real_ledger():
+    """S134: the read path (k_family) and the write path (next_k_family) count the
+    SAME rule -- family, aliases resolved -- over the real 18-row charge ledger.
+
+    READ-ONLY: the ledger's bytes are asserted unchanged either side of the count.
+    """
+    from scripts.platformkit.eval_gate.ledger import load_fwer, next_k_family
+
+    real = Path("data/cache/eval_gate/backtest_fwer.jsonl")
+    before = real.read_bytes()
+    rows = load_fwer(real)
+    assert len(rows) == 18
+    families = sorted({resolve_family(r["family"]) for r in rows if r.get("family")})
+    assert families, "the ledger carries at least one family"
+    for name in families:
+        assert k_family(name, real) == next_k_family(rows, name) - 1, name
+    assert real.read_bytes() == before, "counting must never write the charge ledger"
+
+
+def test_the_frozen_39_family_counts_are_unchanged_by_s134():
+    """The bar: k_family over the unmodified ledger is what it was for every family.
+
+    The S134 register row says 39 frozen families; the frozen spec now carries 40
+    (S102 added a tickgrid family after the row was filed), so the count is asserted
+    from the spec rather than restated.
+    """
+    real = Path("data/cache/eval_gate/backtest_fwer.jsonl")
+    counts = {f.name: k_family(f.name, real) for f in load_families().families}
+    assert len(counts) == 40
+    assert {n: v for n, v in counts.items() if v} == {
+        "ingame_arms_mlb": 2, "ingame_arms_nba": 1, "soccer_gate": 1}
+
+
+@pytest.mark.xfail(strict=True, reason="pending the PROPOSED-S134 ledger.py patch "
+                                       "(eval_gate/ledger.py is token-locked)")
+def test_the_two_counters_also_agree_on_a_pre_s13_row():
+    """The remaining half of S134: a row carrying `family` with `k_family` None.
+
+    It IS a charge against that family, but the write path filters it out
+    (ledger.py:155 `r.get("k_family") is not None`) while the read path counts it --
+    measured 1 vs 2 on this pair. XPASS here means the proposed one-line patch landed
+    and this marker should be removed.
+    """
+    from scripts.platformkit.eval_gate.ledger import next_k_family
+
+    rows = [{"family": "X", "k_family": 1}, {"family": "X", "k_family": None}]
+    assert next_k_family(rows, "X") == 3
