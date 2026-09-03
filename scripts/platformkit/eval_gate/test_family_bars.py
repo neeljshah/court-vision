@@ -17,13 +17,30 @@ import pytest
 
 from scripts.platformkit.eval_gate import family_bars
 
+from scripts.platformkit.eval_gate import worktree_marker
 from scripts.platformkit.eval_gate.family_bars import (
     FAMILY_ALIASES, SPEC_PATH, dual_bar_verdict, git_blob_id, k_family, load_families,
     render_bars, resolve_family)
 
+FWER_LEDGER = Path("data/cache/eval_gate/backtest_fwer.jsonl")
 PLANTED_NULLS = 200
 SEED = 20260903
 MAX_DISCOVERIES = 10
+
+
+def require_ledger(path: Path = FWER_LEDGER) -> Path:
+    """S153: an absent charge ledger is a FAILURE here, a skip only in a worktree.
+
+    data/cache/eval_gate/ is never junctioned into a codex worktree, so the skip is
+    correct there; in the main repo the same absence is missing evidence, and a
+    bare `if not exists: skip` let it read as a pass.
+    """
+    if worktree_marker.is_worktree_checkout():
+        pytest.skip(f"worktree checkout: {path} is never junctioned into a worktree")
+    if not path.exists():
+        raise AssertionError(
+            f"main-repo checkout: the FWER charge ledger is absent: {path.resolve()}")
+    return path
 
 
 def planted_nulls(n: int = PLANTED_NULLS, seed: int = SEED) -> list:
@@ -180,9 +197,7 @@ def test_frozen_grammar_still_enumerates_only_the_37_grids():
 
 def test_k_family_counts_the_two_historical_mlb_arm_charges(tmp_path):
     """k_family is READ-ONLY over the real ledger: rows 15 and 16 -> ingame_arms_mlb = 2."""
-    real = Path("data/cache/eval_gate/backtest_fwer.jsonl")
-    if not real.exists():
-        pytest.skip("the private charge ledger is absent in this worktree")
+    real = require_ledger()
     before = real.read_bytes()
     assert k_family("ingame_arms_mlb") == 2
     assert k_family("ingame_mlb_arms") == 2      # the alias counts the same two rows
@@ -256,9 +271,7 @@ def test_the_two_k_counters_agree_on_every_family_of_the_real_ledger():
     """
     from scripts.platformkit.eval_gate.ledger import load_fwer, next_k_family
 
-    real = Path("data/cache/eval_gate/backtest_fwer.jsonl")
-    if not real.exists():
-        pytest.skip("the private charge ledger is absent in this worktree")
+    real = require_ledger()
     before = real.read_bytes()
     rows = load_fwer(real)
     assert len(rows) == 18
@@ -276,9 +289,7 @@ def test_the_frozen_39_family_counts_are_unchanged_by_s134():
     (S102 added a tickgrid family after the row was filed), so the count is asserted
     from the spec rather than restated.
     """
-    real = Path("data/cache/eval_gate/backtest_fwer.jsonl")
-    if not real.exists():
-        pytest.skip("the private charge ledger is absent in this worktree")
+    real = require_ledger()
     counts = {f.name: k_family(f.name, real) for f in load_families().families}
     assert len(counts) == 41
     assert {n: v for n, v in counts.items() if v} == {
@@ -297,3 +308,21 @@ def test_the_two_counters_also_agree_on_a_pre_s13_row():
 
     rows = [{"family": "X", "k_family": 1}, {"family": "X", "k_family": None}]
     assert next_k_family(rows, "X") == 3
+
+
+# --- S153: absent evidence must not read as a pass -----------------------------
+
+def test_a_worktree_checkout_skips_the_ledger_tests(monkeypatch):
+    """Worktree mode -> Skipped, because data/cache/eval_gate is never junctioned."""
+    monkeypatch.setenv("FOUNDRY_WORKTREE", "1")
+    assert worktree_marker.is_worktree_checkout() is True
+    with pytest.raises(pytest.skip.Exception):
+        require_ledger(FWER_LEDGER)
+
+
+def test_a_missing_ledger_in_the_main_repo_fails_instead_of_skipping(monkeypatch, tmp_path):
+    """Main-repo mode -> AssertionError naming the path. This is the S153 bar."""
+    monkeypatch.setattr(worktree_marker, "is_worktree_checkout", lambda *a, **k: False)
+    absent = tmp_path / "backtest_fwer.jsonl"
+    with pytest.raises(AssertionError, match="charge ledger is absent"):
+        require_ledger(absent)
