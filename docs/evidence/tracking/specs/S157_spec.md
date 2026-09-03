@@ -1,4 +1,4 @@
-GAP S157 | sport mlb+soccer | worktree a13 | log cx_s157_game_key_rekey
+GAP S157 | sport mlb+soccer | worktree a16 | log cx_s157_game_key_rekey
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- self-check section B and Q (S-row) before reporting.
 PREMISE (step 0): event_key is market-type-specific -- reproduce 2026-09-04: 0/3,932 MLB and 0/288 soccer_intl event_key groups carry >=2 market types. The series-prefix strip (`event_key.split("-",1)[1]`, per `rekey_market_overlap` in scripts/platformkit/ingame/s90_microstructure_screen.py) yields MLB moneyline+total on 99 of 3,792 game suffixes (2.61pct) and soccer_intl all three markets on 96/96 (S90 2026-09-04). If these do not reproduce, STOP, write the memo, report FALSIFIED.
 LIMIT (step 1): apply the ONE stated strip rule to every row of both stores (not a hand-picked subset) and count games with >=2 market types under the new key; report the number even if below 99/96. If the generic rule undercounts vs S90's ad-hoc numbers, STOP and report CLOSED AT LIMIT.
