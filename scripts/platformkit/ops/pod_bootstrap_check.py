@@ -6,8 +6,10 @@ Reports, for one boot profile (config/boot/<name>.json + supervisor/stack_specs)
   2. an IMPORT check of each module under a given interpreter,
   3. the required ENV flags (profile global_env + the two capture flags),
   4. the matching /proc pids (own shell EXCLUDED) + heartbeat file ages,
-  5. with --functional, six RUNTIME probes (S54): an import-only preflight
-     passed 14/14 while every parquet read failed (pyarrow wiped).
+  5. with --functional, seven RUNTIME probes (S54 + the S78 factory-source
+     probe): an import-only preflight passed 14/14 while every parquet read
+     failed (pyarrow wiped), and the tree shipped clean while every gitignored
+     data/ source the screen predictor reads was absent.
 
 Exit status is nonzero when any module fails to import (a missing module or a
 missing package) or any --functional probe FAILs; ENV / PROC findings are
@@ -83,6 +85,15 @@ _FUNCTIONAL_PROBES: Dict[str, str] = {
         "from scripts.platformkit.ingame.ingame_live_state import live_states\n"
         "st = live_states('mlb'); assert isinstance(st, list), repr(type(st))\n"
         "print('live_games=%d' % len(st))\n"),
+    # S78: the tree ships by `git archive`, but every source the real screen predictor reads
+    # lives under gitignored data/ -- an unprovisioned pod boots a runner that crashes at bind
+    # and then throws FileNotFound screen_failed per pass. The required set is DERIVED from the
+    # sidecars + screen_predictor's own registries, so this probe cannot drift from them.
+    "factory_sources": (
+        "from scripts.platformkit.ops.factory_source_manifest import missing_local, required\n"
+        "need = required(ingame=False); gone = missing_local(need)\n"
+        "assert not gone, '%d of %d absent, e.g. %s' % (len(gone), len(need), gone[:3])\n"
+        "print('factory sources present: %d/%d' % (len(need), len(need)))\n"),
     "boot_packages": (
         "import fastapi, sklearn, pyarrow, statsmodels, xgboost\n"
         "print('fastapi=%s sklearn=%s pyarrow=%s statsmodels=%s xgboost=%s'"

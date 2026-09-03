@@ -104,11 +104,13 @@ def test_functional_probes_report_ok_fail_and_timeout(capsys, monkeypatch) -> No
                               timeout=0.5)
     assert ok is False and cause.startswith("timeout after"), cause
 
-    # the six real probes exist and none of them can WRITE the snapshot: the
-    # produce probe calls the builder, never produce_once/store.save.
+    # the seven real probes exist and none of them can WRITE the snapshot: the
+    # produce probe calls the builder, never produce_once/store.save. S78 added
+    # factory_sources (the gitignored data/ sources git archive cannot ship).
     assert set(pbc._FUNCTIONAL_PROBES) == {
         "parquet_mlb_games", "mlb_predictor_init", "produce_mlb_dry",
-        "espn_live_state_mlb", "boot_packages", "supervisor_lock_env"}
+        "espn_live_state_mlb", "boot_packages", "supervisor_lock_env",
+        "factory_sources"}
     assert all("produce_once" not in c and "store.save" not in c
                for c in pbc._FUNCTIONAL_PROBES.values())
 
