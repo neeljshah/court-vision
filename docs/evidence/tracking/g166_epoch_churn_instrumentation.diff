@@ -1,0 +1,40 @@
+diff --git a/domains/tennis/tracking/adapter.py b/domains/tennis/tracking/adapter.py
+--- a/domains/tennis/tracking/adapter.py
++++ b/domains/tennis/tracking/adapter.py
+@@ -66,0 +67,3 @@ class TennisAdapter:
++        # G166 temporary measurement only; no tracking output or decision changes.
++        self._g166_source_frame = -1; self._g166_epoch_events: list[dict[str, object]] = []
++        self._g166_probe_displacements: list[dict[str, float]] = []
+@@ -139,2 +142,5 @@ class TennisAdapter:
+-        return bool(np.max(np.linalg.norm(current - previous, axis=1)) <= 8.0)
+-    def _reset_temporal_calibration(self) -> None:
++        displacement = float(np.max(np.linalg.norm(current - previous, axis=1)))
++        self._g166_probe_displacements.append({"source_frame": float(self._g166_source_frame),
++                                                "displacement": displacement})
++        return bool(displacement <= 8.0)
++    def _reset_temporal_calibration(self, g166_cause: str = "reset_unspecified") -> None:
+@@ -142 +148 @@ class TennisAdapter:
+-        self._corners = self._homography = None; self._end_track_ids()
++        self._corners = self._homography = None; self._end_track_ids(g166_cause)
+@@ -152 +158 @@ class TennisAdapter:
+-                self._reset_temporal_calibration()
++                self._reset_temporal_calibration("calibration_loss")
+@@ -172 +178 @@ class TennisAdapter:
+-    def _end_track_ids(self) -> None:
++    def _end_track_ids(self, g166_cause: str = "unspecified") -> None:
+@@ -173,0 +180,3 @@ class TennisAdapter:
++        self._g166_epoch_events.append({"source_frame": self._g166_source_frame,
++                                        "cause": g166_cause, "had_centroids": bool(self._centroids),
++                                        "track_id_base_before": self._track_id_base})
+@@ -218,0 +228 @@ class TennisAdapter:
++                self._g166_source_frame = source_frame
+@@ -221 +231 @@ class TennisAdapter:
+-                    self._reset_temporal_calibration()
++                    self._reset_temporal_calibration("detect_cut")
+@@ -229 +239 @@ class TennisAdapter:
+-                            self._end_track_ids()
++                            self._end_track_ids("emission_gap")
+
+This is the preserved Attempt 1 temporary instrumentation differential, reused for
+G166. It was copied only to the pod scratch directory for the isolated run and
+was not committed into `domains/tennis/tracking/adapter.py`.

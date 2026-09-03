@@ -1,0 +1,47 @@
+[
+  {
+    "ordinal": 1,
+    "target": 0,
+    "source_frame_last": 616,
+    "source_frame_first": 617,
+    "cause": "detect_cut",
+    "distance": 617,
+    "file": "pair_01.png"
+  },
+  {
+    "ordinal": 2,
+    "target": 7193,
+    "source_frame_last": 7463,
+    "source_frame_first": 7464,
+    "cause": "emission_gap",
+    "distance": 271,
+    "file": "pair_02.png"
+  },
+  {
+    "ordinal": 3,
+    "target": 14386,
+    "source_frame_last": 14444,
+    "source_frame_first": 14445,
+    "cause": "emission_gap",
+    "distance": 59,
+    "file": "pair_03.png"
+  },
+  {
+    "ordinal": 4,
+    "target": 21579,
+    "source_frame_last": 21569,
+    "source_frame_first": 21570,
+    "cause": "emission_gap",
+    "distance": 9,
+    "file": "pair_04.png"
+  },
+  {
+    "ordinal": 5,
+    "target": 28772,
+    "source_frame_last": 28466,
+    "source_frame_first": 28467,
+    "cause": "detect_cut",
+    "distance": 305,
+    "file": "pair_05.png"
+  }
+]

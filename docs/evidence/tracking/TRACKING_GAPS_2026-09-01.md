@@ -16,6 +16,12 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G166 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G166 | tennis | Over 293 epoch ends with centroids: `emission_gap` **261 = 89.08 pct**, `detect_cut` 31 = 10.58 pct, `calibration_loss` 1 = 0.34 pct. 293 matches the final id base 586 at two ids per epoch. Eye check on 5 evenly sampled boundaries: all 3 emission-gap ones are same-rally false identity resets; both detect_cut ones are genuine shot cuts. | `g166_epoch_churn_attribution_2026-09-03.md`; `g166_epochs/` | **ACCEPT -- the orchestrator's own hypothesis is REFUTED: cuts do NOT dominate, so `median_track_len` is NOT footage-limited and CLOSED AT LIMIT is not recorded for it. Coverage, track length and jump are one defect (sparse emission) read three ways. No threshold moved; the instrumented adapter was restored, not landed. Landed by the orchestrator because the lane committed nothing twice.** |
+
 ## G176 result register
 
 | Gap | Sport | Finding | Evidence | Status |
