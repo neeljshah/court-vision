@@ -44,3 +44,8 @@ without the two required inputs. No alternate location was read or aliased.
 
 FALSIFIED. S193 is closed at the premise in `track-a12`; no implementation was
 attempted.
+
+## NOT VERIFIED
+
+- Census counts and 158-row output: inputs absent.
+- Calibration scoring and next gate: not run.
