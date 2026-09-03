@@ -1,4 +1,4 @@
-GAP S187 | sport n/a | worktree aXX | log cx_s187_deploy_pathspec
+GAP S187 | sport n/a | worktree a14 | log cx_s187_deploy_pathspec
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it; self-check every line of section B and section Q (S-row) before you report.
 PREMISE (step 0): re-measure today. Closure = transitive first-party imports of the paper profile's 14 py roots (`load_profile('paper').specs()`, kind=="py"); walk ast.Import, ImportFrom(level 0), and each `from X import Y` as a submodule candidate; first-party = resolves to a .py/__init__.py under the repo root or scripts/platformkit, REPO ROOT FIRST on sys.path (else scripts/platformkit/ops/ shadows the top-level ops/ and the walk dies).
 Measured 2026-09-04: 524 modules over 11 module-bearing top-level trees -- scripts 330, domains 72, predict_service 53, frontend 23, supervisor 13, ops 9, src 9, improve 8, governance 4, data_registry 2, kernel 1.
