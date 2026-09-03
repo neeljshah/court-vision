@@ -73,6 +73,25 @@ def worktree_state(home: str) -> dict:
         return {"exists": False}
     dirty = _git(repo, "status", "--porcelain", "--", ".")
     cherry = [l for l in _git(repo, "cherry", "master").splitlines() if l.startswith("+")]
+    # An UNLANDED count is a QUESTION, not a problem to clear. Freeing a worktree
+    # DESTROYS any commit whose content is not already on master -- that is how
+    # G175's finished memo and renders were lost on 2026-09-03, recoverable only
+    # from the reflog. So answer the question here: for every unlanded commit,
+    # check whether its evidence files already exist in the main repo. Register
+    # and ledger files are excluded because the orchestrator rewrites those by
+    # hand and they never match.
+    SHARED = ("RESULTS_LEDGER.md", "TRACKING_GAPS_", "HARNESS_GAPS_", "_spec.md")
+    unlanded_files = []
+    for line in cherry:
+        sha = line.split()[1] if len(line.split()) > 1 else ""
+        if not sha:
+            continue
+        for name in _git(repo, "show", "--format=", "--name-only", sha).splitlines():
+            name = name.strip()
+            if not name or any(s in name for s in SHARED):
+                continue
+            if not (MAIN / name).exists():
+                unlanded_files.append(name)
     # A junction that is a stale real directory reads as a near-empty store; the
     # main repo's count is the only honest comparison.
     def _count(path: str) -> int:
@@ -84,6 +103,7 @@ def worktree_state(home: str) -> dict:
         "exists": True,
         "dirty": len([l for l in dirty.splitlines() if l.strip()]),
         "unlanded": len(cherry),
+        "unlanded_files": unlanded_files,
         "tracking": _count(os.path.join(repo, "data", "tracking")),
         "head": _git(repo, "log", "--oneline", "-1")[:48],
     }
@@ -101,7 +121,13 @@ def main(homes: list) -> int:
             continue
         flags = []
         if state["unlanded"]:
-            flags.append("UNLANDED=%d (codex-sport will REFUSE)" % state["unlanded"])
+            missing = state.get("unlanded_files") or []
+            if missing:
+                flags.append("UNLANDED WORK NOT ON MASTER -- LAND FIRST, DO NOT FREE: %s"
+                             % ", ".join(missing[:3]))
+            else:
+                flags.append("unlanded=%d but all content is on master (safe to free)"
+                             % state["unlanded"])
         if state["dirty"]:
             flags.append("DIRTY=%d (codex-sport will REFUSE)" % state["dirty"])
         # a store an order of magnitude short of main is a provisioning defect
