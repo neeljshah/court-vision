@@ -95,11 +95,12 @@ def _student_only(
 
 
 def _student_plus_ids(
-    train: Sequence[dict], test: dict, student_fn: Callable[[list[dict], dict, bool], float], id_key: str
+    train: Sequence[dict], test: dict, student_fn: Callable[[list[dict], dict, bool], float], id_key: str,
+    prior_strength: float = 50.0,
 ) -> float:
     """Add the train-only EB ID residual to the student's probability."""
     student_p = _student_only(train, test, student_fn, id_key)
-    effects, _mean = _id_summary(train, id_key, 50.0)
+    effects, _mean = _id_summary(train, id_key, prior_strength)
     return float(np.clip(student_p + effects.get(test.get(id_key), 0.0), 0.0, 1.0))
 
 
@@ -145,6 +146,7 @@ def run_student_gate(
     student_fn: Callable[[list[dict], dict, bool], float],
     *,
     id_key: str = "player_id",
+    prior_strength: float = 50.0,
     ledger_path: Path,
     charge_spec: str,
     name: str,
@@ -162,10 +164,14 @@ def run_student_gate(
     prereg.update({"k_cumulative": int(charge["k_cumulative"]), "ledger_row": charge})
     _write(artifact, prereg)
 
-    baseline = walk_forward(states, lambda train, test, _inside: id_fixed_effect_baseline(train, test, id_key))
+    baseline = walk_forward(
+        states, lambda train, test, _inside: id_fixed_effect_baseline(train, test, id_key, prior_strength)
+    )
     student = walk_forward(states, lambda train, test, _inside: _student_only(train, test, student_fn, id_key))
     student_ids = walk_forward(
-        states, lambda train, test, _inside: _student_plus_ids(train, test, student_fn, id_key)
+        states, lambda train, test, _inside: _student_plus_ids(
+            train, test, student_fn, id_key, prior_strength
+        )
     )
     y = [row["y"] for row in baseline.records]
     base_p = [row["p_model"] for row in baseline.records]

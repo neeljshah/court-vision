@@ -10,7 +10,7 @@ import pytest
 
 from scripts.platformkit.eval_gate import student_gate
 from scripts.platformkit.eval_gate.scoring import brier as core_brier
-from scripts.platformkit.eval_gate.walkforward import LeakError
+from scripts.platformkit.eval_gate.walkforward import LeakError, walk_forward
 
 
 def _sigmoid(values: np.ndarray) -> np.ndarray:
@@ -47,6 +47,26 @@ def _states(kind: str, n: int = 1000, seed: int = 20260903) -> list[dict]:
 
 def _teacher(_train: list[dict], test: dict, _inside: bool) -> float:
     return float(test["features"]["teacher"])
+
+
+def _clustered_states() -> list[dict]:
+    """Build all 19 correlated game clusters for S31's INSUFFICIENT construct."""
+    rng = np.random.default_rng(31)
+    start = datetime(2023, 1, 1, 12)
+    states = []
+    for game_index, latent in enumerate(np.linspace(-1.25, 1.25, 19)):
+        probability = float(_sigmoid(np.asarray([latent]))[0])
+        for tick_index, outcome in enumerate(rng.binomial(1, probability, size=12)):
+            state_ts = start + timedelta(days=game_index * 4, minutes=tick_index)
+            states.append({
+                "game_id": f"cluster-{game_index}", "state_ts": state_ts.isoformat(), "sport": "all",
+                "home": f"H{game_index}", "away": f"A{game_index}",
+                "player_id": (game_index * 5 + tick_index) % 9,
+                "features": {"teacher": 0.5},
+                "feature_avail": {"teacher": (state_ts - timedelta(hours=1)).isoformat()},
+                "outcome": int(outcome),
+            })
+    return states
 
 
 def _run(kind: str, tmp_path: Path, monkeypatch) -> tuple[student_gate.StudentVerdict, dict]:
@@ -103,3 +123,34 @@ def test_runtime_unavailable_registered_input_is_refused(tmp_path: Path):
         student_gate.run_student_gate(
             _states("teacher"), unsafe, ledger_path=tmp_path / "ledger.jsonl", charge_spec="unsafe", name="unsafe", output_dir=tmp_path
         )
+
+
+def test_clustered_construct_reaches_insufficient_and_threads_prior_strength(tmp_path: Path):
+    """S31: 19 non-singleton game clusters exercise both filed defects."""
+    states = _clustered_states()
+    output = tmp_path / "output"
+    prior_strength = 3.0
+    result = student_gate.run_student_gate(
+        states, _teacher, ledger_path=tmp_path / "ledger.jsonl", charge_spec="clustered",
+        name="clustered", output_dir=output, prior_strength=prior_strength,
+    )
+    payload = json.loads((output / "student_gate_clustered.json").read_text(encoding="ascii"))
+    threaded = walk_forward(
+        states,
+        lambda train, test, _inside: student_gate._student_plus_ids(
+            train, test, _teacher, "player_id", prior_strength
+        ),
+    )
+    defaulted = walk_forward(
+        states,
+        lambda train, test, _inside: student_gate._student_plus_ids(
+            train, test, _teacher, "player_id", 50.0
+        ),
+    )
+    threaded_brier = core_brier([row["p_model"] for row in threaded.records], [row["y"] for row in threaded.records])
+    defaulted_brier = core_brier([row["p_model"] for row in defaulted.records], [row["y"] for row in defaulted.records])
+    assert result.verdict == "INSUFFICIENT"
+    assert result.detail["clusters"] == 19
+    assert result.detail["icc"] > 0.0
+    assert payload["detail"]["arm_briers"]["student_plus_ids"] == pytest.approx(threaded_brier, abs=1e-12)
+    assert threaded_brier != pytest.approx(defaulted_brier, abs=1e-12)
