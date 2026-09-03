@@ -10,6 +10,12 @@
 |---|---|---|---|---|
 | G142 | tennis | Read-only census of 16 tennis source-table directories on the OLD pod at 2026-09-03T02:18Z: 8 reach the jump gate, 0 coordinate-contract rejections, 1 INSUFFICIENT_DATA, 2 empty or header-only, 5 missing a coordinate declaration. All 8 gate-reaching tables declare `court_feet`; raw table size does not separate the groups. | `g142_tennis_eligibility_drivers_2026-09-03.md`; `g142_drivers/` | **ACCEPT WITH CORRECTIONS -- landed by the orchestrator on 2026-09-03 after the pod died. The 16 directories no longer exist, so the current eligible count is 0 and the memo's "two more to reach 10" is superseded. The reusable result is that the discriminator is the coordinate declaration, not the row count.** |
 
+## G152 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
+
 ## G144 result register
 
 | Gap | Sport | Finding | Evidence | Status |
