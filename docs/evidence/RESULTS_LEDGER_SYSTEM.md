@@ -408,3 +408,5 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-03 | soccer corpus coverage | S181 | 25834 corpus rows; 16322 joined; 9512 unjoined; rate 0.6318030502; LANDED 846b391d5 | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q)
 2026-09-03 | mlb corpus | S180 | current-era non-null coverage: park_factor 10,517/11,179; sp_ra_diff_asof 9,765/11,179; sp_first6_diff_ew 0/11,179 CLOSED AT LIMIT; legacy 27,983 rows identical; LANDED 7f833413f | ACCEPT (verified: codex-sol, contract A/B/Q)
 2026-09-03 | MLB live-slate calibration | S184 | 24-hour construct: before mismatch 10/24 (00Z-09Z), after 0/24; 22 tests passed; LANDED 3b837296a | ACCEPT (verified: codex-sol, contract A/B/Q)
+2026-09-03 | corpus | S183 | coverage census 0/52 columns and 0/220 cells -> 52/52 and 220/220; exactly 6 named zero cells; LANDED 557416574 | ACCEPT (verified: codex-sol, contract A/B/Q)
+2026-09-04 | harness | S197 | 66/66 untraceable ledger lines annotated with resolvable landed:<sha> tokens (suffix-only edits, 0 uncommitted labels), S191 utility reads 0 untraceable of 390; LANDED 0a2dd662a | ACCEPT (verified: codex-sol, contract A/B/Q)
