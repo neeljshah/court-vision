@@ -10,7 +10,7 @@ import subprocess
 import sys
 
 MAIN = r"C:\Users\neelj\nba-ai-system\data"
-RELS = ["domains", "models", "frontend", "footage_corpus", "tracking",
+RELS = ["domains", "models", "frontend", "footage_corpus", "tracking", "videos/reference",
         "cache/combo", "cache/ingame_grade_joined", "cache/ingame",
         "cache/pit", "cache/inplay_odds", "cache/ingame_grade", "cache/clv", "cache/pm_paper"]
 # footage_corpus and tracking added 2026-09-02: G25b, G33b and G44b all returned NOT VALIDATED
