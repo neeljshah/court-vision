@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import Any, Callable, Sequence
 
 import pandas as pd
-
 from scripts.platformkit import signal_foundry as foundry
 from scripts.platformkit.clv_ledger_io import ledger_lock
 from scripts.platformkit.foundry import results_db, tiers
@@ -145,6 +144,8 @@ def _record(queue: ScreenQueue, result: tiers.TierResult) -> None:
            "k_global": result.k_global, "deflated_p": result.deflated_p, "pbo": result.pbo, "verdict": result.verdict,
            "prereg_sha256": result.prereg_sha256, "artifact_path": "", "run_at": None, "family": result.family,
            "incumbent": queue.incumbent, "screen_partition_sha256": result.screen_partition_sha256, "archive": result.archive}
+    if result.archive is not None and "screen_p" in result.archive:
+        row["screen_p"] = result.archive["screen_p"]
     path = results_db.trial_artifact_path(result.hash, result.tier, result.corpus_unit or "all")
     if queue.trials_dir is not None:
         path = Path(queue.trials_dir) / path.name

@@ -232,7 +232,8 @@ def run_tier(hypothesis: Hypothesis, tier: str, *, states: Sequence[dict], predi
 
 def _run_screen(states: Sequence[dict], predict_fn: Callable, sport: str, common: dict) -> TierResult:
     """T1: paired Brier delta + cluster-robust DM p + n_eff, differential archived (Q9). The DM p is
-    archive["screen_p"], not raw_p: family_p_values has no tier filter (S59 bar stays charged-only)."""
+    archive["screen_p"], not raw_p: the runner indexes it for T1 reads while the untiered
+    family_p_values path stays charged-only."""
     records = walk_forward(list(states), predict_fn).records
     model, close, y = (np.array([r[k] for r in records], dtype=float)
                        for k in ("p_model", "p_close", "y"))
