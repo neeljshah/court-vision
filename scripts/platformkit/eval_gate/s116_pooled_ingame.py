@@ -271,6 +271,8 @@ def run(out_dir: Path = OUT_DIR, stem: str = STEM,
         series["loss_" + arm] = (series["p_" + arm].to_numpy(float) - y) ** 2
     for base in ("line", "null", "persport"):
         series["d_partial_vs_" + base] = series["loss_" + base] - series["loss_partial"]
+    series["model_raw"] = scored["model"].to_numpy(float)
+    series["market_raw"] = scored["market"].to_numpy(float)
     series.to_csv(Path(out_dir) / (stem + ".csv"), index=False, encoding="ascii")
     summary["per_tick_csv"] = str(Path(out_dir) / (stem + ".csv"))
     (Path(out_dir) / (stem + ".json")).write_text(json.dumps(

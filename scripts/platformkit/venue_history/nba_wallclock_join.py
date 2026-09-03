@@ -1,39 +1,7 @@
-"""scripts.platformkit.venue_history.nba_wallclock_join -- NBA GOAL 1b: join
-historical play-by-play GAME STATE to historical Kalshi MARKET PRICE by real
-WALL-CLOCK time -> the first NBA checkpoint parquet (state x prob).
+"""Join cached ESPN wall-clock game states to Kalshi NBA candles without future reads.
 
-WHY WALL-CLOCK: pbp_states_2025_26.parquet (domains.basketball_nba.
-ingest_pbp_states) carries only game-clock -- no UTC. cdn.nba.com's liveData
-feed is WAF-BLOCKED here (backfill_pbp_espn.py). ESPN's free summary
-endpoint's ``plays[]`` DOES carry an absolute ``wallclock`` ISO8601 field per
-play (verified live 2026-07-09, event 401869406 BOS@PHI) -- used directly as
-the join key, no derived clock-to-UTC conversion.
-
-SOURCES: data/venue_history/kalshi/nba/KXNBAGAME-*.jsonl (106 files = 53
-distinct 2026-playoff events, read-only). Kalshi tail = AWAY+HOME
-concatenated, no delimiter; every NBA tricode is exactly 3 chars, so the
-split is always at position 3. outcome_home_win comes from the HOME-side
-ticker's own settled ``result`` field -- NOT games.parquet, which stops at
-the regular season (max date 2026-04-12, zero playoff rows).
-
-ESPN event id resolution: scoreboard fetch for the ticker's date (+/-1 day
-fallback), abbreviations normalized via espn_nba_bridge._norm_abbr, matched
-on (away, home). Politeness: 1 req/s, on-disk cache under
-data/cache/nba_pbp_wallclock_raw/{scoreboard,summary}/ (resumable).
-
-JOIN: pd.merge_asof(candles, states, on='ts', direction='backward') -- a
-candle at T gets the LATEST state with ts<=T, never future state (no leak).
-
-OUTPUT: data/cache/inplay_odds/nba_checkpoints_2025_26_playoffs.parquet --
-game_id, game_date, ts, period, game_clock_s, score_home, score_away, margin,
-market_ticker, market_prob, traded, outcome_home_win. game_id/ts are int64.
-
-CALIBRATION substrate only -- no $ field, no edge claim; a join, not a model.
-INVARIANTS: platformkit-only; <=300 LOC; ASCII only; local commits only;
-never writes data/registry/; never flips a flag.
-
-Per-file test: python -m pytest scripts/platformkit/venue_history/test_nba_wallclock_join.py -q
-CLI: python -m scripts.platformkit.venue_history.nba_wallclock_join
+Writes the int64 checkpoint schema under ``data/cache/inplay_odds`` when called as a
+CLI. This is calibration substrate only; it is not a model.
 """
 from __future__ import annotations
 
@@ -64,6 +32,7 @@ _SCOREBOARD_URL = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/
 _SUMMARY_URL = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event={eid}"
 _UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0"
 _SLEEP_S = 1.0  # politeness: 1 req/s
+_JOIN_COLUMNS = ["ts", "period", "game_clock_s", "score_home", "score_away", "margin", "market_prob", "traded"]
 
 
 # -- Pure parsing (no I/O) -- covered directly by the per-file test. ------
@@ -103,6 +72,12 @@ def _epoch(ts: Any) -> Optional[int]:
         return None
 
 
+def _empty_join_frame(max_staleness_s: float) -> pd.DataFrame:
+    out = pd.DataFrame(columns=_JOIN_COLUMNS)
+    out.attrs.update({"stale_share": 0.0, "max_staleness_s": max_staleness_s})
+    return out
+
+
 def join_game_states(states: List[dict], candles: List[dict], *,
                      max_staleness_s: float = 300.0) -> pd.DataFrame:
     """merge_asof(candles, states, direction='backward') -- each candle gets
@@ -112,25 +87,19 @@ def join_game_states(states: List[dict], candles: List[dict], *,
     ``DataFrame.attrs``. Empty input -> empty frame with the right columns
     (never raises). *candles* items use the raw Kalshi shape
     {ts: ISO8601|epoch, prob: float, traded: bool}."""
-    cols = ["ts", "period", "game_clock_s", "score_home", "score_away", "margin",
-            "market_prob", "traded"]
     if not states or not candles:
-        empty = pd.DataFrame(columns=cols)
-        empty.attrs.update({"stale_share": 0.0, "max_staleness_s": max_staleness_s})
-        return empty
+        return _empty_join_frame(max_staleness_s)
     st = pd.DataFrame(states).sort_values("ts").reset_index(drop=True)
     cd_rows = [{"ts": _epoch(c.get("ts")), "market_prob": c.get("prob"), "traded": bool(c.get("traded"))}
                for c in candles]
     cd = pd.DataFrame([r for r in cd_rows if r["ts"] is not None])
     if cd.empty:
-        empty = pd.DataFrame(columns=cols)
-        empty.attrs.update({"stale_share": 0.0, "max_staleness_s": max_staleness_s})
-        return empty
+        return _empty_join_frame(max_staleness_s)
     cd = cd.sort_values("ts").reset_index(drop=True)
     merged, stale_share = asof_join_state(
         cd, st, key="ts", max_staleness_s=max_staleness_s)
     merged = merged.dropna(subset=["margin"]).reset_index(drop=True)
-    out = merged[cols]
+    out = merged[_JOIN_COLUMNS]
     out.attrs.update({"stale_share": stale_share, "max_staleness_s": max_staleness_s})
     log.info("wallclock_join ticks=%d retained=%d stale_share=%.6f rail_s=%s",
              len(cd), len(out), stale_share, max_staleness_s)
