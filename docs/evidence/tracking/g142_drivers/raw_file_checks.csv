@@ -1,0 +1,3 @@
+table,assigned_bucket,raw_file_observation,confirmation
+tennis_01,other_missing_coordinate_declaration,"Header is frame,track_id,cls,x,y; populated data rows follow; coordinate_space is absent.",Matches other: missing coordinate declaration is the first blocker.
+tennis_10,empty_or_header_only,"Header is frame,track_id,cls,x,y,calibration_provenance,coordinate_space,observation,calibration; no data rows follow.",Matches empty_or_header_only.

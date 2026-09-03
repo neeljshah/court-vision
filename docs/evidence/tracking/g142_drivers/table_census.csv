@@ -1,0 +1,17 @@
+table,first_blocker,rows,distinct_frames,coordinate_space,usable_player_fields,unique_positive_modal_stride,source_duration_s,source_fps,source_height,source_width,coverage_pct_latest,provenance_note
+g89_tennis_09,reaches_gate,2850,1226,court_feet,yes,2,,,,,,legacy table; no source metadata retained in current table
+g89_tennis_10,reaches_gate,2103,880,court_feet,yes,2,,,,,,legacy table; no source metadata retained in current table
+g89_tennis_nyYk2nPZAwY_720p,reaches_gate,5333,2245,court_feet,yes,5,,,,,,legacy table; no source metadata retained in current table
+tennis_01,other_missing_coordinate_declaration,9547,4510,,yes,3,,,,,,bare five-column legacy schema
+tennis_02,other_missing_coordinate_declaration,2421,1951,,yes,3,,,,,,bare five-column legacy schema
+tennis_03,other_missing_coordinate_declaration,5610,3392,,yes,3,,,,,,bare five-column legacy schema
+tennis_04,other_missing_coordinate_declaration,7492,3789,,yes,3,,,,,,bare five-column legacy schema
+tennis_05,other_missing_coordinate_declaration,4303,2905,,yes,3,,,,,,bare five-column legacy schema
+tennis_06,reaches_gate,340,141,court_feet,yes,2,963.4,25,720,,0.0059,current daemon ledger direct metadata
+tennis_07,reaches_gate,7128,2925,court_feet,yes,2,962.04,25,720,,0.1216,current daemon ledger direct metadata
+tennis_08,reaches_gate,26630,10589,court_feet,yes,2,2583.84,25,720,,0.0,current daemon ledger direct metadata
+tennis_09,INSUFFICIENT_DATA,4,2,court_feet,yes,8,,,,,,under 30 distinct frames after coordinate and schema prerequisites
+tennis_10,empty_or_header_only,0,0,,no,,,,,,,,header only
+tennis_3x3eEWCZmWQ,reaches_gate,266,101,court_feet,yes,2,,,,,,no direct current source metadata retained
+tennis_459iho5_AFs,empty_or_header_only,0,0,,no,,,,,,,,header only
+tennis_nyYk2nPZAwY,reaches_gate,415,160,court_feet,yes,2,,,,,,no direct current source metadata retained

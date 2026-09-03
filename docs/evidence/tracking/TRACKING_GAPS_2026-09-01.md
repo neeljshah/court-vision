@@ -4,6 +4,12 @@
 
 ## G126 result register
 
+## G142 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G142 | tennis | Read-only census of 16 tennis source-table directories on the OLD pod at 2026-09-03T02:18Z: 8 reach the jump gate, 0 coordinate-contract rejections, 1 INSUFFICIENT_DATA, 2 empty or header-only, 5 missing a coordinate declaration. All 8 gate-reaching tables declare `court_feet`; raw table size does not separate the groups. | `g142_tennis_eligibility_drivers_2026-09-03.md`; `g142_drivers/` | **ACCEPT WITH CORRECTIONS -- landed by the orchestrator on 2026-09-03 after the pod died. The 16 directories no longer exist, so the current eligible count is 0 and the memo's "two more to reach 10" is superseded. The reusable result is that the discriminator is the coordinate declaration, not the row count.** |
+
 ## G144 result register
 
 | Gap | Sport | Finding | Evidence | Status |
