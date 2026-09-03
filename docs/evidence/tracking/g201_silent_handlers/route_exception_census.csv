@@ -1,0 +1,115 @@
+file,line,function,catches,body_kind,silent,source
+scripts/run_clip.py,59,<module>,Exception,pass,True,except Exception:
+scripts/run_clip.py,73,<module>,ImportError,other,False,except ImportError:
+scripts/run_clip.py,98,_ensure_decodable_video,"(FileNotFoundError, subprocess.CalledProcessError)",logged,False,"except (FileNotFoundError, subprocess.CalledProcessError):"
+scripts/run_clip.py,115,_ensure_decodable_video,Exception,logged,False,except Exception:
+scripts/run_clip.py,166,_preflight_check,ImportError,logged,False,except ImportError:
+scripts/run_clip.py,233,_tracking_output_summary,"(TypeError, ValueError)",continue,True,"except (TypeError, ValueError):"
+scripts/run_clip.py,241,_tracking_output_summary,OSError,return,True,except OSError:
+scripts/run_clip.py,376,main,Exception,pass,True,except Exception:
+scripts/run_clip.py,424,main,Exception,logged,False,except Exception as e:
+scripts/run_clip.py,470,main,Exception,other,False,except Exception:
+scripts/run_clip.py,510,main,Exception,logged,False,except Exception as _e:
+scripts/run_clip.py,595,main,Exception,logged,False,except Exception as _e:
+src/pipeline/unified_pipeline.py,34,<module>,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,43,<module>,ImportError,other,False,except ImportError:
+src/pipeline/unified_pipeline.py,51,<module>,ImportError,other,False,except ImportError:
+src/pipeline/unified_pipeline.py,57,<module>,ImportError,pass,True,except ImportError:
+src/pipeline/unified_pipeline.py,97,_pyav_frame_iter,ImportError,other,False,except ImportError:
+src/pipeline/unified_pipeline.py,116,_pyav_frame_iter,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,161,_decord_frame_iter,Exception,other,False,except Exception:
+src/pipeline/unified_pipeline.py,188,_decord_frame_iter,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,192,_decord_frame_iter,Exception,other,False,except Exception:
+src/pipeline/unified_pipeline.py,199,_decord_frame_iter,Exception,continue,True,except Exception:
+src/pipeline/unified_pipeline.py,214,_decord_frame_iter,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,283,_decode_loop,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,339,<module>,ImportError,other,False,except ImportError:
+src/pipeline/unified_pipeline.py,541,_shot_defender_contest,"(ValueError, TypeError)",continue,True,"except (ValueError, TypeError):"
+src/pipeline/unified_pipeline.py,576,__init__,Exception,logged,False,except Exception as e:
+src/pipeline/unified_pipeline.py,609,predict,Exception,return,True,except Exception:
+src/pipeline/unified_pipeline.py,658,__init__,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,751,__init__,Exception,logged,False,except Exception as _ke:
+src/pipeline/unified_pipeline.py,762,__init__,Exception,other,False,except Exception:
+src/pipeline/unified_pipeline.py,796,__init__,Exception,logged,False,except Exception as _pr_exc:
+src/pipeline/unified_pipeline.py,881,_load_pano,Exception,logged,False,except Exception as e:
+src/pipeline/unified_pipeline.py,954,_scan_and_build_pano,Exception,logged,False,except Exception as e:
+src/pipeline/unified_pipeline.py,1019,_is_gameplay,Exception,other,False,except Exception:
+src/pipeline/unified_pipeline.py,1091,_build_court,Exception,logged,False,except Exception as _e:
+src/pipeline/unified_pipeline.py,1153,_try_recover_court_M1,"(np.linalg.LinAlgError, AttributeError)",pass,True,"except (np.linalg.LinAlgError, AttributeError):"
+src/pipeline/unified_pipeline.py,1171,_try_recover_court_M1,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,1283,_get_homography,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,1343,_get_homography,np.linalg.LinAlgError,pass,True,except np.linalg.LinAlgError:
+src/pipeline/unified_pipeline.py,1373,_check_court_drift,np.linalg.LinAlgError,return,True,except np.linalg.LinAlgError:
+src/pipeline/unified_pipeline.py,1514,run,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,1520,run,Exception,other,False,except Exception:
+src/pipeline/unified_pipeline.py,2084,run,"(ImportError, Exception)",pass,True,"except (ImportError, Exception):"
+src/pipeline/unified_pipeline.py,2100,run,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,2115,run,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,2129,run,Exception,other,False,except Exception:
+src/pipeline/unified_pipeline.py,2133,run,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,2169,run,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,2171,run,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,2851,run,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,2864,run,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,2871,run,cv2.error,pass,True,except cv2.error:
+src/pipeline/unified_pipeline.py,2932,run,Exception,logged,False,except Exception as _tc_err:
+src/pipeline/unified_pipeline.py,2962,run,ImportError,pass,True,except ImportError:
+src/pipeline/unified_pipeline.py,2966,run,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,3134,_update_stats,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,3193,_frame_spatial,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,3202,_frame_spatial,Exception,other,False,except Exception:
+src/pipeline/unified_pipeline.py,3401,_resolve_team_names,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,3419,_resolve_team_names,Exception,other,False,except Exception:
+src/pipeline/unified_pipeline.py,3439,_resolve_team_names,Exception,logged,False,except Exception as _e:
+src/pipeline/unified_pipeline.py,3487,_to_float,"(ValueError, TypeError)",return,True,"except (ValueError, TypeError):"
+src/pipeline/unified_pipeline.py,3688,_export_player_stats,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,3841,_pg_write_tracking_rows,Exception,logged,False,except Exception as e:
+src/pipeline/unified_pipeline.py,3880,_db_write_shot_log,Exception,logged,False,except Exception as exc:
+src/pipeline/unified_pipeline.py,3913,_db_write_scoreboard_log,Exception,logged,False,except Exception as exc:
+src/pipeline/unified_pipeline.py,4017,_run_enrichment,Exception,logged,False,except Exception as exc:
+src/pipeline/unified_pipeline.py,4140,_court_side_team_map,Exception,other,False,except Exception:
+src/pipeline/unified_pipeline.py,4146,_court_side_team_map,Exception,logged,False,except Exception as _e:
+src/pipeline/unified_pipeline.py,4168,_court_side_team_map,Exception,pass,True,except Exception:
+src/pipeline/unified_pipeline.py,4193,_backfill_player_names,Exception,logged,False,except Exception as _je:
+src/pipeline/unified_pipeline.py,4220,_backfill_player_names,"(ValueError, TypeError)",pass,True,"except (ValueError, TypeError):"
+src/pipeline/unified_pipeline.py,4235,_backfill_player_names,Exception,logged,False,except Exception as _e:
+src/pipeline/unified_pipeline.py,4265,_backfill_shot_log_pose_features,Exception,logged,False,except Exception as _imp_exc:
+src/pipeline/unified_pipeline.py,4278,_backfill_shot_log_pose_features,Exception,logged,False,except Exception as _e:
+src/pipeline/unified_pipeline.py,4322,_backfill_scoreboard_period,"(ValueError, TypeError)",pass,True,"except (ValueError, TypeError):"
+src/pipeline/unified_pipeline.py,4337,_backfill_scoreboard_period,"(ValueError, TypeError)",pass,True,"except (ValueError, TypeError):"
+src/pipeline/unified_pipeline.py,4348,_backfill_scoreboard_period,Exception,logged,False,except Exception as _e:
+src/pipeline/unified_pipeline.py,4396,_backfill_nba_player_ids,"(ValueError, TypeError)",other,False,"except (ValueError, TypeError):"
+src/pipeline/unified_pipeline.py,4407,_backfill_nba_player_ids,"(ValueError, TypeError)",other,False,"except (ValueError, TypeError):"
+src/pipeline/unified_pipeline.py,4426,_backfill_nba_player_ids,Exception,logged,False,except Exception as _e:
+src/pipeline/unified_pipeline.py,4512,_backfill_team_abbrev,Exception,logged,False,except Exception as _e:
+src/pipeline/unified_pipeline.py,4569,_backfill_possessions_team_abbrev,Exception,logged,False,except Exception as _e:
+src/pipeline/unified_pipeline.py,4616,_backfill_shot_log_team_abbrev,Exception,logged,False,except Exception as _e:
+src/pipeline/unified_pipeline.py,4641,_remap_possession_ids_for_join,Exception,logged,False,except Exception as _e:
+src/pipeline/unified_pipeline.py,4651,_remap_possession_ids_for_join,ValueError,pass,True,except ValueError:
+src/pipeline/unified_pipeline.py,4675,_rewrite,ValueError,pass,True,except ValueError:
+src/pipeline/unified_pipeline.py,4684,_rewrite,Exception,logged,False,except Exception as _e:
+src/tracking/advanced_tracker.py,28,<module>,ImportError,other,False,except ImportError:
+src/tracking/advanced_tracker.py,34,<module>,ImportError,other,False,except ImportError:
+src/tracking/advanced_tracker.py,41,<module>,ImportError,other,False,except ImportError:
+src/tracking/advanced_tracker.py,47,<module>,ImportError,other,False,except ImportError:
+src/tracking/advanced_tracker.py,53,<module>,ImportError,other,False,except ImportError:
+src/tracking/advanced_tracker.py,59,<module>,ImportError,logged,False,except ImportError:
+src/tracking/advanced_tracker.py,63,<module>,ImportError,other,False,except ImportError:
+src/tracking/advanced_tracker.py,69,<module>,ImportError,other,False,except ImportError:
+src/tracking/advanced_tracker.py,286,__init__,Exception,pass,True,except Exception:
+src/tracking/advanced_tracker.py,348,__init__,Exception,pass,True,except Exception:
+src/tracking/advanced_tracker.py,380,__init__,Exception,pass,True,except Exception:
+src/tracking/advanced_tracker.py,404,__init__,Exception,pass,True,except Exception:
+src/tracking/advanced_tracker.py,490,_reset_per_game,Exception,pass,True,except Exception:
+src/tracking/advanced_tracker.py,500,_reset_per_game,Exception,pass,True,except Exception:
+src/tracking/advanced_tracker.py,517,_gpu_roi_extract,ImportError,return,True,except ImportError:
+src/tracking/advanced_tracker.py,714,_calibrate_team_colors,Exception,other,False,except Exception:
+src/tracking/advanced_tracker.py,1257,get_players_pos,Exception,other,False,except Exception:
+src/tracking/advanced_tracker.py,1313,get_players_pos,Exception,pass,True,except Exception:
+src/tracking/advanced_tracker.py,1517,get_players_pos,Exception,pass,True,except Exception:
+src/tracking/advanced_tracker.py,1655,get_players_pos,Exception,pass,True,except Exception:
+src/tracking/advanced_tracker.py,1700,get_players_pos,Exception,pass,True,except Exception:
+src/tracking/color_reid.py,35,<module>,ImportError,other,False,except ImportError:
+src/tracking/color_reid.py,83,dominant_team_color,Exception,return,True,except Exception:
+src/tracking/court_detector.py,205,detect_court_homography,Exception,logged,False,except Exception:
+src/tracking/rectify_court.py,10,<module>,ImportError,other,False,except ImportError:
