@@ -152,5 +152,7 @@ def next_k_family(rows: List[dict], family: Optional[str]) -> Optional[int]:
     from scripts.platformkit.eval_gate.family_bars import resolve_family
 
     target = resolve_family(family)
-    return 1 + sum(1 for r in rows if r.get("k_family") is not None
+    # S134: the count rule is `family` (aliases resolved); k_family is NOT part of it -- a
+    # pre-S13 row with family set and k_family None is still a charge against that family.
+    return 1 + sum(1 for r in rows if r.get("family") is not None
                    and resolve_family(r.get("family")) == target)
