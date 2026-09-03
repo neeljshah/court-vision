@@ -35,6 +35,8 @@
 
 | G183 | all | Keep-list is **18 distinct named filenames** from four readers with fixed manifests (G103, G110, G126, G137); the other three readers GLOB the corpus and need a per-sport policy, not a filename list. **16/18 named files are gone from the pod; 10 of them are provably ones I deleted** -- present in the committed 2026-09-02 inventory, absent now, totalling **2.94 GB**. None is re-fetchable (both sport queues absent) or recoverable as original bytes; for G110 a re-fetch cannot repair it by construction. | `g183_corpus_keeplist_2026-09-03.md` | **ACCEPT. Verified by recomputation in master: the G103 manifest's 11 distinct clips, the 12-of-18 historical presence, and the 10 lost names all reproduce exactly; the 2.94 GB is an orchestrator addition. Retention stays UNIMPLEMENTED -- a durable verdict is not a safe deletion rule. Records orchestrator damage: deletions ran before the survey that said what is read, and the ledger kept counts but no per-file manifest, so six further gone names cannot be attributed to a pass at all.** |
 
+| G185 | baseball/soccer/football | OPEN -- allocated 2026-09-03. Live pod ledger: **0 of 34 rows pass; 24 of 34 fail at `coordinate_contract`** (19 baseball, 3 football, 2 soccer) declaring `image_px`, rejected before any quality gate. Tennis is 2 rows. Why is the daemon taking each sport's uncalibrated emit path, and is the calibration hit rate the same wall G182 measured for tennis (9.245 pct)? Football is the sharp case: its adapter emits `court_feet` via homography yet its rows report `image_px`. | pending | OPEN. Diagnosis only. The baseball comment's "~24 of 500 frames" is a CODE COMMENT and must be measured, never quoted as a result. |
+
 ## G175 result register
 
 | Gap | Sport | Finding | Evidence | Status |
@@ -246,7 +248,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G185  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G186  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
