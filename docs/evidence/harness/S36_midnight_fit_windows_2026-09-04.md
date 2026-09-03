@@ -98,6 +98,8 @@ ticks, data/cache/ingame_grade_joined/mlb, 2026-06-28..2026-07-12)
 | e2_regime | tick_date (shipped, before) | 6,593 | -- | 43.49 pct (2,867/6,593) | 0.252261297271879 |
 | e2_regime | game_first_date (after) | 6,579 | 157 | 0.00 pct (assert-enforced) | 0.254350980569173 |
 
+NOTE (master default-mode re-verifier): current `tick_date` results are e4 0.206629024102877 and e2 0.251859443230625; the historical register values shown above are 0.207033 and 0.252261.
+
 Both "after" Briers reproduce the spec's target to well within 1e-6: e4
 |0.206785778212713 - 0.206786| < 1e-6; e2 |0.254350980569173 -
 0.254350980569169| = 4e-15 < 1e-6. Both are also byte-identical

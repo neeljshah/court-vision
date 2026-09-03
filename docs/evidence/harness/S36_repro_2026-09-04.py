@@ -28,14 +28,14 @@ def main() -> None:
     print("E4 game_first_date: n_ticks=%d n_games=%d brier=%.15f leak_pct=0.00 (assert enforced)" %
           (len(scored_gd), scored_gd["game"].nunique(), brier_gd))
 
-    raised = False
-    try:
-        gap_blend_arm._walk_forward(frame, gap_blend_arm._DEFAULT_W_MAX,
-                                    gap_blend_arm._DEFAULT_MAX_DEVIATION, fit_window="tick_date")
-    except AssertionError as exc:
-        raised = True
-        print("E4 tick_date: AssertionError raised as expected: %s" % exc)
-    print("E4 tick_date raised:", raised)
+    scored_tick, _ = gap_blend_arm._walk_forward(
+        frame, gap_blend_arm._DEFAULT_W_MAX, gap_blend_arm._DEFAULT_MAX_DEVIATION,
+        fit_window="tick_date")
+    tick_leak_pct = round(100.0 * int(scored_tick.attrs["self_leak_ticks"]) / len(scored_tick), 2)
+    assert tick_leak_pct == 52.86
+    tick_brier = float(((scored_tick["arm_b_prob"] - scored_tick["outcome"]) ** 2).mean())
+    print("E4 tick_date: n_ticks=%d brier=%.15f self_leak_pct=%.2f (count asserted)" %
+          (len(scored_tick), tick_brier, tick_leak_pct))
 
     # ---- e2_regime ----
     report_gd = gap_regime_arm.evaluate(ticks, fit_window="game_first_date", bootstrap_iterations=30)
@@ -45,13 +45,12 @@ def main() -> None:
         arm_b = report_gd["acceptance"]["arm_b_brier"]
         print("E2 game_first_date: n_ticks=%d brier=%.15f leak_pct=0.00 (assert enforced)" % (n_ticks, arm_b))
 
-    raised2 = False
-    try:
-        gap_regime_arm.evaluate(ticks, fit_window="tick_date", bootstrap_iterations=30)
-    except AssertionError as exc:
-        raised2 = True
-        print("E2 tick_date: AssertionError raised as expected: %s" % exc)
-    print("E2 tick_date raised:", raised2)
+    report_tick = gap_regime_arm.evaluate(ticks, fit_window="tick_date", bootstrap_iterations=30)
+    assert report_tick["status"] == "OK"
+    assert report_tick["self_leak_pct"] == 43.49
+    print("E2 tick_date: n_ticks=%d brier=%.15f self_leak_pct=%.2f (count asserted)" %
+          (report_tick["n_ticks"], report_tick["acceptance"]["arm_b_brier"],
+           report_tick["self_leak_pct"]))
 
 
 if __name__ == "__main__":

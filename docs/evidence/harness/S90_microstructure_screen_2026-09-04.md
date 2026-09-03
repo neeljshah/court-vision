@@ -81,11 +81,12 @@ the "cheap if free" side measurement the dispatch asked for.
 ## Reproduction (A2)
 
 ```
-cd /c/Users/neelj/nba-ai-system && python -m scripts.platformkit.ingame.s90_microstructure_screen
+cd /c/Users/neelj/nba-ai-system && python -m scripts.platformkit.ingame.s90_microstructure_screen --out-dir <scratch>
 ```
 Prints `S90 | PREMISE FALSIFIED / INSUFFICIENT (n_screen_games=18 < bar=30)`, the L14
 match counts (99/3792, 96/96), and the evidence path. Deterministic (no randomness;
-`partition_corpus(seed=0)` is fixed).
+`partition_corpus(seed=0)` is fixed). `<scratch>` is a caller-created scratch directory,
+so this reproduction does not write under `data/`.
 
 ## Evidence
 
