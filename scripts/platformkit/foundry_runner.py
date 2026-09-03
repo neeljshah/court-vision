@@ -1,13 +1,4 @@
-"""Continuously screen the Signal Foundry pool: a claim-driven T0/T1 queue, or the legacy matrix.
-
-`run_pass(number, queue=...)` claims hypotheses from the S15 results DB and runs the S12 cheap tiers (T0
-then T1) on the SCREEN side of the family partition; an empty queue idles `poll_seconds` and never rebuilds
-`PASS_CONFIGS`. `run_pass(number)` / `--legacy` keep the old rotated matrix. T0/T1 never reach the FWER
-ledger (`tiers.charge_tier` refuses them); T2/T3 run only off `tiers.promote`, serially under `ledger_lock`,
-only with `--allow-charge`. `--predictor real` (S58c) = the honest per-hypothesis logistic screen; default =
-the p_base fixture. A SCREEN is a non-finding. S75: `queue` may be a {sport: ScreenQueue} map -- each sport
-claims only its OWN hypotheses (`claim(sport=...)`) and screens them on its OWN states, so `result.corpus`
-names the corpus the rows came from; `--sport a,b,c` builds that map."""
+"""Continuously screen the Signal Foundry queue or its legacy matrix."""
 from __future__ import annotations
 
 import argparse
@@ -25,6 +16,8 @@ import pandas as pd
 from scripts.platformkit import signal_foundry as foundry
 from scripts.platformkit.clv_ledger_io import ledger_lock
 from scripts.platformkit.foundry import results_db, tiers
+from scripts.platformkit.foundry.grammar import semantic_hash
+from scripts.platformkit.foundry.runner_leases import claim_lifecycle
 from scripts.platformkit.novel_metric_lift import CANDIDATE_METRICS, pivot_player_metrics
 from scripts.platformkit.teacher_student_ab import LOAD_FEATURES, build_features, expanding_folds
 
@@ -33,8 +26,6 @@ SUMMARY_PATH = Path(os.environ.get("FOUNDRY_RUNNER_SUMMARY", "data/ab_reports/fo
 HEARTBEAT_PATH = Path(os.environ.get("FOUNDRY_RUNNER_HEARTBEAT", "data/ab_reports/foundry_runner.heartbeat.json"))
 PASS_CONFIGS = ((3, 1), (4, 2), (5, 1), (3, 2), (4, 1), (5, 2))
 POLL_SECONDS, SCREEN_ROWS, PREDICTORS = 60.0, 800, ("p_base", "real")
-
-
 class ChargeNotAllowed(RuntimeError):
     """A charged tier was reached without the explicit `--allow-charge` opt-in."""
 
@@ -115,6 +106,7 @@ class ScreenQueue:
     trials_dir: Path | None = None       # None -> the S15 production trials directory
     binder: Callable | None = None       # S58c: hypothesis -> (states, predict_fn); None = fixture
     incumbent: str = "devig_close"
+    claimer: str | None = None
 
 
 def screen_queue(sport: str, *, db: Any, ledger_path: Any, rows: int = SCREEN_ROWS,
@@ -227,9 +219,7 @@ def _finish(number: int, screened: dict[str, int], promotions: int, charges: int
 
 
 def run_pass(number: int, queue: Any = None, batch: int = 50) -> dict[str, object]:
-    """Screen a claimed batch PER BOUND SPORT; idle when every bound queue is empty. `queue` is one
-    ScreenQueue (claims across every sport, pre-S75) or a {sport: ScreenQueue} map -- then each sport
-    claims only its own hypotheses and screens them on its own states. No queue: the legacy pass."""
+    """Screen a claimed batch per bound sport; no queue selects the legacy pass."""
     if queue is None:
         return _legacy_pass(number)
     started = time.time()
@@ -237,12 +227,18 @@ def run_pass(number: int, queue: Any = None, batch: int = 50) -> dict[str, objec
     screened, promotions, charges = {}, 0, 0   # type: dict[str, int], int, int
     for sport, bound in queues.items():
         screens = []   # type: list[tiers.TierResult]
-        for hypothesis in bound.db.claim(max(1, batch // len(queues)), tier="T0", sport=sport):
+        claimed = bound.db.claim(max(1, batch // len(queues)), tier="T0", sport=sport,
+                                 owner=bound.claimer)
+        hashes_in_flight = [semantic_hash(hypothesis) for hypothesis in claimed]
+        for hypothesis in claimed:
             family = getattr(hypothesis, "family", "") or bound.family
             screened[family] = screened.get(family, 0) + 1
-            result = _screen_one(bound, hypothesis, family)
-            if result is not None and result.tier == "T1":
-                screens.append(result)
+            try:
+                result = _screen_one(bound, hypothesis, family)
+                if result is not None and result.tier == "T1":
+                    screens.append(result)
+            finally:
+                bound.db.renew(hashes_in_flight)
         pass_promotions, pass_charges = _promotions(bound, screens)
         promotions, charges = promotions + pass_promotions, charges + pass_charges
     if not screened:
@@ -293,7 +289,10 @@ def main() -> None:
                   for sport in (part.strip() for part in args.sport.split(",")) if sport}
         for bound in queues.values():
             bound.poll_seconds = 0.0 if args.idle_exit else args.poll_seconds
-        run(args.max_passes, args.sleep_seconds, queues, args.batch, deadline, args.idle_exit)
+        with claim_lifecycle(db) as claimer:
+            for bound in queues.values():
+                bound.claimer = claimer
+            run(args.max_passes, args.sleep_seconds, queues, args.batch, deadline, args.idle_exit)
 
 
 if __name__ == "__main__":

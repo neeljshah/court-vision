@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Any, Iterable, Optional
 
 from scripts.platformkit.foundry.grammar import Hypothesis, semantic_hash
+from scripts.platformkit.foundry.runner_leases import dead_same_host_claimer
 from scripts.platformkit.foundry.results_db_sql import TierResult, _HYPOTHESIS_RAW, _RESULT_FIELDS, _SCHEMA, _hypothesis, _now, recompute_deflated_p
 
 # Production default: gitignored, pod-authoritative, backed up nightly by S29.
@@ -208,27 +209,19 @@ class ResultsDB:
         return len(rows)
 
     def reap_expired(self, now: Optional[str] = None, owner: Optional[str] = None) -> int:
-        """Hand EXPIRED claims back to the queue. Returns the row count.
-
-        B4: a claimer that dies mid-tier must not strand its rows. `claim()` calls
-        this inside its own transaction, so every claimer reaps by construction; it
-        is public because the runner may also reap on a pass that claims nothing.
-        A row claimed BEFORE S66 has lease_until NULL and is NEVER auto-reaped --
-        nothing can tell a live pre-lease claimer from a dead one, so only
-        `release()` frees those.
-
-        S135: `owner` scopes the reap AWAY from the caller's own rows -- it was global,
-        so a runner whose batch outran its lease reaped and re-claimed the hypotheses it
-        was still screening. ponytail ceiling: a restarted runner reusing the same owner
-        id will not self-reap either; it calls release(), the deliberate act.
-        """
-        sql = ("UPDATE queue SET claimed_at=NULL, lease_until=NULL, claimer=NULL "
-               "WHERE claimed_at IS NOT NULL AND lease_until IS NOT NULL AND lease_until <= ?")
-        args = [now or _now()]
-        if owner is not None:
-            sql += " AND (claimer IS NULL OR claimer <> ?)"
-            args.append(owner)
-        return int(self._c.execute(sql, args).rowcount)
+        """Return expired or dead-same-host claims to the unprocessed queue."""
+        stamp = now or _now()
+        candidates = self._c.execute(
+            "SELECT hash, lease_until, claimer FROM queue WHERE claimed_at IS NOT NULL").fetchall()
+        hashes = [row["hash"] for row in candidates if (owner is None or row["claimer"] != owner)
+                  and ((row["lease_until"] is not None and row["lease_until"] <= stamp)
+                       or dead_same_host_claimer(row["claimer"]))]
+        if not hashes:
+            return 0
+        cursor = self._c.executemany(
+            "UPDATE queue SET claimed_at=NULL, lease_until=NULL, claimer=NULL WHERE hash=?",
+            [(hash,) for hash in hashes])
+        return int(cursor.rowcount)
 
     def renew(self, hashes: Iterable[str], lease_seconds: float = LEASE_SECONDS,
               now: Optional[str] = None) -> int:
@@ -243,30 +236,23 @@ class ResultsDB:
             "UPDATE queue SET lease_until=? WHERE hash=? AND claimed_at IS NOT NULL",
             [(until, h) for h in hashes]).rowcount)
 
-    def release(self, hashes: Iterable[str]) -> int:
-        """Hand claimed rows back on a FAILURE path, without waiting out the lease."""
-        cursor = self._c.executemany(
+    def release(self, hashes: Optional[Iterable[str]] = None, *, claimer: Optional[str] = None) -> int:
+        """Hand unfinished claims back by hash (legacy) or process claimer (S150)."""
+        if claimer is None and isinstance(hashes, str) and ":" in hashes:
+            claimer, hashes = hashes, None
+        sql = ("UPDATE queue SET claimed_at=NULL, lease_until=NULL, claimer=NULL WHERE "
+               "NOT EXISTS (SELECT 1 FROM result WHERE result.hash=queue.hash "
+               "AND result.tier=queue.tier)")
+        if claimer is not None:
+            return int(self._c.execute(sql + " AND claimer=?", (claimer,)).rowcount)
+        return int(self._c.executemany(
             "UPDATE queue SET claimed_at=NULL, lease_until=NULL, claimer=NULL WHERE hash=?",
-            [(h,) for h in hashes])
-        return int(cursor.rowcount)
+            [(hash,) for hash in hashes or ()]).rowcount)
 
     def claim(self, n: int, tier: Optional[str] = None,
               lease_seconds: Optional[float] = None, sport: Optional[str] = None,
               owner: Optional[str] = None) -> list:
-        """Claim up to n queued hypotheses in ONE transaction, holding a lease.
-
-        BEGIN IMMEDIATE takes the write lock before the SELECT, so two claimers can
-        never both see the same unclaimed row. A claimed row is not claimable again
-        until its lease expires (B4): `reap_expired` runs in the same transaction, so
-        an expired claim is reclaimable on the NEXT claim and never before it.
-        S75: `sport` filters the hypothesis's OWN sport, so a screener bound to one
-        corpus cannot claim a row it would screen on foreign states. None = as before.
-
-        S135: `lease_seconds=None` (the new default) leases LEASE_SECONDS PER CLAIMED
-        ROW; an explicit value is honoured exactly, so every pre-S135 caller is
-        unchanged. `owner` is stored on the row and scopes this claim's own reap away
-        from its own claims; `renew()` extends a live lease.
-        """
+        """Claim up to n hypotheses atomically; default lease caps at five intervals."""
         sql = ("SELECT q.hash FROM queue q JOIN hypothesis h ON h.hash=q.hash "
                "WHERE q.claimed_at IS NULL")
         args: list = []
@@ -282,7 +268,7 @@ class ResultsDB:
             self.reap_expired(stamp, owner=owner)
             hashes = [row[0] for row in self._c.execute(sql, args).fetchall()]
             if hashes:
-                lease = (LEASE_SECONDS * len(hashes) if lease_seconds is None
+                lease = (LEASE_SECONDS * min(len(hashes), 5) if lease_seconds is None
                          else float(lease_seconds))
                 until = (datetime.fromisoformat(stamp)          # all stamps are UTC,
                          + timedelta(seconds=lease)).isoformat()
