@@ -61,7 +61,7 @@ def design_effect(rho: float, mean_ticks_per_game: float) -> float:
 
 def effective_sample_size(
     rows: pd.DataFrame, game_column: str = "game", loss_column: str = "loss_differential"
-) -> dict[str, float | int]:
+) -> dict[str, float | int | bool]:
     """Return tick and game counts, ICC, design effect, and clustered ESS."""
     usable = _require_columns(rows, game_column, loss_column)
     n_ticks = len(usable)
@@ -69,12 +69,15 @@ def effective_sample_size(
     mean_ticks_per_game = n_ticks / n_games
     rho = intraclass_correlation(usable, game_column, loss_column)
     deff = design_effect(rho, mean_ticks_per_game)
+    n_eff = n_ticks / deff
+    n_eff_bound_ok = n_eff <= n_ticks and (rho < 1.0 or math.isclose(n_eff, n_games))
     return {
         "n_ticks": n_ticks,
         "n_games": n_games,
         "rho": rho,
         "design_effect": deff,
-        "n_eff": n_ticks / deff,
+        "n_eff": n_eff,
+        "n_eff_bound_ok": n_eff_bound_ok,
     }
 
 
@@ -165,13 +168,14 @@ def evaluate_folds(
 
 def render(report: Mapping[str, Any]) -> str:
     """Render fold evidence with both tick and game counts in every data row."""
-    lines = ["FOLD | STATUS | TRAIN_GAMES | N_TICKS | N_GAMES | RHO | DEFF | N_EFF | MEAN_LOSS_DIFF"]
+    lines = ["FOLD | STATUS | TRAIN_GAMES | N_TICKS | N_GAMES | RHO | DEFF | N_EFF | N_EFF_BOUND_OK | MEAN_LOSS_DIFF"]
     for fold in list(report.get("folds", [])) + [{"name": "POOLED", **report.get("pooled", {})}]:
         if fold.get("status") != OK:
-            lines.append("%s | INSUFFICIENT | %s | - | - | - | - | - | -" %
+            lines.append("%s | INSUFFICIENT | %s | - | - | - | - | - | - | -" %
                          (fold["name"], fold.get("train_games", "-")))
             continue
-        lines.append("%s | OK | %s | %d | %d | %.6f | %.6f | %.2f | %.6f" %
+        lines.append("%s | OK | %s | %d | %d | %.6f | %.6f | %.2f | %s | %.6f" %
                      (fold["name"], fold.get("train_games", "-"), fold["n_ticks"], fold["n_games"],
-                      fold["rho"], fold["design_effect"], fold["n_eff"], fold["mean_loss_differential"]))
+                      fold["rho"], fold["design_effect"], fold["n_eff"], fold["n_eff_bound_ok"],
+                      fold["mean_loss_differential"]))
     return "\n".join(lines)
