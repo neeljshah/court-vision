@@ -47,6 +47,7 @@ NAMED: tuple[str, ...] = (
     "data/domains/tennis/asof_setdetail_wta.parquet",
     "data/domains/tennis/asof_meta_wta.parquet",
     "data/domains/tennis/schedule_density_wta.parquet",
+    "data/domains/tennis/travel_scouting_wta.parquet",
 )
 
 GLOBS: tuple[str, ...] = (

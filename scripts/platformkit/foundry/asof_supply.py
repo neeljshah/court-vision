@@ -90,14 +90,6 @@ def _load_referee(path: str) -> pd.DataFrame:
     return frame
 
 
-def _load_tennis_sides(path: str) -> pd.DataFrame:
-    """A tennis event_id is <date>-<tour>-<year>-<tourney>-<p1_id>-<p2_id>-<match>; the long
-    tables carry player_id but no side flag, so the side is read off the id itself."""
-    frame = _read(path).copy()
-    frame["_is_p1"] = frame["player_id"].astype(str) == frame["event_id"].astype(str).str.split("-").str[4]
-    return frame
-
-
 def _load_player_adv(path: str) -> pd.DataFrame:
     """Player-grain as-of stats rolled to (team, date) through the boxscore's own roster.
 
@@ -113,8 +105,7 @@ def _load_player_adv(path: str) -> pd.DataFrame:
     return merged.groupby(["team", "date"], as_index=False)[values].mean()
 
 
-_LOADERS = {"glob": _load_glob, "referee": _load_referee, "tennis_sides": _load_tennis_sides,
-            "player_adv": _load_player_adv}
+_LOADERS = {"glob": _load_glob, "referee": _load_referee, "player_adv": _load_player_adv}
 
 # ------------------------------------------------------------------ the registry
 REGISTRY = {
@@ -145,19 +136,23 @@ REGISTRY = {
     "tennis_features": Supply(ATP_WTA.format("features"), "event", TENNIS_FEATURES, loader="glob"),
     "tennis_return": Supply(ATP_WTA.format("return"), "event", TENNIS_RETURN, loader="glob"),
     "tennis_meta": Supply(ATP_WTA.format("meta"), "event", TENNIS_META, loader="glob"),
-    "tennis_schedule_density": Supply("data/domains/tennis/schedule_density.parquet", "side",
-                                      ("rest_days", "matches_last_7d", "matches_last_14d"),
-                                      side="_is_p1", entity_from="player", loader="tennis_sides"),
+    # S122: `tennis_schedule_density` and `tennis_travel_scouting` are DELIBERATELY NOT
+    # declared. Their sources are keyed on Sackmann's `date`, which is the TOURNEY START date
+    # -- 1451/1451 ATP and 974/974 WTA tourneys carry exactly ONE distinct date -- so a
+    # trailing-window count cannot order a player's matches within an event. Measured: the
+    # 2025 Wimbledon champion's seven matches serve 0,3,4,5,1,6,2 (the right sequence, wrong
+    # rows) and 46.2 pct of all rows read rest_days == 0. Served p1-minus-p2 correlates
+    # +0.2616 with the outcome on the 800-row screen window, and screening it "beat" the
+    # devigged close by 0.0202 (p=0.0000) -- a LEAK, not a result. The WTA halves are built
+    # (domains/tennis/wta_schedule_travel.py) and would carry coverage to 800/800 and 785/800,
+    # but no as-of column can come off this date grain. See
+    # docs/evidence/harness/S122_tennis_wta_schedule_travel_2026-09-03.md.
     "tennis_serve_return_profiles": Supply("data/domains/tennis/serve_return_profiles.parquet",
                                            "prior", ("serve_strength", "return_strength",
                                                      "n_matches", "z_serve_strength",
                                                      "z_return_strength"),
                                            entity="player_id", date="season", grain="season",
                                            entity_from="player"),
-    "tennis_travel_scouting": Supply("data/domains/tennis/travel_scouting.parquet", "side",
-                                     ("miles_flown_in", "venue_altitude_m"), side="is_p1",
-                                     entity_from="player",
-                                     overrides=(("venue_altitude_m", "a"),)),
 }
 
 
@@ -185,7 +180,7 @@ def _sides(spec: Supply, context: pd.DataFrame) -> tuple:
     """(a_key, b_key) string arrays aligned to `context.index` -- home/away, or p1/p2."""
     if spec.entity_from == "player":
         parts = pd.Series(context.index.astype(str), index=context.index).str.split("-")
-        return parts.str[4].to_numpy(), parts.str[5].to_numpy()
+        return parts.str[-3].to_numpy(), parts.str[-2].to_numpy()  # S122: from the END
     alias = MLB_ALIAS if str(context.attrs.get("sport", "")) == "mlb" else {}
     for column in ("home", "away"):
         if column not in context.columns:

@@ -6,18 +6,18 @@ import pytest
 from scripts.platformkit.foundry import catalogue
 
 
-# S111 (a) built three of the five the S11 spec named absent: asof_features_wta,
-# asof_return_wta and asof_meta_wta are on disk now (domains/tennis/asof_wta_siblings.py).
+# S111 (a) built three of the five the S11 spec named absent (asof_features_wta,
+# asof_return_wta, asof_meta_wta); S122 built schedule_density_wta and NAMED its sibling
+# travel_scouting_wta (domains/tennis/wta_schedule_travel.py). One soccer table is left.
 ABSENT_2026_09_03 = (
     "data/domains/soccer/asof_discipline_features.parquet",
-    "data/domains/tennis/schedule_density_wta.parquet",
 )
 
 
-def test_absent_named_parquets_are_exactly_the_two_still_unbuilt() -> None:
+def test_absent_named_parquets_are_exactly_the_one_still_unbuilt() -> None:
     measured = tuple(path.relative_to(catalogue.ROOT).as_posix() for path in catalogue.absent())
     assert measured == ABSENT_2026_09_03
-    assert len(catalogue.NAMED) == 32
+    assert len(catalogue.NAMED) == 33
 
 
 def test_every_present_entry_carries_a_known_sport() -> None:
