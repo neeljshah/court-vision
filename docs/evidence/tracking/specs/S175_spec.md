@@ -1,4 +1,4 @@
-GAP S175 | sport harness | worktree aXX | log cx_s175_screen_p_writer
+GAP S175 | sport harness | worktree a16 | log cx_s175_screen_p_writer
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- self-check every line of section B AND section Q (S-row) before you report.
 PREMISE (step 0): re-measure first. Measured 2026-09-04 on master HEAD fae6adb76: results_db.record
 adds the column only `if "screen_p" in row` (results_db.py:134) and the only two ResultsDB.record
