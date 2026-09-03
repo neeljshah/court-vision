@@ -1,4 +1,4 @@
-GAP S185 | sport all (ops) | worktree a11 | log cx_s185_pod_pull_sync
+GAP S185 | sport all (ops) | worktree a17 | log cx_s185_pod_pull_sync
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it; self-check against every line of section B AND section Q (Q1-Q9) before you report. Template: docs/evidence/tracking/CODEX_SPEC_TEMPLATE.md. Calibration language only: no dollar, ROI, profit or edge words; never the retracted figures. Never touch data/registry, src/, kernel/, api/, intel/, scripts/team_system/, and never data/cache/eval_gate/backtest_fwer.jsonl. Per-file tests only; NEVER the full suite. NEVER PARK. COMMIT: explicit pathspec in this worktree, no push. Last line of your report: SHA: <sha>.
 GAP (measured 2026-09-04): scripts/platformkit/pod_pull_sync.sh is the only puller covering data/frontend, data/cache/benchmarks, data/cache/ingame_grade and the track-daemon ledger, and it (a) silently swallows 5 of its 7 scp failures, (b) prints "pass complete" unconditionally, (c) is pinned to a pod that is recorded dead, and (d) pulls none of the pod-side book-capture stores.
 PREMISE (step 0, re-measure and print every number before any edit):
