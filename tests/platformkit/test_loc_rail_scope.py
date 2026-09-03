@@ -111,7 +111,7 @@ ALLOWLIST: dict[str, int] = {
     "scripts/platformkit/odds_provider/schema_snapshot.py": 330,
     "scripts/platformkit/odds_shop.py": 312,
     "scripts/platformkit/omni/k_stage_b.py": 324,
-    "scripts/platformkit/ops/pod_bootstrap_check.py": 300,  # 311 -> 300 after S189 moved the floors out (tightened, S189 NEW GAP)
+    "scripts/platformkit/ops/pod_bootstrap_check.py": 311,  # master copy is 300 since S189; keep 311 until every worktree carries the split (tighten only on a fresh worktree day)
     "scripts/platformkit/paper/bankroll_daemon.py": 307,
     "scripts/platformkit/pm_trading/auto_loop.py": 434,
     "scripts/platformkit/pm_trading/pm_paper_tick_runner.py": 303,
