@@ -223,6 +223,21 @@ def _resolve_download(destination: Path):
 # broadcast: the full 720p game is ~1.17 GB, while the 16-minute slice we
 # actually use is 69.9 MB fetched in 18 seconds -- about 12x less data on a
 # link whose 88.6 Mbps upload was the pipeline ceiling.
+# SECTION DOWNLOADS ARE DISABLED, and both routes to them are measured dead as of
+# 2026-09-02. A section forces ffmpeg to fetch the media URL, and:
+#   * WITH cookies the ladder uses the default player client, whose URL returns
+#     403 to anything but yt-dlp itself -- the failure the SECTION_CLIENT comment
+#     below already describes;
+#   * WITHOUT cookies it forces player_client=web, which now yields ZERO media
+#     formats (storyboard images only). Measured against a live video: web 0
+#     formats, default 31.
+# So all eight section attempts per item are guaranteed to fail, and they run
+# BEFORE any full-file attempt, burning an extraction and an ffmpeg 403 each.
+# Full downloads work: the same video fetched 540 MB on rung 2 after the yt-dlp
+# upgrade. Full games are also what the pipeline actually wants.
+# Flip this back to True only after re-measuring that some client serves a
+# section, and record the measurement when you do.
+SECTIONS_ENABLED = False
 SECTION_MINUTES = 16
 # ffmpeg does the cutting, and the default player client hands it a URL that
 # returns 403 to anything but yt-dlp itself. The web client's URL works, but
@@ -305,7 +320,7 @@ def download_local(item: dict) -> Path:
     # legitimately fail (short video, no ffmpeg, an extractor that ignores it),
     # and when it does the ladder must still be able to fetch the whole game.
     section = None
-    if not _is_direct_media(item["url"]):
+    if SECTIONS_ENABLED and not _is_direct_media(item["url"]):
         # An explicit "section" pins the slice. plan_section caps the start at
         # 600s, which lands inside the pregame show on a 4-hour live stream.
         section = item.get("section") or plan_section(probe_duration(item["url"]))

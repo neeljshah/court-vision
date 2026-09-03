@@ -257,6 +257,10 @@ def test_first_download_attempt_does_not_use_cookies(monkeypatch, tmp_path):
 
 def test_explicit_section_prefers_cookie_backed_hls(monkeypatch, tmp_path):
     """A bounded slice must try HLS before a 360p web-client attempt."""
+    # Sections are disabled at runtime (SECTIONS_ENABLED=False) because both
+    # client routes to them are measured dead. The section CODE is still
+    # correct and stays covered, so this test enables the flag explicitly.
+    monkeypatch.setattr(footage_bridge, "SECTIONS_ENABLED", True)
     commands = []
     cookies = tmp_path / "cookies.txt"
     cookies.write_text("# Netscape HTTP Cookie File\n", encoding="utf-8")
@@ -445,6 +449,10 @@ def test_unparseable_duration_falls_back_to_whole_file(monkeypatch):
 def test_section_attempt_is_tried_first_and_falls_back_to_full_download(
         monkeypatch, tmp_path):
     """If sectioning fails the game must still be fetchable in full."""
+    # Sections are disabled at runtime (SECTIONS_ENABLED=False) because both
+    # client routes to them are measured dead. The section CODE is still
+    # correct and stays covered, so this test enables the flag explicitly.
+    monkeypatch.setattr(footage_bridge, "SECTIONS_ENABLED", True)
     monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
     monkeypatch.setattr(footage_bridge, "probe_duration", lambda url: 85 * 60)
     monkeypatch.setattr(footage_bridge, "cut_full_download", lambda full, dst, sec: full)
@@ -467,6 +475,10 @@ def test_section_attempt_is_tried_first_and_falls_back_to_full_download(
 
 def test_section_download_uses_the_web_client(monkeypatch, tmp_path):
     """ffmpeg gets 403 from the default client's URL; only web works."""
+    # Sections are disabled at runtime (SECTIONS_ENABLED=False) because both
+    # client routes to them are measured dead. The section CODE is still
+    # correct and stays covered, so this test enables the flag explicitly.
+    monkeypatch.setattr(footage_bridge, "SECTIONS_ENABLED", True)
     monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
     monkeypatch.setattr(footage_bridge, "COOKIES", tmp_path / "absent.txt")
     monkeypatch.setattr(footage_bridge, "probe_duration", lambda url: 85 * 60)
@@ -488,6 +500,10 @@ def test_section_download_uses_the_web_client(monkeypatch, tmp_path):
 def test_low_resolution_section_is_rejected_before_native_full_fallback(
         monkeypatch, tmp_path):
     """A transport-successful 360p section must never enter the pod queue."""
+    # Sections are disabled at runtime (SECTIONS_ENABLED=False) because both
+    # client routes to them are measured dead. The section CODE is still
+    # correct and stays covered, so this test enables the flag explicitly.
+    monkeypatch.setattr(footage_bridge, "SECTIONS_ENABLED", True)
     monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
     monkeypatch.setattr(footage_bridge, "probe_duration", lambda url: 85 * 60)
     monkeypatch.setattr(footage_bridge, "video_height", lambda path: 360)
@@ -676,6 +692,10 @@ def test_the_first_rung_can_reach_high_resolution_hls():
 
 def test_explicit_section_overrides_plan_section(monkeypatch, tmp_path):
     """An item-supplied section pins the slice; plan_section is not consulted."""
+    # Sections are disabled at runtime (SECTIONS_ENABLED=False) because both
+    # client routes to them are measured dead. The section CODE is still
+    # correct and stays covered, so this test enables the flag explicitly.
+    monkeypatch.setattr(footage_bridge, "SECTIONS_ENABLED", True)
     monkeypatch.setattr(footage_bridge, "LOCAL_STAGE", tmp_path)
     monkeypatch.setattr(footage_bridge, "COOKIES", tmp_path / "absent.txt")
     monkeypatch.setattr(footage_bridge, "video_height", lambda path: 720)
@@ -750,3 +770,15 @@ def test_tracked_row_counts_parses_a_healthy_probe(monkeypatch):
     monkeypatch.setattr(footage_bridge, "_ssh", ok_ssh)
     counts = footage_bridge.tracked_row_counts()
     assert counts == {"kbo_01": 5301, "tennis_01": 9548}
+
+
+def test_sections_are_disabled_by_default():
+    """Both routes to a section download are measured dead as of 2026-09-02.
+
+    With cookies the ladder uses the default player client, whose media URL
+    returns 403 to anything but yt-dlp itself, and ffmpeg does the section cut.
+    Without cookies it forces player_client=web, which yields ZERO media formats
+    -- measured against a live video as web 0, default 31. All eight section
+    attempts per item therefore fail, and they run BEFORE any full-file attempt.
+    """
+    assert footage_bridge.SECTIONS_ENABLED is False
