@@ -1,17 +1,18 @@
 # FWER families -- FROZEN prereg (S14)
 
-spec_version: s102-families-v3
+spec_version: s144-families-v4
 frozen_on: 2026-09-03
 amended_on: 2026-09-03 (S89 -- two in-game ARM families added; nothing removed, no bar moved)
 amended_on: 2026-09-03 (S102 -- one NBA in-game TICK-GRID family added; nothing removed, no bar moved)
+amended_on: 2026-09-03 (S144 -- one NBA in-game pair TICK-GRID family added; nothing removed, no bar moved)
 q_within_family: 0.05
 alpha_global: 0.05
-families: 40
+families: 41
 feature_grid_families: 37
 arm_families: 2
-tick_grid_families: 1
-features: 423
-hypotheses: 4151
+tick_grid_families: 2
+features: 605
+hypotheses: 5243
 transform_grid: raw, ew(halflife=3), ew(halflife=5), ew(halflife=10), ew(halflife=20), rank_in_league, z_vs_league, delta_vs_prior, ratio_to_opponent
 transform_instances: 9
 conditioning: empty set (SF-16 freezes v1 conditioning to {}) for the 37 feature grids; the
@@ -76,6 +77,14 @@ CLOSED construction rule in its block -- 16 base columns x 6 transforms x 6 cond
 `foundry/seed_queue.frozen_hypotheses`, so the frozen 9-transform grammar still enumerates
 exactly 3,564 pregame hypotheses. It is committed BEFORE the S102 screen is run.
 
+S144 adds ONE separate `kind: tickgrid` family, `ingame_nba_pairs`. Its construction is
+closed and disjoint from S102: the 14 non-combined S102 bases yield 91 unordered pairs;
+each pair has one product and one source-ordered safe ratio, under the same six phase
+conditionings, for 1,092 hypotheses. `margin_x_rem` and `margin_over_sqrt_rem` are excluded
+because S102 already froze them as combined bases. Pair operands are causally standardised
+within each game's expanding history; the safe-ratio denominator is sign-preservingly floored
+at 1e-3 standardised units. This block is committed BEFORE the S144 screen is run.
+
 S89 adds ONE arm family per sport that has an in-game arm on disk. Two qualify:
 `ingame_arms_mlb` and `ingame_arms_nba`. There is NO soccer arm family: no soccer in-game
 arm exists in `scripts/platformkit/ingame/` and none has ever been charged, and a family
@@ -113,6 +122,7 @@ by eye rather than by the dtype rule above.
 | ingame_arms_mlb | mlb | live_tick | inplay | 10 | 10 |
 | ingame_arms_nba | nba | live_tick | inplay | 1 | 1 |
 | ingame_nba_tickgrid | nba | live_tick | inplay | 16 | 576 |
+| ingame_nba_pairs | nba | live_tick | inplay | 182 | 1092 |
 | mlb_atbat_states | mlb | live_tick | inplay | 10 | 90 |
 | mlb_bullpen_relief_chains | mlb | pregame | ml | 6 | 54 |
 | mlb_catcher_framing_index | mlb | pregame | ml | 3 | 27 |
@@ -184,6 +194,18 @@ sources: data/cache/inplay_odds/nba_checkpoints_full.parquet, data/cache/eval_ga
 members: margin, rem, dmargin_k3, dmargin_k5, dmargin_k10, dmargin_k20, run_len_signed, lead_changes, lead_change_rate, pace_total, pace_ratio_p1, tdm_h60, tdm_h180, tdm_h600, margin_x_rem, margin_over_sqrt_rem
 construction: 16 base columns x 6 transforms (raw, ew(halflife=3,5,10,20), delta_vs_prior) x 6 conditionings (unconditional, phase=1..5) = 576, deduped by grammar.semantic_hash
 enumerator: scripts/platformkit/foundry/ingame_grammar_nba.enumerate_hypotheses
+
+### fam: ingame_nba_pairs
+kind: tickgrid
+sport: nba
+horizon: live_tick
+market: inplay
+features: 182
+hypotheses: 1092
+sources: data/cache/eval_gate/s86_nba_every_tick_2026-09-03.csv
+members: pair__margin__rem__product, pair__margin__rem__safe_ratio, pair__margin__dmargin_k3__product, pair__margin__dmargin_k3__safe_ratio, pair__margin__dmargin_k5__product, pair__margin__dmargin_k5__safe_ratio, pair__margin__dmargin_k10__product, pair__margin__dmargin_k10__safe_ratio, pair__margin__dmargin_k20__product, pair__margin__dmargin_k20__safe_ratio, pair__margin__run_len_signed__product, pair__margin__run_len_signed__safe_ratio, pair__margin__lead_changes__product, pair__margin__lead_changes__safe_ratio, pair__margin__lead_change_rate__product, pair__margin__lead_change_rate__safe_ratio, pair__margin__pace_total__product, pair__margin__pace_total__safe_ratio, pair__margin__pace_ratio_p1__product, pair__margin__pace_ratio_p1__safe_ratio, pair__margin__tdm_h60__product, pair__margin__tdm_h60__safe_ratio, pair__margin__tdm_h180__product, pair__margin__tdm_h180__safe_ratio, pair__margin__tdm_h600__product, pair__margin__tdm_h600__safe_ratio, pair__rem__dmargin_k3__product, pair__rem__dmargin_k3__safe_ratio, pair__rem__dmargin_k5__product, pair__rem__dmargin_k5__safe_ratio, pair__rem__dmargin_k10__product, pair__rem__dmargin_k10__safe_ratio, pair__rem__dmargin_k20__product, pair__rem__dmargin_k20__safe_ratio, pair__rem__run_len_signed__product, pair__rem__run_len_signed__safe_ratio, pair__rem__lead_changes__product, pair__rem__lead_changes__safe_ratio, pair__rem__lead_change_rate__product, pair__rem__lead_change_rate__safe_ratio, pair__rem__pace_total__product, pair__rem__pace_total__safe_ratio, pair__rem__pace_ratio_p1__product, pair__rem__pace_ratio_p1__safe_ratio, pair__rem__tdm_h60__product, pair__rem__tdm_h60__safe_ratio, pair__rem__tdm_h180__product, pair__rem__tdm_h180__safe_ratio, pair__rem__tdm_h600__product, pair__rem__tdm_h600__safe_ratio, pair__dmargin_k3__dmargin_k5__product, pair__dmargin_k3__dmargin_k5__safe_ratio, pair__dmargin_k3__dmargin_k10__product, pair__dmargin_k3__dmargin_k10__safe_ratio, pair__dmargin_k3__dmargin_k20__product, pair__dmargin_k3__dmargin_k20__safe_ratio, pair__dmargin_k3__run_len_signed__product, pair__dmargin_k3__run_len_signed__safe_ratio, pair__dmargin_k3__lead_changes__product, pair__dmargin_k3__lead_changes__safe_ratio, pair__dmargin_k3__lead_change_rate__product, pair__dmargin_k3__lead_change_rate__safe_ratio, pair__dmargin_k3__pace_total__product, pair__dmargin_k3__pace_total__safe_ratio, pair__dmargin_k3__pace_ratio_p1__product, pair__dmargin_k3__pace_ratio_p1__safe_ratio, pair__dmargin_k3__tdm_h60__product, pair__dmargin_k3__tdm_h60__safe_ratio, pair__dmargin_k3__tdm_h180__product, pair__dmargin_k3__tdm_h180__safe_ratio, pair__dmargin_k3__tdm_h600__product, pair__dmargin_k3__tdm_h600__safe_ratio, pair__dmargin_k5__dmargin_k10__product, pair__dmargin_k5__dmargin_k10__safe_ratio, pair__dmargin_k5__dmargin_k20__product, pair__dmargin_k5__dmargin_k20__safe_ratio, pair__dmargin_k5__run_len_signed__product, pair__dmargin_k5__run_len_signed__safe_ratio, pair__dmargin_k5__lead_changes__product, pair__dmargin_k5__lead_changes__safe_ratio, pair__dmargin_k5__lead_change_rate__product, pair__dmargin_k5__lead_change_rate__safe_ratio, pair__dmargin_k5__pace_total__product, pair__dmargin_k5__pace_total__safe_ratio, pair__dmargin_k5__pace_ratio_p1__product, pair__dmargin_k5__pace_ratio_p1__safe_ratio, pair__dmargin_k5__tdm_h60__product, pair__dmargin_k5__tdm_h60__safe_ratio, pair__dmargin_k5__tdm_h180__product, pair__dmargin_k5__tdm_h180__safe_ratio, pair__dmargin_k5__tdm_h600__product, pair__dmargin_k5__tdm_h600__safe_ratio, pair__dmargin_k10__dmargin_k20__product, pair__dmargin_k10__dmargin_k20__safe_ratio, pair__dmargin_k10__run_len_signed__product, pair__dmargin_k10__run_len_signed__safe_ratio, pair__dmargin_k10__lead_changes__product, pair__dmargin_k10__lead_changes__safe_ratio, pair__dmargin_k10__lead_change_rate__product, pair__dmargin_k10__lead_change_rate__safe_ratio, pair__dmargin_k10__pace_total__product, pair__dmargin_k10__pace_total__safe_ratio, pair__dmargin_k10__pace_ratio_p1__product, pair__dmargin_k10__pace_ratio_p1__safe_ratio, pair__dmargin_k10__tdm_h60__product, pair__dmargin_k10__tdm_h60__safe_ratio, pair__dmargin_k10__tdm_h180__product, pair__dmargin_k10__tdm_h180__safe_ratio, pair__dmargin_k10__tdm_h600__product, pair__dmargin_k10__tdm_h600__safe_ratio, pair__dmargin_k20__run_len_signed__product, pair__dmargin_k20__run_len_signed__safe_ratio, pair__dmargin_k20__lead_changes__product, pair__dmargin_k20__lead_changes__safe_ratio, pair__dmargin_k20__lead_change_rate__product, pair__dmargin_k20__lead_change_rate__safe_ratio, pair__dmargin_k20__pace_total__product, pair__dmargin_k20__pace_total__safe_ratio, pair__dmargin_k20__pace_ratio_p1__product, pair__dmargin_k20__pace_ratio_p1__safe_ratio, pair__dmargin_k20__tdm_h60__product, pair__dmargin_k20__tdm_h60__safe_ratio, pair__dmargin_k20__tdm_h180__product, pair__dmargin_k20__tdm_h180__safe_ratio, pair__dmargin_k20__tdm_h600__product, pair__dmargin_k20__tdm_h600__safe_ratio, pair__run_len_signed__lead_changes__product, pair__run_len_signed__lead_changes__safe_ratio, pair__run_len_signed__lead_change_rate__product, pair__run_len_signed__lead_change_rate__safe_ratio, pair__run_len_signed__pace_total__product, pair__run_len_signed__pace_total__safe_ratio, pair__run_len_signed__pace_ratio_p1__product, pair__run_len_signed__pace_ratio_p1__safe_ratio, pair__run_len_signed__tdm_h60__product, pair__run_len_signed__tdm_h60__safe_ratio, pair__run_len_signed__tdm_h180__product, pair__run_len_signed__tdm_h180__safe_ratio, pair__run_len_signed__tdm_h600__product, pair__run_len_signed__tdm_h600__safe_ratio, pair__lead_changes__lead_change_rate__product, pair__lead_changes__lead_change_rate__safe_ratio, pair__lead_changes__pace_total__product, pair__lead_changes__pace_total__safe_ratio, pair__lead_changes__pace_ratio_p1__product, pair__lead_changes__pace_ratio_p1__safe_ratio, pair__lead_changes__tdm_h60__product, pair__lead_changes__tdm_h60__safe_ratio, pair__lead_changes__tdm_h180__product, pair__lead_changes__tdm_h180__safe_ratio, pair__lead_changes__tdm_h600__product, pair__lead_changes__tdm_h600__safe_ratio, pair__lead_change_rate__pace_total__product, pair__lead_change_rate__pace_total__safe_ratio, pair__lead_change_rate__pace_ratio_p1__product, pair__lead_change_rate__pace_ratio_p1__safe_ratio, pair__lead_change_rate__tdm_h60__product, pair__lead_change_rate__tdm_h60__safe_ratio, pair__lead_change_rate__tdm_h180__product, pair__lead_change_rate__tdm_h180__safe_ratio, pair__lead_change_rate__tdm_h600__product, pair__lead_change_rate__tdm_h600__safe_ratio, pair__pace_total__pace_ratio_p1__product, pair__pace_total__pace_ratio_p1__safe_ratio, pair__pace_total__tdm_h60__product, pair__pace_total__tdm_h60__safe_ratio, pair__pace_total__tdm_h180__product, pair__pace_total__tdm_h180__safe_ratio, pair__pace_total__tdm_h600__product, pair__pace_total__tdm_h600__safe_ratio, pair__pace_ratio_p1__tdm_h60__product, pair__pace_ratio_p1__tdm_h60__safe_ratio, pair__pace_ratio_p1__tdm_h180__product, pair__pace_ratio_p1__tdm_h180__safe_ratio, pair__pace_ratio_p1__tdm_h600__product, pair__pace_ratio_p1__tdm_h600__safe_ratio, pair__tdm_h60__tdm_h180__product, pair__tdm_h60__tdm_h180__safe_ratio, pair__tdm_h60__tdm_h600__product, pair__tdm_h60__tdm_h600__safe_ratio, pair__tdm_h180__tdm_h600__product, pair__tdm_h180__tdm_h600__safe_ratio
+construction: 14 non-combined bases -> 91 unordered pairs x 2 operators (product, safe_ratio) x 6 conditionings (unconditional, phase=1..5) = 1092, deduped by grammar.semantic_hash; safe_ratio denominator sign-preservingly floored at 1e-3 causal standardised units
+enumerator: scripts/platformkit/foundry/ingame_grammar_nba_pairs.enumerate_hypotheses
 
 ### fam: mlb_atbat_states
 sport: mlb

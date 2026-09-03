@@ -51,6 +51,7 @@ import pandas as pd
 from scripts.platformkit.eval_gate.dm_test import (_student_t_two_tailed_pvalue,
                                                    _student_t_two_tailed_quantile)
 from scripts.platformkit.foundry import ingame_grammar_nba as grammar
+from scripts.platformkit.foundry import ingame_grammar_nba_pairs as pair_grammar
 from scripts.platformkit.foundry.grammar import semantic_hash
 from scripts.platformkit.foundry.ingame_incumbent_nba import INCUMBENTS, apply_incumbent
 from scripts.platformkit.foundry.ingame_screen import (BAR, ROOT, assert_column_blind,
@@ -214,13 +215,12 @@ def _icc(values: np.ndarray, codes: np.ndarray, n_clusters: int) -> float:
     mean_size = len(values) / max(1, n_clusters)
     denominator = between + (mean_size - 1.0) * within
     return 0.0 if denominator <= 0 else max(0.0, min(1.0, (between - within) / denominator))
-
-
 def sweep(rows: pd.DataFrame, grid: pd.DataFrame, hypotheses: Sequence, db: Path,
           *, limit: int = 0, verbose: bool = True, allow_adhoc: bool = False) -> Dict[str, object]:
     """Screen every frozen hypothesis; one committed sqlite row each, so a kill is readable."""
-    adhoc = set(gate_features([semantic_hash(h) for h in hypotheses],   # S124's second gate
-                              map(semantic_hash, grammar.enumerate_hypotheses()), allow_adhoc))
+    frozen = grammar.enumerate_hypotheses() + pair_grammar.enumerate_hypotheses()
+    adhoc = set(gate_features([semantic_hash(h) for h in hypotheses],
+                              map(semantic_hash, frozen), allow_adhoc))
     connection = sqlite3.connect(str(db))
     connection.executescript(SCHEMA)
     done = {row[0] for row in connection.execute("SELECT hypothesis_id FROM screen")}
