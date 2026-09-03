@@ -58,6 +58,9 @@
 
 | G189 | wnba | **THE `run_clip.py` ROUTE IS NON-DETERMINISTIC.** Three fresh runs of one command on one file: **1,246 / 1,360 / 1,247** player rows; with G187's 1,104 and G188 v2's 1,549 the spread across five identical runs is **40 pct**. Mechanism located as a hypothesis: three raw detector invocations on frame 474 each emit exactly 15 boxes but not byte-identical ones, every run is FP16 on GPU device 0, FP16 is not bit-reproducible, near-threshold boxes flip at `conf=0.22`, and the stateful tracker amplifies one flip for the rest of the clip. | `g189_route_determinism_2026-09-03.md` | **ACCEPT. Recounted independently from the pod CSVs; all three reproduce exactly. CONSEQUENCE: G187's counts, G188 v2's, and MY OWN eye-check on G187's renders are each one sample of a distribution -- quality measurement through this route now needs a deterministic mode or a reported distribution over repeats. Corrects my earlier 'GPU unused' reading: the 3090 IS used (device 0, FP16); 0 pct utilization means inference is a small share of 3.5 fps wall time, so the bottleneck is decode/tracking/re-ID. Flagged unresolved: survivor tuples outside the 1920x1020 frame (x1=2979, y1=-35).** |
 
+| G190 | wnba | OPEN -- allocated 2026-09-03. Which of the three named causes of G189's 40 pct spread is real: `cudnn.benchmark = True` (`unified_pipeline.py:657`, tuner picks algorithms by runtime timing), FP16 at seven call sites, or the total absence of seeding? Four conditions x >= 3 FRESH PROCESSES, detector in isolation, bit-exact tensor comparison. | pending | OPEN. Diagnosis only; the human applies the proposal. "All four still vary" is a full success. |
+| G191 | all | OPEN -- allocated 2026-09-03. Per-sport baseline over 6 sports, **3 runs each reported as a DISTRIBUTION** because G189 forbids single-run numbers. Plus a one-line blocker statement per sport. | pending | OPEN. There is no baseline to improve against; this creates one. Delete nothing. |
+
 ## G175 result register
 
 | Gap | Sport | Finding | Evidence | Status |
@@ -269,7 +272,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G190  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G192  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
