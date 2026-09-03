@@ -13,9 +13,20 @@ from scripts.platformkit.calib_decomp import decompose
 from scripts.platformkit.eval_gate.calibration_report import (
     PREREG_SEAL, _bin_table, _from_bins, build_report,
 )
+from scripts.platformkit.eval_gate import worktree_marker
 from scripts.platformkit.eval_gate.scoring import ece
 
 _REPO = Path(__file__).resolve().parents[3]
+
+
+def _require_default_report_evidence(landed_path: Path, cache_path: Path) -> None:
+    """S156: missing reproduction evidence skips only in a worktree checkout."""
+    if landed_path.exists() and cache_path.exists():
+        return
+    missing = ", ".join(str(path) for path in (landed_path, cache_path) if not path.exists())
+    if worktree_marker.is_worktree_checkout():
+        pytest.skip(f"worktree checkout: reproduction evidence absent: {missing}")
+    pytest.fail(f"main-repo checkout: reproduction evidence absent: {missing}")
 
 
 def _flattening_records(n: int = 400) -> list[dict]:
@@ -172,8 +183,7 @@ def test_the_default_report_still_reproduces_the_landed_nba_artifact():
     from scripts.platformkit.combo.corpus_cache import load_gate_corpus
 
     landed_path = _REPO / "docs" / "evidence" / "calibration" / "nba_reliability_2026-09-03.json"
-    if not landed_path.exists() or not (_REPO / "data" / "cache" / "combo").exists():
-        pytest.skip("gate corpus cache or landed artifact absent (clean clone)")
+    _require_default_report_evidence(landed_path, _REPO / "data" / "cache" / "combo")
     landed = json.loads(landed_path.read_text(encoding="utf-8"))
     report = build_report(load_gate_corpus("nba"), "nba")
 
@@ -182,3 +192,15 @@ def test_the_default_report_still_reproduces_the_landed_nba_artifact():
         assert report[key] == landed[key], key
     assert report["murphy_after"] == landed["murphy_after"]
     assert report["reliability_bins_after"] == landed["reliability_bins_after"]
+
+
+def test_s156_default_report_guard_skips_only_in_a_worktree(monkeypatch, tmp_path):
+    """S156: a clean clone cannot hide missing report evidence in the main repo."""
+    absent_artifact, absent_cache = tmp_path / "artifact.json", tmp_path / "combo"
+    monkeypatch.setenv("FOUNDRY_WORKTREE", "1")
+    with pytest.raises(pytest.skip.Exception):
+        _require_default_report_evidence(absent_artifact, absent_cache)
+    monkeypatch.delenv("FOUNDRY_WORKTREE")
+    monkeypatch.setattr(worktree_marker, "is_worktree_checkout", lambda *a, **k: False)
+    with pytest.raises(pytest.fail.Exception, match="main-repo checkout.*artifact.json"):
+        _require_default_report_evidence(absent_artifact, absent_cache)

@@ -103,8 +103,7 @@ def test_next_k_family_counts_aliased_rows_s89():
     from pathlib import Path
     from scripts.platformkit.eval_gate.ledger import next_k_family
     path = Path("data/cache/eval_gate/backtest_fwer.jsonl")
-    if not path.exists():
-        return
+    _require_real_ledger(path)
     rows = [json.loads(l) for l in path.read_text(encoding="utf-8").splitlines() if l.strip()]
     assert next_k_family(rows, "ingame_arms_mlb") == 3
     assert next_k_family(rows, "soccer_gate") == 2
@@ -126,5 +125,17 @@ def test_a_missing_ledger_in_the_main_repo_fails_instead_of_skipping(monkeypatch
     """Main-repo mode -> pytest.fail naming the path. This is the S154 bar."""
     monkeypatch.setattr(worktree_marker, "is_worktree_checkout", lambda *a, **k: False)
     absent = tmp_path / "backtest_fwer.jsonl"
+    with pytest.raises(pytest.fail.Exception, match="charge ledger absent"):
+        _require_real_ledger(absent)
+
+
+def test_s156_next_k_guard_skips_only_in_a_worktree(monkeypatch, tmp_path):
+    """S156: the aliased-family count cannot silently pass without its ledger."""
+    absent = tmp_path / "backtest_fwer.jsonl"
+    monkeypatch.setenv("FOUNDRY_WORKTREE", "1")
+    with pytest.raises(pytest.skip.Exception):
+        _require_real_ledger(absent)
+    monkeypatch.delenv("FOUNDRY_WORKTREE")
+    monkeypatch.setattr(worktree_marker, "is_worktree_checkout", lambda *a, **k: False)
     with pytest.raises(pytest.fail.Exception, match="charge ledger absent"):
         _require_real_ledger(absent)

@@ -10,6 +10,18 @@ import pytest
 from scripts.platformkit.eval_gate.tick_informative import (
     _ARTIFACTS, _CACHE, attach_informative_summary, flag_ticks, requote,
 )
+from scripts.platformkit.eval_gate import worktree_marker
+
+
+def _require_requote_artifacts(spec: dict) -> None:
+    """S156: archived quote evidence skips only in a worktree checkout."""
+    paths = (_CACHE / spec["csv"], _CACHE / spec["json"])
+    if all(path.exists() for path in paths):
+        return
+    missing = ", ".join(str(path) for path in paths if not path.exists())
+    if worktree_marker.is_worktree_checkout():
+        pytest.skip(f"worktree checkout: local archived artifact absent: {missing}")
+    pytest.fail(f"main-repo checkout: local archived artifact absent: {missing}")
 
 
 def _frame() -> pd.DataFrame:
@@ -62,14 +74,26 @@ def test_missing_column_raises():
 @pytest.mark.parametrize("name", sorted(_ARTIFACTS))
 def test_requote_reproduces_the_published_ci(name):
     spec = _ARTIFACTS[name]
-    if not (_CACHE / spec["csv"]).exists() or not (_CACHE / spec["json"]).exists():
-        pytest.skip("local-only archived artifact absent: %s" % spec["csv"])
+    _require_requote_artifacts(spec)
     row = requote(name)
     # Q9: the published CI must come back out of the archived series before the
     # informative-subset CI beside it may be read at all.
     assert row["published_ci_reproduced_from_series"] is True
     assert row["after_informative"]["n"] == row["tick_flags"]["n_informative"]
     assert row["after_informative"]["n"] <= row["before_all_rows"]["n"]
+
+
+def test_s156_requote_guard_skips_only_in_a_worktree(monkeypatch, tmp_path):
+    """S156: a missing archive must fail outside the explicitly marked worktree."""
+    spec = {"csv": "absent.csv", "json": "absent.json"}
+    monkeypatch.setattr("scripts.platformkit.eval_gate.test_tick_informative._CACHE", tmp_path)
+    monkeypatch.setenv("FOUNDRY_WORKTREE", "1")
+    with pytest.raises(pytest.skip.Exception):
+        _require_requote_artifacts(spec)
+    monkeypatch.delenv("FOUNDRY_WORKTREE")
+    monkeypatch.setattr(worktree_marker, "is_worktree_checkout", lambda *a, **k: False)
+    with pytest.raises(pytest.fail.Exception, match="main-repo checkout.*absent.csv"):
+        _require_requote_artifacts(spec)
 
 
 # --- S87b: the helper, and one real writer wired to it ------------------------
