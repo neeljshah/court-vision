@@ -16,6 +16,12 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G152b result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G152b | tennis | On the local reference clip: 28,773 decoded frames, 6,770 emitted rows over 2,597 distinct frames, `court_feet` on 6,770/6,770 rows. Only 1,350 rows (19.9409 pct) are `solved` with both raw projected coordinates populated. On the common decoded-frame unit, declaration reaches 9.0258 pct and geometry-backed rows only 4.6919 pct. Rally-only rate deliberately unmeasured -- no per-frame label for this clip and G34's census is a different video. | `g152b_declaration_rates_2026-09-03.md`; `g152b_rates/` | **ACCEPT -- completes G152. About half of declared frames carry no freshly solved geometry. Both figures sit far below the unchanged 0.90 bar and below the ~0.42 rally ceiling; that is a measurement of position, NOT an argument for a lower bar, and no bar was moved.** |
+
 ## G158-G159 result register
 
 | Gap | Sport | Finding | Evidence | Status |
