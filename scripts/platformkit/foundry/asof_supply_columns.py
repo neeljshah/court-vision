@@ -43,3 +43,43 @@ TENNIS_RETURN = tuple("%s_%s%s_asof" % (s, m, f) for m in ("return_won", "break_
                       for s in (("p1", "p2", "diff") if not f else ("p1", "p2")))
 TENNIS_META = tuple("%s_%s" % (s, m) for m in ("ht", "rank_points", "minutes_prior_asof")
                     for s in ("p1", "p2", "diff")) + ("p1_seed", "p2_seed", "draw_size")
+
+# The remaining inline member tuples and source paths, lifted here beside _PIT / _STYLE /
+# _NBA_QUARTER so asof_supply.py holds the 300-line rail after the two S136 entries land.
+# PURE DATA -- no entry's member list, source or rule changes; every string is verbatim.
+_STYLE_SRC = "data/domains/soccer/style_fingerprints.parquet"
+_MATCHES_SRC = "data/domains/soccer/matches.parquet"
+_VALUE_SRC = "data/domains/basketball_nba/player_value_features.parquet"
+_REFEREE_SRC = "data/domains/soccer/referee_card_foul_profiles.parquet"
+_VALUE = ("roster_value_asof", "star_absence_delta", "continuity", "top_heavy")
+_ADV = ("usagepercentage_asof", "offensiverating_asof", "defensiverating_asof", "pie_asof",
+        "possessions_asof", "n_prior")
+_RELIEF = ("battersFaced", "rest_days", "is_b2b", "appearances_last_3d")
+_REFEREE = ("total_fouls", "total_yellow", "total_red", "total_cards")
+_SERVE = ("serve_strength", "return_strength", "n_matches", "z_serve_strength",
+          "z_return_strength")
+
+# S136: the ROUND-GRAIN tennis schedule-density / travel tables. The frozen parquets keyed every
+# match of a tourney on the START date, so a trailing count spanned rounds played AFTER the match
+# (the 2025 Wimbledon champion served 0,3,4,5,1,6,2 and the served value correlated +0.2616 with
+# the outcome). domains/tennis/schedule_density_roundgrain.py re-counts at (tourney start date,
+# Sackmann round) grain -- the champion now serves 0,1,2,3,4,5,6, the correlation is +0.0481
+# inside a +/-0.0693 two-sigma band at n = 800, and the local re-screen is NULL (0 of 32 screens
+# improve on the close). `rest_days` is DELIBERATELY ABSENT from RG_DENSITY: real rest days inside
+# a tourney are unrecoverable at this date grain, so the member is CLOSED AT LIMIT rather than
+# served as a round-depth proxy wearing a rest name. Its hypotheses stay UNCOVERED.
+# See docs/evidence/harness/S136_tennis_roundgrain_builders_2026-09-03.md.
+RG_DENSITY_SRC = ("data/domains/tennis/schedule_density_rg.parquet,"
+                  "data/domains/tennis/schedule_density_rg_wta.parquet")
+RG_TRAVEL_SRC = ("data/domains/tennis/travel_scouting_rg.parquet,"
+                 "data/domains/tennis/travel_scouting_rg_wta.parquet")
+RG_DENSITY = ("matches_last_7d", "matches_last_14d")
+RG_TRAVEL = ("miles_flown_in", "venue_altitude_m")
+RG_DENSITY_PREGAME = ("schedule_density_roundgrain: a match at (D, r) counts only rows with "
+                      "date < D, or date == D and round < r -- strictly before at (tourney start "
+                      "date, Sackmann round) grain, so the row can never see itself, a sibling "
+                      "of equal round, or a later round of its own event")
+RG_TRAVEL_PREGAME = ("schedule_density_roundgrain: prior_city_travel reads the player's PREVIOUS "
+                     "resolved host city under that same (date, round) order -- a first "
+                     "appearance is NaN, never 0; venue_altitude_m is a property of the venue, "
+                     "published with the draw")

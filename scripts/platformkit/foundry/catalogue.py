@@ -48,6 +48,11 @@ NAMED: tuple[str, ...] = (
     "data/domains/tennis/asof_meta_wta.parquet",
     "data/domains/tennis/schedule_density_wta.parquet",
     "data/domains/tennis/travel_scouting_wta.parquet",
+    # S136: the (date, ROUND)-grain rebuild of both tables; the frozen four stay NAMED beside them.
+    "data/domains/tennis/schedule_density_rg.parquet",
+    "data/domains/tennis/schedule_density_rg_wta.parquet",
+    "data/domains/tennis/travel_scouting_rg.parquet",
+    "data/domains/tennis/travel_scouting_rg_wta.parquet",
 )
 
 GLOBS: tuple[str, ...] = (

@@ -17,7 +17,7 @@ ABSENT_2026_09_03 = (
 def test_absent_named_parquets_are_exactly_the_one_still_unbuilt() -> None:
     measured = tuple(path.relative_to(catalogue.ROOT).as_posix() for path in catalogue.absent())
     assert measured == ABSENT_2026_09_03
-    assert len(catalogue.NAMED) == 33
+    assert len(catalogue.NAMED) == 37
 
 
 def test_every_present_entry_carries_a_known_sport() -> None:

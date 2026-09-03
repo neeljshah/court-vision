@@ -38,8 +38,10 @@ import numpy as np
 import pandas as pd
 
 from scripts.platformkit.foundry.asof_supply_columns import (
-    ATP_WTA, IDENTIFIERS, MLB_ALIAS, TENNIS_FEATURES, TENNIS_META, TENNIS_RETURN, _NBA_QUARTER,
-    _PIT, _STYLE)
+    ATP_WTA, IDENTIFIERS, MLB_ALIAS, RG_DENSITY, RG_DENSITY_PREGAME, RG_DENSITY_SRC, RG_TRAVEL,
+    RG_TRAVEL_PREGAME, RG_TRAVEL_SRC, TENNIS_FEATURES, TENNIS_META, TENNIS_RETURN, _ADV,
+    _MATCHES_SRC, _NBA_QUARTER, _PIT, _REFEREE, _REFEREE_SRC, _RELIEF, _SERVE, _STYLE,
+    _STYLE_SRC, _VALUE, _VALUE_SRC)
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -99,7 +101,17 @@ def _load_player_adv(path: str) -> pd.DataFrame:
     return merged.groupby(["team", "date"], as_index=False)[values].mean()
 
 
-_LOADERS = {"glob": _load_glob, "referee": _load_referee, "player_adv": _load_player_adv}
+def _load_tennis_sides(path: str) -> pd.DataFrame:
+    """The round-grain density table carries `player_id` but no side flag: read the side off the
+    event_id, counted from the END (S122: a dashed tourney_id shifts the head)."""
+    frame = _load_glob(path).copy()
+    frame["_is_p1"] = (frame["player_id"].astype(str)
+                       == frame["event_id"].astype(str).str.split("-").str[-3])
+    return frame
+
+
+_LOADERS = {"glob": _load_glob, "referee": _load_referee, "player_adv": _load_player_adv,
+            "tennis_sides": _load_tennis_sides}
 
 # ------------------------------------------------------------------ the registry
 REGISTRY = {
@@ -109,45 +121,33 @@ REGISTRY = {
     # Two rows per game, one per team. S129: the pregame basis is DECLARED and measured --
     # perturbing a game's own boxscore moves none of the 4 columns on that game (5 games sampled
     # evenly); the producer emits from PRE-game state, then updates (player_value_asof.py:87).
-    "nba_player_value_features": Supply("data/domains/basketball_nba/player_value_features.parquet",
-                                        "side", ("roster_value_asof", "star_absence_delta",
-                                                 "continuity", "top_heavy"),
-                                        key="game_id", side="team_abbr",
-                                        pregame="player_boxscores.parquet, state BEFORE game_id"),
+    "nba_player_value_features": Supply(
+        _VALUE_SRC, "side", _VALUE, key="game_id", side="team_abbr",
+        pregame="player_boxscores.parquet, state BEFORE game_id"),
     "nba_opp_allowed": Supply("data/cache/pit/opp_allowed_asof_*.parquet", "prior", _PIT,
                               entity="team", date="game_date", loader="glob"),
     "nba_player_adv": Supply("data/domains/basketball_nba/asof_player_adv.parquet", "prior",
-                             ("usagepercentage_asof", "offensiverating_asof",
-                              "defensiverating_asof", "pie_asof", "possessions_asof", "n_prior"),
-                             entity="team", date="date", loader="player_adv"),
+                             _ADV, entity="team", date="date", loader="player_adv"),
     "mlb_bullpen_relief_chains": Supply("data/domains/mlb/bullpen_relief_chains.parquet", "prior",
-                                        ("battersFaced", "rest_days", "is_b2b",
-                                         "appearances_last_3d"), entity="team", date="date"),
+                                        _RELIEF, entity="team", date="date"),
     "soccer_referee_card_foul_profiles": Supply(
-        "data/domains/soccer/referee_card_foul_profiles.parquet", "prior",
-        ("total_fouls", "total_yellow", "total_red", "total_cards"),
-        entity="referee", date="_date", entity_from="row", side="referee", combine="a",
-        loader="referee"),
-    "soccer_style_fingerprints": Supply("data/domains/soccer/style_fingerprints.parquet", "prior",
-                                        _STYLE, entity="team", date="season", grain="season",
-                                        season_table="data/domains/soccer/matches.parquet"),
+        _REFEREE_SRC, "prior", _REFEREE, entity="referee", date="_date", entity_from="row",
+        side="referee", combine="a", loader="referee"),
+    "soccer_style_fingerprints": Supply(_STYLE_SRC, "prior", _STYLE, entity="team", date="season",
+                                        grain="season", season_table=_MATCHES_SRC),
     "tennis_features": Supply(ATP_WTA.format("features"), "event", TENNIS_FEATURES, loader="glob"),
     "tennis_return": Supply(ATP_WTA.format("return"), "event", TENNIS_RETURN, loader="glob"),
     "tennis_meta": Supply(ATP_WTA.format("meta"), "event", TENNIS_META, loader="glob"),
-    # S122: `tennis_schedule_density` and `tennis_travel_scouting` are DELIBERATELY NOT declared.
-    # Their sources key on Sackmann's `date` = the TOURNEY START (1451/1451 ATP and 974/974 WTA
-    # tourneys carry ONE distinct date), so a trailing-window count cannot order a player's matches
-    # within an event: the 2025 Wimbledon champion's seven serve 0,3,4,5,1,6,2 and 46.2 pct of rows
-    # read rest_days == 0. Served p1-minus-p2 correlates +0.2616 with the outcome and "beat" the
-    # devigged close by 0.0202 (p=0.0000) -- a LEAK. The built WTA halves would carry coverage to
-    # 800/800 and 785/800, but no as-of column comes off this grain. See
-    # docs/evidence/harness/S122_tennis_wta_schedule_travel_2026-09-03.md.
-    "tennis_serve_return_profiles": Supply("data/domains/tennis/serve_return_profiles.parquet",
-                                           "prior", ("serve_strength", "return_strength",
-                                                     "n_matches", "z_serve_strength",
-                                                     "z_return_strength"),
-                                           entity="player_id", date="season", grain="season",
-                                           entity_from="player", season_start_month=1),
+    # S136: the ROUND-GRAIN rebuild of S122's two withheld tables; `rest_days` CLOSED AT LIMIT.
+    "tennis_schedule_density": Supply(RG_DENSITY_SRC, "side", RG_DENSITY, side="_is_p1",
+                                      entity_from="player", loader="tennis_sides",
+                                      pregame=RG_DENSITY_PREGAME),
+    "tennis_travel_scouting": Supply(
+        RG_TRAVEL_SRC, "side", RG_TRAVEL, side="is_p1", entity_from="player", loader="glob",
+        overrides=(("venue_altitude_m", "a"),), pregame=RG_TRAVEL_PREGAME),
+    "tennis_serve_return_profiles": Supply(
+        "data/domains/tennis/serve_return_profiles.parquet", "prior", _SERVE, entity="player_id",
+        date="season", grain="season", entity_from="player", season_start_month=1),
 }
 
 
