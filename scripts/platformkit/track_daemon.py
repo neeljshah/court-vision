@@ -107,7 +107,7 @@ def job_timeout(sport: str) -> int:
 def claimable(active: dict) -> list:
     """Return complete staged videos, one longest source per sibling group."""
     return _claimable_sources(STAGE, active, MIN_VIDEO_BYTES, QUARANTINE,
-                              retain, _record, corrupt_entry)
+                              retain, _record_loudly, corrupt_entry)
 
 
 def verdict(sport: str, game_id: str, video: Path) -> dict | None:
@@ -181,6 +181,34 @@ def _previous_sport_entry(sport: str) -> dict | None:
     return None
 
 
+def _record_loudly(entry: dict) -> bool:
+    """Append a ledger row, reporting a write failure instead of propagating it.
+
+    G151 made a failed append RAISE, which is right: a silent quota failure once
+    froze the ledger at exactly 427 rows for a 200-second watch with no error
+    anywhere. But `_record` is called from `_finish` -- BEFORE `retain` moves the
+    source to the corpus and before the log is unlinked -- and from `claimable`'s
+    scan, both inside `tick`, which the main loop runs with no exception handler.
+    So a PERSISTENT failure such as the quota exhaustion the guard exists for
+    would kill the daemon mid-reap, drop every other in-flight job's bookkeeping
+    with it, and leave the source in STAGE because `retain` sits downstream of
+    the raise. The keeper restarts 60 seconds later with no backoff, re-claims
+    the same video, and re-tracks it -- adding disk pressure on every cycle to
+    the very volume that was already full.
+
+    Loud in the log is loud enough. The verdict sidecar is already durable, so a
+    lost row costs bookkeeping, not the game. `_record` keeps raising, so G151's
+    contract and its test are unchanged; only these two callers absorb it.
+    """
+    try:
+        _record(entry)
+        return True
+    except (RuntimeError, OSError) as exc:
+        print("LEDGER APPEND FAILED for %s: %s -- row lost, job still finished"
+              % (entry.get("game_id"), exc), flush=True)
+        return False
+
+
 def _step_change(previous: dict | None, entry: dict) -> dict | None:
     """Describe a material row-density move against the previous same-sport row."""
     if previous is None:
@@ -252,7 +280,7 @@ def _finish(name: str, job: dict, timed_out: bool = False) -> None:
                  fresh_solves=fresh_solves)
     entry["rows_per_decoded_frame_step_change"] = _step_change(
         _previous_sport_entry(job["sport"]), entry)
-    _record(entry)
+    _record_loudly(entry)
     print("%s %s %s rows=%d passed=%s %s"
           % (job["game_id"], job["sport"], status, rows, entry["passed"],
              ";".join(entry["failure_heads"])[:90]), flush=True)

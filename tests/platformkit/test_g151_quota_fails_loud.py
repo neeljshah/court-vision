@@ -46,3 +46,25 @@ def test_staged_upload_reports_probe_failure_and_stranded_part(monkeypatch, tmp_
             tmp_path / "clip.mp4", {"game_id": "g151", "sport": "tennis"})
 
     assert any(command.startswith("test -e ") for command in calls)
+
+
+def test_ledger_failure_does_not_kill_the_daemon_or_strand_the_source(
+        monkeypatch, tmp_path, capsys) -> None:
+    """A persistent append failure must be loud, not fatal.
+
+    The regression this guards is the one the adversarial review caught the same
+    day the guard landed: `_record` raises inside `_finish`, which runs inside
+    `tick`, which the main loop calls with no exception handler. `retain` sits
+    BELOW the append, so a raise both killed the daemon and left the source in
+    STAGE -- and the keeper's 60-second restart then re-claimed and re-tracked
+    the same game, adding disk pressure to the full volume on every cycle.
+    """
+    monkeypatch.setattr(track_daemon, "_write_probe",
+                        lambda *_args: (_ for _ in ()).throw(
+                            RuntimeError("ledger write probe failed: quota exceeded")))
+
+    assert track_daemon._record_loudly({"game_id": "g151b", "sport": "tennis"}) is False
+    printed = capsys.readouterr().out
+    assert "LEDGER APPEND FAILED" in printed
+    assert "g151b" in printed
+    assert "quota exceeded" in printed
