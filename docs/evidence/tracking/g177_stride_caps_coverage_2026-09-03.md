@@ -69,6 +69,27 @@ decoded denominator and recorded tennis CLOSED AT LIMIT. That still holds:
 tennis fails on evaluable frames too. What changes is the REASON baseball fails,
 and whether the gate discriminates at all.
 
+
+## CORRECTION, added by the orchestrator within the hour (G176)
+
+**Baseball is not actually being failed by coverage, and the framing above overstates
+what fixing the denominator would achieve.** Measured across all 18 ledger rows on the
+pod: **only 1 row has a coverage failure head** (the tennis row). **14 fail at
+`coordinate_contract`** -- baseball rows declare `image_px`, which is not accepted for
+baseball, so they are rejected BEFORE the coverage gate is ever evaluated. 3 rows carry
+no failure head at all.
+
+So the cap arithmetic above stands exactly as measured -- coverage IS capped at 1/stride,
+and baseball's observed values ARE 89.9-96.4 pct of that ceiling -- but the sentence
+"against a baseball `coverage_min` of 0.70 that is unreachable by construction" describes
+a gate baseball never reaches. Correcting the denominator would move baseball's coverage
+NUMBER from ~0.157 to ~0.94; it would NOT flip baseball from FAIL to PASS, because the
+coordinate contract fails it first and independently.
+
+The metric-correctness argument is unaffected: a strided numerator over an unstrided
+denominator is wrong regardless of which gate fires first. But "this rescues baseball" was
+an over-read and is withdrawn.
+
 ## NOT VERIFIED
 
 - The gating quantity itself. These `coverage_pct` values are the LEDGER figure
