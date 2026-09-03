@@ -88,7 +88,11 @@ B11 SINGLE-RUN CLAIM ON AN UNREPRODUCED ROUTE -- quoting n=1 through a route who
 S1  NAME THE MACHINE -- every spec that runs anything says where, in its own line, with the reason.
     "Pod is read-only" plus "do not wait on the daemon" reads as "work locally" unless stated.
 S2  VERIFY THE PREMISE BEFORE DISPATCH -- the orchestrator checks each premise against the code or
-    the live system before sending the spec. Q8 makes the LANE re-measure; S2 makes the AUTHOR
+    the live system before sending the spec. **A premise about a SET is verified by computing the
+    distribution over the WHOLE set, never by reading its first rows.** G192's spec asserted "the
+    decodes are 640x360" from `head -3`; that described 1 of 17 frames, and the lane correctly
+    stopped. This is B11's error one level up: a sample stated as a property, in a spec instead of a
+    memo. Q8 makes the LANE re-measure; S2 makes the AUTHOR
     measure first. A lane that STOPS on a false premise is correct and the author owns the cost.
 S4  NAME THE LEDGER AND THE FIELD -- a spec citing a count says which ledger file and which field.
     The pod ledger carries diagnostics in `failure_heads` over 40 rows; the local one carries them in
