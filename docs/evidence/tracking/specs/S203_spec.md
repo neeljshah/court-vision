@@ -1,4 +1,4 @@
-GAP S203 | sport all (harness) | worktree aXX | log cx_s203_replication_wiring
+GAP S203 | sport all (harness) | worktree a15 | log cx_s203_replication_wiring
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: docs/evidence/harness/S08_replication_gate_2026-09-03.md:42, verbatim: "NEW GAP: stacker.py emits
 min_corpora_eff + single_window=True but does not apply replication_verdict to its own AHEAD, and hard-codes
