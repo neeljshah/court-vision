@@ -416,6 +416,8 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-03 | tracking teacher census | S193 | required worktree inputs absent; census and 158-row output unavailable; LANDED 1c3a08ea3 | FALSIFIED (verified: codex-sol, contract A/B/Q)
 2026-09-03 | deploy pathspec | S187 | paper closure 11/11; bootstrap 4/11; S21b/S21c 3/11 (corrected from 4/11); 7 trees hold 56/524 modules (10.69%); LANDED 6a664db0248194d026617a39f444fb9009905253 | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q)
 2026-09-03 | sport harness | S188 | tree-absence construct: 2/8 before, 8/8 after, control 1/1; LANDED 709ad418c | ACCEPT (verified: codex-sol, contract A/B/Q)
+2026-09-03 | hook | S163 | harness(S163): LOC allowlist -- family_bars.py 324 -> 355 after the verified S174 landing (rail was not yet mandatory at landing); rail green on master again | LANDED (auto; verifier line pending) | 25a1329ca
 2026-09-04 | signals-ingame | S192 | 18,650/186,736 state-joined ticks across 85 games; median age 15 s; LANDED 15a97fa56 | ACCEPT (verified: codex-sol, contract A/B/Q)
 2026-09-03 | ops | S189 | explicit-floor census 3/7 -> 6/7; premise matrix 9/9 and post-change matrix 7/7; LANDED 45fed2287 | ACCEPT (verified: codex-sol, contract A/B/Q)
 2026-09-03 | in-play regression | S198 | before 1/16 failing; candidate 0/16; first bad c1b3f4358; 58 required tests passed; LANDED 0ae6c290d6329b1c1e01e21b41a765ff05913b49 | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q)
+2026-09-03 | ops deploy byte parity | S190 | n=4,950; identical=4,926; eol_only=2; content=22; absent=0; LANDED 8d5620fd8 | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q)
