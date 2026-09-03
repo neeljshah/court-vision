@@ -1,4 +1,4 @@
-GAP S206 | sport wnba (in-game) | worktree aXX | log cx_s206_wnba_ingame_first_score
+GAP S206 | sport wnba (in-game) | worktree a12 | log cx_s206_wnba_ingame_first_score
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: wnba_ingame_census_2026-09-04.md, verbatim: "WNBA in-play ticks with an action-derived as-of state | 0 |
 18,650" and "The before value is the established S80/S82 closed evidence: no settled WNBA ticks in a state-joined
