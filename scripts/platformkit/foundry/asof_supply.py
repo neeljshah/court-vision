@@ -1,28 +1,29 @@
 """S85 -- NAMED as-of supply for frozen family columns the gate corpus cannot serve.
 
 `screen_predictor.source_column` serves a member column only when it is already a gate-corpus
-column or a one-row-per-event column of the family's own frozen source. 14 pregame families fail
-both tests: their source is player / pitcher / referee / team-season grain, or its column name
-carries no `asof` token. This module is the DECLARED bridge: for one (family, column) pair it
-names the table, the join and the event-level aggregation rule, and nothing else. A pair that is
-not declared here is refused exactly as before -- the registry is additive and consulted only for
-what it lists, so no already-screened family's values move.
+column or a one-row-per-event column of the family's own frozen source; 14 pregame families fail
+both tests (player / pitcher / referee / team-season grain, or no `asof` token in the name). This
+module is the DECLARED bridge: per (family, column) pair it names the table, the join and the
+event-level rule, nothing else. An undeclared pair is refused as before -- the registry is
+additive, so no already-screened family's values move.
 
 Three rules, and the whole leak contract lives in them:
 
-  event  one row per event in the source; the value is served as-is. Legal ONLY for a column
-         settled BEFORE the event (entry rank points, seed, draw size, height, and `*_asof`
-         columns the producer already built as-of).
-  side   two rows per event, one per side (a team abbreviation, or an is_p1 flag); the
-         event-level value is home-minus-away (p1-minus-p2), or one declared side.
+  event  one row per event; served as-is. Legal ONLY for a column settled BEFORE the event
+         (entry rank points, seed, draw size, height, `*_asof` columns already built as-of).
+  side   two rows per event, one per side (a team abbreviation, or an is_p1 flag); the value is
+         home-minus-away (p1-minus-p2), or one declared side. It serves the event's OWN row, so
+         S129 fails it closed: no declared `pregame` basis (table + date rule), no supply.
   prior  (entity, date) grain; the served value is the expanding mean over rows of that entity
-         with date STRICTLY BEFORE the event's own date -- `merge_asof(allow_exact_matches=False)`.
-         Under this rule EVERY column of the source becomes as-of by construction, including a
-         same-game total, because the event's own row is unreachable.
+         with date STRICTLY BEFORE the event's own -- `merge_asof(allow_exact_matches=False)`.
+         EVERY column then becomes as-of by construction, a same-game total included, because
+         the event's own row is unreachable.
 
 `prior` is what makes a referee's card total or a reliever's batters-faced honest: the served
 value is that entity's history, never this match. The referee ASSIGNMENT is read from the event's
-own row (it is published before kickoff); that row's card totals are not.
+own row (published before kickoff); that row's card totals are not. On a `season` grain the event's
+season comes from the SOURCE's own convention (`season_table` / `season_start_month`), never from
+`dt.year` -- S128: 51.78 pct of soccer matches sit in the year AFTER their own season label.
 
 A SCREEN is a NON-FINDING. Calibration language only.
 """
@@ -37,17 +38,10 @@ import numpy as np
 import pandas as pd
 
 from scripts.platformkit.foundry.asof_supply_columns import (
-    ATP_WTA, TENNIS_FEATURES, TENNIS_META, TENNIS_RETURN, _NBA_QUARTER, _PIT, _STYLE)
+    ATP_WTA, IDENTIFIERS, MLB_ALIAS, TENNIS_FEATURES, TENNIS_META, TENNIS_RETURN, _NBA_QUARTER,
+    _PIT, _STYLE)
 
 ROOT = Path(__file__).resolve().parents[3]
-# The gate corpus's MLB abbreviations predate two relocations and several style choices; the
-# bullpen table uses the modern set. The EVENT side is mapped into the source vocabulary so the
-# source stays untouched. 24 of the 34 corpus abbreviations already match verbatim.
-MLB_ALIAS = {"ARI": "AZ", "BRS": "BOS", "CUB": "CHC", "KAN": "KC", "LOS": "LAD", "OAK": "ATH",
-             "SDG": "SD", "SFG": "SF", "SFO": "SF", "TAM": "TB", "WAS": "WSH"}
-# Named, and deliberately NOT supplied: an identifier is not a signal, and a prior-mean of one
-# would be noise wearing a plausible name.
-IDENTIFIERS = frozenset(("year", "season", "game_pk", "is_p1", "player_id", "catcher_id"))
 
 
 class SupplyUnavailable(ValueError):
@@ -66,7 +60,10 @@ class Supply:
     entity: str = ""            # entity column (prior rule)
     date: str = ""              # date column (prior rule)
     entity_from: str = "team"   # "team" | "player" | "row" -- how the event names its entity
-    grain: str = "date"         # "date" (calendar) or "season" (integer year)
+    grain: str = "date"         # "date" (calendar) or "season" (the SOURCE's own season label)
+    season_table: str = ""      # (season grain) table mapping `key` -> the source's own season
+    season_start_month: int = 0 # (season grain) or the month a season starts; 1 = calendar year
+    pregame: str = ""           # (side rule) the DECLARED pregame as-of basis: table + date rule
     combine: str = "diff"       # "diff" (a - b) | "a" (the home / p1 side only)
     loader: str = ""            # optional reshaper in _LOADERS
     overrides: tuple = ()       # ((column, combine), ...) where one column combines differently
@@ -74,8 +71,8 @@ class Supply:
 
 # ------------------------------------------------------------------ loaders (reshape only)
 def _load_glob(pattern: str) -> pd.DataFrame:
-    # S111: a COMMA lists several patterns -- the ATP table and its `_wta` sibling are two
-    # frozen files, and one glob wide enough for both also catches the unrelated `_ext2026`.
+    # S111: a COMMA lists patterns -- one glob wide enough for the ATP table and its `_wta`
+    # sibling also catches the unrelated `_ext2026`.
     paths = [q for part in pattern.split(",") for q in sorted(ROOT.glob(part.strip()))]
     if not paths:
         raise SupplyUnavailable("no table matches %s" % pattern)
@@ -91,11 +88,8 @@ def _load_referee(path: str) -> pd.DataFrame:
 
 
 def _load_player_adv(path: str) -> pd.DataFrame:
-    """Player-grain as-of stats rolled to (team, date) through the boxscore's own roster.
-
-    The roster belongs to the game the row is from, which is same-game knowledge -- so this frame
-    is served ONLY through the `prior` rule, where the event's own game is unreachable.
-    """
+    """Player-grain as-of stats rolled to (team, date) through the boxscore's own roster, which
+    is same-game knowledge -- so this frame is served ONLY through the `prior` rule."""
     frame, box = _read(path).copy(), _read("data/domains/basketball_nba/player_boxscores.parquet")
     box = box[["game_id", "player_id", "team"]].astype(str).drop_duplicates(["game_id", "player_id"])
     frame["game_id"] = frame["game_id"].astype(str)
@@ -112,11 +106,14 @@ REGISTRY = {
     # This table's frozen event_id is an ESPN id; its game_id is the NBA id the gate corpus uses.
     "nba_quarter_shape": Supply("data/domains/basketball_nba/asof_quarter_shape.parquet", "event",
                                 _NBA_QUARTER, key="game_id"),
-    # Two rows per game, one per team; the producer builds every column off the team's PREVIOUS game.
+    # Two rows per game, one per team. S129: the pregame basis is DECLARED and measured --
+    # perturbing a game's own boxscore moves none of the 4 columns on that game (5 games sampled
+    # evenly); the producer emits from PRE-game state, then updates (player_value_asof.py:87).
     "nba_player_value_features": Supply("data/domains/basketball_nba/player_value_features.parquet",
                                         "side", ("roster_value_asof", "star_absence_delta",
                                                  "continuity", "top_heavy"),
-                                        key="game_id", side="team_abbr"),
+                                        key="game_id", side="team_abbr",
+                                        pregame="player_boxscores.parquet, state BEFORE game_id"),
     "nba_opp_allowed": Supply("data/cache/pit/opp_allowed_asof_*.parquet", "prior", _PIT,
                               entity="team", date="game_date", loader="glob"),
     "nba_player_adv": Supply("data/domains/basketball_nba/asof_player_adv.parquet", "prior",
@@ -132,27 +129,25 @@ REGISTRY = {
         entity="referee", date="_date", entity_from="row", side="referee", combine="a",
         loader="referee"),
     "soccer_style_fingerprints": Supply("data/domains/soccer/style_fingerprints.parquet", "prior",
-                                        _STYLE, entity="team", date="season", grain="season"),
+                                        _STYLE, entity="team", date="season", grain="season",
+                                        season_table="data/domains/soccer/matches.parquet"),
     "tennis_features": Supply(ATP_WTA.format("features"), "event", TENNIS_FEATURES, loader="glob"),
     "tennis_return": Supply(ATP_WTA.format("return"), "event", TENNIS_RETURN, loader="glob"),
     "tennis_meta": Supply(ATP_WTA.format("meta"), "event", TENNIS_META, loader="glob"),
-    # S122: `tennis_schedule_density` and `tennis_travel_scouting` are DELIBERATELY NOT
-    # declared. Their sources are keyed on Sackmann's `date`, which is the TOURNEY START date
-    # -- 1451/1451 ATP and 974/974 WTA tourneys carry exactly ONE distinct date -- so a
-    # trailing-window count cannot order a player's matches within an event. Measured: the
-    # 2025 Wimbledon champion's seven matches serve 0,3,4,5,1,6,2 (the right sequence, wrong
-    # rows) and 46.2 pct of all rows read rest_days == 0. Served p1-minus-p2 correlates
-    # +0.2616 with the outcome on the 800-row screen window, and screening it "beat" the
-    # devigged close by 0.0202 (p=0.0000) -- a LEAK, not a result. The WTA halves are built
-    # (domains/tennis/wta_schedule_travel.py) and would carry coverage to 800/800 and 785/800,
-    # but no as-of column can come off this date grain. See
+    # S122: `tennis_schedule_density` and `tennis_travel_scouting` are DELIBERATELY NOT declared.
+    # Their sources key on Sackmann's `date` = the TOURNEY START (1451/1451 ATP and 974/974 WTA
+    # tourneys carry ONE distinct date), so a trailing-window count cannot order a player's matches
+    # within an event: the 2025 Wimbledon champion's seven serve 0,3,4,5,1,6,2 and 46.2 pct of rows
+    # read rest_days == 0. Served p1-minus-p2 correlates +0.2616 with the outcome and "beat" the
+    # devigged close by 0.0202 (p=0.0000) -- a LEAK. The built WTA halves would carry coverage to
+    # 800/800 and 785/800, but no as-of column comes off this grain. See
     # docs/evidence/harness/S122_tennis_wta_schedule_travel_2026-09-03.md.
     "tennis_serve_return_profiles": Supply("data/domains/tennis/serve_return_profiles.parquet",
                                            "prior", ("serve_strength", "return_strength",
                                                      "n_matches", "z_serve_strength",
                                                      "z_return_strength"),
                                            entity="player_id", date="season", grain="season",
-                                           entity_from="player"),
+                                           entity_from="player", season_start_month=1),
 }
 
 
@@ -210,6 +205,8 @@ def _event_rule(family: str, name: str, index: pd.Index) -> np.ndarray:
 
 def _side_rule(family: str, name: str, index: pd.Index, context: pd.DataFrame) -> np.ndarray:
     spec, frame = REGISTRY[family], _column(family, name)
+    if not spec.pregame:        # S129: this rule serves the EVENT'S OWN ROW; fail closed
+        raise SupplyUnavailable("no declared pregame as-of basis for %s/%s" % (family, name))
     keyed = frame.dropna(subset=[spec.key, spec.side]).copy()
     keyed[spec.key] = keyed[spec.key].astype(str)
     boolean = keyed[spec.side].dtype == bool
@@ -225,6 +222,17 @@ def _side_rule(family: str, name: str, index: pd.Index, context: pd.DataFrame) -
     a = series.reindex(pd.MultiIndex.from_arrays([ids, a_key])).to_numpy(float)
     b = series.reindex(pd.MultiIndex.from_arrays([ids, b_key])).to_numpy(float)
     return _combine(spec, name, a, b)
+
+
+def _season_of(spec: Supply, index: pd.Index, when: pd.Series) -> pd.Series:
+    """S128: the event's season under the SOURCE's own convention, never `dt.year`."""
+    if spec.season_table:
+        keyed = _read(spec.season_table).drop_duplicates(spec.key)
+        got = pd.Series(keyed["season"].to_numpy(), index=keyed[spec.key].astype(str))
+        return pd.Series(got.reindex(index.astype(str)).to_numpy(float), index=when.index)
+    if not spec.season_start_month:
+        raise SupplyUnavailable("grain='season' declares no season_table or season_start_month")
+    return (when.dt.year - (when.dt.month < spec.season_start_month)).astype(float)
 
 
 def _prior_one(src: pd.DataFrame, entity: np.ndarray, when: pd.Series) -> np.ndarray:
@@ -251,7 +259,7 @@ def _prior_rule(family: str, name: str, index: pd.Index, context: pd.DataFrame) 
     src = src.dropna(subset=["_v"])[["_e", "_d", "_v"]]
     when = pd.to_datetime(context["date"], errors="coerce")
     if spec.grain == "season":
-        when = when.dt.year.astype(float)
+        when = _season_of(spec, index, when)
     if spec.entity_from == "row":
         assign = _frame(family).dropna(subset=[spec.key]).copy()
         assign[spec.key] = assign[spec.key].astype(str)
@@ -265,11 +273,10 @@ def _prior_rule(family: str, name: str, index: pd.Index, context: pd.DataFrame) 
 
 
 def _refuse_all_nan(values: pd.Series, context: Optional[pd.DataFrame]) -> pd.Series:
-    """S111 (c): a pair that supplies ENTIRELY NaN on the window it will be SCORED on is
-    UNAVAILABLE, not merely under-covered. `nba_quarter_shape` served 0 non-null of 1,814 (an
-    ESPN event_id read against the corpus's NBA game_id) and still passed the name guard and
-    the grain guard on its way to a silent UNCOVERED. `served_rows` is the last-N window the
-    screen binder actually scores; absent -> the whole supplied index."""
+    """S111 (c): a pair supplying ENTIRELY NaN on the window it will be SCORED on is UNAVAILABLE,
+    not merely under-covered -- `nba_quarter_shape` served 0 non-null of 1,814 (an ESPN event_id
+    against the corpus's NBA game_id) and still reached a silent UNCOVERED. `served_rows` is the
+    screen binder's last-N window; absent -> the whole supplied index."""
     rows = None if context is None else context.attrs.get("served_rows")
     window = values if not rows else values.iloc[-int(rows):]
     if len(window) and not np.isfinite(pd.to_numeric(window, errors="coerce").to_numpy(float)).any():

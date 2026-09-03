@@ -62,12 +62,64 @@ def test_prior_rule_is_strictly_before(monkeypatch, tmp_path):
     assert got["e3"] == pytest.approx(55.0 - 1.0)   # mean(10, 100) - mean(1, 1)
 
 
+def test_prior_rule_uses_the_source_season_not_the_calendar_year(monkeypatch, tmp_path):
+    """S128. A season that spans two calendar years put 51.78 pct of soccer matches in the year
+    AFTER their own season label, so keying `allow_exact_matches=False` on `dt.year` served the
+    match its OWN season's aggregate. Synthetic first, then the reproduced real case.
+
+    HOME's season-1 value is 10 and its season-2 value is 100; the event is played in calendar
+    year 3 but belongs to season 2, so it must see 10, never mean(10, 100).
+    """
+    src = pd.DataFrame({"team": ["HOME", "HOME", "AWAY", "AWAY"], "season": [1, 2, 1, 2],
+                        "v": [10.0, 100.0, 1.0, 1.0]})
+    seasons = pd.DataFrame({"event_id": ["e1"], "season": [2]})
+    table = tmp_path / "seasons.parquet"
+    seasons.to_parquet(table)
+    _register(monkeypatch, tmp_path, src,
+              asof_supply.Supply("", "prior", ("v",), entity="team", date="season",
+                                 grain="season", season_table=table.as_posix()))
+    context = _context([{"event_id": "e1", "date": "0003-01-01", "home": "HOME", "away": "AWAY"}])
+    assert asof_supply.supply("unit_family", "v", context.index, context)["e1"] == 10.0 - 1.0
+
+    monkeypatch.setitem(asof_supply.REGISTRY, "unit_family",
+                        replace(asof_supply.REGISTRY["unit_family"], season_table="",
+                                season_start_month=0))
+    with pytest.raises(asof_supply.SupplyUnavailable, match="declares no season_table"):
+        asof_supply.supply("unit_family", "v", context.index, context)
+
+
+def test_soccer_prior_serves_the_honest_pre_season_value_on_the_real_corpus():
+    """S128 end to end: the 2026-01-01 Brentford-Tottenham match belongs to season 2025 and must
+    be served the <= 2024 prior -0.275744, not the own-season-inclusive -0.221968."""
+    matches = pd.read_parquet(asof_supply.ROOT / "data/domains/soccer/matches.parquet")
+    row = matches[matches["event_id"] == "20260101-E0-brentford-tottenham"].iloc[0]
+    assert int(row["season"]) == 2025 and str(row["date"])[:4] == "2026"
+    context = pd.DataFrame([{"date": "2026-01-01", "home": "Brentford", "away": "Tottenham"}],
+                           index=pd.Index([row["event_id"]], name="event_id"))
+    context.attrs["sport"] = "soccer"
+    got = asof_supply.supply("soccer_style_fingerprints", "ppg", context.index, context)
+    assert float(got.iloc[0]) == pytest.approx(-0.275744, abs=5e-7)
+
+
+def test_side_rule_refuses_a_column_with_no_declared_pregame_basis(monkeypatch, tmp_path):
+    """S129. The side rule serves the event's OWN row, so it fails closed: a planted column equal
+    to the event outcome is refused by NAME unless the entry declares a pregame as-of basis."""
+    src = pd.DataFrame({"gid": ["e1", "e1", "e2", "e2"], "team_abbr": ["HOME", "AWAY"] * 2,
+                        "leak_outcome": [9.0, 0.0, -9.0, 0.0]})
+    _register(monkeypatch, tmp_path, src,
+              asof_supply.Supply("", "side", ("leak_outcome",), key="gid", side="team_abbr"))
+    context = _context([{"event_id": "e1", "date": "2024-01-01", "home": "HOME", "away": "AWAY"},
+                        {"event_id": "e2", "date": "2024-01-02", "home": "HOME", "away": "AWAY"}])
+    with pytest.raises(asof_supply.SupplyUnavailable, match="no declared pregame as-of basis"):
+        asof_supply.supply("unit_family", "leak_outcome", context.index, context)
+
+
 def test_side_rule_is_home_minus_away_and_event_rule_uses_the_declared_key(monkeypatch, tmp_path):
     src = pd.DataFrame({"gid": ["e1", "e1", "e2", "e2"], "team_abbr": ["HOME", "AWAY"] * 2,
                         "v": [7.0, 2.0, 1.0, 4.0], "w": [9.0, 0.0, 3.0, 0.0]})
     _register(monkeypatch, tmp_path, src,
               asof_supply.Supply("", "side", ("v", "w"), key="gid", side="team_abbr",
-                                 overrides=(("w", "a"),)))
+                                 pregame="unit source, state BEFORE gid", overrides=(("w", "a"),)))
     context = _context([{"event_id": "e1", "date": "2024-01-01", "home": "HOME", "away": "AWAY"},
                         {"event_id": "e2", "date": "2024-01-02", "home": "HOME", "away": "AWAY"}])
     diff = asof_supply.supply("unit_family", "v", context.index, context)
@@ -111,6 +163,10 @@ def test_registry_is_additive_and_well_formed():
         for part in spec.source.split(","):     # S111: a comma lists several patterns
             assert list(asof_supply.ROOT.glob(part.strip())), part
         assert not asof_supply.declared(name, "y")
+        if spec.rule == "side":                 # S129: an undeclared side entry serves own rows
+            assert spec.pregame, name
+        if spec.grain == "season":              # S128: never dt.year
+            assert bool(spec.season_table) != bool(spec.season_start_month), name
     assert not asof_supply.declared(None, "total_cards")
     assert not asof_supply.declared("nba_gate", "p_base")
 

@@ -6,6 +6,15 @@ A column absent from these tuples is refused by `asof_supply.declared` exactly a
 """
 from __future__ import annotations
 
+# The gate corpus's MLB abbreviations predate two relocations and several style choices; the
+# bullpen table uses the modern set. The EVENT side is mapped into the source vocabulary so the
+# source stays untouched. 24 of the 34 corpus abbreviations already match verbatim.
+MLB_ALIAS = {"ARI": "AZ", "BRS": "BOS", "CUB": "CHC", "KAN": "KC", "LOS": "LAD", "OAK": "ATH",
+             "SDG": "SD", "SFG": "SF", "SFO": "SF", "TAM": "TB", "WAS": "WSH"}
+# Named, and deliberately NOT supplied: an identifier is not a signal, and a prior-mean of one
+# would be noise wearing a plausible name.
+IDENTIFIERS = frozenset(("year", "season", "game_pk", "is_p1", "player_id", "catcher_id"))
+
 _NBA_QUARTER = ("home_q1_margin_asof", "away_q1_margin_asof", "diff_q1_margin_asof",
                 "home_first_half_margin_asof", "away_first_half_margin_asof",
                 "diff_first_half_margin_asof", "home_second_half_margin_asof",

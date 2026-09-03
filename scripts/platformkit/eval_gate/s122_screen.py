@@ -76,12 +76,16 @@ def register_leaky() -> None:
     and the improvement it fabricates are both reproducible from the landed tree."""
     supply = asof_supply.Supply
     asof_supply._LOADERS["tennis_sides"] = _load_tennis_sides
+    # S129 made the side rule fail closed on an undeclared `pregame` basis. This reproduction
+    # declares one it does NOT have, which is the point: the flag is a PROMISE, and this script
+    # exists to show the leak that promise would have covered. Never a template for a real entry.
+    leaky = {"pregame": "S122 REPRODUCTION ONLY -- the tourney-START date, which is NOT as-of"}
     asof_supply.REGISTRY["tennis_schedule_density"] = supply(
         _DENSITY_SRC, "side", ("rest_days", "matches_last_7d", "matches_last_14d"),
-        side="_is_p1", entity_from="player", loader="tennis_sides")
+        side="_is_p1", entity_from="player", loader="tennis_sides", **leaky)
     asof_supply.REGISTRY["tennis_travel_scouting"] = supply(
         _TRAVEL_SRC, "side", ("miles_flown_in", "venue_altitude_m"), side="is_p1",
-        entity_from="player", loader="glob", overrides=(("venue_altitude_m", "a"),))
+        entity_from="player", loader="glob", overrides=(("venue_altitude_m", "a"),), **leaky)
     asof_supply._frame.cache_clear()
 
 
