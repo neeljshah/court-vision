@@ -205,7 +205,8 @@ def reproduce_s58(scored: pd.DataFrame, csv_path: Path = S58_PERGAME) -> Dict[st
     """Independent check: the S58 trial-B per-game prior + price must reappear tick-for-tick."""
     if not Path(csv_path).exists():
         return {"status": "S58_ARTIFACT_ABSENT", "path": str(csv_path)}
-    ref = pd.read_csv(csv_path, comment="#").set_index("game_id")
+    from scripts.platformkit.eval_gate.archive_read import read_series  # S147: never comment="#" on an archive
+    ref = read_series(csv_path).set_index("game_id")
     cp = (scored[scored["elapsed"] <= 24.0].sort_values(["game_id", "elapsed", "ts"])
           .groupby("game_id").tail(1))                       # S58's own checkpoint selection
     join = cp.join(ref[["p0_asof", "model", "elapsed"]], on="game_id", rsuffix="_s58", how="inner")

@@ -10,7 +10,7 @@ import pandas as pd
 
 from scripts.platformkit.eval_gate.archive_read import read_series
 
-_MODULES = ("s106_requote.py", "s121_requote.py", "tick_informative.py")
+_MODULES = ("s106_requote.py", "s121_requote.py", "tick_informative.py", "s86_nba_every_tick.py")
 _SRC = Path(__file__).resolve().parents[3] / "scripts" / "platformkit" / "eval_gate"
 
 _ROWS = "cluster,y,loss\nmlb:KXMLBGAME-26JUL051230NYMATL#1,0.0,0.25\nmlb:KXMLBGAME-26JUL051230NYMATL#2,1.0,0.5\n"
