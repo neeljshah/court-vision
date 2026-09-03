@@ -1,4 +1,4 @@
-GAP G156 | sport all | worktree TBD | log cx_g156_daemon_stalls_on_ffprobe
+GAP G156 | sport all | worktree a3 | log cx_g156_daemon_stalls_on_ffprobe
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it, including A5, A7 and Q8; self-check
 section B before reporting. This row MAY change code. It must NOT change the decoded-frame
 denominator, the coverage definition, any bar, any gate, or any verdict. Read B10 twice.
