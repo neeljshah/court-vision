@@ -70,7 +70,7 @@ ALLOWLIST: dict[str, int] = {
     "scripts/platformkit/ingame/ingame_prop_trader.py": 305,
     "scripts/platformkit/ingame/ingame_segment_trust.py": 303,
     "scripts/platformkit/ingame/inplay_aggregate_grade.py": 374,
-    "scripts/platformkit/ingame/inplay_capture_loop.py": 1234,
+    "scripts/platformkit/ingame/inplay_capture_loop.py": 1238,  # 1234 -> 1238: S186 four-line cycle-history hook (verified); module needs its own split row
     "scripts/platformkit/ingame/inplay_derivative_mlb.py": 313,
     "scripts/platformkit/ingame/live_grade.py": 303,
     "scripts/platformkit/ingame/live_loop.py": 358,
