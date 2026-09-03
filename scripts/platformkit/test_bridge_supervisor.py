@@ -30,11 +30,15 @@ def test_refill_uses_plural_sports_flag(monkeypatch):
     """--sport (singular) is rejected by the expander and refills nothing."""
     seen = {}
 
-    def fake_run(command, **kwargs):
-        seen["command"] = command
-        return subprocess.CompletedProcess(command, 0, stdout="", stderr="")
+    class _FakePopen:
+        def __init__(self, command, **kwargs):
+            seen["command"] = command
 
-    monkeypatch.setattr(bridge_supervisor.subprocess, "run", fake_run)
+        def poll(self):
+            return 0
+
+    monkeypatch.setattr(bridge_supervisor.subprocess, "Popen", _FakePopen)
+    bridge_supervisor._REFILLS_IN_FLIGHT.clear()
 
     bridge_supervisor.refill("tennis")
 
@@ -45,7 +49,7 @@ def test_refill_uses_plural_sports_flag(monkeypatch):
 def test_refill_reports_sports_it_cannot_refill(monkeypatch, capsys):
     """A lane with no expander source must say so, not silently no-op."""
     called = []
-    monkeypatch.setattr(bridge_supervisor.subprocess, "run",
+    monkeypatch.setattr(bridge_supervisor.subprocess, "Popen",
                         lambda *a, **k: called.append(a))
 
     # football IS refillable now; use a sport with no expander source.
@@ -71,3 +75,44 @@ def test_every_lane_has_a_real_adapter():
             orphans.append(sport)
 
     assert not orphans, "lanes with no adapter: %s" % sorted(orphans)
+
+
+def test_refill_never_blocks_the_poll_loop(monkeypatch):
+    """A refill must be launched, not waited on, and not duplicated per sport.
+
+    The regression: refill used subprocess.run(timeout=1800), so the supervisor
+    stopped publishing status for as long as the expander took -- and the
+    expander runs yt-dlp searches. bridge_liveness then read a stale snapshot,
+    reported DOWN, and a watchdog started a second supervisor; each spawned its
+    own seven lane workers. On 2026-09-02 that left 17 orphan workers with no
+    supervisor owning them. Every supervisor stopped logging directly after
+    "lane football down to N untracked -- refilling".
+    """
+    launched = []
+
+    class _FakePopen:
+        def __init__(self, command, **kwargs):
+            launched.append(command)
+            self.returncode = None
+
+        def poll(self):
+            return None  # still running
+
+    monkeypatch.setattr(bridge_supervisor.subprocess, "Popen", _FakePopen)
+    monkeypatch.setattr(bridge_supervisor.subprocess, "run", _no_blocking_run)
+    bridge_supervisor._REFILLS_IN_FLIGHT.clear()
+
+    bridge_supervisor.refill("tennis")
+    assert len(launched) == 1
+
+    # A second call while the first is still running must not launch another.
+    bridge_supervisor.refill("tennis")
+    assert len(launched) == 1
+
+    # A different sport is independent.
+    bridge_supervisor.refill("soccer")
+    assert len(launched) == 2
+
+
+def _no_blocking_run(*args, **kwargs):
+    raise AssertionError("refill must not call subprocess.run -- it blocks the heartbeat")

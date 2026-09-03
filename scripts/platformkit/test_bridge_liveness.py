@@ -55,3 +55,23 @@ def test_healthy_restart_is_a_noop_and_report_refuses_stale_status(tmp_path):
     report = night_report.build_report(tmp_path / "tracking.jsonl", tmp_path / "bridge.jsonl", status)
     assert "unknown: status older than" in report
     assert "alive_lanes=baseball" not in report
+
+
+def test_pid_is_alive_survives_a_dead_pid_on_windows():
+    """A dead pid must answer False, not crash the checker.
+
+    Windows raises SystemError rather than OSError from os.kill(pid, 0) when the
+    pid is gone. Catching only OSError made the liveness check raise
+    `SystemError: <class 'OSError'> returned a result with an exception set` --
+    so the watchdog died precisely when the supervisor was down, which is the
+    one moment it exists for. Reproduced against a real dead pid on 2026-09-02.
+    """
+    import os
+
+    from scripts.platformkit.bridge_liveness import pid_is_alive
+
+    assert pid_is_alive(999999) is False
+    assert pid_is_alive(None) is False
+    assert pid_is_alive(0) is False
+    assert pid_is_alive(-1) is False
+    assert pid_is_alive(os.getpid()) is True

@@ -46,12 +46,24 @@ def _read_pid(path: Path) -> int | None:
 
 
 def pid_is_alive(pid: int | None) -> bool:
-    """Return whether the operating system still knows this pid."""
-    if pid is None:
+    """Return whether the operating system still knows this pid.
+
+    Windows raises SystemError, not OSError, from ``os.kill(pid, 0)`` when the
+    pid is gone: CPython's signal shim sets an exception and also returns an
+    error, and the interpreter reports that mismatch as
+    ``SystemError: <class 'OSError'> returned a result with an exception set``.
+    Catching only OSError therefore let the checker CRASH on a dead supervisor
+    -- the exact moment it exists to report. Measured 2026-09-02 against a real
+    dead pid on Windows 11 / CPython 3.10.
+
+    ValueError covers a pid of 0 or negative, which on POSIX would signal a
+    whole process group rather than ask a question.
+    """
+    if pid is None or pid <= 0:
         return False
     try:
         os.kill(pid, 0)
-    except OSError:
+    except (OSError, SystemError, ValueError):
         return False
     return True
 

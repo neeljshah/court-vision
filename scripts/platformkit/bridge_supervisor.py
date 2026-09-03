@@ -76,6 +76,11 @@ def spawn(lane: str, queues: list, per_lane: int) -> subprocess.Popen:
     return subprocess.Popen(command, stdout=handle, stderr=subprocess.STDOUT)
 
 
+# Refills run detached, one at a time per sport. A refill is a network call and
+# must never sit inside the poll loop -- see the comment in refill().
+_REFILLS_IN_FLIGHT: dict = {}
+
+
 def refill(sport: str) -> None:
     """Top a sport queue back up. Best effort: a failed refill must not stop us.
 
@@ -86,16 +91,27 @@ def refill(sport: str) -> None:
         print("lane %s has no expander source -- queue cannot self-refill, "
               "add a source to queue_expander.SOURCES" % sport, flush=True)
         return
+    running = _REFILLS_IN_FLIGHT.get(sport)
+    if running is not None and running.poll() is None:
+        return  # already expanding this sport; a second one would duplicate work
     try:
         # Flag is --sports (plural); --sport is silently rejected and the queue
         # would never actually refill.
-        result = subprocess.run(
+        #
+        # FIRE AND FORGET, deliberately. This used to be subprocess.run with
+        # timeout=1800, which BLOCKED the supervisor poll loop for as long as the
+        # expander took -- and the expander runs yt-dlp searches, so minutes is
+        # normal. While blocked the supervisor published no status, so
+        # bridge_liveness read a stale snapshot, called it DOWN, and a watchdog
+        # started a SECOND supervisor. Each one spawned its own seven lane
+        # workers, and on 2026-09-02 that accumulated 17 orphan workers with no
+        # supervisor owning them. The heartbeat must never be behind a network
+        # call. Measured signature: every supervisor stopped logging directly
+        # after "lane football down to N untracked -- refilling".
+        _REFILLS_IN_FLIGHT[sport] = subprocess.Popen(
             [sys.executable, "-m", "scripts.platformkit.queue_expander",
              "--sports", sport, "--target", "60"],
-            timeout=1800, capture_output=True, text=True)
-        if result.returncode != 0:
-            print("refill %s exit %d: %s"
-                  % (sport, result.returncode, (result.stderr or "")[-200:]), flush=True)
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except (subprocess.SubprocessError, OSError) as exc:
         print("refill %s failed: %s" % (sport, exc), flush=True)
 
