@@ -13,15 +13,11 @@ import pytest
 from scripts.platformkit.eval_gate.backtest_runner import _charge_ledger
 from scripts.platformkit.eval_gate.deflated_metrics import deflated_p
 from scripts.platformkit.foundry.grammar import Hypothesis, semantic_hash
-from scripts.platformkit.foundry.results_db import ResultsDB, TierResult, recompute_deflated_p, trial_artifact_path
+from scripts.platformkit.foundry.results_db import TierResult, recompute_deflated_p, trial_artifact_path
 
 CONDITIONING = frozenset(("phase=period", "rest=NORMAL", "month=2026-09", "confidence=T2"))
 HYPOTHESIS = Hypothesis("nba", "pace_diff_asof", "ew", (("halflife", 5),), CONDITIONING, "pregame", "ml")
 CORPUS, UNIT, SHA, TIER = "nba_gate_v3", "game", "sha_corpus_v1", "T2"
-
-
-def _db(tmp_path):
-    return ResultsDB(tmp_path / "hypotheses.sqlite")
 
 
 def _k(ledger):
@@ -51,10 +47,10 @@ def _propose(db, hypothesis, ledger, k_now=None):
     return "trial", db.lookup(digest, TIER, CORPUS, UNIT, SHA, k_now=k_now)
 
 
-def test_reproposal_is_a_lookup_and_charges_nothing(tmp_path):
+def test_reproposal_is_a_lookup_and_charges_nothing(tmp_path, results_db):
     """Denominator = 2 proposals of the same hash. Bar = 1 trial + 1 lookup, K flat."""
     ledger = tmp_path / "backtest_fwer.jsonl"
-    with _db(tmp_path) as db:
+    with results_db as db:
         first_kind, _ = _propose(db, HYPOTHESIS, ledger)
         k_after_first = _k(ledger)
         second_kind, second = _propose(db, HYPOTHESIS, ledger)
@@ -65,9 +61,9 @@ def test_reproposal_is_a_lookup_and_charges_nothing(tmp_path):
         assert second["k_at_run"] == 1
 
 
-def test_changed_corpus_sha_is_a_fresh_trial(tmp_path):
+def test_changed_corpus_sha_is_a_fresh_trial(results_db):
     """SF-13: corpus_sha is in the UNIQUE key, so a changed corpus never hits."""
-    with _db(tmp_path) as db:
+    with results_db as db:
         digest = db.upsert_hypothesis(HYPOTHESIS)
         db.record(_result(digest, corpus_sha=SHA))
         assert db.lookup(digest, TIER, CORPUS, UNIT, SHA) is not None
@@ -76,9 +72,9 @@ def test_changed_corpus_sha_is_a_fresh_trial(tmp_path):
         assert db._c.execute("SELECT COUNT(*) FROM result").fetchone()[0] == 2
 
 
-def test_stale_k_lookup_flags_rescore(tmp_path):
+def test_stale_k_lookup_flags_rescore(results_db):
     """SF-14: never serve the stored deflated_p as current once K has moved."""
-    with _db(tmp_path) as db:
+    with results_db as db:
         digest = db.upsert_hypothesis(HYPOTHESIS)
         db.record(_result(digest, k_global=3, raw_p=0.02, deflated_p=deflated_p(0.02, 3)))
         same = db.lookup(digest, TIER, CORPUS, UNIT, SHA, k_now=3)
@@ -89,20 +85,20 @@ def test_stale_k_lookup_flags_rescore(tmp_path):
         assert recompute_deflated_p(stale, 14) == pytest.approx(0.28)
 
 
-def test_same_hash_different_raw_params_raises(tmp_path):
+def test_same_hash_different_raw_params_raises(results_db):
     """SF-12: a grid-snap collision is surfaced as IntegrityError, never merged."""
     other = Hypothesis("nba", "pace_diff_asof", "raw", (("unused", "a"),), CONDITIONING, "pregame", "ml")
     twin = Hypothesis("nba", "pace_diff_asof", "raw", (("unused", "b"),), CONDITIONING, "pregame", "ml")
     assert semantic_hash(other) == semantic_hash(twin)  # unused params are grid-snapped away
-    with _db(tmp_path) as db:
+    with results_db as db:
         db.upsert_hypothesis(other)
         db.upsert_hypothesis(other)  # identical raw params -> idempotent
         with pytest.raises(sqlite3.IntegrityError):
             db.upsert_hypothesis(twin)
 
 
-def test_round_trip_every_column(tmp_path):
-    with _db(tmp_path) as db:
+def test_round_trip_every_column(results_db):
+    with results_db as db:
         digest = db.upsert_hypothesis(HYPOTHESIS, family="pace", runtime_available=False, grammar_version="s11", created_at="2026-09-03T00:00:00+00:00")
         hypothesis_row = dict(db._c.execute("SELECT * FROM hypothesis").fetchone())
         assert hypothesis_row == {
@@ -128,18 +124,18 @@ def test_round_trip_every_column(tmp_path):
         assert str(trial_artifact_path(digest, TIER, UNIT)).endswith("{0}_{1}_{2}.json".format(digest, TIER, UNIT))
 
 
-def test_unique_constraint_rejects_a_duplicate_trial(tmp_path):
-    with _db(tmp_path) as db:
+def test_unique_constraint_rejects_a_duplicate_trial(results_db):
+    with results_db as db:
         digest = db.upsert_hypothesis(HYPOTHESIS)
         db.record(_result(digest))
         with pytest.raises(sqlite3.IntegrityError):
             db.record(_result(digest))
 
 
-def test_family_p_values_tier_filter_and_screen_p_column(tmp_path):
+def test_family_p_values_tier_filter_and_screen_p_column(results_db):
     """S74 construct: T1 SCREEN p-values index separately from charged T2 p-values."""
     rows = (("screen", "fam74", "T1", None, 0.03), ("charged_one", "fam74", "T2", 0.10, None), ("charged_two", "fam74", "T2", 0.20, None), ("other", "other", "T2", 0.40, None))
-    with _db(tmp_path) as db:
+    with results_db as db:
         for feature, family, tier, raw_p, screen_p in rows:
             digest = db.upsert_hypothesis(replace(HYPOTHESIS, feature="s74_" + feature, family=family))
             result = asdict(_result(digest, tier=tier, raw_p=raw_p, verdict="SCREEN" if tier == "T1" else "MATCH", deflated_p=0.0 if raw_p is None else deflated_p(raw_p, 7)))
