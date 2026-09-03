@@ -4,7 +4,7 @@ Rule: a gap is closed only by a measured artifact (metric, exact denominator, n,
 and for any scored claim a prereg sealed before the metric). Harness thresholds
 and gate values NEVER move. Calibration language only -- no dollar, ROI or edge
 claim ever appears in a row, an artifact or a memo.
-NEXT_GAP_ID: S122  (allocated by the orchestrator ONLY; lanes never invent ids.
+NEXT_GAP_ID: S123  (allocated by the orchestrator ONLY; lanes never invent ids.
 OWNERSHIP IN FORCE 2026-09-03: account 1 = this harness session holds THIS counter (S); account 2 = the tracking session holds G (G33). Account 1 dispatches codex ONLY into worktrees a10-a12.
 S-ids start at S01 so they can never collide with the tracking register's G-ids.
 S28/S29 allocated 2026-09-03 by the roadmap-audit lane.)
@@ -216,6 +216,8 @@ CLOSED with no S-row; S11-S18 and S27-S29 are new.
 | S120 | docs | NO SINGLE SIGNAL INVENTORY: 120 register rows now carry every signal tested (pregame and in-game, four sports) with verdicts scattered across ~60 memos; JOB_EVIDENCE_PACKET / PUBLIC_EVIDENCE do not yet reflect the S79-S119 wave. Bar: docs/evidence/SIGNAL_INVENTORY_2026-09-03.md -- one table per surface (pregame per sport vs the close / vs Elo labelled; in-game per sport vs the line) with, per signal or arm: n units, improvement, CI, verdict, memo, and whether the reference was the market; the do-not-claim list refreshed; the paper week / forward status (S55 n_settled) as of tonight; and a PROPOSED patch for JOB_EVIDENCE_PACKET's signal section under docs/research/organization-sprint (JOB_EVIDENCE_PACKET is a public truth source -- propose, do not edit). Every number copied from a memo, none recomputed | all S rows | OPEN (new 2026-09-03) -- overnight docs lane |
 
 | S121 | harness | IN-GAME PARTITION LEAKS ACROSS THE ISO-WEEK BOUNDARY: the in-game tier partitions by the ticker's game-first-date iso week, so 495 of 15,702 S82 screen ticks (3.2 pct) are dated in the VERDICT week (a ticker quoted from 07-06 whose ticks run into 07-07/08); dropping them halves the S82 leader (+0.003332 -> +0.001628, S119). Bar: the partition assigns each TICK by its own date's iso week (or the ticker's real-game date after real_game_split), the screen/verdict sets are asserted disjoint at tick level, the S82 / S117 / S119 tables re-quoted on the clean partition from their archives (no refit) with the verdicts unchanged or re-labelled; a test with a ticker spanning two weeks | S119 | OPEN (new 2026-09-03) -- overnight |
+
+| S122 | data | TWO TENNIS FAMILIES STILL AT LIMIT ON COVERAGE (S111): tennis_schedule_density (469/800) and tennis_travel_scouting (454/800) need their parquets extended to the WTA half with a different builder (schedule_density.parquet / travel_scouting.parquet are ATP-only). Bar: WTA rows built from wta_matches.parquet with the same strictly-before rule via the existing builders parametrised by spine (or a new builder under domains/tennis/ importing them), registered in asof_supply, coverage -> >= 0.8 on the served window, the two families screened locally vs the devigged close (expect NULL) | S111 memo | OPEN (new 2026-09-03) -- overnight data lane |
 
 ## Quant additions to the verifier contract (Q1-Q6)
 
