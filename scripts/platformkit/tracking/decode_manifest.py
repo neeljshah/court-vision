@@ -94,9 +94,14 @@ def decoded_frame_count(video_path: str | Path, ffprobe: str = "ffprobe") -> int
     ]
     result = subprocess.run(command, check=True, capture_output=True, text=True)
     values = [line.strip() for line in result.stdout.splitlines() if line.strip() and line.strip() != "N/A"]
-    if len(values) != 1:
+    unique_values = set(values)
+    # MPEG-TS exposes a selected stream both inside its program and in the
+    # top-level stream list.  The default ffprobe writer emits the identical
+    # count twice in that case.  Deduplicate only identical reports: differing
+    # values remain ambiguous and must not select a stream by position.
+    if len(unique_values) != 1:
         raise ValueError("ffprobe did not return exactly one decoded-frame count")
-    count = int(values[0])
+    count = int(unique_values.pop())
     if count < 0:
         raise ValueError("decoded frame count must be non-negative")
     return count

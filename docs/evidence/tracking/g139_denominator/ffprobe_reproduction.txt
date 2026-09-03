@@ -1,0 +1,29 @@
+G139 read-only pod reproduction
+
+Affected game: soccer_cS4OpYJ0Pps
+Affected file: /workspace/nba-ai-system/data/footage_corpus/soccer__soccer_cS4OpYJ0Pps.mp4
+
+Exact decoded_frame_count command:
+ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 /workspace/nba-ai-system/data/footage_corpus/soccer__soccer_cS4OpYJ0Pps.mp4
+
+Return code: 0
+stdout (verbatim):
+39000
+39000
+stderr: empty
+
+The pre-G139 code discarded blank and N/A lines, then required exactly one
+remaining line. It received two identical numeric lines and raised the stated
+decoded_frame_denominator failure.
+
+Read-only ffprobe stream inventory:
+format_name=mpegts, duration=1300.033333
+programs[0].streams[0]: index=0 codec=aac codec_type=audio duration=1300.015589
+programs[0].streams[1]: index=1 codec=h264 codec_type=video r_frame_rate=30/1 avg_frame_rate=30/1 duration=1300.000000 attached_pic=0
+streams[0]: index=0 codec=aac codec_type=audio duration=1300.015589 attached_pic=0
+streams[1]: index=1 codec=h264 codec_type=video r_frame_rate=30/1 avg_frame_rate=30/1 duration=1300.000000 attached_pic=0
+
+There is one actual video stream, no attached cover image, and no data stream.
+The selected stream appears once in the program section and once in the global
+stream section; the default ffprobe count writer prints the same 39000 count
+for both representations.

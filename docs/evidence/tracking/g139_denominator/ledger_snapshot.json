@@ -1,0 +1,21 @@
+{
+  "captured_at_utc": "2026-09-03T01:31:00Z",
+  "ledger_path": "/workspace/nba-ai-system/data/tracking/track_daemon_ledger.jsonl",
+  "physical_rows_read": 426,
+  "target_failure_prefix": "decoded_frame_denominator:",
+  "target_ledger_rows": 6,
+  "target_distinct_games": 6,
+  "last_60_physical_rows": 60,
+  "last_60_target_first_failure_heads": 6,
+  "period_utc": {
+    "first_target_finished_at": "2026-09-02T21:52:34Z",
+    "last_target_finished_at": "2026-09-03T01:30:36Z"
+  },
+  "by_sport": {
+    "kbo": 2,
+    "ncaa_basketball": 1,
+    "soccer": 1,
+    "tennis": 1,
+    "wnba": 1
+  }
+}

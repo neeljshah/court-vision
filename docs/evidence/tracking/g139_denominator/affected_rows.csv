@@ -1,0 +1,7 @@
+ledger_line,game_id,sport,finished_at_utc,rows,decoded_frames,failure_kind
+398,soccer_cS4OpYJ0Pps,soccer,2026-09-02T21:52:34Z,97339,,ffprobe_duplicate_count_lines
+399,ncaa_basketball_WFl3V7ZY4ss,ncaa_basketball,2026-09-02T21:54:38Z,3644,,ffprobe_duplicate_count_lines
+415,kbo_7o6CiQiGfCQ,kbo,2026-09-02T23:39:52Z,48353,,ffprobe_duplicate_count_lines
+419,wnba_09,wnba,2026-09-03T00:15:03Z,4288,,ffprobe_duplicate_count_lines
+420,tennis_08,tennis,2026-09-03T00:16:52Z,26630,,emitted_frame_index_outside_decoded_range
+426,kbo_8UMcAyU1pi0,kbo,2026-09-03T01:30:36Z,162557,,ffprobe_duplicate_count_lines
