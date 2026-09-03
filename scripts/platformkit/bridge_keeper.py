@@ -29,8 +29,11 @@ Run:  python -m scripts.platformkit.bridge_keeper            (start what is miss
 from __future__ import annotations
 
 import argparse
+import contextlib
+import os
 import subprocess
 import sys
+import time
 
 import psutil
 from pathlib import Path
@@ -55,6 +58,47 @@ FETCHER_ALARM = 24
 _NO_WINDOW = (getattr(subprocess, "DETACHED_PROCESS", 0)
               | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
               | getattr(subprocess, "CREATE_NO_WINDOW", 0))
+
+
+LOCK_PATH = Path("data/tracking/bridge_keeper.lock")
+# A keeper run is short, so a lock older than this is a crashed run, not a live one.
+LOCK_STALE_SECONDS = 300
+
+
+@contextlib.contextmanager
+def single_run(lock_path: Path = LOCK_PATH):
+    """Serialise keeper runs so two of them cannot both spawn the same lane.
+
+    This is not hypothetical. On 2026-09-03 a peer session ran the keeper by hand
+    at the same moment the CourtVisionBridgeWatchdog task fired, and an EIGHTH
+    footage_bridge process appeared with a start time matching the tick before
+    exiting again. Two runs each enumerate processes, each see a lane as missing,
+    and each spawn it -- the exact duplicate-worker accumulation this module was
+    written to make impossible. Idempotence protects against re-running SEQUENTIALLY;
+    it does nothing for two runs interleaved between the check and the spawn.
+
+    O_CREAT|O_EXCL is the whole mechanism: creating the file IS acquiring the lock.
+    A stale lock (a run that died before releasing) is reclaimed after
+    LOCK_STALE_SECONDS rather than wedging the keeper forever.
+    """
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        age = time.time() - lock_path.stat().st_mtime
+        if age > LOCK_STALE_SECONDS:
+            lock_path.unlink(missing_ok=True)
+    except OSError:
+        pass
+    try:
+        handle = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError:
+        yield False
+        return
+    try:
+        os.write(handle, str(os.getpid()).encode("ascii"))
+        os.close(handle)
+        yield True
+    finally:
+        lock_path.unlink(missing_ok=True)
 
 
 def _python_command_lines() -> list:
@@ -167,9 +211,17 @@ def main() -> int:
     if args.status:
         return 0 if not missing else 1
 
-    for name, queues in missing:
-        pid = start_lane(name, queues, args.per_lane)
-        print("started %s pid=%s" % (name, pid))
+    with single_run() as acquired:
+        if not acquired:
+            print("another keeper run holds the lock -- starting nothing")
+            return 0
+        # Re-read inside the lock: `missing` was computed before we held it.
+        live_now = running_lane_names()
+        for name, queues in missing:
+            if name in live_now:
+                continue
+            pid = start_lane(name, queues, args.per_lane)
+            print("started %s pid=%s" % (name, pid))
     return 0
 
 

@@ -100,3 +100,39 @@ def test_bridge_keeper_never_shells_out_to_powershell():
     offenders = [c[:70] for c in calls if "powershell" in c.lower()]
     assert offenders == [], "powershell reached a subprocess launch: %s" % offenders
     assert "psutil" in source, "expected psutil to replace the shell-out"
+
+
+def test_two_concurrent_keeper_runs_cannot_both_spawn(tmp_path):
+    """Only one keeper run may hold the lock, so a lane is never double-spawned.
+
+    Idempotence protects against re-running SEQUENTIALLY. It does nothing when
+    two runs interleave between the check and the spawn: both enumerate, both
+    see a lane missing, both start it. On 2026-09-03 a peer ran the keeper by
+    hand as the watchdog task fired and an eighth footage_bridge process
+    appeared with the tick's start time.
+    """
+    from scripts.platformkit.bridge_keeper import single_run
+
+    lock = tmp_path / "keeper.lock"
+    with single_run(lock) as first:
+        assert first is True
+        with single_run(lock) as second:
+            assert second is False, "a second concurrent run must not acquire"
+    # Released on exit, so the next run can acquire again.
+    with single_run(lock) as third:
+        assert third is True
+
+
+def test_a_stale_keeper_lock_is_reclaimed(tmp_path):
+    """A run that died without releasing must not wedge the keeper forever."""
+    import os
+    import time
+
+    from scripts.platformkit import bridge_keeper
+
+    lock = tmp_path / "keeper.lock"
+    lock.write_text("99999", encoding="utf-8")
+    old = time.time() - (bridge_keeper.LOCK_STALE_SECONDS + 60)
+    os.utime(lock, (old, old))
+    with bridge_keeper.single_run(lock) as acquired:
+        assert acquired is True, "a stale lock must be reclaimed"
