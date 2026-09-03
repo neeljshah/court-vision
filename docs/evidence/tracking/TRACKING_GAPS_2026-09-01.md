@@ -16,6 +16,12 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G156c result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G156c | all | Adjudication off `tick()`, adjudicating jobs excluded from the worker budget, bounded 1,800 s timeout, parent-serialised sidecar and ledger writes. The two tests G156b broke are fixed by advancing the async state machine (`_finish_adjudication` joins then ticks), NOT by weakening them: no assert line was deleted and the sidecar/ledger/never-delete assertions are byte-identical. A1 in master: 39 passed across all five daemon test files plus the G151 guard. `decode_manifest.py` zero-line diff. | `g156_daemon_stalls_on_ffprobe_2026-09-03.md` | **ACCEPT -- clears the G156b REJECT. B10 clean: the count is unchanged, only its location moved. NOT deployed; the running daemon still predates it, so G156a's 149.5-241.5 sec/GB stall persists in production until a natural restart.** |
+
 ## G161 result register
 
 | Gap | Sport | Finding | Evidence | Status |

@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import threading
 import time
 import sys
 from pathlib import Path
@@ -40,6 +41,15 @@ def _stage(tmp_path, monkeypatch):
     monkeypatch.setattr(track_daemon_sources, "probe_source", lambda _: source)
     monkeypatch.setattr(track_daemon, "probe_source", lambda _: source)
     return stage
+
+
+def _complete_adjudication(active, workers=4):
+    """Advance one finished background verdict without a polling loop."""
+    for job in active.values():
+        adjudication = job.get("adjudication")
+        if adjudication is not None:
+            adjudication.join(2)
+    track_daemon.tick(active, workers=workers)
 
 
 def test_partial_uploads_are_invisible(tmp_path, monkeypatch):
@@ -128,11 +138,53 @@ def test_finished_job_is_graded_and_video_deleted(tmp_path, monkeypatch):
                                  "sport": "tennis", "game_id": "g1",
                                  "started": 0.0}}
     track_daemon.tick(active, workers=4)
+    _complete_adjudication(active)
 
     entry = json.loads(track_daemon.LEDGER.read_text(encoding="utf-8").strip())
     assert entry["status"] == "tracked" and entry["rows"] == 900
     assert entry["adjudicated"] is True
     assert not video.exists()
+
+
+def test_daemon_claims_during_adjudication_and_times_out(tmp_path, monkeypatch):
+    """A stalled exact count cannot hold a worker slot or an active job forever."""
+    stage = _stage(tmp_path, monkeypatch)
+    finished = stage / "tennis__finished.mp4"
+    queued = stage / "tennis__queued.mp4"
+    finished.write_bytes(_VIDEO)
+    queued.write_bytes(_VIDEO)
+    log = stage / "tennis__finished.log"
+    log.write_text("done", encoding="utf-8")
+    started = threading.Event()
+    release = threading.Event()
+    launched = []
+
+    def slow_verdict(*_args, **_kwargs):
+        started.set()
+        assert release.wait(2)
+        return {"passed": False, "failure_heads": [], "coverage_pct": 0.0,
+                "coordinate_space": "undeclared", "rung": "UNDECLARED",
+                "evaluated_at": 1, "decoded_frames": 17}
+
+    monkeypatch.setattr(track_daemon, "verdict", slow_verdict)
+    monkeypatch.setattr(track_daemon.subprocess, "Popen",
+                        lambda *args, **kwargs: launched.append(args) or FakeProc(done=False))
+    active = {finished.name: {"proc": FakeProc(), "video": finished, "log": log,
+                              "sport": "tennis", "game_id": "finished", "started": 0.0}}
+
+    track_daemon.tick(active, workers=1)
+
+    assert started.wait(1)
+    assert launched and queued.name in active
+    active[finished.name]["adjudication_started"] = (
+        time.monotonic() - track_daemon.ADJUDICATION_TIMEOUT_SECONDS - 1)
+    track_daemon.tick(active, workers=1)
+
+    entry = json.loads(track_daemon.LEDGER.read_text(encoding="utf-8").strip())
+    assert finished.name not in active
+    assert entry["verdict"] == "ADJUDICATION_TIMEOUT"
+    assert entry["adjudication_timed_out"] is True
+    release.set()
 
 
 def test_direct_run_clip_output_writes_no_ball_capability_sidecar(tmp_path, monkeypatch):
@@ -150,6 +202,7 @@ def test_direct_run_clip_output_writes_no_ball_capability_sidecar(tmp_path, monk
     active = {"wnba__w1.mp4": {"proc": FakeProc(), "video": video, "log": log,
                                "sport": "wnba", "game_id": "w1", "started": 0.0}}
     track_daemon.tick(active, workers=4)
+    _complete_adjudication(active)
 
     payload = json.loads(
         (csv_dir / "tracking_capability.json").read_text(encoding="utf-8"))
@@ -171,6 +224,7 @@ def test_nonempty_output_is_adjudicated_even_when_the_harness_fails(tmp_path, mo
     active = {"kbo__k1.mp4": {"proc": FakeProc(), "video": video, "log": log,
                               "sport": "kbo", "game_id": "k1", "started": 0.0}}
     track_daemon.tick(active, workers=4)
+    _complete_adjudication(active)
 
     entry = json.loads(track_daemon.LEDGER.read_text(encoding="utf-8").strip())
     assert entry["status"] == "tracked" and entry["passed"] is False
@@ -272,6 +326,7 @@ def test_ledger_carries_the_harness_verdict_not_just_row_count(tmp_path, monkeyp
                                    "sport": "baseball", "game_id": "b1",
                                    "started": 0.0}}
     track_daemon.tick(active, workers=4)
+    _complete_adjudication(active)
 
     entry = json.loads(track_daemon.LEDGER.read_text(encoding="utf-8").strip())
     assert entry["rows"] == 4043 and entry["status"] == "tracked"
@@ -323,6 +378,7 @@ def test_a_job_that_never_finishes_is_killed_to_free_its_slot(tmp_path, monkeypa
                                "started": time.time() - 99999}}
 
     track_daemon.tick(active, workers=4)
+    _complete_adjudication(active)
 
     assert proc.killed is True
     assert not active
@@ -448,6 +504,7 @@ def test_every_ledger_entry_is_dated(tmp_path, monkeypatch):
                                  "sport": "tennis", "game_id": "t1",
                                  "started": time.time() - 5}}
     track_daemon.tick(active, workers=4)
+    _complete_adjudication(active)
 
     entry = json.loads(track_daemon.LEDGER.read_text(encoding="utf-8").strip())
     assert entry["finished_at"] >= entry["seconds"]
@@ -469,6 +526,7 @@ def test_a_tracked_video_is_retained_not_destroyed(tmp_path, monkeypatch):
                                  "sport": "soccer", "game_id": "s1",
                                  "started": time.time()}}
     track_daemon.tick(active, workers=4)
+    _complete_adjudication(active)
 
     assert not video.exists(), "the stage must be reclaimed"
     assert not log.exists()

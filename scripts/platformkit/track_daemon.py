@@ -12,6 +12,7 @@ import json
 import os
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -20,6 +21,7 @@ from scripts.platformkit.track_daemon_done import (
     read_adjudicated,
     retain,
     tracking_rows,
+    write_adjudicated,
 )
 from scripts.platformkit.track_daemon_ledger import corrupt_entry
 from scripts.platformkit.track_daemon_sources import (
@@ -74,6 +76,8 @@ CLIP_SPORTS = {"wnba", "basketball", "ncaa_basketball", "nba"}
 # A fivefold density move is operationally conspicuous without changing any
 # harness bar. The marker is diagnostic only; completion remains G15b's verdict.
 ROW_DENSITY_STEP_FACTOR = 5.0
+ADJUDICATION_TIMEOUT_SECONDS = 1800
+_UNSET = object()
 
 
 def build_command(sport: str, video: Path, game_id: str) -> list:
@@ -110,9 +114,9 @@ def claimable(active: dict) -> list:
                               retain, _record_loudly, corrupt_entry)
 
 
-def verdict(sport: str, game_id: str, video: Path) -> dict | None:
+def verdict(sport: str, game_id: str, video: Path, *, publish: bool = True) -> dict | None:
     """Publish the frozen-harness verdict for a nonempty emitted CSV."""
-    return adjudicate(video, sport, game_id, TRACKING)
+    return adjudicate(video, sport, game_id, TRACKING, publish=publish)
 
 
 def _write_probe(directory: Path, name: str) -> None:
@@ -228,18 +232,52 @@ def _step_change(previous: dict | None, entry: dict) -> dict | None:
             "factor": round(factor, 3)}
 
 
-def _finish(name: str, job: dict, timed_out: bool = False) -> None:
-    """Record a finished job; only a durable verdict is a done game."""
+def _prepare_adjudication(job: dict) -> None:
+    """Do completion-side CSV preparation before its background verdict."""
     rows = tracking_rows(TRACKING, job["game_id"])
     source = job.get("source")
     if source:
         stamp_tracking_csv(TRACKING / job["game_id"] / "tracking_data.csv", source)
-    if rows and job["sport"] in CLIP_SPORTS:  # declare before verdict() adjudicates
+    if rows and job["sport"] in CLIP_SPORTS:
         from scripts.platformkit.adapter_run import BALL_TELEMETRY_AVAILABLE as _BALL
         from scripts.platformkit.tracking_schema import write_ball_telemetry_declaration
         write_ball_telemetry_declaration(TRACKING / job["game_id"] / "tracking_data.csv",
                                          job["sport"], _BALL[job["sport"]])
-    graded = None if timed_out else verdict(job["sport"], job["game_id"], job["video"])
+
+
+def _begin_adjudication(job: dict) -> None:
+    """Run the unchanged verdict off the poll loop and retain the claim."""
+    _prepare_adjudication(job)
+    job["adjudication_started"] = time.monotonic()
+
+    def run() -> None:
+        try:
+            graded = verdict(job["sport"], job["game_id"], job["video"], publish=False)
+            if not job.get("adjudication_timed_out"):
+                job["graded"] = graded
+        except Exception as exc:
+            if not job.get("adjudication_timed_out"):
+                job["adjudication_error"] = exc
+
+    thread = threading.Thread(target=run, name="adjudicate-%s" % job["game_id"], daemon=True)
+    job["adjudication"] = thread
+    thread.start()
+
+
+def _finish(name: str, job: dict, timed_out: bool = False,
+            adjudication_timed_out: bool = False, graded: object = _UNSET,
+            prepared: bool = False) -> None:
+    """Record a finished job; only a durable verdict is a done game."""
+    rows = tracking_rows(TRACKING, job["game_id"])
+    source = job.get("source")
+    if not prepared:
+        _prepare_adjudication(job)
+    if timed_out or adjudication_timed_out:
+        graded = None
+    elif graded is _UNSET:
+        graded = verdict(job["sport"], job["game_id"], job["video"], publish=False)
+    if graded is not None:
+        write_adjudicated(TRACKING, job["game_id"], graded)
     status = "timeout" if timed_out else "tracked" if graded is not None else "thin"
     # finished_at, because without it the ledger cannot be read. Diagnosing this
     # file meant guessing whether a "timeout at 2707s" predated the current
@@ -253,7 +291,9 @@ def _finish(name: str, job: dict, timed_out: bool = False) -> None:
               # This additive terminal verdict makes a killed process
               # distinguishable from an honest empty or thin result by ledger
               # inspection alone.
-              "verdict": "TIMEOUT" if timed_out else None,
+              "verdict": ("TIMEOUT" if timed_out else
+                          "ADJUDICATION_TIMEOUT" if adjudication_timed_out else None),
+              "adjudication_timed_out": adjudication_timed_out,
               "passed": graded.get("passed") if graded else None,
               "failure_heads": (graded or {}).get("failure_heads", [])[:4],
               "failures": (graded or {}).get("failure_heads", [])[:4],
@@ -293,8 +333,22 @@ def _finish(name: str, job: dict, timed_out: bool = False) -> None:
 def tick(active: dict, workers: int) -> None:
     """Reap finished jobs, then fill free slots. One pass, never blocking."""
     for name, job in list(active.items()):
-        if job["proc"].poll() is not None:
-            _finish(name, active.pop(name))
+        adjudication = job.get("adjudication")
+        if adjudication is not None:
+            if adjudication.is_alive():
+                if time.monotonic() - job["adjudication_started"] <= ADJUDICATION_TIMEOUT_SECONDS:
+                    continue
+                job["adjudication_timed_out"] = True
+                print("%s adjudication exceeded %ds -- recording timeout"
+                      % (job["game_id"], ADJUDICATION_TIMEOUT_SECONDS), flush=True)
+                _finish(name, active.pop(name), adjudication_timed_out=True, prepared=True)
+                continue
+            error = job.get("adjudication_error")
+            if error is not None:
+                print("adjudication failed %s: %s" % (job["game_id"], error), flush=True)
+            _finish(name, active.pop(name), graded=job.get("graded"), prepared=True)
+        elif job["proc"].poll() is not None:
+            _begin_adjudication(job)
         elif time.time() - job["started"] > job_timeout(job["sport"]):
             print("%s exceeded %ds -- killing to free the slot"
                   % (job["game_id"], job_timeout(job["sport"])), flush=True)
@@ -303,8 +357,9 @@ def tick(active: dict, workers: int) -> None:
             except OSError as exc:
                 print("kill failed %s: %s" % (job["game_id"], exc), flush=True)
             _finish(name, active.pop(name), timed_out=True)
+    tracking_active = sum(1 for job in active.values() if "adjudication" not in job)
     for path, sport, game_id in claimable(active):
-        if len(active) >= workers:
+        if tracking_active >= workers:
             break
         # PASS and FAIL are both done once the frozen harness sidecar has been
         # atomically written after fsyncing a nonempty CSV.  A missing verdict
@@ -329,6 +384,7 @@ def tick(active: dict, workers: int) -> None:
                              "started": time.time(), "source": probe_source(path),
                              "source_variants": [item.name for item in siblings if item != path],
                              "retained_videos": siblings}
+        tracking_active += 1
         print("tracking %s (%s), %d active" % (game_id, sport, len(active)),
               flush=True)
 

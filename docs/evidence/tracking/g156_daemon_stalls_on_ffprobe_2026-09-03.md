@@ -159,3 +159,31 @@ and stored artifacts, not runtime readers of this changed path.
   duration estimate as an extrapolation.
 - Physical cancellation of a stuck Python thread. The bounded property is the
   terminal job/worker/sidecar exposure, exercised by the focused test.
+
+## Fix-pass regression reconciliation
+
+The rejected patch changed a completion boundary deliberately: the first
+`tick()` now starts the exact-count adjudication thread, while a later parent
+`tick()` publishes its sidecar and ledger row after that thread has completed.
+`test_failed_harness_verdict_is_done_and_durable` and
+`test_empty_csv_is_unadjudicated_and_footage_is_never_deleted` had asserted a
+ledger row immediately after the first tick. That timing expectation is
+superseded by the accepted asynchronous design; preserving it in production
+would require returning the adjudication (and its `ffprobe -count_frames`) to
+the poll loop. Both tests now join the completed test thread and run the parent
+poll once before reading durable output. The failed-harness mock also accepts
+and forwards `publish=False`, so the test continues to prove that only the
+parent writes the sidecar.
+
+The A5 follow-up searched every `track_daemon.tick` caller. The other readers
+of the old tick-to-publication timing are the completion assertions in
+`scripts/platformkit/test_track_daemon.py`, already advanced by that file's
+`_complete_adjudication` helper; `test_track_daemon_job_budget.py` exercises
+the separate synchronous killed-job timeout path. No runtime consumer calls
+`tick()` expecting a ledger write before it returns. Runtime ledger readers are
+`scripts/platformkit/night_report.py` and
+`scripts/platformkit/pod_pull_sync.sh`; runtime sidecar readers/writers remain
+`track_daemon.py` and `track_daemon_done.py`. The decode-manifest readers remain
+`track_daemon_done.py`, `decode_manifest.py`'s `build_from_decoder`, and their
+focused tests. No field, verdict, coverage calculation, threshold, or decoded
+frame-count implementation changed in this repair.

@@ -37,6 +37,15 @@ def _csv(tracking, game_id, contents):
     return path
 
 
+def _finish_adjudication(active, workers=1):
+    """Advance a finished background verdict through the parent publisher."""
+    for job in active.values():
+        adjudication = job.get("adjudication")
+        if adjudication is not None:
+            adjudication.join(2)
+    track_daemon.tick(active, workers=workers)
+
+
 def test_no_verdict_is_not_done_and_footage_stays_staged(tmp_path, monkeypatch):
     stage = _paths(tmp_path, monkeypatch)
     video = stage / "tennis__missing.mp4"
@@ -69,12 +78,14 @@ def test_failed_harness_verdict_is_done_and_durable(tmp_path, monkeypatch):
 
     monkeypatch.setattr(
         track_daemon, "verdict",
-        lambda sport, game_id, source: adjudicate(
-            source, sport, game_id, track_daemon.TRACKING, fake_harness, lambda _: 4))
+        lambda sport, game_id, source, *, publish=True: adjudicate(
+            source, sport, game_id, track_daemon.TRACKING, fake_harness, lambda _: 4,
+            publish=publish))
     active = {video.name: {"proc": DoneProc(), "video": video, "log": log,
                            "sport": "tennis", "game_id": "failed", "started": 0}}
 
     track_daemon.tick(active, workers=1)
+    _finish_adjudication(active)
 
     sidecar = read_adjudicated(track_daemon.TRACKING, "failed")
     ledger = json.loads(track_daemon.LEDGER.read_text(encoding="utf-8"))
@@ -98,6 +109,7 @@ def test_empty_csv_is_unadjudicated_and_footage_is_never_deleted(tmp_path, monke
                            "sport": "tennis", "game_id": "empty", "started": 0}}
 
     track_daemon.tick(active, workers=1)
+    _finish_adjudication(active)
 
     ledger = json.loads(track_daemon.LEDGER.read_text(encoding="utf-8"))
     assert ledger["status"] == "thin" and ledger["adjudicated"] is False

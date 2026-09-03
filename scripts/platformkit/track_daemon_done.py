@@ -114,10 +114,16 @@ HARNESS_SPORT = {
 }
 
 
+def write_adjudicated(tracking: Path, game_id: str, payload: dict) -> None:
+    """Atomically publish a completed frozen-harness verdict sidecar."""
+    _atomic_json(tracking / game_id / VERDICT_FILE, payload)
+
+
 def adjudicate(video: Path, sport: str, game_id: str, tracking: Path,
                harness: Callable = evaluate,
-               frame_counter: Callable[[Path], int] = decoded_frame_count) -> dict | None:
-    """Run the frozen harness and atomically publish a per-game verdict sidecar."""
+               frame_counter: Callable[[Path], int] = decoded_frame_count,
+               *, publish: bool = True) -> dict | None:
+    """Run the frozen harness and optionally publish its per-game sidecar."""
     csv_path = tracking_csv(tracking, game_id)
     if not _fsync_csv(csv_path):
         return None
@@ -152,7 +158,8 @@ def adjudicate(video: Path, sport: str, game_id: str, tracking: Path,
                "rung": _rung(_coordinate_space(emitted)),
                "evaluated_at": int(time.time()), "csv_fsynced": True,
                "decoded_frames": decoded}
-    _atomic_json(tracking / game_id / VERDICT_FILE, payload)
+    if publish:
+        write_adjudicated(tracking, game_id, payload)
     return payload
 
 
