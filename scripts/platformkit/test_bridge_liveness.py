@@ -75,3 +75,28 @@ def test_pid_is_alive_survives_a_dead_pid_on_windows():
     assert pid_is_alive(0) is False
     assert pid_is_alive(-1) is False
     assert pid_is_alive(os.getpid()) is True
+
+
+def test_bridge_keeper_never_shells_out_to_powershell():
+    """Process listing must not launch powershell.exe.
+
+    bridge_keeper runs from a scheduled task every few minutes. Each
+    `powershell -Command Get-CimInstance / Get-Process` it used to launch was a
+    console child that surfaced a window, and on 2026-09-03 Windows Defender
+    flagged that repeated hidden sub-execution as
+    Trojan:Win32/PowhidSubExec.B. psutil replaces it with no process at all.
+    """
+    from pathlib import Path as _Path
+
+    from scripts.platformkit import bridge_keeper
+
+    import re
+
+    source = _Path(bridge_keeper.__file__).read_text(encoding="utf-8")
+    # The word still appears in prose explaining why it is banned; what matters
+    # is that it never reaches a launch. Look for it inside a subprocess call.
+    calls = re.findall(r"subprocess\.(?:run|Popen)\((?:[^()]|\([^()]*\))*\)",
+                       source, re.S)
+    offenders = [c[:70] for c in calls if "powershell" in c.lower()]
+    assert offenders == [], "powershell reached a subprocess launch: %s" % offenders
+    assert "psutil" in source, "expected psutil to replace the shell-out"

@@ -65,6 +65,12 @@ POD_PORT = _pod_cfg("Port", "40034")
 POD_HOST = "root@" + _pod_cfg("HostName", "213.192.2.123")
 POD = ["-o", "StrictHostKeyChecking=no", "-o", "ConnectTimeout=30", "-p", POD_PORT,
        POD_HOST]
+# Console children of a console-less parent pop a Windows Terminal window on
+# this box. The user asked three times for that to stop, and on 2026-09-03
+# Windows Defender additionally flagged repeated hidden sub-execution as
+# Trojan:Win32/PowhidSubExec.B. ssh, scp and yt-dlp are all console programs,
+# so every launch here passes this flag. It is 0 on non-Windows.
+_NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 POD_ROOT = "/workspace/nba-ai-system"
 REMOTE_STAGE = POD_ROOT + "/data/footage_bridge"
 REMOTE_CORPUS = POD_ROOT + "/data/footage_corpus"
@@ -132,7 +138,8 @@ def _ssh(command: str, timeout: int = 7200) -> subprocess.CompletedProcess:
     """
     try:
         return subprocess.run(["ssh", *POD, command], capture_output=True,
-                              text=True, timeout=timeout)
+                              text=True, timeout=timeout,
+                              creationflags=_NO_WINDOW)
     except (subprocess.TimeoutExpired, OSError) as exc:
         return subprocess.CompletedProcess(command, 255, stdout="",
                                            stderr="ssh failed: %s" % exc)
@@ -175,7 +182,7 @@ def _upload_to_pod(local: Path, remote: str) -> None:
     try:
         subprocess.run(["scp", "-o", "StrictHostKeyChecking=no", "-P", POD_PORT,
                         str(local), "%s:%s" % (POD_HOST, remote)],
-                       check=True, timeout=7200, capture_output=True, text=True)
+                       check=True, timeout=7200, capture_output=True, text=True, creationflags=_NO_WINDOW)
     except subprocess.CalledProcessError as exc:
         detail = (exc.stderr or exc.stdout or str(exc)).strip()[-160:]
         raise RuntimeError("pod scp failed for %s: %s%s" %
@@ -317,7 +324,7 @@ def probe_duration(url: str) -> float:
     try:
         result = subprocess.run(
             ["yt-dlp", "--skip-download", "--no-playlist", "--print", "duration", url],
-            capture_output=True, text=True, timeout=180)
+            capture_output=True, text=True, timeout=180, creationflags=_NO_WINDOW)
         return float((result.stdout or "").strip().splitlines()[-1])
     except (subprocess.SubprocessError, OSError, ValueError, IndexError):
         return 0.0
@@ -407,7 +414,7 @@ def download_local(item: dict) -> Path:
         command += ["-o", str(destination), item["url"]]
         try:
             subprocess.run(command, check=True, timeout=7200,
-                           capture_output=True, text=True)
+                           capture_output=True, text=True, creationflags=_NO_WINDOW)
         except subprocess.CalledProcessError as exc:
             last_error = _error_tail(exc.stderr, exc.stdout)
             if "416" in last_error:

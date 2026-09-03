@@ -787,3 +787,21 @@ def test_sections_are_disabled_by_default():
     attempts per item therefore fail, and they run BEFORE any full-file attempt.
     """
     assert footage_bridge.SECTIONS_ENABLED is False
+
+
+def test_every_subprocess_launch_suppresses_a_console_window():
+    """No launch here may pop a Windows Terminal window.
+
+    ssh, scp and yt-dlp are console programs, and a console child of the
+    console-less parent this runs under surfaces a visible window. The user
+    asked three times for that to stop. On 2026-09-03 Windows Defender also
+    flagged repeated hidden sub-execution as Trojan:Win32/PowhidSubExec.B, so
+    this is a security property now, not only an annoyance.
+    """
+    import re
+
+    source = Path(footage_bridge.__file__).read_text(encoding="utf-8")
+    calls = re.findall(r"subprocess\.(?:run|Popen)\((?:[^()]|\([^()]*\))*\)", source, re.S)
+    assert calls, "expected subprocess launches in footage_bridge"
+    missing = [c[:70] for c in calls if "creationflags" not in c]
+    assert missing == [], "subprocess launches without creationflags: %s" % missing
