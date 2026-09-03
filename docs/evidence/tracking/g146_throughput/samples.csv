@@ -1,0 +1,7 @@
+sample_utc,gpu_util_pct,gpu_mem_util_pct,gpu_mem_used_mib,gpu_mem_total_mib,daemon_pid,daemon_present,direct_children_total,direct_children_live,tracking_jobs_live,live_child_kind,stage_complete_mp4,stage_claimed_mp4,stage_waiting_mp4,stage_complete_bytes,notes
+2026-09-03T03:01:09Z,0,0,1,24576,4035,true,0,0,0,none,0,0,0,0,baseline
+2026-09-03T03:02:24Z,0,0,442,24576,4035,true,1,1,1,run_clip,1,1,0,2059054697,WNBA run_clip child owns the sole staged file
+2026-09-03T03:06:15Z,0,0,1,24576,4035,true,1,0,0,zombie_run_clip,1,0,1,2059054697,zombie child excluded from live tracking jobs
+2026-09-03T03:10:39Z,0,0,1,24576,4035,true,1,1,0,ffprobe_count_frames,1,1,0,2059054697,live child is synchronous source probe not tracker
+2026-09-03T03:15:10Z,0,0,356,24576,4035,true,1,1,0,ffprobe_count_frames,1,1,0,2059054697,same source probe elapsed 527 seconds
+2026-09-03T03:23:27Z,0,0,356,24576,,false,0,0,0,none,1,0,1,2059054697,PID file absent and no daemon command line found

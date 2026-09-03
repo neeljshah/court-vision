@@ -1,0 +1,8 @@
+metric,value,unit,method
+timed_terminal_rows,120,ledger rows,JSONL rows with parseable finished_at and seconds
+distinct_game_ids,92,game ids,distinct game_id among timed terminal rows
+distinct_interval_tuples,120,job intervals,"distinct (game_id, finished_at, seconds) tuples"
+maximum_reconstructed_concurrency,10,jobs,"sweep [finished_at - seconds, finished_at) intervals; end events ordered before starts at equal timestamp"
+maximum_reached_utc,2026-09-01T15:18:26Z,UTC,first timestamp where reconstructed active count reached 10
+worker_cap,10,workers,running daemon command line --workers 10
+peak_sports,"football=3;kbo=4;mlb=2;soccer=1",jobs,active intervals at first reconstructed maximum

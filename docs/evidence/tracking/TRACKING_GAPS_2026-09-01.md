@@ -65,6 +65,12 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
 NEXT_GAP_ID: G150  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G33-G36 were allocated by the tracking orchestrator in the 2026-09-03 planning session; G37+ are reserved for the G35 gap-finder rows.
+
+## G146 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G146 | all | Six timestamped read-only pod samples over 22:18 measured GPU utilization at 0 pct throughout. The daemon ran one `run_clip` job at one sample, then its only live child was synchronous `ffprobe -count_frames` for at least 527 seconds; by the last sample, no daemon process existed and one complete 2.059 GB WNBA MP4 was waiting. The historical 120-row ledger reconstruction reaches 10 concurrent job intervals, equal to `--workers 10`, but this does not create present headroom while the daemon is unavailable. | `g146_pod_throughput_headroom_2026-09-02.md`; `g146_throughput/samples.csv`; `g146_throughput/ledger_intervals.csv`; `g146_throughput/ledger_concurrency.csv` | ACCEPT (read-only throughput observation; do not raise worker count before approved daemon-availability diagnosis and remeasurement). |
 ONE COUNTER, ONE HOLDER: if two sessions run (the two-account split in
 HANDOFF_TRACKING_ACCOUNT2_2026-09-02.md), exactly one may increment this header.
 Say which, in the first turn of the day.
