@@ -64,12 +64,19 @@ def test_the_side_is_read_from_the_end_of_a_dashed_event_id() -> None:
     assert list(a) == ["11", "105357"] and list(b) == ["22", "105733"]
 
 
-def test_neither_family_is_declared_because_the_date_is_the_tourney_date() -> None:
-    """The leak that keeps both out of the bridge, pinned on the REAL corpus: every match of
-    a tournament carries ONE date, so a trailing-window count cannot order them and 46 pct of
-    rows read zero days of rest. Re-registering these columns must fail this test first."""
-    assert "tennis_schedule_density" not in asof_supply.REGISTRY
-    assert "tennis_travel_scouting" not in asof_supply.REGISTRY
+def test_neither_family_is_declared_on_the_leaky_tourney_date_source() -> None:
+    """The leak that kept both out of the bridge, pinned on the REAL corpus: every match of a
+    tournament carries ONE date, so a trailing-window count cannot order them and 46 pct of
+    rows read zero days of rest. S136 rebuilt both tables at (date, ROUND) grain, so a
+    declaration is legal -- but ONLY off the `_rg` siblings, and never carrying `rest_days`,
+    which is unrecoverable at tourney-date grain. Re-registering the FROZEN parquets, or
+    serving `rest_days` from either, must fail this test first.
+    (Renamed from `..._because_the_date_is_the_tourney_date` by S136.)"""
+    for family in ("tennis_schedule_density", "tennis_travel_scouting"):
+        spec = asof_supply.REGISTRY.get(family)
+        if spec is not None:
+            assert all("_rg" in part for part in spec.source.split(",")), spec.source
+            assert "rest_days" not in spec.columns
     for path in ("data/domains/tennis/matches.parquet",
                  "data/domains/tennis/wta_matches.parquet"):
         spine = pd.read_parquet(path)
