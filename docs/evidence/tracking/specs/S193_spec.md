@@ -1,4 +1,4 @@
-GAP S193 | sport nba | worktree aXX | log cx_s193_teacher_census
+GAP S193 | sport nba | worktree a12 | log cx_s193_teacher_census
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- self-check B1-B10 and Q1-Q9 before reporting.
 PREMISE (step 0): re-measure and print all of it. data/tracking = 408 dirs + 15 loose files, only 393 match
 ^00\d{8}$ -- adopt the S69/S77 guard: SKIP a non-conforming name, never alias (a sport-blind MLB run
