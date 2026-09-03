@@ -4,7 +4,7 @@ Rule: a gap is closed only by a measured artifact (metric, exact denominator, n,
 and for any scored claim a prereg sealed before the metric). Harness thresholds
 and gate values NEVER move. Calibration language only -- no dollar, ROI or edge
 claim ever appears in a row, an artifact or a memo.
-NEXT_GAP_ID: S112  (allocated by the orchestrator ONLY; lanes never invent ids.
+NEXT_GAP_ID: S113  (allocated by the orchestrator ONLY; lanes never invent ids.
 OWNERSHIP IN FORCE 2026-09-03: account 1 = this harness session holds THIS counter (S); account 2 = the tracking session holds G (G33). Account 1 dispatches codex ONLY into worktrees a10-a12.
 S-ids start at S01 so they can never collide with the tracking register's G-ids.
 S28/S29 allocated 2026-09-03 by the roadmap-audit lane.)
@@ -200,6 +200,8 @@ CLOSED with no S-row; S11-S18 and S27-S29 are new.
 | S110 | harness | RESULTS DB HAD NO BUSY TIMEOUT: results_db connected with the sqlite default (5 s), so a concurrent seed_queue write killed the live pod runner with 'database is locked' (S109). LANDED by the orchestrator e98a7e545: sqlite3.connect(..., timeout=30.0); 15 tests; deployed at md5 parity; runner relaunched. Residual: seed_queue should still be run with the runner paused or in small batches -- recorded in the runbook memo | S109 | LANDED (2026-09-03) |
 
 | S111 | data | THE PREGAME FACTORY'S COVERAGE ACQUISITIONS ARE ON DISK (S85): (a) five tennis families sit at 58 pct coverage because the WTA half of the served window has no as-of tables -- build asof_features_wta / asof_return_wta / asof_meta_wta (the pattern asof_hold_wta / asof_setdetail_wta already follows) from wta_matches.parquet with the same builder and the same strictly-before rule; (b) nba_quarter_shape at 35.2 pct -- fold linescores_2024_25.parquet through espn_nba_game_bridge into asof_quarter_shape keyed by the NBA game_id; (c) GUARD: a supplied column with 0 non-null on the served window must be refused as 'unavailable' (never screened silently) -- the nba_quarter_shape all-NaN column passed both guards; (d) re-run the local real screen over the newly covered families and report coverage before/after per family and the screen table (expect nulls). No fetch; no bar moved; no charge | S85 memo | OPEN (new 2026-09-03) |
+
+| S112 | data | NBA AND MLB PREGAME SCREENS HAVE NO REAL CLOSE: the nba and mlb gate corpora carry p_base = Elo as the incumbent (S98), so every pregame result for those sports (S58c, S79, S85, S108) is 'vs Elo', which says nothing about the market. On disk: nba_checkpoints_full's first traded tick (~21 s after tip, 1,593 games, S81) is a de-facto close; nba_close_corpus.parquet has 663 closes; the Kalshi mlb_price_series' last two-sided TRADED quote before the ticker's first pitch (935 events, S81 rule) is a close. Bar: a close_join for nba and mlb that attaches p_close (devigged where two sides exist; labelled 'first in-play tick' for nba) to the gate corpora additively (new columns, sidecars rebuilt, portable=True still loads on the pod), coverage per sport reported; then S108's elastic net and the factory screens re-scored vs THAT close on the SCREEN side (expect: matches the close, the +0.005 vs-Elo NBA screens vanish) | S81 S98 S108 | OPEN (new 2026-09-03) -- makes NBA/MLB pregame results market-relative for the first time |
 
 ## Quant additions to the verifier contract (Q1-Q6)
 
