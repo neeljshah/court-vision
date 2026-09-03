@@ -37,6 +37,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from scripts.platformkit.odds_provider.kalshi_series_spec import SERIES_SPEC
+from scripts.platformkit.venue_history.game_key import game_key_from_event_key
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_KALSHI_DIR = _REPO_ROOT / "data" / "venue_history" / "kalshi"
@@ -75,7 +76,7 @@ def series_to_market_type() -> Dict[str, str]:
 
 def add_game_key(frame: pd.DataFrame) -> pd.DataFrame:
     """Add game_key by stripping event_key's series prefix and return frame."""
-    frame["game_key"] = frame["event_key"].astype(str).str.split("-", n=1).str[1]
+    frame["game_key"] = game_key_from_event_key(frame["event_key"])
     return frame
 
 

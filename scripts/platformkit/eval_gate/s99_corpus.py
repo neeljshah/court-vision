@@ -20,6 +20,7 @@ import pandas as pd
 from scripts.platformkit.eval_gate.asof_join import asof_join_state
 from scripts.platformkit.ingame.soccer_outcome import (SoccerOutcomeResolver, _resolve_code,
                                                        parse_wc_ticker)
+from scripts.platformkit.venue_history.game_key import game_key_from_event_key
 
 REPO = Path(__file__).resolve().parents[3]
 PRICES = REPO / "data" / "cache" / "inplay_odds"
@@ -53,7 +54,7 @@ def rekey(sport: str, prices_dir: Path = PRICES) -> pd.DataFrame:
     cols = ["game_date", "event_key", "market_type", "side", "ts", "prob"]
     frame = pd.read_parquet(Path(prices_dir) / ("%s_price_series.parquet" % sport), columns=cols,
                             filters=[("venue", "==", "kalshi")])   # pushed down: 13.4M -> 4.2M
-    frame["game_key"] = frame.pop("event_key").str.split("-", n=1).str[1].astype("category")
+    frame["game_key"] = game_key_from_event_key(frame.pop("event_key")).astype("category")
     frame["market_type"] = frame["market_type"].astype("category")
     return frame
 
