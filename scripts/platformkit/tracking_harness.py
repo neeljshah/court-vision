@@ -64,6 +64,7 @@ SPORTS = CONFIG_VERSIONS[DEFAULT_CONFIG_VERSION]
 MIN_FRAMES_FOR_METRICS = 30
 _N_DEPENDENT_METRIC_FIELDS = (
     "coverage_pct", "det_per_frame", "median_track_len", "ball_valid_pct",
+    "coverage_attempted_frames_pct", "ball_valid_attempted_frames_pct",
     "ball_in_bounds_pct", "jump_p95", "jump_max", "oob_pct", "zero_step_share",
     "median_step_distance", "distinct_position_ratio", "stationary_track_share",
     "liveness_verdict", "jump_p95_ft_per_s", "jump_max_modal_stride_frames",
@@ -118,6 +119,15 @@ class QualityReport:
     sampling_interval_reason: str | None = None
     jump_p95_ft_per_s: float | str | None = None
     jump_max_modal_stride_frames: int | None = None
+    # The legacy fields above retain their emitted-frame denominator. These
+    # additive fields are the only coverage metrics allowed to decide a gate.
+    attempted_frames: int | None = None
+    coverage_attempted_frames_pct: float | None = None
+    ball_valid_attempted_frames_pct: float | None = None
+    coverage_pct_denominator: str = "emitted_frames"
+    ball_valid_pct_denominator: str = "emitted_frames"
+    coverage_attempted_frames_pct_denominator: str = "unavailable"
+    ball_valid_attempted_frames_pct_denominator: str = "unavailable"
 
     def to_json(self) -> str:
         return json.dumps(asdict(self), indent=2)
@@ -186,6 +196,63 @@ def _modal_stride(frame_gaps: pd.Series) -> int | None:
     return int(modes.index[0]) if len(modes) == 1 else None
 
 
+def _attempted_frame_count(df: pd.DataFrame, attempted_frames: int | None,
+                           emitted_frames: int) -> tuple[int | None, str | None]:
+    """Validate an explicit attempted count, never deriving one from emitted rows."""
+    candidate = attempted_frames
+    if candidate is None and "attempted_frames" in df:
+        values = df["attempted_frames"].dropna().unique()
+        if len(values) != 1 or df["attempted_frames"].isna().any():
+            return None, "attempted_frames invalid"
+        candidate = values[0]
+    if candidate is None:
+        return None, "attempted_frames unavailable"
+    try:
+        value = int(candidate)
+    except (TypeError, ValueError):
+        return None, "attempted_frames invalid"
+    if value != candidate or value < emitted_frames or value <= 0:
+        return None, "attempted_frames invalid"
+    return value, None
+
+
+def _apply_metric_local_attempted_gate(report: QualityReport, df: pd.DataFrame, cfg: Mapping[str, object],
+                                       attempted_frames: int | None, reason: str | None) -> QualityReport:
+    """Replace metric-local's legacy coverage checks with attempted-frame checks."""
+    report.attempted_frames = attempted_frames
+    report.coverage_pct_denominator = "emitted_frames"
+    report.ball_valid_pct_denominator = "emitted_frames"
+    report.failures = [failure for failure in report.failures
+                       if not failure.startswith(("coverage ", "ball_valid "))]
+    if attempted_frames is None:
+        report.coverage_attempted_frames_pct_denominator = "unavailable"
+        report.ball_valid_attempted_frames_pct_denominator = "unavailable"
+        report.failures.append(reason or "attempted_frames unavailable")
+    else:
+        players = df[df["cls"] == "player"]
+        coverage = float((players.groupby("frame")["track_id"].nunique()
+                          >= cfg["min_players"]).sum() / attempted_frames)
+        report.coverage_attempted_frames_pct = round(coverage, 4)
+        report.coverage_attempted_frames_pct_denominator = "attempted_frames"
+        if coverage < cfg["coverage_min"]:
+            report.failures.append("coverage_attempted_frames {:.2f} < {:.2f}".format(
+                coverage, cfg["coverage_min"]
+            ))
+        if report.ball_telemetry_available is not False:
+            ball_valid = float(df.loc[df["cls"] == "ball", "frame"].nunique() / attempted_frames)
+            report.ball_valid_attempted_frames_pct = round(ball_valid, 4)
+            report.ball_valid_attempted_frames_pct_denominator = "attempted_frames"
+            if ball_valid < cfg["ball_valid_min"]:
+                report.failures.append("ball_valid_attempted_frames {:.2f} < {:.2f}".format(
+                    ball_valid, cfg["ball_valid_min"]
+                ))
+        else:
+            report.ball_valid_attempted_frames_pct_denominator = "not_applicable"
+    report.passed = not report.failures
+    report.verdict = "PASS_METRIC_LOCAL" if report.passed else "FAIL_METRIC_LOCAL"
+    return report
+
+
 def _adjudicate_insufficient_data(report: QualityReport) -> QualityReport:
     if report.insufficient_data:
         report.passed = False
@@ -199,6 +266,7 @@ def evaluate(df: pd.DataFrame, sport: str,
              config_version: str = DEFAULT_CONFIG_VERSION,
              source_metadata: Mapping[str, object] | None = None,
              source: str | None = None,
+             attempted_frames: int | None = None,
              allow_legacy_undeclared: bool = False) -> QualityReport:
     """Return self-consistency health metrics for a recognized tracking table."""
     configs = CONFIG_VERSIONS.get(config_version)
@@ -220,18 +288,22 @@ def evaluate(df: pd.DataFrame, sport: str,
                               source_metadata, schema)
     resolution, frame_rate = _source_fields(source_metadata)
     sampling_interval, sampling_interval_reason = _sampling_fields(source_metadata)
+    n_frames = int(df["frame"].nunique())
+    attempted_count, attempted_reason = _attempted_frame_count(df, attempted_frames, n_frames)
     # Legacy-undeclared rows reach here without a coordinate_space column at all
     # (normalize_tracking_frame leaves them as-is under the audited legacy mode).
     # Reading it unconditionally turned an intended clean FAIL into a KeyError,
     # so absence means "not metric_local" and falls through to the court profile.
     if "coordinate_space" in df and df["coordinate_space"].eq(METRIC_LOCAL).all():
-        return _adjudicate_insufficient_data(QualityReport(
+        local_report = QualityReport(
             sport=sport, config_version=config_version, source_resolution=resolution,
             source_frame_rate=frame_rate, sampling_interval_s=sampling_interval,
             sampling_interval_reason=sampling_interval_reason,
             **metric_local_report_fields(df, cfg, schema),
+        )
+        return _adjudicate_insufficient_data(_apply_metric_local_attempted_gate(
+            local_report, df, cfg, attempted_count, attempted_reason
         ))
-    n_frames = int(df["frame"].nunique())
     n_unique_games = (int(df["game_id"].dropna().nunique()) if "game_id" in df
                       else int(n_frames > 0))
     duplicate_keys = ["frame", "track_id"]
@@ -249,6 +321,8 @@ def evaluate(df: pd.DataFrame, sport: str,
     players = df[df["cls"] == "player"]
     per_frame = players.groupby("frame")["track_id"].nunique()
     coverage = float((per_frame >= cfg["min_players"]).sum() / n_frames)
+    coverage_attempted = (float((per_frame >= cfg["min_players"]).sum() / attempted_count)
+                          if attempted_count is not None else None)
     det_per_frame = float(len(df) / n_frames)
     track_len = (float(players.groupby("track_id")["frame"].count().median())
                  if len(players) else 0.0)
@@ -256,6 +330,9 @@ def evaluate(df: pd.DataFrame, sport: str,
     oob_pct = float(oob.mean()) if len(players) else 1.0
     ball_valid = (float(df[df["cls"] == "ball"]["frame"].nunique() / n_frames)
                   if schema.ball_telemetry_available is not False else None)
+    ball_valid_attempted = (float(df[df["cls"] == "ball"]["frame"].nunique() / attempted_count)
+                            if attempted_count is not None and schema.ball_telemetry_available is not False
+                            else None)
     balls = df[df["cls"] == "ball"]
     ball_in_bounds = (float((balls["x"].between(x0, x1) & balls["y"].between(y0, y1)).mean())
                       if len(balls) else None)
@@ -272,7 +349,7 @@ def evaluate(df: pd.DataFrame, sport: str,
     if duplicates:
         failures.append("duplicate frame-track rows {}".format(duplicates))
     for name, value, threshold, operator in (
-        ("coverage", coverage, cfg["coverage_min"], "min"),
+        ("coverage_attempted_frames", coverage_attempted, cfg["coverage_min"], "min"),
         ("median_track_len", track_len, cfg["min_median_track_len"], "min"),
         ("oob", oob_pct, cfg["oob_max"], "max"),
         ("jump_max", jump_max, cfg["jump_max_max"], "max"),
@@ -283,9 +360,11 @@ def evaluate(df: pd.DataFrame, sport: str,
             failures.append("{} {:.2f} {} {:.2f}".format(name, value, sign, threshold))
     if len(players) and jump_max is None:
         failures.append("jump_max unmeasurable: no unique positive modal frame stride")
-    if ball_valid is not None and ball_valid < cfg["ball_valid_min"]:
-        failures.append("ball_valid {:.2f} < {:.2f}".format(
-            ball_valid, cfg["ball_valid_min"]
+    if attempted_reason is not None:
+        failures.append(attempted_reason)
+    if ball_valid_attempted is not None and ball_valid_attempted < cfg["ball_valid_min"]:
+        failures.append("ball_valid_attempted_frames {:.2f} < {:.2f}".format(
+            ball_valid_attempted, cfg["ball_valid_min"]
         ))
     if liveness.verdict == "FROZEN":
         failures.append("liveness verdict FROZEN")
@@ -315,7 +394,13 @@ def evaluate(df: pd.DataFrame, sport: str,
                            frame_rate, True, passed, verdict, failures,
                            round(ball_in_bounds, 4) if ball_in_bounds is not None else None,
                            n_frames < MIN_FRAMES_FOR_METRICS, sampling_interval,
-                           sampling_interval_reason, jump_p95_ft_per_s, modal_stride)
+                           sampling_interval_reason, jump_p95_ft_per_s, modal_stride,
+                           attempted_count,
+                           round(coverage_attempted, 4) if coverage_attempted is not None else None,
+                           round(ball_valid_attempted, 4) if ball_valid_attempted is not None else None,
+                           "emitted_frames", "emitted_frames",
+                           "attempted_frames" if attempted_count is not None else "unavailable",
+                           "attempted_frames" if attempted_count is not None else "unavailable")
     if report.insufficient_data:
         for field in _N_DEPENDENT_METRIC_FIELDS:
             setattr(report, field, None)

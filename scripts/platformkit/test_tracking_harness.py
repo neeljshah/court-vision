@@ -23,6 +23,7 @@ def _good_game(n_frames=100, n_players=10, coordinate_space="court_feet"):
         rows.append({"frame": frame, "track_id": 99, "cls": "ball",
                      "x": 47.0, "y": 25.0})
     game = pd.DataFrame(rows)
+    game["attempted_frames"] = n_frames
     if coordinate_space is not None:
         game["coordinate_space"] = coordinate_space
     return game
@@ -118,7 +119,7 @@ def test_no_sidecar_zero_ball_tennis_fails_closed_at_existing_threshold():
     assert report.ball_telemetry_available is None
     assert report.ball_telemetry_rule == "unknown_no_sidecar"
     assert report.ball_valid == "evaluated" and report.ball_valid_pct == 0.0
-    assert report.failures == ["ball_valid 0.00 < 0.20"]
+    assert report.failures == ["ball_valid_attempted_frames 0.00 < 0.20"]
 
 
 def test_declared_tennis_ball_telemetry_without_rows_fails_ball_gate(tmp_path):
@@ -131,7 +132,7 @@ def test_declared_tennis_ball_telemetry_without_rows_fails_ball_gate(tmp_path):
     assert not report.passed and report.verdict == "FAIL"
     assert report.ball_telemetry_available is True
     assert report.ball_valid == "evaluated" and report.ball_valid_pct == 0.0
-    assert report.failures == ["ball_valid 0.00 < 0.20"]
+    assert report.failures == ["ball_valid_attempted_frames 0.00 < 0.20"]
 
 
 def test_declared_no_ball_telemetry_skips_gate_and_uses_weaker_pass_label(tmp_path):
