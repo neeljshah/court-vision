@@ -23,19 +23,22 @@ from __future__ import annotations
 import argparse
 import glob
 import json
-import math
 import os
-import statistics
-from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 try:
     from scripts.platformkit.analytics_showcase._clone_safe import verify_recorded_artifact
+    from scripts.platformkit.analytics_showcase.closing_decay_io import (
+        JOINABLE, MIN_N_POWERED, REPO_ROOT, bucket_prob, load_home_snapshots,
+        load_outcomes, score_bucket,
+    )
 except ImportError:
     from _clone_safe import verify_recorded_artifact
+    from closing_decay_io import (
+        JOINABLE, MIN_N_POWERED, REPO_ROOT, bucket_prob, load_home_snapshots,
+        load_outcomes, score_bucket,
+    )
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-LH_DIR = os.path.join(REPO_ROOT, "data", "cache", "line_history")
 OUT_JSON = os.path.join(REPO_ROOT, "scripts", "platformkit", "analytics_showcase", "out", "micro_closing_decay.json")
 OUT_PNG = os.path.join(REPO_ROOT, "docs", "img", "micro_closing_decay.png")
 
@@ -47,15 +50,6 @@ ANCHORS: Tuple[Tuple[str, float, Tuple[float, float]], ...] = (
     ("close", 0.0, (0.0, 0.5)),
 )
 _ANCHOR_LABELS = [a[0] for a in ANCHORS]
-MAX_HORIZON_H = 72.0   # ignore snapshots captured >3 days out (stale/opening noise)
-MIN_N_POWERED = 20     # per-bucket floor below which the bucket is 'underpowered'
-
-# sport -> (outcome parquet, mode). mode 'home_win' reads that column;
-# 'scores' derives home_win from home_score>away_score (completed rows only).
-JOINABLE: Dict[str, Tuple[str, str]] = {
-    "wnba": (os.path.join(REPO_ROOT, "data", "domains", "wnba", "espn_scoreboard.parquet"), "home_win"),
-    "soccer_intl": (os.path.join(REPO_ROOT, "data", "domains", "soccer_intl", "espn_finals.parquet"), "scores"),
-}
 NOT_JOINABLE: Dict[str, str] = {
     "nba": "line_history covers the 2026 window; no ESPN-keyed NBA outcome table on disk spans it (games.parquet uses NBA-stats ids).",
     "mlb": "line_history uses ESPN/odds-api ids; games.parquet uses date-team keys (20100404-BOS-NYY-1) -- 0 direct joins.",
@@ -65,115 +59,13 @@ NOT_JOINABLE: Dict[str, str] = {
     "npb": "line_history rows carry no commence_time (game_id=0) -- hours-to-start is undefined.",
 }
 
-def _parse_dt(s: Optional[str]) -> Optional[datetime]:
-    if not s or not isinstance(s, str):
-        return None
-    try:
-        d = datetime.fromisoformat(s.replace("Z", "+00:00"))
-        return d if d.tzinfo else d.replace(tzinfo=timezone.utc)
-    except ValueError:
-        return None
-
-def load_home_snapshots(sport: str) -> Tuple[Dict[str, List[Tuple[float, float]]], Optional[str], Dict[str, Any]]:
-    """Return {game_id: [(horizon_hours, devigged_home_prob), ...]} for pregame
-    home-side moneyline snapshots, the max captured-at date seen (as_of), and the
-    observation window (min/max captured_at actually read from line_history)."""
-    by_game: Dict[str, List[Tuple[float, float]]] = {}
-    max_cap: Optional[datetime] = None
-    min_cap: Optional[datetime] = None
-    n_files = 0
-    for path in glob.glob(os.path.join(LH_DIR, sport, "*.jsonl")):
-        n_files += 1
-        with open(path, encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                d = json.loads(line)
-                if d.get("market_type") != "moneyline" or d.get("side") != "home":
-                    continue
-                p = d.get("devigged_prob")
-                gid = d.get("game_id")
-                if p is None or gid in (None, "", "0"):
-                    continue
-                ct = _parse_dt(d.get("commence_time"))
-                cap = _parse_dt(d.get("captured_at"))
-                if ct is None or cap is None:
-                    continue
-                if max_cap is None or cap > max_cap:
-                    max_cap = cap
-                if min_cap is None or cap < min_cap:
-                    min_cap = cap
-                horizon = (ct - cap).total_seconds() / 3600.0
-                if horizon < 0.0 or horizon > MAX_HORIZON_H:
-                    continue
-                by_game.setdefault(str(gid), []).append((horizon, float(p)))
-    as_of = max_cap.date().isoformat() if max_cap else None
-    window: Dict[str, Any] = {
-        "source": "data/cache/line_history/%s/*.jsonl (captured_at of every snapshot read)" % sport,
-        "first_captured_at": min_cap.date().isoformat() if min_cap else None,
-        "last_captured_at": as_of,
-        "span_days": (round((max_cap - min_cap).total_seconds() / 86400.0, 1)
-                      if (min_cap and max_cap) else None),
-        "n_daily_files": n_files,
-        "note": ("This is the FULL local capture window, not a season. Counts below are large "
-                 "because capture is dense (many books x many ticks per game), not because the "
-                 "history is long."),
-    }
-    return by_game, as_of, window
-
-def load_outcomes(sport: str) -> Dict[str, int]:
-    """{ESPN event_id (str): home_win 0/1} for the sport's outcome table."""
-    import pandas as pd
-    path, mode = JOINABLE[sport]
-    df = pd.read_parquet(path)
-    out: Dict[str, int] = {}
-    for _, r in df.iterrows():
-        eid = str(r["event_id"])
-        if mode == "home_win":
-            hw = r.get("home_win")
-            if hw is None or (isinstance(hw, float) and math.isnan(hw)):
-                continue
-            out[eid] = int(hw)
-        else:  # scores
-            if not bool(r.get("completed", True)):
-                continue
-            hs, as_ = r.get("home_score"), r.get("away_score")
-            if hs is None or as_ is None or (isinstance(hs, float) and math.isnan(hs)):
-                continue
-            out[eid] = int(hs > as_)  # binary event "home team wins" (draw -> 0)
-    return out
-
-def bucket_prob(snaps: List[Tuple[float, float]], window: Tuple[float, float]) -> Optional[float]:
-    """Consensus (median) devigged home prob among snapshots whose horizon falls
-    in [lo, hi); None if the game has no snapshot in that window."""
-    lo, hi = window
-    ps = [p for h, p in snaps if lo <= h < hi]
-    return statistics.median(ps) if ps else None
-
-def score_bucket(pairs: List[Tuple[float, int]]) -> Dict[str, Any]:
-    n = len(pairs)
-    if n == 0:
-        return {"n": 0}
-    brier = sum((p - y) ** 2 for p, y in pairs) / n
-    ll = 0.0
-    for p, y in pairs:
-        pc = min(max(p, 1e-6), 1.0 - 1e-6)
-        ll += -(y * math.log(pc) + (1 - y) * math.log(1.0 - pc))
-    return {
-        "n": n,
-        "brier": round(brier, 6),
-        "logloss": round(ll / n, 6),
-        "mean_prob": round(sum(p for p, _ in pairs) / n, 4),
-        "underpowered": n < MIN_N_POWERED,
-    }
-
 def analyze_sport(sport: str) -> Dict[str, Any]:
     by_game, as_of, window = load_home_snapshots(sport)
     outcomes = load_outcomes(sport)
-    # per-anchor (prob, outcome) pairs, plus per-game close & T-24h for pairing.
+    # Per-anchor pairs plus retained per-game values for the two paired summaries.
     per_anchor: Dict[str, List[Tuple[float, int]]] = {a: [] for a in _ANCHOR_LABELS}
     paired: List[Tuple[float, float, int]] = []  # (p_t24, p_close, y)
+    joined_probs: List[Tuple[Dict[str, Optional[float]], int]] = []
     joined_games = 0
     for gid, snaps in by_game.items():
         if gid not in outcomes:
@@ -186,6 +78,7 @@ def analyze_sport(sport: str) -> Dict[str, Any]:
             probs[label] = p
             if p is not None:
                 per_anchor[label].append((p, y))
+        joined_probs.append((probs, y))
         if probs["T-24h"] is not None and probs["close"] is not None:
             paired.append((probs["T-24h"], probs["close"], y))
     buckets = {a: score_bucket(per_anchor[a]) for a in _ANCHOR_LABELS}
@@ -200,25 +93,46 @@ def analyze_sport(sport: str) -> Dict[str, Any]:
             "close_sharper": b_cl < b_t24,
             "underpowered": len(paired) < MIN_N_POWERED,
         })
+    first_anchor = next((a for a in _ANCHOR_LABELS if buckets[a].get("brier") is not None), None)
+    first_paired: List[Tuple[float, float, int]] = []
+    if first_anchor is not None:
+        for probs, y in joined_probs:
+            if probs[first_anchor] is not None and probs["close"] is not None:
+                first_paired.append((probs[first_anchor], probs["close"], y))
+    first_pair_out: Dict[str, Any] = {"first_anchor": first_anchor, "n": len(first_paired)}
+    if first_paired:
+        b_first = sum((p - y) ** 2 for p, _c, y in first_paired) / len(first_paired)
+        b_close = sum((c - y) ** 2 for _p, c, y in first_paired) / len(first_paired)
+        first_pair_out.update({
+            "brier_first_anchor": round(b_first, 6),
+            "brier_close": round(b_close, 6),
+            "brier_delta_first_anchor_minus_close": round(b_first - b_close, 6),
+            "close_sharper": b_close < b_first,
+            "underpowered": len(first_paired) < MIN_N_POWERED,
+        })
     return {"as_of": as_of, "observation_window": window, "n_games_joined": joined_games,
-            "buckets": buckets, "close_vs_t24h_paired": pair_out}
+            "buckets": buckets, "close_vs_t24h_paired": pair_out,
+            "close_vs_first_paired": first_pair_out}
 
 def build_verdict(sports: Dict[str, Any]) -> str:
     lines: List[str] = []
     for sport, res in sports.items():
-        b = res["buckets"]
-        seq = [(a, b[a].get("brier")) for a in _ANCHOR_LABELS if b[a].get("brier") is not None]
-        if len(seq) < 2:
-            lines.append(f"{sport}: too few populated horizons to compare ({res['n_games_joined']} games).")
+        paired = res["close_vs_first_paired"]
+        first_anchor = paired.get("first_anchor")
+        if first_anchor is None:
+            lines.append(f"{sport}: no populated horizon to pair with close (n_games=0).")
             continue
-        first_lbl, first_b = seq[0]
-        last_lbl, last_b = seq[-1]
-        drop = first_b - last_b
-        pw = "" if not b[last_lbl].get("underpowered") else " (UNDERPOWERED)"
+        if paired["n"] == 0:
+            lines.append(f"{sport}: no paired games between {first_anchor} and close (n_games=0).")
+            continue
+        first_b = paired["brier_first_anchor"]
+        close_b = paired["brier_close"]
+        drop = paired["brier_delta_first_anchor_minus_close"]
+        pw = "" if not paired["underpowered"] else " (UNDERPOWERED)"
         direction = "sharpens toward the close" if drop > 0 else "does NOT sharpen toward the close"
         lines.append(
-            f"{sport}: Brier {direction} -- {first_lbl}={first_b:.4f} -> {last_lbl}={last_b:.4f} "
-            f"(delta={drop:+.4f}, n_games={res['n_games_joined']}){pw}."
+            f"{sport}: Brier {direction} -- {first_anchor}={first_b:.4f} -> close={close_b:.4f} "
+            f"(delta={drop:+.4f}, n_games={paired['n']}){pw}."
         )
     return " ".join(lines) if lines else "No sport was joinable."
 
@@ -268,7 +182,7 @@ def run() -> Dict[str, Any]:
         "edge_claimed": False,
         "method": ("Consensus (median) devigged market P(home win) bucketed by hours-to-start into "
                    "T-24h/T-6h/T-1h/close, scored Brier + log-loss vs the settled ESPN outcome; "
-                   "paired within-game close-vs-T-24h delta."),
+                   "paired within-game close-vs-T-24h and close-vs-first-populated-horizon summaries."),
         "assumptions": [
             "Market prob = home-side devigged_prob from line_history (consensus median across books/ticks in each horizon window).",
             "Binary event scored is 'home team wins'; a soccer draw counts as home-loss (y=0).",
@@ -303,7 +217,7 @@ def run() -> Dict[str, Any]:
     return result
 
 def _local_data_present() -> bool:
-    return any(glob.glob(os.path.join(LH_DIR, s, "*.jsonl")) for s in JOINABLE)
+    return any(glob.glob(os.path.join(REPO_ROOT, "data", "cache", "line_history", s, "*.jsonl")) for s in JOINABLE)
 
 def check() -> None:
     """Validate structure + Brier bounds. Clone-safe: with local data absent,
@@ -322,6 +236,12 @@ def check() -> None:
             for lbl, bk in res["buckets"].items():
                 if bk.get("n"):
                     assert 0.0 <= bk["brier"] <= 1.0, f"{sport}/{lbl} Brier out of [0,1]: {bk['brier']}"
+            paired = res.get("close_vs_first_paired") or {}
+            assert "first_anchor" in paired and "n" in paired, \
+                f"{sport}: close_vs_first_paired missing anchor or n"
+            if paired["n"]:
+                assert 0.0 <= paired["brier_first_anchor"] <= 1.0
+                assert 0.0 <= paired["brier_close"] <= 1.0
     if not _local_data_present():
         verify_recorded_artifact(OUT_JSON, validate, "micro_closing_decay")
         return

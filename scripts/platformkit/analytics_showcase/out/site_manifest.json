@@ -386,7 +386,7 @@
     {
       "id": "micro_closing_decay",
       "title": "Micro Closing Decay",
-      "one_line": "wnba: Brier sharpens toward the close -- T-6h=0.2454 -> close=0.2280 (delta=+0.0174, n_games=30). soccer_intl: Brier does NOT sharpen toward the close -- T-24h=0.1355 -> close=0.1374 (delta=-0.0019, n_games=13) (UNDERPOWERED).",
+      "one_line": "wnba: Brier sharpens toward the close -- T-6h=0.2356 -> close=0.2347 (delta=+0.0009, n_games=25). soccer_intl: Brier does NOT sharpen toward the close -- T-24h=0.1355 -> close=0.1568 (delta=-0.0213, n_games=7) (UNDERPOWERED).",
       "out_path": "scripts/platformkit/analytics_showcase/out/micro_closing_decay.json",
       "chart_path": "docs/img/micro_closing_decay.png",
       "status": "ok",

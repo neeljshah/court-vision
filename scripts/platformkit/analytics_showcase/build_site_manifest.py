@@ -221,7 +221,7 @@ def main():
         return
     m = build()
     _validate(m)
-    _MANIFEST.write_text(json.dumps(m, indent=2), encoding="utf-8")
+    _MANIFEST.write_text(json.dumps(m, indent=2, ensure_ascii=True), encoding="utf-8")
     print(f"wrote {_rel(_MANIFEST)}: {m['module_count']} modules, "
           f"{m['atlas_card_count']} atlas cards, "
           f"checks_green={m['checks_green']['green']}")

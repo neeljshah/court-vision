@@ -154,8 +154,8 @@ Consensus devigged market P(home) scored (Brier / log-loss) at T-24h / T-6h / T-
 
 Source: [`out/micro_closing_decay.json`](../../scripts/platformkit/analytics_showcase/out/micro_closing_decay.json).
 
-- **WNBA sharpens toward the close:** Brier T-6h **0.2454** -> close **0.2280** (n=30 games).
-- **soccer_intl: flat and UNDERPOWERED** (n=13) -- flagged, not reported as a finding.
+- **WNBA paired comparison:** Brier T-6h **0.2356** -> close **0.2347** (delta=**+0.0009**, n=25 shared games).
+- **soccer_intl: paired comparison is UNDERPOWERED:** Brier T-24h **0.1355** -> close **0.1568** (delta=**-0.0213**, n=7 shared games).
 - **nba / mlb / soccer / tennis / kbo / npb: `not_joinable`** -- no line_history <-> settled-outcome
   join available in this capture. Stated per sport with a reason, never guessed.
 

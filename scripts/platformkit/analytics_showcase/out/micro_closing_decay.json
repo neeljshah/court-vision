@@ -1,6 +1,6 @@
 {
   "edge_claimed": false,
-  "method": "Consensus (median) devigged market P(home win) bucketed by hours-to-start into T-24h/T-6h/T-1h/close, scored Brier + log-loss vs the settled ESPN outcome; paired within-game close-vs-T-24h delta.",
+  "method": "Consensus (median) devigged market P(home win) bucketed by hours-to-start into T-24h/T-6h/T-1h/close, scored Brier + log-loss vs the settled ESPN outcome; paired within-game close-vs-T-24h and close-vs-first-populated-horizon summaries.",
   "assumptions": [
     "Market prob = home-side devigged_prob from line_history (consensus median across books/ticks in each horizon window).",
     "Binary event scored is 'home team wins'; a soccer draw counts as home-loss (y=0).",
@@ -43,13 +43,13 @@
   ],
   "sports": {
     "wnba": {
-      "as_of": "2026-07-17",
+      "as_of": "2026-07-27",
       "observation_window": {
         "source": "data/cache/line_history/wnba/*.jsonl (captured_at of every snapshot read)",
         "first_captured_at": "2026-07-04",
-        "last_captured_at": "2026-07-17",
-        "span_days": 13.0,
-        "n_daily_files": 14,
+        "last_captured_at": "2026-07-27",
+        "span_days": 23.7,
+        "n_daily_files": 15,
         "note": "This is the FULL local capture window, not a season. Counts below are large because capture is dense (many books x many ticks per game), not because the history is long."
       },
       "n_games_joined": 30,
@@ -81,6 +81,15 @@
       },
       "close_vs_t24h_paired": {
         "n": 0
+      },
+      "close_vs_first_paired": {
+        "first_anchor": "T-6h",
+        "n": 25,
+        "brier_first_anchor": 0.235641,
+        "brier_close": 0.234696,
+        "brier_delta_first_anchor_minus_close": 0.000945,
+        "close_sharper": true,
+        "underpowered": false
       }
     },
     "soccer_intl": {
@@ -131,6 +140,15 @@
         "brier_delta_t24h_minus_close": -0.021289,
         "close_sharper": false,
         "underpowered": true
+      },
+      "close_vs_first_paired": {
+        "first_anchor": "T-24h",
+        "n": 7,
+        "brier_first_anchor": 0.135518,
+        "brier_close": 0.156807,
+        "brier_delta_first_anchor_minus_close": -0.021289,
+        "close_sharper": false,
+        "underpowered": true
       }
     }
   },
@@ -145,10 +163,10 @@
   "observation_window": {
     "corpus": "data/cache/line_history/<sport>/*.jsonl",
     "first_captured_at": "2026-06-19",
-    "last_captured_at": "2026-07-17",
+    "last_captured_at": "2026-07-27",
     "span_days": 28.0,
     "note": "Union of the per-sport capture windows below. This is a single short capture window, not a season or multi-season history -- every Brier here is provisional and describes only these dates."
   },
-  "verdict": "wnba: Brier sharpens toward the close -- T-6h=0.2454 -> close=0.2280 (delta=+0.0174, n_games=30). soccer_intl: Brier does NOT sharpen toward the close -- T-24h=0.1355 -> close=0.1374 (delta=-0.0019, n_games=13) (UNDERPOWERED).",
+  "verdict": "wnba: Brier sharpens toward the close -- T-6h=0.2356 -> close=0.2347 (delta=+0.0009, n_games=25). soccer_intl: Brier does NOT sharpen toward the close -- T-24h=0.1355 -> close=0.1568 (delta=-0.0213, n_games=7) (UNDERPOWERED).",
   "plot_written": true
 }

@@ -1,0 +1,63 @@
+{
+  "gap": "S194",
+  "sport": "mlb",
+  "verdict": "CLOSED AT LIMIT",
+  "reason": "The fixed output grain has only 337 settled event_id values in the fixed in-window dates, below the unchanged acceptance bar of 400.",
+  "acceptance": {
+    "denominator_in_window_raw_game_ids": 641,
+    "bar_distinct_event_ids": 400,
+    "date_window_settled_event_id_capacity": 337,
+    "raw_ids_with_strict_precommence_moneyline_and_total": 600
+  },
+  "remeasurement": {
+    "mlb_rows": 2164041,
+    "distinct_raw_game_ids": 859,
+    "raw_game_ids_with_commence_time": 686,
+    "raw_game_ids_without_commence_time": 173,
+    "commence_time_ids_outside_outcome_date_set": 45,
+    "singleton_bridge_raw_game_ids": 604,
+    "singleton_bridge_event_ids": 331,
+    "singleton_bridge_event_ids_with_moneyline_and_total": 314,
+    "doubleheader_ambiguous_raw_game_ids": 6,
+    "unmatched_valid_name_raw_game_ids": 8,
+    "rejected_non_franchise_raw_game_ids": 23
+  },
+  "strict_precommence_rows_by_book_market": [
+    {"book": "espn:DraftKings", "market_type": "moneyline", "rows": 616},
+    {"book": "espn:DraftKings", "market_type": "total", "rows": 616},
+    {"book": "fanduel", "market_type": "moneyline", "rows": 476},
+    {"book": "pinnacle", "market_type": "moneyline", "rows": 612},
+    {"book": "pinnacle", "market_type": "spread", "rows": 594},
+    {"book": "pinnacle", "market_type": "total", "rows": 594}
+  ],
+  "hazards": {
+    "raw_last_quote_post_start": {"post_start_tuples": 3630, "tuples_with_commence_time": 6174, "percent": 58.7949, "median_lead_minutes": -2.7833},
+    "captured_at_suspect": {"mlb_present": 3366, "mlb_false": 3366, "mlb_absent": 2160675, "mlb_absent_percent": 99.8445, "status": "ABSENT_NOT_CLEAN"},
+    "unaccepted_name_values": ["Away Runs (8 Games)", "Away Runs (9 Games)", "Away Runs (13 Games)", "Away Runs (14 Games)", "Away Runs (15 Games)", "Away Runs (16 Games)", "G2 Milwaukee Brewers", "G2 Pittsburgh Pirates", "Home Runs (8 Games)", "Home Runs (9 Games)", "Home Runs (13 Games)", "Home Runs (14 Games)", "Home Runs (15 Games)", "Home Runs (16 Games)"]
+  },
+  "unmatched_valid_name_pairs": [
+    ["401815805", "2026-06-18", "Atlanta Braves", "San Francisco Giants"],
+    ["401815848", "2026-06-21", "Chicago Cubs", "Toronto Blue Jays"],
+    ["1632067493", "2026-06-22", "New York Mets", "Chicago Cubs"],
+    ["401815854", "2026-06-22", "New York Mets", "Chicago Cubs"],
+    ["401815904", "2026-06-25", "St. Louis Cardinals", "Arizona Diamondbacks"],
+    ["fd:35805200", "2026-07-10", "Pittsburgh Pirates", "Milwaukee Brewers"],
+    ["1632298149", "2026-07-10", "Pittsburgh Pirates", "Milwaukee Brewers"],
+    ["401816100", "2026-07-10", "Pittsburgh Pirates", "Milwaukee Brewers"]
+  ],
+  "evenly_spaced_singleton_bridge_sample": [
+    {"event_id": "2026-06-18-BOS-TOR-1", "source_game_id": "401815806", "date": "2026-06-18", "home_team": "BOS", "away_team": "TOR", "target_home_win": 0, "home_runs": 3, "away_runs": 4},
+    {"event_id": "2026-06-20-NYY-CIN-2", "source_game_id": "401815826", "date": "2026-06-20", "home_team": "NYY", "away_team": "CIN", "target_home_win": 0, "home_runs": 2, "away_runs": 10},
+    {"event_id": "2026-06-22-TOR-HOU-5", "source_game_id": "1632067494", "date": "2026-06-22", "home_team": "TOR", "away_team": "HOU", "target_home_win": 1, "home_runs": 4, "away_runs": 2},
+    {"event_id": "2026-06-24-WAS-PHI-10", "source_game_id": "401815887", "date": "2026-06-24", "home_team": "WAS", "away_team": "PHI", "target_home_win": 0, "home_runs": 4, "away_runs": 5},
+    {"event_id": "2026-06-27-MIL-CUB-11", "source_game_id": "401815929", "date": "2026-06-27", "home_team": "MIL", "away_team": "CUB", "target_home_win": 0, "home_runs": 2, "away_runs": 8},
+    {"event_id": "2026-06-29-HOU-MIN-9", "source_game_id": "401815958", "date": "2026-06-29", "home_team": "HOU", "away_team": "MIN", "target_home_win": 0, "home_runs": 4, "away_runs": 5},
+    {"event_id": "2026-07-01-KAN-TAM-9", "source_game_id": "401815989", "date": "2026-07-01", "home_team": "KAN", "away_team": "TAM", "target_home_win": 0, "home_runs": 0, "away_runs": 4},
+    {"event_id": "2026-07-04-CIN-BAL-5", "source_game_id": "401816015", "date": "2026-07-04", "home_team": "CIN", "away_team": "BAL", "target_home_win": 0, "home_runs": 5, "away_runs": 8},
+    {"event_id": "2026-07-06-LAD-COL-8", "source_game_id": "401816051", "date": "2026-07-06", "home_team": "LAD", "away_team": "COL", "target_home_win": 1, "home_runs": 8, "away_runs": 7},
+    {"event_id": "2026-07-08-SFO-TOR-1", "source_game_id": "401816082", "date": "2026-07-08", "home_team": "SFO", "away_team": "TOR", "target_home_win": 0, "home_runs": 0, "away_runs": 10},
+    {"event_id": "2026-07-10-TEX-HOU-9", "source_game_id": "1632298167", "date": "2026-07-10", "home_team": "TEX", "away_team": "HOU", "target_home_win": 1, "home_runs": 7, "away_runs": 3},
+    {"event_id": "2026-07-12-WAS-NYY-3", "source_game_id": "401816131", "date": "2026-07-12", "home_team": "WAS", "away_team": "NYY", "target_home_win": 0, "home_runs": 3, "away_runs": 5}
+  ],
+  "not_verified": ["No bridge module, close parquet, or test was created because the premise is falsified before implementation.", "No scoring or forecast comparison was performed.", "The ledger and register were not read or written."]
+}
