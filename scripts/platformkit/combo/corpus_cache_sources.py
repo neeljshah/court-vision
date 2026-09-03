@@ -42,10 +42,20 @@ def _build_mlb() -> Tuple[pd.DataFrame, List[Path]]:
     games_b = _cache._REPO / "data/domains/mlb/games_current.parquet"
     park = _cache._REPO / "data/domains/mlb/asof_park.parquet"
     asof = _cache._REPO / "data/domains/mlb/asof_features.parquet"
+    park_current = _cache._REPO / "data/domains/mlb/asof_park_current.parquet"
+    asof_current = _cache._REPO / "data/domains/mlb/asof_features_current.parquet"
     sources = [games_a, games_b, park, asof]
     sp = build_sp_form_features()[["event_id", "sp_first6_diff_ew"]]
     park_df = pd.read_parquet(park)[["event_id", "park_factor"]]
     ra_df = pd.read_parquet(asof)[["event_id", "sp_ra_diff_asof"]]
+    park_current_df = None
+    if park_current.exists():
+        park_current_df = pd.read_parquet(park_current)[["event_id", "park_factor"]]
+        sources.append(park_current)
+    ra_current_df = None
+    if asof_current.exists():
+        ra_current_df = pd.read_parquet(asof_current)[["event_id", "sp_ra_diff_asof"]]
+        sources.append(asof_current)
     frames = []
     for path, unit in ((games_a, "era_2010_2021"), (games_b, "era_2022_2026")):
         games = pd.read_parquet(path)
@@ -54,6 +64,13 @@ def _build_mlb() -> Tuple[pd.DataFrame, List[Path]]:
         out = games[["event_id", "target_home_win"]].merge(elo, on="event_id", how="left")
         out = out.merge(sp, on="event_id", how="left").merge(park_df, on="event_id", how="left")
         out = out.merge(ra_df, on="event_id", how="left").sort_values("date").reset_index(drop=True)
+        if unit == "era_2022_2026" and park_current_df is not None:
+            out = out.merge(park_current_df, on="event_id", how="left", suffixes=("", "_current"))
+            out["park_factor"] = out["park_factor"].combine_first(out.pop("park_factor_current"))
+        if unit == "era_2022_2026" and ra_current_df is not None:
+            out = out.merge(ra_current_df, on="event_id", how="left", suffixes=("", "_current"))
+            out["sp_ra_diff_asof"] = out["sp_ra_diff_asof"].combine_first(
+                out.pop("sp_ra_diff_asof_current"))
         out["corpus_unit"], out["y"], out["p_base"] = unit, out["target_home_win"].astype(float), np.nan
         frames.append(out)
     df = pd.concat(frames, ignore_index=True)

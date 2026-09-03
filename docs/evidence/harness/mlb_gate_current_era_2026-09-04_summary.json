@@ -1,0 +1,106 @@
+{
+  "row": "S180",
+  "metric": "full-census non-null count per corpus_unit",
+  "columns": [
+    "event_id",
+    "corpus_unit",
+    "event_date",
+    "y",
+    "p_base",
+    "p_home_elo",
+    "sp_first6_diff_ew",
+    "park_factor",
+    "sp_ra_diff_asof"
+  ],
+  "n": 39162,
+  "denominators": {
+    "era_2010_2021": 27983,
+    "era_2022_2026": 11179
+  },
+  "before": {
+    "era_2010_2021": {
+      "event_id": 27983,
+      "corpus_unit": 27983,
+      "event_date": 27983,
+      "y": 27983,
+      "p_base": 27983,
+      "p_home_elo": 27983,
+      "sp_first6_diff_ew": 24521,
+      "park_factor": 0,
+      "sp_ra_diff_asof": 26559
+    },
+    "era_2022_2026": {
+      "event_id": 11179,
+      "corpus_unit": 11179,
+      "event_date": 11179,
+      "y": 11179,
+      "p_base": 11179,
+      "p_home_elo": 11179,
+      "sp_first6_diff_ew": 0,
+      "park_factor": 0,
+      "sp_ra_diff_asof": 0
+    }
+  },
+  "after": {
+    "era_2010_2021": {
+      "event_id": 27983,
+      "corpus_unit": 27983,
+      "event_date": 27983,
+      "y": 27983,
+      "p_base": 27983,
+      "p_home_elo": 27983,
+      "sp_first6_diff_ew": 24521,
+      "park_factor": 0,
+      "sp_ra_diff_asof": 26559
+    },
+    "era_2022_2026": {
+      "event_id": 11179,
+      "corpus_unit": 11179,
+      "event_date": 11179,
+      "y": 11179,
+      "p_base": 11179,
+      "p_home_elo": 11179,
+      "sp_first6_diff_ew": 0,
+      "park_factor": 10517,
+      "sp_ra_diff_asof": 9765
+    }
+  },
+  "ceilings": {
+    "park_factor": {
+      "source_rows": 10826,
+      "non_null_on_era_2022_2026_ids": 10517,
+      "denominator": 11179
+    },
+    "sp_ra_diff_asof": {
+      "source_rows": 10458,
+      "non_null_on_era_2022_2026_ids": 9765,
+      "denominator": 11179
+    },
+    "sp_first6_diff_ew": {
+      "served_era_2022_2026_ids": 0,
+      "status": "CLOSED AT LIMIT"
+    }
+  },
+  "controls": {
+    "schema_identical": true,
+    "row_count_identical": true,
+    "legacy_dataframe_equals": true,
+    "y_non_null": 39162,
+    "p_base_non_null": 39162,
+    "mlb_gate_features": 5,
+    "mlb_gate_hypotheses": 45,
+    "fwer_artifact_local_check": "NOT VERIFIED - artifact absent in this worktree"
+  },
+  "sources": [
+    "data/domains/mlb/games.parquet",
+    "data/domains/mlb/games_current.parquet",
+    "data/domains/mlb/asof_park.parquet",
+    "data/domains/mlb/asof_features.parquet",
+    "data/domains/mlb/asof_park_current.parquet",
+    "data/domains/mlb/asof_features_current.parquet"
+  ],
+  "artifacts": {
+    "legacy_before": "docs/evidence/harness/mlb_gate_current_era_2026-09-04_legacy_before.parquet",
+    "after_full": "docs/evidence/harness/mlb_gate_current_era_2026-09-04_after.parquet"
+  }
+}
