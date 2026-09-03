@@ -1,0 +1,35 @@
+{
+  "g140": "corner pixel targets on G136",
+  "decision_set": {
+    "source_manifest": "../g130_recensus/rejudge_selection_manifest.json",
+    "source_seed": 13020260903,
+    "manifest_frames": 42,
+    "g136_census_frames": 210,
+    "g136_four_corner_frames": 97,
+    "selected_qualifying_frames": 17,
+    "selection_rule": "existing fixed 42-frame manifest intersected with immutable first-pass visible_paint_corners >= 4"
+  },
+  "targets": {
+    "role_vocabulary": [
+      "paint_near_baseline_left_corner",
+      "paint_near_baseline_right_corner",
+      "paint_near_free_throw_left_corner",
+      "paint_near_free_throw_right_corner"
+    ],
+    "target_rows": 68,
+    "unique_frames": 17,
+    "renders": 17
+  },
+  "blind_self_agreement": {
+    "seed": 13020260903,
+    "frame_count": 3,
+    "role_pairs": 12,
+    "median_displacement_px": 10.971927,
+    "p90_displacement_px": 11.39295
+  },
+  "g136_caveat": {
+    "reachability_agreement": "28/42 = 66.7%",
+    "wilson_95_pct": "51.6% to 79.0%",
+    "effect": "The 68 target roles are conditioned on G136's caveated first-pass census, not a precise independent visibility denominator."
+  }
+}
