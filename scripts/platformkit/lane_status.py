@@ -71,7 +71,11 @@ def worktree_state(home: str) -> dict:
     repo = WORKTREE % home
     if not os.path.isdir(repo):
         return {"exists": False}
-    dirty = _git(repo, "status", "--porcelain", "--", ".")
+    # Match codex-sport exactly: it excludes the specs dir from its dirty check
+    # because it COPIES the spec in itself, so a modified spec is never a reason
+    # it would refuse. Counting it here raised false alarms on five worktrees.
+    dirty = _git(repo, "status", "--porcelain", "--", ".",
+                 ":(exclude)docs/evidence/tracking/specs")
     cherry = [l for l in _git(repo, "cherry", "master").splitlines() if l.startswith("+")]
     # An UNLANDED count is a QUESTION, not a problem to clear. Freeing a worktree
     # DESTROYS any commit whose content is not already on master -- that is how
