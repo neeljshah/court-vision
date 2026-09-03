@@ -16,6 +16,12 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G171 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G171 | all | 1 of 10 sports' reference files has been overwritten since first write (`tennis.mp4`), matching the mtime measurement. The fix preserves canonical references and archives a better clip only as a unique sibling, so an existing reference is never replaced. 0 overwritten by this work; no footage deleted; the lost clip NOT restored. | `g171_reference_store_immutable_2026-09-03.md`; `footage_bridge.py` | **ACCEPT -- A1 in master: 44 footage_bridge tests pass, and the file still carries the other session's 5 NO_WINDOW sites and this session's 3 `_pod_cfg` uses, so the landing clobbered neither.** |
+
 ## G169 / G170 result register
 
 | Gap | Sport | Finding | Evidence | Status |

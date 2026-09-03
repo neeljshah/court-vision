@@ -77,10 +77,9 @@ REMOTE_CORPUS = POD_ROOT + "/data/footage_corpus"
 LOCAL_STAGE = Path("data/videos/bridge")
 COOKIES = Path("data/videos/youtube_cookies.txt")
 LEDGER = Path("data/tracking/footage_bridge_ledger.jsonl")
-# ONE reference clip per sport is kept permanently so tracking work can be
-# re-measured. Deleting every copy is right for disk, but it left the
-# homography investigation unable to produce a before/after because no footage
-# survived. Gitignored under data/, capped at one file per sport.
+# The first reference clip per sport is permanent so tracking work can be
+# re-measured. A later, stronger clip is retained under a unique sibling name;
+# no reference file is ever replaced or deleted. Gitignored under data/.
 REFERENCE_DIR = Path("data/videos/reference")
 TRACKING_REPORT_DIR = Path("data/tracking_reports")
 TRACKING_DIR = Path("data/tracking")
@@ -603,19 +602,33 @@ def _reference_quality(local: Path, sport: str) -> Optional[dict]:
 
 
 def _reference_clip(sport: str) -> Optional[Path]:
-    """The retained clip for a sport, excluding its JSON metadata sidecar."""
+    """The immutable canonical clip for a sport, excluding its sidecar."""
     for path in REFERENCE_DIR.glob(sport + ".*"):
         if path.is_file() and path.stem == sport and path.suffix != ".json":
             return path
     return None
 
 
-def keep_reference(local: Path, sport: str) -> bool:
-    """Retain the BEST known clip per sport, replacing a weaker incumbent.
+def _reference_destination(local: Path, sport: str,
+                           incumbent: Optional[Path]) -> Path:
+    """Choose a fresh sibling for an improved clip without replacing a reference."""
+    if incumbent is None:
+        return REFERENCE_DIR / (sport + local.suffix)
+    stem = sport + "." + local.stem
+    destination = REFERENCE_DIR / (stem + local.suffix)
+    suffix = 2
+    while destination.exists():
+        destination = REFERENCE_DIR / (stem + "." + str(suffix) + local.suffix)
+        suffix += 1
+    return destination
 
-    Ranked by (passed, rows), so a game that clears the harness always beats
-    one that does not. The previous version kept the FIRST clip forever, which
-    let a nine-row clip become a sport's permanent baseline.
+
+def keep_reference(local: Path, sport: str) -> bool:
+    """Retain a first clip permanently and stronger clips as immutable siblings.
+
+    Candidates are ranked by (passed, rows) only to decide whether a later clip
+    merits archival. The canonical first clip and every archived sibling remain
+    byte-stable once published.
 
     An unmeasured candidate is kept PROVISIONALLY when there is no incumbent,
     so a run always retains footage; any measured clip then outranks it.
@@ -625,9 +638,8 @@ def keep_reference(local: Path, sport: str) -> bool:
     if provisional:
         quality = {"game_id": local.stem, "rows": 0, "passed": False,
                    "provisional": True}
-    sidecar = REFERENCE_DIR / (sport + ".reference.json")
     candidate = REFERENCE_DIR / (sport + ".candidate" + local.suffix)
-    metadata = REFERENCE_DIR / (sport + ".reference.json.new")
+    metadata: Optional[Path] = None
     try:
         REFERENCE_DIR.mkdir(parents=True, exist_ok=True)
         incumbent = _reference_clip(sport)
@@ -635,28 +647,29 @@ def keep_reference(local: Path, sport: str) -> bool:
             if provisional:
                 return False  # never displace a clip with an unmeasured one
             try:
-                prior = json.loads(sidecar.read_text(encoding="utf-8"))
+                incumbent_sidecar = incumbent.with_suffix(".reference.json")
+                prior = json.loads(incumbent_sidecar.read_text(encoding="utf-8"))
                 prior_rank = (bool(prior["passed"]), int(prior["rows"]))
             except (OSError, ValueError, TypeError, KeyError):
                 prior_rank = (False, -1)  # unreadable sidecar must not lock us out
             if (bool(quality["passed"]), int(quality["rows"])) <= prior_rank:
                 return False
+        destination = _reference_destination(local, sport, incumbent)
+        sidecar = destination.with_suffix(".reference.json")
+        metadata = sidecar.with_suffix(sidecar.suffix + ".new")
         local.replace(candidate)
         metadata.write_text(json.dumps(quality, sort_keys=True), encoding="utf-8")
-        destination = REFERENCE_DIR / (sport + local.suffix)
-        # Stage before publishing: a failed publish leaves the incumbent intact,
-        # and an incumbent with a different suffix is removed only afterwards.
+        # Stage before publishing: a failed publish leaves every reference intact.
         candidate.replace(destination)
         metadata.replace(sidecar)
-        if incumbent is not None and incumbent != destination:
-            incumbent.unlink()
-        print("kept reference clip for %s (rows=%d passed=%s%s)"
+        print("kept immutable reference clip for %s (rows=%d passed=%s%s)"
               % (sport, quality["rows"], quality["passed"],
                  " provisional" if provisional else ""), flush=True)
         return True
     except OSError as exc:
         candidate.unlink(missing_ok=True)
-        metadata.unlink(missing_ok=True)
+        if metadata is not None:
+            metadata.unlink(missing_ok=True)
         print("reference keep failed for %s: %s" % (sport, exc), flush=True)
         return False
 

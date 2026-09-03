@@ -602,7 +602,7 @@ def test_unmeasured_clip_is_kept_provisionally_when_nothing_is_retained(
     assert (tmp_path / "ref" / "tennis.mp4").is_file()
 
 
-def test_a_measured_clip_replaces_a_provisional_one(monkeypatch, tmp_path):
+def test_a_measured_clip_keeps_the_canonical_reference_immutable(monkeypatch, tmp_path):
     ref = tmp_path / "ref"
     ref.mkdir()
     (ref / "tennis.mp4").write_bytes(b"old")
@@ -620,7 +620,8 @@ def test_a_measured_clip_replaces_a_provisional_one(monkeypatch, tmp_path):
     clip.write_bytes(b"better")
 
     assert footage_bridge.keep_reference(clip, "tennis") is True
-    assert (ref / "tennis.mp4").read_bytes() == b"better"
+    assert (ref / "tennis.mp4").read_bytes() == b"old"
+    assert (ref / "tennis.tennis_09.mp4").read_bytes() == b"better"
 
 
 def test_a_worse_clip_never_displaces_the_incumbent(monkeypatch, tmp_path):
