@@ -1,0 +1,24 @@
+{
+  "row": "S179",
+  "sport": "mlb",
+  "date": "2026-09-04",
+  "verdict": "FALSIFIED",
+  "premise": "Both named corpora must be available for read-only re-measurement before code changes.",
+  "sources": {
+    "s06": {
+      "path": "data/cache/eval_gate/s06_stacker_series_2026-09-03.csv",
+      "exists": false,
+      "tracked": false,
+      "ignore_rule": ".gitignore:516:data/*"
+    },
+    "s88": {
+      "path": "docs/evidence/harness/s88_phase_recal_2026-09-04.csv",
+      "exists": true,
+      "bytes": 4311731
+    }
+  },
+  "scoring_performed": false,
+  "reason": "The required S06 corpus is absent; no substitute corpus was used.",
+  "memo": "docs/evidence/harness/fold_key_purge_2026-09-04.md",
+  "fold_rows": "docs/evidence/harness/fold_key_purge_2026-09-04_folds.json"
+}

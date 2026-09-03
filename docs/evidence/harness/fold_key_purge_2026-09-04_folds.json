@@ -1,0 +1,6 @@
+{
+  "row": "S179",
+  "status": "NOT_MEASURABLE",
+  "reason": "Required S06 source data/cache/eval_gate/s06_stacker_series_2026-09-03.csv is absent.",
+  "folds": []
+}
