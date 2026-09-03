@@ -4,7 +4,11 @@ from __future__ import annotations
 import csv
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
+from math import isfinite
 from pathlib import Path
+from typing import Any
+
+from scripts.platformkit.tracking_timebase import sampling_plan
 
 
 @dataclass(frozen=True)
@@ -111,3 +115,56 @@ def audit_paired_ball_table(tracking_table_path: str | Path) -> PairedFrameAudit
 def attempted_frames_from_paired_ball_table(tracking_table_path: str | Path) -> int | None:
     """Return a verified sibling ball-frame count, otherwise fail closed with ``None``."""
     return audit_paired_ball_table(tracking_table_path).attempted_frames
+
+
+def _positive_integral(value: object) -> int | None:
+    """Return one finite positive integer without rounding a source fact."""
+    if isinstance(value, bool):
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    if not isfinite(number) or number <= 0 or not number.is_integer():
+        return None
+    return int(number)
+
+
+def _positive_float(value: object) -> float | None:
+    """Return one finite positive source rate without inventing a fallback."""
+    if isinstance(value, bool):
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    return number if isfinite(number) and number > 0 else None
+
+
+def evaluated_frames_from_metadata(decoded_frames: object, source_fps: object,
+                                   max_frames: object) -> int | None:
+    """Count pre-tracking adapter evaluations from recorded source facts only."""
+    decoded = _positive_integral(decoded_frames)
+    fps = _positive_float(source_fps)
+    cap = _positive_integral(max_frames)
+    if decoded is None or fps is None or cap is None:
+        return None
+    stride = sampling_plan(fps).stride
+    return len(range(0, min(decoded, stride * cap), stride))
+
+
+def _stable_column_value(frame: Any, column: str) -> object | None:
+    """Return a value only when every emitted row repeats one non-null fact."""
+    if column not in frame or frame.empty or frame[column].isna().any():
+        return None
+    values = frame[column].unique()
+    return values[0] if len(values) == 1 else None
+
+
+def evaluated_frames_from_tracking_table(frame: Any) -> int | None:
+    """Derive direct-harness attempts from stable producer metadata, else ``None``."""
+    return evaluated_frames_from_metadata(
+        _stable_column_value(frame, "decoded_frames"),
+        _stable_column_value(frame, "source_fps"),
+        _stable_column_value(frame, "max_frames"),
+    )

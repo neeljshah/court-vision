@@ -30,17 +30,17 @@ def _write_pair(tmp_path: Path, tracking_frames: int, ball_frames: int) -> Path:
     return tracking_path
 
 
-def test_direct_csv_scoring_uses_verified_sibling_ball_frame_count(tmp_path):
+def test_verified_sibling_ball_count_is_not_a_direct_harness_fallback(tmp_path):
     tracking_path = _write_pair(tmp_path, tracking_frames=100, ball_frames=200)
 
     report = evaluate_csv_path(str(tracking_path), "basketball")
 
     assert attempted_frames_from_paired_ball_table(tracking_path) == 200
-    assert report.attempted_frames == 200
-    assert report.coverage_attempted_frames_pct == 0.5
-    assert report.ball_valid_attempted_frames_pct == 0.5
+    assert report.attempted_frames is None
+    assert report.coverage_attempted_frames_pct is None
+    assert report.ball_valid_attempted_frames_pct is None
     assert not report.passed
-    assert any(failure.startswith("coverage_attempted_frames") for failure in report.failures)
+    assert "attempted_frames unavailable" in report.failures
 
 
 def test_non_superset_sibling_ball_table_is_never_used_as_denominator(tmp_path):

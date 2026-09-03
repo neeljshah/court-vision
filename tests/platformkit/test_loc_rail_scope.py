@@ -140,7 +140,7 @@ ALLOWLIST: dict[str, int] = {
     "scripts/platformkit/specs/predictabilitytendencies_mlb.py": 751,
     "scripts/platformkit/specs/predictabilitytendencies_nba.py": 732,
     "scripts/platformkit/specs/predictabilitytendencies_tennis.py": 678,
-    "scripts/platformkit/tracking_harness.py": 416,  # 331 -> 416: tracking-session G197 coverage-denominator fix 93baf7587 (their verified landing); raised by the harness orchestrator
+    "scripts/platformkit/tracking_harness.py": 425,  # 331 -> 416 G197; -> 425 G204 direct source-metadata denominator (A12).
     "scripts/platformkit/track_daemon.py": 440,  # 437 -> 440 via tracking-session landings 2026-09-04 (their G rows); raised by the harness orchestrator
     "scripts/platformkit/venue_history/nba_close_corpus.py": 326,
 }

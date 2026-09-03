@@ -11,7 +11,7 @@ from typing import Mapping
 
 import pandas as pd
 
-from scripts.platformkit.attempted_frame_count_source import attempted_frames_from_paired_ball_table
+from scripts.platformkit.attempted_frame_count_source import evaluated_frames_from_tracking_table
 from scripts.platformkit.liveness_metrics import compute_liveness_metrics, liveness_failures
 from scripts.platformkit.metric_local_profile import report_fields as metric_local_report_fields
 from scripts.platformkit.tracking_schema import (
@@ -410,10 +410,11 @@ def evaluate(df: pd.DataFrame, sport: str,
 
 def evaluate_csv_path(path: str, sport: str,
                       config_version: str = DEFAULT_CONFIG_VERSION) -> QualityReport:
-    """Score a direct CSV using only a verified sibling-ball denominator."""
+    """Score a direct CSV using only its stable pre-tracking metadata count."""
+    frame = pd.read_csv(path)
     return evaluate(
-        pd.read_csv(path), sport, config_version, source=path,
-        attempted_frames=attempted_frames_from_paired_ball_table(path),
+        frame, sport, config_version, source=path,
+        attempted_frames=evaluated_frames_from_tracking_table(frame),
     )
 
 
