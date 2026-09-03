@@ -16,6 +16,13 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G169 / G170 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G169 | tennis | Compared local reference (2,024,970,178 B) against pod `tennis_smoke.mp4` (38,094,576 B); different sizes and hashes; branch (d) nondeterminism NOT entered. Both decode 28,773 frames. Local OpenCV 4.11.0, pod OpenCV 5.0.0. | `g169_emitted_frame_nondeterminism_2026-09-03.md` | **ACCEPT WITH CORRECTIONS -- nondeterminism correctly ruled out, but the local file was overwritten at 09:45:18 and BOTH original runs predate that, so the size/hash difference is an artefact of the swap, not the cause. The 2,597-vs-726 discrepancy is still OPEN; leading candidate is cv2 4.11.0 local vs 5.0.0 pod.** |
+| G170 | all | `data/videos/reference/tennis.mp4` mtime 2026-09-03 09:45:18 at 2,024,970,178 B; every other sport's reference dates 2026-08-31/09-01 and none exceeds 831 MB. The bridge overwrote the permanent reference clip with a freshly downloaded full game mid-session. | orchestrator measurement from mtimes and sizes | **RECORDED -- a store documented as permanent silently mutates, which makes every "re-measure later" promise conditional. G152b measured the 38 MB clip and G161 the 2 GB one; both decode 28,773 frames as the same content at two encodes, so G161's labels remain index-compatible and NO result is retracted. G168's pairing of the two is flagged.** |
+
 ## G167 result register
 
 | Gap | Sport | Finding | Evidence | Status |
@@ -172,7 +179,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G170  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G171  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
