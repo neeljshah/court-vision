@@ -1,0 +1,6 @@
+role,claimed_correct,claimed_total,claimed_correct_rate,claimed_wilson_95_low,claimed_wilson_95_high,available_from_stable_groups,available_total,available_rate,available_wilson_95_low,available_wilson_95_high,available_minus_correct
+baseline,0,21,0.000000,0.000000,0.154639,0,21,0.000000,0.000000,0.154639,0
+free_throw,0,21,0.000000,0.000000,0.154639,1,21,0.047619,0.008456,0.226694,1
+lane_left,0,21,0.000000,0.000000,0.154639,0,21,0.000000,0.000000,0.154639,0
+lane_right,0,21,0.000000,0.000000,0.154639,0,21,0.000000,0.000000,0.154639,0
+overall,0,84,0.000000,0.000000,0.043732,1,84,0.011905,0.002105,0.064395,1
