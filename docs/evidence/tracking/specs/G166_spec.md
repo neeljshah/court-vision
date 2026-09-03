@@ -28,7 +28,7 @@ solved, and that is a different and more tractable problem.
 
 DO THIS:
   (a) Instrument READ-ONLY. Add temporary counting that does NOT change behaviour -- count calls to
-      `_end_track_ids` by call site, on a local run over the reference tennis clip. Do not commit an
+      `_end_track_ids` by call site, on a POD run over the reference tennis clip (see POD below). Do not commit an
       instrumented adapter; commit the counts and the diff you used, clearly marked as a measurement
       harness that was not landed.
   (b) Report, over an ELIGIBLE DENOMINATOR of total epoch ends: the count and share from `detect_cut`,
@@ -63,7 +63,7 @@ ACCEPTANCE RULE:
   bar           = NO pass bar. Success is the split measured with its denominator named and the eye
                   check done. "Cuts dominate, the bar is unreachable on broadcast footage" is a FULL
                   SUCCESS and closes the question.
-  n             = every epoch end on one full local run (CONSTRUCT, exhaustive); state the count
+  n             = every epoch end on one full run (CONSTRUCT, exhaustive); state the count
   eye check     = REQUIRED: 5 evenly-sampled epoch-boundary frame PAIRS, committed, with a verdict on
                   each as genuine cut or false reset
   must not move = the tennis adapter, identity.py, the camera lock, the 8.0 drift threshold,
