@@ -1,4 +1,4 @@
-GAP S179 | sport mlb | worktree aXX | log cx_s179_fold_key_purge
+GAP S179 | sport mlb | worktree a13 | log cx_s179_fold_key_purge
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read A1-A7, B1-B10 and section Q (Q1-Q9); self-check every line of B and Q before you report.
 PREMISE (step 0): re-measure both, read-only, before touching code. On data/cache/eval_gate/s06_stacker_series_2026-09-03.csv (47,104 rows / 158 tickers / 0 null y) reproduce stacker._first_dates (stacker.py:53-57, str(timestamp)[:10] min per game) and outer_walk_forward's rule (stacker.py:138-141, train_games = {g : first[g] < date}), then count train rows whose OWN timestamp is >= that fold's first test tick.
 Reproduced 2026-09-03: 12 folds, 27,571 / 334,844 = 8.2340 pct; 149 of 957 train-game-fold slots carry >= 1 post-cut tick; worst 2026-07-01 5,515/7,118 = 77.48 pct, 2026-07-02 3,314/12,476 = 26.56 pct, 2026-07-04 3,277/19,217 = 17.05 pct.
