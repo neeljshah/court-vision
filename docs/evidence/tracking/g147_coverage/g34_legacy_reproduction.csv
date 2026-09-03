@@ -1,0 +1,5 @@
+table,rows,frame_min,frame_max,emitted_frames,coverage_numerator_frames,coverage_harness,stated_stride,processable_frames,coverage_on_processable,inflation_factor,reproduction_status
+tennis_02,2421,90,28767,1951,295,0.151204511,3,9560,0.030857741,4.900051256,REPRODUCED
+tennis_03,5610,45,28236,3392,1490,0.439268868,3,9398,0.158544371,2.770636792,REPRODUCED
+tennis_04,7492,27,28770,3789,2273,0.599894431,3,9582,0.237215613,2.528899446,REPRODUCED
+tennis_05,4303,138,23994,2905,954,0.328399312,3,7953,0.119954734,2.737693632,REPRODUCED

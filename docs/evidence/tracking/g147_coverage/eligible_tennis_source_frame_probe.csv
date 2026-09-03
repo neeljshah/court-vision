@@ -1,0 +1,9 @@
+table,source,rows,emitted_frames,coverage_numerator_frames,current_harness_coverage,source_stream_nb_frames,candidate_full_source_coverage,candidate_inflation,modal_stride,decoder_count_frames_verified,status
+g89_tennis_09,tennis_09,2850,1226,1226,1.000000,7507,0.163314,6.123165,2,false,NOT_VERIFIED_noncontiguous_output_scope
+g89_tennis_10,tennis_10,2103,880,880,1.000000,7252,0.121346,8.240909,2,false,NOT_VERIFIED_noncontiguous_output_scope
+g89_tennis_nyYk2nPZAwY_720p,tennis_nyYk2nPZAwY_720p,5333,2245,2245,1.000000,48048,0.046724,21.402227,5,false,NOT_VERIFIED_noncontiguous_output_scope
+tennis_06,tennis_06,340,141,141,1.000000,24084,0.005855,170.808511,2,false,NOT_VERIFIED_noncontiguous_output_scope
+tennis_07,tennis_07,7128,2925,2924,0.999658,24051,0.121575,8.222564,2,false,NOT_VERIFIED_noncontiguous_output_scope
+tennis_08,tennis_08,26630,10589,10572,0.998395,24055,0.439493,2.271697,2,false,NOT_VERIFIED_source_frame_mismatch
+tennis_3x3eEWCZmWQ,tennis_3x3eEWCZmWQ,266,101,101,1.000000,24024,0.004204,237.861386,2,false,NOT_VERIFIED_noncontiguous_output_scope
+tennis_nyYk2nPZAwY,tennis_nyYk2nPZAwY,415,160,160,1.000000,24024,0.006660,150.150000,2,false,NOT_VERIFIED_noncontiguous_output_scope
