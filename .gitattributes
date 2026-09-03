@@ -1,1 +1,3 @@
 *.sh text eol=lf
+docs/evidence/harness/S76_charge_path_followups_2026-09-04_archive.json text eol=lf
+docs/evidence/harness/S76_charge_path_followups_2026-09-04_ledger.json text eol=lf
