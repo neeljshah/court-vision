@@ -34,6 +34,7 @@ import pandas as pd
 
 from scripts.platformkit.eval_gate.dm_test import diebold_mariano
 from scripts.platformkit.foundry.screen_predictor import RIDGE, _logistic, _logit
+from scripts.platformkit.foundry.tick_partition import screen_side
 from scripts.platformkit.foundry.tiers import partition_corpus
 from scripts.platformkit.mlb_state_features import game_state_features
 
@@ -238,13 +239,23 @@ def score_feature(rows: pd.DataFrame, candidate: pd.Series, null: pd.Series, col
             "feature_coverage": float(rows[column].notna().mean()), "phase_coverage_inning": coverage}
 
 
+def _summaries(ticks, rows: pd.DataFrame) -> List[Any]:
+    """The state_summary of each scored row, so the S121 tick partition can purge by real game."""
+    return [(ticks[i].get("state_summary") or (ticks[i].get("raw") or {}).get("state_summary"))
+            for i in rows["row_id"]]
+
+
 def run(ticks, e4, table, first_dates, *, out_json: Optional[Path] = None,
-        out_csv: Optional[Path] = None, features: Optional[Mapping[str, str]] = None) -> dict:
-    """Screen every supplied in-game state feature on the SCREEN side; archive the differential."""
+        out_csv: Optional[Path] = None, features: Optional[Mapping[str, str]] = None,
+        mode: Optional[str] = None) -> dict:
+    """Screen every supplied in-game state feature on the SCREEN side; archive the differential.
+
+    `mode` (or FOUNDRY_INGAME_PARTITION) selects the S121 partition grain; the default stays
+    the frozen ticker-week rule so this artifact reproduces S82 byte-identically."""
     features = dict(FEATURES if features is None else features)
     rows = screen_rows(ticks, e4, table, first_dates)
     part = partition(rows)
-    side = rows[rows["game"].isin(part.screen_ids)].reset_index(drop=True)
+    side, side_meta = screen_side(rows, part, mode=mode, state_summary=_summaries(ticks, rows))
     results: List[dict] = []
     series: List[pd.DataFrame] = []
     for member, column in sorted(features.items()):
@@ -271,7 +282,7 @@ def run(ticks, e4, table, first_dates, *, out_json: Optional[Path] = None,
     report = {"tier": "in-game screen (S82)", "verdict": "SCREEN (a non-finding)", "sport": "mlb",
               "bar": BAR, "seed": SEED, "embargo_days": EMBARGO_DAYS, "min_train": MIN_TRAIN,
               "partition": {"basis": part.basis, "screen_sha256": part.screen_sha256,
-                            "verdict_sha256": part.verdict_sha256,
+                            "verdict_sha256": part.verdict_sha256, "tick_grain": side_meta,
                             "n_screen_games": len(part.screen_ids), "n_verdict_games": len(part.verdict_ids)},
               "corpus": {"n_scored_ticks": int(len(rows)), "n_scored_games": int(rows["game"].nunique()),
                          "n_screen_ticks": int(len(side)), "n_screen_games": int(side["game"].nunique()),

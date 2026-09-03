@@ -39,6 +39,7 @@ import pandas as pd
 
 from scripts.platformkit.eval_gate.tick_informative import attach_informative_summary
 from scripts.platformkit.foundry import ingame_screen
+from scripts.platformkit.foundry.tick_partition import screen_side
 from scripts.platformkit.foundry.ingame_screen import (BAR, ROOT, assert_tick_asof, partition,
                                                        score_feature, screen_rows,
                                                        walk_forward_feature)
@@ -163,7 +164,7 @@ def _extrapolate(half_width: float, n_games: int) -> Optional[float]:
 
 def run(ticks, first_dates, table, *, out_json: Optional[Path] = None,
         out_csv: Optional[Path] = None, census: Optional[dict] = None,
-        min_train: int = ingame_screen.MIN_TRAIN) -> dict:
+        min_train: int = ingame_screen.MIN_TRAIN, mode: Optional[str] = None) -> dict:
     """Screen every soccer state feature on the SCREEN side of the iso_week split.
 
     `min_train` is the reused walk-forward's own TRAIN FLOOR, not a bar: BAR (+0.004) is never
@@ -173,7 +174,9 @@ def run(ticks, first_dates, table, *, out_json: Optional[Path] = None,
     """
     rows = screen_rows(ticks, [t["model_prob"] for t in ticks], table, first_dates)
     part = partition(rows)
-    side = rows[rows["game"].isin(part.screen_ids)].reset_index(drop=True)
+    # state_summary=None: real_game_split's boundary rules are inning-based (MLB); a soccer
+    # summary parses to inning=None, so no real-game purge is claimed here (meta says so).
+    side, side_meta = screen_side(rows, part, mode=mode)
     results: List[dict] = []
     series: List[pd.DataFrame] = []
     floor_was, ingame_screen.MIN_TRAIN = ingame_screen.MIN_TRAIN, int(min_train)
@@ -189,7 +192,7 @@ def run(ticks, first_dates, table, *, out_json: Optional[Path] = None,
               "arm": "headline (verbatim train floor)" if int(min_train) == floor_was
                      else "SENSITIVITY (train floor lowered for corpus size; BAR untouched)",
               "census": dict(census or {}),
-              "partition": {"basis": part.basis, "scored_side": "screen",
+              "partition": {"basis": part.basis, "scored_side": "screen", "tick_grain": side_meta,
                             "screen_sha256": part.screen_sha256,
                             "verdict_sha256": part.verdict_sha256,
                             "n_screen_games": len(part.screen_ids),
