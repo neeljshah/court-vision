@@ -421,3 +421,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-03 | ops | S189 | explicit-floor census 3/7 -> 6/7; premise matrix 9/9 and post-change matrix 7/7; LANDED 45fed2287 | ACCEPT (verified: codex-sol, contract A/B/Q)
 2026-09-03 | in-play regression | S198 | before 1/16 failing; candidate 0/16; first bad c1b3f4358; 58 required tests passed; LANDED 0ae6c290d6329b1c1e01e21b41a765ff05913b49 | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q)
 2026-09-03 | ops deploy byte parity | S190 | n=4,950; identical=4,926; eol_only=2; content=22; absent=0; LANDED 8d5620fd8 | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q)
+2026-09-03 | WNBA state census | S199 | premise falsified: 707 prior joined rows are post-final and the required four classes omit 790 future-only rows; LANDED eb7bc8b8bed88db9bf8f09bc308117472165ba94 | FALSIFIED (verified: codex-sol, contract A/B/Q)
