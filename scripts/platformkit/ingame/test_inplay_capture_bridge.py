@@ -91,20 +91,24 @@ def test_bridge_enables_ingame_bet(monkeypatch, tmp_path):
     """Full chain: Kalshi-id miss -> bridge by team -> calibrated model -> gates -> tier bet."""
     monkeypatch.setattr(L._ls, "live_states",
                         lambda sport, **kw: [_LIVE_USA_MEX] if sport == "soccer_intl" else [])
-    hb = L.poll_once(
+    positions = {}
+    poll_args = dict(
         sports=["soccer_intl"],
         inplay_fetch_fn=lambda s: _kalshi_legs(),
         live_state_fn=lambda s, g: None,        # simulate the Kalshi-ticker miss
-        model_fn=lambda s, st: 0.82,            # stub calibrated P(home win) as-of tick
+        model_fn=lambda s, st: 0.65,            # calibrated fixture below the divergence cap
         finals_fn=lambda s: [],
         grade_dir=tmp_path / "grade",
         ledger_path=tmp_path / "ingame_ledger.jsonl",
         now=datetime(2026, 6, 22, 20, 0, 0, tzinfo=timezone.utc),  # ticket's own ET date
     )
+    resting = L.poll_once(**poll_args, positions=positions)
+    assert resting["games"][0]["action"] == "resting"
+    hb = L.poll_once(**poll_args, positions=positions)
     assert hb["n_pairs"] == 1 and hb["n_bets"] == 1
     g = hb["games"][0]
     assert g["paired"] is True and g["bet"] is True
-    assert g["action"] == "bet" and g["tier"] in ("A", "B", "C") and g["reason"] == "ok"
+    assert g["action"] == "bet" and g["tier"] in ("A", "B", "C") and g["reason"] == "maker_fill_cross"
 
 
 _LIVE_MIL_PIT = {
