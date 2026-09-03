@@ -38,6 +38,7 @@ from typing import Any, Dict, Iterable, Optional
 import pandas as pd
 
 from scripts.platformkit.eval_gate import s100_microstructure as S100
+from scripts.platformkit.venue_history.game_key import game_key_from_event_key
 
 REPO = Path(__file__).resolve().parents[3]
 MLB_PRICES = REPO / "data" / "cache" / "inplay_odds" / "mlb_price_series.parquet"
@@ -66,7 +67,7 @@ def rekey_market_overlap(frame: pd.DataFrame, required_types: Iterable[str]) -> 
     synthetic, so it is exercised by a CONSTRUCT test with no store read.
     """
     required = set(required_types)
-    suffix = frame["event_key"].astype(str).str.split("-", n=1).str[1]
+    suffix = game_key_from_event_key(frame["event_key"])
     types_per_game = frame.assign(_suffix=suffix).groupby("_suffix")["market_type"].apply(set)
     matched = types_per_game[types_per_game.apply(lambda s: required.issubset(s))]
     return {

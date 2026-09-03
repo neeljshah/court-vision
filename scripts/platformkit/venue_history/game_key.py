@@ -1,4 +1,8 @@
-"""Shared event-key to game-key derivation for price-series readers."""
+"""Shared event-key to game-key derivation.
+
+Importers: venue_history.build_price_series, eval_gate.s99_corpus, and
+ingame.s90_microstructure_screen.
+"""
 from __future__ import annotations
 
 import pandas as pd
