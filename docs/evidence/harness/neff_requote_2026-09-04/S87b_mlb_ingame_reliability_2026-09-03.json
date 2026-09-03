@@ -1,0 +1,1451 @@
+{
+ "bin_edge_rule": "calib_decomp.bin_edges(bins) -- np.linspace(0, 1, bins + 1) equal-width edges, bin k = [lo, hi) except the last = [lo, hi]; the SAME rule eval_gate.scoring.ece and calib_decomp.decompose bin by (gap S42)",
+ "bin_edges": [
+  0.0,
+  0.1,
+  0.2,
+  0.30000000000000004,
+  0.4,
+  0.5,
+  0.6000000000000001,
+  0.7000000000000001,
+  0.8,
+  0.9,
+  1.0
+ ],
+ "bins": 10,
+ "ess_note": "effective_sample_size over each series' OWN per-tick residual loss (model_prob - outcome) ** 2, clustered by game; the column is named loss_differential by that function's signature, it is a level not a paired difference",
+ "generated_at": "2026-09-02T19:46:34.295985+00:00",
+ "input": {
+  "e4_blend_leakfree_gd": "stacker.e4_gd_series -- the game-first-date leak-free e4 variant scored by S06 (column pair_leakfree)",
+  "market": "tick market_prob captured per tick by live_grade.capture_pair_once; the same series the E4 trial scored",
+  "per_tick_series": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\eval_gate\\s06_stacker_series_2026-09-03.csv",
+  "raw_model": "tick model_prob",
+  "store": "data/cache/ingame_grade_joined (mlb, window 1)"
+ },
+ "mode": "DESCRIPTIVE",
+ "n_games": 158,
+ "n_ticks": 47104,
+ "note": "DESCRIPTIVE. max-loser-WP is REPORTED here, not gated: no bar, no threshold and no promotion is armed by this artifact. Gating on it would require its own prereg-sealed bar fixed before the first metric (Q3). Calibration, not edge.",
+ "reproduction_max_abs_diff": 2.0261570199409107e-15,
+ "series": {
+  "e4_blend_leakfree_gd": {
+   "base_rate": 0.46335767663043476,
+   "brier": 0.20678577821271302,
+   "ece": 0.07415005786997675,
+   "ess": {
+    "design_effect": 108.37087758940585,
+    "n_eff": 434.65551860221166,
+    "n_games": 158.0,
+    "n_ticks": 47104.0,
+    "rho": 0.3613640919168007
+   },
+   "max_loser_wp": {
+    "above_0_8": 13,
+    "above_0_9": 9,
+    "max": 0.9796684450354352,
+    "n_loser_games": 81,
+    "p50": 0.67,
+    "p90": 0.9059456946102128,
+    "per_game": [
+     {
+      "game": "KXMLBGAME-26JUL011335DETNYY",
+      "max_loser_wp": 0.676264
+     },
+     {
+      "game": "KXMLBGAME-26JUL011335WSHBOS",
+      "max_loser_wp": 0.6796697394958625
+     },
+     {
+      "game": "KXMLBGAME-26JUL011940TBKC",
+      "max_loser_wp": 0.59463780001653
+     },
+     {
+      "game": "KXMLBGAME-26JUL012010MINHOU",
+      "max_loser_wp": 0.6899999999999251
+     },
+     {
+      "game": "KXMLBGAME-26JUL012140SFAZ",
+      "max_loser_wp": 0.67
+     },
+     {
+      "game": "KXMLBGAME-26JUL021235PITPHI",
+      "max_loser_wp": 0.7000000000000001
+     },
+     {
+      "game": "KXMLBGAME-26JUL021410CINMIL",
+      "max_loser_wp": 0.7950000000002418
+     },
+     {
+      "game": "KXMLBGAME-26JUL021915STLATL",
+      "max_loser_wp": 0.8811979950773604
+     },
+     {
+      "game": "KXMLBGAME-26JUL021940TBKC",
+      "max_loser_wp": 0.5781264170129561
+     },
+     {
+      "game": "KXMLBGAME-26JUL031605STLCHC",
+      "max_loser_wp": 0.5238480000000001
+     },
+     {
+      "game": "KXMLBGAME-26JUL031910BALCIN",
+      "max_loser_wp": 0.511968
+     },
+     {
+      "game": "KXMLBGAME-26JUL032015TBHOU",
+      "max_loser_wp": 0.4995499999999999
+     },
+     {
+      "game": "KXMLBGAME-26JUL032138BOSLAA",
+      "max_loser_wp": 0.460136
+     },
+     {
+      "game": "KXMLBGAME-26JUL032145MILAZ",
+      "max_loser_wp": 0.4907999999999999
+     },
+     {
+      "game": "KXMLBGAME-26JUL032210TORSEA",
+      "max_loser_wp": 0.553328
+     },
+     {
+      "game": "KXMLBGAME-26JUL041105PITWSH",
+      "max_loser_wp": 0.56
+     },
+     {
+      "game": "KXMLBGAME-26JUL041335MINNYY",
+      "max_loser_wp": 0.7567954866991191
+     },
+     {
+      "game": "KXMLBGAME-26JUL041605DETTEX",
+      "max_loser_wp": 0.5605439999999999
+     },
+     {
+      "game": "KXMLBGAME-26JUL041910BALCIN",
+      "max_loser_wp": 0.6429159633213107
+     },
+     {
+      "game": "KXMLBGAME-26JUL042008STLCHC",
+      "max_loser_wp": 0.5238480000000001
+     },
+     {
+      "game": "KXMLBGAME-26JUL042010PHIKC",
+      "max_loser_wp": 0.45194
+     },
+     {
+      "game": "KXMLBGAME-26JUL042010SFCOL",
+      "max_loser_wp": 0.6050000000000457
+     },
+     {
+      "game": "KXMLBGAME-26JUL042138BOSLAA",
+      "max_loser_wp": 0.460136
+     },
+     {
+      "game": "KXMLBGAME-26JUL051230NYMATL",
+      "max_loser_wp": 0.7797959252788877
+     },
+     {
+      "game": "KXMLBGAME-26JUL051300PITWSH",
+      "max_loser_wp": 0.539688
+     },
+     {
+      "game": "KXMLBGAME-26JUL051335MINNYY",
+      "max_loser_wp": 0.72
+     },
+     {
+      "game": "KXMLBGAME-26JUL051530DETTEX",
+      "max_loser_wp": 0.6692295576858079
+     },
+     {
+      "game": "KXMLBGAME-26JUL051600MILAZ",
+      "max_loser_wp": 0.6862167198879544
+     },
+     {
+      "game": "KXMLBGAME-26JUL051920SDLAD",
+      "max_loser_wp": 0.8150000000002556
+     },
+     {
+      "game": "KXMLBGAME-26JUL052130BOSLAA",
+      "max_loser_wp": 0.6818061060033381
+     },
+     {
+      "game": "KXMLBGAME-26JUL061840NYYTB",
+      "max_loser_wp": 0.46943
+     },
+     {
+      "game": "KXMLBGAME-26JUL061915NYMATL",
+      "max_loser_wp": 0.9215853723000228
+     },
+     {
+      "game": "KXMLBGAME-26JUL061945MILSTL",
+      "max_loser_wp": 0.9289397717248754
+     },
+     {
+      "game": "KXMLBGAME-26JUL062140AZSD",
+      "max_loser_wp": 0.54532
+     },
+     {
+      "game": "KXMLBGAME-26JUL071415MILSTLG1",
+      "max_loser_wp": 0.6983320605574196
+     },
+     {
+      "game": "KXMLBGAME-26JUL071835CHCBAL",
+      "max_loser_wp": 0.5065999999999999
+     },
+     {
+      "game": "KXMLBGAME-26JUL071845HOUWSH",
+      "max_loser_wp": 0.6886778146184278
+     },
+     {
+      "game": "KXMLBGAME-26JUL071910KCNYM",
+      "max_loser_wp": 0.9728908054533456
+     },
+     {
+      "game": "KXMLBGAME-26JUL071910PHICIN",
+      "max_loser_wp": 0.4562
+     },
+     {
+      "game": "KXMLBGAME-26JUL071945MILSTLG2",
+      "max_loser_wp": 0.6199999999999821
+     },
+     {
+      "game": "KXMLBGAME-26JUL072145TORSF",
+      "max_loser_wp": 0.65
+     },
+     {
+      "game": "KXMLBGAME-26JUL072210COLLAD",
+      "max_loser_wp": 0.9622059040513092
+     },
+     {
+      "game": "KXMLBGAME-26JUL081545TORSF",
+      "max_loser_wp": 0.523496
+     },
+     {
+      "game": "KXMLBGAME-26JUL081835CHCBAL",
+      "max_loser_wp": 0.7733303841397324
+     },
+     {
+      "game": "KXMLBGAME-26JUL081840ATLPIT",
+      "max_loser_wp": 0.685000000000047
+     },
+     {
+      "game": "KXMLBGAME-26JUL082005LAATEX",
+      "max_loser_wp": 0.74
+     },
+     {
+      "game": "KXMLBGAME-26JUL091235ATLPIT",
+      "max_loser_wp": 0.493616
+     },
+     {
+      "game": "KXMLBGAME-26JUL091310NYYTB",
+      "max_loser_wp": 0.72
+     },
+     {
+      "game": "KXMLBGAME-26JUL091340CLEMIN",
+      "max_loser_wp": 0.6050000000000457
+     },
+     {
+      "game": "KXMLBGAME-26JUL091910PHICIN",
+      "max_loser_wp": 0.55
+     },
+     {
+      "game": "KXMLBGAME-26JUL091945MILSTL",
+      "max_loser_wp": 0.614999999999953
+     },
+     {
+      "game": "KXMLBGAME-26JUL092140AZSD",
+      "max_loser_wp": 0.685000000000047
+     },
+     {
+      "game": "KXMLBGAME-26JUL101845NYYWSH",
+      "max_loser_wp": 0.9059456946102128
+     },
+     {
+      "game": "KXMLBGAME-26JUL101910CLEMIA",
+      "max_loser_wp": 0.4967599999999998
+     },
+     {
+      "game": "KXMLBGAME-26JUL101915BOSNYM",
+      "max_loser_wp": 0.490232
+     },
+     {
+      "game": "KXMLBGAME-26JUL102010LAAMIN",
+      "max_loser_wp": 0.6775182925430806
+     },
+     {
+      "game": "KXMLBGAME-26JUL102140TORSD",
+      "max_loser_wp": 0.7913443543653651
+     },
+     {
+      "game": "KXMLBGAME-26JUL102210AZLAD",
+      "max_loser_wp": 0.6582239999999999
+     },
+     {
+      "game": "KXMLBGAME-26JUL102215COLSF",
+      "max_loser_wp": 0.923602117631012
+     },
+     {
+      "game": "KXMLBGAME-26JUL111605NYYWSH",
+      "max_loser_wp": 0.9489533044114548
+     },
+     {
+      "game": "KXMLBGAME-26JUL111610BOSNYM",
+      "max_loser_wp": 0.4950000000002418
+     },
+     {
+      "game": "KXMLBGAME-26JUL111610CLEMIA",
+      "max_loser_wp": 0.52
+     },
+     {
+      "game": "KXMLBGAME-26JUL111810PHIDET",
+      "max_loser_wp": 0.5950000000000351
+     },
+     {
+      "game": "KXMLBGAME-26JUL111905HOUTEX",
+      "max_loser_wp": 0.68
+     },
+     {
+      "game": "KXMLBGAME-26JUL111910CHCCIN",
+      "max_loser_wp": 0.8475229794369307
+     },
+     {
+      "game": "KXMLBGAME-26JUL112110AZLAD",
+      "max_loser_wp": 0.6582239999999999
+     },
+     {
+      "game": "KXMLBGAME-26JUL121335NYYWSH",
+      "max_loser_wp": 0.8154957583705608
+     },
+     {
+      "game": "KXMLBGAME-26JUL121340BOSNYM",
+      "max_loser_wp": 0.9796684450354352
+     },
+     {
+      "game": "KXMLBGAME-26JUL121340CHCCIN",
+      "max_loser_wp": 0.7764573068166826
+     },
+     {
+      "game": "KXMLBGAME-26JUL121340CLEMIA",
+      "max_loser_wp": 0.4952479999999999
+     },
+     {
+      "game": "KXMLBGAME-26JUL121340PHIDET",
+      "max_loser_wp": 0.4579999999999999
+     },
+     {
+      "game": "KXMLBGAME-26JUL121340SEATB",
+      "max_loser_wp": 0.74
+     },
+     {
+      "game": "KXMLBGAME-26JUL121415ATLSTL",
+      "max_loser_wp": 0.6949999999999542
+     },
+     {
+      "game": "KXMLBGAME-26JUL121610AZLAD",
+      "max_loser_wp": 0.9462152038296118
+     },
+     {
+      "game": "KXMLBGAME-26JUN301840TEXCLE",
+      "max_loser_wp": 0.728277481657537
+     },
+     {
+      "game": "KXMLBGAME-26JUN301905DETNYY",
+      "max_loser_wp": 0.676264
+     },
+     {
+      "game": "KXMLBGAME-26JUN301907NYMTOR",
+      "max_loser_wp": 0.571896
+     },
+     {
+      "game": "KXMLBGAME-26JUN301910WSHBOS",
+      "max_loser_wp": 0.6796697394958625
+     },
+     {
+      "game": "KXMLBGAME-26JUN301915STLATL",
+      "max_loser_wp": 0.672634353411408
+     },
+     {
+      "game": "KXMLBGAME-26JUN301940TBKC",
+      "max_loser_wp": 0.59463780001653
+     },
+     {
+      "game": "KXMLBGAME-26JUN302040MIACOL",
+      "max_loser_wp": 0.4038159999999999
+     }
+    ],
+    "quantiles": {
+     "50": 0.67,
+     "75": 0.74,
+     "90": 0.9059456946102128,
+     "95": 0.9462152038296118
+    },
+    "share_above_0_8": 0.16049382716049382,
+    "share_above_0_9": 0.1111111111111111
+   },
+   "murphy": {
+    "reliability": 0.009859802425000152,
+    "resolution": 0.05106073579241581,
+    "uncertainty": 0.2486573401380802
+   },
+   "n_games": 158,
+   "n_ticks": 47104,
+   "reliability_bins": [
+    {
+     "bin": "0.0-0.1",
+     "flag": true,
+     "gap": -0.01710528759896047,
+     "mean_predicted_prob": 0.04047674458553431,
+     "n": 4022,
+     "observed_win_freq": 0.023371456986573842,
+     "status": "OK"
+    },
+    {
+     "bin": "0.1-0.2",
+     "flag": false,
+     "gap": 0.014898720848942837,
+     "mean_predicted_prob": 0.14486136639206043,
+     "n": 1834,
+     "observed_win_freq": 0.15976008724100327,
+     "status": "OK"
+    },
+    {
+     "bin": "0.2-0.3",
+     "flag": true,
+     "gap": 0.053057914239125925,
+     "mean_predicted_prob": 0.2621049930290445,
+     "n": 3192,
+     "observed_win_freq": 0.3151629072681704,
+     "status": "OK"
+    },
+    {
+     "bin": "0.3-0.4",
+     "flag": true,
+     "gap": 0.05974680131592225,
+     "mean_predicted_prob": 0.3566976431285222,
+     "n": 4500,
+     "observed_win_freq": 0.41644444444444445,
+     "status": "OK"
+    },
+    {
+     "bin": "0.4-0.5",
+     "flag": true,
+     "gap": -0.047977001620337856,
+     "mean_predicted_prob": 0.45315058909481026,
+     "n": 7345,
+     "observed_win_freq": 0.4051735874744724,
+     "status": "OK"
+    },
+    {
+     "bin": "0.5-0.6",
+     "flag": true,
+     "gap": -0.05787699236368676,
+     "mean_predicted_prob": 0.5439846579553513,
+     "n": 8062,
+     "observed_win_freq": 0.4861076655916646,
+     "status": "OK"
+    },
+    {
+     "bin": "0.6-0.7",
+     "flag": true,
+     "gap": -0.21356567648741487,
+     "mean_predicted_prob": 0.6522467164366856,
+     "n": 7885,
+     "observed_win_freq": 0.43868103994927077,
+     "status": "OK"
+    },
+    {
+     "bin": "0.7-0.8",
+     "flag": true,
+     "gap": -0.08707713456305644,
+     "mean_predicted_prob": 0.740570430258187,
+     "n": 4251,
+     "observed_win_freq": 0.6534932956951306,
+     "status": "OK"
+    },
+    {
+     "bin": "0.8-0.9",
+     "flag": true,
+     "gap": -0.027713911236534328,
+     "mean_predicted_prob": 0.8477139112365343,
+     "n": 2550,
+     "observed_win_freq": 0.82,
+     "status": "OK"
+    },
+    {
+     "bin": "0.9-1.0",
+     "flag": false,
+     "gap": 0.004223221441838398,
+     "mean_predicted_prob": 0.9591033739956436,
+     "n": 3463,
+     "observed_win_freq": 0.963326595437482,
+     "status": "OK"
+    }
+   ],
+   "reproduced_from_bins": {
+    "ece": 0.07415005786997735,
+    "reliability": 0.009859802424999491,
+    "resolution": 0.05106073579241581
+   },
+   "reproduction_max_abs_diff": 6.609296443471635e-16,
+   "sharpness": 0.0611002473632042,
+   "tick_informative": {
+    "ci95_informative": [
+     0.1525037683117597,
+     0.18953595655655497
+    ],
+    "dm_p_informative": 1.2475713720086828e-40,
+    "loss_col_note": "S87 flags computed against the market series; the loss is this block's OWN level loss (p - y) ** 2 -- the same series its ess uses -- so n_eff_icc is directly comparable to ess.n_eff and ci95_informative is a BRIER interval on the informative ticks, NOT a verdict comparison. This module arms no bar (DESCRIPTIVE)",
+    "mean_loss_differential_informative": 0.17101986243415734,
+    "n": 47104,
+    "n_dup": 0,
+    "n_eff_icc": 452.33596323006765,
+    "n_games": 158,
+    "n_games_informative": 158,
+    "n_held_both": 32487,
+    "n_held_market": 33989,
+    "n_held_model": 42430,
+    "n_informative": 14617,
+    "note": "S87: the headline CI stays as published (all rows); ci95_informative re-quotes the same paired losses on informative ticks only. No bar moved."
+   }
+  },
+  "market": {
+   "base_rate": 0.46335767663043476,
+   "brier": 0.19538695758322486,
+   "ece": 0.06671471637229695,
+   "ess": {
+    "design_effect": 112.05709140138148,
+    "n_eff": 420.3571537590283,
+    "n_games": 158.0,
+    "n_ticks": 47104.0,
+    "rho": 0.37377029867120254
+   },
+   "max_loser_wp": {
+    "above_0_8": 12,
+    "above_0_9": 6,
+    "max": 0.9549999999996946,
+    "n_loser_games": 81,
+    "p50": 0.6200000000001109,
+    "p90": 0.8899999999999999,
+    "per_game": [
+     {
+      "game": "KXMLBGAME-26JUL011335DETNYY",
+      "max_loser_wp": 0.6149999999999062
+     },
+     {
+      "game": "KXMLBGAME-26JUL011335WSHBOS",
+      "max_loser_wp": 0.5950000000001153
+     },
+     {
+      "game": "KXMLBGAME-26JUL011940TBKC",
+      "max_loser_wp": 0.44500000000003503
+     },
+     {
+      "game": "KXMLBGAME-26JUL012010MINHOU",
+      "max_loser_wp": 0.5849999999999682
+     },
+     {
+      "game": "KXMLBGAME-26JUL012140SFAZ",
+      "max_loser_wp": 0.5950000000001153
+     },
+     {
+      "game": "KXMLBGAME-26JUL021235PITPHI",
+      "max_loser_wp": 0.735000000000152
+     },
+     {
+      "game": "KXMLBGAME-26JUL021410CINMIL",
+      "max_loser_wp": 0.6549999999999996
+     },
+     {
+      "game": "KXMLBGAME-26JUL021915STLATL",
+      "max_loser_wp": 0.8749999999998768
+     },
+     {
+      "game": "KXMLBGAME-26JUL021940TBKC",
+      "max_loser_wp": 0.6349999999999364
+     },
+     {
+      "game": "KXMLBGAME-26JUL031605STLCHC",
+      "max_loser_wp": 0.5950000000001153
+     },
+     {
+      "game": "KXMLBGAME-26JUL031910BALCIN",
+      "max_loser_wp": 0.47499999999999093
+     },
+     {
+      "game": "KXMLBGAME-26JUL032015TBHOU",
+      "max_loser_wp": 0.5849999999999682
+     },
+     {
+      "game": "KXMLBGAME-26JUL032138BOSLAA",
+      "max_loser_wp": 0.5499999999999067
+     },
+     {
+      "game": "KXMLBGAME-26JUL032145MILAZ",
+      "max_loser_wp": 0.6049999999999788
+     },
+     {
+      "game": "KXMLBGAME-26JUL032210TORSEA",
+      "max_loser_wp": 0.5049999999999989
+     },
+     {
+      "game": "KXMLBGAME-26JUL041105PITWSH",
+      "max_loser_wp": 0.4899999999999944
+     },
+     {
+      "game": "KXMLBGAME-26JUL041335MINNYY",
+      "max_loser_wp": 0.6100000000001216
+     },
+     {
+      "game": "KXMLBGAME-26JUL041605DETTEX",
+      "max_loser_wp": 0.5050000000000081
+     },
+     {
+      "game": "KXMLBGAME-26JUL041910BALCIN",
+      "max_loser_wp": 0.6849999999998286
+     },
+     {
+      "game": "KXMLBGAME-26JUL042008STLCHC",
+      "max_loser_wp": 0.6049999999999788
+     },
+     {
+      "game": "KXMLBGAME-26JUL042010PHIKC",
+      "max_loser_wp": 0.45000000000009327
+     },
+     {
+      "game": "KXMLBGAME-26JUL042010SFCOL",
+      "max_loser_wp": 0.4800000000000306
+     },
+     {
+      "game": "KXMLBGAME-26JUL042138BOSLAA",
+      "max_loser_wp": 0.4150000000000319
+     },
+     {
+      "game": "KXMLBGAME-26JUL051230NYMATL",
+      "max_loser_wp": 0.7549999999996772
+     },
+     {
+      "game": "KXMLBGAME-26JUL051300PITWSH",
+      "max_loser_wp": 0.6750000000002581
+     },
+     {
+      "game": "KXMLBGAME-26JUL051335MINNYY",
+      "max_loser_wp": 0.5750000000000883
+     },
+     {
+      "game": "KXMLBGAME-26JUL051530DETTEX",
+      "max_loser_wp": 0.6450000000002418
+     },
+     {
+      "game": "KXMLBGAME-26JUL051600MILAZ",
+      "max_loser_wp": 0.7249999999999551
+     },
+     {
+      "game": "KXMLBGAME-26JUL051920SDLAD",
+      "max_loser_wp": 0.7300000000003318
+     },
+     {
+      "game": "KXMLBGAME-26JUL052130BOSLAA",
+      "max_loser_wp": 0.6349999999999364
+     },
+     {
+      "game": "KXMLBGAME-26JUL061840NYYTB",
+      "max_loser_wp": 0.5449999999999542
+     },
+     {
+      "game": "KXMLBGAME-26JUL061915NYMATL",
+      "max_loser_wp": 0.8950000000000502
+     },
+     {
+      "game": "KXMLBGAME-26JUL061945MILSTL",
+      "max_loser_wp": 0.90499999999968
+     },
+     {
+      "game": "KXMLBGAME-26JUL062140AZSD",
+      "max_loser_wp": 0.5399999999999251
+     },
+     {
+      "game": "KXMLBGAME-26JUL071415MILSTLG1",
+      "max_loser_wp": 0.6049999999999788
+     },
+     {
+      "game": "KXMLBGAME-26JUL071835CHCBAL",
+      "max_loser_wp": 0.5549999999999649
+     },
+     {
+      "game": "KXMLBGAME-26JUL071845HOUWSH",
+      "max_loser_wp": 0.6949999999997953
+     },
+     {
+      "game": "KXMLBGAME-26JUL071910KCNYM",
+      "max_loser_wp": 0.9549999999996946
+     },
+     {
+      "game": "KXMLBGAME-26JUL071910PHICIN",
+      "max_loser_wp": 0.44500000000003503
+     },
+     {
+      "game": "KXMLBGAME-26JUL071945MILSTLG2",
+      "max_loser_wp": 0.5549999999999649
+     },
+     {
+      "game": "KXMLBGAME-26JUL072145TORSF",
+      "max_loser_wp": 0.5
+     },
+     {
+      "game": "KXMLBGAME-26JUL072210COLLAD",
+      "max_loser_wp": 0.9350000000001147
+     },
+     {
+      "game": "KXMLBGAME-26JUL081545TORSF",
+      "max_loser_wp": 0.49500000000000105
+     },
+     {
+      "game": "KXMLBGAME-26JUL081835CHCBAL",
+      "max_loser_wp": 0.8249999999995936
+     },
+     {
+      "game": "KXMLBGAME-26JUL081840ATLPIT",
+      "max_loser_wp": 0.5950000000001153
+     },
+     {
+      "game": "KXMLBGAME-26JUL082005LAATEX",
+      "max_loser_wp": 0.59
+     },
+     {
+      "game": "KXMLBGAME-26JUL091235ATLPIT",
+      "max_loser_wp": 0.5650000000000963
+     },
+     {
+      "game": "KXMLBGAME-26JUL091310NYYTB",
+      "max_loser_wp": 0.7300000000000001
+     },
+     {
+      "game": "KXMLBGAME-26JUL091340CLEMIN",
+      "max_loser_wp": 0.6650000000002556
+     },
+     {
+      "game": "KXMLBGAME-26JUL091910PHICIN",
+      "max_loser_wp": 0.5650000000000963
+     },
+     {
+      "game": "KXMLBGAME-26JUL091945MILSTL",
+      "max_loser_wp": 0.5650000000000963
+     },
+     {
+      "game": "KXMLBGAME-26JUL092140AZSD",
+      "max_loser_wp": 0.7049999999996712
+     },
+     {
+      "game": "KXMLBGAME-26JUL101845NYYWSH",
+      "max_loser_wp": 0.8950000000000502
+     },
+     {
+      "game": "KXMLBGAME-26JUL101910CLEMIA",
+      "max_loser_wp": 0.6200000000001109
+     },
+     {
+      "game": "KXMLBGAME-26JUL101915BOSNYM",
+      "max_loser_wp": 0.5750000000000883
+     },
+     {
+      "game": "KXMLBGAME-26JUL102010LAAMIN",
+      "max_loser_wp": 0.774999999999719
+     },
+     {
+      "game": "KXMLBGAME-26JUL102140TORSD",
+      "max_loser_wp": 0.8149999999998482
+     },
+     {
+      "game": "KXMLBGAME-26JUL102210AZLAD",
+      "max_loser_wp": 0.7049999999996712
+     },
+     {
+      "game": "KXMLBGAME-26JUL102215COLSF",
+      "max_loser_wp": 0.90499999999968
+     },
+     {
+      "game": "KXMLBGAME-26JUL111605NYYWSH",
+      "max_loser_wp": 0.8899999999999999
+     },
+     {
+      "game": "KXMLBGAME-26JUL111610BOSNYM",
+      "max_loser_wp": 0.6450000000002418
+     },
+     {
+      "game": "KXMLBGAME-26JUL111610CLEMIA",
+      "max_loser_wp": 0.67
+     },
+     {
+      "game": "KXMLBGAME-26JUL111810PHIDET",
+      "max_loser_wp": 0.5149999999999793
+     },
+     {
+      "game": "KXMLBGAME-26JUL111905HOUTEX",
+      "max_loser_wp": 0.53
+     },
+     {
+      "game": "KXMLBGAME-26JUL111910CHCCIN",
+      "max_loser_wp": 0.78
+     },
+     {
+      "game": "KXMLBGAME-26JUL112110AZLAD",
+      "max_loser_wp": 0.774999999999719
+     },
+     {
+      "game": "KXMLBGAME-26JUL121335NYYWSH",
+      "max_loser_wp": 0.7850000000001042
+     },
+     {
+      "game": "KXMLBGAME-26JUL121340BOSNYM",
+      "max_loser_wp": 0.9549999999996946
+     },
+     {
+      "game": "KXMLBGAME-26JUL121340CHCCIN",
+      "max_loser_wp": 0.7049999999996712
+     },
+     {
+      "game": "KXMLBGAME-26JUL121340CLEMIA",
+      "max_loser_wp": 0.5549999999999649
+     },
+     {
+      "game": "KXMLBGAME-26JUL121340PHIDET",
+      "max_loser_wp": 0.5950000000001153
+     },
+     {
+      "game": "KXMLBGAME-26JUL121340SEATB",
+      "max_loser_wp": 0.6250000000001539
+     },
+     {
+      "game": "KXMLBGAME-26JUL121415ATLSTL",
+      "max_loser_wp": 0.6949999999997953
+     },
+     {
+      "game": "KXMLBGAME-26JUL121610AZLAD",
+      "max_loser_wp": 0.9350000000001147
+     },
+     {
+      "game": "KXMLBGAME-26JUN301840TEXCLE",
+      "max_loser_wp": 0.7249999999999551
+     },
+     {
+      "game": "KXMLBGAME-26JUN301905DETNYY",
+      "max_loser_wp": 0.535000000000047
+     },
+     {
+      "game": "KXMLBGAME-26JUN301907NYMTOR",
+      "max_loser_wp": 0.5549999999999649
+     },
+     {
+      "game": "KXMLBGAME-26JUN301910WSHBOS",
+      "max_loser_wp": 0.7049999999996712
+     },
+     {
+      "game": "KXMLBGAME-26JUN301915STLATL",
+      "max_loser_wp": 0.735000000000152
+     },
+     {
+      "game": "KXMLBGAME-26JUN301940TBKC",
+      "max_loser_wp": 0.6450000000002418
+     },
+     {
+      "game": "KXMLBGAME-26JUN302040MIACOL",
+      "max_loser_wp": 0.49500000000000105
+     }
+    ],
+    "quantiles": {
+     "50": 0.6200000000001109,
+     "75": 0.7300000000000001,
+     "90": 0.8899999999999999,
+     "95": 0.90499999999968
+    },
+    "share_above_0_8": 0.14814814814814814,
+    "share_above_0_9": 0.07407407407407407
+   },
+   "murphy": {
+    "reliability": 0.006109229919630827,
+    "resolution": 0.05809495923881197,
+    "uncertainty": 0.2486573401380802
+   },
+   "n_games": 158,
+   "n_ticks": 47104,
+   "reliability_bins": [
+    {
+     "bin": "0.0-0.1",
+     "flag": true,
+     "gap": -0.04018758085385115,
+     "mean_predicted_prob": 0.04989003880986667,
+     "n": 3092,
+     "observed_win_freq": 0.009702457956015523,
+     "status": "OK"
+    },
+    {
+     "bin": "0.1-0.2",
+     "flag": true,
+     "gap": -0.054638142922250096,
+     "mean_predicted_prob": 0.14976786527090735,
+     "n": 2197,
+     "observed_win_freq": 0.09512972234865726,
+     "status": "OK"
+    },
+    {
+     "bin": "0.2-0.3",
+     "flag": true,
+     "gap": -0.07481753812641742,
+     "mean_predicted_prob": 0.24747549019613418,
+     "n": 1836,
+     "observed_win_freq": 0.17265795206971676,
+     "status": "OK"
+    },
+    {
+     "bin": "0.3-0.4",
+     "flag": true,
+     "gap": -0.0590416469474378,
+     "mean_predicted_prob": 0.3609820160908358,
+     "n": 2113,
+     "observed_win_freq": 0.301940369143398,
+     "status": "OK"
+    },
+    {
+     "bin": "0.4-0.5",
+     "flag": true,
+     "gap": -0.05755488442326995,
+     "mean_predicted_prob": 0.4485410616796296,
+     "n": 8609,
+     "observed_win_freq": 0.39098617725635965,
+     "status": "OK"
+    },
+    {
+     "bin": "0.5-0.6",
+     "flag": true,
+     "gap": -0.11947345604909732,
+     "mean_predicted_prob": 0.5494454448446155,
+     "n": 14994,
+     "observed_win_freq": 0.42997198879551823,
+     "status": "OK"
+    },
+    {
+     "bin": "0.6-0.7",
+     "flag": false,
+     "gap": -0.007469800848865171,
+     "mean_predicted_prob": 0.6473653281097206,
+     "n": 6126,
+     "observed_win_freq": 0.6398955272608554,
+     "status": "OK"
+    },
+    {
+     "bin": "0.7-0.8",
+     "flag": true,
+     "gap": -0.06955487336909394,
+     "mean_predicted_prob": 0.7418495778971063,
+     "n": 2606,
+     "observed_win_freq": 0.6722947045280123,
+     "status": "OK"
+    },
+    {
+     "bin": "0.8-0.9",
+     "flag": false,
+     "gap": 0.012368421052722844,
+     "mean_predicted_prob": 0.8511317928967851,
+     "n": 2337,
+     "observed_win_freq": 0.8635002139495079,
+     "status": "OK"
+    },
+    {
+     "bin": "0.9-1.0",
+     "flag": true,
+     "gap": 0.02921415153416551,
+     "mean_predicted_prob": 0.9504351909830543,
+     "n": 3194,
+     "observed_win_freq": 0.9796493425172198,
+     "status": "OK"
+    }
+   ],
+   "reproduced_from_bins": {
+    "ece": 0.06671471637229898,
+    "reliability": 0.006109229919630756,
+    "resolution": 0.05809495923881197
+   },
+   "reproduction_max_abs_diff": 2.0261570199409107e-15,
+   "sharpness": 0.04971300967653441
+  },
+  "raw_model": {
+   "base_rate": 0.46335767663043476,
+   "brier": 0.23668290151326293,
+   "ece": 0.08690114363121648,
+   "ess": {
+    "design_effect": 97.51677541170324,
+    "n_eff": 483.0348399148043,
+    "n_games": 158.0,
+    "n_ticks": 47104.0,
+    "rho": 0.3248338626304501
+   },
+   "max_loser_wp": {
+    "above_0_8": 34,
+    "above_0_9": 29,
+    "max": 0.9831599606529792,
+    "n_loser_games": 81,
+    "p50": 0.6582239999999999,
+    "p90": 0.9676959999844666,
+    "per_game": [
+     {
+      "game": "KXMLBGAME-26JUL011335DETNYY",
+      "max_loser_wp": 0.676264
+     },
+     {
+      "game": "KXMLBGAME-26JUL011335WSHBOS",
+      "max_loser_wp": 0.6369740217255582
+     },
+     {
+      "game": "KXMLBGAME-26JUL011940TBKC",
+      "max_loser_wp": 0.5481432597237328
+     },
+     {
+      "game": "KXMLBGAME-26JUL012010MINHOU",
+      "max_loser_wp": 0.9611554265282553
+     },
+     {
+      "game": "KXMLBGAME-26JUL012140SFAZ",
+      "max_loser_wp": 0.8526156155607699
+     },
+     {
+      "game": "KXMLBGAME-26JUL021235PITPHI",
+      "max_loser_wp": 0.969608
+     },
+     {
+      "game": "KXMLBGAME-26JUL021410CINMIL",
+      "max_loser_wp": 0.7426581976802515
+     },
+     {
+      "game": "KXMLBGAME-26JUL021915STLATL",
+      "max_loser_wp": 0.968983947685462
+     },
+     {
+      "game": "KXMLBGAME-26JUL021940TBKC",
+      "max_loser_wp": 0.5025216927536761
+     },
+     {
+      "game": "KXMLBGAME-26JUL031605STLCHC",
+      "max_loser_wp": 0.5238480000000001
+     },
+     {
+      "game": "KXMLBGAME-26JUL031910BALCIN",
+      "max_loser_wp": 0.511968
+     },
+     {
+      "game": "KXMLBGAME-26JUL032015TBHOU",
+      "max_loser_wp": 0.49955
+     },
+     {
+      "game": "KXMLBGAME-26JUL032138BOSLAA",
+      "max_loser_wp": 0.460136
+     },
+     {
+      "game": "KXMLBGAME-26JUL032145MILAZ",
+      "max_loser_wp": 0.4908
+     },
+     {
+      "game": "KXMLBGAME-26JUL032210TORSEA",
+      "max_loser_wp": 0.553328
+     },
+     {
+      "game": "KXMLBGAME-26JUL041105PITWSH",
+      "max_loser_wp": 0.963608
+     },
+     {
+      "game": "KXMLBGAME-26JUL041335MINNYY",
+      "max_loser_wp": 0.9774879606529794
+     },
+     {
+      "game": "KXMLBGAME-26JUL041605DETTEX",
+      "max_loser_wp": 0.5605439999999999
+     },
+     {
+      "game": "KXMLBGAME-26JUL041910BALCIN",
+      "max_loser_wp": 0.5702920656680843
+     },
+     {
+      "game": "KXMLBGAME-26JUL042008STLCHC",
+      "max_loser_wp": 0.5238480000000001
+     },
+     {
+      "game": "KXMLBGAME-26JUL042010PHIKC",
+      "max_loser_wp": 0.45194
+     },
+     {
+      "game": "KXMLBGAME-26JUL042010SFCOL",
+      "max_loser_wp": 0.949744
+     },
+     {
+      "game": "KXMLBGAME-26JUL042138BOSLAA",
+      "max_loser_wp": 0.460136
+     },
+     {
+      "game": "KXMLBGAME-26JUL051230NYMATL",
+      "max_loser_wp": 0.972416
+     },
+     {
+      "game": "KXMLBGAME-26JUL051300PITWSH",
+      "max_loser_wp": 0.539688
+     },
+     {
+      "game": "KXMLBGAME-26JUL051335MINNYY",
+      "max_loser_wp": 0.9675595218957384
+     },
+     {
+      "game": "KXMLBGAME-26JUL051530DETTEX",
+      "max_loser_wp": 0.6034120656680844
+     },
+     {
+      "game": "KXMLBGAME-26JUL051600MILAZ",
+      "max_loser_wp": 0.9471154265282552
+     },
+     {
+      "game": "KXMLBGAME-26JUL051920SDLAD",
+      "max_loser_wp": 0.9731439606529794
+     },
+     {
+      "game": "KXMLBGAME-26JUL052130BOSLAA",
+      "max_loser_wp": 0.5302032597237328
+     },
+     {
+      "game": "KXMLBGAME-26JUL061840NYYTB",
+      "max_loser_wp": 0.46943
+     },
+     {
+      "game": "KXMLBGAME-26JUL061915NYMATL",
+      "max_loser_wp": 0.972416
+     },
+     {
+      "game": "KXMLBGAME-26JUL061945MILSTL",
+      "max_loser_wp": 0.7974635248783061
+     },
+     {
+      "game": "KXMLBGAME-26JUL062140AZSD",
+      "max_loser_wp": 0.54532
+     },
+     {
+      "game": "KXMLBGAME-26JUL071415MILSTLG1",
+      "max_loser_wp": 0.6081083910190656
+     },
+     {
+      "game": "KXMLBGAME-26JUL071835CHCBAL",
+      "max_loser_wp": 0.5065999999999999
+     },
+     {
+      "game": "KXMLBGAME-26JUL071845HOUWSH",
+      "max_loser_wp": 0.9646204106846152
+     },
+     {
+      "game": "KXMLBGAME-26JUL071910KCNYM",
+      "max_loser_wp": 0.8557461148373267
+     },
+     {
+      "game": "KXMLBGAME-26JUL071910PHICIN",
+      "max_loser_wp": 0.4562
+     },
+     {
+      "game": "KXMLBGAME-26JUL071945MILSTLG2",
+      "max_loser_wp": 0.6081083910190656
+     },
+     {
+      "game": "KXMLBGAME-26JUL072145TORSF",
+      "max_loser_wp": 0.962136
+     },
+     {
+      "game": "KXMLBGAME-26JUL072210COLLAD",
+      "max_loser_wp": 0.9831599606529792
+     },
+     {
+      "game": "KXMLBGAME-26JUL081545TORSF",
+      "max_loser_wp": 0.523496
+     },
+     {
+      "game": "KXMLBGAME-26JUL081835CHCBAL",
+      "max_loser_wp": 0.6241528725889205
+     },
+     {
+      "game": "KXMLBGAME-26JUL081840ATLPIT",
+      "max_loser_wp": 0.953616
+     },
+     {
+      "game": "KXMLBGAME-26JUL082005LAATEX",
+      "max_loser_wp": 0.9676959999844666
+     },
+     {
+      "game": "KXMLBGAME-26JUL091235ATLPIT",
+      "max_loser_wp": 0.493616
+     },
+     {
+      "game": "KXMLBGAME-26JUL091310NYYTB",
+      "max_loser_wp": 0.9518159606529794
+     },
+     {
+      "game": "KXMLBGAME-26JUL091340CLEMIN",
+      "max_loser_wp": 0.955664
+     },
+     {
+      "game": "KXMLBGAME-26JUL091910PHICIN",
+      "max_loser_wp": 0.95416
+     },
+     {
+      "game": "KXMLBGAME-26JUL091945MILSTL",
+      "max_loser_wp": 0.953015947685462
+     },
+     {
+      "game": "KXMLBGAME-26JUL092140AZSD",
+      "max_loser_wp": 0.9641199999999992
+     },
+     {
+      "game": "KXMLBGAME-26JUL101845NYYWSH",
+      "max_loser_wp": 0.8658911044758237
+     },
+     {
+      "game": "KXMLBGAME-26JUL101910CLEMIA",
+      "max_loser_wp": 0.49676
+     },
+     {
+      "game": "KXMLBGAME-26JUL101915BOSNYM",
+      "max_loser_wp": 0.490232
+     },
+     {
+      "game": "KXMLBGAME-26JUL102010LAAMIN",
+      "max_loser_wp": 0.583556417499346
+     },
+     {
+      "game": "KXMLBGAME-26JUL102140TORSD",
+      "max_loser_wp": 0.6278602020767151
+     },
+     {
+      "game": "KXMLBGAME-26JUL102210AZLAD",
+      "max_loser_wp": 0.6582239999999999
+     },
+     {
+      "game": "KXMLBGAME-26JUL102215COLSF",
+      "max_loser_wp": 0.9752079999999992
+     },
+     {
+      "game": "KXMLBGAME-26JUL111605NYYWSH",
+      "max_loser_wp": 0.8930822446660878
+     },
+     {
+      "game": "KXMLBGAME-26JUL111610BOSNYM",
+      "max_loser_wp": 0.49334
+     },
+     {
+      "game": "KXMLBGAME-26JUL111610CLEMIA",
+      "max_loser_wp": 0.49676
+     },
+     {
+      "game": "KXMLBGAME-26JUL111810PHIDET",
+      "max_loser_wp": 0.9544
+     },
+     {
+      "game": "KXMLBGAME-26JUL111905HOUTEX",
+      "max_loser_wp": 0.965223947685462
+     },
+     {
+      "game": "KXMLBGAME-26JUL111910CHCCIN",
+      "max_loser_wp": 0.958919947685462
+     },
+     {
+      "game": "KXMLBGAME-26JUL112110AZLAD",
+      "max_loser_wp": 0.6582239999999999
+     },
+     {
+      "game": "KXMLBGAME-26JUL121335NYYWSH",
+      "max_loser_wp": 0.7467065870294156
+     },
+     {
+      "game": "KXMLBGAME-26JUL121340BOSNYM",
+      "max_loser_wp": 0.9554274265282552
+     },
+     {
+      "game": "KXMLBGAME-26JUL121340CHCCIN",
+      "max_loser_wp": 0.958919947685462
+     },
+     {
+      "game": "KXMLBGAME-26JUL121340CLEMIA",
+      "max_loser_wp": 0.4952479999999999
+     },
+     {
+      "game": "KXMLBGAME-26JUL121340PHIDET",
+      "max_loser_wp": 0.458
+     },
+     {
+      "game": "KXMLBGAME-26JUL121340SEATB",
+      "max_loser_wp": 0.9594959999844668
+     },
+     {
+      "game": "KXMLBGAME-26JUL121415ATLSTL",
+      "max_loser_wp": 0.9563679606529794
+     },
+     {
+      "game": "KXMLBGAME-26JUL121610AZLAD",
+      "max_loser_wp": 0.83922584036204
+     },
+     {
+      "game": "KXMLBGAME-26JUN301840TEXCLE",
+      "max_loser_wp": 0.6470051391682257
+     },
+     {
+      "game": "KXMLBGAME-26JUN301905DETNYY",
+      "max_loser_wp": 0.676264
+     },
+     {
+      "game": "KXMLBGAME-26JUN301907NYMTOR",
+      "max_loser_wp": 0.571896
+     },
+     {
+      "game": "KXMLBGAME-26JUN301910WSHBOS",
+      "max_loser_wp": 0.6369740217255582
+     },
+     {
+      "game": "KXMLBGAME-26JUN301915STLATL",
+      "max_loser_wp": 0.6295120656680844
+     },
+     {
+      "game": "KXMLBGAME-26JUN301940TBKC",
+      "max_loser_wp": 0.5481432597237328
+     },
+     {
+      "game": "KXMLBGAME-26JUN302040MIACOL",
+      "max_loser_wp": 0.403816
+     }
+    ],
+    "quantiles": {
+     "50": 0.6582239999999999,
+     "75": 0.955664,
+     "90": 0.9676959999844666,
+     "95": 0.972416
+    },
+    "share_above_0_8": 0.41975308641975306,
+    "share_above_0_9": 0.35802469135802467
+   },
+   "murphy": {
+    "reliability": 0.0131276113663163,
+    "resolution": 0.024746360657359925,
+    "uncertainty": 0.2486573401380802
+   },
+   "n_games": 158,
+   "n_ticks": 47104,
+   "reliability_bins": [
+    {
+     "bin": "0.0-0.1",
+     "flag": true,
+     "gap": 0.15397877313377625,
+     "mean_predicted_prob": 0.04895659237567901,
+     "n": 3543,
+     "observed_win_freq": 0.20293536550945526,
+     "status": "OK"
+    },
+    {
+     "bin": "0.1-0.2",
+     "flag": true,
+     "gap": 0.07237033680553309,
+     "mean_predicted_prob": 0.1556268911916949,
+     "n": 2886,
+     "observed_win_freq": 0.227997227997228,
+     "status": "OK"
+    },
+    {
+     "bin": "0.2-0.3",
+     "flag": true,
+     "gap": 0.02268896080489996,
+     "mean_predicted_prob": 0.24469071833948508,
+     "n": 2805,
+     "observed_win_freq": 0.26737967914438504,
+     "status": "OK"
+    },
+    {
+     "bin": "0.3-0.4",
+     "flag": true,
+     "gap": -0.024176039999014687,
+     "mean_predicted_prob": 0.359493500316475,
+     "n": 4032,
+     "observed_win_freq": 0.3353174603174603,
+     "status": "OK"
+    },
+    {
+     "bin": "0.4-0.5",
+     "flag": true,
+     "gap": -0.0718950724246103,
+     "mean_predicted_prob": 0.4578349999233156,
+     "n": 7724,
+     "observed_win_freq": 0.3859399274987053,
+     "status": "OK"
+    },
+    {
+     "bin": "0.5-0.6",
+     "flag": true,
+     "gap": -0.027781167943698004,
+     "mean_predicted_prob": 0.5463550364321694,
+     "n": 9368,
+     "observed_win_freq": 0.5185738684884714,
+     "status": "OK"
+    },
+    {
+     "bin": "0.6-0.7",
+     "flag": true,
+     "gap": -0.08420464032760866,
+     "mean_predicted_prob": 0.6456867858527842,
+     "n": 6693,
+     "observed_win_freq": 0.5614821455251755,
+     "status": "OK"
+    },
+    {
+     "bin": "0.7-0.8",
+     "flag": true,
+     "gap": -0.09598741816549272,
+     "mean_predicted_prob": 0.7485194498921554,
+     "n": 3278,
+     "observed_win_freq": 0.6525320317266626,
+     "status": "OK"
+    },
+    {
+     "bin": "0.8-0.9",
+     "flag": true,
+     "gap": -0.12836131447578825,
+     "mean_predicted_prob": 0.8528288185719106,
+     "n": 3662,
+     "observed_win_freq": 0.7244675040961224,
+     "status": "OK"
+    },
+    {
+     "bin": "0.9-1.0",
+     "flag": true,
+     "gap": -0.32573224775570064,
+     "mean_predicted_prob": 0.9547075127733685,
+     "n": 3113,
+     "observed_win_freq": 0.6289752650176679,
+     "status": "OK"
+    }
+   ],
+   "reproduced_from_bins": {
+    "ece": 0.08690114363121529,
+    "reliability": 0.013127611366316242,
+    "resolution": 0.024746360657359925
+   },
+   "reproduction_max_abs_diff": 1.1934897514720433e-15,
+   "sharpness": 0.06002721895586637,
+   "tick_informative": {
+    "ci95_informative": [
+     0.1854134852558801,
+     0.21647347121301466
+    ],
+    "dm_p_informative": 8.02670992276744e-58,
+    "loss_col_note": "S87 flags computed against the market series; the loss is this block's OWN level loss (p - y) ** 2 -- the same series its ess uses -- so n_eff_icc is directly comparable to ess.n_eff and ci95_informative is a BRIER interval on the informative ticks, NOT a verdict comparison. This module arms no bar (DESCRIPTIVE)",
+    "mean_loss_differential_informative": 0.2009434782344474,
+    "n": 47104,
+    "n_dup": 0,
+    "n_eff_icc": 631.0490367252464,
+    "n_games": 158,
+    "n_games_informative": 158,
+    "n_held_both": 31123,
+    "n_held_market": 33989,
+    "n_held_model": 42138,
+    "n_informative": 15981,
+    "note": "S87: the headline CI stays as published (all rows); ci95_informative re-quotes the same paired losses on informative ticks only. No bar moved."
+   }
+  }
+ }
+}

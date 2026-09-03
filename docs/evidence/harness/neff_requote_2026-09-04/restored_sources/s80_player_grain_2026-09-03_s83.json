@@ -1,0 +1,101 @@
+{
+ "beta_by_fold": {
+  "2026-07-09": null,
+  "2026-07-10": null,
+  "2026-07-11": 1.0,
+  "2026-07-12": -0.05999999999999994
+ },
+ "brier": {
+  "candidate_e4_plus_player": 0.24481194382039348,
+  "incumbent_e4": 0.248434711193472,
+  "market": 0.24495737179487354
+ },
+ "dm": {
+  "ci95": [
+   -0.02697626352025525,
+   0.03422179826641229
+  ],
+  "n_clusters": 13,
+  "p_value": 0.8008084334803197,
+  "stat": 0.25796019680750537
+ },
+ "embargo_days": 1,
+ "folds": [
+  {
+   "n_train_ticks": 0,
+   "status": "INSUFFICIENT",
+   "test_date": "2026-07-09"
+  },
+  {
+   "n_train_ticks": 0,
+   "status": "INSUFFICIENT",
+   "test_date": "2026-07-10"
+  },
+  {
+   "beta": 1.0,
+   "embargo_cut": "2026-07-10",
+   "n_test_games": 12,
+   "n_test_ticks": 2082,
+   "n_train_games": 4,
+   "n_train_ticks": 448,
+   "status": "OK",
+   "test_date": "2026-07-11",
+   "train_date_max": "2026-07-09",
+   "weight": 1.0,
+   "z_mu": 0.0014099791805513562,
+   "z_sd": 0.06132116521036325
+  },
+  {
+   "beta": -0.05999999999999994,
+   "embargo_cut": "2026-07-11",
+   "n_test_games": 1,
+   "n_test_ticks": 180,
+   "n_train_games": 14,
+   "n_train_ticks": 1893,
+   "status": "OK",
+   "test_date": "2026-07-12",
+   "train_date_max": "2026-07-10",
+   "weight": 0.935,
+   "z_mu": 0.0064713298504976025,
+   "z_sd": 0.07448181409489378
+  }
+ ],
+ "improvement_vs_e4": 0.0036227673730785115,
+ "n_games": 13,
+ "n_player_ticks_total": 8287,
+ "n_screen_ticks_available": 4155,
+ "n_ticks": 2262,
+ "partition": {
+  "basis": "corpus_unit",
+  "n_screen_games": 27,
+  "n_verdict_games": 26,
+  "screen_sha256": "075508c8b155dbac6e331d5817cae5808da867e58dfa35fe7499bca39e56e98d",
+  "seed": 0,
+  "verdict_sha256": "f833e2d46171b7cb6d1b685e5d4f6b06bf34f5baf8a528c09513f27d83d62da5"
+ },
+ "per_tick_series": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\eval_gate\\s80_player_grain_2026-09-03_s83.csv",
+ "purge": "by game (train games disjoint from test games)",
+ "single_window": true,
+ "spec_id": "scripts.platformkit.eval_gate.s80_player_grain_screen:mlb_pitcher_asof_ra9_v1",
+ "sport": "mlb",
+ "tick_informative": {
+  "ci95_informative": [
+   -0.03257587236612572,
+   0.03608119060844829
+  ],
+  "dm_p_informative": 0.9132647493078896,
+  "mean_loss_differential_informative": 0.0017526591211612888,
+  "n": 2262,
+  "n_dup": 0,
+  "n_eff_icc": 62.557218376843984,
+  "n_games": 13,
+  "n_games_informative": 13,
+  "n_held_both": 1156,
+  "n_held_market": 1426,
+  "n_held_model": 1381,
+  "n_informative": 1106,
+  "note": "S87: the headline CI stays as published (all rows); ci95_informative re-quotes the same paired losses on informative ticks only. No bar moved."
+ },
+ "tier": "SCREEN (uncharged, no prereg seal, no K read)",
+ "verdict": "SCREEN_NULL"
+}

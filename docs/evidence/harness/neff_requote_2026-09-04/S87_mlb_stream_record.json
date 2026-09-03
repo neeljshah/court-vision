@@ -1,0 +1,10 @@
+{
+  "source_path": "data/cache/ingame_grade_joined/mlb",
+  "source_kind": "227 per-game JSONL tables streamed one file at a time",
+  "source_bytes": 35859254,
+  "source_sha256_directory_fingerprint": "409274fb7c1d7f60f271771b0dd3a985641e5fb4d4c640ded0b080481b726677",
+  "copied_units": "S87_mlb_units",
+  "columns": ["close_prob", "close_source", "close_ts", "edge_claimed", "game_id", "market_prob", "mlb_batter_id", "mlb_bullpen_used", "mlb_ondeck_id", "mlb_pitcher_id", "mlb_pitcher_pitch_count", "model_prob", "outcome", "side", "sport", "state_summary", "ts"],
+  "all_ticks": {"n_ticks": 78986, "n_games": 227, "rho": 0.27091658718434597, "n_eff": 831.4655281089265},
+  "informative_ticks": {"n_ticks": 23812, "n_games": 227, "rho": 0.19340711977624836, "n_eff": 1128.811984694203}
+}

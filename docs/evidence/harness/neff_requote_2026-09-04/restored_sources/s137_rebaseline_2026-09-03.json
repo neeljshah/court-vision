@@ -1,0 +1,689 @@
+{
+ "a2_reproduction": {
+  "S103": {
+   "ci_excludes_zero_favouring_candidate": false,
+   "design_effect": 76.49271563498006,
+   "dm_ci95": [
+    -0.004670304120890657,
+    0.00043625972664769605
+   ],
+   "dm_p": 0.10396341090504224,
+   "dm_stat": -1.6285379352400347,
+   "max_abs_delta": 2.6020852139652106e-18,
+   "mean_loss_differential": -0.0021170221971214803,
+   "n": 162171,
+   "n_eff": 2120.084228331924,
+   "n_games": 571,
+   "note": "sigma grid widened to [3, 60]",
+   "published_ci95": [
+    -0.00467030412089066,
+    0.00043625972664769475
+   ],
+   "reproduced": true,
+   "rho": 0.2667471573488466,
+   "series_csv": "s103_nba_sigma_2026-09-03.csv",
+   "tolerance": 1e-09
+  },
+  "S112m": {
+   "ci_excludes_zero_favouring_candidate": true,
+   "design_effect": 1.1920546602375657,
+   "dm_ci95": [
+    6.591938252925762e-05,
+    0.014472774254456148
+   ],
+   "dm_p": 0.04809217083448435,
+   "dm_stat": 2.078385623942609,
+   "max_abs_delta": 2.2574554385187962e-07,
+   "mean_loss_differential": 0.007269346818492703,
+   "n": 276,
+   "n_eff": 231.5330070057322,
+   "n_games": 26,
+   "note": "MLB close minus Elo, pre-S133 attach (S112 as published)",
+   "published_ci95": [
+    6.6e-05,
+    0.014473
+   ],
+   "reproduced": true,
+   "rho": 0.019973684664706837,
+   "series_csv": "s112_rescore_2026-09-03_mlb_fullmodel_pre_s132.csv",
+   "tolerance": 5e-07
+  },
+  "S112n": {
+   "ci_excludes_zero_favouring_candidate": true,
+   "design_effect": 1.0,
+   "dm_ci95": [
+    0.015252443167124199,
+    0.035959562175430414
+   ],
+   "dm_p": 2.1578436881670013e-05,
+   "dm_stat": 5.058178847459976,
+   "max_abs_delta": 4.4316712419917303e-07,
+   "mean_loss_differential": 0.025606002671277307,
+   "n": 351,
+   "n_eff": 351.0,
+   "n_games": 30,
+   "note": "NBA close minus Elo, contaminated reference (S112 as published)",
+   "published_ci95": [
+    0.015252,
+    0.03596
+   ],
+   "reproduced": true,
+   "rho": 0.0,
+   "series_csv": "s112_rescore_2026-09-03_nba_fullmodel_pre_s132.csv",
+   "tolerance": 5e-07
+  },
+  "S114": {
+   "ci_excludes_zero_favouring_candidate": false,
+   "design_effect": 72.01966807582703,
+   "dm_ci95": [
+    -0.000663045298246861,
+    0.000176745619988309
+   ],
+   "dm_p": 0.25593989684903684,
+   "dm_stat": -1.1370087438224876,
+   "max_abs_delta": 1.5449880957918438e-18,
+   "mean_loss_differential": -0.00024314983912927603,
+   "n": 192635,
+   "n_eff": 2674.7554542625944,
+   "n_games": 673,
+   "note": "k=5 arm vs the raw line (POST re-run archive -- see the memo)",
+   "published_ci95": [
+    -0.0006630452982468621,
+    0.00017674561998831054
+   ],
+   "reproduced": true,
+   "rho": 0.2489880112471822,
+   "series_csv": "s114_ingame_ensemble_series.csv",
+   "tolerance": 1e-09
+  },
+  "S115": {
+   "ci_excludes_zero_favouring_candidate": false,
+   "design_effect": 59.45884656184304,
+   "dm_ci95": [
+    -0.001475755404864898,
+    0.00037811162451286307
+   ],
+   "dm_p": 0.2454224279658187,
+   "dm_stat": -1.162555877625356,
+   "max_abs_delta": 4.119968255444917e-18,
+   "mean_loss_differential": -0.0005488218901760174,
+   "n": 192635,
+   "n_eff": 3239.803849871872,
+   "n_games": 673,
+   "note": "best non-linear arm (mlp) vs the raw line",
+   "published_ci95": [
+    -0.001475755404864902,
+    0.0003781116245128606
+   ],
+   "reproduced": true,
+   "rho": 0.20495099934424713,
+   "series_csv": "s115_ingame_models_2026-09-03.csv",
+   "tolerance": 1e-09
+  },
+  "S116": {
+   "ci_excludes_zero_favouring_candidate": false,
+   "design_effect": 93.8185933281663,
+   "dm_ci95": [
+    -0.002272820333606651,
+    0.02794775565352907
+   ],
+   "dm_p": 0.09446587857601796,
+   "dm_stat": 1.698295374252509,
+   "max_abs_delta": 2.0816681711721685e-17,
+   "mean_loss_differential": 0.012837467659961209,
+   "n": 9669,
+   "n_eff": 103.06059446211249,
+   "n_games": 63,
+   "note": "partially pooled residual, MLB side, vs the raw line",
+   "published_ci95": [
+    -0.002272820333606637,
+    0.02794775565352909
+   ],
+   "reproduced": true,
+   "rho": 0.6087415552440638,
+   "series_csv": "s116_pooled_ingame_2026-09-03.csv",
+   "tolerance": 1e-09
+  },
+  "S117": {
+   "ci_excludes_zero_favouring_candidate": false,
+   "design_effect": 11.102297731173687,
+   "dm_ci95": [
+    -0.33785811785610265,
+    0.38800077389750365
+   ],
+   "dm_p": 0.5413883054191537,
+   "dm_stat": 0.8777502912975265,
+   "mean_loss_differential": 0.025071328020700487,
+   "n": 163,
+   "n_eff": 14.681645542824795,
+   "n_games": 2,
+   "note": "soccer leader minute_x_score_diff vs the recal null",
+   "rho": 0.1254943817537104,
+   "series_csv": "s117_soccer_ingame_screen_2026-09-03_series.csv"
+  },
+  "S119": {
+   "ci_excludes_zero_favouring_candidate": false,
+   "design_effect": 73.09133313982883,
+   "dm_ci95": [
+    -0.001971363971910289,
+    0.008635956504959368
+   ],
+   "dm_p": 0.21147798491491088,
+   "dm_stat": 1.269844159449725,
+   "max_abs_delta": 0.0,
+   "mean_loss_differential": 0.003332296266524539,
+   "n": 15702,
+   "n_eff": 214.82711185416437,
+   "n_games": 41,
+   "note": "the S82 leader on the S119 archive, by ticker",
+   "published_ci95": [
+    -0.001971363971910289,
+    0.008635956504959368
+   ],
+   "reproduced": true,
+   "rho": 0.18873281774682216,
+   "series_csv": "s119_real_game_series_2026-09-03.csv",
+   "tolerance": 1e-09
+  },
+  "S82": {
+   "ci_excludes_zero_favouring_candidate": false,
+   "design_effect": 73.09133313982883,
+   "dm_ci95": [
+    -0.001971363971910289,
+    0.008635956504959368
+   ],
+   "dm_p": 0.21147798491491088,
+   "dm_stat": 1.269844159449725,
+   "max_abs_delta": 4.7704895589362195e-18,
+   "mean_loss_differential": 0.003332296266524539,
+   "n": 15702,
+   "n_eff": 214.82711185416437,
+   "n_games": 41,
+   "note": "leader tick_index_in_game vs the recal null, by ticker",
+   "published_ci95": [
+    -0.0019713639719102843,
+    0.00863595650495937
+   ],
+   "reproduced": true,
+   "rho": 0.18873281774682216,
+   "series_csv": "s82_ingame_screen_series_2026-09-03.csv",
+   "tolerance": 1e-09
+  },
+  "S86": {
+   "ci_excludes_zero_favouring_candidate": false,
+   "design_effect": 71.4558273672784,
+   "dm_ci95": [
+    -0.007354581642036966,
+    -0.0023586996172860215
+   ],
+   "dm_p": 0.00014586911403192507,
+   "dm_stat": -3.8164777661113267,
+   "max_abs_delta": 5.204170427930421e-18,
+   "mean_loss_differential": -0.004856640629661494,
+   "n": 232951,
+   "n_eff": 3260.0700122419225,
+   "n_games": 797,
+   "note": "pooled state-priced prior vs the in-play line",
+   "published_ci95": [
+    -0.0073545816420369624,
+    -0.0023586996172860163
+   ],
+   "reproduced": true,
+   "rho": 0.2418795041727512,
+   "series_csv": "s86_nba_every_tick_2026-09-03.csv",
+   "tolerance": 1e-09
+  },
+  "S87": {
+   "ci_excludes_zero_favouring_candidate": false,
+   "design_effect": 83.19590681216773,
+   "dm_ci95": [
+    -0.0003638636071911642,
+    0.0020961961593819484
+   ],
+   "dm_p": 0.1662254508490163,
+   "dm_stat": 1.3908948597206199,
+   "max_abs_delta": 0.0,
+   "mean_loss_differential": 0.0008661662760953922,
+   "n": 47104,
+   "n_eff": 566.1817005774958,
+   "n_games": 158,
+   "note": "trial A clamp family, all rows, by ticker",
+   "published_ci95": [
+    -0.0003638636071911642,
+    0.0020961961593819484
+   ],
+   "reproduced": true,
+   "rho": 0.2766359919124633,
+   "series_csv": "s58_trialA_clamp_family_series_2026-09-03.csv",
+   "tolerance": 1e-09
+  },
+  "S94": {
+   "ci_excludes_zero_favouring_candidate": false,
+   "design_effect": 47.80814125531624,
+   "dm_ci95": [
+    -0.0009989643254569257,
+    0.0005133123868300753
+   ],
+   "dm_p": 0.5285441122060813,
+   "dm_stat": -0.6305577360524414,
+   "max_abs_delta": 3.2526065174565133e-18,
+   "mean_loss_differential": -0.00024282596931342524,
+   "n": 192635,
+   "n_eff": 4029.33464765437,
+   "n_games": 673,
+   "note": "overall phase-conditioned shrinkage vs the raw line",
+   "published_ci95": [
+    -0.0009989643254569233,
+    0.0005133123868300785
+   ],
+   "reproduced": true,
+   "rho": 0.16410476586422224,
+   "series_csv": "s94_nba_early_shrinkage_2026-09-03.csv",
+   "tolerance": 1e-09
+  },
+  "S96": {
+   "ci_excludes_zero_favouring_candidate": false,
+   "design_effect": 3.212715075388174,
+   "dm_ci95": [
+    -0.00030087099948154734,
+    2.5261763560459273e-05
+   ],
+   "dm_p": 0.09751611786575709,
+   "dm_stat": -1.659356779782097,
+   "max_abs_delta": 1.5449880957918438e-18,
+   "mean_loss_differential": -0.00013780461796054403,
+   "n": 39168,
+   "n_eff": 12191.5573217359,
+   "n_games": 665,
+   "note": "primary post-event drift arm thr3_k5",
+   "published_ci95": [
+    -0.00030087099948154664,
+    2.5261763560460818e-05
+   ],
+   "reproduced": true,
+   "rho": 0.03821664610895607,
+   "series_csv": "s96_nba_overreaction_2026-09-03.csv",
+   "tolerance": 1e-09
+  },
+  "S97": {
+   "ci_excludes_zero_favouring_candidate": false,
+   "design_effect": 2.8266869937780585,
+   "dm_ci95": [
+    -9.144454491473476e-06,
+    1.4779244757549325e-05
+   ],
+   "dm_p": 0.6438964160619453,
+   "dm_stat": 0.4624666476228911,
+   "max_abs_delta": 5.251604272976662e-19,
+   "mean_loss_differential": 2.817395133037925e-06,
+   "n": 192635,
+   "n_eff": 68148.68445781834,
+   "n_games": 673,
+   "note": "two-sensor Kalman posterior vs the raw line",
+   "published_ci95": [
+    -9.144454491474001e-06,
+    1.4779244757549366e-05
+   ],
+   "reproduced": true,
+   "rho": 0.006404185968121989,
+   "series_csv": "s97_nba_sensor_fusion_2026-09-03.csv",
+   "tolerance": 1e-09
+  },
+  "S98": {
+   "ci_excludes_zero_favouring_candidate": false,
+   "design_effect": 76.41286277442387,
+   "dm_ci95": [
+    -0.004904215008892328,
+    0.00014783324796200465
+   ],
+   "dm_p": 0.06494859902114658,
+   "dm_stat": -1.8491853889685086,
+   "max_abs_delta": 2.6020852139652106e-18,
+   "mean_loss_differential": -0.0023781908804651614,
+   "n": 162171,
+   "n_eff": 2122.299755719664,
+   "n_games": 571,
+   "note": "fitted per-cell sigma arm vs the raw line",
+   "published_ci95": [
+    -0.00490421500889233,
+    0.00014783324796200335
+   ],
+   "reproduced": true,
+   "rho": 0.2664650039863615,
+   "series_csv": "s98_nba_better_prior_2026-09-03.csv",
+   "tolerance": 1e-09
+  }
+ },
+ "corrected_artifacts": {
+  "s106_s131": {
+   "boundary_reasons": {
+    "inning_decrease": 4,
+    "ts_gap": 129
+   },
+   "gap_hours": 5.0,
+   "min_gap_minutes": 20.0,
+   "n_game_ids": 227,
+   "n_multi": 112,
+   "n_real_games": 360,
+   "n_ticks": 78986,
+   "n_ticks_reassigned": 21318
+  },
+  "s114_rerun_per_k": {
+   "k1": {
+    "ci95": [
+     -0.0011191016202090243,
+     4.438798478690513e-05
+    ],
+    "dm_p_raw": 0.07017254466592623,
+    "dm_stat": -1.8136824371582527,
+    "icc_game": 0.3412577605241686,
+    "improvement": -0.0005373568177110596,
+    "n_eff": 1958.9056074865694,
+    "n_games": 673
+   },
+   "k10": {
+    "ci95": [
+     -0.0009750988776679198,
+     0.00016241573751843397
+    ],
+    "dm_p_raw": 0.1611387932778836,
+    "dm_stat": -1.4027983961978814,
+    "icc_game": 0.30011870705875865,
+    "improvement": -0.0004063415700747429,
+    "n_eff": 2224.3238906560928,
+    "n_games": 673
+   },
+   "k3": {
+    "ci95": [
+     -0.0006722629163981507,
+     0.0001678145034651053
+    ],
+    "dm_p_raw": 0.23879962733719162,
+    "dm_stat": -1.1790397427040282,
+    "icc_game": 0.26567787491300304,
+    "improvement": -0.0002522242064665227,
+    "n_eff": 2508.9159510495697,
+    "n_games": 673
+   },
+   "k5": {
+    "ci95": [
+     -0.0006630452982468621,
+     0.00017674561998831054
+    ],
+    "dm_p_raw": 0.25593989684903684,
+    "dm_stat": -1.137008743822483,
+    "icc_game": 0.2489797359268079,
+    "improvement": -0.0002431498391292758,
+    "n_eff": 2674.8431204699496,
+    "n_games": 673
+   }
+  },
+  "s121_s131_leader": {
+   "ci_new": [
+    -0.004610734368407151,
+    0.008512395538636926
+   ],
+   "ci_old": [
+    -0.0038045963728001483,
+    0.010469188905849226
+   ],
+   "clears_bar_new": false,
+   "clears_bar_old": false,
+   "feature": "tick_index_in_game",
+   "improvement_new": 0.0019508305851148877,
+   "improvement_old": 0.003332296266524537,
+   "n_eff_new": 107.06240426914886,
+   "n_eff_old": 107.62011453019696,
+   "n_new": 15336,
+   "n_old": 15702,
+   "verdict": "SCREEN_NULL (unchanged)"
+  }
+ },
+ "edge_claimed": false,
+ "generated_at": "2026-09-03T02:55:08.729349+00:00",
+ "honest_note": "Brier and Brier differences only. No dollar, ROI, profit or edge claim. An uncharged screen is a NON-FINDING; a null is a success.",
+ "improvement_bar": 0.004,
+ "instruments": {
+  "S121": "tick-level partition (tick_week + real-game purge)",
+  "S125": "UTC stamp parsing -- measured NO-OP on both live stores (0 folds differ)",
+  "S126": "same-rows recalibration null in the S114 ladder (changes the FITTED arm)",
+  "S128/S129": "season-grain prior + side-rule guard (fitted arm; S85 only)",
+  "S131": "corroborated real-game split -- 392 -> 360 real games (20-min floor)",
+  "S132/S133": "clean NBA/MLB close -- NBA 952 -> 563 rows with a close, MLB 894 -> 910"
+ },
+ "n_ahead_after": 0,
+ "n_ahead_before": 0,
+ "rerun_commands": {
+  "S114": "python -m scripts.platformkit.eval_gate.s114_ingame_ensemble",
+  "S85 (soccer_style_fingerprints, not in this table)": "python -m scripts.platformkit.eval_gate.s111_screen  # season-grain prior (S128); take S128 section 4's numbers"
+ },
+ "row": "S137",
+ "rows": [
+  {
+   "changed": "yes",
+   "headline": "MLB in-game screen tier, leader tick_index_in_game",
+   "instrument": "real-game clusters (S131) + tick partition (S121)",
+   "row": "S82"
+  },
+  {
+   "changed": "no",
+   "headline": "NBA state-priced prior at every tick, pooled",
+   "instrument": "none applies",
+   "row": "S86"
+  },
+  {
+   "changed": "yes",
+   "headline": "informative-tick re-quote, trial A clamp family",
+   "instrument": "real-game clusters (S131)",
+   "row": "S87"
+  },
+  {
+   "changed": "no",
+   "headline": "NBA phase-conditioned shrinkage, overall",
+   "instrument": "none applies",
+   "row": "S94"
+  },
+  {
+   "changed": "no",
+   "headline": "NBA post-event drift arm thr3_k5",
+   "instrument": "none applies",
+   "row": "S96"
+  },
+  {
+   "changed": "no",
+   "headline": "NBA two-sensor Kalman posterior",
+   "instrument": "none applies",
+   "row": "S97"
+  },
+  {
+   "changed": "no",
+   "headline": "NBA fitted per-cell sigma arm",
+   "instrument": "none applies",
+   "row": "S98"
+  },
+  {
+   "changed": "no",
+   "headline": "NBA conformal grouped coverage (STATIC)",
+   "instrument": "none applies",
+   "row": "S101"
+  },
+  {
+   "changed": "no",
+   "headline": "NBA 576-hypothesis sweep, best arm",
+   "instrument": "none applies",
+   "row": "S102"
+  },
+  {
+   "changed": "no",
+   "headline": "NBA sigma grid widened to [3, 60]",
+   "instrument": "none applies",
+   "row": "S103"
+  },
+  {
+   "changed": "yes",
+   "headline": "MLB real-game split of the joined tick store",
+   "instrument": "the corroborated boundary rule (S131)",
+   "row": "S106"
+  },
+  {
+   "changed": "yes",
+   "headline": "close minus Elo, NBA and MLB",
+   "instrument": "clean close (S132/S133)",
+   "row": "S112"
+  },
+  {
+   "changed": "yes",
+   "headline": "Elo-relative promotions that vanish under the close",
+   "instrument": "clean close (S132/S133)",
+   "row": "S113"
+  },
+  {
+   "changed": "yes",
+   "headline": "nested-selection ensemble ladder, best k",
+   "instrument": "same-rows recalibration null (S126) -- RE-RUN REQUIRED, and it landed",
+   "row": "S114"
+  },
+  {
+   "changed": "no",
+   "headline": "NBA non-linear residual models, best arm (mlp)",
+   "instrument": "none applies",
+   "row": "S115"
+  },
+  {
+   "changed": "yes",
+   "headline": "cross-sport pooled residual, MLB side",
+   "instrument": "real-game clusters (S131) + the S127 relabel",
+   "row": "S116"
+  },
+  {
+   "changed": "no",
+   "headline": "soccer in-game tier, leader minute_x_score_diff",
+   "instrument": "tick partition (S121) -- the identity on a single-ISO-week archive",
+   "row": "S117"
+  },
+  {
+   "changed": "yes",
+   "headline": "the S82 tier on corrected real-game clusters",
+   "instrument": "real-game clusters (S131)",
+   "row": "S119"
+  },
+  {
+   "changed": "yes",
+   "headline": "the S82 tier on the tick-clean partition",
+   "instrument": "real-game clusters (S131)",
+   "row": "S121"
+  },
+  {
+   "changed": "no",
+   "headline": "NBA in-game baseline ordering, market < recal null < ladder BASE",
+   "instrument": "none applies",
+   "row": "S123"
+  }
+ ],
+ "s102_leader": {
+  "dm_ci95": [
+   -0.0006644429045053041,
+   0.0011599509851178743
+  ],
+  "improvement": 0.0002477540403062889,
+  "label": "margin_over_sqrt_rem|raw",
+  "n": 192635,
+  "n_eff": 2295.5683358944066,
+  "n_games": 673,
+  "n_informative": 68925
+ },
+ "s112_clean_close_minus_elo": {
+  "mlb": {
+   "ci_excludes_zero_favouring_candidate": false,
+   "design_effect": 1.0701360838521803,
+   "dm_ci95": [
+    -0.00019807620267718682,
+    0.013616558191157858
+   ],
+   "dm_p": 0.056421094148583865,
+   "dm_stat": 2.00047863641143,
+   "mean_loss_differential": 0.006709240994240335,
+   "n": 281,
+   "n_eff": 262.5834267623995,
+   "n_games": 26,
+   "rho": 0.00715113011826152
+  },
+  "nba": {
+   "ci_excludes_zero_favouring_candidate": true,
+   "design_effect": 1.0,
+   "dm_ci95": [
+    0.01046779664015481,
+    0.033169708056584195
+   ],
+   "dm_p": 0.0004819185346183088,
+   "dm_stat": 3.931330559676406,
+   "mean_loss_differential": 0.021818752348369504,
+   "n": 171,
+   "n_eff": 171.0,
+   "n_games": 30,
+   "rho": 0.0
+  }
+ },
+ "s113_promotions": {
+  "n_control_promotions": 240,
+  "n_unique_hashes_clean_close": 212,
+  "n_unique_hashes_contaminated_close": 211,
+  "note": "A4: the promotion lists declare 240 / 216 / 216 promotions; the UNIQUE hash counts are 240 / 211 / 212 because a few hypotheses are promoted in two families. The vanishing counts (147, 154) are over the control set.",
+  "vanishing_clean": 154,
+  "vanishing_contaminated": 147
+ },
+ "s116_requote_on_s131": {
+  "after_s131_clusters": {
+   "ci_excludes_zero_favouring_candidate": false,
+   "design_effect": 101.68469147140638,
+   "dm_ci95": [
+    -0.0023761820994155445,
+    0.02805111741933796
+   ],
+   "dm_p": 0.09642725367541127,
+   "dm_stat": 1.6924735192566034,
+   "mean_loss_differential": 0.012837467659961209,
+   "n": 9669,
+   "n_eff": 95.08805957009676,
+   "n_games": 54,
+   "rho": 0.565467846017259
+  },
+  "before_s106_clusters": {
+   "ci_excludes_zero_favouring_candidate": false,
+   "design_effect": 93.8185933281663,
+   "dm_ci95": [
+    -0.002272820333606651,
+    0.02794775565352907
+   ],
+   "dm_p": 0.09446587857601796,
+   "dm_stat": 1.698295374252509,
+   "mean_loss_differential": 0.012837467659961209,
+   "n": 9669,
+   "n_eff": 103.06059446211249,
+   "n_games": 63,
+   "rho": 0.6087415552440638
+  },
+  "instrument": "real-game clusters, S131 corroborated split (no refit)",
+  "joined_store_split": {
+   "n_game_ids": 227,
+   "n_multi": 112,
+   "n_real_games": 360,
+   "n_ticks": 78986
+  },
+  "n_unmatched_in_joined_store": 0,
+  "s127_relabel": {
+   "dates": [
+    "2026-07-04",
+    "2026-07-05"
+   ],
+   "label": "SINGLE-DATE-PAIR",
+   "n_dates": 2,
+   "scored_folds": [
+    3,
+    4
+   ]
+  }
+ },
+ "tier": "RE-BASELINE (no charge, no prereg seal, no K read, no bar moved, no refit except where the row says RE-RUN REQUIRED)",
+ "verdicts_changed": 0
+}
