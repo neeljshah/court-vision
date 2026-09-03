@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS result(
     corpus_unit TEXT, corpus_sha TEXT, n INTEGER, n_eff REAL, brier_model REAL,
     brier_close REAL, dm_stat REAL, raw_p REAL, k_family INTEGER, k_global INTEGER,
     deflated_p REAL, pbo REAL, verdict TEXT, artifact_path TEXT, prereg_sha256 TEXT,
-    run_at TEXT, UNIQUE(hash, tier, corpus, corpus_unit, corpus_sha));
+    run_at TEXT, screen_p REAL, UNIQUE(hash, tier, corpus, corpus_unit, corpus_sha));
 CREATE TABLE IF NOT EXISTS queue(
     hash TEXT PRIMARY KEY, tier TEXT, enqueued_at TEXT, claimed_at TEXT, lease_until TEXT,
     claimer TEXT);

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from dataclasses import replace
+from dataclasses import asdict, replace
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -134,6 +134,7 @@ def test_round_trip_every_column(tmp_path):
                     "corpus_unit": UNIT, "corpus_sha": SHA, "n": 412, "n_eff": 380.5,
                     "brier_model": 0.2201, "brier_close": 0.2198, "dm_stat": -0.41,
                     "raw_p": 0.34, "k_family": 1, "k_global": 7, "deflated_p": 1.0,
+                    "screen_p": None,
                     "pbo": 0.48, "verdict": "MATCH",
                     "artifact_path": str(trial_artifact_path(digest, TIER, UNIT)),
                     "prereg_sha256": "0" * 64, "run_at": "2026-09-03T01:00:00+00:00",
@@ -149,6 +150,37 @@ def test_unique_constraint_rejects_a_duplicate_trial(tmp_path):
         db.record(_result(digest))
         with pytest.raises(sqlite3.IntegrityError):
             db.record(_result(digest))
+
+
+def test_family_p_values_tier_filter_and_screen_p_column(tmp_path):
+    """S74 construct: T1 SCREEN p-values index separately from charged T2 p-values."""
+    rows = (
+        ("screen", "fam74", "T1", None, 0.03),
+        ("charged_one", "fam74", "T2", 0.10, None),
+        ("charged_two", "fam74", "T2", 0.20, None),
+        ("other", "other", "T2", 0.40, None),
+    )
+    with _db(tmp_path) as db:
+        for feature, family, tier, raw_p, screen_p in rows:
+            digest = db.upsert_hypothesis(replace(HYPOTHESIS, feature="s74_" + feature,
+                                                  family=family))
+            result = asdict(_result(
+                digest, tier=tier, raw_p=raw_p, verdict="SCREEN" if tier == "T1" else "MATCH",
+                deflated_p=0.0 if raw_p is None else deflated_p(raw_p, 7)))
+            if screen_p is not None:
+                result["screen_p"] = screen_p
+            db.record(result)
+
+        columns = [row[1] for row in db._c.execute("PRAGMA table_info(result)")]
+        assert "screen_p" in columns
+        assert db.family_p_values("fam74") == [0.10, 0.20]
+        assert db.family_p_values("fam74", tier="T1") == [0.03]
+        assert db.family_p_values("fam74", tier="T2") == [0.10, 0.20]
+        assert [tuple(row) for row in db._c.execute(
+            "SELECT h.family, r.tier, r.raw_p, r.screen_p FROM result r "
+            "JOIN hypothesis h ON h.hash=r.hash ORDER BY r.id")] == [
+                ("fam74", "T1", None, 0.03), ("fam74", "T2", 0.10, None),
+                ("fam74", "T2", 0.20, None), ("other", "T2", 0.40, None)]
 
 
 def test_claim_is_atomic(tmp_path):

@@ -58,11 +58,14 @@ class ResultsDB:
         self._c.row_factory = sqlite3.Row
         self._c.execute("PRAGMA foreign_keys=ON")
         self._c.executescript(_SCHEMA)
-        # Additive migration for a DB created before S66 / S135 (see reap_expired).
-        columns = {row[1] for row in self._c.execute("PRAGMA table_info(queue)")}
-        for column in ("lease_until", "claimer"):
-            if column not in columns:
-                self._c.execute("ALTER TABLE queue ADD COLUMN {0} TEXT".format(column))
+        # Additive migration for DBs created before S66 / S135 / S74.
+        for table, additions in (("queue", (("lease_until", "TEXT"), ("claimer", "TEXT"))),
+                                 ("result", (("screen_p", "REAL"),))):
+            columns = {row[1] for row in self._c.execute("PRAGMA table_info({0})".format(table))}
+            for column, data_type in additions:
+                if column not in columns:
+                    self._c.execute(
+                        "ALTER TABLE {0} ADD COLUMN {1} {2}".format(table, column, data_type))
 
     def close(self) -> None:
         self._c.close()
@@ -128,10 +131,11 @@ class ResultsDB:
         if missing:
             raise ValueError("result missing fields: {0}".format(", ".join(missing)))
         row["run_at"] = row.get("run_at") or _now()
+        fields = _RESULT_FIELDS + (("screen_p",) if "screen_p" in row else ())
         self._c.execute(
             "INSERT INTO result({0}) VALUES({1})".format(
-                ", ".join(_RESULT_FIELDS), ",".join("?" * len(_RESULT_FIELDS))),
-            tuple(row[name] for name in _RESULT_FIELDS))
+                ", ".join(fields), ",".join("?" * len(fields))),
+            tuple(row[name] for name in fields))
         return int(self._c.execute("SELECT last_insert_rowid()").fetchone()[0])
 
     def lookup(self, hash: str, tier: str, corpus: str, corpus_unit: str,
@@ -152,15 +156,26 @@ class ResultsDB:
             k_now is not None and int(k_now) != int(out["k_at_run"]))
         return out
 
-    def family_p_values(self, family: str) -> list:
+    def family_p_values(self, family: str, tier: Optional[str] = None) -> list:
         """Raw p-values of every scored trial already recorded for ONE frozen family (S59).
 
         What a within-family BH/BY bar is computed over. Read-only: indexing is not a
         trial, so this costs the FWER ledger nothing and cannot re-score a stored verdict.
         """
-        rows = self._c.execute(
-            "SELECT r.raw_p FROM result r JOIN hypothesis h ON h.hash = r.hash "
-            "WHERE h.family = ? AND r.raw_p IS NOT NULL ORDER BY r.id", (family,)).fetchall()
+        if tier is None:
+            rows = self._c.execute(
+                "SELECT r.raw_p FROM result r JOIN hypothesis h ON h.hash = r.hash "
+                "WHERE h.family = ? AND r.raw_p IS NOT NULL ORDER BY r.id", (family,)).fetchall()
+        elif tier == "T1":
+            rows = self._c.execute(
+                "SELECT r.screen_p FROM result r JOIN hypothesis h ON h.hash = r.hash "
+                "WHERE h.family = ? AND r.tier = 'T1' AND r.screen_p IS NOT NULL ORDER BY r.id",
+                (family,)).fetchall()
+        else:
+            rows = self._c.execute(
+                "SELECT r.raw_p FROM result r JOIN hypothesis h ON h.hash = r.hash "
+                "WHERE h.family = ? AND r.tier = ? AND r.raw_p IS NOT NULL ORDER BY r.id",
+                (family, tier)).fetchall()
         return [float(row[0]) for row in rows]
 
     # -- queue ------------------------------------------------------------------
