@@ -1,0 +1,22 @@
+{
+  "audit": "G205 zero-shot corner probe",
+  "status": "preregistered_before_measurement",
+  "candidate": "g134_stable_lsd_intersections",
+  "candidate_licence": "OpenCV is Apache-2.0; the G134 grouping reference is in-repository code.",
+  "input": "docs/evidence/tracking/g140_corner_targets/corner_pixel_targets.csv",
+  "coordinate_contract": "native JPEG pixels; each source_decode is read at its own CSV-declared width and height",
+  "tolerance_px": 12.0,
+  "configuration": {
+    "raw_lsd_min_length_px": 28.0,
+    "contrast_lsd_min_length_px": 28.0,
+    "stable_group_angle_deg": 5.0,
+    "stable_group_offset_px": 10.0,
+    "intersection_min_angle_deg": 35.0,
+    "support_extension_px": 45.0,
+    "deduplicate_radius_px": 2.0
+  },
+  "proposal_rule": "Intersect every non-parallel pair of G134 stable line groups only when the point is in the native image and within both group extents after the fixed 45 px extension. Proposals are generic, not role-labelled.",
+  "score_rule": "A named target is available if any generic proposal on its frame is within 12 px. Each proposal is precise if within 12 px of any target on its frame. All four roles require all four named targets to be available.",
+  "render_audit_indices": [0, 4, 8, 12, 16],
+  "prohibited": ["per-frame tuning", "target-derived detection", "training", "GPU", "pod", "run_clip.py"]
+}

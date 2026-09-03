@@ -1,0 +1,17 @@
+{
+  "candidate": "g134_stable_lsd_intersections",
+  "corner_recall": 22,
+  "corner_total": 68,
+  "frames_all_four": 0,
+  "frames_total": 17,
+  "proposal_precision_hits": 80,
+  "proposal_total": 32777,
+  "render_indices": [
+    0,
+    4,
+    8,
+    12,
+    16
+  ],
+  "tolerance_px": 12.0
+}
