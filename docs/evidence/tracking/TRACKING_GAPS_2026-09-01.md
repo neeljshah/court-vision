@@ -16,6 +16,13 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G174 / G180 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G174 | basketball | Eligible denominator is **0 tables**, not the 19 the spec assumed: no basketball-family daemon-produced table on the new pod qualifies, so declared/undeclared shares are undefined (0/0). | `g174_late_stamp_skip_rate_2026-09-03.md` | **ACCEPT -- premise FALSIFIED (Q8). Explicitly NOT evidence that the late stamp succeeds; G158's concern remains untested.** |
+| G180 | all | Mandatory A5 survey found **seven** readers that re-measure from corpus sources: `tracking_corpus_ab`, `tracking/footage_census`, `basketball_relabel_image_px`, `g103_g68_tile_recipe`, `g110_tile_nonreproducibility`, `g126_g111_label_audit`, `g137_qualifying_frame_scale`. Landing nothing was the specced full success. | `g180_corpus_retention_2026-09-03.md` | **ACCEPT -- the refusal IS the result. Records an orchestrator error: I had already deleted 23 sources (~22.9 GB) on a durability test alone before this survey existed. Manual deletion STOPPED; retention now requires a keep-list for these readers.** |
+
 ## G181 result register
 
 | Gap | Sport | Finding | Evidence | Status |
