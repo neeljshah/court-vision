@@ -61,8 +61,8 @@ _TEAMS_GAMES = ("data/domains/basketball_nba/games.parquet",
 def _rel(path) -> str:
     p = Path(path)
     try:
-        return (p if p.is_absolute() else _REPO_ROOT / p).resolve().relative_to(
-            _REPO_ROOT).as_posix()
+        root = _REPO_ROOT.absolute()
+        return (p if p.is_absolute() else root / p).absolute().relative_to(root).as_posix()
     except ValueError:
         return p.as_posix()
 
@@ -73,7 +73,8 @@ def _add(out: Dict[str, List[str]], spec: str, origin: str) -> None:
     if not spec:
         return
     if any(ch in spec for ch in "*?["):
-        hits = sorted(_REPO_ROOT.glob(spec))
+        pattern = Path(spec).relative_to(_REPO_ROOT) if Path(spec).is_absolute() else Path(spec)
+        hits = sorted(_REPO_ROOT.glob(pattern.as_posix()))
         for hit in hits:
             out.setdefault(_rel(hit), []).append(origin)
         if hits:
