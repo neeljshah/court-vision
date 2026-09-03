@@ -4,7 +4,7 @@ Rule: a gap is closed only by a measured artifact (metric, exact denominator, n,
 and for any scored claim a prereg sealed before the metric). Harness thresholds
 and gate values NEVER move. Calibration language only -- no dollar, ROI or edge
 claim ever appears in a row, an artifact or a memo.
-NEXT_GAP_ID: S154  (allocated by the orchestrator ONLY; lanes never invent ids.
+NEXT_GAP_ID: S155  (allocated by the orchestrator ONLY; lanes never invent ids.
 OWNERSHIP IN FORCE 2026-09-03: account 1 = this harness session holds THIS counter (S); account 2 = the tracking session holds G (G33). Account 1 dispatches codex ONLY into worktrees a10-a12.
 S-ids start at S01 so they can never collide with the tracking register's G-ids.
 S28/S29 allocated 2026-09-03 by the roadmap-audit lane.)
@@ -292,3 +292,4 @@ reporting; the verifier applies A + B1-B10 + Q1-Q6 and nothing else.
   any artifact, memo, ledger line or register row; none of the retracted figures
   (+18.38, 0.119, +54, 78.11, 8.94, 54.57) appears outside an explicit retraction
   context. Accuracy is not edge; an honest REJECT, NULL or BEHIND is a success.
+| S154 | harness | MISSING EVIDENCE READS AS A PASS in test_ledger_schema_s13.py (S153 follow-up, the register's own open item): the ledger_copy fixture (:23-30) skips EVERY test in the file when data/cache/eval_gate/backtest_fwer.jsonl is absent, so in the main repo a missing charge ledger reads as a green file. Bar: skip only under worktree_marker.is_worktree_checkout() (the S153 helper), pytest.fail otherwise; two CONSTRUCT tests (worktree -> skip, main -> fail); every pre-existing test still passes with the ledger present; ledger.py / backtest_runner.py / the ledger file byte-identical | S153 memo; test_family_bars.py:32-39 | OPEN (new 2026-09-04) -- spec S154_spec.md, codex a16 |
