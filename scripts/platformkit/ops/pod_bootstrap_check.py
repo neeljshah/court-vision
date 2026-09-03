@@ -40,6 +40,7 @@ if str(_REPO_ROOT) not in sys.path:  # run as a file path, not as -m
     sys.path.insert(0, str(_REPO_ROOT))
 
 from supervisor.config import load_profile  # noqa: E402
+from scripts.platformkit.ops.preflight_floors import MLB_EXISTENCE_FLOOR_PROBES
 
 # run_pod_capture refuses to start without these (S21 memo section 7); the
 # profile's own global_env carries the rest.
@@ -66,21 +67,9 @@ _IMPORT_PROBE = (
 # 60 s timeout. Prints one line on success; ANY exception -> FAIL + that cause.
 _PROBE_TIMEOUT_S = 60.0
 _FUNCTIONAL_PROBES: Dict[str, str] = {
-    "parquet_mlb_games": (
-        "import pandas as pd; from domains.mlb.predictor import _corpus_path\n"
-        "df = pd.read_parquet(_corpus_path(None))\n"
-        "print('rows=%d cols=%d' % (len(df), len(df.columns)))\n"),
-    "mlb_predictor_init": (
-        "from domains.mlb.predictor import MLBPredictor; p = MLBPredictor()\n"
-        "print('n_games=%d teams=%d r_home=%.3f' % (p.n_games, len(p.teams), p.r_home))\n"),
-    # produce_sport() is the BUILDER produce_once() wraps; it never reaches
-    # store.save, so this probe cannot overwrite latest.json.
-    "produce_mlb_dry": (
-        "from predict_service.produce import produce_sport; e = produce_sport('mlb')\n"
-        "print('status=%s predictions=%d markets=%d'"
-        " % (e.status, len(e.predictions), len(e.markets)))\n"),
-    # live_states() is fail-open ([] on any error) -> an empty slate is OK; FAIL
-    # only when the call itself raises (import / name breakage).
+    **MLB_EXISTENCE_FLOOR_PROBES,
+    # live_states() stays fail-open BY DESIGN ([] on any error): an empty slate is
+    # OK; FAIL only when the call itself raises (import / name breakage).
     "espn_live_state_mlb": (
         "from scripts.platformkit.ingame.ingame_live_state import live_states\n"
         "st = live_states('mlb'); assert isinstance(st, list), repr(type(st))\n"

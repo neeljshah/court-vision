@@ -1,0 +1,45 @@
+{
+  "gap": "S189",
+  "contract": "docs/evidence/tracking/VERIFIER_CONTRACT.md",
+  "construct": {
+    "probe_order": [
+      "parquet_mlb_games",
+      "mlb_predictor_init",
+      "produce_mlb_dry",
+      "espn_live_state_mlb",
+      "factory_sources",
+      "boot_packages",
+      "supervisor_lock_env"
+    ],
+    "before_explicit_floor_probes": 3,
+    "after_explicit_floor_probes": 6,
+    "named_exclusion": "espn_live_state_mlb",
+    "exclusion_reason": "fail-open BY DESIGN",
+    "live_corpus_reported": {"rows": 27983, "columns": 10}
+  },
+  "premise_matrix": [
+    {"probe": "parquet_mlb_games", "plant": "zero_row_schema_correct", "ok": true, "cause": "rows=0 cols=10"},
+    {"probe": "parquet_mlb_games", "plant": "zero_row_one_column", "ok": true, "cause": "rows=0 cols=1"},
+    {"probe": "parquet_mlb_games", "plant": "absent", "ok": false, "cause": "FileNotFoundError"},
+    {"probe": "mlb_predictor_init", "plant": "zero_row_schema_correct", "ok": false, "cause": "IndexError"},
+    {"probe": "mlb_predictor_init", "plant": "zero_row_one_column", "ok": false, "cause": "KeyError"},
+    {"probe": "mlb_predictor_init", "plant": "absent", "ok": false, "cause": "FileNotFoundError"},
+    {"probe": "produce_mlb_dry", "plant": "zero_row_schema_correct", "ok": true, "cause": "status=ok"},
+    {"probe": "produce_mlb_dry", "plant": "zero_row_one_column", "ok": true, "cause": "status=ok"},
+    {"probe": "produce_mlb_dry", "plant": "forced_unavailable", "ok": true, "cause": "status=unavailable predictions=0 markets=0"}
+  ],
+  "post_change_matrix": [
+    {"probe": "parquet_mlb_games", "plant": "zero_row_schema_correct", "ok": false, "cause": "AssertionError"},
+    {"probe": "parquet_mlb_games", "plant": "zero_row_one_column", "ok": false, "cause": "AssertionError"},
+    {"probe": "parquet_mlb_games", "plant": "absent", "ok": false, "cause": "FileNotFoundError"},
+    {"probe": "mlb_predictor_init", "plant": "zero_row_schema_correct", "ok": false, "cause": "IndexError"},
+    {"probe": "mlb_predictor_init", "plant": "zero_row_one_column", "ok": false, "cause": "KeyError"},
+    {"probe": "mlb_predictor_init", "plant": "absent", "ok": false, "cause": "FileNotFoundError"},
+    {"probe": "produce_mlb_dry", "plant": "forced_unavailable", "ok": false, "cause": "AssertionError"}
+  ],
+  "not_verified": [
+    "pod deployment",
+    "remote boot action",
+    "changed boot decision"
+  ]
+}
