@@ -145,14 +145,20 @@ def write_adjudicated(tracking: Path, game_id: str, payload: dict) -> None:
 def adjudicate(video: Path, sport: str, game_id: str, tracking: Path,
                harness: Callable = evaluate,
                frame_counter: Callable[[Path], int] = decoded_frame_count,
-               *, publish: bool = True) -> dict | None:
+               *, publish: bool = True,
+               printer: Callable[[str], None] = print) -> dict | None:
     """Run the frozen harness and optionally publish its per-game sidecar."""
     csv_path = tracking_csv(tracking, game_id)
     if not _fsync_csv(csv_path):
         return None
     try:
         emitted = pd.read_csv(csv_path)
-    except Exception:
+    except Exception as exc:
+        # An unreadable table is NOT the same as an unfinished game: both used to
+        # return None silently, so a corrupt CSV sat unadjudicated forever with no
+        # error anywhere. Say so; the return contract is unchanged.
+        printer("adjudicate: unreadable tracking csv %s: %s"
+                % (csv_path, str(exc)[:160]))
         return None
     if emitted.empty:
         return None

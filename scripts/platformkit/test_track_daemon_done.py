@@ -172,3 +172,27 @@ def test_every_acquisition_label_maps_to_a_sport_the_harness_knows():
 
     assert HARNESS_SPORT["mlb"] == "baseball"
     assert HARNESS_SPORT["ncaa_basketball"] == "basketball"
+
+
+def test_unreadable_tracking_csv_is_reported_not_swallowed(tmp_path):
+    """An unreadable table must not look identical to an unfinished game.
+
+    Both used to return None in silence, so a corrupt CSV sat unadjudicated
+    forever with no error anywhere (G201 census: the only broad silent swallow
+    among the evidence-producing files).
+    """
+    tracking = tmp_path / "tracking"
+    video = tmp_path / "source.mp4"
+    path = tracking / "sample" / "tracking_data.csv"
+    path.parent.mkdir(parents=True)
+    # Undecodable bytes: pandas raises rather than returning a frame.
+    path.write_bytes(bytes([255, 254, 0, 65, 66, 67]))
+    said = []
+
+    payload = adjudicate(video, "tennis", "sample", tracking,
+                         publish=False, printer=said.append)
+
+    assert payload is None
+    assert len(said) == 1
+    assert "unreadable tracking csv" in said[0]
+    assert "tracking_data.csv" in said[0]
