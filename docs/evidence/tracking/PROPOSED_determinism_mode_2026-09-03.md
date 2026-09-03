@@ -1,5 +1,14 @@
 # PROPOSED (human-gated, NOT applied): a determinism mode for measurement runs
 
+> **SIMPLIFIED 2026-09-03 after G190 measured it.** Only the cuDNN tuner flag is
+> needed. G190 ran the route's detector in four conditions, three fresh processes
+> each: with `benchmark=True` the box tensor differed across all three runs; with
+> `benchmark=False` alone it was BIT-EXACT, and adding seeds produced a
+> byte-identical result (seeds add nothing). FP32 was also stable but produced
+> DIFFERENT values, so it changes the system under measurement and is rejected.
+> **The change below can therefore be one line rather than a seeding block.** The
+> fuller version is kept beneath for the record.
+
 **This touches `src/pipeline/unified_pipeline.py`, which is human-gated. No edit
 has been made.** This is the diff for a human to apply, with the reasoning and
 the cost stated so the trade is yours to make.
