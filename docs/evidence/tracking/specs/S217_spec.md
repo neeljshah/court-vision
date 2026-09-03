@@ -1,4 +1,4 @@
-GAP S217 | sport mlb (in-game) | worktree aXX | log cx_s217_mlb_depth_capture_pod
+GAP S217 | sport mlb (in-game) | worktree a17 | log cx_s217_mlb_depth_capture_pod
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S100 closed order-book microstructure with "premise falsified: depth captured pre-game only".
 PREMISE (step 0): re-measure and print: book_depth/kalshi file count; depth_history/mlb file count and date span (15
