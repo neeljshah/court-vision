@@ -12,8 +12,9 @@ use PRIOR rows only. A SCREEN is a NON-FINDING. Calibration language only.
 """
 from __future__ import annotations
 
-import os
+import hashlib
 import math
+import os
 import re
 from pathlib import Path
 from typing import Any, Callable, Optional, Sequence
@@ -25,8 +26,8 @@ from scripts.platformkit.combo.corpus_cache import SOCCER_LEAKY_COLUMNS, load_ga
 from scripts.platformkit.foundry.grammar import Hypothesis
 
 ROOT = Path(__file__).resolve().parents[3]
-# ponytail: refit cadence. Every fit serves only test rows LATER than every row it was fit on
-# (walk_forward hands train in time order), so the cadence buys speed, never lookahead.
+# Every fit serves only test rows LATER than every row it was fit on. The cache identity below
+# is a CPCV path identity, never a length bucket shared by disjoint train sets.
 REFIT_EVERY, MIN_FIT_ROWS, RIDGE = 50, 30, 1e-3
 # Spine, keys and the LABEL are never features. `p_base` / `p_elo` ARE: the corpus's own as-of
 # base is a frozen member of every *_gate family ("does the base still add to the close?").
@@ -102,7 +103,7 @@ class RealScreenPredictor:
 
     def __init__(self, feature: str, refit_every: int = REFIT_EVERY) -> None:
         self.feature, self.refit_every = feature, int(refit_every)
-        self._bucket, self._fit = -1, None
+        self._path_key, self._fit = None, None
         self.fits: list = []
 
     def _refit(self, train: Sequence[dict]) -> None:
@@ -116,6 +117,10 @@ class RealScreenPredictor:
             coef = _logistic(X, np.array([r[2] for r in rows], dtype=float))
             self._fit = (coef, mu, sd)
         self.fits.append({"n_train": len(train), "n_fit": len(rows),
+                          "first_game_id": train[0]["game_id"] if train else "",
+                          "last_game_id": train[-1]["game_id"] if train else "",
+                          "train_sha256": hashlib.sha256("\n".join(
+                              str(state["game_id"]) for state in train).encode("ascii")).hexdigest(),
                           "coef": None if self._fit is None else [float(c) for c in self._fit[0]],
                           "mu": None if self._fit is None else mu,
                           "sd": None if self._fit is None else sd})
@@ -124,9 +129,10 @@ class RealScreenPredictor:
         if not select_inside:
             raise ValueError("the screen fits inside the window only (select_inside=True)")
         p_ref = _clip(test["features"]["p_ref"])
-        bucket = len(train) // self.refit_every
-        if bucket != self._bucket:
-            self._bucket = bucket
+        path_key = (id(train), train[0]["game_id"] if train else "",
+                    train[-1]["game_id"] if train else "", len(train) // self.refit_every)
+        if path_key != self._path_key:
+            self._path_key = path_key
             self._refit(train)
         x = test["features"].get(self.feature)
         if self._fit is None or x is None:          # missing != bad: fall back to the incumbent

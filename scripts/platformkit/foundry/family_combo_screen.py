@@ -68,7 +68,7 @@ class ComboPredictor:
 
     def __init__(self, features: Sequence[str], refit_every: int = REFIT_EVERY) -> None:
         self.features, self.refit_every = list(features), int(refit_every)
-        self._bucket, self._fit = -1, None
+        self._path_key, self._fit = None, None
         self.fits: list = []
 
     def _rows(self, states: Sequence[dict]) -> list:
@@ -99,9 +99,9 @@ class ComboPredictor:
         if not select_inside:
             raise ValueError("the screen fits inside the window only (select_inside=True)")
         p_ref = _clip(test["features"]["p_ref"])
-        bucket = len(train) // self.refit_every
-        if bucket != self._bucket:
-            self._bucket = bucket
+        path_key = (id(train), train[0]["game_id"] if train else "", train[-1]["game_id"] if train else "", len(train) // self.refit_every)
+        if path_key != self._path_key:
+            self._path_key = path_key
             self._refit(train)
         values = [test["features"].get(f) for f in self.features]
         if self._fit is None or any(v is None for v in values):

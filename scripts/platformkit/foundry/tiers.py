@@ -21,16 +21,14 @@ import numpy as np
 import pandas as pd
 
 from scripts.platformkit.combo.corpus_cache import SPORTS, load_gate_corpus
-from scripts.platformkit.combo.fwer_budget import min_corpora_eff
 from scripts.platformkit.eval_gate import scoring
 from scripts.platformkit.eval_gate.backtest_runner import _charge_ledger
-from scripts.platformkit.eval_gate.cpcv_engine import cpcv_evaluate
 from scripts.platformkit.eval_gate.dm_test import diebold_mariano
 from scripts.platformkit.eval_gate.family_bars import (charged_bars,  # noqa: F401 re-export
                                                        families_spec_sha, frozen_family,
                                                        git_blob_id)
-from scripts.platformkit.eval_gate.pbo import cscv_pbo
 from scripts.platformkit.eval_gate.walkforward import assert_vintage, walk_forward
+from scripts.platformkit.foundry.charge_path_followups import run_charged
 from scripts.platformkit.foundry.grammar import Hypothesis, semantic_hash
 # Re-exported so `tiers.PromotionRule` / `tiers.promote` keep resolving for every importer.
 from scripts.platformkit.foundry.promotion import SPEC_PATH, PromotionRule, promote  # noqa: F401
@@ -137,14 +135,15 @@ def partition_corpus(states: Sequence[dict], *, seed: int) -> Partition:
 
 
 def charge_tier(tier: str, *, ledger_path: Any, family: str, hypothesis_hash: str,
-                prereg_sha256: str, sport: str, start: str, end: str) -> dict:
+                prereg_sha256: str, sport: str, start: str, end: str,
+                trial_prereg_sha256: Optional[str] = None) -> dict:
     """THE REFUSAL: the only path from this module to the FWER ledger. T0/T1 may never take it."""
     if tier not in CHARGED_TIERS:
         raise TierNotChargeable("tier %r is a cheap screen and may never consume K; only %s are "
                                 "charged" % (tier, list(CHARGED_TIERS)))
     return _charge_ledger(Path(ledger_path), "foundry:%s" % hypothesis_hash[:16], sport, start, end,
-                          family=family, hypothesis_hash=hypothesis_hash, tier=tier,
-                          prereg_sha256=prereg_sha256)
+                           family=family, hypothesis_hash=hypothesis_hash, tier=tier,
+                           prereg_sha256=prereg_sha256, trial_prereg_sha256=trial_prereg_sha256)
 
 
 def _cluster_ids(states: Sequence[dict], sport: str) -> tuple:
@@ -183,9 +182,10 @@ def _pooled_oof(records: Sequence[dict]) -> tuple:
 
 
 def run_tier(hypothesis: Hypothesis, tier: str, *, states: Sequence[dict], predict_fn: Callable,
-             ledger_path: Any, partition: Partition, rule: PromotionRule, family: str = "",
-             screened_n: Optional[int] = None, n_corpora: int = 1,
-             artifact_path: str = "", results_db: Any = None) -> TierResult:
+              ledger_path: Any, partition: Partition, rule: PromotionRule, family: str = "",
+              screened_n: Optional[int] = None, n_corpora: int = 1,
+              artifact_path: str = "", results_db: Any = None,
+              trial_prereg_sha256: Optional[str] = None) -> TierResult:
     """Run one tier on rows that must already sit on that tier's side of the partition.
 
     `partition`/`predict_fn` are forced by the spec's field list (both partition sha256s are
@@ -224,8 +224,10 @@ def run_tier(hypothesis: Hypothesis, tier: str, *, states: Sequence[dict], predi
                           else "UNCOVERED", **_EMPTY, **common)
     if tier == "T1":
         return _run_screen(states, predict_fn, sport, common)
-    return _run_charged(tier, states, predict_fn, sport, ledger_path, family, screened_n,
-                        n_corpora, rule, digest, common, results_db)
+    return run_charged(tier, states, predict_fn, sport, ledger_path, family, screened_n, n_corpora,
+                       rule, digest, common, results_db, trial_prereg_sha256, result_factory=TierResult,
+                       charge_tier=charge_tier, pooled_oof=_pooled_oof, cluster_ids=_cluster_ids,
+                       dm_test=diebold_mariano, n_eff=_n_eff)
 
 
 def _run_screen(states: Sequence[dict], predict_fn: Callable, sport: str, common: dict) -> TierResult:
@@ -246,55 +248,8 @@ def _run_screen(states: Sequence[dict], predict_fn: Callable, sport: str, common
         (r["game_id"], r["ts"], c, float(a), float(b))
         for r, c, a, b in zip(records, clusters, loss_model, loss_close)])
     return TierResult(n_eff=_n_eff((loss_model - loss_close).tolist(), clusters), verdict="SCREEN",
-                      dm=dm.dm_stat, archive=archive, brier_model=scoring.brier(model, y),
-                      brier_close=scoring.brier(close, y),
-                      **{k: v for k, v in _EMPTY.items() if k != "dm"},
-                      **{**common, "cluster_key": key})
-
-
-def _run_charged(tier: str, states: Sequence[dict], predict_fn: Callable, sport: str,
-                 ledger_path: Any, family: str, screened_n: Optional[int], n_corpora: int,
-                 rule: PromotionRule, digest: str, common: dict,
-                 results_db: Any = None) -> TierResult:
-    if screened_n is None:
-        raise ValueError("%s must print screened_n beside deflated_p (SF-2)" % tier)
-    if frozen_family(family) is None:
-        # No frozen family, no family bar, so no AHEAD is reachable -- and the refusal comes
-        # BEFORE charge_tier, so an unfrozen family never consumes K silently.
-        return TierResult(verdict="NOT_IN_FROZEN_FAMILIES",
-                          families_spec_sha256=families_spec_sha(), **_UNSCORED, **common)
-    stamps = sorted(str(s["state_ts"])[:10] for s in states)
-    # Q2: the ledger row is appended BEFORE any metric, and K is read AT LAUNCH.
-    charge = charge_tier(tier, ledger_path=ledger_path, family=family, hypothesis_hash=digest,
-                         prereg_sha256=rule.prereg_sha256, sport=sport, start=stamps[0],
-                         end=stamps[-1])
-    k_global, k_family = int(charge["k_cumulative"]), charge.get("k_family")
-    ids, model, close, y = _pooled_oof(cpcv_evaluate(list(states), predict_fn))
-    by_id = {_event_id(s): s for s in states}
-    key, cluster_ids = _cluster_ids([by_id[i] for i in ids], sport)
-    losses = (model - y) ** 2 - (close - y) ** 2
-    dm = diebold_mariano(losses.tolist(), cluster_ids)
-    pbo = cscv_pbo(np.column_stack([model, close]), y, s_blocks=16).pbo
-    brier_model, brier_close = scoring.brier(model, y), scoring.brier(close, y)
-    prior = [] if results_db is None else list(results_db.family_p_values(family))
-    bars = charged_bars(dm.p_value, k_global, family, prior, rule.alpha,
-                        common["artifact_path"])
-    if not bars["global_pass"]:
-        verdict = "MATCH"
-    elif brier_model > brier_close:
-        verdict = "BEHIND"
-    elif tier == "T3" and n_corpora < min_corpora_eff(n_corpora, k_global):
-        verdict = "SINGLE-WINDOW"
-    elif not bars["family_pass"]:
-        verdict = "MATCH"                       # AHEAD needs BOTH bars; the family bar blocked
-    else:
-        verdict = "AHEAD"
-    return TierResult(n_eff=_n_eff(losses.tolist(), cluster_ids), brier_model=brier_model,
-                      brier_close=brier_close, dm=dm.dm_stat, raw_p=dm.p_value, k_family=k_family,
-                      k_global=k_global, deflated_p=bars["deflated_p"], pbo=pbo, verdict=verdict,
-                      family_q=bars["q"], bh_passed=bars["family_pass"],
-                      global_passed=bars["global_pass"], dual_verdict=bars["verdict"],
-                      families_spec_sha256=bars["families_spec_sha"],
-                      **{**common, "cluster_key": key, "n": len(ids)})
-
+                       dm=dm.dm_stat, archive=archive, brier_model=scoring.brier(model, y),
+                       brier_close=scoring.brier(close, y),
+                       **{k: v for k, v in _EMPTY.items() if k != "dm"},
+                       **{**common, "cluster_key": key})
 

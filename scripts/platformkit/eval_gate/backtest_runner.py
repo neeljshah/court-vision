@@ -175,7 +175,8 @@ def _phase_metrics(records: list[dict]) -> dict:
 
 def _charge_ledger(path: Path, spec: str, sport: str, start: str, end: str, *,
                    family: str | None = None, hypothesis_hash: str | None = None,
-                   tier: str | None = None, prereg_sha256: str | None = None) -> dict:
+                   tier: str | None = None, prereg_sha256: str | None = None,
+                   trial_prereg_sha256: str | None = None) -> dict:
     # Read-max + append run under one cross-process lock: concurrent charges must
     # neither interleave bytes nor lose updates (K undercount loosens eps_eff).
     # S13: the four caller-supplied fields and the derived k_family are ADDITIVE and
@@ -191,9 +192,12 @@ def _charge_ledger(path: Path, spec: str, sport: str, start: str, end: str, *,
                "start": start, "end": end, "k_cumulative": cumulative_k(prior, 1)}
         row.update({k: v for k, v in (("family", family), ("k_family", next_k_family(rows, family)),
                                       ("hypothesis_hash", hypothesis_hash), ("tier", tier),
-                                      ("prereg_sha256", prereg_sha256)) if v is not None})
-        with path.open("a", encoding="ascii") as fh:
-            fh.write(json.dumps(row, ensure_ascii=True, sort_keys=True) + "\n")
+                                      ("prereg_sha256", prereg_sha256),
+                                      ("trial_prereg_sha256", trial_prereg_sha256)) if v is not None})
+        first_line = path.read_bytes().splitlines(keepends=True)[:1] if path.exists() else []
+        terminator = "\r\n" if first_line and first_line[0].endswith(b"\r\n") else "\n"
+        with path.open("a", encoding="ascii", newline="") as fh:
+            fh.write(json.dumps(row, ensure_ascii=True, sort_keys=True) + terminator)
     return row
 
 

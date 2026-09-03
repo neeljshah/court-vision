@@ -44,12 +44,7 @@ CSV_FIELDS = ("event_id", "ts", "div", "home", "away", "p_model", "p_close", "y"
 
 
 class PerPathPredictor:
-    """A FRESH RealScreenPredictor whenever the train set changes: one fit per CPCV path.
-
-    RealScreenPredictor caches its fit by len(train) // 50, safe under walk_forward (train
-    only grows) but not under cpcv_evaluate, where a later path can share a bucket with an
-    earlier one whose train set held this path's test rows. Filed as a NEW GAP; not fixed here.
-    """
+    """Compatibility adapter retaining the original trial archive shape for historic reruns."""
 
     def __init__(self, feature: str) -> None:
         self.feature, self._key, self._inner, self.paths = feature, None, None, []
@@ -111,10 +106,10 @@ def run_trial(ledger_path: Path = LEDGER, db_path: Path = SCREENS_DB, out: Path 
     before = _ledger_state(ledger_path)
     with results_db.ResultsDB(db_path) as db:
         prior_n = len(db.family_p_values(FAMILY))
-        result = tiers.run_tier(HYPOTHESIS, "T2", states=served, predict_fn=PerPathPredictor(feature),
+        result = tiers.run_tier(HYPOTHESIS, "T2", states=served, predict_fn=RealScreenPredictor(feature),
                                 ledger_path=ledger_path, partition=part, rule=rule, family=FAMILY,
                                 screened_n=SCREENED_N, results_db=db,
-                                artifact_path=str(out) + "_bars.json")
+                                artifact_path=str(out) + "_bars.json", trial_prereg_sha256=seal)
         db.record(dict(hash=result.hash, tier="T2", corpus="soccer", corpus_unit="",
                        corpus_sha=part.verdict_sha256[:16], n=result.n, n_eff=result.n_eff,
                        brier_model=result.brier_model, brier_close=result.brier_close,
@@ -127,7 +122,7 @@ def run_trial(ledger_path: Path = LEDGER, db_path: Path = SCREENS_DB, out: Path 
         raise RuntimeError("ledger rows %d -> %d, expected exactly one charge" % (before[0], after[0]))
     k = int(result.k_global)
     # REPRODUCTION (A2) + the differential (Q9): an independent second CPCV run must match.
-    predictor = PerPathPredictor(feature)
+    predictor = RealScreenPredictor(feature)
     ids, model, close, y = tiers._pooled_oof(cpcv_evaluate(list(served), predictor))
     by_id = {s["game_id"]: s for s in served}
     rows = [by_id[i] for i in ids]
