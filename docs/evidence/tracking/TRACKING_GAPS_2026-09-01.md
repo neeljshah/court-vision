@@ -16,6 +16,12 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G156b result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G156b | all | Adjudication moved off `tick()`, adjudicating jobs excluded from the worker budget, bounded 1,800 s adjudication timeout, parent-serialised sidecar and ledger writes. `decode_manifest.py` byte-identical to master, so the decoded-frame count is definitionally unchanged (B10 clean). Own file 29/29. | `g156_daemon_stalls_on_ffprobe_2026-09-03.md`; worktree a3 `15eb93350` (NOT landed) | **REJECT -- flips two sibling tests in `test_track_daemon_done.py` from PASS to FAIL with `FileNotFoundError ... ledger.jsonl`. Orchestrator verified both ways in master (A1): 4 pass stashed, 2 fail applied. Backed out; master green at 32. The per-file rule hid it and the A5 survey missed it. Fix pass queued with both test names named.** |
+
 ## G162 / G163 / G165 result register
 
 | Gap | Sport | Finding | Evidence | Status |
