@@ -1,0 +1,338 @@
+{
+  "gap": "S182",
+  "contract": "docs/evidence/tracking/VERIFIER_CONTRACT.md",
+  "verdict": "NOT VALIDATED IN THIS WORKTREE (ATTEMPT 2)",
+  "denominator": {
+    "rows": 4846,
+    "seasons": {
+      "2022-23": 1230,
+      "2023-24": 1230,
+      "2024-25": 1230,
+      "2025-26": 1156
+    }
+  },
+  "default_artifacts": {
+    "rows": 4846,
+    "distinct_event_id": 4846,
+    "legacy_subset_rows": 1814,
+    "portable_load": true,
+    "default_path_hash_identity": true,
+    "parquet_sha256": "471bf4017e32bcdf076f07b323078894050cca526bcb7cdd402103cf9bec0cf3",
+    "sidecar_sha256": "bc2b69359aeb06e031965e445d567b1eb28f277c6df5a38f6776ef2a9221461a",
+    "census_sha256": "054d3e7a4659c426f2032a27b5c6364ae711267f3cb45927816b1ed2755b4898"
+  },
+  "census": [
+    {
+      "column": "p_base",
+      "season": "2022-23",
+      "numerator": 1230,
+      "denominator": 1230,
+      "status": "OPEN"
+    },
+    {
+      "column": "p_base",
+      "season": "2023-24",
+      "numerator": 1230,
+      "denominator": 1230,
+      "status": "OPEN"
+    },
+    {
+      "column": "p_base",
+      "season": "2024-25",
+      "numerator": 1230,
+      "denominator": 1230,
+      "status": "OPEN"
+    },
+    {
+      "column": "p_base",
+      "season": "2025-26",
+      "numerator": 1156,
+      "denominator": 1156,
+      "status": "OPEN"
+    },
+    {
+      "column": "p_elo",
+      "season": "2022-23",
+      "numerator": 1230,
+      "denominator": 1230,
+      "status": "OPEN"
+    },
+    {
+      "column": "p_elo",
+      "season": "2023-24",
+      "numerator": 1230,
+      "denominator": 1230,
+      "status": "OPEN"
+    },
+    {
+      "column": "p_elo",
+      "season": "2024-25",
+      "numerator": 1230,
+      "denominator": 1230,
+      "status": "OPEN"
+    },
+    {
+      "column": "p_elo",
+      "season": "2025-26",
+      "numerator": 1156,
+      "denominator": 1156,
+      "status": "OPEN"
+    },
+    {
+      "column": "dreb_diff_asof",
+      "season": "2022-23",
+      "numerator": 0,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "dreb_diff_asof",
+      "season": "2023-24",
+      "numerator": 0,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "dreb_diff_asof",
+      "season": "2024-25",
+      "numerator": 1209,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "dreb_diff_asof",
+      "season": "2025-26",
+      "numerator": 589,
+      "denominator": 1156,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "fg3m_diff_asof",
+      "season": "2022-23",
+      "numerator": 0,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "fg3m_diff_asof",
+      "season": "2023-24",
+      "numerator": 0,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "fg3m_diff_asof",
+      "season": "2024-25",
+      "numerator": 1209,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "fg3m_diff_asof",
+      "season": "2025-26",
+      "numerator": 589,
+      "denominator": 1156,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "stl_diff_asof",
+      "season": "2022-23",
+      "numerator": 0,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "stl_diff_asof",
+      "season": "2023-24",
+      "numerator": 0,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "stl_diff_asof",
+      "season": "2024-25",
+      "numerator": 1209,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "stl_diff_asof",
+      "season": "2025-26",
+      "numerator": 589,
+      "denominator": 1156,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "blk_diff_asof",
+      "season": "2022-23",
+      "numerator": 0,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "blk_diff_asof",
+      "season": "2023-24",
+      "numerator": 0,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "blk_diff_asof",
+      "season": "2024-25",
+      "numerator": 1209,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "blk_diff_asof",
+      "season": "2025-26",
+      "numerator": 589,
+      "denominator": 1156,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "pace_diff_asof",
+      "season": "2022-23",
+      "numerator": 1214,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "pace_diff_asof",
+      "season": "2023-24",
+      "numerator": 1230,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "pace_diff_asof",
+      "season": "2024-25",
+      "numerator": 1225,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "pace_diff_asof",
+      "season": "2025-26",
+      "numerator": 589,
+      "denominator": 1156,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "oreb_pg_diff_asof",
+      "season": "2022-23",
+      "numerator": 0,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "oreb_pg_diff_asof",
+      "season": "2023-24",
+      "numerator": 0,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "oreb_pg_diff_asof",
+      "season": "2024-25",
+      "numerator": 1209,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "oreb_pg_diff_asof",
+      "season": "2025-26",
+      "numerator": 589,
+      "denominator": 1156,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "tov_pg_diff_asof",
+      "season": "2022-23",
+      "numerator": 0,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "tov_pg_diff_asof",
+      "season": "2023-24",
+      "numerator": 0,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "tov_pg_diff_asof",
+      "season": "2024-25",
+      "numerator": 1209,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "tov_pg_diff_asof",
+      "season": "2025-26",
+      "numerator": 589,
+      "denominator": 1156,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "dreb_x_pace_asof",
+      "season": "2022-23",
+      "numerator": 0,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "dreb_x_pace_asof",
+      "season": "2023-24",
+      "numerator": 0,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "dreb_x_pace_asof",
+      "season": "2024-25",
+      "numerator": 1209,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "dreb_x_pace_asof",
+      "season": "2025-26",
+      "numerator": 589,
+      "denominator": 1156,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "stl_x_fg3m_asof",
+      "season": "2022-23",
+      "numerator": 0,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "stl_x_fg3m_asof",
+      "season": "2023-24",
+      "numerator": 0,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "stl_x_fg3m_asof",
+      "season": "2024-25",
+      "numerator": 1209,
+      "denominator": 1230,
+      "status": "CLOSED AT LIMIT"
+    },
+    {
+      "column": "stl_x_fg3m_asof",
+      "season": "2025-26",
+      "numerator": 589,
+      "denominator": 1156,
+      "status": "CLOSED AT LIMIT"
+    }
+  ],
+  "not_verified": [
+    "FWER file is absent in this worktree",
+    "venue-close corpus is absent"
+  ]
+}
