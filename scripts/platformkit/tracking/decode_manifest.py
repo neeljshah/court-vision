@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import csv
 import json
+import logging
 import subprocess
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -18,6 +19,12 @@ NON_PLAY = "non_play"
 SOLVED = "solved"
 UNSOLVED = "unsolved"
 _STATUSES = {NON_PLAY, SOLVED, UNSOLVED}
+_LOG = logging.getLogger(__name__)
+# Container duration is rounded to a finite decimal representation, so a
+# constant-frame-rate stream can land fractionally either side of its last
+# frame. One frame admits that endpoint rounding without accepting a material
+# metadata/count disagreement.
+_METADATA_COUNT_TOLERANCE_FRAMES = 1.0
 
 
 @dataclass(frozen=True)
@@ -85,8 +92,84 @@ class DecodeManifest:
 NonPlayClassifier = Callable[[int], bool]
 
 
+def _positive_integer(value: object) -> int | None:
+    """Return a positive integer metadata value, never a rounded estimate."""
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value if value > 0 else None
+    if not isinstance(value, str) or not value.isdecimal():
+        return None
+    parsed = int(value)
+    return parsed if parsed > 0 else None
+
+
+def _positive_float(value: object) -> float | None:
+    """Return a finite positive metadata number."""
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return None
+    return parsed if parsed > 0.0 and parsed != float("inf") else None
+
+
+def _frame_rate(value: object) -> float | None:
+    """Parse ffprobe's rational frame rate without rounding it."""
+    if not isinstance(value, str):
+        return None
+    numerator, separator, denominator = value.partition("/")
+    if not separator:
+        return None
+    top = _positive_float(numerator)
+    bottom = _positive_float(denominator)
+    return top / bottom if top is not None and bottom is not None else None
+
+
+def _metadata_frame_count(video_path: str | Path, ffprobe: str) -> tuple[int | None, str]:
+    """Return a duration-consistent metadata count, or its fallback reason."""
+    command = [
+        ffprobe, "-v", "error", "-select_streams", "v:0",
+        "-show_entries", "stream=nb_frames,r_frame_rate,duration:format=duration",
+        "-of", "json", str(video_path),
+    ]
+    try:
+        result = subprocess.run(command, check=True, capture_output=True, text=True)
+        payload = json.loads(result.stdout)
+    except (OSError, subprocess.CalledProcessError, ValueError, TypeError):
+        return None, "unreadable metadata"
+    streams = payload.get("streams")
+    container = payload.get("format")
+    if not isinstance(streams, list) or not streams:
+        return None, "missing stream metadata"
+    container_duration = container.get("duration") if isinstance(container, dict) else None
+    candidates: list[tuple[int, float]] = []
+    for stream in streams:
+        if not isinstance(stream, dict):
+            return None, "invalid stream metadata"
+        count = _positive_integer(stream.get("nb_frames"))
+        rate = _frame_rate(stream.get("r_frame_rate"))
+        duration = _positive_float(stream.get("duration", container_duration))
+        if count is None or rate is None or duration is None:
+            return None, "missing positive metadata"
+        expected = duration * rate
+        if abs(count - expected) > _METADATA_COUNT_TOLERANCE_FRAMES:
+            return None, "metadata disagrees with duration and frame rate"
+        candidates.append((count, expected))
+    counts = {count for count, _expected in candidates}
+    if len(counts) != 1:
+        return None, "ambiguous metadata counts"
+    count, expected = candidates[0]
+    _LOG.info("decoded_frame_count path=metadata video=%s count=%d expected=%.6f tolerance_frames=%.1f",
+              video_path, count, expected, _METADATA_COUNT_TOLERANCE_FRAMES)
+    return count, "metadata"
+
+
 def decoded_frame_count(video_path: str | Path, ffprobe: str = "ffprobe") -> int:
-    """Read the decoded-frame count with ffprobe, never from tracking output."""
+    """Read a validated metadata count, or decode frames when metadata is unsafe."""
+    metadata_count, reason = _metadata_frame_count(video_path, ffprobe)
+    if metadata_count is not None:
+        return metadata_count
+    _LOG.info("decoded_frame_count path=decode_fallback video=%s reason=%s", video_path, reason)
     command = [
         ffprobe, "-v", "error", "-count_frames", "-select_streams", "v:0",
         "-show_entries", "stream=nb_read_frames", "-of", "default=nokey=1:noprint_wrappers=1",
