@@ -10,7 +10,6 @@ import pandas as pd
 from scripts.platformkit.eval_gate.family_bars import load_families
 from scripts.platformkit.foundry import asof_supply
 from scripts.platformkit.foundry.grammar import Hypothesis
-from scripts.platformkit.foundry import screen_predictor as _core
 
 
 @lru_cache(maxsize=96)
@@ -58,3 +57,8 @@ def source_column(hypothesis: Hypothesis, name: str, table: pd.DataFrame,
     joined = pd.concat(parts)
     joined = joined[~joined.index.duplicated(keep="first")]
     return pd.to_numeric(joined.reindex(table.index), errors="coerce")
+
+
+# Bound at the BOTTOM of this file: screen_predictor imports source_column, so a top-of-file
+# back-import crashes whenever this module is the one imported first.
+from scripts.platformkit.foundry import screen_predictor as _core

@@ -12,7 +12,6 @@ from domains.mlb.asof_sp_form import build_sp_form_features
 from domains.mlb.ratings import walk_forward_elo as mlb_walk_forward_elo
 from domains.soccer.ratings import walk_forward_goals
 from domains.tennis.elo_walkforward import walk_forward_elo as tennis_walk_forward_elo
-from scripts.platformkit.combo import corpus_cache as _cache
 
 _NBA_PAIR_DIFFS: Dict[str, Tuple[str, str]] = {
     "pace_diff_asof": ("home_pace_asof", "away_pace_asof"),
@@ -159,3 +158,8 @@ def _build_tennis() -> Tuple[pd.DataFrame, List[Path]]:
 
 
 _BUILDERS = {"mlb": _build_mlb, "nba": _build_nba, "soccer": _build_soccer, "tennis": _build_tennis}
+
+
+# Bound at the BOTTOM of this file: corpus_cache imports these builders, so a top-of-file
+# back-import crashes whenever this module is the one imported first.
+from scripts.platformkit.combo import corpus_cache as _cache
