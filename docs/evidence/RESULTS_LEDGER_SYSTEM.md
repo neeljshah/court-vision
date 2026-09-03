@@ -400,3 +400,5 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-03 | frozen family calibration spec | S174 | v1 unchanged; v2 2/21 DROPPED, 35 active, pin df461f2744a8d6754f7ef643e79abf2ecefeee0614599f64b7c7f42714114ae1; LANDED 2cc58675e | ACCEPT (verified: codex-sol, contract A/B/Q)
 
 2026-09-04 | harness | S173 | direct n_eff re-quote attempted in worktree a13: 4/23 cited series present, 0/23 converted; codex-sol REJECT x2 (B2 status flip corrected; bar unmet for an environmental reason -- the eval_gate cache is never junctioned); every series exists in the main repo -> S196; LANDED 7de326e40 (docs only) | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q)
+2026-09-03 | hook | S173 | docs(harness): register -- S173 CLOSED AT LIMIT, S196 allocated (main-repo continuation); spec; ledger line | LANDED (auto; verifier line pending) | 97cbf460c
+2026-09-04 | harness | S191 | ledger sha trace: 66 of 390 RESULTS_LEDGER_SYSTEM data lines carry no resolvable landing token; audit utility + evidence LANDED fcc0b9958; the 0 bar needs orchestrator-only ledger edits -> S197 | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q)
