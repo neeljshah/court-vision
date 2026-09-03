@@ -13,7 +13,11 @@ MAIN = r"C:\Users\neelj\nba-ai-system\data"
 RELS = ["domains", "models", "frontend", "footage_corpus", "tracking", "videos/reference",
         "videos/bridge",
         "cache/combo", "cache/ingame_grade_joined", "cache/ingame",
-        "cache/pit", "cache/inplay_odds", "cache/ingame_grade", "cache/clv", "cache/pm_paper"]
+        "cache/pit", "cache/inplay_odds", "cache/ingame_grade", "cache/clv", "cache/pm_paper",
+        # 2026-09-03: absent here, an S-register lane could not see 34 cycle-history
+        # files (24,612 rows) and declared a FALSE FALSIFIED. Same landmine as the
+        # tracking and reference-clip misses earlier the same day.
+        "cache/ingame_shadow_history"]
 # footage_corpus and tracking added 2026-09-02: G25b, G33b and G44b all returned NOT VALIDATED
 # because a worktree could not see any source clip or tracking table. Linking them is necessary
 # but NOT sufficient -- the local main repo holds 2 clips and the pod holds 63 (6.6 GB), so any
