@@ -184,3 +184,28 @@ and was never claimed here; it is recorded so no reader mistakes "it runs" for
 rendered and 394 with rows. That is an existence observation, not a recall
 measurement, and the follow-on row must measure it properly rather than quote
 these two frames as a rate.
+
+## CORRECTION from G188, same day: my wording above was too broad
+
+The section above says the detector is "emitting well under a third of the people
+it should". **The 2.80 rows/frame aggregate and the two eye-checked frames stand
+exactly as measured for THIS run. The generalisation about the detector does
+not.**
+
+G188 invoked the existing basketball survivor path read-only on frame 474 of a
+different source -- the retained 1280x720 `g130_recensus/wnba__wnba_01.mp4`
+rather than the 1920x1080 pod file this row used -- and after the normal
+`TOPCUT=60` crop its fresh `AdvancedFeetDetector` call **retained six on-court
+player boxes from eleven raw person detections.** Not spectators. On-court
+players.
+
+So the same selection path demonstrably CAN retain on-court players. Whatever
+produced three non-court survivors here is specific to this run and this input,
+and **the cause is unresolved**: resolution, the crop, the pipeline route, or
+selection. G188 stopped rather than guess, and explicitly does not claim this run
+was wrong.
+
+What survives unchanged: the crash is fixed, the route completes, 1,104 rows over
+394 of 400 attempted frames, and the rows declare `image_px` so they are not
+scorable under the coordinate contract. What is withdrawn: any reading of this row
+as a general verdict on the detector.
