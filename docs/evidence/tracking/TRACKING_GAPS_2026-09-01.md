@@ -75,6 +75,8 @@
 
 | G196 | ncaa_basketball/wnba | **COURT GEOMETRY IS RECOVERABLE -- the ceiling is DETECTION.** All 17 frames solved a four-point homography from G140's hand-labelled paint corners. Orchestrator eye check: the projected three-point arc tracks the painted arc and the baseline lands on the baseline -- and the arc was NOT used to fit the matrix, so that is out-of-sample confirmation. Direct contrast with G194, where `Rectify1.npy` collapses the same court model to a diagonal line on the same footage. | `g196_homography_from_labelled_corners_2026-09-03.md` + 17 renders | **ACCEPT. Test passes. REDIRECTS BASKETBALL EFFORT: a corner detector is worth building and now has a validated target -- four correct paint corners suffice. Unlike G31's tennis attempt, the geometry question is settled first. NOT claimed: production accuracy. Four points is the exact minimum with no redundancy, the label floor is 11.39 px, and 2 of 5 render checks were tight-crop indeterminates. LANE EXCEEDED SPEC: established NCAA 12-ft vs WNBA 16-ft lane widths with rule-book citations and used different court models per league; assuming one width would have produced a confident wrong answer.** |
 
+| G197 | all | OPEN -- allocated 2026-09-03, SPEC WRITTEN AND HELD (local RAM at 87.7 pct; a peer session asked both loops to hold new local lanes below 85 pct). **Fixes the B1 inside the harness**: `tracking_harness.py:234` sets `n_frames` from frames that HAVE rows and `:250` divides coverage by it, so frames the tracker emitted nothing on are excluded from their own denominator. `ball_valid_pct` inherits it. G34 measured 4.9x inflation on 2026-09-02. | pending | OPEN. Adjudicated step 1, ahead of detector work. Makes coverage HARDER, which Q3 permits -- not a moved bar. Additive only (B2): 8+ modules read `coverage_pct`. A PASS->FAIL flip is the expected direction; a FAIL->PASS flip must be investigated. |
+
 ## G175 result register
 
 | Gap | Sport | Finding | Evidence | Status |
@@ -286,7 +288,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G197  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G198  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
