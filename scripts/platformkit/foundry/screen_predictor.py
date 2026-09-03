@@ -15,7 +15,6 @@ from __future__ import annotations
 import os
 import math
 import re
-from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, Optional, Sequence
 
@@ -23,8 +22,6 @@ import numpy as np
 import pandas as pd
 
 from scripts.platformkit.combo.corpus_cache import SOCCER_LEAKY_COLUMNS, load_gate_corpus
-from scripts.platformkit.eval_gate.family_bars import load_families
-from scripts.platformkit.foundry import asof_supply
 from scripts.platformkit.foundry.grammar import Hypothesis
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -144,53 +141,7 @@ class RealScreenPredictor:
                 "fits": list(self.fits)}
 
 
-@lru_cache(maxsize=96)
-def _table(path: str) -> pd.DataFrame:
-    return pd.read_parquet(path)
-
-
-def _families_of(hypothesis: Hypothesis) -> list:
-    """Frozen families that could have enumerated this hypothesis (sport, horizon, market, member)."""
-    return [f for f in load_families().families
-            if f.sport == hypothesis.sport and f.horizon == hypothesis.horizon
-            and f.market == hypothesis.market and hypothesis.feature in f.members]
-
-
-def source_column(hypothesis: Hypothesis, name: str, table: pd.DataFrame,
-                  context: Optional[pd.DataFrame] = None) -> pd.Series:
-    """The feature as a Series indexed by event_id: a gate-corpus column, the S85 declared as-of
-    bridge for this (family, column) pair, else a one-row-per-event join from the frozen family's
-    own sources. Never an undeclared multi-row (player / tick) source."""
-    names = [hypothesis.family] + [f.name for f in _families_of(hypothesis)]
-    declared = next((n for n in names if n and asof_supply.declared(n, name)), None)
-    if declared is not None:                    # S85: a NAMED table + event-level as-of rule
-        try:
-            return asof_supply.supply(declared, name, table.index, context)
-        except asof_supply.SupplyUnavailable as exc:
-            raise ScreenRefused("unavailable: %s" % exc)
-    check_feature_name(name, table.columns)
-    if name in table.columns:
-        return pd.to_numeric(table[name], errors="coerce")
-    parts, tried = [], []
-    for family in _families_of(hypothesis):
-        for src in family.sources:
-            frame = _table(str(ROOT / src))
-            key = next((k for k in ("event_id", "game_id") if k in frame.columns), None)
-            tried.append(Path(src).name)
-            if key is None or name not in frame.columns:
-                continue
-            got = frame[[key, name]].dropna(subset=[key])
-            got[key] = got[key].astype(str)
-            if got[key].duplicated().any():
-                raise ScreenRefused("unavailable: %s has >1 row per %s in %s (player/tick grain)"
-                                    % (name, key, Path(src).name))
-            parts.append(got.set_index(key)[name])
-    if not parts:
-        raise ScreenRefused("unavailable: %s not found one-row-per-event in %s"
-                            % (name, ", ".join(sorted(set(tried))) or "no frozen family source"))
-    joined = pd.concat(parts)
-    joined = joined[~joined.index.duplicated(keep="first")]
-    return pd.to_numeric(joined.reindex(table.index), errors="coerce")
+from scripts.platformkit.foundry.screen_predictor_supply import _families_of, _table, source_column
 
 
 def _twin(name: str) -> Optional[str]:

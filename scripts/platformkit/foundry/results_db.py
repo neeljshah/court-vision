@@ -17,13 +17,13 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from dataclasses import asdict, dataclass, is_dataclass
-from datetime import datetime, timedelta, timezone
+from dataclasses import asdict, is_dataclass
+from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Optional
+from typing import Any, Iterable, Optional
 
-from scripts.platformkit.eval_gate.deflated_metrics import deflated_p as _deflated_p
 from scripts.platformkit.foundry.grammar import Hypothesis, semantic_hash
+from scripts.platformkit.foundry.results_db_sql import TierResult, _HYPOTHESIS_RAW, _RESULT_FIELDS, _SCHEMA, _hypothesis, _now, recompute_deflated_p
 
 # Production default: gitignored, pod-authoritative, backed up nightly by S29.
 # data/registry/ is NEVER agent-written and a tracked path would leak research
@@ -32,26 +32,6 @@ DEFAULT_PATH = Path("data/cache/eval_gate/hypotheses.sqlite")
 TRIALS_DIR = Path("data/cache/eval_gate/trials")
 GRAMMAR_VERSION = "s11"
 
-_HYPOTHESIS_RAW = ("sport", "feature", "transform", "params", "conditioning", "horizon", "market")
-_RESULT_FIELDS = ("hash", "tier", "corpus", "corpus_unit", "corpus_sha", "n", "n_eff",
-                  "brier_model", "brier_close", "dm_stat", "raw_p", "k_family", "k_global",
-                  "deflated_p", "pbo", "verdict", "artifact_path", "prereg_sha256", "run_at")
-
-_SCHEMA = """
-CREATE TABLE IF NOT EXISTS hypothesis(
-    hash TEXT PRIMARY KEY, family TEXT, sport TEXT, feature TEXT, transform TEXT,
-    params TEXT, conditioning TEXT, horizon TEXT, market TEXT,
-    runtime_available INTEGER, created_at TEXT, grammar_version TEXT);
-CREATE TABLE IF NOT EXISTS result(
-    id INTEGER PRIMARY KEY, hash TEXT REFERENCES hypothesis(hash), tier TEXT, corpus TEXT,
-    corpus_unit TEXT, corpus_sha TEXT, n INTEGER, n_eff REAL, brier_model REAL,
-    brier_close REAL, dm_stat REAL, raw_p REAL, k_family INTEGER, k_global INTEGER,
-    deflated_p REAL, pbo REAL, verdict TEXT, artifact_path TEXT, prereg_sha256 TEXT,
-    run_at TEXT, UNIQUE(hash, tier, corpus, corpus_unit, corpus_sha));
-CREATE TABLE IF NOT EXISTS queue(
-    hash TEXT PRIMARY KEY, tier TEXT, enqueued_at TEXT, claimed_at TEXT, lease_until TEXT,
-    claimer TEXT);
-"""
 
 LEASE_SECONDS = 900.0  # S66: how long a claim is held before reap_expired frees it
 # S135: the DEFAULT lease is LEASE_SECONDS per claimed row -- a claimer screens its batch
@@ -60,63 +40,9 @@ LEASE_SECONDS = 900.0  # S66: how long a claim is held before reap_expired frees
 _SQL_VARS = 500  # chunk for an IN (...) list; sqlite's default parameter limit is 999
 
 
-@dataclass(frozen=True)
-class TierResult:
-    """The minimal shape `record()` accepts.
-
-    Defined here rather than imported so this module does not depend on S12;
-    scripts/platformkit/foundry/tiers.py adapts to this field list. `record()`
-    also takes any plain mapping carrying the same keys.
-    """
-
-    hash: str
-    tier: str
-    corpus: str
-    corpus_unit: str
-    corpus_sha: str
-    n: int
-    n_eff: float
-    brier_model: float
-    brier_close: float
-    dm_stat: float
-    raw_p: float
-    k_family: Optional[int]
-    k_global: int
-    deflated_p: float
-    pbo: Optional[float]
-    verdict: str
-    artifact_path: str
-    prereg_sha256: Optional[str] = None
-    run_at: Optional[str] = None
-
-
-def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
 def trial_artifact_path(hash: str, tier: str, corpus_unit: str) -> Path:
     """Where the evidence JSON lives. The DB indexes it; it never replaces it."""
     return TRIALS_DIR / "{0}_{1}_{2}.json".format(hash, tier, corpus_unit)
-
-
-def recompute_deflated_p(row: Mapping[str, Any], k_now: int) -> Optional[float]:
-    """SF-14: the current-K deflated p for a stored row. Never serve row['deflated_p']
-    as current -- it was computed at row['k_at_run'] and the ledger only grows."""
-    raw_p = row.get("raw_p")
-    return None if raw_p is None else _deflated_p(float(raw_p), int(k_now))
-
-
-def _hypothesis(row: sqlite3.Row) -> Hypothesis:
-    return Hypothesis(
-        sport=row["sport"], feature=row["feature"], transform=row["transform"],
-        params=tuple(tuple(pair) for pair in json.loads(row["params"])),
-        conditioning=frozenset(json.loads(row["conditioning"])),
-        horizon=row["horizon"], market=row["market"],
-        # S66: DROPPED here before, so every claimed hypothesis came back with
-        # family="" and the runner's `or queue.family` fallback labelled all 6,000
-        # pod claims with the queue's sport. Stored all along; reconstruction lost it.
-        family=row["family"] or "",
-        runtime_available=bool(row["runtime_available"]))
 
 
 class ResultsDB:
