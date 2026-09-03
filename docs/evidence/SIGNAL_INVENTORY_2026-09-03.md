@@ -376,3 +376,44 @@ current. S88, S90, S118 are OPEN with no result.
 
 ---
 **Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Register](HARNESS_GAPS_2026-09-03.md)
+
+---
+
+## 7. POST-FIX COLUMN (S137, appended 2026-09-03 -- nothing above this line was edited)
+
+Everything above was transcribed BEFORE the round-2 fixes landed. Five instruments then changed
+at once: the clean NBA/MLB close (S132/S133), the corroborated real-game split 392 -> 360 (S131),
+the tick-level partition (S121), the same-rows recalibration null (S126) and UTC stamp parsing
+(S125, a measured no-op). This section is the post-fix column for every headline above that any
+of them reaches. Source: `docs/evidence/harness/S137_rebaseline_2026-09-03.md` and
+`data/cache/eval_gate/s137_rebaseline_2026-09-03.json`. Every published number was reproduced
+from its own archive before its post-fix number was read (14 of 14 comparable intervals; 12 at
+1e-9). Calibration language only; a screen is still a non-finding.
+
+**Headline: 0 verdicts change. 0 AHEAD before, 0 AHEAD after. Two LABELS change.**
+
+| row | as published above | post-fix | what moved | verdict |
+|---|---|---|---|---|
+| S82 / S119 / S121 (one measurement, three stages) | 15,702 ticks / 41 tickers, +0.003332, CI [-0.001971, +0.008636]; on 88 real games CI [-0.003705, +0.010370] | **15,336 ticks / 73 real games, +0.001951, CI [-0.004611, +0.008512]**, n_eff 214.83 -> 107.06; S119 alone 88 -> **76** clusters, CI [-0.003805, +0.010469] | the leader's point estimate falls **41 pct** (the tick partition, not the split); every interval still spans zero | SCREEN NULL, unchanged |
+| S87 (trial A clamp re-quote) | 47,104 ticks, 315 real-game clusters, n_eff 569.67, CI [-0.000212, +0.001944] | 47,104 ticks, **284** clusters, n_eff **521.04**, CI **[-0.000262, +0.001994]** | cluster unit only; mean differential +0.000866 unchanged (no refit) | NULL, unchanged |
+| S87 (the 70-pct-duplicate premise) | 78,986 ticks / 227 game_ids; held market 74.97 pct, model 91.71 pct, both 69.86 pct; dup 1,659; informative 23,964 | identical -- the counts are per (game_id, ts). Only the GAME denominator moves: 227 game_ids -> 392 -> **360** real games | nothing | unchanged |
+| S106 | 227 game_ids -> **392** real games, 122 multi, 22,768 ticks (28.8 pct) reassigned | 227 -> **360**, **112** multi, **21,318** reassigned; boundary reasons {ts_gap 129, inning_decrease 4} where they were {inning_decrease 156, score_reset 6, ts_gap 3} | 32 near-instant "boundaries" (a 1-inning feed regression, gaps of 1-13 s) are refused; all 129 genuine > 5 h splits survive | "every verdict unchanged, every CI still spans zero" -- still true |
+| S112 NBA | close beats Elo by **+0.025606**, n 351, CI [+0.015252, +0.035960]; close attaches to 952 of 1,814 (52.48 pct) | **+0.021819**, n **171**, CI **[+0.010468, +0.033170]**, p 4.82e-04; coverage **563 of 1,814 (31.04 pct)** | 389 of the old 952 were in-play ticks carrying a scoreboard. The clean close is measurably LESS sharp (0.186122 -> 0.191493) -- part of the old reference's sharpness was the score | close still ahead of Elo; unchanged |
+| S112 MLB | close beats Elo by **+0.007269**, n 276, CI [+0.000066, +0.014473], p 0.0481; 894 closes | **+0.006709**, n **281**, CI **[-0.000198, +0.013617]**, p **0.0564**; **910** closes | **RE-LABEL:** the interval now includes zero | a marginal positive becomes an honest **NULL**. Every model arm is BEHIND the close before and after |
+| S113 | **147 of 240** Elo-relative promotions vanish; best family +0.000640, CI [-0.003011, +0.004291]; 889 rows, window 800 -> 499 | **154 of 240** (64.2 pct); best **+0.002302**, CI **[-0.003129, +0.007733]**; served window nba **313**, mlb **460**; screens beating the close **10 of 945 -> 43 of 945** | a cleaner reference is a slightly easier one, and is still not beaten | NULL, unchanged. The conclusion is slightly STRONGER: 7 more Elo-relative promotions fail |
+| S114 | best arm k=5 **-0.000400**, CI [-0.000934, +0.000133], n_eff 2,369; k=5 over k=1 +0.0000830 [+0.0000027, +0.0001634] p 0.0429 | **RE-RUN REQUIRED** (the same-rows null changes the FITTED arm) -- `python -m scripts.platformkit.eval_gate.s114_ingame_ensemble`, **run and landed** (S126). k=5 **-0.000243**, CI **[-0.000663, +0.000177]**, n_eff **2,674.8**; vs its OWN same-rows null **-0.000070** [-0.000286, +0.000147]; k=5 over k=1 **+0.000294** [+0.000023, +0.000565] p 0.0333; PBO over k **0.80** | the arms are finally scored on the same rows, which SHRINKS the apparent gap to the null | SCREEN NULL, unchanged. The k-over-k1 interval still excludes zero and is still **14x below the bar** |
+| S116 | +0.012837, CI [-0.002273, +0.027948], **63** MLB clusters, n_eff 103.06; row cited "392 real games" | +0.012837 (no refit), CI **[-0.002376, +0.028051]**, **54** clusters, n_eff **95.09** | re-quoted here for the first time -- no other lane had done it | SCREEN NULL crossing zero, unchanged, and now correctly labelled |
+| **S127** | (open row) | **DISCHARGED as a re-label.** S116's MLB side is scored on folds 3 and 4 only: fold 3 = 7,972 ticks / 52 clusters / test date 2026-07-04, fold 4 = 1,697 / 11 / 2026-07-05 | 63 S106 clusters over **2 calendar dates**, 54 after S131, against 673 NBA game-clusters over 18 months | the S116 MLB readout is **SINGLE-DATE-PAIR**. Its +0.012837 stays "a direction, not a measurement" |
+| S117 | 29 usable games / 3,658 ticks; leader +0.025071 on 163 ticks / 2 clusters; 0 of 7 clear | **identical.** Both S117 archives sit inside ONE ISO week, 0 ticks dropped, every improvement and CI byte-identical on all 7 features and both arms | the tick partition is the identity here; the real-game split is inning-based and claims no soccer purge | SCREEN NULL / CLOSED AT LIMIT, unchanged |
+| S86, S94, S96, S97, S98, S101, S102, S103, S115, S123 | as published | **unchanged -- no instrument reaches them.** They sit on NBA corpora with no close attach, no MLB real-game split, no in-game tier partition and no S114 null. S102 is positively confirmed: S126's GATED re-run of its top 10 is byte-identical to the landed DB over 21 columns x 10 hypotheses | nothing | unchanged |
+| S85 `soccer_style_fingerprints` (section 1c above) | -0.001158 vs the devigged close | **RE-RUN, not a re-quote** (the season-grain prior changes the FITTED arm). From S128 section 4: **-0.001006**, CI [-0.005228, +0.003216], DM p 0.6865, coverage 15,646 -> **14,878** of 16,322; 112 of 112 T1 rows moved | **0 of 112 improve on the close before, 0 of 112 after** | NULL, unchanged -- and now behind the close honestly. `nba_player_value_features` did not move at all (0 of 32); its +0.005221 is still vs Elo, never vs a close |
+
+**What this section does NOT change.** Every do-not-claim item in section 4 above still stands,
+and two are now firmer: S116's +0.0128 is not a result (and is a SINGLE-DATE-PAIR readout), and
+every "vs Elo" positive is still not market-relative -- though the NBA close's advantage over Elo
+is **+0.021819**, not +0.025606, and on MLB it is a NULL rather than a marginal positive. Nothing
+beats the close or the in-play line at the +0.004 bar on either side of any instrument change.
+The FWER ledger stood at **18 rows** before this wave and stands at 18 rows after it.
+
+---
+**Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Register](HARNESS_GAPS_2026-09-03.md)
