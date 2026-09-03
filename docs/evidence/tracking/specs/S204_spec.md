@@ -1,4 +1,4 @@
-GAP S204 | sport all (pregame) | worktree aXX | log cx_s204_close_reference_calibration
+GAP S204 | sport all (pregame) | worktree a18 | log cx_s204_close_reference_calibration
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S05_calibration_report_2026-09-03.md line 148, verbatim: "- No sport is compared to a market close -- no gate
 corpus carries one." False on disk: S02 joined the soccer close 16,322/16,322 with "Brier(devigged
