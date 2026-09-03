@@ -413,3 +413,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-04 | harness | S196 | 23/23 direct RE-QUOTED from named per-unit series in the main repo; 5/5 values and 3/3 SHA-256 pairs reproduced; provenance corrections applied on attempt 2; 2 tests passed; LANDED 646cae4c8 | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q)
 2026-09-03 | nba teacher census premise | S193 | required worktree sources absent; census unavailable; LANDED 684c63fbc | FALSIFIED (verified: codex-sol, contract A/B/Q)
 2026-09-04 | ops | S185 | pod pull sync failure hardening landed; LANDED a56c793f2 | ACCEPT (verified: codex-sol, contract A/B/Q)
+2026-09-03 | tracking teacher census | S193 | required worktree inputs absent; census and 158-row output unavailable; LANDED 1c3a08ea3 | FALSIFIED (verified: codex-sol, contract A/B/Q)
