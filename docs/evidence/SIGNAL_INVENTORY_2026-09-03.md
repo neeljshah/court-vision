@@ -415,5 +415,51 @@ is **+0.021819**, not +0.025606, and on MLB it is a NULL rather than a marginal 
 beats the close or the in-play line at the +0.004 bar on either side of any instrument change.
 The FWER ledger stood at **18 rows** before this wave and stands at 18 rows after it.
 
+
+## 7b. LIVE-ONLY COLUMN (S148, appended 2026-09-03 to section 7 -- nothing above this line was edited)
+
+Every NBA in-game number in sections 2 and 7 above is quoted on a corpus that is **about half
+post-final-buzzer price**. S146 measured that on the source parquet; S148 states the rule,
+applies it to every archive and re-quotes with **no refit**.
+
+**THE RULE.** `data/cache/inplay_odds/nba_checkpoints_full.parquet` has no `final` and no
+`status` column, so the rule is a state rule: a tick is **LIVE** iff `game_clock_s > 0` OR
+`period < 4`; **DEAD** iff `period >= 4` AND `game_clock_s == 0`. A P1-P3 quarter-end buzzer
+is live and is kept (13,660 such ticks). Exclusions: **122,065 of 232,951 (52.40 pct)** on the
+S86 screen CSV, **244,183 of 465,249 (52.48 pct)** on the source parquet -- 8,670 more than
+S146's 235,513, because S146 counted only rows that are ALSO over the 300 s staleness rail.
+**0 games** lose all their ticks and `n_games` is unchanged on every row below. The
+live-informative column in the memo is the PUBLISHED `tick_informative.flag_ticks` mask
+intersected with live.
+
+**A2 first: 60 of 60 published readings reproduce from their own archive at 1e-9** (15 headline
+CIs, 25 of the 27 S86 cell CIs -- the other 2 publish `dm_ci95: null` -- 10 S101 phase
+coverages exact, 10 S102 sqlite CIs) before any live number is read.
+
+| row | as published above | LIVE ticks only (no refit) | what moved | verdict |
+|---|---|---|---|---|
+| S86 pooled, state-priced prior vs the in-play line | 232,951 ticks, n_eff 3260.07, -0.004857, CI [-0.007355, -0.002359] | **110,886 live ticks, n_eff 1542.19, -0.007298, CI [-0.012501, -0.002096]** | **the sharpest change.** The BEHIND gap grows from -0.0049 to -0.0073 and now exceeds 0.004 in the behind direction; the dead half was where the model looked closest to the line | NEGATIVE, unchanged |
+| S94 overall, phase-conditioned shrinkage | 192,635 ticks, n_eff 4029.33, -0.000243, CI [-0.000999, +0.000513] | **93,776 live ticks, n_eff 1881.98, -0.000814, CI [-0.002292, +0.000664]** | interval widens with the halved clustered ESS | NULL, unchanged |
+| S94 TARGET cell P1-P2 \| close_le5 \| rem_gt12 | 23,561 ticks, n_eff 875.59, -0.002807, CI [-0.006055, +0.000440] | **23,561 live ticks, n_eff 875.59, -0.002807, CI [-0.006055, +0.000440]** | **identical** -- the cell holds no P4/OT tick, so the mask removes nothing. The non-tautology check | NULL, unchanged |
+| S96 primary post-event drift arm `thr3_k5` | 39,168 ticks, n_eff 12191.56, -0.000138, CI [-0.000301, +0.000025] | **38,113 live ticks, n_eff 11844.45, -0.000144, CI [-0.000311, +0.000024]** | barely moves: the arm only scores ticks near a market move | NULL, unchanged |
+| S97 two-sensor Kalman posterior | 192,635 ticks, n_eff 68148.68, +0.000003, CI [-0.000009, +0.000015] | **93,776 live ticks, n_eff 33144.87, +0.000006, CI [-0.000018, +0.000031]** | still null by three orders of magnitude | NULL, unchanged |
+| S98 fitted per-cell sigma arm (`elo_sig`) | 162,171 ticks, n_eff 2122.30, -0.002378, CI [-0.004904, +0.000148] | **78,590 live ticks, n_eff 993.25, -0.004119, CI [-0.009359, +0.001120]** | point estimate nearly doubles in the behind direction | NULL, unchanged |
+| S103 sigma grid widened to [3, 60] | 162,171 ticks, n_eff 2120.08, -0.002117, CI [-0.004670, +0.000436] | **78,590 live ticks, n_eff 1022.95, -0.004461, CI [-0.009712, +0.000790]** | same shape as S98; still CLOSED AT LIMIT at the low end | NULL, unchanged |
+| S114 ladder best arm k=5 | 192,635 ticks, n_eff 2674.76, -0.000243, CI [-0.000663, +0.000177] | **93,776 live ticks, n_eff 1334.63, -0.000501, CI [-0.001363, +0.000361]** | k1 -0.000537 -> -0.001102, k3 -0.000252 -> -0.000520, k10 -0.000406 -> -0.000839; the ordering over k is unchanged | NULL, unchanged |
+| S115 best non-linear arm (`mlp`) | 192,635 ticks, n_eff 3239.80, -0.000549, CI [-0.001476, +0.000378] | **93,776 live ticks, n_eff 1631.39, -0.001199, CI [-0.003096, +0.000697]** | `hgb` -0.001411 -> -0.002962, `hgb_mono` -0.001455 -> -0.003028 | NULL, unchanged |
+| S116 pooled residual, NBA side | 192,635 ticks, n_eff 2370.04, -0.000343, CI [-0.001124, +0.000438] | **93,776 live ticks, n_eff 1174.03, -0.000829, CI [-0.002413, +0.000754]** | the MLB side carries no NBA tick and is untouched by this row | NULL, unchanged |
+| S101 grouped coverage, STATIC arm at nominal 0.90 | market P1 0.9362 / P2 0.9400 / P3 0.9600 / **P4 0.9800** / OT 0.9412; model P1 0.9574 / P2 0.8800 / P3 0.9400 / **P4 0.9400** / OT 0.6471 | P1-P3 **identical** (no dead ticks there); **P4 market 0.8400, model 0.7600** on 22,553 live ticks of 115,035; OT not scorable live (739 ticks is fewer than the two groups of 400 the measure needs) | **the second sharpest change.** The published P4 over-coverage was carried by the 92,482 post-buzzer P4 ticks; on live P4 ticks BOTH bands UNDER-cover | BAR NOT REACHED in any phase, unchanged -- and P4 is now a miss in the other direction |
+| S102 top 10 of the 576-hypothesis sweep | best `margin_over_sqrt_rem\|raw` +0.000248, CI [-0.000664, +0.001160], n_eff 2,295.57 | +0.000328, CI [-0.001529, +0.002185], n_eff 1,107.55 on 93,776 live ticks. Every leader's point estimate RISES (each is a live-state feature) and every interval widens | the only interval excluding zero, `tdm_h600\|dprior`, goes +0.000139 -> +0.000285 [+0.000110, +0.000460] -- still **14x below the bar** | SCREEN NULL, **0 of 10 change verdict** |
+| the 27 S86 period x margin x rem cells | as published | 21 of 27 are entirely live and identical; the six `rem_le02` P4/OT cells shrink | **2 verdict changes, both NEGATIVE -> NULL**: `OT\|close_le5\|rem_le02` -0.061524 [-0.081368, -0.041681] on 5,667 -> **-0.010074 [-0.035042, +0.014894] on 394**, and `OT\|mid_06_12\|rem_le02` -0.005010 -> -0.003577 with an interval that now spans zero | the cell-level "the model is far behind in the OT endgame" reading is a **post-buzzer artifact** |
+
+**What this section does NOT change.** Every do-not-claim item in section 4 stands. **0 AHEAD
+before, 0 AHEAD after**; the +0.004 bar is cleared by nothing on either row set; every reading
+is SINGLE-WINDOW. Two readings get WORSE rather than better on live ticks (S86 pooled and the
+S101 P4 coverage), and 13 of the 15 headline point estimates move further behind their
+incumbent. The FWER ledger stood at **18 rows** before this row and stands at 18 rows after it.
+
+Evidence: `docs/evidence/harness/S148_live_requote_2026-09-03.md`; artifact
+`data/cache/eval_gate/s148_live_requote_2026-09-03.json` (local).
+
 ---
 **Navigate:** [Up: full doc map](../INDEX.md) - [Home](../../README.md) - [Register](HARNESS_GAPS_2026-09-03.md)
