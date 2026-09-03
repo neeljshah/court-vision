@@ -1,0 +1,23 @@
+{
+  "nba": {
+    "sport": "nba", "n_rows_cached": 1814, "stale": false, "load_provenance": "host-local", "zero_coverage": [],
+    "coverage": {"p_base": [1814, 1814, [1225, 1225], [589, 589]], "p_elo": [1814, 1814, [1225, 1225], [589, 589]], "dreb_diff_asof": [1798, 1814, [1209, 1225], [589, 589]], "fg3m_diff_asof": [1798, 1814, [1209, 1225], [589, 589]], "stl_diff_asof": [1798, 1814, [1209, 1225], [589, 589]], "blk_diff_asof": [1798, 1814, [1209, 1225], [589, 589]], "pace_diff_asof": [1798, 1814, [1209, 1225], [589, 589]], "oreb_pg_diff_asof": [1798, 1814, [1209, 1225], [589, 589]], "tov_pg_diff_asof": [1798, 1814, [1209, 1225], [589, 589]], "dreb_x_pace_asof": [1798, 1814, [1209, 1225], [589, 589]], "stl_x_fg3m_asof": [1798, 1814, [1209, 1225], [589, 589]]}
+  },
+  "mlb": {
+    "sport": "mlb", "n_rows_cached": 39162, "stale": false, "load_provenance": "host-local",
+    "zero_coverage": [["sp_first6_diff_ew", "era_2022_2026"], ["park_factor", "era_2010_2021"], ["park_factor", "era_2022_2026"], ["sp_ra_diff_asof", "era_2022_2026"]],
+    "coverage": {"p_base": [39162, 39162, [27983, 27983], [11179, 11179]], "p_home_elo": [39162, 39162, [27983, 27983], [11179, 11179]], "sp_first6_diff_ew": [24521, 39162, [24521, 27983], [0, 11179]], "park_factor": [0, 39162, [0, 27983], [0, 11179]], "sp_ra_diff_asof": [26559, 39162, [26559, 27983], [0, 11179]]}
+  },
+  "soccer": {
+    "sport": "soccer", "n_rows_cached": 25834, "stale": false, "load_provenance": "host-local", "zero_coverage": [],
+    "units": ["D1", "E0", "E1", "F1", "I1", "SP1"], "unit_rows": [3366, 4180, 6072, 3856, 4180, 4180],
+    "coverage": {"p_base": [25834, 25834, [3366, 4180, 6072, 3856, 4180, 4180]], "p_over25": [25834, 25834, [3366, 4180, 6072, 3856, 4180, 4180]], "home_n_prior": [25834, 25834, [3366, 4180, 6072, 3856, 4180, 4180]], "away_n_prior": [25834, 25834, [3366, 4180, 6072, 3856, 4180, 4180]], "home_group": [25752, 25834, [3354, 4170, 6055, 3842, 4166, 4165]], "away_group": [25729, 25834, [3348, 4170, 6051, 3837, 4159, 4164]], "diff_group": [25708, 25834, [3345, 4170, 6046, 3833, 4155, 4159]]},
+    "groups": {"home_group": ["home_sot_for_l10", "home_sot_ratio_for_asof", "home_sot_for_asof", "home_sot_against_asof", "home_shots_for_asof", "home_shots_against_asof", "home_xg_for_asof", "home_xg_against_asof", "home_xg_supremacy_asof"], "away_group": ["away_sot_for_l10", "away_sot_ratio_for_asof", "away_sot_for_asof", "away_sot_against_asof", "away_shots_for_asof", "away_shots_against_asof", "away_xg_for_asof", "away_xg_against_asof", "away_xg_supremacy_asof"], "diff_group": ["diff_sot_for_asof", "diff_sot_against_asof", "diff_shots_for_asof", "diff_shots_against_asof", "diff_xg_for_asof", "diff_xg_against_asof", "diff_xg_supremacy_asof"]}
+  },
+  "tennis": {
+    "sport": "tennis", "n_rows_cached": 41886, "stale": false, "load_provenance": "host-local",
+    "zero_coverage": [["diff_return_won_asof", "WTA"], ["diff_break_pct_asof", "WTA"]],
+    "coverage": {"p_base": [41886, 41886, [30616, 30616], [11270, 11270]], "p_elo": [41886, 41886, [30616, 30616], [11270, 11270]], "surface": [41886, 41886, [30616, 30616], [11270, 11270]], "p1_hold_pct_asof": [40753, 41886, [30024, 30616], [10729, 11270]], "p2_hold_pct_asof": [39756, 41886, [29443, 30616], [10313, 11270]], "diff_return_won_asof": [29179, 41886, [29179, 30616], [0, 11270]], "diff_break_pct_asof": [29181, 41886, [29181, 30616], [0, 11270]]}
+  },
+  "format": "coverage entries are [global_non_null, global_rows, per_unit_count_rows...] in the named unit order; rates are exact count/row ratios"
+}

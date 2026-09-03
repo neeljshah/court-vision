@@ -96,10 +96,12 @@ def build_gate_corpus(sport: str) -> pd.DataFrame:
     df, sources = built[0], built[1]
     _CACHE_DIR.mkdir(parents=True, exist_ok=True)
     df.to_parquet(_corpus_path(sport), index=False)
+    census = _sources.column_coverage(df)
     manifest = {"sport": sport, "built_at": time.time(), "n_rows": len(df),
                 "corpus_sha256": _file_sha256(_corpus_path(sport)),
                 "sources": _source_manifest(sources),
-                "provenance": built[2] if len(built) > 2 else {}}
+                "provenance": built[2] if len(built) > 2 else {},
+                "coverage": census["coverage"], "zero_coverage": census["zero_coverage"]}
     _sidecar_path(sport).write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     return df
 
@@ -153,6 +155,9 @@ def freshness_report(sport: str) -> Dict[str, object]:
     cached = pd.read_parquet(cp)
     rep["n_rows_cached"] = len(cached)
     rep["order_basis"] = DATE_COL if DATE_COL in cached.columns else POSITIONAL_ORDER
+    census = _sources.column_coverage(cached)
+    rep["coverage"] = census["coverage"]
+    rep["zero_coverage"] = census["zero_coverage"]
     changed_names: List[str] = []
     for src, rec in manifest.get("sources", {}).items():
         p = _resolve_source(src)

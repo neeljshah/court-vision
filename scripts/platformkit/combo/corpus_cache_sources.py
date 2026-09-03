@@ -35,6 +35,27 @@ _SOCCER_ASOF_ADDED: Tuple[str, ...] = (
     "home_sot_for_asof", "home_sot_against_asof", "home_shots_for_asof",
     "home_shots_against_asof", "away_sot_for_asof", "away_sot_against_asof",
     "away_shots_for_asof", "away_shots_against_asof")
+_CORPUS_SPINE = frozenset({"event_id", "corpus_unit", "event_date", "y"})
+
+
+def column_coverage(df: pd.DataFrame) -> Dict[str, object]:
+    """Return feature non-null counts globally and for each corpus unit."""
+    coverage: Dict[str, object] = {}
+    zero_coverage = []
+    for column in (name for name in df.columns if name not in _CORPUS_SPINE):
+        series = df[column].notna()
+        by_unit: Dict[str, Dict[str, object]] = {}
+        for unit, group in df.groupby("corpus_unit", dropna=False):
+            present = group[column].notna()
+            n_non_null = int(present.sum())
+            unit_name = str(unit)
+            by_unit[unit_name] = {"n_rows": int(len(group)), "n_non_null": n_non_null,
+                                  "rate": float(present.mean())}
+            if n_non_null == 0:
+                zero_coverage.append({"column": column, "corpus_unit": unit_name})
+        coverage[column] = {"n_rows": int(len(df)), "n_non_null": int(series.sum()),
+                            "rate": float(series.mean()), "corpus_unit": by_unit}
+    return {"coverage": coverage, "zero_coverage": zero_coverage}
 
 
 def _build_mlb() -> Tuple[pd.DataFrame, List[Path]]:
@@ -42,20 +63,10 @@ def _build_mlb() -> Tuple[pd.DataFrame, List[Path]]:
     games_b = _cache._REPO / "data/domains/mlb/games_current.parquet"
     park = _cache._REPO / "data/domains/mlb/asof_park.parquet"
     asof = _cache._REPO / "data/domains/mlb/asof_features.parquet"
-    park_current = _cache._REPO / "data/domains/mlb/asof_park_current.parquet"
-    asof_current = _cache._REPO / "data/domains/mlb/asof_features_current.parquet"
     sources = [games_a, games_b, park, asof]
     sp = build_sp_form_features()[["event_id", "sp_first6_diff_ew"]]
     park_df = pd.read_parquet(park)[["event_id", "park_factor"]]
     ra_df = pd.read_parquet(asof)[["event_id", "sp_ra_diff_asof"]]
-    park_current_df = None
-    if park_current.exists():
-        park_current_df = pd.read_parquet(park_current)[["event_id", "park_factor"]]
-        sources.append(park_current)
-    ra_current_df = None
-    if asof_current.exists():
-        ra_current_df = pd.read_parquet(asof_current)[["event_id", "sp_ra_diff_asof"]]
-        sources.append(asof_current)
     frames = []
     for path, unit in ((games_a, "era_2010_2021"), (games_b, "era_2022_2026")):
         games = pd.read_parquet(path)
@@ -64,13 +75,6 @@ def _build_mlb() -> Tuple[pd.DataFrame, List[Path]]:
         out = games[["event_id", "target_home_win"]].merge(elo, on="event_id", how="left")
         out = out.merge(sp, on="event_id", how="left").merge(park_df, on="event_id", how="left")
         out = out.merge(ra_df, on="event_id", how="left").sort_values("date").reset_index(drop=True)
-        if unit == "era_2022_2026" and park_current_df is not None:
-            out = out.merge(park_current_df, on="event_id", how="left", suffixes=("", "_current"))
-            out["park_factor"] = out["park_factor"].combine_first(out.pop("park_factor_current"))
-        if unit == "era_2022_2026" and ra_current_df is not None:
-            out = out.merge(ra_current_df, on="event_id", how="left", suffixes=("", "_current"))
-            out["sp_ra_diff_asof"] = out["sp_ra_diff_asof"].combine_first(
-                out.pop("sp_ra_diff_asof_current"))
         out["corpus_unit"], out["y"], out["p_base"] = unit, out["target_home_win"].astype(float), np.nan
         frames.append(out)
     df = pd.concat(frames, ignore_index=True)
