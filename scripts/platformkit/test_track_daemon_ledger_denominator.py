@@ -49,7 +49,8 @@ def test_ledger_denominators_are_additive_and_old_rows_still_report(tmp_path, mo
 
     entries = [json.loads(line) for line in ledger.read_text(encoding="utf-8").splitlines()]
     newly_written = entries[1:]
-    assert all({"decoded_frames", "source_resolution", "fresh_solves"} <= entry.keys()
+    assert all({"decoded_frames", "evaluated_frames", "stride", "harness_coverage_pct",
+                "source_resolution", "fresh_solves"} <= entry.keys()
                for entry in newly_written)
     assert entries[0] == old_row
     assert entries[2]["decoded_frames"] == 100

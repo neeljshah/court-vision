@@ -16,6 +16,12 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G179 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G179 | all | `max_frames` pinned from code: `adapter.py:198` caps `processed`, the stride-SELECTED frame, so it limits evaluated frames and does not truncate `decoded_frames` -- confirmed by both soccer rows capping at exactly 30,000. Denominator corrected to evaluated frames: `tennis_ref01` gate coverage **0.0248 -> 0.0745**. All values in [0,1], no clamping, **no FAIL became PASS**. 41 tests pass in master; `tracking_harness.py` and `decode_manifest.py` zero-line diffs. | `g179_evaluated_denominator_arith_2026-09-03.md` | **ACCEPT -- bars byte-identical (B10 clean). Carries a THIRD correction to the orchestrator's G177 narrative: baseball's GATE coverage is 0.0000 before and after, so "the tracker solves nearly every frame" described the ledger PRESENCE quantity, not the gate, and is withdrawn.** |
+
 ## G178 result register
 
 | Gap | Sport | Finding | Evidence | Status |

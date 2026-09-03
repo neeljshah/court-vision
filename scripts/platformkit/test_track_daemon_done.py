@@ -5,13 +5,18 @@ import json
 from dataclasses import dataclass
 
 from scripts.platformkit import track_daemon
-from scripts.platformkit.track_daemon_done import adjudicate, read_adjudicated
+from scripts.platformkit.track_daemon_done import (
+    _evaluated_denominator,
+    adjudicate,
+    read_adjudicated,
+)
 
 
 @dataclass
 class FakeReport:
     passed: bool
     failures: list[str]
+    coverage_pct: float = 0.0
 
 
 class DoneProc:
@@ -96,6 +101,35 @@ def test_failed_harness_verdict_is_done_and_durable(tmp_path, monkeypatch):
     assert ledger["status"] == "tracked" and ledger["passed"] is False
     assert ledger["adjudicated"] is True and ledger["failures"] == ledger["failure_heads"]
     assert not video.exists() and (track_daemon.CORPUS / video.name).exists()
+
+
+def test_evaluated_denominator_uses_stride_and_persists_gating_coverage(tmp_path):
+    tracking = tmp_path / "tracking"
+    video = tmp_path / "source.mp4"
+    csv = _csv(tracking, "sample", "frame,track_id,cls,x,y,source_fps\n"
+               "0,1,player,1,1,59.94\n")
+    seen = {}
+
+    def fake_harness(frame, _sport, source):
+        seen["frames"] = sorted(frame["frame"].unique().tolist())
+        seen["source"] = source
+        return FakeReport(False, ["coverage 0.50 < 0.90"], 0.5)
+
+    payload = adjudicate(video, "tennis", "sample", tracking, fake_harness,
+                         lambda _path: 10, publish=False)
+
+    assert seen == {"frames": [0, 6], "source": str(csv)}
+    assert payload["harness_coverage_pct"] == 0.5
+    assert payload["evaluated_frames"] == 2
+    assert payload["stride"] == 6
+
+
+def test_max_frames_caps_evaluated_samples_not_source_frames():
+    denominator, stride = _evaluated_denominator(180_001, 30.0)
+
+    assert stride == 3
+    assert len(denominator) == 30_000
+    assert denominator[-1] == 89_997
 
 
 def test_empty_csv_is_unadjudicated_and_footage_is_never_deleted(tmp_path, monkeypatch):

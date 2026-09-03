@@ -13,10 +13,12 @@ from scripts.platformkit.tracking.decode_manifest import (
     build_decode_manifest,
     decoded_frame_count,
 )
+from scripts.platformkit.tracking_timebase import sampling_plan
 from scripts.platformkit.tracking_harness import evaluate
 
 
 VERDICT_FILE = "harness_verdict.json"
+_ADAPTER_MAX_FRAMES = 30000
 _REQUIRED = frozenset(("passed", "failure_heads", "coverage_pct",
                        "coordinate_space", "rung", "evaluated_at", "csv_fsynced"))
 
@@ -78,9 +80,9 @@ def _rung(space: str) -> str:
     return "UNDECLARED"
 
 
-def _with_decoded_denominator(frame: pd.DataFrame, decoded: int) -> pd.DataFrame:
+def _with_frame_denominator(frame: pd.DataFrame, denominator: range) -> pd.DataFrame:
     emitted = {int(value) for value in frame["frame"].dropna().unique()}
-    missing = sorted(set(range(decoded)) - emitted)
+    missing = sorted(set(denominator) - emitted)
     if not missing:
         return frame
     fillers = pd.DataFrame({"frame": missing, "track_id": "__decoded__",
@@ -90,6 +92,27 @@ def _with_decoded_denominator(frame: pd.DataFrame, decoded: int) -> pd.DataFrame
             values = frame[column].dropna().unique()
             fillers[column] = values[0] if len(values) == 1 else None
     return pd.concat((frame, fillers.loc[:, frame.columns]), ignore_index=True)
+
+
+def _source_fps(frame: pd.DataFrame) -> float | None:
+    """Return the uniquely stamped source fps, if completion preparation supplied it."""
+    if "source_fps" not in frame:
+        return None
+    values = pd.to_numeric(frame["source_fps"], errors="coerce").dropna().unique()
+    if len(values) != 1 or values[0] <= 0:
+        return None
+    return float(values[0])
+
+
+def _evaluated_denominator(decoded: int, source_fps: float | None,
+                           max_frames: int = _ADAPTER_MAX_FRAMES) -> tuple[range, int | None]:
+    """Return adapter-evaluated source indices and their declared sampling stride."""
+    if source_fps is None:
+        return range(decoded), None
+    stride = sampling_plan(source_fps).stride
+    # Adapter loops increment ``processed`` only for source_frame % stride == 0.
+    # Its max_frames condition therefore caps evaluated samples, not source reads.
+    return range(0, min(decoded, stride * max_frames), stride), stride
 
 
 # A staged game carries its ACQUISITION label (mlb, kbo, npb, wnba, ncaa_basketball),
@@ -135,10 +158,15 @@ def adjudicate(video: Path, sport: str, game_id: str, tracking: Path,
         return None
     failures: list[str] = []
     decoded = 0
+    stride: int | None = None
+    evaluated_frames: int | None = None
+    harness_coverage_pct: float | None = None
     try:
         decoded = frame_counter(video)
         manifest = build_decode_manifest(decoded, csv_path)
-        harness_input = _with_decoded_denominator(emitted, decoded)
+        denominator, stride = _evaluated_denominator(decoded, _source_fps(emitted))
+        evaluated_frames = len(denominator) if stride is not None else None
+        harness_input = _with_frame_denominator(emitted, denominator)
         coverage = manifest.summary.completeness
     except Exception as exc:
         harness_input = emitted
@@ -147,6 +175,7 @@ def adjudicate(video: Path, sport: str, game_id: str, tracking: Path,
     harness_sport = HARNESS_SPORT.get(sport, sport)
     try:
         report = harness(harness_input, harness_sport, source=str(csv_path))
+        harness_coverage_pct = float(getattr(report, "coverage_pct", 0.0))
         failures.extend(getattr(report, "failures", []))
         passed = bool(getattr(report, "passed", False)) and not failures
     except Exception as exc:
@@ -154,10 +183,13 @@ def adjudicate(video: Path, sport: str, game_id: str, tracking: Path,
         passed = False
     payload = {"passed": passed, "failure_heads": failures[:4],
                "coverage_pct": round(float(coverage), 4),
+               "harness_coverage_pct": (round(harness_coverage_pct, 4)
+                                        if harness_coverage_pct is not None else None),
                "coordinate_space": _coordinate_space(emitted),
                "rung": _rung(_coordinate_space(emitted)),
                "evaluated_at": int(time.time()), "csv_fsynced": True,
-               "decoded_frames": decoded}
+               "decoded_frames": decoded, "evaluated_frames": evaluated_frames,
+               "stride": stride}
     if publish:
         write_adjudicated(tracking, game_id, payload)
     return payload

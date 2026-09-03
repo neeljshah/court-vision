@@ -298,6 +298,7 @@ def _finish(name: str, job: dict, timed_out: bool = False,
               "failure_heads": (graded or {}).get("failure_heads", [])[:4],
               "failures": (graded or {}).get("failure_heads", [])[:4],
               "coverage_pct": (graded or {}).get("coverage_pct"),
+              "harness_coverage_pct": (graded or {}).get("harness_coverage_pct"),
               "coordinate_space": (graded or {}).get("coordinate_space"),
               "rung": (graded or {}).get("rung"),
               "evaluated_at": (graded or {}).get("evaluated_at"),
@@ -316,6 +317,8 @@ def _finish(name: str, job: dict, timed_out: bool = False,
             entry["tail"] = "no log"
     manifest_frames, fresh_solves = _fresh_solve_summary(job["game_id"])
     entry.update(decoded_frames=(graded or {}).get("decoded_frames", manifest_frames),
+                 evaluated_frames=(graded or {}).get("evaluated_frames"),
+                 stride=(graded or {}).get("stride"),
                  source_resolution=(source or {}).get("source_resolution"),
                  fresh_solves=fresh_solves)
     entry["rows_per_decoded_frame_step_change"] = _step_change(
