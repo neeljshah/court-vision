@@ -1,6 +1,7 @@
 """E4: leak-safe one-parameter in-game logit blend with a market guard."""
 from __future__ import annotations
 
+import logging
 import random
 from collections import defaultdict
 from typing import Any, Iterable, Mapping, Sequence
@@ -14,6 +15,7 @@ _DEFAULT_MAX_DEVIATION = 0.15
 _DEFAULT_W_MAX = 1.0
 _GRID_POINTS = 201
 _SEED = 20260831
+_LOGGER = logging.getLogger(__name__)
 
 
 def _brier(probabilities: Iterable[float], outcomes: Iterable[float]) -> float:
@@ -76,15 +78,44 @@ def _fit_weight(train: pd.DataFrame, w_max: float, max_abs_deviation: float) -> 
     return float(grid[int(np.argmin(scores))])
 
 
-def _walk_forward(frame: pd.DataFrame, w_max: float, max_abs_deviation: float) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
+def _check_disjoint(train_games: set[str], test_games: set[str], fit_window: str) -> set[str]:
+    """Return the overlapping (leaked) games between a fold's train and test
+    sets. fit_window="game_first_date" (the S36 bar): raises AssertionError on
+    any overlap -- game-disjointness is enforced, not merely reported.
+    fit_window="tick_date" (legacy default): never raises; the caller counts
+    the returned leaked games instead so existing default-mode readers keep
+    running unbroken (S36 correction, orchestrator decision)."""
+    leaked = train_games & test_games
+    if fit_window == "game_first_date":
+        assert not leaked, "fold games not disjoint (self-leak)"
+    return leaked
+
+
+def _walk_forward(frame: pd.DataFrame, w_max: float, max_abs_deviation: float,
+                  fit_window: str = "tick_date") -> tuple[pd.DataFrame, list[dict[str, Any]]]:
+    """fit_window="tick_date" (default, unchanged): folds key on each tick's own
+    date. "game_first_date" (S36): folds key on each GAME's earliest tick date,
+    so a game's ticks never split across train/test -- removes the UTC-midnight
+    self-leak. game_first_date asserts per-fold game disjointness and raises on
+    any violation (the bar); tick_date never raises -- it counts self-leaked
+    ticks into the returned frame's `.attrs["self_leak_ticks"]` and logs one
+    warning if any occurred (S36 correction: the assert used to raise in BOTH
+    modes, which broke live default-mode readers on the real corpus)."""
+    if fit_window not in ("tick_date", "game_first_date"):
+        raise ValueError("fit_window must be 'tick_date' or 'game_first_date'")
+    if fit_window == "game_first_date":
+        frame = frame.assign(date=frame["game"].map(frame.groupby("game")["date"].min()))
     dates = sorted(frame["date"].unique())
-    scored, folds = [], []
+    scored, folds, leak_ticks = [], [], 0
     for date in dates[1:]:
         train, test = frame[frame["date"] < date], frame[frame["date"] == date].copy()
         assert not train.empty and train["date"].max() < test["date"].min(), "prior-fold ordering violated"
+        leaked_games = _check_disjoint(set(train["game"]), set(test["game"]), fit_window)
         if train["outcome"].nunique() < 2:
             folds.append({"train_date_max": str(train["date"].max()), "test_date_min": str(date), "status": "INSUFFICIENT"})
             continue
+        if leaked_games:
+            leak_ticks += int(test["game"].isin(leaked_games).sum())
         weight = _fit_weight(train, w_max, max_abs_deviation)
         test["arm_a_prob"] = _guarded_prob(test["model_prob"].to_numpy(), test["market_prob"].to_numpy(),
                                             test["signal"].to_numpy(), 0.0, max_abs_deviation)
@@ -93,7 +124,14 @@ def _walk_forward(frame: pd.DataFrame, w_max: float, max_abs_deviation: float) -
         scored.append(test)
         folds.append({"train_date_max": str(train["date"].max()), "test_date_min": str(date), "weight": weight,
                       "status": "OK", "date_ordering_asserted": True, "test_games": int(test["game"].nunique())})
-    return (pd.concat(scored, ignore_index=True) if scored else frame.iloc[0:0].copy(), folds)
+    scored_frame = pd.concat(scored, ignore_index=True) if scored else frame.iloc[0:0].copy()
+    scored_frame.attrs["self_leak_ticks"] = leak_ticks
+    if fit_window != "game_first_date" and leak_ticks:
+        pct = round(100.0 * leak_ticks / len(scored_frame), 2)
+        _LOGGER.warning("gap_blend_arm._walk_forward: %d/%d scored ticks (%.2f pct) self-leak in "
+                        "fit_window=%r mode; pass fit_window=\"game_first_date\" to remove (S36)",
+                        leak_ticks, len(scored_frame), pct, fit_window)
+    return (scored_frame, folds)
 
 
 def _metrics(rows: pd.DataFrame) -> dict[str, float] | None:
@@ -119,15 +157,25 @@ def _bootstrap_improvement(rows: pd.DataFrame, iterations: int) -> list[float] |
 
 
 def evaluate(ticks: Sequence[Mapping[str, Any]], w_max: float = _DEFAULT_W_MAX,
-             max_abs_deviation: float = _DEFAULT_MAX_DEVIATION, bootstrap_iterations: int = 300) -> dict[str, Any]:
-    """Fit E4 only on prior dates and report all/in-window guarded Brier gaps."""
+             max_abs_deviation: float = _DEFAULT_MAX_DEVIATION, bootstrap_iterations: int = 300,
+             fit_window: str = "tick_date") -> dict[str, Any]:
+    """Fit E4 only on prior dates and report all/in-window guarded Brier gaps.
+    fit_window: see _walk_forward. Default "tick_date" is byte-identical to
+    pre-S36 behavior (its Brier/fold numbers never move); "game_first_date" is
+    the opt-in leak-free mode. self_leak_ticks/self_leak_pct: how many scored
+    ticks (and what pct) had their own game's outcome already in that fold's
+    train set -- always 0 in game_first_date mode (assert-enforced), a counted
+    non-fatal warning in tick_date mode."""
     frame = _frame(ticks)
     if frame.empty:
         return {"status": "INSUFFICIENT", "folds": [], "slices": {}}
-    scored, folds = _walk_forward(frame, w_max, max_abs_deviation)
+    scored, folds = _walk_forward(frame, w_max, max_abs_deviation, fit_window)
+    leak_ticks = int(scored.attrs.get("self_leak_ticks", 0))
+    self_leak_pct = round(100.0 * leak_ticks / len(scored), 2) if len(scored) else 0.0
     slices = {"all_ticks": scored, "in_window_ticks": scored[scored["in_window"]]}
     report: dict[str, Any] = {"status": "OK", "w_max": w_max, "max_abs_deviation": max_abs_deviation,
-                              "folds": folds, "slices": {}}
+                              "fit_window": fit_window, "self_leak_ticks": leak_ticks,
+                              "self_leak_pct": self_leak_pct, "folds": folds, "slices": {}}
     for name, rows in slices.items():
         metrics, ci = _metrics(rows), _bootstrap_improvement(rows, bootstrap_iterations)
         accepted = bool(metrics is not None and metrics["gap"] <= .044 and ci is not None and ci[0] > 0.0)

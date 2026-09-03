@@ -1,0 +1,20 @@
+{
+  "generated_at": "2026-09-04",
+  "gap": "S36",
+  "corpus": "data/cache/ingame_grade_joined/mlb (178 games / 52558 ticks, 2026-06-28..2026-07-12)",
+  "e4_blend": {
+    "before_tick_date_shipped": {"brier": 0.207032929516776, "n_ticks": 47292, "self_leak_pct": 52.86, "self_leak_ticks": 25000},
+    "after_game_first_date": {"brier": 0.206785778212713, "n_ticks": 47104, "n_games": 158, "self_leak_pct": 0.00},
+    "tick_date_mode_on_this_corpus": "raises AssertionError at first violating fold (fold games not disjoint)",
+    "element_wise_match_vs_stacker.e4_gd_series": {"n_common": 47104, "max_abs_diff": 0.0}
+  },
+  "e2_regime": {
+    "before_tick_date_shipped": {"brier": 0.252261297271879, "n_ticks": 6593, "self_leak_pct": 43.49, "self_leak_ticks": 2867},
+    "after_game_first_date": {"brier": 0.254350980569173, "n_ticks": 6579, "n_games": 157, "self_leak_pct": 0.00},
+    "tick_date_mode_on_this_corpus": "raises AssertionError at first violating fold (fold games not disjoint)",
+    "element_wise_match_vs_stacker.e2_gd_series": {"n_common": 6579, "max_abs_diff": 0.0}
+  },
+  "reproduction_command": "cd /c/Users/neelj/nba-track-a13 && PYTHONPATH=$(pwd) python docs/evidence/harness/S36_repro_2026-09-04.py",
+  "test_command": "cd /c/Users/neelj/nba-track-a13 && python -m pytest scripts/platformkit/ingame/test_gap_blend_arm.py -q",
+  "not_touched": "data/cache/eval_gate/backtest_fwer.jsonl -- no ledger write, no _charge_ledger import/call"
+}
