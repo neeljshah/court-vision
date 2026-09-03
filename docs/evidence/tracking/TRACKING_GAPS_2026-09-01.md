@@ -67,6 +67,8 @@
 
 | G193 | wnba | OPEN -- allocated 2026-09-03. Does `cudnn.benchmark=False` make the WHOLE ROUTE deterministic, or does the stateful tracker still vary? G190 settled the detector; the tracker is unmeasured. 3 runs tuner-ON as control vs 3 tuner-OFF. Highest-value open row: it decides whether quality measurement is unblocked. | pending | OPEN. The flag is set inside `UnifiedPipeline.__init__` so it must be WRAPPED in the measurement process (G182's sanctioned pattern), never edited. "Tuner off is not sufficient" is the more informative full success. |
 
+| G192b | ncaa_basketball/wnba | **THE CHEAP BASKETBALL PATH IS CLOSED.** `detect_court_homography` (the function `unified_pipeline.py:330` imports) returned `None` on **17 of 17** G140-labelled frames, **0 of 51** calls, 3 fresh processes each -- on frames SELECTED for paint-corner visibility. Error against the 11.39 px floor is **undefined, not zero**; all 68 targets kept in the denominator. | `g192b_score_existing_homography_2026-09-03.md`, `g192b_renders/` | **ACCEPT. Answers the adjudicated step 2: there is no good homography being discarded, so basketball's coordinate-contract failure is NOT merely plumbing. BOUNDARY the lane drew correctly: this was the Hough route only -- no LoFTR, no SIFT, and the static `Rectify1.npy` fallback was not substituted -- so it does not establish what the FULL pipeline uses. That contradiction with `run_clip.py:581`'s "solved in memory and discarded" is the next row. NOT claimed: that basketball cannot be calibrated; G136 measured 46.2 pct four-corner visibility.** |
+
 ## G175 result register
 
 | Gap | Sport | Finding | Evidence | Status |
