@@ -106,3 +106,32 @@ corrupts one league: NCAA uses a **12-ft** lane and WNBA a **16-ft** lane
 recorded in G189/G193/G195 survivor tuples and is a route-run observation, not a
 dedicated census. T6 and T7 have no measurement at all yet. Nothing here claims
 any feature is currently correct.
+
+
+## 6. Status update, same day, after G195-G206
+
+| # | property | status now |
+|---|---|---|
+| T1 | route reproducible | **OPEN.** Five candidates eliminated: cuDNN tuner/FP16 (G190), torch seeds and FP32 (G190), OpenCV's six RNG sites (G195), the YOLO prefetch cache (G198), and wall-clock branching (no branch reads a clock). Decode byte-identity (G203) is the last enumerated candidate. |
+| T2 | coverage on an honest denominator | **HALF DONE.** The harness gate is corrected (G197) and the route now emits a validated pre-tracking evaluated-frame count (G206). **But a `--frames N` run writes `null`**, because the cap is detector-dependent via `_is_gameplay`. So T2 holds for FULL-LENGTH runs only. |
+| T3 | per-clip court geometry | **OPEN, and better characterised.** G196: recoverable from hand labels. G205: classical line intersections give 0/17 all-four but **22/68 corner recall** against G141's 0/68 -- real signal -- at ~1,928 proposals per frame, which is the actual blocker. G208 is running the learned zero-shot candidates. |
+| T4 | enough players per frame | **OPEN**, and now known to be measurable only on full-length runs (see T2). |
+| T5 | identity survives occlusion | OPEN, measured only for tennis (G166: 89.08 pct of resets are FALSE). |
+| T6 | pose columns attributable | NOT MEASURED. |
+| T7 | events aligned to their frame | **WORSE THAN ASSUMED.** G198 measured **100 pct of detections attributed to the next processed frame** (offset +3 source frames at stride 3). A fix is proposed and human-gated, not applied. |
+
+### The new constraint that reorders the plan
+
+T2's `--frames` limitation means **every coverage and quality number requires a
+full-length run** -- 174,430 frames against the 1,200 the measurement rows use.
+The pod is a 256-core machine running one job at ~13 cores, so the throughput to
+do that exists but has never been used. **Pod concurrency (G200) moved from an
+efficiency nicety to a prerequisite for T2 and T4.**
+
+### A second circularity, upstream of the one we fixed
+
+`unified_pipeline.py:992` `_is_gameplay` selects frames by whether YOLO found
+enough players, and is sticky for ~3 seconds either way. **The producer's own
+notion of an attempted frame is detector-selected.** No gameplay-derived quantity
+can ever be a denominator, which is why G199's candidate failed and why G204 had
+to exclude it by construction rather than by care.
