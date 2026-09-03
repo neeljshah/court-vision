@@ -416,3 +416,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-03 | tracking teacher census | S193 | required worktree inputs absent; census and 158-row output unavailable; LANDED 1c3a08ea3 | FALSIFIED (verified: codex-sol, contract A/B/Q)
 2026-09-03 | deploy pathspec | S187 | paper closure 11/11; bootstrap 4/11; S21b/S21c 3/11 (corrected from 4/11); 7 trees hold 56/524 modules (10.69%); LANDED 6a664db0248194d026617a39f444fb9009905253 | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q)
 2026-09-03 | sport harness | S188 | tree-absence construct: 2/8 before, 8/8 after, control 1/1; LANDED 709ad418c | ACCEPT (verified: codex-sol, contract A/B/Q)
+2026-09-04 | signals-ingame | S192 | 18,650/186,736 state-joined ticks across 85 games; median age 15 s; LANDED 15a97fa56 | ACCEPT (verified: codex-sol, contract A/B/Q)
