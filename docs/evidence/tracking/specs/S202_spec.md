@@ -1,4 +1,4 @@
-GAP S202 | sport all (harness) | worktree aXX | log cx_s202_two_way_neff
+GAP S202 | sport all (harness) | worktree a10 | log cx_s202_two_way_neff
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: docs/evidence/harness/REDTEAM_SIGNAL_FACTORY_2026-09-03.md:163 and :165, verbatim: "- The ICC table
 uses `(y - p_base)**2` as a stand-in for a real paired Brier differential. The true design effect under a
