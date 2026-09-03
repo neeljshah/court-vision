@@ -1,4 +1,4 @@
-GAP S199 | sport wnba | worktree aXX | log cx_s199_wnba_state_ceiling
+GAP S199 | sport wnba | worktree a14 | log cx_s199_wnba_state_ceiling
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: docs/evidence/harness/wnba_ingame_census_2026-09-04.md:82 (with its _summary.json and _per_game.csv),
 verbatim: "- No state can be recovered for the 167,280 ticks outside cached play-by-play wallclock spans."
