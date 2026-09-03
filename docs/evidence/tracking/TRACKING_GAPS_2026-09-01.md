@@ -16,6 +16,12 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G177 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G177 | all | The daemon strides the numerator (`TARGET_SAMPLE_SECONDS = 0.1`, `stride = round(fps*0.1)`, `adapter.py:223`) but `decoded_frame_count` counts every decoded frame, capping coverage at 1/stride: 0.3333 at 29.97 fps, 0.1667 at 59.94 fps. Twelve baseball rows sit at **89.9-96.4 pct of that ceiling**, so the gate measures 1/stride rather than the tracker. Baseball's 0.70 bar against a 0.1667 ceiling and tennis's 0.90 against 0.3333 are both **unreachable by construction**. | `g177_stride_caps_coverage_2026-09-03.md` | **ACCEPT -- measurement only, NOTHING CHANGED. Does not rescue tennis: tennis is at 7.6 pct of cap against baseball's ~94 pct, so CLOSED AT LIMIT stands and the mismatch overstates tennis by ~3x, a correction of degree not verdict. The remedy is an orchestrator decision under B10/Q3.** |
+
 ## G173 result register
 
 | Gap | Sport | Finding | Evidence | Status |
@@ -191,7 +197,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G177  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G178  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
