@@ -19,6 +19,7 @@ from typing import Any, Dict, List, Optional, Sequence
 
 import pandas as pd
 
+from scripts.platformkit.eval_gate.archive_read import read_series
 from scripts.platformkit.eval_gate.real_game_split import assign_real_game_seq, cluster_ids
 # reuse: the SAME DM + clustered-ESS quote S87 published with (no second implementation)
 from scripts.platformkit.eval_gate.tick_informative import _quote
@@ -87,7 +88,7 @@ def requote_s82(seq_by: Dict[tuple, int], cache: Path = _CACHE,
     """Re-quote the top-`top_n` S82 screen features (by published improvement_vs_null)."""
     published = json.loads((cache / S82_JSON).read_text(encoding="utf-8"))
     ranked = sorted(published["results"], key=lambda r: -float(r["improvement_vs_null"]))[:top_n]
-    series = pd.read_csv(cache / S82_SERIES, comment="#")
+    series = read_series(cache / S82_SERIES)
     out: List[Dict[str, Any]] = []
     for row in ranked:
         sub = series[series["feature"] == row["feature"]].copy()
@@ -111,7 +112,7 @@ def requote_s82(seq_by: Dict[tuple, int], cache: Path = _CACHE,
 
 def requote_s87_trial_a(seq_by: Dict[tuple, int], cache: Path = _CACHE) -> Dict[str, Any]:
     """Re-quote S87's trial-A (s58_trialA_clamp) headline CI on corrected clusters."""
-    series = pd.read_csv(cache / S58A_SERIES, comment="#")
+    series = read_series(cache / S58A_SERIES)
     series["_d"] = (((series["incumbent_e4_gd"] - series["y"]) ** 2)
                     - ((series["candidate"] - series["y"]) ** 2))
     coverage = _attach(series, seq_by, "game", "timestamp")

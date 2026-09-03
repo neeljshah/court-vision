@@ -24,6 +24,7 @@ from typing import Any, Dict, Optional
 
 import pandas as pd
 
+from scripts.platformkit.eval_gate.archive_read import read_series
 from scripts.platformkit.eval_gate.dm_test import diebold_mariano
 from scripts.platformkit.ingame.gap_effective_n import effective_sample_size
 
@@ -246,7 +247,7 @@ def requote(name: str, cache: Path = _CACHE) -> Dict[str, Any]:
     same CSV first; if that reproduction fails the caller must not read the new CI.
     """
     spec = _ARTIFACTS[name]
-    frame = pd.read_csv(cache / spec["csv"], comment="#")
+    frame = read_series(cache / spec["csv"])
     frame["_d"] = spec["loss"](frame)
     flagged, summary = flag_ticks(
         frame, game_col=spec["game"], ts_col=spec["ts"], market_col=spec["market"],
