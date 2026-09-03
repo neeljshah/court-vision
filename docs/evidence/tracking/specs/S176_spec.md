@@ -1,4 +1,4 @@
-GAP S176 | sport harness | worktree a18 | log cx_s176_screen_failure_rows
+GAP S176 | sport harness | worktree a17 | log cx_s176_screen_failure_rows
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- self-check B AND Q (S-row) before reporting.
 PREMISE (step 0): census the READ-ONLY shipped DB data/cache/eval_gate/s85_screen_2026-09-03.sqlite
 (md5 ef0919534012db3eda6dbc38d6d0c360; open mode=ro, never write it): queue 1,125 all claimed,
