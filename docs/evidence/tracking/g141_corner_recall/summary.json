@@ -1,0 +1,83 @@
+{
+  "role_metrics": [
+    {
+      "role": "paint_near_baseline_left_corner",
+      "detected": 0,
+      "denominator": 17,
+      "recall": 0.0,
+      "wilson_95_lower": 0.0,
+      "wilson_95_upper": 0.1843181350088518
+    },
+    {
+      "role": "paint_near_baseline_right_corner",
+      "detected": 0,
+      "denominator": 17,
+      "recall": 0.0,
+      "wilson_95_lower": 0.0,
+      "wilson_95_upper": 0.1843181350088518
+    },
+    {
+      "role": "paint_near_free_throw_left_corner",
+      "detected": 0,
+      "denominator": 17,
+      "recall": 0.0,
+      "wilson_95_lower": 0.0,
+      "wilson_95_upper": 0.1843181350088518
+    },
+    {
+      "role": "paint_near_free_throw_right_corner",
+      "detected": 0,
+      "denominator": 17,
+      "recall": 0.0,
+      "wilson_95_lower": 0.0,
+      "wilson_95_upper": 0.1843181350088518
+    }
+  ],
+  "targets": 68,
+  "available_targets": 0,
+  "recall": 0.0,
+  "recall_wilson_95": [
+    0.0,
+    0.053471336520070537
+  ],
+  "proposals": 1700,
+  "matched_proposals": 0,
+  "precision": 0.0,
+  "precision_wilson_95": [
+    0.0,
+    0.002254587010315487
+  ],
+  "g140_targets_path": "../g140_corner_targets/corner_pixel_targets.csv",
+  "unique_frames": 17,
+  "tolerance_px": 12.0,
+  "parameters": {
+    "max_corners": 100,
+    "quality_level": 0.01,
+    "min_distance_px": 10.0,
+    "block_size": 5,
+    "harris_k": 0.04
+  },
+  "render_audit_ids": [
+    "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s03__f003973",
+    "ncaa_basketball__ncaa_basketball_mRkuGgeECak__s08__f016871",
+    "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s01__f002920",
+    "wnba__wnba_01_1080p__s01__f001600",
+    "wnba__wnba_01_1080p__s06__f007539",
+    "wnba__wnba_06__s03__f007237",
+    "wnba__wnba_07__s08__f016801"
+  ],
+  "render_paths": [
+    "renders/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s03__f003973.jpg",
+    "renders/ncaa_basketball__ncaa_basketball_mRkuGgeECak__s08__f016871.jpg",
+    "renders/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s01__f002920.jpg",
+    "renders/wnba__wnba_01_1080p__s01__f001600.jpg",
+    "renders/wnba__wnba_01_1080p__s06__f007539.jpg",
+    "renders/wnba__wnba_06__s03__f007237.jpg",
+    "renders/wnba__wnba_07__s08__f016801.jpg"
+  ],
+  "scale_conversion_feet": {
+    "minimum": 0.213945,
+    "median": 0.514409,
+    "maximum": 1.975823
+  }
+}
