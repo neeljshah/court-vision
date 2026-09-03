@@ -1,4 +1,4 @@
-GAP S181 | sport soccer | worktree aXX | log cx_s181_corpus_denominator
+GAP S181 | sport soccer | worktree a17 | log cx_s181_corpus_denominator
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- self-check A/B and section Q (Q1-Q9) before you report. S-row: eye check = n/a, REPRODUCTION replaces it (A2 applies, A3 does not).
 PREMISE (step 0): re-run coverage_report('soccer') (scripts/platformkit/eval_gate/close_join.py:262). MEASURED 2026-09-04 in master: denominator 16322, joined 16322, unjoined 0,
 join_rate 1.0, scored 16322; all six by_corpus_unit rates exactly 1.0 (D1 2142, E0 2660, E1 3864, F1 2336, I1 2660, SP1 2660). The corpus it claims to cover,

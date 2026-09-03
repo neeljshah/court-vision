@@ -1,4 +1,4 @@
-GAP S182 | sport nba | worktree aXX | log cx_s182_nba_spine_census
+GAP S182 | sport nba | worktree a18 | log cx_s182_nba_spine_census
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it; self-check section B and section Q (Q1-Q8) before you report.
 PREMISE (step 0; re-measured 2026-09-04, reconfirm before any work -- if falsified STOP, write the memo, commit, report FALSIFIED):
 data/domains/basketball_nba/games.parquet = 4,846 rows, ALL home_win non-null, seasons 2022-23..2025-26 = 1,230 / 1,230 / 1,230 / 1,156, dates 2022-10-18..2026-04-12.
