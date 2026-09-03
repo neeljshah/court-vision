@@ -1,0 +1,8 @@
+record_type,sampling_rule,sample_index,table,expected_relative_path,source_exists,observed_header
+target_population,"G154 rollup_bucket=other; exhaustive construct",,359 tables,data/tracking/<table>/tracking_data.csv,0 of 359,
+systematic_hand_check,"floor((i+0.5)*359/5), i=0..4",35,0022500041,data/tracking/0022500041/tracking_data.csv,false,
+systematic_hand_check,"floor((i+0.5)*359/5), i=0..4",107,0022500330,data/tracking/0022500330/tracking_data.csv,false,
+systematic_hand_check,"floor((i+0.5)*359/5), i=0..4",179,0022500575,data/tracking/0022500575/tracking_data.csv,false,
+systematic_hand_check,"floor((i+0.5)*359/5), i=0..4",251,0022500892,data/tracking/0022500892/tracking_data.csv,false,
+systematic_hand_check,"floor((i+0.5)*359/5), i=0..4",323,0022501147,data/tracking/0022501147/tracking_data.csv,false,
+non_target_current_local,"enumerated current data/tracking/*/tracking_data.csv",,timebase_tennis_600,data/tracking/timebase_tennis_600/tracking_data.csv,true,"frame,track_id,cls,x,y,calibration_provenance,coordinate_space,observation,calibration"

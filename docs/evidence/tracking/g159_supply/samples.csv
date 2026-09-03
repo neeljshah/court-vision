@@ -1,0 +1,4 @@
+sample,pod_utc,interval_seconds_from_previous,local_stage_changed,local_active_bridge_lanes,local_fetchers,daemon_workers,tracking_jobs_live,ffprobe_count_frames_present,complete_stage_mp4s,stage_part_bytes,stage_du_bytes,corpus_du_bytes,ledger_completed_jobs_in_window
+001,2026-09-03T14:34:25Z,,false,7,,10,0,true,2,23239680,1277727763,342144561,0
+002,2026-09-03T14:35:32Z,67,false,7,6,10,0,true,2,91653120,1346141203,342144561,0
+003,2026-09-03T14:36:21Z,49,false,7,8,10,0,true,2,91653120,1346141203,342144561,0

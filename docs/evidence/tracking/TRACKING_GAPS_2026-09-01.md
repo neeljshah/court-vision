@@ -16,6 +16,13 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G158-G159 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G158 | all | The 359 undeclared local tables are NOT legacy. 358 of 359 (99.7214 pct) are basketball, and `src/pipeline/unified_pipeline.py:_checkpoint_csv` is a live, separate, UNSTAMPED writer reached today by `process_game.py`, `full_game_pipeline.py` and the module CLI. `run_clip.py` stamps late and only inside a `try/except` that logs `stamp skipped`. G152's unconditional stamp describes the tennis adapter and never covered this population. | `g158_the_other_359_2026-09-03.md`; `g158_other/` | **ACCEPT WITH CORRECTIONS -- the orchestrator's legacy hypothesis is FALSIFIED. The availability half (dates, headers, geometry columns, 5 hand checks) is UNMEASURED: the worktree store was a stale directory of 1 table, not a junction to main's 423. Fixed and re-dispatched. `src/` is human-gated; nothing changed there.** |
+| G159 | all | Refused to name supply or capacity as binding on a 116-second window with no completed job. Occupancy read 0/10 but every sample coincided with a live `ffprobe -count_frames`, so it is labelled CONFOUNDED by G156 rather than quoted clean. Quota arithmetic: ~24 games of ~2 GB before the ~50 GB volume binds; 22 backlog slots remain. | `g159_supply_not_workers_2026-09-03.md`; `g159_supply/` | **NOT VALIDATED -- window too short, and the worktree could not see the staging directory while main held 14 GB in flight. Raising the worker count is NOT supported by anything measured. Re-run queued over a real window.** |
+
 ## G150-G155 result register (post-pod-loss rebuild wave)
 
 | Gap | Sport | Finding | Evidence | Status |

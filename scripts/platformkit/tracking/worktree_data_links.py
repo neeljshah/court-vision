@@ -11,6 +11,7 @@ import sys
 
 MAIN = r"C:\Users\neelj\nba-ai-system\data"
 RELS = ["domains", "models", "frontend", "footage_corpus", "tracking", "videos/reference",
+        "videos/bridge",
         "cache/combo", "cache/ingame_grade_joined", "cache/ingame",
         "cache/pit", "cache/inplay_odds", "cache/ingame_grade", "cache/clv", "cache/pm_paper"]
 # footage_corpus and tracking added 2026-09-02: G25b, G33b and G44b all returned NOT VALIDATED
@@ -32,8 +33,24 @@ def main(homes):
             parts = rel.split("/")
             src = os.path.join(MAIN, *parts)
             dst = os.path.join(wt, "data", *parts)
-            if not os.path.isdir(src) or os.path.lexists(dst):
+            if not os.path.isdir(src):
                 continue
+            if os.path.lexists(dst):
+                # A REAL directory sitting where a junction belongs is the silent
+                # failure this whole script exists to prevent: the lane sees an
+                # empty store and reports an honest-looking NOT VALIDATED that is
+                # really a provisioning defect. G158 read 0 of 359 tables and G159
+                # saw no download growth on 2026-09-03 for exactly this reason.
+                # An empty one is safe to replace; a non-empty one is somebody's
+                # work and is reported LOUDLY rather than destroyed.
+                if os.path.islink(dst):
+                    continue
+                if os.listdir(dst):
+                    print("WARN %s data/%s is a NON-EMPTY real directory, not a "
+                          "junction -- the lane will not see main's store" % (h, rel))
+                    continue
+                os.rmdir(dst)
+                print("REPLACE %s data/%s (was an empty real directory)" % (h, rel))
             r = subprocess.run(["cmd", "/c", "mklink", "/J", dst, src], capture_output=True, text=True)
             print("%s %s data/%s %s" % ("LINK" if r.returncode == 0 else "FAIL", h, rel, r.stderr.strip()[:80]))
         for rel in FORBIDDEN:
