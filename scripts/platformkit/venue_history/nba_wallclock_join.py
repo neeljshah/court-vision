@@ -1,7 +1,5 @@
 """Join cached ESPN wall-clock game states to Kalshi NBA candles without future reads.
-
-Writes the int64 checkpoint schema under ``data/cache/inplay_odds`` when called as a
-CLI. This is calibration substrate only; it is not a model.
+Provenance and invariants: docs/evidence/harness/nba_wallclock_join_PROVENANCE.md
 """
 from __future__ import annotations
 
