@@ -27,6 +27,7 @@ set -eu
 REPO=${REPO:-/workspace/nba-ai-system}
 PY=${PY:-/usr/local/bin/python}
 CHECK="$REPO/scripts/platformkit/ops/pod_bootstrap_check.py"
+TREE_CHECK="$REPO/scripts/platformkit/ops/deploy_tree_gate.py"
 cd "$REPO"
 
 # Live pids whose cmdline contains $1, EXCLUDING this shell and this script --
@@ -57,6 +58,10 @@ if ! "$PY" "$CHECK" --profile paper --python "$PY"; then
     echo "pod_bootstrap: preflight FAILED -- not booting anything"
     exit 1
 fi
+if ! "$PY" "$TREE_CHECK" --python "$PY" --repo "$REPO"; then
+    echo "pod_bootstrap: tree preflight FAILED -- not booting anything"
+    exit 1
+fi
 # Functional probes (S54): importable is not usable -- an import-only preflight
 # passed 14/14 on 2026-09-03 while every parquet read failed (pyarrow wiped).
 # REPORTED, not a boot gate: supervisor_lock_env needs a RUNNING supervisor,
@@ -72,7 +77,7 @@ else
     CV_CAPTURE_POD=1 CV_MLB_BOOK_ARCHIVE_LIVE=1 nohup setsid \
         "$PY" -u -m supervisor --profile paper \
         </dev/null >>/workspace/paper.log 2>&1 &
-    echo "  launched; expect 15 children in /proc within 80s"
+    echo "  launched; expect 14 children in /proc within 80s"
 fi
 
 # ---- 5. mlb book capture (not a supervisor child), only if absent

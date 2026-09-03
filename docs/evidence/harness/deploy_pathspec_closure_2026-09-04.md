@@ -43,8 +43,8 @@ The current command in `scripts/platformkit/ops/pod_bootstrap.sh:13` names
 module-bearing top-level trees, this is 4 of 11; `config` holds no closure
 module. The command in
 `docs/evidence/harness/S21b_full_parity_deploy_2026-09-03.md:219` and the delta
-scope in `docs/evidence/harness/S21c_delta_deploy_2026-09-03.md:46` cover the
-same four module-bearing trees.
+scope in `docs/evidence/harness/S21c_delta_deploy_2026-09-03.md:47` cover the
+same three module-bearing trees: `scripts`, `supervisor`, and `predict_service`.
 
 The exact omitted set is:
 
