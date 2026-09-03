@@ -230,7 +230,7 @@ def summarise(result: dict) -> dict:
         jaccard = [len(set(a) & set(b)) / len(set(a) | set(b)) if (set(a) | set(b)) else None
                    for a, b in zip(chosen, chosen[1:])]
         stable = [j for j in jaccard if j is not None]
-        arms = {"n_%s_per_fold" % n: {f["fold"]: f["fits"][key].get(n) for f in scored}
+        arms = {"n_%s_per_fold" % n: {f["fold"]: f["fits"][key].get("n_%s" % n) for f in scored}
                 for n in ("fit", "null_fit", "scored")}
         block = {"brier": float(((series[column] - y) ** 2).mean()), **arms,
                  "vs_market": paired(series, "market", column),

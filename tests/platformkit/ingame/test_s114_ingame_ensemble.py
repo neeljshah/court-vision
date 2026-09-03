@@ -174,3 +174,20 @@ def test_every_k_arm_carries_its_own_null_series(scored):
         fallback = arm == null            # the rows the arm could not score natively
         assert bool(fallback.any()) or bool((~fallback).any())
         assert np.isfinite(null).all()
+
+
+def test_the_per_k_table_publishes_the_two_arms_fit_counts(scored):
+    """S126's bar: n_fit / n_null_fit / n_scored must appear BESIDE every k, not only inside
+    the per-fold `fits` block -- the first re-run published them as nulls (a key-name slip)."""
+    _rows, result = scored
+    artifact = s114.summarise(result)
+    folds = [f["fold"] for f in result["folds"] if f["status"] == "OK"]
+    for k in s114.K_VALUES:
+        block = artifact["per_k"]["k%d" % k]
+        for name in ("n_fit_per_fold", "n_null_fit_per_fold", "n_scored_per_fold"):
+            assert set(block[name]) == set(folds), (k, name)
+            assert all(v is not None for v in block[name].values()), (k, name, block[name])
+        assert block["n_fit_per_fold"] == block["n_null_fit_per_fold"]
+        assert block["n_fit_per_fold"] == {
+            f["fold"]: f["fits"]["k%d" % k]["n_fit"] for f in result["folds"]
+            if f["status"] == "OK"}
