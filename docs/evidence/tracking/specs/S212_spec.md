@@ -1,4 +1,4 @@
-GAP S212 | sport all | worktree aXX | log cx_s212_regime_key_clean_rerun
+GAP S212 | sport all | worktree a13 | log cx_s212_regime_key_clean_rerun
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: S200 (regime-key OOF leak) CLOSED AT LIMIT 2026-09-04: attempt 2 (a13 9d730e518) built date-group
 train-only keys, but the verifier's CLEAN rerun did not reproduce the archive: clean after-ECE nba 0.022205 /
