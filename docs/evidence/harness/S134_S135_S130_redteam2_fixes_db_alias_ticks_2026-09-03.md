@@ -162,13 +162,29 @@ python -m pytest tests/platformkit/foundry/test_foundry_runner_s16.py -q        
 The three eval_gate files run together as `41 passed, 1 xfailed in 4.86s`.
 Regression on downstream readers of the changed flags:
 `tests/platformkit/foundry/test_ingame_supply_mlb.py` 4 passed,
-`tests/platformkit/ingame/test_s98_nba_better_prior.py` 11 passed.
+`tests/platformkit/ingame/test_s98_nba_better_prior.py` 11 passed, and (added with
+the A5 correction) `test_s121_requote.py` + `test_s58_clamp_family_trial.py` +
+`test_s58_e2_slice_trial.py` = 12 passed. The other newly-named callers (s92, s94,
+s96, s97, s103, s115, s116, `ingame_screen_soccer`) have no dedicated test file, so
+they are covered by the argument above, not by a run -- recorded in NOT VERIFIED.
 
-A5 -- every reader of a touched surface was grepped. `flag_ticks` /
-`attach_informative_summary`: 10 production call sites, all under
-`scripts/platformkit/eval_gate/` (s58 x3, s80, s84, s98, s103, s114, s115, s121,
-`ingame_calibration_report`), every one of which already sorted or fed
-already-sorted rows -- the change can only make their flags MORE stable.
+A5 -- every reader of a touched surface was grepped. CORRECTED after the first
+commit: a background sweep that finished later found the first count was SHORT.
+`flag_ticks` / `attach_informative_summary` have **17** production call files, not
+10 -- 15 under `scripts/platformkit/eval_gate/` (`ingame_calibration_report`,
+s58_clamp_family_trial, s58_e2_slice_trial, s80, s84, s92, s94, s96, s97, s98,
+s103, s114, s115, s116, s121) and 2 under `scripts/platformkit/foundry/`
+(`ingame_screen_soccer`, `ingame_supply_mlb`). The CONCLUSION is unchanged and now
+rests on the full set: 15 of the 17 go through `attach_informative_summary`, which
+sorted by `(game_col, ts_col)` before this lane and still does -- the sort simply
+moved inside. The only two DIRECT `flag_ticks` callers are s94_nba_early_shrinkage
+(line 207) and s97_nba_sensor_fusion (line 184), and both already pre-sort with
+exactly `sort_values(["game", "ts"], kind="mergesort")`, so the in-function sort is
+idempotent for them. The one remaining behaviour change any caller can see is the
+UTC normalisation, and for a column of identically formatted ISO-8601 UTC strings
+lexicographic and chronological order coincide, so it merges same-instant spellings
+and reorders nothing else. `ts_col` across the set is `ts` (9), `timestamp` (3,
+plus the 4 that take the default) and `ts_utc` (s116).
 `ResultsDB.enqueue`: `foundry/seed_queue.py:87` and `eval_gate/s111_screen.py:50`.
 `ResultsDB.claim`: `foundry_runner.py:240`. `resolve_family`: `ledger.py:152`
 plus `family_bars` internals. `next_k_family`: `backtest_runner.py:192`.
@@ -189,6 +205,11 @@ plus `family_bars` internals. `next_k_family`: `backtest_runner.py:192`.
   the token-locked one-liner.
 - `results_db.py` is 372 lines, over the 300-LOC rail; it was already at 301
   before this lane. Trimming further would delete existing documentation.
+- 8 of the 17 `flag_ticks` readers (s92, s94, s96, s97, s103, s115, s116,
+  `ingame_screen_soccer`) have no test file; they are covered by the
+  already-pre-sorted argument above, not by an executed run.
+- The A5 caller count in the first commit (e870ee600) said 10 and was SHORT; the
+  correct figure is 17. The conclusion it supported did not change.
 - Lane's own report; no verifier re-run.
 
 ## Appendix -- the PROPOSED one-liner, verbatim
