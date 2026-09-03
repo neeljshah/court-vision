@@ -58,3 +58,12 @@ def test_ball_projection_guard_names_sign_flip_and_envelope_rejections() -> None
                                                                "outside_physical_envelope"]
     assert rows.loc[0, ["x", "y"]].tolist() == [39.0, 20.0]
     assert rows.loc[1:, ["x", "y"]].isna().all().all()
+
+
+def test_ball_rows_use_the_reserved_negative_track_namespace() -> None:
+    homography = np.array(((1.0, 0.0, 0.0), (0.0, 0.1, 0.0),
+                           (0.0, 0.01, -1.0)))
+    rows = ball_rows(((39.0, 200.0, 0.9),), homography)
+
+    assert rows["track_id"].tolist() == [-1]
+    assert rows.loc[0, "track_id"] != 99

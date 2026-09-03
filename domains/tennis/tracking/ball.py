@@ -16,6 +16,9 @@ RectifiedTrack = list[Optional[BallPoint]]
 BALL_COLUMNS = ("frame", "track_id", "cls", "x", "y", "projection_status",
                 "projection_rejection_reason", "raw_projected_x_ft", "raw_projected_y_ft")
 _MIN_CONFIDENCE = 0.5
+# Future ball rows use a namespace disjoint from positive player epoch ids.
+# Historical tracking tables retain their existing literal 99 values.
+BALL_TRACK_ID = -1
 
 
 class BallDetector(Protocol):
@@ -240,7 +243,7 @@ def ball_rows(rectified: Sequence[Optional[BallPoint]], homography: np.ndarray) 
         if point is None or point[2] < _MIN_CONFIDENCE:
             continue
         decision = guard_ball_projection(point, homography)
-        rows.append({"frame": frame, "track_id": 99, "cls": "ball",
+        rows.append({"frame": frame, "track_id": BALL_TRACK_ID, "cls": "ball",
                      "x": decision.raw_x if decision.status == "accepted" else float("nan"),
                      "y": decision.raw_y if decision.status == "accepted" else float("nan"),
                      "projection_status": decision.status,

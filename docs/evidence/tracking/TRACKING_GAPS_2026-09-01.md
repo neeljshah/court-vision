@@ -16,6 +16,12 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G167 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G167 | tennis | A5 survey over 143 Python and 65 evidence readers found none requiring ball id 99 or positive/unsigned ids. Future ball rows use `-1`; existing tables untouched. A1 in master: test_ball.py 5 passed, test_adapter_run.py 8 passed. | `g167_track_id_namespace_2026-09-03.md`; `domains/tennis/tracking/ball.py` | **ACCEPT -- additive under B2: nothing renamed, removed, renumbered or rewritten. Does NOT retroactively fix `tennis_smoke`; its four collisions stay in the committed table as a historical fact.** |
+
 ## G168 result register
 
 | Gap | Sport | Finding | Evidence | Status |
