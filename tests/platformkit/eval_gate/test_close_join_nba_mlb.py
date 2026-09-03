@@ -25,7 +25,7 @@ _HOME_P, _AWAY_P = 0.60, 0.44
 def _mlb_fixture(tmp_path):
     """8 games, one per rule: ok / post-start-only / untraded-later / placeholder / one-sided."""
     kinds = ["ok", "ok", "post_start_only", "untraded_later", "placeholder", "one_sided",
-             "ok", "ok"]
+             "ok", "pickem"]
     spine, ticks = [], []
     for i, kind in enumerate(kinds):
         home, away = _PAIRS[i]
@@ -44,6 +44,8 @@ def _mlb_fixture(tmp_path):
             "untraded_later": [(-600, _HOME_P, _AWAY_P, True), (-60, 0.99, 0.99, False)],
             "placeholder": [(-60, 0.5, 0.5, True)],
             "one_sided": [(-60, _HOME_P, None, True)],
+            # S133: symmetric RAW quote -> devigs to exactly 0.500, a genuine pick'em
+            "pickem": [(-60, 0.52, 0.52, True)],
         }[kind]
         for off, ph, pa, traded in plan:
             for seat, prob in (("home", ph), ("away", pa)):
@@ -74,8 +76,9 @@ def test_mlb_close_is_the_two_sided_devig(mlb_built):
     drops = mod._drops()
     close = mod.mlb_close(path, spine, drops)
     expected = devig2(1.0 / _HOME_P, 1.0 / _AWAY_P)[0]
+    priced = close.loc[~close["event_id"].str.contains("WAS")]     # not the pick'em game
     assert set(close["close_kind"]) == {"DEVIG_TWO_SIDED"}
-    assert close["p_close"].to_numpy(dtype=float) == pytest.approx(expected)
+    assert priced["p_close"].to_numpy(dtype=float) == pytest.approx(expected)
     assert expected != pytest.approx(_HOME_P)          # the vig really was removed
 
 
@@ -88,6 +91,7 @@ def test_mlb_close_is_strictly_pregame_and_traded(mlb_built):
     assert not any("CUB" in i for i in ids)            # post_start_only game: no close at all
     assert all(np.asarray(close["close_sec_after_tip"], dtype=float) < 0.0)
     untraded = [i for i in ids if "ARI" in i]          # untraded_later game
+    assert len([i for i in ids if "WAS" in i]) == 1     # S133: the pick'em survived
     assert len(untraded) == 1
     # The 0.99/0.99 untraded tick at -60 s would devig to 0.5; the traded -600 s tick wins.
     assert float(close.loc[untraded[0], "p_close"]) == pytest.approx(
@@ -98,9 +102,11 @@ def test_mlb_placeholder_half_excluded_and_counted(mlb_built):
     spine, path = mlb_built
     drops = mod._drops()
     close = mod.mlb_close(path, spine, drops)
-    assert drops["placeholder_half"] == 1              # the 0.5/0.5 game
-    assert not (close["p_close"].to_numpy(dtype=float) == mod.PLACEHOLDER_PROB).any()
+    assert drops["placeholder_half"] == 1              # the RAW 0.5/0.5 listing only
     assert len(close) == 5                             # 8 - post_start - placeholder - one_sided
+    # S133: the placeholder rule runs on the RAW quote, so a devigged 0.500 SURVIVES.
+    pickem = close.loc[close["event_id"].str.contains("WAS"), "p_close"]
+    assert float(pickem.iloc[0]) == pytest.approx(mod.PLACEHOLDER_PROB)
 
 
 def _nba_ticks(rows):
@@ -141,7 +147,10 @@ def test_nba_first_tick_is_the_earliest_traded_tick(nba_patched):
     assert bool(first["close_within_30s"]) is True
     assert bool(out.loc["0022400001", "close_within_30s"]) is True     # 30 s is inside
     assert bool(out.loc["0022400002", "close_within_30s"]) is False    # 60 s is not
-    assert set(out["close_source"]) == {"first_inplay_tick"}
+    # S132: 60 s of live play after tip is not a close -- labelled, and priceless.
+    assert set(out["close_source"]) == {"first_inplay_tick", "inplay_contaminated"}
+    assert out.loc["0022400002", "close_source"] == "inplay_contaminated"
+    assert np.isnan(float(out.loc["0022400002", "p_close"]))
     assert set(out["close_kind"]) == {"VENUE_PROB_ONE_SIDED"}
 
 
@@ -195,6 +204,51 @@ def test_bar_is_not_moved():
 def test_close_columns_are_additive_only():
     """B2: the attach appends, it never renames or drops a live-corpus column."""
     assert mod.CLOSE_COLUMNS == ("p_close", "close_ts", "close_source", "close_kind",
-                                 "close_sec_after_tip", "close_within_30s")
+                                 "close_sec_after_tip", "close_within_30s",
+                                 "close_score_on_board")
     assert mod.close_corpus_path("nba").name == "gate_corpus_nba_close.parquet"
     assert mod.close_corpus_path("nba") != mod.close_corpus_path("mlb")
+
+
+def test_nba_tick_with_points_on_the_board_is_not_a_close(nba_patched):
+    """S132: a tick inside the 30 s window but with a score already up is contaminated."""
+    path = nba_patched / "ck.parquet"
+    ticks = _nba_ticks([("a", 100, 1, 700.0, 0.61, True),      # 20 s, 0-0  -> a real close
+                        ("b", 100, 1, 700.0, 0.44, True),      # 20 s, 2-0  -> contaminated
+                        ("c", 100, 1, 700.0, 0.55, True)])     # 20 s, 2-2  -> contaminated
+    ticks.loc[1, ["score_home", "score_away", "margin"]] = [2, 0, 2]
+    ticks.loc[2, ["score_home", "score_away", "margin"]] = [2, 2, 0]
+    ticks.to_parquet(path)
+    drops = mod._drops()
+    out = mod.nba_first_inplay_tick(path, drops).set_index("event_id")
+    assert drops["inplay_contaminated"] == 2
+    assert float(out.loc["0022400000", "p_close"]) == pytest.approx(0.61)
+    assert float(out.loc["0022400000", "close_score_on_board"]) == 0.0
+    for event in ("0022400001", "0022400002"):     # margin != 0 AND a 2-2 tie both fail
+        assert out.loc[event, "close_source"] == "inplay_contaminated"
+        assert np.isnan(float(out.loc[event, "p_close"]))
+
+    # allow_contaminated reproduces the pre-S132 behaviour, for an A2 comparison only.
+    old = mod.nba_first_inplay_tick(path, mod._drops(), allow_contaminated=True)
+    assert set(old["close_source"]) == {"first_inplay_tick"}
+    assert int(old["p_close"].notna().sum()) == 3
+
+
+def test_nba_ambiguous_pregame_close_does_not_downgrade_to_the_tick(nba_patched, monkeypatch):
+    """S133: two venue rows for one game -> one priceless `ambiguous` row, never the tick."""
+    pregame = nba_patched / "pre.parquet"
+    row = {"date": "2024-11-01", "home_team": "NYK", "away_team": "BOS", "home_win": 1.0,
+           "venue": "polymarket", "corpus_id": "x", "close_kind": "last_tick_before_commence",
+           "close_ts": "2024-11-01T23:59:36Z", "commence_time": "2024-11-02T00:00:00Z",
+           "seconds_before_tip": 24.0, "validation_only": True}
+    pd.DataFrame([dict(row, game_id="0022400000", close_prob_home=0.42),
+                  dict(row, game_id="0022400000", close_prob_home=0.70)]).to_parquet(pregame)
+    ticks = nba_patched / "ck.parquet"
+    _nba_ticks([("a", 100, 1, 700.0, 0.61, True)]).to_parquet(ticks)
+    monkeypatch.setattr(mod, "NBA_PREGAME_CLOSE", pregame)
+    monkeypatch.setattr(mod, "CHECKPOINTS", ticks)
+    drops = mod._drops()
+    out = mod.nba_close(drops).set_index("event_id")
+    assert drops["ambiguous_event_id"] == 2
+    assert out.loc["0022400000", "close_source"] == "ambiguous"
+    assert np.isnan(float(out.loc["0022400000", "p_close"]))
