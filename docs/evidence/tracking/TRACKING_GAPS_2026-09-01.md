@@ -16,6 +16,12 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G175 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G175 | tennis | Over all 113 committed `RALLY_VIEW` labels: **`calibration_unavailable` 104/113 = 92.04 pct**, `emitted_players` 8/113 = 7.08 pct, `unsolved_drift` 1/113 = 0.88 pct. In NOT_RALLY frames `calibration_unavailable` is 170/187 = **90.91 pct** -- essentially the same rate. | `g175_rally_stage_histogram_2026-09-03.md`; `g175_stages/` | **ACCEPT -- names the tennis defect and RETIRES A STRATEGY: calibration is missing inside rally view at the same rate as outside it, so "tennis works on selected rally-view ranges" does not rescue it. Recovered from reflog 68b44577c after the orchestrator destroyed the commit by freeing a3.** |
+
 ## G179 result register
 
 | Gap | Sport | Finding | Evidence | Status |
