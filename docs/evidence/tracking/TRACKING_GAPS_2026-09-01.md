@@ -69,6 +69,8 @@
 
 | G192b | ncaa_basketball/wnba | **THE CHEAP BASKETBALL PATH IS CLOSED.** `detect_court_homography` (the function `unified_pipeline.py:330` imports) returned `None` on **17 of 17** G140-labelled frames, **0 of 51** calls, 3 fresh processes each -- on frames SELECTED for paint-corner visibility. Error against the 11.39 px floor is **undefined, not zero**; all 68 targets kept in the denominator. | `g192b_score_existing_homography_2026-09-03.md`, `g192b_renders/` | **ACCEPT. Answers the adjudicated step 2: there is no good homography being discarded, so basketball's coordinate-contract failure is NOT merely plumbing. BOUNDARY the lane drew correctly: this was the Hough route only -- no LoFTR, no SIFT, and the static `Rectify1.npy` fallback was not substituted -- so it does not establish what the FULL pipeline uses. That contradiction with `run_clip.py:581`'s "solved in memory and discarded" is the next row. NOT claimed: that basketball cannot be calibrated; G136 measured 46.2 pct four-corner visibility.** |
 
+| G194 | wnba | OPEN -- allocated 2026-09-03. Which branch actually supplies the M1 the pipeline projects with? `court_detector.py:206` falls back to `Rectify1.npy` on failure, and `unified_pipeline.py:885-887` says that matrix is calibrated for the Short4Mosaicing panorama and that a per-video broadcast frame "would break M1". Given G192b's 17/17 solver failures, basketball may be projecting through a matrix the code itself documents as invalid for this footage. | pending | OPEN. Resolves the contradiction between `run_clip.py:581` ("solved in memory and discarded") and G192b. Report what the code SAYS and what you MEASURE separately; do not conclude from the comment alone. |
+
 ## G175 result register
 
 | Gap | Sport | Finding | Evidence | Status |
@@ -280,7 +282,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G194  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G195  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
