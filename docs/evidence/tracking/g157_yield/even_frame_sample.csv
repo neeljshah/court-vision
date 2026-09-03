@@ -1,0 +1,6 @@
+table,selection_rule,n_distinct_frames,frame,rows,classes,coordinate_space,calibration_provenance,source_eye_check
+tennis_smoke,"round(i*(n-1)/4) for i=0..4 over sorted distinct frame IDs",726,372,2,player,court_feet,solved,NOT_VERIFIED_source_and_render_absent
+tennis_smoke,"round(i*(n-1)/4) for i=0..4 over sorted distinct frame IDs",726,7452,2,player,court_feet,solved,NOT_VERIFIED_source_and_render_absent
+tennis_smoke,"round(i*(n-1)/4) for i=0..4 over sorted distinct frame IDs",726,13800,3,ball|player,court_feet,solved,NOT_VERIFIED_source_and_render_absent
+tennis_smoke,"round(i*(n-1)/4) for i=0..4 over sorted distinct frame IDs",726,21189,1,ball,court_feet,solved,NOT_VERIFIED_source_and_render_absent
+tennis_smoke,"round(i*(n-1)/4) for i=0..4 over sorted distinct frame IDs",726,28461,2,player,court_feet,solved,NOT_VERIFIED_source_and_render_absent

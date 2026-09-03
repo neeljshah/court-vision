@@ -16,6 +16,13 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G157 / G160 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G157 | tennis | Eligible denominator 1 tennis source-table directory on the pod. `tennis_smoke` reaches the gate: 1,861 rows, 726 distinct frames, `court_feet`, solved share 1,558/1,861 = 0.8372. Zero tennis ledger rows in the window, so G147 still has no tennis row for its comparison. | `g157_retrack_yield_2026-09-03.md`; `g157_yield/` | **ACCEPT WITH CORRECTIONS -- `tennis_smoke` is the orchestrator's hand-run bootstrap smoke test, not a daemon product, which is why it has a table and no ledger row. It shows the tennis path works on the new hardware, NOT that the rebuild yields eligible tables. 0.8372 is one clip; G152b measured 0.1994 on another.** |
+| G160 | all | LF-normalised parity over 4,691 HEAD sources: 4,689 identical, 1 differing (`worktree_data_links.py`, a local tool the pod never runs), 1 missing, 393 pod-only `.pyc`. Daemon PID 33064 predates the G151 deploy and is therefore not executing its write probe or ledger fsync. Foreign deploy confirmed from `/workspace/bootstrap.log`. | `g160_pod_code_identity_2026-09-03.md`; `g160_identity/` | **ACCEPT -- files current, running process stale. The daemon was NOT killed to force the guards in; they take effect at its next natural restart, and rows written before then come from pre-guard code.** |
+
 ## G152b result register
 
 | Gap | Sport | Finding | Evidence | Status |

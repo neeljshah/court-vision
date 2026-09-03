@@ -1,0 +1,1 @@
+ledger_line,game_id,status,decoded_frames,harness_coverage_pct,coverage_against_decoded_frames,rows,seconds,failure_heads,denominator_state

@@ -1,0 +1,8 @@
+first_blocker,tables,eligible_denominator_tennis_source_table_directories,share_of_eligible_denominator
+unknown_sport_routing,0,1,0.000000
+empty_or_header_only,0,1,0.000000
+metric_local_scope,0,1,0.000000
+coordinate_contract_rejection,0,1,0.000000
+missing_required_coordinate_or_schema,0,1,0.000000
+INSUFFICIENT_DATA,0,1,0.000000
+reaches_gate,1,1,1.000000
