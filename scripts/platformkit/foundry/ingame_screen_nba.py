@@ -52,6 +52,7 @@ from scripts.platformkit.eval_gate.dm_test import (_student_t_two_tailed_pvalue,
                                                    _student_t_two_tailed_quantile)
 from scripts.platformkit.foundry import ingame_grammar_nba as grammar
 from scripts.platformkit.foundry.grammar import semantic_hash
+from scripts.platformkit.foundry.ingame_incumbent_nba import INCUMBENTS, apply_incumbent
 from scripts.platformkit.foundry.ingame_screen import BAR, ROOT, walk_forward_feature
 
 S86_CSV = ROOT / "data" / "cache" / "eval_gate" / "s86_nba_every_tick_2026-09-03.csv"
@@ -70,12 +71,23 @@ SCHEMA = """CREATE TABLE IF NOT EXISTS screen (
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT);"""
 
 
-def load_screen(path: Path = S86_CSV, n_folds: int = N_FOLDS) -> pd.DataFrame:
+def load_screen(path: Path = S86_CSV, n_folds: int = N_FOLDS,
+                incumbent: str = "market") -> pd.DataFrame:
     """The S86 SCREEN-side per-tick archive as the tier's `rows` frame.
 
     `p_e4` holds the in-play market probability: on this corpus the market IS the
     incumbent the candidate must improve on, and the null arm recalibrates it. `game_date`
     holds the FOLD BLOCK key, not the calendar date -- see point 4 of the module docstring.
+
+    S123(c): `incumbent` names which arm goes in that anchor slot -- "market" (the
+    DEFAULT, byte-identical to every screen published before this option existed),
+    "recal_null" (S94's walk-forward recalibration of the line) or "ladder_base"
+    (`nba_mechanism_ladder` BASE). S92 measured market < recal_null < ladder_base by
+    Brier on both NBA tick corpora, so the default already anchors on the strongest of
+    the three; the option exists so a future screen can say which one it measured
+    against instead of inheriting it. A fitted anchor is out-of-fold only, so the
+    seed block's rows are dropped and the survivors re-blocked (see
+    `ingame_incumbent_nba.apply_incumbent`).
     """
     frame = pd.read_csv(path, usecols=list(COLS))
     rows = pd.DataFrame({
@@ -97,6 +109,9 @@ def load_screen(path: Path = S86_CSV, n_folds: int = N_FOLDS) -> pd.DataFrame:
         "rem": frame["rem"].astype(float)})
     rows = rows.sort_values(["ts", "game"], kind="stable").reset_index(drop=True)
     rows["game_date"] = fold_blocks(rows, n_folds)
+    if incumbent != "market":
+        rows = apply_incumbent(rows, incumbent)
+        rows["game_date"] = fold_blocks(rows, n_folds)
     return rows
 
 
@@ -263,6 +278,8 @@ def write_meta(db: Path, rows: pd.DataFrame, hypotheses: Sequence, probes: List[
             "embargo_days": EMBARGO_DAYS, "n_folds": N_FOLDS, "corpus": str(S86_CSV.name),
             "n_ticks": int(len(rows)), "n_games": int(rows["game"].nunique()),
             "n_informative": int(rows["informative"].sum()),
+            "incumbent": str(rows["incumbent"].iloc[0]) if "incumbent" in rows else "market",
+            "incumbent_options": json.dumps(list(INCUMBENTS)),
             "ts_min": str(rows["ts"].min()), "ts_max": str(rows["ts"].max()),
             "fold_blocks": json.dumps(rows.groupby("game_date").size().to_dict()),
             "n_hypotheses": len(hypotheses), "tick_asof_probes": json.dumps(probes),

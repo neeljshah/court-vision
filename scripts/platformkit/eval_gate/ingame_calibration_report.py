@@ -201,5 +201,66 @@ def main() -> int:
     return 0
 
 
-if __name__ == "__main__":
-    raise SystemExit(main())
+
+
+# --- S123(a): the NBA in-game baseline ordering, recorded. DESCRIPTIVE, no bar. ---------
+S92_CSV = (REPO / "data" / "cache" / "eval_gate"
+           / "s92_nba_lineup_dynamic_2026-09-03_%s.csv")
+NBA_OUTPUT = REPO / "docs" / "evidence" / "calibration" / "nba_ingame_baseline_2026-09-03.json"
+NBA_CORPORA = ("all", "rated")
+# arm -> the S92 archive column holding it. p_null is S94's global recalibration
+# [1, logit(market)] fit WALK-FORWARD on exactly these rows; p_incumbent is the
+# nba_mechanism_ladder BASE. Both are read as archived -- nothing is refit here (A2).
+NBA_ARMS = (("market", "market_prob"), ("recal_null", "p_null"),
+            ("ladder_base", "p_incumbent"))
+NBA_NOTE = (
+    "S123(a). The NBA in-game arms of the S92 archive, scored as levels: the raw in-play "
+    "line, the S94 walk-forward recalibration of that line, and the nba_mechanism_ladder "
+    "BASE incumbent, on identical rows. On both corpora the ordering is "
+    "market < recal_null < ladder_base by Brier, i.e. the in-play price is already well "
+    "calibrated at this grain, re-fitting it costs a little, and the ladder BASE is behind "
+    "both. DESCRIPTIVE: a calibration ordering, no bar, no gate, nothing charged.")
+
+
+def nba_ingame_block(frame: pd.DataFrame, *, bins: int = 10) -> dict[str, Any]:
+    """One S92 corpus through `build_ingame_report`: the three arms, S43-style.
+
+    `frame` is an S92 per-tick archive (columns `ts, game, outcome_home_win,
+    market_prob, p_null, p_incumbent`). Every probability is taken AS ARCHIVED --
+    this reproduces an ordering, it does not refit an arm.
+    """
+    return build_ingame_report(
+        list(frame["ts"]),
+        {name: [float(value) for value in frame[column]] for name, column in NBA_ARMS},
+        [float(value) for value in frame["outcome_home_win"]],
+        [str(value) for value in frame["game"]], bins=bins)
+
+
+def main_nba() -> int:
+    """Both S92 NBA corpora: Brier / ECE / reliability bins / n_eff per arm."""
+    report = {"generated_at": datetime.now(timezone.utc).isoformat(), "mode": "DESCRIPTIVE",
+              "note": NBA_NOTE, "sport": "nba", "corpora": {}}
+    for corpus in NBA_CORPORA:
+        path = Path(str(S92_CSV) % corpus)
+        block = nba_ingame_block(pd.read_csv(path))
+        block["input"] = {"per_tick_series": str(path),
+                          "arms": {name: column for name, column in NBA_ARMS}}
+        report["corpora"][corpus] = block
+    NBA_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    NBA_OUTPUT.write_text(json.dumps(report, indent=1, sort_keys=True,
+                                     default=lambda o: o.item() if hasattr(o, "item") else str(o))
+                          + "\n", encoding="ascii")
+    print("CORPUS | ARM | BRIER | ECE | N | N_INFORMATIVE | N_EFF")
+    for corpus, block in report["corpora"].items():
+        for name, arm in block["series"].items():
+            informative = arm.get("tick_informative") or {}
+            print("%s | %s | %.6f | %.6f | %d | %s | %.1f"
+                  % (corpus, name, arm["brier"], arm["ece"], arm["n_ticks"],
+                     informative.get("n_informative", "-"), arm["ess"]["n_eff"]))
+    print("REPORT: %s" % NBA_OUTPUT)
+    return 0
+
+
+if __name__ == "__main__":                    # `... ingame_calibration_report nba`
+    import sys
+    raise SystemExit(main_nba() if "nba" in sys.argv[1:] else main())

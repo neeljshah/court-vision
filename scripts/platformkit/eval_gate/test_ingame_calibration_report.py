@@ -71,3 +71,49 @@ def test_misaligned_series_is_refused():
     except ValueError:
         return
     raise AssertionError("misaligned series accepted")
+
+
+# --- S123(a): the NBA in-game baseline block -------------------------------------------
+
+def _s92_frame(n_games: int = 24, n_ticks: int = 40):
+    """An S92-shaped archive whose three arms have a KNOWN Brier ordering.
+
+    market is the sharpest, the recalibration null is a shrink of it, and the ladder
+    BASE is a further shrink -- the ordering S92 measured on both real corpora.
+    """
+    import pandas as pd
+    rng = np.random.default_rng(20260903)
+    rows = []
+    for g in range(n_games):
+        p = float(np.clip(rng.beta(2.0, 2.0), 0.06, 0.94))
+        outcome = float(rng.random() < p)
+        for t in range(n_ticks):
+            rows.append({"ts": float(g * 10000 + t), "game": "G%02d" % g,
+                         "outcome_home_win": outcome, "market_prob": p,
+                         "p_null": 0.5 + 0.90 * (p - 0.5),
+                         "p_incumbent": 0.5 + 0.80 * (p - 0.5)})
+    return pd.DataFrame.from_records(rows)
+
+
+def test_nba_block_records_the_three_arms_with_bins_and_the_informative_triple():
+    from scripts.platformkit.eval_gate.ingame_calibration_report import (NBA_ARMS,
+                                                                        nba_ingame_block)
+    frame = _s92_frame()
+    block = nba_ingame_block(frame)
+    assert set(block["series"]) == {name for name, _ in NBA_ARMS}
+    assert block["n_ticks"] == len(frame) and block["n_games"] == frame["game"].nunique()
+    y = frame["outcome_home_win"].to_numpy(dtype=float)
+    for name, column in NBA_ARMS:
+        arm = block["series"][name]
+        assert abs(arm["brier"] - float(np.mean((frame[column].to_numpy() - y) ** 2))) < 1e-12
+        assert len(arm["reliability_bins"]) == len(bin_edges(10)) - 1
+        assert sum(row["n"] for row in arm["reliability_bins"]) == len(frame)
+        assert 0 < arm["ess"]["n_eff"] <= len(frame)
+        assert arm["reproduction_max_abs_diff"] < 1e-9
+    for name in ("recal_null", "ladder_base"):                                  # S87 triple
+        triple = block["series"][name]["tick_informative"]
+        assert triple["n"] == len(frame)
+        assert 0 <= triple["n_informative"] <= triple["n"]
+        assert triple["n_eff_icc"] > 0
+    briers = {name: block["series"][name]["brier"] for name, _ in NBA_ARMS}
+    assert briers["market"] < briers["recal_null"] < briers["ladder_base"]
