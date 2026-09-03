@@ -16,6 +16,12 @@
 |---|---|---|---|---|
 | G152 | tennis | Exhaustive trace of the tennis `court_feet` declaration path finds exactly three conditions and NO geometry condition: the video opens, `process_video` reaches its post-loop return, and the sport key is `tennis`. `_stamp()` populates every provenance column in its empty-frame branch, so a table with zero recovered geometry is still stamped `court_feet`. | `g152_court_feet_declaration_2026-09-03.md`; `g152_declaration/` | **ACCEPT WITH CORRECTIONS -- trace half only. The clip half was blocked by a missing worktree junction, not by footage: decoded-frame count, both declaration rates and the five renders remain UNMEASURED and are re-dispatched. The trace puts G142's declaration-as-discriminator reading in tension; the orchestrator is not treating the stamp as evidence of geometry until that is resolved.** |
 
+## G176 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G176 | all | 0 rows confirmed passing the coverage gate over an 18-row ledger, but the row states honestly that this **cannot settle whether the gate discriminates program-wide**: 14 rows exit at `coordinate_contract` before coverage is evaluated and 3 are thin/unadjudicated, leaving exactly 1 row (tennis) with a coverage failure head. | `g176_decoded_gate_across_sports_2026-09-03.md` | **ACCEPT -- and it CORRECTS the orchestrator's G177 framing. Baseball never reaches the coverage gate, so "unreachable by construction" describes a gate it never hits and the "baseball rescue" reading is withdrawn. No bar proposed or moved.** |
+
 ## G177 result register
 
 | Gap | Sport | Finding | Evidence | Status |
