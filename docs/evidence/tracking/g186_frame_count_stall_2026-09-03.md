@@ -85,6 +85,21 @@ The new test asserts the fallback fires and logs `path=decode_fallback` when
 metadata is internally inconsistent (`nb_frames=99` against a duration*rate of 30),
 returning the decoded value, and that `-count_frames` appears in the second call.
 
+## Deployed, and timed on the file that caused the stall
+
+The fix was copied to the pod (hash parity confirmed with local) and
+`decoded_frame_count` was called there on the exact clip the daemon had been
+blocked on:
+
+    decoded_frame_count("data/footage_corpus/soccer__soccer_dnR5C6WLJI4.mp4")
+    -> 250200 in 0.21 sec
+
+**Same value the decode produced (250,200), returned in 0.21 seconds against a
+`-count_frames` call observed at 22:15 elapsed and still unfinished.** This is a
+direct measurement of the function on real footage, not an estimate.
+
+It is NOT a daemon throughput measurement -- see NOT VERIFIED below.
+
 ## NOT VERIFIED
 
 - **Any throughput improvement.** None is measured here. The daemon holds its
