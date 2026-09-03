@@ -4,6 +4,12 @@
 
 ## G126 result register
 
+## G144 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G144 | tennis | Exhaustive live census: 8/215 source-table directories reach the jump-statistic eligibility definition, all tennis; none passes the unchanged production quality gate. Coverage and ball-valid each block 7 tables, oob blocks 4, jump-p95 2, and median-track plus decoded-frame denominator 1 each. The production ceiling is 0/8: seven ball-valid failures are not creditable to the closed labelling branch, and the sole non-ball exception (`tennis_08`) would still have 0.4402 coverage after its malformed index is repaired. | `g144_tennis_quality_ceiling_2026-09-03.md`; `g144_ceiling/` | **CLOSED AT LIMIT -- measured ceiling; no threshold, verdict, coordinate contract, source, or deployment change.** |
+
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G126 | basketball | Blind source-index audit across 45 label-stratified G111 units: source and committed render agree 45/45, but the retained G111 label agrees 22/45 (48.9 pct, Wilson 95 pct 35.0--63.0). The mismatch is label error rather than a source-render association defect. The reweighted source four-corner audit estimate is 33.8 pct; this does not itself revise G111 or the REACH verdict. | `g126_g111_label_audit_2026-09-02.md`; `g126_label_audit/` | **ACCEPT WITH CORRECTIONS -- evidence audit landed; orchestrator adjudicates the unchanged G111/REACH verdict.** |

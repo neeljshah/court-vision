@@ -1,0 +1,4 @@
+selection_method,table,source_video_remote,gap_start,gap_end,gap_size,rendered_midpoint,coverage_pct,render_observation
+evenly_spaced_rank_1_of_7,g89_tennis_09,/workspace/nba-ai-system/data/footage_corpus/tennis__tennis_09.mp4,5072,5898,826,5485,0.1633,"Crowd and scoreboard shot, not a playable court frame; it is charged as unsolved because no independent non-play classifier is supplied."
+evenly_spaced_rank_4_of_7,tennis_06,/workspace/nba-ai-system/data/footage_corpus/tennis__tennis_06.mp4,20062,23334,3272,21698,0.0059,"Bench/replay-style split screen, not a two-player court frame; it is charged as unsolved because no independent non-play classifier is supplied."
+evenly_spaced_rank_7_of_7,tennis_nyYk2nPZAwY,/workspace/nba-ai-system/data/footage_corpus/tennis__tennis_nyYk2nPZAwY.mp4,22,2748,2726,1385,0.0067,"Full-screen shot-quality graphic overlays the court; it is charged as unsolved because no independent non-play classifier is supplied."
