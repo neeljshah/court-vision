@@ -414,7 +414,7 @@ def evaluate_csv_path(path: str, sport: str,
     frame = pd.read_csv(path)
     return evaluate(
         frame, sport, config_version, source=path,
-        attempted_frames=evaluated_frames_from_tracking_table(frame),
+        attempted_frames=evaluated_frames_from_tracking_table(frame, path),
     )
 
 

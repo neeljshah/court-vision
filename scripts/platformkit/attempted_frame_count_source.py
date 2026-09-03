@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import csv
+import json
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from math import isfinite
@@ -153,6 +154,36 @@ def evaluated_frames_from_metadata(decoded_frames: object, source_fps: object,
     return len(range(0, min(decoded, stride * cap), stride))
 
 
+def _sidecar_evaluated_frames(tracking_table_path: str | Path) -> int | None:
+    """Read one self-validating pre-tracking evaluated-count sidecar."""
+    path = Path(tracking_table_path).with_name("evaluated_frame_count.json")
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            sidecar = json.load(handle)
+    except (OSError, json.JSONDecodeError):
+        return None
+    if (not isinstance(sidecar, dict) or sidecar.get("schema_version") != "g206-v1"
+            or sidecar.get("reason") is not None
+            or sidecar.get("formula") != "ceil(decoded_frames / stride) when max_frames is null and start_frame is 0"):
+        return None
+    decoded = _positive_integral(sidecar.get("decoded_frames"))
+    source_frames = _positive_integral(sidecar.get("source_frame_count"))
+    fps = _positive_float(sidecar.get("source_fps"))
+    stride = _positive_integral(sidecar.get("stride"))
+    cap_value = sidecar.get("max_frames")
+    cap = None if cap_value is None else _positive_integral(cap_value)
+    count = _positive_integral(sidecar.get("evaluated_frames"))
+    if (decoded is None or source_frames != decoded or fps is None or stride is None
+            or count is None or sidecar.get("start_frame") != 0
+            or not isinstance(sidecar.get("source_path"), str)
+            or not sidecar["source_path"] or _positive_integral(sidecar.get("source_size_bytes")) is None):
+        return None
+    if cap is not None:
+        return None
+    expected = (decoded + stride - 1) // stride
+    return count if count == expected else None
+
+
 def _stable_column_value(frame: Any, column: str) -> object | None:
     """Return a value only when every emitted row repeats one non-null fact."""
     if column not in frame or frame.empty or frame[column].isna().any():
@@ -161,10 +192,14 @@ def _stable_column_value(frame: Any, column: str) -> object | None:
     return values[0] if len(values) == 1 else None
 
 
-def evaluated_frames_from_tracking_table(frame: Any) -> int | None:
+def evaluated_frames_from_tracking_table(frame: Any,
+                                         tracking_table_path: str | Path | None = None) -> int | None:
     """Derive direct-harness attempts from stable producer metadata, else ``None``."""
-    return evaluated_frames_from_metadata(
+    from_columns = evaluated_frames_from_metadata(
         _stable_column_value(frame, "decoded_frames"),
         _stable_column_value(frame, "source_fps"),
         _stable_column_value(frame, "max_frames"),
     )
+    if from_columns is not None:
+        return from_columns
+    return _sidecar_evaluated_frames(tracking_table_path) if tracking_table_path else None

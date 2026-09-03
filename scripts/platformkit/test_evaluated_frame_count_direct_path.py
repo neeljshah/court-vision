@@ -1,4 +1,5 @@
 """Regression tests for G204's pre-tracking direct-harness denominator."""
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -55,3 +56,23 @@ def test_direct_path_fails_closed_for_missing_or_unstable_source_metadata(tmp_pa
     assert report.attempted_frames is None
     assert report.coverage_attempted_frames_pct is None
     assert "attempted_frames unavailable" in report.failures
+
+
+def test_direct_path_consumes_a_self_validating_route_sidecar(tmp_path):
+    path = tmp_path / "tracking_data.csv"
+    _tracking_rows(50, decoded=39035, fps=60.0, cap=30000).drop(
+        columns=["decoded_frames", "source_fps", "max_frames"]
+    ).to_csv(path, index=False)
+    (tmp_path / "evaluated_frame_count.json").write_text(json.dumps({
+        "schema_version": "g206-v1", "decoded_frames": 39035,
+        "source_frame_count": 39035, "source_fps": 60.0, "stride": 6,
+        "max_frames": None, "start_frame": 0, "evaluated_frames": 6506,
+        "source_path": "/fixture/source.mp4", "source_size_bytes": 1,
+        "reason": None,
+        "formula": "ceil(decoded_frames / stride) when max_frames is null and start_frame is 0",
+    }))
+
+    report = evaluate_csv_path(str(path), "basketball")
+
+    assert report.attempted_frames == 6506
+    assert report.coverage_attempted_frames_pct == round(50 / 6506, 4)

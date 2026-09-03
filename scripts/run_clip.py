@@ -37,7 +37,9 @@ Outputs (written to data/)
 import argparse
 import csv
 import json
+import math
 import os
+import subprocess
 import sys
 import time
 import uuid
@@ -77,6 +79,148 @@ except ImportError:
 MIN_CLIP_SECONDS = 60  # clips under this are too short for meaningful analytics
 _PREFLIGHT_FRAMES = 10   # number of evenly-spaced frames to sample
 _PREFLIGHT_MIN_PERSONS = 3  # median person count below this -> reject video
+_EVALUATED_COUNT_SIDECAR = "evaluated_frame_count.json"
+
+
+def _positive_integer(value) -> int | None:
+    """Return a positive integral metadata value without rounding it."""
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(number) or number <= 0 or not number.is_integer():
+        return None
+    return int(number)
+
+
+def _positive_rate(value) -> float | None:
+    """Parse one positive numeric or ffprobe rational frame rate."""
+    try:
+        text = str(value)
+        numerator, separator, denominator = text.partition("/")
+        number = float(numerator) / float(denominator) if separator else float(text)
+    except (TypeError, ValueError, ZeroDivisionError):
+        return None
+    return number if math.isfinite(number) and number > 0 else None
+
+
+def _ffprobe_video_metadata(video_path: str) -> tuple[dict, str | None]:
+    """Read container metadata only; this never performs a decode count."""
+    command = [
+        "ffprobe", "-v", "error", "-select_streams", "v:0",
+        "-show_entries", "stream=nb_frames,r_frame_rate,duration",
+        "-of", "json", video_path,
+    ]
+    try:
+        completed = subprocess.run(command, check=True, capture_output=True, text=True)
+        streams = json.loads(completed.stdout).get("streams", [])
+    except (FileNotFoundError, subprocess.CalledProcessError, json.JSONDecodeError):
+        return {}, "ffprobe_metadata_unavailable"
+    if len(streams) != 1 or not isinstance(streams[0], dict):
+        return {}, "ffprobe_video_stream_ambiguous"
+    stream = streams[0]
+    return {
+        "nb_frames": _positive_integer(stream.get("nb_frames")),
+        "fps": _positive_rate(stream.get("r_frame_rate")),
+        "duration": _positive_rate(stream.get("duration")),
+    }, None
+
+
+def _validated_route_video_metadata(video_path: str) -> tuple[dict, str | None]:
+    """Return source facts only when route-visible cv2 metadata is cross-validated."""
+    metadata, metadata_reason = _ffprobe_video_metadata(video_path)
+    if metadata_reason is not None:
+        return {}, metadata_reason
+    fps = metadata["fps"]
+    duration = metadata["duration"]
+    if fps is None or duration is None:
+        return {}, "ffprobe_duration_or_rate_unavailable"
+    cap = cv2.VideoCapture(video_path)
+    cv_frames = _positive_integer(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    cv_fps = _positive_rate(cap.get(cv2.CAP_PROP_FPS))
+    cap.release()
+    if cv_fps is None:
+        return {}, "cv2_source_fps_unavailable"
+    if abs(cv_fps - fps) > 0.001:
+        return {}, "cv2_source_fps_disagrees_with_ffprobe"
+    expected = duration * fps
+    metadata_frames = metadata["nb_frames"]
+    if metadata_frames is not None and abs(metadata_frames - expected) <= 1.0:
+        if cv_frames != metadata_frames:
+            return {}, "cv2_frame_count_disagrees_with_validated_metadata"
+        return {"decoded_frames": metadata_frames, "source_fps": cv_fps,
+                "validation": "ffprobe_nb_frames_and_cv2_agree"}, None
+    if cv_frames is not None and abs(cv_frames - expected) <= 1.0:
+        return {"decoded_frames": cv_frames, "source_fps": cv_fps,
+                "validation": "cv2_count_validated_by_ffprobe_duration_rate"}, None
+    return {}, "frame_count_untrusted"
+
+
+def _route_stride(source_frames: int, source_fps: float) -> int:
+    """Mirror UnifiedPipeline's prefetch stride selection without touching it."""
+    from src.pipeline.unified_pipeline import _FRAME_STRIDE, _FRAME_STRIDE_THRESH
+    base = max(_FRAME_STRIDE, round(source_fps / 10.0)) if source_fps > 35 else _FRAME_STRIDE
+    return base if source_frames > _FRAME_STRIDE_THRESH else 1
+
+
+def _evaluated_count_sidecar(video_path: str, max_frames: int | None,
+                             start_frame: int) -> dict:
+    """Build auditable pre-tracking scheduling facts without inspecting detections."""
+    try:
+        source_size_bytes = os.path.getsize(video_path)
+    except OSError:
+        source_size_bytes = None
+    sidecar = {
+        "schema_version": "g206-v1",
+        "source_path": os.path.abspath(video_path),
+        "source_size_bytes": source_size_bytes,
+        "decoded_frames": None,
+        "source_frame_count": None,
+        "source_fps": None,
+        "stride": None,
+        "max_frames": max_frames,
+        "start_frame": start_frame,
+        "evaluated_frames": None,
+        "formula": "ceil(decoded_frames / stride) when max_frames is null and start_frame is 0",
+        "frame_count_validation": None,
+        "reason": None,
+    }
+    if source_size_bytes is None:
+        sidecar["reason"] = "source_size_unavailable"
+        return sidecar
+    if max_frames is not None:
+        sidecar["reason"] = "max_frames_is_detector_dependent_in_this_route"
+        return sidecar
+    if start_frame != 0:
+        sidecar["reason"] = "start_frame_requires_an_additional_formula_input"
+        return sidecar
+    metadata, reason = _validated_route_video_metadata(video_path)
+    if reason is not None:
+        sidecar["reason"] = reason
+        return sidecar
+    decoded_frames = metadata["decoded_frames"]
+    source_fps = metadata["source_fps"]
+    stride = _route_stride(decoded_frames, source_fps)
+    sidecar.update(
+        decoded_frames=decoded_frames,
+        source_frame_count=decoded_frames,
+        source_fps=source_fps,
+        stride=stride,
+        evaluated_frames=(decoded_frames + stride - 1) // stride,
+        frame_count_validation=metadata["validation"],
+    )
+    return sidecar
+
+
+def _write_evaluated_count_sidecar(video_path: str, data_dir: str,
+                                   max_frames: int | None, start_frame: int) -> str:
+    """Persist the route's pre-tracking count beside its existing output CSVs."""
+    path = os.path.join(data_dir, _EVALUATED_COUNT_SIDECAR)
+    with open(path, "w", encoding="utf-8") as handle:
+        json.dump(_evaluated_count_sidecar(video_path, max_frames, start_frame), handle,
+                  indent=2, sort_keys=True)
+        handle.write("\n")
+    return path
 
 
 def _ensure_decodable_video(video_path: str) -> str:
@@ -326,6 +470,10 @@ def main():
 
     data_dir = args.data_dir if args.data_dir else os.path.join(PROJECT_DIR, "data")
     os.makedirs(data_dir, exist_ok=True)
+    sidecar_path = _write_evaluated_count_sidecar(
+        args.video, data_dir, args.frames, args.start_frame
+    )
+    print(f" Evaluated-frame sidecar : {sidecar_path}")
     t0 = time.time()
 
     # -- Stage 1: Tracking -----------------------------------------------------
