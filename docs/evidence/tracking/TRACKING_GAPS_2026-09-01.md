@@ -549,3 +549,9 @@ LOW behind G25b.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G145 | all | Full 2026-09-02 G80-G143 NOT VERIFIED inventory: 56 memos read, 55 explicit sections, 214 bullet items. Classified 6 CHEAP / 165 EXPENSIVE / 43 PERMANENT; six read-only checks performed. G121's cause caveat is overturned on G126's audit sample as a G111 label error, while G107's 6-table snapshot is merely later superseded by an 8-table snapshot. No threshold, verdict, coordinate contract, published number, pod file, or process changed. | `g145_not_verified_sweep_2026-09-0X.md`; `g145_sweep/README.md` | ACCEPT (debt sweep complete; expensive queue and permanent exclusions named). |
+
+## G230 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G230 | tennis | Exhaustive local measurement of 22935 committed rows, with player denominators separated from ball rows. All three tables declare `court_feet`; out-of-bounds and real-frame-gap speed distributions are reported without a pass/fail interpretation. The available track-edge test does not place most beyond-29-ft/s pairs at observed boundaries in `tennis_01` or `tennis_02`; `tennis_ref01` is split. The CSV cannot test unobserved inter-ID gaps. Plausibility is necessary, never sufficient, and establishes no coordinate correctness. No gate or threshold was introduced. | `g230_physical_plausibility_audit_2026-09-04.md`; `g230_physical_plausibility_audit_2026-09-04.json` | ACCEPT (descriptive measurement only; no gate, threshold, production change, or pod action). |

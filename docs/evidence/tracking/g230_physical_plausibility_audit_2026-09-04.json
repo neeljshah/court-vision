@@ -1,0 +1,234 @@
+{
+  "method": {
+    "court_plane_ft": [
+      78.0,
+      36.0
+    ],
+    "references_are_descriptive_not_gates": [
+      29.0,
+      58.0
+    ],
+    "speed": "distance * declared source_fps / actual consecutive within-track frame gap"
+  },
+  "tables": {
+    "tennis_01": {
+      "class_rows": {
+        "ball": 2671,
+        "player": 16766
+      },
+      "eligible_player_rows": 16766,
+      "epoch_boundary_cooccurrence": {
+        "beyond_29ftps_at_track_edge": 14,
+        "beyond_29ftps_in_two_row_or_shorter_track": 0,
+        "definition": "A track boundary is its first or last emitted player row; a speed edge is the first or last consecutive within-track transition. CSV rows cannot measure the unobserved inter-ID reset interval.",
+        "speed_pairs_at_track_edge": 652,
+        "speed_pairs_in_two_row_or_shorter_track": 48
+      },
+      "input": {
+        "bytes": 2832341,
+        "coordinate_space_values": [
+          "court_feet"
+        ],
+        "path": "docs/evidence/tracking/g219b_inputs/tennis_01_tracking_data.csv",
+        "rows": 19437,
+        "sha256": "4e0def5dd2a53570d3aba4c5893f9761a8d695e62c16da5d0b60b12ab87c3929",
+        "source_fps": 59.94005994005994
+      },
+      "out_of_bounds": {
+        "beyond_21ft_length_or_12ft_width_runoff_rows": 1171,
+        "boundary_row_cooccurrence": {
+          "fraction": 0.05536899648574776,
+          "oob_rows_at_track_first_or_last_emission": 709
+        },
+        "distance_ft": {
+          "max": 33.98524547351301,
+          "median": 3.324713945388794,
+          "n": 12805,
+          "p90": 16.84928225295734,
+          "p99": 25.92806972948326
+        },
+        "fraction": 0.7637480615531432,
+        "rows": 12805
+      },
+      "player_ids_per_emitted_player_frame": {
+        "distribution": {
+          "2": 8383
+        },
+        "frames": 8383,
+        "more_than_two_frames": 0
+      },
+      "speed_ft_per_second": {
+        "actual_frame_gap_distribution": {
+          "max": 18.0,
+          "median": 6.0,
+          "n": 16230,
+          "p90": 6.0,
+          "p99": 12.0
+        },
+        "beyond_29ftps_reference": {
+          "count": 404,
+          "fraction": 0.024892174984596425
+        },
+        "beyond_58ftps_reference": {
+          "count": 124,
+          "fraction": 0.0076401725200246455
+        },
+        "distribution": {
+          "max": 1082.8244459322732,
+          "median": 4.311282873896151,
+          "n": 16230,
+          "p90": 15.955948078445253,
+          "p99": 44.00419079147609
+        },
+        "nonpositive_frame_gap_pairs_excluded": 0,
+        "speed_pairs": 16230
+      }
+    },
+    "tennis_02": {
+      "class_rows": {
+        "ball": 133,
+        "player": 1504
+      },
+      "eligible_player_rows": 1504,
+      "epoch_boundary_cooccurrence": {
+        "beyond_29ftps_at_track_edge": 9,
+        "beyond_29ftps_in_two_row_or_shorter_track": 1,
+        "definition": "A track boundary is its first or last emitted player row; a speed edge is the first or last consecutive within-track transition. CSV rows cannot measure the unobserved inter-ID reset interval.",
+        "speed_pairs_at_track_edge": 64,
+        "speed_pairs_in_two_row_or_shorter_track": 8
+      },
+      "input": {
+        "bytes": 255168,
+        "coordinate_space_values": [
+          "court_feet"
+        ],
+        "path": "docs/evidence/tracking/g219b_inputs/tennis_02_tracking_data.csv",
+        "rows": 1637,
+        "sha256": "a2f8147401f85044fa8d0a120d1bf316a497db959b845b520eaad5a58dc2d2cd",
+        "source_fps": 59.94005994005994
+      },
+      "out_of_bounds": {
+        "beyond_21ft_length_or_12ft_width_runoff_rows": 57,
+        "boundary_row_cooccurrence": {
+          "fraction": 0.27017543859649124,
+          "oob_rows_at_track_first_or_last_emission": 308
+        },
+        "distance_ft": {
+          "max": 29.62574448941576,
+          "median": 4.7228474617004395,
+          "n": 1140,
+          "p90": 12.586313629150407,
+          "p99": 24.211400934662734
+        },
+        "fraction": 0.7579787234042553,
+        "rows": 1140
+      },
+      "player_ids_per_emitted_player_frame": {
+        "distribution": {
+          "2": 752
+        },
+        "frames": 752,
+        "more_than_two_frames": 0
+      },
+      "speed_ft_per_second": {
+        "actual_frame_gap_distribution": {
+          "max": 12.0,
+          "median": 6.0,
+          "n": 1090,
+          "p90": 6.0,
+          "p99": 6.0
+        },
+        "beyond_29ftps_reference": {
+          "count": 50,
+          "fraction": 0.045871559633027525
+        },
+        "beyond_58ftps_reference": {
+          "count": 15,
+          "fraction": 0.013761467889908258
+        },
+        "distribution": {
+          "max": 402.2725986326869,
+          "median": 4.536451813982626,
+          "n": 1090,
+          "p90": 19.447473903131243,
+          "p99": 68.64927183260856
+        },
+        "nonpositive_frame_gap_pairs_excluded": 0,
+        "speed_pairs": 1090
+      }
+    },
+    "tennis_ref01": {
+      "class_rows": {
+        "ball": 431,
+        "player": 1430
+      },
+      "eligible_player_rows": 1430,
+      "epoch_boundary_cooccurrence": {
+        "beyond_29ftps_at_track_edge": 10,
+        "beyond_29ftps_in_two_row_or_shorter_track": 0,
+        "definition": "A track boundary is its first or last emitted player row; a speed edge is the first or last consecutive within-track transition. CSV rows cannot measure the unobserved inter-ID reset interval.",
+        "speed_pairs_at_track_edge": 466,
+        "speed_pairs_in_two_row_or_shorter_track": 114
+      },
+      "input": {
+        "bytes": 252850,
+        "coordinate_space_values": [
+          "court_feet"
+        ],
+        "path": "docs/evidence/tracking/g219_inputs/tennis_ref01_tracking_data.csv",
+        "rows": 1861,
+        "sha256": "77accc8cd83dee040601605a19bd7db592a703b2dd2bdf066fb0f2a8245f567b",
+        "source_fps": 29.97
+      },
+      "out_of_bounds": {
+        "beyond_21ft_length_or_12ft_width_runoff_rows": 0,
+        "boundary_row_cooccurrence": {
+          "fraction": 0.673469387755102,
+          "oob_rows_at_track_first_or_last_emission": 132
+        },
+        "distance_ft": {
+          "max": 12.627556832799275,
+          "median": 1.6607950925827026,
+          "n": 196,
+          "p90": 7.331178379002207,
+          "p99": 9.1664852142334
+        },
+        "fraction": 0.13706293706293707,
+        "rows": 196
+      },
+      "player_ids_per_emitted_player_frame": {
+        "distribution": {
+          "2": 715
+        },
+        "frames": 715,
+        "more_than_two_frames": 0
+      },
+      "speed_ft_per_second": {
+        "actual_frame_gap_distribution": {
+          "max": 9.0,
+          "median": 3.0,
+          "n": 844,
+          "p90": 9.0,
+          "p99": 9.0
+        },
+        "beyond_29ftps_reference": {
+          "count": 20,
+          "fraction": 0.023696682464454975
+        },
+        "beyond_58ftps_reference": {
+          "count": 4,
+          "fraction": 0.004739336492890996
+        },
+        "distribution": {
+          "max": 488.7666082658616,
+          "median": 4.627441931065803,
+          "n": 844,
+          "p90": 14.963290264660436,
+          "p99": 38.73946052022364
+        },
+        "nonpositive_frame_gap_pairs_excluded": 0,
+        "speed_pairs": 844
+      }
+    }
+  }
+}
