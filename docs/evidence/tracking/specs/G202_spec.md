@@ -82,6 +82,39 @@ daemon's own basketball command is different -- `run_clip.py --video ... --game-
 `wnba_01`, so a configuration that DOES emit rows exists. **Finding which configurations emit rows and
 which emit none is itself a first-class result of this row.**
 
+**FOURTH AMENDMENT 2026-09-04 -- THE ORCHESTRATOR HAS READ THE CODE AND CAN HAND YOU THE EXACT LINE TO
+INSTRUMENT. This is the single most useful thing in this spec; start here.**
+
+**`src/tracking/advanced_tracker.py:1270` is `if len(boxes_xyxy) == 0:`.** When YOLO returns ZERO boxes
+that branch calls `_age_all`, runs an optical-flow gap-fill its own comment describes as covering
+*'fully-empty frames (YOLO blackout)'* because *'Broadcast footage has frequent YOLO misses'*, and then
+**RETURNS EARLY at `:1320` (`return self._render(frame, map_2d, timestamp)`), bypassing cropping,
+embedding, assignment and row emission entirely.** **A run where every sampled frame took that branch
+would produce G211b's signature exactly: collector entered 400 times, `crops_step3` / `osnet` /
+`assign_state` / `render` never reached, zero rows.**
+
+**AND THERE IS AN APPARENT CONTRADICTION THERE THAT IS PROBABLY THE HEART OF THIS ROW.**
+`_is_gameplay` (`unified_pipeline.py:992`) gates every frame at `:1696` and its docstring says it returns
+True *'when YOLO detects enough players'*. **So a frame reaching `get_players_pos` should already have
+had players detected -- yet the blackout branch requires ZERO boxes.** The reconciliation the code
+offers is the **CACHE**: `_is_gameplay` returns True WITHOUT running YOLO whenever
+`frame_idx < self._gameplay_cache_until`, trusting a prior confirmation for `_GAMEPLAY_CACHE_FRAMES`
+(about 3 s), so cached-admitted frames can reach `get_players_pos` and find nothing there.
+
+**INSTRUMENT EXACTLY THIS, and it is cheap:**
+  - **`len(boxes_xyxy)` per call** -- the raw box count at `:1270`, which is the true top of your funnel.
+  - **whether each frame passed `_is_gameplay` FRESHLY or on `_gameplay_cache_until`**, and likewise for
+    `_no_gameplay_until`.
+  - **how many calls take the `:1270` blackout early-return** versus proceeding to `crops_step3`.
+**If most frames are cache-admitted and then find zero boxes, the funnel's real leak is the gameplay
+cache, not the selector -- and that would be a different and more important finding than the survivor
+count this row was written to census.**
+
+**THIS IS A STRUCTURAL MATCH, NOT A DEMONSTRATED CAUSE. Do not inherit it as fact.** It was read from
+source, and nobody has yet logged a box count on a real run. **I have withdrawn two cause claims tonight
+already (G220-CAUSE-RETRACTION, G211b-CAUSE-CORRECTION) for exactly the mistake of naming a cause
+without measuring it. Measure it.**
+
 PART 1 -- THE CENSUS (this is the deliverable; do this first and completely):
   Instrument in your own process to record, per frame, over a bounded run:
     a. raw detector box count;
