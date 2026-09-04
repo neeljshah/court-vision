@@ -33,6 +33,15 @@ WHERE THIS ROW RUNS (step -1, MANDATORY -- state it PER STEP, not per row):
   is NOT a disk failure -- it means move that step to pod_run, not STOP.
   HOLD RULE: count DISTINCT /workspace/wt/a* worktree directories, never python
   PIDs -- one lane routinely shows two PIDs sharing one cwd (G274).
+  DISK GUARD, CORRECTED 2026-09-04: `du -sm /workspace` is a NETWORK filesystem
+  walk (MooseFS) and under load it takes minutes or returns NOTHING. An empty
+  result means UNKNOWN, NEVER 0 -- a monitor that parsed empty as 0 raised a
+  false "corpus deleted" alarm, and a lane died parsing empty du output and lost
+  a completed 3,801-frame pass. So: `v=$(timeout 60 du -sm /workspace | cut -f1);
+  [ -z "$v" ] && v=UNKNOWN`, report v verbatim, and NEVER stop on UNKNOWN --
+  stop only on a failed `dd conv=fsync` probe, which is cheap and decisive.
+  `df` is useless here: it reports the 929T cluster, not the 50 GB quota.
+  Rows that write only summaries need no disk guard at all.
 PREMISE (step 0): <the one measurement that proves the gap is real today>. If
 falsified, STOP, write the memo, commit, report FALSIFIED -- a valid result
 that earns its own register row.
