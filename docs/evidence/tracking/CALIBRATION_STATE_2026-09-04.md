@@ -976,6 +976,74 @@ population the chain was measured on and the population it is quoted about.**
 
 ---
 
+---
+
+## 7.23 IDENTITY IS THE HEALTHY AXIS: purity 0.935 at one second, and most swaps revert
+
+G281 asked the question every memo in this chain had deferred: **when a track id
+persists for one second, is it still on the same person?** It is the first
+positive identity evidence the programme has produced.
+
+**Two sealed blind passes.** Pass 1 measured person-ness with all 160+ crops
+pooled into one randomised order so the **pairing was hidden**; Pass 2 judged
+identity on the subset where both endpoints were people, necessarily showing the
+two crops together -- which is precisely why person-ness had to be measured
+first with the pairing concealed. Both orders were committed before un-blinding.
+
+**The funnel, every denominator named:**
+
+`20,551 pre-on-court pairs -> 15,207 eligible -> 80 sampled from 59 ids ->
+62 both-endpoints-person -> 46 judgeable -> 43 SAME / 3 DIFFERENT`
+
+**Purity = 43 / 46 = 0.935, 95 pct Wilson [0.825, 0.978]**, with 16 CANNOT JUDGE
+held separate and the rate never quoted against the 80 sampled pairs.
+
+### Combined with G272b, this bounds transient swapping
+
+Neither row could establish this alone:
+
+| direction | quantity | value |
+|---|---|---:|
+| from G281 | per-frame **NET** identity change, `1 - 0.9348^(1/30)` | **0.225 pct** |
+| from G272b x G279 | steps **involving** a swap, `0.1875 x 0.1054` | **1.98 pct** |
+| ratio | swap events per net change | **8.8x** (3.1x at the Wilson lower purity bound) |
+
+**Swap events outnumber net identity changes by at least about 3x and probably
+nearer 9x, so the great majority of swaps REVERT -- the track leaves a person and
+returns within the second.** G281's spec named this in advance as invisible to an
+endpoint-only design; the two rows together now bound it.
+
+**It is a lower bound, not an estimate.** The arithmetic assumes swaps occur only
+in above-40-ft/s jump steps, the only population G272b sampled. Swaps elsewhere
+make the ratio **larger**, so the conclusion strengthens.
+
+### This resolves the apparent tension in sections 7.16 to 7.18
+
+A 0.935 purity beside a 10.5 pct physically-impossible-step rate is **not** a
+contradiction. G272b's split was **50 pct not-a-person, 29 pct footpoint
+localisation, 19 pct identity swap** -- identity was always the smallest of the
+three defect modes. **G281 confirms from an independent direction that identity
+is the comparatively healthy axis, and that the binding defect remains detection
+precision and footpoint localisation** (G273: only 0.597 of retained detections
+are a player on the court of play).
+
+### What 0.935 may not be used for
+
+- **Endpoint-only judgement bounds purity from ABOVE.** A track that drifts onto
+  a third person and back inside the second is scored SAME.
+- **One second is ONE horizon.** Purity at 3 s or 10 s is a different and
+  probably worse number that nothing here measures.
+- **Not clip-wide.** Per section 7.22 the span is measurably friendlier than the
+  clip (0.836 against 0.656, p = 0.0078).
+- **Fragmentation is not covered, and cannot be measured on this artifact.** Only
+  **6** termination-to-restart candidate pairs exist at the loosest setting
+  (45 frames, 600 px) and none tighter, because ids here are long-lived (98 ids,
+  median 124 rows) and **drift rather than restart** -- which is a purity failure,
+  the thing G281 measures, not a fragmentation one.
+- One clip, one shot, one arena, one labeller, one non-deterministic draw.
+
+---
+
 ## NOT VERIFIED
 
 - Whether a trained basketball calibration model would work; nothing was trained
