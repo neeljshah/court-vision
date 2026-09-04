@@ -1,0 +1,668 @@
+{
+  "spec": "docs/evidence/tracking/specs/S228_spec.md",
+  "attempt2_prereg_seal": "83115c8892c0d7a4e0fb511aea16b8670ccd8dab8e059c2ebf19003ffb249617",
+  "files_parsed": 77,
+  "files_discovered": 77,
+  "unparsed_files": [],
+  "games": 77,
+  "distinct_players": 357,
+  "distinct_stats": 3,
+  "priced_player_stat_rows": 24247,
+  "settled_priced_rows": 21052,
+  "settled_game_clusters": 65,
+  "tidy_schema": [
+    "game",
+    "commence_time",
+    "home_team",
+    "away_team",
+    "player",
+    "stat",
+    "line",
+    "over_price",
+    "under_price",
+    "book",
+    "capture_ts",
+    "source_file"
+  ],
+  "source_audit": [
+    {
+      "source_file": "0022500410.json",
+      "parsed": true,
+      "row_count": 339,
+      "error": null
+    },
+    {
+      "source_file": "0022500411.json",
+      "parsed": true,
+      "row_count": 416,
+      "error": null
+    },
+    {
+      "source_file": "0022500412.json",
+      "parsed": true,
+      "row_count": 314,
+      "error": null
+    },
+    {
+      "source_file": "0022500413.json",
+      "parsed": true,
+      "row_count": 331,
+      "error": null
+    },
+    {
+      "source_file": "0022500414.json",
+      "parsed": true,
+      "row_count": 368,
+      "error": null
+    },
+    {
+      "source_file": "0022500415.json",
+      "parsed": true,
+      "row_count": 330,
+      "error": null
+    },
+    {
+      "source_file": "0022500416.json",
+      "parsed": true,
+      "row_count": 345,
+      "error": null
+    },
+    {
+      "source_file": "0022500417.json",
+      "parsed": true,
+      "row_count": 388,
+      "error": null
+    },
+    {
+      "source_file": "0022500418.json",
+      "parsed": true,
+      "row_count": 342,
+      "error": null
+    },
+    {
+      "source_file": "0022500420.json",
+      "parsed": true,
+      "row_count": 330,
+      "error": null
+    },
+    {
+      "source_file": "0022500421.json",
+      "parsed": true,
+      "row_count": 367,
+      "error": null
+    },
+    {
+      "source_file": "0022500422.json",
+      "parsed": true,
+      "row_count": 238,
+      "error": null
+    },
+    {
+      "source_file": "0022500584.json",
+      "parsed": true,
+      "row_count": 379,
+      "error": null
+    },
+    {
+      "source_file": "0022500585.json",
+      "parsed": true,
+      "row_count": 387,
+      "error": null
+    },
+    {
+      "source_file": "0022500671.json",
+      "parsed": true,
+      "row_count": 360,
+      "error": null
+    },
+    {
+      "source_file": "0022500672.json",
+      "parsed": true,
+      "row_count": 391,
+      "error": null
+    },
+    {
+      "source_file": "0022500673.json",
+      "parsed": true,
+      "row_count": 368,
+      "error": null
+    },
+    {
+      "source_file": "0022500674.json",
+      "parsed": true,
+      "row_count": 329,
+      "error": null
+    },
+    {
+      "source_file": "0022500675.json",
+      "parsed": true,
+      "row_count": 359,
+      "error": null
+    },
+    {
+      "source_file": "0022500676.json",
+      "parsed": true,
+      "row_count": 386,
+      "error": null
+    },
+    {
+      "source_file": "0022500677.json",
+      "parsed": true,
+      "row_count": 308,
+      "error": null
+    },
+    {
+      "source_file": "0022500678.json",
+      "parsed": true,
+      "row_count": 375,
+      "error": null
+    },
+    {
+      "source_file": "0022500679.json",
+      "parsed": true,
+      "row_count": 386,
+      "error": null
+    },
+    {
+      "source_file": "0022500771.json",
+      "parsed": true,
+      "row_count": 303,
+      "error": null
+    },
+    {
+      "source_file": "0022500772.json",
+      "parsed": true,
+      "row_count": 323,
+      "error": null
+    },
+    {
+      "source_file": "0022500773.json",
+      "parsed": true,
+      "row_count": 394,
+      "error": null
+    },
+    {
+      "source_file": "0022500774.json",
+      "parsed": true,
+      "row_count": 383,
+      "error": null
+    },
+    {
+      "source_file": "0022500831.json",
+      "parsed": true,
+      "row_count": 352,
+      "error": null
+    },
+    {
+      "source_file": "0022500832.json",
+      "parsed": true,
+      "row_count": 345,
+      "error": null
+    },
+    {
+      "source_file": "0022500833.json",
+      "parsed": true,
+      "row_count": 388,
+      "error": null
+    },
+    {
+      "source_file": "0022500834.json",
+      "parsed": true,
+      "row_count": 389,
+      "error": null
+    },
+    {
+      "source_file": "0022500835.json",
+      "parsed": true,
+      "row_count": 438,
+      "error": null
+    },
+    {
+      "source_file": "0022500836.json",
+      "parsed": true,
+      "row_count": 402,
+      "error": null
+    },
+    {
+      "source_file": "0022500837.json",
+      "parsed": true,
+      "row_count": 422,
+      "error": null
+    },
+    {
+      "source_file": "0022500838.json",
+      "parsed": true,
+      "row_count": 426,
+      "error": null
+    },
+    {
+      "source_file": "0022500839.json",
+      "parsed": true,
+      "row_count": 376,
+      "error": null
+    },
+    {
+      "source_file": "0022500840.json",
+      "parsed": true,
+      "row_count": 375,
+      "error": null
+    },
+    {
+      "source_file": "0022500841.json",
+      "parsed": true,
+      "row_count": 393,
+      "error": null
+    },
+    {
+      "source_file": "0022500922.json",
+      "parsed": true,
+      "row_count": 353,
+      "error": null
+    },
+    {
+      "source_file": "0022500923.json",
+      "parsed": true,
+      "row_count": 388,
+      "error": null
+    },
+    {
+      "source_file": "0022500924.json",
+      "parsed": true,
+      "row_count": 420,
+      "error": null
+    },
+    {
+      "source_file": "0022500925.json",
+      "parsed": true,
+      "row_count": 324,
+      "error": null
+    },
+    {
+      "source_file": "0022500926.json",
+      "parsed": true,
+      "row_count": 293,
+      "error": null
+    },
+    {
+      "source_file": "0022500927.json",
+      "parsed": true,
+      "row_count": 416,
+      "error": null
+    },
+    {
+      "source_file": "0022500928.json",
+      "parsed": true,
+      "row_count": 373,
+      "error": null
+    },
+    {
+      "source_file": "0022500929.json",
+      "parsed": true,
+      "row_count": 378,
+      "error": null
+    },
+    {
+      "source_file": "0022500930.json",
+      "parsed": true,
+      "row_count": 297,
+      "error": null
+    },
+    {
+      "source_file": "0022501003.json",
+      "parsed": true,
+      "row_count": 279,
+      "error": null
+    },
+    {
+      "source_file": "0022501016.json",
+      "parsed": true,
+      "row_count": 329,
+      "error": null
+    },
+    {
+      "source_file": "0022501017.json",
+      "parsed": true,
+      "row_count": 400,
+      "error": null
+    },
+    {
+      "source_file": "0022501018.json",
+      "parsed": true,
+      "row_count": 388,
+      "error": null
+    },
+    {
+      "source_file": "0022501019.json",
+      "parsed": true,
+      "row_count": 342,
+      "error": null
+    },
+    {
+      "source_file": "0022501020.json",
+      "parsed": true,
+      "row_count": 397,
+      "error": null
+    },
+    {
+      "source_file": "0022501021.json",
+      "parsed": true,
+      "row_count": 417,
+      "error": null
+    },
+    {
+      "source_file": "0022501105.json",
+      "parsed": true,
+      "row_count": 332,
+      "error": null
+    },
+    {
+      "source_file": "0022501106.json",
+      "parsed": true,
+      "row_count": 401,
+      "error": null
+    },
+    {
+      "source_file": "0022501107.json",
+      "parsed": true,
+      "row_count": 374,
+      "error": null
+    },
+    {
+      "source_file": "0022501108.json",
+      "parsed": true,
+      "row_count": 220,
+      "error": null
+    },
+    {
+      "source_file": "0022501109.json",
+      "parsed": true,
+      "row_count": 253,
+      "error": null
+    },
+    {
+      "source_file": "0022501110.json",
+      "parsed": true,
+      "row_count": 291,
+      "error": null
+    },
+    {
+      "source_file": "0022501112.json",
+      "parsed": true,
+      "row_count": 356,
+      "error": null
+    },
+    {
+      "source_file": "0022501113.json",
+      "parsed": true,
+      "row_count": 317,
+      "error": null
+    },
+    {
+      "source_file": "0022501172.json",
+      "parsed": true,
+      "row_count": 24,
+      "error": null
+    },
+    {
+      "source_file": "0022501173.json",
+      "parsed": true,
+      "row_count": 256,
+      "error": null
+    },
+    {
+      "source_file": "0022501174.json",
+      "parsed": true,
+      "row_count": 27,
+      "error": null
+    },
+    {
+      "source_file": "0022501175.json",
+      "parsed": true,
+      "row_count": 158,
+      "error": null
+    },
+    {
+      "source_file": "0022501176.json",
+      "parsed": true,
+      "row_count": 279,
+      "error": null
+    },
+    {
+      "source_file": "0022501177.json",
+      "parsed": true,
+      "row_count": 184,
+      "error": null
+    },
+    {
+      "source_file": "0022501178.json",
+      "parsed": true,
+      "row_count": 162,
+      "error": null
+    },
+    {
+      "source_file": "0022501179.json",
+      "parsed": true,
+      "row_count": 17,
+      "error": null
+    },
+    {
+      "source_file": "0022501180.json",
+      "parsed": true,
+      "row_count": 43,
+      "error": null
+    },
+    {
+      "source_file": "0022501182.json",
+      "parsed": true,
+      "row_count": 10,
+      "error": null
+    },
+    {
+      "source_file": "0022501183.json",
+      "parsed": true,
+      "row_count": 214,
+      "error": null
+    },
+    {
+      "source_file": "0022501184.json",
+      "parsed": true,
+      "row_count": 34,
+      "error": null
+    },
+    {
+      "source_file": "0022501185.json",
+      "parsed": true,
+      "row_count": 39,
+      "error": null
+    },
+    {
+      "source_file": "0022501203.json",
+      "parsed": true,
+      "row_count": 315,
+      "error": null
+    },
+    {
+      "source_file": "0022501204.json",
+      "parsed": true,
+      "row_count": 302,
+      "error": null
+    }
+  ],
+  "verdict": "SCORABLE",
+  "player_stat_scores": {
+    "crps": {
+      "model": 2.436377,
+      "market": 2.820141,
+      "model_cluster_ci": [
+        2.340853,
+        2.553932
+      ],
+      "market_cluster_ci": [
+        2.708352,
+        2.963321
+      ]
+    },
+    "pinball": {
+      "model": 1.736526,
+      "market": 1.524313,
+      "model_cluster_ci": [
+        1.667927,
+        1.819625
+      ],
+      "market_cluster_ci": [
+        1.46433,
+        1.593884
+      ]
+    },
+    "brier": {
+      "model": 0.277149,
+      "market": 0.249064,
+      "model_cluster_ci": [
+        0.269525,
+        0.283912
+      ],
+      "market_cluster_ci": [
+        0.247501,
+        0.250643
+      ],
+      "model_reliability_bins": [
+        {
+          "bin": "0.0-0.1",
+          "n": 179,
+          "mean_probability": 0.069161,
+          "observed_rate": 0.541899
+        },
+        {
+          "bin": "0.1-0.2",
+          "n": 886,
+          "mean_probability": 0.160387,
+          "observed_rate": 0.493228
+        },
+        {
+          "bin": "0.2-0.3",
+          "n": 1994,
+          "mean_probability": 0.255966,
+          "observed_rate": 0.462387
+        },
+        {
+          "bin": "0.3-0.4",
+          "n": 2578,
+          "mean_probability": 0.350924,
+          "observed_rate": 0.491078
+        },
+        {
+          "bin": "0.4-0.5",
+          "n": 3156,
+          "mean_probability": 0.450813,
+          "observed_rate": 0.448035
+        },
+        {
+          "bin": "0.5-0.6",
+          "n": 2796,
+          "mean_probability": 0.547051,
+          "observed_rate": 0.418097
+        },
+        {
+          "bin": "0.6-0.7",
+          "n": 1727,
+          "mean_probability": 0.645276,
+          "observed_rate": 0.510712
+        },
+        {
+          "bin": "0.7-0.8",
+          "n": 743,
+          "mean_probability": 0.740081,
+          "observed_rate": 0.558546
+        },
+        {
+          "bin": "0.8-0.9",
+          "n": 161,
+          "mean_probability": 0.830729,
+          "observed_rate": 0.385093
+        },
+        {
+          "bin": "0.9-1.0",
+          "n": 11,
+          "mean_probability": 0.921896,
+          "observed_rate": 0.818182
+        }
+      ],
+      "market_reliability_bins": [
+        {
+          "bin": "0.0-0.1",
+          "n": 0,
+          "mean_probability": null,
+          "observed_rate": null
+        },
+        {
+          "bin": "0.1-0.2",
+          "n": 0,
+          "mean_probability": null,
+          "observed_rate": null
+        },
+        {
+          "bin": "0.2-0.3",
+          "n": 1,
+          "mean_probability": 0.27027,
+          "observed_rate": 0.0
+        },
+        {
+          "bin": "0.3-0.4",
+          "n": 240,
+          "mean_probability": 0.383355,
+          "observed_rate": 0.4125
+        },
+        {
+          "bin": "0.4-0.5",
+          "n": 7017,
+          "mean_probability": 0.463506,
+          "observed_rate": 0.448767
+        },
+        {
+          "bin": "0.5-0.6",
+          "n": 6845,
+          "mean_probability": 0.529084,
+          "observed_rate": 0.490723
+        },
+        {
+          "bin": "0.6-0.7",
+          "n": 128,
+          "mean_probability": 0.615271,
+          "observed_rate": 0.515625
+        },
+        {
+          "bin": "0.7-0.8",
+          "n": 0,
+          "mean_probability": null,
+          "observed_rate": null
+        },
+        {
+          "bin": "0.8-0.9",
+          "n": 0,
+          "mean_probability": null,
+          "observed_rate": null
+        },
+        {
+          "bin": "0.9-1.0",
+          "n": 0,
+          "mean_probability": null,
+          "observed_rate": null
+        }
+      ]
+    }
+  },
+  "player_stat_scored_rows": 14231,
+  "tail_scores": {
+    "model_log_loss": 0.337126,
+    "base_log_loss": 0.464262,
+    "model_cluster_ci": [
+      0.270485,
+      0.405764
+    ],
+    "base_cluster_ci": [
+      0.386814,
+      0.553809
+    ]
+  },
+  "tail_scored_rows": 893
+}
