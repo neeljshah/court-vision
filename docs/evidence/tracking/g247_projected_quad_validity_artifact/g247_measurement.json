@@ -1,0 +1,5372 @@
+{
+  "video": {
+    "path": "/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4",
+    "bytes": 2931985407,
+    "declared_frames": 174430,
+    "resolution": [
+      1920,
+      1080
+    ]
+  },
+  "seed": {
+    "frame": 19599,
+    "scale": 1.0,
+    "labels_px": [
+      [
+        350.0,
+        400.0
+      ],
+      [
+        835.0,
+        420.0
+      ],
+      [
+        390.0,
+        696.0
+      ],
+      [
+        990.0,
+        730.0
+      ]
+    ],
+    "court_points_ft": [
+      [
+        17.0,
+        0.0
+      ],
+      [
+        33.0,
+        0.0
+      ],
+      [
+        17.0,
+        19.0
+      ],
+      [
+        33.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        0.050071754999888064,
+        0.01225404716365722,
+        2.3351407383547964
+      ],
+      [
+        -0.0047586809476217904,
+        0.1153980129798286,
+        -44.493666860263815
+      ],
+      [
+        3.054485397744623e-05,
+        0.0011147252900901028,
+        1.0
+      ]
+    ],
+    "projected_court_corners_px_role_order": [
+      [
+        350.0,
+        400.0
+      ],
+      [
+        835.0,
+        420.0
+      ],
+      [
+        390.0,
+        696.0
+      ],
+      [
+        990.0,
+        730.0
+      ]
+    ],
+    "published_matrix_max_abs_difference": 0.0,
+    "exact_decode_reference_mad": 1.0870476466049384,
+    "sequential_seed_mad": 0.0
+  },
+  "sampling": {
+    "method": "one sequential cv2.VideoCapture decode pass from frame 0 through 174429; sample set is stride-2000 frames 0..174000 plus explicit seed",
+    "sample_frames": [
+      0,
+      2000,
+      4000,
+      6000,
+      8000,
+      10000,
+      12000,
+      14000,
+      16000,
+      18000,
+      19599,
+      20000,
+      22000,
+      24000,
+      26000,
+      28000,
+      30000,
+      32000,
+      34000,
+      36000,
+      38000,
+      40000,
+      42000,
+      44000,
+      46000,
+      48000,
+      50000,
+      52000,
+      54000,
+      56000,
+      58000,
+      60000,
+      62000,
+      64000,
+      66000,
+      68000,
+      70000,
+      72000,
+      74000,
+      76000,
+      78000,
+      80000,
+      82000,
+      84000,
+      86000,
+      88000,
+      90000,
+      92000,
+      94000,
+      96000,
+      98000,
+      100000,
+      102000,
+      104000,
+      106000,
+      108000,
+      110000,
+      112000,
+      114000,
+      116000,
+      118000,
+      120000,
+      122000,
+      124000,
+      126000,
+      128000,
+      130000,
+      132000,
+      134000,
+      136000,
+      138000,
+      140000,
+      142000,
+      144000,
+      146000,
+      148000,
+      150000,
+      152000,
+      154000,
+      156000,
+      158000,
+      160000,
+      162000,
+      164000,
+      166000,
+      168000,
+      170000,
+      172000,
+      174000
+    ],
+    "denominator": 89,
+    "index_mapping_check": {
+      "sampled_frame": 100000,
+      "method": "independent ffmpeg select=eq(n,N) decode with no input-side seek",
+      "mad_bgr": 0.0
+    }
+  },
+  "g222_acceptance": "unchanged estimate_motion: ORB nfeatures=2000 fastThreshold=12; BF Hamming ratio < 0.75; at least 4 matches; cv2.findHomography RANSAC 3.0; finite matrix",
+  "control": {
+    "expected_source": "committed G242 per_sample_table.csv",
+    "exact_match_and_inlier_counts": true,
+    "mismatch_count": 0,
+    "mismatches": []
+  },
+  "records": [
+    {
+      "source_frame": 0,
+      "signed_distance_frames": -19599,
+      "direct_seed": {
+        "matches": 147,
+        "inliers": 113,
+        "inlier_ratio": 0.7687074829931972,
+        "rms_reprojection_px": 0.3186911940574646
+      },
+      "homography_image_to_court": [
+        [
+          0.06055153579233912,
+          0.018057220996005405,
+          -1.3636909474956573
+        ],
+        [
+          -8.424781186681299e-05,
+          0.1477029455810226,
+          -65.84020780784283
+        ],
+        [
+          0.00020469972968426307,
+          0.0016881909455865496,
+          0.7523181790786941
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          331.14361572265625,
+          445.9498596191406
+        ],
+        [
+          799.1536865234375,
+          446.216796875
+        ],
+        [
+          379.6506042480469,
+          706.0858154296875
+        ],
+        [
+          995.8621826171875,
+          727.2620239257812
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 145375.54080107855,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.8987946508459522,
+        "bbox_aspect_ratio": 2.362921520058989,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 20407.06725911875
+      }
+    },
+    {
+      "source_frame": 2000,
+      "signed_distance_frames": -17599,
+      "direct_seed": {
+        "matches": 376,
+        "inliers": 297,
+        "inlier_ratio": 0.7898936170212766,
+        "rms_reprojection_px": 0.5251101851463318
+      },
+      "homography_image_to_court": [
+        [
+          0.05087662703581612,
+          0.01299422859656839,
+          1.8471471205458587
+        ],
+        [
+          -0.004783258388708315,
+          0.11839590906268817,
+          -46.312438336417564
+        ],
+        [
+          3.264159274669998e-05,
+          0.0011683087804349097,
+          0.9816047635999947
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          350.2153625488281,
+          405.31475830078125
+        ],
+        [
+          831.3848876953125,
+          424.7542724609375
+        ],
+        [
+          390.0484924316406,
+          697.213134765625
+        ],
+        [
+          988.4790649414062,
+          730.8269653320312
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 158780.4931348767,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9816717248439006,
+        "bbox_aspect_ratio": 1.9607980548984547,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 13272.509043863398
+      }
+    },
+    {
+      "source_frame": 4000,
+      "signed_distance_frames": -15599,
+      "direct_seed": {
+        "matches": 267,
+        "inliers": 234,
+        "inlier_ratio": 0.8764044943820225,
+        "rms_reprojection_px": 0.5214274525642395
+      },
+      "homography_image_to_court": [
+        [
+          0.051505777405175014,
+          0.013615811658453547,
+          1.376610926344976
+        ],
+        [
+          -0.0047271725577247,
+          0.12044334704049056,
+          -47.58233924625621
+        ],
+        [
+          3.639490269633972e-05,
+          0.0012049256509085518,
+          0.968120735727243
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          351.5519104003906,
+          408.857666015625
+        ],
+        [
+          829.9942016601562,
+          427.6356201171875
+        ],
+        [
+          390.5803527832031,
+          698.0341186523438
+        ],
+        [
+          987.7807006835938,
+          731.207275390625
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 156840.09607843403,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9696750816311727,
+        "bbox_aspect_ratio": 1.9737228517719625,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 13658.77333079627
+      }
+    },
+    {
+      "source_frame": 6000,
+      "signed_distance_frames": -13599,
+      "direct_seed": {
+        "matches": 273,
+        "inliers": 235,
+        "inlier_ratio": 0.8608058608058609,
+        "rms_reprojection_px": 0.5860236287117004
+      },
+      "homography_image_to_court": [
+        [
+          0.05032747479559347,
+          0.012510559075439213,
+          2.2067587000119273
+        ],
+        [
+          -0.004841927939264067,
+          0.11688261627865307,
+          -45.442517291869045
+        ],
+        [
+          2.8639728589924786e-05,
+          0.0011400119657783358,
+          0.9907053889876113
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.2222595214844,
+          403.2543640136719
+        ],
+        [
+          832.5838623046875,
+          423.27789306640625
+        ],
+        [
+          389.7024841308594,
+          696.9462890625
+        ],
+        [
+          988.973876953125,
+          730.8429565429688
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 160081.34315591166,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9897143228904242,
+        "bbox_aspect_ratio": 1.9529117680568393,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 13033.981694327244
+      }
+    },
+    {
+      "source_frame": 8000,
+      "signed_distance_frames": -11599,
+      "direct_seed": {
+        "matches": 566,
+        "inliers": 528,
+        "inlier_ratio": 0.9328621908127208,
+        "rms_reprojection_px": 0.5939241051673889
+      },
+      "homography_image_to_court": [
+        [
+          0.05041210709976465,
+          0.012775571946564774,
+          1.9197783175938463
+        ],
+        [
+          -0.004817845033263393,
+          0.11674637886676163,
+          -45.3282455011699
+        ],
+        [
+          3.0359677966729254e-05,
+          0.0011384189750432358,
+          0.9913698738771081
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          352.3926086425781,
+          402.804931640625
+        ],
+        [
+          835.373779296875,
+          422.7364196777344
+        ],
+        [
+          391.144775390625,
+          696.7711181640625
+        ],
+        [
+          989.9143676757812,
+          730.7312622070312
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 160188.73509864183,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9903782812367729,
+        "bbox_aspect_ratio": 1.9441005482300016,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12948.422241846058
+      }
+    },
+    {
+      "source_frame": 10000,
+      "signed_distance_frames": -9599,
+      "direct_seed": {
+        "matches": 510,
+        "inliers": 473,
+        "inlier_ratio": 0.9274509803921569,
+        "rms_reprojection_px": 0.5974953770637512
+      },
+      "homography_image_to_court": [
+        [
+          0.05040633543936626,
+          0.012833827710834338,
+          1.8524814831579213
+        ],
+        [
+          -0.004795218745368719,
+          0.1165106080028138,
+          -45.142910730906316
+        ],
+        [
+          3.082658279735533e-05,
+          0.0011355522574311267,
+          0.9930461624867111
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          353.4420166015625,
+          402.00408935546875
+        ],
+        [
+          836.4812622070312,
+          421.884521484375
+        ],
+        [
+          391.6373596191406,
+          696.456298828125
+        ],
+        [
+          990.3914794921875,
+          730.3936767578125
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 160485.22586665582,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.992211356559126,
+        "bbox_aspect_ratio": 1.9396152841784016,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12863.91006436686
+      }
+    },
+    {
+      "source_frame": 12000,
+      "signed_distance_frames": -7599,
+      "direct_seed": {
+        "matches": 337,
+        "inliers": 274,
+        "inlier_ratio": 0.8130563798219584,
+        "rms_reprojection_px": 0.615990161895752
+      },
+      "homography_image_to_court": [
+        [
+          0.05105615044413948,
+          0.013314174788522173,
+          1.5435962454958356
+        ],
+        [
+          -0.004691014156396757,
+          0.11920262586520661,
+          -46.981625072999954
+        ],
+        [
+          3.482619587370215e-05,
+          0.00117959848536074,
+          0.9745707134515081
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          352.20220947265625,
+          407.9927673339844
+        ],
+        [
+          832.5738525390625,
+          426.89697265625
+        ],
+        [
+          390.9735412597656,
+          698.326904296875
+        ],
+        [
+          988.842041015625,
+          731.3903198242188
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 157807.78290102864,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9756578744383358,
+        "bbox_aspect_ratio": 1.9685981747254977,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 13518.294507919814
+      }
+    },
+    {
+      "source_frame": 14000,
+      "signed_distance_frames": -5599,
+      "direct_seed": {
+        "matches": 149,
+        "inliers": 111,
+        "inlier_ratio": 0.7449664429530202,
+        "rms_reprojection_px": 0.34525376558303833
+      },
+      "homography_image_to_court": [
+        [
+          0.0549038207710073,
+          0.01541687070598788,
+          0.3899658231594072
+        ],
+        [
+          -0.004192123255394519,
+          0.13229139840056378,
+          -55.304011296636766
+        ],
+        [
+          6.459072221667636e-05,
+          0.0014126125794472302,
+          0.883213693859748
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          340.32708740234375,
+          428.8313903808594
+        ],
+        [
+          807.1826782226562,
+          443.6253662109375
+        ],
+        [
+          384.1883850097656,
+          703.3275146484375
+        ],
+        [
+          978.7859497070312,
+          733.8848876953125
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 147422.51335906843,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9114502046991773,
+        "bbox_aspect_ratio": 2.092940641314975,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 16373.047695817388
+      }
+    },
+    {
+      "source_frame": 16000,
+      "signed_distance_frames": -3599,
+      "direct_seed": {
+        "matches": 459,
+        "inliers": 426,
+        "inlier_ratio": 0.9281045751633987,
+        "rms_reprojection_px": 0.4264374077320099
+      },
+      "homography_image_to_court": [
+        [
+          0.049665287628198024,
+          0.011765642034943354,
+          2.7245197914052883
+        ],
+        [
+          -0.0047647789928846815,
+          0.11421098200700061,
+          -43.812944174556215
+        ],
+        [
+          2.8840688316491994e-05,
+          0.0010926301274977344,
+          1.0069860411288876
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          347.8415832519531,
+          398.125732421875
+        ],
+        [
+          834.8916625976562,
+          418.4450378417969
+        ],
+        [
+          389.0436096191406,
+          695.6861572265625
+        ],
+        [
+          990.18017578125,
+          729.8611450195312
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 162993.12911377335,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0077166472767216,
+        "bbox_aspect_ratio": 1.9362979294235139,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12546.759257053653
+      }
+    },
+    {
+      "source_frame": 18000,
+      "signed_distance_frames": -1599,
+      "direct_seed": {
+        "matches": 274,
+        "inliers": 228,
+        "inlier_ratio": 0.8321167883211679,
+        "rms_reprojection_px": 0.5079323649406433
+      },
+      "homography_image_to_court": [
+        [
+          0.05065938620041447,
+          0.012733040097373149,
+          2.046905080578567
+        ],
+        [
+          -0.0048072203419599,
+          0.1175960528457162,
+          -45.7959380227199
+        ],
+        [
+          3.139097498885984e-05,
+          0.001154374726829989,
+          0.9869902794530984
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.4029541015625,
+          403.71759033203125
+        ],
+        [
+          831.509765625,
+          423.4256896972656
+        ],
+        [
+          389.6912536621094,
+          696.7642211914062
+        ],
+        [
+          988.492919921875,
+          730.5883178710938
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 159552.7255977504,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9864461071300529,
+        "bbox_aspect_ratio": 1.9551765024414383,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 13111.397836102895
+      }
+    },
+    {
+      "source_frame": 19599,
+      "signed_distance_frames": 0,
+      "direct_seed": {
+        "matches": 2000,
+        "inliers": 2000,
+        "inlier_ratio": 1.0,
+        "rms_reprojection_px": 0.0
+      },
+      "homography_image_to_court": [
+        [
+          0.05007175499988804,
+          0.01225404716365716,
+          2.3351407383548306
+        ],
+        [
+          -0.004758680947621784,
+          0.11539801297982852,
+          -44.49366686026378
+        ],
+        [
+          3.0544853977446434e-05,
+          0.0011147252900901004,
+          1.0000000000000004
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          350.0,
+          400.0
+        ],
+        [
+          835.0,
+          420.0
+        ],
+        [
+          390.0,
+          696.0
+        ],
+        [
+          990.0,
+          730.0
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161745.0,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0,
+        "bbox_aspect_ratio": 1.9393939393939394,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12713.866472354772
+      }
+    },
+    {
+      "source_frame": 20000,
+      "signed_distance_frames": 401,
+      "direct_seed": {
+        "matches": 543,
+        "inliers": 513,
+        "inlier_ratio": 0.9447513812154696,
+        "rms_reprojection_px": 0.4000231921672821
+      },
+      "homography_image_to_court": [
+        [
+          0.050161660720944155,
+          0.012426562318615523,
+          2.1689273653724435
+        ],
+        [
+          -0.00473670519433333,
+          0.1154683082539821,
+          -44.50437792668349
+        ],
+        [
+          3.150448366618394e-05,
+          0.001116922368170539,
+          0.9996445162311787
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          351.5989685058594,
+          399.8482360839844
+        ],
+        [
+          836.1634521484375,
+          419.72589111328125
+        ],
+        [
+          390.7346496582031,
+          695.8572387695312
+        ],
+        [
+          990.3871459960938,
+          729.803466796875
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161680.50180454506,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9996012353058521,
+        "bbox_aspect_ratio": 1.9359843943376478,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12686.013492566308
+      }
+    },
+    {
+      "source_frame": 22000,
+      "signed_distance_frames": 2401,
+      "direct_seed": {
+        "matches": 601,
+        "inliers": 564,
+        "inlier_ratio": 0.9384359400998337,
+        "rms_reprojection_px": 0.3832303583621979
+      },
+      "homography_image_to_court": [
+        [
+          0.05004265299854423,
+          0.012185287982497454,
+          2.4055719752169593
+        ],
+        [
+          -0.004774286698887716,
+          0.11544148138373701,
+          -44.54375386175441
+        ],
+        [
+          2.9998819303862347e-05,
+          0.0011149379733730628,
+          0.9996302682583394
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.2164306640625,
+          400.29815673828125
+        ],
+        [
+          834.3340454101562,
+          420.3610534667969
+        ],
+        [
+          389.6470642089844,
+          696.1673583984375
+        ],
+        [
+          989.763671875,
+          730.1930541992188
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161683.4668990597,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9996195672141934,
+        "bbox_aspect_ratio": 1.9416706537171706,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12747.00513428787
+      }
+    },
+    {
+      "source_frame": 24000,
+      "signed_distance_frames": 4401,
+      "direct_seed": {
+        "matches": 108,
+        "inliers": 63,
+        "inlier_ratio": 0.5833333333333334,
+        "rms_reprojection_px": 0.5086588263511658
+      },
+      "homography_image_to_court": [
+        [
+          0.04919356944623623,
+          0.01203557357366603,
+          2.7186076784679907
+        ],
+        [
+          -0.007787321233630564,
+          0.11558253675054167,
+          -44.1055800762344
+        ],
+        [
+          -6.0033201277592886e-05,
+          0.0011279473225405746,
+          1.0038967683759197
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          343.2730712890625,
+          404.7216796875
+        ],
+        [
+          808.8704833984375,
+          436.0910949707031
+        ],
+        [
+          385.00335693359375,
+          698.2213745117188
+        ],
+        [
+          957.7847900390625,
+          738.6572875976562
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 151313.22758316807,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9355048229198311,
+        "bbox_aspect_ratio": 1.8402102207540905,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12336.079043222579
+      }
+    },
+    {
+      "source_frame": 26000,
+      "signed_distance_frames": 6401,
+      "direct_seed": {
+        "matches": 488,
+        "inliers": 399,
+        "inlier_ratio": 0.8176229508196722,
+        "rms_reprojection_px": 0.4729779064655304
+      },
+      "homography_image_to_court": [
+        [
+          0.050448222408775875,
+          0.012567533265719846,
+          2.1478937343776408
+        ],
+        [
+          -0.0047867332588827785,
+          0.11683011789035744,
+          -45.348397297318954
+        ],
+        [
+          3.0922390279265434e-05,
+          0.0011405820463395208,
+          0.9915102734585537
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.6146545410156,
+          402.4810485839844
+        ],
+        [
+          832.7112426757812,
+          422.27435302734375
+        ],
+        [
+          389.80029296875,
+          696.538818359375
+        ],
+        [
+          988.993896484375,
+          730.3792724609375
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 160294.35984029248,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9910313137363905,
+        "bbox_aspect_ratio": 1.9499320075100266,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12976.320119264523
+      }
+    },
+    {
+      "source_frame": 28000,
+      "signed_distance_frames": 8401,
+      "direct_seed": {
+        "matches": 299,
+        "inliers": 255,
+        "inlier_ratio": 0.8528428093645485,
+        "rms_reprojection_px": 0.3313688039779663
+      },
+      "homography_image_to_court": [
+        [
+          0.05042095731983898,
+          0.012545310994097008,
+          2.159376440896937
+        ],
+        [
+          -0.00479434733407884,
+          0.11668114395729964,
+          -45.240588241999355
+        ],
+        [
+          3.095400697126877e-05,
+          0.0011380773421602788,
+          0.992569079946283
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.72369384765625,
+          402.0982666015625
+        ],
+        [
+          832.9850463867188,
+          421.95513916015625
+        ],
+        [
+          389.8443603515625,
+          696.3953857421875
+        ],
+        [
+          989.1160888671875,
+          730.328125
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 160463.50558987074,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.992077069398564,
+        "bbox_aspect_ratio": 1.9480019220048355,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12936.39014200129
+      }
+    },
+    {
+      "source_frame": 30000,
+      "signed_distance_frames": 10401,
+      "direct_seed": {
+        "matches": 261,
+        "inliers": 221,
+        "inlier_ratio": 0.8467432950191571,
+        "rms_reprojection_px": 0.34969860315322876
+      },
+      "homography_image_to_court": [
+        [
+          0.05016202689787764,
+          0.012322896442906472,
+          2.2866211440887865
+        ],
+        [
+          -0.0047412028188886625,
+          0.11570235583013676,
+          -44.69394805287403
+        ],
+        [
+          3.1319412174810575e-05,
+          0.001119840499799094,
+          0.9980201213111556
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.98626708984375,
+          400.6253967285156
+        ],
+        [
+          834.656005859375,
+          420.4859924316406
+        ],
+        [
+          389.97222900390625,
+          696.1828002929688
+        ],
+        [
+          989.8817749023438,
+          730.0855102539062
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161461.358237206,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9982463645689573,
+        "bbox_aspect_ratio": 1.94225486346524,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12780.89394618017
+      }
+    },
+    {
+      "source_frame": 32000,
+      "signed_distance_frames": 12401,
+      "direct_seed": {
+        "matches": 440,
+        "inliers": 407,
+        "inlier_ratio": 0.925,
+        "rms_reprojection_px": 0.5106703639030457
+      },
+      "homography_image_to_court": [
+        [
+          0.04904589112672512,
+          0.010262010647622399,
+          4.027940831581862
+        ],
+        [
+          -0.0046668485423153406,
+          0.11155820224515768,
+          -42.114715171095106
+        ],
+        [
+          2.993200636338322e-05,
+          0.0010467224943371098,
+          1.0245173671964447
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          336.6182556152344,
+          391.5952453613281
+        ],
+        [
+          827.9141845703125,
+          412.14776611328125
+        ],
+        [
+          383.4948425292969,
+          693.6622924804688
+        ],
+        [
+          987.5706176757812,
+          728.1627807617188
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 166414.83426404232,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0288715834433357,
+        "bbox_aspect_ratio": 1.9340913593646363,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12143.85810378637
+      }
+    },
+    {
+      "source_frame": 34000,
+      "signed_distance_frames": 14401,
+      "direct_seed": {
+        "matches": 492,
+        "inliers": 458,
+        "inlier_ratio": 0.9308943089430894,
+        "rms_reprojection_px": 0.4993782341480255
+      },
+      "homography_image_to_court": [
+        [
+          0.04890513279172441,
+          0.009776548793109232,
+          4.482174164710713
+        ],
+        [
+          -0.004662318223893165,
+          0.1110541590217918,
+          -41.78924199291653
+        ],
+        [
+          2.9697964128529285e-05,
+          0.0010376576776173982,
+          1.0281052222450024
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          331.9039611816406,
+          390.23016357421875
+        ],
+        [
+          824.1685180664062,
+          410.8966064453125
+        ],
+        [
+          381.1264343261719,
+          693.1919555664062
+        ],
+        [
+          985.950927734375,
+          727.8012084960938
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 167096.29795857612,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0330847813445616,
+        "bbox_aspect_ratio": 1.9375090855440587,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12105.62397795746
+      }
+    },
+    {
+      "source_frame": 36000,
+      "signed_distance_frames": 16401,
+      "direct_seed": {
+        "matches": 343,
+        "inliers": 274,
+        "inlier_ratio": 0.7988338192419825,
+        "rms_reprojection_px": 0.5091923475265503
+      },
+      "homography_image_to_court": [
+        [
+          0.0506907564597367,
+          0.012863200577343754,
+          1.9166601814167876
+        ],
+        [
+          -0.004773951884337193,
+          0.11780659314239703,
+          -46.00224968935627
+        ],
+        [
+          3.190659968001724e-05,
+          0.0011568114505301416,
+          0.9847959627649897
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          350.516845703125,
+          404.6938171386719
+        ],
+        [
+          832.4161376953125,
+          424.2221374511719
+        ],
+        [
+          390.1979675292969,
+          697.2208862304688
+        ],
+        [
+          988.7616577148438,
+          730.8269653320312
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 159231.01955931308,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9844571365996666,
+        "bbox_aspect_ratio": 1.9570068714183972,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 13188.579787588451
+      }
+    },
+    {
+      "source_frame": 38000,
+      "signed_distance_frames": 18401,
+      "direct_seed": {
+        "matches": 312,
+        "inliers": 271,
+        "inlier_ratio": 0.8685897435897436,
+        "rms_reprojection_px": 0.5257123112678528
+      },
+      "homography_image_to_court": [
+        [
+          0.049884063752659795,
+          0.012041577982510699,
+          2.51312349294333
+        ],
+        [
+          -0.004776910339637781,
+          0.11491501185229029,
+          -44.21791505646477
+        ],
+        [
+          2.9307836308152717e-05,
+          0.0011058090332793705,
+          1.0028762549644077
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          348.96392822265625,
+          399.2940979003906
+        ],
+        [
+          834.8529663085938,
+          419.4920349121094
+        ],
+        [
+          389.5498352050781,
+          695.9222412109375
+        ],
+        [
+          990.0698852539062,
+          730.0316162109375
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 162249.75221932447,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0031206666006645,
+        "bbox_aspect_ratio": 1.9384131570742509,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12648.491833844275
+      }
+    },
+    {
+      "source_frame": 40000,
+      "signed_distance_frames": 20401,
+      "direct_seed": {
+        "matches": 373,
+        "inliers": 331,
+        "inlier_ratio": 0.8873994638069705,
+        "rms_reprojection_px": 0.521399974822998
+      },
+      "homography_image_to_court": [
+        [
+          0.04942180675179956,
+          0.011510481110272678,
+          2.938056329014514
+        ],
+        [
+          -0.004843039995618441,
+          0.11335989385381871,
+          -43.205257807097546
+        ],
+        [
+          2.6249333064826206e-05,
+          0.0010795052602727228,
+          1.0129537568553793
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          346.9266662597656,
+          395.9551696777344
+        ],
+        [
+          834.9170532226562,
+          416.8034362792969
+        ],
+        [
+          388.6946105957031,
+          694.972412109375
+        ],
+        [
+          990.245361328125,
+          729.5806884765625
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 163911.2482303027,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0133929842054017,
+        "bbox_aspect_ratio": 1.928265851438877,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12341.025000427198
+      }
+    },
+    {
+      "source_frame": 42000,
+      "signed_distance_frames": 22401,
+      "direct_seed": {
+        "matches": 291,
+        "inliers": 247,
+        "inlier_ratio": 0.8487972508591065,
+        "rms_reprojection_px": 0.5263459086418152
+      },
+      "homography_image_to_court": [
+        [
+          0.05008812267291216,
+          0.012270484202009775,
+          2.320962383275745
+        ],
+        [
+          -0.004724300463039381,
+          0.11561834692149103,
+          -44.70336805360473
+        ],
+        [
+          3.1062101874648334e-05,
+          0.0011172152219713438,
+          0.9979859140789816
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.8785095214844,
+          400.9424133300781
+        ],
+        [
+          834.8901977539062,
+          420.76055908203125
+        ],
+        [
+          389.95843505859375,
+          696.4365844726562
+        ],
+        [
+          990.0380859375,
+          730.2227172851562
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161491.95685084723,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9984355426804367,
+        "bbox_aspect_ratio": 1.9441174243551143,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12806.473007610033
+      }
+    },
+    {
+      "source_frame": 44000,
+      "signed_distance_frames": 24401,
+      "direct_seed": {
+        "matches": 658,
+        "inliers": 631,
+        "inlier_ratio": 0.958966565349544,
+        "rms_reprojection_px": 0.4757981300354004
+      },
+      "homography_image_to_court": [
+        [
+          0.050236157802742744,
+          0.012471138433878046,
+          2.157511214769826
+        ],
+        [
+          -0.004766001899221807,
+          0.11595790941202647,
+          -44.83926970779357
+        ],
+        [
+          3.08838589462242e-05,
+          0.0011246820375744677,
+          0.9964345584734754
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          351.00091552734375,
+          401.1122741699219
+        ],
+        [
+          835.0752563476562,
+          421.0082702636719
+        ],
+        [
+          390.47900390625,
+          696.2935791015625
+        ],
+        [
+          989.8975830078125,
+          730.2147216796875
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161098.29062749818,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9960016731738117,
+        "bbox_aspect_ratio": 1.9413306473860559,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12809.237244239925
+      }
+    },
+    {
+      "source_frame": 46000,
+      "signed_distance_frames": 26401,
+      "direct_seed": {
+        "matches": 465,
+        "inliers": 446,
+        "inlier_ratio": 0.9591397849462365,
+        "rms_reprojection_px": 0.3876452147960663
+      },
+      "homography_image_to_court": [
+        [
+          0.048734680064637444,
+          0.009578541990401552,
+          4.620587264484897
+        ],
+        [
+          -0.004627733927020719,
+          0.11021052663367191,
+          -41.20741777655078
+        ],
+        [
+          2.982744046289935e-05,
+          0.001024561291094433,
+          1.0335151784928909
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          331.5378723144531,
+          387.81854248046875
+        ],
+        [
+          824.8087768554688,
+          408.5309753417969
+        ],
+        [
+          381.0314636230469,
+          692.3163452148438
+        ],
+        [
+          986.4076538085938,
+          726.9699096679688
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 168175.0728347837,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0397543839672552,
+        "bbox_aspect_ratio": 1.9309070959224397,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 11912.069974132502
+      }
+    },
+    {
+      "source_frame": 48000,
+      "signed_distance_frames": 28401,
+      "direct_seed": {
+        "matches": 399,
+        "inliers": 342,
+        "inlier_ratio": 0.8571428571428571,
+        "rms_reprojection_px": 0.4565640389919281
+      },
+      "homography_image_to_court": [
+        [
+          0.0496614191051017,
+          0.01190112276391197,
+          2.566066737686854
+        ],
+        [
+          -0.0047402911435527155,
+          0.11404749505581707,
+          -43.726695001181724
+        ],
+        [
+          2.943421936511861e-05,
+          0.0010898197244001773,
+          1.0075538856163841
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.8519592285156,
+          397.9490661621094
+        ],
+        [
+          836.8458862304688,
+          418.1905822753906
+        ],
+        [
+          389.9816589355469,
+          695.6964111328125
+        ],
+        [
+          990.8507690429688,
+          729.8114624023438
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 163089.16963915713,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0083104246756136,
+        "bbox_aspect_ratio": 1.9315198620769183,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12498.279439278827
+      }
+    },
+    {
+      "source_frame": 50000,
+      "signed_distance_frames": 30401,
+      "direct_seed": {
+        "matches": 391,
+        "inliers": 329,
+        "inlier_ratio": 0.8414322250639387,
+        "rms_reprojection_px": 0.3804676830768585
+      },
+      "homography_image_to_court": [
+        [
+          0.050029134152657376,
+          0.012175358455358866,
+          2.395532578681
+        ],
+        [
+          -0.004713413652412361,
+          0.11537197952947179,
+          -44.550085598135155
+        ],
+        [
+          3.1088899021723736e-05,
+          0.001112852328531572,
+          0.9995563188324922
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.4299621582031,
+          400.4186706542969
+        ],
+        [
+          834.769287109375,
+          420.2467346191406
+        ],
+        [
+          389.7330017089844,
+          696.2791137695312
+        ],
+        [
+          989.9776000976562,
+          730.0670166015625
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161758.68191417214,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0000845894103196,
+        "bbox_aspect_ratio": 1.9431240769578215,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12763.25210429086
+      }
+    },
+    {
+      "source_frame": 52000,
+      "signed_distance_frames": 32401,
+      "direct_seed": {
+        "matches": 350,
+        "inliers": 310,
+        "inlier_ratio": 0.8857142857142857,
+        "rms_reprojection_px": 0.5011486411094666
+      },
+      "homography_image_to_court": [
+        [
+          0.04926581860320325,
+          0.01142715262372949,
+          2.9272034919462553
+        ],
+        [
+          -0.004717389986331753,
+          0.1126915524800926,
+          -42.92360690687277
+        ],
+        [
+          2.8657863365080373e-05,
+          0.0010655014262198309,
+          1.0154824452604407
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          348.1080627441406,
+          395.466796875
+        ],
+        [
+          837.2469482421875,
+          415.94268798828125
+        ],
+        [
+          389.1889953613281,
+          695.1618041992188
+        ],
+        [
+          991.2283935546875,
+          729.4286499023438
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 164602.87729696836,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0176690302449434,
+        "bbox_aspect_ratio": 1.9257299149010596,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12281.086737908021
+      }
+    },
+    {
+      "source_frame": 54000,
+      "signed_distance_frames": 34401,
+      "direct_seed": {
+        "matches": 287,
+        "inliers": 258,
+        "inlier_ratio": 0.8989547038327527,
+        "rms_reprojection_px": 0.49884751439094543
+      },
+      "homography_image_to_court": [
+        [
+          0.04999042184247272,
+          0.01218026166536376,
+          2.39347817396878
+        ],
+        [
+          -0.0047939391811263965,
+          0.11512099434665193,
+          -44.29490613241906
+        ],
+        [
+          2.947202355679109e-05,
+          0.001110392976666186,
+          1.0019730711952557
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.85662841796875,
+          399.33721923828125
+        ],
+        [
+          835.1002807617188,
+          419.5440368652344
+        ],
+        [
+          389.9691467285156,
+          695.7860107421875
+        ],
+        [
+          990.012451171875,
+          729.9537963867188
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 162002.819991312,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0015939904869515,
+        "bbox_aspect_ratio": 1.9362484128147464,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12643.693777613544
+      }
+    },
+    {
+      "source_frame": 56000,
+      "signed_distance_frames": 36401,
+      "direct_seed": {
+        "matches": 739,
+        "inliers": 671,
+        "inlier_ratio": 0.9079837618403248,
+        "rms_reprojection_px": 0.5196743607521057
+      },
+      "homography_image_to_court": [
+        [
+          0.05039365802472971,
+          0.012759289877882768,
+          1.9086997667737788
+        ],
+        [
+          -0.0047707371751962565,
+          0.11636304481693933,
+          -45.05823812602678
+        ],
+        [
+          3.149843934816149e-05,
+          0.0011326987362583426,
+          0.9939463725447547
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          352.9614562988281,
+          401.6921691894531
+        ],
+        [
+          836.1768188476562,
+          421.5033874511719
+        ],
+        [
+          391.35772705078125,
+          696.3651123046875
+        ],
+        [
+          990.1998901367188,
+          730.2669067382812
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 160654.3857057509,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9932571993307422,
+        "bbox_aspect_ratio": 1.9394017890471367,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12844.077713379638
+      }
+    },
+    {
+      "source_frame": 58000,
+      "signed_distance_frames": 38401,
+      "direct_seed": {
+        "matches": 612,
+        "inliers": 574,
+        "inlier_ratio": 0.9379084967320261,
+        "rms_reprojection_px": 0.5186300277709961
+      },
+      "homography_image_to_court": [
+        [
+          0.049796870293241924,
+          0.011963372508208938,
+          2.5235153487666313
+        ],
+        [
+          -0.004708177312378737,
+          0.11418369191232067,
+          -43.74291073626968
+        ],
+        [
+          3.1250308696749987e-05,
+          0.0010936454528415404,
+          1.0073572612063892
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.86981201171875,
+          397.5187683105469
+        ],
+        [
+          836.5390014648438,
+          417.58575439453125
+        ],
+        [
+          389.9444580078125,
+          695.3648681640625
+        ],
+        [
+          990.8466186523438,
+          729.4739990234375
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 163149.68200192694,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0086845466748706,
+        "bbox_aspect_ratio": 1.930913410414094,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12479.682162631741
+      }
+    },
+    {
+      "source_frame": 60000,
+      "signed_distance_frames": 40401,
+      "direct_seed": {
+        "matches": 383,
+        "inliers": 334,
+        "inlier_ratio": 0.8720626631853786,
+        "rms_reprojection_px": 0.4351188838481903
+      },
+      "homography_image_to_court": [
+        [
+          0.049819523241110504,
+          0.011901412704261104,
+          2.6407504278559704
+        ],
+        [
+          -0.0047489197140304865,
+          0.1149599446163302,
+          -44.330188569874956
+        ],
+        [
+          2.9260647365092882e-05,
+          0.0011046531807689037,
+          1.002000603950701
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          347.5957946777344,
+          399.9731750488281
+        ],
+        [
+          833.8876342773438,
+          420.0615539550781
+        ],
+        [
+          388.9154052734375,
+          696.2890014648438
+        ],
+        [
+          989.7553100585938,
+          730.2075805664062
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 162163.61167234974,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.002588096524466,
+        "bbox_aspect_ratio": 1.944556668389532,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12730.724530139078
+      }
+    },
+    {
+      "source_frame": 62000,
+      "signed_distance_frames": 42401,
+      "direct_seed": {
+        "matches": 264,
+        "inliers": 209,
+        "inlier_ratio": 0.7916666666666666,
+        "rms_reprojection_px": 0.35243165493011475
+      },
+      "homography_image_to_court": [
+        [
+          0.0491780909385686,
+          0.011346188248967394,
+          2.9984600129319943
+        ],
+        [
+          -0.004728129122331361,
+          0.11248397799077196,
+          -42.79483198309762
+        ],
+        [
+          2.7994273264249966e-05,
+          0.0010619239025635146,
+          1.0167577302250552
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          347.7454528808594,
+          395.06976318359375
+        ],
+        [
+          837.3203735351562,
+          415.6484375
+        ],
+        [
+          389.05621337890625,
+          695.0651245117188
+        ],
+        [
+          991.395751953125,
+          729.388671875
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 164854.90949489083,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0192272372864128,
+        "bbox_aspect_ratio": 1.9252584354012365,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12247.004057797238
+      }
+    },
+    {
+      "source_frame": 64000,
+      "signed_distance_frames": 44401,
+      "direct_seed": {
+        "matches": 539,
+        "inliers": 507,
+        "inlier_ratio": 0.9406307977736549,
+        "rms_reprojection_px": 0.5482159852981567
+      },
+      "homography_image_to_court": [
+        [
+          0.04960040187173022,
+          0.011636084083472156,
+          2.8261595242050896
+        ],
+        [
+          -0.004744323006527211,
+          0.11381001647326391,
+          -43.537549430246735
+        ],
+        [
+          2.9624820441546484e-05,
+          0.0010862055829051038,
+          1.009713349831752
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          347.2814025878906,
+          397.0227355957031
+        ],
+        [
+          834.95703125,
+          417.3521423339844
+        ],
+        [
+          388.77630615234375,
+          695.33056640625
+        ],
+        [
+          990.4219970703125,
+          729.6010131835938
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 163584.61297850916,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.011373538461833,
+        "bbox_aspect_ratio": 1.9338021687614844,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12458.546575147351
+      }
+    },
+    {
+      "source_frame": 66000,
+      "signed_distance_frames": 46401,
+      "direct_seed": {
+        "matches": 312,
+        "inliers": 265,
+        "inlier_ratio": 0.8493589743589743,
+        "rms_reprojection_px": 0.4804439842700958
+      },
+      "homography_image_to_court": [
+        [
+          0.05005764220633478,
+          0.012208474834411042,
+          2.398953395126128
+        ],
+        [
+          -0.004784675772786389,
+          0.11561721886418053,
+          -44.6585049269767
+        ],
+        [
+          2.9420952517226575e-05,
+          0.001117936474954572,
+          0.9985277053763024
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.07757568359375,
+          400.7078552246094
+        ],
+        [
+          834.0062255859375,
+          420.7760314941406
+        ],
+        [
+          389.61322021484375,
+          696.2808227539062
+        ],
+        [
+          989.6282958984375,
+          730.2542114257812
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161461.4440527074,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9982468951294161,
+        "bbox_aspect_ratio": 1.943734798341448,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12787.399096995785
+      }
+    },
+    {
+      "source_frame": 68000,
+      "signed_distance_frames": 48401,
+      "direct_seed": {
+        "matches": 315,
+        "inliers": 260,
+        "inlier_ratio": 0.8253968253968254,
+        "rms_reprojection_px": 0.34088635444641113
+      },
+      "homography_image_to_court": [
+        [
+          0.05062704915299046,
+          0.012808708391822016,
+          1.9456698311638632
+        ],
+        [
+          -0.0047653150679215946,
+          0.11748465241594407,
+          -45.79036410259028
+        ],
+        [
+          3.1927658711996306e-05,
+          0.0011514089309167099,
+          0.9869102971906
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          350.70556640625,
+          403.9811706542969
+        ],
+        [
+          832.9139404296875,
+          423.54010009765625
+        ],
+        [
+          390.28509521484375,
+          696.995361328125
+        ],
+        [
+          988.944580078125,
+          730.63232421875
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 159557.5195507249,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9864757460862771,
+        "bbox_aspect_ratio": 1.953885687245678,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 13114.95430220082
+      }
+    },
+    {
+      "source_frame": 70000,
+      "signed_distance_frames": 50401,
+      "direct_seed": {
+        "matches": 87,
+        "inliers": 50,
+        "inlier_ratio": 0.5747126436781609,
+        "rms_reprojection_px": 1.4003139734268188
+      },
+      "homography_image_to_court": [
+        [
+          0.00767028707684742,
+          -0.0012617892905291647,
+          3.8093465428593705
+        ],
+        [
+          -0.002583296545656589,
+          0.010102106825910223,
+          2.0199959065081066
+        ],
+        [
+          -5.027835165314845e-05,
+          -0.00010039788336231124,
+          0.46243919355613516
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          479.35968017578125,
+          -77.37670135498047
+        ],
+        [
+          1203.7022705078125,
+          107.85116577148438
+        ],
+        [
+          442.78009033203125,
+          623.4309692382812
+        ],
+        [
+          1071.5953369140625,
+          708.6719970703125
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 451733.31641863077,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 2.7928734515356317,
+        "bbox_aspect_ratio": 0.9680344000316415,
+        "outside_corner_fraction": 0.25,
+        "homography_condition_number": 5402.320969613452
+      }
+    },
+    {
+      "source_frame": 72000,
+      "signed_distance_frames": 52401,
+      "direct_seed": {
+        "matches": 221,
+        "inliers": 187,
+        "inlier_ratio": 0.8461538461538461,
+        "rms_reprojection_px": 0.7588157057762146
+      },
+      "homography_image_to_court": [
+        [
+          0.0509910778244946,
+          0.01314439294145279,
+          1.7233332631735725
+        ],
+        [
+          -0.004836370981210038,
+          0.11862425443889042,
+          -46.35429083329801
+        ],
+        [
+          3.153109968142634e-05,
+          0.0011741937243743192,
+          0.9809576551572344
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          351.0914306640625,
+          405.07989501953125
+        ],
+        [
+          831.2453002929688,
+          424.656005859375
+        ],
+        [
+          390.5096130371094,
+          696.8320922851562
+        ],
+        [
+          988.04443359375,
+          730.5536499023438
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 158405.6373082865,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9793541519570095,
+        "bbox_aspect_ratio": 1.9570026565091976,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 13240.498440576288
+      }
+    },
+    {
+      "source_frame": 74000,
+      "signed_distance_frames": 54401,
+      "direct_seed": {
+        "matches": 482,
+        "inliers": 395,
+        "inlier_ratio": 0.8195020746887967,
+        "rms_reprojection_px": 0.5350982546806335
+      },
+      "homography_image_to_court": [
+        [
+          0.05017315553716104,
+          0.012402396786234123,
+          2.209635663841981
+        ],
+        [
+          -0.0047682917818988625,
+          0.11557926411224634,
+          -44.55742715680147
+        ],
+        [
+          3.1019595220577696e-05,
+          0.0011189842792192547,
+          0.9992019997815842
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          350.98406982421875,
+          399.99407958984375
+        ],
+        [
+          835.4857788085938,
+          419.98248291015625
+        ],
+        [
+          390.4404602050781,
+          695.876953125
+        ],
+        [
+          990.1463012695312,
+          729.9425659179688
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161591.67722329497,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9990520709962903,
+        "bbox_aspect_ratio": 1.9371576410557696,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12705.287397351432
+      }
+    },
+    {
+      "source_frame": 76000,
+      "signed_distance_frames": 56401,
+      "direct_seed": {
+        "matches": 539,
+        "inliers": 499,
+        "inlier_ratio": 0.9257884972170687,
+        "rms_reprojection_px": 0.43470069766044617
+      },
+      "homography_image_to_court": [
+        [
+          0.050669639254526014,
+          0.013088097476435882,
+          1.6635877407865727
+        ],
+        [
+          -0.004796941367094391,
+          0.11738506879783699,
+          -45.672532991101036
+        ],
+        [
+          3.143170021704367e-05,
+          0.0011512555733255696,
+          0.987610459658337
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          353.8837585449219,
+          403.54443359375
+        ],
+        [
+          835.4881591796875,
+          423.2252197265625
+        ],
+        [
+          391.80389404296875,
+          696.7828979492188
+        ],
+        [
+          989.6898193359375,
+          730.5494384765625
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 159508.30253867153,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.986171458398538,
+        "bbox_aspect_ratio": 1.9443312833051805,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 13020.193110870425
+      }
+    },
+    {
+      "source_frame": 78000,
+      "signed_distance_frames": 58401,
+      "direct_seed": {
+        "matches": 181,
+        "inliers": 131,
+        "inlier_ratio": 0.7237569060773481,
+        "rms_reprojection_px": 0.3309136629104614
+      },
+      "homography_image_to_court": [
+        [
+          0.05843344530938049,
+          0.02007592052494055,
+          -2.6726966212805037
+        ],
+        [
+          -0.007724159700088865,
+          0.15250905456022038,
+          -68.23522569608724
+        ],
+        [
+          -2.5884184995852233e-05,
+          0.00179480233490189,
+          0.7185386866589301
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          335.19580078125,
+          464.394287109375
+        ],
+        [
+          766.1160278320312,
+          486.21917724609375
+        ],
+        [
+          379.5740966796875,
+          714.755859375
+        ],
+        [
+          939.6282958984375,
+          748.9640502929688
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 124066.57140676491,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.7670504275666321,
+        "bbox_aspect_ratio": 2.124022202342103,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 20499.3402047212
+      }
+    },
+    {
+      "source_frame": 80000,
+      "signed_distance_frames": 60401,
+      "direct_seed": {
+        "matches": 375,
+        "inliers": 284,
+        "inlier_ratio": 0.7573333333333333,
+        "rms_reprojection_px": 0.5925236344337463
+      },
+      "homography_image_to_court": [
+        [
+          0.05090907314485864,
+          0.013027296743953795,
+          1.8653376537330302
+        ],
+        [
+          -0.004825336083141823,
+          0.11900646677950268,
+          -46.75362208693146
+        ],
+        [
+          3.0596590940480465e-05,
+          0.0011779843788814503,
+          0.9772910293937683
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.2266540527344,
+          407.0262756347656
+        ],
+        [
+          829.8504638671875,
+          426.5140380859375
+        ],
+        [
+          389.6174011230469,
+          697.8406372070312
+        ],
+        [
+          987.7233276367188,
+          731.307861328125
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 158000.30332749384,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9768481457077117,
+        "bbox_aspect_ratio": 1.9689575410789644,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 13444.748600559078
+      }
+    },
+    {
+      "source_frame": 82000,
+      "signed_distance_frames": 62401,
+      "direct_seed": {
+        "matches": 244,
+        "inliers": 182,
+        "inlier_ratio": 0.7459016393442623,
+        "rms_reprojection_px": 0.45829328894615173
+      },
+      "homography_image_to_court": [
+        [
+          0.05042722260489067,
+          0.012520698642314558,
+          2.1883157953738546
+        ],
+        [
+          -0.004797497417215417,
+          0.11675870649341955,
+          -45.30365069530976
+        ],
+        [
+          3.0856454283847516e-05,
+          0.00113913902539786,
+          0.992006092588628
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.2763977050781,
+          402.3623046875
+        ],
+        [
+          832.506103515625,
+          422.2177429199219
+        ],
+        [
+          389.62298583984375,
+          696.5185546875
+        ],
+        [
+          988.9026489257812,
+          730.4393920898438
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 160374.90162221575,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9915292690482905,
+        "bbox_aspect_ratio": 1.949621829080325,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12966.110030603064
+      }
+    },
+    {
+      "source_frame": 84000,
+      "signed_distance_frames": 64401,
+      "direct_seed": {
+        "matches": 357,
+        "inliers": 311,
+        "inlier_ratio": 0.8711484593837535,
+        "rms_reprojection_px": 0.4947943389415741
+      },
+      "homography_image_to_court": [
+        [
+          0.05046405738225738,
+          0.012720582460106301,
+          1.9850330611125862
+        ],
+        [
+          -0.004767756184821913,
+          0.11687824530936751,
+          -45.41542167553193
+        ],
+        [
+          3.13142289978157e-05,
+          0.0011407752584619484,
+          0.9906219121285675
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          351.3588562011719,
+          402.9031677246094
+        ],
+        [
+          834.2764892578125,
+          422.6025695800781
+        ],
+        [
+          390.6255187988281,
+          696.7395629882812
+        ],
+        [
+          989.518310546875,
+          730.4746704101562
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 160135.2645952506,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9900476960354299,
+        "bbox_aspect_ratio": 1.9481531485915182,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12989.522001633242
+      }
+    },
+    {
+      "source_frame": 86000,
+      "signed_distance_frames": 66401,
+      "direct_seed": {
+        "matches": 352,
+        "inliers": 312,
+        "inlier_ratio": 0.8863636363636364,
+        "rms_reprojection_px": 0.39085179567337036
+      },
+      "homography_image_to_court": [
+        [
+          0.05015247565256515,
+          0.01226023237012954,
+          2.3813106746571955
+        ],
+        [
+          -0.004786841324698744,
+          0.11601910013514243,
+          -44.90910133615083
+        ],
+        [
+          2.9718861738785322e-05,
+          0.0011247636098292324,
+          0.9961078631194176
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          348.59698486328125,
+          401.46649169921875
+        ],
+        [
+          833.1289672851562,
+          421.45782470703125
+        ],
+        [
+          389.3619079589844,
+          696.4585571289062
+        ],
+        [
+          989.292724609375,
+          730.3790893554688
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161076.1869634986,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9958650156944486,
+        "bbox_aspect_ratio": 1.9479209501598098,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12873.52261959435
+      }
+    },
+    {
+      "source_frame": 88000,
+      "signed_distance_frames": 68401,
+      "direct_seed": {
+        "matches": 149,
+        "inliers": 118,
+        "inlier_ratio": 0.7919463087248322,
+        "rms_reprojection_px": 0.39296433329582214
+      },
+      "homography_image_to_court": [
+        [
+          0.053301568752831756,
+          0.014362175943654543,
+          1.1364756344289209
+        ],
+        [
+          -0.004838272841138244,
+          0.126986778506662,
+          -51.63794708715107
+        ],
+        [
+          3.851759860024422e-05,
+          0.0013222932244137103,
+          0.9249628275568664
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          341.79144287109375,
+          419.6628112792969
+        ],
+        [
+          810.9783325195312,
+          437.5390930175781
+        ],
+        [
+          385.0926208496094,
+          700.5203247070312
+        ],
+        [
+          977.15234375,
+          732.8955078125
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 150244.6610808936,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9288983342971566,
+        "bbox_aspect_ratio": 2.0283990397903975,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 15030.597858939573
+      }
+    },
+    {
+      "source_frame": 90000,
+      "signed_distance_frames": 70401,
+      "direct_seed": {
+        "matches": 557,
+        "inliers": 496,
+        "inlier_ratio": 0.8904847396768402,
+        "rms_reprojection_px": 0.4996319115161896
+      },
+      "homography_image_to_court": [
+        [
+          0.049725857423077884,
+          0.011872840728830348,
+          2.5922883412141857
+        ],
+        [
+          -0.004700145093890664,
+          0.11379451186541034,
+          -43.46250115796961
+        ],
+        [
+          3.1262061200162735e-05,
+          0.0010877526867181984,
+          1.010083750306659
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.6895751953125,
+          396.3819580078125
+        ],
+        [
+          836.7743530273438,
+          416.50042724609375
+        ],
+        [
+          389.8599853515625,
+          694.9425048828125
+        ],
+        [
+          991.0015869140625,
+          729.1163940429688
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 163636.024520481,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.011691393987332,
+        "bbox_aspect_ratio": 1.92739897727625,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12380.745282197791
+      }
+    },
+    {
+      "source_frame": 92000,
+      "signed_distance_frames": 72401,
+      "direct_seed": {
+        "matches": 453,
+        "inliers": 409,
+        "inlier_ratio": 0.9028697571743929,
+        "rms_reprojection_px": 0.6945767402648926
+      },
+      "homography_image_to_court": [
+        [
+          0.05013127257047194,
+          0.01241906797638137,
+          2.1594556850038353
+        ],
+        [
+          -0.004726580528047715,
+          0.11522113354485106,
+          -44.32633342544879
+        ],
+        [
+          3.183723627741626e-05,
+          0.0011131151927201142,
+          1.001320090160331
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          352.06683349609375,
+          399.1490478515625
+        ],
+        [
+          836.8353271484375,
+          419.0351257324219
+        ],
+        [
+          390.9463195800781,
+          695.592529296875
+        ],
+        [
+          990.6749877929688,
+          729.5819091796875
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161974.0968265012,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0014164074716447,
+        "bbox_aspect_ratio": 1.9326411777874815,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12616.255843329405
+      }
+    },
+    {
+      "source_frame": 94000,
+      "signed_distance_frames": 74401,
+      "direct_seed": {
+        "matches": 181,
+        "inliers": 113,
+        "inlier_ratio": 0.6243093922651933,
+        "rms_reprojection_px": 0.3926239311695099
+      },
+      "homography_image_to_court": [
+        [
+          0.04978953370739674,
+          0.012143966208088915,
+          2.37270215631133
+        ],
+        [
+          -0.004741472536097588,
+          0.1145554275481558,
+          -44.018796889612844
+        ],
+        [
+          2.9529453120814024e-05,
+          0.0010992811720420977,
+          1.004537817486554
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          351.2875671386719,
+          398.7974853515625
+        ],
+        [
+          837.5833740234375,
+          418.9253845214844
+        ],
+        [
+          390.7226867675781,
+          695.8201293945312
+        ],
+        [
+          991.2763671875,
+          729.8170166015625
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 162564.57537030755,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0050670831883988,
+        "bbox_aspect_ratio": 1.9333868235269822,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12567.871222162179
+      }
+    },
+    {
+      "source_frame": 96000,
+      "signed_distance_frames": 76401,
+      "direct_seed": {
+        "matches": 308,
+        "inliers": 248,
+        "inlier_ratio": 0.8051948051948052,
+        "rms_reprojection_px": 0.3392985463142395
+      },
+      "homography_image_to_court": [
+        [
+          0.0500532173864673,
+          0.012118689279068213,
+          2.4863360773472665
+        ],
+        [
+          -0.004768267498756235,
+          0.11563056687389091,
+          -44.6786509797227
+        ],
+        [
+          2.981672899976419e-05,
+          0.001117733175576525,
+          0.9984680082506636
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          348.0753479003906,
+          400.7449645996094
+        ],
+        [
+          833.181396484375,
+          420.74932861328125
+        ],
+        [
+          389.1314697265625,
+          696.2913818359375
+        ],
+        [
+          989.3765869140625,
+          730.215087890625
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161503.32212416176,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9985058092934048,
+        "bbox_aspect_ratio": 1.9464624974423579,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12810.706346095178
+      }
+    },
+    {
+      "source_frame": 98000,
+      "signed_distance_frames": 78401,
+      "direct_seed": {
+        "matches": 367,
+        "inliers": 331,
+        "inlier_ratio": 0.9019073569482289,
+        "rms_reprojection_px": 0.5517556071281433
+      },
+      "homography_image_to_court": [
+        [
+          0.050230774551386366,
+          0.012360753024994248,
+          2.2818869337851693
+        ],
+        [
+          -0.004748615956322835,
+          0.11614703004111758,
+          -45.0009116503076
+        ],
+        [
+          3.106471408517337e-05,
+          0.0011269230987322292,
+          0.9950795370294986
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.3778381347656,
+          401.7319641113281
+        ],
+        [
+          833.6730346679688,
+          421.5321350097656
+        ],
+        [
+          389.6947021484375,
+          696.54931640625
+        ],
+        [
+          989.4940185546875,
+          730.3511962890625
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 160971.38322074478,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9952170590790738,
+        "bbox_aspect_ratio": 1.9478962815959406,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12896.19704793728
+      }
+    },
+    {
+      "source_frame": 100000,
+      "signed_distance_frames": 80401,
+      "direct_seed": {
+        "matches": 260,
+        "inliers": 221,
+        "inlier_ratio": 0.85,
+        "rms_reprojection_px": 0.6343245506286621
+      },
+      "homography_image_to_court": [
+        [
+          0.050129106645157774,
+          0.01222799617238506,
+          2.398444312511491
+        ],
+        [
+          -0.0047769258956960525,
+          0.11572297310192711,
+          -44.672063077206836
+        ],
+        [
+          3.0134794727688568e-05,
+          0.001120724687313047,
+          0.9983962685174584
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          348.8115539550781,
+          400.4244689941406
+        ],
+        [
+          833.5638427734375,
+          420.4345397949219
+        ],
+        [
+          389.46856689453125,
+          696.0245971679688
+        ],
+        [
+          989.5445556640625,
+          730.0193481445312
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161475.58674317552,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9983343333220533,
+        "bbox_aspect_ratio": 1.9440016888630869,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12778.28907609333
+      }
+    },
+    {
+      "source_frame": 102000,
+      "signed_distance_frames": 82401,
+      "direct_seed": {
+        "matches": 548,
+        "inliers": 497,
+        "inlier_ratio": 0.906934306569343,
+        "rms_reprojection_px": 0.3887919783592224
+      },
+      "homography_image_to_court": [
+        [
+          0.050600728980708824,
+          0.013078482710132878,
+          1.6338462842602446
+        ],
+        [
+          -0.004756460061277965,
+          0.11702031685971423,
+          -45.474210152077184
+        ],
+        [
+          3.237447887147826e-05,
+          0.0011443885396655114,
+          0.9894979566349499
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          354.78936767578125,
+          403.02191162109375
+        ],
+        [
+          836.8760375976562,
+          422.61700439453125
+        ],
+        [
+          392.20489501953125,
+          696.7208862304688
+        ],
+        [
+          990.2913818359375,
+          730.4401245117188
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 159893.49991140887,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9885529686321609,
+        "bbox_aspect_ratio": 1.9409488817057576,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12956.608042334086
+      }
+    },
+    {
+      "source_frame": 104000,
+      "signed_distance_frames": 84401,
+      "direct_seed": {
+        "matches": 656,
+        "inliers": 624,
+        "inlier_ratio": 0.9512195121951219,
+        "rms_reprojection_px": 0.39375853538513184
+      },
+      "homography_image_to_court": [
+        [
+          0.05018393968869219,
+          0.012429417393388164,
+          2.177420493852202
+        ],
+        [
+          -0.004745108776811825,
+          0.11563983865550671,
+          -44.62794800300831
+        ],
+        [
+          3.126429032572936e-05,
+          0.0011195597408439994,
+          0.9984817481639254
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          351.24591064453125,
+          400.33477783203125
+        ],
+        [
+          835.6574096679688,
+          420.2118835449219
+        ],
+        [
+          390.5711975097656,
+          696.0438842773438
+        ],
+        [
+          990.156494140625,
+          729.967041015625
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161473.37998018414,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9983206898524476,
+        "bbox_aspect_ratio": 1.9382525767516958,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12734.608453973457
+      }
+    },
+    {
+      "source_frame": 106000,
+      "signed_distance_frames": 86401,
+      "direct_seed": {
+        "matches": 322,
+        "inliers": 282,
+        "inlier_ratio": 0.8757763975155279,
+        "rms_reprojection_px": 0.4088447391986847
+      },
+      "homography_image_to_court": [
+        [
+          0.05047945642710624,
+          0.012726298263873224,
+          1.9685049940366908
+        ],
+        [
+          -0.004773683844483619,
+          0.11669085295878576,
+          -45.24655131631241
+        ],
+        [
+          3.1554989463971243e-05,
+          0.0011386204336454669,
+          0.9922177610465878
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          351.7098693847656,
+          402.1352233886719
+        ],
+        [
+          834.5338745117188,
+          421.8869934082031
+        ],
+        [
+          390.77630615234375,
+          696.4071655273438
+        ],
+        [
+          989.5216674804688,
+          730.2520141601562
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 160348.25690174336,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9913645361633643,
+        "bbox_aspect_ratio": 1.943856017231086,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12912.589393467528
+      }
+    },
+    {
+      "source_frame": 108000,
+      "signed_distance_frames": 88401,
+      "direct_seed": {
+        "matches": 140,
+        "inliers": 92,
+        "inlier_ratio": 0.6571428571428571,
+        "rms_reprojection_px": 0.423849880695343
+      },
+      "homography_image_to_court": [
+        [
+          0.06741044673504283,
+          0.030090640749685343,
+          -9.514601297017126
+        ],
+        [
+          -0.013182418804191215,
+          0.200436827869294,
+          -100.97652849953202
+        ],
+        [
+          -0.0001602860837612238,
+          0.002741021642764331,
+          0.22661258618326519
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          314.01751708984375,
+          524.4347534179688
+        ],
+        [
+          689.6949462890625,
+          549.1424560546875
+        ],
+        [
+          363.4543151855469,
+          734.486328125
+        ],
+        [
+          872.4646606445312,
+          769.2660522460938
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 91689.33668830618,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.5668758644057386,
+        "bbox_aspect_ratio": 2.2809467017806626,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 31897.327588754335
+      }
+    },
+    {
+      "source_frame": 110000,
+      "signed_distance_frames": 90401,
+      "direct_seed": {
+        "matches": 330,
+        "inliers": 298,
+        "inlier_ratio": 0.9030303030303031,
+        "rms_reprojection_px": 0.40265509486198425
+      },
+      "homography_image_to_court": [
+        [
+          0.050150760512623384,
+          0.012257112384275924,
+          2.3734829359615297
+        ],
+        [
+          -0.004771902176150553,
+          0.11588427224021831,
+          -44.81173750384908
+        ],
+        [
+          3.0263645590070272e-05,
+          0.0011227155601272734,
+          0.9970271569598175
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          348.8341064453125,
+          401.0582275390625
+        ],
+        [
+          833.4627685546875,
+          421.01434326171875
+        ],
+        [
+          389.45489501953125,
+          696.306396484375
+        ],
+        [
+          989.4349365234375,
+          730.2349853515625
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161254.6950309351,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9969686545546083,
+        "bbox_aspect_ratio": 1.9460694440736093,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12834.915696781
+      }
+    },
+    {
+      "source_frame": 112000,
+      "signed_distance_frames": 92401,
+      "direct_seed": {
+        "matches": 391,
+        "inliers": 357,
+        "inlier_ratio": 0.9130434782608695,
+        "rms_reprojection_px": 0.4482799470424652
+      },
+      "homography_image_to_court": [
+        [
+          0.050009873505214124,
+          0.012174577554896935,
+          2.3925536764197988
+        ],
+        [
+          -0.0047357596534808285,
+          0.1152570785216101,
+          -44.45680920715182
+        ],
+        [
+          3.07621778316463e-05,
+          0.001111284298614876,
+          1.0004363506008136
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.6345520019531,
+          400.084716796875
+        ],
+        [
+          835.0210571289062,
+          420.0285949707031
+        ],
+        [
+          389.82421875,
+          696.1673583984375
+        ],
+        [
+          990.053466796875,
+          730.0878295898438
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161880.4148389143,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.00083721190092,
+        "bbox_aspect_ratio": 1.9406450726320756,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12723.473789124333
+      }
+    },
+    {
+      "source_frame": 114000,
+      "signed_distance_frames": 94401,
+      "direct_seed": {
+        "matches": 130,
+        "inliers": 100,
+        "inlier_ratio": 0.7692307692307693,
+        "rms_reprojection_px": 0.27889084815979004
+      },
+      "homography_image_to_court": [
+        [
+          0.045747852007190636,
+          0.009120295737418141,
+          4.18273263729134
+        ],
+        [
+          -0.004201473307899692,
+          0.09942754825288587,
+          -34.75670403483677
+        ],
+        [
+          3.0929098779079264e-05,
+          0.0008449431158805177,
+          1.0841240399203849
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          357.3388977050781,
+          364.6680908203125
+        ],
+        [
+          868.3924560546875,
+          386.26348876953125
+        ],
+        [
+          394.6697692871094,
+          686.6102294921875
+        ],
+        [
+          1009.1942749023438,
+          721.9095458984375
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 182508.00994405244,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.1283687900340191,
+        "bbox_aspect_ratio": 1.8246913059256005,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 9685.992660481226
+      }
+    },
+    {
+      "source_frame": 116000,
+      "signed_distance_frames": 96401,
+      "direct_seed": {
+        "matches": 533,
+        "inliers": 501,
+        "inlier_ratio": 0.9399624765478424,
+        "rms_reprojection_px": 0.5757217407226562
+      },
+      "homography_image_to_court": [
+        [
+          0.05031875860262255,
+          0.01273529859508357,
+          1.8945104922200067
+        ],
+        [
+          -0.004736095912973574,
+          0.11584291451218362,
+          -44.704248456130216
+        ],
+        [
+          3.22741968001197e-05,
+          0.0011243807086770486,
+          0.9973135663507705
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          353.9046630859375,
+          400.37298583984375
+        ],
+        [
+          837.6131591796875,
+          420.1488342285156
+        ],
+        [
+          391.783935546875,
+          695.906005859375
+        ],
+        [
+          990.8307495117188,
+          729.8231811523438
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161257.73046626803,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9969874213500759,
+        "bbox_aspect_ratio": 1.9333000723269416,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12711.13960121486
+      }
+    },
+    {
+      "source_frame": 118000,
+      "signed_distance_frames": 98401,
+      "direct_seed": {
+        "matches": 405,
+        "inliers": 333,
+        "inlier_ratio": 0.8222222222222222,
+        "rms_reprojection_px": 0.5655037760734558
+      },
+      "homography_image_to_court": [
+        [
+          0.050061360144822854,
+          0.012235826649215404,
+          2.357679178979552
+        ],
+        [
+          -0.0047415397007876505,
+          0.11553502112257345,
+          -44.633274572991496
+        ],
+        [
+          3.0442482996716618e-05,
+          0.0011161658674910706,
+          0.9987075557331491
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.5981140136719,
+          400.66558837890625
+        ],
+        [
+          834.6401977539062,
+          420.5716552734375
+        ],
+        [
+          389.8134460449219,
+          696.3212890625
+        ],
+        [
+          989.8734130859375,
+          730.1637573242188
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161562.6397146806,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9988725445279953,
+        "bbox_aspect_ratio": 1.9431831779876552,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12781.166731402445
+      }
+    },
+    {
+      "source_frame": 120000,
+      "signed_distance_frames": 100401,
+      "direct_seed": {
+        "matches": 273,
+        "inliers": 243,
+        "inlier_ratio": 0.8901098901098901,
+        "rms_reprojection_px": 0.38197165727615356
+      },
+      "homography_image_to_court": [
+        [
+          0.05032462529443701,
+          0.012427911506935268,
+          2.275167173010954
+        ],
+        [
+          -0.004799349286405522,
+          0.1166964312750695,
+          -45.31678157754238
+        ],
+        [
+          2.9867964655025507e-05,
+          0.0011369452372433759,
+          0.992022324235598
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          348.63067626953125,
+          402.6685485839844
+        ],
+        [
+          832.2858276367188,
+          422.5597229003906
+        ],
+        [
+          389.36077880859375,
+          696.7265625
+        ],
+        [
+          988.9209594726562,
+          730.5639038085938
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 160389.71479775757,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9916208525627226,
+        "bbox_aspect_ratio": 1.95272751809651,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12997.702435885192
+      }
+    },
+    {
+      "source_frame": 122000,
+      "signed_distance_frames": 102401,
+      "direct_seed": {
+        "matches": 292,
+        "inliers": 225,
+        "inlier_ratio": 0.7705479452054794,
+        "rms_reprojection_px": 0.4929548501968384
+      },
+      "homography_image_to_court": [
+        [
+          0.05018514779538653,
+          0.012486231482910136,
+          2.1065758978963887
+        ],
+        [
+          -0.004727327001277089,
+          0.11548166912624082,
+          -44.52225304771676
+        ],
+        [
+          3.200072165533243e-05,
+          0.0011170318217913115,
+          0.9993777959091343
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          352.2051696777344,
+          399.9530029296875
+        ],
+        [
+          836.6830444335938,
+          419.78546142578125
+        ],
+        [
+          390.9792785644531,
+          695.9238891601562
+        ],
+        [
+          990.5293579101562,
+          729.8605346679688
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161653.4335038336,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9994338836058834,
+        "bbox_aspect_ratio": 1.9348578823559883,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12686.943131329535
+      }
+    },
+    {
+      "source_frame": 124000,
+      "signed_distance_frames": 104401,
+      "direct_seed": {
+        "matches": 124,
+        "inliers": 88,
+        "inlier_ratio": 0.7096774193548387,
+        "rms_reprojection_px": 1.2470663785934448
+      },
+      "homography_image_to_court": [
+        [
+          0.05485965896115514,
+          0.01737252319530852,
+          -1.4337207837522572
+        ],
+        [
+          -0.004672435034086988,
+          0.132920997345011,
+          -55.45389657198728
+        ],
+        [
+          4.6673873864548985e-05,
+          0.0014331069340603492,
+          0.8777429901393121
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          358.07305908203125,
+          429.7813720703125
+        ],
+        [
+          820.4248657226562,
+          446.0339660644531
+        ],
+        [
+          393.4182434082031,
+          703.15771484375
+        ],
+        [
+          982.0836791992188,
+          734.12060546875
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 145201.4090069309,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.8977180686075668,
+        "bbox_aspect_ratio": 2.0503784975374497,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 16153.773732275822
+      }
+    },
+    {
+      "source_frame": 126000,
+      "signed_distance_frames": 106401,
+      "direct_seed": {
+        "matches": 137,
+        "inliers": 114,
+        "inlier_ratio": 0.8321167883211679,
+        "rms_reprojection_px": 0.46627047657966614
+      },
+      "homography_image_to_court": [
+        [
+          0.04546714711122599,
+          0.008904597269525413,
+          4.267263363175488
+        ],
+        [
+          -0.003966388353180475,
+          0.09825044092113218,
+          -34.15227572392709
+        ],
+        [
+          3.765282224498393e-05,
+          0.0008235697935254243,
+          1.088224384385022
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          358.66204833984375,
+          362.08355712890625
+        ],
+        [
+          873.7338256835938,
+          382.8771057128906
+        ],
+        [
+          395.50634765625,
+          686.179443359375
+        ],
+        [
+          1013.5291137695312,
+          721.2080688476562
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 185182.96066478826,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.144906863672993,
+        "bbox_aspect_ratio": 1.8235097969100746,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 9534.051326567791
+      }
+    },
+    {
+      "source_frame": 128000,
+      "signed_distance_frames": 108401,
+      "direct_seed": {
+        "matches": 237,
+        "inliers": 199,
+        "inlier_ratio": 0.8396624472573839,
+        "rms_reprojection_px": 0.6092791557312012
+      },
+      "homography_image_to_court": [
+        [
+          0.05376699102724477,
+          0.01597118886709524,
+          -0.33740733049039295
+        ],
+        [
+          -0.00473575185383629,
+          0.12857274808044378,
+          -52.58764279175514
+        ],
+        [
+          4.383604099700295e-05,
+          0.0013542440582647534,
+          0.9118725636778429
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          354.8602294921875,
+          422.0814514160156
+        ],
+        [
+          822.7349853515625,
+          439.3147888183594
+        ],
+        [
+          391.9560852050781,
+          701.03466796875
+        ],
+        [
+          983.990234375,
+          733.091796875
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 149316.2616994069,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9231584388970719,
+        "bbox_aspect_ratio": 2.022858770033363,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 15206.021674336209
+      }
+    },
+    {
+      "source_frame": 130000,
+      "signed_distance_frames": 110401,
+      "direct_seed": {
+        "matches": 224,
+        "inliers": 175,
+        "inlier_ratio": 0.78125,
+        "rms_reprojection_px": 0.6967836022377014
+      },
+      "homography_image_to_court": [
+        [
+          0.045184642235590204,
+          0.008513151442623086,
+          4.577517484874809
+        ],
+        [
+          -0.004641615544443302,
+          0.09801937599792142,
+          -34.191503937797236
+        ],
+        [
+          1.839533478278376e-05,
+          0.000816072978588455,
+          1.0874581340768121
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          353.64569091796875,
+          365.57049560546875
+        ],
+        [
+          863.3469848632812,
+          389.7069091796875
+        ],
+        [
+          392.22052001953125,
+          688.4993896484375
+        ],
+        [
+          1002.0328979492188,
+          725.3858642578125
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 181625.88226135075,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.1229149727122987,
+        "bbox_aspect_ratio": 1.8019997574303905,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 9609.183626845148
+      }
+    },
+    {
+      "source_frame": 132000,
+      "signed_distance_frames": 112401,
+      "direct_seed": {
+        "matches": 115,
+        "inliers": 86,
+        "inlier_ratio": 0.7478260869565218,
+        "rms_reprojection_px": 0.4384867548942566
+      },
+      "homography_image_to_court": [
+        [
+          0.043755920904299236,
+          0.008286261004721194,
+          4.635287937104162
+        ],
+        [
+          -0.00536399018150185,
+          0.09410082811305201,
+          -31.39860025762716
+        ],
+        [
+          -9.281443842555135e-06,
+          0.0007632058550294483,
+          1.1070952474788551
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          360.8460693359375,
+          354.2389221191406
+        ],
+        [
+          870.9671020507812,
+          383.317138671875
+        ],
+        [
+          396.1076965332031,
+          684.5267944335938
+        ],
+        [
+          1001.6279296875,
+          723.9894409179688
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 184294.59756073775,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.139414495414002,
+        "bbox_aspect_ratio": 1.733011389499079,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 8552.119306057892
+      }
+    },
+    {
+      "source_frame": 134000,
+      "signed_distance_frames": 114401,
+      "direct_seed": {
+        "matches": 261,
+        "inliers": 222,
+        "inlier_ratio": 0.8505747126436781,
+        "rms_reprojection_px": 0.6661705374717712
+      },
+      "homography_image_to_court": [
+        [
+          0.050849901031013556,
+          0.013112392248992103,
+          1.712249223327749
+        ],
+        [
+          -0.004779298445396633,
+          0.11839177354128717,
+          -46.36587810720106
+        ],
+        [
+          3.245593690866447e-05,
+          0.001167149544324302,
+          0.9808995056044503
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          351.78125,
+          405.831787109375
+        ],
+        [
+          832.891357421875,
+          425.25347900390625
+        ],
+        [
+          390.8036804199219,
+          697.5115966796875
+        ],
+        [
+          988.9513549804688,
+          731.0568237304688
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 158626.3571819784,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9807187683203711,
+        "bbox_aspect_ratio": 1.9591668329114813,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 13290.308848693205
+      }
+    },
+    {
+      "source_frame": 136000,
+      "signed_distance_frames": 116401,
+      "direct_seed": {
+        "matches": 127,
+        "inliers": 98,
+        "inlier_ratio": 0.7716535433070866,
+        "rms_reprojection_px": 0.4383756220340729
+      },
+      "homography_image_to_court": [
+        [
+          0.0459645270160249,
+          0.009224233021090596,
+          3.976986115477125
+        ],
+        [
+          -0.0033640345176172265,
+          0.09872896249758925,
+          -34.38702932121659
+        ],
+        [
+          5.6176497331421385e-05,
+          0.0008325492065481064,
+          1.086500362985637
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          361.5018615722656,
+          360.6148986816406
+        ],
+        [
+          879.16552734375,
+          378.25347900390625
+        ],
+        [
+          397.0210266113281,
+          684.9539184570312
+        ],
+        [
+          1019.82861328125,
+          718.2416381835938
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 187168.43490931345,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.1571821998164609,
+        "bbox_aspect_ratio": 1.8408208307516363,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 9574.134642297779
+      }
+    },
+    {
+      "source_frame": 138000,
+      "signed_distance_frames": 118401,
+      "direct_seed": {
+        "matches": 119,
+        "inliers": 86,
+        "inlier_ratio": 0.7226890756302521,
+        "rms_reprojection_px": 0.5314493179321289
+      },
+      "homography_image_to_court": [
+        [
+          0.058368368557355194,
+          0.01907279844822946,
+          -2.0712781195246004
+        ],
+        [
+          -0.00544141057154983,
+          0.14939515584889074,
+          -66.77140739687916
+        ],
+        [
+          3.667635902427158e-05,
+          0.001724555309578791,
+          0.7402034363427588
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          335.2439880371094,
+          459.1554870605469
+        ],
+        [
+          778.2245483398438,
+          475.2901611328125
+        ],
+        [
+          380.299560546875,
+          713.1153564453125
+        ],
+        [
+          955.7078247070312,
+          743.3995971679688
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 130334.88359254319,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.8058047147827951,
+        "bbox_aspect_ratio": 2.1828555618458916,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 20321.88503163107
+      }
+    },
+    {
+      "source_frame": 140000,
+      "signed_distance_frames": 120401,
+      "direct_seed": {
+        "matches": 114,
+        "inliers": 89,
+        "inlier_ratio": 0.7807017543859649,
+        "rms_reprojection_px": 0.4280489683151245
+      },
+      "homography_image_to_court": [
+        [
+          0.05962828557871128,
+          0.019754247670057297,
+          -2.341369973727625
+        ],
+        [
+          -0.006271390153881149,
+          0.1542199217813095,
+          -69.5623712478208
+        ],
+        [
+          2.015420351892421e-05,
+          0.0018233129162434397,
+          0.7013307552420947
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          328.6644287109375,
+          464.4247741699219
+        ],
+        [
+          762.6503295898438,
+          482.07293701171875
+        ],
+        [
+          376.0089416503906,
+          714.0985107421875
+        ],
+        [
+          943.3267211914062,
+          745.6690673828125
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 125679.02747057425,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.7770195521999088,
+        "bbox_aspect_ratio": 2.1855102745682884,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 21143.175985884223
+      }
+    },
+    {
+      "source_frame": 142000,
+      "signed_distance_frames": 122401,
+      "direct_seed": {
+        "matches": 441,
+        "inliers": 416,
+        "inlier_ratio": 0.9433106575963719,
+        "rms_reprojection_px": 0.5132791996002197
+      },
+      "homography_image_to_court": [
+        [
+          0.04906814511443107,
+          0.01020683378281654,
+          4.0931401342567115
+        ],
+        [
+          -0.004675482149406921,
+          0.11158074269579868,
+          -42.092997090370424
+        ],
+        [
+          2.9837258633567805e-05,
+          0.0010476019004758885,
+          1.0248310071394031
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          335.740966796875,
+          391.310791015625
+        ],
+        [
+          826.9288940429688,
+          411.8926696777344
+        ],
+        [
+          383.0418701171875,
+          693.448974609375
+        ],
+        [
+          987.0966796875,
+          727.9910888671875
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 166420.66157268733,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0289076111947035,
+        "bbox_aspect_ratio": 1.9346416082172957,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12137.428278168121
+      }
+    },
+    {
+      "source_frame": 144000,
+      "signed_distance_frames": 124401,
+      "direct_seed": {
+        "matches": 652,
+        "inliers": 620,
+        "inlier_ratio": 0.950920245398773,
+        "rms_reprojection_px": 0.5185481905937195
+      },
+      "homography_image_to_court": [
+        [
+          0.04976031298947338,
+          0.011890609962951453,
+          2.5835156753408746
+        ],
+        [
+          -0.004698444266111751,
+          0.11395645512573682,
+          -43.58020583248825
+        ],
+        [
+          3.1276617222590946e-05,
+          0.0010903206941217129,
+          1.0089720733527623
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.5110168457031,
+          396.8389892578125
+        ],
+        [
+          836.3946533203125,
+          416.91326904296875
+        ],
+        [
+          389.7733459472656,
+          695.1241455078125
+        ],
+        [
+          990.8014526367188,
+          729.240966796875
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 163435.88999591116,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0104540480132997,
+        "bbox_aspect_ratio": 1.9292617948268789,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12424.702822307796
+      }
+    },
+    {
+      "source_frame": 146000,
+      "signed_distance_frames": 126401,
+      "direct_seed": {
+        "matches": 308,
+        "inliers": 234,
+        "inlier_ratio": 0.7597402597402597,
+        "rms_reprojection_px": 0.42196112871170044
+      },
+      "homography_image_to_court": [
+        [
+          0.049609927968270635,
+          0.011884245603301306,
+          2.5341917581526787
+        ],
+        [
+          -0.004671531208138878,
+          0.11365960935402467,
+          -43.525957863141834
+        ],
+        [
+          3.1015426200601416e-05,
+          0.0010825616350321361,
+          1.009364544147689
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          350.7461242675781,
+          397.3661193847656
+        ],
+        [
+          838.2139282226562,
+          417.4015808105469
+        ],
+        [
+          390.3633728027344,
+          695.6371459960938
+        ],
+        [
+          991.4046020507812,
+          729.6036376953125
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 163523.36538181826,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0109948708264136,
+        "bbox_aspect_ratio": 1.9283146618750355,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12435.877879480642
+      }
+    },
+    {
+      "source_frame": 148000,
+      "signed_distance_frames": 128401,
+      "direct_seed": {
+        "matches": 115,
+        "inliers": 65,
+        "inlier_ratio": 0.5652173913043478,
+        "rms_reprojection_px": 0.32621529698371887
+      },
+      "homography_image_to_court": [
+        [
+          0.05971600676794121,
+          0.019822964489040976,
+          -2.4550596527975546
+        ],
+        [
+          -0.005326391681132764,
+          0.1537693024289069,
+          -69.3681202707984
+        ],
+        [
+          4.5220405752718544e-05,
+          0.0018137624521297043,
+          0.7037645521032607
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          331.0174255371094,
+          462.5841979980469
+        ],
+        [
+          769.5341186523438,
+          477.7738952636719
+        ],
+        [
+          377.8094787597656,
+          713.0850219726562
+        ],
+        [
+          951.7798461914062,
+          742.8428344726562
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 127928.25903628021,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.7909255867957601,
+        "bbox_aspect_ratio": 2.214962680411585,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 21148.98345989542
+      }
+    },
+    {
+      "source_frame": 150000,
+      "signed_distance_frames": 130401,
+      "direct_seed": {
+        "matches": 289,
+        "inliers": 246,
+        "inlier_ratio": 0.8512110726643599,
+        "rms_reprojection_px": 0.4317792057991028
+      },
+      "homography_image_to_court": [
+        [
+          0.05041516799805288,
+          0.012492828890163437,
+          2.2473443625238723
+        ],
+        [
+          -0.004805778234705543,
+          0.11709933343844532,
+          -45.563766273295805
+        ],
+        [
+          2.96381487665898e-05,
+          0.0011441710710073218,
+          0.9895837754095419
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          348.2665710449219,
+          403.396484375
+        ],
+        [
+          831.3916015625,
+          423.2239990234375
+        ],
+        [
+          389.18194580078125,
+          696.888427734375
+        ],
+        [
+          988.4915161132812,
+          730.63037109375
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 159956.3891190458,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9889417856443525,
+        "bbox_aspect_ratio": 1.9564750811355243,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 13078.770219794891
+      }
+    },
+    {
+      "source_frame": 152000,
+      "signed_distance_frames": 132401,
+      "direct_seed": {
+        "matches": 232,
+        "inliers": 193,
+        "inlier_ratio": 0.8318965517241379,
+        "rms_reprojection_px": 0.5049585103988647
+      },
+      "homography_image_to_court": [
+        [
+          0.0502163451808891,
+          0.012413230526499439,
+          2.216869217301732
+        ],
+        [
+          -0.004760458796624764,
+          0.11601415300852169,
+          -44.90412672673323
+        ],
+        [
+          3.068262415071656e-05,
+          0.0011250766997714348,
+          0.995906817518068
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          350.3064270019531,
+          401.43157958984375
+        ],
+        [
+          834.4916381835938,
+          421.29937744140625
+        ],
+        [
+          390.1603698730469,
+          696.4577026367188
+        ],
+        [
+          989.7022705078125,
+          730.3089599609375
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 161032.79648742732,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9955967509810338,
+        "bbox_aspect_ratio": 1.944177014498192,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12848.21090320659
+      }
+    },
+    {
+      "source_frame": 154000,
+      "signed_distance_frames": 134401,
+      "direct_seed": {
+        "matches": 277,
+        "inliers": 246,
+        "inlier_ratio": 0.8880866425992779,
+        "rms_reprojection_px": 0.39906543493270874
+      },
+      "homography_image_to_court": [
+        [
+          0.04983996226182029,
+          0.0119834705241095,
+          2.5425483351204052
+        ],
+        [
+          -0.004734063792978738,
+          0.114724974648488,
+          -44.13641343248216
+        ],
+        [
+          3.006108701716328e-05,
+          0.0011017511423003761,
+          1.0036860645743866
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          348.93634033203125,
+          399.1136169433594
+        ],
+        [
+          835.16845703125,
+          419.177734375
+        ],
+        [
+          389.5301818847656,
+          695.9356689453125
+        ],
+        [
+          990.22021484375,
+          729.9130859375
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 162448.65268251626,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0043503829021996,
+        "bbox_aspect_ratio": 1.9385879803908563,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12635.396377733514
+      }
+    },
+    {
+      "source_frame": 156000,
+      "signed_distance_frames": 136401,
+      "direct_seed": {
+        "matches": 249,
+        "inliers": 206,
+        "inlier_ratio": 0.8273092369477911,
+        "rms_reprojection_px": 0.32673704624176025
+      },
+      "homography_image_to_court": [
+        [
+          0.05035960542932229,
+          0.012561507295815759,
+          2.099571309941072
+        ],
+        [
+          -0.004760542822575306,
+          0.11632059408494627,
+          -45.04438916138726
+        ],
+        [
+          3.162404883111572e-05,
+          0.001131398380025206,
+          0.9943736277365163
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          350.9374084472656,
+          401.6059265136719
+        ],
+        [
+          834.5100708007812,
+          421.39666748046875
+        ],
+        [
+          390.4100341796875,
+          696.3491821289062
+        ],
+        [
+          989.6575927734375,
+          730.23095703125
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 160780.05446232948,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9940341553824198,
+        "bbox_aspect_ratio": 1.9436139216790633,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12867.961565744483
+      }
+    },
+    {
+      "source_frame": 158000,
+      "signed_distance_frames": 138401,
+      "direct_seed": {
+        "matches": 299,
+        "inliers": 266,
+        "inlier_ratio": 0.8896321070234113,
+        "rms_reprojection_px": 0.499606192111969
+      },
+      "homography_image_to_court": [
+        [
+          0.050457333600943705,
+          0.012797396225634233,
+          1.8522844760791013
+        ],
+        [
+          -0.004707832024959553,
+          0.1163467076389073,
+          -45.06641267064422
+        ],
+        [
+          3.3383307336358615e-05,
+          0.0011322233751900142,
+          0.9937740361143429
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          353.4320068359375,
+          401.64703369140625
+        ],
+        [
+          836.5675048828125,
+          421.1965637207031
+        ],
+        [
+          391.5374450683594,
+          696.3687744140625
+        ],
+        [
+          990.3184204101562,
+          730.0986328125
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 160712.13859339803,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9936142606782159,
+        "bbox_aspect_ratio": 1.939057125246058,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12845.650071095617
+      }
+    },
+    {
+      "source_frame": 160000,
+      "signed_distance_frames": 140401,
+      "direct_seed": {
+        "matches": 334,
+        "inliers": 300,
+        "inlier_ratio": 0.8982035928143712,
+        "rms_reprojection_px": 0.39614373445510864
+      },
+      "homography_image_to_court": [
+        [
+          0.049471621794958724,
+          0.011738673817040367,
+          2.6571441701531664
+        ],
+        [
+          -0.004708893941758036,
+          0.11316596523115219,
+          -43.17537012886407
+        ],
+        [
+          2.9850889605267978e-05,
+          0.0010747867695843434,
+          1.0127969670563899
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          350.2148742675781,
+          396.0951843261719
+        ],
+        [
+          838.29736328125,
+          416.404541015625
+        ],
+        [
+          390.1215515136719,
+          695.2052001953125
+        ],
+        [
+          991.4847412109375,
+          729.4154052734375
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 164086.26110873418,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.014475013810221,
+        "bbox_aspect_ratio": 1.9238852810097418,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12318.06442053006
+      }
+    },
+    {
+      "source_frame": 162000,
+      "signed_distance_frames": 142401,
+      "direct_seed": {
+        "matches": 245,
+        "inliers": 198,
+        "inlier_ratio": 0.8081632653061225,
+        "rms_reprojection_px": 0.6696102619171143
+      },
+      "homography_image_to_court": [
+        [
+          0.05066030328447683,
+          0.012781222533914196,
+          1.9981333189349804
+        ],
+        [
+          -0.004776332015111389,
+          0.117692747704643,
+          -45.900225647735596
+        ],
+        [
+          3.1320623676204626e-05,
+          0.0011554607230353582,
+          0.9859093774895187
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.8208923339844,
+          404.197265625
+        ],
+        [
+          831.7832641601562,
+          423.75677490234375
+        ],
+        [
+          389.89569091796875,
+          696.9657592773438
+        ],
+        [
+          988.4910278320312,
+          730.5498657226562
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 159350.7887742482,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9851976183143109,
+        "bbox_aspect_ratio": 1.9569941692112585,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 13153.963526219632
+      }
+    },
+    {
+      "source_frame": 164000,
+      "signed_distance_frames": 144401,
+      "direct_seed": {
+        "matches": 199,
+        "inliers": 164,
+        "inlier_ratio": 0.8241206030150754,
+        "rms_reprojection_px": 0.37196066975593567
+      },
+      "homography_image_to_court": [
+        [
+          0.050985600259378754,
+          0.013065176890732945,
+          1.7863794893338163
+        ],
+        [
+          -0.004724634920273265,
+          0.11878498206758425,
+          -46.61113506486212
+        ],
+        [
+          3.40943909292739e-05,
+          0.0011740116942245778,
+          0.9785765433002729
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          350.1615295410156,
+          406.3267822265625
+        ],
+        [
+          830.9386596679688,
+          425.4495544433594
+        ],
+        [
+          389.987060546875,
+          697.5552368164062
+        ],
+        [
+          988.2234497070312,
+          730.8681030273438
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 158363.6442855033,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9790945270982306,
+        "bbox_aspect_ratio": 1.9660421624945814,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 13386.764446200768
+      }
+    },
+    {
+      "source_frame": 166000,
+      "signed_distance_frames": 146401,
+      "direct_seed": {
+        "matches": 328,
+        "inliers": 282,
+        "inlier_ratio": 0.8597560975609756,
+        "rms_reprojection_px": 0.44550850987434387
+      },
+      "homography_image_to_court": [
+        [
+          0.049742341998583024,
+          0.011811491528119574,
+          2.7143299304860022
+        ],
+        [
+          -0.004790398343480731,
+          0.1145251674338749,
+          -43.97725375975876
+        ],
+        [
+          2.848529971196348e-05,
+          0.0010986304830367846,
+          1.0054368630451955
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          347.4371337890625,
+          398.5291442871094
+        ],
+        [
+          834.0584106445312,
+          418.8836975097656
+        ],
+        [
+          388.8555603027344,
+          695.7069702148438
+        ],
+        [
+          989.8460693359375,
+          729.9216918945312
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 162685.3253649627,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0058136286436223,
+        "bbox_aspect_ratio": 1.9385135247757381,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12593.691629383673
+      }
+    },
+    {
+      "source_frame": 168000,
+      "signed_distance_frames": 148401,
+      "direct_seed": {
+        "matches": 276,
+        "inliers": 236,
+        "inlier_ratio": 0.855072463768116,
+        "rms_reprojection_px": 0.4501033127307892
+      },
+      "homography_image_to_court": [
+        [
+          0.04959392000084221,
+          0.011658288407206023,
+          2.8234125356044992
+        ],
+        [
+          -0.0047748753562213125,
+          0.11404294541675587,
+          -43.71228199540803
+        ],
+        [
+          2.8139001187518175e-05,
+          0.0010897466659559405,
+          1.0080681078540439
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          347.0547790527344,
+          397.8275451660156
+        ],
+        [
+          834.41943359375,
+          418.2330627441406
+        ],
+        [
+          388.69512939453125,
+          695.6387329101562
+        ],
+        [
+          990.0382690429688,
+          729.8461303710938
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 163178.00940908352,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0088596828902503,
+        "bbox_aspect_ratio": 1.9365888496666004,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12526.179285040764
+      }
+    },
+    {
+      "source_frame": 170000,
+      "signed_distance_frames": 150401,
+      "direct_seed": {
+        "matches": 309,
+        "inliers": 266,
+        "inlier_ratio": 0.86084142394822,
+        "rms_reprojection_px": 0.48365333676338196
+      },
+      "homography_image_to_court": [
+        [
+          0.05067006640503293,
+          0.012968055260052697,
+          1.7731976467127792
+        ],
+        [
+          -0.004753819872364509,
+          0.117472293447381,
+          -45.78603181348177
+        ],
+        [
+          3.252717095730422e-05,
+          0.0011512700389829805,
+          0.9866864194044019
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          352.5438537597656,
+          404.02685546875
+        ],
+        [
+          834.4464721679688,
+          423.5282897949219
+        ],
+        [
+          391.14984130859375,
+          697.0245361328125
+        ],
+        [
+          989.3994140625,
+          730.6412963867188
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 159482.34322558297,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9860109630936534,
+        "bbox_aspect_ratio": 1.949869572554156,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 13092.15607473424
+      }
+    },
+    {
+      "source_frame": 172000,
+      "signed_distance_frames": 152401,
+      "direct_seed": {
+        "matches": 259,
+        "inliers": 223,
+        "inlier_ratio": 0.861003861003861,
+        "rms_reprojection_px": 0.31369122862815857
+      },
+      "homography_image_to_court": [
+        [
+          0.049909902145697196,
+          0.012078943778312893,
+          2.4557962111254947
+        ],
+        [
+          -0.004713159799404874,
+          0.11492302678890406,
+          -44.273959078908355
+        ],
+        [
+          3.079388928167239e-05,
+          0.0011050150435550788,
+          1.0022598686841135
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          349.5365905761719,
+          399.58380126953125
+        ],
+        [
+          835.4705200195312,
+          419.5126647949219
+        ],
+        [
+          389.7999267578125,
+          696.0899047851562
+        ],
+        [
+          990.31298828125,
+          729.9634399414062
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 162232.32854832103,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 1.0030129435118305,
+        "bbox_aspect_ratio": 1.9395154019811784,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 12675.75658979204
+      }
+    },
+    {
+      "source_frame": 174000,
+      "signed_distance_frames": 154401,
+      "direct_seed": {
+        "matches": 254,
+        "inliers": 215,
+        "inlier_ratio": 0.8464566929133859,
+        "rms_reprojection_px": 0.35741981863975525
+      },
+      "homography_image_to_court": [
+        [
+          0.050770868815291005,
+          0.01303545485937017,
+          1.7432518733198479
+        ],
+        [
+          -0.004735674944835509,
+          0.11796931220021774,
+          -46.13237151438216
+        ],
+        [
+          3.2948735063524606e-05,
+          0.0011593706821763398,
+          0.9832586195973334
+        ]
+      ],
+      "projected_court_corners_px_role_order": [
+        [
+          352.0421142578125,
+          405.1861267089844
+        ],
+        [
+          833.517822265625,
+          424.5141296386719
+        ],
+        [
+          390.88311767578125,
+          697.4066772460938
+        ],
+        [
+          989.0331420898438,
+          730.83447265625
+        ]
+      ],
+      "quad_checks": {
+        "is_convex": true,
+        "signed_area_px2": 158986.68189834617,
+        "winding_inverted_relative_seed": false,
+        "corner_order_consistent_with_seed": true,
+        "projected_area_ratio_to_seed": 0.9829465015817872,
+        "bbox_aspect_ratio": 1.9560702081231618,
+        "outside_corner_fraction": 0.0,
+        "homography_condition_number": 13220.55889477058
+      }
+    }
+  ],
+  "source_sha256": {
+    "scripts.platformkit.tracking.g196_homography_from_labelled_corners": "f9655c338c92be6bcf90be998eac8b2904aaee52346b2f1593a2814458c737a3",
+    "scripts.platformkit.tracking.g215_temporal_homography_propagation": "b3eb085fa0b57af006af19ff29f1e5d2f2bf5b61addc649940b998cc52b6442a",
+    "scripts.platformkit.tracking.g222_direct_to_seed_propagation": "2b99a30f3ff6dd1d633e0d088dee150c379f655e2fb78556589b5a948743d8c4"
+  },
+  "disk_guard": {
+    "data_megabytes": 33051,
+    "probe_bytes_removed": 1048576
+  },
+  "remote_temp_bytes_removed": 93494,
+  "local_input_sha256": {
+    "g242_per_sample_table": "469a4a70683515077279f55c055c7ce06e26d17269deecd630b5aa34ac179146",
+    "g244_blind_labels": "c95071bc687eaff41b30dc46d635f4a835421a3f16e117a7988c6547cfbfdadf"
+  },
+  "analysis": {
+    "validity_counts": {
+      "VALID": 27,
+      "INVALID": 28,
+      "CANNOT_JUDGE": 34
+    },
+    "quad_perimeter_role_indices": [
+      0,
+      1,
+      3,
+      2
+    ],
+    "distributions": {
+      "is_convex": {
+        "VALID": {
+          "n": 27,
+          "min": 1.0,
+          "median": 1.0,
+          "p90": 1.0,
+          "max": 1.0
+        },
+        "INVALID": {
+          "n": 28,
+          "min": 1.0,
+          "median": 1.0,
+          "p90": 1.0,
+          "max": 1.0
+        },
+        "CANNOT_JUDGE": {
+          "n": 34,
+          "min": 1.0,
+          "median": 1.0,
+          "p90": 1.0,
+          "max": 1.0
+        }
+      },
+      "signed_area_px2": {
+        "VALID": {
+          "n": 27,
+          "min": 157807.78290102864,
+          "median": 161503.32212416176,
+          "p90": 164123.57851024493,
+          "max": 182508.00994405244
+        },
+        "INVALID": {
+          "n": 28,
+          "min": 125679.02747057425,
+          "median": 161247.07736231666,
+          "p90": 165148.21257968404,
+          "max": 187168.43490931345
+        },
+        "CANNOT_JUDGE": {
+          "n": 34,
+          "min": 91689.33668830618,
+          "median": 161256.21274860157,
+          "p90": 166891.85885021597,
+          "max": 451733.31641863077
+        }
+      },
+      "winding_inverted_relative_seed": {
+        "VALID": {
+          "n": 27,
+          "min": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "max": 0.0
+        },
+        "INVALID": {
+          "n": 28,
+          "min": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "max": 0.0
+        },
+        "CANNOT_JUDGE": {
+          "n": 34,
+          "min": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "max": 0.0
+        }
+      },
+      "corner_order_consistent_with_seed": {
+        "VALID": {
+          "n": 27,
+          "min": 1.0,
+          "median": 1.0,
+          "p90": 1.0,
+          "max": 1.0
+        },
+        "INVALID": {
+          "n": 28,
+          "min": 1.0,
+          "median": 1.0,
+          "p90": 1.0,
+          "max": 1.0
+        },
+        "CANNOT_JUDGE": {
+          "n": 34,
+          "min": 1.0,
+          "median": 1.0,
+          "p90": 1.0,
+          "max": 1.0
+        }
+      },
+      "projected_area_ratio_to_seed": {
+        "VALID": {
+          "n": 27,
+          "min": 0.9756578744383358,
+          "median": 0.9985058092934048,
+          "p90": 1.0147057313069643,
+          "max": 1.1283687900340191
+        },
+        "INVALID": {
+          "n": 28,
+          "min": 0.7770195521999088,
+          "median": 0.9969215577749956,
+          "p90": 1.0210406045298714,
+          "max": 1.1571821998164609
+        },
+        "CANNOT_JUDGE": {
+          "n": 34,
+          "min": 0.5668758644057386,
+          "median": 0.9969780379523421,
+          "p90": 1.0318208219741938,
+          "max": 2.7928734515356317
+        }
+      },
+      "bbox_aspect_ratio": {
+        "VALID": {
+          "n": 27,
+          "min": 1.8019997574303905,
+          "median": 1.9431240769578215,
+          "p90": 1.9585233448104202,
+          "max": 1.9689575410789644
+        },
+        "INVALID": {
+          "n": 28,
+          "min": 1.733011389499079,
+          "median": 1.9438572349545324,
+          "p90": 2.0631471406707074,
+          "max": 2.362921520058989
+        },
+        "CANNOT_JUDGE": {
+          "n": 34,
+          "min": 0.9680344000316415,
+          "median": 1.9411397645459068,
+          "p90": 2.0953352535765912,
+          "max": 2.2809467017806626
+        }
+      },
+      "outside_corner_fraction": {
+        "VALID": {
+          "n": 27,
+          "min": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "max": 0.0
+        },
+        "INVALID": {
+          "n": 28,
+          "min": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "max": 0.0
+        },
+        "CANNOT_JUDGE": {
+          "n": 34,
+          "min": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "max": 0.25
+        }
+      },
+      "homography_condition_number": {
+        "VALID": {
+          "n": 27,
+          "min": 9609.183626845148,
+          "median": 12810.706346095178,
+          "p90": 13241.338954407707,
+          "max": 13518.294507919814
+        },
+        "INVALID": {
+          "n": 28,
+          "min": 8552.119306057892,
+          "median": 12827.341955408312,
+          "p90": 16219.555921338291,
+          "max": 21143.175985884223
+        },
+        "CANNOT_JUDGE": {
+          "n": 34,
+          "min": 5402.320969613452,
+          "median": 12782.844086544557,
+          "p90": 18787.12602444261,
+          "max": 31897.327588754335
+        }
+      }
+    },
+    "valid_invalid_range_overlap": {
+      "is_convex": {
+        "invalid_range_min": 1.0,
+        "invalid_range_max": 1.0,
+        "valid_in_invalid_range": 27,
+        "valid_range_min": 1.0,
+        "valid_range_max": 1.0,
+        "invalid_in_valid_range": 28
+      },
+      "signed_area_px2": {
+        "invalid_range_min": 125679.02747057425,
+        "invalid_range_max": 187168.43490931345,
+        "valid_in_invalid_range": 27,
+        "valid_range_min": 157807.78290102864,
+        "valid_range_max": 182508.00994405244,
+        "invalid_in_valid_range": 21
+      },
+      "winding_inverted_relative_seed": {
+        "invalid_range_min": 0.0,
+        "invalid_range_max": 0.0,
+        "valid_in_invalid_range": 27,
+        "valid_range_min": 0.0,
+        "valid_range_max": 0.0,
+        "invalid_in_valid_range": 28
+      },
+      "corner_order_consistent_with_seed": {
+        "invalid_range_min": 1.0,
+        "invalid_range_max": 1.0,
+        "valid_in_invalid_range": 27,
+        "valid_range_min": 1.0,
+        "valid_range_max": 1.0,
+        "invalid_in_valid_range": 28
+      },
+      "projected_area_ratio_to_seed": {
+        "invalid_range_min": 0.7770195521999088,
+        "invalid_range_max": 1.1571821998164609,
+        "valid_in_invalid_range": 27,
+        "valid_range_min": 0.9756578744383358,
+        "valid_range_max": 1.1283687900340191,
+        "invalid_in_valid_range": 21
+      },
+      "bbox_aspect_ratio": {
+        "invalid_range_min": 1.733011389499079,
+        "invalid_range_max": 2.362921520058989,
+        "valid_in_invalid_range": 27,
+        "valid_range_min": 1.8019997574303905,
+        "valid_range_max": 1.9689575410789644,
+        "invalid_in_valid_range": 22
+      },
+      "outside_corner_fraction": {
+        "invalid_range_min": 0.0,
+        "invalid_range_max": 0.0,
+        "valid_in_invalid_range": 27,
+        "valid_range_min": 0.0,
+        "valid_range_max": 0.0,
+        "invalid_in_valid_range": 28
+      },
+      "homography_condition_number": {
+        "invalid_range_min": 8552.119306057892,
+        "invalid_range_max": 21143.175985884223,
+        "valid_in_invalid_range": 27,
+        "valid_range_min": 9609.183626845148,
+        "valid_range_max": 13518.294507919814,
+        "invalid_in_valid_range": 21
+      }
+    }
+  }
+}
