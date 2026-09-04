@@ -1,4 +1,4 @@
-GAP S283 | sport nba (in-game) | worktree a15 | log cx_s283_bayes_timescore_blend
+GAP S283 | sport nba (in-game) | worktree a18 | log cx_s283_bayes_timescore_blend
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: Maddox et al., "Bayesian estimation of in-game home team win probability for NBA games," arXiv
   2207.05114 (2022), and its college-basketball parent arXiv 2204.11777, build a nonparametric win-rate table
