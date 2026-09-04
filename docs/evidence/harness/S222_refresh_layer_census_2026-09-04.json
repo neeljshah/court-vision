@@ -1,0 +1,24 @@
+{
+  "row": "S222",
+  "verdict": "FALSIFIED",
+  "reason": "The required lineup-minutes source data/cache/team_system/player_rates.parquet is absent.",
+  "denominator": 13,
+  "method": "ParquetFile metadata per present source; one bounded bullpen row-group read for final-day rows and teams",
+  "tables": [
+    {"path": "data/cache/ingame/pbp_states_2024_25.parquet", "file_bytes": 93621, "rows": 30383, "min_date": "2024-10-22", "max_date": "2025-06-22", "source_exists": true, "declared_asof": false},
+    {"path": "data/cache/ingame/pbp_states_2025_26.parquet", "file_bytes": 92842, "rows": 30199, "min_date": "2025-10-21", "max_date": "2026-05-24", "source_exists": true, "declared_asof": false},
+    {"path": "data/cache/ingame/pbp_foul_states_2024_25.parquet", "file_bytes": 160492, "rows": 30383, "min_date": "2024-10-22", "max_date": "2025-06-22", "source_exists": true, "declared_asof": false},
+    {"path": "data/cache/ingame/pbp_foul_states_2025_26.parquet", "file_bytes": 161230, "rows": 30199, "min_date": "2025-10-21", "max_date": "2026-05-24", "source_exists": true, "declared_asof": false},
+    {"path": "data/cache/ingame/possession_states_2024_25.parquet", "file_bytes": 249491, "rows": 30383, "min_date": "2024-10-22", "max_date": "2025-06-22", "source_exists": true, "declared_asof": false},
+    {"path": "data/cache/ingame/possession_states_2025_26.parquet", "file_bytes": 247926, "rows": 30199, "min_date": "2025-10-21", "max_date": "2026-05-24", "source_exists": true, "declared_asof": false},
+    {"path": "data/cache/ingame/mlb_pitch_states__2022.parquet", "file_bytes": 503175, "rows": 66266, "min_date": "2022-04-07", "max_date": "2022-04-22", "source_exists": true, "declared_asof": false},
+    {"path": "data/cache/ingame/mlb_pitch_states__2023.parquet", "file_bytes": 549621, "rows": 69823, "min_date": "2023-03-30", "max_date": "2023-04-14", "source_exists": true, "declared_asof": false},
+    {"path": "data/cache/ingame/mlb_pitch_states__2024.parquet", "file_bytes": 534664, "rows": 70326, "min_date": "2024-03-20", "max_date": "2024-09-30", "source_exists": true, "declared_asof": false},
+    {"path": "data/cache/ingame/mlb_pitch_states__2025.parquet", "file_bytes": 496094, "rows": 65983, "min_date": "2025-03-18", "max_date": "2025-09-28", "source_exists": true, "declared_asof": false},
+    {"path": "data/cache/ingame/mlb_pitch_states__2026.parquet", "file_bytes": 234626, "rows": 29319, "min_date": "2026-03-25", "max_date": "2026-06-16", "source_exists": true, "declared_asof": false},
+    {"path": "data/domains/mlb/bullpen_relief_chains.parquet", "file_bytes": 475148, "rows": 71523, "min_date": "2022-04-07", "max_date": "2026-07-02", "source_exists": true, "declared_asof": true, "asof_line": "scripts/platformkit/foundry/asof_supply.py:131-132", "max_date_rows": 8, "max_date_teams": 2},
+    {"path": "data/cache/team_system/player_rates.parquet", "file_bytes": "NOT VERIFIED: source absent", "rows": "NOT VERIFIED: source absent", "min_date": "NOT VERIFIED: source absent", "max_date": "NOT VERIFIED: source absent", "source_exists": false, "declared_asof": false}
+  ],
+  "writes": "none under data; no code or test created",
+  "register_or_ledger": "not accessed"
+}
