@@ -1,0 +1,21 @@
+{
+  "blind_seed": 28620260904,
+  "classified_detector_box_population": 79,
+  "unblind_map_sha256": "d1fefa51cc3a5e37565c8ec29271362719f974cc1470b832926ccae0af8ef16e",
+  "crop_policy": "512x640 native-pixel crop centred on the G267 footpoint, matching G273",
+  "marker_policy": "red cross plus red ring: detector footpoint at crop centre; yellow diamond plus ring: sealed located player feet",
+  "verdict_values": [
+    "LOCATED_FEET",
+    "LOCATED_BODY_NOT_FEET",
+    "BARE_COURT_OR_FLOOR",
+    "DIFFERENT_PERSON",
+    "SOMETHING_ELSE",
+    "CANNOT_JUDGE"
+  ],
+  "direction_values": [
+    "ABOVE",
+    "BELOW",
+    "LEFT",
+    "RIGHT"
+  ]
+}

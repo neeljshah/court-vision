@@ -1,0 +1,33 @@
+{
+  "classified_detector_box_population": 79,
+  "counts": {
+    "BARE_COURT_OR_FLOOR": 40,
+    "CANNOT_JUDGE": 0,
+    "DIFFERENT_PERSON": 7,
+    "LOCATED_BODY_NOT_FEET": 3,
+    "LOCATED_FEET": 0,
+    "SOMETHING_ELSE": 29
+  },
+  "direction_counts": {
+    "ABOVE": 12,
+    "BELOW": 37,
+    "LEFT": 19,
+    "RIGHT": 11
+  },
+  "direction_fractions": {
+    "ABOVE": 0.1518987341772152,
+    "BELOW": 0.46835443037974683,
+    "LEFT": 0.24050632911392406,
+    "RIGHT": 0.13924050632911392
+  },
+  "fractions": {
+    "BARE_COURT_OR_FLOOR": 0.5063291139240507,
+    "CANNOT_JUDGE": 0.0,
+    "DIFFERENT_PERSON": 0.08860759493670886,
+    "LOCATED_BODY_NOT_FEET": 0.0379746835443038,
+    "LOCATED_FEET": 0.0,
+    "SOMETHING_ELSE": 0.3670886075949367
+  },
+  "recomputed_player_present": 79,
+  "total_finite_detector_footpoints": 112
+}
