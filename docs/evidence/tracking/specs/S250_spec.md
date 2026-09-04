@@ -1,4 +1,4 @@
-GAP S250 | sport all (pregame) | worktree aXX | log cx_s250_mlb_tennis_prop_close_capture
+GAP S250 | sport all (pregame) | worktree a16 | log cx_s250_mlb_tennis_prop_close_capture
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S240 census: NBA closing_props/ = 77 files, 48,515 tidy rows, 0/48,515 (0.0 pct) null prices, SCORABLE
   n=77. MLB and tennis prop_history_corpus_*.jsonl = 3,000 rows each, 3,000/3,000 (100.0 pct) null market_prob,
