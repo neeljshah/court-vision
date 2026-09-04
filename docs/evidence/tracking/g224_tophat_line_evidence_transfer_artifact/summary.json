@@ -1,0 +1,35 @@
+{
+  "configuration": {
+    "contrast": 45,
+    "kernel_720p_px": 11,
+    "kernel_rule": "round(11 * native_height / 720), odd, minimum 3",
+    "min_lsd_length_px": 28.0
+  },
+  "corner_roles_total": 68,
+  "frames_total": 17,
+  "machine": "local Windows worktree C:/Users/neelj/nba-track-a3; no pod access",
+  "raw_lsd": {
+    "oracle_frames_all_four": 1,
+    "proposals_per_frame": 1928.0588235294117,
+    "real_frames_all_four": 0,
+    "selected_line_distance_px": {
+      "max": 59.693249497295,
+      "median": 10.2347919059155
+    }
+  },
+  "render_indices": [
+    0,
+    8,
+    16
+  ],
+  "tolerance_px": 12.0,
+  "top_hat": {
+    "oracle_frames_all_four": 0,
+    "proposals_per_frame": 367.52941176470586,
+    "real_frames_all_four": 0,
+    "selected_line_distance_px": {
+      "max": 93.543804852054,
+      "median": 19.0664425331655
+    }
+  }
+}

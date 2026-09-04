@@ -5,6 +5,13 @@
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G217 | ncaa_basketball / wnba | Local reproduction separates G210b's 0/17 label-free branch from its 1/17 detected-line oracle at 28.841315992648475 px median maximum corner error. The oracle-selected detected groups miss their intended labelled paint lines by median 10.2347919059155 px across all 68 role-frame selections. Replacing only those detected geometries with exact label-derived paint lines while retaining the same solver, court model, projection, scorer, labels, 12 px threshold, and exhaustive 17-frame construct yields 17/17 and 0.0 px median maximum error. This refutes G214's claim that detection quality cannot lift the result much because four-point homographies are inherently too difficult at 12 px; current detector-line geometry is the live lever, while automatic calibration remains unproven because the control uses labels. | g217_oracle_error_decomposition_2026-09-04.md; g217_oracle_error_decomposition_artifact/ | ACCEPT (attribution; no production change). |
+
+## G224 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G224 | ncaa_basketball / wnba | One fixed tennis-derived white top-hat configuration (contrast 45; 11-px 720p kernel scaled by native height) worsened detected basketball paint-line geometry on all 17 exhaustive frames: real search remains 0/17, the label-assisted oracle falls 1/17 to 0/17, selected-line median/max rises 10.234792/59.693249 to 19.066443/93.543805 px over 68 roles per arm, while G205 proposals fall 1928.06 to 367.53 per frame. The transfer is CLOSED AT LIMIT; no production change is proposed. | g224_tophat_line_evidence_transfer_2026-09-04.md; g224_tophat_line_evidence_transfer_artifact/ | CLOSED AT LIMIT (negative transfer; no production change). |
+
 ## G103 result register
 
 ## G126 result register
