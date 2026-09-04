@@ -1,0 +1,215 @@
+{
+  "purpose": "G278 Part B blind stratified re-judge; do not join first-pass labels until committed",
+  "random_seed": 2780905,
+  "composition": {
+    "a": 20,
+    "b": 11,
+    "c": 9,
+    "d": 0
+  },
+  "blind_order": [
+    {
+      "rejudge_id": 0,
+      "g275_blind_id": 19,
+      "sha256": "3ffb9684f0572b02b9184e9126488134fe178bf63ceff0c135a2979e8ed23ced"
+    },
+    {
+      "rejudge_id": 1,
+      "g275_blind_id": 37,
+      "sha256": "be687fa7dc3a5d79dd518f2a78947a2da2bef06f4a55d34f45c0ff35070e72be"
+    },
+    {
+      "rejudge_id": 2,
+      "g275_blind_id": 68,
+      "sha256": "c1fea81d555b1f43fb3c664f8806a0edd81dbcf00b470bc4d2d4529f4ec6edc1"
+    },
+    {
+      "rejudge_id": 3,
+      "g275_blind_id": 22,
+      "sha256": "78c0ffbecda1fc64237aa3f79abeb161182c096e7982b0548cf05b404faf2353"
+    },
+    {
+      "rejudge_id": 4,
+      "g275_blind_id": 131,
+      "sha256": "ac767affd63762b5f13a90587d0e12789657e976d0efbb0315a6d2843a06b352"
+    },
+    {
+      "rejudge_id": 5,
+      "g275_blind_id": 93,
+      "sha256": "f05069808826ff82debb158b1eea119852d63f581ff28001c7c7aee1c3457326"
+    },
+    {
+      "rejudge_id": 6,
+      "g275_blind_id": 34,
+      "sha256": "3a05cf580936f4c531292cc1d51132c78bab54cb6b74e7627acd0a641c7db31f"
+    },
+    {
+      "rejudge_id": 7,
+      "g275_blind_id": 134,
+      "sha256": "724dc689ede7fd1bbb56c18b123aabb7fcbe6ccfd5dfb88acdf6a7eb3a760a28"
+    },
+    {
+      "rejudge_id": 8,
+      "g275_blind_id": 3,
+      "sha256": "da2896a4c12f8a1314b181e0d2b4544dc0fcfbff5941af7e39baa6dfa96c7701"
+    },
+    {
+      "rejudge_id": 9,
+      "g275_blind_id": 101,
+      "sha256": "7115d1cfc3f5fedd8fd4cea8c6f0768827ccc2fc6539a95b8c1e10b2374b8e74"
+    },
+    {
+      "rejudge_id": 10,
+      "g275_blind_id": 170,
+      "sha256": "a35e5be9ce5f5779fad56da3e6e7d0dd7e5b0d24d034830d4c3c248c773e9fd2"
+    },
+    {
+      "rejudge_id": 11,
+      "g275_blind_id": 175,
+      "sha256": "f83f288f7c30445e488a97ce25709c0aa2b228a7a6b81e5470fa56219bc9bc0e"
+    },
+    {
+      "rejudge_id": 12,
+      "g275_blind_id": 174,
+      "sha256": "52a10f49eef45a3d0a7f1be77dbec5296be327a2ab548e2412639c8cdb528a85"
+    },
+    {
+      "rejudge_id": 13,
+      "g275_blind_id": 156,
+      "sha256": "11d3fd5ba94070fe2fd9a79742c6cdcf55f384e898e7824c800c320281e630ea"
+    },
+    {
+      "rejudge_id": 14,
+      "g275_blind_id": 61,
+      "sha256": "b1f076f081501030833104680dd443ca729e5b60791547897e37d969be07cbdb"
+    },
+    {
+      "rejudge_id": 15,
+      "g275_blind_id": 57,
+      "sha256": "36b48cf9e3bba9867c96d0461b597722bdb692b5eddc9ea4f1bf763a59719fff"
+    },
+    {
+      "rejudge_id": 16,
+      "g275_blind_id": 73,
+      "sha256": "c85417668438b8dc782ab9c2cfb382d0702ef41ca784e64e40ec8b5c74369939"
+    },
+    {
+      "rejudge_id": 17,
+      "g275_blind_id": 128,
+      "sha256": "26e36649ecd58aec71398e1f5aa1531319f1d940e69af809e915534baa947491"
+    },
+    {
+      "rejudge_id": 18,
+      "g275_blind_id": 81,
+      "sha256": "9982d25fb05afece7acf948464ea67ebb96f87069825928153c89083519464ae"
+    },
+    {
+      "rejudge_id": 19,
+      "g275_blind_id": 141,
+      "sha256": "4de3075dc5c820f14f36bf3ba2be908acc7dcef8362d9f1b77ee36574a03e3e9"
+    },
+    {
+      "rejudge_id": 20,
+      "g275_blind_id": 100,
+      "sha256": "075999500cb640ffe50547574725e7a4f1def62a05e6501680a31dbe62993ed5"
+    },
+    {
+      "rejudge_id": 21,
+      "g275_blind_id": 98,
+      "sha256": "5beb7a431b29f778ecfc5b6679abb2b2c5e51e7ad2a5b6f3c1f7f66500d8480f"
+    },
+    {
+      "rejudge_id": 22,
+      "g275_blind_id": 106,
+      "sha256": "43ca2de874a5ad22f3cf5dd56b57ab37e0c6b87eb6eced89d8f16948aac49bf3"
+    },
+    {
+      "rejudge_id": 23,
+      "g275_blind_id": 31,
+      "sha256": "29c54d0cacb16f68ce305ee0f26e9f6adecd8a7316b7524c947e1b7fd4f2f296"
+    },
+    {
+      "rejudge_id": 24,
+      "g275_blind_id": 119,
+      "sha256": "e2e1009d7a85fb49b4894d4bc70efcf554eb59662fae08840cfbf78a6668b70b"
+    },
+    {
+      "rejudge_id": 25,
+      "g275_blind_id": 55,
+      "sha256": "c95265eae7cd00a8ee5ebaecce22df550dbb3964c297d0e121d18739e3de6f00"
+    },
+    {
+      "rejudge_id": 26,
+      "g275_blind_id": 120,
+      "sha256": "73fcecc91873a3f147112d32c5c912e998c3923568d44c784f754c6f0ebf1ddf"
+    },
+    {
+      "rejudge_id": 27,
+      "g275_blind_id": 49,
+      "sha256": "d85c33838d74e3dae9c7c85475652fca119a1b7d80d6ce4446206606e2ff2535"
+    },
+    {
+      "rejudge_id": 28,
+      "g275_blind_id": 103,
+      "sha256": "1fce0726d3f95835783cfcb2ca3a51e654d8a41d16ba5e049292ca0f034ed22f"
+    },
+    {
+      "rejudge_id": 29,
+      "g275_blind_id": 77,
+      "sha256": "428ae23502e672b1a66504de359cad4a8972ddc31ad2cfd2d055e65def4f14a2"
+    },
+    {
+      "rejudge_id": 30,
+      "g275_blind_id": 142,
+      "sha256": "c56b06b208367db4bea7bcbf0f41f62a9d1322019ce67ed23ce87d5c99156fb1"
+    },
+    {
+      "rejudge_id": 31,
+      "g275_blind_id": 85,
+      "sha256": "52e593cf8a51ad1a9f756ea7faeea5b392caaec371dfc732dc286e3e34b03f99"
+    },
+    {
+      "rejudge_id": 32,
+      "g275_blind_id": 32,
+      "sha256": "70230788752370134d8172ba4af99f72bda367b207d699798730dd61fc92ea64"
+    },
+    {
+      "rejudge_id": 33,
+      "g275_blind_id": 15,
+      "sha256": "0dfde50bba8af3df4138b59c5c0ccb6d51b67243d72a120a77748d5b7c4bc0cf"
+    },
+    {
+      "rejudge_id": 34,
+      "g275_blind_id": 50,
+      "sha256": "c334802d1c3d61c1ae12a3ffb4d2d7feadb5817b276b8f6ce2ea5b415979f92d"
+    },
+    {
+      "rejudge_id": 35,
+      "g275_blind_id": 75,
+      "sha256": "5f798368a532415d82b2c26f0aef5dcb28db6cce5259cb513ab20457c3a26977"
+    },
+    {
+      "rejudge_id": 36,
+      "g275_blind_id": 136,
+      "sha256": "c2539600f61324b2d0ccbfa2f07563005257a39f8b92f10cffc434454c9a5b30"
+    },
+    {
+      "rejudge_id": 37,
+      "g275_blind_id": 79,
+      "sha256": "402597d67a0f01b3edf1a13004f4dd393c4464dfdae21a5cd2e7e969449e5290"
+    },
+    {
+      "rejudge_id": 38,
+      "g275_blind_id": 111,
+      "sha256": "fa288274b2c6ce8ad590a10bfe6ce02cb5a51a18b2256691026f266eb6a14845"
+    },
+    {
+      "rejudge_id": 39,
+      "g275_blind_id": 1,
+      "sha256": "c6aaa86bf62530aaea505e0409c273526ce3271ee25fbdcc71c19629478e7fd9"
+    }
+  ],
+  "source_frames": "docs\\evidence\\tracking\\g275_map_eligible_footage_census_artifact\\blind_frames",
+  "source_frame_resolution": "1920x1080",
+  "copy_method": "shutil.copyfile; no decode, crop, or pixel alteration"
+}

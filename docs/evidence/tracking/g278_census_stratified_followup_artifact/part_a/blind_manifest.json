@@ -1,0 +1,398 @@
+{
+  "purpose": "G278 Part A blinded new within-span sample; do not join labels until committed",
+  "category_wording": {
+    "a": "two or more distinct painted court lines visible AND at least one intersection of painted lines visible",
+    "b": "painted court surface visible but not that",
+    "c": "no painted court surface at all",
+    "d": "cannot judge"
+  },
+  "span_inclusive": [
+    19599,
+    23399
+  ],
+  "sample_size": 61,
+  "spacing_frames": "3801/61 = 62.311475",
+  "index_rule": "start + floor((2*i+1)*span_size/(2*n)) for i=0..n-1",
+  "random_seed": 2780904,
+  "sampled_indices_chronological": [
+    19630,
+    19692,
+    19754,
+    19817,
+    19879,
+    19941,
+    20004,
+    20066,
+    20128,
+    20190,
+    20253,
+    20315,
+    20377,
+    20440,
+    20502,
+    20564,
+    20627,
+    20689,
+    20751,
+    20814,
+    20876,
+    20938,
+    21001,
+    21063,
+    21125,
+    21187,
+    21250,
+    21312,
+    21374,
+    21437,
+    21499,
+    21561,
+    21624,
+    21686,
+    21748,
+    21811,
+    21873,
+    21935,
+    21997,
+    22060,
+    22122,
+    22184,
+    22247,
+    22309,
+    22371,
+    22434,
+    22496,
+    22558,
+    22621,
+    22683,
+    22745,
+    22808,
+    22870,
+    22932,
+    22994,
+    23057,
+    23119,
+    23181,
+    23244,
+    23306,
+    23368
+  ],
+  "blind_order": [
+    {
+      "blind_id": 0,
+      "source_frame": 22060,
+      "source_seconds": 735.3333333333334
+    },
+    {
+      "blind_id": 1,
+      "source_frame": 21935,
+      "source_seconds": 731.1666666666666
+    },
+    {
+      "blind_id": 2,
+      "source_frame": 20128,
+      "source_seconds": 670.9333333333333
+    },
+    {
+      "blind_id": 3,
+      "source_frame": 21686,
+      "source_seconds": 722.8666666666667
+    },
+    {
+      "blind_id": 4,
+      "source_frame": 21873,
+      "source_seconds": 729.1
+    },
+    {
+      "blind_id": 5,
+      "source_frame": 23119,
+      "source_seconds": 770.6333333333333
+    },
+    {
+      "blind_id": 6,
+      "source_frame": 21001,
+      "source_seconds": 700.0333333333333
+    },
+    {
+      "blind_id": 7,
+      "source_frame": 22434,
+      "source_seconds": 747.8
+    },
+    {
+      "blind_id": 8,
+      "source_frame": 19817,
+      "source_seconds": 660.5666666666667
+    },
+    {
+      "blind_id": 9,
+      "source_frame": 20190,
+      "source_seconds": 673.0
+    },
+    {
+      "blind_id": 10,
+      "source_frame": 21437,
+      "source_seconds": 714.5666666666667
+    },
+    {
+      "blind_id": 11,
+      "source_frame": 22745,
+      "source_seconds": 758.1666666666666
+    },
+    {
+      "blind_id": 12,
+      "source_frame": 21250,
+      "source_seconds": 708.3333333333334
+    },
+    {
+      "blind_id": 13,
+      "source_frame": 21624,
+      "source_seconds": 720.8
+    },
+    {
+      "blind_id": 14,
+      "source_frame": 19941,
+      "source_seconds": 664.7
+    },
+    {
+      "blind_id": 15,
+      "source_frame": 22309,
+      "source_seconds": 743.6333333333333
+    },
+    {
+      "blind_id": 16,
+      "source_frame": 20502,
+      "source_seconds": 683.4
+    },
+    {
+      "blind_id": 17,
+      "source_frame": 20315,
+      "source_seconds": 677.1666666666666
+    },
+    {
+      "blind_id": 18,
+      "source_frame": 21561,
+      "source_seconds": 718.7
+    },
+    {
+      "blind_id": 19,
+      "source_frame": 22621,
+      "source_seconds": 754.0333333333333
+    },
+    {
+      "blind_id": 20,
+      "source_frame": 21125,
+      "source_seconds": 704.1666666666666
+    },
+    {
+      "blind_id": 21,
+      "source_frame": 22371,
+      "source_seconds": 745.7
+    },
+    {
+      "blind_id": 22,
+      "source_frame": 23306,
+      "source_seconds": 776.8666666666667
+    },
+    {
+      "blind_id": 23,
+      "source_frame": 22558,
+      "source_seconds": 751.9333333333333
+    },
+    {
+      "blind_id": 24,
+      "source_frame": 20066,
+      "source_seconds": 668.8666666666667
+    },
+    {
+      "blind_id": 25,
+      "source_frame": 21748,
+      "source_seconds": 724.9333333333333
+    },
+    {
+      "blind_id": 26,
+      "source_frame": 23057,
+      "source_seconds": 768.5666666666667
+    },
+    {
+      "blind_id": 27,
+      "source_frame": 22932,
+      "source_seconds": 764.4
+    },
+    {
+      "blind_id": 28,
+      "source_frame": 20938,
+      "source_seconds": 697.9333333333333
+    },
+    {
+      "blind_id": 29,
+      "source_frame": 23368,
+      "source_seconds": 778.9333333333333
+    },
+    {
+      "blind_id": 30,
+      "source_frame": 21312,
+      "source_seconds": 710.4
+    },
+    {
+      "blind_id": 31,
+      "source_frame": 20751,
+      "source_seconds": 691.7
+    },
+    {
+      "blind_id": 32,
+      "source_frame": 23181,
+      "source_seconds": 772.7
+    },
+    {
+      "blind_id": 33,
+      "source_frame": 21811,
+      "source_seconds": 727.0333333333333
+    },
+    {
+      "blind_id": 34,
+      "source_frame": 19879,
+      "source_seconds": 662.6333333333333
+    },
+    {
+      "blind_id": 35,
+      "source_frame": 22247,
+      "source_seconds": 741.5666666666667
+    },
+    {
+      "blind_id": 36,
+      "source_frame": 22184,
+      "source_seconds": 739.4666666666667
+    },
+    {
+      "blind_id": 37,
+      "source_frame": 19630,
+      "source_seconds": 654.3333333333334
+    },
+    {
+      "blind_id": 38,
+      "source_frame": 20253,
+      "source_seconds": 675.1
+    },
+    {
+      "blind_id": 39,
+      "source_frame": 22808,
+      "source_seconds": 760.2666666666667
+    },
+    {
+      "blind_id": 40,
+      "source_frame": 20876,
+      "source_seconds": 695.8666666666667
+    },
+    {
+      "blind_id": 41,
+      "source_frame": 21187,
+      "source_seconds": 706.2333333333333
+    },
+    {
+      "blind_id": 42,
+      "source_frame": 21499,
+      "source_seconds": 716.6333333333333
+    },
+    {
+      "blind_id": 43,
+      "source_frame": 22496,
+      "source_seconds": 749.8666666666667
+    },
+    {
+      "blind_id": 44,
+      "source_frame": 22994,
+      "source_seconds": 766.4666666666667
+    },
+    {
+      "blind_id": 45,
+      "source_frame": 20814,
+      "source_seconds": 693.8
+    },
+    {
+      "blind_id": 46,
+      "source_frame": 21374,
+      "source_seconds": 712.4666666666667
+    },
+    {
+      "blind_id": 47,
+      "source_frame": 20004,
+      "source_seconds": 666.8
+    },
+    {
+      "blind_id": 48,
+      "source_frame": 20564,
+      "source_seconds": 685.4666666666667
+    },
+    {
+      "blind_id": 49,
+      "source_frame": 20440,
+      "source_seconds": 681.3333333333334
+    },
+    {
+      "blind_id": 50,
+      "source_frame": 22870,
+      "source_seconds": 762.3333333333334
+    },
+    {
+      "blind_id": 51,
+      "source_frame": 20689,
+      "source_seconds": 689.6333333333333
+    },
+    {
+      "blind_id": 52,
+      "source_frame": 21997,
+      "source_seconds": 733.2333333333333
+    },
+    {
+      "blind_id": 53,
+      "source_frame": 21063,
+      "source_seconds": 702.1
+    },
+    {
+      "blind_id": 54,
+      "source_frame": 20377,
+      "source_seconds": 679.2333333333333
+    },
+    {
+      "blind_id": 55,
+      "source_frame": 23244,
+      "source_seconds": 774.8
+    },
+    {
+      "blind_id": 56,
+      "source_frame": 19754,
+      "source_seconds": 658.4666666666667
+    },
+    {
+      "blind_id": 57,
+      "source_frame": 22683,
+      "source_seconds": 756.1
+    },
+    {
+      "blind_id": 58,
+      "source_frame": 19692,
+      "source_seconds": 656.4
+    },
+    {
+      "blind_id": 59,
+      "source_frame": 20627,
+      "source_seconds": 687.5666666666667
+    },
+    {
+      "blind_id": 60,
+      "source_frame": 22122,
+      "source_seconds": 737.4
+    }
+  ],
+  "source": {
+    "path": "/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4",
+    "bytes": 2931985407,
+    "sha256": "f361ad7a32ccc6d98ae8e98eee0b090f5e121f9425182e24a31c282ca226c678",
+    "stream": {
+      "width": 1920,
+      "height": 1080,
+      "r_frame_rate": "30/1",
+      "nb_frames": "174430"
+    }
+  }
+}
