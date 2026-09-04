@@ -23,6 +23,8 @@ never computes or claims a betting edge.
 from __future__ import annotations
 
 import copy
+from bisect import bisect_left, bisect_right
+from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Callable, List, Sequence
 
@@ -61,6 +63,33 @@ def _purged(train_state: dict, train_ts: datetime, test_state: dict,
     return _same_team(train_state, test_state) and gap < timedelta(hours=PURGE_HOURS)
 
 
+def _blocked_indices(states: List[dict], stamps: List[datetime], test_idx: Sequence[int],
+                     embargo_days: int) -> set[int]:
+    """Index-equivalent symmetric purge, avoiding a corpus-size squared scan."""
+    by_day, by_team, by_matchup = defaultdict(list), defaultdict(list), defaultdict(list)
+    for index, (state, stamp) in enumerate(zip(states, stamps)):
+        by_day[stamp.date()].append(index)
+        for team in {state["home"], state["away"]}:
+            by_team[team].append((stamp, index))
+        by_matchup[frozenset((state["home"], state["away"]))].append((stamp, index))
+
+    def nearby(entries: list[tuple[datetime, int]], stamp: datetime, window: timedelta) -> set[int]:
+        lo = bisect_left(entries, (stamp - window, -1))
+        hi = bisect_right(entries, (stamp + window, len(states)))
+        return {index for candidate, index in entries[lo:hi] if abs(candidate - stamp) < window}
+
+    blocked: set[int] = set()
+    for index in test_idx:
+        state, stamp = states[index], stamps[index]
+        for offset in range(-embargo_days, embargo_days + 1):
+            blocked.update(by_day[stamp.date() + timedelta(days=offset)])
+        blocked.update(nearby(by_matchup[frozenset((state["home"], state["away"]))], stamp,
+                              timedelta(days=EMBARGO_DAYS)))
+        for team in {state["home"], state["away"]}:
+            blocked.update(nearby(by_team[team], stamp, timedelta(hours=PURGE_HOURS)))
+    return blocked
+
+
 def cpcv_evaluate(states: List[dict], predictor: Predictor, n_groups: int = 8,
                   n_test_groups: int = 2, embargo_days: int = 1,
                   *, strict_redaction: bool = False,
@@ -83,11 +112,10 @@ def cpcv_evaluate(states: List[dict], predictor: Predictor, n_groups: int = 8,
     splits = cpcv_splits([s["state_ts"] for s in ordered], n_groups=n_groups,
                          n_test_groups=n_test_groups, embargo_blocks=0)
     for split_id, (train_idx, test_idx) in enumerate(splits):
-        train_states = [
-            ordered[i] for i in train_idx
-            if not any(_purged(ordered[i], stamps[i], ordered[j], stamps[j], embargo_days)
-                       for j in test_idx)
-        ]
+        blocked = _blocked_indices(ordered, stamps, test_idx, embargo_days)
+        train_indices = [i for i in train_idx if i not in blocked]
+        assert not set(train_indices).intersection(blocked), "symmetric purge or embargo violation"
+        train_states = [ordered[i] for i in train_indices]
         for i in test_idx:
             test = ordered[i]
             assert_vintage(test)

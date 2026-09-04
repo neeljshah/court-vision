@@ -1,0 +1,1307 @@
+{
+  "arms": [
+    "isotonic",
+    "temperature",
+    "beta"
+  ],
+  "bin_edge_rule": "np.linspace(0, 1, bins + 1) equal-width edges, bin k = [lo, hi) except the last = [lo, hi] -- the SAME rule eval_gate.scoring.ece and calib_decomp.decompose bin by (gap S42)",
+  "calibration_only": true,
+  "gap": "S205",
+  "prereg_path": "docs/evidence/harness/S05_calibration_prereg_2026-09-03.md",
+  "prereg_seal_sha256": "9051BB6E3BD89F7309A799F9739C8E61EA6DB3530E52AD87666568220591DF8A",
+  "s205_spec_commit": "75d7b37079634d148ef348afc0e1b2caeed9f802",
+  "sports": {
+    "mlb": {
+      "arms": {
+        "beta": {
+          "ece": 0.017660219531003562,
+          "log_loss": 0.6820895859004122,
+          "murphy_reliability": 0.0003803097876466131,
+          "murphy_resolution": 0.0040489484912080076,
+          "reliability_bins": [
+            {
+              "bin": "0.0-0.1",
+              "gap": null,
+              "hi": 0.1,
+              "lo": 0.0,
+              "mean_predicted_prob": null,
+              "n": 0,
+              "observed_win_freq": null
+            },
+            {
+              "bin": "0.1-0.2",
+              "gap": 0.5552304624172291,
+              "hi": 0.2,
+              "lo": 0.1,
+              "mean_predicted_prob": 0.19476953758277094,
+              "n": 4,
+              "observed_win_freq": 0.75
+            },
+            {
+              "bin": "0.2-0.3",
+              "gap": -0.003576651209437065,
+              "hi": 0.30000000000000004,
+              "lo": 0.2,
+              "mean_predicted_prob": 0.2688827736584167,
+              "n": 98,
+              "observed_win_freq": 0.2653061224489796
+            },
+            {
+              "bin": "0.3-0.4",
+              "gap": 0.03366816821933838,
+              "hi": 0.4,
+              "lo": 0.30000000000000004,
+              "mean_predicted_prob": 0.3670644325132624,
+              "n": 1365,
+              "observed_win_freq": 0.40073260073260075
+            },
+            {
+              "bin": "0.4-0.5",
+              "gap": -0.006915826912333667,
+              "hi": 0.5,
+              "lo": 0.4,
+              "mean_predicted_prob": 0.4617765228348495,
+              "n": 8363,
+              "observed_win_freq": 0.4548606959225158
+            },
+            {
+              "bin": "0.5-0.6",
+              "gap": -0.020498989222044517,
+              "hi": 0.6000000000000001,
+              "lo": 0.5,
+              "mean_predicted_prob": 0.5573194299629711,
+              "n": 19921,
+              "observed_win_freq": 0.5368204407409266
+            },
+            {
+              "bin": "0.6-0.7",
+              "gap": -0.01908899030098432,
+              "hi": 0.7000000000000001,
+              "lo": 0.6000000000000001,
+              "mean_predicted_prob": 0.6361031501850294,
+              "n": 8969,
+              "observed_win_freq": 0.6170141598840451
+            },
+            {
+              "bin": "0.7-0.8",
+              "gap": -0.012838133972505106,
+              "hi": 0.8,
+              "lo": 0.7000000000000001,
+              "mean_predicted_prob": 0.7164580434747676,
+              "n": 442,
+              "observed_win_freq": 0.7036199095022625
+            },
+            {
+              "bin": "0.8-0.9",
+              "gap": null,
+              "hi": 0.9,
+              "lo": 0.8,
+              "mean_predicted_prob": null,
+              "n": 0,
+              "observed_win_freq": null
+            },
+            {
+              "bin": "0.9-1.0",
+              "gap": null,
+              "hi": 1.0,
+              "lo": 0.9,
+              "mean_predicted_prob": null,
+              "n": 0,
+              "observed_win_freq": null
+            }
+          ],
+          "reproduction_max_abs_diff": 0.0,
+          "resolution_tax": -2.398163407443636e-06,
+          "sharpness": 0.005728801165757392,
+          "verdict": "FLATTENED"
+        },
+        "isotonic": {
+          "ece": 0.008076824645850213,
+          "log_loss": 0.6881732326595696,
+          "murphy_reliability": 0.00044616183771279425,
+          "murphy_resolution": 0.003991299104653331,
+          "reliability_bins": [
+            {
+              "bin": "0.0-0.1",
+              "gap": 0.5833333333333334,
+              "hi": 0.1,
+              "lo": 0.0,
+              "mean_predicted_prob": 0.0,
+              "n": 12,
+              "observed_win_freq": 0.5833333333333334
+            },
+            {
+              "bin": "0.1-0.2",
+              "gap": 0.20708051253505358,
+              "hi": 0.2,
+              "lo": 0.1,
+              "mean_predicted_prob": 0.16791948746494642,
+              "n": 16,
+              "observed_win_freq": 0.375
+            },
+            {
+              "bin": "0.2-0.3",
+              "gap": 0.09681552442872204,
+              "hi": 0.30000000000000004,
+              "lo": 0.2,
+              "mean_predicted_prob": 0.2725026573894598,
+              "n": 176,
+              "observed_win_freq": 0.3693181818181818
+            },
+            {
+              "bin": "0.3-0.4",
+              "gap": 0.02214861409195723,
+              "hi": 0.4,
+              "lo": 0.30000000000000004,
+              "mean_predicted_prob": 0.35472999862480575,
+              "n": 865,
+              "observed_win_freq": 0.376878612716763
+            },
+            {
+              "bin": "0.4-0.5",
+              "gap": 0.003821959897685412,
+              "hi": 0.5,
+              "lo": 0.4,
+              "mean_predicted_prob": 0.4618202299215759,
+              "n": 11453,
+              "observed_win_freq": 0.4656421898192613
+            },
+            {
+              "bin": "0.5-0.6",
+              "gap": -0.00588980915856796,
+              "hi": 0.6000000000000001,
+              "lo": 0.5,
+              "mean_predicted_prob": 0.5498594511318396,
+              "n": 18183,
+              "observed_win_freq": 0.5439696419732717
+            },
+            {
+              "bin": "0.6-0.7",
+              "gap": -0.00935536333587661,
+              "hi": 0.7000000000000001,
+              "lo": 0.6000000000000001,
+              "mean_predicted_prob": 0.6308476690387086,
+              "n": 7733,
+              "observed_win_freq": 0.621492305702832
+            },
+            {
+              "bin": "0.7-0.8",
+              "gap": -0.046053429507100896,
+              "hi": 0.8,
+              "lo": 0.7000000000000001,
+              "mean_predicted_prob": 0.7212800156098199,
+              "n": 662,
+              "observed_win_freq": 0.675226586102719
+            },
+            {
+              "bin": "0.8-0.9",
+              "gap": -0.1000045646586879,
+              "hi": 0.9,
+              "lo": 0.8,
+              "mean_predicted_prob": 0.8209347972168274,
+              "n": 43,
+              "observed_win_freq": 0.7209302325581395
+            },
+            {
+              "bin": "0.9-1.0",
+              "gap": -0.620701955917718,
+              "hi": 1.0,
+              "lo": 0.9,
+              "mean_predicted_prob": 0.989123008549297,
+              "n": 19,
+              "observed_win_freq": 0.3684210526315789
+            }
+          ],
+          "reproduction_max_abs_diff": 0.0,
+          "resolution_tax": 5.525122314723255e-05,
+          "sharpness": 0.006063212281556373,
+          "verdict": "FLATTENED"
+        },
+        "temperature": {
+          "ece": 0.0046798441480831905,
+          "log_loss": 0.6812490534310877,
+          "murphy_reliability": 3.797414142536561e-05,
+          "murphy_resolution": 0.004000464690782767,
+          "reliability_bins": [
+            {
+              "bin": "0.0-0.1",
+              "gap": null,
+              "hi": 0.1,
+              "lo": 0.0,
+              "mean_predicted_prob": null,
+              "n": 0,
+              "observed_win_freq": null
+            },
+            {
+              "bin": "0.1-0.2",
+              "gap": null,
+              "hi": 0.2,
+              "lo": 0.1,
+              "mean_predicted_prob": null,
+              "n": 0,
+              "observed_win_freq": null
+            },
+            {
+              "bin": "0.2-0.3",
+              "gap": -0.08000562668747072,
+              "hi": 0.30000000000000004,
+              "lo": 0.2,
+              "mean_predicted_prob": 0.28690217841160864,
+              "n": 29,
+              "observed_win_freq": 0.20689655172413793
+            },
+            {
+              "bin": "0.3-0.4",
+              "gap": 0.013642401663708503,
+              "hi": 0.4,
+              "lo": 0.30000000000000004,
+              "mean_predicted_prob": 0.3697568078224575,
+              "n": 1012,
+              "observed_win_freq": 0.383399209486166
+            },
+            {
+              "bin": "0.4-0.5",
+              "gap": -0.008060405556621908,
+              "hi": 0.5,
+              "lo": 0.4,
+              "mean_predicted_prob": 0.4653921363258527,
+              "n": 9984,
+              "observed_win_freq": 0.4573317307692308
+            },
+            {
+              "bin": "0.5-0.6",
+              "gap": -0.0028267341009250435,
+              "hi": 0.6000000000000001,
+              "lo": 0.5,
+              "mean_predicted_prob": 0.548598229978428,
+              "n": 21225,
+              "observed_win_freq": 0.545771495877503
+            },
+            {
+              "bin": "0.6-0.7",
+              "gap": -0.0026510246944811966,
+              "hi": 0.7000000000000001,
+              "lo": 0.6000000000000001,
+              "mean_predicted_prob": 0.632466770088116,
+              "n": 6567,
+              "observed_win_freq": 0.6298157453936348
+            },
+            {
+              "bin": "0.7-0.8",
+              "gap": -0.026852125598605947,
+              "hi": 0.8,
+              "lo": 0.7000000000000001,
+              "mean_predicted_prob": 0.7196057487870118,
+              "n": 345,
+              "observed_win_freq": 0.6927536231884058
+            },
+            {
+              "bin": "0.8-0.9",
+              "gap": null,
+              "hi": 0.9,
+              "lo": 0.8,
+              "mean_predicted_prob": null,
+              "n": 0,
+              "observed_win_freq": null
+            },
+            {
+              "bin": "0.9-1.0",
+              "gap": null,
+              "hi": 1.0,
+              "lo": 0.9,
+              "mean_predicted_prob": null,
+              "n": 0,
+              "observed_win_freq": null
+            }
+          ],
+          "reproduction_max_abs_diff": 0.0,
+          "resolution_tax": 4.608563701779655e-05,
+          "sharpness": 0.004677174438303707,
+          "verdict": "FLATTENED"
+        }
+      },
+      "dropped_rows": 0,
+      "input": {
+        "bytes": 1645142,
+        "path": "C:\\Users\\neelj\\nba-track-a18\\data\\cache\\combo\\gate_corpus_mlb.parquet",
+        "resolution": "n/a tabular",
+        "sha256": "ac60c9cb18958c20ff53d7d0b698700375b6a0ce15e7ef0ecd20fb730e0903bd"
+      },
+      "input_rows": 39162,
+      "prediction_column": "p_base",
+      "prediction_path": "docs/evidence/harness/S205_calib_bakeoff_2026-09-04_predictions_mlb.json",
+      "premise_abs_diff": 0.0,
+      "premise_isotonic_after_ece": 0.008076824645850213,
+      "scored_rows": 39162
+    },
+    "nba": {
+      "arms": {
+        "beta": {
+          "ece": 0.043432376103774435,
+          "log_loss": 0.6118193977538924,
+          "murphy_reliability": 0.002794142670088244,
+          "murphy_resolution": 0.03867800175467708,
+          "reliability_bins": [
+            {
+              "bin": "0.0-0.1",
+              "gap": -0.07639786344418269,
+              "hi": 0.1,
+              "lo": 0.0,
+              "mean_predicted_prob": 0.07639786344418269,
+              "n": 3,
+              "observed_win_freq": 0.0
+            },
+            {
+              "bin": "0.1-0.2",
+              "gap": -0.11801698499736421,
+              "hi": 0.2,
+              "lo": 0.1,
+              "mean_predicted_prob": 0.15801698499736422,
+              "n": 25,
+              "observed_win_freq": 0.04
+            },
+            {
+              "bin": "0.2-0.3",
+              "gap": -0.10683256798663207,
+              "hi": 0.30000000000000004,
+              "lo": 0.2,
+              "mean_predicted_prob": 0.2573702023952342,
+              "n": 93,
+              "observed_win_freq": 0.15053763440860216
+            },
+            {
+              "bin": "0.3-0.4",
+              "gap": -0.03064511160380129,
+              "hi": 0.4,
+              "lo": 0.30000000000000004,
+              "mean_predicted_prob": 0.3548209357796255,
+              "n": 182,
+              "observed_win_freq": 0.3241758241758242
+            },
+            {
+              "bin": "0.4-0.5",
+              "gap": -0.07244202949045986,
+              "hi": 0.5,
+              "lo": 0.4,
+              "mean_predicted_prob": 0.4540674711865729,
+              "n": 283,
+              "observed_win_freq": 0.38162544169611307
+            },
+            {
+              "bin": "0.5-0.6",
+              "gap": -0.0702764296279248,
+              "hi": 0.6000000000000001,
+              "lo": 0.5,
+              "mean_predicted_prob": 0.5549180678531808,
+              "n": 293,
+              "observed_win_freq": 0.48464163822525597
+            },
+            {
+              "bin": "0.6-0.7",
+              "gap": -0.022669644551521095,
+              "hi": 0.7000000000000001,
+              "lo": 0.6000000000000001,
+              "mean_predicted_prob": 0.6505766212957071,
+              "n": 473,
+              "observed_win_freq": 0.627906976744186
+            },
+            {
+              "bin": "0.7-0.8",
+              "gap": 0.010368078686006088,
+              "hi": 0.8,
+              "lo": 0.7000000000000001,
+              "mean_predicted_prob": 0.751713705700611,
+              "n": 269,
+              "observed_win_freq": 0.7620817843866171
+            },
+            {
+              "bin": "0.8-0.9",
+              "gap": -0.0194430233584878,
+              "hi": 0.9,
+              "lo": 0.8,
+              "mean_predicted_prob": 0.8419282304590795,
+              "n": 169,
+              "observed_win_freq": 0.8224852071005917
+            },
+            {
+              "bin": "0.9-1.0",
+              "gap": -0.09183994535666262,
+              "hi": 1.0,
+              "lo": 0.9,
+              "mean_predicted_prob": 0.925173278689996,
+              "n": 24,
+              "observed_win_freq": 0.8333333333333334
+            }
+          ],
+          "reproduction_max_abs_diff": 0.0,
+          "resolution_tax": 0.001213129041676149,
+          "sharpness": 0.030277160223598974,
+          "verdict": "FLATTENED"
+        },
+        "isotonic": {
+          "ece": 0.024842541854003943,
+          "log_loss": 0.6476648740873279,
+          "murphy_reliability": 0.0013465555808244932,
+          "murphy_resolution": 0.0372087601151529,
+          "reliability_bins": [
+            {
+              "bin": "0.0-0.1",
+              "gap": 0.054011317741805495,
+              "hi": 0.1,
+              "lo": 0.0,
+              "mean_predicted_prob": 0.02932201559152783,
+              "n": 36,
+              "observed_win_freq": 0.08333333333333333
+            },
+            {
+              "bin": "0.1-0.2",
+              "gap": -0.03437461822531322,
+              "hi": 0.2,
+              "lo": 0.1,
+              "mean_predicted_prob": 0.1434655273162223,
+              "n": 55,
+              "observed_win_freq": 0.10909090909090909
+            },
+            {
+              "bin": "0.2-0.3",
+              "gap": -0.008115976670400704,
+              "hi": 0.30000000000000004,
+              "lo": 0.2,
+              "mean_predicted_prob": 0.2700207385751626,
+              "n": 42,
+              "observed_win_freq": 0.2619047619047619
+            },
+            {
+              "bin": "0.3-0.4",
+              "gap": -0.005594028917496718,
+              "hi": 0.4,
+              "lo": 0.30000000000000004,
+              "mean_predicted_prob": 0.35712986509497113,
+              "n": 293,
+              "observed_win_freq": 0.3515358361774744
+            },
+            {
+              "bin": "0.4-0.5",
+              "gap": -0.05058868314573778,
+              "hi": 0.5,
+              "lo": 0.4,
+              "mean_predicted_prob": 0.4342621525334929,
+              "n": 245,
+              "observed_win_freq": 0.3836734693877551
+            },
+            {
+              "bin": "0.5-0.6",
+              "gap": -0.029804271715758057,
+              "hi": 0.6000000000000001,
+              "lo": 0.5,
+              "mean_predicted_prob": 0.5567752260726045,
+              "n": 241,
+              "observed_win_freq": 0.5269709543568465
+            },
+            {
+              "bin": "0.6-0.7",
+              "gap": 0.007590696085941873,
+              "hi": 0.7000000000000001,
+              "lo": 0.6000000000000001,
+              "mean_predicted_prob": 0.6437854507030489,
+              "n": 436,
+              "observed_win_freq": 0.6513761467889908
+            },
+            {
+              "bin": "0.7-0.8",
+              "gap": -0.0198044516525121,
+              "hi": 0.8,
+              "lo": 0.7000000000000001,
+              "mean_predicted_prob": 0.742748174596235,
+              "n": 231,
+              "observed_win_freq": 0.7229437229437229
+            },
+            {
+              "bin": "0.8-0.9",
+              "gap": -0.026357505116967328,
+              "hi": 0.9,
+              "lo": 0.8,
+              "mean_predicted_prob": 0.8394888182482805,
+              "n": 198,
+              "observed_win_freq": 0.8131313131313131
+            },
+            {
+              "bin": "0.9-1.0",
+              "gap": -0.1775465755815846,
+              "hi": 1.0,
+              "lo": 0.9,
+              "mean_predicted_prob": 0.9613303593653684,
+              "n": 37,
+              "observed_win_freq": 0.7837837837837838
+            }
+          ],
+          "reproduction_max_abs_diff": 0.0,
+          "resolution_tax": 0.0026823706812003287,
+          "sharpness": 0.04026535398806859,
+          "verdict": "FLATTENED"
+        },
+        "temperature": {
+          "ece": 0.0348283168877856,
+          "log_loss": 0.6066102448815675,
+          "murphy_reliability": 0.0017420718806077406,
+          "murphy_resolution": 0.03805972484962708,
+          "reliability_bins": [
+            {
+              "bin": "0.0-0.1",
+              "gap": -0.07275817894823053,
+              "hi": 0.1,
+              "lo": 0.0,
+              "mean_predicted_prob": 0.07275817894823053,
+              "n": 9,
+              "observed_win_freq": 0.0
+            },
+            {
+              "bin": "0.1-0.2",
+              "gap": -0.09701016571619728,
+              "hi": 0.2,
+              "lo": 0.1,
+              "mean_predicted_prob": 0.15951016571619728,
+              "n": 48,
+              "observed_win_freq": 0.0625
+            },
+            {
+              "bin": "0.2-0.3",
+              "gap": -0.003937655191769807,
+              "hi": 0.30000000000000004,
+              "lo": 0.2,
+              "mean_predicted_prob": 0.2539376551917698,
+              "n": 96,
+              "observed_win_freq": 0.25
+            },
+            {
+              "bin": "0.3-0.4",
+              "gap": -0.03071428481879762,
+              "hi": 0.4,
+              "lo": 0.30000000000000004,
+              "mean_predicted_prob": 0.34963320373771656,
+              "n": 185,
+              "observed_win_freq": 0.31891891891891894
+            },
+            {
+              "bin": "0.4-0.5",
+              "gap": -0.07471810743054597,
+              "hi": 0.5,
+              "lo": 0.4,
+              "mean_predicted_prob": 0.4537135412205003,
+              "n": 219,
+              "observed_win_freq": 0.3789954337899543
+            },
+            {
+              "bin": "0.5-0.6",
+              "gap": -0.039038283989914935,
+              "hi": 0.6000000000000001,
+              "lo": 0.5,
+              "mean_predicted_prob": 0.5523126202731008,
+              "n": 452,
+              "observed_win_freq": 0.5132743362831859
+            },
+            {
+              "bin": "0.6-0.7",
+              "gap": -0.014378081136799947,
+              "hi": 0.7000000000000001,
+              "lo": 0.6000000000000001,
+              "mean_predicted_prob": 0.6486062690562631,
+              "n": 298,
+              "observed_win_freq": 0.6342281879194631
+            },
+            {
+              "bin": "0.7-0.8",
+              "gap": 0.014556869195722189,
+              "hi": 0.8,
+              "lo": 0.7000000000000001,
+              "mean_predicted_prob": 0.7490794944406415,
+              "n": 330,
+              "observed_win_freq": 0.7636363636363637
+            },
+            {
+              "bin": "0.8-0.9",
+              "gap": -0.04678660401505397,
+              "hi": 0.9,
+              "lo": 0.8,
+              "mean_predicted_prob": 0.8394695308443223,
+              "n": 164,
+              "observed_win_freq": 0.7926829268292683
+            },
+            {
+              "bin": "0.9-1.0",
+              "gap": 0.07977613208379997,
+              "hi": 1.0,
+              "lo": 0.9,
+              "mean_predicted_prob": 0.9202238679162,
+              "n": 13,
+              "observed_win_freq": 1.0
+            }
+          ],
+          "reproduction_max_abs_diff": 0.0,
+          "resolution_tax": 0.00183140594672615,
+          "sharpness": 0.032764018167616316,
+          "verdict": "FLATTENED"
+        }
+      },
+      "dropped_rows": 0,
+      "input": {
+        "bytes": 201706,
+        "path": "C:\\Users\\neelj\\nba-track-a18\\data\\cache\\combo\\gate_corpus_nba.parquet",
+        "resolution": "n/a tabular",
+        "sha256": "716f6f5f3f2181051e352936efa60d616c9de029a026b85cc585d6ed20cb0aaf"
+      },
+      "input_rows": 1814,
+      "prediction_column": "p_base",
+      "prediction_path": "docs/evidence/harness/S205_calib_bakeoff_2026-09-04_predictions_nba.json",
+      "premise_abs_diff": 0.0,
+      "premise_isotonic_after_ece": 0.024842541854003943,
+      "scored_rows": 1814
+    },
+    "soccer": {
+      "arms": {
+        "beta": {
+          "ece": 0.008130583189166077,
+          "log_loss": 0.689058526467516,
+          "murphy_reliability": 0.0003420010167361407,
+          "murphy_resolution": 0.0015815138281449267,
+          "reliability_bins": [
+            {
+              "bin": "0.0-0.1",
+              "gap": null,
+              "hi": 0.1,
+              "lo": 0.0,
+              "mean_predicted_prob": null,
+              "n": 0,
+              "observed_win_freq": null
+            },
+            {
+              "bin": "0.1-0.2",
+              "gap": 0.33215426089934075,
+              "hi": 0.2,
+              "lo": 0.1,
+              "mean_predicted_prob": 0.16784573910065928,
+              "n": 8,
+              "observed_win_freq": 0.5
+            },
+            {
+              "bin": "0.2-0.3",
+              "gap": 0.22546013841517837,
+              "hi": 0.30000000000000004,
+              "lo": 0.2,
+              "mean_predicted_prob": 0.25983397923188045,
+              "n": 68,
+              "observed_win_freq": 0.4852941176470588
+            },
+            {
+              "bin": "0.3-0.4",
+              "gap": 0.08329761855273621,
+              "hi": 0.4,
+              "lo": 0.30000000000000004,
+              "mean_predicted_prob": 0.36313095287583524,
+              "n": 224,
+              "observed_win_freq": 0.44642857142857145
+            },
+            {
+              "bin": "0.4-0.5",
+              "gap": 0.006289476476047884,
+              "hi": 0.5,
+              "lo": 0.4,
+              "mean_predicted_prob": 0.4746597213849147,
+              "n": 11968,
+              "observed_win_freq": 0.4809491978609626
+            },
+            {
+              "bin": "0.5-0.6",
+              "gap": -0.004680856501741548,
+              "hi": 0.6000000000000001,
+              "lo": 0.5,
+              "mean_predicted_prob": 0.5381873965483281,
+              "n": 11162,
+              "observed_win_freq": 0.5335065400465866
+            },
+            {
+              "bin": "0.6-0.7",
+              "gap": -0.01543315714394733,
+              "hi": 0.7000000000000001,
+              "lo": 0.6000000000000001,
+              "mean_predicted_prob": 0.6267812800108415,
+              "n": 2344,
+              "observed_win_freq": 0.6113481228668942
+            },
+            {
+              "bin": "0.7-0.8",
+              "gap": -0.1448693194349009,
+              "hi": 0.8,
+              "lo": 0.7000000000000001,
+              "mean_predicted_prob": 0.733104613552548,
+              "n": 51,
+              "observed_win_freq": 0.5882352941176471
+            },
+            {
+              "bin": "0.8-0.9",
+              "gap": -0.25716285325599775,
+              "hi": 0.9,
+              "lo": 0.8,
+              "mean_predicted_prob": 0.8127184088115533,
+              "n": 9,
+              "observed_win_freq": 0.5555555555555556
+            },
+            {
+              "bin": "0.9-1.0",
+              "gap": null,
+              "hi": 1.0,
+              "lo": 0.9,
+              "mean_predicted_prob": null,
+              "n": 0,
+              "observed_win_freq": null
+            }
+          ],
+          "reproduction_max_abs_diff": 0.0,
+          "resolution_tax": 0.0012328721805475822,
+          "sharpness": 0.0032134890719680838,
+          "verdict": "FLATTENED"
+        },
+        "isotonic": {
+          "ece": 0.009301788688995382,
+          "log_loss": 0.6942148078656845,
+          "murphy_reliability": 0.0007477666948768654,
+          "murphy_resolution": 0.0022362933472342725,
+          "reliability_bins": [
+            {
+              "bin": "0.0-0.1",
+              "gap": 0.5736624279610253,
+              "hi": 0.1,
+              "lo": 0.0,
+              "mean_predicted_prob": 0.009670905372308037,
+              "n": 12,
+              "observed_win_freq": 0.5833333333333334
+            },
+            {
+              "bin": "0.1-0.2",
+              "gap": 0.22283462462256118,
+              "hi": 0.2,
+              "lo": 0.1,
+              "mean_predicted_prob": 0.15216537537743882,
+              "n": 32,
+              "observed_win_freq": 0.375
+            },
+            {
+              "bin": "0.2-0.3",
+              "gap": 0.1824946639324716,
+              "hi": 0.30000000000000004,
+              "lo": 0.2,
+              "mean_predicted_prob": 0.2619497805119728,
+              "n": 99,
+              "observed_win_freq": 0.4444444444444444
+            },
+            {
+              "bin": "0.3-0.4",
+              "gap": 0.07514704039824427,
+              "hi": 0.4,
+              "lo": 0.30000000000000004,
+              "mean_predicted_prob": 0.36375570274390034,
+              "n": 401,
+              "observed_win_freq": 0.4389027431421446
+            },
+            {
+              "bin": "0.4-0.5",
+              "gap": 0.005880970655071094,
+              "hi": 0.5,
+              "lo": 0.4,
+              "mean_predicted_prob": 0.4710968975718432,
+              "n": 11793,
+              "observed_win_freq": 0.4769778682269143
+            },
+            {
+              "bin": "0.5-0.6",
+              "gap": 0.00430976007218653,
+              "hi": 0.6000000000000001,
+              "lo": 0.5,
+              "mean_predicted_prob": 0.5259469636441949,
+              "n": 9816,
+              "observed_win_freq": 0.5302567237163814
+            },
+            {
+              "bin": "0.6-0.7",
+              "gap": -0.013045566815082843,
+              "hi": 0.7000000000000001,
+              "lo": 0.6000000000000001,
+              "mean_predicted_prob": 0.6252847879555558,
+              "n": 3595,
+              "observed_win_freq": 0.6122392211404729
+            },
+            {
+              "bin": "0.7-0.8",
+              "gap": -0.16221219517024577,
+              "hi": 0.8,
+              "lo": 0.7000000000000001,
+              "mean_predicted_prob": 0.7336407665988172,
+              "n": 70,
+              "observed_win_freq": 0.5714285714285714
+            },
+            {
+              "bin": "0.8-0.9",
+              "gap": -0.31742587730653893,
+              "hi": 0.9,
+              "lo": 0.8,
+              "mean_predicted_prob": 0.8174258773065389,
+              "n": 10,
+              "observed_win_freq": 0.5
+            },
+            {
+              "bin": "0.9-1.0",
+              "gap": -0.8333333333333334,
+              "hi": 1.0,
+              "lo": 0.9,
+              "mean_predicted_prob": 1.0,
+              "n": 6,
+              "observed_win_freq": 0.16666666666666666
+            }
+          ],
+          "reproduction_max_abs_diff": 0.0,
+          "resolution_tax": 0.0005780926614582364,
+          "sharpness": 0.004096912204797555,
+          "verdict": "FLATTENED"
+        },
+        "temperature": {
+          "ece": 0.0072615787322737775,
+          "log_loss": 0.6882648207174464,
+          "murphy_reliability": 0.0002897715599841194,
+          "murphy_resolution": 0.0019950786719059553,
+          "reliability_bins": [
+            {
+              "bin": "0.0-0.1",
+              "gap": null,
+              "hi": 0.1,
+              "lo": 0.0,
+              "mean_predicted_prob": null,
+              "n": 0,
+              "observed_win_freq": null
+            },
+            {
+              "bin": "0.1-0.2",
+              "gap": 0.33215426089934075,
+              "hi": 0.2,
+              "lo": 0.1,
+              "mean_predicted_prob": 0.16784573910065928,
+              "n": 8,
+              "observed_win_freq": 0.5
+            },
+            {
+              "bin": "0.2-0.3",
+              "gap": 0.24059389120975988,
+              "hi": 0.30000000000000004,
+              "lo": 0.2,
+              "mean_predicted_prob": 0.2594061087902401,
+              "n": 48,
+              "observed_win_freq": 0.5
+            },
+            {
+              "bin": "0.3-0.4",
+              "gap": 0.05682276248969509,
+              "hi": 0.4,
+              "lo": 0.30000000000000004,
+              "mean_predicted_prob": 0.3598439041769716,
+              "n": 144,
+              "observed_win_freq": 0.4166666666666667
+            },
+            {
+              "bin": "0.4-0.5",
+              "gap": -0.00024058651483410687,
+              "hi": 0.5,
+              "lo": 0.4,
+              "mean_predicted_prob": 0.4762470775124386,
+              "n": 12941,
+              "observed_win_freq": 0.4760064909976045
+            },
+            {
+              "bin": "0.5-0.6",
+              "gap": 0.010761373867129831,
+              "hi": 0.6000000000000001,
+              "lo": 0.5,
+              "mean_predicted_prob": 0.5358472250950644,
+              "n": 10792,
+              "observed_win_freq": 0.5466085989621943
+            },
+            {
+              "bin": "0.6-0.7",
+              "gap": -0.02013173792490741,
+              "hi": 0.7000000000000001,
+              "lo": 0.6000000000000001,
+              "mean_predicted_prob": 0.6307663862954048,
+              "n": 1749,
+              "observed_win_freq": 0.6106346483704974
+            },
+            {
+              "bin": "0.7-0.8",
+              "gap": -0.0534739904094087,
+              "hi": 0.8,
+              "lo": 0.7000000000000001,
+              "mean_predicted_prob": 0.7295303284375777,
+              "n": 142,
+              "observed_win_freq": 0.676056338028169
+            },
+            {
+              "bin": "0.8-0.9",
+              "gap": -0.31535131744490674,
+              "hi": 0.9,
+              "lo": 0.8,
+              "mean_predicted_prob": 0.8153513174449067,
+              "n": 10,
+              "observed_win_freq": 0.5
+            },
+            {
+              "bin": "0.9-1.0",
+              "gap": null,
+              "hi": 1.0,
+              "lo": 0.9,
+              "mean_predicted_prob": null,
+              "n": 0,
+              "observed_win_freq": null
+            }
+          ],
+          "reproduction_max_abs_diff": 0.0,
+          "resolution_tax": 0.0008193073367865535,
+          "sharpness": 0.002989128031925408,
+          "verdict": "FLATTENED"
+        }
+      },
+      "dropped_rows": 0,
+      "input": {
+        "bytes": 6053712,
+        "path": "C:\\Users\\neelj\\nba-track-a18\\data\\cache\\combo\\gate_corpus_soccer.parquet",
+        "resolution": "n/a tabular",
+        "sha256": "e0d2f13e7a53b3ed578e81e38db82f14bb6d3a71e31a9c7cb636d5b4c7e92bc6"
+      },
+      "input_rows": 25834,
+      "prediction_column": "p_base",
+      "prediction_path": "docs/evidence/harness/S205_calib_bakeoff_2026-09-04_predictions_soccer.json",
+      "premise_abs_diff": 0.0,
+      "premise_isotonic_after_ece": 0.009301788688995382,
+      "scored_rows": 25834
+    },
+    "tennis": {
+      "arms": {
+        "beta": {
+          "ece": 0.008634880382824747,
+          "log_loss": 0.6239951457005041,
+          "murphy_reliability": 8.745988256637545e-05,
+          "murphy_resolution": 0.031458635671568036,
+          "reliability_bins": [
+            {
+              "bin": "0.0-0.1",
+              "gap": -0.0027775810867185224,
+              "hi": 0.1,
+              "lo": 0.0,
+              "mean_predicted_prob": 0.07057419125621005,
+              "n": 354,
+              "observed_win_freq": 0.06779661016949153
+            },
+            {
+              "bin": "0.1-0.2",
+              "gap": -0.018149446356266752,
+              "hi": 0.2,
+              "lo": 0.1,
+              "mean_predicted_prob": 0.15743274588297398,
+              "n": 1479,
+              "observed_win_freq": 0.13928329952670723
+            },
+            {
+              "bin": "0.2-0.3",
+              "gap": 0.010571701294350366,
+              "hi": 0.30000000000000004,
+              "lo": 0.2,
+              "mean_predicted_prob": 0.25534703733512204,
+              "n": 3298,
+              "observed_win_freq": 0.2659187386294724
+            },
+            {
+              "bin": "0.3-0.4",
+              "gap": -0.009648717535103879,
+              "hi": 0.4,
+              "lo": 0.30000000000000004,
+              "mean_predicted_prob": 0.3545859856036672,
+              "n": 5659,
+              "observed_win_freq": 0.34493726806856334
+            },
+            {
+              "bin": "0.4-0.5",
+              "gap": -0.002674527420975681,
+              "hi": 0.5,
+              "lo": 0.4,
+              "mean_predicted_prob": 0.45505547980192806,
+              "n": 8736,
+              "observed_win_freq": 0.4523809523809524
+            },
+            {
+              "bin": "0.5-0.6",
+              "gap": -0.009782671235911367,
+              "hi": 0.6000000000000001,
+              "lo": 0.5,
+              "mean_predicted_prob": 0.5443516955706851,
+              "n": 8794,
+              "observed_win_freq": 0.5345690243347737
+            },
+            {
+              "bin": "0.6-0.7",
+              "gap": -0.011224194931992115,
+              "hi": 0.7000000000000001,
+              "lo": 0.6000000000000001,
+              "mean_predicted_prob": 0.6505657855447692,
+              "n": 6136,
+              "observed_win_freq": 0.6393415906127771
+            },
+            {
+              "bin": "0.7-0.8",
+              "gap": -0.008932645527290006,
+              "hi": 0.8,
+              "lo": 0.7000000000000001,
+              "mean_predicted_prob": 0.7462009174216007,
+              "n": 4693,
+              "observed_win_freq": 0.7372682718943107
+            },
+            {
+              "bin": "0.8-0.9",
+              "gap": -0.009768863729888944,
+              "hi": 0.9,
+              "lo": 0.8,
+              "mean_predicted_prob": 0.8425229905761096,
+              "n": 2302,
+              "observed_win_freq": 0.8327541268462206
+            },
+            {
+              "bin": "0.9-1.0",
+              "gap": -0.003937400420073622,
+              "hi": 1.0,
+              "lo": 0.9,
+              "mean_predicted_prob": 0.930374182029269,
+              "n": 435,
+              "observed_win_freq": 0.9264367816091954
+            }
+          ],
+          "reproduction_max_abs_diff": 0.0,
+          "resolution_tax": 0.0002574401842943344,
+          "sharpness": 0.03305905192624112,
+          "verdict": "FLATTENED"
+        },
+        "isotonic": {
+          "ece": 0.008403089761848824,
+          "log_loss": 0.629501558994631,
+          "murphy_reliability": 0.00013934776115065827,
+          "murphy_resolution": 0.03103590509145616,
+          "reliability_bins": [
+            {
+              "bin": "0.0-0.1",
+              "gap": 0.050140462670597144,
+              "hi": 0.1,
+              "lo": 0.0,
+              "mean_predicted_prob": 0.06117012978900788,
+              "n": 557,
+              "observed_win_freq": 0.11131059245960502
+            },
+            {
+              "bin": "0.1-0.2",
+              "gap": 0.0017547874793414076,
+              "hi": 0.2,
+              "lo": 0.1,
+              "mean_predicted_prob": 0.13636180444890972,
+              "n": 1115,
+              "observed_win_freq": 0.13811659192825113
+            },
+            {
+              "bin": "0.2-0.3",
+              "gap": 0.006596092751390892,
+              "hi": 0.30000000000000004,
+              "lo": 0.2,
+              "mean_predicted_prob": 0.25305408818950176,
+              "n": 3316,
+              "observed_win_freq": 0.25965018094089265
+            },
+            {
+              "bin": "0.3-0.4",
+              "gap": 0.0023644270378013754,
+              "hi": 0.4,
+              "lo": 0.30000000000000004,
+              "mean_predicted_prob": 0.3456375143956236,
+              "n": 6181,
+              "observed_win_freq": 0.348001941433425
+            },
+            {
+              "bin": "0.4-0.5",
+              "gap": -0.0018120085763465577,
+              "hi": 0.5,
+              "lo": 0.4,
+              "mean_predicted_prob": 0.4582730097404909,
+              "n": 8590,
+              "observed_win_freq": 0.45646100116414434
+            },
+            {
+              "bin": "0.5-0.6",
+              "gap": -0.010428786780390498,
+              "hi": 0.6000000000000001,
+              "lo": 0.5,
+              "mean_predicted_prob": 0.5409107144912338,
+              "n": 8300,
+              "observed_win_freq": 0.5304819277108433
+            },
+            {
+              "bin": "0.6-0.7",
+              "gap": -0.011709691546744283,
+              "hi": 0.7000000000000001,
+              "lo": 0.6000000000000001,
+              "mean_predicted_prob": 0.6507157862490415,
+              "n": 6399,
+              "observed_win_freq": 0.6390060947022972
+            },
+            {
+              "bin": "0.7-0.8",
+              "gap": -0.00789345358562854,
+              "hi": 0.8,
+              "lo": 0.7000000000000001,
+              "mean_predicted_prob": 0.7528877867930331,
+              "n": 5294,
+              "observed_win_freq": 0.7449943332074046
+            },
+            {
+              "bin": "0.8-0.9",
+              "gap": -0.034251518747761,
+              "hi": 0.9,
+              "lo": 0.8,
+              "mean_predicted_prob": 0.8632507307256964,
+              "n": 1269,
+              "observed_win_freq": 0.8289992119779354
+            },
+            {
+              "bin": "0.9-1.0",
+              "gap": -0.026927519311731984,
+              "hi": 1.0,
+              "lo": 0.9,
+              "mean_predicted_prob": 0.926349484629651,
+              "n": 865,
+              "observed_win_freq": 0.8994219653179191
+            }
+          ],
+          "reproduction_max_abs_diff": 0.0,
+          "resolution_tax": 0.0006801707644062092,
+          "sharpness": 0.03479011149543342,
+          "verdict": "FLATTENED"
+        },
+        "temperature": {
+          "ece": 0.007238871287360969,
+          "log_loss": 0.6238618741614824,
+          "murphy_reliability": 7.303047543185594e-05,
+          "murphy_resolution": 0.031449365454360036,
+          "reliability_bins": [
+            {
+              "bin": "0.0-0.1",
+              "gap": -0.03946775923912634,
+              "hi": 0.1,
+              "lo": 0.0,
+              "mean_predicted_prob": 0.07490083010526807,
+              "n": 254,
+              "observed_win_freq": 0.03543307086614173
+            },
+            {
+              "bin": "0.1-0.2",
+              "gap": -0.01469321738712287,
+              "hi": 0.2,
+              "lo": 0.1,
+              "mean_predicted_prob": 0.15957409311152726,
+              "n": 1553,
+              "observed_win_freq": 0.1448808757244044
+            },
+            {
+              "bin": "0.2-0.3",
+              "gap": 0.011194861309715864,
+              "hi": 0.30000000000000004,
+              "lo": 0.2,
+              "mean_predicted_prob": 0.25513411762923377,
+              "n": 3751,
+              "observed_win_freq": 0.26632897893894963
+            },
+            {
+              "bin": "0.3-0.4",
+              "gap": 0.004550992380575158,
+              "hi": 0.4,
+              "lo": 0.30000000000000004,
+              "mean_predicted_prob": 0.3531047097399792,
+              "n": 5989,
+              "observed_win_freq": 0.35765570212055436
+            },
+            {
+              "bin": "0.4-0.5",
+              "gap": -0.0052405800643901546,
+              "hi": 0.5,
+              "lo": 0.4,
+              "mean_predicted_prob": 0.4564600922595121,
+              "n": 7708,
+              "observed_win_freq": 0.45121951219512196
+            },
+            {
+              "bin": "0.5-0.6",
+              "gap": -0.0027524492044955773,
+              "hi": 0.6000000000000001,
+              "lo": 0.5,
+              "mean_predicted_prob": 0.5366078153951911,
+              "n": 8684,
+              "observed_win_freq": 0.5338553661906955
+            },
+            {
+              "bin": "0.6-0.7",
+              "gap": -0.01166557967551407,
+              "hi": 0.7000000000000001,
+              "lo": 0.6000000000000001,
+              "mean_predicted_prob": 0.6491296438304544,
+              "n": 6609,
+              "observed_win_freq": 0.6374640641549403
+            },
+            {
+              "bin": "0.7-0.8",
+              "gap": -0.0064287957217785685,
+              "hi": 0.8,
+              "lo": 0.7000000000000001,
+              "mean_predicted_prob": 0.7456432194178507,
+              "n": 4659,
+              "observed_win_freq": 0.7392144236960722
+            },
+            {
+              "bin": "0.8-0.9",
+              "gap": -0.012744914772918503,
+              "hi": 0.9,
+              "lo": 0.8,
+              "mean_predicted_prob": 0.8430616568543665,
+              "n": 2210,
+              "observed_win_freq": 0.830316742081448
+            },
+            {
+              "bin": "0.9-1.0",
+              "gap": -0.0034193393047018406,
+              "hi": 1.0,
+              "lo": 0.9,
+              "mean_predicted_prob": 0.9287924736330601,
+              "n": 469,
+              "observed_win_freq": 0.9253731343283582
+            }
+          ],
+          "reproduction_max_abs_diff": 0.0,
+          "resolution_tax": 0.0002667104015023347,
+          "sharpness": 0.033502459745485644,
+          "verdict": "FLATTENED"
+        }
+      },
+      "dropped_rows": 0,
+      "input": {
+        "bytes": 2745405,
+        "path": "C:\\Users\\neelj\\nba-track-a18\\data\\cache\\combo\\gate_corpus_tennis.parquet",
+        "resolution": "n/a tabular",
+        "sha256": "22d006f2b4f7a7186876e133508e1e9ddf14af3570f1d20a73d73d1d3669d700"
+      },
+      "input_rows": 41886,
+      "prediction_column": "p_base",
+      "prediction_path": "docs/evidence/harness/S205_calib_bakeoff_2026-09-04_predictions_tennis.json",
+      "premise_abs_diff": 0.0,
+      "premise_isotonic_after_ece": 0.008403089761848824,
+      "scored_rows": 41886
+    }
+  }
+}
