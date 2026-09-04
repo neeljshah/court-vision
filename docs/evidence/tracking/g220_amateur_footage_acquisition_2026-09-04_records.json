@@ -1,0 +1,177 @@
+{
+  "cap_bytes": 4000000000,
+  "part_bytes_freed": 0,
+  "pod_start_load": "utc=2026-09-04T04:37:37Z\n load= 04:37:37 up 147 days, 18:51,  0 user,  load average: 20.92, 24.75, 31.06\n0 %, 354 MiB, 24576 MiB",
+  "records": [
+    {
+      "after_guard": {
+        "data_du_mb": 31013,
+        "dd_bytes": 4194304,
+        "label": "jh3fnwMi7dM_after",
+        "raw": "dd_bytes=4194304 data_du_mb=31013\t/workspace/nba-ai-system/data"
+      },
+      "before_guard": {
+        "data_du_mb": 31012,
+        "dd_bytes": 4194304,
+        "label": "jh3fnwMi7dM_before",
+        "raw": "dd_bytes=4194304 data_du_mb=31012\t/workspace/nba-ai-system/data"
+      },
+      "bytes": 0,
+      "candidate": {
+        "description": "Lorain vs Bedford HS",
+        "duration_seconds": 8845,
+        "expected_height": 1080,
+        "sport": "basketball",
+        "youtube_id": "jh3fnwMi7dM"
+      },
+      "error": "ERROR: [youtube] jh3fnwMi7dM: Requested format is not available. Use --list-formats for a list of available formats",
+      "height": 0,
+      "outcome": "unavailable",
+      "part_bytes_freed": 0,
+      "rung": "b[height<=1080][height>=720]",
+      "section": "*00:10:00-00:26:00"
+    },
+    {
+      "after_guard": {
+        "data_du_mb": 31014,
+        "dd_bytes": 4194304,
+        "label": "qpZfGp_fScU_after",
+        "raw": "dd_bytes=4194304 data_du_mb=31014\t/workspace/nba-ai-system/data"
+      },
+      "before_guard": {
+        "data_du_mb": 31013,
+        "dd_bytes": 4194304,
+        "label": "qpZfGp_fScU_before",
+        "raw": "dd_bytes=4194304 data_du_mb=31013\t/workspace/nba-ai-system/data"
+      },
+      "bytes": 0,
+      "candidate": {
+        "description": "Bismarck HS at Dickinson",
+        "duration_seconds": 4190,
+        "expected_height": 720,
+        "sport": "basketball",
+        "youtube_id": "qpZfGp_fScU"
+      },
+      "error": "ERROR: [youtube] qpZfGp_fScU: Requested format is not available. Use --list-formats for a list of available formats",
+      "height": 0,
+      "outcome": "unavailable",
+      "part_bytes_freed": 0,
+      "rung": "b[height<=1080][height>=720]",
+      "section": "*00:10:00-00:26:00"
+    },
+    {
+      "after_guard": {
+        "data_du_mb": 31014,
+        "dd_bytes": 4194304,
+        "label": "1MwO3CDkeeM_after",
+        "raw": "dd_bytes=4194304 data_du_mb=31014\t/workspace/nba-ai-system/data"
+      },
+      "before_guard": {
+        "data_du_mb": 31014,
+        "dd_bytes": 4194304,
+        "label": "1MwO3CDkeeM_before",
+        "raw": "dd_bytes=4194304 data_du_mb=31014\t/workspace/nba-ai-system/data"
+      },
+      "bytes": 0,
+      "candidate": {
+        "description": "Bremen at Triton fifth grade",
+        "duration_seconds": 1858,
+        "expected_height": 1080,
+        "sport": "basketball",
+        "youtube_id": "1MwO3CDkeeM"
+      },
+      "error": "ERROR: [youtube] 1MwO3CDkeeM: Requested format is not available. Use --list-formats for a list of available formats",
+      "height": 0,
+      "outcome": "unavailable",
+      "part_bytes_freed": 0,
+      "rung": "b[height<=1080][height>=720]",
+      "section": "*00:04:38-00:20:38"
+    },
+    {
+      "after_guard": {
+        "data_du_mb": 31014,
+        "dd_bytes": 4194304,
+        "label": "3asBuhRd_LI_after",
+        "raw": "dd_bytes=4194304 data_du_mb=31014\t/workspace/nba-ai-system/data"
+      },
+      "before_guard": {
+        "data_du_mb": 31014,
+        "dd_bytes": 4194304,
+        "label": "3asBuhRd_LI_before",
+        "raw": "dd_bytes=4194304 data_du_mb=31014\t/workspace/nba-ai-system/data"
+      },
+      "bytes": 0,
+      "candidate": {
+        "description": "Pella eighth grade vs Newton",
+        "duration_seconds": 1772,
+        "expected_height": 1080,
+        "sport": "basketball",
+        "youtube_id": "3asBuhRd_LI"
+      },
+      "error": "ERROR: [youtube] 3asBuhRd_LI: Requested format is not available. Use --list-formats for a list of available formats",
+      "height": 0,
+      "outcome": "unavailable",
+      "part_bytes_freed": 0,
+      "rung": "b[height<=1080][height>=720]",
+      "section": "*00:04:25-00:20:25"
+    },
+    {
+      "after_guard": {
+        "data_du_mb": 31016,
+        "dd_bytes": 4194304,
+        "label": "lAs8JaoWNwg_after",
+        "raw": "dd_bytes=4194304 data_du_mb=31016\t/workspace/nba-ai-system/data"
+      },
+      "before_guard": {
+        "data_du_mb": 31015,
+        "dd_bytes": 4194304,
+        "label": "lAs8JaoWNwg_before",
+        "raw": "dd_bytes=4194304 data_du_mb=31015\t/workspace/nba-ai-system/data"
+      },
+      "bytes": 0,
+      "candidate": {
+        "description": "GACS mens soccer",
+        "duration_seconds": 4770,
+        "expected_height": 720,
+        "sport": "soccer",
+        "youtube_id": "lAs8JaoWNwg"
+      },
+      "error": "ERROR: [youtube] lAs8JaoWNwg: Requested format is not available. Use --list-formats for a list of available formats",
+      "height": 0,
+      "outcome": "unavailable",
+      "part_bytes_freed": 0,
+      "rung": "b[height<=1080][height>=720]",
+      "section": "*00:10:00-00:26:00"
+    },
+    {
+      "after_guard": {
+        "data_du_mb": 31017,
+        "dd_bytes": 4194304,
+        "label": "XwpLBtt1G2g_after",
+        "raw": "dd_bytes=4194304 data_du_mb=31017\t/workspace/nba-ai-system/data"
+      },
+      "before_guard": {
+        "data_du_mb": 31016,
+        "dd_bytes": 4194304,
+        "label": "XwpLBtt1G2g_before",
+        "raw": "dd_bytes=4194304 data_du_mb=31016\t/workspace/nba-ai-system/data"
+      },
+      "bytes": 0,
+      "candidate": {
+        "description": "Nepean Hotspurs U15-16",
+        "duration_seconds": 3869,
+        "expected_height": 1080,
+        "sport": "soccer",
+        "youtube_id": "XwpLBtt1G2g"
+      },
+      "error": "ERROR: [youtube] XwpLBtt1G2g: Requested format is not available. Use --list-formats for a list of available formats",
+      "height": 0,
+      "outcome": "unavailable",
+      "part_bytes_freed": 0,
+      "rung": "b[height<=1080][height>=720]",
+      "section": "*00:09:40-00:25:40"
+    }
+  ],
+  "running_total_bytes": 0,
+  "section_seconds": 960
+}
