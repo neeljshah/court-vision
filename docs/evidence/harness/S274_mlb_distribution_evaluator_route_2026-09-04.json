@@ -1,0 +1,49 @@
+{
+  "cluster_count": 777,
+  "cold_start_rows": 63,
+  "embargo_days": 3,
+  "input": {
+    "bytes": 1283918,
+    "path": "data\\frontend\\prop_history_corpus_mlb.jsonl",
+    "sha256": "97a6ebd51c89c456588119c39128099f6492185d414f49a26031a2c10a6c1d0d"
+  },
+  "market_arm": "NULL: premise census has zero non-null market_prob rows",
+  "metrics": {
+    "crps": {
+      "archived": 0.5098297809224259,
+      "delta": 0.0,
+      "route": 0.5098297809224259
+    },
+    "pinball_q10": {
+      "archived": 0.08655308369594088,
+      "delta": 0.0,
+      "route": 0.08655308369594088
+    },
+    "pinball_q50": {
+      "archived": 0.37323931073931077,
+      "delta": 0.0,
+      "route": 0.37323931073931077
+    },
+    "pinball_q90": {
+      "archived": 0.2013804110232682,
+      "delta": 0.0,
+      "route": 0.2013804110232682
+    }
+  },
+  "n_groups": 778,
+  "n_test_groups": 1,
+  "protected_route_sha256_after": {
+    "scripts\\platformkit\\eval_gate\\cpcv_distribution.py": "ea6bc6b811d9ad8e71b8ad9a1840fa4d0e17765db07806fe39e2ebfdaa9d0b0b",
+    "scripts\\platformkit\\mlb_batter_pitcher_line_dist.py": "9d47948779367416bd84bdd97b9ccf879d3e1a51f95392c101cad6d4c5bc4ac4"
+  },
+  "protected_route_sha256_before": {
+    "scripts\\platformkit\\eval_gate\\cpcv_distribution.py": "ea6bc6b811d9ad8e71b8ad9a1840fa4d0e17765db07806fe39e2ebfdaa9d0b0b",
+    "scripts\\platformkit\\mlb_batter_pitcher_line_dist.py": "9d47948779367416bd84bdd97b9ccf879d3e1a51f95392c101cad6d4c5bc4ac4"
+  },
+  "row_count": 3000,
+  "rss_mb": {
+    "after": 163.64453125,
+    "before": 143.171875,
+    "limit": 600.0
+  }
+}
