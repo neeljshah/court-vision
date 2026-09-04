@@ -1,0 +1,30 @@
+{
+  "artifact": "docs/evidence/harness/S230_pregame_scheme_interaction_prereg_2026-09-04.json",
+  "candidate_family": [
+    "off_tempo_z_x_def_pace_imposed_z",
+    "off_spacing_z_x_def_defender_distance_z",
+    "off_tempo_spacing_z_x_def_pace_imposed_z",
+    "off_paint_dwell_z_x_def_paint_dwell_allowed_z",
+    "off_transition_share_z_x_def_intensity_z",
+    "off_avg_spacing_z_x_def_catch_shoot_allowed_z"
+  ],
+  "candidate_rule": "For each term, form offense_z times opponent defense_z on each team row, then form home minus away at the game row. The list is frozen from matchup_grid field names after metadata-only review of the undated 108-row archetype and 315-row position scheme tables. Those undated tables are not joined, fitted, or scored.",
+  "corpus": "data/cache/combo/gate_corpus_nba_close.parquet",
+  "evaluator": "scripts.platformkit.eval_gate.walkforward.walk_forward",
+  "feature_availability": "Every interaction is declared available at event_date T00:00:00; the scored state is event_date T12:00:00.",
+  "frozen_bar": "Census first; all paired joined rows; model-relative ECE, Brier, log-loss with corpus_unit-clustered CI and n_eff; market-relative metrics only on pregame close rows; ten bins under np.linspace(0,1,11), [lo,hi) except final [lo,hi]; zero rows dropped after pairing.",
+  "generated_artifacts": [
+    "docs/evidence/harness/S230_pregame_scheme_interaction_2026-09-04.md",
+    "docs/evidence/harness/S230_pregame_scheme_interaction_2026-09-04_predictions.csv"
+  ],
+  "incumbent": "p_base",
+  "interaction_model": "Ridge logistic residual model with logit(p_base) fixed as a true offset. Standardization and the ridge fit use only evaluator-supplied training states. If fewer than 30 train rows are available, the callback returns p_base.",
+  "metric": "ECE, Brier, and log-loss of callback-produced interaction predictions against the incumbent on all paired rows, and separately against p_close only where close_source is pregame_last_tick_before_commence.",
+  "no_charge_or_ledger": true,
+  "preregistration_version": 1,
+  "scoring_command": "python -m scripts.platformkit.s230_pregame_scheme_interaction",
+  "seal_canonicalization": "SHA-256 of UTF-8 JSON serialized with sort_keys=true and separators=(comma,colon), after removing seal_sha256.",
+  "seal_sha256": "f690d620ce3baccec2a92d2fad0243d412ec96620f7ac66613bc80c2241806ec",
+  "sealed_at_utc": "2026-09-04T00:00:00Z",
+  "verdict_rule": "If fewer than 30 corpus-unit clusters remain after pairing, report CLOSED AT LIMIT. Otherwise report SCREEN NULL unless the required census, zero-drop, callback, purge, symmetric embargo, and archived paired-loss conditions are all met; no market-relative result is stated when the pregame close subset has fewer than 30 effective clusters."
+}

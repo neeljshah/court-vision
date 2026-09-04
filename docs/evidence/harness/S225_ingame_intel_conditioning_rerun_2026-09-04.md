@@ -83,6 +83,9 @@ SHA-256:
 - `docs/evidence/harness/S225_ingame_intel_conditioning_rerun_2026-09-04_per_game_differentials.csv`
 - `docs/evidence/harness/S225_ingame_intel_conditioning_rerun_2026-09-04_state_differentials.csv`
 
+The state-differentials CSV is 274,290,586 bytes, exceeds the 50 MB evidence
+cap, and remains local-only under the repository's gitignored CSV pattern.
+
 The per-game CSV retains its legacy seven-column, one-row-per-game-and-arm
 schema. The state CSV has one row per scored state and arm, with game,
 timestamp, outcome, arm/incumbent/market predictions, three losses, both
@@ -105,5 +108,3 @@ The archived 2024-25 `cond_prior` and `cond_val` values remain unverified as
 historical same-season-fit artifacts. Attempt 2 does not use those values as
 out-of-sample inputs; it does not independently validate their archived source
 construction.
-
-NOTE (orchestrator, 2026-09-04 00:25 CDT): the 20-column state archive `S225_ingame_intel_conditioning_rerun_2026-09-04_state_differentials.csv` (274,290,586 bytes) exceeds the GitHub 100 MB file limit and is LOCAL-ONLY (gitignored); it was removed from the unpushed history before the first push. The seven-column per-game file and the summary JSON carry every number the acceptance rule scores.
