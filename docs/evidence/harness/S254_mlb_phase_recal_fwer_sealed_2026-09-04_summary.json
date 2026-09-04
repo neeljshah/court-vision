@@ -1,0 +1,3096 @@
+{
+  "bh_survivors": [],
+  "buckets": [
+    {
+      "bh_p": 0.6742113817783193,
+      "bh_rank": 7,
+      "bh_survivor": false,
+      "bh_threshold": 0.023333333333333334,
+      "brier_candidate": 0.22828814629596997,
+      "brier_incumbent": 0.23569880256465944,
+      "bucket": "early|leading",
+      "ci95": [
+        -0.008176910520451386,
+        0.02285924496624357
+      ],
+      "delta": 0.007122946641206753,
+      "label_after_bh": "NO_CHANGE",
+      "n_game_clusters": 103,
+      "n_ticks": 1248,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.37451996361648,
+      "replication": {
+        "brier_candidate": 0.20838788863327753,
+        "brier_incumbent": 0.21013950592836222,
+        "ci95": [
+          -0.012909886965222842,
+          0.030446883500978187
+        ],
+        "delta": 0.00835207584671621,
+        "n_game_clusters": 49,
+        "n_ticks": 620,
+        "raw_p": 0.45317552739055045
+      },
+      "replication_label": "NOT_REPLICATED"
+    },
+    {
+      "bh_p": 0.7860196718749702,
+      "bh_rank": 13,
+      "bh_survivor": false,
+      "bh_threshold": 0.043333333333333335,
+      "brier_candidate": 0.09487763962314245,
+      "brier_incumbent": 0.06812866078653329,
+      "bucket": "early|leading_big",
+      "ci95": [
+        -0.022566389599608116,
+        0.01738022188922407
+      ],
+      "delta": -0.004174070796674779,
+      "label_after_bh": "NO_CHANGE",
+      "n_game_clusters": 33,
+      "n_ticks": 349,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.6812170489583076,
+      "replication": {
+        "brier_candidate": 0.07011642266286822,
+        "brier_incumbent": 0.0324152977130291,
+        "ci95": [
+          -0.03922300977624377,
+          0.0037053762373222355
+        ],
+        "delta": -0.02235417382043866,
+        "n_game_clusters": 14,
+        "n_ticks": 149,
+        "raw_p": 0.08133782411038731
+      },
+      "replication_label": "NOT_REPLICATED"
+    },
+    {
+      "bh_p": 0.9299353378431525,
+      "bh_rank": 15,
+      "bh_survivor": false,
+      "bh_threshold": 0.05,
+      "brier_candidate": 0.24766333194835063,
+      "brier_incumbent": 0.2455287196463929,
+      "bucket": "early|tied",
+      "ci95": [
+        -0.009928296665349194,
+        0.011263633620846997
+      ],
+      "delta": 0.00047289068418094444,
+      "label_after_bh": "NO_CHANGE",
+      "n_game_clusters": 157,
+      "n_ticks": 2709,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.9299353378431525,
+      "replication": {
+        "brier_candidate": 0.24671424538380612,
+        "brier_incumbent": 0.24474515669774255,
+        "ci95": [
+          -0.017754348650345232,
+          0.012292484282640835
+        ],
+        "delta": -0.002271877816993395,
+        "n_game_clusters": 74,
+        "n_ticks": 1253,
+        "raw_p": 0.7690680792732801
+      },
+      "replication_label": "NOT_REPLICATED"
+    },
+    {
+      "bh_p": 0.3466251403662979,
+      "bh_rank": 6,
+      "bh_survivor": false,
+      "bh_threshold": 0.020000000000000004,
+      "brier_candidate": 0.20734826031952389,
+      "brier_incumbent": 0.20904831637679674,
+      "bucket": "early|trailing",
+      "ci95": [
+        -0.015716400753660906,
+        0.0020485766026546435
+      ],
+      "delta": -0.0069228589359032885,
+      "label_after_bh": "NO_CHANGE",
+      "n_game_clusters": 101,
+      "n_ticks": 1203,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.13865005614651915,
+      "replication": {
+        "brier_candidate": 0.22052184687964158,
+        "brier_incumbent": 0.2190041253880242,
+        "ci95": [
+          -0.02427116398601401,
+          0.002818930040167969
+        ],
+        "delta": -0.01064453475111184,
+        "n_game_clusters": 46,
+        "n_ticks": 619,
+        "raw_p": 0.14009146561670494
+      },
+      "replication_label": "NOT_REPLICATED"
+    },
+    {
+      "bh_p": 0.7443983824203294,
+      "bh_rank": 12,
+      "bh_survivor": false,
+      "bh_threshold": 0.04000000000000001,
+      "brier_candidate": 0.1536000924485036,
+      "brier_incumbent": 0.155772713934984,
+      "bucket": "early|trailing_big",
+      "ci95": [
+        -0.0096754035481247,
+        0.005063474240108718
+      ],
+      "delta": -0.002059213848328081,
+      "label_after_bh": "NO_CHANGE",
+      "n_game_clusters": 42,
+      "n_ticks": 538,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.5955187059362635,
+      "replication": {
+        "brier_candidate": 0.2184825125229897,
+        "brier_incumbent": 0.22596191553694306,
+        "ci95": [
+          -0.015255404241885633,
+          0.011601246606250977
+        ],
+        "delta": -0.0007492533101272743,
+        "n_game_clusters": 19,
+        "n_ticks": 180,
+        "raw_p": 0.9184331081389443
+      },
+      "replication_label": "NOT_REPLICATED"
+    },
+    {
+      "bh_p": 0.7144683522734617,
+      "bh_rank": 10,
+      "bh_survivor": false,
+      "bh_threshold": 0.03333333333333333,
+      "brier_candidate": 0.15251887618543614,
+      "brier_incumbent": 0.15044053297124857,
+      "bucket": "late|leading",
+      "ci95": [
+        -0.013148020005537539,
+        0.02982515213519637
+      ],
+      "delta": 0.007808346065495781,
+      "label_after_bh": "NO_CHANGE",
+      "n_game_clusters": 67,
+      "n_ticks": 845,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.47631223484897445,
+      "replication": {
+        "brier_candidate": 0.12873811243996283,
+        "brier_incumbent": 0.12884314850200243,
+        "ci95": [
+          -0.013315031014045027,
+          0.044012151106638836
+        ],
+        "delta": 0.014654991772949079,
+        "n_game_clusters": 33,
+        "n_ticks": 460,
+        "raw_p": 0.31918553898232493
+      },
+      "replication_label": "NOT_REPLICATED"
+    },
+    {
+      "bh_p": 0.3466251403662979,
+      "bh_rank": 2,
+      "bh_survivor": false,
+      "bh_threshold": 0.006666666666666667,
+      "brier_candidate": 0.03082989413318077,
+      "brier_incumbent": 0.031380050312753406,
+      "bucket": "late|leading_big",
+      "ci95": [
+        0.0005051067485249957,
+        0.031100610499671617
+      ],
+      "delta": 0.01474790654623147,
+      "label_after_bh": "NO_CHANGE",
+      "n_game_clusters": 59,
+      "n_ticks": 426,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.06406827215745792,
+      "replication": {
+        "brier_candidate": 0.04828623393018314,
+        "brier_incumbent": 0.05147125292281199,
+        "ci95": [
+          -0.0003960068158730967,
+          0.04301504740852375
+        ],
+        "delta": 0.020075723135849467,
+        "n_game_clusters": 35,
+        "n_ticks": 203,
+        "raw_p": 0.08272127971599252
+      },
+      "replication_label": "NOT_REPLICATED"
+    },
+    {
+      "bh_p": 0.3466251403662979,
+      "bh_rank": 5,
+      "bh_survivor": false,
+      "bh_threshold": 0.016666666666666666,
+      "brier_candidate": 0.2770588267213152,
+      "brier_incumbent": 0.23888992254221122,
+      "bucket": "late|tied",
+      "ci95": [
+        -0.04519199349751324,
+        0.005749966010083336
+      ],
+      "delta": -0.01991785879125198,
+      "label_after_bh": "NO_CHANGE",
+      "n_game_clusters": 49,
+      "n_ticks": 493,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.13085170928038325,
+      "replication": {
+        "brier_candidate": 0.30977514034655396,
+        "brier_incumbent": 0.23857977667322386,
+        "ci95": [
+          -0.07332049497354347,
+          0.00902194475464005
+        ],
+        "delta": -0.032327124629731585,
+        "n_game_clusters": 21,
+        "n_ticks": 164,
+        "raw_p": 0.15272852729900932
+      },
+      "replication_label": "NOT_REPLICATED"
+    },
+    {
+      "bh_p": 0.3466251403662979,
+      "bh_rank": 1,
+      "bh_survivor": false,
+      "bh_threshold": 0.0033333333333333335,
+      "brier_candidate": 0.0912236794535513,
+      "brier_incumbent": 0.08957687754674211,
+      "bucket": "late|trailing",
+      "ci95": [
+        -0.0212442640556988,
+        -0.002612345785473446
+      ],
+      "delta": -0.011156782653962803,
+      "label_after_bh": "NO_CHANGE",
+      "n_game_clusters": 63,
+      "n_ticks": 860,
+      "raw_label": "WORSE",
+      "raw_p": 0.03084971602639782,
+      "replication": {
+        "brier_candidate": 0.035479516545878394,
+        "brier_incumbent": 0.0353891775244168,
+        "ci95": [
+          -0.03992048778747709,
+          -0.0009002780392225813
+        ],
+        "delta": -0.01846476788209759,
+        "n_game_clusters": 25,
+        "n_ticks": 343,
+        "raw_p": 0.08569761041733094
+      },
+      "replication_label": "NOT_REPLICATED"
+    },
+    {
+      "bh_p": 0.6742113817783193,
+      "bh_rank": 9,
+      "bh_survivor": false,
+      "bh_threshold": 0.030000000000000002,
+      "brier_candidate": 0.04359261601970348,
+      "brier_incumbent": 0.043145145586825584,
+      "bucket": "late|trailing_big",
+      "ci95": [
+        -0.009953253694260695,
+        0.0025100784744714493
+      ],
+      "delta": -0.0026372593089610693,
+      "label_after_bh": "NO_CHANGE",
+      "n_game_clusters": 61,
+      "n_ticks": 708,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.40452682906699156,
+      "replication": {
+        "brier_candidate": 0.03261122432119736,
+        "brier_incumbent": 0.03356599340312116,
+        "ci95": [
+          -0.01634716747392241,
+          0.006611712632028814
+        ],
+        "delta": -0.002908227078455442,
+        "n_game_clusters": 27,
+        "n_ticks": 368,
+        "raw_p": 0.6393041041845673
+      },
+      "replication_label": "NOT_REPLICATED"
+    },
+    {
+      "bh_p": 0.6742113817783193,
+      "bh_rank": 8,
+      "bh_survivor": false,
+      "bh_threshold": 0.02666666666666667,
+      "brier_candidate": 0.21380173600543584,
+      "brier_incumbent": 0.21806398469481791,
+      "bucket": "mid|leading",
+      "ci95": [
+        -0.006513709168223573,
+        0.016892770532488107
+      ],
+      "delta": 0.005209080415908293,
+      "label_after_bh": "NO_CHANGE",
+      "n_game_clusters": 93,
+      "n_ticks": 1438,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.3814360069600654,
+      "replication": {
+        "brier_candidate": 0.2039408032523486,
+        "brier_incumbent": 0.20820917327498498,
+        "ci95": [
+          -0.008293724587882844,
+          0.023526939319093512
+        ],
+        "delta": 0.007853712194568726,
+        "n_game_clusters": 48,
+        "n_ticks": 759,
+        "raw_p": 0.32723051210956156
+      },
+      "replication_label": "NOT_REPLICATED"
+    },
+    {
+      "bh_p": 0.9299353378431525,
+      "bh_rank": 14,
+      "bh_survivor": false,
+      "bh_threshold": 0.04666666666666667,
+      "brier_candidate": 0.04354863255005738,
+      "brier_incumbent": 0.038600605173012385,
+      "bucket": "mid|leading_big",
+      "ci95": [
+        -0.006494405697747428,
+        0.008066047905080706
+      ],
+      "delta": 0.0005225594026206751,
+      "label_after_bh": "NO_CHANGE",
+      "n_game_clusters": 54,
+      "n_ticks": 745,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.8891321137699748,
+      "replication": {
+        "brier_candidate": 0.017756386126799757,
+        "brier_incumbent": 0.011673059447462691,
+        "ci95": [
+          -0.007757768528021303,
+          0.011105216023476649
+        ],
+        "delta": 0.0008272423146551283,
+        "n_game_clusters": 28,
+        "n_ticks": 411,
+        "raw_p": 0.8662207330508475
+      },
+      "replication_label": "NOT_REPLICATED"
+    },
+    {
+      "bh_p": 0.7443983824203294,
+      "bh_rank": 11,
+      "bh_survivor": false,
+      "bh_threshold": 0.03666666666666667,
+      "brier_candidate": 0.24155878284456894,
+      "brier_incumbent": 0.23662569146133983,
+      "bucket": "mid|tied",
+      "ci95": [
+        -0.015074615332273611,
+        0.008366422308336403
+      ],
+      "delta": -0.0033152861190770106,
+      "label_after_bh": "NO_CHANGE",
+      "n_game_clusters": 85,
+      "n_ticks": 939,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.570184655893454,
+      "replication": {
+        "brier_candidate": 0.2504885050010278,
+        "brier_incumbent": 0.2415777852852388,
+        "ci95": [
+          -0.021828334216348024,
+          0.00992109907298891
+        ],
+        "delta": -0.005611069706740244,
+        "n_game_clusters": 44,
+        "n_ticks": 366,
+        "raw_p": 0.4981810168634674
+      },
+      "replication_label": "NOT_REPLICATED"
+    },
+    {
+      "bh_p": 0.3466251403662979,
+      "bh_rank": 4,
+      "bh_survivor": false,
+      "bh_threshold": 0.013333333333333334,
+      "brier_candidate": 0.1665009480842696,
+      "brier_incumbent": 0.17195818103591912,
+      "bucket": "mid|trailing",
+      "ci95": [
+        -0.012076311589394987,
+        0.0014305786649835058
+      ],
+      "delta": -0.00540121109372281,
+      "label_after_bh": "NO_CHANGE",
+      "n_game_clusters": 76,
+      "n_ticks": 1142,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.12900296159446267,
+      "replication": {
+        "brier_candidate": 0.15041592083549055,
+        "brier_incumbent": 0.15461793021584622,
+        "ci95": [
+          -0.016199490957861558,
+          0.0031317715794138045
+        ],
+        "delta": -0.006648516004941941,
+        "n_game_clusters": 40,
+        "n_ticks": 556,
+        "raw_p": 0.20035993066452573
+      },
+      "replication_label": "NOT_REPLICATED"
+    },
+    {
+      "bh_p": 0.3466251403662979,
+      "bh_rank": 3,
+      "bh_survivor": false,
+      "bh_threshold": 0.010000000000000002,
+      "brier_candidate": 0.056771363190877416,
+      "brier_incumbent": 0.056197369939325795,
+      "bucket": "mid|trailing_big",
+      "ci95": [
+        -0.009271978175304047,
+        0.0005809503272483273
+      ],
+      "delta": -0.004263787627895132,
+      "label_after_bh": "NO_CHANGE",
+      "n_game_clusters": 53,
+      "n_ticks": 968,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.09812017466452527,
+      "replication": {
+        "brier_candidate": 0.04416736392506185,
+        "brier_incumbent": 0.04411784684892746,
+        "ci95": [
+          -0.015098900822613195,
+          -0.0005624991519824602
+        ],
+        "delta": -0.0074250151918085995,
+        "n_game_clusters": 27,
+        "n_ticks": 424,
+        "raw_p": 0.07301719187168086
+      },
+      "replication_label": "NOT_REPLICATED"
+    }
+  ],
+  "code_sha256": "e78079898aec0a92e7a57fc478c7962066ac1ae431c497c76d48bcd090ff18e9",
+  "denominator": {
+    "n_eval_ticks": 47104,
+    "n_informative_game_clusters": 158,
+    "n_informative_ticks": 14611,
+    "replication_game_clusters": 158
+  },
+  "family": [
+    "early|leading",
+    "early|leading_big",
+    "early|tied",
+    "early|trailing",
+    "early|trailing_big",
+    "late|leading",
+    "late|leading_big",
+    "late|tied",
+    "late|trailing",
+    "late|trailing_big",
+    "mid|leading",
+    "mid|leading_big",
+    "mid|tied",
+    "mid|trailing",
+    "mid|trailing_big"
+  ],
+  "first_score_at_utc": "2026-09-04T08:20:14.375571+00:00",
+  "not_verified": [
+    "No calibration improvement is claimed; the measurement is a sealed, purged CPCV family score.",
+    "No flags, FWER ledger, or serving artifact changed."
+  ],
+  "prereg": {
+    "header_lines": 31,
+    "path": "docs/evidence/harness/S254_mlb_phase_recal_fwer_sealed_2026-09-04_PREREG.md",
+    "sealed_at_utc": "2026-09-04T08:08:26.2449950Z",
+    "sha256": "91aa52f7948a4cf0abc9106f6163172ace74b454478cfece41fc3fd94efdb096"
+  },
+  "purge": {
+    "embargo_days": 1,
+    "splits": [
+      {
+        "excluded_game_clusters": [
+          {
+            "game_id": "KXMLBGAME-26JUL011507NYMTOR",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011840PITPHI",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011915STLATL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011940TBKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL012010CINMIL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL012010MINHOU",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL012040MIACOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL012140SFAZ",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021235PITPHI",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021410CINMIL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021510MIACOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021915STLATL",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021940TBKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL022005DETTEX",
+            "reasons": [
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL022140LAASEA",
+            "reasons": [
+              "same_matchup_embargo"
+            ]
+          }
+        ],
+        "n_test_ticks": 8395,
+        "n_train_after": 33868,
+        "n_train_before": 38709,
+        "split_id": 0
+      },
+      {
+        "excluded_game_clusters": [
+          {
+            "game_id": "KXMLBGAME-26JUL011310TEXCLE",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011335DETNYY",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011335WSHBOS",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011420SDCHC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011507NYMTOR",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011840PITPHI",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011915STLATL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011940TBKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL012010CINMIL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL012010MINHOU",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL012040MIACOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL012140SFAZ",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021235PITPHI",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021510MIACOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021915STLATL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021940TBKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL022005DETTEX",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL022140LAASEA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL022210SDLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL031605STLCHC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL031845PITWSH",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL031905MINNYY",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL031910BALCIN",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL031915NYMATL",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL032210SDLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041105PITWSH",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041335MINNYY",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041910BALCIN",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042008NYMATL",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042008STLCHC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042210SDLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051300PITWSH",
+            "reasons": [
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN301840PITPHI",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN301840TEXCLE",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN301905DETNYY",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN301907NYMTOR",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN301910WSHBOS",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN301915STLATL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN301940CINMIL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN301940TBKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN302005SDCHC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN302010MINHOU",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN302040MIACOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN302140LAASEA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN302140SFAZ",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          }
+        ],
+        "n_test_ticks": 3843,
+        "n_train_after": 29172,
+        "n_train_before": 43261,
+        "split_id": 1
+      },
+      {
+        "excluded_game_clusters": [
+          {
+            "game_id": "KXMLBGAME-26JUL011310TEXCLE",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011335DETNYY",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011335WSHBOS",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011420SDCHC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011507NYMTOR",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011840PITPHI",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011915STLATL",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011940TBKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL012010CINMIL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL012010MINHOU",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL012040MIACOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL012140SFAZ",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021235PITPHI",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021410CINMIL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021510MIACOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021915STLATL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021940TBKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL022140LAASEA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL031605STLCHC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL031845PITWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL031905MINNYY",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL031910BALCIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL031915NYMATL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL032010SFCOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL032015TBHOU",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL032138BOSLAA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL032145MILAZ",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL032210SDLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL032210TORSEA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041105PITWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041335MINNYY",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041605DETTEX",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041610TORSEA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041910BALCIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041910TBHOU",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042008NYMATL",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042008STLCHC",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042010SFCOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042138BOSLAA",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042140MILAZ",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042210SDLAD",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051230NYMATL",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051300PITWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051305BALCIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051335MINNYY",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051430STLCHC",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051530DETTEX",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051530TBHOU",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051600MILAZ",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051600SFCOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051700TORSEA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051920SDLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL052130BOSLAA",
+            "reasons": [
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN301840PITPHI",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN301840TEXCLE",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN301905DETNYY",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN301907NYMTOR",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN301910WSHBOS",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN301915STLATL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN301940CINMIL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN301940TBKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN302005SDCHC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN302010MINHOU",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN302040MIACOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN302140LAASEA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUN302140SFAZ",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          }
+        ],
+        "n_test_ticks": 2479,
+        "n_train_after": 24020,
+        "n_train_before": 44625,
+        "split_id": 2
+      },
+      {
+        "excluded_game_clusters": [
+          {
+            "game_id": "KXMLBGAME-26JUL011840PITPHI",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011915STLATL",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL011940TBKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL012010CINMIL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL012010MINHOU",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL012040MIACOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL012140SFAZ",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021235PITPHI",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021410CINMIL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021510MIACOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021915STLATL",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021940TBKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL022005DETTEX",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL022140LAASEA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL022210SDLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL031605STLCHC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL032210SDLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041335MINNYY",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041605DETTEX",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041610TORSEA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041910BALCIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041910TBHOU",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042008NYMATL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042008STLCHC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042010PHIKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042010SFCOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042138BOSLAA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042140MILAZ",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042210SDLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051230NYMATL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051300PITWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051305BALCIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051335MINNYY",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051430STLCHC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051500PHIKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051530DETTEX",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051530TBHOU",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051600MILAZ",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051600SFCOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051700TORSEA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051920SDLAD",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL052130BOSLAA",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL061410PHIKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL061915NYMATL",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          }
+        ],
+        "n_test_ticks": 7524,
+        "n_train_after": 26922,
+        "n_train_before": 39580,
+        "split_id": 3
+      },
+      {
+        "excluded_game_clusters": [
+          {
+            "game_id": "KXMLBGAME-26JUL021915STLATL",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL021940TBKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL022005DETTEX",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL022140LAASEA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL022210SDLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL031605STLCHC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL031845PITWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL031905MINNYY",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL031910BALCIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL031915NYMATL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL032010SFCOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL032015TBHOU",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL032138BOSLAA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL032145MILAZ",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL032210SDLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL032210TORSEA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041105PITWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041335MINNYY",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041610TORSEA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041910BALCIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041910TBHOU",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042008NYMATL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042008STLCHC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042010SFCOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042138BOSLAA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042140MILAZ",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042210SDLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051230NYMATL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051300PITWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051335MINNYY",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051600MILAZ",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051600SFCOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051920SDLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL052130BOSLAA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL061410PHIKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL061840NYYTB",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL061845HOUWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL061915NYMATL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL061945MILSTL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL062140AZSD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL062145TORSF",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL062210COLLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071415MILSTLG1",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071835CHCBAL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071840ATLPIT",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071840NYYTB",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071840SEAMIA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071845HOUWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071910KCNYM",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071910PHICIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071940CLEMIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071945MILSTLG2",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL072005LAATEX",
+            "reasons": [
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL072140AZSD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL072145TORSF",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL072210COLLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081835CHCBAL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081840ATLPIT",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081840NYYTB",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081840SEAMIA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081845HOUWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081910KCNYM",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081910PHICIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081940CLEMIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081945MILSTL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL082005LAATEX",
+            "reasons": [
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL082210COLLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          }
+        ],
+        "n_test_ticks": 6268,
+        "n_train_after": 27649,
+        "n_train_before": 40836,
+        "split_id": 4
+      },
+      {
+        "excluded_game_clusters": [
+          {
+            "game_id": "KXMLBGAME-26JUL031915NYMATL",
+            "reasons": [
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL032138BOSLAA",
+            "reasons": [
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041910BALCIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL041910TBHOU",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042008NYMATL",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042008STLCHC",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042010PHIKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042010SFCOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042138BOSLAA",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042140MILAZ",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL042210SDLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051230NYMATL",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051300PITWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051305BALCIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051335MINNYY",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051430STLCHC",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051500PHIKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051530DETTEX",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051530TBHOU",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051600MILAZ",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051600SFCOL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051700TORSEA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL051920SDLAD",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL052130BOSLAA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL061410PHIKC",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL061915NYMATL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081835CHCBAL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081840ATLPIT",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081840NYYTB",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081840SEAMIA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081845HOUWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081910KCNYM",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081910PHICIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081940CLEMIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081945MILSTL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL082005LAATEX",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL082210AZSD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL082210COLLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091235ATLPIT",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091310KCNYM",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091310NYYTB",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091340CLEMIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091835CHCBAL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091840SEAMIA",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091910PHICIN",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091945MILSTL",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL092005LAATEX",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL092140AZSD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL101840MILPIT",
+            "reasons": [
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL101840PHIDET",
+            "reasons": [
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL101845NYYWSH",
+            "reasons": [
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL101910CHCCIN",
+            "reasons": [
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL101910CLEMIA",
+            "reasons": [
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111610CLEMIA",
+            "reasons": [
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111910CHCCIN",
+            "reasons": [
+              "same_team_purge"
+            ]
+          }
+        ],
+        "n_test_ticks": 5463,
+        "n_train_after": 30751,
+        "n_train_before": 41641,
+        "split_id": 5
+      },
+      {
+        "excluded_game_clusters": [
+          {
+            "game_id": "KXMLBGAME-26JUL061840NYYTB",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL061845HOUWSH",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL061915NYMATL",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL061945MILSTL",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL062140AZSD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL062145TORSF",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL062210COLLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071415MILSTLG1",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071835CHCBAL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071840ATLPIT",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071840NYYTB",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071840SEAMIA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071845HOUWSH",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_matchup_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071910KCNYM",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071910PHICIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071940CLEMIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL071945MILSTLG2",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL072005LAATEX",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL072140AZSD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL072145TORSF",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL072210COLLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081545TORSF",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081835CHCBAL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081840ATLPIT",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081840NYYTB",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081840SEAMIA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081845HOUWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081910KCNYM",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081910PHICIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081940CLEMIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL081945MILSTL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL082005LAATEX",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL082210AZSD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL082210COLLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091235ATLPIT",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091310KCNYM",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091310NYYTB",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091340CLEMIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091835CHCBAL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091840SEAMIA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091910PHICIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL101840MILPIT",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL101845NYYWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL101915BOSNYM",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL102005HOUTEX",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL102010LAAMIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL102015ATLSTL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL102140TORSD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL102210AZLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL102215COLSF",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111410LAAMIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111605COLSF",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111605MILPIT",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111605NYYWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111610BOSNYM",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111610CLEMIA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111610SEATB",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111810PHIDET",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111905HOUTEX",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111905KCBAL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111910CHCCIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111915ATLSTL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL112040TORSD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL112110AZLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121215MILPIT",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121335KCBAL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121335NYYWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121340BOSNYM",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121340CHCCIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121340CLEMIA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121340PHIDET",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121340SEATB",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121410LAAMIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121415ATLSTL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121435HOUTEX",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121605COLSF",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121610AZLAD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121610TORSD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          }
+        ],
+        "n_test_ticks": 6375,
+        "n_train_after": 28819,
+        "n_train_before": 40729,
+        "split_id": 6
+      },
+      {
+        "excluded_game_clusters": [
+          {
+            "game_id": "KXMLBGAME-26JUL081940CLEMIN",
+            "reasons": [
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091235ATLPIT",
+            "reasons": [
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091340CLEMIN",
+            "reasons": [
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091835CHCBAL",
+            "reasons": [
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091840SEAMIA",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091910PHICIN",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL091945MILSTL",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL092005LAATEX",
+            "reasons": [
+              "calendar_day_embargo",
+              "same_team_purge"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL092140AZSD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL092145COLSF",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL101840MILPIT",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL101840PHIDET",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL101845NYYWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL101905KCBAL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL101910CHCCIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL101910CLEMIA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL101910SEATB",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL101915BOSNYM",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL102005HOUTEX",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL102010LAAMIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL102015ATLSTL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL102140TORSD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL102215COLSF",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111410LAAMIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111605MILPIT",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111605NYYWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111610BOSNYM",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111610CLEMIA",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111610SEATB",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111810PHIDET",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111905HOUTEX",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111905KCBAL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111910CHCCIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL111915ATLSTL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL112040TORSD",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121335NYYWSH",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121340CHCCIN",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121340SEATB",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          },
+          {
+            "game_id": "KXMLBGAME-26JUL121415ATLSTL",
+            "reasons": [
+              "calendar_day_embargo"
+            ]
+          }
+        ],
+        "n_test_ticks": 6757,
+        "n_train_after": 35878,
+        "n_train_before": 40347,
+        "split_id": 7
+      }
+    ],
+    "symmetric": true
+  },
+  "q": 0.05,
+  "s254": "mlb_phase_recal_fwer_sealed",
+  "source": {
+    "bytes": 73485324,
+    "file_count": 505,
+    "path": "C:\\Users\\neelj\\nba-track-a13\\data\\cache\\ingame_grade_joined"
+  }
+}
