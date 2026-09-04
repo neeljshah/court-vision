@@ -238,7 +238,37 @@ calibration per ~50 frames" as a requirement any more.**
 | **G243** | does any of this work on AMATEUR footage? | **FALSIFIED: the named clip existed nowhere, and the corpus was 9 clips of pure professional broadcast.** My premise error. |
 | **G245** | acquire amateur footage, since there was none | **ACCEPT.** `basketball__amateur_jh3fnwMi7dM.mp4` landed: 1280x720, 3,601 frames, 120.1 s, high-school coaches camera, near-fixed, arcs at both ends and the centre circle visible. |
 | **G243b** | amateur calibration against the real clip | RUNNING, with a new clustered-vs-spread label-geometry arm. |
-| **G244** | does ANY diagnostic separate a correct court from a wrong one? | RUNNING. Made urgent by 7.5, extended by 7.6. |
+| **G244** | does ANY diagnostic separate a correct court from a wrong one? | **ANSWERED: NO -- see 7.7.** |
+| **G246** | WHY did the amateur gate fail? | RUNNING. A 4-point homography has zero residual by construction, so a wrong role mapping would be invisible to every fitted metric. |
+| **G247** | does the projected quad's SHAPE separate them? | RUNNING. G244 could not test it -- G242 persisted no matrices. |
+
+### 7.7 G244: no match diagnostic separates a correct court from a wrong one
+
+G244 blind-labelled all 89 of G242's overlays VALID / INVALID / CANNOT JUDGE and
+**committed those labels in a separate, earlier commit before reading any
+diagnostic** -- the ordering is verifiable in git history. Then it measured the
+overlap:
+
+| diagnostic | INVALID range | VALID inside it | VALID range | INVALID inside it |
+|---|---|---:|---|---:|
+| matches | 114-652 | 25/27 | 130-2000 | 24/28 |
+| inliers | 86-620 | 25/27 | 100-2000 | 24/28 |
+| inlier ratio | 0.709677-0.950920 | 25/27 | 0.624309-1.000000 | **28/28** |
+| RMS px | 0.318691-1.247066 | 25/27 | 0.000000-0.696784 | 26/28 |
+
+**The classes interpenetrate on every diagnostic.** Slightly different medians are
+not evidence.
+
+**The abrupt-drop idea from 7.6 also failed.** G241b's two cut drops were 128 and
+165 matches, but ordinary single-frame drops across that span run **-283 to 170** --
+an ordinary drop of 170 exceeds both cuts. Not separable, in-sample on two cuts.
+
+**So as of now there is NO automatic validity signal at all, and every "it held"
+claim in this programme is carried by renders alone.** One check remains untested:
+the SHAPE of the projected quad. G244 could not compute it because **G242 persisted
+no per-frame homography (0/89) and no ordered corners (0/89)** -- a retention gap,
+not a negative, now issued as G247. **The retention lesson is general: persist the
+matrix, not only its summary statistics.**
 
 ### 7.6 G241b: the operational unit is the CAMERA SHOT, not a frame count
 
