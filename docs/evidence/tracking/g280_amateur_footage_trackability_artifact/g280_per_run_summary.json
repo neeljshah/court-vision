@@ -1,0 +1,176 @@
+[
+  {
+    "all_row_count": 24078,
+    "calibration_values": [
+      "none"
+    ],
+    "coordinate_space_values": [
+      "image_px"
+    ],
+    "csv": "docs/evidence/tracking/g280_amateur_footage_trackability_artifact/run_1/tracking_data.csv",
+    "csv_sha256": "26b2073831c667aca80622ff98c446e15678ce4c37ae0202961287f7c4b1c897",
+    "detection_count": 24078,
+    "schema_columns": [
+      "frame",
+      "track_id",
+      "cls",
+      "x",
+      "y",
+      "calibration_provenance",
+      "projection_status",
+      "projection_rejection_reason",
+      "raw_projected_x_ft",
+      "raw_projected_y_ft",
+      "coordinate_space",
+      "observation",
+      "calibration",
+      "source_fps",
+      "source_height",
+      "source_duration"
+    ],
+    "source_fps": 30.0,
+    "source_height": 720,
+    "speed": {
+      "max": null,
+      "median": null,
+      "p90": null,
+      "p99": null,
+      "p999": null
+    },
+    "speed_formula": "sqrt(dx^2+dy^2)/source_height*source_fps on consecutive source-frame same-track_id steps",
+    "speed_unit": "frame_heights_per_second",
+    "step_count": 0,
+    "track_count": 51,
+    "track_length_frames": {
+      "max": 1102.0,
+      "median": 274.0,
+      "p90": 995.0,
+      "p99": 1067.0,
+      "p999": 1098.5000000000002
+    },
+    "track_length_seconds": {
+      "max": 36.733333333333334,
+      "median": 9.133333333333333,
+      "p90": 33.166666666666664,
+      "p99": 35.56666666666666,
+      "p999": 36.616666666666674
+    },
+    "track_shorter_than_5_fraction": 0.0392156862745098
+  },
+  {
+    "all_row_count": 24078,
+    "calibration_values": [
+      "none"
+    ],
+    "coordinate_space_values": [
+      "image_px"
+    ],
+    "csv": "docs/evidence/tracking/g280_amateur_footage_trackability_artifact/run_2/tracking_data.csv",
+    "csv_sha256": "26b2073831c667aca80622ff98c446e15678ce4c37ae0202961287f7c4b1c897",
+    "detection_count": 24078,
+    "schema_columns": [
+      "frame",
+      "track_id",
+      "cls",
+      "x",
+      "y",
+      "calibration_provenance",
+      "projection_status",
+      "projection_rejection_reason",
+      "raw_projected_x_ft",
+      "raw_projected_y_ft",
+      "coordinate_space",
+      "observation",
+      "calibration",
+      "source_fps",
+      "source_height",
+      "source_duration"
+    ],
+    "source_fps": 30.0,
+    "source_height": 720,
+    "speed": {
+      "max": null,
+      "median": null,
+      "p90": null,
+      "p99": null,
+      "p999": null
+    },
+    "speed_formula": "sqrt(dx^2+dy^2)/source_height*source_fps on consecutive source-frame same-track_id steps",
+    "speed_unit": "frame_heights_per_second",
+    "step_count": 0,
+    "track_count": 51,
+    "track_length_frames": {
+      "max": 1102.0,
+      "median": 274.0,
+      "p90": 995.0,
+      "p99": 1067.0,
+      "p999": 1098.5000000000002
+    },
+    "track_length_seconds": {
+      "max": 36.733333333333334,
+      "median": 9.133333333333333,
+      "p90": 33.166666666666664,
+      "p99": 35.56666666666666,
+      "p999": 36.616666666666674
+    },
+    "track_shorter_than_5_fraction": 0.0392156862745098
+  },
+  {
+    "all_row_count": 24078,
+    "calibration_values": [
+      "none"
+    ],
+    "coordinate_space_values": [
+      "image_px"
+    ],
+    "csv": "docs/evidence/tracking/g280_amateur_footage_trackability_artifact/run_3/tracking_data.csv",
+    "csv_sha256": "26b2073831c667aca80622ff98c446e15678ce4c37ae0202961287f7c4b1c897",
+    "detection_count": 24078,
+    "schema_columns": [
+      "frame",
+      "track_id",
+      "cls",
+      "x",
+      "y",
+      "calibration_provenance",
+      "projection_status",
+      "projection_rejection_reason",
+      "raw_projected_x_ft",
+      "raw_projected_y_ft",
+      "coordinate_space",
+      "observation",
+      "calibration",
+      "source_fps",
+      "source_height",
+      "source_duration"
+    ],
+    "source_fps": 30.0,
+    "source_height": 720,
+    "speed": {
+      "max": null,
+      "median": null,
+      "p90": null,
+      "p99": null,
+      "p999": null
+    },
+    "speed_formula": "sqrt(dx^2+dy^2)/source_height*source_fps on consecutive source-frame same-track_id steps",
+    "speed_unit": "frame_heights_per_second",
+    "step_count": 0,
+    "track_count": 51,
+    "track_length_frames": {
+      "max": 1102.0,
+      "median": 274.0,
+      "p90": 995.0,
+      "p99": 1067.0,
+      "p999": 1098.5000000000002
+    },
+    "track_length_seconds": {
+      "max": 36.733333333333334,
+      "median": 9.133333333333333,
+      "p90": 33.166666666666664,
+      "p99": 35.56666666666666,
+      "p999": 36.616666666666674
+    },
+    "track_shorter_than_5_fraction": 0.0392156862745098
+  }
+]

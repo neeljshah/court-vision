@@ -1,0 +1,8 @@
+{
+  "sample_size": 72,
+  "sample_seed": 28020260904,
+  "blind_seed": 28020904,
+  "unblind_map_sha256": "4bb76cd6da4c094fcd7a903671cb0006b6c60c20cebabc00a96270a7330e8a32",
+  "sampling": "one uniformly random retained detector-box observation from each equal-width source-frame bin; conditioned on nothing downstream",
+  "crop_policy": "512x640 native-pixel crop centred on the retained footpoint; no detector box drawn or inferred"
+}

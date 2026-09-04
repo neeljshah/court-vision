@@ -1,0 +1,18 @@
+{
+  "disk_guard": {
+    "dd_probe_bytes": 1048576,
+    "dd_probe_removed": true,
+    "workspace_du_mb": 40061
+  },
+  "source_bytes": 24523745,
+  "source_duration_seconds": 120.1,
+  "source_fps": "30/1",
+  "source_frame_count": 3729,
+  "source_height": 720,
+  "source_name": "basketball__amateur_jh3fnwMi7dM.mp4",
+  "source_path": "/workspace/nba-ai-system/data/footage_corpus/basketball__amateur_jh3fnwMi7dM.mp4",
+  "source_width": 1280,
+  "tracking_store": "/workspace/nba-ai-system/data/tracking",
+  "tracking_store_filename_match_count": 0,
+  "tracking_store_filename_matches": []
+}

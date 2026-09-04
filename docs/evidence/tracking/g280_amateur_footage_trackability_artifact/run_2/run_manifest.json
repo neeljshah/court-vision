@@ -1,0 +1,50 @@
+{
+  "adapter_metadata": {
+    "coordinate_space": "image_px",
+    "processed_frames": 1201,
+    "source_duration": 124.3,
+    "source_fps": 30.0,
+    "source_height": 720
+  },
+  "adapter_options": {
+    "image_space": true,
+    "max_frames": 30000,
+    "player_only": true,
+    "stride": 3
+  },
+  "columns": [
+    "frame",
+    "track_id",
+    "cls",
+    "x",
+    "y",
+    "calibration_provenance",
+    "projection_status",
+    "projection_rejection_reason",
+    "raw_projected_x_ft",
+    "raw_projected_y_ft",
+    "coordinate_space",
+    "observation",
+    "calibration",
+    "source_fps",
+    "source_height",
+    "source_duration"
+  ],
+  "csv_sha256": "26b2073831c667aca80622ff98c446e15678ce4c37ae0202961287f7c4b1c897",
+  "detector_model_environment": null,
+  "route": "scripts.platformkit.adapter_run default basketball invocation; imported adapter path",
+  "route_files_sha256": {
+    "domains/basketball/tracking/adapter.py": "1ecf483df26b19c44d1fa25297caed845e5952fbfdd9b704f95a6125f4366c15",
+    "scripts/platformkit/adapter_run.py": "e4abc2f5e4e4fb2a977ca6beb2fed854e33e829eb0a5d96cef8645680f6181c5",
+    "scripts/platformkit/detection/shim.py": "525537a5f8f3d17b46783b6d6b263ce7018bd91f18c4bcaf4fa5c896f28dfb6e"
+  },
+  "rows": 24078,
+  "source_metadata": {
+    "bit_rate": 1526038,
+    "frame_rate": 30.0,
+    "height": 720,
+    "path": "/workspace/nba-ai-system/data/footage_corpus/basketball__amateur_jh3fnwMi7dM.mp4",
+    "resolution": "1280x720",
+    "width": 1280
+  }
+}

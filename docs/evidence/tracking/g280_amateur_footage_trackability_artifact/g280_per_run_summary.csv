@@ -1,0 +1,4 @@
+run,detection_count,track_count,step_count,speed_median,speed_p90,speed_p99,speed_p999,speed_max,track_length_median_frames,track_length_p90_frames,track_shorter_than_5_fraction
+run_1,24078,51,0,,,,,,274.0,995.0,0.0392156862745098
+run_2,24078,51,0,,,,,,274.0,995.0,0.0392156862745098
+run_3,24078,51,0,,,,,,274.0,995.0,0.0392156862745098
