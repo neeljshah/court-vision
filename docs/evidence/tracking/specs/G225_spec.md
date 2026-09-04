@@ -31,10 +31,11 @@ adapter is very likely counting the bleacher crowd. A larger model detecting MOR
 automatically better** -- it may simply find more spectators. **The eye check in this spec is what
 separates those, and it is mandatory.**
 
- G211 is measuring per-frame cost on the pod and this
-row is deliberately heavy. **Check the pod and say in your memo that you checked and when you began.**
-The `track_daemon` and its `adapter_run` jobs are PERMANENT residents and are the load floor, **not** a
-reason to wait; never kill or restart them. Harness and test writing may proceed immediately.
+**This row is deliberately heavy, so check the pod for other measurement rows before starting and say in
+your memo that you checked and when you began.** The `track_daemon`, `keep_track_daemon.sh`,
+`adapter_run` jobs, `inplay_capture_runner` and `foundry_runner` are PERMANENT residents and are the
+load floor, **not** a reason to wait; never kill or restart them. Harness and test writing may proceed
+immediately.
 
 **S1 MACHINE: RUN ON THE POD.** RTX 3090. **DISK GUARD, BINDING:** `df` is NON-AUTHORITATIVE here (it
 reports the whole cluster filesystem against a 50 GB volume cap, which caused a `Disk quota exceeded`
