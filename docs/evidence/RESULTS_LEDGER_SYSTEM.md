@@ -461,3 +461,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-03 | ops | S251 | premise FALSIFIED by existing m50 heartbeat-age paths; isolated 601 s and 1/0 alerts reproduced; memo census is 3/3 | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 3b1345c24
 2026-09-03 | nba in-game calibration | S247 | rates coverage 0/661 game clusters; no three-arm score | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | fc0084261
 2026-09-03 | nba in-game | S255 | 355/661 clusters (53.7065%) received qualifying strictly-prior snapshots; premise confirmed; two metadata counts corrected | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | b559352ed
+2026-09-03 | NBA in-game | S253 | 167 clusters; 5647/5647 complete ticks (100.00 pct), duplicate 0, imbalance 0; memo NOT VERIFIED heading required | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | 4dd9e24eb
