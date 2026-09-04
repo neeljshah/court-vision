@@ -1,0 +1,8 @@
+{
+  "sample_size": 72,
+  "sample_seed": 27320260904,
+  "blind_seed": 27320904,
+  "unblind_map_sha256": "2851f20e00b4416459f546fedca62ab714dfd7862d74409d8d254a883f172294",
+  "sampling": "one uniformly random finite retained detection from each equal-width source-frame bin; no speed, jump, association outcome, position, or ID condition",
+  "crop_policy": "512x640 native-pixel crop centred on retained footpoint; no box drawn, reconstructed, or inferred"
+}

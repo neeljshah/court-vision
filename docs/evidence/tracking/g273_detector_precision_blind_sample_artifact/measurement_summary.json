@@ -1,0 +1,27 @@
+{
+  "input_artifact": "docs/evidence/tracking/g267_court_space_physical_plausibility_artifact/g267_measurement.json",
+  "input_sha256": "0903d4ee8afac9999e37ca07d14ec81ea59e66ca485a99c21fd27ed959cee2b5",
+  "inherited_source": {
+    "absolute_path": "/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4",
+    "bytes": 2931985407,
+    "resolution_px": [
+      1920,
+      1080
+    ],
+    "seed_frame": 19599,
+    "source_frame_span_inclusive": [
+      19599,
+      23399
+    ],
+    "fps": 30.0
+  },
+  "retained_detection_count": 30071,
+  "sample_size": 72,
+  "frame_bin_count": 72,
+  "distinct_sample_frames": 72,
+  "distinct_emitted_ids": 41,
+  "crop_size_px": [
+    512,
+    640
+  ]
+}
