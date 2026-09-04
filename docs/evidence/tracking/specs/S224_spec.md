@@ -1,4 +1,4 @@
-GAP S224 | sport nba (in-game) | worktree aXX | log cx_s224_ingame_tail_calibration
+GAP S224 | sport nba (in-game) | worktree a13 | log cx_s224_ingame_tail_calibration
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: the in-game work is all pooled Brier; no lane has reported calibration INSIDE the tail states the product is
 asked about. Measured 2026-09-04 on nba_checkpoints_full.parquet (465,249 ticks / 1,593 games): the trailing-side cell
