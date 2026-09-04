@@ -1,4 +1,4 @@
-GAP S262 | sport nba | worktree a16 | log cx_s262_boxscore_q50_census
+GAP S262 | sport nba | worktree a17 | log cx_s262_boxscore_q50_census
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: S243 CLOSED AT LIMIT (6c1af0488bd4b1f05e267c685b7d5291dc53f510). The one preregistered source,
   data/intelligence/matchup_grid.parquet (141,940 bytes, 4,900 rows, 2024-10-22..2026-04-12), lacks all seven
