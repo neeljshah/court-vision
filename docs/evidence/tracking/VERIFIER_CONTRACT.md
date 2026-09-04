@@ -37,6 +37,9 @@ Q3 NO BAR OR THRESHOLD MOVED -- every bar in the artifact is byte-identical to t
 Q4 LEAK CONTRACT VIA CPCV -- anything scored OOS runs through walk_forward or cpcv_evaluate with purging and a symmetric embargo; any meta-learner consumes OOF series only, asserted to reproduce each arm's own reported metric to 1e-9.
 Q5 TWO CORPORA FOR ANY AHEAD -- an AHEAD names its second corpus or corpus_unit and prints min_corpora_eff at the current K; if it cannot be satisfied the verdict is labelled SINGLE-WINDOW in the artifact AND the register row.
 Q6 CALIBRATION LANGUAGE ONLY -- no dollar, ROI, profit or "edge" language in any artifact, memo, ledger line or register row; none of the retracted figures (+18.38, 0.119, +54, 78.11, 8.94, 54.57) appears outside an explicit retraction context. Accuracy is not edge; an honest REJECT, NULL or BEHIND is a success.
+   Q6 NOTE (orchestrator ruling 2026-09-04, S223): Q6 governs prose, claims, table labels and ledger text. OPAQUE
+   IDENTIFIERS quoted verbatim -- file basenames, paths, column names, module strings -- are exempt even when they
+   contain a prohibited token; a census must emit the exact path and must not rename or mask it.
 
 ## Q7-Q8 (added 2026-09-03 by the roadmap audit)
 Q7 SAMPLING RAIL SCOPE -- `n >= 30` binds a SAMPLED or SCORED metric. A spec that
