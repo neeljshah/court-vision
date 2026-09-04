@@ -1,4 +1,4 @@
-GAP S287 | sport nba (in-game) | worktree aXX | log cx_s287_nba_sim_third_arm_full_pod
+GAP S287 | sport nba (in-game) | worktree a13 | log cx_s287_nba_sim_third_arm_full_pod
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 RECOVERY: a17 commit afb5a9460; module scripts/platformkit/ingame/s256_nba_sim_engine_v3.py; construct memo
   docs/evidence/harness/S266_nba_sim_third_arm_construct_2026-09-04.md.
