@@ -1,0 +1,17 @@
+{
+  "temp_dir": "/tmp/g241b_seed_2ecrr_ie",
+  "files": [
+    "g241b_measurement.json",
+    "paired/direct_seed_renders/render_distance_0000.jpg",
+    "paired/direct_seed_renders/render_distance_1000.jpg",
+    "paired/direct_seed_renders/render_distance_10000.jpg",
+    "paired/direct_seed_renders/render_distance_2000.jpg",
+    "paired/direct_seed_renders/render_distance_3000.jpg",
+    "paired/direct_seed_renders/render_distance_4000.jpg",
+    "paired/direct_seed_renders/render_distance_5000.jpg",
+    "paired/direct_seed_renders/render_distance_6000.jpg",
+    "paired/direct_seed_renders/render_distance_7000.jpg",
+    "paired/direct_seed_renders/render_distance_8000.jpg",
+    "paired/direct_seed_renders/render_distance_9000.jpg"
+  ]
+}
