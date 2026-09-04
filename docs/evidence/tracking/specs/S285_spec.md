@@ -1,4 +1,4 @@
-GAP S285 | sport nba (in-game) | worktree a17 | log cx_s285_event_conformal_width
+GAP S285 | sport nba (in-game) | worktree a14 | log cx_s285_event_conformal_width
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: Tibshirani, "Conformal Prediction Under Distribution Shift" (Berkeley STAT lecture notes), and
   Angelopoulos & Bates, arXiv 2107.07511 (2021), show marginal (static) conformal coverage can fail under a
