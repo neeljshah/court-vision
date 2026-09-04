@@ -1,4 +1,4 @@
-GAP S280 | sport nba (in-game) | worktree a16 | log cx_s280_ingame_cross_venue_disagreement
+GAP S280 | sport nba (in-game) | worktree a13 | log cx_s280_ingame_cross_venue_disagreement
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: census-first, already run by this lane's author and re-verifiable by column read (grep of
   scripts/platformkit + data/frontend for kalshi/polymarket found no cross-venue module; the overlap lives in a
