@@ -1,0 +1,24 @@
+{
+  "control": {
+    "abstentions": 17,
+    "all_four_g205": 0,
+    "corners_g205": 0
+  },
+  "first_reject_distribution": {
+    "1. _candidate_quads": 1,
+    "2. _paint area and shortest-side": 16,
+    "3. _paint _line_support": 0,
+    "4. baseline adjacency naming": 0
+  },
+  "frames": 17,
+  "landmark_cooccurrence": {
+    "none": 17
+  },
+  "min_edge_support": 0.16,
+  "route_sha256": {
+    "domains/basketball/tracking/keypoints.py": "38209f49e470688b37182ff38ce0d96ce89eb42dd802e32d9a8954245870d943",
+    "scripts/platformkit/basketball_gate_funnel.py": "101f1002bd9763fc67c52bed248b15c6a4e34f4de70dad26c61683dd04717885",
+    "scripts/platformkit/tracking/g205_zero_shot_corner_probe.py": "63c32795c57482e2b2ca2ba5e055c3dd3ca32cb5735f9b96378617b96320cf60",
+    "scripts/platformkit/tracking/g229_keypoint_gate_funnel.py": "6bc816a27d13616fef32fb28f5a099527f3c00f4f1d5340cb53cd546dacc36a5"
+  }
+}
