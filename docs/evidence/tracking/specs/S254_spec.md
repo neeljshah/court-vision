@@ -1,4 +1,4 @@
-GAP S254 | sport mlb (in-game) | worktree aXX | log cx_s254_mlb_phase_recal_fwer_sealed
+GAP S254 | sport mlb (in-game) | worktree a13 | log cx_s254_mlb_phase_recal_fwer_sealed
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S209_VERIFY_2026-09-03.md (a18) REJECTed on Q1 (no sealed prereg predating scoring) and Q4 (inherited
   archive not purged / no symmetric embargo) while every ACCEPTANCE item passed: 15 buckets, 0 BH survivors,
