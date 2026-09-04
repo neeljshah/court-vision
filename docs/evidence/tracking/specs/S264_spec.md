@@ -1,4 +1,4 @@
-GAP S264 | sport all | worktree a12 | log cx_s264_isoweek_game_id_overlap
+GAP S264 | sport all | worktree a18 | log cx_s264_isoweek_game_id_overlap
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: docs/evidence/harness/FACTORY_TIERS_SPEC_2026-09-03.md:53-54,66 fixes ISO-week blocks of state_ts as
   the SF-1 screen/verdict partition basis when a corpus lacks 2+ corpus_units; S209_mlb_phase_recal_fwer_2026-
