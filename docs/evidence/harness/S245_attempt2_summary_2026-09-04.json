@@ -1,0 +1,84 @@
+{
+  "games": 1231,
+  "paired_archive": "docs/evidence/harness/S245_attempt2_paired_losses_2026-09-04.csv.gz",
+  "paired_archive_sha256": "fdfaf0e16482eb7f3810fe6860a4b21e59b0d841a547c310498007e55bc8d853",
+  "prereg_sha256_payload": "cc75e0f963502c71825359598cd619c0c2667883e5c9fe6dedb110692d4536d5",
+  "preregistration": "docs/evidence/harness/S245_attempt2_prereg_2026-09-04.md",
+  "route_sha256": "f246749bd9d3e40291e33f202a23e4c5de0d1f6b0c2ef6ce4168891bea77bc81",
+  "rows": 208887,
+  "snapshot_states": 3693,
+  "table": [
+    {
+      "checkpoint": "end_q1",
+      "difference": 0.9118985881288881,
+      "difference_ci95": [
+        0.8857100124493718,
+        0.9372062749768484
+      ],
+      "n_games": 1188,
+      "naive_crps": 2.1644181415607764,
+      "partition": "garbage-unavailable",
+      "state_conditioned_crps": 3.076316729689665
+    },
+    {
+      "checkpoint": "end_q1",
+      "difference": 0.8853928297897216,
+      "difference_ci95": [
+        0.7463570416019382,
+        1.02241902094145
+      ],
+      "n_games": 43,
+      "naive_crps": 2.1887651816790377,
+      "partition": "non-garbage",
+      "state_conditioned_crps": 3.0741580114687586
+    },
+    {
+      "checkpoint": "end_q2",
+      "difference": 0.11372419023403618,
+      "difference_ci95": [
+        0.09867356411310171,
+        0.12869638204098316
+      ],
+      "n_games": 1188,
+      "naive_crps": 1.6092213416454995,
+      "partition": "garbage-unavailable",
+      "state_conditioned_crps": 1.7229455318795355
+    },
+    {
+      "checkpoint": "end_q2",
+      "difference": 0.07546297781733245,
+      "difference_ci95": [
+        -0.00520548938441901,
+        0.15794254945021294
+      ],
+      "n_games": 43,
+      "naive_crps": 1.6450105274951408,
+      "partition": "non-garbage",
+      "state_conditioned_crps": 1.7204735053124736
+    },
+    {
+      "checkpoint": "end_q3",
+      "difference": 0.05324520939857377,
+      "difference_ci95": [
+        0.04378753992839289,
+        0.06273318869848897
+      ],
+      "n_games": 1188,
+      "naive_crps": 1.0014878012624087,
+      "partition": "garbage-unavailable",
+      "state_conditioned_crps": 1.0547330106609825
+    },
+    {
+      "checkpoint": "end_q3",
+      "difference": 0.021410376414116264,
+      "difference_ci95": [
+        -0.034156020542153206,
+        0.07821056997743202
+      ],
+      "n_games": 43,
+      "naive_crps": 1.0363450774871545,
+      "partition": "non-garbage",
+      "state_conditioned_crps": 1.0577554539012708
+    }
+  ]
+}
