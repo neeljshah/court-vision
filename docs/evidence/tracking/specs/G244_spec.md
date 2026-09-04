@@ -55,6 +55,24 @@ METHOD:
   8. **If nothing separates, say so plainly and do not soften it.** "No available diagnostic distinguishes
      a correct court from a wrong one on these 89 frames" is a complete and valuable result.
 
+**PART TWO -- A SECOND SIGNAL G241b JUST SURFACED, TESTABLE FROM COMMITTED DATA ALONE.**
+G241b propagated 10,000 CONTIGUOUS frames from the same seed and found the eye check fails at distance
+4,000, where a shot cut takes the broadcast to a tight close-up. **At that cut the matched-feature count
+collapsed in a SINGLE FRAME: 310 at distance 3,932 to 182 at 3,933, falling to 81 near 4,440. A second
+abrupt drop appears at distance 9,823, 327 to 162.** A hard scene inventory found 15 `scene > 0.40` cut
+candidates over the span.
+
+**So the ABSOLUTE level may be uninformative while the FRAME-TO-FRAME CHANGE is not.** G242's 89 samples
+are 2,000 frames apart, so no derivative can be computed there -- **but G241b's contiguous per-frame
+series is committed and can answer this directly:**
+  9. **Take G241b's contiguous match-count series and characterise the single-frame drop distribution.**
+     Report the drop magnitude at the two cuts G241b identified against **the distribution of single-frame
+     drops everywhere else in the span.** **The question is whether cut-drops are SEPARABLE from ordinary
+     frame-to-frame variation, and the overlap is again the answer.**
+ 10. **Do NOT fit a drop threshold and report its accuracy on this same span**, and do not propose a
+     production cut detector. **State whether an abrupt-drop signal looks viable or not, and label it
+     IN-SAMPLE on two cuts in one clip** -- two events is a very small denominator and you must say so.
+
 **DISK GUARD:** if you touch the pod at all, `df` is NON-AUTHORITATIVE -- **`dd conv=fsync` probe before
 writing and record `du -sm /workspace/nba-ai-system/data` (baseline ~32,940 MB of 50,000).** This row
 should add almost nothing; **do NOT re-commit G242's 12.4 MB artifact.** Delete every temporary artifact
@@ -70,9 +88,11 @@ visible -- and it must not be silently merged into either other class. A separat
 in-sample and would NOT establish a usable gate.
 
 ACCEPTANCE RULE:
-  metric        = the blind VALID/INVALID/CANNOT JUDGE counts; agreement with G242's inventory; each
-                  diagnostic's distribution by class with the explicit overlap count; the same for the
-                  geometric sanity checks; and a plain statement of whether anything separates
+  metric        = PART ONE: the blind VALID/INVALID/CANNOT JUDGE counts; agreement with G242's inventory;
+                  each diagnostic's distribution by class with the explicit overlap count; the same for
+                  the geometric sanity checks; and a plain statement of whether anything separates.
+                  PART TWO: the single-frame match-drop magnitude at G241b's two identified cuts against
+                  the drop distribution over the rest of the 10,000-frame span, with the overlap stated
   before       = G242 showed G222's acceptance rule accepts 89/89 including replays, graphics and the
                  wrong hoop end; no diagnostic has ever been shown to indicate court correctness
   bar          = NO pass bar. **"Nothing separates them" is a FULL SUCCESS and is the more consequential
