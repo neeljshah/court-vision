@@ -1,4 +1,4 @@
-GAP S272 | sport nba (in-game) | worktree a16 | log cx_s272_ingame_tail_recal_screen
+GAP S272 | sport nba (in-game) | worktree a15 | log cx_s272_ingame_tail_recal_screen
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: successor to S224 (CLOSED AT LIMIT, all 20 frozen 1 pct tail bins UNDERPOWERED individually). Verified
   from S224's memo: low-tail bin 00-01 has 118,601 ticks, realized rate 0.000228 (market Brier 0.000227); the
