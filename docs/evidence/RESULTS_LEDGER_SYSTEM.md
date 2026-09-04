@@ -472,4 +472,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-04 | NBA in-game margin calibration | S227 | 1593 games/465249 ticks; fixed CRPS 2.831222, fitted CRPS 2.827759, difference 0.003463, 95 percent CI [0.000419,0.006641] | ACCEPT (verified: codex-sol, contract A/B/Q) | f45ea8554
 2026-09-04 | nba pregame calibration | S230 | 1,814 paired rows; incumbent/interaction ECE 0.053327859/0.026757281, Brier 0.210959665/0.213678446, log-loss 0.609781029/0.632114278; pregame n=220 and n_eff=2 | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | e236352ce
 
-2026-09-04 | screen-width accounting | S234 | 200-screen construct: current K +1, screened-charge K +200; direct shared-counter integration gated | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | a39da1cf6
+2026-09-04 | screen-width accounting | S234 | 200-screen construct: current K +1, screened-charge K +200; direct shared-counter integration gated | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 0c42b0db2
