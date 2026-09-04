@@ -1,4 +1,4 @@
-GAP S256 | sport nba (in-game) | worktree a13 | log cx_s256_nba_sim_engine_vs_line_v3_asof
+GAP S256 | sport nba (in-game) | worktree a18 | log cx_s256_nba_sim_engine_vs_line_v3_asof
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S247 CLOSED AT LIMIT (fc0084261): 0/661 archive game clusters had a rates snapshot dated strictly before the
   game. S255 (b559352ed) then built walk-forward as-of snapshots: docs/evidence/harness/S255_asof_rate_snapshot_producer_
