@@ -1,4 +1,4 @@
-GAP S284 | sport nba (in-game) | worktree a16 | log cx_s284_orderflow_traded
+GAP S284 | sport nba (in-game) | worktree a13 | log cx_s284_orderflow_traded
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: Whelan et al., "Makers and Takers: The Economics of the Kalshi Prediction Market" (Kalshi is
   quote-driven; order flow carries information), and Angelini & De Angelis, "When Do Markets Fully Process
