@@ -1,0 +1,36 @@
+{
+  "gap": "S236",
+  "status": "PREMISE_FALSIFIED",
+  "preregistration": {
+    "path": "docs/evidence/harness/S236_season_block_partition_prereg_2026-09-04.md",
+    "preseal_sha256": "C26751B85E039209C93B2B1890176267A32DB438A1B03E05C163EA73A89986FC"
+  },
+  "method": "read each gate corpus one at a time; count every corpus_unit value without filtering",
+  "season_block_metric": "not_measured_after_q8_premise_falsification",
+  "corpora": {
+    "nba": {
+      "rows": 1814,
+      "corpus_unit_counts": {"2024-25": 1225, "2025-26": 589},
+      "season_block_count": null,
+      "input": {"path": "C:/Users/neelj/nba-track-a17/data/cache/combo/gate_corpus_nba.parquet", "bytes": 201706, "resolution": "not_applicable_tabular", "sha256": "716F6F5F3F2181051E352936EFA60D616C9DE029A026B85CC585D6ED20CB0AAF"}
+    },
+    "mlb": {
+      "rows": 39162,
+      "corpus_unit_counts": {"era_2010_2021": 27983, "era_2022_2026": 11179},
+      "season_block_count": null,
+      "input": {"path": "C:/Users/neelj/nba-track-a17/data/cache/combo/gate_corpus_mlb.parquet", "bytes": 1645142, "resolution": "not_applicable_tabular", "sha256": "AC60C9CB18958C20FF53D7D0B698700375B6A0CE15E7EF0ECD20FB730E0903BD"}
+    },
+    "soccer": {
+      "rows": 25834,
+      "corpus_unit_counts": {"D1": 3366, "E0": 4180, "E1": 6072, "F1": 3856, "I1": 4180, "SP1": 4180},
+      "season_block_count": null,
+      "input": {"path": "C:/Users/neelj/nba-track-a17/data/cache/combo/gate_corpus_soccer.parquet", "bytes": 6053712, "resolution": "not_applicable_tabular", "sha256": "E0D2F13E7A53B3ED578E81E38DB82F14BB6D3A71E31A9C7CB636D5B4C7E92BC6"}
+    },
+    "tennis": {
+      "rows": 41886,
+      "corpus_unit_counts": {"ATP": 30616, "WTA": 11270},
+      "season_block_count": null,
+      "input": {"path": "C:/Users/neelj/nba-track-a17/data/cache/combo/gate_corpus_tennis.parquet", "bytes": 2745405, "resolution": "not_applicable_tabular", "sha256": "22D006F2B4F7A7186876E133508E1E9DDF14AF3570F1D20A73D73D1D3669D700"}
+    }
+  }
+}
