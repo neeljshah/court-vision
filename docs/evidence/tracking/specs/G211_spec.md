@@ -26,6 +26,28 @@ if another measurement row or a multi-worker arm is active, WAIT and say you wai
 keeper are permanent residents and cannot be stopped (never kill them); record them as the floor and
 report every timing against that recorded floor.
 
+**G216 HAS NOW REPORTED AND IT HANDS YOU THE STRONGEST LEAD IN THIS ROW. READ THIS BEFORE PLANNING.**
+Local staging was tested against the network mount: **direct reads were 4.9x faster single-stream and
+9.9x faster at four readers (785.3 -> 3,844.5 MiB/s, 1,561.6 -> 15,389.0 MiB/s), and end-to-end
+throughput did NOT change** -- 0.150 vs 0.158 jobs/min at N=8, with per-job slowdown 21.83x network
+against 22.75x local. **The network filesystem is ELIMINATED as the cause of the concurrency collapse.**
+
+**AND THE DECISIVE SIGNATURE, which the orchestrator read out of G216's own table: PER-JOB CPU
+COLLAPSES AS CONCURRENCY RISES.** Mean aggregate route CPU was **1,129.50 pct at N=1 and only
+2,513.91 pct at N=8** -- roughly **11.3 cores for a single job falling to about 3.1 cores per job at
+eight** -- while host RAM peaked at 100.77 GiB of ~1007 and GPU memory at 8,004 MiB of 24,576.
+**Jobs are not competing for exhausted CPU, RAM, VRAM or disk bandwidth. They are WAITING.**
+
+**THAT IS THE SIGNATURE OF A SERIALIZATION POINT INSIDE THE ROUTE -- a lock, a GIL-bound section, a
+single shared worker or service, or an oversubscribed thread pool -- and finding it is now the most
+valuable thing this row can do.** Note the N=1 figure too: **one job already uses ~11 cores**, so the
+route is internally parallel, and something in that internal parallelism is what degrades. **Look for
+thread-count settings that do not scale with concurrency (OpenCV `setNumThreads`, torch
+`set_num_threads`, BLAS/OMP environment variables, a shared executor), and for work that holds the GIL.
+If you can identify the serialized resource, say which and cite `file:line`; if you cannot, say
+UNDETERMINED and name what would settle it.** **Do not report a percentage decomposition until it
+actually partitions the frame (see the amendment above).**
+
 **ONE FINDING FROM TONIGHT THAT SHARPENS THIS ROW: the GPU is idle even under heavy load.** Observed
 directly on the pod under EIGHT concurrent route jobs: `nvidia-smi` reported **0 pct utilisation with
 5,956 MiB of 24,576 MiB used**, while load average sat near 57 of 256 cores. Separately, **OPS-NVDEC-UNUSED

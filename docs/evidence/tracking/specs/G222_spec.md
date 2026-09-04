@@ -1,4 +1,4 @@
-GAP G222 | sport wnba | worktree a3 | log g222_direct_to_seed_propagation
+GAP G222 | sport wnba | worktree a6 | log g222_direct_to_seed_propagation
 **MEASUREMENT ONLY. Change NO production code.** `src/` is HUMAN-GATED: READ and IMPORT only. Build in
 `scripts/platformkit/tracking/`.
 
