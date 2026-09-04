@@ -18,35 +18,30 @@ per-frame cost and the remainder is CPU-side. That is independently corroborated
 0-2 pct utilisation in every observation, including under **8 concurrent route jobs** where it used
 **5,524 MiB of 24,576 MiB at 0 pct** with load average 63.5 of 256 cores.
 
-**HOLD PARTIALLY LIFTED -- AMENDED 2026-09-04 BY THE ORCHESTRATOR. G203 HAS REPORTED. The QUIET-MACHINE
-requirement STANDS and is the binding condition now.** This row measures TIME, so a contended pod
-produces a number that means nothing -- that is the exact error the contention warning below describes.
-**Before you measure anything, check what else is running on the pod (`ps`, `nvidia-smi`, `uptime`) and
-if another measurement row or a multi-worker arm is active, WAIT and say you waited.** The daemon and
-keeper are permanent residents and cannot be stopped (never kill them); record them as the floor and
-report every timing against that recorded floor.
+**THIRD AMENDMENT 2026-09-04. THE PREVIOUS "QUIET MACHINE" REQUIREMENT WAS MY ERROR AND IT MADE THIS
+ROW UNRUNNABLE. An attempt on 2026-09-04 correctly refused to measure and reported that
+daemon-launched tennis routing and an active frame-count scan were still consuming CPU. Its reasoning
+followed my spec exactly. The spec was wrong.**
 
-**G216 HAS NOW REPORTED AND IT HANDS YOU THE STRONGEST LEAD IN THIS ROW. READ THIS BEFORE PLANNING.**
-Local staging was tested against the network mount: **direct reads were 4.9x faster single-stream and
-9.9x faster at four readers (785.3 -> 3,844.5 MiB/s, 1,561.6 -> 15,389.0 MiB/s), and end-to-end
-throughput did NOT change** -- 0.150 vs 0.158 jobs/min at N=8, with per-job slowdown 21.83x network
-against 22.75x local. **The network filesystem is ELIMINATED as the cause of the concurrency collapse.**
+**THE POD IS NEVER QUIET AND NEVER WILL BE.** `keep_track_daemon.sh` supervises
+`track_daemon --workers 10 --forever`, which keeps `adapter_run` jobs running continuously; an
+`inplay_capture_runner`, a `foundry_runner`, a scheduler and periodic `ffprobe -count_frames` scans also
+live there permanently. **Waiting for silence is waiting forever. DO NOT WAIT. DO NOT PARK.**
 
-**AND THE DECISIVE SIGNATURE, which the orchestrator read out of G216's own table: PER-JOB CPU
-COLLAPSES AS CONCURRENCY RISES.** Mean aggregate route CPU was **1,129.50 pct at N=1 and only
-2,513.91 pct at N=8** -- roughly **11.3 cores for a single job falling to about 3.1 cores per job at
-eight** -- while host RAM peaked at 100.77 GiB of ~1007 and GPU memory at 8,004 MiB of 24,576.
-**Jobs are not competing for exhausted CPU, RAM, VRAM or disk bandwidth. They are WAITING.**
-
-**THAT IS THE SIGNATURE OF A SERIALIZATION POINT INSIDE THE ROUTE -- a lock, a GIL-bound section, a
-single shared worker or service, or an oversubscribed thread pool -- and finding it is now the most
-valuable thing this row can do.** Note the N=1 figure too: **one job already uses ~11 cores**, so the
-route is internally parallel, and something in that internal parallelism is what degrades. **Look for
-thread-count settings that do not scale with concurrency (OpenCV `setNumThreads`, torch
-`set_num_threads`, BLAS/OMP environment variables, a shared executor), and for work that holds the GIL.
-If you can identify the serialized resource, say which and cite `file:line`; if you cannot, say
-UNDETERMINED and name what would settle it.** **Do not report a percentage decomposition until it
-actually partitions the frame (see the amendment above).**
+**MEASURE WITH THE FLOOR PRESENT AND RECORD IT -- that is exactly what G200 and G216 did, and both
+produced landed, useful results.** The binding requirements are:
+  - **Snapshot the load floor immediately BEFORE and immediately AFTER every timing** (`ps` top
+    consumers with CPU pct, `uptime` load average, `nvidia-smi`, `free`), and report each timing beside
+    its own floor. **A timing without its load context is not a result** -- that rule stands.
+  - **State plainly that these are SHARED-MACHINE figures, not clean-machine capacity**, and that the
+    ABSOLUTE per-frame cost is therefore an upper bound. **The PROPORTIONS and the DECOMPOSITION are
+    what this row is for, and they survive a shared machine far better than absolutes do.**
+  - **If the floor changes materially between the before and after snapshot of a timing, DISCARD that
+    timing and repeat it**, saying how many you discarded. That is the honest way to handle contention,
+    rather than waiting for a silence that never comes.
+  - **The ONLY thing you should wait for is another ORCHESTRATOR-DISPATCHED measurement row** (a G-row
+    running route jobs on the pod). At dispatch time none is running. **The daemon, keeper, supervisor,
+    capture and foundry processes are the FLOOR, not a conflict.** Never kill or restart any of them.
 
 **ONE FINDING FROM TONIGHT THAT SHARPENS THIS ROW: the GPU is idle even under heavy load.** Observed
 directly on the pod under EIGHT concurrent route jobs: `nvidia-smi` reported **0 pct utilisation with
