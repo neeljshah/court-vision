@@ -26,8 +26,7 @@ ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
   bar           = SIGNAL only if settled coverage minus near-event coverage > 0.05 and its CI lower bound is
                   above 0; otherwise NULL.
   The near-minus-settled half-width interaction is descriptive and has its own CI.
-  sign          = improvement = baseline loss minus candidate loss; positive = candidate better; compared with
-                  the frozen +0.004 bar.
+  sign          = coverage gap = settled coverage minus near-event coverage; positive = near-event undercovers.
   n             = >= 30 game clusters in each of near-event and settled bins, printed separately
   eye check     = n/a (S-row); reproduction = verifier reruns the covariate derivation and diffs every number
   must not move = S265's/S276's archived summary JSON and paired-loss CSV, the S123 incumbent, MEMORY_LIMIT
