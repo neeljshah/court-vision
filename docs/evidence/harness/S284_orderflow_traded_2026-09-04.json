@@ -1,0 +1,43 @@
+{
+  "code_sha256": "9bfd2ce586e7e833485f24428d2d4f2f11afc29d000b7e8bb95acb4b0eea52de",
+  "evaluator_records": {
+    "candidate": 38402,
+    "recal_null": 38402
+  },
+  "inputs": [
+    {
+      "bytes": 25140428,
+      "path": "data/cache/inplay_odds/nba_price_series.parquet",
+      "resolution": "parquet",
+      "sha256": "3db7d0444d800cfe487ab48c4780a9283b3a621511e0b259975a4339b970bd5b"
+    },
+    {
+      "bytes": 2829826,
+      "path": "data/cache/inplay_odds/nba_checkpoints_full.parquet",
+      "resolution": "parquet",
+      "sha256": "5ea6498d88bf7548395c700c7239641dcbd1d641bdaddb5a6b63fcf0ea8909e5"
+    }
+  ],
+  "join": {
+    "joined_checkpoint_ticks": 6272,
+    "joined_game_clusters": 40,
+    "matched_game_clusters": 40,
+    "ordering": "away_home",
+    "recal_null_oof_game_clusters": 35,
+    "strictly_prior": true,
+    "tolerance_seconds": 60
+  },
+  "spec": "S284",
+  "summary": {
+    "bar": 0.004,
+    "candidate_brier": 0.21058286362608172,
+    "game_clustered_ci95": [
+      -0.06269144274272628,
+      0.027467473498453215
+    ],
+    "improvement": -0.016100838865529533,
+    "n_game_clusters": 35,
+    "n_states": 5486,
+    "recal_null_brier": 0.1944820247605522
+  }
+}
