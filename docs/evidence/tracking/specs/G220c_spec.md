@@ -33,6 +33,30 @@ with the error and move on.
     | `lAs8JaoWNwg` | 4770 |  720 | GACS mens soccer, sideline camera | **fixed camera + amateur, soccer** |
     | `XwpLBtt1G2g` | 3869 | 1080 | Nepean Hotspurs U15-16, full match | amateur youth soccer |
 
+**AMENDMENT 2026-09-04 -- THE WORKING RECIPE IS NOW REPRODUCED WITH A VERIFIED ARTIFACT. USE IT.**
+G220c's first attempt used the merging selector and **timed out**: it selects `136+251`, and format 136
+is the `https` DASH variant, which gives ffmpeg no segment map for `--download-sections`, so the fetch
+does not bound. It was still running when killed at 170 s.
+
+**The HLS formats work and are fast. Measured directly:**
+
+    -f "232+233" --download-sections "*00:10:00-00:10:20"   ->  100% of 4.56MiB in 00:00:03
+    ffprobe: h264, 1280x720, nb_frames=665, duration=20.067   (verified playable)
+
+versus `bv*[height<=720][vcodec^=avc1]+ba/b[height<=720]` -> `136+251` -> unfinished after 170 s.
+
+**`-F` lists BOTH at 720p: 232 (m3u8) and 136 (https). The rung ladder selects by height and codec but
+never by PROTOCOL, which is the whole problem.** The bridge already knows this -- its own comment records
+*'a SECTION of an HLS stream only fetches the segments it needs: measured at 5.58 MiB in 2 seconds for a
+20s slice'*.
+
+**SO: prefer an m3u8/HLS format for every section download.** A selector such as
+`bv*[protocol*=m3u8][height<=1080][height>=720]+ba[protocol*=m3u8]` expresses it generically; the
+explicit `232+233` is proven on candidate `jh3fnwMi7dM`. **State the selector you used and the format ids
+actually chosen for every candidate, and if a candidate offers no HLS rung at your target height, say so
+and record it rather than silently falling back to DASH.** **Keep your existing timeout and cleanup
+behaviour -- it is why the previous null was trustworthy.**
+
 METHOD:
   1. **Use a MERGING format selector.** Start from the bridge's own working rung
      `bv*[height<=720][vcodec^=avc1]+ba/b[height<=720]`. **Report, per candidate, the selector used, the
