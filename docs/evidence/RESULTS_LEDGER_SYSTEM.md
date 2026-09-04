@@ -481,3 +481,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-04 | execution | S239 | real 0/null/UNDEFINED; CONSTRUCT 4/2.0/98; blockers S20/S18 | ACCEPT (verified: codex-sol, contract A/B/Q) | 7d1e18df0
 2026-09-04 | nba | S210 | per-phase recalibration: nine buckets all >= 30 clusters, BH survivors none, late|blowout_gt12 worse -- measured NULL; attempt 2 REJECTED for missing sealed prereg + embargo cutoff; code NOT landed, memos landed | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 7fa25d845 .
 2026-09-04 | NBA pregame prop calibration | S242 | premise falsified: prior paired artifact has 14,231 rows; CRPS PTS 3.910120, REB 1.613150, AST 1.317556 | PREMISE FALSIFIED (verified: codex-sol, contract A/B/Q) | 44a04f387
+2026-09-04 | NBA boxscore distribution coherence | S243 | named store 4,900 rows, 0 usable cases, seven required q50 fields absent | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 1d8d1e60e
