@@ -1044,6 +1044,64 @@ are a player on the court of play).
 
 ---
 
+---
+
+## 7.24 SETTLED: detection fails on BOTH axes, and recall is the worse one
+
+G284 measured the axis nobody had touched. Precision was already known; recall
+sat in G273's own NOT VERIFIED list, untouched by any row.
+
+**A sealed blind count with no detections shown**, then joined to G267's records:
+
+| quantity | value |
+|---|---:|
+| visibly on-court **players** counted, 54 judgeable frames | **524** |
+| other visibly on-court people | 47 |
+| G270-on-court **detector boxes** in those frames | **365** |
+| raw boxes per visible player | **0.697** |
+| **expected PLAYER-boxes per visible player**, applying G273's 0.597 | **0.416** |
+| recount agreement | **22/23 exact**, 22/23 within one |
+
+### The two numbers together settle the programme's priority
+
+**Precision 0.597** -- only three in five retained boxes are a player on the court
+of play. **Recall bounded at 0.416** -- fewer than half the visible players get a
+player-box. **Detection fails on both axes, and the recall side is worse.**
+
+This is consistent with everything measured tonight and finally orders it.
+G272b split the defect as **50 pct not-a-person, 29 pct footpoint localisation,
+19 pct identity swap**. G281 then measured identity purity at **0.935** and
+showed most swaps revert. **So association and identity are the comparatively
+healthy axes; detection is where the loss is -- now measured rather than
+inferred.**
+
+### 0.416 is an UPPER bound, and all three inflation sources make reality worse
+
+1. **No per-person matching.** Ten people and five boxes is consistent with five
+   found once each, or three found twice and two missed. The ratio bounds the
+   fraction found **only if duplicates are negligible** -- and they are: **0.33
+   pct of 121,926 same-frame pairs are within 1 ft** in court space, 0.21 pct
+   within 20 px in image space.
+2. **Occluded people cannot be counted** by labeller or detector alike, so the
+   denominator is *visible* players. That **inflates** apparent recall.
+3. **It assumes G273's precision transfers** to the on-court subset, which is
+   unverified.
+
+**So "recall is 0.416" must never be said.** It is an upper bound on a fraction
+found, under three named assumptions, from one shot of one clip with one
+labeller -- and per section 7.22 that span is measurably friendlier than the clip
+(0.836 against 0.656, p = 0.0078), so **it may not be quoted clip-wide.**
+
+### A hypothesis closed in passing
+
+**Over-counting by duplicate boxes explains none of this.** The detector is not
+stacking boxes on one person -- **it is missing people and inventing non-people
+at the same time.** That is a different and harder problem than a
+threshold or a de-duplication rule, and no row should spend a cycle on
+duplicates again.
+
+---
+
 ## NOT VERIFIED
 
 - Whether a trained basketball calibration model would work; nothing was trained
