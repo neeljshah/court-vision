@@ -1,0 +1,780 @@
+{
+  "anchors": {
+    "S117_soccer_ingame_screen_2026-09-03": {
+      "improvement": 0.025071328020700463,
+      "n_game_clusters": 2,
+      "n_ticks": 163
+    },
+    "S82_ingame_screen_2026-09-03": {
+      "improvement": 0.003332296266524539,
+      "n_game_clusters": 41,
+      "n_ticks": 15702
+    }
+  },
+  "bar": 0.004,
+  "filter": {
+    "source": "all in-game and CI spellings"
+  },
+  "legacy_before_count": 29,
+  "screens": [
+    {
+      "aliases": [
+        "S06_stacker_result_2026-09-03"
+      ],
+      "ci95_half_width": 0.04209431659149591,
+      "delta": "stacker_minus_pair_leakfree_brier",
+      "filter": {},
+      "improvement": 0.0901568358107058,
+      "label": "UNDERPOWERED",
+      "mde_80": 0.06007947758447682,
+      "memo": "S06_stacker_result_2026-09-03.md",
+      "n_eff": 296.61098781510543,
+      "n_game_clusters": 158,
+      "n_ticks": 47104,
+      "paired_loss_se": 0.021311536828163346,
+      "screen": "S06_stacker_result_2026-09-03",
+      "screen_id": "S259:S06_stacker_result_2026-09-03:0001",
+      "source_bytes": 6664806,
+      "source_path": "data/cache/eval_gate/s06_stacker_series_2026-09-03.csv"
+    },
+    {
+      "aliases": [
+        "S08_replication_gate_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S08_replication_gate_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S08_replication_gate_2026-09-03",
+      "screen_id": "S259:S08_replication_gate_2026-09-03:0002",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S100_microstructure_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S100_microstructure_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S100_microstructure_2026-09-03",
+      "screen_id": "S259:S100_microstructure_2026-09-03:0003",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S102_nba_pod_sweep_2026-09-03"
+      ],
+      "ci95_half_width": 8.55064873569865e-05,
+      "delta": "d",
+      "filter": {
+        "hypothesis": "tdm_h600|dprior"
+      },
+      "improvement": 0.00013944047485006666,
+      "label": "REFUTED-AT-BAR",
+      "mde_80": 0.00012218070393428627,
+      "memo": "S102_nba_pod_sweep_2026-09-03.md",
+      "n_eff": 26657.33285184584,
+      "n_game_clusters": 673,
+      "n_ticks": 192635,
+      "paired_loss_se": 4.35479855148962e-05,
+      "screen": "S102_nba_pod_sweep_2026-09-03",
+      "screen_id": "S259:S102_nba_pod_sweep_2026-09-03:0004",
+      "source_bytes": 59588606,
+      "source_path": "data/cache/eval_gate/s102_nba_sweep_top10_series.parquet"
+    },
+    {
+      "aliases": [
+        "S103_nba_sigma_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S103_nba_sigma_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S103_nba_sigma_2026-09-03",
+      "screen_id": "S259:S103_nba_sigma_2026-09-03:0005",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S108_pregame_full_model_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S108_pregame_full_model_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S108_pregame_full_model_2026-09-03",
+      "screen_id": "S259:S108_pregame_full_model_2026-09-03:0006",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S112_nba_mlb_close_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S112_nba_mlb_close_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S112_nba_mlb_close_2026-09-03",
+      "screen_id": "S259:S112_nba_mlb_close_2026-09-03:0007",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S113_close_incumbent_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S113_close_incumbent_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S113_close_incumbent_2026-09-03",
+      "screen_id": "S259:S113_close_incumbent_2026-09-03:0008",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S114_ingame_ensemble_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S114_ingame_ensemble_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S114_ingame_ensemble_2026-09-03",
+      "screen_id": "S259:S114_ingame_ensemble_2026-09-03:0009",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S115_ingame_models_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S115_ingame_models_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S115_ingame_models_2026-09-03",
+      "screen_id": "S259:S115_ingame_models_2026-09-03:0010",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S116_pooled_ingame_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S116_pooled_ingame_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S116_pooled_ingame_2026-09-03",
+      "screen_id": "S259:S116_pooled_ingame_2026-09-03:0011",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S117_soccer_ingame_screen_2026-09-03"
+      ],
+      "ci95_half_width": 0.362929445876803,
+      "delta": "delta_vs_null",
+      "filter": {
+        "feature": "minute_x_score_diff"
+      },
+      "improvement": 0.025071328020700463,
+      "label": "UNDERPOWERED",
+      "mde_80": 0.40224327231698986,
+      "memo": "S117_soccer_ingame_screen_2026-09-03.md",
+      "n_eff": 14.681645542824795,
+      "n_game_clusters": 2,
+      "n_ticks": 163,
+      "paired_loss_se": 0.0285631668474174,
+      "screen": "S117_soccer_ingame_screen_2026-09-03",
+      "screen_id": "S259:S117_soccer_ingame_screen_2026-09-03:0012",
+      "source_bytes": 274974,
+      "source_path": "data/cache/eval_gate/s117_soccer_ingame_screen_2026-09-03_series.csv"
+    },
+    {
+      "aliases": [
+        "S119_mlb_ingame_supply_2026-09-03"
+      ],
+      "ci95_half_width": 0.005303660238434828,
+      "delta": "p_null_minus_p_candidate_brier",
+      "filter": {
+        "feature": "tick_index_in_game"
+      },
+      "improvement": 0.003332296266524539,
+      "label": "UNDERPOWERED",
+      "mde_80": 0.007536047364327625,
+      "memo": "S119_mlb_ingame_supply_2026-09-03.md",
+      "n_eff": 214.82711185416437,
+      "n_game_clusters": 41,
+      "n_ticks": 15702,
+      "paired_loss_se": 0.0026241773383976178,
+      "screen": "S119_mlb_ingame_supply_2026-09-03",
+      "screen_id": "S259:S119_mlb_ingame_supply_2026-09-03:0013",
+      "source_bytes": 33377586,
+      "source_path": "data/cache/eval_gate/s119_real_game_series_2026-09-03.csv"
+    },
+    {
+      "aliases": [
+        "S121_tick_partition_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S121_tick_partition_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S121_tick_partition_2026-09-03",
+      "screen_id": "S259:S121_tick_partition_2026-09-03:0014",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S124_S125_S126_S131_ingame_guards_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S124_S125_S126_S131_ingame_guards_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S124_S125_S126_S131_ingame_guards_2026-09-03",
+      "screen_id": "S259:S124_S125_S126_S131_ingame_guards_2026-09-03:0015",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S126_rerun_S124_gate_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S126_rerun_S124_gate_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S126_rerun_S124_gate_2026-09-03",
+      "screen_id": "S259:S126_rerun_S124_gate_2026-09-03:0016",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S128_S129_asof_supply_leaks_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S128_S129_asof_supply_leaks_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S128_S129_asof_supply_leaks_2026-09-03",
+      "screen_id": "S259:S128_S129_asof_supply_leaks_2026-09-03:0017",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S132_close_contamination_fix_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S132_close_contamination_fix_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S132_close_contamination_fix_2026-09-03",
+      "screen_id": "S259:S132_close_contamination_fix_2026-09-03:0018",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S136_tennis_roundgrain_builders_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S136_tennis_roundgrain_builders_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S136_tennis_roundgrain_builders_2026-09-03",
+      "screen_id": "S259:S136_tennis_roundgrain_builders_2026-09-03:0019",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S137_rebaseline_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S137_rebaseline_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S137_rebaseline_2026-09-03",
+      "screen_id": "S259:S137_rebaseline_2026-09-03:0020",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S143_archive_read_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S143_archive_read_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S143_archive_read_2026-09-03",
+      "screen_id": "S259:S143_archive_read_2026-09-03:0021",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S148_live_requote_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S148_live_requote_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S148_live_requote_2026-09-03",
+      "screen_id": "S259:S148_live_requote_2026-09-03:0022",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S152_s116_rerun_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S152_s116_rerun_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S152_s116_rerun_2026-09-03",
+      "screen_id": "S259:S152_s116_rerun_2026-09-03:0023",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S206_wnba_ingame_first_score_2026-09-04"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S206_wnba_ingame_first_score_2026-09-04.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S206_wnba_ingame_first_score_2026-09-04",
+      "screen_id": "S259:S206_wnba_ingame_first_score_2026-09-04:0024",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S219_nba_tail_guard_screen_2026-09-04"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S219_nba_tail_guard_screen_2026-09-04.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S219_nba_tail_guard_screen_2026-09-04",
+      "screen_id": "S259:S219_nba_tail_guard_screen_2026-09-04:0025",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S225_ingame_intel_conditioning_rerun_2026-09-04"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S225_ingame_intel_conditioning_rerun_2026-09-04.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S225_ingame_intel_conditioning_rerun_2026-09-04",
+      "screen_id": "S259:S225_ingame_intel_conditioning_rerun_2026-09-04:0026",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S247_nba_sim_engine_vs_line_v2_2026-09-04"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S247_nba_sim_engine_vs_line_v2_2026-09-04.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S247_nba_sim_engine_vs_line_v2_2026-09-04",
+      "screen_id": "S259:S247_nba_sim_engine_vs_line_v2_2026-09-04:0027",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S58_trial1_e2_slice_2026-09-03"
+      ],
+      "ci95_half_width": 0.02385041531479496,
+      "delta": "e2_gd_minus_e4_gd_brier",
+      "filter": {},
+      "improvement": 0.048272196858205545,
+      "label": "UNDERPOWERED",
+      "mde_80": 0.034040382412385536,
+      "memo": "S58_trial1_e2_slice_2026-09-03.md",
+      "n_eff": 467.2728821977526,
+      "n_game_clusters": 157,
+      "n_ticks": 6579,
+      "paired_loss_se": 0.012074401939859702,
+      "screen": "S58_trial1_e2_slice_2026-09-03",
+      "screen_id": "S259:S58_trial1_e2_slice_2026-09-03:0028",
+      "source_bytes": 612871,
+      "source_path": "data/cache/eval_gate/s58_trial1_e2_slice_series_2026-09-03.csv"
+    },
+    {
+      "aliases": [
+        "S58_trialA_clamp_family_2026-09-03"
+      ],
+      "ci95_half_width": 0.0012300298832865564,
+      "delta": "candidate_minus_incumbent_e4_gd_brier",
+      "filter": {},
+      "improvement": -0.0008661662760953922,
+      "label": "REFUTED-AT-BAR",
+      "mde_80": 0.0017555707939936206,
+      "memo": "S58_trialA_clamp_family_2026-09-03.md",
+      "n_eff": 566.1817005774958,
+      "n_game_clusters": 158,
+      "n_ticks": 47104,
+      "paired_loss_se": 0.0006227402956032014,
+      "screen": "S58_trialA_clamp_family_2026-09-03",
+      "screen_id": "S259:S58_trialA_clamp_family_2026-09-03:0029",
+      "source_bytes": 5863520,
+      "source_path": "data/cache/eval_gate/s58_trialA_clamp_family_series_2026-09-03.csv"
+    },
+    {
+      "aliases": [
+        "S58_trialB_nba_halftime_asof_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S58_trialB_nba_halftime_asof_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S58_trialB_nba_halftime_asof_2026-09-03",
+      "screen_id": "S259:S58_trialB_nba_halftime_asof_2026-09-03:0030",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S79_family_combo_2026-09-03"
+      ],
+      "ci95_half_width": 0.004824678573119409,
+      "delta": "d",
+      "filter": {},
+      "improvement": -0.0038736636127116807,
+      "label": "UNDERPOWERED",
+      "mde_80": 0.006839709886335205,
+      "memo": "S79_family_combo_2026-09-03.md",
+      "n_eff": 800.0,
+      "n_game_clusters": 30,
+      "n_ticks": 800,
+      "paired_loss_se": 0.0023589911243846384,
+      "screen": "S79_family_combo_2026-09-03",
+      "screen_id": "S259:S79_family_combo_2026-09-03:0031",
+      "source_bytes": 84117,
+      "source_path": "data/cache/eval_gate/s79_family_combo_2026-09-03_mlb_gate.csv"
+    },
+    {
+      "aliases": [
+        "S80_player_grain_2026-09-03"
+      ],
+      "ci95_half_width": 0.030638865461131922,
+      "delta": "loss_differential",
+      "filter": {},
+      "improvement": 0.0037594655525051593,
+      "label": "UNDERPOWERED",
+      "mde_80": 0.04290965729834819,
+      "memo": "S80_player_grain_2026-09-03.md",
+      "n_eff": 79.25178503374742,
+      "n_game_clusters": 13,
+      "n_ticks": 2267,
+      "paired_loss_se": 0.014062183333944957,
+      "screen": "S80_player_grain_2026-09-03",
+      "screen_id": "S259:S80_player_grain_2026-09-03:0032",
+      "source_bytes": 574328,
+      "source_path": "data/cache/eval_gate/s80_player_grain_2026-09-03.csv"
+    },
+    {
+      "aliases": [
+        "S81_market_move_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S81_market_move_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S81_market_move_2026-09-03",
+      "screen_id": "S259:S81_market_move_2026-09-03:0033",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S82_ingame_screen_2026-09-03"
+      ],
+      "ci95_half_width": 0.005303660238434828,
+      "delta": "p_null_minus_p_candidate_brier",
+      "filter": {
+        "feature": "tick_index_in_game"
+      },
+      "improvement": 0.003332296266524539,
+      "label": "UNDERPOWERED",
+      "mde_80": 0.007536047364327625,
+      "memo": "S82_ingame_screen_2026-09-03.md",
+      "n_eff": 214.82711185416437,
+      "n_game_clusters": 41,
+      "n_ticks": 15702,
+      "paired_loss_se": 0.0026241773383976178,
+      "screen": "S82_ingame_screen_2026-09-03",
+      "screen_id": "S259:S82_ingame_screen_2026-09-03:0034",
+      "source_bytes": 33376960,
+      "source_path": "data/cache/eval_gate/s82_ingame_screen_series_2026-09-03.csv"
+    },
+    {
+      "aliases": [
+        "S83_mlb_join_player_ids_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S83_mlb_join_player_ids_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S83_mlb_join_player_ids_2026-09-03",
+      "screen_id": "S259:S83_mlb_join_player_ids_2026-09-03:0035",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S84_nba_lineup_at_tick_2026-09-03"
+      ],
+      "ci95_half_width": 0.0034644386580359606,
+      "delta": "loss_differential",
+      "filter": {},
+      "improvement": -0.00045533866429213975,
+      "label": "UNDERPOWERED",
+      "mde_80": 0.004947967696491481,
+      "memo": "S84_nba_lineup_at_tick_2026-09-03.md",
+      "n_eff": 894.3561752192002,
+      "n_game_clusters": 284,
+      "n_ticks": 33713,
+      "paired_loss_se": 0.001760043930902869,
+      "screen": "S84_nba_lineup_at_tick_2026-09-03",
+      "screen_id": "S259:S84_nba_lineup_at_tick_2026-09-03:0036",
+      "source_bytes": 9916512,
+      "source_path": "data/cache/eval_gate/s84_nba_lineup_2026-09-03.csv"
+    },
+    {
+      "aliases": [
+        "S85_refused_families_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S85_refused_families_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S85_refused_families_2026-09-03",
+      "screen_id": "S259:S85_refused_families_2026-09-03:0037",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S86_nba_every_tick_2026-09-03"
+      ],
+      "ci95_half_width": 0.0024979410123754722,
+      "delta": "d",
+      "filter": {},
+      "improvement": -0.004856640629661494,
+      "label": "REFUTED-AT-BAR",
+      "mde_80": 0.003569517036084228,
+      "memo": "S86_nba_every_tick_2026-09-03.md",
+      "n_eff": 3260.0700122419225,
+      "n_game_clusters": 797,
+      "n_ticks": 232951,
+      "paired_loss_se": 0.001272545243885963,
+      "screen": "S86_nba_every_tick_2026-09-03",
+      "screen_id": "S259:S86_nba_every_tick_2026-09-03:0038",
+      "source_bytes": 49052957,
+      "source_path": "data/cache/eval_gate/s86_nba_every_tick_2026-09-03.csv"
+    },
+    {
+      "aliases": [
+        "S92_nba_lineup_dynamic_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S92_nba_lineup_dynamic_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S92_nba_lineup_dynamic_2026-09-03",
+      "screen_id": "S259:S92_nba_lineup_dynamic_2026-09-03:0039",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S94_nba_early_shrinkage_2026-09-03"
+      ],
+      "ci95_half_width": 0.0007561383561435005,
+      "delta": "d_candidate_vs_market",
+      "filter": {},
+      "improvement": -0.00024282596931342524,
+      "label": "REFUTED-AT-BAR",
+      "mde_80": 0.001080450378456324,
+      "memo": "S94_nba_early_shrinkage_2026-09-03.md",
+      "n_eff": 4029.33464765437,
+      "n_game_clusters": 673,
+      "n_ticks": 192635,
+      "paired_loss_se": 0.0003850971218490137,
+      "screen": "S94_nba_early_shrinkage_2026-09-03",
+      "screen_id": "S259:S94_nba_early_shrinkage_2026-09-03:0040",
+      "source_bytes": 54683596,
+      "source_path": "data/cache/eval_gate/s94_nba_early_shrinkage_2026-09-03.csv"
+    },
+    {
+      "aliases": [
+        "S96_nba_overreaction_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S96_nba_overreaction_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S96_nba_overreaction_2026-09-03",
+      "screen_id": "S259:S96_nba_overreaction_2026-09-03:0041",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S97_nba_sensor_fusion_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S97_nba_sensor_fusion_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S97_nba_sensor_fusion_2026-09-03",
+      "screen_id": "S259:S97_nba_sensor_fusion_2026-09-03:0042",
+      "source_bytes": null,
+      "source_path": null
+    },
+    {
+      "aliases": [
+        "S98_nba_better_prior_2026-09-03"
+      ],
+      "delta": null,
+      "filter": {},
+      "label": "NO SERIES ARCHIVED",
+      "memo": "S98_nba_better_prior_2026-09-03.md",
+      "paired_loss_se": null,
+      "reason": "NO SERIES ARCHIVED: no unambiguous paired Brier archive rule.",
+      "screen": "S98_nba_better_prior_2026-09-03",
+      "screen_id": "S259:S98_nba_better_prior_2026-09-03:0043",
+      "source_bytes": null,
+      "source_path": null
+    }
+  ],
+  "source_grep_count": 43,
+  "source_memos": [
+    "S06_stacker_result_2026-09-03.md",
+    "S08_replication_gate_2026-09-03.md",
+    "S100_microstructure_2026-09-03.md",
+    "S102_nba_pod_sweep_2026-09-03.md",
+    "S103_nba_sigma_2026-09-03.md",
+    "S108_pregame_full_model_2026-09-03.md",
+    "S112_nba_mlb_close_2026-09-03.md",
+    "S113_close_incumbent_2026-09-03.md",
+    "S114_ingame_ensemble_2026-09-03.md",
+    "S115_ingame_models_2026-09-03.md",
+    "S116_pooled_ingame_2026-09-03.md",
+    "S117_soccer_ingame_screen_2026-09-03.md",
+    "S119_mlb_ingame_supply_2026-09-03.md",
+    "S121_tick_partition_2026-09-03.md",
+    "S124_S125_S126_S131_ingame_guards_2026-09-03.md",
+    "S126_rerun_S124_gate_2026-09-03.md",
+    "S128_S129_asof_supply_leaks_2026-09-03.md",
+    "S132_close_contamination_fix_2026-09-03.md",
+    "S136_tennis_roundgrain_builders_2026-09-03.md",
+    "S137_rebaseline_2026-09-03.md",
+    "S143_archive_read_2026-09-03.md",
+    "S148_live_requote_2026-09-03.md",
+    "S152_s116_rerun_2026-09-03.md",
+    "S206_wnba_ingame_first_score_2026-09-04.md",
+    "S219_nba_tail_guard_screen_2026-09-04.md",
+    "S225_ingame_intel_conditioning_rerun_2026-09-04.md",
+    "S247_nba_sim_engine_vs_line_v2_2026-09-04.md",
+    "S58_trial1_e2_slice_2026-09-03.md",
+    "S58_trialA_clamp_family_2026-09-03.md",
+    "S58_trialB_nba_halftime_asof_2026-09-03.md",
+    "S79_family_combo_2026-09-03.md",
+    "S80_player_grain_2026-09-03.md",
+    "S81_market_move_2026-09-03.md",
+    "S82_ingame_screen_2026-09-03.md",
+    "S83_mlb_join_player_ids_2026-09-03.md",
+    "S84_nba_lineup_at_tick_2026-09-03.md",
+    "S85_refused_families_2026-09-03.md",
+    "S86_nba_every_tick_2026-09-03.md",
+    "S92_nba_lineup_dynamic_2026-09-03.md",
+    "S94_nba_early_shrinkage_2026-09-03.md",
+    "S96_nba_overreaction_2026-09-03.md",
+    "S97_nba_sensor_fusion_2026-09-03.md",
+    "S98_nba_better_prior_2026-09-03.md"
+  ]
+}
