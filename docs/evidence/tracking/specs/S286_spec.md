@@ -1,4 +1,4 @@
-GAP S286 | sport nba (in-game) | worktree a18 | log cx_s286_empirical_quantile_crps
+GAP S286 | sport nba (in-game) | worktree a15 | log cx_s286_empirical_quantile_crps
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: S227 fit Gaussian sigma per _cell; FROZEN_LADDER contains evaluation thresholds only.
 PREMISE (step 0, INFORMATIONAL): import s227's own `load`, `_cell`, `_remaining_fraction` unmodified; print n
