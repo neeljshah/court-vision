@@ -1,0 +1,3338 @@
+{
+  "attempt": 2,
+  "bh": [
+    {
+      "bh_threshold": 0.005555555555555556,
+      "bucket": "late|mid_06_12",
+      "p_raw": 0.12560818094549564,
+      "rank": 1,
+      "survives": false
+    },
+    {
+      "bh_threshold": 0.011111111111111112,
+      "bucket": "late|blowout_gt12",
+      "p_raw": 0.2215411887820744,
+      "rank": 2,
+      "survives": false
+    },
+    {
+      "bh_threshold": 0.01666666666666667,
+      "bucket": "early|blowout_gt12",
+      "p_raw": 0.2828083547126814,
+      "rank": 3,
+      "survives": false
+    },
+    {
+      "bh_threshold": 0.022222222222222223,
+      "bucket": "early|close_le5",
+      "p_raw": 0.4295706480759054,
+      "rank": 4,
+      "survives": false
+    },
+    {
+      "bh_threshold": 0.027777777777777776,
+      "bucket": "mid|mid_06_12",
+      "p_raw": 0.46275864023260505,
+      "rank": 5,
+      "survives": false
+    },
+    {
+      "bh_threshold": 0.03333333333333334,
+      "bucket": "early|mid_06_12",
+      "p_raw": 0.7240992144036138,
+      "rank": 6,
+      "survives": false
+    },
+    {
+      "bh_threshold": 0.03888888888888889,
+      "bucket": "mid|blowout_gt12",
+      "p_raw": 0.8058660072573474,
+      "rank": 7,
+      "survives": false
+    },
+    {
+      "bh_threshold": 0.044444444444444446,
+      "bucket": "mid|close_le5",
+      "p_raw": 0.8807835463246485,
+      "rank": 8,
+      "survives": false
+    },
+    {
+      "bh_threshold": 0.05,
+      "bucket": "late|close_le5",
+      "p_raw": 0.9655948471116612,
+      "rank": 9,
+      "survives": false
+    }
+  ],
+  "bh_q": 0.05,
+  "buckets": [
+    {
+      "brier_incumbent": 0.110116514842119,
+      "brier_market": 0.110116514842119,
+      "brier_recal": 0.1113185266319439,
+      "bucket": "early|blowout_gt12",
+      "ci95": [
+        -0.0020062622385392903,
+        0.002334131580490198
+      ],
+      "delta": 0.00011258048813251353,
+      "ece_incumbent": 0.02324902139874745,
+      "ece_market": 0.02324902139874745,
+      "ece_recal": 0.01934295587897862,
+      "label": "NO_CHANGE",
+      "n_eff": 350.1547502749999,
+      "n_games": 316,
+      "n_ticks": 7664,
+      "p_raw": 0.2828083547126814
+    },
+    {
+      "brier_incumbent": 0.22273345630472044,
+      "brier_market": 0.22273345630472044,
+      "brier_recal": 0.22174523221216966,
+      "bucket": "early|close_le5",
+      "ci95": [
+        -0.0022066589209620738,
+        0.001997364647868353
+      ],
+      "delta": -0.00014183934265511576,
+      "ece_incumbent": 0.05461196553481263,
+      "ece_market": 0.05461196553481263,
+      "ece_recal": 0.03786461686495574,
+      "label": "NO_CHANGE",
+      "n_eff": 653.0498690740727,
+      "n_games": 618,
+      "n_ticks": 21587,
+      "p_raw": 0.4295706480759054
+    },
+    {
+      "brier_incumbent": 0.19567732808468408,
+      "brier_market": 0.19567732808468408,
+      "brier_recal": 0.19606581869089618,
+      "bucket": "early|mid_06_12",
+      "ci95": [
+        -0.002419042907409996,
+        0.0015471005559278452
+      ],
+      "delta": -0.00045049000765273067,
+      "ece_incumbent": 0.035625736023817405,
+      "ece_market": 0.035625736023817405,
+      "ece_recal": 0.038374604538071906,
+      "label": "NO_CHANGE",
+      "n_eff": 681.3824217309284,
+      "n_games": 613,
+      "n_ticks": 15115,
+      "p_raw": 0.7240992144036138
+    },
+    {
+      "brier_incumbent": 0.003346682671343767,
+      "brier_market": 0.003346682671343767,
+      "brier_recal": 0.0030774743386666288,
+      "bucket": "late|blowout_gt12",
+      "ci95": [
+        -0.0018947801123077469,
+        -9.034283517074667e-05
+      ],
+      "delta": -0.000938308590740588,
+      "ece_incumbent": 0.0020701025364275637,
+      "ece_market": 0.0020701025364275637,
+      "ece_recal": 0.0017444707200676701,
+      "label": "WORSE",
+      "n_eff": 1894.4247185303213,
+      "n_games": 407,
+      "n_ticks": 46325,
+      "p_raw": 0.2215411887820744
+    },
+    {
+      "brier_incumbent": 0.0503857994655562,
+      "brier_market": 0.0503857994655562,
+      "brier_recal": 0.050398360395393034,
+      "bucket": "late|close_le5",
+      "ci95": [
+        -0.0003926085566100315,
+        0.002505675578167916
+      ],
+      "delta": 0.001036522543103833,
+      "ece_incumbent": 0.006172927133560336,
+      "ece_market": 0.006172927133560336,
+      "ece_recal": 0.004410754009317918,
+      "label": "NO_CHANGE",
+      "n_eff": 1049.2118056166632,
+      "n_games": 341,
+      "n_ticks": 29657,
+      "p_raw": 0.9655948471116612
+    },
+    {
+      "brier_incumbent": 0.016592055626895436,
+      "brier_market": 0.016592055626895436,
+      "brier_recal": 0.01678106086394438,
+      "bucket": "late|mid_06_12",
+      "ci95": [
+        -0.002461866693209528,
+        0.0003753721451158385
+      ],
+      "delta": -0.0010017939484132504,
+      "ece_incumbent": 0.0036358842654572675,
+      "ece_market": 0.0036358842654572675,
+      "ece_recal": 0.00492695978610401,
+      "label": "NO_CHANGE",
+      "n_eff": 1000.1070885736784,
+      "n_games": 470,
+      "n_ticks": 36601,
+      "p_raw": 0.12560818094549564
+    },
+    {
+      "brier_incumbent": 0.06321645692274307,
+      "brier_market": 0.06321645692274307,
+      "brier_recal": 0.06298184003673528,
+      "bucket": "mid|blowout_gt12",
+      "ci95": [
+        -0.0022116445071717543,
+        0.0009190715886478877
+      ],
+      "delta": -0.0006464965370122872,
+      "ece_incumbent": 0.02004781539351852,
+      "ece_market": 0.02004781539351852,
+      "ece_recal": 0.020298702353037913,
+      "label": "NO_CHANGE",
+      "n_eff": 427.7149095101476,
+      "n_games": 364,
+      "n_ticks": 6912,
+      "p_raw": 0.8058660072573474
+    },
+    {
+      "brier_incumbent": 0.23005182265625,
+      "brier_market": 0.23005182265625,
+      "brier_recal": 0.22981873997845723,
+      "bucket": "mid|close_le5",
+      "ci95": [
+        -0.0029889607451740606,
+        0.0014836967644228105
+      ],
+      "delta": -0.0007146828516239036,
+      "ece_incumbent": 0.05313251488095239,
+      "ece_market": 0.05313251488095239,
+      "ece_recal": 0.03767044402879237,
+      "label": "NO_CHANGE",
+      "n_eff": 425.96460468352745,
+      "n_games": 399,
+      "n_ticks": 6720,
+      "p_raw": 0.8807835463246485
+    },
+    {
+      "brier_incumbent": 0.16764498041775455,
+      "brier_market": 0.16764498041775455,
+      "brier_recal": 0.16843393489022726,
+      "bucket": "mid|mid_06_12",
+      "ci95": [
+        -0.0022355958542560205,
+        0.001330409214201139
+      ],
+      "delta": -0.0004603436502394191,
+      "ece_incumbent": 0.03532738613286917,
+      "ece_market": 0.03532738613286917,
+      "ece_recal": 0.02827403331043532,
+      "label": "NO_CHANGE",
+      "n_eff": 563.4108613441922,
+      "n_games": 503,
+      "n_ticks": 6894,
+      "p_raw": 0.46275864023260505
+    }
+  ],
+  "burn_in_dates": [
+    "2024-10-22",
+    "2024-10-23",
+    "2024-10-24",
+    "2024-10-25",
+    "2024-10-26",
+    "2024-10-27",
+    "2024-10-28",
+    "2024-10-29",
+    "2024-10-30",
+    "2024-10-31",
+    "2024-11-01",
+    "2024-11-02",
+    "2024-11-03",
+    "2024-11-04",
+    "2024-11-11",
+    "2024-11-12",
+    "2024-11-13",
+    "2024-11-15",
+    "2024-11-16",
+    "2024-11-17",
+    "2024-11-18",
+    "2024-11-19",
+    "2024-11-20",
+    "2024-11-21",
+    "2024-11-22",
+    "2024-11-23",
+    "2024-11-25",
+    "2024-12-01",
+    "2024-12-02",
+    "2024-12-03",
+    "2024-12-04",
+    "2024-12-05",
+    "2024-12-06",
+    "2024-12-07",
+    "2024-12-08",
+    "2024-12-09",
+    "2024-12-10",
+    "2024-12-11",
+    "2024-12-12",
+    "2024-12-13",
+    "2024-12-14",
+    "2024-12-15",
+    "2024-12-16",
+    "2024-12-22",
+    "2024-12-23",
+    "2024-12-25",
+    "2024-12-26",
+    "2024-12-27",
+    "2024-12-28",
+    "2024-12-29",
+    "2024-12-30",
+    "2024-12-31",
+    "2025-01-01",
+    "2025-01-02"
+  ],
+  "calibration_only": true,
+  "ece_reason": "S94 defines the cited 0.064157 cell on this representation; Brier is unchanged by the boundary.",
+  "ece_source": "S86 SCREEN CSV decimal representation reconstructed in memory",
+  "global_folds": [
+    {
+      "date": "2025-01-03",
+      "n_test": 1365,
+      "n_train": 55476,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-02"
+    },
+    {
+      "date": "2025-01-04",
+      "n_test": 813,
+      "n_train": 56841,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-03"
+    },
+    {
+      "date": "2025-01-05",
+      "n_test": 825,
+      "n_train": 57654,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-04"
+    },
+    {
+      "date": "2025-01-06",
+      "n_test": 1386,
+      "n_train": 58479,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-05"
+    },
+    {
+      "date": "2025-01-07",
+      "n_test": 843,
+      "n_train": 59865,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-06"
+    },
+    {
+      "date": "2025-01-08",
+      "n_test": 1105,
+      "n_train": 60708,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-07"
+    },
+    {
+      "date": "2025-01-09",
+      "n_test": 1064,
+      "n_train": 61813,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-08"
+    },
+    {
+      "date": "2025-01-10",
+      "n_test": 785,
+      "n_train": 62877,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-09"
+    },
+    {
+      "date": "2025-01-11",
+      "n_test": 526,
+      "n_train": 63662,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-10"
+    },
+    {
+      "date": "2025-01-12",
+      "n_test": 1368,
+      "n_train": 64188,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-11"
+    },
+    {
+      "date": "2025-01-13",
+      "n_test": 788,
+      "n_train": 65556,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-12"
+    },
+    {
+      "date": "2025-01-14",
+      "n_test": 804,
+      "n_train": 66344,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-13"
+    },
+    {
+      "date": "2025-01-15",
+      "n_test": 1685,
+      "n_train": 67148,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-14"
+    },
+    {
+      "date": "2025-01-16",
+      "n_test": 565,
+      "n_train": 68833,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-15"
+    },
+    {
+      "date": "2025-01-17",
+      "n_test": 1169,
+      "n_train": 69398,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-16"
+    },
+    {
+      "date": "2025-01-18",
+      "n_test": 293,
+      "n_train": 70567,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-17"
+    },
+    {
+      "date": "2025-01-19",
+      "n_test": 1051,
+      "n_train": 70860,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-18"
+    },
+    {
+      "date": "2025-01-20",
+      "n_test": 837,
+      "n_train": 71911,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-19"
+    },
+    {
+      "date": "2025-01-21",
+      "n_test": 843,
+      "n_train": 72748,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-20"
+    },
+    {
+      "date": "2025-01-22",
+      "n_test": 1094,
+      "n_train": 73591,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-21"
+    },
+    {
+      "date": "2025-01-23",
+      "n_test": 1159,
+      "n_train": 74685,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-22"
+    },
+    {
+      "date": "2025-01-24",
+      "n_test": 572,
+      "n_train": 75844,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-23"
+    },
+    {
+      "date": "2025-01-25",
+      "n_test": 2079,
+      "n_train": 76416,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-24"
+    },
+    {
+      "date": "2025-01-27",
+      "n_test": 1831,
+      "n_train": 78495,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-25"
+    },
+    {
+      "date": "2025-01-28",
+      "n_test": 599,
+      "n_train": 80326,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-27"
+    },
+    {
+      "date": "2025-01-29",
+      "n_test": 1470,
+      "n_train": 80925,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-28"
+    },
+    {
+      "date": "2025-01-30",
+      "n_test": 914,
+      "n_train": 82395,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-29"
+    },
+    {
+      "date": "2025-01-31",
+      "n_test": 960,
+      "n_train": 83309,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-30"
+    },
+    {
+      "date": "2025-02-01",
+      "n_test": 814,
+      "n_train": 84269,
+      "spec": "global_logistic",
+      "train_date_max": "2025-01-31"
+    },
+    {
+      "date": "2025-04-13",
+      "n_test": 2587,
+      "n_train": 85083,
+      "spec": "global_logistic",
+      "train_date_max": "2025-02-01"
+    },
+    {
+      "date": "2025-04-15",
+      "n_test": 352,
+      "n_train": 87670,
+      "spec": "global_logistic",
+      "train_date_max": "2025-04-13"
+    },
+    {
+      "date": "2025-04-16",
+      "n_test": 330,
+      "n_train": 88022,
+      "spec": "global_logistic",
+      "train_date_max": "2025-04-15"
+    },
+    {
+      "date": "2025-04-19",
+      "n_test": 665,
+      "n_train": 88352,
+      "spec": "global_logistic",
+      "train_date_max": "2025-04-16"
+    },
+    {
+      "date": "2025-04-20",
+      "n_test": 340,
+      "n_train": 89017,
+      "spec": "global_logistic",
+      "train_date_max": "2025-04-19"
+    },
+    {
+      "date": "2025-04-24",
+      "n_test": 407,
+      "n_train": 89357,
+      "spec": "global_logistic",
+      "train_date_max": "2025-04-20"
+    },
+    {
+      "date": "2025-04-26",
+      "n_test": 676,
+      "n_train": 89764,
+      "spec": "global_logistic",
+      "train_date_max": "2025-04-24"
+    },
+    {
+      "date": "2025-04-27",
+      "n_test": 677,
+      "n_train": 90440,
+      "spec": "global_logistic",
+      "train_date_max": "2025-04-26"
+    },
+    {
+      "date": "2025-04-28",
+      "n_test": 324,
+      "n_train": 91117,
+      "spec": "global_logistic",
+      "train_date_max": "2025-04-27"
+    },
+    {
+      "date": "2025-04-29",
+      "n_test": 731,
+      "n_train": 91441,
+      "spec": "global_logistic",
+      "train_date_max": "2025-04-28"
+    },
+    {
+      "date": "2025-04-30",
+      "n_test": 350,
+      "n_train": 92172,
+      "spec": "global_logistic",
+      "train_date_max": "2025-04-29"
+    },
+    {
+      "date": "2025-05-01",
+      "n_test": 345,
+      "n_train": 92522,
+      "spec": "global_logistic",
+      "train_date_max": "2025-04-30"
+    },
+    {
+      "date": "2025-05-04",
+      "n_test": 725,
+      "n_train": 92867,
+      "spec": "global_logistic",
+      "train_date_max": "2025-05-01"
+    },
+    {
+      "date": "2025-05-07",
+      "n_test": 714,
+      "n_train": 93592,
+      "spec": "global_logistic",
+      "train_date_max": "2025-05-04"
+    },
+    {
+      "date": "2025-05-08",
+      "n_test": 367,
+      "n_train": 94306,
+      "spec": "global_logistic",
+      "train_date_max": "2025-05-07"
+    },
+    {
+      "date": "2025-05-09",
+      "n_test": 384,
+      "n_train": 94673,
+      "spec": "global_logistic",
+      "train_date_max": "2025-05-08"
+    },
+    {
+      "date": "2025-05-11",
+      "n_test": 404,
+      "n_train": 95057,
+      "spec": "global_logistic",
+      "train_date_max": "2025-05-09"
+    },
+    {
+      "date": "2025-05-12",
+      "n_test": 768,
+      "n_train": 95461,
+      "spec": "global_logistic",
+      "train_date_max": "2025-05-11"
+    },
+    {
+      "date": "2025-05-13",
+      "n_test": 779,
+      "n_train": 96229,
+      "spec": "global_logistic",
+      "train_date_max": "2025-05-12"
+    },
+    {
+      "date": "2025-05-16",
+      "n_test": 398,
+      "n_train": 97008,
+      "spec": "global_logistic",
+      "train_date_max": "2025-05-13"
+    },
+    {
+      "date": "2025-05-20",
+      "n_test": 394,
+      "n_train": 97406,
+      "spec": "global_logistic",
+      "train_date_max": "2025-05-16"
+    },
+    {
+      "date": "2025-05-21",
+      "n_test": 430,
+      "n_train": 97800,
+      "spec": "global_logistic",
+      "train_date_max": "2025-05-20"
+    },
+    {
+      "date": "2025-05-25",
+      "n_test": 357,
+      "n_train": 98230,
+      "spec": "global_logistic",
+      "train_date_max": "2025-05-21"
+    },
+    {
+      "date": "2025-05-26",
+      "n_test": 279,
+      "n_train": 98587,
+      "spec": "global_logistic",
+      "train_date_max": "2025-05-25"
+    },
+    {
+      "date": "2025-05-29",
+      "n_test": 277,
+      "n_train": 98866,
+      "spec": "global_logistic",
+      "train_date_max": "2025-05-26"
+    },
+    {
+      "date": "2025-06-05",
+      "n_test": 282,
+      "n_train": 99143,
+      "spec": "global_logistic",
+      "train_date_max": "2025-05-29"
+    },
+    {
+      "date": "2025-06-11",
+      "n_test": 287,
+      "n_train": 99425,
+      "spec": "global_logistic",
+      "train_date_max": "2025-06-05"
+    },
+    {
+      "date": "2025-06-16",
+      "n_test": 287,
+      "n_train": 99712,
+      "spec": "global_logistic",
+      "train_date_max": "2025-06-11"
+    },
+    {
+      "date": "2025-06-22",
+      "n_test": 378,
+      "n_train": 99999,
+      "spec": "global_logistic",
+      "train_date_max": "2025-06-16"
+    },
+    {
+      "date": "2025-10-02",
+      "n_test": 863,
+      "n_train": 100377,
+      "spec": "global_logistic",
+      "train_date_max": "2025-06-22"
+    },
+    {
+      "date": "2025-10-04",
+      "n_test": 601,
+      "n_train": 101240,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-02"
+    },
+    {
+      "date": "2025-10-05",
+      "n_test": 264,
+      "n_train": 101841,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-04"
+    },
+    {
+      "date": "2025-10-06",
+      "n_test": 717,
+      "n_train": 102105,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-05"
+    },
+    {
+      "date": "2025-10-07",
+      "n_test": 269,
+      "n_train": 102822,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-06"
+    },
+    {
+      "date": "2025-10-08",
+      "n_test": 536,
+      "n_train": 103091,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-07"
+    },
+    {
+      "date": "2025-10-09",
+      "n_test": 562,
+      "n_train": 103627,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-08"
+    },
+    {
+      "date": "2025-10-10",
+      "n_test": 936,
+      "n_train": 104189,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-09"
+    },
+    {
+      "date": "2025-10-11",
+      "n_test": 270,
+      "n_train": 105125,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-10"
+    },
+    {
+      "date": "2025-10-12",
+      "n_test": 996,
+      "n_train": 105395,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-11"
+    },
+    {
+      "date": "2025-10-13",
+      "n_test": 777,
+      "n_train": 106391,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-12"
+    },
+    {
+      "date": "2025-10-14",
+      "n_test": 820,
+      "n_train": 107168,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-13"
+    },
+    {
+      "date": "2025-10-15",
+      "n_test": 519,
+      "n_train": 107988,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-14"
+    },
+    {
+      "date": "2025-10-16",
+      "n_test": 800,
+      "n_train": 108507,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-15"
+    },
+    {
+      "date": "2025-10-17",
+      "n_test": 1058,
+      "n_train": 109307,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-16"
+    },
+    {
+      "date": "2025-10-21",
+      "n_test": 305,
+      "n_train": 110365,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-17"
+    },
+    {
+      "date": "2025-10-22",
+      "n_test": 1664,
+      "n_train": 110670,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-21"
+    },
+    {
+      "date": "2025-10-23",
+      "n_test": 321,
+      "n_train": 112334,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-22"
+    },
+    {
+      "date": "2025-10-24",
+      "n_test": 1692,
+      "n_train": 112655,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-23"
+    },
+    {
+      "date": "2025-10-25",
+      "n_test": 534,
+      "n_train": 114347,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-24"
+    },
+    {
+      "date": "2025-10-26",
+      "n_test": 275,
+      "n_train": 114881,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-25"
+    },
+    {
+      "date": "2025-11-02",
+      "n_test": 548,
+      "n_train": 115156,
+      "spec": "global_logistic",
+      "train_date_max": "2025-10-26"
+    },
+    {
+      "date": "2025-11-03",
+      "n_test": 542,
+      "n_train": 115704,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-02"
+    },
+    {
+      "date": "2025-11-04",
+      "n_test": 1087,
+      "n_train": 116246,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-03"
+    },
+    {
+      "date": "2025-11-05",
+      "n_test": 843,
+      "n_train": 117333,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-04"
+    },
+    {
+      "date": "2025-11-06",
+      "n_test": 1667,
+      "n_train": 118176,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-05"
+    },
+    {
+      "date": "2025-11-07",
+      "n_test": 267,
+      "n_train": 119843,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-06"
+    },
+    {
+      "date": "2025-11-08",
+      "n_test": 1073,
+      "n_train": 120110,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-07"
+    },
+    {
+      "date": "2025-11-09",
+      "n_test": 1940,
+      "n_train": 121183,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-08"
+    },
+    {
+      "date": "2025-11-10",
+      "n_test": 256,
+      "n_train": 123123,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-09"
+    },
+    {
+      "date": "2025-11-11",
+      "n_test": 1965,
+      "n_train": 123379,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-10"
+    },
+    {
+      "date": "2025-11-12",
+      "n_test": 1831,
+      "n_train": 125344,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-11"
+    },
+    {
+      "date": "2025-11-13",
+      "n_test": 515,
+      "n_train": 127175,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-12"
+    },
+    {
+      "date": "2025-11-14",
+      "n_test": 859,
+      "n_train": 127690,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-13"
+    },
+    {
+      "date": "2025-11-21",
+      "n_test": 1072,
+      "n_train": 128549,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-14"
+    },
+    {
+      "date": "2025-11-22",
+      "n_test": 821,
+      "n_train": 129621,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-21"
+    },
+    {
+      "date": "2025-11-23",
+      "n_test": 1071,
+      "n_train": 130442,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-22"
+    },
+    {
+      "date": "2025-11-24",
+      "n_test": 1389,
+      "n_train": 131513,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-23"
+    },
+    {
+      "date": "2025-11-25",
+      "n_test": 543,
+      "n_train": 132902,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-24"
+    },
+    {
+      "date": "2025-11-26",
+      "n_test": 1223,
+      "n_train": 133445,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-25"
+    },
+    {
+      "date": "2025-11-28",
+      "n_test": 1580,
+      "n_train": 134668,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-26"
+    },
+    {
+      "date": "2025-11-29",
+      "n_test": 1054,
+      "n_train": 136248,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-28"
+    },
+    {
+      "date": "2025-11-30",
+      "n_test": 1083,
+      "n_train": 137302,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-29"
+    },
+    {
+      "date": "2025-12-01",
+      "n_test": 1308,
+      "n_train": 138385,
+      "spec": "global_logistic",
+      "train_date_max": "2025-11-30"
+    },
+    {
+      "date": "2025-12-02",
+      "n_test": 862,
+      "n_train": 139693,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-01"
+    },
+    {
+      "date": "2025-12-03",
+      "n_test": 1133,
+      "n_train": 140555,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-02"
+    },
+    {
+      "date": "2025-12-10",
+      "n_test": 269,
+      "n_train": 141688,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-03"
+    },
+    {
+      "date": "2025-12-11",
+      "n_test": 551,
+      "n_train": 141957,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-10"
+    },
+    {
+      "date": "2025-12-12",
+      "n_test": 792,
+      "n_train": 142508,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-11"
+    },
+    {
+      "date": "2025-12-13",
+      "n_test": 299,
+      "n_train": 143300,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-12"
+    },
+    {
+      "date": "2025-12-14",
+      "n_test": 1302,
+      "n_train": 143599,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-13"
+    },
+    {
+      "date": "2025-12-15",
+      "n_test": 845,
+      "n_train": 144901,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-14"
+    },
+    {
+      "date": "2025-12-17",
+      "n_test": 262,
+      "n_train": 145746,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-15"
+    },
+    {
+      "date": "2025-12-18",
+      "n_test": 2014,
+      "n_train": 146008,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-17"
+    },
+    {
+      "date": "2025-12-19",
+      "n_test": 1016,
+      "n_train": 148022,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-18"
+    },
+    {
+      "date": "2025-12-20",
+      "n_test": 1388,
+      "n_train": 149038,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-19"
+    },
+    {
+      "date": "2025-12-21",
+      "n_test": 832,
+      "n_train": 150426,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-20"
+    },
+    {
+      "date": "2025-12-22",
+      "n_test": 808,
+      "n_train": 151258,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-21"
+    },
+    {
+      "date": "2025-12-23",
+      "n_test": 1923,
+      "n_train": 152066,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-22"
+    },
+    {
+      "date": "2025-12-25",
+      "n_test": 875,
+      "n_train": 153989,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-23"
+    },
+    {
+      "date": "2025-12-26",
+      "n_test": 1097,
+      "n_train": 154864,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-25"
+    },
+    {
+      "date": "2026-01-02",
+      "n_test": 1341,
+      "n_train": 155961,
+      "spec": "global_logistic",
+      "train_date_max": "2025-12-26"
+    },
+    {
+      "date": "2026-01-03",
+      "n_test": 1019,
+      "n_train": 157302,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-02"
+    },
+    {
+      "date": "2026-01-04",
+      "n_test": 1252,
+      "n_train": 158321,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-03"
+    },
+    {
+      "date": "2026-01-05",
+      "n_test": 1079,
+      "n_train": 159573,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-04"
+    },
+    {
+      "date": "2026-01-06",
+      "n_test": 843,
+      "n_train": 160652,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-05"
+    },
+    {
+      "date": "2026-01-07",
+      "n_test": 1668,
+      "n_train": 161495,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-06"
+    },
+    {
+      "date": "2026-01-08",
+      "n_test": 266,
+      "n_train": 163163,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-07"
+    },
+    {
+      "date": "2026-01-09",
+      "n_test": 1473,
+      "n_train": 163429,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-08"
+    },
+    {
+      "date": "2026-01-10",
+      "n_test": 898,
+      "n_train": 164902,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-09"
+    },
+    {
+      "date": "2026-01-11",
+      "n_test": 1464,
+      "n_train": 165800,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-10"
+    },
+    {
+      "date": "2026-01-12",
+      "n_test": 818,
+      "n_train": 167264,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-11"
+    },
+    {
+      "date": "2026-01-13",
+      "n_test": 1142,
+      "n_train": 168082,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-12"
+    },
+    {
+      "date": "2026-01-14",
+      "n_test": 257,
+      "n_train": 169224,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-13"
+    },
+    {
+      "date": "2026-01-21",
+      "n_test": 1092,
+      "n_train": 169481,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-14"
+    },
+    {
+      "date": "2026-01-22",
+      "n_test": 1050,
+      "n_train": 170573,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-21"
+    },
+    {
+      "date": "2026-01-23",
+      "n_test": 1027,
+      "n_train": 171623,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-22"
+    },
+    {
+      "date": "2026-01-24",
+      "n_test": 775,
+      "n_train": 172650,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-23"
+    },
+    {
+      "date": "2026-01-25",
+      "n_test": 829,
+      "n_train": 173425,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-24"
+    },
+    {
+      "date": "2026-01-26",
+      "n_test": 1029,
+      "n_train": 174254,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-25"
+    },
+    {
+      "date": "2026-01-27",
+      "n_test": 861,
+      "n_train": 175283,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-26"
+    },
+    {
+      "date": "2026-01-28",
+      "n_test": 1322,
+      "n_train": 176144,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-27"
+    },
+    {
+      "date": "2026-01-29",
+      "n_test": 841,
+      "n_train": 177466,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-28"
+    },
+    {
+      "date": "2026-01-30",
+      "n_test": 1404,
+      "n_train": 178307,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-29"
+    },
+    {
+      "date": "2026-01-31",
+      "n_test": 856,
+      "n_train": 179711,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-30"
+    },
+    {
+      "date": "2026-02-01",
+      "n_test": 1554,
+      "n_train": 180567,
+      "spec": "global_logistic",
+      "train_date_max": "2026-01-31"
+    },
+    {
+      "date": "2026-02-02",
+      "n_test": 552,
+      "n_train": 182121,
+      "spec": "global_logistic",
+      "train_date_max": "2026-02-01"
+    },
+    {
+      "date": "2026-02-10",
+      "n_test": 542,
+      "n_train": 182673,
+      "spec": "global_logistic",
+      "train_date_max": "2026-02-02"
+    },
+    {
+      "date": "2026-02-11",
+      "n_test": 2084,
+      "n_train": 183215,
+      "spec": "global_logistic",
+      "train_date_max": "2026-02-10"
+    },
+    {
+      "date": "2026-02-12",
+      "n_test": 534,
+      "n_train": 185299,
+      "spec": "global_logistic",
+      "train_date_max": "2026-02-11"
+    },
+    {
+      "date": "2026-02-19",
+      "n_test": 1407,
+      "n_train": 185833,
+      "spec": "global_logistic",
+      "train_date_max": "2026-02-12"
+    },
+    {
+      "date": "2026-02-20",
+      "n_test": 1075,
+      "n_train": 187240,
+      "spec": "global_logistic",
+      "train_date_max": "2026-02-19"
+    },
+    {
+      "date": "2026-02-21",
+      "n_test": 877,
+      "n_train": 188315,
+      "spec": "global_logistic",
+      "train_date_max": "2026-02-20"
+    },
+    {
+      "date": "2026-02-22",
+      "n_test": 1645,
+      "n_train": 189192,
+      "spec": "global_logistic",
+      "train_date_max": "2026-02-21"
+    },
+    {
+      "date": "2026-02-23",
+      "n_test": 265,
+      "n_train": 190837,
+      "spec": "global_logistic",
+      "train_date_max": "2026-02-22"
+    },
+    {
+      "date": "2026-02-24",
+      "n_test": 2251,
+      "n_train": 191102,
+      "spec": "global_logistic",
+      "train_date_max": "2026-02-23"
+    },
+    {
+      "date": "2026-02-25",
+      "n_test": 888,
+      "n_train": 193353,
+      "spec": "global_logistic",
+      "train_date_max": "2026-02-24"
+    },
+    {
+      "date": "2026-02-26",
+      "n_test": 574,
+      "n_train": 194241,
+      "spec": "global_logistic",
+      "train_date_max": "2026-02-25"
+    },
+    {
+      "date": "2026-03-05",
+      "n_test": 1450,
+      "n_train": 194815,
+      "spec": "global_logistic",
+      "train_date_max": "2026-02-26"
+    },
+    {
+      "date": "2026-03-06",
+      "n_test": 888,
+      "n_train": 196265,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-05"
+    },
+    {
+      "date": "2026-03-07",
+      "n_test": 966,
+      "n_train": 197153,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-06"
+    },
+    {
+      "date": "2026-03-08",
+      "n_test": 1497,
+      "n_train": 198119,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-07"
+    },
+    {
+      "date": "2026-03-09",
+      "n_test": 859,
+      "n_train": 199616,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-08"
+    },
+    {
+      "date": "2026-03-10",
+      "n_test": 1536,
+      "n_train": 200475,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-09"
+    },
+    {
+      "date": "2026-03-11",
+      "n_test": 899,
+      "n_train": 202011,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-10"
+    },
+    {
+      "date": "2026-03-12",
+      "n_test": 1192,
+      "n_train": 202910,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-11"
+    },
+    {
+      "date": "2026-03-13",
+      "n_test": 1307,
+      "n_train": 204102,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-12"
+    },
+    {
+      "date": "2026-03-14",
+      "n_test": 1301,
+      "n_train": 205409,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-13"
+    },
+    {
+      "date": "2026-03-15",
+      "n_test": 944,
+      "n_train": 206710,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-14"
+    },
+    {
+      "date": "2026-03-16",
+      "n_test": 1152,
+      "n_train": 207654,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-15"
+    },
+    {
+      "date": "2026-03-17",
+      "n_test": 868,
+      "n_train": 208806,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-16"
+    },
+    {
+      "date": "2026-03-24",
+      "n_test": 644,
+      "n_train": 209674,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-17"
+    },
+    {
+      "date": "2026-03-25",
+      "n_test": 1828,
+      "n_train": 210318,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-24"
+    },
+    {
+      "date": "2026-03-26",
+      "n_test": 265,
+      "n_train": 212146,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-25"
+    },
+    {
+      "date": "2026-03-27",
+      "n_test": 1523,
+      "n_train": 212411,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-26"
+    },
+    {
+      "date": "2026-03-28",
+      "n_test": 963,
+      "n_train": 213934,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-27"
+    },
+    {
+      "date": "2026-03-29",
+      "n_test": 1389,
+      "n_train": 214897,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-28"
+    },
+    {
+      "date": "2026-03-30",
+      "n_test": 1066,
+      "n_train": 216286,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-29"
+    },
+    {
+      "date": "2026-03-31",
+      "n_test": 798,
+      "n_train": 217352,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-30"
+    },
+    {
+      "date": "2026-04-01",
+      "n_test": 1533,
+      "n_train": 218150,
+      "spec": "global_logistic",
+      "train_date_max": "2026-03-31"
+    },
+    {
+      "date": "2026-04-02",
+      "n_test": 872,
+      "n_train": 219683,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-01"
+    },
+    {
+      "date": "2026-04-03",
+      "n_test": 1244,
+      "n_train": 220555,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-02"
+    },
+    {
+      "date": "2026-04-04",
+      "n_test": 348,
+      "n_train": 221799,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-03"
+    },
+    {
+      "date": "2026-04-05",
+      "n_test": 1738,
+      "n_train": 222147,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-04"
+    },
+    {
+      "date": "2026-04-06",
+      "n_test": 295,
+      "n_train": 223885,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-05"
+    },
+    {
+      "date": "2026-04-14",
+      "n_test": 224,
+      "n_train": 224180,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-06"
+    },
+    {
+      "date": "2026-04-15",
+      "n_test": 252,
+      "n_train": 224404,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-14"
+    },
+    {
+      "date": "2026-04-17",
+      "n_test": 212,
+      "n_train": 224656,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-15"
+    },
+    {
+      "date": "2026-04-18",
+      "n_test": 457,
+      "n_train": 224868,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-17"
+    },
+    {
+      "date": "2026-04-19",
+      "n_test": 553,
+      "n_train": 225325,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-18"
+    },
+    {
+      "date": "2026-04-20",
+      "n_test": 194,
+      "n_train": 225878,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-19"
+    },
+    {
+      "date": "2026-04-21",
+      "n_test": 378,
+      "n_train": 226072,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-20"
+    },
+    {
+      "date": "2026-04-22",
+      "n_test": 185,
+      "n_train": 226450,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-21"
+    },
+    {
+      "date": "2026-04-23",
+      "n_test": 372,
+      "n_train": 226635,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-22"
+    },
+    {
+      "date": "2026-04-24",
+      "n_test": 191,
+      "n_train": 227007,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-23"
+    },
+    {
+      "date": "2026-04-25",
+      "n_test": 437,
+      "n_train": 227198,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-24"
+    },
+    {
+      "date": "2026-04-26",
+      "n_test": 180,
+      "n_train": 227635,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-25"
+    },
+    {
+      "date": "2026-04-27",
+      "n_test": 385,
+      "n_train": 227815,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-26"
+    },
+    {
+      "date": "2026-04-28",
+      "n_test": 686,
+      "n_train": 228200,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-27"
+    },
+    {
+      "date": "2026-04-30",
+      "n_test": 175,
+      "n_train": 228886,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-28"
+    },
+    {
+      "date": "2026-05-01",
+      "n_test": 464,
+      "n_train": 229061,
+      "spec": "global_logistic",
+      "train_date_max": "2026-04-30"
+    },
+    {
+      "date": "2026-05-02",
+      "n_test": 613,
+      "n_train": 229525,
+      "spec": "global_logistic",
+      "train_date_max": "2026-05-01"
+    },
+    {
+      "date": "2026-05-03",
+      "n_test": 216,
+      "n_train": 230138,
+      "spec": "global_logistic",
+      "train_date_max": "2026-05-02"
+    },
+    {
+      "date": "2026-05-04",
+      "n_test": 191,
+      "n_train": 230354,
+      "spec": "global_logistic",
+      "train_date_max": "2026-05-03"
+    },
+    {
+      "date": "2026-05-05",
+      "n_test": 182,
+      "n_train": 230545,
+      "spec": "global_logistic",
+      "train_date_max": "2026-05-04"
+    },
+    {
+      "date": "2026-05-08",
+      "n_test": 195,
+      "n_train": 230727,
+      "spec": "global_logistic",
+      "train_date_max": "2026-05-05"
+    },
+    {
+      "date": "2026-05-09",
+      "n_test": 297,
+      "n_train": 230922,
+      "spec": "global_logistic",
+      "train_date_max": "2026-05-08"
+    },
+    {
+      "date": "2026-05-18",
+      "n_test": 458,
+      "n_train": 231219,
+      "spec": "global_logistic",
+      "train_date_max": "2026-05-09"
+    },
+    {
+      "date": "2026-05-21",
+      "n_test": 165,
+      "n_train": 231677,
+      "spec": "global_logistic",
+      "train_date_max": "2026-05-18"
+    },
+    {
+      "date": "2026-05-22",
+      "n_test": 226,
+      "n_train": 231842,
+      "spec": "global_logistic",
+      "train_date_max": "2026-05-21"
+    },
+    {
+      "date": "2026-05-25",
+      "n_test": 156,
+      "n_train": 232068,
+      "spec": "global_logistic",
+      "train_date_max": "2026-05-22"
+    },
+    {
+      "date": "2026-05-26",
+      "n_test": 181,
+      "n_train": 232224,
+      "spec": "global_logistic",
+      "train_date_max": "2026-05-25"
+    },
+    {
+      "date": "2026-05-30",
+      "n_test": 170,
+      "n_train": 232405,
+      "spec": "global_logistic",
+      "train_date_max": "2026-05-26"
+    },
+    {
+      "date": "2026-06-05",
+      "n_test": 184,
+      "n_train": 232575,
+      "spec": "global_logistic",
+      "train_date_max": "2026-05-30"
+    },
+    {
+      "date": "2026-06-10",
+      "n_test": 192,
+      "n_train": 232759,
+      "spec": "global_logistic",
+      "train_date_max": "2026-06-05"
+    }
+  ],
+  "global_null": {
+    "brier_incumbent": 0.07891252489646429,
+    "brier_market": 0.07891252489646429,
+    "brier_recal": 0.078860545375922,
+    "bucket": "GLOBAL",
+    "ci95": [
+      -0.00047218578765587815,
+      0.0005053532692306253
+    ],
+    "delta": 1.8374224816423216e-05,
+    "ece_incumbent": 0.012896407944781049,
+    "ece_market": 0.012896407944781049,
+    "ece_recal": 0.010101125879377917,
+    "label": "NO_CHANGE",
+    "n_eff": 1887.2873966634936,
+    "n_games": 618,
+    "n_ticks": 177475,
+    "p_raw": 0.828391685357884
+  },
+  "limit": "CLOSED AT LIMIT",
+  "method": "S123 market incumbent; outer expanding game-first-date folds; inner 20 pct train-only spec selection; 20 pct burn-in excluded",
+  "phase_folds": [
+    {
+      "date": "2025-01-03",
+      "n_test": 1365,
+      "n_train": 55476,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-01-02"
+    },
+    {
+      "date": "2025-01-04",
+      "n_test": 813,
+      "n_train": 56841,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-01-03"
+    },
+    {
+      "date": "2025-01-05",
+      "n_test": 825,
+      "n_train": 57654,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-01-04"
+    },
+    {
+      "date": "2025-01-06",
+      "n_test": 1386,
+      "n_train": 58479,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-01-05"
+    },
+    {
+      "date": "2025-01-07",
+      "n_test": 843,
+      "n_train": 59865,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-06"
+    },
+    {
+      "date": "2025-01-08",
+      "n_test": 1105,
+      "n_train": 60708,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-01-07"
+    },
+    {
+      "date": "2025-01-09",
+      "n_test": 1064,
+      "n_train": 61813,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-01-08"
+    },
+    {
+      "date": "2025-01-10",
+      "n_test": 785,
+      "n_train": 62877,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-09"
+    },
+    {
+      "date": "2025-01-11",
+      "n_test": 526,
+      "n_train": 63662,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-01-10"
+    },
+    {
+      "date": "2025-01-12",
+      "n_test": 1368,
+      "n_train": 64188,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-01-11"
+    },
+    {
+      "date": "2025-01-13",
+      "n_test": 788,
+      "n_train": 65556,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-12"
+    },
+    {
+      "date": "2025-01-14",
+      "n_test": 804,
+      "n_train": 66344,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-13"
+    },
+    {
+      "date": "2025-01-15",
+      "n_test": 1685,
+      "n_train": 67148,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-14"
+    },
+    {
+      "date": "2025-01-16",
+      "n_test": 565,
+      "n_train": 68833,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-15"
+    },
+    {
+      "date": "2025-01-17",
+      "n_test": 1169,
+      "n_train": 69398,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-16"
+    },
+    {
+      "date": "2025-01-18",
+      "n_test": 293,
+      "n_train": 70567,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-17"
+    },
+    {
+      "date": "2025-01-19",
+      "n_test": 1051,
+      "n_train": 70860,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-18"
+    },
+    {
+      "date": "2025-01-20",
+      "n_test": 837,
+      "n_train": 71911,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-19"
+    },
+    {
+      "date": "2025-01-21",
+      "n_test": 843,
+      "n_train": 72748,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-20"
+    },
+    {
+      "date": "2025-01-22",
+      "n_test": 1094,
+      "n_train": 73591,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-21"
+    },
+    {
+      "date": "2025-01-23",
+      "n_test": 1159,
+      "n_train": 74685,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-22"
+    },
+    {
+      "date": "2025-01-24",
+      "n_test": 572,
+      "n_train": 75844,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-23"
+    },
+    {
+      "date": "2025-01-25",
+      "n_test": 2079,
+      "n_train": 76416,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-24"
+    },
+    {
+      "date": "2025-01-27",
+      "n_test": 1831,
+      "n_train": 78495,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-25"
+    },
+    {
+      "date": "2025-01-28",
+      "n_test": 599,
+      "n_train": 80326,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-27"
+    },
+    {
+      "date": "2025-01-29",
+      "n_test": 1470,
+      "n_train": 80925,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-28"
+    },
+    {
+      "date": "2025-01-30",
+      "n_test": 914,
+      "n_train": 82395,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-29"
+    },
+    {
+      "date": "2025-01-31",
+      "n_test": 960,
+      "n_train": 83309,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-30"
+    },
+    {
+      "date": "2025-02-01",
+      "n_test": 814,
+      "n_train": 84269,
+      "spec": "phase_platt",
+      "train_date_max": "2025-01-31"
+    },
+    {
+      "date": "2025-04-13",
+      "n_test": 2587,
+      "n_train": 85083,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-02-01"
+    },
+    {
+      "date": "2025-04-15",
+      "n_test": 352,
+      "n_train": 87670,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-04-13"
+    },
+    {
+      "date": "2025-04-16",
+      "n_test": 330,
+      "n_train": 88022,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-04-15"
+    },
+    {
+      "date": "2025-04-19",
+      "n_test": 665,
+      "n_train": 88352,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-04-16"
+    },
+    {
+      "date": "2025-04-20",
+      "n_test": 340,
+      "n_train": 89017,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-04-19"
+    },
+    {
+      "date": "2025-04-24",
+      "n_test": 407,
+      "n_train": 89357,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-04-20"
+    },
+    {
+      "date": "2025-04-26",
+      "n_test": 676,
+      "n_train": 89764,
+      "spec": "phase_platt",
+      "train_date_max": "2025-04-24"
+    },
+    {
+      "date": "2025-04-27",
+      "n_test": 677,
+      "n_train": 90440,
+      "spec": "phase_platt",
+      "train_date_max": "2025-04-26"
+    },
+    {
+      "date": "2025-04-28",
+      "n_test": 324,
+      "n_train": 91117,
+      "spec": "phase_platt",
+      "train_date_max": "2025-04-27"
+    },
+    {
+      "date": "2025-04-29",
+      "n_test": 731,
+      "n_train": 91441,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-04-28"
+    },
+    {
+      "date": "2025-04-30",
+      "n_test": 350,
+      "n_train": 92172,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-04-29"
+    },
+    {
+      "date": "2025-05-01",
+      "n_test": 345,
+      "n_train": 92522,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-04-30"
+    },
+    {
+      "date": "2025-05-04",
+      "n_test": 725,
+      "n_train": 92867,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-05-01"
+    },
+    {
+      "date": "2025-05-07",
+      "n_test": 714,
+      "n_train": 93592,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-05-04"
+    },
+    {
+      "date": "2025-05-08",
+      "n_test": 367,
+      "n_train": 94306,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-05-07"
+    },
+    {
+      "date": "2025-05-09",
+      "n_test": 384,
+      "n_train": 94673,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-05-08"
+    },
+    {
+      "date": "2025-05-11",
+      "n_test": 404,
+      "n_train": 95057,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-05-09"
+    },
+    {
+      "date": "2025-05-12",
+      "n_test": 768,
+      "n_train": 95461,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-05-11"
+    },
+    {
+      "date": "2025-05-13",
+      "n_test": 779,
+      "n_train": 96229,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-05-12"
+    },
+    {
+      "date": "2025-05-16",
+      "n_test": 398,
+      "n_train": 97008,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-05-13"
+    },
+    {
+      "date": "2025-05-20",
+      "n_test": 394,
+      "n_train": 97406,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-05-16"
+    },
+    {
+      "date": "2025-05-21",
+      "n_test": 430,
+      "n_train": 97800,
+      "spec": "phase_platt",
+      "train_date_max": "2025-05-20"
+    },
+    {
+      "date": "2025-05-25",
+      "n_test": 357,
+      "n_train": 98230,
+      "spec": "phase_platt",
+      "train_date_max": "2025-05-21"
+    },
+    {
+      "date": "2025-05-26",
+      "n_test": 279,
+      "n_train": 98587,
+      "spec": "phase_platt",
+      "train_date_max": "2025-05-25"
+    },
+    {
+      "date": "2025-05-29",
+      "n_test": 277,
+      "n_train": 98866,
+      "spec": "phase_platt",
+      "train_date_max": "2025-05-26"
+    },
+    {
+      "date": "2025-06-05",
+      "n_test": 282,
+      "n_train": 99143,
+      "spec": "phase_platt",
+      "train_date_max": "2025-05-29"
+    },
+    {
+      "date": "2025-06-11",
+      "n_test": 287,
+      "n_train": 99425,
+      "spec": "phase_platt",
+      "train_date_max": "2025-06-05"
+    },
+    {
+      "date": "2025-06-16",
+      "n_test": 287,
+      "n_train": 99712,
+      "spec": "phase_platt",
+      "train_date_max": "2025-06-11"
+    },
+    {
+      "date": "2025-06-22",
+      "n_test": 378,
+      "n_train": 99999,
+      "spec": "phase_platt",
+      "train_date_max": "2025-06-16"
+    },
+    {
+      "date": "2025-10-02",
+      "n_test": 863,
+      "n_train": 100377,
+      "spec": "phase_platt",
+      "train_date_max": "2025-06-22"
+    },
+    {
+      "date": "2025-10-04",
+      "n_test": 601,
+      "n_train": 101240,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-10-02"
+    },
+    {
+      "date": "2025-10-05",
+      "n_test": 264,
+      "n_train": 101841,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-10-04"
+    },
+    {
+      "date": "2025-10-06",
+      "n_test": 717,
+      "n_train": 102105,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-10-05"
+    },
+    {
+      "date": "2025-10-07",
+      "n_test": 269,
+      "n_train": 102822,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-10-06"
+    },
+    {
+      "date": "2025-10-08",
+      "n_test": 536,
+      "n_train": 103091,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-10-07"
+    },
+    {
+      "date": "2025-10-09",
+      "n_test": 562,
+      "n_train": 103627,
+      "spec": "phase_platt",
+      "train_date_max": "2025-10-08"
+    },
+    {
+      "date": "2025-10-10",
+      "n_test": 936,
+      "n_train": 104189,
+      "spec": "phase_platt",
+      "train_date_max": "2025-10-09"
+    },
+    {
+      "date": "2025-10-11",
+      "n_test": 270,
+      "n_train": 105125,
+      "spec": "phase_platt",
+      "train_date_max": "2025-10-10"
+    },
+    {
+      "date": "2025-10-12",
+      "n_test": 996,
+      "n_train": 105395,
+      "spec": "phase_platt",
+      "train_date_max": "2025-10-11"
+    },
+    {
+      "date": "2025-10-13",
+      "n_test": 777,
+      "n_train": 106391,
+      "spec": "phase_platt",
+      "train_date_max": "2025-10-12"
+    },
+    {
+      "date": "2025-10-14",
+      "n_test": 820,
+      "n_train": 107168,
+      "spec": "phase_platt",
+      "train_date_max": "2025-10-13"
+    },
+    {
+      "date": "2025-10-15",
+      "n_test": 519,
+      "n_train": 107988,
+      "spec": "phase_platt",
+      "train_date_max": "2025-10-14"
+    },
+    {
+      "date": "2025-10-16",
+      "n_test": 800,
+      "n_train": 108507,
+      "spec": "phase_platt",
+      "train_date_max": "2025-10-15"
+    },
+    {
+      "date": "2025-10-17",
+      "n_test": 1058,
+      "n_train": 109307,
+      "spec": "phase_platt",
+      "train_date_max": "2025-10-16"
+    },
+    {
+      "date": "2025-10-21",
+      "n_test": 305,
+      "n_train": 110365,
+      "spec": "phase_platt",
+      "train_date_max": "2025-10-17"
+    },
+    {
+      "date": "2025-10-22",
+      "n_test": 1664,
+      "n_train": 110670,
+      "spec": "phase_platt",
+      "train_date_max": "2025-10-21"
+    },
+    {
+      "date": "2025-10-23",
+      "n_test": 321,
+      "n_train": 112334,
+      "spec": "phase_platt",
+      "train_date_max": "2025-10-22"
+    },
+    {
+      "date": "2025-10-24",
+      "n_test": 1692,
+      "n_train": 112655,
+      "spec": "phase_platt",
+      "train_date_max": "2025-10-23"
+    },
+    {
+      "date": "2025-10-25",
+      "n_test": 534,
+      "n_train": 114347,
+      "spec": "phase_platt",
+      "train_date_max": "2025-10-24"
+    },
+    {
+      "date": "2025-10-26",
+      "n_test": 275,
+      "n_train": 114881,
+      "spec": "phase_platt",
+      "train_date_max": "2025-10-25"
+    },
+    {
+      "date": "2025-11-02",
+      "n_test": 548,
+      "n_train": 115156,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-10-26"
+    },
+    {
+      "date": "2025-11-03",
+      "n_test": 542,
+      "n_train": 115704,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-11-02"
+    },
+    {
+      "date": "2025-11-04",
+      "n_test": 1087,
+      "n_train": 116246,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-11-03"
+    },
+    {
+      "date": "2025-11-05",
+      "n_test": 843,
+      "n_train": 117333,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-11-04"
+    },
+    {
+      "date": "2025-11-06",
+      "n_test": 1667,
+      "n_train": 118176,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-11-05"
+    },
+    {
+      "date": "2025-11-07",
+      "n_test": 267,
+      "n_train": 119843,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-11-06"
+    },
+    {
+      "date": "2025-11-08",
+      "n_test": 1073,
+      "n_train": 120110,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-11-07"
+    },
+    {
+      "date": "2025-11-09",
+      "n_test": 1940,
+      "n_train": 121183,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-11-08"
+    },
+    {
+      "date": "2025-11-10",
+      "n_test": 256,
+      "n_train": 123123,
+      "spec": "phase_platt",
+      "train_date_max": "2025-11-09"
+    },
+    {
+      "date": "2025-11-11",
+      "n_test": 1965,
+      "n_train": 123379,
+      "spec": "phase_platt",
+      "train_date_max": "2025-11-10"
+    },
+    {
+      "date": "2025-11-12",
+      "n_test": 1831,
+      "n_train": 125344,
+      "spec": "phase_platt",
+      "train_date_max": "2025-11-11"
+    },
+    {
+      "date": "2025-11-13",
+      "n_test": 515,
+      "n_train": 127175,
+      "spec": "phase_platt",
+      "train_date_max": "2025-11-12"
+    },
+    {
+      "date": "2025-11-14",
+      "n_test": 859,
+      "n_train": 127690,
+      "spec": "phase_platt",
+      "train_date_max": "2025-11-13"
+    },
+    {
+      "date": "2025-11-21",
+      "n_test": 1072,
+      "n_train": 128549,
+      "spec": "phase_platt",
+      "train_date_max": "2025-11-14"
+    },
+    {
+      "date": "2025-11-22",
+      "n_test": 821,
+      "n_train": 129621,
+      "spec": "phase_platt",
+      "train_date_max": "2025-11-21"
+    },
+    {
+      "date": "2025-11-23",
+      "n_test": 1071,
+      "n_train": 130442,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-11-22"
+    },
+    {
+      "date": "2025-11-24",
+      "n_test": 1389,
+      "n_train": 131513,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-11-23"
+    },
+    {
+      "date": "2025-11-25",
+      "n_test": 543,
+      "n_train": 132902,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-11-24"
+    },
+    {
+      "date": "2025-11-26",
+      "n_test": 1223,
+      "n_train": 133445,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-11-25"
+    },
+    {
+      "date": "2025-11-28",
+      "n_test": 1580,
+      "n_train": 134668,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-11-26"
+    },
+    {
+      "date": "2025-11-29",
+      "n_test": 1054,
+      "n_train": 136248,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-11-28"
+    },
+    {
+      "date": "2025-11-30",
+      "n_test": 1083,
+      "n_train": 137302,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-11-29"
+    },
+    {
+      "date": "2025-12-01",
+      "n_test": 1308,
+      "n_train": 138385,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-11-30"
+    },
+    {
+      "date": "2025-12-02",
+      "n_test": 862,
+      "n_train": 139693,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-01"
+    },
+    {
+      "date": "2025-12-03",
+      "n_test": 1133,
+      "n_train": 140555,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-02"
+    },
+    {
+      "date": "2025-12-10",
+      "n_test": 269,
+      "n_train": 141688,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-03"
+    },
+    {
+      "date": "2025-12-11",
+      "n_test": 551,
+      "n_train": 141957,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-10"
+    },
+    {
+      "date": "2025-12-12",
+      "n_test": 792,
+      "n_train": 142508,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-11"
+    },
+    {
+      "date": "2025-12-13",
+      "n_test": 299,
+      "n_train": 143300,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-12"
+    },
+    {
+      "date": "2025-12-14",
+      "n_test": 1302,
+      "n_train": 143599,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-13"
+    },
+    {
+      "date": "2025-12-15",
+      "n_test": 845,
+      "n_train": 144901,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-14"
+    },
+    {
+      "date": "2025-12-17",
+      "n_test": 262,
+      "n_train": 145746,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-15"
+    },
+    {
+      "date": "2025-12-18",
+      "n_test": 2014,
+      "n_train": 146008,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-17"
+    },
+    {
+      "date": "2025-12-19",
+      "n_test": 1016,
+      "n_train": 148022,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-18"
+    },
+    {
+      "date": "2025-12-20",
+      "n_test": 1388,
+      "n_train": 149038,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-19"
+    },
+    {
+      "date": "2025-12-21",
+      "n_test": 832,
+      "n_train": 150426,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-20"
+    },
+    {
+      "date": "2025-12-22",
+      "n_test": 808,
+      "n_train": 151258,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-21"
+    },
+    {
+      "date": "2025-12-23",
+      "n_test": 1923,
+      "n_train": 152066,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-22"
+    },
+    {
+      "date": "2025-12-25",
+      "n_test": 875,
+      "n_train": 153989,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-23"
+    },
+    {
+      "date": "2025-12-26",
+      "n_test": 1097,
+      "n_train": 154864,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-25"
+    },
+    {
+      "date": "2026-01-02",
+      "n_test": 1341,
+      "n_train": 155961,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2025-12-26"
+    },
+    {
+      "date": "2026-01-03",
+      "n_test": 1019,
+      "n_train": 157302,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-02"
+    },
+    {
+      "date": "2026-01-04",
+      "n_test": 1252,
+      "n_train": 158321,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-03"
+    },
+    {
+      "date": "2026-01-05",
+      "n_test": 1079,
+      "n_train": 159573,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-04"
+    },
+    {
+      "date": "2026-01-06",
+      "n_test": 843,
+      "n_train": 160652,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-05"
+    },
+    {
+      "date": "2026-01-07",
+      "n_test": 1668,
+      "n_train": 161495,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-06"
+    },
+    {
+      "date": "2026-01-08",
+      "n_test": 266,
+      "n_train": 163163,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-07"
+    },
+    {
+      "date": "2026-01-09",
+      "n_test": 1473,
+      "n_train": 163429,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-08"
+    },
+    {
+      "date": "2026-01-10",
+      "n_test": 898,
+      "n_train": 164902,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-09"
+    },
+    {
+      "date": "2026-01-11",
+      "n_test": 1464,
+      "n_train": 165800,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-10"
+    },
+    {
+      "date": "2026-01-12",
+      "n_test": 818,
+      "n_train": 167264,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-11"
+    },
+    {
+      "date": "2026-01-13",
+      "n_test": 1142,
+      "n_train": 168082,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-12"
+    },
+    {
+      "date": "2026-01-14",
+      "n_test": 257,
+      "n_train": 169224,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-13"
+    },
+    {
+      "date": "2026-01-21",
+      "n_test": 1092,
+      "n_train": 169481,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-14"
+    },
+    {
+      "date": "2026-01-22",
+      "n_test": 1050,
+      "n_train": 170573,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-21"
+    },
+    {
+      "date": "2026-01-23",
+      "n_test": 1027,
+      "n_train": 171623,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-22"
+    },
+    {
+      "date": "2026-01-24",
+      "n_test": 775,
+      "n_train": 172650,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-23"
+    },
+    {
+      "date": "2026-01-25",
+      "n_test": 829,
+      "n_train": 173425,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-24"
+    },
+    {
+      "date": "2026-01-26",
+      "n_test": 1029,
+      "n_train": 174254,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-25"
+    },
+    {
+      "date": "2026-01-27",
+      "n_test": 861,
+      "n_train": 175283,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-26"
+    },
+    {
+      "date": "2026-01-28",
+      "n_test": 1322,
+      "n_train": 176144,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-27"
+    },
+    {
+      "date": "2026-01-29",
+      "n_test": 841,
+      "n_train": 177466,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-28"
+    },
+    {
+      "date": "2026-01-30",
+      "n_test": 1404,
+      "n_train": 178307,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-29"
+    },
+    {
+      "date": "2026-01-31",
+      "n_test": 856,
+      "n_train": 179711,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-30"
+    },
+    {
+      "date": "2026-02-01",
+      "n_test": 1554,
+      "n_train": 180567,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-01-31"
+    },
+    {
+      "date": "2026-02-02",
+      "n_test": 552,
+      "n_train": 182121,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-02-01"
+    },
+    {
+      "date": "2026-02-10",
+      "n_test": 542,
+      "n_train": 182673,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-02-02"
+    },
+    {
+      "date": "2026-02-11",
+      "n_test": 2084,
+      "n_train": 183215,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-02-10"
+    },
+    {
+      "date": "2026-02-12",
+      "n_test": 534,
+      "n_train": 185299,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-02-11"
+    },
+    {
+      "date": "2026-02-19",
+      "n_test": 1407,
+      "n_train": 185833,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-02-12"
+    },
+    {
+      "date": "2026-02-20",
+      "n_test": 1075,
+      "n_train": 187240,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-02-19"
+    },
+    {
+      "date": "2026-02-21",
+      "n_test": 877,
+      "n_train": 188315,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-02-20"
+    },
+    {
+      "date": "2026-02-22",
+      "n_test": 1645,
+      "n_train": 189192,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-02-21"
+    },
+    {
+      "date": "2026-02-23",
+      "n_test": 265,
+      "n_train": 190837,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-02-22"
+    },
+    {
+      "date": "2026-02-24",
+      "n_test": 2251,
+      "n_train": 191102,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-02-23"
+    },
+    {
+      "date": "2026-02-25",
+      "n_test": 888,
+      "n_train": 193353,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-02-24"
+    },
+    {
+      "date": "2026-02-26",
+      "n_test": 574,
+      "n_train": 194241,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-02-25"
+    },
+    {
+      "date": "2026-03-05",
+      "n_test": 1450,
+      "n_train": 194815,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-02-26"
+    },
+    {
+      "date": "2026-03-06",
+      "n_test": 888,
+      "n_train": 196265,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-05"
+    },
+    {
+      "date": "2026-03-07",
+      "n_test": 966,
+      "n_train": 197153,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-06"
+    },
+    {
+      "date": "2026-03-08",
+      "n_test": 1497,
+      "n_train": 198119,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-07"
+    },
+    {
+      "date": "2026-03-09",
+      "n_test": 859,
+      "n_train": 199616,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-08"
+    },
+    {
+      "date": "2026-03-10",
+      "n_test": 1536,
+      "n_train": 200475,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-09"
+    },
+    {
+      "date": "2026-03-11",
+      "n_test": 899,
+      "n_train": 202011,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-10"
+    },
+    {
+      "date": "2026-03-12",
+      "n_test": 1192,
+      "n_train": 202910,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-11"
+    },
+    {
+      "date": "2026-03-13",
+      "n_test": 1307,
+      "n_train": 204102,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-12"
+    },
+    {
+      "date": "2026-03-14",
+      "n_test": 1301,
+      "n_train": 205409,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-13"
+    },
+    {
+      "date": "2026-03-15",
+      "n_test": 944,
+      "n_train": 206710,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-14"
+    },
+    {
+      "date": "2026-03-16",
+      "n_test": 1152,
+      "n_train": 207654,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-15"
+    },
+    {
+      "date": "2026-03-17",
+      "n_test": 868,
+      "n_train": 208806,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-16"
+    },
+    {
+      "date": "2026-03-24",
+      "n_test": 644,
+      "n_train": 209674,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-17"
+    },
+    {
+      "date": "2026-03-25",
+      "n_test": 1828,
+      "n_train": 210318,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-24"
+    },
+    {
+      "date": "2026-03-26",
+      "n_test": 265,
+      "n_train": 212146,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-25"
+    },
+    {
+      "date": "2026-03-27",
+      "n_test": 1523,
+      "n_train": 212411,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-26"
+    },
+    {
+      "date": "2026-03-28",
+      "n_test": 963,
+      "n_train": 213934,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-27"
+    },
+    {
+      "date": "2026-03-29",
+      "n_test": 1389,
+      "n_train": 214897,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-28"
+    },
+    {
+      "date": "2026-03-30",
+      "n_test": 1066,
+      "n_train": 216286,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-29"
+    },
+    {
+      "date": "2026-03-31",
+      "n_test": 798,
+      "n_train": 217352,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-30"
+    },
+    {
+      "date": "2026-04-01",
+      "n_test": 1533,
+      "n_train": 218150,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-03-31"
+    },
+    {
+      "date": "2026-04-02",
+      "n_test": 872,
+      "n_train": 219683,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-01"
+    },
+    {
+      "date": "2026-04-03",
+      "n_test": 1244,
+      "n_train": 220555,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-02"
+    },
+    {
+      "date": "2026-04-04",
+      "n_test": 348,
+      "n_train": 221799,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-03"
+    },
+    {
+      "date": "2026-04-05",
+      "n_test": 1738,
+      "n_train": 222147,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-04"
+    },
+    {
+      "date": "2026-04-06",
+      "n_test": 295,
+      "n_train": 223885,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-05"
+    },
+    {
+      "date": "2026-04-14",
+      "n_test": 224,
+      "n_train": 224180,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-06"
+    },
+    {
+      "date": "2026-04-15",
+      "n_test": 252,
+      "n_train": 224404,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-14"
+    },
+    {
+      "date": "2026-04-17",
+      "n_test": 212,
+      "n_train": 224656,
+      "spec": "phase_platt",
+      "train_date_max": "2026-04-15"
+    },
+    {
+      "date": "2026-04-18",
+      "n_test": 457,
+      "n_train": 224868,
+      "spec": "phase_platt",
+      "train_date_max": "2026-04-17"
+    },
+    {
+      "date": "2026-04-19",
+      "n_test": 553,
+      "n_train": 225325,
+      "spec": "phase_platt",
+      "train_date_max": "2026-04-18"
+    },
+    {
+      "date": "2026-04-20",
+      "n_test": 194,
+      "n_train": 225878,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-19"
+    },
+    {
+      "date": "2026-04-21",
+      "n_test": 378,
+      "n_train": 226072,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-20"
+    },
+    {
+      "date": "2026-04-22",
+      "n_test": 185,
+      "n_train": 226450,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-21"
+    },
+    {
+      "date": "2026-04-23",
+      "n_test": 372,
+      "n_train": 226635,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-22"
+    },
+    {
+      "date": "2026-04-24",
+      "n_test": 191,
+      "n_train": 227007,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-23"
+    },
+    {
+      "date": "2026-04-25",
+      "n_test": 437,
+      "n_train": 227198,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-24"
+    },
+    {
+      "date": "2026-04-26",
+      "n_test": 180,
+      "n_train": 227635,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-25"
+    },
+    {
+      "date": "2026-04-27",
+      "n_test": 385,
+      "n_train": 227815,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-26"
+    },
+    {
+      "date": "2026-04-28",
+      "n_test": 686,
+      "n_train": 228200,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-27"
+    },
+    {
+      "date": "2026-04-30",
+      "n_test": 175,
+      "n_train": 228886,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-28"
+    },
+    {
+      "date": "2026-05-01",
+      "n_test": 464,
+      "n_train": 229061,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-04-30"
+    },
+    {
+      "date": "2026-05-02",
+      "n_test": 613,
+      "n_train": 229525,
+      "spec": "phase_platt",
+      "train_date_max": "2026-05-01"
+    },
+    {
+      "date": "2026-05-03",
+      "n_test": 216,
+      "n_train": 230138,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-05-02"
+    },
+    {
+      "date": "2026-05-04",
+      "n_test": 191,
+      "n_train": 230354,
+      "spec": "phase_platt",
+      "train_date_max": "2026-05-03"
+    },
+    {
+      "date": "2026-05-05",
+      "n_test": 182,
+      "n_train": 230545,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-05-04"
+    },
+    {
+      "date": "2026-05-08",
+      "n_test": 195,
+      "n_train": 230727,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-05-05"
+    },
+    {
+      "date": "2026-05-09",
+      "n_test": 297,
+      "n_train": 230922,
+      "spec": "phase_platt",
+      "train_date_max": "2026-05-08"
+    },
+    {
+      "date": "2026-05-18",
+      "n_test": 458,
+      "n_train": 231219,
+      "spec": "phase_platt",
+      "train_date_max": "2026-05-09"
+    },
+    {
+      "date": "2026-05-21",
+      "n_test": 165,
+      "n_train": 231677,
+      "spec": "phase_platt",
+      "train_date_max": "2026-05-18"
+    },
+    {
+      "date": "2026-05-22",
+      "n_test": 226,
+      "n_train": 231842,
+      "spec": "phase_platt",
+      "train_date_max": "2026-05-21"
+    },
+    {
+      "date": "2026-05-25",
+      "n_test": 156,
+      "n_train": 232068,
+      "spec": "phase_platt",
+      "train_date_max": "2026-05-22"
+    },
+    {
+      "date": "2026-05-26",
+      "n_test": 181,
+      "n_train": 232224,
+      "spec": "phase_platt",
+      "train_date_max": "2026-05-25"
+    },
+    {
+      "date": "2026-05-30",
+      "n_test": 170,
+      "n_train": 232405,
+      "spec": "phase_platt",
+      "train_date_max": "2026-05-26"
+    },
+    {
+      "date": "2026-06-05",
+      "n_test": 184,
+      "n_train": 232575,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-05-30"
+    },
+    {
+      "date": "2026-06-10",
+      "n_test": 192,
+      "n_train": 232759,
+      "spec": "phase_platt_margin",
+      "train_date_max": "2026-06-05"
+    }
+  ],
+  "pooled": {
+    "brier_incumbent": 0.07891252489646429,
+    "brier_market": 0.07891252489646429,
+    "brier_recal": 0.07886080915719242,
+    "bucket": "POOLED",
+    "ci95": [
+      -0.0006122091116746314,
+      0.0008657388974247114
+    ],
+    "delta": 0.0001191749010496135,
+    "ece_incumbent": 0.012896407944781049,
+    "ece_market": 0.012896407944781049,
+    "ece_recal": 0.007394600969575003,
+    "label": "NO_CHANGE",
+    "n_eff": 2058.9270797644795,
+    "n_games": 618,
+    "n_ticks": 177475,
+    "p_raw": 0.8861505715269085
+  },
+  "source": {
+    "csv_boundary_ticks": {
+      "P1": 34,
+      "P2": 44
+    },
+    "raw_bytes": 2829826,
+    "raw_path": "C:\\Users\\neelj\\nba-track-a16\\data\\cache\\inplay_odds\\nba_checkpoints_full.parquet",
+    "screen_games": 797,
+    "screen_partition_seed": 0,
+    "screen_ticks": 232951
+  }
+}
