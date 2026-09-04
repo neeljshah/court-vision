@@ -517,6 +517,56 @@ asking -- if the basin were wide, an approximate automatic guess could be refine
 into a good one. **It is not. "Get roughly close, then refine" is closed as a
 route to automatic calibration on this evidence.**
 
+---
+
+## 7.14 THE GENERALISATION RESULT: one clip out of four footage classes is fittable
+
+This is the most important thing measured tonight, and it only became visible once
+the method was carried to other footage.
+
+| footage | result |
+|---|---|
+| **WNBA broadcast** | **WORKS.** Seeded 4-point (G233d) and lines-only (G253 control, independently re-judged PASS by G255). |
+| **NCAA broadcast** | **0/300** frames with an identifiable centre-circle conic -- the permanent centre logo replaces the painted circumference, 0.00 identifiable arc (G264). **0/300** with four identifiable painted lines; **1/300** with three (G265). |
+| **Amateur basketball** | **0** usable four-point sets across 20 inventoried features; largest set 3 collinear points (G250). Near court corners in frame **0/61** (G249). **4 of 4** further sources screened out (G251). |
+| **Broadcast soccer** | **0/1,195** complete penalty/goal-area rectangles (G259). **0** four-edge and **0** three-edge penalty boxes (G261). **0/1,195** with circle + halfway line + both touchlines (G263). The one-touchline DOF shortcut is mathematically false (G262). |
+
+**The WNBA clip is the exception, not the rule.** Every positive calibration result
+this programme has ever produced comes from that single clip.
+
+### 7.14a Three distinct causes, none of them detector quality
+
+1. **Camera framing.** The near-side boundary is systematically absent -- near court
+   corners 0/61 in amateur basketball, the near touchline missing in every soccer
+   candidate. Cameras sit on one side, so that side's geometry falls outside the
+   frame or behind crowd, benches and scorer tables.
+2. **Occlusion.** Players stand precisely on the lane and free-throw intersections
+   that four-point methods want -- that blocked every G243c candidate.
+3. **Court decoration.** A painted centre logo can replace the geometry outright,
+   which is what closed NCAA's conic route.
+
+**None of these is a detector problem, a resolution problem, or a tuning problem.**
+They are properties of how sport is filmed and how courts are painted.
+
+### 7.14b Why this points at a learned model, with evidence rather than assertion
+
+Every lane tonight refused to fit when features were ambiguous, and **that
+discipline was correct** -- G246 showed that fitting unverified points produces a
+confident, precise, completely wrong court with a residual of exactly zero.
+
+**But identity-first hand fitting requires each individual feature to be
+unambiguous, and real footage usually cannot supply four of those in one frame.**
+A learned calibration model has no such requirement: it integrates weak, partial and
+individually ambiguous evidence across the whole image, which is exactly the
+regime these four footage classes present.
+
+**So the closures above are not a dead end; they are the specification for what has
+to replace hand fitting.** And tonight also built the instruments to evaluate a
+replacement honestly: a pixel-accuracy baseline (7.12), a measured eye-gate
+resolution (7.7-7.8), a blind-ladder gate that a single look cannot fake (G257,
+now standard in every new spec), and four independently closed hand-built validity
+families (7.10) so no one re-runs them.
+
 ## NOT VERIFIED
 
 - Whether a trained basketball calibration model would work; nothing was trained
