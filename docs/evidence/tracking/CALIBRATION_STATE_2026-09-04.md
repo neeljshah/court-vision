@@ -644,6 +644,33 @@ authenticated players -- officials, bench, spectators and duplicates included
 arena, and **one draw of a non-deterministic detector** (G241). A plausible
 distribution would be necessary, never sufficient.
 
+---
+
+## 7.17 The 13.6 pct figure, tested against my own doubt: it is 10.5 pct on court
+
+I reported 13.6 pct as an end-to-end quality figure, then noticed G267's own
+Jacobian table (0.016-0.079 ft/px on court) rules out on-court pixel error as the
+source of its extremes -- 100,457 ft/s at 30 fps needs about 3,348 ft in one frame.
+**The natural suspicion was that the figure was dominated by off-court boxes
+projecting near the homography's unbounded horizon.** G270 tested it.
+
+| partition | steps | above 40 ft/s |
+|---|---:|---:|
+| both endpoints ON court | 23,783 | **0.105** |
+| one endpoint crossing the boundary | 1,001 | **0.765** |
+| both endpoints off court | 5,189 | 0.157 |
+
+**The suspicion was right in shape and wrong in size.** Boundary-crossing steps are
+overwhelmingly implausible, exactly as the horizon hypothesis predicts -- **but they
+are only about 1,000 of 29,973 steps.** **61.3 pct of all impossible steps have BOTH
+endpoints inside the court.**
+
+**So the correct on-court figure is 10.5 pct, not 13.6 pct** -- a modest revision,
+not a retraction, and **the defect is real and it is on the court.** Neither figure
+is a tracking-quality score for authenticated people: the denominator is detector
+boxes including officials, bench and spectators, and identity is unvalidated
+everywhere in this programme.
+
 ## NOT VERIFIED
 
 - Whether a trained basketball calibration model would work; nothing was trained
