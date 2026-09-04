@@ -1,0 +1,26 @@
+{
+  "temp_dir": "/tmp/g233d_seed_0emlggwt",
+  "measurement_sha256": "6156c078d59799d33b37afd84467ac805a644b439c2da88b131b7bd026936d2c",
+  "files": [
+    "g233d_measurement.json",
+    "paired",
+    "paired/chained_renders",
+    "paired/chained_renders/render_distance_0000.jpg",
+    "paired/chained_renders/render_distance_0200.jpg",
+    "paired/chained_renders/render_distance_0400.jpg",
+    "paired/chained_renders/render_distance_0600.jpg",
+    "paired/chained_renders/render_distance_0800.jpg",
+    "paired/chained_renders/render_distance_1000.jpg",
+    "paired/chained_renders/render_distance_1200.jpg",
+    "paired/direct_seed_renders",
+    "paired/direct_seed_renders/render_distance_0000.jpg",
+    "paired/direct_seed_renders/render_distance_0200.jpg",
+    "paired/direct_seed_renders/render_distance_0400.jpg",
+    "paired/direct_seed_renders/render_distance_0600.jpg",
+    "paired/direct_seed_renders/render_distance_0800.jpg",
+    "paired/direct_seed_renders/render_distance_1000.jpg",
+    "paired/direct_seed_renders/render_distance_1200.jpg",
+    "paired/drift_records.csv",
+    "paired/run_summary.json"
+  ]
+}

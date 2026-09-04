@@ -567,3 +567,8 @@ LOW behind G25b.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G240 | wnba | Three fresh direct basketball-adapter runs on `wnba__wnba_01.mp4` with `--max-frames 6000` each emitted 64,171 rows and the identical SHA-256 `979b0e2ec9820fbeadad9d640a555b37b61405916b08b03d6bda40480e49df75`. Exhaustive pairwise row comparison found no content, coordinate, track-ID, ordering, or float-serialization difference. Denominator: three runs, one clip, one configuration; this is not a general determinism claim. | `g240_adapter_determinism_hash_2026-09-04.md` | ACCEPT (bounded content-repeatability measurement; no production change). |
+## G241 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G241 | wnba | The required G233d 1,200-frame control exactly reproduced every G222 direct record, but 808 of 1,201 detector/projection records changed and all-frame box/inside totals changed from 11,236/9,720 to 11,242/9,723. G241 stopped before extension, so it does not name a propagation horizon or failure cause. | `g241_seed_horizon_to_failure_2026-09-04.md`; `g241_seed_horizon_to_failure_artifact/control_g233d_1200/` | NOT VALIDATED - control mismatch requires STOP before any extended measurement. |
