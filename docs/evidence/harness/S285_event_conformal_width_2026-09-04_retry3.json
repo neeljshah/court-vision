@@ -1,0 +1,245 @@
+{
+  "code_identity": {
+    "aci_online": "17dbb28395158d0366cafddf9e309152722076960783fb8d30d53e14db12136c",
+    "s101": "4dbadc319b76a0e9c6e4ea53e3c683f242176774290917bebee894344c2cf93f",
+    "s123": "476ed9fdfb714b93c5b722f8e99fb1266cdb5987a729495f12e84d2b62ea08ed",
+    "s265": "697d7ae649686ec580e9059e62744ce288bd27b6383e311c3c94d881fff817ff",
+    "s285": "d3ba1d30b8d6b8542e98b3544c5a0020af8ad3ad5e60b680b5765ce740ebe5a3",
+    "s86": "2e197d14cce6d86ed80db6482cf37b08201c61944b930197cbf6317a1140fa68"
+  },
+  "design": {
+    "bootstrap_reps": 2000,
+    "bootstrap_seed": 2850904,
+    "coverage_max_groups": 50,
+    "coverage_min_group": 400,
+    "evaluator": "S265/S101 walk-forward",
+    "folds": [
+      {
+        "embargo_cut": "2025-01-01",
+        "fold": 1,
+        "n_test_games": 45,
+        "n_test_ticks": 12958,
+        "n_train_games": 42,
+        "n_train_ticks": 12544,
+        "status": "OK",
+        "symmetric_embargo_days": 1,
+        "test_end": "2025-04-13",
+        "test_start": "2025-01-02",
+        "train_date_max": "2024-12-30"
+      },
+      {
+        "embargo_cut": "2025-04-17",
+        "fold": 2,
+        "n_test_games": 41,
+        "n_test_ticks": 13309,
+        "n_train_games": 90,
+        "n_train_ticks": 26298,
+        "status": "OK",
+        "symmetric_embargo_days": 1,
+        "test_end": "2025-11-11",
+        "test_start": "2025-04-18",
+        "train_date_max": "2025-04-13"
+      },
+      {
+        "embargo_cut": "2025-11-11",
+        "fold": 3,
+        "n_test_games": 41,
+        "n_test_ticks": 12807,
+        "n_train_games": 127,
+        "n_train_ticks": 38523,
+        "status": "OK",
+        "symmetric_embargo_days": 1,
+        "test_end": "2026-01-09",
+        "test_start": "2025-11-12",
+        "train_date_max": "2025-11-10"
+      },
+      {
+        "embargo_cut": "2026-01-09",
+        "fold": 4,
+        "n_test_games": 43,
+        "n_test_ticks": 12352,
+        "n_train_games": 169,
+        "n_train_ticks": 51522,
+        "status": "OK",
+        "symmetric_embargo_days": 1,
+        "test_end": "2026-02-26",
+        "test_start": "2026-01-10",
+        "train_date_max": "2026-01-08"
+      },
+      {
+        "embargo_cut": "2026-03-04",
+        "fold": 5,
+        "n_test_games": 47,
+        "n_test_ticks": 12743,
+        "n_train_games": 215,
+        "n_train_ticks": 64766,
+        "status": "OK",
+        "symmetric_embargo_days": 1,
+        "test_end": "2026-06-08",
+        "test_start": "2026-03-05",
+        "train_date_max": "2026-02-26"
+      }
+    ],
+    "purge": "game-disjoint",
+    "symmetric_embargo_days": 1
+  },
+  "generated_at": "2026-09-04T21:15:07.570428+00:00",
+  "machine": "pod scratch /workspace/wt/a14",
+  "paired_loss_series": {
+    "path": "docs/evidence/harness/S285_event_conformal_width_2026-09-04_retry3_paired_loss.csv",
+    "sha256": "3d453534c20682803a74ec8121b8983c22f22225d90e577ed246f95bd3fcda91"
+  },
+  "premise": {
+    "future_row_plant": "PASS",
+    "middle_ticks": 31998,
+    "near_ticks": 40051,
+    "p50": 13,
+    "p90": 136,
+    "settled_ticks": 7870
+  },
+  "prereg": {
+    "path": "docs/evidence/harness/S285_preregistration_event_conformal_width_2026-09-04_v2.md",
+    "seal_sha256": "b5accd1d3e1f80877e1d44a699838501363726958d6a68cb090d89f14d5a76c7"
+  },
+  "results": {
+    "0.80": {
+      "bins": {
+        "near_event": {
+          "absent_because": null,
+          "coverage": 1.0,
+          "coverage_ci95": [
+            0.86,
+            1.0
+          ],
+          "mean_half_width": 0.12431901697447528,
+          "mean_half_width_ci95": [
+            0.12029349997540635,
+            0.12824757914423632
+          ],
+          "n_games": 217,
+          "n_groups": 50,
+          "n_ticks": 32414
+        },
+        "pooled": {
+          "absent_because": null,
+          "coverage": 1.0,
+          "coverage_ci95": [
+            0.92,
+            1.0
+          ],
+          "mean_half_width": 0.08488166371943363,
+          "mean_half_width_ci95": [
+            0.08009647404934203,
+            0.08982942029052247
+          ],
+          "n_games": 217,
+          "n_groups": 50,
+          "n_ticks": 64169
+        },
+        "settled": {
+          "absent_because": null,
+          "coverage": 0.9333333333333333,
+          "coverage_ci95": [
+            0.7857142857142857,
+            1.0
+          ],
+          "mean_half_width": 0.0353079794953973,
+          "mean_half_width_ci95": [
+            0.029663580175348696,
+            0.044339845119753286
+          ],
+          "n_games": 121,
+          "n_groups": 15,
+          "n_ticks": 6117
+        }
+      },
+      "coverage_gap_settled_minus_near": -0.06666666666666665,
+      "coverage_gap_settled_minus_near_ci95": [
+        -0.17999999999999994,
+        0.09343749999999948
+      ],
+      "half_width_gap_near_minus_settled": 0.08901103747907799,
+      "half_width_gap_near_minus_settled_ci95": [
+        0.08032473116648803,
+        0.09465030215675098
+      ],
+      "verdict": "NULL"
+    },
+    "0.90": {
+      "bins": {
+        "near_event": {
+          "absent_because": null,
+          "coverage": 1.0,
+          "coverage_ci95": [
+            0.92,
+            1.0
+          ],
+          "mean_half_width": 0.16860218286536824,
+          "mean_half_width_ci95": [
+            0.16301161458332392,
+            0.17401944716481518
+          ],
+          "n_games": 217,
+          "n_groups": 50,
+          "n_ticks": 32414
+        },
+        "pooled": {
+          "absent_because": null,
+          "coverage": 1.0,
+          "coverage_ci95": [
+            0.96,
+            1.0
+          ],
+          "mean_half_width": 0.14977168015983341,
+          "mean_half_width_ci95": [
+            0.1408967954864365,
+            0.15885382655038308
+          ],
+          "n_games": 217,
+          "n_groups": 50,
+          "n_ticks": 64169
+        },
+        "settled": {
+          "absent_because": null,
+          "coverage": 0.9333333333333333,
+          "coverage_ci95": [
+            0.8461538461538461,
+            1.0
+          ],
+          "mean_half_width": 0.1201142956039481,
+          "mean_half_width_ci95": [
+            0.1033732156516255,
+            0.13812389976317163
+          ],
+          "n_games": 121,
+          "n_groups": 15,
+          "n_ticks": 6117
+        }
+      },
+      "coverage_gap_settled_minus_near": -0.06666666666666665,
+      "coverage_gap_settled_minus_near_ci95": [
+        -0.1428571428571429,
+        0.06000000000000005
+      ],
+      "half_width_gap_near_minus_settled": 0.04848788726142014,
+      "half_width_gap_near_minus_settled_ci95": [
+        0.032294004214555194,
+        0.06320054232421865
+      ],
+      "verdict": "NULL"
+    }
+  },
+  "row": "S285 retry3",
+  "rss": {
+    "after_current_bytes": null,
+    "before_current_bytes": null,
+    "before_peak_bytes": 185303040,
+    "peak_bytes": 311398400
+  },
+  "source": {
+    "bytes": 2829826,
+    "path": "/workspace/nba-ai-system/data/cache/inplay_odds/nba_checkpoints_full.parquet",
+    "sample_games": 269,
+    "sample_ticks": 79919
+  }
+}
