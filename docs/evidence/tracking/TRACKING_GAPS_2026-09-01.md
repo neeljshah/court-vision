@@ -1,5 +1,11 @@
 # Tracking gap register -- 2026-09-01 (living; one gap = one lane)
 
+## G236 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G236 | ncaa_basketball | The committed 640x360 labelled still exists in the current 1920x1080 corpus file at zero-based frame 46154, not at its labelled index 28171. The whole-clip stride-5 scan decoded all 205,444 frames and scored 41,089 frames: refined best 1.944878, p1 25.779028, median 53.049913, so best/median 0.036661 clears the existing 0.5 separation rule decisively. Frame-accurate 640x360 colour MAD is 6.358071 against 61.625894 at 28171. The recovered delta is +17,983 frames. One point is consistent with a re-index but does not establish a constant offset for this or any other clip. | `g236_label_reindex_existence_2026-09-04.md`; `g236_label_reindex_existence_artifact/` | ACCEPT (existence established; successor must validate any broader re-index). |
+
 ## G217 result register
 
 | Gap | Sport | Finding | Evidence | Status |
