@@ -769,6 +769,86 @@ new hand labels, which converts a measurement problem into a labelling one.
 
 ---
 
+---
+
+## 7.20 THE DETECTOR'S USEFUL YIELD IS 0.597, AND THE SECOND SHOT HAS NO COURT
+
+Two rows landed on 2026-09-04 that together close section 7.19's two open risks
+and reshape what the chain means.
+
+### G273: what fraction of retained detections is even a person
+
+An **unconditioned** sample -- 72 retained detections, one drawn from each of 72
+contiguous frame bins across the G267 span, covering 72 distinct source frames
+and 41 emitted ids, selected with **no** speed, jump, association, position or id
+condition -- classified blind in a randomised order committed before un-blinding:
+
+| category | count | fraction |
+|---|---:|---:|
+| **(a) PLAYER on the court of play** | **43 / 72** | **0.597** |
+| (b) PERSON, not a player in play | 9 / 72 | 0.125 |
+| **(c) NOT A PERSON** | **15 / 72** | **0.208** |
+| (d) CANNOT JUDGE | 5 / 72 | 0.069 |
+| **(b) + (c): boxes that arguably should never enter tracking** | **24 / 72** | **0.333** |
+
+**The detector's useful yield is 0.597.** One retained detection in five is not a
+person at all. This is the first time the programme has measured detector
+precision on anything other than a single frame (G225: 19 boxes, 2 visibly
+on-court people).
+
+### The comparison against G272b has to be bracketed, and the bracket matters
+
+G272b's **0.500** counts steps where **one or both** of **two** footpoint crops
+showed no person. G273's **0.208** is a **single-crop** rate. **Pairing them
+directly implies a 2.40x concentration that the data do not support.**
+
+The right baseline is the rate at which an *unconditioned* step shows a
+non-person at one or both endpoints, and that was never measured, so it can only
+be bracketed:
+
+- **endpoints independent:** `1 - (1 - 0.208)^2 = 0.373`
+- **endpoints perfectly correlated** (a track sitting persistently on or off a
+  person): `0.208`
+
+Real tracks are positively correlated frame to frame, so the truth lies inside
+**[0.208, 0.373]**. G272b's 0.500 **exceeds the top of that range**, so the
+concentration is real -- **but the honest ratio is 1.34x to 2.40x, not 2.40x.**
+**G276 is open to measure the endpoint correlation directly and collapse the
+bracket**, presenting both endpoints of every step in one pooled blind order so
+the labeller cannot see the pairing.
+
+### G274: the replication cannot be done, and that is the finding
+
+The adjacent distinct camera shot, source frames **23476-24127** (652 frames,
+bracketed by `scene > 0.40` cuts at 23475 and 24128), is **a tight player
+close-up with no painted court.** Direct-to-seed matching against the 19599 seed
+nonetheless returned **0.285-1.434 px RMS with up to 350 inliers**, and at the
+independent mid-shot frame 23599 **116 matches, 60 inliers, 0.569 px RMS** -- with
+the projected court running across a player's body.
+
+**The lane ran no detector inference at all: 0 new boxes, 0 ids, 0 steps.** It
+stopped, which the spec named in advance as a full success.
+
+Two consequences, and the second is larger than the first:
+
+1. **The G267/G270/G271 profile is NOT EVALUATED across a cut.** It is neither
+   replicated nor refuted, and **it may not be called a property of the tracking
+   system.** It remains a property of one measured shot.
+2. **Sub-pixel reprojection residual is worthless as a validity signal.** This is
+   the fifth independent failure (after G242 acceptance, G244 match statistics,
+   G247 quad shape, G248 line/image agreement), and the most striking, because
+   0.569 px RMS is precisely the statistic a naive pipeline would trust most.
+
+### What this leaves open
+
+**G275** censuses the whole 174,430-frame clip for how much of it shows enough
+painted court to be a calibration candidate at all -- reported explicitly as an
+**upper bound**, with a blind re-judge for label agreement. If that fraction is
+low, court-space tracking addresses only a small slice of broadcast footage, and
+that reframes the programme rather than the clip.
+
+---
+
 ## NOT VERIFIED
 
 - Whether a trained basketball calibration model would work; nothing was trained
