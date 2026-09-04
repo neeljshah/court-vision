@@ -1,4 +1,4 @@
-GAP S288 | sport nba (in-game) | worktree aXX | log cx_s288_staleness_gated_blend
+GAP S288 | sport nba (in-game) | worktree a14 | log cx_s288_staleness_gated_blend
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 DEPENDENCY: S277 landed as 33801c3df; use
   docs/evidence/harness/S277_ingame_market_staleness_2026-09-04_attempt2b.md.
