@@ -1,4 +1,4 @@
-GAP S251 | sport all (ops) | worktree aXX | log cx_s251_foundry_runner_heartbeat_check
+GAP S251 | sport all (ops) | worktree a18 | log cx_s251_foundry_runner_heartbeat_check
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: POD_BATCH_2026-09-04_pass3.md: the foundry runner died silently for 41 min 52 s (2026-09-04T00:51:15Z to
   2026-09-04T01:33:07Z) and this was found only by an ad hoc ssh probe in pass 3, not by any routine local check.
