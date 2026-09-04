@@ -6,6 +6,7 @@ import argparse
 import csv
 import json
 import random
+import shutil
 import subprocess
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -17,6 +18,8 @@ FRAME_COUNT = 174_430
 FPS = 30
 SAMPLE_SIZE = 180
 RANDOM_SEED = 2_750_904
+REJUDGE_SEED = 2_750_905
+REJUDGE_SIZE = 40
 VALID_CATEGORIES = ("a", "b", "c", "d")
 
 
@@ -41,6 +44,13 @@ def blind_plan(indices: list[int], seed: int = RANDOM_SEED) -> list[BlindFrame]:
     return [BlindFrame(item, frame, frame / FPS) for item, frame in enumerate(shuffled)]
 
 
+def rejudge_plan(n: int = REJUDGE_SIZE, seed: int = REJUDGE_SEED) -> list[int]:
+    """Return a fresh random order of unique first-pass blind identifiers."""
+    if n <= 0 or n > SAMPLE_SIZE:
+        raise ValueError("require 0 < n <= SAMPLE_SIZE")
+    return random.Random(seed).sample(range(SAMPLE_SIZE), n)
+
+
 def _run_ffmpeg(video: Path, frame: BlindFrame, output: Path) -> None:
     command = [
         "ffmpeg",
@@ -63,7 +73,7 @@ def _run_ffmpeg(video: Path, frame: BlindFrame, output: Path) -> None:
     subprocess.run(command, check=True)
 
 
-def _write_board(images: list[Path], board_path: Path) -> None:
+def _write_board(images: list[Path], board_path: Path, label_prefix: str = "blind") -> None:
     tiles: list[object] = []
     for image_path in images:
         image = cv2.imread(str(image_path), cv2.IMREAD_COLOR)
@@ -74,7 +84,7 @@ def _write_board(images: list[Path], board_path: Path) -> None:
         cv2.rectangle(tile, (0, 0), (125, 30), (0, 0, 0), -1)
         cv2.putText(
             tile,
-            f"blind {blind_id}",
+            f"{label_prefix} {blind_id}",
             (8, 22),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.65,
@@ -123,12 +133,45 @@ def make_sample(video: Path, output_dir: Path) -> None:
         writer.writerows({"blind_id": item, "category": ""} for item in range(SAMPLE_SIZE))
 
 
+def make_rejudge(first_pass_dir: Path) -> None:
+    """Create a separate, freshly shuffled 40-frame blind re-judge board set."""
+    output_dir = first_pass_dir / "rejudge"
+    if output_dir.exists() and any(output_dir.iterdir()):
+        raise FileExistsError(f"refusing to overwrite nonempty {output_dir}")
+    frames_dir = output_dir / "frames"
+    boards_dir = output_dir / "boards"
+    frames_dir.mkdir(parents=True)
+    boards_dir.mkdir()
+    order = rejudge_plan()
+    for rejudge_id, blind_id in enumerate(order):
+        shutil.copyfile(
+            first_pass_dir / "blind_frames" / f"blind_{blind_id:03d}.jpg",
+            frames_dir / f"rejudge_{rejudge_id:03d}.jpg",
+        )
+    for board_number, offset in enumerate(range(0, len(order), 12)):
+        images = [frames_dir / f"rejudge_{item:03d}.jpg" for item in range(offset, min(offset + 12, len(order)))]
+        _write_board(images, boards_dir / f"board_{board_number:02d}.jpg", "rejudge")
+    (output_dir / "manifest.json").write_text(
+        json.dumps({"random_seed": REJUDGE_SEED, "rejudge_order_blind_ids": order}, indent=2) + "\n"
+    )
+    with (output_dir / "labels.csv").open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=("rejudge_id", "category"))
+        writer.writeheader()
+        writer.writerows({"rejudge_id": item, "category": ""} for item in range(REJUDGE_SIZE))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--video", type=Path, required=True)
+    parser.add_argument("--video", type=Path)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--make-rejudge", action="store_true")
     arguments = parser.parse_args()
-    make_sample(arguments.video, arguments.output_dir)
+    if arguments.make_rejudge:
+        make_rejudge(arguments.output_dir)
+    else:
+        if arguments.video is None:
+            parser.error("--video is required unless --make-rejudge is used")
+        make_sample(arguments.video, arguments.output_dir)
 
 
 if __name__ == "__main__":

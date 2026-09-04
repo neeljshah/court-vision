@@ -2,6 +2,7 @@ from scripts.platformkit.tracking.g275_footage_census import (
     FRAME_COUNT,
     SAMPLE_SIZE,
     blind_plan,
+    rejudge_plan,
     uniform_indices,
 )
 
@@ -20,3 +21,11 @@ def test_g275_centred_uniform_sample_is_fixed_unique_and_clip_wide() -> None:
     assert first == second
     assert [item.blind_id for item in first] == list(range(SAMPLE_SIZE))
     assert {item.source_frame for item in first} == set(indices)
+
+
+def test_g275_rejudge_is_a_fixed_fresh_40_frame_permutation() -> None:
+    order = rejudge_plan()
+    assert len(order) == 40
+    assert len(set(order)) == 40
+    assert order == rejudge_plan()
+    assert all(0 <= blind_id < SAMPLE_SIZE for blind_id in order)
