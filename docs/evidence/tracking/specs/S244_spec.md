@@ -1,4 +1,4 @@
-GAP S244 | sport mlb (pregame) | worktree aXX | log cx_s244_mlb_batter_pitcher_line
+GAP S244 | sport mlb (pregame) | worktree a13 | log cx_s244_mlb_batter_pitcher_line
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: data/frontend/prop_history_corpus_mlb.jsonl has 3,000 rows (strikeouts etc.) with
 market_prob null on the sampled row; gate_corpus_mlb.parquet (39,162 rows) is team/game grain, not
