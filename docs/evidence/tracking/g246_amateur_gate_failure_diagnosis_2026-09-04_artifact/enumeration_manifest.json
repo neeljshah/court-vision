@@ -1,0 +1,2260 @@
+{
+  "seed_frame": 2760,
+  "seed_image": "docs\\evidence\\tracking\\g243b_seeded_calibration_amateur_2026-09-04_artifact\\seed_frame_2760.jpg",
+  "image_size_px": [
+    1280,
+    720
+  ],
+  "model": {
+    "width_ft": 50,
+    "length_ft": 84,
+    "lane_ft": 12,
+    "arc_ft": 19.75
+  },
+  "sets": {
+    "clustered": {
+      "crops": [
+        {
+          "index": 1,
+          "claimed_role": "paint_near_baseline_left_corner",
+          "pixel_xy": [
+            45,
+            385
+          ],
+          "crop": "identity_crops/clustered_01.jpg"
+        },
+        {
+          "index": 2,
+          "claimed_role": "paint_near_baseline_right_corner",
+          "pixel_xy": [
+            283,
+            276
+          ],
+          "crop": "identity_crops/clustered_02.jpg"
+        },
+        {
+          "index": 3,
+          "claimed_role": "paint_near_free_throw_left_corner",
+          "pixel_xy": [
+            363,
+            424
+          ],
+          "crop": "identity_crops/clustered_03.jpg"
+        },
+        {
+          "index": 4,
+          "claimed_role": "paint_near_free_throw_right_corner",
+          "pixel_xy": [
+            624,
+            306
+          ],
+          "crop": "identity_crops/clustered_04.jpg"
+        }
+      ],
+      "variants": [
+        {
+          "variant_index": 0,
+          "court_index_for_label_index": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              0.0
+            ],
+            [
+              31.0,
+              0.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_00_court_indices_0123.jpg",
+          "homography_image_to_court": [
+            [
+              0.017802264764038542,
+              -0.09563849728838544,
+              58.783851981385915
+            ],
+            [
+              0.06125508113075181,
+              0.13374962668916443,
+              -54.25008492621214
+            ],
+            [
+              0.0002602545214424565,
+              0.00048415787066383495,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 1,
+          "court_index_for_label_index": [
+            0,
+            1,
+            3,
+            2
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              0.0
+            ],
+            [
+              31.0,
+              0.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_01_court_indices_0132.jpg",
+          "homography_image_to_court": [
+            [
+              -0.021368685462728052,
+              -0.06670275649656977,
+              30.03444966692432
+            ],
+            [
+              -0.009128196008141671,
+              -0.01993129036640109,
+              8.084315611430798
+            ],
+            [
+              -0.0009220797626401083,
+              -0.002025881644978881,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 2,
+          "court_index_for_label_index": [
+            0,
+            2,
+            1,
+            3
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              0.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              0.0
+            ],
+            [
+              31.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_02_court_indices_0213.jpg",
+          "homography_image_to_court": [
+            [
+              0.04363225556893414,
+              0.09367244797787462,
+              -15.263211532344513
+            ],
+            [
+              0.020357595689667114,
+              -0.16599270331574734,
+              62.99109897052771
+            ],
+            [
+              0.0002602545214424566,
+              0.00048415787066383533,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 3,
+          "court_index_for_label_index": [
+            0,
+            2,
+            3,
+            1
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              0.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              31.0,
+              0.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_03_court_indices_0231.jpg",
+          "homography_image_to_court": [
+            [
+              -0.023284691916356827,
+              -0.05107993464390466,
+              24.105883544061548
+            ],
+            [
+              -0.006094519123229501,
+              -0.04466742496645418,
+              17.471211972630186
+            ],
+            [
+              -0.0009220797626401096,
+              -0.00202588164497888,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 4,
+          "court_index_for_label_index": [
+            0,
+            3,
+            1,
+            2
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              0.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              31.0,
+              0.0
+            ],
+            [
+              19.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_04_court_indices_0312.jpg",
+          "homography_image_to_court": [
+            [
+              0.0017654052011313885,
+              -0.09421578422720849,
+              32.150731933326355
+            ],
+            [
+              0.003615501696055916,
+              -0.02948024459860975,
+              11.18719659414224
+            ],
+            [
+              0.0003343580161966402,
+              -0.0031891699062127315,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 5,
+          "court_index_for_label_index": [
+            0,
+            3,
+            2,
+            1
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              0.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              0.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_05_court_indices_0321.jpg",
+          "homography_image_to_court": [
+            [
+              0.008636277063139892,
+              -0.07921333006979538,
+              26.06559784893193
+            ],
+            [
+              -0.007263378752124213,
+              -0.053234130347847096,
+              20.82199222776672
+            ],
+            [
+              0.00033435801619663934,
+              -0.0031891699062127302,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 6,
+          "court_index_for_label_index": [
+            1,
+            0,
+            2,
+            3
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              0.0
+            ],
+            [
+              19.0,
+              0.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_06_court_indices_1023.jpg",
+          "homography_image_to_court": [
+            [
+              -0.024735302669277398,
+              -0.034591325752374225,
+              19.96555033307566
+            ],
+            [
+              -0.009128196008141697,
+              -0.01993129036640109,
+              8.084315611430798
+            ],
+            [
+              -0.0009220797626401096,
+              -0.002025881644978881,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 7,
+          "court_index_for_label_index": [
+            1,
+            0,
+            3,
+            2
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              0.0
+            ],
+            [
+              19.0,
+              0.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_07_court_indices_1032.jpg",
+          "homography_image_to_court": [
+            [
+              -0.004789538691915724,
+              0.11984639082157718,
+              -8.783851981385912
+            ],
+            [
+              0.06125508113075177,
+              0.13374962668916437,
+              -54.25008492621211
+            ],
+            [
+              0.00026025452144245624,
+              0.00048415787066383436,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 8,
+          "court_index_for_label_index": [
+            1,
+            2,
+            0,
+            3
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              0.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              19.0,
+              0.0
+            ],
+            [
+              31.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_08_court_indices_1203.jpg",
+          "homography_image_to_court": [
+            [
+              0.014952495608700588,
+              -0.06524271108342808,
+              17.84926806667364
+            ],
+            [
+              0.0036155016960559105,
+              -0.029480244598609713,
+              11.187196594142224
+            ],
+            [
+              0.0003343580161966398,
+              -0.003189169906212732,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 9,
+          "court_index_for_label_index": [
+            1,
+            2,
+            3,
+            0
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              0.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              0.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_09_court_indices_1230.jpg",
+          "homography_image_to_court": [
+            [
+              0.008081623746692102,
+              -0.08024516524084113,
+              23.934402151068056
+            ],
+            [
+              -0.007263378752124213,
+              -0.053234130347847096,
+              20.82199222776672
+            ],
+            [
+              0.00033435801619663994,
+              -0.003189169906212731,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 10,
+          "court_index_for_label_index": [
+            1,
+            3,
+            0,
+            2
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              0.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              0.0
+            ],
+            [
+              19.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_10_court_indices_1302.jpg",
+          "homography_image_to_court": [
+            [
+              -0.030619529496811324,
+              -0.06946455444468283,
+              65.26321153234453
+            ],
+            [
+              0.020357595689667107,
+              -0.1659927033157474,
+              62.99109897052774
+            ],
+            [
+              0.0002602545214424566,
+              0.0004841578706638373,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 11,
+          "court_index_for_label_index": [
+            1,
+            3,
+            2,
+            0
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              0.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              19.0,
+              0.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_11_court_indices_1320.jpg",
+          "homography_image_to_court": [
+            [
+              -0.022819296215648648,
+              -0.050214147605039366,
+              25.894116455938455
+            ],
+            [
+              -0.006094519123229498,
+              -0.04466742496645416,
+              17.47121197263018
+            ],
+            [
+              -0.000922079762640109,
+              -0.0020258816449788804,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 12,
+          "court_index_for_label_index": [
+            2,
+            0,
+            1,
+            3
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              19.0
+            ],
+            [
+              19.0,
+              0.0
+            ],
+            [
+              31.0,
+              0.0
+            ],
+            [
+              31.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_12_court_indices_2013.jpg",
+          "homography_image_to_court": [
+            [
+              -0.023284691916356827,
+              -0.05107993464390466,
+              24.105883544061548
+            ],
+            [
+              -0.011424996366932588,
+              0.006175673711855417,
+              1.5287880273698284
+            ],
+            [
+              -0.0009220797626401096,
+              -0.00202588164497888,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 13,
+          "court_index_for_label_index": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              19.0
+            ],
+            [
+              19.0,
+              0.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              31.0,
+              0.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_13_court_indices_2031.jpg",
+          "homography_image_to_court": [
+            [
+              0.04363225556893412,
+              0.0936724479778746,
+              -15.263211532344506
+            ],
+            [
+              -0.015412759782260449,
+              0.1751917028583602,
+              -43.9910989705277
+            ],
+            [
+              0.00026025452144245645,
+              0.0004841578706638349,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 14,
+          "court_index_for_label_index": [
+            2,
+            1,
+            0,
+            3
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              0.0
+            ],
+            [
+              19.0,
+              0.0
+            ],
+            [
+              31.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_14_court_indices_2103.jpg",
+          "homography_image_to_court": [
+            [
+              0.008636277063139892,
+              -0.07921333006979538,
+              26.06559784893193
+            ],
+            [
+              0.013616181059860368,
+              -0.007360097870194767,
+              -1.8219922277667229
+            ],
+            [
+              0.00033435801619663934,
+              -0.0031891699062127302,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 15,
+          "court_index_for_label_index": [
+            2,
+            1,
+            3,
+            0
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              0.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              0.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_15_court_indices_2130.jpg",
+          "homography_image_to_court": [
+            [
+              0.0017654052011314054,
+              -0.09421578422720849,
+              32.15073193332635
+            ],
+            [
+              0.002737300611680253,
+              -0.031113983619432118,
+              7.81280340585775
+            ],
+            [
+              0.0003343580161966407,
+              -0.003189169906212732,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 16,
+          "court_index_for_label_index": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              0.0
+            ],
+            [
+              31.0,
+              0.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_16_court_indices_2301.jpg",
+          "homography_image_to_court": [
+            [
+              0.017802264764038532,
+              -0.09563849728838543,
+              58.78385198138592
+            ],
+            [
+              -0.056310245223345115,
+              -0.12455062714655159,
+              73.25008492621214
+            ],
+            [
+              0.0002602545214424565,
+              0.00048415787066383604,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 17,
+          "court_index_for_label_index": [
+            2,
+            3,
+            1,
+            0
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              31.0,
+              0.0
+            ],
+            [
+              19.0,
+              0.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_17_court_indices_2310.jpg",
+          "homography_image_to_court": [
+            [
+              -0.021368685462728052,
+              -0.06670275649656977,
+              30.03444966692432
+            ],
+            [
+              -0.008391319482020395,
+              -0.018560460888197655,
+              10.91568438856921
+            ],
+            [
+              -0.0009220797626401083,
+              -0.002025881644978881,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 18,
+          "court_index_for_label_index": [
+            3,
+            0,
+            1,
+            2
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              0.0
+            ],
+            [
+              31.0,
+              0.0
+            ],
+            [
+              19.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_18_court_indices_3012.jpg",
+          "homography_image_to_court": [
+            [
+              0.008081623746692102,
+              -0.08024516524084113,
+              23.934402151068056
+            ],
+            [
+              0.01361618105986038,
+              -0.007360097870194747,
+              -1.8219922277667395
+            ],
+            [
+              0.00033435801619663994,
+              -0.003189169906212731,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 19,
+          "court_index_for_label_index": [
+            3,
+            0,
+            2,
+            1
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              0.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              0.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_19_court_indices_3021.jpg",
+          "homography_image_to_court": [
+            [
+              0.014952495608700588,
+              -0.06524271108342808,
+              17.84926806667364
+            ],
+            [
+              0.00273730061168025,
+              -0.03111398361943219,
+              7.812803405857775
+            ],
+            [
+              0.0003343580161966398,
+              -0.003189169906212732,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 20,
+          "court_index_for_label_index": [
+            3,
+            1,
+            0,
+            2
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              19.0
+            ],
+            [
+              31.0,
+              0.0
+            ],
+            [
+              19.0,
+              0.0
+            ],
+            [
+              19.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_20_court_indices_3102.jpg",
+          "homography_image_to_court": [
+            [
+              -0.022819296215648648,
+              -0.050214147605039366,
+              25.894116455938455
+            ],
+            [
+              -0.011424996366932573,
+              0.0061756737118554075,
+              1.5287880273698284
+            ],
+            [
+              -0.000922079762640109,
+              -0.0020258816449788804,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 21,
+          "court_index_for_label_index": [
+            3,
+            1,
+            2,
+            0
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              19.0
+            ],
+            [
+              31.0,
+              0.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              19.0,
+              0.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_21_court_indices_3120.jpg",
+          "homography_image_to_court": [
+            [
+              -0.030619529496811324,
+              -0.06946455444468282,
+              65.26321153234451
+            ],
+            [
+              -0.015412759782260449,
+              0.17519170285836028,
+              -43.99109897052772
+            ],
+            [
+              0.0002602545214424564,
+              0.00048415787066383674,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 22,
+          "court_index_for_label_index": [
+            3,
+            2,
+            0,
+            1
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              19.0,
+              0.0
+            ],
+            [
+              31.0,
+              0.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_22_court_indices_3201.jpg",
+          "homography_image_to_court": [
+            [
+              -0.024735302669277388,
+              -0.03459132575237423,
+              19.96555033307566
+            ],
+            [
+              -0.008391319482020387,
+              -0.018560460888197645,
+              10.9156843885692
+            ],
+            [
+              -0.0009220797626401092,
+              -0.0020258816449788813,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 23,
+          "court_index_for_label_index": [
+            3,
+            2,
+            1,
+            0
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              0.0
+            ],
+            [
+              19.0,
+              0.0
+            ]
+          ],
+          "render": "enumerated_renders/clustered_23_court_indices_3210.jpg",
+          "homography_image_to_court": [
+            [
+              -0.004789538691915725,
+              0.11984639082157722,
+              -8.78385198138592
+            ],
+            [
+              -0.056310245223345115,
+              -0.12455062714655155,
+              73.25008492621212
+            ],
+            [
+              0.0002602545214424562,
+              0.0004841578706638354,
+              1.0
+            ]
+          ]
+        }
+      ]
+    },
+    "spread": {
+      "crops": [
+        {
+          "index": 1,
+          "claimed_role": "paint_near_free_throw_left_corner",
+          "pixel_xy": [
+            363,
+            424
+          ],
+          "crop": "identity_crops/spread_01.jpg"
+        },
+        {
+          "index": 2,
+          "claimed_role": "paint_near_free_throw_right_corner",
+          "pixel_xy": [
+            624,
+            306
+          ],
+          "crop": "identity_crops/spread_02.jpg"
+        },
+        {
+          "index": 3,
+          "claimed_role": "centre_circle_top",
+          "pixel_xy": [
+            1140,
+            359
+          ],
+          "crop": "identity_crops/spread_03.jpg"
+        },
+        {
+          "index": 4,
+          "claimed_role": "centre_circle_bottom",
+          "pixel_xy": [
+            1160,
+            468
+          ],
+          "crop": "identity_crops/spread_04.jpg"
+        }
+      ],
+      "variants": [
+        {
+          "variant_index": 0,
+          "court_index_for_label_index": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              25.0,
+              36.0
+            ],
+            [
+              25.0,
+              48.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_00_court_indices_0123.jpg",
+          "homography_image_to_court": [
+            [
+              -0.1960137020119241,
+              0.23974634512820314,
+              8.312721845449033
+            ],
+            [
+              -0.2993850517462234,
+              -0.12220744106899536,
+              199.30492714661182
+            ],
+            [
+              -0.008461973881244325,
+              0.009703876887837736,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 1,
+          "court_index_for_label_index": [
+            0,
+            1,
+            3,
+            2
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              25.0,
+              48.0
+            ],
+            [
+              25.0,
+              36.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_01_court_indices_0132.jpg",
+          "homography_image_to_court": [
+            [
+              -0.008045598090758208,
+              -0.06034631550099748,
+              26.054582749248535
+            ],
+            [
+              -0.014128039005180885,
+              -0.06537505947881919,
+              30.39469624778037
+            ],
+            [
+              -0.00028255179528455146,
+              -0.0024210585151492148,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 2,
+          "court_index_for_label_index": [
+            0,
+            2,
+            1,
+            3
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              19.0
+            ],
+            [
+              25.0,
+              36.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              25.0,
+              48.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_02_court_indices_0213.jpg",
+          "homography_image_to_court": [
+            [
+              -0.0046457106512480684,
+              -0.0519309548912535,
+              25.300402744374924
+            ],
+            [
+              -0.007969729009050085,
+              -0.0835600728230014,
+              39.91776741131817
+            ],
+            [
+              -0.00021676234709539527,
+              -0.0019748889260182063,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 3,
+          "court_index_for_label_index": [
+            0,
+            2,
+            3,
+            1
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              19.0
+            ],
+            [
+              25.0,
+              36.0
+            ],
+            [
+              25.0,
+              48.0
+            ],
+            [
+              31.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_03_court_indices_0231.jpg",
+          "homography_image_to_court": [
+            [
+              -0.0022570270179847977,
+              -0.05490014788717493,
+              26.008302226148704
+            ],
+            [
+              0.00017088581924517584,
+              -0.0786164400854907,
+              35.18267775832011
+            ],
+            [
+              -0.00010740599835891016,
+              -0.002029280302241875,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 4,
+          "court_index_for_label_index": [
+            0,
+            3,
+            1,
+            2
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              19.0
+            ],
+            [
+              25.0,
+              48.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              25.0,
+              36.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_04_court_indices_0312.jpg",
+          "homography_image_to_court": [
+            [
+              -0.004557793843304312,
+              -0.05826895107644439,
+              24.684371073516996
+            ],
+            [
+              -0.006892836650895961,
+              -0.09469822365112479,
+              40.97800318433725
+            ],
+            [
+              -0.0001498099191973089,
+              -0.0024382949770743612,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 5,
+          "court_index_for_label_index": [
+            0,
+            3,
+            2,
+            1
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              19.0,
+              19.0
+            ],
+            [
+              25.0,
+              48.0
+            ],
+            [
+              25.0,
+              36.0
+            ],
+            [
+              31.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_05_court_indices_0321.jpg",
+          "homography_image_to_court": [
+            [
+              0.014542592983405756,
+              -0.07558917441531308,
+              23.022725871426886
+            ],
+            [
+              0.016027358710712078,
+              -0.1422174061559946,
+              50.734126170463654
+            ],
+            [
+              0.000615285571805107,
+              -0.0033505148232906403,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 6,
+          "court_index_for_label_index": [
+            1,
+            0,
+            2,
+            3
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              25.0,
+              36.0
+            ],
+            [
+              25.0,
+              48.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_06_court_indices_1023.jpg",
+          "homography_image_to_court": [
+            [
+              -0.22708499205029387,
+              0.2454474992636856,
+              41.687278154551116
+            ],
+            [
+              -0.29938505174622587,
+              -0.12220744106899648,
+              199.30492714661338
+            ],
+            [
+              -0.008461973881244391,
+              0.009703876887837817,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 7,
+          "court_index_for_label_index": [
+            1,
+            0,
+            3,
+            2
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              25.0,
+              48.0
+            ],
+            [
+              25.0,
+              36.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_07_court_indices_1032.jpg",
+          "homography_image_to_court": [
+            [
+              -0.006081991673469337,
+              -0.06070661025646341,
+              23.94541725075148
+            ],
+            [
+              -0.014128039005180882,
+              -0.06537505947881929,
+              30.394696247780388
+            ],
+            [
+              -0.0002825517952845506,
+              -0.0024210585151492182,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 8,
+          "court_index_for_label_index": [
+            1,
+            2,
+            0,
+            3
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              19.0
+            ],
+            [
+              25.0,
+              36.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              25.0,
+              48.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_08_court_indices_1203.jpg",
+          "homography_image_to_court": [
+            [
+              -0.006192406703521654,
+              -0.046813491409656925,
+              24.69959725562508
+            ],
+            [
+              -0.007969729009050072,
+              -0.08356007282300143,
+              39.91776741131815
+            ],
+            [
+              -0.00021676234709539386,
+              -0.0019748889260182098,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 9,
+          "court_index_for_label_index": [
+            1,
+            2,
+            3,
+            0
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              19.0
+            ],
+            [
+              25.0,
+              36.0
+            ],
+            [
+              25.0,
+              48.0
+            ],
+            [
+              19.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_09_court_indices_1230.jpg",
+          "homography_image_to_court": [
+            [
+              -0.0031132728999607438,
+              -0.04656386722491873,
+              23.991697773851307
+            ],
+            [
+              0.00017088581924516358,
+              -0.07861644008549071,
+              35.18267775832014
+            ],
+            [
+              -0.00010740599835891104,
+              -0.0020292803022418713,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 10,
+          "court_index_for_label_index": [
+            1,
+            3,
+            0,
+            2
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              19.0
+            ],
+            [
+              25.0,
+              48.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              25.0,
+              36.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_10_court_indices_1302.jpg",
+          "homography_image_to_court": [
+            [
+              -0.002932702116561092,
+              -0.06364579777727378,
+              25.315628926483015
+            ],
+            [
+              -0.006892836650895923,
+              -0.09469822365112483,
+              40.97800318433724
+            ],
+            [
+              -0.00014980991919730753,
+              -0.0024382949770743643,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 11,
+          "court_index_for_label_index": [
+            1,
+            3,
+            2,
+            0
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              31.0,
+              19.0
+            ],
+            [
+              25.0,
+              48.0
+            ],
+            [
+              25.0,
+              36.0
+            ],
+            [
+              19.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_11_court_indices_1320.jpg",
+          "homography_image_to_court": [
+            [
+              0.016221685606849598,
+              -0.09193656674921892,
+              26.977274128573143
+            ],
+            [
+              0.016027358710712092,
+              -0.1422174061559948,
+              50.73412617046375
+            ],
+            [
+              0.0006152855718051076,
+              -0.0033505148232906385,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 12,
+          "court_index_for_label_index": [
+            2,
+            0,
+            1,
+            3
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              25.0,
+              36.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              25.0,
+              48.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_12_court_indices_2013.jpg",
+          "homography_image_to_court": [
+            [
+              0.030724501740102883,
+              -0.16406962070504272,
+              27.960414691839762
+            ],
+            [
+              0.03773103054046641,
+              -0.2621223710397814,
+              53.59248232284297
+            ],
+            [
+              0.0012127967095871004,
+              -0.006269645329711692,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 13,
+          "court_index_for_label_index": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              25.0,
+              36.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              25.0,
+              48.0
+            ],
+            [
+              31.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_13_court_indices_2031.jpg",
+          "homography_image_to_court": [
+            [
+              0.07746021309661975,
+              -0.2893420430120936,
+              34.10268806493551
+            ],
+            [
+              0.12325636927109009,
+              -0.41349227011748085,
+              43.515856106314544
+            ],
+            [
+              0.0031654456523982333,
+              -0.010772330199399355,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 14,
+          "court_index_for_label_index": [
+            2,
+            1,
+            0,
+            3
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              25.0,
+              36.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              25.0,
+              48.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_14_court_indices_2103.jpg",
+          "homography_image_to_court": [
+            [
+              0.029915333739252124,
+              -0.14941264578054192,
+              22.039585308160277
+            ],
+            [
+              0.037731030540466365,
+              -0.2621223710397812,
+              53.59248232284294
+            ],
+            [
+              0.0012127967095870997,
+              -0.006269645329711689,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 15,
+          "court_index_for_label_index": [
+            2,
+            1,
+            3,
+            0
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              25.0,
+              36.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              25.0,
+              48.0
+            ],
+            [
+              19.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_15_court_indices_2130.jpg",
+          "homography_image_to_court": [
+            [
+              0.08081206952329228,
+              -0.24927446695787503,
+              15.89731193506444
+            ],
+            [
+              0.12325636927109063,
+              -0.4134922701174825,
+              43.515856106314665
+            ],
+            [
+              0.0031654456523982485,
+              -0.010772330199399395,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 16,
+          "court_index_for_label_index": [
+            2,
+            3,
+            0,
+            1
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              25.0,
+              36.0
+            ],
+            [
+              25.0,
+              48.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_16_court_indices_2301.jpg",
+          "homography_image_to_court": [
+            [
+              -0.08859902367386209,
+              0.20559576206225796,
+              20.948243741303138
+            ],
+            [
+              -0.13517419873564904,
+              0.16303000102088186,
+              89.32505152559422
+            ],
+            [
+              -0.0036685507757538774,
+              0.00794825467472217,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 17,
+          "court_index_for_label_index": [
+            2,
+            3,
+            1,
+            0
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              25.0,
+              36.0
+            ],
+            [
+              25.0,
+              48.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_17_court_indices_2310.jpg",
+          "homography_image_to_court": [
+            [
+              -0.09482851511383147,
+              0.19181697167384978,
+              29.051756258696823
+            ],
+            [
+              -0.1351741987356486,
+              0.1630300010208811,
+              89.325051525594
+            ],
+            [
+              -0.0036685507757538674,
+              0.007948254674722138,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 18,
+          "court_index_for_label_index": [
+            3,
+            0,
+            1,
+            2
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              25.0,
+              48.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              25.0,
+              36.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_18_court_indices_3012.jpg",
+          "homography_image_to_court": [
+            [
+              0.0015878816398488419,
+              -0.0760868059821164,
+              23.671086838956615
+            ],
+            [
+              0.007938128655815413,
+              -0.12451763616900366,
+              34.528366738180985
+            ],
+            [
+              7.077988300576271e-05,
+              -0.003175060877403104,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 19,
+          "court_index_for_label_index": [
+            3,
+            0,
+            2,
+            1
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              25.0,
+              48.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              25.0,
+              36.0
+            ],
+            [
+              31.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_19_court_indices_3021.jpg",
+          "homography_image_to_court": [
+            [
+              0.05418364603190378,
+              -0.1536010014795406,
+              17.929860581343387
+            ],
+            [
+              0.089210629195055,
+              -0.290753492055017,
+              38.041685203632795
+            ],
+            [
+              0.002115277502607753,
+              -0.006766456969110011,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 20,
+          "court_index_for_label_index": [
+            3,
+            1,
+            0,
+            2
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              25.0,
+              48.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              25.0,
+              36.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_20_court_indices_3102.jpg",
+          "homography_image_to_court": [
+            [
+              0.001951112510439297,
+              -0.08266623788803883,
+              26.328913161043403
+            ],
+            [
+              0.007938128655815406,
+              -0.12451763616900353,
+              34.52836673818096
+            ],
+            [
+              7.07798830057627e-05,
+              -0.003175060877403103,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 21,
+          "court_index_for_label_index": [
+            3,
+            1,
+            2,
+            0
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              25.0,
+              48.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              25.0,
+              36.0
+            ],
+            [
+              19.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_21_court_indices_3120.jpg",
+          "homography_image_to_court": [
+            [
+              0.05158022909848404,
+              -0.18472184697596034,
+              32.07013941865665
+            ],
+            [
+              0.0892106291950553,
+              -0.2907534920550177,
+              38.04168520363285
+            ],
+            [
+              0.00211527750260776,
+              -0.006766456969110024,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 22,
+          "court_index_for_label_index": [
+            3,
+            2,
+            0,
+            1
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              25.0,
+              48.0
+            ],
+            [
+              25.0,
+              36.0
+            ],
+            [
+              19.0,
+              19.0
+            ],
+            [
+              31.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_22_court_indices_3201.jpg",
+          "homography_image_to_court": [
+            [
+              -0.011529440032729507,
+              -0.031927459833919994,
+              25.728501288812826
+            ],
+            [
+              -0.020108498548763697,
+              -0.02116349993540663,
+              31.64436639352551
+            ],
+            [
+              -0.0004387764880490952,
+              -0.0012275501682645778,
+              1.0
+            ]
+          ]
+        },
+        {
+          "variant_index": 23,
+          "court_index_for_label_index": [
+            3,
+            2,
+            1,
+            0
+          ],
+          "court_points_ft_for_label_order": [
+            [
+              25.0,
+              48.0
+            ],
+            [
+              25.0,
+              36.0
+            ],
+            [
+              31.0,
+              19.0
+            ],
+            [
+              19.0,
+              19.0
+            ]
+          ],
+          "render": "enumerated_renders/spread_23_court_indices_3210.jpg",
+          "homography_image_to_court": [
+            [
+              -0.010409384369725251,
+              -0.029450048579308902,
+              24.271498711187185
+            ],
+            [
+              -0.020108498548763707,
+              -0.021163499935406616,
+              31.644366393525523
+            ],
+            [
+              -0.00043877648804909494,
+              -0.0012275501682645774,
+              1.0
+            ]
+          ]
+        }
+      ]
+    }
+  }
+}
