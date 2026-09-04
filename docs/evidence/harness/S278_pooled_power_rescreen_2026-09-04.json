@@ -1,0 +1,41 @@
+{
+  "bar": 0.004,
+  "input_store": "data/cache/ingame_grade_joined/mlb",
+  "preregistrations": {
+    "S119": "docs/evidence/harness/S278_S119_prereg_2026-09-04.md",
+    "S82": "docs/evidence/harness/S278_S82_prereg_2026-09-04.md"
+  },
+  "row": "S278",
+  "screens": [
+    {
+      "available_clusters": 158,
+      "bar": 0.004,
+      "brier_candidate": 0.1998553756460682,
+      "brier_delta": 0.002722269468624071,
+      "brier_null": 0.2025776451146923,
+      "embargo_days_symmetric_nonzero": 1,
+      "evaluator": "scripts.platformkit.eval_gate.cpcv_engine.cpcv_evaluate",
+      "mde80": 0.006669480609776886,
+      "n_groups": 5,
+      "n_test_groups": 1,
+      "n_ticks": 47104,
+      "paired_loss_csv": "docs/evidence/harness/S278_S82_paired_losses_2026-09-04.csv",
+      "screen": "S82"
+    },
+    {
+      "available_clusters": 284,
+      "bar": 0.004,
+      "brier_candidate": 0.1998553756460682,
+      "brier_delta": 0.002722269468624071,
+      "brier_null": 0.2025776451146923,
+      "embargo_days_symmetric_nonzero": 1,
+      "evaluator": "scripts.platformkit.eval_gate.cpcv_engine.cpcv_evaluate",
+      "mde80": 0.0066772225902414365,
+      "n_groups": 5,
+      "n_test_groups": 1,
+      "n_ticks": 47104,
+      "paired_loss_csv": "docs/evidence/harness/S278_S119_paired_losses_2026-09-04.csv",
+      "screen": "S119"
+    }
+  ]
+}
