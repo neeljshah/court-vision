@@ -1,4 +1,4 @@
-GAP S276 | sport nba (in-game) | worktree a12 | log cx_s276_incumbent_conformal_band_full_pod
+GAP S276 | sport nba (in-game) | worktree a17 | log cx_s276_incumbent_conformal_band_full_pod
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S265 stage 2 (S265 landed ACCEPT 0194a9ab4, SAMPLE-scale only): seed 258104, 79919 ticks / 269 games; all
   12 STATIC grouped cells (P1/P2/P3/P4/OT/ALL x nominal 0.90/0.80) had >= 400 ticks; worst coverage OT 0.833333333
