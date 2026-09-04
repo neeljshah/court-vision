@@ -1,4 +1,4 @@
-GAP S275 | sport all | worktree a9 | log cx_s275_key_explicit_consumers_v2
+GAP S275 | sport all | worktree a16 | log cx_s275_key_explicit_consumers_v2
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S267 successor (CLOSED AT LIMIT 270dcc83b): fixed 1e-9 bar missed 4/4 on per-unit ECE, each <= 1e-6:
   nba diff 8.644848374486e-7, mlb diff 5.8880346513337e-7, soccer diff 2.263514300494e-7, tennis diff
