@@ -11,8 +11,15 @@ reading code, writing the harness, writing tests -- may proceed immediately.
 
 **WHY THIS ROW EXISTS -- THE PROGRAMME'S STATED GOAL IS ARBITRARY-FOOTAGE TRACKING AND THE CORPUS
 CANNOT SUPPORT A SINGLE ROBUSTNESS CLAIM ABOUT IT.** G213 visually classified every corpus clip and
-found the corpus **MONOLITHIC**: professional broadcast with a moving camera, and **ZERO examples of
-amateur/high-school capture, ZERO fixed single-camera, and ZERO dim-gym lighting.** Nearly every
+found the corpus **MONOLITHIC**. **Quote G213's zero list EXACTLY as it is written, because it is more
+precise than a loose summary and your comparison must be against the real baseline:** zero handheld
+game-camera footage; zero fixed **single-camera** game footage (tennis is a multi-camera broadcast that
+merely uses a fixed-wide primary play view, which G213 explicitly says does NOT count); zero
+**amateur/high-school direct field/court camera acquisition** (the corpus DOES contain one
+amateur/home-produced item, but it is a **desktop-commentary screen capture, not an amateur game
+camera**); zero graphics-free footage; zero high playing-surface visibility; and zero dim-gym or
+visibly poor lighting. **That census covered 13 clips.** **So the missing thing is specifically an
+AMATEUR GAME CAMERA POINTED AT A COURT OR FIELD -- not "amateur footage" loosely.** Nearly every
 measurement in the tracking body (G189, G190, G193, G195, G198, G203) ran on ONE clip,
 `wnba__wnba_01.mp4`. **So every claim about robustness to "any footage" is currently unsupported by
 construction, and that is the gap this row closes.**
