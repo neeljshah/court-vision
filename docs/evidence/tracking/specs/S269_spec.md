@@ -10,7 +10,8 @@ CONTEXT: successor to S253 (DONE 4dd9e24eb) and S84 (SCREEN_NULL, NBA). S253's m
   would be an expected, valid pattern, not a surprise.
 PREMISE (step 0, INFORMATIONAL): print S253's stamps.csv row/game count (expect 5,647 / 167) and S206's scored
   tick/cluster count (expect 16,571 / 75, from wnba_checkpoints_full.parquet + wnba_price_series.parquet); print
-  the exact set overlap between stamps.csv game_id and S206's cdn_game_id (expect 85 of 85).
+  the exact set overlap between stamps.csv game_id and the game_id column of
+  data/cache/inplay_odds/wnba_checkpoints_full.parquet (S206's memo calls that key cdn_game_id; expect 85 of 85).
 CHANGE (step 1): additive; join S253's per-tick five-man stamps to S206's scored WNBA ticks by (game_id, backward
   as-of: latest stamp at or before the tick's elapsed time). Derive lineup_state = (home starters currently on
   court) minus (away starters currently on court), an integer in [-5,5], purely from S253's stamps -- no new
