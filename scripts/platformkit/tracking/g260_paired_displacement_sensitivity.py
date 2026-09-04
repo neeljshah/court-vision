@@ -77,7 +77,10 @@ def samples(h,w,ht):
  if not pts:raise RuntimeError("no projected geometry")
  return np.concatenate(pts),np.concatenate(tan),inside/total
 def bilinear(image,points):
- return cv2.remap(image,points[:,0].astype(np.float32),points[:,1].astype(np.float32),cv2.INTER_LINEAR).reshape(-1)
+ chunks=[]
+ for first in range(0,len(points),30000):
+  part=points[first:first+30000];chunks.append(cv2.remap(image,part[:,0].astype(np.float32),part[:,1].astype(np.float32),cv2.INTER_LINEAR).reshape(-1))
+ return np.concatenate(chunks)
 def offset(edges,h):
  ht,w=edges.shape;inv=np.linalg.inv(h);found=[];count=missing=0;radii=np.arange(-24,25,dtype=float)
  for _,raw in TYPED:
