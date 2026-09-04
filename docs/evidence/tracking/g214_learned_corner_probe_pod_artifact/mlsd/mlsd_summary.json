@@ -1,0 +1,27 @@
+{
+  "candidate": "mlsd_control",
+  "config": {
+    "deduplicate_radius_px": 2.0,
+    "distance_threshold": 20.0,
+    "input_size": 512,
+    "intersection_min_angle_degrees": 35.0,
+    "model": "tflite_models/M-LSD_512_tiny_fp32.tflite",
+    "score_threshold": 0.1,
+    "support_extension_px": 0.0
+  },
+  "corner_recall": 2,
+  "corner_total": 68,
+  "frames_all_four": 0,
+  "frames_total": 17,
+  "proposal_precision_hits": 2,
+  "proposal_total": 265,
+  "proposals_per_frame": 15.588235294117647,
+  "render_indices": [
+    0,
+    4,
+    8,
+    12,
+    16
+  ],
+  "tolerance_px": 12.0
+}
