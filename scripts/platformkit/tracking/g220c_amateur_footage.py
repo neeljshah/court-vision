@@ -19,7 +19,7 @@ SECTION_SECONDS = 16 * 60
 SECTION_TIMEOUT_SECONDS = 90
 WHOLE_FETCH_TIMEOUT_SECONDS = 900
 CUT_TIMEOUT_SECONDS = 180
-MERGING_SELECTOR = "bv*[height<=720][vcodec^=avc1]+ba/b[height<=720]"
+MERGING_SELECTOR = "bv*[protocol*=m3u8][height<=1080][height>=720]+ba[protocol*=m3u8]"
 STAGE = Path("data/videos/g220c_amateur_footage")
 RECORDS = Path("docs/evidence/tracking/g220c_amateur_footage_working_rung_2026-09-04_records.json")
 FRAMES = Path("docs/evidence/tracking/g220c_amateur_footage_working_rung_2026-09-04_frames")

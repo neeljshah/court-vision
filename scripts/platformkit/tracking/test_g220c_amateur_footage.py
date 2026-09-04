@@ -28,6 +28,9 @@ def test_construct_selector_and_caps_are_fixed():
 def test_command_uses_merging_selector_and_optional_section():
     command = _command(CANDIDATES[0], Path("clip.mp4"), "*00:10:00-00:26:00", 1234)
     assert command[command.index("-f") + 1] == MERGING_SELECTOR
+    assert MERGING_SELECTOR == (
+        "bv*[protocol*=m3u8][height<=1080][height>=720]+ba[protocol*=m3u8]"
+    )
     assert command[command.index("--download-sections") + 1] == "*00:10:00-00:26:00"
     assert command[command.index("--max-filesize") + 1] == "1234"
     whole = _command(CANDIDATES[0], Path("whole.mp4"), None, 1234)
