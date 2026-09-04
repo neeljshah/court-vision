@@ -1,0 +1,11 @@
+2026-09-04T06:18:05Z
+31818	/workspace/nba-ai-system/data
+/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4|2931985407
+width=1920
+height=1080
+r_frame_rate=30/1
+nb_frames=174430
+c3bc2f7d4c4fda366f83523dd0aac86e47a40fecaf26e36b490d5a8c73ca5cc7  /workspace/nba-ai-system/src/tracking/player_detection.py
+df2ae698ae03e804f67639434d8303638aea9087c3169c016af5a3734dd474d7  /workspace/nba-ai-system/src/tracking/advanced_tracker.py
+047dd04e9b12b588c560f68dbab32aa1855f791c2e1a46f19f4e082f50c4f331  /workspace/nba-ai-system/src/pipeline/unified_pipeline.py
+f9655c338c92be6bcf90be998eac8b2904aaee52346b2f1593a2814458c737a3  streamed/scripts/platformkit/tracking/g196_homography_from_labelled_corners.py\nb3eb085fa0b57af006af19ff29f1e5d2f2bf5b61addc649940b998cc52b6442a  streamed/scripts/platformkit/tracking/g215_temporal_homography_propagation.py\n2b99a30f3ff6dd1d633e0d088dee150c379f655e2fb78556589b5a948743d8c4  streamed/scripts/platformkit/tracking/g222_direct_to_seed_propagation.py\n5f13cd26c34b54b8a30f0537788dff9c9f53230951b2bf3f69ed2b3db8d312cb  streamed/scripts/platformkit/tracking/g233_basketball_seeded_court_coordinates.py
