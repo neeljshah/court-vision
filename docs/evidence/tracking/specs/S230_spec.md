@@ -1,4 +1,4 @@
-GAP S230 | sport nba (pregame) | worktree aXX | log cx_s230_pregame_scheme_interaction
+GAP S230 | sport nba (pregame) | worktree a16XX | log cx_s230_pregame_scheme_interaction
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: S108 fit every numeric as-of column the NBA gate corpus supplies (178) with logit(incumbent) as a true offset
 under nested walk-forward and the inner CV zeroed EVERY coefficient in 20 of 23 outer folds (elastic net +0.001360, n
