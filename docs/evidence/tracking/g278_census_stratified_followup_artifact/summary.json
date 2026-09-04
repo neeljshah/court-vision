@@ -1,0 +1,58 @@
+{
+  "part_a": {
+    "counts": {
+      "a": 51,
+      "b": 2,
+      "c": 8,
+      "d": 0
+    },
+    "n": 61,
+    "a_fraction": 0.8360655737704918,
+    "a_wilson_95": [
+      0.7238716146826547,
+      0.908439883943204
+    ],
+    "two_proportion_vs_g275_118_of_180": {
+      "pooled_p": 0.7012448132780082,
+      "se": 0.06781096256834847,
+      "z": 2.6619592375347194,
+      "p_two_sided_nominal": 0.007768728578515542
+    }
+  },
+  "part_b": {
+    "n": 40,
+    "confusion_rows_first_pass_columns_rejudge": {
+      "a": {
+        "a": 20,
+        "b": 0,
+        "c": 0,
+        "d": 0
+      },
+      "b": {
+        "a": 0,
+        "b": 11,
+        "c": 0,
+        "d": 0
+      },
+      "c": {
+        "a": 0,
+        "b": 0,
+        "c": 9,
+        "d": 0
+      },
+      "d": {
+        "a": 0,
+        "b": 0,
+        "c": 0,
+        "d": 0
+      }
+    },
+    "a_to_b": 0,
+    "b_to_a": 0,
+    "a_b_boundary_observed_transition_rates": {
+      "a_to_b": 0.0,
+      "b_to_a": 0.0
+    },
+    "repeatability_adjusted_a_fraction": 0.6555555555555556
+  }
+}
