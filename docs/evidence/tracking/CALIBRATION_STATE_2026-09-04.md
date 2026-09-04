@@ -912,6 +912,70 @@ detector, not footage availability.**
 
 ---
 
+---
+
+## 7.22 THE CHAIN'S SPAN IS NOT A SAMPLE OF THE CLIP -- and that bounds every figure in 7.16 to 7.18
+
+G278 closed the two sub-questions G275's spec could not answer, and the first
+result is the most consequential thing measured today.
+
+### The studied span is measurably friendlier than the clip
+
+| population | category (a) frames | fraction |
+|---|---:|---:|
+| **studied span 19599-23399** (61 fresh frames, stride 62-63) | **51 / 61** | **0.836** |
+| **clip-wide** (G275's 180 frames, stride 969) | **118 / 180** | **0.656** |
+
+Pooled p = 0.7012, SE = 0.0678, **z = 2.662, nominal two-sided p = 0.0078**,
+uncorrected for the many comparisons in this programme. The within-span 95 pct
+Wilson interval is [0.724, 0.908].
+
+### What follows, stated precisely and no further
+
+Court-space measurement is only possible where a map can exist, which is (a)
+footage. **The chain's span is 0.836 (a); the clip is 0.656 (a). The chain's
+population is therefore NOT the clip's population, and any clip-wide
+extrapolation of the 13.6 pct all-steps or 10.5 pct on-court implausible-step
+figures is unsupported.**
+
+**What does NOT follow: the direction of the effect.** It is tempting to argue
+the chain was measured under favourable conditions and so understates the defect.
+**That inference is not available.** Nobody has measured tracking quality in
+low-court-visibility footage, and G274 established that in the adjacent close-up
+shot **no map exists at all**, so it cannot be measured there in court space.
+**The span is unrepresentative on a measured axis; the sign of the consequence is
+unknown.** Anyone quoting 10.5 pct must attach the span, not the clip.
+
+### The (a)/(b) boundary is perfectly repeatable, and my ceiling was too loose
+
+The stratified re-judge included **all 11** first-pass (b) frames plus 20 (a) and
+9 (c): **40/40 agreement, with zero a->b (0/20) and zero b->a (0/11)
+transitions.**
+
+This tightens the bound in one direction and supplies the first floor:
+
+- **Ceiling.** My G275-DESIGN-LIMITS row put it at `(118+11+1)/180 = 0.722` by
+  allowing every (b) and (d) frame to be really (a). **All 11 (b) frames
+  re-judged as (b)**, so only the single un-rejudged (d) survives:
+  **`119/180 = 0.661`.**
+- **Floor.** The Wilson lower bound on the 20/20 a->a repeatability is 0.8389,
+  giving `(118 * 0.8389)/180 = 0.550`.
+
+So 0.656 sits inside **[0.550, 0.661]** -- and that is a **repeatability-only
+bound, not a correctness interval.** **40/40 does not confirm the figure**: both
+passes can be consistently wrong in the same way, and a category (a) frame still
+carries no evidence that a map would fit, since G274 produced 0.569 px RMS on a
+frame containing no court at all.
+
+### Net effect on the programme
+
+Section 7.21's headline survives -- **court-bearing footage is plentiful, so
+footage availability is not the binding constraint** -- but 7.19's "one shot"
+caveat is now sharper than a caveat. **It is a measured mismatch between the
+population the chain was measured on and the population it is quoted about.**
+
+---
+
 ## NOT VERIFIED
 
 - Whether a trained basketball calibration model would work; nothing was trained
