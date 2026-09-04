@@ -3,7 +3,35 @@ GAP G225 | sport wnba | worktree a6 | log g225_detector_capacity_sweep
 `scripts/platformkit/tracking/`. **You need NO `src/` edit to do this row** -- `yolo_model` is already a
 config key read at `src/tracking/advanced_tracker.py:260`, so pass it from YOUR OWN process.
 
-**HELD -- DO NOT START UNTIL G211 HAS REPORTED.** G211 is measuring per-frame cost on the pod and this
+**HOLD LIFTED 2026-09-04: G211 and G211b have both reported (both NOT VALIDATED -- the disjoint wrapper
+is built and correct, but the route emitted no instrumented sample). Check the pod for other measurement
+rows before starting and say that you checked.**
+
+**AMENDMENT 2026-09-04 -- USE THE ADAPTER, NOT `run_clip`, AND YOU NOW HAVE TWO BASELINES.**
+The legacy route is a poor vehicle for this row and tonight measured why: `run_clip --frames 1200`
+made 400 detector calls and emitted **ZERO rows** (G211b); **9 of 9** historical basketball daemon jobs
+died with `cv2.error` in `_build_court` (G234, G234-COMPLETE), though that crash is INTERMITTENT (G235);
+and a 40-frame probe never reached `cv2.findHomography` at all. **The basketball ADAPTER works: use
+`adapter_run basketball ... --max-frames 6000`, which is how both baselines below were produced.**
+
+**BASELINE A -- professional broadcast (G226c / G226c-OUTPUT / G226c-IDENTITY), `wnba__wnba_01.mp4`:**
+6,000 evaluated frames, **64,171 rows**, 5,972 frames with players, players/frame min 1 / **median 11.0**
+/ p90 16 / max 27, 207 track ids, track length min 1 / **median 205** / p90 730 / max 2,270, one
+one-frame track, zero duplicate `(frame, track_id)`, 100.00 pct of rows inside 1920x1080, harness SCORED
+failing `coordinate_contract` on `image_px`.
+
+**BASELINE B -- fixed-camera amateur (G239), `g220c__jh3fnwMi7dM.mp4`:** same invocation, players/frame
+**6 / 20.0 / 24 / 34**, track length **1 / 500 / 1,729.2 / 4,029**, 50 fewer distinct ids.
+
+**REPORT YOUR ARMS AGAINST BASELINE A** (same clip, same invocation) so the capacity comparison is
+clean. **A second pass on the amateur clip is a bonus, not a requirement.**
+
+**AND CARRY G239's WARNING: a median of 20 detections per frame against TEN players on court means the
+adapter is very likely counting the bleacher crowd. A larger model detecting MORE people is NOT
+automatically better** -- it may simply find more spectators. **The eye check in this spec is what
+separates those, and it is mandatory.**
+
+ G211 is measuring per-frame cost on the pod and this
 row is deliberately heavy. **Check the pod and say in your memo that you checked and when you began.**
 The `track_daemon` and its `adapter_run` jobs are PERMANENT residents and are the load floor, **not** a
 reason to wait; never kill or restart them. Harness and test writing may proceed immediately.
