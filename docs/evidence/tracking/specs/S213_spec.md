@@ -1,4 +1,4 @@
-GAP S213 | sport all (in-game) | worktree aXX | log cx_s213_ingame_latency_ledger
+GAP S213 | sport all (in-game) | worktree a16 | log cx_s213_ingame_latency_ledger
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: INGAME_CAPABILITY_2026-09-01.md, verbatim: "schema_has_venue_ts=false for every sport in
   inplay_tick_latency.json, so no sport carries a real lag_p90 field at all -- nor an src_ts_coverage_pct field", and
