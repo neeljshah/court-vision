@@ -1,4 +1,4 @@
-GAP S228 | sport nba (pregame) | worktree aXX | log cx_s228_pregame_prop_close_upset
+GAP S228 | sport nba (pregame) | worktree a13 | log cx_s228_pregame_prop_close_upset
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: a player-level market exists on disk and has never entered the harness. Measured 2026-09-04:
 data/cache/cv_fix/closing_props/ holds 77 JSON files, one per game, each an odds-API payload with commence_time,
