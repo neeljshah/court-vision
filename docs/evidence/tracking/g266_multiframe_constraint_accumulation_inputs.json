@@ -1,0 +1,10 @@
+{
+  "reference_frame": 19599,
+  "constraints": [
+    {"frame": 19569, "primitive": "near_baseline", "image_endpoints_px": [[428.0, 402.0], [759.0, 415.0]], "court_endpoints_ft": [[0.0, 0.0], [50.0, 0.0]]},
+    {"frame": 19584, "primitive": "left_lane_boundary", "image_endpoints_px": [[355.0, 467.0], [381.0, 647.0]], "court_endpoints_ft": [[17.0, 0.0], [17.0, 19.0]]},
+    {"frame": 19614, "primitive": "right_lane_boundary", "image_endpoints_px": [[861.0, 470.0], [968.0, 686.0]], "court_endpoints_ft": [[33.0, 0.0], [33.0, 19.0]]},
+    {"frame": 19629, "primitive": "near_free_throw_line", "image_endpoints_px": [[465.0, 700.0], [900.0, 723.0]], "court_endpoints_ft": [[17.0, 19.0], [33.0, 19.0]]}
+  ],
+  "published_homography_image_to_court": [[0.050071754999888064, 0.01225404716365722, 2.3351407383547964], [-0.0047586809476217904, 0.1153980129798286, -44.493666860263815], [3.054485397744623e-05, 0.0011147252900901028, 1.0]]
+}

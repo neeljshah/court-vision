@@ -1,0 +1,234 @@
+{
+  "reference_frame": 19599,
+  "frames": {
+    "19569": {
+      "frame": 19569,
+      "path": "docs\\evidence\\tracking\\g266_multiframe_constraint_accumulation_artifact\\control\\frames\\frame_019569.jpg",
+      "bytes": 384181,
+      "resolution_px": [
+        1920,
+        1080
+      ],
+      "jpeg_sha256": "295c70bf91952559b8f085c607d5166d2a3a6ea738fc723260f248614f604950",
+      "bgr_sha256": "dd959382094c3bb1d676b467f612fe123395d12dfe99b51bd58adbf68773564e"
+    },
+    "19584": {
+      "frame": 19584,
+      "path": "docs\\evidence\\tracking\\g266_multiframe_constraint_accumulation_artifact\\control\\frames\\frame_019584.jpg",
+      "bytes": 370414,
+      "resolution_px": [
+        1920,
+        1080
+      ],
+      "jpeg_sha256": "77172729219add35b3178c33f05b6f3bd0f3d02fccf97150474d2b667c1e9c20",
+      "bgr_sha256": "450232c3062e8699a0c0b4243917b7859f5a71cd5562565dcfe23f2fe99e33b0"
+    },
+    "19599": {
+      "frame": 19599,
+      "path": "docs\\evidence\\tracking\\g266_multiframe_constraint_accumulation_artifact\\control\\frames\\frame_019599.jpg",
+      "bytes": 378249,
+      "resolution_px": [
+        1920,
+        1080
+      ],
+      "jpeg_sha256": "529bad68f0c46847c7d787a32573fb8f5d183a3f3bb4d7ecfafc22c7861182d4",
+      "bgr_sha256": "398422e88e0811b0abc746cb656f678ff92729bee29e201fadd96cf713581c7b"
+    },
+    "19614": {
+      "frame": 19614,
+      "path": "docs\\evidence\\tracking\\g266_multiframe_constraint_accumulation_artifact\\control\\frames\\frame_019614.jpg",
+      "bytes": 386119,
+      "resolution_px": [
+        1920,
+        1080
+      ],
+      "jpeg_sha256": "1afcaf9667d5babe9607083ad7ccc1c2961ad975d837dc11cda54d2c4b88bdd4",
+      "bgr_sha256": "2a1725d9baf5df4971986bbabbe9d282ab4d6b5af3275dbd093b781b47890889"
+    },
+    "19629": {
+      "frame": 19629,
+      "path": "docs\\evidence\\tracking\\g266_multiframe_constraint_accumulation_artifact\\control\\frames\\frame_019629.jpg",
+      "bytes": 389365,
+      "resolution_px": [
+        1920,
+        1080
+      ],
+      "jpeg_sha256": "0ea8a63930e34a1c8cfb2c5ddbb5e64372147ab7bba41da1a3d2c90f51c8192c",
+      "bgr_sha256": "a6e0c5176d5b60ca64dc1096c85d401dbbf1d2ec56ce17908f0b049fb37f7a77"
+    }
+  },
+  "transports": {
+    "19599": {
+      "matrix_seed_to_frame": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "diagnostic": {
+        "matches": null,
+        "inliers": null,
+        "inlier_ratio": null,
+        "rms_reprojection_px": null
+      }
+    },
+    "19569": {
+      "matrix_seed_to_frame": [
+        [
+          1.0074287268382218,
+          0.007293453379690812,
+          -7.191632055018064
+        ],
+        [
+          7.21535552938063e-05,
+          1.012396914736722,
+          -5.03983492850594
+        ],
+        [
+          7.25315595736291e-09,
+          7.506550691699771e-06,
+          1.0
+        ]
+      ],
+      "diagnostic": {
+        "matches": 1174,
+        "inliers": 1015,
+        "inlier_ratio": 0.8645655877342419,
+        "rms_reprojection_px": 0.5190296769142151
+      }
+    },
+    "19584": {
+      "matrix_seed_to_frame": [
+        [
+          1.0082621699494898,
+          0.009510801150590097,
+          -9.86336859579083
+        ],
+        [
+          0.0008144911972653629,
+          1.010240582016493,
+          -3.6629588049055655
+        ],
+        [
+          7.699474064965983e-07,
+          6.781624395935131e-06,
+          1.0
+        ]
+      ],
+      "diagnostic": {
+        "matches": 1456,
+        "inliers": 1328,
+        "inlier_ratio": 0.9120879120879121,
+        "rms_reprojection_px": 0.6063019037246704
+      }
+    },
+    "19614": {
+      "matrix_seed_to_frame": [
+        [
+          0.994990036036589,
+          -0.004489306167943028,
+          4.43624509113233
+        ],
+        [
+          -6.766053485631291e-05,
+          0.9918061972422453,
+          3.2862779991181323
+        ],
+        [
+          -2.0469559653850208e-08,
+          -5.029773601125606e-06,
+          1.0
+        ]
+      ],
+      "diagnostic": {
+        "matches": 1458,
+        "inliers": 1334,
+        "inlier_ratio": 0.9149519890260631,
+        "rms_reprojection_px": 0.3797074854373932
+      }
+    },
+    "19629": {
+      "matrix_seed_to_frame": [
+        [
+          0.9956765723689295,
+          -0.0028354638989817127,
+          2.7675103750615264
+        ],
+        [
+          0.0001126906804533462,
+          0.9929421423024993,
+          2.5280627932888184
+        ],
+        [
+          1.563198457991246e-07,
+          -4.660421911926969e-06,
+          1.0
+        ]
+      ],
+      "diagnostic": {
+        "matches": 1342,
+        "inliers": 1191,
+        "inlier_ratio": 0.8874813710879285,
+        "rms_reprojection_px": 0.43466559052467346
+      }
+    }
+  },
+  "identity_crops": [
+    {
+      "frame": 19569,
+      "primitive": "near_baseline",
+      "crop": "docs\\evidence\\tracking\\g266_multiframe_constraint_accumulation_artifact\\control\\identity_crops\\frame_019569_near_baseline.jpg",
+      "source_rect_px": [
+        373,
+        347,
+        441,
+        123
+      ]
+    },
+    {
+      "frame": 19584,
+      "primitive": "left_lane_boundary",
+      "crop": "docs\\evidence\\tracking\\g266_multiframe_constraint_accumulation_artifact\\control\\identity_crops\\frame_019584_left_lane_boundary.jpg",
+      "source_rect_px": [
+        300,
+        412,
+        136,
+        290
+      ]
+    },
+    {
+      "frame": 19614,
+      "primitive": "right_lane_boundary",
+      "crop": "docs\\evidence\\tracking\\g266_multiframe_constraint_accumulation_artifact\\control\\identity_crops\\frame_019614_right_lane_boundary.jpg",
+      "source_rect_px": [
+        806,
+        415,
+        217,
+        326
+      ]
+    },
+    {
+      "frame": 19629,
+      "primitive": "near_free_throw_line",
+      "crop": "docs\\evidence\\tracking\\g266_multiframe_constraint_accumulation_artifact\\control\\identity_crops\\frame_019629_near_free_throw_line.jpg",
+      "source_rect_px": [
+        410,
+        645,
+        545,
+        133
+      ]
+    }
+  ],
+  "g222_matcher": "ORB nfeatures=2000 fastThreshold=12; BF/Hamming; 0.75 ratio test; cv2.findHomography RANSAC 3 px"
+}
