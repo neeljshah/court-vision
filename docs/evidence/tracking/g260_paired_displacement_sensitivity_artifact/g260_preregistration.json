@@ -1,0 +1,54 @@
+{
+  "gap": "G260",
+  "status": "sealed_before_measurement",
+  "question": "Across different WNBA broadcast frames, does a fixed projection signal show a consistently directed within-frame change between a persisted G247 map and G257-defined known synthetic displacements?",
+  "source": {
+    "video_path": "/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4",
+    "expected_bytes": 2931985407,
+    "expected_resolution": [1920, 1080],
+    "persisted_maps": "docs/evidence/tracking/g247_projected_quad_validity_artifact/g247_measurement.json",
+    "persisted_maps_sha256": "05be8b9d4b71c2f865683c4cf6d498b0997ad6108681414ae2e29f88ad37b87b"
+  },
+  "sampling": {
+    "population": "The 89 unique G247 persisted-map source frames from the single 174430-frame clip.",
+    "method": "35 frame identities selected by rounded equally spaced positions in the source-frame-sorted 89-record G247 population, including both clip endpoints. This pre-enumerated sample is clip-wide, not a head slice.",
+    "source_frames": [0, 6000, 10000, 16000, 19599, 24000, 30000, 34000, 40000, 44000, 50000, 54000, 60000, 66000, 70000, 76000, 80000, 86000, 92000, 96000, 102000, 106000, 112000, 118000, 122000, 128000, 132000, 138000, 142000, 148000, 154000, 158000, 164000, 168000, 174000],
+    "decode_rule": "For each named source frame, decode that frame exactly once into worker memory, then reuse that same BGR array for unperturbed and every rung. No full decoded frame is written to disk."
+  },
+  "rungs_projected_court_displacement_px": [0, 2, 5, 10, 20, 40, 100],
+  "perturbation": {
+    "definition": "For each persisted image-to-court map H let P=inverse(H). At rung N, P_N=T(N,0)P where T(N,0) translates image coordinates N pixels camera-right; measure with H_N=inverse(P_N). Every finite projected court point moves exactly N horizontal image pixels.",
+    "not_a_real_calibration_error": true
+  },
+  "fixed_routes": {
+    "maps": "G247 persisted maps unchanged",
+    "image_agreement": "G248 edge-response and marking contrast use 3 px and 9 px controls on both normal sides; LSD_REFINE_STD agreement uses 4 px distance and 15 degree unoriented tangent tolerance; geometry sampling is 2 px.",
+    "offset": "G252 Canny low=50 high=150 aperture=3 L2gradient=true; 4 px projected sampling; integer local-normal search -24 through +24; no-candidate records are retained; found distances are conditional and right-censored at 24 px.",
+    "quad": "G247 role order and perimeter [0,1,3,2], area ratio, bbox aspect ratio, and outside-corner fraction."
+  },
+  "paired_series": {
+    "definition": "For each signal, source frame, and nonzero rung, paired_difference = signal(displaced map on that frame) - signal(unperturbed map on that same frame). The worker retains every finite pair and every excluded pair with its predeclared reason.",
+    "signals": ["offset_p90_px", "edge_response_contrast", "line_detector_agreement", "marking_contrast", "coverage", "quad_projected_area_ratio_to_seed", "quad_bbox_aspect_ratio", "quad_outside_corner_fraction"],
+    "exclusion_rules": {
+      "all_signals": "Exclude only a nonfinite or structurally undefined scalar, retaining source_frame, rung, signal, and reason in the artifact.",
+      "offset_p90_px": "Also exclude the pair if either condition has no found candidates or p90 at the 24 px search bound; report these separately as undefined or censored, never as zero or evidence of a small offset."
+    }
+  },
+  "detection_criterion_before_measurement": {
+    "paired_spread": "For each signal/rung retain the median paired difference m and scaled MAD s=1.4826*median(abs(d-m)) across its retained frame pairs. A zero or undefined s is not evidence and cannot establish detection.",
+    "reliably_detected_displacement": "A nonzero rung is reliably detected only when at least 30 retained frame pairs exist, s is positive and finite, abs(m) >= 3*s, and at least 80 percent of retained paired differences have the strict sign of m. In addition, the six nonzero-rung medians must be monotone from the 0-px baseline in that same direction across the whole 2,5,10,20,40,100 px ladder. This is a predeclared measurement criterion based on paired spread, not a fitted production threshold or an accuracy calculation.",
+    "monotonicity": "Report every rung median and state whether the full nonzero ladder is nondecreasing or nonincreasing. Any signal failing that test is explicitly ineligible for a one-sided gate regardless of individual-rung effects."
+  },
+  "required_reporting": [
+    "Per signal and rung: retained-pair count, median paired difference, scaled MAD, strict sign-agreement count and direction, and every exclusion count/reason.",
+    "The full-ladder monotonicity decision including 100 px and the smallest reliably detected displacement or none.",
+    "The G257 20 px eye-gate comparison marked as indicative only because G257 used amateur footage while this uses WNBA broadcast footage.",
+    "The dd conv=fsync guard, du baseline, temporary bytes freed, source/route identity hashes, and NOT VERIFIED limits."
+  ],
+  "limits": [
+    "One clip, one seed-map family, one arena, and 35 pre-enumerated frames; no population inference.",
+    "The unperturbed maps are not known correct: G257 only constrains its amateur eye instrument to roughly 20 px, and G252 measured 5 px median and 19 px p90 on WNBA VALID frames.",
+    "Synthetic uniform displacement is not a real calibration error, which can be non-uniform across the image.",
+    "No production gate, threshold fitting, automatic-calibration conclusion, tracking-accuracy conclusion, or claim beyond detection of a known displacement is permitted; automatic calibration remains 0/17."
+  ]
+}
