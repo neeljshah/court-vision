@@ -33,9 +33,10 @@ warning below, which is the whole reason this row exists in this form.
     `[SUBPROFILE]   yolo=0.095  ac_call=0.021  hsv=0.370  warmup=0.568  classify_dyn=0.383`
     `               ctrack_upd=0.314  n_boxes=17.000  crops_step3=1.774  osnet=1.163`
     `               assign_render=2.232  total=5.267`
-**Detection is 95 ms. Everything after it is about 5.7 s: assign_render 2.23 s, crops_step3 1.77 s,
-osnet 1.16 s.** That is consistent with G189's 3.5 fps and with the 3090 measured at **2 pct
-utilisation, 664 MiB of 24,576 MiB**.
+**Detection is 95 ms and the rest is CPU-side. Read those sub-timings as OVERLAPPING, not as shares:
+they sum to 6.92 s against `total=5.267 s` (see the amendment above).** The CPU-bound conclusion is
+consistent with G189's 3.5 fps and with the 3090 measured at **2 pct utilisation, 664 MiB of
+24,576 MiB**.
 
 **WHY THIS IS THE BINDING CONSTRAINT.** G206 established that a coverage number needs a FULL-LENGTH
 run, because `--frames N` counts detector-selected gameplay frames and fails closed. A full pass of
@@ -57,11 +58,10 @@ METHOD:
      line is an anecdote; I quoted one and labelled it as such, and you must do better.
   3. **Attribute the cost exhaustively.** The stage times must account for the total; if they do not,
      say how much is unattributed rather than rounding it away.
-  4. **Answer the specific suspicious item: what is `assign_render` doing under `--no-show`, and why
-     does it cost about 2.2 s?** Read the code path. **If a headless run is doing rendering work it
-     does not need, that is the finding** -- quantify what fraction of the total it is. **If it turns
-     out to be legitimate assignment work that is merely named "render", say so plainly; my suspicion
-     is a hypothesis, not a premise.**
+  4. **Answer what `assign_render` actually spends 2.2 s on.** The orchestrator has already
+     established it does NO rendering (zero drawing calls in `advanced_tracker.py:1472-1773`), so do
+     not re-check that. It is assignment and tracking-state work: identify WHICH operations dominate,
+     and whether any is quadratic in box count or repeated per box where it could be batched.
   5. Do the same for `crops_step3` (1.77 s) and `osnet` (1.16 s): what are they for, and is either
      avoidable for a run whose only purpose is coverage measurement, without changing what the
      coverage number MEANS? **A speedup that changes which players survive is NOT acceptable** -- it
