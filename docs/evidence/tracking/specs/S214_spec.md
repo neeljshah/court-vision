@@ -1,4 +1,4 @@
-GAP S214 | sport soccer (in-game) | worktree aXX | log cx_s214_soccer_inplay_census
+GAP S214 | sport soccer (in-game) | worktree a17 | log cx_s214_soccer_inplay_census
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S117 closed soccer in-game AT LIMIT on corpus size -- 9,003 ticks / 51 games, usable 29 games / 3,658 ticks,
   and only 163 ticks over 2 game clusters actually scored.
