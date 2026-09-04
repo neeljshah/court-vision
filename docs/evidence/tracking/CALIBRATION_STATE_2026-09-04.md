@@ -444,6 +444,62 @@ available. **That is G253**, and it runs a lines-only positive control on G233d'
 validated WNBA seed first: if it cannot reproduce a known-good calibration on clean
 broadcast footage, it closes cheaply and nothing is lost.
 
+---
+
+## 7.12 How accurate is a "valid" calibration? 5 px median, 19 px p90
+
+**G252 put the programme's first number on this.** Every calibration verdict here
+had been a binary eye judgement. On the 27 eye-VALID frames, the nearest strong
+image edge is a **median 5 px** from the projected marking, **p90 19 px**, inside
+a 24-px search (larger offsets censored by construction).
+
+**The median sits inside G140's 11.39 px label-repeatability scale; the p90
+exceeds it**, so the upper tail is not hand-label noise alone. G252 correctly
+declined to decompose further.
+
+**This one number plausibly explains all four validity negatives at once.** A
+projection off by 5-19 px looks right at overlay scale while missing a thin
+painted line, so every pixel-precise statistic in 7.10 was measuring the wrong
+thing. **When quoting the seeded path, say "eye-valid at roughly 5 px median /
+19 px p90", not "accurate".**
+
+## 7.13 The first non-broadcast calibration -- and a route closed beside it
+
+**G253 calibrated the amateur clip from LINES AND A CONIC, where no four points
+exist.** A homography has 8 DOF; a line gives 2 constraints and a conic 5. Fitting
+only the far sideline, centre line and centre circle -- the geometry that IS
+reliably visible -- produced a court that **passes its gate on the WITHHELD
+left-end arc and painted-end markings.** Degeneracy diagnostics are clean: line
+angle 87.6 deg, observed conic fraction 0.58, Jacobian condition 40.4.
+
+**The positive control is why it is credible.** A lines-only fit on G233d's
+validated WNBA seed reproduced the published map to **2.849 px median / 4.344 px
+max -- over 231 of 634 sampled points, those both in frame and shared.** Over all
+634 the p90 is 280 px: expected off-frame divergence, not failure. **Quote that
+denominator with the claim.**
+
+**Hold it provisionally.** n=1 frame, 1 labeller, an assumed court model, and
+hand-fitted lines are no more automatic than hand-fitted points. **G255 is
+independently blind-judging it and measuring its withheld-geometry offset**, because
+the amateur gate has no objective anchor the control has.
+
+**The transferable lesson: when four identifiable points do not exist, count
+CONSTRAINTS, not points.** Lines and conics survive occlusion and cropping far
+better than the intersections they define.
+
+### 7.13a G254: refinement improved its own number and broke the calibration
+
+Refining G233d's seed against detected edges moved the pooled offset from
+**5/18 px to 4/17 px -- and the refined court FAILS the independent eye gate**,
+visibly displaced above the painted end markings. **A lower residual is not a
+better map**, and only re-running the gate on withheld geometry caught it.
+
+**And the basin is narrow: 13 of 43 perturbed starts converge, and ZERO
+non-identity translate/rotate/scale starts do.** That was the question worth
+asking -- if the basin were wide, an approximate automatic guess could be refined
+into a good one. **It is not. "Get roughly close, then refine" is closed as a
+route to automatic calibration on this evidence.**
+
 ## NOT VERIFIED
 
 - Whether a trained basketball calibration model would work; nothing was trained
