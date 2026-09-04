@@ -14,27 +14,29 @@ artifact did not reproduce itself.  `_bin_table` below is that one rule, and
 Calibration, not edge.  Nothing here is charged, promoted or served.
 """
 from __future__ import annotations
-
 import json
 import math
 import sys
 from pathlib import Path
 from typing import Any, Mapping, Sequence
-
 import numpy as np
-
 from scripts.platformkit.calib_decomp import decompose
 from scripts.platformkit.combo.corpus_cache import (
     SPORTS, StaleCorpusError, freshness_report, load_gate_corpus,
 )
 from scripts.platformkit.eval_gate.scoring import ece, sharpness
-from scripts.platformkit.recalibration import walk_forward_recalibrate
-from scripts.platformkit.regime_calibration import buckets, fit_per_regime
-from scripts.platformkit.wp_diagnostics import isotonic_check, max_loser_wp
-
+from scripts.platformkit.eval_gate.calibration_report_helpers import (
+    _as_records, _bin_table, _finite_binary, _from_bins, _max_loser_summary,
+    _prediction_column, _ticks, _unit_groups, _unit_summary,
+)
+from scripts.platformkit.regime_calibration import buckets
+from scripts.platformkit.eval_gate.s200_regime_key_oof import (
+    changed_label_count, oof_per_regime, stable_date_order, train_only_keys,
+)
+_oof_per_regime = oof_per_regime
+from scripts.platformkit.wp_diagnostics import isotonic_check
 _REPO = Path(__file__).resolve().parents[3]
 _OUTPUT = _REPO / "docs" / "evidence" / "calibration"
-_PREDICTION_COLUMNS = ("model_prob", "pred", "prediction", "p_base")
 
 PREREG_PATH = "docs/evidence/harness/S05_calibration_prereg_2026-09-03.md"
 PREREG_SEAL = "9051BB6E3BD89F7309A799F9739C8E61EA6DB3530E52AD87666568220591DF8A"
@@ -50,132 +52,6 @@ REPRODUCTION = {
     "murphy_uncertainty": "base_rate * (1 - base_rate)",
     "note": "sum over non-empty bins in ascending bin order; base_rate is published per report",
 }
-
-
-def _as_records(records: Any) -> list[dict[str, Any]]:
-    if hasattr(records, "to_dict"):
-        return [dict(row) for row in records.to_dict("records")]
-    return [dict(row) for row in records]
-
-
-def _prediction_column(rows: Sequence[Mapping[str, Any]]) -> str | None:
-    for column in _PREDICTION_COLUMNS:
-        if any(column in row for row in rows):
-            return column
-    return None
-
-
-def _finite_binary(value: Any) -> bool:
-    try:
-        return math.isfinite(float(value)) and float(value) in (0.0, 1.0)
-    except (TypeError, ValueError):
-        return False
-
-
-def _bin_table(probs: Sequence[float], outcomes: Sequence[float], bins: int) -> list[dict[str, Any]]:
-    """The ONE bin-edge rule -- always `bins` rows, empty bins carried as n = 0."""
-    p, y = np.asarray(probs, dtype=float), np.asarray(outcomes, dtype=float)
-    edges = np.linspace(0.0, 1.0, bins + 1)
-    rows: list[dict[str, Any]] = []
-    for k in range(bins):
-        lo, hi = float(edges[k]), float(edges[k + 1])
-        mask = (p >= lo) & (p < hi) if k < bins - 1 else (p >= lo) & (p <= hi)
-        n_k = int(mask.sum())
-        mean_p = float(p[mask].mean()) if n_k else None
-        observed = float(y[mask].mean()) if n_k else None
-        rows.append({"bin": "%0.1f-%0.1f" % (lo, hi), "lo": lo, "hi": hi, "n": n_k,
-                    "mean_predicted_prob": mean_p, "observed_win_freq": observed,
-                    "gap": (observed - mean_p) if n_k else None})
-    return rows
-
-
-def _from_bins(table: Sequence[Mapping[str, Any]], base_rate: float,
-               total: int) -> dict[str, float]:
-    """Recompute the summary figures FROM the published bins (A2 reproduction)."""
-    out = {"ece": 0.0, "reliability": 0.0, "resolution": 0.0}
-    for row in table:
-        if not row["n"]:
-            continue
-        weight = row["n"] / total
-        out["ece"] += weight * abs(row["gap"])
-        out["reliability"] += weight * row["gap"] ** 2
-        out["resolution"] += weight * (row["observed_win_freq"] - base_rate) ** 2
-    return out
-
-
-def _ticks(probs: Sequence[float], outcomes: Sequence[float],
-           rows: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
-    return [
-        {"model_prob": float(prob), "outcome": float(outcome),
-         "game": str(row.get("event_id", index))}
-        for index, (prob, outcome, row) in enumerate(zip(probs, outcomes, rows))
-    ]
-
-
-def _unit_groups(rows: Sequence[Mapping[str, Any]], unit_col: str | None,
-                 order_by: str | None) -> tuple[list[tuple[str, list[int]]], bool, bool]:
-    """Positions per corpus_unit, sorted within the unit by ``order_by`` (S50).
-
-    Returns (groups, sort_within_unit_is_noop, partition_is_identity) -- both
-    flags published so a reader sees whether the walk order actually moved.
-    ponytail: the sort key is ``str(value)``; every gate corpus stores one
-    ISO-ordered date dtype per column, so lexical order IS date order there.
-    """
-    units: dict[str, list[int]] = {}
-    for index, row in enumerate(rows):
-        units.setdefault(str(row.get(unit_col)) if unit_col else "ALL", []).append(index)
-    groups: list[tuple[str, list[int]]] = []
-    sort_noop = True
-    for key, positions in units.items():
-        ordered = positions
-        if order_by and any(order_by in rows[index] for index in positions):
-            ordered = sorted(positions, key=lambda index: str(rows[index].get(order_by)))
-            sort_noop = sort_noop and ordered == positions
-        groups.append((key, ordered))
-    walked = [index for _, positions in groups for index in positions]
-    return groups, sort_noop, walked == list(range(len(rows)))
-
-
-def _unit_summary(key: str, positions: list[int], rows: Sequence[Mapping[str, Any]],
-                  order_by: str | None, raw: list[float], calibrated: list[float],
-                  outcomes: list[float], bins: int) -> dict[str, Any]:
-    dates = [str(rows[index].get(order_by)) for index in positions] if order_by else []
-    y = [outcomes[index] for index in positions]
-    return {
-        "corpus_unit": key, "n": len(positions),
-        "date_min": min(dates) if dates else None,
-        "date_max": max(dates) if dates else None,
-        "ece_before": ece([raw[index] for index in positions], y, bins=bins),
-        "ece_after": ece([calibrated[index] for index in positions], y, bins=bins),
-    }
-
-
-def _oof_per_regime(
-    probs: list[float], outcomes: list[float], keys: list[str], min_n: int,
-) -> list[float]:
-    """Return expanding-window isotonic outputs with fit_per_regime fallback."""
-    fits = fit_per_regime(probs, outcomes, keys, min_n=min_n)
-    global_oof = walk_forward_recalibrate(probs, outcomes, min_history=min_n).tolist()
-    calibrated = list(global_oof)
-    global_fit = fits["GLOBAL"]
-    for key in sorted(set(keys)):
-        if fits[key] is global_fit:
-            continue
-        indices = [index for index, candidate in enumerate(keys) if candidate == key]
-        local = walk_forward_recalibrate(
-            [probs[index] for index in indices],
-            [outcomes[index] for index in indices],
-            min_history=min_n,
-        )
-        for index, value in zip(indices, local):
-            calibrated[index] = float(value)
-    return calibrated
-
-
-def _max_loser_summary(ticks: list[dict[str, Any]]) -> dict[str, Any]:
-    """Keep the existing diagnostic's aggregate fields, not its event listing."""
-    result = max_loser_wp(ticks)
-    return {key: result[key] for key in ("quantiles", "above_0_8", "above_0_9")}
 
 
 def _stamp(report: dict[str, Any], sport: str,
@@ -216,7 +92,11 @@ def _no_metrics(sport: str, status: str, **extra: Any) -> dict[str, Any]:
 
 
 def build_report(records: Any, sport: str, *, bins: int = 10, min_n: int = 200,
-                 order_by: str | None = None, unit_col: str | None = None) -> dict:
+                  order_by: str | None = None, unit_col: str | None = None,
+                  key_source: str = "global", include_rows: bool = False,
+                  key_timing: str = "date_group",
+                  fallback_source: str = "prior_date",
+                  train_refit_every: int = 20) -> dict:
     """Build one sport's evidence report from every finite/binary corpus row.
 
     ``order_by`` / ``unit_col`` (gap S50) are OPT-IN and default OFF: given both,
@@ -228,10 +108,18 @@ def build_report(records: Any, sport: str, *, bins: int = 10, min_n: int = 200,
     chronological corpora -- it withholds the first unit's history from the
     second, and splits soccer's six interleaved divisions. Deltas: S50 memo.
     """
+    if key_source not in ("global", "train"):
+        raise ValueError("key_source must be 'global' or 'train'")
+    if key_timing not in ("row_position", "date_group"):
+        raise ValueError("key_timing must be 'row_position' or 'date_group'")
+    if fallback_source not in ("full_sample", "prior_date"):
+        raise ValueError("fallback_source must be 'full_sample' or 'prior_date'")
+    if train_refit_every < 1:
+        raise ValueError("train_refit_every must be positive")
     rows = _as_records(records)
     prediction_column = _prediction_column(rows)
     usable: list[dict[str, Any]] = []
-    for row in rows:
+    for source_index, row in enumerate(rows):
         if prediction_column is None:
             continue
         if not _finite_binary(row.get("y")):
@@ -243,6 +131,7 @@ def build_report(records: Any, sport: str, *, bins: int = 10, min_n: int = 200,
         if math.isfinite(prediction):
             copied = dict(row)
             copied["model_prob"] = prediction
+            copied["_s200_row_index"] = source_index
             usable.append(copied)
     dropped_rows = len(rows) - len(usable)
     if len(usable) < min_n:
@@ -251,17 +140,25 @@ def build_report(records: Any, sport: str, *, bins: int = 10, min_n: int = 200,
             input_rows=len(rows), dropped_rows=dropped_rows, scored_rows=len(usable),
             min_n=min_n, shortfall=max(0, min_n - len(usable)))
 
+    if key_source == "train":
+        usable = [usable[index] for index in stable_date_order(usable)]
     raw = [float(row["model_prob"]) for row in usable]
     outcomes = [float(row["y"]) for row in usable]
-    keys = buckets(usable)
+    default_keys = buckets(usable)
+    keys = default_keys if key_source == "global" else train_only_keys(
+        usable, raw, by_date_group=key_timing == "date_group")
     # Default OFF collapses to ONE group in row order, i.e. the pre-S50 call.
     walked = bool(order_by and unit_col)
     groups, sort_noop, identity = _unit_groups(
         usable, unit_col if walked else None, order_by if walked else None)
     calibrated = [0.0] * len(usable)
     for _, positions in groups:
-        local = _oof_per_regime([raw[i] for i in positions], [outcomes[i] for i in positions],
-                                [keys[i] for i in positions], min_n)
+        local = oof_per_regime(
+            [raw[i] for i in positions], [outcomes[i] for i in positions],
+            [keys[i] for i in positions], min_n,
+            rows=[usable[i] for i in positions] if key_source == "train" else None,
+            fallback_source=fallback_source if key_source == "train" else "full_sample",
+            refit_every=train_refit_every if key_source == "train" else 1)
         for index, value in zip(positions, local):
             calibrated[index] = float(value)
     raw_ticks = _ticks(raw, outcomes, usable)
@@ -286,7 +183,7 @@ def build_report(records: Any, sport: str, *, bins: int = 10, min_n: int = 200,
         and murphy_after["reliability"] < murphy_before["reliability"]
         and murphy_after["resolution"] >= murphy_before["resolution"]
     )
-    return _stamp({
+    result = {
         "sport": sport,
         "status": "OK",
         "prediction_column": prediction_column,
@@ -323,7 +220,29 @@ def build_report(records: Any, sport: str, *, bins: int = 10, min_n: int = 200,
                           raw, calibrated, outcomes, bins)
             for key, positions in groups
         ] if walked else None,
-    }, sport, "event_date" if walked else "POSITIONAL-ORDER")
+    }
+    if key_source == "train":
+        result["key_source"] = "train"
+        result["key_timing"] = key_timing
+        result["fallback_source"] = fallback_source
+        result["train_refit_every"] = train_refit_every
+        result["confidence_label_change_count"] = changed_label_count(default_keys, keys)
+    if include_rows:
+        result["s200_rows"] = [
+            {
+                "row_index": int(row["_s200_row_index"]),
+                "event_id": str(row.get("event_id", index)),
+                "cluster_id": str(row.get("corpus_unit", row.get("event_id", index))),
+                "timestamp": row.get("event_date"),
+                "outcome": outcomes[index],
+                "raw_prediction": raw[index],
+                "calibrated_prediction": calibrated[index],
+                "confidence_label": keys[index].rsplit("confidence=", 1)[-1],
+                "squared_loss": (calibrated[index] - outcomes[index]) ** 2,
+            }
+            for index, row in enumerate(usable)
+        ]
+    return _stamp(result, sport, "event_date" if walked else "POSITIONAL-ORDER")
 
 
 def _unavailable(sport: str, error: Exception) -> dict[str, Any]:
