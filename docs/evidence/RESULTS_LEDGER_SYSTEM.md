@@ -460,3 +460,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-03 | nba in-game calibration | S219 | composite Brier improvement -0.102920, 95 pct CI [-0.105850, -0.099991], 306735 ticks/1056 games | SCREEN NULL (verified: codex-sol, contract A/B/Q) | ef2202422
 2026-09-03 | ops | S251 | premise FALSIFIED by existing m50 heartbeat-age paths; isolated 601 s and 1/0 alerts reproduced; memo census is 3/3 | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 3b1345c24
 2026-09-03 | nba in-game calibration | S247 | rates coverage 0/661 game clusters; no three-arm score | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | fc0084261
+2026-09-03 | nba in-game | S255 | 355/661 clusters (53.7065%) received qualifying strictly-prior snapshots; premise confirmed; two metadata counts corrected | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | b559352ed
