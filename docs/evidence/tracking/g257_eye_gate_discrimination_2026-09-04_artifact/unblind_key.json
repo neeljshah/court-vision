@@ -1,0 +1,79 @@
+{
+  "source": {
+    "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g253_line_and_conic_calibration_2026-09-04_artifact\\amateur_frame_0540.jpg",
+    "bytes": 254981,
+    "resolution_px": [
+      1280,
+      720
+    ],
+    "sha256": "e09bd6cdd65404ea048967b7eaf2d6f217013a269fe9331b0e579113ff611dd8"
+  },
+  "candidate_map": {
+    "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g253_line_and_conic_calibration_2026-09-04_artifact\\amateur_fit_measurement.json",
+    "bytes": 674,
+    "sha256": "1c725599a5e456db818558d95163a95162479a0425d44594a526d75d2a91c45d",
+    "homography_image_to_court": [
+      [
+        -0.016964985688211878,
+        0.43326576312637743,
+        -82.3095541360741
+      ],
+      [
+        -0.1528514362199151,
+        0.2556061279500158,
+        150.07184060959338
+      ],
+      [
+        -0.0006687104024960311,
+        0.006078261531845628,
+        1.0
+      ]
+    ]
+  },
+  "magnitude_definition": "For each noncandidate condition, left-multiply the court-to-image projection by an image-plane translation (+N, 0). Therefore every finite projected court point is translated exactly N pixels horizontally to camera right; N is not a physical or real-calibration-error estimate.",
+  "ladder_px": [
+    5,
+    10,
+    20,
+    40,
+    100
+  ],
+  "unblind_key": [
+    {
+      "board": "blind_board_01.jpg",
+      "condition": "candidate_unchanged",
+      "magnitude_px": 0,
+      "dx_px": 0.0
+    },
+    {
+      "board": "blind_board_02.jpg",
+      "condition": "translate_right_40_px",
+      "magnitude_px": 40,
+      "dx_px": 40.0
+    },
+    {
+      "board": "blind_board_03.jpg",
+      "condition": "translate_right_5_px",
+      "magnitude_px": 5,
+      "dx_px": 5.0
+    },
+    {
+      "board": "blind_board_04.jpg",
+      "condition": "translate_right_20_px",
+      "magnitude_px": 20,
+      "dx_px": 20.0
+    },
+    {
+      "board": "blind_board_05.jpg",
+      "condition": "translate_right_100_px",
+      "magnitude_px": 100,
+      "dx_px": 100.0
+    },
+    {
+      "board": "blind_board_06.jpg",
+      "condition": "translate_right_10_px",
+      "magnitude_px": 10,
+      "dx_px": 10.0
+    }
+  ]
+}
