@@ -1,4 +1,4 @@
-GAP S243 | sport nba (pregame) | worktree aXX | log cx_s243_boxscore_coherence_check
+GAP S243 | sport nba (pregame) | worktree a16 | log cx_s243_boxscore_coherence_check
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: distributions must stay coherent: roster minutes cannot exceed 240 (5x48) plus OT, and
 summed player pts/reb/ast should track the team-level totals. scripts/platformkit/
