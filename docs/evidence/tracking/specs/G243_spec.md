@@ -1,4 +1,4 @@
-GAP G243 | sport basketball (amateur) | worktree a3 | log g243_seeded_calibration_amateur
+GAP G243 | sport basketball (amateur) | worktree a6 | log g243_seeded_calibration_amateur
 **MEASUREMENT ONLY. Change NO production code.** `src/` and `domains/` are READ and IMPORT only. Build in
 `scripts/platformkit/tracking/`.
 
