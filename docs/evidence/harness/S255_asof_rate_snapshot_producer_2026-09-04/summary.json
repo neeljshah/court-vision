@@ -1,0 +1,35 @@
+{
+  "denominator_clusters": 661,
+  "qualifying_clusters": 355,
+  "qualifying_fraction": "355/661",
+  "player_snapshot_rows": 76820,
+  "team_snapshot_rows": 1434,
+  "inputs": {
+    "archive": {
+      "path": "data\\cache\\eval_gate\\s92_nba_lineup_dynamic_2026-09-03_all.csv",
+      "bytes": 38630145
+    },
+    "player_source": {
+      "path": "data\\intelligence\\built_signals_sidecar.parquet",
+      "bytes": 399511
+    },
+    "team_source": {
+      "path": "data\\intelligence\\team_tempo_spacing.parquet",
+      "bytes": 24255
+    }
+  },
+  "artifacts": {
+    "player_snapshots": {
+      "path": "docs\\evidence\\harness\\S255_asof_rate_snapshot_producer_2026-09-04\\player_rate_snapshots.parquet",
+      "bytes": 565095
+    },
+    "team_snapshots": {
+      "path": "docs\\evidence\\harness\\S255_asof_rate_snapshot_producer_2026-09-04\\team_rate_snapshots.parquet",
+      "bytes": 22677
+    },
+    "qualification": {
+      "path": "docs\\evidence\\harness\\S255_asof_rate_snapshot_producer_2026-09-04\\cluster_qualification.csv",
+      "bytes": 36282
+    }
+  }
+}
