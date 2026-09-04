@@ -1,13 +1,18 @@
-GAP G220 | sport ncaa_basketball / soccer (amateur tier) | worktree a2 | log g220_amateur_footage_acquisition
+GAP G220 | sport ncaa_basketball / soccer (amateur tier) | worktree a7 | log g220_amateur_footage_acquisition
 **ACQUISITION AND CLASSIFICATION ONLY. Change NO production code.** `src/` is HUMAN-GATED: READ only.
 Build in `scripts/platformkit/tracking/`. You may READ `scripts/platformkit/footage_bridge.py` and
 reuse it; **do not edit it.**
 
-**HELD -- DO NOT START THE DOWNLOAD UNTIL G216 HAS REPORTED.** G216 is measuring read throughput from
-`/workspace` against local storage on the pod, and **an upload running during it would corrupt exactly
-the number it exists to produce.** Check first (`ps` on the pod for concurrent route jobs, and the
-G216 ledger row) and **say in your memo that you checked and when you started.** Preparation work --
-reading code, writing the harness, writing tests -- may proceed immediately.
+**HOLD LIFTED 2026-09-04: G216 HAS REPORTED AND LANDED** (network filesystem eliminated; local staging
+did not remove the concurrency collapse). **You may proceed.**
+
+**BUT G211 IS NOW MEASURING PER-FRAME COST ON THE POD, so keep your pod footprint small and say when
+you started.** Two things you must NOT misread as a reason to block: **the `track_daemon` and its
+`adapter_run` jobs are PERMANENT RESIDENTS of this pod and are always running -- they are the load
+floor, not a conflicting measurement.** Do not wait for them, do not kill them, do not restart them.
+**Your uploads are disk writes, not route jobs; G216 established that read/write bandwidth is NOT this
+route's bottleneck, so a bounded upload is acceptable alongside G211.** Record the pod load you
+observed when you began.
 
 **WHY THIS ROW EXISTS -- THE PROGRAMME'S STATED GOAL IS ARBITRARY-FOOTAGE TRACKING AND THE CORPUS
 CANNOT SUPPORT A SINGLE ROBUSTNESS CLAIM ABOUT IT.** G213 visually classified every corpus clip and
