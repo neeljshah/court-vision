@@ -1,4 +1,4 @@
-GAP S234 | sport all | worktree aXX | log cx_s234_signal_factory_screen_verdict_partition
+GAP S234 | sport all | worktree a13 | log cx_s234_signal_factory_screen_verdict_partition
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: REDTEAM_SIGNAL_FACTORY_2026-09-03.md SF-1 (a T1 screen and its T2 verdict score the SAME corpus rows) and
 SF-2 (K prices only charged T2/T3 trials, so the search width the screen actually had never reaches deflated_p).
