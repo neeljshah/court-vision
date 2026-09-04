@@ -10,9 +10,9 @@ CONTEXT: codex test audit (docs/research/codex_test_audit_2026-09-04.md section 
   0.039002202208806645; classified a STALE FIXTURE.
 PREMISE (step 0): reproduce both failures once (the answers file via ~/bin/pod_run <aN> -- python -m pytest
   <file> -q -p no:cacheprovider; it exceeds local RAM); quote the failing assertions.
-CHANGE (step 1, the audit's PROPOSED diffs): (1) in calibration_report.py restore the exact pre-S212
-  `_legacy_oof_per_regime` helper/imports from `6226fb042^` and call `_legacy_oof_per_regime(...) if key_source ==
-  "global" else oof_per_regime(...)`; never rewrite the frozen S05 artifact; keep the failing test as the guard.
+CHANGE: copy 6226fb042^:calibration_report.py::_oof_per_regime verbatim and install it under the new alias
+  _legacy_oof_per_regime.
+  Call `_legacy_oof_per_regime(...) if key_source == "global" else oof_per_regime(...)`; never rewrite S05.
   (2) in the answers test load `Path(result["source_artifact"])` and assert `result["improved_ece"] ==
   artifact["ece_after"]` (tracked-file authority, no drifting scalar). Both files named; nothing else changes.
   Seal a prereg FIRST as its own commit (LF; seal = SHA-256 of the STAGED bytes above the seal line via git show
@@ -31,5 +31,6 @@ ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
 NON-TAUTOLOGY: the fix restores the legacy path for key_source == "global" ONLY; the S212 route stays the
   default for every other key_source and its outputs are proven unchanged.
 EVIDENCE: docs/evidence/harness/S305_master_failing_tests_repair_2026-09-04.md + JSON.
-TEST: the two named files, one at a time; run nothing broader.
+TEST: add exactly tests/platformkit/eval_gate/test_s305_master_failing_tests_repair.py; also run the two repaired
+  regression files one at a time.
 REPORT: before/after counts, the ece_after value, unchanged-output diff, SHA. No push. NEVER PARK.

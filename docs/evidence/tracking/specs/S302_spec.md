@@ -14,6 +14,7 @@ CHANGE (step 1): additive test tests/platformkit/eval_gate/test_cpcv_scalar_futu
   :<path>, verified with git show HEAD:<path>; the seal TEST reads the FILE, normalizes CRLF to LF, hashes above
   the seal line). Never write data/ or docs/research/; never rewrite an existing artifact (new dated filenames);
   engines and every existing module byte-identical unless the CHANGE names the file (SHA-256 printed).
+WHERE: local construct only. POD: n/a; above 500 MB use ~/bin/pod_run <aN> --fetch <outputs> -- <command>.
 ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
   metric        = planted row absent from target train (bool); target probability under real purge; target score
                   under the disabled-purge control; their difference

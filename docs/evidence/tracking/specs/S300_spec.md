@@ -1,13 +1,15 @@
 GAP S300 | sport nba | worktree aXX | log cx_s300_canonical_tail_panel
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
+ORDER: S280 already ran without this rule; S300 output is S280's follow-up check, not a prerequisite.
 CONTEXT: audit gap 1: the tail state panel is not canonical -- nba_price_series.parquet row group 0 has
   171,546/200,000 rows sharing event+venue+ts with another side; a one-home-probability row per venue/event/ts is
-  the prerequisite for S280 (cross-venue) and tail rows. Inputs: nba_price_series.parquet (8,399,632 rows, key
+  required for the S280 cross-venue follow-up and tail rows. Inputs: nba_price_series.parquet (8,399,632 rows, key
   event_key, first KXNBAGAME-26APR26BOSPHI) and nba_checkpoints_full.parquet (465,249 / 1,593).
 WHERE: local; pyarrow row-group reads of the two verified parquets only.
 PREMISE: reproduce 1,593/1,593 Polymarket ticker overlap and all printed schemas.
 LIMIT: print cross-venue game overlap; if below 30 games, report CLOSED AT LIMIT for that arm.
-CHANGE: add a canonical one-home-probability row per venue, event, and timestamp.
+CHANGE: filter moneyline; Polymarket side=home is canonical; for Kalshi use side==parsed home, else complement the
+  parsed away side; account every excluded source row by reason.
   Seal a prereg FIRST as its own commit (LF; seal = SHA-256 of the STAGED bytes above the seal line via git show
   :<path>, verified with git show HEAD:<path>; the seal TEST reads the FILE, normalizes CRLF to LF, hashes above
   the seal line). Print RSS before/after; a scorer above 500 MB runs via ~/bin/pod_run <aN> --fetch <outputs> --

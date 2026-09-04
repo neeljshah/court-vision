@@ -8,9 +8,10 @@ CONTEXT: data/cache/inplay_odds/{nba,mlb,soccer,tennis}_price_series.parquet are
   are data/cache/combo/gate_corpus_{nba,mlb}_close.parquet (p_close column, close_kind); soccer/tennis have only
   gate_corpus_{soccer,tennis}.parquet with p_base, a MODEL baseline (Poisson/Elo per S02/S03), not a market close.
 PREMISE (step 0, PREMISE-FIRST -- this row's deliverable is the table below, not a scored recalibration):
-  gate_corpus_nba_close.parquet 1814 rows (event_id e.g. 0022400061/62/63), p_close non-null 563/1814, tail
-  counts <=0.15: 25, >=0.85: 60 (n=85 pooled, min 0.055/max 0.945). gate_corpus_mlb_close.parquet 39162 rows
-  (event_id e.g. 20100404-BOS-NYY-1), p_close non-null 910/39162, tail counts <=0.15: 0, >=0.85: 0 (empty).
+  gate_corpus_nba_close.parquet: 1,814 rows; p_close 563/1,814; tails <=0.15: 25 and >=0.85: 60 (n=85,
+  min 0.055/max 0.945).
+  gate_corpus_mlb_close.parquet: 39,162 rows; p_close non-null 910; tails <=0.15: 1 and >=0.85: 1 (n=2,
+  min 0.01/max 0.99).
   gate_corpus_soccer.parquet 25834 rows (event_id e.g. 20150807-E1-brighton-nott_m_forest) and
   gate_corpus_tennis.parquet 41886 rows (event_id e.g. 20150104-atp-2015-339-105357-105733-1) carry no p_close.
 CHANGE (step 1): additive module scripts/platformkit/eval_gate/s290_pregame_longshot_feasibility.py (<=300 LOC)
@@ -33,8 +34,7 @@ ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
   eye check     = n/a (S-row); reproduction = verifier reruns the module and diffs every printed count and label
   must not move = gate_corpus_*.parquet and gate_corpus_*_close.parquet files (byte-identical, untouched); the
                   +0.004 bar (unused here, named for continuity); nothing charged
-NON-TAUTOLOGY: MLB's empty tail and soccer/tennis's missing p_close are reported as NOT_TESTABLE_TODAY, never
+NON-TAUTOLOGY: MLB's thin tail and soccer/tennis's missing p_close are reported as NOT_TESTABLE_TODAY, never
   silently dropped from the table to make three sports look ready.
 EVIDENCE: docs/evidence/harness/S290_pregame_longshot_close_recal_2026-09-04.md + summary JSON with all 4 rows.
-TEST: one per-file test (CONSTRUCT, all 4 sports) asserting the printed counts equal the archived parquet counts.
-REPORT: the 4-sport table, blocking facts, test line, SHA. No push. NEVER PARK.
+TEST: one per-file CONSTRUCT test of all 4 counts; report table, blockers, test, SHA. No push. NEVER PARK.

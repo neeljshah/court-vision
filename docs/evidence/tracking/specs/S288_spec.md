@@ -1,14 +1,11 @@
 GAP S288 | sport nba (in-game) | worktree aXX | log cx_s288_staleness_gated_blend
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
-CONTEXT: S277 (market staleness stratification, worktree a15 candidate 0fd33ebe9; read its memo
-  docs/evidence/harness/S277_ingame_market_staleness_2026-09-04.md and quote the table): pooled verdict NULL, but the
-  stale-minus-fresh interaction of the incumbent's improvement over market is 0.001247896 with game-clustered
-  95 pct CI [0.000074233, 0.002549025] -- the incumbent helps more when the venue price has not moved for a while.
-  This row turns that lead into a single additive arm: a blend weight w(staleness) that leans on the incumbent
-  when the price is stale and on the market when it is fresh, fit walk-forward, scored against recal_null.
-PREMISE (step 0, INFORMATIONAL): re-derive S277's staleness definition (seconds since market_prob last moved,
-  per game, from data/cache/inplay_odds/nba_checkpoints_full.parquet; print the p50 and p90 cutoffs it used) and
-  reproduce the interaction 0.001247896 to <= 1e-9 from S277's archived per-game series; print first 3 game ids.
+DEPENDENCY: S277 landed as 33801c3df; use
+  docs/evidence/harness/S277_ingame_market_staleness_2026-09-04_attempt2b.md.
+AUTHORITY: use its tracked attempt-2b summary JSON, verification memo, preregistration, module and test artifacts.
+  The 64,801,335-byte attempt-2b paired-loss CSV is local-only/untracked and is not durable evidence.
+PREMISE (step 0, INFORMATIONAL): recompute the interaction from the landed attempt-2b summary plus this lane's
+  own per-tick evaluator run, not from that CSV; re-derive the staleness definition and print p50/p90 cutoffs.
 CHANGE (step 1): additive; one module under scripts/platformkit/ingame/ (<= 300 lines) with an arm
   p_blend = (1 - w(s)) * market_prob + w(s) * p_incumbent, where w(s) is a monotone function of staleness s with
   TWO parameters (floor weight, saturation scale) fit on the TRAIN folds only inside the shared evaluator callback

@@ -6,7 +6,8 @@ CONTEXT: codex gap audit (docs/research/codex_gap_audit_signals_2026-09-04.md ga
 WHERE: local construct only; no data store.
 PREMISE: show default-false redaction and a callback reading a planted raw settled field.
 LIMIT: if the planted callback cannot alter a score, report FALSIFIED and stop.
-CHANGE: additive strict wrapper; predictors receive declared features, never raw corpus closure.
+CHANGE: additive isolated evaluator: serialize only declared features and a declarative predictor spec into a
+  fresh subprocess; raw corpus arrays are never imported or inherited there.
   Seal a prereg FIRST as its own commit (LF; seal = SHA-256 of the STAGED bytes above the seal line via git show
   :<path>, verified with git show HEAD:<path>; the seal TEST reads the FILE, normalizes CRLF to LF, hashes above
   the seal line). Print RSS before/after; a scorer above 500 MB runs via ~/bin/pod_run <aN> --fetch <outputs> --
@@ -14,7 +15,10 @@ CHANGE: additive strict wrapper; predictors receive declared features, never raw
 ACCEPTANCE RULE:
   metric = planted leak detections and valid-caller Brier replay error.
   before = undeclared settled field is readable under default mode in the construct.
-  bar = 6/6 planted cases rejected; valid replay error <=1e-12.
+  bar = 6/6 closure, module-global and default-argument plants rejected across walk-forward and CPCV; valid replay
+        error <= 1e-12.
+  sign = improvement = baseline loss minus candidate loss; positive = candidate better; compared with the frozen
+         +0.004 bar.
   n = 6 (CONSTRUCT), exhaustive across walk-forward/CPCV and three attack forms.
   eye check = n/a; reproduction = rerun all six cases and valid fixture.
   must not move = cpcv_engine.py, walkforward.py, existing defaults, and thresholds.

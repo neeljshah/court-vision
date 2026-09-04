@@ -2,8 +2,9 @@ GAP S291 | sport nba (in-game) | worktree aXX | log cx_s291_ingame_comeback_stat
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: nba_checkpoints_full.parquet (465,249 ticks/1,593 games; cols confirmed: game_id, game_date, ts, period,
   game_clock_s, score_home, score_away, margin, market_prob, traded, market_ticker, outcome_home_win, venue) has
-  no precomputed "remaining game clock" column; period runs 1-6 (4 regulation + OT periods 5/6, 1,613 OT rows)
-  and game_clock_s runs 0-720 (12 min quarters). Trailing-team comeback conditioning is a tail state the S272/
+  no precomputed "remaining game clock" column.
+CONTEXT: period runs 1-6; periods 5-6 contain 14,765 OT ticks; game_clock_s runs 0-720.
+  Trailing-team comeback conditioning is a tail state the S272/
   S277/S289 rows never isolated: they conditioned on market_prob, not on the underlying score/clock state.
 PREMISE (step 0): reproduce remaining_s = (4-period)*720 + game_clock_s for period<=4 (OT rows keep only
   game_clock_s, named and excluded from the headline if their remaining semantics differ). The condition

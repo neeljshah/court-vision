@@ -1,7 +1,7 @@
 GAP S289 | sport nba (in-game) | worktree aXX | log cx_s289_ingame_longshot_bins
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: successor to S224/S272 (S272 BEHIND, docs/evidence/harness/S272_ingame_tail_recal_screen_2026-09-04.md,
-  all-ticks recal_null improvement -0.000037 [-0.000070, -0.000008]) and S277 (NULL). Both scored the frozen
+  tail-candidate minus recal_null improvement -0.000037 [-0.000070, -0.000008]) and S277 (NULL). Both scored the
   nba_checkpoints_full.parquet grid via scripts/platformkit/foundry/ingame_incumbent_nba.py apply_incumbent(...,
   "recal_null") and scripts/platformkit/eval_gate/cpcv_engine.py cpcv_evaluate (purge + symmetric embargo).
   Neither scored the FAVORITE-LONGSHOT bias in fine bins near 0/1 with log-loss (Brier is tail-insensitive per
@@ -21,10 +21,13 @@ CHANGE (step 1): additive module scripts/platformkit/ingame/s289_ingame_longshot
 ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
   metric        = per-bin log-loss + reliability, recal_null vs market, game-clustered 95 pct CI on the six
                   bins; PLUS all-ticks Brier improvement of recal_null over market with its own CI
-  before        = S272 all-ticks recal_null improvement -0.000037 [-0.000070, -0.000008] (BEHIND); no fine-bin
-                  log-loss ever measured
+  before        = S272 tail-candidate minus recal_null improvement -0.000037 [-0.000070,-0.000008]; no fine-bin
+                  log loss exists.
+  Also print recal_null minus market Brier on the exact all-tick rows before applying the non-inferiority rule.
   bar           = frozen +0.004 all-ticks Brier bar untouched; all-ticks improvement CI must not lie entirely
                   below 0 (non-inferiority); TAIL-ONLY verdict; SCREEN NULL or BEHIND is a valid SUCCESS
+  sign          = improvement = baseline loss minus candidate loss; positive = candidate better; compared with
+                  the frozen +0.004 bar.
   n             = 9226/8982/15778/23912/13123/12624 ticks (649/691/826/1005/871/827 games) per bin, each >= 30
   eye check     = n/a (S-row); reproduction = verifier recomputes log-loss/reliability/CI per bin and the
                   all-ticks Brier delta from the archived paired-loss CSV

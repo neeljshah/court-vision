@@ -1,26 +1,29 @@
 GAP S283 | sport nba (in-game) | worktree a18 | log cx_s283_bayes_timescore_blend
-CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
+CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: Maddox et al., "Bayesian estimation of in-game home team win probability for NBA games," arXiv
   2207.05114 (2022), and its college-basketball parent arXiv 2204.11777, build a nonparametric win-rate table
   by time-elapsed and margin, blended with a time-weighted pregame prior via a FITTED, non-constant weight --
   distinct from Stern's parametric Brownian-motion form, already SCREENED NULL on WNBA by S206 (candidate delta
   +0.000384828, CI [-0.000210271, +0.000979927]). No nonparametric time-score table has been built on
   nba_checkpoints_full.parquet (465,249 ticks/1,593 games, columns verified this session, matching S277).
-PREMISE (step 0, INFORMATIONAL): via scripts/platformkit/eval_gate/s86_nba_every_tick.load_ticks, print n
-  ticks/games and the period_bucket/margin_bucket/rem_bucket cell counts s86's own `_cell` defines; name every
-  cell whose earliest walk-forward train fold holds fewer than 200 rows (the sparse cells needing a fallback,
-  not silently pooled).
-CHANGE (step 1): additive new arm only. Build, walk-forward per s86 fold, an empirical table P(home wins |
-  period_bucket, margin_bucket, rem_bucket) from strictly-prior folds' outcome_home_win (sparse cells fall back
-  to their parent period_bucket table, named); blend with market_prob via weight w = rem_fraction ** k, k
-  chosen on TRAIN folds only from the frozen grid {0.5, 1, 2, 4} by train-fold Brier, archived per fold; score
-  scripts/platformkit/foundry/ingame_incumbent_nba.apply_incumbent's recal_null and the blended arm on
-  identical rows/folds via cpcv_engine.cpcv_evaluate, purge + symmetric nonzero embargo.
+PREMISE: use s86_nba_every_tick.load_ticks plus period_bucket, margin_bucket and rem_bucket; print all
+  bucket-cross counts.
+CHANGE (step 1): additive new arm only. Build an empirical table P(home wins | period_bucket, margin_bucket,
+  rem_bucket) from strictly-prior outcome_home_win rows (sparse cells, < 200 train rows, fall back to their parent
+  period_bucket table, named); blend with market_prob via weight w = rem_fraction ** k, k chosen on TRAIN folds only
+  from the frozen grid {0.5, 1, 2, 4} by train-fold Brier, archived per fold; score apply_incumbent's recal_null
+  and the blended arm on identical rows via cpcv_evaluate with n_groups=5, n_test_groups=1 and embargo_days=1;
+  every table and k is fit inside its train membership; the callback produces every scored probability.
+PREREG: seal a prereg FIRST as its own commit (LF); hash the STAGED bytes above the seal line via git show :<path>.
+Verify with git show HEAD:<path>; the seal test normalizes CRLF to LF and hashes the bytes above the seal line.
+WHERE: local; above 500 MB use ~/bin/pod_run <aN> --fetch <outputs> -- <command> under the B5 NOTE.
+Never write data/ or docs/research/; never rewrite an existing artifact; use new dated filenames.
 ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
-  metric        = blended-arm minus recal_null Brier improvement, game-clustered 95 pct CI, with market and
-                  recal_null Brier/ECE printed beside it
+  metric        = recal_null Brier minus blended-arm Brier, with a game-clustered 95 pct CI.
   before        = no empirical time-score table exists; S206's parametric Stern arm SCREENED NULL on WNBA
   bar           = the frozen +0.004 bar vs recal_null; NULL is the expected valid result per the S206 precedent
+  sign          = improvement = baseline loss minus candidate loss; positive = candidate better; compared with
+                  the frozen +0.004 bar.
   n             = >= 30 game clusters (1,593 games available)
   eye check     = n/a (S-row); reproduction = verifier reruns the table build and blend, diffs every Brier
   must not move = nba_checkpoints_full.parquet, s86_nba_every_tick.py, ingame_incumbent_nba.py, the +0.004 bar

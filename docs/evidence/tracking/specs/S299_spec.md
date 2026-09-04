@@ -1,5 +1,7 @@
 GAP S299 | sport nba | worktree aXX | log cx_s299_forward_vs_cpcv
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
+DEPENDENCY: dispatch only after S293 lands; import cpcv_tail_metrics and freeze its landed commit SHA before
+  preregistration. Freeze its landed callable names in this spec before dispatch.
 CONTEXT: audit gap 5: the headline design mixes forward walk-forward and symmetric CPCV (cpcv_engine.py:12-18,
   walkforward.py:122-156); this row measures design sensitivity on one frozen tail calibrator (S272's) and
   labels it, never promotes it. Input: nba_checkpoints_full.parquet (465,249 / 1,593).
@@ -14,7 +16,10 @@ CHANGE: score one frozen tail calibrator by forward-only walk-forward and symmet
 ACCEPTANCE RULE:
   metric = all-tick/tail Brier, tail log-loss/ECE, and paired design differences with CIs.
   before = S272 candidate improvement -0.000037 and tail ECE change -0.000248.
-  bar = no promotion test; label DESIGN-SENSITIVE if any primary score CI excludes 0.
+  bar = DESIGN-SENSITIVE only for the preregistered primary paired Brier difference; tail log loss and ECE are
+        named secondary diagnostics.
+  sign = improvement = baseline loss minus candidate loss; positive = candidate better; compared with the frozen
+         +0.004 bar.
   n = 465,249 ticks / 1,593 games, with one prediction per game-tick per design.
   eye check = n/a; reproduction = replay both designs and paired differences.
   must not move = source, S272 artifacts, split constants, or +0.004 bar.

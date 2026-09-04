@@ -1,5 +1,5 @@
 GAP S284 | sport nba (in-game) | worktree a16 | log cx_s284_orderflow_traded
-CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
+CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: Whelan et al., "Makers and Takers: The Economics of the Kalshi Prediction Market" (Kalshi is
   quote-driven; order flow carries information), and Angelini & De Angelis, "When Do Markets Fully Process
   Public Information? Evidence from Real-Time Prediction Markets," arXiv 2606.07811 (2026, Kalshi NBA event
@@ -18,19 +18,23 @@ CHANGE (step 1): if the best ordering clears 30 clusters, asof-join (strictly pr
   score scripts/platformkit/foundry/ingame_incumbent_nba.apply_incumbent's recal_null plus these features via
   cpcv_engine.cpcv_evaluate, purge + symmetric nonzero embargo, on the joined subset only. Below 30 clusters,
   STOP at PREMISE and report CLOSED AT LIMIT naming the acquisition (a Kalshi-native id capture) needed.
+PREREG: seal a prereg FIRST as its own commit (LF); hash the STAGED bytes above the seal line via git show :<path>.
+Verify with git show HEAD:<path>; the seal test normalizes CRLF to LF and hashes the bytes above the seal line.
+WHERE: local; above 500 MB use ~/bin/pod_run <aN> --fetch <outputs> -- <command> under the B5 NOTE.
+Never write data/ or docs/research/; never rewrite an existing artifact; use new dated filenames.
 ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
-  metric        = recal_null-plus-orderflow minus recal_null Brier improvement, game-clustered 95 pct CI,
-                  scored only on the joined subset
+  metric        = recal_null Brier minus recal_null-plus-orderflow Brier, with a game-clustered 95 pct CI on
+                  the joined subset.
   before        = no arm has used a non-degenerate traded flag; checkpoints' own column is verified constant
   bar           = the frozen +0.004 bar; CLOSED AT LIMIT below 30 clusters is the expected valid result
+  sign          = improvement = baseline loss minus candidate loss; positive = candidate better; compared with
+                  the frozen +0.004 bar.
   n             = >= 30 game clusters required to score
   eye check     = n/a (S-row); reproduction = verifier reruns the parse-join and diffs the overlap count
   must not move = nba_checkpoints_full.parquet, nba_price_series.parquet, the +0.004 bar; nothing charged if
                   CLOSED AT LIMIT
 NON-TAUTOLOGY: both orderings are tried and both counts reported before either is scored; picking the better
   ordering is disclosed as a join-quality choice, not a fit -- no Brier computed before the count is fixed.
-EVIDENCE: docs/evidence/harness/S284_orderflow_traded_2026-09-04.md + parse-join census CSV + (if scored)
-  summary JSON and paired-loss CSV.
-TEST: one per-file test parsing synthetic ticker/event_key pairs (one per ordering, one non-matching) and
-  reproducing the overlap count; if scored, also reproduce one game's Brier from the archived CSV.
+EVIDENCE: docs/evidence/harness/S284_orderflow_traded_2026-09-04.md + parse-join census CSV; if scored, JSON + CSV.
+TEST: one per-file test parsing synthetic pairs and reproducing overlap; if scored, one game's archived Brier.
 REPORT: ordering census table, cluster count, verdict, RSS, test line, SHA. No push. NEVER PARK.

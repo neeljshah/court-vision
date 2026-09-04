@@ -12,6 +12,7 @@ CHANGE (step 1): additive tests/platformkit/eval_gate/test_s106_requote.py on fi
   :<path>, verified with git show HEAD:<path>; the seal TEST reads the FILE, normalizes CRLF to LF, hashes above
   the seal line). Never write data/ or docs/research/; never rewrite an existing artifact (new dated filenames);
   engines and every existing module byte-identical unless the CHANGE names the file (SHA-256 printed).
+WHERE: local construct only. POD: n/a; above 500 MB use ~/bin/pod_run <aN> --fetch <outputs> -- <command>.
 ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
   metric        = the four behaviours asserted with exact fixture values
   before        = 0 direct importer tests for s106_requote.py

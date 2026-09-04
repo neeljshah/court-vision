@@ -1,5 +1,5 @@
 GAP S285 | sport nba (in-game) | worktree a17 | log cx_s285_event_conformal_width
-CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
+CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: Tibshirani, "Conformal Prediction Under Distribution Shift" (Berkeley STAT lecture notes), and
   Angelopoulos & Bates, arXiv 2107.07511 (2021), show marginal (static) conformal coverage can fail under a
   local covariate shift; Otting, Michels, Langrock, Deutscher, "The reaction to news in live betting," arXiv
@@ -12,17 +12,22 @@ PREMISE (step 0, INFORMATIONAL): reload S265's own sealed sample via
   scripts/platformkit/eval_gate/s265_incumbent_conformal_band_sample; derive
   ticks_since_last_score_change strictly from strictly-prior ticks per game (planted-future-row test); print n
   ticks in scope, p50/p90 of that distribution, and the near-event (<= p50) / settled (> p90) tick counts.
-CHANGE (step 1): additive covariate-conditioned band only, no new incumbent fit: reuse S265's own coverage
-  machinery (scripts/platformkit/eval_gate/s101_aci_coverage + scripts/platformkit/ingame/aci_online) to score
-  empirical coverage and half-width of S265's STATIC band separately in the near-event and settled bins;
-  report the interaction (near-event half-width minus settled half-width) with a game-clustered 95 pct CI.
-  Never rewrites S265's archived JSON/CSV; new dated filenames only.
+CHANGE: a stratification audit of S265's unchanged STATIC band (no conditioned band is built): reuse S265's own
+  coverage machinery (eval_gate/s101_aci_coverage + ingame/aci_online) to score empirical coverage and half-width
+  of that band in the near-event and settled bins; report the interaction with a game-clustered 95 pct CI.
+PREREG: seal a prereg FIRST as its own commit (LF); hash the STAGED bytes above the seal line via git show :<path>.
+Verify with git show HEAD:<path>; the seal test normalizes CRLF to LF and hashes the bytes above the seal line.
+WHERE: local; above 500 MB use ~/bin/pod_run <aN> --fetch <outputs> -- <command> under the B5 NOTE.
+Never write data/ or docs/research/; never rewrite an existing artifact; use new dated filenames.
 ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
   metric        = S265's static-band empirical coverage and half-width, near-event bin / settled bin / pooled,
                   game-clustered 95 pct CI, plus the near-event-minus-settled interaction with its own CI
   before        = S265's band is scored only pooled and per STATIC cell; no event-proximity split exists
-  bar           = nominal coverage undershoot by more than 5 pct in the near-event bin vs settled is the
-                  signal; a CI-crossing-zero interaction is a valid NULL (band already adequate)
+  bar           = SIGNAL only if settled coverage minus near-event coverage > 0.05 and its CI lower bound is
+                  above 0; otherwise NULL.
+  The near-minus-settled half-width interaction is descriptive and has its own CI.
+  sign          = improvement = baseline loss minus candidate loss; positive = candidate better; compared with
+                  the frozen +0.004 bar.
   n             = >= 30 game clusters in each of near-event and settled bins, printed separately
   eye check     = n/a (S-row); reproduction = verifier reruns the covariate derivation and diffs every number
   must not move = S265's/S276's archived summary JSON and paired-loss CSV, the S123 incumbent, MEMORY_LIMIT

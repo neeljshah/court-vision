@@ -11,10 +11,13 @@ CHANGE: fit a DNP probability plus positive-minutes q10/q50/q90 with player part
   the seal line). Print RSS before/after; a scorer above 500 MB runs via ~/bin/pod_run <aN> --fetch <outputs> --
   <command> (B5 NOTE). Never write data/ or docs/research/; never rewrite an existing artifact (new dated names).
 ACCEPTANCE RULE:
-  metric = DNP Brier/log-loss, minutes CRPS/pinball, 80% coverage, player-clustered CI.
+  metric = candidate versus a train-fold empirical DNP-rate plus train-fold positive-minutes empirical-CDF
+           baseline.
   before = no scored minutes quantiles; heuristic floor/ceiling are not quantiles.
-  bar = CRPS improvement >0 with CI above 0; NULL is valid and all metrics remain reported.
-  n = all held-out roster player-games, including zero-minute rows.
+  bar = baseline CRPS minus candidate CRPS > 0 with CI lower > 0; NULL is valid.
+  sign = improvement = baseline loss minus candidate loss; positive = candidate better; compared with the frozen
+         +0.004 bar.
+  n = all held-out roster player-games and >= 30 held-out game clusters per fold; retain zero-minute rows.
   eye check = n/a; reproduction = refit one fold and replay paired scores.
   must not move = source parquets and existing minutes modules.
 NON-TAUTOLOGY: never condition evaluation on playing or on target minutes >0.
