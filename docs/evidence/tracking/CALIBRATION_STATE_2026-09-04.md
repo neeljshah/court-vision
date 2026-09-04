@@ -239,8 +239,8 @@ calibration per ~50 frames" as a requirement any more.**
 | **G245** | acquire amateur footage, since there was none | **ACCEPT.** `basketball__amateur_jh3fnwMi7dM.mp4` landed: 1280x720, 3,601 frames, 120.1 s, high-school coaches camera, near-fixed, arcs at both ends and the centre circle visible. |
 | **G243b** | amateur calibration against the real clip | RUNNING, with a new clustered-vs-spread label-geometry arm. |
 | **G244** | does ANY diagnostic separate a correct court from a wrong one? | **ANSWERED: NO -- see 7.7.** |
-| **G246** | WHY did the amateur gate fail? | RUNNING. A 4-point homography has zero residual by construction, so a wrong role mapping would be invisible to every fitted metric. |
-| **G247** | does the projected quad's SHAPE separate them? | RUNNING. G244 could not test it -- G242 persisted no matrices. |
+| **G246** | WHY did the amateur gate fail? | **ANSWERED: all eight labelled pixels were the wrong features -- see 7.9.** |
+| **G247** | does the projected quad's SHAPE separate them? | **ANSWERED: NO -- see 7.8. Every invalid map is a well-formed quad.** |
 
 ### 7.7 G244: no match diagnostic separates a correct court from a wrong one
 
@@ -332,6 +332,62 @@ runs and found the emitted tables **byte-identical** (SHA-256
 every pair. Three runs on one clip in one configuration is an existence check,
 not a determinism proof -- but it is the programme's first repeatable measurement
 path, and it is stronger than G225's equal row counts.
+
+---
+
+## 7.8 The validity question is CLOSED for hand-built signals
+
+Three rows tested three independent signal families against the same blind labels,
+and **none separates a visibly correct court from a visibly wrong one.**
+
+| family | row | result |
+|---|---|---|
+| the acceptance rule | G242 | accepts **89/89**, including replays, graphics, close-ups and the wrong hoop end |
+| match statistics and dynamics | G244 | matches, inliers, ratio, RMS all interpenetrate; cut drops (128, 165) sit inside ordinary variation (-283 to 170) |
+| projected-quad shape | G247 | seven pre-registered checks, all overlapping |
+
+**G247's control reproduced G242 exactly -- 89/89, zero mismatches -- so this is a
+clean measurement, not a flaky one.** And its most informative line is a negative
+about the mechanism itself: **no INVALID map inverted, lost convexity, changed
+corner order, or placed a projected corner outside the image.** A homography onto
+a close-up or a graphic is still a perfectly well-formed, convex, correctly-wound,
+in-bounds quad of plausible area.
+
+**Consequence, stated plainly: there is currently NO automatic validity signal, and
+every "it held for N frames" claim in this programme is carried by renders alone.**
+That is expensive -- it means a human must look.
+
+**What remains untested is the one thing the eye actually does:** ask whether the
+projected court LINES land on real painted lines in the image. Every signal tested
+so far is a property of the match or of the matrix; none looks at whether the
+projection agrees with the picture. **That is G248.** If it also fails, the honest
+conclusion is that a hand-built statistic will not do this and the programme needs
+a trained model or a different instrument.
+
+## 7.9 The amateur-footage chain: four rows, and the goal is still open
+
+| row | outcome |
+|---|---|
+| **G243** | FALSIFIED -- I named a clip that existed nowhere. **The corpus was 9 clips, all professional broadcast: the any-footage goal had no test material at all.** |
+| **G245** | ACCEPT -- acquired `basketball__amateur_jh3fnwMi7dM.mp4`, a high-school coaches camera, 1280x720, 3,601 frames, 120.1 s, near-fixed, arcs at both ends and the centre circle visible. |
+| **G243b** | CLOSED AT LIMIT -- both seed gates FAILED, under three labellings whose spread was inside G140's p90. |
+| **G246** | **The cause was bad labels, not the footage.** All eight labelled pixels were NOT the features their roles claimed; two were occluded by a coach and a player. Exhaustive enumeration of every correspondence and axis convention found no repair. |
+| **G243c** | CLOSED AT LIMIT -- with identity verification required first, **no eligible seed frame exists in the clip.** |
+
+**The methodological finding is the durable one.** G243b's three labellings agreed
+to about 10 px, inside G140's 11.39 px p90 -- **and all three were consistently
+wrong.** In G246's words: *"Repeating an incorrect point within 11.39 px can be
+repeatable without identifying the intended feature."* **Label repeatability is
+precision, never identity, and this programme has been leaning on it as though it
+were both.** The check that does establish identity is a committed zoomed crop at
+each labelled pixel, before the fit.
+
+**And G243c's blockers all name the same feature class.** Frames 660, 840, 3300 and
+3525 failed because *"players occupy the line intersections"* -- the lane and
+free-throw geometry, which is exactly where basketball players stand. **The four
+court corners, which players almost never occupy, have never been checked.** That
+is G249, and if they are visible an eligible frame may already exist in the footage
+we have.
 
 ## NOT VERIFIED
 
