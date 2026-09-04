@@ -1,0 +1,6 @@
+{
+  "pass2_blind_seed": 28121904,
+  "eligible_person_person_pairs": 62,
+  "unblind_map_sha256": "f7c8b1807a415a0a7337d5378097b6dc47d91f61df65099e75f650633f50268b",
+  "presentation": "two endpoint crops together; pairing is visible by necessity for identity judgement"
+}
