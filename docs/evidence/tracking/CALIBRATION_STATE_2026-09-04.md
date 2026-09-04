@@ -14,12 +14,18 @@ no longer support is its diagnosis of what basketball is missing.**
 
 ## 1. The one-paragraph state
 
-The fitter and the court model are **not** the problem, the detector's line
-geometry is, and **no in-repo option improves that geometry.** Meanwhile a human
-census says the footage is far more solvable than our detectors achieve. The
-classical in-repo route is exhausted; the remaining paths are a trained model or
-labelling, and the viability of labelling turns on a propagation horizon that is
-being measured now (G222).
+**Read section 4 before acting on sections 1-3.** Sections 1-3 are the per-frame
+corner-detection story and remain correct: the fitter and court model contribute
+zero error, the detector's line geometry is the lever, no in-repo option improves
+it, and a human census says the footage is far more solvable (62.36 pct) than our
+detectors achieve. **Section 4 then shows those experiments were never what
+production uses** -- the court model is anchored to a generic panorama of a
+different venue, and the homography acceptance thresholds sit at or below the
+mathematical floor. **Section 5 shows the hand-labelled alternative has failed
+three times, and that none of the three was a fair test**: no seeded attempt has
+yet used a frame G196 actually validated. Propagation itself is not the
+obstacle -- G222 measured direct-to-seed holding across all 1,200 frames tested
+at a flat 0.26-0.38 px reprojection residual.
 
 ---
 
