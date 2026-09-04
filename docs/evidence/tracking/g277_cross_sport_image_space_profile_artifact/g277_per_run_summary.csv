@@ -1,0 +1,43 @@
+run,sport,analysis_status,schema_missing_fields,invalid_numeric_required_rows,cls_values,observation_values,rows,step_count,speed_median,speed_p90,speed_p99,speed_p999,speed_max,track_count,track_length_median_frames,track_length_p90_frames,track_shorter_than_5_fraction,track_length_median_seconds,track_length_p90_seconds,frame_order_nonmonotonic_rows,duplicate_track_frame_rows
+football_Z8Ezd95NnjM,football,comparable,,0,['player'],['observed'],136911,0,,,,,,29,1072.0,14836.599999999999,0.13793103448275862,35.76906666666667,495.0478866666666,0,0
+football_wHZt1eY3A9s,football,comparable,,0,['player'],['observed'],258248,0,,,,,,37,2666.0,20801.6,0.02702702702702703,88.95553333333334,694.0800533333332,0,0
+football_yahhMkUWd7c,football,comparable,,0,['player'],['observed'],147019,0,,,,,,33,1015.0,14231.2,0.12121212121212122,33.86716666666667,474.84770666666674,0,0
+kbo_01,kbo,comparable,,0,['player'],['observed'],63497,0,,,,,,4381,9.0,35.0,0.33006162976489384,0.15015,0.5839166666666666,0,0
+kbo_02,kbo,comparable,,0,['player'],['observed'],39744,0,,,,,,3020,8.0,31.0,0.3622516556291391,0.13346666666666668,0.5171833333333333,0,0
+kbo_03,kbo,comparable,,0,['player'],['observed'],39254,0,,,,,,2959,8.0,31.0,0.3565393714092599,0.13346666666666668,0.5171833333333333,0,0
+kbo_04,kbo,comparable,,0,['player'],['observed'],54914,0,,,,,,3835,9.0,36.0,0.34185136897001306,0.15015,0.6006,0,0
+kbo_05,kbo,comparable,,0,['player'],['observed'],53295,0,,,,,,3876,7.0,35.0,0.40170278637770895,0.11678333333333334,0.5839166666666666,0,0
+kbo_06,kbo,comparable,,0,['player'],['observed'],47317,0,,,,,,3323,9.0,37.0,0.3623232019259705,0.15015,0.6172833333333333,0,0
+kbo_07,kbo,comparable,,0,['player'],['observed'],49366,0,,,,,,3151,9.0,38.0,0.33608378292605523,0.15015,0.6339666666666667,0,0
+kbo_08,kbo,comparable,,0,['player'],['observed'],76995,0,,,,,,5052,10.0,36.0,0.3068091844813935,0.16683333333333333,0.6006,0,0
+kbo_09,kbo,comparable,,0,['player'],['observed'],86881,0,,,,,,5469,9.0,40.0,0.37081733406472844,0.15015,0.6673333333333333,0,0
+kbo_10,kbo,comparable,,0,['player'],['observed'],58895,0,,,,,,4173,8.0,34.80000000000018,0.3527438293793434,0.13346666666666668,0.580580000000003,0,0
+mlb_2026-08-30_03d78bee,mlb,comparable,,0,['player'],['observed'],39998,0,,,,,,3173,8.0,30.0,0.3643239836117239,0.13346666666666668,0.5005000000000001,0,0
+mlb_2026-08-30_08b16ce9,mlb,comparable,,0,['player'],['observed'],49132,0,,,,,,3727,9.0,32.0,0.3410249530453448,0.15015,0.5338666666666667,0,0
+mlb_2026-08-30_0f36e8cc,mlb,comparable,,0,['player'],['observed'],54537,0,,,,,,4773,7.0,28.0,0.4007961449821915,0.11678333333333334,0.46713333333333334,0,0
+mlb_2026-08-30_10893dca,mlb,comparable,,0,['player'],['observed'],32380,0,,,,,,2584,8.0,29.0,0.33862229102167185,0.13346666666666668,0.4838166666666667,0,0
+mlb_2026-08-30_1c6706c6,mlb,comparable,,0,['player'],['observed'],42691,0,,,,,,2728,10.0,36.0,0.3101173020527859,0.16683333333333333,0.6006,0,0
+mlb_2026-08-30_2143de43,mlb,comparable,,0,['player'],['observed'],46570,0,,,,,,3721,8.0,30.0,0.3705993012631013,0.13346666666666668,0.5005000000000001,0,0
+mlb_2026-08-30_2b814fad,mlb,comparable,,0,['player'],['observed'],46490,0,,,,,,2989,11.0,35.20000000000027,0.2850451656072265,0.18351666666666666,0.5872533333333378,0,0
+mlb_2026-08-30_3a02d9b3,mlb,comparable,,0,['player'],['observed'],35882,0,,,,,,2306,11.0,35.0,0.2862098872506505,0.18351666666666666,0.5839166666666666,0,0
+mlb_2026-08-30_7e8080e5,mlb,comparable,,0,['player'],['observed'],48816,0,,,,,,3935,8.0,28.0,0.37153748411689963,0.13346666666666668,0.46713333333333334,0,0
+mlb_2026-08-30_f8812b72,mlb,comparable,,0,['player'],['observed'],60952,0,,,,,,4158,9.0,36.0,0.33694083694083693,0.15015,0.6006,0,0
+mlb_A5AkcaXA2fk,mlb,comparable,,0,['player'],['observed'],79013,0,,,,,,985,8.0,152.0000000000001,0.4020304568527919,0.26666666666666666,5.066666666666671,0,0
+mlb_gDv5xF2AA2E,mlb,comparable,,0,['player'],['observed'],183929,0,,,,,,8251,15.0,54.0,0.22494243122045812,0.25025000000000003,0.9009,0,0
+mlb_nLoG6gvC-Nk,mlb,comparable,,0,['player'],['observed'],118535,0,,,,,,3811,10.0,56.0,0.32038834951456313,0.3333333333333333,1.8666666666666667,0,0
+ncaa_basketball_IB-_u4gW3ds,ncaa_basketball,schema_incompatible,"['cls', 'track_id', 'x', 'y']",,,['observed'],271,,,,,,,,,,,,,,
+npb_01,npb,comparable,,0,['player'],['observed'],140965,0,,,,,,5995,15.0,57.0,0.2303586321934946,0.5,1.9,0,0
+npb_02,npb,comparable,,0,['player'],['observed'],154016,0,,,,,,7318,11.0,52.0,0.2809510795299262,0.36666666666666664,1.7333333333333334,0,0
+npb_03,npb,comparable,,0,['player'],['observed'],139970,0,,,,,,6673,12.0,50.0,0.2931215345421849,0.4,1.6666666666666667,0,0
+npb_04,npb,comparable,,0,['player'],['observed'],119498,0,,,,,,5364,13.0,57.0,0.2598806860551827,0.43333333333333335,1.9,0,0
+soccer_Z6NTDyxcODs,soccer,comparable,,0,['player'],['observed'],240661,0,,,,,,2384,77.0,205.0,0.026845637583892617,2.566666666666667,6.833333333333333,0,0
+soccer_c1mzmBGHQr4,soccer,comparable,,0,['player'],['observed'],182403,0,,,,,,2470,45.0,176.0,0.10931174089068826,1.5,5.866666666666666,0,0
+soccer_dnR5C6WLJI4,soccer,comparable,,0,['player'],['observed'],237203,0,,,,,,2451,67.0,218.0,0.037943696450428395,2.2333333333333334,7.266666666666667,0,0
+soccer_kSgNjoaqCpI,soccer,comparable,,0,['player'],['observed'],230794,0,,,,,,2407,53.0,242.0,0.08309098462816784,1.7666666666666666,8.066666666666666,0,0
+tennis_01,tennis,data_incomplete,,2153,"['ball', 'player']",['observed'],19437,,,,,,,,,,,,,518,0
+tennis_02,tennis,data_incomplete,,104,"['ball', 'player']",['observed'],1637,,,,,,,,,,,,,29,0
+tennis_ref01,tennis,data_incomplete,,136,"['ball', 'player']",['observed'],1861,,,,,,,,,,,,,295,0
+tennis_smoke,tennis,schema_incompatible,"['source_duration', 'source_fps', 'source_height']",,"['ball', 'player']",['observed'],1861,,,,,,,,,,,,,,
+wnba_01,wnba,schema_incompatible,"['cls', 'track_id', 'x', 'y']",,,['observed'],3377,,,,,,,,,,,,,,
+wnba_02,wnba,schema_incompatible,"['cls', 'track_id', 'x', 'y']",,,['observed'],4171,,,,,,,,,,,,,,
+wnba_03,wnba,schema_incompatible,"['cls', 'track_id', 'x', 'y']",,,['observed'],4534,,,,,,,,,,,,,,

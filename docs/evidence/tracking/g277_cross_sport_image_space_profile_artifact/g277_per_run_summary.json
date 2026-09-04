@@ -1,0 +1,3748 @@
+{
+  "comparable_run_count": 34,
+  "disk_guard": {
+    "bytes_freed": 1048576,
+    "du_sm_after": 39003,
+    "du_sm_before": 39003,
+    "probe_bytes_written_and_removed": 1048576,
+    "probe_returncode": 0,
+    "workspace": "/workspace"
+  },
+  "excluded_count": 15,
+  "excluded_runs": [
+    {
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 1686168,
+            "mtime_utc": "2026-09-03T16:38:24+00:00",
+            "path": "frame_manifest.csv"
+          },
+          {
+            "bytes": 636,
+            "mtime_utc": "2026-09-03T16:38:24+00:00",
+            "path": "g172_stage_counts.json",
+            "provenance_scalars": {
+              "detector_boxes_raw": 11409,
+              "detector_calls": 2522
+            }
+          },
+          {
+            "bytes": 60,
+            "mtime_utc": "2026-09-03T16:38:24+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 700720,
+          "mtime_utc": "2026-09-03T16:38:24+00:00",
+          "path": "data/tracking/g172_cv2_environment_gap_20260903_a5/tracking_data.csv"
+        }
+      },
+      "reason": "g172 detector/hash variant on the same footage",
+      "run": "g172_cv2_environment_gap_20260903_a5"
+    },
+    {
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 65,
+            "mtime_utc": "2026-09-04T08:18:18+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 15283751,
+          "mtime_utc": "2026-09-04T08:18:18+00:00",
+          "path": "data/tracking/g225_yolov8m_r1_1788509783/tracking_data.csv"
+        }
+      },
+      "reason": "g225 YOLOv8 detector variant on the same footage",
+      "run": "g225_yolov8m_r1_1788509783"
+    },
+    {
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 65,
+            "mtime_utc": "2026-09-04T08:20:18+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 15283751,
+          "mtime_utc": "2026-09-04T08:20:18+00:00",
+          "path": "data/tracking/g225_yolov8m_r2_1788509903/tracking_data.csv"
+        }
+      },
+      "reason": "g225 YOLOv8 detector variant on the same footage",
+      "run": "g225_yolov8m_r2_1788509903"
+    },
+    {
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 65,
+            "mtime_utc": "2026-09-04T08:22:20+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 15283751,
+          "mtime_utc": "2026-09-04T08:22:20+00:00",
+          "path": "data/tracking/g225_yolov8m_r3_1788510023/tracking_data.csv"
+        }
+      },
+      "reason": "g225 YOLOv8 detector variant on the same footage",
+      "run": "g225_yolov8m_r3_1788510023"
+    },
+    {
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 65,
+            "mtime_utc": "2026-09-04T08:07:15+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 9900631,
+          "mtime_utc": "2026-09-04T08:07:15+00:00",
+          "path": "data/tracking/g225_yolov8n_r1_1788509139/tracking_data.csv"
+        }
+      },
+      "reason": "g225 YOLOv8 detector variant on the same footage",
+      "run": "g225_yolov8n_r1_1788509139"
+    },
+    {
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 65,
+            "mtime_utc": "2026-09-04T08:08:58+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 9900631,
+          "mtime_utc": "2026-09-04T08:08:58+00:00",
+          "path": "data/tracking/g225_yolov8n_r2_1788509240/tracking_data.csv"
+        }
+      },
+      "reason": "g225 YOLOv8 detector variant on the same footage",
+      "run": "g225_yolov8n_r2_1788509240"
+    },
+    {
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 65,
+            "mtime_utc": "2026-09-04T08:10:40+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 9900631,
+          "mtime_utc": "2026-09-04T08:10:40+00:00",
+          "path": "data/tracking/g225_yolov8n_r3_1788509342/tracking_data.csv"
+        }
+      },
+      "reason": "g225 YOLOv8 detector variant on the same footage",
+      "run": "g225_yolov8n_r3_1788509342"
+    },
+    {
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 65,
+            "mtime_utc": "2026-09-04T08:12:34+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 17562217,
+          "mtime_utc": "2026-09-04T08:12:34+00:00",
+          "path": "data/tracking/g225_yolov8s_r1_1788509445/tracking_data.csv"
+        }
+      },
+      "reason": "g225 YOLOv8 detector variant on the same footage",
+      "run": "g225_yolov8s_r1_1788509445"
+    },
+    {
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 65,
+            "mtime_utc": "2026-09-04T08:14:25+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 17562217,
+          "mtime_utc": "2026-09-04T08:14:24+00:00",
+          "path": "data/tracking/g225_yolov8s_r2_1788509558/tracking_data.csv"
+        }
+      },
+      "reason": "g225 YOLOv8 detector variant on the same footage",
+      "run": "g225_yolov8s_r2_1788509558"
+    },
+    {
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 65,
+            "mtime_utc": "2026-09-04T08:16:18+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 17562217,
+          "mtime_utc": "2026-09-04T08:16:18+00:00",
+          "path": "data/tracking/g225_yolov8s_r3_1788509670/tracking_data.csv"
+        }
+      },
+      "reason": "g225 YOLOv8 detector variant on the same footage",
+      "run": "g225_yolov8s_r3_1788509670"
+    },
+    {
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 65,
+            "mtime_utc": "2026-09-04T06:00:46+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 9900631,
+          "mtime_utc": "2026-09-04T06:00:46+00:00",
+          "path": "data/tracking/g226c_basketball_20260904T0558Z/tracking_data.csv"
+        }
+      },
+      "reason": "g226c detector/hash variant on the same footage",
+      "run": "g226c_basketball_20260904T0558Z"
+    },
+    {
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 65,
+            "mtime_utc": "2026-09-04T07:31:38+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 17950507,
+          "mtime_utc": "2026-09-04T07:31:37+00:00",
+          "path": "data/tracking/g239_basketball_20260904T0729Z/tracking_data.csv"
+        }
+      },
+      "reason": "g239 detector/hash variant on the same footage",
+      "run": "g239_basketball_20260904T0729Z"
+    },
+    {
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 65,
+            "mtime_utc": "2026-09-04T08:44:44+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 9900631,
+          "mtime_utc": "2026-09-04T08:44:44+00:00",
+          "path": "data/tracking/g240_basketball_hash_20260904T084304Z_r1/tracking_data.csv"
+        }
+      },
+      "reason": "g240 detector/hash variant on the same footage",
+      "run": "g240_basketball_hash_20260904T084304Z_r1"
+    },
+    {
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 65,
+            "mtime_utc": "2026-09-04T08:46:18+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 9900631,
+          "mtime_utc": "2026-09-04T08:46:18+00:00",
+          "path": "data/tracking/g240_basketball_hash_20260904T084304Z_r2/tracking_data.csv"
+        }
+      },
+      "reason": "g240 detector/hash variant on the same footage",
+      "run": "g240_basketball_hash_20260904T084304Z_r2"
+    },
+    {
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 65,
+            "mtime_utc": "2026-09-04T08:48:04+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 9900631,
+          "mtime_utc": "2026-09-04T08:47:55+00:00",
+          "path": "data/tracking/g240_basketball_hash_20260904T084304Z_r3/tracking_data.csv"
+        }
+      },
+      "reason": "g240 detector/hash variant on the same footage",
+      "run": "g240_basketball_hash_20260904T084304Z_r3"
+    }
+  ],
+  "footage_run_count": 42,
+  "footage_runs": [
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "9617.274333333333"
+        ],
+        "source_fps": [
+          "29.97002997002997"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 347,
+            "mtime_utc": "2026-09-03T19:21:36+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T19:08:35+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 15636596,
+          "mtime_utc": "2026-09-03T19:08:35+00:00",
+          "path": "data/tracking/football_Z8Ezd95NnjM/tracking_data.csv"
+        }
+      },
+      "rows": 136911,
+      "run": "football_Z8Ezd95NnjM",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "football",
+      "step_count": 0,
+      "track_count": 29,
+      "track_length_median_frames": 1072.0,
+      "track_length_median_seconds": 35.76906666666667,
+      "track_length_p90_frames": 14836.599999999999,
+      "track_length_p90_seconds": 495.0478866666666,
+      "track_shorter_than_5_fraction": 0.13793103448275862
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "7731.1901333333335"
+        ],
+        "source_fps": [
+          "29.97002997002997"
+        ],
+        "source_height": [
+          "1080"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 347,
+            "mtime_utc": "2026-09-03T17:41:14+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T17:01:15+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 30171768,
+          "mtime_utc": "2026-09-03T17:01:15+00:00",
+          "path": "data/tracking/football_wHZt1eY3A9s/tracking_data.csv"
+        }
+      },
+      "rows": 258248,
+      "run": "football_wHZt1eY3A9s",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "football",
+      "step_count": 0,
+      "track_count": 37,
+      "track_length_median_frames": 2666.0,
+      "track_length_median_seconds": 88.95553333333334,
+      "track_length_p90_frames": 20801.6,
+      "track_length_p90_seconds": 694.0800533333332,
+      "track_shorter_than_5_fraction": 0.02702702702702703
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "10129.552766666668"
+        ],
+        "source_fps": [
+          "29.97002997002997"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 347,
+            "mtime_utc": "2026-09-03T20:19:31+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T20:05:23+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 16957820,
+          "mtime_utc": "2026-09-03T20:05:23+00:00",
+          "path": "data/tracking/football_yahhMkUWd7c/tracking_data.csv"
+        }
+      },
+      "rows": 147019,
+      "run": "football_yahhMkUWd7c",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "football",
+      "step_count": 0,
+      "track_count": 33,
+      "track_length_median_frames": 1015.0,
+      "track_length_median_seconds": 33.86716666666667,
+      "track_length_p90_frames": 14231.2,
+      "track_length_p90_seconds": 474.84770666666674,
+      "track_shorter_than_5_fraction": 0.12121212121212122
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "1153.9861666666666"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "1080"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-03T14:39:08+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 24025,
+            "mtime_utc": "2026-09-03T14:33:17+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T14:33:17+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 7558478,
+          "mtime_utc": "2026-09-03T14:33:17+00:00",
+          "path": "data/tracking/kbo_01/tracking_data.csv"
+        }
+      },
+      "rows": 63497,
+      "run": "kbo_01",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "kbo",
+      "step_count": 0,
+      "track_count": 4381,
+      "track_length_median_frames": 9.0,
+      "track_length_median_seconds": 0.15015,
+      "track_length_p90_frames": 35.0,
+      "track_length_p90_seconds": 0.5839166666666666,
+      "track_shorter_than_5_fraction": 0.33006162976489384
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "809.2417666666666"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "1080"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-03T15:34:16+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 2039,
+            "mtime_utc": "2026-09-03T15:30:14+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T15:30:14+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 4695692,
+          "mtime_utc": "2026-09-03T15:30:14+00:00",
+          "path": "data/tracking/kbo_02/tracking_data.csv"
+        }
+      },
+      "rows": 39744,
+      "run": "kbo_02",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "kbo",
+      "step_count": 0,
+      "track_count": 3020,
+      "track_length_median_frames": 8.0,
+      "track_length_median_seconds": 0.13346666666666668,
+      "track_length_p90_frames": 31.0,
+      "track_length_p90_seconds": 0.5171833333333333,
+      "track_shorter_than_5_fraction": 0.3622516556291391
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "783.7162666666667"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "1080"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-03T16:06:27+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 15342,
+            "mtime_utc": "2026-09-03T16:01:58+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T16:01:58+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 4626624,
+          "mtime_utc": "2026-09-03T16:01:58+00:00",
+          "path": "data/tracking/kbo_03/tracking_data.csv"
+        }
+      },
+      "rows": 39254,
+      "run": "kbo_03",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "kbo",
+      "step_count": 0,
+      "track_count": 2959,
+      "track_length_median_frames": 8.0,
+      "track_length_median_seconds": 0.13346666666666668,
+      "track_length_p90_frames": 31.0,
+      "track_length_p90_seconds": 0.5171833333333333,
+      "track_shorter_than_5_fraction": 0.3565393714092599
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "1196.3618333333334"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "1080"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-03T17:15:46+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 19445,
+            "mtime_utc": "2026-09-03T17:00:51+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T17:00:49+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 6535789,
+          "mtime_utc": "2026-09-03T17:00:49+00:00",
+          "path": "data/tracking/kbo_04/tracking_data.csv"
+        }
+      },
+      "rows": 54914,
+      "run": "kbo_04",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "kbo",
+      "step_count": 0,
+      "track_count": 3835,
+      "track_length_median_frames": 9.0,
+      "track_length_median_seconds": 0.15015,
+      "track_length_p90_frames": 36.0,
+      "track_length_p90_seconds": 0.6006,
+      "track_shorter_than_5_fraction": 0.34185136897001306
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "878.9447333333334"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "1080"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-03T17:52:02+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 18022,
+            "mtime_utc": "2026-09-03T17:47:45+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T17:47:45+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 6299816,
+          "mtime_utc": "2026-09-03T17:47:45+00:00",
+          "path": "data/tracking/kbo_05/tracking_data.csv"
+        }
+      },
+      "rows": 53295,
+      "run": "kbo_05",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "kbo",
+      "step_count": 0,
+      "track_count": 3876,
+      "track_length_median_frames": 7.0,
+      "track_length_median_seconds": 0.11678333333333334,
+      "track_length_p90_frames": 35.0,
+      "track_length_p90_seconds": 0.5839166666666666,
+      "track_shorter_than_5_fraction": 0.40170278637770895
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "887.4866000000001"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "1080"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-03T19:02:37+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 25829,
+            "mtime_utc": "2026-09-03T18:44:37+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T18:44:37+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 5581429,
+          "mtime_utc": "2026-09-03T18:44:37+00:00",
+          "path": "data/tracking/kbo_06/tracking_data.csv"
+        }
+      },
+      "rows": 47317,
+      "run": "kbo_06",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "kbo",
+      "step_count": 0,
+      "track_count": 3323,
+      "track_length_median_frames": 9.0,
+      "track_length_median_seconds": 0.15015,
+      "track_length_p90_frames": 37.0,
+      "track_length_p90_seconds": 0.6172833333333333,
+      "track_shorter_than_5_fraction": 0.3623232019259705
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "903.903"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "1080"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-03T19:56:52+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 2871,
+            "mtime_utc": "2026-09-03T19:09:19+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T19:09:19+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 5339393,
+          "mtime_utc": "2026-09-03T19:09:19+00:00",
+          "path": "data/tracking/kbo_07/tracking_data.csv"
+        }
+      },
+      "rows": 49366,
+      "run": "kbo_07",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "kbo",
+      "step_count": 0,
+      "track_count": 3151,
+      "track_length_median_frames": 9.0,
+      "track_length_median_seconds": 0.15015,
+      "track_length_p90_frames": 38.0,
+      "track_length_p90_seconds": 0.6339666666666667,
+      "track_shorter_than_5_fraction": 0.33608378292605523
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "1193.4589333333333"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "1080"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-04T00:22:52+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 9336,
+            "mtime_utc": "2026-09-04T00:17:42+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-04T00:17:42+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 9179700,
+          "mtime_utc": "2026-09-04T00:17:42+00:00",
+          "path": "data/tracking/kbo_08/tracking_data.csv"
+        }
+      },
+      "rows": 76995,
+      "run": "kbo_08",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "kbo",
+      "step_count": 0,
+      "track_count": 5052,
+      "track_length_median_frames": 10.0,
+      "track_length_median_seconds": 0.16683333333333333,
+      "track_length_p90_frames": 36.0,
+      "track_length_p90_seconds": 0.6006,
+      "track_shorter_than_5_fraction": 0.3068091844813935
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "1070.2692"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "1080"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-04T01:48:28+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 12208,
+            "mtime_utc": "2026-09-04T01:29:51+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-04T01:29:51+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 9586916,
+          "mtime_utc": "2026-09-04T01:29:51+00:00",
+          "path": "data/tracking/kbo_09/tracking_data.csv"
+        }
+      },
+      "rows": 86881,
+      "run": "kbo_09",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "kbo",
+      "step_count": 0,
+      "track_count": 5469,
+      "track_length_median_frames": 9.0,
+      "track_length_median_seconds": 0.15015,
+      "track_length_p90_frames": 40.0,
+      "track_length_p90_seconds": 0.6673333333333333,
+      "track_shorter_than_5_fraction": 0.37081733406472844
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "1012.1111"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "1080"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-04T04:22:45+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 1417,
+            "mtime_utc": "2026-09-04T04:18:09+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-04T04:18:09+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 6503593,
+          "mtime_utc": "2026-09-04T04:18:09+00:00",
+          "path": "data/tracking/kbo_10/tracking_data.csv"
+        }
+      },
+      "rows": 58895,
+      "run": "kbo_10",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "kbo",
+      "step_count": 0,
+      "track_count": 4173,
+      "track_length_median_frames": 8.0,
+      "track_length_median_seconds": 0.13346666666666668,
+      "track_length_p90_frames": 34.80000000000018,
+      "track_length_p90_seconds": 0.580580000000003,
+      "track_shorter_than_5_fraction": 0.3527438293793434
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "631.6643666666666"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-03T16:17:06+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 20314,
+            "mtime_utc": "2026-09-03T16:15:08+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T16:15:08+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 4679363,
+          "mtime_utc": "2026-09-03T16:15:08+00:00",
+          "path": "data/tracking/mlb_2026-08-30_03d78bee/tracking_data.csv"
+        }
+      },
+      "rows": 39998,
+      "run": "mlb_2026-08-30_03d78bee",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "mlb",
+      "step_count": 0,
+      "track_count": 3173,
+      "track_length_median_frames": 8.0,
+      "track_length_median_seconds": 0.13346666666666668,
+      "track_length_p90_frames": 30.0,
+      "track_length_p90_seconds": 0.5005000000000001,
+      "track_shorter_than_5_fraction": 0.3643239836117239
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "823.2557666666667"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-03T15:20:55+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 22303,
+            "mtime_utc": "2026-09-03T15:18:23+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T15:18:23+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 5745292,
+          "mtime_utc": "2026-09-03T15:18:23+00:00",
+          "path": "data/tracking/mlb_2026-08-30_08b16ce9/tracking_data.csv"
+        }
+      },
+      "rows": 49132,
+      "run": "mlb_2026-08-30_08b16ce9",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "mlb",
+      "step_count": 0,
+      "track_count": 3727,
+      "track_length_median_frames": 9.0,
+      "track_length_median_seconds": 0.15015,
+      "track_length_p90_frames": 32.0,
+      "track_length_p90_seconds": 0.5338666666666667,
+      "track_shorter_than_5_fraction": 0.3410249530453448
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "818.8013166666667"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-03T14:45:17+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 33337,
+            "mtime_utc": "2026-09-03T14:42:47+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T14:42:47+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 6369006,
+          "mtime_utc": "2026-09-03T14:42:43+00:00",
+          "path": "data/tracking/mlb_2026-08-30_0f36e8cc/tracking_data.csv"
+        }
+      },
+      "rows": 54537,
+      "run": "mlb_2026-08-30_0f36e8cc",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "mlb",
+      "step_count": 0,
+      "track_count": 4773,
+      "track_length_median_frames": 7.0,
+      "track_length_median_seconds": 0.11678333333333334,
+      "track_length_p90_frames": 28.0,
+      "track_length_p90_seconds": 0.46713333333333334,
+      "track_shorter_than_5_fraction": 0.4007961449821915
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "651.2339166666667"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-03T14:23:41+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 30861,
+            "mtime_utc": "2026-09-03T14:21:41+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T14:21:41+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 3771927,
+          "mtime_utc": "2026-09-03T14:21:41+00:00",
+          "path": "data/tracking/mlb_2026-08-30_10893dca/tracking_data.csv"
+        }
+      },
+      "rows": 32380,
+      "run": "mlb_2026-08-30_10893dca",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "mlb",
+      "step_count": 0,
+      "track_count": 2584,
+      "track_length_median_frames": 8.0,
+      "track_length_median_seconds": 0.13346666666666668,
+      "track_length_p90_frames": 29.0,
+      "track_length_p90_seconds": 0.4838166666666667,
+      "track_shorter_than_5_fraction": 0.33862229102167185
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "670.9369333333334"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-03T15:40:15+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 30141,
+            "mtime_utc": "2026-09-03T15:38:01+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T15:38:01+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 4978858,
+          "mtime_utc": "2026-09-03T15:38:01+00:00",
+          "path": "data/tracking/mlb_2026-08-30_1c6706c6/tracking_data.csv"
+        }
+      },
+      "rows": 42691,
+      "run": "mlb_2026-08-30_1c6706c6",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "mlb",
+      "step_count": 0,
+      "track_count": 2728,
+      "track_length_median_frames": 10.0,
+      "track_length_median_seconds": 0.16683333333333333,
+      "track_length_p90_frames": 36.0,
+      "track_length_p90_seconds": 0.6006,
+      "track_shorter_than_5_fraction": 0.3101173020527859
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "726.7927333333333"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-03T16:30:45+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 18829,
+            "mtime_utc": "2026-09-03T16:28:22+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T16:28:22+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 5437464,
+          "mtime_utc": "2026-09-03T16:28:21+00:00",
+          "path": "data/tracking/mlb_2026-08-30_2143de43/tracking_data.csv"
+        }
+      },
+      "rows": 46570,
+      "run": "mlb_2026-08-30_2143de43",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "mlb",
+      "step_count": 0,
+      "track_count": 3721,
+      "track_length_median_frames": 8.0,
+      "track_length_median_seconds": 0.13346666666666668,
+      "track_length_p90_frames": 30.0,
+      "track_length_p90_seconds": 0.5005000000000001,
+      "track_shorter_than_5_fraction": 0.3705993012631013
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "670.31965"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-03T16:02:13+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 25001,
+            "mtime_utc": "2026-09-03T16:00:10+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T16:00:09+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 5051948,
+          "mtime_utc": "2026-09-03T16:00:09+00:00",
+          "path": "data/tracking/mlb_2026-08-30_2b814fad/tracking_data.csv"
+        }
+      },
+      "rows": 46490,
+      "run": "mlb_2026-08-30_2b814fad",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "mlb",
+      "step_count": 0,
+      "track_count": 2989,
+      "track_length_median_frames": 11.0,
+      "track_length_median_seconds": 0.18351666666666666,
+      "track_length_p90_frames": 35.20000000000027,
+      "track_length_p90_seconds": 0.5872533333333378,
+      "track_shorter_than_5_fraction": 0.2850451656072265
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "616.0320833333334"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-03T15:06:40+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 8254,
+            "mtime_utc": "2026-09-03T15:04:38+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T15:04:38+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 4180743,
+          "mtime_utc": "2026-09-03T15:04:38+00:00",
+          "path": "data/tracking/mlb_2026-08-30_3a02d9b3/tracking_data.csv"
+        }
+      },
+      "rows": 35882,
+      "run": "mlb_2026-08-30_3a02d9b3",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "mlb",
+      "step_count": 0,
+      "track_count": 2306,
+      "track_length_median_frames": 11.0,
+      "track_length_median_seconds": 0.18351666666666666,
+      "track_length_p90_frames": 35.0,
+      "track_length_p90_seconds": 0.5839166666666666,
+      "track_shorter_than_5_fraction": 0.2862098872506505
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "684.5004833333334"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-03T14:57:19+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 20682,
+            "mtime_utc": "2026-09-03T14:55:13+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T14:55:13+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 5711229,
+          "mtime_utc": "2026-09-03T14:55:13+00:00",
+          "path": "data/tracking/mlb_2026-08-30_7e8080e5/tracking_data.csv"
+        }
+      },
+      "rows": 48816,
+      "run": "mlb_2026-08-30_7e8080e5",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "mlb",
+      "step_count": 0,
+      "track_count": 3935,
+      "track_length_median_frames": 8.0,
+      "track_length_median_seconds": 0.13346666666666668,
+      "track_length_p90_frames": 28.0,
+      "track_length_p90_seconds": 0.46713333333333334,
+      "track_shorter_than_5_fraction": 0.37153748411689963
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "996.8959"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 346,
+            "mtime_utc": "2026-09-03T17:18:36+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 69196,
+            "mtime_utc": "2026-09-03T16:58:38+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T16:58:38+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 6567397,
+          "mtime_utc": "2026-09-03T16:58:38+00:00",
+          "path": "data/tracking/mlb_2026-08-30_f8812b72/tracking_data.csv"
+        }
+      },
+      "rows": 60952,
+      "run": "mlb_2026-08-30_f8812b72",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "mlb",
+      "step_count": 0,
+      "track_count": 4158,
+      "track_length_median_frames": 9.0,
+      "track_length_median_seconds": 0.15015,
+      "track_length_p90_frames": 36.0,
+      "track_length_p90_seconds": 0.6006,
+      "track_shorter_than_5_fraction": 0.33694083694083693
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "8909.733333333334"
+        ],
+        "source_fps": [
+          "30.0"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 347,
+            "mtime_utc": "2026-09-03T18:13:42+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 989,
+            "mtime_utc": "2026-09-03T17:58:47+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T17:58:47+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 8165186,
+          "mtime_utc": "2026-09-03T17:58:47+00:00",
+          "path": "data/tracking/mlb_A5AkcaXA2fk/tracking_data.csv"
+        }
+      },
+      "rows": 79013,
+      "run": "mlb_A5AkcaXA2fk",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "mlb",
+      "step_count": 0,
+      "track_count": 985,
+      "track_length_median_frames": 8.0,
+      "track_length_median_seconds": 0.26666666666666666,
+      "track_length_p90_frames": 152.0000000000001,
+      "track_length_p90_seconds": 5.066666666666671,
+      "track_shorter_than_5_fraction": 0.4020304568527919
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "8170.028533333333"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 347,
+            "mtime_utc": "2026-09-04T04:42:46+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 7219,
+            "mtime_utc": "2026-09-04T04:20:49+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-04T04:20:49+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 21642338,
+          "mtime_utc": "2026-09-04T04:20:49+00:00",
+          "path": "data/tracking/mlb_gDv5xF2AA2E/tracking_data.csv"
+        }
+      },
+      "rows": 183929,
+      "run": "mlb_gDv5xF2AA2E",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "mlb",
+      "step_count": 0,
+      "track_count": 8251,
+      "track_length_median_frames": 15.0,
+      "track_length_median_seconds": 0.25025000000000003,
+      "track_length_p90_frames": 54.0,
+      "track_length_p90_seconds": 0.9009,
+      "track_shorter_than_5_fraction": 0.22494243122045812
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "7354.133333333333"
+        ],
+        "source_fps": [
+          "30.0"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 347,
+            "mtime_utc": "2026-09-03T19:28:30+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 12147,
+            "mtime_utc": "2026-09-03T19:10:30+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T19:10:30+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 12334652,
+          "mtime_utc": "2026-09-03T19:10:30+00:00",
+          "path": "data/tracking/mlb_nLoG6gvC-Nk/tracking_data.csv"
+        }
+      },
+      "rows": 118535,
+      "run": "mlb_nLoG6gvC-Nk",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "mlb",
+      "step_count": 0,
+      "track_count": 3811,
+      "track_length_median_frames": 10.0,
+      "track_length_median_seconds": 0.3333333333333333,
+      "track_length_p90_frames": 56.0,
+      "track_length_p90_seconds": 1.8666666666666667,
+      "track_shorter_than_5_fraction": 0.32038834951456313
+    },
+    {
+      "analysis_status": "schema_incompatible",
+      "cls_values": null,
+      "header": [
+        "frame",
+        "timestamp",
+        "player_id",
+        "team",
+        "x_position",
+        "y_position",
+        "x_norm",
+        "y_norm",
+        "velocity",
+        "acceleration",
+        "direction_deg",
+        "court_zone",
+        "ball_possession",
+        "distance_to_ball",
+        "nearest_opponent",
+        "nearest_teammate",
+        "event",
+        "team_spacing",
+        "spacing_hull_area",
+        "team_centroid_x",
+        "team_centroid_y",
+        "paint_count_own",
+        "paint_count_opp",
+        "possession_side",
+        "handler_isolation",
+        "bbox_x1",
+        "bbox_y1",
+        "bbox_x2",
+        "bbox_y2",
+        "ball_x2d",
+        "ball_y2d",
+        "ball_velocity",
+        "distance_to_basket",
+        "vel_toward_basket",
+        "drive_flag",
+        "ft_x",
+        "ft_y",
+        "dist_to_basket_ft",
+        "fast_break_flag",
+        "possession_id",
+        "possession_duration",
+        "confidence",
+        "play_type",
+        "paint_touches",
+        "off_ball_distance",
+        "shot_clock_est",
+        "scoreboard_shot_clock",
+        "scoreboard_game_clock",
+        "scoreboard_period",
+        "scoreboard_score_diff",
+        "scoreboard_confidence",
+        "possession_duration_sec",
+        "possession_type",
+        "ankle_x",
+        "ankle_y",
+        "contest_arm_angle",
+        "jump_detected",
+        "dribble_hand",
+        "ball_shot_arc_angle",
+        "ball_peak_height_px",
+        "ball_pass_speed_pxpf",
+        "player_name",
+        "jersey_number",
+        "team_abbrev",
+        "dribble_count",
+        "lineup_id",
+        "homography_valid",
+        "coordinate_space",
+        "observation",
+        "calibration",
+        "source_fps",
+        "source_height",
+        "source_duration"
+      ],
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 449,
+            "mtime_utc": "2026-09-04T01:08:41+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 373,
+            "mtime_utc": "2026-09-04T00:47:46+00:00",
+            "path": "resolver_debug.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 44,
+            "mtime_utc": "2026-09-04T00:47:45+00:00",
+            "path": "team_colors.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 70,
+            "mtime_utc": "2026-09-04T00:48:06+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 102562,
+          "mtime_utc": "2026-09-04T00:47:56+00:00",
+          "path": "data/tracking/ncaa_basketball_IB-_u4gW3ds/tracking_data.csv"
+        }
+      },
+      "rows": 271,
+      "run": "ncaa_basketball_IB-_u4gW3ds",
+      "schema_missing_fields": [
+        "cls",
+        "track_id",
+        "x",
+        "y"
+      ],
+      "sport": "ncaa_basketball"
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "14202.4"
+        ],
+        "source_fps": [
+          "30.0"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 347,
+            "mtime_utc": "2026-09-03T16:52:56+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 2024,
+            "mtime_utc": "2026-09-03T16:37:47+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T16:37:47+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 13256987,
+          "mtime_utc": "2026-09-03T16:37:47+00:00",
+          "path": "data/tracking/npb_01/tracking_data.csv"
+        }
+      },
+      "rows": 140965,
+      "run": "npb_01",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "npb",
+      "step_count": 0,
+      "track_count": 5995,
+      "track_length_median_frames": 15.0,
+      "track_length_median_seconds": 0.5,
+      "track_length_p90_frames": 57.0,
+      "track_length_p90_seconds": 1.9,
+      "track_shorter_than_5_fraction": 0.2303586321934946
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "13706.366666666667"
+        ],
+        "source_fps": [
+          "30.0"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 347,
+            "mtime_utc": "2026-09-03T18:58:18+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 1791,
+            "mtime_utc": "2026-09-03T18:41:10+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T18:41:10+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 16173658,
+          "mtime_utc": "2026-09-03T18:41:10+00:00",
+          "path": "data/tracking/npb_02/tracking_data.csv"
+        }
+      },
+      "rows": 154016,
+      "run": "npb_02",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "npb",
+      "step_count": 0,
+      "track_count": 7318,
+      "track_length_median_frames": 11.0,
+      "track_length_median_seconds": 0.36666666666666664,
+      "track_length_p90_frames": 52.0,
+      "track_length_p90_seconds": 1.7333333333333334,
+      "track_shorter_than_5_fraction": 0.2809510795299262
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "14345.7"
+        ],
+        "source_fps": [
+          "30.0"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 347,
+            "mtime_utc": "2026-09-03T20:57:30+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 9906,
+            "mtime_utc": "2026-09-03T20:08:12+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-03T20:08:11+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 13145129,
+          "mtime_utc": "2026-09-03T20:08:11+00:00",
+          "path": "data/tracking/npb_03/tracking_data.csv"
+        }
+      },
+      "rows": 139970,
+      "run": "npb_03",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "npb",
+      "step_count": 0,
+      "track_count": 6673,
+      "track_length_median_frames": 12.0,
+      "track_length_median_seconds": 0.4,
+      "track_length_p90_frames": 50.0,
+      "track_length_p90_seconds": 1.6666666666666667,
+      "track_shorter_than_5_fraction": 0.2931215345421849
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "11619.133333333333"
+        ],
+        "source_fps": [
+          "30.0"
+        ],
+        "source_height": [
+          "720"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 347,
+            "mtime_utc": "2026-09-04T04:12:53+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 8244,
+            "mtime_utc": "2026-09-04T02:52:17+00:00",
+            "path": "teacher_meta.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 63,
+            "mtime_utc": "2026-09-04T02:52:17+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 12526721,
+          "mtime_utc": "2026-09-04T02:52:17+00:00",
+          "path": "data/tracking/npb_04/tracking_data.csv"
+        }
+      },
+      "rows": 119498,
+      "run": "npb_04",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "npb",
+      "step_count": 0,
+      "track_count": 5364,
+      "track_length_median_frames": 13.0,
+      "track_length_median_seconds": 0.43333333333333335,
+      "track_length_p90_frames": 57.0,
+      "track_length_p90_seconds": 1.9,
+      "track_shorter_than_5_fraction": 0.2598806860551827
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "5975.0"
+        ],
+        "source_fps": [
+          "30.0"
+        ],
+        "source_height": [
+          "1080"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 345,
+            "mtime_utc": "2026-09-04T04:56:58+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 61,
+            "mtime_utc": "2026-09-04T04:25:23+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 22615041,
+          "mtime_utc": "2026-09-04T04:25:23+00:00",
+          "path": "data/tracking/soccer_Z6NTDyxcODs/tracking_data.csv"
+        }
+      },
+      "rows": 240661,
+      "run": "soccer_Z6NTDyxcODs",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "soccer",
+      "step_count": 0,
+      "track_count": 2384,
+      "track_length_median_frames": 77.0,
+      "track_length_median_seconds": 2.566666666666667,
+      "track_length_p90_frames": 205.0,
+      "track_length_p90_seconds": 6.833333333333333,
+      "track_shorter_than_5_fraction": 0.026845637583892617
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "6035.0"
+        ],
+        "source_fps": [
+          "30.0"
+        ],
+        "source_height": [
+          "1080"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 345,
+            "mtime_utc": "2026-09-03T17:10:04+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 61,
+            "mtime_utc": "2026-09-03T16:52:32+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 17149263,
+          "mtime_utc": "2026-09-03T16:52:32+00:00",
+          "path": "data/tracking/soccer_c1mzmBGHQr4/tracking_data.csv"
+        }
+      },
+      "rows": 182403,
+      "run": "soccer_c1mzmBGHQr4",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "soccer",
+      "step_count": 0,
+      "track_count": 2470,
+      "track_length_median_frames": 45.0,
+      "track_length_median_seconds": 1.5,
+      "track_length_p90_frames": 176.0,
+      "track_length_p90_seconds": 5.866666666666666,
+      "track_shorter_than_5_fraction": 0.10931174089068826
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "8340.0"
+        ],
+        "source_fps": [
+          "30.0"
+        ],
+        "source_height": [
+          "1080"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 345,
+            "mtime_utc": "2026-09-03T19:51:38+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 61,
+            "mtime_utc": "2026-09-03T19:19:42+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 22306680,
+          "mtime_utc": "2026-09-03T19:19:42+00:00",
+          "path": "data/tracking/soccer_dnR5C6WLJI4/tracking_data.csv"
+        }
+      },
+      "rows": 237203,
+      "run": "soccer_dnR5C6WLJI4",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "soccer",
+      "step_count": 0,
+      "track_count": 2451,
+      "track_length_median_frames": 67.0,
+      "track_length_median_seconds": 2.2333333333333334,
+      "track_length_p90_frames": 218.0,
+      "track_length_p90_seconds": 7.266666666666667,
+      "track_shorter_than_5_fraction": 0.037943696450428395
+    },
+    {
+      "analysis_status": "comparable",
+      "cls_values": [
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 0,
+      "invalid_numeric_required_rows": 0,
+      "metadata_values": {
+        "calibration": [
+          "none"
+        ],
+        "cls": [
+          "player"
+        ],
+        "coordinate_space": [
+          "image_px"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "6070.0"
+        ],
+        "source_fps": [
+          "30.0"
+        ],
+        "source_height": [
+          "1080"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 345,
+            "mtime_utc": "2026-09-03T15:56:57+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 61,
+            "mtime_utc": "2026-09-03T15:39:13+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 21667350,
+          "mtime_utc": "2026-09-03T15:39:13+00:00",
+          "path": "data/tracking/soccer_kSgNjoaqCpI/tracking_data.csv"
+        }
+      },
+      "rows": 230794,
+      "run": "soccer_kSgNjoaqCpI",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "soccer",
+      "step_count": 0,
+      "track_count": 2407,
+      "track_length_median_frames": 53.0,
+      "track_length_median_seconds": 1.7666666666666666,
+      "track_length_p90_frames": 242.0,
+      "track_length_p90_seconds": 8.066666666666666,
+      "track_shorter_than_5_fraction": 0.08309098462816784
+    },
+    {
+      "analysis_status": "data_incomplete",
+      "cls_values": [
+        "ball",
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 518,
+      "invalid_numeric_required_rows": 2153,
+      "metadata_values": {
+        "calibration": [
+          "homography"
+        ],
+        "cls": [
+          "ball",
+          "player"
+        ],
+        "coordinate_space": [
+          "court_feet"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "4592.1876"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "1080"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 268,
+            "mtime_utc": "2026-09-03T18:11:34+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 60,
+            "mtime_utc": "2026-09-03T17:51:18+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 2832341,
+          "mtime_utc": "2026-09-03T17:51:18+00:00",
+          "path": "data/tracking/tennis_01/tracking_data.csv"
+        }
+      },
+      "rows": 19437,
+      "run": "tennis_01",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "tennis",
+      "step_count": null,
+      "track_count": null,
+      "track_length_median_frames": null,
+      "track_length_median_seconds": null,
+      "track_length_p90_frames": null,
+      "track_length_p90_seconds": null,
+      "track_shorter_than_5_fraction": null
+    },
+    {
+      "analysis_status": "data_incomplete",
+      "cls_values": [
+        "ball",
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 29,
+      "invalid_numeric_required_rows": 104,
+      "metadata_values": {
+        "calibration": [
+          "homography"
+        ],
+        "cls": [
+          "ball",
+          "player"
+        ],
+        "coordinate_space": [
+          "court_feet"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "8101.6936000000005"
+        ],
+        "source_fps": [
+          "59.94005994005994"
+        ],
+        "source_height": [
+          "1080"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 299,
+            "mtime_utc": "2026-09-03T23:03:56+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 60,
+            "mtime_utc": "2026-09-03T22:23:21+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 255168,
+          "mtime_utc": "2026-09-03T22:23:21+00:00",
+          "path": "data/tracking/tennis_02/tracking_data.csv"
+        }
+      },
+      "rows": 1637,
+      "run": "tennis_02",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "tennis",
+      "step_count": null,
+      "track_count": null,
+      "track_length_median_frames": null,
+      "track_length_median_seconds": null,
+      "track_length_p90_frames": null,
+      "track_length_p90_seconds": null,
+      "track_shorter_than_5_fraction": null
+    },
+    {
+      "analysis_status": "data_incomplete",
+      "cls_values": [
+        "ball",
+        "player"
+      ],
+      "duplicate_track_frame_rows": 0,
+      "frame_order_nonmonotonic_rows": 295,
+      "invalid_numeric_required_rows": 136,
+      "metadata_values": {
+        "calibration": [
+          "homography"
+        ],
+        "cls": [
+          "ball",
+          "player"
+        ],
+        "coordinate_space": [
+          "court_feet"
+        ],
+        "observation": [
+          "observed"
+        ],
+        "source_duration": [
+          "964.5645645645646"
+        ],
+        "source_fps": [
+          "29.97"
+        ],
+        "source_height": [
+          "360"
+        ]
+      },
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 304,
+            "mtime_utc": "2026-09-03T16:21:35+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 60,
+            "mtime_utc": "2026-09-03T16:21:18+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 252850,
+          "mtime_utc": "2026-09-03T16:21:18+00:00",
+          "path": "data/tracking/tennis_ref01/tracking_data.csv"
+        }
+      },
+      "rows": 1861,
+      "run": "tennis_ref01",
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "tennis",
+      "step_count": null,
+      "track_count": null,
+      "track_length_median_frames": null,
+      "track_length_median_seconds": null,
+      "track_length_p90_frames": null,
+      "track_length_p90_seconds": null,
+      "track_shorter_than_5_fraction": null
+    },
+    {
+      "analysis_status": "schema_incompatible",
+      "cls_values": [
+        "ball",
+        "player"
+      ],
+      "header": [
+        "frame",
+        "track_id",
+        "cls",
+        "x",
+        "y",
+        "calibration_provenance",
+        "projection_status",
+        "projection_rejection_reason",
+        "raw_projected_x_ft",
+        "raw_projected_y_ft",
+        "coordinate_space",
+        "observation",
+        "calibration"
+      ],
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 60,
+            "mtime_utc": "2026-09-03T14:19:55+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 198839,
+          "mtime_utc": "2026-09-03T14:19:55+00:00",
+          "path": "data/tracking/tennis_smoke/tracking_data.csv"
+        }
+      },
+      "rows": 1861,
+      "run": "tennis_smoke",
+      "schema_missing_fields": [
+        "source_duration",
+        "source_fps",
+        "source_height"
+      ],
+      "sport": "tennis"
+    },
+    {
+      "analysis_status": "schema_incompatible",
+      "cls_values": null,
+      "header": [
+        "frame",
+        "timestamp",
+        "player_id",
+        "team",
+        "x_position",
+        "y_position",
+        "x_norm",
+        "y_norm",
+        "velocity",
+        "acceleration",
+        "direction_deg",
+        "court_zone",
+        "ball_possession",
+        "distance_to_ball",
+        "nearest_opponent",
+        "nearest_teammate",
+        "event",
+        "team_spacing",
+        "spacing_hull_area",
+        "team_centroid_x",
+        "team_centroid_y",
+        "paint_count_own",
+        "paint_count_opp",
+        "possession_side",
+        "handler_isolation",
+        "bbox_x1",
+        "bbox_y1",
+        "bbox_x2",
+        "bbox_y2",
+        "ball_x2d",
+        "ball_y2d",
+        "ball_velocity",
+        "distance_to_basket",
+        "vel_toward_basket",
+        "drive_flag",
+        "ft_x",
+        "ft_y",
+        "dist_to_basket_ft",
+        "fast_break_flag",
+        "possession_id",
+        "possession_duration",
+        "confidence",
+        "play_type",
+        "paint_touches",
+        "off_ball_distance",
+        "shot_clock_est",
+        "scoreboard_shot_clock",
+        "scoreboard_game_clock",
+        "scoreboard_period",
+        "scoreboard_score_diff",
+        "scoreboard_confidence",
+        "possession_duration_sec",
+        "possession_type",
+        "ankle_x",
+        "ankle_y",
+        "contest_arm_angle",
+        "jump_detected",
+        "dribble_hand",
+        "ball_shot_arc_angle",
+        "ball_peak_height_px",
+        "ball_pass_speed_pxpf",
+        "player_name",
+        "jersey_number",
+        "team_abbrev",
+        "dribble_count",
+        "lineup_id",
+        "homography_valid",
+        "coordinate_space",
+        "observation",
+        "calibration",
+        "source_fps",
+        "source_height",
+        "source_duration"
+      ],
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 429,
+            "mtime_utc": "2026-09-03T20:39:28+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 830,
+            "mtime_utc": "2026-09-03T20:02:23+00:00",
+            "path": "resolver_debug.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 44,
+            "mtime_utc": "2026-09-03T20:02:22+00:00",
+            "path": "team_colors.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 59,
+            "mtime_utc": "2026-09-03T20:19:31+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 1259329,
+          "mtime_utc": "2026-09-03T20:08:14+00:00",
+          "path": "data/tracking/wnba_01/tracking_data.csv"
+        }
+      },
+      "rows": 3377,
+      "run": "wnba_01",
+      "schema_missing_fields": [
+        "cls",
+        "track_id",
+        "x",
+        "y"
+      ],
+      "sport": "wnba"
+    },
+    {
+      "analysis_status": "schema_incompatible",
+      "cls_values": null,
+      "header": [
+        "frame",
+        "timestamp",
+        "player_id",
+        "team",
+        "x_position",
+        "y_position",
+        "x_norm",
+        "y_norm",
+        "velocity",
+        "acceleration",
+        "direction_deg",
+        "court_zone",
+        "ball_possession",
+        "distance_to_ball",
+        "nearest_opponent",
+        "nearest_teammate",
+        "event",
+        "team_spacing",
+        "spacing_hull_area",
+        "team_centroid_x",
+        "team_centroid_y",
+        "paint_count_own",
+        "paint_count_opp",
+        "possession_side",
+        "handler_isolation",
+        "bbox_x1",
+        "bbox_y1",
+        "bbox_x2",
+        "bbox_y2",
+        "ball_x2d",
+        "ball_y2d",
+        "ball_velocity",
+        "distance_to_basket",
+        "vel_toward_basket",
+        "drive_flag",
+        "ft_x",
+        "ft_y",
+        "dist_to_basket_ft",
+        "fast_break_flag",
+        "possession_id",
+        "possession_duration",
+        "confidence",
+        "play_type",
+        "paint_touches",
+        "off_ball_distance",
+        "shot_clock_est",
+        "scoreboard_shot_clock",
+        "scoreboard_game_clock",
+        "scoreboard_period",
+        "scoreboard_score_diff",
+        "scoreboard_confidence",
+        "possession_duration_sec",
+        "possession_type",
+        "ankle_x",
+        "ankle_y",
+        "contest_arm_angle",
+        "jump_detected",
+        "dribble_hand",
+        "ball_shot_arc_angle",
+        "ball_peak_height_px",
+        "ball_pass_speed_pxpf",
+        "player_name",
+        "jersey_number",
+        "team_abbrev",
+        "dribble_count",
+        "lineup_id",
+        "homography_valid",
+        "coordinate_space",
+        "observation",
+        "calibration",
+        "source_fps",
+        "source_height",
+        "source_duration"
+      ],
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 428,
+            "mtime_utc": "2026-09-04T00:43:04+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 832,
+            "mtime_utc": "2026-09-04T00:32:02+00:00",
+            "path": "resolver_debug.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 44,
+            "mtime_utc": "2026-09-04T00:32:00+00:00",
+            "path": "team_colors.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 59,
+            "mtime_utc": "2026-09-04T00:33:08+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 1586107,
+          "mtime_utc": "2026-09-04T00:32:55+00:00",
+          "path": "data/tracking/wnba_02/tracking_data.csv"
+        }
+      },
+      "rows": 4171,
+      "run": "wnba_02",
+      "schema_missing_fields": [
+        "cls",
+        "track_id",
+        "x",
+        "y"
+      ],
+      "sport": "wnba"
+    },
+    {
+      "analysis_status": "schema_incompatible",
+      "cls_values": null,
+      "header": [
+        "frame",
+        "timestamp",
+        "player_id",
+        "team",
+        "x_position",
+        "y_position",
+        "x_norm",
+        "y_norm",
+        "velocity",
+        "acceleration",
+        "direction_deg",
+        "court_zone",
+        "ball_possession",
+        "distance_to_ball",
+        "nearest_opponent",
+        "nearest_teammate",
+        "event",
+        "team_spacing",
+        "spacing_hull_area",
+        "team_centroid_x",
+        "team_centroid_y",
+        "paint_count_own",
+        "paint_count_opp",
+        "possession_side",
+        "handler_isolation",
+        "bbox_x1",
+        "bbox_y1",
+        "bbox_x2",
+        "bbox_y2",
+        "ball_x2d",
+        "ball_y2d",
+        "ball_velocity",
+        "distance_to_basket",
+        "vel_toward_basket",
+        "drive_flag",
+        "ft_x",
+        "ft_y",
+        "dist_to_basket_ft",
+        "fast_break_flag",
+        "possession_id",
+        "possession_duration",
+        "confidence",
+        "play_type",
+        "paint_touches",
+        "off_ball_distance",
+        "shot_clock_est",
+        "scoreboard_shot_clock",
+        "scoreboard_game_clock",
+        "scoreboard_period",
+        "scoreboard_score_diff",
+        "scoreboard_confidence",
+        "possession_duration_sec",
+        "possession_type",
+        "ankle_x",
+        "ankle_y",
+        "contest_arm_angle",
+        "jump_detected",
+        "dribble_hand",
+        "ball_shot_arc_angle",
+        "ball_peak_height_px",
+        "ball_pass_speed_pxpf",
+        "player_name",
+        "jersey_number",
+        "team_abbrev",
+        "dribble_count",
+        "lineup_id",
+        "homography_valid",
+        "coordinate_space",
+        "observation",
+        "calibration",
+        "source_fps",
+        "source_height",
+        "source_duration"
+      ],
+      "observation_values": [
+        "observed"
+      ],
+      "provenance": {
+        "candidate_files": [
+          {
+            "bytes": 429,
+            "mtime_utc": "2026-09-04T03:03:18+00:00",
+            "path": "harness_verdict.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 1099,
+            "mtime_utc": "2026-09-04T02:47:27+00:00",
+            "path": "resolver_debug.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 44,
+            "mtime_utc": "2026-09-04T02:47:26+00:00",
+            "path": "team_colors.json",
+            "provenance_scalars": {}
+          },
+          {
+            "bytes": 59,
+            "mtime_utc": "2026-09-04T02:48:54+00:00",
+            "path": "tracking_capability.json",
+            "provenance_scalars": {}
+          }
+        ],
+        "tracking_csv": {
+          "bytes": 1781389,
+          "mtime_utc": "2026-09-04T02:48:38+00:00",
+          "path": "data/tracking/wnba_03/tracking_data.csv"
+        }
+      },
+      "rows": 4534,
+      "run": "wnba_03",
+      "schema_missing_fields": [
+        "cls",
+        "track_id",
+        "x",
+        "y"
+      ],
+      "sport": "wnba"
+    }
+  ],
+  "normalization_formula": "sqrt(dx^2 + dy^2) / source_height * source_fps on consecutive-frame same-track_id steps",
+  "other_active_python_lane_worktrees": {
+    "/workspace/wt/a17": [
+      3128174
+    ]
+  },
+  "purpose": "G277 landed-record cross-sport image_px profile; no tracker or detector replayed",
+  "quantile_method": "linear interpolation on sorted run-local values",
+  "route_sha256": "7e8940d16f0ef605a7583aa313386cf05c8fe7e44f1013c1486549b024ca775e",
+  "sport_aggregation_run_level_medians": [
+    {
+      "run_count": 3,
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "football",
+      "step_count": 0,
+      "track_count": 33,
+      "track_length_median_frames": 1072.0,
+      "track_length_median_seconds": 35.76906666666667,
+      "track_length_p90_frames": 14836.599999999999,
+      "track_length_p90_seconds": 495.0478866666666,
+      "track_shorter_than_5_fraction": 0.12121212121212122
+    },
+    {
+      "run_count": 10,
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "kbo",
+      "step_count": 0.0,
+      "track_count": 3855.5,
+      "track_length_median_frames": 9.0,
+      "track_length_median_seconds": 0.15015,
+      "track_length_p90_frames": 35.5,
+      "track_length_p90_seconds": 0.5922583333333333,
+      "track_shorter_than_5_fraction": 0.35464160039430165
+    },
+    {
+      "run_count": 13,
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "mlb",
+      "step_count": 0,
+      "track_count": 3721,
+      "track_length_median_frames": 9.0,
+      "track_length_median_seconds": 0.15015,
+      "track_length_p90_frames": 35.0,
+      "track_length_p90_seconds": 0.5839166666666666,
+      "track_shorter_than_5_fraction": 0.33862229102167185
+    },
+    {
+      "run_count": 4,
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "npb",
+      "step_count": 0.0,
+      "track_count": 6334.0,
+      "track_length_median_frames": 12.5,
+      "track_length_median_seconds": 0.4166666666666667,
+      "track_length_p90_frames": 54.5,
+      "track_length_p90_seconds": 1.8166666666666667,
+      "track_shorter_than_5_fraction": 0.27041588279255446
+    },
+    {
+      "run_count": 4,
+      "speed_max": null,
+      "speed_median": null,
+      "speed_p90": null,
+      "speed_p99": null,
+      "speed_p999": null,
+      "sport": "soccer",
+      "step_count": 0.0,
+      "track_count": 2429.0,
+      "track_length_median_frames": 60.0,
+      "track_length_median_seconds": 2.0,
+      "track_length_p90_frames": 211.5,
+      "track_length_p90_seconds": 7.05,
+      "track_shorter_than_5_fraction": 0.06051734053929812
+    }
+  ],
+  "track_length_definition": "number of observed detector-box rows per track_id; seconds = rows/source_fps when fps is constant within run",
+  "wnba_placements": []
+}
