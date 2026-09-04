@@ -1,4 +1,4 @@
-GAP S261 | sport all | worktree a18 | log cx_s261_ingame_headline_rederive_v2
+GAP S261 | sport all | worktree a13 | log cx_s261_ingame_headline_rederive_v2
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S211 REJECT (709e2297492d21eeae739d47ea8987708bfe0437, S211_VERIFY_2026-09-04.md). B2 FAIL: attempt 2
   removed v1 fields finite_resamples and reproduction_abs_diff without aliases and changed checkpoint_count's
