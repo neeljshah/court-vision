@@ -1,4 +1,4 @@
-GAP S267 | sport all | worktree a13 | log cx_s267_key_explicit_consumers
+GAP S267 | sport all | worktree a18 | log cx_s267_key_explicit_consumers
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: successor to S257 (CLOSED AT LIMIT 644c24d46). S257_VERIFY B2 FAIL: resolver_registry.py:627-650 is an
   omitted base-path reader; test_calibration_report.py:192 and test_calibration_scoreboard_regex.py:50 fail on the
