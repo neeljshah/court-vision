@@ -1,0 +1,38 @@
+{
+  "source": {
+    "path": "/workspace/nba-ai-system/data/footage_corpus/soccer__soccer_Z6NTDyxcODs.mp4",
+    "bytes": 2341768743,
+    "sha256": "7e4c123f91eb7e096ae2a018482818929b000c9bc2b8b9ca47b542b61ba8c55e",
+    "resolution": "1920x1080",
+    "declared_frames": 179250,
+    "duration_seconds": 5975
+  },
+  "reused_survey": {
+    "manifest": "docs/evidence/tracking/g259_soccer_penalty_area_seed_2026-09-04_artifact/survey_manifest.json",
+    "panels": "docs/evidence/tracking/g259_soccer_penalty_area_seed_2026-09-04_artifact/survey_panels/",
+    "sample_count": 1195,
+    "stride_seconds": 5,
+    "sample_frame_formula": "zero_based_frame = sample_index * 150"
+  },
+  "usable_edge_rule": "A penalty-box edge must have an actually visible painted segment at native 1920x1080 resolution whose identity does not rely on a player occlusion, goal/net edge, or extrapolation beyond the paint. A partial painted segment can count; a painted corner is not required.",
+  "rescreen_counts": {
+    "four_usable_penalty_box_edges": 0,
+    "three_usable_penalty_box_edges": 0,
+    "two_usable_penalty_box_edges": 2,
+    "two_usable_edge_sample_indices": [111, 746],
+    "all_other_sample_indices": "0-1194 excluding 111 and 746; each had zero or one usable penalty-box edge"
+  },
+  "native_confirmation": {
+    "triage_note": "The 62 frames on the indexed boards are a non-evidentiary panel-derived native-confirmation set. The full 1,195-sample count was decided from the complete twelve-panel G259 survey and native confirmation of the two retained two-edge cases; no frame was promoted from a panel directly into a fit.",
+    "board_1": "native_confirmation_board_1.jpg",
+    "board_2": "native_confirmation_board_2.jpg",
+    "two_edge_frames": {
+      "111": "native_confirmations/frame_016650.jpg",
+      "746": "native_confirmations/frame_111900.jpg"
+    }
+  },
+  "fit": {
+    "performed": false,
+    "reason": "No sampled frame has all four usable penalty-box edges; a homography, residual, degeneracy diagnostics, withheld render, and offsets would be fabricated."
+  }
+}
