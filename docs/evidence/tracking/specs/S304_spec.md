@@ -1,6 +1,7 @@
 GAP S304 | sport all | worktree aXX | log cx_s304_s108_features_asof_guards
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
-CONTEXT: codex test audit (docs/research/codex_test_audit_2026-09-04.md section A): scripts/platformkit/eval_gate/s108_features.py
+CONTEXT: codex test audit (docs/research/codex_test_audit_2026-09-04.md section A):
+  scripts/platformkit/eval_gate/s108_features.py
   (named by S114 and S180) has zero direct importer tests, and it is the as-of feature joiner whose failure modes
   are leaks (a same-game column read, a duplicate-key source). This row adds the guard tests.
 PREMISE (step 0): print grep evidence of 0 direct importer tests and the four public behaviours (file:line).

@@ -1,6 +1,7 @@
 GAP S303 | sport all | worktree aXX | log cx_s303_prereg_committed_object_seals
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
-CONTEXT: codex test audit (docs/research/codex_test_audit_2026-09-04.md section D): 0/10 persisted-artifact seal tests read the
+CONTEXT: codex test audit (docs/research/codex_test_audit_2026-09-04.md section D): 0/10 persisted-artifact seal
+  tests read the
   COMMITTED object; they hash a working FILE (raw or normalized) or `git hash-object` of the current file, so a
   dirty working copy passes. The landing recipe (S261 attempt 2d, worktree a13 commit ccb10fe9f) is: `git show
   HEAD:<prereg>` primary; normalized FILE bytes only after `git cat-file -e HEAD:<prereg>` proves absence.

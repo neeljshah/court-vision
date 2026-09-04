@@ -1,6 +1,7 @@
 GAP S301 | sport all | worktree aXX | log cx_s301_unique_state_key_routes
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
-CONTEXT: codex test audit (docs/research/codex_test_audit_2026-09-04.md section D): none of the three shared evaluator routes
+CONTEXT: codex test audit (docs/research/codex_test_audit_2026-09-04.md section D): none of the three shared
+  evaluator routes
   (scripts/platformkit/eval_gate/cpcv_engine.py cpcv_evaluate, walkforward.py walk_forward, cpcv_distribution.py)
   rejects a duplicate (game_id, state_ts) state key -- the Q4 one-state-per-tick contract that S277/S271 failed on
   is unguarded in code. This row adds ONE shared additive validator (new module) and a per-file test.

@@ -1,6 +1,7 @@
 GAP S306 | sport mlb | worktree aXX | log cx_s306_s106_requote_test
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
-CONTEXT: codex test audit (docs/research/codex_test_audit_2026-09-04.md section A): scripts/platformkit/eval_gate/s106_requote.py is
+CONTEXT: codex test audit (docs/research/codex_test_audit_2026-09-04.md section A):
+  scripts/platformkit/eval_gate/s106_requote.py is
   named by four landed rows (S106, S121, S137, S143) and has zero direct importer tests -- the most-depended-on
   untested module in the harness. This row adds the per-file test only; the module is byte-identical.
 PREMISE (step 0): print grep evidence of 0 direct importer tests and the four landed rows naming the module.

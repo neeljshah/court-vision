@@ -1,6 +1,7 @@
 GAP S305 | sport all | worktree aXX | log cx_s305_master_failing_tests_repair
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
-CONTEXT: codex test audit (docs/research/codex_test_audit_2026-09-04.md section B): two tests fail identically on master. (1)
+CONTEXT: codex test audit (docs/research/codex_test_audit_2026-09-04.md section B): two tests fail identically on
+  master. (1)
   scripts/platformkit/eval_gate/test_calibration_report.py: 9 passed / 1 failed -- `assert report[key] ==
   landed[key]` with ece_after 0.024842541854003943 vs the frozen S05 artifact 0.039002202208806645; classified a
   REAL REGRESSION: S212 replaced the legacy global `_oof_per_regime` path while promising the default unchanged.
