@@ -1,4 +1,4 @@
-GAP S265 | sport nba | worktree aXX | log cx_s265_incumbent_conformal_band_sample
+GAP S265 | sport nba | worktree a15 | log cx_s265_incumbent_conformal_band_sample
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S238 and S258 both CLOSED AT LIMIT on the same wall: the full 465,249-tick / 1,593-game source needs ~900 MB,
   the laptop RAM guard kills it, and contract B5 forbids a pod run before ACCEPT. This row is stage 1 of the B5
