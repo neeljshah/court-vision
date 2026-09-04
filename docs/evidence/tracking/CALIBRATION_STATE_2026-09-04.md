@@ -69,7 +69,67 @@ tried is not more accurate.
 
 ---
 
-## 4. What is genuinely open
+## 4. UPDATE, later on 2026-09-04: the architecture, not the detector
+
+**Everything in sections 1-3 stands. What follows was found afterwards and changes where the problem
+most likely lives.** Sections 1-3 concluded that detected LINE ACCURACY is the lever. That remains true
+of the per-frame corner experiments. **But those experiments were never what production uses.**
+
+### 4.1 The court model is anchored to a panorama of a different venue
+
+| Finding | Evidence | Row |
+|---|---|---|
+| All six "per-clip" cached panoramas are **byte-identical** to the generic `resources/pano_enhanced.png` | one md5 `408aca74842f9cd4a1be094d0610230d` across football, ncaa_basketball, soccer and three WNBA clips, all `(500, 3698, 3)` | G237-PANO-GENERIC |
+| The per-clip build **cannot** succeed | `_pano_valid` (`:843-851`) requires >=2000 px wide and a 3.0-50.0 aspect ratio; a broadcast frame is ~1.88:1 | G237-PANO-GENERIC |
+| The generic image is **cached under the per-clip name**, and a cache hit then prevents any retry | `pano = _fb_img` then `cv2.imwrite(out, pano)` (`:975-988`); `_load_pano` returns early on a valid cache (`:861-866`) | G237-PANO-MECHANISM |
+| Confirmed at **runtime**, not inferred | a 5-frame run printed `Pano cache hit: pano_wnba__wnba_01.png`, then `_build_court: rectified portrait (1711x3404) - rotated 90 deg -> landscape`, then `Using static Rectify1.npy` | G237-PANO-CONFIRMED |
+
+The code defends this: **`M1` (`Rectify1.npy`) is calibrated for the Short4Mosaicing panorama**, and the
+comment warns that a different pano "clusters all players into a ~590px wide strip".
+
+### 4.2 The acceptance thresholds are at or below the mathematical floor
+
+| Constant | Value | Note |
+|---|---:|---|
+| `_H_MIN_INLIERS` (`:351`) | **5** | comment at `:889`: *"Broadcast frames give 5-7 SIFT inliers vs pano_enhanced"* |
+| bootstrap `min_inliers` (`:1306`) | **3** | below the **4** correspondences a homography requires |
+| `_H_RESET_INLIERS` (`:354`) | **40** | what the code itself calls a "very clean SIFT match" |
+| sanity gate (`:1327`) | **`> 99999`** | inline comment: *"sanity gate disabled"* -- it fires for **no** frame |
+
+**An 8x gap separates "accepted" (5) from "clean" (40), the first homography of every clip is accepted
+at 3 and becomes the EMA everything else blends against, and M1 is re-synced from
+`_M1_raw_clip @ inv(_M_ema)` on every EMA change (`:1338-1343`), so a poor EMA propagates straight into
+the court mapping.**
+
+### 4.3 What this means, stated at the right strength
+
+**IF production really operates in the 5-7 inlier regime its own comments describe, then per-frame corner
+detection was never the binding constraint and G194's "DEGENERATE basketball projection" is the design's
+expected output rather than a puzzle.** **That is an INFERENCE FROM CODE, not a measurement.** G238 was
+written to observe the actual inlier distribution and **could not launch**; a 40-frame probe showed
+`cv2.findHomography` is not even reached that early. **So all of 4.2 is what the code ACCEPTS, not what
+it receives.** If real matches routinely yield 30+ inliers, these thresholds are harmless.
+
+## 5. The hand-labelled path: three failures, none of them a fair test
+
+| Row | Frame used | Why it failed |
+|---|---|---|
+| G233 | `wnba__wnba_01_1080p` labels vs `wnba__wnba_01.mp4` | different clip identifiers; no `_1080p` file in the corpus. **My spec error.** |
+| G233b | `IB-_u4gW3ds__s14__f028171` at index 28171 | the still is not that frame (frame-accurate MAD 61.33) |
+| G233c | same still at the **correct** index 46154 (verified, MAD 1.87) | clean gate failure -- but **G196 never eye-checked this frame** |
+
+**G196 eye-checked only 5 of 17 frames** (indices 0, 4, 8, 12, 16): **3 YES** -- `sRtHQbywiTE__s03__f006925`,
+`wnba__wnba_01_1080p__s01__f001600`, `wnba__wnba_07__s08__f016801` -- and **2 INDETERMINATE**. Its table
+entry for G233c's frame reads `yes | 0.000e+00 | 0.000e+00`, which is the **round-trip residual**: a
+self-fit that is trivially zero, the same trap as G217's 17/17 control, **not** an eye-check verdict.
+
+**All three validated frames come from clip identifiers absent from the corpus; the one clip present was
+rated INDETERMINATE. So the geometry has never been tested on a frame anyone confirmed.** G236 showed
+labels are recoverable by re-indexing (its still sits at frame **46154**, delta **+17,983**, match ratio
+**0.037** to the scan median over a full 205,444-frame decode). **G236b is running the fair test.**
+
+## 6. What is genuinely open
+
 
 1. **A trained model.** Untried for basketball. Any such row **must cite G31**,
    which closed a trained calibration path AT LIMIT for tennis, and say why
