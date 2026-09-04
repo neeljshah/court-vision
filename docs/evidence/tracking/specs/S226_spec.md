@@ -1,4 +1,4 @@
-GAP S226 | sport nba (in-game) | worktree aXX | log cx_s226_ingame_clutch_foul_rotation
+GAP S226 | sport nba (in-game) | worktree a13 | log cx_s226_ingame_clutch_foul_rotation
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: the clutch cell has never been scored as its own partition. Measured 2026-09-04 on
 nba_checkpoints_full.parquet: period 4 with |margin| <= 5 and game_clock_s <= 300 holds 62,465 ticks / 702 games;
