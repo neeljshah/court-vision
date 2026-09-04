@@ -1,0 +1,85 @@
+{
+  "evaluation": {
+    "engine": "cpcv_evaluate",
+    "n_groups": 8,
+    "n_test_groups": 2,
+    "same_matchup_embargo_days": 3,
+    "same_team_purge_hours": 48,
+    "symmetric_calendar_embargo_days": 1
+  },
+  "helper_sha256": "701AC96CE0E346087D846822A0AA791ECC241CE2646EFC39F7BBBA9BA8565F0E",
+  "prereg_seal_sha256": "E6CE4EEAEA909412EA52321E68B2F507295C05AC1576F6D16B1592CCCC9D913D",
+  "preregistration": "S211_ingame_headline_rederive_attempt_2_prereg_2026-09-04.md",
+  "schema_version": 2,
+  "sports": {
+    "mlb": {
+      "brier": {
+        "conditional": 0.12799755953257377,
+        "score": 0.12822834737953837,
+        "static": 0.24897282410431543
+      },
+      "checkpoint_count": 488341,
+      "game_path_count": 23279,
+      "inputs": [
+        {
+          "bytes": 343723,
+          "path": "C:\\Users\\neelj\\nba-track-a18\\data\\domains\\mlb\\games.parquet",
+          "resolution": "not_applicable"
+        },
+        {
+          "bytes": 659985,
+          "path": "C:\\Users\\neelj\\nba-track-a18\\data\\domains\\mlb\\pitchers.parquet",
+          "resolution": "not_applicable"
+        }
+      ],
+      "prior_share_ci": {
+        "lower": 0.0005919733086871243,
+        "method": "game_cluster_bootstrap_percentile",
+        "n_eff": 23279,
+        "reported": true,
+        "resamples": 10000,
+        "seed": 21120260904,
+        "upper": 0.0032629680717889283
+      },
+      "series_path": "docs\\evidence\\harness\\S211_mlb_per_game_losses_2026-09-04.csv",
+      "shares": {
+        "model_prior_contribution": 0.00023078784696459187,
+        "model_prior_share": 0.0019077275654787128,
+        "score_only_share": 0.9980922724345213,
+        "total_calibration_change": 0.12097526457174165
+      }
+    },
+    "nba": {
+      "brier": {
+        "conditional": 0.163246780662365,
+        "score": 0.17235318274013006,
+        "static": 0.21883250084408842
+      },
+      "checkpoint_count": 27573,
+      "game_path_count": 1313,
+      "inputs": [
+        {
+          "bytes": 28744,
+          "path": "C:\\Users\\neelj\\nba-track-a18\\data\\domains\\basketball_nba\\linescores.parquet",
+          "resolution": "not_applicable"
+        }
+      ],
+      "prior_share_ci": {
+        "lower": 0.11469448235798914,
+        "method": "game_cluster_bootstrap_percentile",
+        "n_eff": 1313,
+        "reported": true,
+        "resamples": 10000,
+        "seed": 21120260904,
+        "upper": 0.226824389014025
+      },
+      "series_path": "docs\\evidence\\harness\\S211_nba_per_game_losses_2026-09-04.csv",
+      "shares": {
+        "model_prior_contribution": 0.009106402077765058,
+        "model_prior_share": 0.16382628574378427,
+        "score_only_share": 0.8361737142562157,
+        "total_calibration_change": 0.05558572018172342
+      }
+    }
+  }
+}
