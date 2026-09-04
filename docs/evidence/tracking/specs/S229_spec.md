@@ -1,4 +1,4 @@
-GAP S229 | sport nba (pregame) | worktree aXX | log cx_s229_matchup_player_vs_defender
+GAP S229 | sport nba (pregame) | worktree a17 | log cx_s229_matchup_player_vs_defender
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: the person-to-person question has never been screened and the served surface cannot answer it:
 matchup_preview's style_matchup note reads 'sport-level style-pairing statistics ... no team/player-to-style-category
