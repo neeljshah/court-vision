@@ -1,0 +1,50 @@
+{
+  "attempt": "2",
+  "attempt_2": {
+    "limit_evidence_path": "docs/evidence/harness/S250_mlb_tennis_prop_close_capture_2026-09-04_attempt_2_venue_responses.jsonl",
+    "scored": false,
+    "sports": {
+      "mlb": {
+        "credential_kind": "ODDS_API_KEY",
+        "earliest_conditional_30_cluster_window_cdt": "2026-09-05T15:10:00-05:00",
+        "finding": "NOT VERIFIED: route not sent because environment credential is absent; no MLB event was live at the attempt time",
+        "next_event_cdt": "2026-09-04T13:10:00-05:00",
+        "venue_market": "pitcher_strikeouts listed"
+      },
+      "tennis": {
+        "credential_kind": "ODDS_API_KEY",
+        "earliest_conditional_30_cluster_window_cdt": null,
+        "finding": "CLOSED AT LIMIT: player_aces is not listed in venue market documentation",
+        "next_event_cdt": null,
+        "venue_market": "player_aces not listed"
+      }
+    }
+  },
+  "capture": {
+    "duplicate_count": 0,
+    "path": "docs/evidence/harness/S250_mlb_tennis_prop_close_capture_2026-09-04.jsonl",
+    "rows": 0
+  },
+  "preregistration_sha256": "3ac24eae6881a9db2d529a6559a59a5635efe806155f81b80a37d84ace8cc96e",
+  "probe": {
+    "http_requests": 0,
+    "reason": "ODDS_API_KEY absent before route call"
+  },
+  "restart_construct": {
+    "clean_stop": "PASS",
+    "mid_poll_interrupt": "PASS",
+    "process_kill_mid_write": "PASS"
+  },
+  "sports": {
+    "mlb": {
+      "attempted_clusters": 0,
+      "real_price_clusters": 0,
+      "verdict": "NOT VERIFIED"
+    },
+    "tennis": {
+      "attempted_clusters": 0,
+      "real_price_clusters": 0,
+      "verdict": "NOT VERIFIED"
+    }
+  }
+}
