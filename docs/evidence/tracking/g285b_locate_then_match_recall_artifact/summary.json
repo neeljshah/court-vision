@@ -1,0 +1,44 @@
+{
+  "g270_on_court_footpoints": 88,
+  "g284_sealed_visible_players": 150,
+  "located_visible_players": 143,
+  "primary_radius_px": 50.0,
+  "radii": {
+    "100": {
+      "located_player_recall": 0.11888111888111888,
+      "located_player_recall_wilson_95": [
+        0.07556270475062815,
+        0.18214012062719487
+      ],
+      "matched_located_players": 17,
+      "unmatched_footpoint_rate": 0.8068181818181818,
+      "unmatched_footpoints": 71
+    },
+    "25": {
+      "located_player_recall": 0.02097902097902098,
+      "located_player_recall_wilson_95": [
+        0.007160017221554262,
+        0.05986096513405814
+      ],
+      "matched_located_players": 3,
+      "unmatched_footpoint_rate": 0.9659090909090909,
+      "unmatched_footpoints": 85
+    },
+    "50": {
+      "located_player_recall": 0.04895104895104895,
+      "located_player_recall_wilson_95": [
+        0.023911439729467972,
+        0.09759006920391888
+      ],
+      "matched_located_players": 7,
+      "unmatched_footpoint_rate": 0.9204545454545454,
+      "unmatched_footpoints": 81
+    }
+  },
+  "sampled_frames": 15,
+  "sensitivity_radii_px": [
+    25.0,
+    50.0,
+    100.0
+  ]
+}
