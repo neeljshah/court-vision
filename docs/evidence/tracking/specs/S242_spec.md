@@ -1,4 +1,4 @@
-GAP S242 | sport nba (pregame) | worktree aXX | log cx_s242_ptsrebast_given_minutes
+GAP S242 | sport nba (pregame) | worktree a18 | log cx_s242_ptsrebast_given_minutes
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: pts/reb/ast = minutes x rate; S241 builds the minutes distribution, not the conditional
 rate distributions. The 7 prop models (_PROP_STATS, player_props.py) are point estimates;
