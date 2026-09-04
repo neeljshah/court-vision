@@ -1,4 +1,4 @@
-GAP S215 | sport tennis (in-game) | worktree aXX | log cx_s215_tennis_inplay_census
+GAP S215 | sport tennis (in-game) | worktree a13 | log cx_s215_tennis_inplay_census
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: tennis is recorded as having no in-play close (MODEL_QUALITY_PROGRAM section 2, "NO in-play close on disk"),
   yet tennis_price_series.parquet holds 1,854,100 rows (metadata 2026-09-04) and two artifacts disagree on its event
