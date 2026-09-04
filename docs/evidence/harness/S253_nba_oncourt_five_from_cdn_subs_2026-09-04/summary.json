@@ -1,0 +1,16 @@
+{
+  "archive_root": "data/domains/wnba/cdn_backfill",
+  "complete_ticks": 5647,
+  "coverage_pct": 100.0,
+  "duplicate_on_court_violations": 0,
+  "excluded_games": [
+    {
+      "game_id": "1022600019",
+      "reason": "invalid_substitution_membership"
+    }
+  ],
+  "pair_directories": 168,
+  "qualifying_game_clusters": 167,
+  "substitution_bounded_ticks": 5647,
+  "substitution_in_out_imbalance": 0
+}
