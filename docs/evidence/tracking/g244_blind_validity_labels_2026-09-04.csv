@@ -1,0 +1,90 @@
+frame,scene_type,validity,independent_geometry_basis
+0,normal_court,INVALID,visible sideline and three-point arc disagree with projected court
+2000,normal_court,VALID,visible sideline and three-point arc follow projected court
+4000,normal_court,INVALID,visible sideline and arc disagree with projected court
+6000,normal_court,INVALID,visible paint arc and sideline disagree with projected court
+8000,normal_court,INVALID,visible paint and arc disagree with projected court
+10000,normal_court,VALID,visible sideline and three-point arc follow projected court
+12000,normal_court,VALID,visible sideline and three-point arc follow projected court
+14000,normal_court,INVALID,visible paint arc and sideline disagree with projected court
+16000,normal_court,INVALID,visible paint and free-throw circle disagree with projected court
+18000,graphic_partial,CANNOT_JUDGE,no painted court geometry is visible
+19599,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+20000,normal_court,INVALID,visible paint arc and sideline disagree with projected court
+22000,normal_court,INVALID,visible paint arc and baseline disagree with projected court
+24000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+26000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+28000,normal_court,INVALID,visible paint arc and baseline disagree with projected court
+30000,normal_court,INVALID,visible paint arc and baseline disagree with projected court
+32000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+34000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+36000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+38000,normal_court,INVALID,visible paint arc and sideline disagree with projected court
+40000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+42000,normal_court,INVALID,visible paint arc and sideline disagree with projected court
+44000,tight_player_bench_crowd,CANNOT_JUDGE,partial picture leaves no sufficient independent geometry
+46000,replay_overhead,CANNOT_JUDGE,no sufficient painted court geometry is visible
+48000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+50000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+52000,normal_court,INVALID,visible baseline and paint arc disagree with projected court
+54000,normal_court,INVALID,visible paint arc and sideline disagree with projected court
+56000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+58000,normal_court,INVALID,visible paint arc and sideline disagree with projected court
+60000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+62000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+64000,graphic_partial,CANNOT_JUDGE,partial graphic leaves no sufficient independent geometry
+66000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+68000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+70000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+72000,normal_court,INVALID,visible paint arc and sideline disagree with projected court
+74000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+76000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+78000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+80000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+82000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+84000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+86000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+88000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+90000,normal_court,VALID,visible sideline and three-point arc follow projected court
+92000,normal_court,VALID,visible sideline and three-point arc follow projected court
+94000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+96000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+98000,normal_court,INVALID,visible paint arc and sideline disagree with projected court
+100000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+102000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+104000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+106000,normal_court,VALID,visible sideline and three-point arc follow projected court
+108000,normal_court,CANNOT_JUDGE,visible crop lacks enough independent geometry for a validity call
+110000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+112000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+114000,replay_overhead,VALID,visible baseline free-throw circle and three-point arc follow projected court
+116000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+118000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+120000,replay_overhead,INVALID,visible baseline free-throw circle and arc disagree with projected court
+122000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+124000,normal_court,INVALID,visible sideline and three-point arc disagree with projected court
+126000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+128000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+130000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+132000,replay_overhead,INVALID,visible baseline free-throw circle and arc disagree with projected court
+134000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+136000,replay_overhead,INVALID,visible baseline free-throw circle and arc disagree with projected court
+138000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+140000,normal_court,INVALID,visible sidelines and center-court geometry disagree with projected court
+142000,replay_overhead,INVALID,visible baseline free-throw circle and arc disagree with projected court
+144000,normal_court,INVALID,visible paint arc and sideline disagree with projected court
+146000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+148000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+150000,normal_court,INVALID,visible paint arc and sideline disagree with projected court
+152000,normal_court,INVALID,visible paint arc and sideline disagree with projected court
+154000,normal_court,INVALID,visible paint arc and sideline disagree with projected court
+156000,normal_court,INVALID,visible paint arc and sideline disagree with projected court
+158000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+160000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+162000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
+164000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+166000,normal_court,CANNOT_JUDGE,visible crop lacks enough independent geometry for a validity call
+168000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+170000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+172000,tight_player_bench_crowd,CANNOT_JUDGE,no painted court geometry is visible
+174000,normal_court,VALID,visible sideline free-throw circle and three-point arc follow projected court
