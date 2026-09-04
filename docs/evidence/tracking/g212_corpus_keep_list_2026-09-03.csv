@@ -1,0 +1,13 @@
+source_file,source_bytes,tracking_data_bytes,harness_verdict_bytes,durability_screen,protected_thin_game,reader_citations,keep_reason
+baseball__kbo_06.mp4,642203161,5581429,346,yes,no,R01;R02,"R01 and R02 dynamically enumerate every current corpus source."
+baseball__kbo_07.mp4,648964602,5339393,346,yes,no,R01;R02,"R01 and R02 dynamically enumerate every current corpus source."
+baseball__kbo_08.mp4,533566464,9179700,346,yes,no,R01;R02,"R01 and R02 dynamically enumerate every current corpus source."
+baseball__npb_02.mp4,895692406,16173658,347,yes,no,R01;R02,"R01 and R02 dynamically enumerate every current corpus source."
+baseball__npb_03.mp4,3093450494,13145129,347,yes,no,R01;R02,"R01 and R02 dynamically enumerate every current corpus source."
+football__football_Z8Ezd95NnjM.mp4,2493550705,15636596,347,yes,no,R01;R02,"R01 and R02 dynamically enumerate every current corpus source."
+football__football_yahhMkUWd7c.mp4,2567704906,16957820,347,yes,no,R01;R02,"R01 and R02 dynamically enumerate every current corpus source."
+mlb__mlb_nLoG6gvC-Nk.mp4,1066801340,12334652,347,yes,no,R01;R02,"R01 and R02 dynamically enumerate every current corpus source."
+ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4,3580059573,ABSENT,ABSENT,no,yes,R01;R02;R04;R05;R06;R07,"Protected thin game; also dynamically cited by R01/R02 and explicitly cited by R04-R07."
+soccer__soccer_dnR5C6WLJI4.mp4,3373680742,22306680,345,yes,no,R01;R02,"R01 and R02 dynamically enumerate every current corpus source."
+tennis__tennis_02.mp4,4131436578,255168,299,yes,no,R01;R02,"R01 and R02 dynamically enumerate every current corpus source."
+wnba__wnba_01.mp4,2931985407,1259329,429,yes,yes,R01;R02;R04;R05;R06;R07,"Protected thin game by G212 rule; also dynamically cited by R01/R02 and explicitly cited by R04-R07."
