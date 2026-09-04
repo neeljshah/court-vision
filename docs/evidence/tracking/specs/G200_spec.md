@@ -1,7 +1,15 @@
-GAP G200 | sport all | worktree a6 | log g200_pod_concurrency_headroom
-**HELD -- DO NOT DISPATCH UNTIL G198 HAS REPORTED.** G198 is measuring a decode-thread timing race
-on the pod. Adding concurrent pod load would change the exact variable it measures and would
-contaminate it. Dispatch only after G198's EXIT line.
+**HOLD LIFTED 2026-09-03 on the user's explicit instruction to push GPU pressure on the pod.**
+**G203 IS STILL RUNNING ON THIS MACHINE.** That is a real confound and you must handle it, not ignore
+it: **record the concurrent load (`ps`, core count, what the daemon and any G203 job are doing) BEFORE
+and AFTER every measurement, and report it beside every timing. A timing without its load context is
+not a result.** If G203 has finished by the time you start, say so and note the machine was quieter.
+
+**DISK GUARD, BINDING -- the pod hit `Disk quota exceeded` tonight.** `df` CANNOT see the volume cap;
+it reports the whole cluster filesystem. **Before each arm, verify writable headroom with an actual
+small write test (`dd` a few MB to a temp path and remove it), and record `du -sm` of
+`/workspace/nba-ai-system/data`. If a write test FAILS, STOP IMMEDIATELY, report, and delete nothing.**
+Give every concurrent job its own `--data-dir` and **delete your own job outputs when done**; do not
+leave N sets of tracking output behind.
 
 **MEASUREMENT ONLY. Change NO production code.** `src/` is HUMAN-GATED: READ and wrap in your own
 process only. Deploy nothing into the pod checkout (B5). **NEVER kill, restart or deploy over the pod
