@@ -1,0 +1,408 @@
+{
+  "census": {
+    "excluded_by_reason": {},
+    "games_loaded": 1593,
+    "games_scorable": 1593,
+    "games_scored": 1593,
+    "ticks_loaded": 465249,
+    "ticks_scorable": 465249,
+    "ticks_scored": 465249
+  },
+  "code_identity": {
+    "aci_online": "17dbb28395158d0366cafddf9e309152722076960783fb8d30d53e14db12136c",
+    "cpcv_engine": "e9fe694a721658a067bd452911b7f95627897ba4d6c6dccd86cc080f9fa6935c",
+    "s101": "4dbadc319b76a0e9c6e4ea53e3c683f242176774290917bebee894344c2cf93f",
+    "s123": "476ed9fdfb714b93c5b722f8e99fb1266cdb5987a729495f12e84d2b62ea08ed",
+    "s265": "697d7ae649686ec580e9059e62744ce288bd27b6383e311c3c94d881fff817ff",
+    "s276_attempt2": "14f9f155017a48f754b6902d59bdfdaad477118118c3f98ebf40585bd63454d1",
+    "s86": "2e197d14cce6d86ed80db6482cf37b08201c61944b930197cbf6317a1140fa68"
+  },
+  "design": {
+    "coverage_max_groups": 50,
+    "coverage_min_group": 400,
+    "engine": "cpcv_evaluate",
+    "game_first_date_blocks": true,
+    "n_groups": 5,
+    "n_test_groups": 1,
+    "purge": "game-disjoint",
+    "symmetric_embargo_days": 1
+  },
+  "generated_at": "2026-09-04T15:57:06.726880+00:00",
+  "paired_loss_series": {
+    "path": "docs/evidence/harness/S276_incumbent_conformal_band_full_pod_paired_loss_2026-09-04_attempt2.csv.gz",
+    "sha256": "4c49985745fe05409b31b80c5e03447746dd59ea1d1b44ae2d15e4a7c7fc2b62"
+  },
+  "pod_rss": {
+    "peak_bytes": 1948352512
+  },
+  "prereg": {
+    "path": "docs/evidence/harness/S276_preregistration_incumbent_conformal_band_full_pod_2026-09-04_attempt2.md",
+    "seal_sha256": "8217203a503ebcf52c90889d4b97629c964cdae00e932d6a3f9f367ff22de2a2"
+  },
+  "row": "S276 attempt 2",
+  "s101_regression": {
+    "cells": [
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P1",
+        "committed_coverage": 0.9361702127659575,
+        "nominal": 0.9,
+        "replayed_coverage": 0.9361702127659575
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P2",
+        "committed_coverage": 0.94,
+        "nominal": 0.9,
+        "replayed_coverage": 0.94
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P3",
+        "committed_coverage": 0.96,
+        "nominal": 0.9,
+        "replayed_coverage": 0.96
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P4",
+        "committed_coverage": 0.98,
+        "nominal": 0.9,
+        "replayed_coverage": 0.98
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "OT",
+        "committed_coverage": 0.9411764705882353,
+        "nominal": 0.9,
+        "replayed_coverage": 0.9411764705882353
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "ALL",
+        "committed_coverage": 0.96,
+        "nominal": 0.9,
+        "replayed_coverage": 0.96
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P1",
+        "committed_coverage": 0.851063829787234,
+        "nominal": 0.8,
+        "replayed_coverage": 0.851063829787234
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P2",
+        "committed_coverage": 0.94,
+        "nominal": 0.8,
+        "replayed_coverage": 0.94
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P3",
+        "committed_coverage": 0.84,
+        "nominal": 0.8,
+        "replayed_coverage": 0.84
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P4",
+        "committed_coverage": 0.96,
+        "nominal": 0.8,
+        "replayed_coverage": 0.96
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "OT",
+        "committed_coverage": 0.8235294117647058,
+        "nominal": 0.8,
+        "replayed_coverage": 0.8235294117647058
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "ALL",
+        "committed_coverage": 0.96,
+        "nominal": 0.8,
+        "replayed_coverage": 0.96
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P1",
+        "committed_coverage": 0.9574468085106383,
+        "nominal": 0.9,
+        "replayed_coverage": 0.9574468085106383
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P2",
+        "committed_coverage": 0.88,
+        "nominal": 0.9,
+        "replayed_coverage": 0.88
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P3",
+        "committed_coverage": 0.94,
+        "nominal": 0.9,
+        "replayed_coverage": 0.94
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P4",
+        "committed_coverage": 0.94,
+        "nominal": 0.9,
+        "replayed_coverage": 0.94
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "OT",
+        "committed_coverage": 0.6470588235294118,
+        "nominal": 0.9,
+        "replayed_coverage": 0.6470588235294118
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "ALL",
+        "committed_coverage": 0.98,
+        "nominal": 0.9,
+        "replayed_coverage": 0.98
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P1",
+        "committed_coverage": 0.8936170212765957,
+        "nominal": 0.8,
+        "replayed_coverage": 0.8936170212765957
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P2",
+        "committed_coverage": 0.86,
+        "nominal": 0.8,
+        "replayed_coverage": 0.86
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P3",
+        "committed_coverage": 0.86,
+        "nominal": 0.8,
+        "replayed_coverage": 0.86
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P4",
+        "committed_coverage": 0.94,
+        "nominal": 0.8,
+        "replayed_coverage": 0.94
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "OT",
+        "committed_coverage": 0.47058823529411764,
+        "nominal": 0.8,
+        "replayed_coverage": 0.47058823529411764
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "ALL",
+        "committed_coverage": 0.98,
+        "nominal": 0.8,
+        "replayed_coverage": 0.98
+      }
+    ],
+    "max_abs_coverage_diff": 0.0,
+    "n_cells": 24,
+    "passes": true,
+    "tolerance": 1e-09
+  },
+  "source": {
+    "loaded": {
+      "n_games": 1593,
+      "n_ticks": 465249
+    },
+    "path": "data/cache/inplay_odds/nba_checkpoints_full.parquet"
+  },
+  "static": {
+    "0.80": {
+      "cells": {
+        "ALL": {
+          "coverage": 1.0,
+          "deviation": 0.19999999999999996,
+          "group_size": 9304,
+          "mean_interval_half_width": 0.021273110898659936,
+          "mean_interval_width": 0.04254622179731987,
+          "mean_miss": 0.0,
+          "n": 465249,
+          "n_groups": 50,
+          "nominal": 0.8,
+          "within_tolerance": false
+        },
+        "OT": {
+          "coverage": 0.7777777777777778,
+          "deviation": -0.022222222222222254,
+          "group_size": 410,
+          "mean_interval_half_width": 0.030226130559337077,
+          "mean_interval_width": 0.060452261118674154,
+          "mean_miss": 0.008779451358316306,
+          "n": 14765,
+          "n_groups": 36,
+          "nominal": 0.8,
+          "within_tolerance": false
+        },
+        "P1": {
+          "coverage": 0.8,
+          "deviation": 0.0,
+          "group_size": 888,
+          "mean_interval_half_width": 0.06267805400400733,
+          "mean_interval_width": 0.12535610800801467,
+          "mean_miss": 0.004468426989249787,
+          "n": 44428,
+          "n_groups": 50,
+          "nominal": 0.8,
+          "within_tolerance": true
+        },
+        "P2": {
+          "coverage": 0.82,
+          "deviation": 0.019999999999999907,
+          "group_size": 1376,
+          "mean_interval_half_width": 0.048306047880738764,
+          "mean_interval_width": 0.09661209576147753,
+          "mean_miss": 0.0023727200002409653,
+          "n": 68825,
+          "n_groups": 50,
+          "nominal": 0.8,
+          "within_tolerance": true
+        },
+        "P3": {
+          "coverage": 0.86,
+          "deviation": 0.05999999999999994,
+          "group_size": 1052,
+          "mean_interval_half_width": 0.037046453222962995,
+          "mean_interval_width": 0.07409290644592599,
+          "mean_miss": 0.0024728806489568685,
+          "n": 52645,
+          "n_groups": 50,
+          "nominal": 0.8,
+          "within_tolerance": false
+        },
+        "P4": {
+          "coverage": 0.82,
+          "deviation": 0.019999999999999907,
+          "group_size": 5691,
+          "mean_interval_half_width": 0.0048890754248899085,
+          "mean_interval_width": 0.009778150849779817,
+          "mean_miss": 0.0032061132177294486,
+          "n": 284586,
+          "n_groups": 50,
+          "nominal": 0.8,
+          "within_tolerance": true
+        }
+      },
+      "n_scored_games": 1593,
+      "n_scored_ticks": 465249
+    },
+    "0.90": {
+      "cells": {
+        "ALL": {
+          "coverage": 1.0,
+          "deviation": 0.09999999999999998,
+          "group_size": 9304,
+          "mean_interval_half_width": 0.03152496350695204,
+          "mean_interval_width": 0.06304992701390408,
+          "mean_miss": 0.0,
+          "n": 465249,
+          "n_groups": 50,
+          "nominal": 0.9,
+          "within_tolerance": false
+        },
+        "OT": {
+          "coverage": 0.9166666666666666,
+          "deviation": 0.016666666666666607,
+          "group_size": 410,
+          "mean_interval_half_width": 0.05565923208848362,
+          "mean_interval_width": 0.11131846417696724,
+          "mean_miss": 0.0020948695665151365,
+          "n": 14765,
+          "n_groups": 36,
+          "nominal": 0.9,
+          "within_tolerance": true
+        },
+        "P1": {
+          "coverage": 0.92,
+          "deviation": 0.020000000000000018,
+          "group_size": 888,
+          "mean_interval_half_width": 0.08388118285125555,
+          "mean_interval_width": 0.1677623657025111,
+          "mean_miss": 0.0017118506967446013,
+          "n": 44428,
+          "n_groups": 50,
+          "nominal": 0.9,
+          "within_tolerance": false
+        },
+        "P2": {
+          "coverage": 0.94,
+          "deviation": 0.039999999999999925,
+          "group_size": 1376,
+          "mean_interval_half_width": 0.06264388113467566,
+          "mean_interval_width": 0.12528776226935132,
+          "mean_miss": 0.00020771171496505438,
+          "n": 68825,
+          "n_groups": 50,
+          "nominal": 0.9,
+          "within_tolerance": false
+        },
+        "P3": {
+          "coverage": 0.94,
+          "deviation": 0.039999999999999925,
+          "group_size": 1052,
+          "mean_interval_half_width": 0.055754548565847176,
+          "mean_interval_width": 0.11150909713169435,
+          "mean_miss": 0.0008968841908480729,
+          "n": 52645,
+          "n_groups": 50,
+          "nominal": 0.9,
+          "within_tolerance": false
+        },
+        "P4": {
+          "coverage": 0.9,
+          "deviation": 0.0,
+          "group_size": 5691,
+          "mean_interval_half_width": 0.0100912241499001,
+          "mean_interval_width": 0.0201824482998002,
+          "mean_miss": 0.002058509445067856,
+          "n": 284586,
+          "n_groups": 50,
+          "nominal": 0.9,
+          "within_tolerance": true
+        }
+      },
+      "n_scored_games": 1593,
+      "n_scored_ticks": 465249
+    }
+  }
+}
