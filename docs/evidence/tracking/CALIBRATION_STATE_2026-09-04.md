@@ -849,6 +849,69 @@ that reframes the programme rather than the clip.
 
 ---
 
+---
+
+## 7.21 THE MAP-ELIGIBLE CEILING IS NOT THE BINDING CONSTRAINT: about two thirds of the clip is court-bearing
+
+G274 found the shot adjacent to the studied span was a close-up with no painted
+court, which raised the possibility that court-bearing footage is rare and that
+the whole court-space programme addresses only a sliver of broadcast video.
+**G275 censused the whole clip and the answer is the opposite, and better.**
+
+A uniform sample of **180 frames across all 174,430** (stride 969.06, each
+extracted by an independent `ffmpeg -ss` seek, the clip never decoded in one
+pass), classified blind in a randomised order committed before un-blinding:
+
+| category | count | fraction |
+|---|---:|---:|
+| **(a) two or more painted lines AND a visible intersection** | **118 / 180** | **0.656** |
+| (b) court surface visible, but not that | 11 / 180 | 0.061 |
+| **(c) no painted court surface at all** | **50 / 180** | **0.278** |
+| (d) cannot judge | 1 / 180 | 0.006 |
+
+**Roughly two thirds of this clip's runtime is court-geometry-bearing.** Close-ups
+and graphics like G274's second shot are real and account for **0.278** of
+runtime, but they do not dominate. **The ceiling on court-space tracking in this
+clip is set by whether an (a) frame can actually be calibrated, not by how much
+(a) footage exists.**
+
+### (a) is NECESSARY, NOT SUFFICIENT -- this bound is one-directional
+
+Category (a) says painted geometry is visible. **It does not say a map would
+fit, or that a fitted map would be correct.** Four independent signal families
+failed to separate a valid court from an invalid one (section 7.10), the eye
+resolves only 20 px (G257), and **G274 produced 0.569 px RMS on a frame with no
+court in it at all.** So **0.656 is the MOST footage that could ever be
+calibrated**, and the realised fraction can only be lower.
+
+### Two design flaws of mine bound how precisely it may be quoted
+
+Both were reported by the lane, unprompted, and both are faults in my spec:
+
+1. **The studied-span question was unanswerable by construction.** I asked
+   whether frames 19599-23399 are unusually court-bearing while specifying a
+   uniform 969-frame stride, so that 3,801-frame span could receive at most
+   **3.92 samples.** It received four (three (a), one (c)). **The question stays
+   OPEN and needs a stratified re-sample.**
+2. **The 40/40 re-judge agreement tests the easy boundary.** I required a
+   re-judge but did not require it to be stratified; the draw contained 29 (a)
+   and 11 (c) and **no (b) at all.** So agreement is measured on (a) against
+   (c) -- painted lines against crowd -- which is visually trivial. **The
+   boundary that sets the headline, (a) against (b), is untested.**
+
+**Consequence: 0.656 has a measured CEILING and no measured FLOOR.** It could rise
+to at most `(118+11+1)/180 = 0.722` if every (b) and (d) frame were really (a);
+it has no lower bound, because an unmeasured (a)/(b) error rate could move any
+number of the 118 (a) labels down. **Quote it as "about two thirds, upper-bounded
+at 0.722", never as a precise 0.656.**
+
+**None of this disturbs the counts, the sealed protocol or the confusion table,
+which are sound.** The central finding stands: **court-bearing footage is
+plentiful in this clip, so the binding constraint is calibration validity and the
+detector, not footage availability.**
+
+---
+
 ## NOT VERIFIED
 
 - Whether a trained basketball calibration model would work; nothing was trained
