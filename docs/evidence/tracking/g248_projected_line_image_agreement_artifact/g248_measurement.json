@@ -1,0 +1,1237 @@
+{
+  "video": {
+    "path": "/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4",
+    "bytes": 2931985407,
+    "resolution": [
+      1920,
+      1080
+    ],
+    "declared_frames": 174430
+  },
+  "decode": "one sequential cv2.VideoCapture pass, frames 0 through 174429; no frame seek and no images retained",
+  "geometry": "baselines, sidelines, lane boundaries, both free-throw lines/circles, both three-point arcs/corner lines, and centre circle; curves sampled at projected 2 px arclength",
+  "parameters": {
+    "edge_and_marking_offsets_px": {
+      "near": 3.0,
+      "far": 9.0,
+      "sides": "both perpendicular sides; aggregate control mean"
+    },
+    "line_detector": "OpenCV LSD_REFINE_STD",
+    "line_distance_px": 4,
+    "orientation_degrees": 15.0
+  },
+  "records": [
+    {
+      "source_frame": 0,
+      "signals": {
+        "edge_response_contrast": -45.58180236816406,
+        "line_detector_agreement": 9.749425980125584e-05,
+        "marking_contrast": -51.37059341618153,
+        "coverage": 0.41888405870462914,
+        "on_curve_samples": 31222351,
+        "control_samples": 27626,
+        "lsd_segments": 6829
+      }
+    },
+    {
+      "source_frame": 2000,
+      "signals": {
+        "edge_response_contrast": -52.87744903564453,
+        "line_detector_agreement": 0.017326082880180012,
+        "marking_contrast": -105.85011688677503,
+        "coverage": 0.33470197183744965,
+        "on_curve_samples": 79995,
+        "control_samples": 20975,
+        "lsd_segments": 7475
+      }
+    },
+    {
+      "source_frame": 4000,
+      "signals": {
+        "edge_response_contrast": -57.52611541748047,
+        "line_detector_agreement": 0.010225939830896105,
+        "marking_contrast": -110.36012617771232,
+        "coverage": 0.16317854402384604,
+        "on_curve_samples": 220811,
+        "control_samples": 20563,
+        "lsd_segments": 6093
+      }
+    },
+    {
+      "source_frame": 6000,
+      "signals": {
+        "edge_response_contrast": -42.07931137084961,
+        "line_detector_agreement": 0.036364092654403095,
+        "marking_contrast": -109.63164681959785,
+        "coverage": 0.3075583174087794,
+        "on_curve_samples": 39847,
+        "control_samples": 20999,
+        "lsd_segments": 6827
+      }
+    },
+    {
+      "source_frame": 8000,
+      "signals": {
+        "edge_response_contrast": -36.17448806762695,
+        "line_detector_agreement": 0.02945901193683118,
+        "marking_contrast": -121.10692961715675,
+        "coverage": 0.30889129860883313,
+        "on_curve_samples": 40463,
+        "control_samples": 20997,
+        "lsd_segments": 6459
+      }
+    },
+    {
+      "source_frame": 10000,
+      "signals": {
+        "edge_response_contrast": -51.9217643737793,
+        "line_detector_agreement": 0.0466760252682242,
+        "marking_contrast": -94.74894111720694,
+        "coverage": 0.30868096393489974,
+        "on_curve_samples": 39892,
+        "control_samples": 21000,
+        "lsd_segments": 6270
+      }
+    },
+    {
+      "source_frame": 12000,
+      "signals": {
+        "edge_response_contrast": -43.48567581176758,
+        "line_detector_agreement": 0.010807299889040244,
+        "marking_contrast": -130.18982819508764,
+        "coverage": 0.35142679417370365,
+        "on_curve_samples": 110851,
+        "control_samples": 20953,
+        "lsd_segments": 6485
+      }
+    },
+    {
+      "source_frame": 14000,
+      "signals": {
+        "edge_response_contrast": -57.0252799987793,
+        "line_detector_agreement": 0.005494410890871281,
+        "marking_contrast": -77.37017117941345,
+        "coverage": 0.48511693301268327,
+        "on_curve_samples": 522713,
+        "control_samples": 28206,
+        "lsd_segments": 7340
+      }
+    },
+    {
+      "source_frame": 16000,
+      "signals": {
+        "edge_response_contrast": -47.1633415222168,
+        "line_detector_agreement": 0.0782625709254549,
+        "marking_contrast": -97.13043708865466,
+        "coverage": 0.3029499025043894,
+        "on_curve_samples": 25555,
+        "control_samples": 21060,
+        "lsd_segments": 6502
+      }
+    },
+    {
+      "source_frame": 18000,
+      "signals": {
+        "edge_response_contrast": -69.21524810791016,
+        "line_detector_agreement": 0.020674391823808837,
+        "marking_contrast": -123.96441511353788,
+        "coverage": 0.3191162677193689,
+        "on_curve_samples": 55576,
+        "control_samples": 20984,
+        "lsd_segments": 5026
+      }
+    },
+    {
+      "source_frame": 19599,
+      "signals": {
+        "edge_response_contrast": -51.244564056396484,
+        "line_detector_agreement": 0.06123359245571556,
+        "marking_contrast": -112.49740674800024,
+        "coverage": 0.3043193985698227,
+        "on_curve_samples": 31388,
+        "control_samples": 21023,
+        "lsd_segments": 6946
+      }
+    },
+    {
+      "source_frame": 20000,
+      "signals": {
+        "edge_response_contrast": -42.86228942871094,
+        "line_detector_agreement": 0.04262676336485204,
+        "marking_contrast": -112.6075793750198,
+        "coverage": 0.3051970600638149,
+        "on_curve_samples": 32679,
+        "control_samples": 21031,
+        "lsd_segments": 7128
+      }
+    },
+    {
+      "source_frame": 22000,
+      "signals": {
+        "edge_response_contrast": -47.3786506652832,
+        "line_detector_agreement": 0.05136612021857923,
+        "marking_contrast": -107.51161269225685,
+        "coverage": 0.30394511976572436,
+        "on_curve_samples": 31110,
+        "control_samples": 21037,
+        "lsd_segments": 7143
+      }
+    },
+    {
+      "source_frame": 24000,
+      "signals": {
+        "edge_response_contrast": -28.664735794067383,
+        "line_detector_agreement": 0.02762881790627186,
+        "marking_contrast": -79.05318116940461,
+        "coverage": 0.2644755724394734,
+        "on_curve_samples": 17156,
+        "control_samples": 20463,
+        "lsd_segments": 2027
+      }
+    },
+    {
+      "source_frame": 26000,
+      "signals": {
+        "edge_response_contrast": -47.05487823486328,
+        "line_detector_agreement": 0.037751171748108964,
+        "marking_contrast": -121.23578170362623,
+        "coverage": 0.31066396218556575,
+        "on_curve_samples": 43098,
+        "control_samples": 21004,
+        "lsd_segments": 6717
+      }
+    },
+    {
+      "source_frame": 28000,
+      "signals": {
+        "edge_response_contrast": -51.767242431640625,
+        "line_detector_agreement": 0.03441682600382409,
+        "marking_contrast": -113.82540737313647,
+        "coverage": 0.3099658592853908,
+        "on_curve_samples": 41840,
+        "control_samples": 21015,
+        "lsd_segments": 6882
+      }
+    },
+    {
+      "source_frame": 30000,
+      "signals": {
+        "edge_response_contrast": -42.30094528198242,
+        "line_detector_agreement": 0.03818515289094681,
+        "marking_contrast": -112.10529573852364,
+        "coverage": 0.3053967554926725,
+        "on_curve_samples": 33259,
+        "control_samples": 21022,
+        "lsd_segments": 7153
+      }
+    },
+    {
+      "source_frame": 32000,
+      "signals": {
+        "edge_response_contrast": -9.716695785522461,
+        "line_detector_agreement": 0.006626417317037255,
+        "marking_contrast": -49.234208160408684,
+        "coverage": 0.30811105309412173,
+        "on_curve_samples": 20373,
+        "control_samples": 21136,
+        "lsd_segments": 1494
+      }
+    },
+    {
+      "source_frame": 34000,
+      "signals": {
+        "edge_response_contrast": -9.165130615234375,
+        "line_detector_agreement": 0.010281991245037158,
+        "marking_contrast": -107.92263993114953,
+        "coverage": 0.30958699172636167,
+        "on_curve_samples": 19646,
+        "control_samples": 21153,
+        "lsd_segments": 1134
+      }
+    },
+    {
+      "source_frame": 36000,
+      "signals": {
+        "edge_response_contrast": -41.52476501464844,
+        "line_detector_agreement": 0.02218042444460217,
+        "marking_contrast": -119.62300919004741,
+        "coverage": 0.31980200941576864,
+        "on_curve_samples": 56356,
+        "control_samples": 20983,
+        "lsd_segments": 6571
+      }
+    },
+    {
+      "source_frame": 38000,
+      "signals": {
+        "edge_response_contrast": -40.95508575439453,
+        "line_detector_agreement": 0.04753724802804558,
+        "marking_contrast": -107.36986641382731,
+        "coverage": 0.3030175525665535,
+        "on_curve_samples": 28525,
+        "control_samples": 21042,
+        "lsd_segments": 6822
+      }
+    },
+    {
+      "source_frame": 40000,
+      "signals": {
+        "edge_response_contrast": -37.45994567871094,
+        "line_detector_agreement": 0.0509396001883481,
+        "marking_contrast": -107.42828647617831,
+        "coverage": 0.30283201371837387,
+        "on_curve_samples": 23361,
+        "control_samples": 21081,
+        "lsd_segments": 4963
+      }
+    },
+    {
+      "source_frame": 42000,
+      "signals": {
+        "edge_response_contrast": -44.59075927734375,
+        "line_detector_agreement": 0.04137387742240429,
+        "marking_contrast": -105.32984149680443,
+        "coverage": 0.3045978015763843,
+        "on_curve_samples": 31735,
+        "control_samples": 21029,
+        "lsd_segments": 7127
+      }
+    },
+    {
+      "source_frame": 44000,
+      "signals": {
+        "edge_response_contrast": -55.67815017700195,
+        "line_detector_agreement": 0.04836067929082498,
+        "marking_contrast": -103.23114514513061,
+        "coverage": 0.3058863866896437,
+        "on_curve_samples": 34801,
+        "control_samples": 21023,
+        "lsd_segments": 5300
+      }
+    },
+    {
+      "source_frame": 46000,
+      "signals": {
+        "edge_response_contrast": -21.15134048461914,
+        "line_detector_agreement": 0.016487914198815432,
+        "marking_contrast": -26.93191272134347,
+        "coverage": 0.3117112020734286,
+        "on_curve_samples": 18741,
+        "control_samples": 21191,
+        "lsd_segments": 2933
+      }
+    },
+    {
+      "source_frame": 48000,
+      "signals": {
+        "edge_response_contrast": -46.974647521972656,
+        "line_detector_agreement": 0.05938223321893208,
+        "marking_contrast": -99.2879983824518,
+        "coverage": 0.30327015617623077,
+        "on_curve_samples": 25058,
+        "control_samples": 21047,
+        "lsd_segments": 7049
+      }
+    },
+    {
+      "source_frame": 50000,
+      "signals": {
+        "edge_response_contrast": -38.0838737487793,
+        "line_detector_agreement": 0.03486274638417894,
+        "marking_contrast": -109.77648376025087,
+        "coverage": 0.3041380682166615,
+        "on_curve_samples": 30491,
+        "control_samples": 21030,
+        "lsd_segments": 6589
+      }
+    },
+    {
+      "source_frame": 52000,
+      "signals": {
+        "edge_response_contrast": -47.042110443115234,
+        "line_detector_agreement": 0.07521629919062238,
+        "marking_contrast": -77.22611699840633,
+        "coverage": 0.3054655960308224,
+        "on_curve_samples": 21498,
+        "control_samples": 21097,
+        "lsd_segments": 4827
+      }
+    },
+    {
+      "source_frame": 54000,
+      "signals": {
+        "edge_response_contrast": -48.99311828613281,
+        "line_detector_agreement": 0.04720629417255634,
+        "marking_contrast": -106.39932244840656,
+        "coverage": 0.30339352951426946,
+        "on_curve_samples": 29996,
+        "control_samples": 21034,
+        "lsd_segments": 6935
+      }
+    },
+    {
+      "source_frame": 56000,
+      "signals": {
+        "edge_response_contrast": -38.636451721191406,
+        "line_detector_agreement": 0.02901498378044385,
+        "marking_contrast": -115.95554156675465,
+        "coverage": 0.30837853417605193,
+        "on_curve_samples": 38842,
+        "control_samples": 21012,
+        "lsd_segments": 6672
+      }
+    },
+    {
+      "source_frame": 58000,
+      "signals": {
+        "edge_response_contrast": -43.26683807373047,
+        "line_detector_agreement": 0.04908182808216606,
+        "marking_contrast": -107.0178333747734,
+        "coverage": 0.3038710920716615,
+        "on_curve_samples": 26629,
+        "control_samples": 21058,
+        "lsd_segments": 6629
+      }
+    },
+    {
+      "source_frame": 60000,
+      "signals": {
+        "edge_response_contrast": -24.037555694580078,
+        "line_detector_agreement": 0.02432422678552095,
+        "marking_contrast": -108.53652875949695,
+        "coverage": 0.3028576398675475,
+        "on_curve_samples": 27709,
+        "control_samples": 21038,
+        "lsd_segments": 1711
+      }
+    },
+    {
+      "source_frame": 62000,
+      "signals": {
+        "edge_response_contrast": -41.58519744873047,
+        "line_detector_agreement": 0.06584518768733051,
+        "marking_contrast": -88.45207690543882,
+        "coverage": 0.3057888394550492,
+        "on_curve_samples": 21019,
+        "control_samples": 21093,
+        "lsd_segments": 6932
+      }
+    },
+    {
+      "source_frame": 64000,
+      "signals": {
+        "edge_response_contrast": -48.759220123291016,
+        "line_detector_agreement": 0.059921177511461435,
+        "marking_contrast": -75.37692433836368,
+        "coverage": 0.3036136019502117,
+        "on_curve_samples": 24866,
+        "control_samples": 21079,
+        "lsd_segments": 5144
+      }
+    },
+    {
+      "source_frame": 66000,
+      "signals": {
+        "edge_response_contrast": -30.054384231567383,
+        "line_detector_agreement": 0.02847851482335112,
+        "marking_contrast": -63.412886578992314,
+        "coverage": 0.3037934793307369,
+        "on_curve_samples": 31673,
+        "control_samples": 21031,
+        "lsd_segments": 1916
+      }
+    },
+    {
+      "source_frame": 68000,
+      "signals": {
+        "edge_response_contrast": -55.65645980834961,
+        "line_detector_agreement": 0.03440797186400938,
+        "marking_contrast": -99.87870024929651,
+        "coverage": 0.31639493294731036,
+        "on_curve_samples": 51180,
+        "control_samples": 20983,
+        "lsd_segments": 6961
+      }
+    },
+    {
+      "source_frame": 70000,
+      "signals": {
+        "edge_response_contrast": -5.373359680175781,
+        "line_detector_agreement": 0.06844389336639801,
+        "marking_contrast": -17.116431301384793,
+        "coverage": 0.8860229539775137,
+        "on_curve_samples": 8065,
+        "control_samples": 22878,
+        "lsd_segments": 2970
+      }
+    },
+    {
+      "source_frame": 72000,
+      "signals": {
+        "edge_response_contrast": -42.817039489746094,
+        "line_detector_agreement": 0.012379476237444393,
+        "marking_contrast": -114.49915801011778,
+        "coverage": 0.3443756526057127,
+        "on_curve_samples": 99358,
+        "control_samples": 20965,
+        "lsd_segments": 6913
+      }
+    },
+    {
+      "source_frame": 74000,
+      "signals": {
+        "edge_response_contrast": -52.215187072753906,
+        "line_detector_agreement": 0.049306117555375714,
+        "marking_contrast": -106.96734901752743,
+        "coverage": 0.30535611699039594,
+        "on_curve_samples": 33363,
+        "control_samples": 21029,
+        "lsd_segments": 7008
+      }
+    },
+    {
+      "source_frame": 76000,
+      "signals": {
+        "edge_response_contrast": -47.325077056884766,
+        "line_detector_agreement": 0.02805630731488873,
+        "marking_contrast": -99.52126313215255,
+        "coverage": 0.31630895489809124,
+        "on_curve_samples": 51361,
+        "control_samples": 20986,
+        "lsd_segments": 7293
+      }
+    },
+    {
+      "source_frame": 78000,
+      "signals": {
+        "edge_response_contrast": -14.381155967712402,
+        "line_detector_agreement": 0.000845420425869865,
+        "marking_contrast": -64.74768783565447,
+        "coverage": 0.4754441673881273,
+        "on_curve_samples": 702609,
+        "control_samples": 29508,
+        "lsd_segments": 1570
+      }
+    },
+    {
+      "source_frame": 80000,
+      "signals": {
+        "edge_response_contrast": -50.90481185913086,
+        "line_detector_agreement": 0.016480601069700312,
+        "marking_contrast": -127.46697495102146,
+        "coverage": 0.3411595540519907,
+        "on_curve_samples": 94232,
+        "control_samples": 20956,
+        "lsd_segments": 7213
+      }
+    },
+    {
+      "source_frame": 82000,
+      "signals": {
+        "edge_response_contrast": -51.106868743896484,
+        "line_detector_agreement": 0.03163328124260075,
+        "marking_contrast": -102.78793285857586,
+        "coverage": 0.310169357318183,
+        "on_curve_samples": 42234,
+        "control_samples": 21003,
+        "lsd_segments": 7137
+      }
+    },
+    {
+      "source_frame": 84000,
+      "signals": {
+        "edge_response_contrast": -47.20350646972656,
+        "line_detector_agreement": 0.03431821921350164,
+        "marking_contrast": -86.21733160650442,
+        "coverage": 0.31047211067013536,
+        "on_curve_samples": 42543,
+        "control_samples": 21004,
+        "lsd_segments": 4976
+      }
+    },
+    {
+      "source_frame": 86000,
+      "signals": {
+        "edge_response_contrast": -34.63943099975586,
+        "line_detector_agreement": 0.02947226140103432,
+        "marking_contrast": -80.6015160498516,
+        "coverage": 0.3049160583298541,
+        "on_curve_samples": 34032,
+        "control_samples": 21031,
+        "lsd_segments": 2182
+      }
+    },
+    {
+      "source_frame": 88000,
+      "signals": {
+        "edge_response_contrast": -44.9163932800293,
+        "line_detector_agreement": 0.0035677660626231983,
+        "marking_contrast": -119.37930800118887,
+        "coverage": 0.4893878735599803,
+        "on_curve_samples": 488541,
+        "control_samples": 25860,
+        "lsd_segments": 3430
+      }
+    },
+    {
+      "source_frame": 90000,
+      "signals": {
+        "edge_response_contrast": -45.84528350830078,
+        "line_detector_agreement": 0.04674820423218792,
+        "marking_contrast": -89.35150318421256,
+        "coverage": 0.3039841929273859,
+        "on_curve_samples": 25755,
+        "control_samples": 21076,
+        "lsd_segments": 6763
+      }
+    },
+    {
+      "source_frame": 92000,
+      "signals": {
+        "edge_response_contrast": -41.35829162597656,
+        "line_detector_agreement": 0.03901166263242275,
+        "marking_contrast": -106.05901439941097,
+        "coverage": 0.3050280299867203,
+        "on_curve_samples": 31811,
+        "control_samples": 21035,
+        "lsd_segments": 5927
+      }
+    },
+    {
+      "source_frame": 94000,
+      "signals": {
+        "edge_response_contrast": -56.682090759277344,
+        "line_detector_agreement": 0.07029503799731783,
+        "marking_contrast": -77.08057264445938,
+        "coverage": 0.30296533383327573,
+        "on_curve_samples": 26844,
+        "control_samples": 21041,
+        "lsd_segments": 7116
+      }
+    },
+    {
+      "source_frame": 96000,
+      "signals": {
+        "edge_response_contrast": -61.14486312866211,
+        "line_detector_agreement": 0.055958385876418666,
+        "marking_contrast": -84.57375302840327,
+        "coverage": 0.3040068571927226,
+        "on_curve_samples": 31720,
+        "control_samples": 21033,
+        "lsd_segments": 7097
+      }
+    },
+    {
+      "source_frame": 98000,
+      "signals": {
+        "edge_response_contrast": -36.49538040161133,
+        "line_detector_agreement": 0.02895971068542691,
+        "marking_contrast": -114.49587302333282,
+        "coverage": 0.30624349267366635,
+        "on_curve_samples": 35394,
+        "control_samples": 21022,
+        "lsd_segments": 5509
+      }
+    },
+    {
+      "source_frame": 100000,
+      "signals": {
+        "edge_response_contrast": -24.005828857421875,
+        "line_detector_agreement": 0.019656019656019656,
+        "marking_contrast": -78.4697171551667,
+        "coverage": 0.3048306029612757,
+        "on_curve_samples": 33374,
+        "control_samples": 21038,
+        "lsd_segments": 2132
+      }
+    },
+    {
+      "source_frame": 102000,
+      "signals": {
+        "edge_response_contrast": -29.705936431884766,
+        "line_detector_agreement": 0.023037875829754,
+        "marking_contrast": -73.03487219249605,
+        "coverage": 0.31330028419823686,
+        "on_curve_samples": 46098,
+        "control_samples": 21002,
+        "lsd_segments": 2499
+      }
+    },
+    {
+      "source_frame": 104000,
+      "signals": {
+        "edge_response_contrast": -39.16099548339844,
+        "line_detector_agreement": 0.0379986193234685,
+        "marking_contrast": -100.23093421477631,
+        "coverage": 0.3053504321948518,
+        "on_curve_samples": 33317,
+        "control_samples": 21031,
+        "lsd_segments": 3480
+      }
+    },
+    {
+      "source_frame": 106000,
+      "signals": {
+        "edge_response_contrast": -27.42058563232422,
+        "line_detector_agreement": 0.01853817307011958,
+        "marking_contrast": -127.69327301099696,
+        "coverage": 0.3105388602316914,
+        "on_curve_samples": 42399,
+        "control_samples": 21009,
+        "lsd_segments": 6372
+      }
+    },
+    {
+      "source_frame": 108000,
+      "signals": {
+        "edge_response_contrast": -13.270166397094727,
+        "line_detector_agreement": 0.284694332887104,
+        "marking_contrast": -48.02471205143795,
+        "coverage": 0.003457326101092793,
+        "on_curve_samples": 8964,
+        "control_samples": 19677,
+        "lsd_segments": 5236
+      }
+    },
+    {
+      "source_frame": 110000,
+      "signals": {
+        "edge_response_contrast": -42.874637603759766,
+        "line_detector_agreement": 0.04881520804294315,
+        "marking_contrast": -71.19255825805571,
+        "coverage": 0.305045474359181,
+        "on_curve_samples": 33719,
+        "control_samples": 21031,
+        "lsd_segments": 4587
+      }
+    },
+    {
+      "source_frame": 112000,
+      "signals": {
+        "edge_response_contrast": -28.13275909423828,
+        "line_detector_agreement": 0.03423566878980892,
+        "marking_contrast": -99.78671378224553,
+        "coverage": 0.3039666272518017,
+        "on_curve_samples": 30144,
+        "control_samples": 21031,
+        "lsd_segments": 4253
+      }
+    },
+    {
+      "source_frame": 114000,
+      "signals": {
+        "edge_response_contrast": -23.57173728942871,
+        "line_detector_agreement": 0.04379746835443038,
+        "marking_contrast": -57.78756105892802,
+        "coverage": 0.36549888673288944,
+        "on_curve_samples": 11850,
+        "control_samples": 21492,
+        "lsd_segments": 4508
+      }
+    },
+    {
+      "source_frame": 116000,
+      "signals": {
+        "edge_response_contrast": -25.544940948486328,
+        "line_detector_agreement": 0.02140570633263744,
+        "marking_contrast": -59.16236616217563,
+        "coverage": 0.30708465526243506,
+        "on_curve_samples": 35925,
+        "control_samples": 21023,
+        "lsd_segments": 2333
+      }
+    },
+    {
+      "source_frame": 118000,
+      "signals": {
+        "edge_response_contrast": -39.28888702392578,
+        "line_detector_agreement": 0.03568464730290456,
+        "marking_contrast": -111.90160330766082,
+        "coverage": 0.3040967458418981,
+        "on_curve_samples": 31330,
+        "control_samples": 21025,
+        "lsd_segments": 6702
+      }
+    },
+    {
+      "source_frame": 120000,
+      "signals": {
+        "edge_response_contrast": -36.18477249145508,
+        "line_detector_agreement": 0.021973003146249875,
+        "marking_contrast": -106.82493767174535,
+        "coverage": 0.307836234937637,
+        "on_curve_samples": 39412,
+        "control_samples": 21007,
+        "lsd_segments": 2684
+      }
+    },
+    {
+      "source_frame": 122000,
+      "signals": {
+        "edge_response_contrast": -53.321746826171875,
+        "line_detector_agreement": 0.04616462133438899,
+        "marking_contrast": -97.35388202363353,
+        "coverage": 0.3055199714972143,
+        "on_curve_samples": 32839,
+        "control_samples": 21036,
+        "lsd_segments": 6980
+      }
+    },
+    {
+      "source_frame": 124000,
+      "signals": {
+        "edge_response_contrast": -46.73841857910156,
+        "line_detector_agreement": 0.0037100786326086225,
+        "marking_contrast": -96.31009318676563,
+        "coverage": 0.42316645978046613,
+        "on_curve_samples": 683813,
+        "control_samples": 27996,
+        "lsd_segments": 6235
+      }
+    },
+    {
+      "source_frame": 126000,
+      "signals": {
+        "edge_response_contrast": -17.29782485961914,
+        "line_detector_agreement": 0.0985213204951857,
+        "marking_contrast": -55.23128776634558,
+        "coverage": 0.3735409783868871,
+        "on_curve_samples": 11632,
+        "control_samples": 21571,
+        "lsd_segments": 3240
+      }
+    },
+    {
+      "source_frame": 128000,
+      "signals": {
+        "edge_response_contrast": -29.16638946533203,
+        "line_detector_agreement": 0.002423496944059209,
+        "marking_contrast": -83.452112549477,
+        "coverage": 0.30307336124950235,
+        "on_curve_samples": 573964,
+        "control_samples": 25841,
+        "lsd_segments": 1699
+      }
+    },
+    {
+      "source_frame": 130000,
+      "signals": {
+        "edge_response_contrast": -30.05047035217285,
+        "line_detector_agreement": 0.14106412005457025,
+        "marking_contrast": -58.60596754777047,
+        "coverage": 0.37861621895787,
+        "on_curve_samples": 10995,
+        "control_samples": 21429,
+        "lsd_segments": 7473
+      }
+    },
+    {
+      "source_frame": 132000,
+      "signals": {
+        "edge_response_contrast": -16.019041061401367,
+        "line_detector_agreement": 0.048576547879753136,
+        "marking_contrast": -45.14223498889532,
+        "coverage": 0.3950010646307021,
+        "on_curve_samples": 10046,
+        "control_samples": 21379,
+        "lsd_segments": 4207
+      }
+    },
+    {
+      "source_frame": 134000,
+      "signals": {
+        "edge_response_contrast": -24.922042846679688,
+        "line_detector_agreement": 0.007755367239448692,
+        "marking_contrast": -92.13675085590346,
+        "coverage": 0.33017373776089887,
+        "on_curve_samples": 72337,
+        "control_samples": 20980,
+        "lsd_segments": 1484
+      }
+    },
+    {
+      "source_frame": 136000,
+      "signals": {
+        "edge_response_contrast": -13.773242950439453,
+        "line_detector_agreement": 0.054829014702298756,
+        "marking_contrast": -62.83489795869787,
+        "coverage": 0.3688536969029232,
+        "on_curve_samples": 12311,
+        "control_samples": 21634,
+        "lsd_segments": 4657
+      }
+    },
+    {
+      "source_frame": 138000,
+      "signals": {
+        "edge_response_contrast": -53.11534118652344,
+        "line_detector_agreement": 0.0006421492080690908,
+        "marking_contrast": -95.24798955551798,
+        "coverage": 0.4999360168556111,
+        "on_curve_samples": 5020640,
+        "control_samples": 29587,
+        "lsd_segments": 5252
+      }
+    },
+    {
+      "source_frame": 140000,
+      "signals": {
+        "edge_response_contrast": -46.07333755493164,
+        "line_detector_agreement": 0.0033075533068305024,
+        "marking_contrast": -64.83732038636666,
+        "coverage": 0.024252255824990163,
+        "on_curve_samples": 1037625,
+        "control_samples": 29141,
+        "lsd_segments": 6652
+      }
+    },
+    {
+      "source_frame": 142000,
+      "signals": {
+        "edge_response_contrast": -27.590965270996094,
+        "line_detector_agreement": 0.028614531120735802,
+        "marking_contrast": -67.96096628114599,
+        "coverage": 0.3078233581512522,
+        "on_curve_samples": 20549,
+        "control_samples": 21138,
+        "lsd_segments": 4573
+      }
+    },
+    {
+      "source_frame": 144000,
+      "signals": {
+        "edge_response_contrast": -53.362884521484375,
+        "line_detector_agreement": 0.06482189267696072,
+        "marking_contrast": -93.22763607723066,
+        "coverage": 0.30389543203615305,
+        "on_curve_samples": 26164,
+        "control_samples": 21068,
+        "lsd_segments": 7020
+      }
+    },
+    {
+      "source_frame": 146000,
+      "signals": {
+        "edge_response_contrast": -51.79008483886719,
+        "line_detector_agreement": 0.06506194395942463,
+        "marking_contrast": -86.96757572171559,
+        "coverage": 0.30431269732491095,
+        "on_curve_samples": 24054,
+        "control_samples": 21051,
+        "lsd_segments": 7577
+      }
+    },
+    {
+      "source_frame": 148000,
+      "signals": {
+        "edge_response_contrast": -52.45174026489258,
+        "line_detector_agreement": 0.0005002320372873832,
+        "marking_contrast": -98.20733756020833,
+        "coverage": 0.27758617990667483,
+        "on_curve_samples": 6195125,
+        "control_samples": 29118,
+        "lsd_segments": 3608
+      }
+    },
+    {
+      "source_frame": 150000,
+      "signals": {
+        "edge_response_contrast": -44.709197998046875,
+        "line_detector_agreement": 0.023112978826571845,
+        "marking_contrast": -109.73192301173955,
+        "coverage": 0.3100330598731018,
+        "on_curve_samples": 43309,
+        "control_samples": 21007,
+        "lsd_segments": 7132
+      }
+    },
+    {
+      "source_frame": 152000,
+      "signals": {
+        "edge_response_contrast": -45.58183670043945,
+        "line_detector_agreement": 0.043606500491585216,
+        "marking_contrast": -110.58681105227299,
+        "coverage": 0.3056425942244537,
+        "on_curve_samples": 34582,
+        "control_samples": 21020,
+        "lsd_segments": 7288
+      }
+    },
+    {
+      "source_frame": 154000,
+      "signals": {
+        "edge_response_contrast": -54.83268737792969,
+        "line_detector_agreement": 0.05712835755972016,
+        "marking_contrast": -95.89165235437068,
+        "coverage": 0.30322882018055564,
+        "on_curve_samples": 27587,
+        "control_samples": 21037,
+        "lsd_segments": 6913
+      }
+    },
+    {
+      "source_frame": 156000,
+      "signals": {
+        "edge_response_contrast": -49.03736877441406,
+        "line_detector_agreement": 0.038562892999712994,
+        "marking_contrast": -112.26001219547962,
+        "coverage": 0.3081500014876915,
+        "on_curve_samples": 38327,
+        "control_samples": 21019,
+        "lsd_segments": 6965
+      }
+    },
+    {
+      "source_frame": 158000,
+      "signals": {
+        "edge_response_contrast": -29.38848876953125,
+        "line_detector_agreement": 0.02312386524107323,
+        "marking_contrast": -89.0400910895391,
+        "coverage": 0.3097115157995814,
+        "on_curve_samples": 39656,
+        "control_samples": 21008,
+        "lsd_segments": 2453
+      }
+    },
+    {
+      "source_frame": 160000,
+      "signals": {
+        "edge_response_contrast": -33.785850524902344,
+        "line_detector_agreement": 0.05848998996815981,
+        "marking_contrast": -81.49478473984819,
+        "coverage": 0.3045770338290468,
+        "on_curve_samples": 22927,
+        "control_samples": 21076,
+        "lsd_segments": 5221
+      }
+    },
+    {
+      "source_frame": 162000,
+      "signals": {
+        "edge_response_contrast": -50.1514778137207,
+        "line_detector_agreement": 0.02377522927416267,
+        "marking_contrast": -95.39723539920027,
+        "coverage": 0.3183979540723037,
+        "on_curve_samples": 54847,
+        "control_samples": 20978,
+        "lsd_segments": 7648
+      }
+    },
+    {
+      "source_frame": 164000,
+      "signals": {
+        "edge_response_contrast": -31.11955451965332,
+        "line_detector_agreement": 0.009831041823061814,
+        "marking_contrast": -86.2496945092507,
+        "coverage": 0.3445202977842247,
+        "on_curve_samples": 97243,
+        "control_samples": 20967,
+        "lsd_segments": 2663
+      }
+    },
+    {
+      "source_frame": 166000,
+      "signals": {
+        "edge_response_contrast": -43.55587387084961,
+        "line_detector_agreement": 0.044350620236138096,
+        "marking_contrast": -89.13605751951276,
+        "coverage": 0.3026351459172526,
+        "on_curve_samples": 26764,
+        "control_samples": 21053,
+        "lsd_segments": 4826
+      }
+    },
+    {
+      "source_frame": 168000,
+      "signals": {
+        "edge_response_contrast": -42.90205764770508,
+        "line_detector_agreement": 0.051495949306168284,
+        "marking_contrast": -92.41553826663295,
+        "coverage": 0.30279072899475556,
+        "on_curve_samples": 24934,
+        "control_samples": 21066,
+        "lsd_segments": 4647
+      }
+    },
+    {
+      "source_frame": 170000,
+      "signals": {
+        "edge_response_contrast": -30.720165252685547,
+        "line_detector_agreement": 0.013063878667523314,
+        "marking_contrast": -92.75814485701022,
+        "coverage": 0.3168421932509183,
+        "on_curve_samples": 51363,
+        "control_samples": 20983,
+        "lsd_segments": 2004
+      }
+    },
+    {
+      "source_frame": 172000,
+      "signals": {
+        "edge_response_contrast": -30.459806442260742,
+        "line_detector_agreement": 0.041342669153091025,
+        "marking_contrast": -61.46586725728826,
+        "coverage": 0.30359674070382575,
+        "on_curve_samples": 28421,
+        "control_samples": 21037,
+        "lsd_segments": 3772
+      }
+    },
+    {
+      "source_frame": 174000,
+      "signals": {
+        "edge_response_contrast": -67.88824462890625,
+        "line_detector_agreement": 0.029084272390871187,
+        "marking_contrast": -94.40338875813471,
+        "coverage": 0.32244333440171674,
+        "on_curve_samples": 59723,
+        "control_samples": 20973,
+        "lsd_segments": 7678
+      }
+    }
+  ],
+  "disk_guard": {
+    "data_megabytes": 33084,
+    "probe_bytes_removed": 1048576
+  },
+  "remote_temp_bytes_removed": 33450,
+  "input_sha256": {
+    "g244_blind_labels": "c95071bc687eaff41b30dc46d635f4a835421a3f16e117a7988c6547cfbfdadf",
+    "g247_measurement": "05be8b9d4b71c2f865683c4cf6d498b0997ad6108681414ae2e29f88ad37b87b"
+  },
+  "analysis": {
+    "validity_counts": {
+      "VALID": 27,
+      "INVALID": 28,
+      "CANNOT_JUDGE": 34
+    },
+    "distributions": {
+      "edge_response_contrast": {
+        "VALID": {
+          "n": 27,
+          "min": -67.88824462890625,
+          "median": -47.325077056884766,
+          "p90": -34.8705123901367,
+          "max": -23.57173728942871
+        },
+        "INVALID": {
+          "n": 28,
+          "min": -57.52611541748047,
+          "median": -45.14550018310547,
+          "p90": -33.59943122863769,
+          "max": -13.773242950439453
+        },
+        "CANNOT_JUDGE": {
+          "n": 34,
+          "min": -69.21524810791016,
+          "median": -30.257095336914062,
+          "p90": -13.60346326828003,
+          "max": -5.373359680175781
+        }
+      },
+      "line_detector_agreement": {
+        "VALID": {
+          "n": 27,
+          "min": 0.010807299889040244,
+          "median": 0.037751171748108964,
+          "p90": 0.06537524145058698,
+          "max": 0.14106412005457025
+        },
+        "INVALID": {
+          "n": 28,
+          "min": 9.749425980125584e-05,
+          "median": 0.038374022945329905,
+          "p90": 0.05943641809489233,
+          "max": 0.0782625709254549
+        },
+        "CANNOT_JUDGE": {
+          "n": 34,
+          "min": 0.0005002320372873832,
+          "median": 0.025976522345896404,
+          "p90": 0.059491821248470945,
+          "max": 0.284694332887104
+        }
+      },
+      "marking_contrast": {
+        "VALID": {
+          "n": 27,
+          "min": -130.18982819508764,
+          "median": -99.87870024929651,
+          "p90": -81.5764808748257,
+          "max": -57.78756105892802
+        },
+        "INVALID": {
+          "n": 28,
+          "min": -121.10692961715675,
+          "median": -106.92138552325937,
+          "p90": -64.23659365806601,
+          "max": -45.14223498889532
+        },
+        "CANNOT_JUDGE": {
+          "n": 34,
+          "min": -123.96441511353788,
+          "median": -84.8347220779907,
+          "p90": -51.033332042189755,
+          "max": -17.116431301384793
+        }
+      },
+      "coverage": {
+        "VALID": {
+          "n": 27,
+          "min": 0.30296533383327573,
+          "median": 0.30868096393489974,
+          "p90": 0.3452664501006759,
+          "max": 0.37861621895787
+        },
+        "INVALID": {
+          "n": 28,
+          "min": 0.024252255824990163,
+          "median": 0.30594304344906004,
+          "p90": 0.40216596285288025,
+          "max": 0.48511693301268327
+        },
+        "CANNOT_JUDGE": {
+          "n": 34,
+          "min": 0.003457326101092793,
+          "median": 0.3056184094422477,
+          "p90": 0.44487321068775515,
+          "max": 0.8860229539775137
+        }
+      }
+    },
+    "valid_invalid_range_overlap": {
+      "edge_response_contrast": {
+        "invalid_range_min": -57.52611541748047,
+        "invalid_range_max": -13.773242950439453,
+        "valid_in_invalid_range": 25,
+        "valid_range_min": -67.88824462890625,
+        "valid_range_max": -23.57173728942871,
+        "invalid_in_valid_range": 26
+      },
+      "line_detector_agreement": {
+        "invalid_range_min": 9.749425980125584e-05,
+        "invalid_range_max": 0.0782625709254549,
+        "valid_in_invalid_range": 26,
+        "valid_range_min": 0.010807299889040244,
+        "valid_range_max": 0.14106412005457025,
+        "invalid_in_valid_range": 23
+      },
+      "marking_contrast": {
+        "invalid_range_min": -121.10692961715675,
+        "invalid_range_max": -45.14223498889532,
+        "valid_in_invalid_range": 23,
+        "valid_range_min": -130.18982819508764,
+        "valid_range_max": -57.78756105892802,
+        "invalid_in_valid_range": 26
+      },
+      "coverage": {
+        "invalid_range_min": 0.024252255824990163,
+        "invalid_range_max": 0.48511693301268327,
+        "valid_in_invalid_range": 27,
+        "valid_range_min": 0.30296533383327573,
+        "valid_range_max": 0.37861621895787,
+        "invalid_in_valid_range": 21
+      }
+    }
+  }
+}
