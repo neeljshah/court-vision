@@ -1,9 +1,9 @@
 GAP S269 | sport wnba | worktree a15 | log cx_s269_wnba_oncourt_five_lineup_state
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: successor to S253 (DONE 4dd9e24eb) and S84 (SCREEN_NULL, NBA). S253's module is named "nba_..." but its
-  ONLY source is data/domains/wnba/cdn_backfill (168 WNBA games, 2026-04-25..2026-07-04, per the register row
-  itself) -- verified: no NBA CDN archive exists on disk. This row is WNBA, correcting a false "nba" premise per
-  contract clause S2. All 85 priced games in wnba_ingame_census (S206, DONE) fall inside S253's 167 qualifying
+  ONLY source is the S253 stamps.csv artifact (raw CDN store: dangling link, OUT OF SCOPE) (168 WNBA games,
+  2026-04-25..2026-07-04, per the register row) -- verified: no NBA CDN archive exists. This row is WNBA,
+  correcting a false "nba" premise per contract clause S2. All 85 priced games in wnba_ingame_census (S206, DONE) fall inside S253's 167 qualifying
   games (verified this session: comm -12 of the two id sets returns 85/85). S84's NBA lineup screen was
   SCREEN_NULL (-0.000455, CI [-0.003920,+0.003009], 284 clusters); S206's WNBA Stern-state screen was also
   SCREEN_NULL (brier_candidate 0.154859 vs brier_null 0.155244, CI [-0.000210,+0.000980]) -- a third null here
@@ -37,3 +37,4 @@ EVIDENCE: docs/evidence/harness/S269_wnba_oncourt_five_lineup_state_2026-09-04.m
 TEST: one per-file test recomputing one game's paired loss and its lineup_state values from the archived CSV,
   under 200 MB; run only that file.
 REPORT: join overlap, per-cell table, pooled delta + CI, RSS, test line, SHA. No push. NEVER PARK.
+INPUT RULE: read only docs/evidence/harness/S253_nba_oncourt_five_from_cdn_subs_2026-09-04/*.csv and the WNBA parquet.
