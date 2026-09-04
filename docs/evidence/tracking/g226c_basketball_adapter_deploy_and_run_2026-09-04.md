@@ -32,10 +32,23 @@ restarted, or otherwise changed.
 
 | Full pod path | Bytes | Resolution | Frames | Use |
 |---|---:|---|---:|---|
-| \`/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4\` | 2,931,985,407 | 1920x1080 | 174,430 | One bounded direct basketball adapter run |
+| `/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4` | 2,931,985,407 | 1920x1080 | 174,430 | One bounded direct basketball adapter run |
 
 This is one shared-pod existence draw, not a rate, repeatability, physical
 tracking-accuracy, identity-quality, calibration, or court-coordinate claim.
+
+
+Supporting inputs opened for this evidence are listed explicitly below. The
+document and CSV entries are not video inputs, so no pixel resolution applies.
+
+| Full path | Bytes | Resolution | Use |
+|---|---:|---|---|
+| C:\Users\neelj\nba-track-a6\docs\evidence\tracking\specs\G226c_spec.md | 8,178 | Not a video | Required method and acceptance rule |
+| C:\Users\neelj\nba-track-a6\docs\evidence\tracking\VERIFIER_CONTRACT.md | 11,979 | Not a video | Required verifier contract |
+| C:\Users\neelj\nba-track-a6\docs\evidence\tracking\g211b_per_frame_cost_attribution_2026-09-04_records.json | 144,319 | Not a video | Hold-lift record and prior load context |
+| C:\Users\neelj\nba-track-a6\docs\evidence\tracking\g207_pod_ledger_rescore_census_2026-09-03.md | 14,188 | Not a video | Stage classification rule |
+| C:\Users\neelj\nba-track-a6\docs\evidence\tracking\g226b_basketball_adapter_pod_run_2026-09-04.md | 7,461 | Not a video | Prior pod preflight and source absence |
+| /workspace/nba-ai-system/data/tracking/soccer_Z6NTDyxcODs/tracking_data.csv | 22,615,041 | Not a video | Real adapter-table header comparison |
 
 ## Disk guard
 
