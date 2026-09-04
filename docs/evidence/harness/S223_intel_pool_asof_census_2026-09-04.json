@@ -1,0 +1,3490 @@
+{
+  "checkpoint_recount": {
+    "atlas_as_of": "2026-05-31",
+    "error": null,
+    "n_games": 1593,
+    "path": "data/cache/inplay_odds/nba_checkpoints_full.parquet",
+    "post_as_of_games": 5,
+    "post_as_of_ticks": 915
+  },
+  "contract": "docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q",
+  "counts_by_label": {
+    "AS-OF SAFE": 49,
+    "SNAPSHOT-ONLY": 55,
+    "UNDATED": 54
+  },
+  "declared_patterns": [
+    "data/cache/atlas_*.parquet",
+    "data/intelligence/*.parquet"
+  ],
+  "max_store_bytes": 314572800,
+  "stores": [
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 9,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_catch_shoot_vs_pullup.parquet",
+      "producer_module": "NONE",
+      "rows": 722,
+      "size_bytes": 94110,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 10,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_clutch_scoring.parquet",
+      "producer_module": "NONE",
+      "rows": 439,
+      "size_bytes": 50245,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 12,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_defensive_profile.parquet",
+      "producer_module": "NONE",
+      "rows": 631,
+      "size_bytes": 84050,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-01-19",
+      "date_min": "2022-11-26",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 24,
+      "n_distinct_as_of": 146,
+      "path": "data/cache/atlas_player_durability_load.parquet",
+      "producer_module": "NONE",
+      "rows": 768,
+      "size_bytes": 59224,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 11,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_form_streak_dynamics.parquet",
+      "producer_module": "NONE",
+      "rows": 706,
+      "size_bytes": 604820,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 12,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_foul_drawing.parquet",
+      "producer_module": "NONE",
+      "rows": 1081,
+      "size_bytes": 83343,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 13,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_foul_tendency.parquet",
+      "producer_module": "NONE",
+      "rows": 465,
+      "size_bytes": 49552,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 13,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_ft_profile.parquet",
+      "producer_module": "NONE",
+      "rows": 571,
+      "size_bytes": 72261,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 13,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_isolation_profile.parquet",
+      "producer_module": "NONE",
+      "rows": 492,
+      "size_bytes": 49464,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 14,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_matchup_splits.parquet",
+      "producer_module": "NONE",
+      "rows": 106,
+      "size_bytes": 64785,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 8,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_monthly_form.parquet",
+      "producer_module": "NONE",
+      "rows": 639,
+      "size_bytes": 329132,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 43,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_pace_fit.parquet",
+      "producer_module": "NONE",
+      "rows": 28,
+      "size_bytes": 37341,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 11,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_pick_and_roll_profile.parquet",
+      "producer_module": "NONE",
+      "rows": 576,
+      "size_bytes": 52777,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-06-08",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 29,
+      "n_distinct_as_of": 2,
+      "path": "data/cache/atlas_player_playmaking_network.parquet",
+      "producer_module": "NONE",
+      "rows": 723,
+      "size_bytes": 77810,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 14,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_post_up_profile.parquet",
+      "producer_module": "NONE",
+      "rows": 578,
+      "size_bytes": 32262,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2025-04-13",
+      "date_min": "2024-11-01",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 30,
+      "n_distinct_as_of": 70,
+      "path": "data/cache/atlas_player_quarter_shape_fatigue.parquet",
+      "producer_module": "NONE",
+      "rows": 497,
+      "size_bytes": 101876,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2019-06-30",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 20,
+      "n_distinct_as_of": 8,
+      "path": "data/cache/atlas_player_rebounding_profile.parquet",
+      "producer_module": "NONE",
+      "rows": 1192,
+      "size_bytes": 84198,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 11,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_rest_b2b_splits.parquet",
+      "producer_module": "NONE",
+      "rows": 722,
+      "size_bytes": 84012,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 11,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_score_margin_splits.parquet",
+      "producer_module": "NONE",
+      "rows": 540,
+      "size_bytes": 118823,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 29,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_scoring_creation.parquet",
+      "producer_module": "NONE",
+      "rows": 560,
+      "size_bytes": 71695,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 9,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_shot_clock_scoring.parquet",
+      "producer_module": "NONE",
+      "rows": 722,
+      "size_bytes": 43783,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 14,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_shot_profile.parquet",
+      "producer_module": "NONE",
+      "rows": 718,
+      "size_bytes": 188823,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 11,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_situational_splits.parquet",
+      "producer_module": "NONE",
+      "rows": 690,
+      "size_bytes": 298762,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 16,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_spacing_gravity.parquet",
+      "producer_module": "NONE",
+      "rows": 979,
+      "size_bytes": 106899,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 11,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_transition_scoring.parquet",
+      "producer_module": "NONE",
+      "rows": 671,
+      "size_bytes": 44458,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 12,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_turnover_profile.parquet",
+      "producer_module": "NONE",
+      "rows": 18,
+      "size_bytes": 20006,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 23,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_usage_role.parquet",
+      "producer_module": "NONE",
+      "rows": 722,
+      "size_bytes": 83470,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 11,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_player_vs_scheme_splits.parquet",
+      "producer_module": "NONE",
+      "rows": 701,
+      "size_bytes": 276883,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 11,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_team_bench_production.parquet",
+      "producer_module": "NONE",
+      "rows": 30,
+      "size_bytes": 14129,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 11,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_team_clutch_team.parquet",
+      "producer_module": "NONE",
+      "rows": 30,
+      "size_bytes": 16498,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 14,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_team_defensive_scheme.parquet",
+      "producer_module": "NONE",
+      "rows": 30,
+      "size_bytes": 44102,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 14,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_team_ft_foul_environment.parquet",
+      "producer_module": "NONE",
+      "rows": 30,
+      "size_bytes": 21414,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 12,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_team_halfcourt_offense.parquet",
+      "producer_module": "NONE",
+      "rows": 30,
+      "size_bytes": 23611,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 24,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_team_lineup_synergy.parquet",
+      "producer_module": "NONE",
+      "rows": 30,
+      "size_bytes": 35557,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 14,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_team_matchup_adjustments.parquet",
+      "producer_module": "NONE",
+      "rows": 2,
+      "size_bytes": 20424,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 15,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_team_offensive_scheme.parquet",
+      "producer_module": "NONE",
+      "rows": 30,
+      "size_bytes": 28086,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 14,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_team_pace_identity.parquet",
+      "producer_module": "NONE",
+      "rows": 30,
+      "size_bytes": 19509,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 11,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_team_paint_defense.parquet",
+      "producer_module": "NONE",
+      "rows": 30,
+      "size_bytes": 17667,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2025-04-13",
+      "date_min": "2025-04-13",
+      "error": null,
+      "grain_key_columns": [
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 19,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_team_rebounding_scheme.parquet",
+      "producer_module": "NONE",
+      "rows": 30,
+      "size_bytes": 17801,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 16,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_team_rotation_patterns.parquet",
+      "producer_module": "NONE",
+      "rows": 30,
+      "size_bytes": 30707,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 11,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_team_three_pt_defense.parquet",
+      "producer_module": "NONE",
+      "rows": 30,
+      "size_bytes": 17324,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 12,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_team_transition_defense.parquet",
+      "producer_module": "NONE",
+      "rows": 30,
+      "size_bytes": 18878,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 13,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_team_transition_halfcourt_splits.parquet",
+      "producer_module": "NONE",
+      "rows": 30,
+      "size_bytes": 23533,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-05-31",
+      "date_min": "2026-05-31",
+      "error": null,
+      "grain_key_columns": [
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 12,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_team_turnover_forcing.parquet",
+      "producer_module": "NONE",
+      "rows": 30,
+      "size_bytes": 18008,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-01-01",
+      "date_min": "2026-01-01",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 17,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_wnba_player_box_profile.parquet",
+      "producer_module": "NONE",
+      "rows": 300,
+      "size_bytes": 29881,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-01-01",
+      "date_min": "2026-01-01",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 12,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_wnba_player_clutch_margin.parquet",
+      "producer_module": "NONE",
+      "rows": 281,
+      "size_bytes": 19042,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-01-01",
+      "date_min": "2026-01-01",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 11,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_wnba_player_defense_activity.parquet",
+      "producer_module": "NONE",
+      "rows": 300,
+      "size_bytes": 18629,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-01-01",
+      "date_min": "2026-01-01",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 10,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_wnba_player_ft_profile.parquet",
+      "producer_module": "NONE",
+      "rows": 300,
+      "size_bytes": 17026,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-01-01",
+      "date_min": "2026-01-01",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 9,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_wnba_player_playmaking.parquet",
+      "producer_module": "NONE",
+      "rows": 300,
+      "size_bytes": 15346,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-01-01",
+      "date_min": "2026-01-01",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 11,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_wnba_player_rotation.parquet",
+      "producer_module": "NONE",
+      "rows": 300,
+      "size_bytes": 17998,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-01-01",
+      "date_min": "2026-01-01",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 15,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_wnba_player_shooting_profile.parquet",
+      "producer_module": "NONE",
+      "rows": 300,
+      "size_bytes": 29379,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-01-01",
+      "date_min": "2026-01-01",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 15,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_wnba_player_shot_zones.parquet",
+      "producer_module": "NONE",
+      "rows": 296,
+      "size_bytes": 23254,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-01-01",
+      "date_min": "2026-01-01",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 9,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_wnba_player_usage_volume.parquet",
+      "producer_module": "NONE",
+      "rows": 300,
+      "size_bytes": 15628,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-01-01",
+      "date_min": "2026-01-01",
+      "error": null,
+      "grain_key_columns": [
+        "team_id",
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 14,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_wnba_team_bench_hustle.parquet",
+      "producer_module": "NONE",
+      "rows": 17,
+      "size_bytes": 10141,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-01-01",
+      "date_min": "2026-01-01",
+      "error": null,
+      "grain_key_columns": [
+        "team_id",
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 10,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_wnba_team_defense_allowed.parquet",
+      "producer_module": "NONE",
+      "rows": 17,
+      "size_bytes": 7079,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-01-01",
+      "date_min": "2026-01-01",
+      "error": null,
+      "grain_key_columns": [
+        "team_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 17,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_wnba_team_lineup_exposure.parquet",
+      "producer_module": "NONE",
+      "rows": 2947,
+      "size_bytes": 144923,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-01-01",
+      "date_min": "2026-01-01",
+      "error": null,
+      "grain_key_columns": [
+        "team_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 12,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_wnba_team_officials_venue.parquet",
+      "producer_module": "NONE",
+      "rows": 175,
+      "size_bytes": 10485,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-01-01",
+      "date_min": "2026-01-01",
+      "error": null,
+      "grain_key_columns": [
+        "team_id",
+        "team_tricode",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 11,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_wnba_team_pace_shooting.parquet",
+      "producer_module": "NONE",
+      "rows": 17,
+      "size_bytes": 7874,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": "as_of",
+      "category": "atlas",
+      "classification_field": "as_of",
+      "date_column": "as_of",
+      "date_max": "2026-01-01",
+      "date_min": "2026-01-01",
+      "error": null,
+      "grain_key_columns": [
+        "team_id",
+        "as_of"
+      ],
+      "label": "SNAPSHOT-ONLY",
+      "n_cols": 8,
+      "n_distinct_as_of": 1,
+      "path": "data/cache/atlas_wnba_team_rotation.parquet",
+      "producer_module": "NONE",
+      "rows": 17,
+      "size_bytes": 5587,
+      "temporal_fields": [
+        "as_of"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 71,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/absence_cv_impact.parquet",
+      "producer_module": "scripts/build_absence_impact.py",
+      "rows": 5,
+      "size_bytes": 55031,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-04-12",
+      "date_min": "2025-01-23",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 11,
+      "n_distinct_as_of": 77,
+      "path": "data/intelligence/anomaly_log.parquet",
+      "producer_module": "scripts/build_anomaly_intel.py",
+      "rows": 812,
+      "size_bytes": 80419,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "team_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 25,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/anti_correlation_parlay_candidates.parquet",
+      "producer_module": "scripts/build_daily_picks.py",
+      "rows": 764,
+      "size_bytes": 66452,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 18,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/archetype_drift.parquet",
+      "producer_module": "scripts/build_archetype_drift.py",
+      "rows": 104,
+      "size_bytes": 18610,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 4,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/archetype_label_sidecar.parquet",
+      "producer_module": "scripts/int95_per_archetype_residual.py",
+      "rows": 220,
+      "size_bytes": 4351,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-04-12",
+      "date_min": "2025-02-28",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 10,
+      "n_distinct_as_of": 72,
+      "path": "data/intelligence/archetype_outlier_signals.parquet",
+      "producer_module": "scripts/build_archetype_outlier_signal.py",
+      "rows": 383,
+      "size_bytes": 12898,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "stat"
+      ],
+      "label": "UNDATED",
+      "n_cols": 9,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/archetype_scheme_interactions.parquet",
+      "producer_module": "scripts/build_archetype_scheme_matrix.py",
+      "rows": 108,
+      "size_bytes": 10084,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "date",
+      "category": "intelligence",
+      "classification_field": "date",
+      "date_column": "date",
+      "date_max": "2026-05-24",
+      "date_min": "2022-10-18",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 8,
+      "n_distinct_as_of": 686,
+      "path": "data/intelligence/atlas_features_sidecar.parquet",
+      "producer_module": "scripts/prop_pergame_walk_forward_atlas.py",
+      "rows": 101765,
+      "size_bytes": 261703,
+      "temporal_fields": [
+        "date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 10,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/atlas_redundancy_matrix.parquet",
+      "producer_module": "scripts/diagnose_atlas_redundancy.py",
+      "rows": 24,
+      "size_bytes": 7362,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 7,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/bench_starter_split.parquet",
+      "producer_module": "scripts/build_bench_starter_split.py",
+      "rows": 81,
+      "size_bytes": 6585,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "date",
+      "category": "intelligence",
+      "classification_field": "date",
+      "date_column": "date",
+      "date_max": "2026-05-24",
+      "date_min": "2023-04-07",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 13,
+      "n_distinct_as_of": 525,
+      "path": "data/intelligence/blk_residual_head_v1.parquet",
+      "producer_module": "scripts/int90_blk_residual_head.py",
+      "rows": 76323,
+      "size_bytes": 1727217,
+      "temporal_fields": [
+        "date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "stat"
+      ],
+      "label": "UNDATED",
+      "n_cols": 13,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/bookmaker_consistency.parquet",
+      "producer_module": "scripts/check_bookmaker_consistency.py",
+      "rows": 14,
+      "size_bytes": 8125,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-05-24",
+      "date_min": "2022-10-18",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 5,
+      "n_distinct_as_of": 686,
+      "path": "data/intelligence/built_signals_sidecar.parquet",
+      "producer_module": "scripts/prop_pergame_walk_forward_built.py",
+      "rows": 101765,
+      "size_bytes": 399511,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 55,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/clutch_cv_split.parquet",
+      "producer_module": "scripts/build_clutch_cv.py",
+      "rows": 199,
+      "size_bytes": 115007,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "game_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 11,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/coaching_adjustments.parquet",
+      "producer_module": "scripts/build_coaching_adjustments.py",
+      "rows": 58,
+      "size_bytes": 17992,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 14,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/compound_candidates.parquet",
+      "producer_module": "scripts/build_ai_chat_facts_v2.py",
+      "rows": 10,
+      "size_bytes": 14495,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "stat"
+      ],
+      "label": "UNDATED",
+      "n_cols": 21,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/compound_signal_hunt_v3.parquet",
+      "producer_module": "scripts/hunt_compound_signals_v3.py",
+      "rows": 36,
+      "size_bytes": 19363,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "stat"
+      ],
+      "label": "UNDATED",
+      "n_cols": 25,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/compound_signal_hunt_v4.parquet",
+      "producer_module": "scripts/hunt_compound_signals_v4.py",
+      "rows": 36,
+      "size_bytes": 21223,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "asof_date",
+      "category": "intelligence",
+      "classification_field": "asof_date",
+      "date_column": "asof_date",
+      "date_max": "2026-04-12",
+      "date_min": "2023-11-24",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "stat",
+        "asof_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 12,
+      "n_distinct_as_of": 320,
+      "path": "data/intelligence/confidence_ensemble.parquet",
+      "producer_module": "scripts/build_confidence_ensemble.py",
+      "rows": 307643,
+      "size_bytes": 2984098,
+      "temporal_fields": [
+        "asof_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 61,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/current_form_profiles.parquet",
+      "producer_module": "scripts/build_current_form.py",
+      "rows": 82,
+      "size_bytes": 81667,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "asof_date",
+      "category": "intelligence",
+      "classification_field": "asof_date",
+      "date_column": "asof_date",
+      "date_max": "2026-04-11",
+      "date_min": "2025-11-10",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "asof_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 37,
+      "n_distinct_as_of": 55,
+      "path": "data/intelligence/cv_consistency_kelly.parquet",
+      "producer_module": "scripts/build_cv_consistency_kelly.py",
+      "rows": 145,
+      "size_bytes": 49269,
+      "temporal_fields": [
+        "asof_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-04-05",
+      "date_min": "2025-01-23",
+      "error": null,
+      "grain_key_columns": [
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 9,
+      "n_distinct_as_of": 96,
+      "path": "data/intelligence/cv_coverage_gates.parquet",
+      "producer_module": "scripts/build_cv_coverage_gates.py",
+      "rows": 635,
+      "size_bytes": 14348,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-04-12",
+      "date_min": "2025-01-23",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 5,
+      "n_distinct_as_of": 86,
+      "path": "data/intelligence/cv_coverage_interactions.parquet",
+      "producer_module": "scripts/build_cv_coverage_interactions.py",
+      "rows": 635,
+      "size_bytes": 12958,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2025-04-11",
+      "date_min": "2025-01-23",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 8,
+      "n_distinct_as_of": 2,
+      "path": "data/intelligence/cv_fatigue_trajectories.parquet",
+      "producer_module": "scripts/build_cv_fatigue_trajectories.py",
+      "rows": 164,
+      "size_bytes": 8785,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-05-24",
+      "date_min": "2022-10-18",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 7,
+      "n_distinct_as_of": 691,
+      "path": "data/intelligence/cv_pace_features_sidecar.parquet",
+      "producer_module": "scripts/build_cv_pace_features.py",
+      "rows": 102131,
+      "size_bytes": 389105,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-04-12",
+      "date_min": "2025-01-23",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 9,
+      "n_distinct_as_of": 90,
+      "path": "data/intelligence/cv_pace_per_game.parquet",
+      "producer_module": "scripts/build_cv_pace_features.py",
+      "rows": 696,
+      "size_bytes": 21094,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "game_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 10,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/cv_quality_per_game.parquet",
+      "producer_module": "scripts/build_cv_quality_confidence.py",
+      "rows": 3560,
+      "size_bytes": 98235,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2025-11-26",
+      "date_min": "2025-10-22",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 12,
+      "n_distinct_as_of": 17,
+      "path": "data/intelligence/cv_shot_clock_features_sidecar.parquet",
+      "producer_module": "scripts/build_cv_shot_clock_features_sidecar.py",
+      "rows": 318,
+      "size_bytes": 14678,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2025-11-26",
+      "date_min": "2025-10-27",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 9,
+      "n_distinct_as_of": 4,
+      "path": "data/intelligence/cv_shot_clock_per_game.parquet",
+      "producer_module": "scripts/build_cv_shot_clock_features.py",
+      "rows": 99,
+      "size_bytes": 8033,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2025-11-26",
+      "date_min": "2025-01-23",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 11,
+      "n_distinct_as_of": 19,
+      "path": "data/intelligence/cv_shot_range_features_sidecar.parquet",
+      "producer_module": "scripts/build_cv_shot_range_features.py",
+      "rows": 388,
+      "size_bytes": 17607,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2025-11-26",
+      "date_min": "2025-01-23",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 9,
+      "n_distinct_as_of": 19,
+      "path": "data/intelligence/cv_shot_range_per_game.parquet",
+      "producer_module": "scripts/build_cv_shot_range_features.py",
+      "rows": 388,
+      "size_bytes": 12030,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-04-05",
+      "date_min": "2025-01-23",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 11,
+      "n_distinct_as_of": 80,
+      "path": "data/intelligence/cv_shot_type_features_sidecar.parquet",
+      "producer_module": "scripts/build_cv_shot_type_features.py",
+      "rows": 560,
+      "size_bytes": 13070,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-04-05",
+      "date_min": "2025-01-23",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 10,
+      "n_distinct_as_of": 80,
+      "path": "data/intelligence/cv_shot_types_per_game.parquet",
+      "producer_module": "scripts/build_cv_shot_types.py",
+      "rows": 664,
+      "size_bytes": 12966,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "date",
+      "category": "intelligence",
+      "classification_field": "date",
+      "date_column": "date",
+      "date_max": "2026-03-25",
+      "date_min": "2026-01-02",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "stat",
+        "date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 15,
+      "n_distinct_as_of": 5,
+      "path": "data/intelligence/daily_picks_retro_2026-04-25_to_2026-05-24.parquet",
+      "producer_module": "scripts/run_daily_picks_retro.py",
+      "rows": 95,
+      "size_bytes": 13240,
+      "temporal_fields": [
+        "date"
+      ]
+    },
+    {
+      "as_of_column": "date",
+      "category": "intelligence",
+      "classification_field": "date",
+      "date_column": "date",
+      "date_max": "2026-03-25",
+      "date_min": "2026-01-02",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "stat",
+        "date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 17,
+      "n_distinct_as_of": 5,
+      "path": "data/intelligence/daily_picks_retro_v1_vs_v2_comparison.parquet",
+      "producer_module": "scripts/run_daily_picks_retro_v2.py",
+      "rows": 194,
+      "size_bytes": 15832,
+      "temporal_fields": [
+        "date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 15,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/defensive_schemes.parquet",
+      "producer_module": "scripts/build_defensive_schemes.py",
+      "rows": 30,
+      "size_bytes": 12996,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 18,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/dow_cv_profiles.parquet",
+      "producer_module": "scripts/build_time_of_day_cv.py",
+      "rows": 25,
+      "size_bytes": 13505,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-04-06",
+      "date_min": "2024-10-22",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 10,
+      "n_distinct_as_of": 164,
+      "path": "data/intelligence/ft_rate_predictions.parquet",
+      "producer_module": "scripts/build_ft_rate_model.py",
+      "rows": 26016,
+      "size_bytes": 583194,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-03-05",
+      "date_min": "2024-04-09",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 12,
+      "n_distinct_as_of": 25,
+      "path": "data/intelligence/game_similarity_index.parquet",
+      "producer_module": "scripts/build_game_similarity.py",
+      "rows": 1214,
+      "size_bytes": 225688,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-03-30",
+      "date_min": "2022-10-18",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 23,
+      "n_distinct_as_of": 343,
+      "path": "data/intelligence/garbage_time_player_aggregates.parquet",
+      "producer_module": "scripts/build_garbage_time_gates.py",
+      "rows": 51622,
+      "size_bytes": 425106,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "period"
+      ],
+      "label": "UNDATED",
+      "n_cols": 14,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/garbage_time_segments.parquet",
+      "producer_module": "scripts/build_garbage_time_gates.py",
+      "rows": 1226606,
+      "size_bytes": 4851899,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-05-24",
+      "date_min": "2022-10-18",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 22,
+      "n_distinct_as_of": 675,
+      "path": "data/intelligence/gt_weighted_forms.parquet",
+      "producer_module": "scripts/build_gt_weighted_forms.py",
+      "rows": 99157,
+      "size_bytes": 6850050,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 22,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/h1_h2_projections.parquet",
+      "producer_module": "scripts/build_h1_to_h2_projection.py",
+      "rows": 497,
+      "size_bytes": 54295,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-05-29",
+      "date_min": "2026-04-10",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 16,
+      "n_distinct_as_of": 5,
+      "path": "data/intelligence/ingame_momentum.parquet",
+      "producer_module": "scripts/build_ingame_momentum.py",
+      "rows": 878,
+      "size_bytes": 784008,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 13,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/int99_v1_vs_v2_diff.parquet",
+      "producer_module": "NONE",
+      "rows": 27,
+      "size_bytes": 9964,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 51,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/lineup_chemistry.parquet",
+      "producer_module": "scripts/build_lineup_chemistry.py",
+      "rows": 6123,
+      "size_bytes": 883948,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 56,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/matchup_deviations.parquet",
+      "producer_module": "scripts/build_matchup_intel.py",
+      "rows": 581,
+      "size_bytes": 125667,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-04-12",
+      "date_min": "2024-10-22",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "team_id",
+        "opp_team_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 28,
+      "n_distinct_as_of": 325,
+      "path": "data/intelligence/matchup_grid.parquet",
+      "producer_module": "scripts/build_matchup_grid.py",
+      "rows": 4900,
+      "size_bytes": 141940,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "asof_date",
+      "category": "intelligence",
+      "classification_field": "asof_date",
+      "date_column": "asof_date",
+      "date_max": "2026-05-24",
+      "date_min": "2022-10-27",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "stat",
+        "asof_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 10,
+      "n_distinct_as_of": 666,
+      "path": "data/intelligence/momentum_signals.parquet",
+      "producer_module": "scripts/build_momentum_signals.py",
+      "rows": 673204,
+      "size_bytes": 5622181,
+      "temporal_fields": [
+        "asof_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 12,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/multitask_residual_head_predictions.parquet",
+      "producer_module": "scripts/int116_wrapper.py",
+      "rows": 4,
+      "size_bytes": 7817,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-05-24",
+      "date_min": "2022-10-18",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 21,
+      "n_distinct_as_of": 675,
+      "path": "data/intelligence/non_gt_forms_sidecar.parquet",
+      "producer_module": "scripts/build_non_gt_rolling_features.py",
+      "rows": 99157,
+      "size_bytes": 10162349,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 13,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/officials_cv_impact.parquet",
+      "producer_module": "scripts/build_officials_cv_impact.py",
+      "rows": 10,
+      "size_bytes": 8870,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 10,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/officials_player_sensitivity.parquet",
+      "producer_module": "scripts/build_officials_cv_impact.py",
+      "rows": 0,
+      "size_bytes": 4838,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-04-12",
+      "date_min": "2025-02-28",
+      "error": null,
+      "grain_key_columns": [
+        "team_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 12,
+      "n_distinct_as_of": 77,
+      "path": "data/intelligence/opp_defensive_intensity.parquet",
+      "producer_module": "scripts/build_opp_defensive_intensity.py",
+      "rows": 240,
+      "size_bytes": 21180,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-01-19",
+      "date_min": "2024-10-22",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 8,
+      "n_distinct_as_of": 135,
+      "path": "data/intelligence/opp_minutes_predictions.parquet",
+      "producer_module": "scripts/build_opp_minutes_v2.py",
+      "rows": 18606,
+      "size_bytes": 448211,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-04-12",
+      "date_min": "2025-11-03",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 11,
+      "n_distinct_as_of": 61,
+      "path": "data/intelligence/opp_normalized_cv.parquet",
+      "producer_module": "scripts/build_opp_normalized_cv.py",
+      "rows": 207,
+      "size_bytes": 17578,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-04-12",
+      "date_min": "2025-02-28",
+      "error": null,
+      "grain_key_columns": [
+        "team_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 10,
+      "n_distinct_as_of": 77,
+      "path": "data/intelligence/opp_paint_allowance.parquet",
+      "producer_module": "scripts/build_opp_paint_allowance.py",
+      "rows": 240,
+      "size_bytes": 17393,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 24,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/pace_adjusted_cv.parquet",
+      "producer_module": "scripts/build_pace_adjusted_cv.py",
+      "rows": 121,
+      "size_bytes": 30984,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 68,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/pair_chemistry.parquet",
+      "producer_module": "scripts/build_pair_chemistry.py",
+      "rows": 998,
+      "size_bytes": 423185,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 7,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/parlay_correlation_retro_buckets.parquet",
+      "producer_module": "scripts/validate_parlay_correlation_retro.py",
+      "rows": 18,
+      "size_bytes": 5233,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-04-05",
+      "date_min": "2026-01-02",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 21,
+      "n_distinct_as_of": 29,
+      "path": "data/intelligence/parlay_correlation_retro_validation.parquet",
+      "producer_module": "scripts/validate_parlay_correlation_retro.py",
+      "rows": 3682,
+      "size_bytes": 235794,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-04-05",
+      "date_min": "2026-01-02",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 23,
+      "n_distinct_as_of": 29,
+      "path": "data/intelligence/parlay_correlation_retro_validation_v2.parquet",
+      "producer_module": "NONE",
+      "rows": 3682,
+      "size_bytes": 272307,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 19,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/parlay_scores_v2_demo.parquet",
+      "producer_module": "scripts/build_daily_picks.py",
+      "rows": 27,
+      "size_bytes": 13805,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 19,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/parlay_scores_v2_demo_with_calibration.parquet",
+      "producer_module": "scripts/score_multi_leg_v2.py",
+      "rows": 27,
+      "size_bytes": 13798,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 19,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/parlay_scores_v2_legacy_calibrated.parquet",
+      "producer_module": "NONE",
+      "rows": 27,
+      "size_bytes": 13811,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "date",
+      "category": "intelligence",
+      "classification_field": "date",
+      "date_column": "date",
+      "date_max": "2026-05-24",
+      "date_min": "2022-10-18",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 9,
+      "n_distinct_as_of": 686,
+      "path": "data/intelligence/per_archetype_residual_v1.parquet",
+      "producer_module": "scripts/int95_per_archetype_residual.py",
+      "rows": 101765,
+      "size_bytes": 147074,
+      "temporal_fields": [
+        "date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "stat"
+      ],
+      "label": "UNDATED",
+      "n_cols": 19,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/per_book_edge_audit_2026-05-29.parquet",
+      "producer_module": "scripts/build_player_betting_profile.py",
+      "rows": 100,
+      "size_bytes": 15339,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "asof_date",
+      "category": "intelligence",
+      "classification_field": "asof_date",
+      "date_column": "asof_date",
+      "date_max": "2026-04-12",
+      "date_min": "2023-11-24",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "stat",
+        "asof_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 11,
+      "n_distinct_as_of": 320,
+      "path": "data/intelligence/per_player_calibration.parquet",
+      "producer_module": "scripts/build_per_player_calibration.py",
+      "rows": 307643,
+      "size_bytes": 11143409,
+      "temporal_fields": [
+        "asof_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 22,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/per_player_confidence.parquet",
+      "producer_module": "scripts/build_daily_slate.py",
+      "rows": 112,
+      "size_bytes": 33478,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "stat"
+      ],
+      "label": "UNDATED",
+      "n_cols": 11,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/player_betting_profile.parquet",
+      "producer_module": "scripts/build_player_betting_profile.py",
+      "rows": 67,
+      "size_bytes": 8826,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-05-24",
+      "date_min": "2022-10-18",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 17,
+      "n_distinct_as_of": 675,
+      "path": "data/intelligence/player_def_archetype_sidecar.parquet",
+      "producer_module": "scripts/build_player_def_archetype.py",
+      "rows": 99498,
+      "size_bytes": 9812855,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-05-24",
+      "date_min": "2022-10-18",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 17,
+      "n_distinct_as_of": 675,
+      "path": "data/intelligence/player_def_archetype_sidecar_null.parquet",
+      "producer_module": "NONE",
+      "rows": 99498,
+      "size_bytes": 9799223,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 64,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/player_development.parquet",
+      "producer_module": "scripts/build_player_development.py",
+      "rows": 42,
+      "size_bytes": 44789,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-04-12",
+      "date_min": "2025-11-21",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 80,
+      "n_distinct_as_of": 34,
+      "path": "data/intelligence/player_development_v2.parquet",
+      "producer_module": "scripts/build_player_development_v2.py",
+      "rows": 78,
+      "size_bytes": 87960,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 29,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/player_fingerprints.parquet",
+      "producer_module": "scripts/build_player_atlas.py",
+      "rows": 221,
+      "size_bytes": 48191,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 28,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/player_fingerprints_kbest.parquet",
+      "producer_module": "scripts/refit_atlas_k_sweep.py",
+      "rows": 230,
+      "size_bytes": 44461,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-05-24",
+      "date_min": "2022-10-18",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 18,
+      "n_distinct_as_of": 675,
+      "path": "data/intelligence/player_opp_splits_sidecar.parquet",
+      "producer_module": "scripts/build_player_opp_splits.py",
+      "rows": 99498,
+      "size_bytes": 5013638,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 9,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/player_similarity.parquet",
+      "producer_module": "scripts/build_player_similarity.py",
+      "rows": 2210,
+      "size_bytes": 37972,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "stat"
+      ],
+      "label": "UNDATED",
+      "n_cols": 9,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/pos_vs_pos_matchups.parquet",
+      "producer_module": "scripts/build_position_vs_position.py",
+      "rows": 84,
+      "size_bytes": 8472,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "stat"
+      ],
+      "label": "UNDATED",
+      "n_cols": 11,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/position_scheme_interactions.parquet",
+      "producer_module": "scripts/build_position_scheme_matrix.py",
+      "rows": 315,
+      "size_bytes": 24604,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 35,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/possession_type_profiles.parquet",
+      "producer_module": "scripts/build_possession_type_intel.py",
+      "rows": 503,
+      "size_bytes": 112212,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "team_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 15,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/pra_arbitrage_opportunities_2026-05-29.parquet",
+      "producer_module": "NONE",
+      "rows": 23,
+      "size_bytes": 10762,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "date",
+      "category": "intelligence",
+      "classification_field": "date",
+      "date_column": "date",
+      "date_max": "2026-05-24",
+      "date_min": "2022-10-18",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 12,
+      "n_distinct_as_of": 675,
+      "path": "data/intelligence/pts_decomposition_predictions.parquet",
+      "producer_module": "scripts/train_pts_decomposition.py",
+      "rows": 99083,
+      "size_bytes": 3460398,
+      "temporal_fields": [
+        "date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 20,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/q1_extrapolation_signals.parquet",
+      "producer_module": "scripts/build_q1_extrapolation_signals.py",
+      "rows": 0,
+      "size_bytes": 9959,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 15,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/quarter_profiles.parquet",
+      "producer_module": "scripts/build_quarter_momentum.py",
+      "rows": 559,
+      "size_bytes": 55168,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 40,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/rest_cv_impact.parquet",
+      "producer_module": "scripts/build_rest_cv_intel.py",
+      "rows": 30,
+      "size_bytes": 32034,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "date",
+      "category": "intelligence",
+      "classification_field": "date",
+      "date_column": "date",
+      "date_max": "2026-05-11",
+      "date_min": "2024-04-21",
+      "error": null,
+      "grain_key_columns": [
+        "player_id",
+        "stat",
+        "date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 20,
+      "n_distinct_as_of": 66,
+      "path": "data/intelligence/retro_bet_audit.parquet",
+      "producer_module": "scripts/audit_retro_bets.py",
+      "rows": 200,
+      "size_bytes": 16744,
+      "temporal_fields": [
+        "date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 45,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/rolling_trends.parquet",
+      "producer_module": "scripts/build_rolling_trends.py",
+      "rows": 31,
+      "size_bytes": 46793,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-05-24",
+      "date_min": "2022-10-18",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 11,
+      "n_distinct_as_of": 675,
+      "path": "data/intelligence/schedule_strength_7d.parquet",
+      "producer_module": "scripts/build_schedule_strength.py",
+      "rows": 99498,
+      "size_bytes": 1025217,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 17,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/sequential_patterns.parquet",
+      "producer_module": "scripts/build_sequential_possession.py",
+      "rows": 157,
+      "size_bytes": 22094,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 9,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/shot_clock_buckets.parquet",
+      "producer_module": "scripts/build_shot_clock_buckets.py",
+      "rows": 8883,
+      "size_bytes": 58418,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 9,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/similarity_matrix.parquet",
+      "producer_module": "scripts/build_similarity_engine.py",
+      "rows": 26335,
+      "size_bytes": 803385,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 7,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/stat_correlation_matrix.parquet",
+      "producer_module": "scripts/build_stat_correlations.py",
+      "rows": 245,
+      "size_bytes": 7386,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-04-05",
+      "date_min": "2025-10-30",
+      "error": null,
+      "grain_key_columns": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 36,
+      "n_distinct_as_of": 61,
+      "path": "data/intelligence/streak_signatures.parquet",
+      "producer_module": "scripts/build_streak_signatures.py",
+      "rows": 282,
+      "size_bytes": 47435,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": "game_date",
+      "category": "intelligence",
+      "classification_field": "game_date",
+      "date_column": "game_date",
+      "date_max": "2026-04-12",
+      "date_min": "2025-10-22",
+      "error": null,
+      "grain_key_columns": [
+        "team_id",
+        "game_date"
+      ],
+      "label": "AS-OF SAFE",
+      "n_cols": 15,
+      "n_distinct_as_of": 68,
+      "path": "data/intelligence/team_tempo_spacing.parquet",
+      "producer_module": "scripts/build_team_tempo_spacing.py",
+      "rows": 210,
+      "size_bytes": 24255,
+      "temporal_fields": [
+        "game_date"
+      ]
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "team_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 10,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/teammate_correlation.parquet",
+      "producer_module": "scripts/build_teammate_correlation.py",
+      "rows": 71001,
+      "size_bytes": 1447190,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 9,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/time_of_day_cv.parquet",
+      "producer_module": "scripts/build_time_of_day_cv.py",
+      "rows": 25,
+      "size_bytes": 7501,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [],
+      "label": "UNDATED",
+      "n_cols": 6,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/tipoff_predictability.parquet",
+      "producer_module": "scripts/build_tipoff_predictability.py",
+      "rows": 45,
+      "size_bytes": 5038,
+      "temporal_fields": []
+    },
+    {
+      "as_of_column": null,
+      "category": "intelligence",
+      "classification_field": null,
+      "date_column": null,
+      "date_max": null,
+      "date_min": null,
+      "error": null,
+      "grain_key_columns": [
+        "player_id"
+      ],
+      "label": "UNDATED",
+      "n_cols": 15,
+      "n_distinct_as_of": null,
+      "path": "data/intelligence/trade_profile_shifts.parquet",
+      "producer_module": "scripts/build_trade_intel.py",
+      "rows": 263,
+      "size_bytes": 25380,
+      "temporal_fields": []
+    }
+  ]
+}
