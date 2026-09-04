@@ -19,6 +19,20 @@ Also cite `VERIFIER_CONTRACT.md` section Q on an S-row, not just section B.
 GAP <GID> | sport <sport> | worktree a<N> | log cx_<gid>_<slug>
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it; self-check
 against every line of section B before you report.
+WHERE THIS ROW RUNS (step -1, MANDATORY -- state it PER STEP, not per row):
+  local  = reading committed records/artifacts in the worktree, arithmetic, tests.
+  pod    = anything needing full-resolution corpus video or GPU. Ship and run it
+           with `~/bin/pod_run <aN> --ship <paths> --fetch <paths> -- <cmd>`, which
+           copies this worktree's code tree to /workspace/wt/<aN>, runs there under
+           nohup, fetches the listed paths back, and never writes the deployed tree
+           /workspace/nba-ai-system.
+  A "mostly local" row is exactly where this gets missed (G256, G276). If a step
+  names a /workspace path, SAY it is a pod path.
+  DISK GUARD SCOPE: `du -sm /workspace` and the `dd conv=fsync` probe are POD-side
+  and belong INSIDE the pod_run command. A missing /workspace in the local checkout
+  is NOT a disk failure -- it means move that step to pod_run, not STOP.
+  HOLD RULE: count DISTINCT /workspace/wt/a* worktree directories, never python
+  PIDs -- one lane routinely shows two PIDs sharing one cwd (G274).
 PREMISE (step 0): <the one measurement that proves the gap is real today>. If
 falsified, STOP, write the memo, commit, report FALSIFIED -- a valid result
 that earns its own register row.
