@@ -1,0 +1,4656 @@
+{
+  "pass1_counts": {
+    "PLAYER": 146,
+    "PERSON NOT PLAYER IN PLAY": 4,
+    "NOT A PERSON": 20
+  },
+  "sampled_pairs": 80,
+  "both_endpoints_person_pairs": 62,
+  "identity_counts": {
+    "SAME PERSON": 43,
+    "CANNOT JUDGE": 16,
+    "DIFFERENT PERSON": 3
+  },
+  "judgeable_person_person_pairs": 46,
+  "purity_same_over_same_plus_different": 0.9347826086956522,
+  "purity_wilson_95": [
+    0.8249725891809578,
+    0.9775721385707115
+  ],
+  "pass1_unblinded_rows": [
+    {
+      "pair_index": 7,
+      "endpoint": "second",
+      "emitted_track_id": 1,
+      "source_frame": 19945,
+      "foot_x_px": 552.0,
+      "foot_y_px": 799.5,
+      "time_bin": 7,
+      "time_bin_inclusive": [
+        19881,
+        19927
+      ],
+      "blind_index": 1,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 80,
+      "endpoint": "first",
+      "emitted_track_id": 89,
+      "source_frame": 23361,
+      "foot_x_px": 987.75,
+      "foot_y_px": 453.375,
+      "time_bin": 80,
+      "time_bin_inclusive": [
+        23322,
+        23369
+      ],
+      "blind_index": 2,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 5,
+      "endpoint": "second",
+      "emitted_track_id": 10,
+      "source_frame": 19847,
+      "foot_x_px": 1137.0,
+      "foot_y_px": 859.5,
+      "time_bin": 5,
+      "time_bin_inclusive": [
+        19787,
+        19833
+      ],
+      "blind_index": 3,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 21,
+      "endpoint": "second",
+      "emitted_track_id": 15,
+      "source_frame": 20597,
+      "foot_x_px": 1337.25,
+      "foot_y_px": 619.5,
+      "time_bin": 21,
+      "time_bin_inclusive": [
+        20541,
+        20587
+      ],
+      "blind_index": 4,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 24,
+      "endpoint": "second",
+      "emitted_track_id": 33,
+      "source_frame": 20755,
+      "foot_x_px": 1747.5,
+      "foot_y_px": 958.5,
+      "time_bin": 24,
+      "time_bin_inclusive": [
+        20683,
+        20729
+      ],
+      "blind_index": 5,
+      "verdict": "PERSON NOT PLAYER IN PLAY"
+    },
+    {
+      "pair_index": 40,
+      "endpoint": "first",
+      "emitted_track_id": 46,
+      "source_frame": 21451,
+      "foot_x_px": 888.0,
+      "foot_y_px": 478.875,
+      "time_bin": 40,
+      "time_bin_inclusive": [
+        21437,
+        21483
+      ],
+      "blind_index": 6,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 2,
+      "endpoint": "second",
+      "emitted_track_id": 4,
+      "source_frame": 19691,
+      "foot_x_px": 883.5,
+      "foot_y_px": 531.75,
+      "time_bin": 2,
+      "time_bin_inclusive": [
+        19646,
+        19692
+      ],
+      "blind_index": 7,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 28,
+      "endpoint": "second",
+      "emitted_track_id": 34,
+      "source_frame": 20901,
+      "foot_x_px": 358.5,
+      "foot_y_px": 453.75,
+      "time_bin": 28,
+      "time_bin_inclusive": [
+        20871,
+        20917
+      ],
+      "blind_index": 8,
+      "verdict": "PERSON NOT PLAYER IN PLAY"
+    },
+    {
+      "pair_index": 73,
+      "endpoint": "first",
+      "emitted_track_id": 86,
+      "source_frame": 23021,
+      "foot_x_px": 532.125,
+      "foot_y_px": 819.75,
+      "time_bin": 73,
+      "time_bin_inclusive": [
+        22992,
+        23039
+      ],
+      "blind_index": 9,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 65,
+      "endpoint": "second",
+      "emitted_track_id": 78,
+      "source_frame": 22649,
+      "foot_x_px": 942.75,
+      "foot_y_px": 874.5,
+      "time_bin": 65,
+      "time_bin_inclusive": [
+        22615,
+        22661
+      ],
+      "blind_index": 10,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 72,
+      "endpoint": "second",
+      "emitted_track_id": 83,
+      "source_frame": 23013,
+      "foot_x_px": 979.5,
+      "foot_y_px": 925.5,
+      "time_bin": 72,
+      "time_bin_inclusive": [
+        22945,
+        22991
+      ],
+      "blind_index": 11,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 1,
+      "endpoint": "first",
+      "emitted_track_id": 8,
+      "source_frame": 19621,
+      "foot_x_px": 877.5,
+      "foot_y_px": 801.0,
+      "time_bin": 1,
+      "time_bin_inclusive": [
+        19599,
+        19645
+      ],
+      "blind_index": 12,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 39,
+      "endpoint": "second",
+      "emitted_track_id": 48,
+      "source_frame": 21429,
+      "foot_x_px": 943.5,
+      "foot_y_px": 603.75,
+      "time_bin": 39,
+      "time_bin_inclusive": [
+        21390,
+        21436
+      ],
+      "blind_index": 13,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 13,
+      "endpoint": "first",
+      "emitted_track_id": 7,
+      "source_frame": 20191,
+      "foot_x_px": 1254.75,
+      "foot_y_px": 505.875,
+      "time_bin": 13,
+      "time_bin_inclusive": [
+        20164,
+        20210
+      ],
+      "blind_index": 14,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 12,
+      "endpoint": "first",
+      "emitted_track_id": 15,
+      "source_frame": 20143,
+      "foot_x_px": 675.0,
+      "foot_y_px": 759.0,
+      "time_bin": 12,
+      "time_bin_inclusive": [
+        20117,
+        20163
+      ],
+      "blind_index": 15,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 79,
+      "endpoint": "first",
+      "emitted_track_id": 95,
+      "source_frame": 23300,
+      "foot_x_px": 475.5,
+      "foot_y_px": 826.5,
+      "time_bin": 79,
+      "time_bin_inclusive": [
+        23275,
+        23321
+      ],
+      "blind_index": 16,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 49,
+      "endpoint": "second",
+      "emitted_track_id": 42,
+      "source_frame": 21916,
+      "foot_x_px": 571.125,
+      "foot_y_px": 536.25,
+      "time_bin": 49,
+      "time_bin_inclusive": [
+        21861,
+        21907
+      ],
+      "blind_index": 17,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 3,
+      "endpoint": "second",
+      "emitted_track_id": 14,
+      "source_frame": 19759,
+      "foot_x_px": 243.796875,
+      "foot_y_px": 421.125,
+      "time_bin": 3,
+      "time_bin_inclusive": [
+        19693,
+        19739
+      ],
+      "blind_index": 18,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 22,
+      "endpoint": "first",
+      "emitted_track_id": 37,
+      "source_frame": 20621,
+      "foot_x_px": 1112.25,
+      "foot_y_px": 867.0,
+      "time_bin": 22,
+      "time_bin_inclusive": [
+        20588,
+        20635
+      ],
+      "blind_index": 19,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 25,
+      "endpoint": "first",
+      "emitted_track_id": 38,
+      "source_frame": 20750,
+      "foot_x_px": 1211.25,
+      "foot_y_px": 865.5,
+      "time_bin": 25,
+      "time_bin_inclusive": [
+        20730,
+        20776
+      ],
+      "blind_index": 20,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 43,
+      "endpoint": "second",
+      "emitted_track_id": 47,
+      "source_frame": 21626,
+      "foot_x_px": 1191.0,
+      "foot_y_px": 486.75,
+      "time_bin": 43,
+      "time_bin_inclusive": [
+        21578,
+        21624
+      ],
+      "blind_index": 21,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 36,
+      "endpoint": "second",
+      "emitted_track_id": 41,
+      "source_frame": 21295,
+      "foot_x_px": 1378.5,
+      "foot_y_px": 453.75,
+      "time_bin": 36,
+      "time_bin_inclusive": [
+        21248,
+        21294
+      ],
+      "blind_index": 22,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 21,
+      "endpoint": "first",
+      "emitted_track_id": 15,
+      "source_frame": 20567,
+      "foot_x_px": 1174.5,
+      "foot_y_px": 481.5,
+      "time_bin": 21,
+      "time_bin_inclusive": [
+        20541,
+        20587
+      ],
+      "blind_index": 23,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 66,
+      "endpoint": "second",
+      "emitted_track_id": 69,
+      "source_frame": 22719,
+      "foot_x_px": 834.1875,
+      "foot_y_px": 605.25,
+      "time_bin": 66,
+      "time_bin_inclusive": [
+        22662,
+        22709
+      ],
+      "blind_index": 24,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 30,
+      "endpoint": "second",
+      "emitted_track_id": 35,
+      "source_frame": 21021,
+      "foot_x_px": 1083.0,
+      "foot_y_px": 887.25,
+      "time_bin": 30,
+      "time_bin_inclusive": [
+        20965,
+        21012
+      ],
+      "blind_index": 25,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 10,
+      "endpoint": "second",
+      "emitted_track_id": 26,
+      "source_frame": 20096,
+      "foot_x_px": 288.375,
+      "foot_y_px": 768.75,
+      "time_bin": 10,
+      "time_bin_inclusive": [
+        20023,
+        20069
+      ],
+      "blind_index": 26,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 42,
+      "endpoint": "second",
+      "emitted_track_id": 45,
+      "source_frame": 21582,
+      "foot_x_px": 466.5,
+      "foot_y_px": 639.0,
+      "time_bin": 42,
+      "time_bin_inclusive": [
+        21531,
+        21577
+      ],
+      "blind_index": 27,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 68,
+      "endpoint": "first",
+      "emitted_track_id": 69,
+      "source_frame": 22777,
+      "foot_x_px": 646.125,
+      "foot_y_px": 948.0,
+      "time_bin": 68,
+      "time_bin_inclusive": [
+        22757,
+        22803
+      ],
+      "blind_index": 28,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 4,
+      "endpoint": "second",
+      "emitted_track_id": 11,
+      "source_frame": 19800,
+      "foot_x_px": 1176.0,
+      "foot_y_px": 532.5,
+      "time_bin": 4,
+      "time_bin_inclusive": [
+        19740,
+        19786
+      ],
+      "blind_index": 29,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 17,
+      "endpoint": "first",
+      "emitted_track_id": 31,
+      "source_frame": 20386,
+      "foot_x_px": 1145.25,
+      "foot_y_px": 844.5,
+      "time_bin": 17,
+      "time_bin_inclusive": [
+        20353,
+        20399
+      ],
+      "blind_index": 30,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 70,
+      "endpoint": "second",
+      "emitted_track_id": 84,
+      "source_frame": 22911,
+      "foot_x_px": 302.8125,
+      "foot_y_px": 766.5,
+      "time_bin": 70,
+      "time_bin_inclusive": [
+        22851,
+        22897
+      ],
+      "blind_index": 31,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 48,
+      "endpoint": "second",
+      "emitted_track_id": 46,
+      "source_frame": 21865,
+      "foot_x_px": 801.1875,
+      "foot_y_px": 572.25,
+      "time_bin": 48,
+      "time_bin_inclusive": [
+        21814,
+        21860
+      ],
+      "blind_index": 32,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 18,
+      "endpoint": "first",
+      "emitted_track_id": 35,
+      "source_frame": 20446,
+      "foot_x_px": 501.375,
+      "foot_y_px": 867.0,
+      "time_bin": 18,
+      "time_bin_inclusive": [
+        20400,
+        20446
+      ],
+      "blind_index": 33,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 41,
+      "endpoint": "second",
+      "emitted_track_id": 49,
+      "source_frame": 21520,
+      "foot_x_px": 1773.0,
+      "foot_y_px": 955.5,
+      "time_bin": 41,
+      "time_bin_inclusive": [
+        21484,
+        21530
+      ],
+      "blind_index": 34,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 6,
+      "endpoint": "second",
+      "emitted_track_id": 2,
+      "source_frame": 19885,
+      "foot_x_px": 891.0,
+      "foot_y_px": 760.5,
+      "time_bin": 6,
+      "time_bin_inclusive": [
+        19834,
+        19880
+      ],
+      "blind_index": 35,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 74,
+      "endpoint": "second",
+      "emitted_track_id": 87,
+      "source_frame": 23116,
+      "foot_x_px": 1266.0,
+      "foot_y_px": 726.75,
+      "time_bin": 74,
+      "time_bin_inclusive": [
+        23040,
+        23086
+      ],
+      "blind_index": 36,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 39,
+      "endpoint": "first",
+      "emitted_track_id": 48,
+      "source_frame": 21399,
+      "foot_x_px": 894.0,
+      "foot_y_px": 626.625,
+      "time_bin": 39,
+      "time_bin_inclusive": [
+        21390,
+        21436
+      ],
+      "blind_index": 37,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 48,
+      "endpoint": "first",
+      "emitted_track_id": 46,
+      "source_frame": 21835,
+      "foot_x_px": 462.375,
+      "foot_y_px": 559.5,
+      "time_bin": 48,
+      "time_bin_inclusive": [
+        21814,
+        21860
+      ],
+      "blind_index": 38,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 49,
+      "endpoint": "first",
+      "emitted_track_id": 42,
+      "source_frame": 21886,
+      "foot_x_px": 162.1875,
+      "foot_y_px": 564.75,
+      "time_bin": 49,
+      "time_bin_inclusive": [
+        21861,
+        21907
+      ],
+      "blind_index": 39,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 53,
+      "endpoint": "first",
+      "emitted_track_id": 60,
+      "source_frame": 22073,
+      "foot_x_px": 159.84375,
+      "foot_y_px": 893.25,
+      "time_bin": 53,
+      "time_bin_inclusive": [
+        22050,
+        22096
+      ],
+      "blind_index": 40,
+      "verdict": "PERSON NOT PLAYER IN PLAY"
+    },
+    {
+      "pair_index": 73,
+      "endpoint": "second",
+      "emitted_track_id": 86,
+      "source_frame": 23051,
+      "foot_x_px": 862.3125,
+      "foot_y_px": 817.5,
+      "time_bin": 73,
+      "time_bin_inclusive": [
+        22992,
+        23039
+      ],
+      "blind_index": 41,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 44,
+      "endpoint": "first",
+      "emitted_track_id": 44,
+      "source_frame": 21648,
+      "foot_x_px": 227.578125,
+      "foot_y_px": 975.0,
+      "time_bin": 44,
+      "time_bin_inclusive": [
+        21625,
+        21672
+      ],
+      "blind_index": 42,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 65,
+      "endpoint": "first",
+      "emitted_track_id": 78,
+      "source_frame": 22619,
+      "foot_x_px": 1243.5,
+      "foot_y_px": 598.875,
+      "time_bin": 65,
+      "time_bin_inclusive": [
+        22615,
+        22661
+      ],
+      "blind_index": 43,
+      "verdict": "PERSON NOT PLAYER IN PLAY"
+    },
+    {
+      "pair_index": 11,
+      "endpoint": "second",
+      "emitted_track_id": 22,
+      "source_frame": 20122,
+      "foot_x_px": 432.75,
+      "foot_y_px": 454.125,
+      "time_bin": 11,
+      "time_bin_inclusive": [
+        20070,
+        20116
+      ],
+      "blind_index": 44,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 51,
+      "endpoint": "second",
+      "emitted_track_id": 59,
+      "source_frame": 21991,
+      "foot_x_px": 128.90625,
+      "foot_y_px": 972.0,
+      "time_bin": 51,
+      "time_bin_inclusive": [
+        21955,
+        22002
+      ],
+      "blind_index": 45,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 34,
+      "endpoint": "second",
+      "emitted_track_id": 39,
+      "source_frame": 21207,
+      "foot_x_px": 791.25,
+      "foot_y_px": 677.25,
+      "time_bin": 34,
+      "time_bin_inclusive": [
+        21154,
+        21200
+      ],
+      "blind_index": 46,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 12,
+      "endpoint": "second",
+      "emitted_track_id": 15,
+      "source_frame": 20173,
+      "foot_x_px": 815.25,
+      "foot_y_px": 763.5,
+      "time_bin": 12,
+      "time_bin_inclusive": [
+        20117,
+        20163
+      ],
+      "blind_index": 47,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 14,
+      "endpoint": "first",
+      "emitted_track_id": 25,
+      "source_frame": 20253,
+      "foot_x_px": 1836.0,
+      "foot_y_px": 972.75,
+      "time_bin": 14,
+      "time_bin_inclusive": [
+        20211,
+        20257
+      ],
+      "blind_index": 48,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 20,
+      "endpoint": "first",
+      "emitted_track_id": 32,
+      "source_frame": 20533,
+      "foot_x_px": 303.9375,
+      "foot_y_px": 972.75,
+      "time_bin": 20,
+      "time_bin_inclusive": [
+        20494,
+        20540
+      ],
+      "blind_index": 49,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 20,
+      "endpoint": "second",
+      "emitted_track_id": 32,
+      "source_frame": 20563,
+      "foot_x_px": 216.75,
+      "foot_y_px": 979.5,
+      "time_bin": 20,
+      "time_bin_inclusive": [
+        20494,
+        20540
+      ],
+      "blind_index": 50,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 27,
+      "endpoint": "first",
+      "emitted_track_id": 25,
+      "source_frame": 20833,
+      "foot_x_px": 1041.75,
+      "foot_y_px": 519.0,
+      "time_bin": 27,
+      "time_bin_inclusive": [
+        20824,
+        20870
+      ],
+      "blind_index": 51,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 8,
+      "endpoint": "second",
+      "emitted_track_id": 20,
+      "source_frame": 19973,
+      "foot_x_px": 523.125,
+      "foot_y_px": 498.375,
+      "time_bin": 8,
+      "time_bin_inclusive": [
+        19928,
+        19975
+      ],
+      "blind_index": 52,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 59,
+      "endpoint": "second",
+      "emitted_track_id": 63,
+      "source_frame": 22385,
+      "foot_x_px": 828.75,
+      "foot_y_px": 868.5,
+      "time_bin": 59,
+      "time_bin_inclusive": [
+        22332,
+        22379
+      ],
+      "blind_index": 53,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 62,
+      "endpoint": "second",
+      "emitted_track_id": 62,
+      "source_frame": 22546,
+      "foot_x_px": 1173.0,
+      "foot_y_px": 550.5,
+      "time_bin": 62,
+      "time_bin_inclusive": [
+        22474,
+        22520
+      ],
+      "blind_index": 54,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 29,
+      "endpoint": "second",
+      "emitted_track_id": 31,
+      "source_frame": 20960,
+      "foot_x_px": 370.3125,
+      "foot_y_px": 976.5,
+      "time_bin": 29,
+      "time_bin_inclusive": [
+        20918,
+        20964
+      ],
+      "blind_index": 55,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 54,
+      "endpoint": "first",
+      "emitted_track_id": 57,
+      "source_frame": 22118,
+      "foot_x_px": 819.0,
+      "foot_y_px": 449.25,
+      "time_bin": 54,
+      "time_bin_inclusive": [
+        22097,
+        22143
+      ],
+      "blind_index": 56,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 37,
+      "endpoint": "first",
+      "emitted_track_id": 44,
+      "source_frame": 21336,
+      "foot_x_px": 822.0,
+      "foot_y_px": 534.0,
+      "time_bin": 37,
+      "time_bin_inclusive": [
+        21295,
+        21342
+      ],
+      "blind_index": 57,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 52,
+      "endpoint": "first",
+      "emitted_track_id": 56,
+      "source_frame": 22028,
+      "foot_x_px": 1113.0,
+      "foot_y_px": 851.25,
+      "time_bin": 52,
+      "time_bin_inclusive": [
+        22003,
+        22049
+      ],
+      "blind_index": 58,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 23,
+      "endpoint": "second",
+      "emitted_track_id": 36,
+      "source_frame": 20685,
+      "foot_x_px": 113.6484375,
+      "foot_y_px": 632.25,
+      "time_bin": 23,
+      "time_bin_inclusive": [
+        20636,
+        20682
+      ],
+      "blind_index": 59,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 66,
+      "endpoint": "first",
+      "emitted_track_id": 69,
+      "source_frame": 22689,
+      "foot_x_px": 768.0,
+      "foot_y_px": 883.5,
+      "time_bin": 66,
+      "time_bin_inclusive": [
+        22662,
+        22709
+      ],
+      "blind_index": 60,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 15,
+      "endpoint": "second",
+      "emitted_track_id": 24,
+      "source_frame": 20288,
+      "foot_x_px": 1069.5,
+      "foot_y_px": 450.75,
+      "time_bin": 15,
+      "time_bin_inclusive": [
+        20258,
+        20305
+      ],
+      "blind_index": 61,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 46,
+      "endpoint": "first",
+      "emitted_track_id": 55,
+      "source_frame": 21762,
+      "foot_x_px": 1100.25,
+      "foot_y_px": 519.75,
+      "time_bin": 46,
+      "time_bin_inclusive": [
+        21720,
+        21766
+      ],
+      "blind_index": 62,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 74,
+      "endpoint": "first",
+      "emitted_track_id": 87,
+      "source_frame": 23086,
+      "foot_x_px": 1524.0,
+      "foot_y_px": 852.75,
+      "time_bin": 74,
+      "time_bin_inclusive": [
+        23040,
+        23086
+      ],
+      "blind_index": 63,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 63,
+      "endpoint": "first",
+      "emitted_track_id": 68,
+      "source_frame": 22544,
+      "foot_x_px": 386.625,
+      "foot_y_px": 972.75,
+      "time_bin": 63,
+      "time_bin_inclusive": [
+        22521,
+        22567
+      ],
+      "blind_index": 64,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 4,
+      "endpoint": "first",
+      "emitted_track_id": 11,
+      "source_frame": 19770,
+      "foot_x_px": 1188.0,
+      "foot_y_px": 664.125,
+      "time_bin": 4,
+      "time_bin_inclusive": [
+        19740,
+        19786
+      ],
+      "blind_index": 65,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 23,
+      "endpoint": "first",
+      "emitted_track_id": 36,
+      "source_frame": 20655,
+      "foot_x_px": 340.875,
+      "foot_y_px": 975.0,
+      "time_bin": 23,
+      "time_bin_inclusive": [
+        20636,
+        20682
+      ],
+      "blind_index": 66,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 24,
+      "endpoint": "first",
+      "emitted_track_id": 33,
+      "source_frame": 20725,
+      "foot_x_px": 1449.0,
+      "foot_y_px": 880.5,
+      "time_bin": 24,
+      "time_bin_inclusive": [
+        20683,
+        20729
+      ],
+      "blind_index": 67,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 55,
+      "endpoint": "second",
+      "emitted_track_id": 61,
+      "source_frame": 22192,
+      "foot_x_px": 1443.0,
+      "foot_y_px": 846.0,
+      "time_bin": 55,
+      "time_bin_inclusive": [
+        22144,
+        22190
+      ],
+      "blind_index": 68,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 78,
+      "endpoint": "second",
+      "emitted_track_id": 42,
+      "source_frame": 23293,
+      "foot_x_px": 1659.0,
+      "foot_y_px": 945.0,
+      "time_bin": 78,
+      "time_bin_inclusive": [
+        23228,
+        23274
+      ],
+      "blind_index": 69,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 47,
+      "endpoint": "second",
+      "emitted_track_id": 54,
+      "source_frame": 21810,
+      "foot_x_px": 254.4375,
+      "foot_y_px": 897.75,
+      "time_bin": 47,
+      "time_bin_inclusive": [
+        21767,
+        21813
+      ],
+      "blind_index": 70,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 18,
+      "endpoint": "second",
+      "emitted_track_id": 35,
+      "source_frame": 20476,
+      "foot_x_px": 1260.75,
+      "foot_y_px": 574.875,
+      "time_bin": 18,
+      "time_bin_inclusive": [
+        20400,
+        20446
+      ],
+      "blind_index": 71,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 80,
+      "endpoint": "second",
+      "emitted_track_id": 89,
+      "source_frame": 23391,
+      "foot_x_px": 997.5,
+      "foot_y_px": 426.0,
+      "time_bin": 80,
+      "time_bin_inclusive": [
+        23322,
+        23369
+      ],
+      "blind_index": 72,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 58,
+      "endpoint": "first",
+      "emitted_track_id": 49,
+      "source_frame": 22298,
+      "foot_x_px": 1611.0,
+      "foot_y_px": 973.5,
+      "time_bin": 58,
+      "time_bin_inclusive": [
+        22285,
+        22331
+      ],
+      "blind_index": 73,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 45,
+      "endpoint": "second",
+      "emitted_track_id": 53,
+      "source_frame": 21726,
+      "foot_x_px": 367.5,
+      "foot_y_px": 736.5,
+      "time_bin": 45,
+      "time_bin_inclusive": [
+        21673,
+        21719
+      ],
+      "blind_index": 74,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 32,
+      "endpoint": "first",
+      "emitted_track_id": 7,
+      "source_frame": 21072,
+      "foot_x_px": 1345.5,
+      "foot_y_px": 519.75,
+      "time_bin": 32,
+      "time_bin_inclusive": [
+        21060,
+        21106
+      ],
+      "blind_index": 75,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 38,
+      "endpoint": "first",
+      "emitted_track_id": 42,
+      "source_frame": 21366,
+      "foot_x_px": 508.5,
+      "foot_y_px": 513.75,
+      "time_bin": 38,
+      "time_bin_inclusive": [
+        21343,
+        21389
+      ],
+      "blind_index": 76,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 27,
+      "endpoint": "second",
+      "emitted_track_id": 25,
+      "source_frame": 20863,
+      "foot_x_px": 1055.25,
+      "foot_y_px": 532.5,
+      "time_bin": 27,
+      "time_bin_inclusive": [
+        20824,
+        20870
+      ],
+      "blind_index": 77,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 5,
+      "endpoint": "first",
+      "emitted_track_id": 10,
+      "source_frame": 19817,
+      "foot_x_px": 1229.25,
+      "foot_y_px": 864.0,
+      "time_bin": 5,
+      "time_bin_inclusive": [
+        19787,
+        19833
+      ],
+      "blind_index": 78,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 7,
+      "endpoint": "first",
+      "emitted_track_id": 1,
+      "source_frame": 19915,
+      "foot_x_px": 765.0,
+      "foot_y_px": 793.5,
+      "time_bin": 7,
+      "time_bin_inclusive": [
+        19881,
+        19927
+      ],
+      "blind_index": 79,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 54,
+      "endpoint": "second",
+      "emitted_track_id": 57,
+      "source_frame": 22148,
+      "foot_x_px": 315.0,
+      "foot_y_px": 501.75,
+      "time_bin": 54,
+      "time_bin_inclusive": [
+        22097,
+        22143
+      ],
+      "blind_index": 80,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 77,
+      "endpoint": "second",
+      "emitted_track_id": 42,
+      "source_frame": 23212,
+      "foot_x_px": 1648.5,
+      "foot_y_px": 964.5,
+      "time_bin": 77,
+      "time_bin_inclusive": [
+        23181,
+        23227
+      ],
+      "blind_index": 81,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 61,
+      "endpoint": "second",
+      "emitted_track_id": 66,
+      "source_frame": 22481,
+      "foot_x_px": 1425.0,
+      "foot_y_px": 547.5,
+      "time_bin": 61,
+      "time_bin_inclusive": [
+        22427,
+        22473
+      ],
+      "blind_index": 82,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 8,
+      "endpoint": "first",
+      "emitted_track_id": 20,
+      "source_frame": 19943,
+      "foot_x_px": 729.75,
+      "foot_y_px": 704.25,
+      "time_bin": 8,
+      "time_bin_inclusive": [
+        19928,
+        19975
+      ],
+      "blind_index": 83,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 10,
+      "endpoint": "first",
+      "emitted_track_id": 26,
+      "source_frame": 20066,
+      "foot_x_px": 59.765625,
+      "foot_y_px": 800.25,
+      "time_bin": 10,
+      "time_bin_inclusive": [
+        20023,
+        20069
+      ],
+      "blind_index": 84,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 16,
+      "endpoint": "first",
+      "emitted_track_id": 29,
+      "source_frame": 20349,
+      "foot_x_px": 1268.25,
+      "foot_y_px": 717.0,
+      "time_bin": 16,
+      "time_bin_inclusive": [
+        20306,
+        20352
+      ],
+      "blind_index": 85,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 26,
+      "endpoint": "first",
+      "emitted_track_id": 32,
+      "source_frame": 20780,
+      "foot_x_px": 510.75,
+      "foot_y_px": 695.25,
+      "time_bin": 26,
+      "time_bin_inclusive": [
+        20777,
+        20823
+      ],
+      "blind_index": 86,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 6,
+      "endpoint": "first",
+      "emitted_track_id": 2,
+      "source_frame": 19855,
+      "foot_x_px": 821.25,
+      "foot_y_px": 811.5,
+      "time_bin": 6,
+      "time_bin_inclusive": [
+        19834,
+        19880
+      ],
+      "blind_index": 87,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 72,
+      "endpoint": "first",
+      "emitted_track_id": 83,
+      "source_frame": 22983,
+      "foot_x_px": 981.0,
+      "foot_y_px": 903.75,
+      "time_bin": 72,
+      "time_bin_inclusive": [
+        22945,
+        22991
+      ],
+      "blind_index": 88,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 78,
+      "endpoint": "first",
+      "emitted_track_id": 42,
+      "source_frame": 23263,
+      "foot_x_px": 1654.5,
+      "foot_y_px": 966.0,
+      "time_bin": 78,
+      "time_bin_inclusive": [
+        23228,
+        23274
+      ],
+      "blind_index": 89,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 3,
+      "endpoint": "first",
+      "emitted_track_id": 14,
+      "source_frame": 19729,
+      "foot_x_px": 400.125,
+      "foot_y_px": 976.5,
+      "time_bin": 3,
+      "time_bin_inclusive": [
+        19693,
+        19739
+      ],
+      "blind_index": 90,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 25,
+      "endpoint": "second",
+      "emitted_track_id": 38,
+      "source_frame": 20780,
+      "foot_x_px": 1272.0,
+      "foot_y_px": 866.25,
+      "time_bin": 25,
+      "time_bin_inclusive": [
+        20730,
+        20776
+      ],
+      "blind_index": 91,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 13,
+      "endpoint": "second",
+      "emitted_track_id": 7,
+      "source_frame": 20221,
+      "foot_x_px": 1162.5,
+      "foot_y_px": 467.625,
+      "time_bin": 13,
+      "time_bin_inclusive": [
+        20164,
+        20210
+      ],
+      "blind_index": 92,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 19,
+      "endpoint": "first",
+      "emitted_track_id": 34,
+      "source_frame": 20476,
+      "foot_x_px": 1330.5,
+      "foot_y_px": 840.0,
+      "time_bin": 19,
+      "time_bin_inclusive": [
+        20447,
+        20493
+      ],
+      "blind_index": 93,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 22,
+      "endpoint": "second",
+      "emitted_track_id": 37,
+      "source_frame": 20651,
+      "foot_x_px": 822.75,
+      "foot_y_px": 606.75,
+      "time_bin": 22,
+      "time_bin_inclusive": [
+        20588,
+        20635
+      ],
+      "blind_index": 94,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 36,
+      "endpoint": "first",
+      "emitted_track_id": 41,
+      "source_frame": 21265,
+      "foot_x_px": 1365.75,
+      "foot_y_px": 481.5,
+      "time_bin": 36,
+      "time_bin_inclusive": [
+        21248,
+        21294
+      ],
+      "blind_index": 95,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 33,
+      "endpoint": "first",
+      "emitted_track_id": 39,
+      "source_frame": 21148,
+      "foot_x_px": 618.0,
+      "foot_y_px": 448.5,
+      "time_bin": 33,
+      "time_bin_inclusive": [
+        21107,
+        21153
+      ],
+      "blind_index": 96,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 53,
+      "endpoint": "second",
+      "emitted_track_id": 60,
+      "source_frame": 22103,
+      "foot_x_px": 536.625,
+      "foot_y_px": 742.5,
+      "time_bin": 53,
+      "time_bin_inclusive": [
+        22050,
+        22096
+      ],
+      "blind_index": 97,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 52,
+      "endpoint": "second",
+      "emitted_track_id": 56,
+      "source_frame": 22058,
+      "foot_x_px": 1380.75,
+      "foot_y_px": 567.375,
+      "time_bin": 52,
+      "time_bin_inclusive": [
+        22003,
+        22049
+      ],
+      "blind_index": 98,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 43,
+      "endpoint": "first",
+      "emitted_track_id": 47,
+      "source_frame": 21596,
+      "foot_x_px": 1075.5,
+      "foot_y_px": 432.0,
+      "time_bin": 43,
+      "time_bin_inclusive": [
+        21578,
+        21624
+      ],
+      "blind_index": 99,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 75,
+      "endpoint": "second",
+      "emitted_track_id": 83,
+      "source_frame": 23117,
+      "foot_x_px": 1066.5,
+      "foot_y_px": 970.5,
+      "time_bin": 75,
+      "time_bin_inclusive": [
+        23087,
+        23133
+      ],
+      "blind_index": 100,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 33,
+      "endpoint": "second",
+      "emitted_track_id": 39,
+      "source_frame": 21178,
+      "foot_x_px": 517.5,
+      "foot_y_px": 399.0,
+      "time_bin": 33,
+      "time_bin_inclusive": [
+        21107,
+        21153
+      ],
+      "blind_index": 101,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 70,
+      "endpoint": "first",
+      "emitted_track_id": 84,
+      "source_frame": 22881,
+      "foot_x_px": 422.25,
+      "foot_y_px": 739.5,
+      "time_bin": 70,
+      "time_bin_inclusive": [
+        22851,
+        22897
+      ],
+      "blind_index": 102,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 2,
+      "endpoint": "first",
+      "emitted_track_id": 4,
+      "source_frame": 19661,
+      "foot_x_px": 864.0,
+      "foot_y_px": 565.875,
+      "time_bin": 2,
+      "time_bin_inclusive": [
+        19646,
+        19692
+      ],
+      "blind_index": 103,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 55,
+      "endpoint": "first",
+      "emitted_track_id": 61,
+      "source_frame": 22162,
+      "foot_x_px": 1693.5,
+      "foot_y_px": 940.5,
+      "time_bin": 55,
+      "time_bin_inclusive": [
+        22144,
+        22190
+      ],
+      "blind_index": 104,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 46,
+      "endpoint": "second",
+      "emitted_track_id": 55,
+      "source_frame": 21792,
+      "foot_x_px": 1167.75,
+      "foot_y_px": 453.0,
+      "time_bin": 46,
+      "time_bin_inclusive": [
+        21720,
+        21766
+      ],
+      "blind_index": 105,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 68,
+      "endpoint": "second",
+      "emitted_track_id": 69,
+      "source_frame": 22807,
+      "foot_x_px": 587.25,
+      "foot_y_px": 949.5,
+      "time_bin": 68,
+      "time_bin_inclusive": [
+        22757,
+        22803
+      ],
+      "blind_index": 106,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 30,
+      "endpoint": "first",
+      "emitted_track_id": 35,
+      "source_frame": 20991,
+      "foot_x_px": 1103.25,
+      "foot_y_px": 876.0,
+      "time_bin": 30,
+      "time_bin_inclusive": [
+        20965,
+        21012
+      ],
+      "blind_index": 107,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 35,
+      "endpoint": "second",
+      "emitted_track_id": 40,
+      "source_frame": 21231,
+      "foot_x_px": 882.0,
+      "foot_y_px": 700.5,
+      "time_bin": 35,
+      "time_bin_inclusive": [
+        21201,
+        21247
+      ],
+      "blind_index": 108,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 9,
+      "endpoint": "second",
+      "emitted_track_id": 18,
+      "source_frame": 20012,
+      "foot_x_px": 39.9375,
+      "foot_y_px": 972.0,
+      "time_bin": 9,
+      "time_bin_inclusive": [
+        19976,
+        20022
+      ],
+      "blind_index": 109,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 50,
+      "endpoint": "first",
+      "emitted_track_id": 57,
+      "source_frame": 21941,
+      "foot_x_px": 82.265625,
+      "foot_y_px": 936.0,
+      "time_bin": 50,
+      "time_bin_inclusive": [
+        21908,
+        21954
+      ],
+      "blind_index": 110,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 9,
+      "endpoint": "first",
+      "emitted_track_id": 18,
+      "source_frame": 19982,
+      "foot_x_px": 976.5,
+      "foot_y_px": 506.25,
+      "time_bin": 9,
+      "time_bin_inclusive": [
+        19976,
+        20022
+      ],
+      "blind_index": 111,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 1,
+      "endpoint": "second",
+      "emitted_track_id": 8,
+      "source_frame": 19651,
+      "foot_x_px": 889.5,
+      "foot_y_px": 801.75,
+      "time_bin": 1,
+      "time_bin_inclusive": [
+        19599,
+        19645
+      ],
+      "blind_index": 112,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 51,
+      "endpoint": "first",
+      "emitted_track_id": 59,
+      "source_frame": 21961,
+      "foot_x_px": 203.25,
+      "foot_y_px": 979.5,
+      "time_bin": 51,
+      "time_bin_inclusive": [
+        21955,
+        22002
+      ],
+      "blind_index": 113,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 56,
+      "endpoint": "first",
+      "emitted_track_id": 55,
+      "source_frame": 22191,
+      "foot_x_px": 1644.0,
+      "foot_y_px": 792.75,
+      "time_bin": 56,
+      "time_bin_inclusive": [
+        22191,
+        22237
+      ],
+      "blind_index": 114,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 45,
+      "endpoint": "first",
+      "emitted_track_id": 53,
+      "source_frame": 21696,
+      "foot_x_px": 231.796875,
+      "foot_y_px": 728.25,
+      "time_bin": 45,
+      "time_bin_inclusive": [
+        21673,
+        21719
+      ],
+      "blind_index": 115,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 31,
+      "endpoint": "second",
+      "emitted_track_id": 33,
+      "source_frame": 21071,
+      "foot_x_px": 897.0,
+      "foot_y_px": 460.875,
+      "time_bin": 31,
+      "time_bin_inclusive": [
+        21013,
+        21059
+      ],
+      "blind_index": 116,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 31,
+      "endpoint": "first",
+      "emitted_track_id": 33,
+      "source_frame": 21041,
+      "foot_x_px": 490.125,
+      "foot_y_px": 454.125,
+      "time_bin": 31,
+      "time_bin_inclusive": [
+        21013,
+        21059
+      ],
+      "blind_index": 117,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 50,
+      "endpoint": "second",
+      "emitted_track_id": 57,
+      "source_frame": 21971,
+      "foot_x_px": 42.421875,
+      "foot_y_px": 964.5,
+      "time_bin": 50,
+      "time_bin_inclusive": [
+        21908,
+        21954
+      ],
+      "blind_index": 118,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 35,
+      "endpoint": "first",
+      "emitted_track_id": 40,
+      "source_frame": 21201,
+      "foot_x_px": 1180.5,
+      "foot_y_px": 657.0,
+      "time_bin": 35,
+      "time_bin_inclusive": [
+        21201,
+        21247
+      ],
+      "blind_index": 119,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 14,
+      "endpoint": "second",
+      "emitted_track_id": 25,
+      "source_frame": 20283,
+      "foot_x_px": 1791.0,
+      "foot_y_px": 972.0,
+      "time_bin": 14,
+      "time_bin_inclusive": [
+        20211,
+        20257
+      ],
+      "blind_index": 120,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 16,
+      "endpoint": "second",
+      "emitted_track_id": 29,
+      "source_frame": 20379,
+      "foot_x_px": 1515.0,
+      "foot_y_px": 973.5,
+      "time_bin": 16,
+      "time_bin_inclusive": [
+        20306,
+        20352
+      ],
+      "blind_index": 121,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 77,
+      "endpoint": "first",
+      "emitted_track_id": 42,
+      "source_frame": 23182,
+      "foot_x_px": 1659.0,
+      "foot_y_px": 972.0,
+      "time_bin": 77,
+      "time_bin_inclusive": [
+        23181,
+        23227
+      ],
+      "blind_index": 122,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 32,
+      "endpoint": "second",
+      "emitted_track_id": 7,
+      "source_frame": 21102,
+      "foot_x_px": 637.5,
+      "foot_y_px": 440.625,
+      "time_bin": 32,
+      "time_bin_inclusive": [
+        21060,
+        21106
+      ],
+      "blind_index": 123,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 37,
+      "endpoint": "second",
+      "emitted_track_id": 44,
+      "source_frame": 21366,
+      "foot_x_px": 850.5,
+      "foot_y_px": 530.625,
+      "time_bin": 37,
+      "time_bin_inclusive": [
+        21295,
+        21342
+      ],
+      "blind_index": 124,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 60,
+      "endpoint": "first",
+      "emitted_track_id": 64,
+      "source_frame": 22414,
+      "foot_x_px": 170.15625,
+      "foot_y_px": 936.0,
+      "time_bin": 60,
+      "time_bin_inclusive": [
+        22380,
+        22426
+      ],
+      "blind_index": 125,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 63,
+      "endpoint": "second",
+      "emitted_track_id": 68,
+      "source_frame": 22574,
+      "foot_x_px": 393.0,
+      "foot_y_px": 972.0,
+      "time_bin": 63,
+      "time_bin_inclusive": [
+        22521,
+        22567
+      ],
+      "blind_index": 126,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 40,
+      "endpoint": "second",
+      "emitted_track_id": 46,
+      "source_frame": 21481,
+      "foot_x_px": 938.25,
+      "foot_y_px": 480.75,
+      "time_bin": 40,
+      "time_bin_inclusive": [
+        21437,
+        21483
+      ],
+      "blind_index": 127,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 67,
+      "endpoint": "first",
+      "emitted_track_id": 70,
+      "source_frame": 22710,
+      "foot_x_px": 278.25,
+      "foot_y_px": 970.5,
+      "time_bin": 67,
+      "time_bin_inclusive": [
+        22710,
+        22756
+      ],
+      "blind_index": 128,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 76,
+      "endpoint": "second",
+      "emitted_track_id": 83,
+      "source_frame": 23197,
+      "foot_x_px": 913.6875,
+      "foot_y_px": 880.5,
+      "time_bin": 76,
+      "time_bin_inclusive": [
+        23134,
+        23180
+      ],
+      "blind_index": 129,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 58,
+      "endpoint": "second",
+      "emitted_track_id": 49,
+      "source_frame": 22328,
+      "foot_x_px": 1612.5,
+      "foot_y_px": 974.25,
+      "time_bin": 58,
+      "time_bin_inclusive": [
+        22285,
+        22331
+      ],
+      "blind_index": 130,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 29,
+      "endpoint": "first",
+      "emitted_track_id": 31,
+      "source_frame": 20930,
+      "foot_x_px": 651.75,
+      "foot_y_px": 873.75,
+      "time_bin": 29,
+      "time_bin_inclusive": [
+        20918,
+        20964
+      ],
+      "blind_index": 131,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 62,
+      "endpoint": "first",
+      "emitted_track_id": 62,
+      "source_frame": 22516,
+      "foot_x_px": 1066.5,
+      "foot_y_px": 567.75,
+      "time_bin": 62,
+      "time_bin_inclusive": [
+        22474,
+        22520
+      ],
+      "blind_index": 132,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 57,
+      "endpoint": "second",
+      "emitted_track_id": 45,
+      "source_frame": 22302,
+      "foot_x_px": 1410.0,
+      "foot_y_px": 526.5,
+      "time_bin": 57,
+      "time_bin_inclusive": [
+        22238,
+        22284
+      ],
+      "blind_index": 133,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 17,
+      "endpoint": "second",
+      "emitted_track_id": 31,
+      "source_frame": 20416,
+      "foot_x_px": 1317.75,
+      "foot_y_px": 859.5,
+      "time_bin": 17,
+      "time_bin_inclusive": [
+        20353,
+        20399
+      ],
+      "blind_index": 134,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 19,
+      "endpoint": "second",
+      "emitted_track_id": 34,
+      "source_frame": 20506,
+      "foot_x_px": 1403.25,
+      "foot_y_px": 755.25,
+      "time_bin": 19,
+      "time_bin_inclusive": [
+        20447,
+        20493
+      ],
+      "blind_index": 135,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 34,
+      "endpoint": "first",
+      "emitted_track_id": 39,
+      "source_frame": 21177,
+      "foot_x_px": 517.125,
+      "foot_y_px": 398.625,
+      "time_bin": 34,
+      "time_bin_inclusive": [
+        21154,
+        21200
+      ],
+      "blind_index": 136,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 15,
+      "endpoint": "first",
+      "emitted_track_id": 24,
+      "source_frame": 20258,
+      "foot_x_px": 882.0,
+      "foot_y_px": 508.875,
+      "time_bin": 15,
+      "time_bin_inclusive": [
+        20258,
+        20305
+      ],
+      "blind_index": 137,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 28,
+      "endpoint": "first",
+      "emitted_track_id": 34,
+      "source_frame": 20871,
+      "foot_x_px": 463.5,
+      "foot_y_px": 716.25,
+      "time_bin": 28,
+      "time_bin_inclusive": [
+        20871,
+        20917
+      ],
+      "blind_index": 138,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 41,
+      "endpoint": "first",
+      "emitted_track_id": 49,
+      "source_frame": 21490,
+      "foot_x_px": 1762.5,
+      "foot_y_px": 970.5,
+      "time_bin": 41,
+      "time_bin_inclusive": [
+        21484,
+        21530
+      ],
+      "blind_index": 139,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 69,
+      "endpoint": "second",
+      "emitted_track_id": 80,
+      "source_frame": 22878,
+      "foot_x_px": 98.0859375,
+      "foot_y_px": 750.0,
+      "time_bin": 69,
+      "time_bin_inclusive": [
+        22804,
+        22850
+      ],
+      "blind_index": 140,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 26,
+      "endpoint": "second",
+      "emitted_track_id": 32,
+      "source_frame": 20810,
+      "foot_x_px": 507.75,
+      "foot_y_px": 679.5,
+      "time_bin": 26,
+      "time_bin_inclusive": [
+        20777,
+        20823
+      ],
+      "blind_index": 141,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 42,
+      "endpoint": "first",
+      "emitted_track_id": 45,
+      "source_frame": 21552,
+      "foot_x_px": 897.75,
+      "foot_y_px": 434.625,
+      "time_bin": 42,
+      "time_bin_inclusive": [
+        21531,
+        21577
+      ],
+      "blind_index": 142,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 79,
+      "endpoint": "second",
+      "emitted_track_id": 95,
+      "source_frame": 23330,
+      "foot_x_px": 479.625,
+      "foot_y_px": 828.75,
+      "time_bin": 79,
+      "time_bin_inclusive": [
+        23275,
+        23321
+      ],
+      "blind_index": 143,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 38,
+      "endpoint": "second",
+      "emitted_track_id": 42,
+      "source_frame": 21396,
+      "foot_x_px": 534.75,
+      "foot_y_px": 870.0,
+      "time_bin": 38,
+      "time_bin_inclusive": [
+        21343,
+        21389
+      ],
+      "blind_index": 144,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 61,
+      "endpoint": "first",
+      "emitted_track_id": 66,
+      "source_frame": 22451,
+      "foot_x_px": 1401.0,
+      "foot_y_px": 589.5,
+      "time_bin": 61,
+      "time_bin_inclusive": [
+        22427,
+        22473
+      ],
+      "blind_index": 145,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 69,
+      "endpoint": "first",
+      "emitted_track_id": 80,
+      "source_frame": 22848,
+      "foot_x_px": 297.0,
+      "foot_y_px": 968.25,
+      "time_bin": 69,
+      "time_bin_inclusive": [
+        22804,
+        22850
+      ],
+      "blind_index": 146,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 67,
+      "endpoint": "second",
+      "emitted_track_id": 70,
+      "source_frame": 22740,
+      "foot_x_px": 219.0,
+      "foot_y_px": 963.0,
+      "time_bin": 67,
+      "time_bin_inclusive": [
+        22710,
+        22756
+      ],
+      "blind_index": 147,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 59,
+      "endpoint": "first",
+      "emitted_track_id": 63,
+      "source_frame": 22355,
+      "foot_x_px": 867.75,
+      "foot_y_px": 436.5,
+      "time_bin": 59,
+      "time_bin_inclusive": [
+        22332,
+        22379
+      ],
+      "blind_index": 148,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 75,
+      "endpoint": "first",
+      "emitted_track_id": 83,
+      "source_frame": 23087,
+      "foot_x_px": 1111.5,
+      "foot_y_px": 972.0,
+      "time_bin": 75,
+      "time_bin_inclusive": [
+        23087,
+        23133
+      ],
+      "blind_index": 149,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 47,
+      "endpoint": "first",
+      "emitted_track_id": 54,
+      "source_frame": 21780,
+      "foot_x_px": 1144.5,
+      "foot_y_px": 437.25,
+      "time_bin": 47,
+      "time_bin_inclusive": [
+        21767,
+        21813
+      ],
+      "blind_index": 150,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 64,
+      "endpoint": "second",
+      "emitted_track_id": 67,
+      "source_frame": 22608,
+      "foot_x_px": 1266.0,
+      "foot_y_px": 484.875,
+      "time_bin": 64,
+      "time_bin_inclusive": [
+        22568,
+        22614
+      ],
+      "blind_index": 151,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 64,
+      "endpoint": "first",
+      "emitted_track_id": 67,
+      "source_frame": 22578,
+      "foot_x_px": 1248.75,
+      "foot_y_px": 503.25,
+      "time_bin": 64,
+      "time_bin_inclusive": [
+        22568,
+        22614
+      ],
+      "blind_index": 152,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 60,
+      "endpoint": "second",
+      "emitted_track_id": 64,
+      "source_frame": 22444,
+      "foot_x_px": 643.5,
+      "foot_y_px": 867.0,
+      "time_bin": 60,
+      "time_bin_inclusive": [
+        22380,
+        22426
+      ],
+      "blind_index": 153,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 44,
+      "endpoint": "second",
+      "emitted_track_id": 44,
+      "source_frame": 21678,
+      "foot_x_px": 865.5,
+      "foot_y_px": 682.5,
+      "time_bin": 44,
+      "time_bin_inclusive": [
+        21625,
+        21672
+      ],
+      "blind_index": 154,
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "pair_index": 71,
+      "endpoint": "second",
+      "emitted_track_id": 81,
+      "source_frame": 22928,
+      "foot_x_px": 1120.5,
+      "foot_y_px": 744.75,
+      "time_bin": 71,
+      "time_bin_inclusive": [
+        22898,
+        22944
+      ],
+      "blind_index": 155,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 57,
+      "endpoint": "first",
+      "emitted_track_id": 45,
+      "source_frame": 22272,
+      "foot_x_px": 1405.5,
+      "foot_y_px": 507.0,
+      "time_bin": 57,
+      "time_bin_inclusive": [
+        22238,
+        22284
+      ],
+      "blind_index": 156,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 71,
+      "endpoint": "first",
+      "emitted_track_id": 81,
+      "source_frame": 22898,
+      "foot_x_px": 868.5,
+      "foot_y_px": 748.5,
+      "time_bin": 71,
+      "time_bin_inclusive": [
+        22898,
+        22944
+      ],
+      "blind_index": 157,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 11,
+      "endpoint": "first",
+      "emitted_track_id": 22,
+      "source_frame": 20092,
+      "foot_x_px": 333.0,
+      "foot_y_px": 498.375,
+      "time_bin": 11,
+      "time_bin_inclusive": [
+        20070,
+        20116
+      ],
+      "blind_index": 158,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 56,
+      "endpoint": "second",
+      "emitted_track_id": 55,
+      "source_frame": 22221,
+      "foot_x_px": 1534.5,
+      "foot_y_px": 780.75,
+      "time_bin": 56,
+      "time_bin_inclusive": [
+        22191,
+        22237
+      ],
+      "blind_index": 159,
+      "verdict": "PLAYER"
+    },
+    {
+      "pair_index": 76,
+      "endpoint": "first",
+      "emitted_track_id": 83,
+      "source_frame": 23167,
+      "foot_x_px": 1001.25,
+      "foot_y_px": 873.0,
+      "time_bin": 76,
+      "time_bin_inclusive": [
+        23134,
+        23180
+      ],
+      "blind_index": 160,
+      "verdict": "PLAYER"
+    }
+  ],
+  "pass2_unblinded_rows": [
+    {
+      "blind_index": 1,
+      "pair": [
+        {
+          "pair_index": 64,
+          "endpoint": "first",
+          "emitted_track_id": 67,
+          "source_frame": 22578,
+          "foot_x_px": 1248.75,
+          "foot_y_px": 503.25,
+          "time_bin": 64,
+          "time_bin_inclusive": [
+            22568,
+            22614
+          ],
+          "blind_index": 152,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 64,
+          "endpoint": "second",
+          "emitted_track_id": 67,
+          "source_frame": 22608,
+          "foot_x_px": 1266.0,
+          "foot_y_px": 484.875,
+          "time_bin": 64,
+          "time_bin_inclusive": [
+            22568,
+            22614
+          ],
+          "blind_index": 151,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 2,
+      "pair": [
+        {
+          "pair_index": 27,
+          "endpoint": "first",
+          "emitted_track_id": 25,
+          "source_frame": 20833,
+          "foot_x_px": 1041.75,
+          "foot_y_px": 519.0,
+          "time_bin": 27,
+          "time_bin_inclusive": [
+            20824,
+            20870
+          ],
+          "blind_index": 51,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 27,
+          "endpoint": "second",
+          "emitted_track_id": 25,
+          "source_frame": 20863,
+          "foot_x_px": 1055.25,
+          "foot_y_px": 532.5,
+          "time_bin": 27,
+          "time_bin_inclusive": [
+            20824,
+            20870
+          ],
+          "blind_index": 77,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 3,
+      "pair": [
+        {
+          "pair_index": 73,
+          "endpoint": "first",
+          "emitted_track_id": 86,
+          "source_frame": 23021,
+          "foot_x_px": 532.125,
+          "foot_y_px": 819.75,
+          "time_bin": 73,
+          "time_bin_inclusive": [
+            22992,
+            23039
+          ],
+          "blind_index": 9,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 73,
+          "endpoint": "second",
+          "emitted_track_id": 86,
+          "source_frame": 23051,
+          "foot_x_px": 862.3125,
+          "foot_y_px": 817.5,
+          "time_bin": 73,
+          "time_bin_inclusive": [
+            22992,
+            23039
+          ],
+          "blind_index": 41,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 4,
+      "pair": [
+        {
+          "pair_index": 46,
+          "endpoint": "first",
+          "emitted_track_id": 55,
+          "source_frame": 21762,
+          "foot_x_px": 1100.25,
+          "foot_y_px": 519.75,
+          "time_bin": 46,
+          "time_bin_inclusive": [
+            21720,
+            21766
+          ],
+          "blind_index": 62,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 46,
+          "endpoint": "second",
+          "emitted_track_id": 55,
+          "source_frame": 21792,
+          "foot_x_px": 1167.75,
+          "foot_y_px": 453.0,
+          "time_bin": 46,
+          "time_bin_inclusive": [
+            21720,
+            21766
+          ],
+          "blind_index": 105,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 5,
+      "pair": [
+        {
+          "pair_index": 76,
+          "endpoint": "first",
+          "emitted_track_id": 83,
+          "source_frame": 23167,
+          "foot_x_px": 1001.25,
+          "foot_y_px": 873.0,
+          "time_bin": 76,
+          "time_bin_inclusive": [
+            23134,
+            23180
+          ],
+          "blind_index": 160,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 76,
+          "endpoint": "second",
+          "emitted_track_id": 83,
+          "source_frame": 23197,
+          "foot_x_px": 913.6875,
+          "foot_y_px": 880.5,
+          "time_bin": 76,
+          "time_bin_inclusive": [
+            23134,
+            23180
+          ],
+          "blind_index": 129,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 6,
+      "pair": [
+        {
+          "pair_index": 59,
+          "endpoint": "first",
+          "emitted_track_id": 63,
+          "source_frame": 22355,
+          "foot_x_px": 867.75,
+          "foot_y_px": 436.5,
+          "time_bin": 59,
+          "time_bin_inclusive": [
+            22332,
+            22379
+          ],
+          "blind_index": 148,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 59,
+          "endpoint": "second",
+          "emitted_track_id": 63,
+          "source_frame": 22385,
+          "foot_x_px": 828.75,
+          "foot_y_px": 868.5,
+          "time_bin": 59,
+          "time_bin_inclusive": [
+            22332,
+            22379
+          ],
+          "blind_index": 53,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 7,
+      "pair": [
+        {
+          "pair_index": 6,
+          "endpoint": "first",
+          "emitted_track_id": 2,
+          "source_frame": 19855,
+          "foot_x_px": 821.25,
+          "foot_y_px": 811.5,
+          "time_bin": 6,
+          "time_bin_inclusive": [
+            19834,
+            19880
+          ],
+          "blind_index": 87,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 6,
+          "endpoint": "second",
+          "emitted_track_id": 2,
+          "source_frame": 19885,
+          "foot_x_px": 891.0,
+          "foot_y_px": 760.5,
+          "time_bin": 6,
+          "time_bin_inclusive": [
+            19834,
+            19880
+          ],
+          "blind_index": 35,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 8,
+      "pair": [
+        {
+          "pair_index": 31,
+          "endpoint": "first",
+          "emitted_track_id": 33,
+          "source_frame": 21041,
+          "foot_x_px": 490.125,
+          "foot_y_px": 454.125,
+          "time_bin": 31,
+          "time_bin_inclusive": [
+            21013,
+            21059
+          ],
+          "blind_index": 117,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 31,
+          "endpoint": "second",
+          "emitted_track_id": 33,
+          "source_frame": 21071,
+          "foot_x_px": 897.0,
+          "foot_y_px": 460.875,
+          "time_bin": 31,
+          "time_bin_inclusive": [
+            21013,
+            21059
+          ],
+          "blind_index": 116,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 9,
+      "pair": [
+        {
+          "pair_index": 39,
+          "endpoint": "first",
+          "emitted_track_id": 48,
+          "source_frame": 21399,
+          "foot_x_px": 894.0,
+          "foot_y_px": 626.625,
+          "time_bin": 39,
+          "time_bin_inclusive": [
+            21390,
+            21436
+          ],
+          "blind_index": 37,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 39,
+          "endpoint": "second",
+          "emitted_track_id": 48,
+          "source_frame": 21429,
+          "foot_x_px": 943.5,
+          "foot_y_px": 603.75,
+          "time_bin": 39,
+          "time_bin_inclusive": [
+            21390,
+            21436
+          ],
+          "blind_index": 13,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 10,
+      "pair": [
+        {
+          "pair_index": 72,
+          "endpoint": "first",
+          "emitted_track_id": 83,
+          "source_frame": 22983,
+          "foot_x_px": 981.0,
+          "foot_y_px": 903.75,
+          "time_bin": 72,
+          "time_bin_inclusive": [
+            22945,
+            22991
+          ],
+          "blind_index": 88,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 72,
+          "endpoint": "second",
+          "emitted_track_id": 83,
+          "source_frame": 23013,
+          "foot_x_px": 979.5,
+          "foot_y_px": 925.5,
+          "time_bin": 72,
+          "time_bin_inclusive": [
+            22945,
+            22991
+          ],
+          "blind_index": 11,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 11,
+      "pair": [
+        {
+          "pair_index": 12,
+          "endpoint": "first",
+          "emitted_track_id": 15,
+          "source_frame": 20143,
+          "foot_x_px": 675.0,
+          "foot_y_px": 759.0,
+          "time_bin": 12,
+          "time_bin_inclusive": [
+            20117,
+            20163
+          ],
+          "blind_index": 15,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 12,
+          "endpoint": "second",
+          "emitted_track_id": 15,
+          "source_frame": 20173,
+          "foot_x_px": 815.25,
+          "foot_y_px": 763.5,
+          "time_bin": 12,
+          "time_bin_inclusive": [
+            20117,
+            20163
+          ],
+          "blind_index": 47,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 12,
+      "pair": [
+        {
+          "pair_index": 1,
+          "endpoint": "first",
+          "emitted_track_id": 8,
+          "source_frame": 19621,
+          "foot_x_px": 877.5,
+          "foot_y_px": 801.0,
+          "time_bin": 1,
+          "time_bin_inclusive": [
+            19599,
+            19645
+          ],
+          "blind_index": 12,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 1,
+          "endpoint": "second",
+          "emitted_track_id": 8,
+          "source_frame": 19651,
+          "foot_x_px": 889.5,
+          "foot_y_px": 801.75,
+          "time_bin": 1,
+          "time_bin_inclusive": [
+            19599,
+            19645
+          ],
+          "blind_index": 112,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 13,
+      "pair": [
+        {
+          "pair_index": 41,
+          "endpoint": "first",
+          "emitted_track_id": 49,
+          "source_frame": 21490,
+          "foot_x_px": 1762.5,
+          "foot_y_px": 970.5,
+          "time_bin": 41,
+          "time_bin_inclusive": [
+            21484,
+            21530
+          ],
+          "blind_index": 139,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 41,
+          "endpoint": "second",
+          "emitted_track_id": 49,
+          "source_frame": 21520,
+          "foot_x_px": 1773.0,
+          "foot_y_px": 955.5,
+          "time_bin": 41,
+          "time_bin_inclusive": [
+            21484,
+            21530
+          ],
+          "blind_index": 34,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 14,
+      "pair": [
+        {
+          "pair_index": 2,
+          "endpoint": "first",
+          "emitted_track_id": 4,
+          "source_frame": 19661,
+          "foot_x_px": 864.0,
+          "foot_y_px": 565.875,
+          "time_bin": 2,
+          "time_bin_inclusive": [
+            19646,
+            19692
+          ],
+          "blind_index": 103,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 2,
+          "endpoint": "second",
+          "emitted_track_id": 4,
+          "source_frame": 19691,
+          "foot_x_px": 883.5,
+          "foot_y_px": 531.75,
+          "time_bin": 2,
+          "time_bin_inclusive": [
+            19646,
+            19692
+          ],
+          "blind_index": 7,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 15,
+      "pair": [
+        {
+          "pair_index": 35,
+          "endpoint": "first",
+          "emitted_track_id": 40,
+          "source_frame": 21201,
+          "foot_x_px": 1180.5,
+          "foot_y_px": 657.0,
+          "time_bin": 35,
+          "time_bin_inclusive": [
+            21201,
+            21247
+          ],
+          "blind_index": 119,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 35,
+          "endpoint": "second",
+          "emitted_track_id": 40,
+          "source_frame": 21231,
+          "foot_x_px": 882.0,
+          "foot_y_px": 700.5,
+          "time_bin": 35,
+          "time_bin_inclusive": [
+            21201,
+            21247
+          ],
+          "blind_index": 108,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 16,
+      "pair": [
+        {
+          "pair_index": 7,
+          "endpoint": "first",
+          "emitted_track_id": 1,
+          "source_frame": 19915,
+          "foot_x_px": 765.0,
+          "foot_y_px": 793.5,
+          "time_bin": 7,
+          "time_bin_inclusive": [
+            19881,
+            19927
+          ],
+          "blind_index": 79,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 7,
+          "endpoint": "second",
+          "emitted_track_id": 1,
+          "source_frame": 19945,
+          "foot_x_px": 552.0,
+          "foot_y_px": 799.5,
+          "time_bin": 7,
+          "time_bin_inclusive": [
+            19881,
+            19927
+          ],
+          "blind_index": 1,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 17,
+      "pair": [
+        {
+          "pair_index": 11,
+          "endpoint": "first",
+          "emitted_track_id": 22,
+          "source_frame": 20092,
+          "foot_x_px": 333.0,
+          "foot_y_px": 498.375,
+          "time_bin": 11,
+          "time_bin_inclusive": [
+            20070,
+            20116
+          ],
+          "blind_index": 158,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 11,
+          "endpoint": "second",
+          "emitted_track_id": 22,
+          "source_frame": 20122,
+          "foot_x_px": 432.75,
+          "foot_y_px": 454.125,
+          "time_bin": 11,
+          "time_bin_inclusive": [
+            20070,
+            20116
+          ],
+          "blind_index": 44,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 18,
+      "pair": [
+        {
+          "pair_index": 8,
+          "endpoint": "first",
+          "emitted_track_id": 20,
+          "source_frame": 19943,
+          "foot_x_px": 729.75,
+          "foot_y_px": 704.25,
+          "time_bin": 8,
+          "time_bin_inclusive": [
+            19928,
+            19975
+          ],
+          "blind_index": 83,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 8,
+          "endpoint": "second",
+          "emitted_track_id": 20,
+          "source_frame": 19973,
+          "foot_x_px": 523.125,
+          "foot_y_px": 498.375,
+          "time_bin": 8,
+          "time_bin_inclusive": [
+            19928,
+            19975
+          ],
+          "blind_index": 52,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 19,
+      "pair": [
+        {
+          "pair_index": 55,
+          "endpoint": "first",
+          "emitted_track_id": 61,
+          "source_frame": 22162,
+          "foot_x_px": 1693.5,
+          "foot_y_px": 940.5,
+          "time_bin": 55,
+          "time_bin_inclusive": [
+            22144,
+            22190
+          ],
+          "blind_index": 104,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 55,
+          "endpoint": "second",
+          "emitted_track_id": 61,
+          "source_frame": 22192,
+          "foot_x_px": 1443.0,
+          "foot_y_px": 846.0,
+          "time_bin": 55,
+          "time_bin_inclusive": [
+            22144,
+            22190
+          ],
+          "blind_index": 68,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 20,
+      "pair": [
+        {
+          "pair_index": 61,
+          "endpoint": "first",
+          "emitted_track_id": 66,
+          "source_frame": 22451,
+          "foot_x_px": 1401.0,
+          "foot_y_px": 589.5,
+          "time_bin": 61,
+          "time_bin_inclusive": [
+            22427,
+            22473
+          ],
+          "blind_index": 145,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 61,
+          "endpoint": "second",
+          "emitted_track_id": 66,
+          "source_frame": 22481,
+          "foot_x_px": 1425.0,
+          "foot_y_px": 547.5,
+          "time_bin": 61,
+          "time_bin_inclusive": [
+            22427,
+            22473
+          ],
+          "blind_index": 82,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 21,
+      "pair": [
+        {
+          "pair_index": 47,
+          "endpoint": "first",
+          "emitted_track_id": 54,
+          "source_frame": 21780,
+          "foot_x_px": 1144.5,
+          "foot_y_px": 437.25,
+          "time_bin": 47,
+          "time_bin_inclusive": [
+            21767,
+            21813
+          ],
+          "blind_index": 150,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 47,
+          "endpoint": "second",
+          "emitted_track_id": 54,
+          "source_frame": 21810,
+          "foot_x_px": 254.4375,
+          "foot_y_px": 897.75,
+          "time_bin": 47,
+          "time_bin_inclusive": [
+            21767,
+            21813
+          ],
+          "blind_index": 70,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 22,
+      "pair": [
+        {
+          "pair_index": 69,
+          "endpoint": "first",
+          "emitted_track_id": 80,
+          "source_frame": 22848,
+          "foot_x_px": 297.0,
+          "foot_y_px": 968.25,
+          "time_bin": 69,
+          "time_bin_inclusive": [
+            22804,
+            22850
+          ],
+          "blind_index": 146,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 69,
+          "endpoint": "second",
+          "emitted_track_id": 80,
+          "source_frame": 22878,
+          "foot_x_px": 98.0859375,
+          "foot_y_px": 750.0,
+          "time_bin": 69,
+          "time_bin_inclusive": [
+            22804,
+            22850
+          ],
+          "blind_index": 140,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "DIFFERENT PERSON"
+    },
+    {
+      "blind_index": 23,
+      "pair": [
+        {
+          "pair_index": 21,
+          "endpoint": "first",
+          "emitted_track_id": 15,
+          "source_frame": 20567,
+          "foot_x_px": 1174.5,
+          "foot_y_px": 481.5,
+          "time_bin": 21,
+          "time_bin_inclusive": [
+            20541,
+            20587
+          ],
+          "blind_index": 23,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 21,
+          "endpoint": "second",
+          "emitted_track_id": 15,
+          "source_frame": 20597,
+          "foot_x_px": 1337.25,
+          "foot_y_px": 619.5,
+          "time_bin": 21,
+          "time_bin_inclusive": [
+            20541,
+            20587
+          ],
+          "blind_index": 4,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 24,
+      "pair": [
+        {
+          "pair_index": 79,
+          "endpoint": "first",
+          "emitted_track_id": 95,
+          "source_frame": 23300,
+          "foot_x_px": 475.5,
+          "foot_y_px": 826.5,
+          "time_bin": 79,
+          "time_bin_inclusive": [
+            23275,
+            23321
+          ],
+          "blind_index": 16,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 79,
+          "endpoint": "second",
+          "emitted_track_id": 95,
+          "source_frame": 23330,
+          "foot_x_px": 479.625,
+          "foot_y_px": 828.75,
+          "time_bin": 79,
+          "time_bin_inclusive": [
+            23275,
+            23321
+          ],
+          "blind_index": 143,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 25,
+      "pair": [
+        {
+          "pair_index": 75,
+          "endpoint": "first",
+          "emitted_track_id": 83,
+          "source_frame": 23087,
+          "foot_x_px": 1111.5,
+          "foot_y_px": 972.0,
+          "time_bin": 75,
+          "time_bin_inclusive": [
+            23087,
+            23133
+          ],
+          "blind_index": 149,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 75,
+          "endpoint": "second",
+          "emitted_track_id": 83,
+          "source_frame": 23117,
+          "foot_x_px": 1066.5,
+          "foot_y_px": 970.5,
+          "time_bin": 75,
+          "time_bin_inclusive": [
+            23087,
+            23133
+          ],
+          "blind_index": 100,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 26,
+      "pair": [
+        {
+          "pair_index": 62,
+          "endpoint": "first",
+          "emitted_track_id": 62,
+          "source_frame": 22516,
+          "foot_x_px": 1066.5,
+          "foot_y_px": 567.75,
+          "time_bin": 62,
+          "time_bin_inclusive": [
+            22474,
+            22520
+          ],
+          "blind_index": 132,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 62,
+          "endpoint": "second",
+          "emitted_track_id": 62,
+          "source_frame": 22546,
+          "foot_x_px": 1173.0,
+          "foot_y_px": 550.5,
+          "time_bin": 62,
+          "time_bin_inclusive": [
+            22474,
+            22520
+          ],
+          "blind_index": 54,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 27,
+      "pair": [
+        {
+          "pair_index": 38,
+          "endpoint": "first",
+          "emitted_track_id": 42,
+          "source_frame": 21366,
+          "foot_x_px": 508.5,
+          "foot_y_px": 513.75,
+          "time_bin": 38,
+          "time_bin_inclusive": [
+            21343,
+            21389
+          ],
+          "blind_index": 76,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 38,
+          "endpoint": "second",
+          "emitted_track_id": 42,
+          "source_frame": 21396,
+          "foot_x_px": 534.75,
+          "foot_y_px": 870.0,
+          "time_bin": 38,
+          "time_bin_inclusive": [
+            21343,
+            21389
+          ],
+          "blind_index": 144,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 28,
+      "pair": [
+        {
+          "pair_index": 5,
+          "endpoint": "first",
+          "emitted_track_id": 10,
+          "source_frame": 19817,
+          "foot_x_px": 1229.25,
+          "foot_y_px": 864.0,
+          "time_bin": 5,
+          "time_bin_inclusive": [
+            19787,
+            19833
+          ],
+          "blind_index": 78,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 5,
+          "endpoint": "second",
+          "emitted_track_id": 10,
+          "source_frame": 19847,
+          "foot_x_px": 1137.0,
+          "foot_y_px": 859.5,
+          "time_bin": 5,
+          "time_bin_inclusive": [
+            19787,
+            19833
+          ],
+          "blind_index": 3,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "DIFFERENT PERSON"
+    },
+    {
+      "blind_index": 29,
+      "pair": [
+        {
+          "pair_index": 52,
+          "endpoint": "first",
+          "emitted_track_id": 56,
+          "source_frame": 22028,
+          "foot_x_px": 1113.0,
+          "foot_y_px": 851.25,
+          "time_bin": 52,
+          "time_bin_inclusive": [
+            22003,
+            22049
+          ],
+          "blind_index": 58,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 52,
+          "endpoint": "second",
+          "emitted_track_id": 56,
+          "source_frame": 22058,
+          "foot_x_px": 1380.75,
+          "foot_y_px": 567.375,
+          "time_bin": 52,
+          "time_bin_inclusive": [
+            22003,
+            22049
+          ],
+          "blind_index": 98,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 30,
+      "pair": [
+        {
+          "pair_index": 28,
+          "endpoint": "first",
+          "emitted_track_id": 34,
+          "source_frame": 20871,
+          "foot_x_px": 463.5,
+          "foot_y_px": 716.25,
+          "time_bin": 28,
+          "time_bin_inclusive": [
+            20871,
+            20917
+          ],
+          "blind_index": 138,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 28,
+          "endpoint": "second",
+          "emitted_track_id": 34,
+          "source_frame": 20901,
+          "foot_x_px": 358.5,
+          "foot_y_px": 453.75,
+          "time_bin": 28,
+          "time_bin_inclusive": [
+            20871,
+            20917
+          ],
+          "blind_index": 8,
+          "person_verdict": "PERSON NOT PLAYER IN PLAY"
+        }
+      ],
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 31,
+      "pair": [
+        {
+          "pair_index": 50,
+          "endpoint": "first",
+          "emitted_track_id": 57,
+          "source_frame": 21941,
+          "foot_x_px": 82.265625,
+          "foot_y_px": 936.0,
+          "time_bin": 50,
+          "time_bin_inclusive": [
+            21908,
+            21954
+          ],
+          "blind_index": 110,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 50,
+          "endpoint": "second",
+          "emitted_track_id": 57,
+          "source_frame": 21971,
+          "foot_x_px": 42.421875,
+          "foot_y_px": 964.5,
+          "time_bin": 50,
+          "time_bin_inclusive": [
+            21908,
+            21954
+          ],
+          "blind_index": 118,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 32,
+      "pair": [
+        {
+          "pair_index": 67,
+          "endpoint": "first",
+          "emitted_track_id": 70,
+          "source_frame": 22710,
+          "foot_x_px": 278.25,
+          "foot_y_px": 970.5,
+          "time_bin": 67,
+          "time_bin_inclusive": [
+            22710,
+            22756
+          ],
+          "blind_index": 128,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 67,
+          "endpoint": "second",
+          "emitted_track_id": 70,
+          "source_frame": 22740,
+          "foot_x_px": 219.0,
+          "foot_y_px": 963.0,
+          "time_bin": 67,
+          "time_bin_inclusive": [
+            22710,
+            22756
+          ],
+          "blind_index": 147,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 33,
+      "pair": [
+        {
+          "pair_index": 57,
+          "endpoint": "first",
+          "emitted_track_id": 45,
+          "source_frame": 22272,
+          "foot_x_px": 1405.5,
+          "foot_y_px": 507.0,
+          "time_bin": 57,
+          "time_bin_inclusive": [
+            22238,
+            22284
+          ],
+          "blind_index": 156,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 57,
+          "endpoint": "second",
+          "emitted_track_id": 45,
+          "source_frame": 22302,
+          "foot_x_px": 1410.0,
+          "foot_y_px": 526.5,
+          "time_bin": 57,
+          "time_bin_inclusive": [
+            22238,
+            22284
+          ],
+          "blind_index": 133,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 34,
+      "pair": [
+        {
+          "pair_index": 77,
+          "endpoint": "first",
+          "emitted_track_id": 42,
+          "source_frame": 23182,
+          "foot_x_px": 1659.0,
+          "foot_y_px": 972.0,
+          "time_bin": 77,
+          "time_bin_inclusive": [
+            23181,
+            23227
+          ],
+          "blind_index": 122,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 77,
+          "endpoint": "second",
+          "emitted_track_id": 42,
+          "source_frame": 23212,
+          "foot_x_px": 1648.5,
+          "foot_y_px": 964.5,
+          "time_bin": 77,
+          "time_bin_inclusive": [
+            23181,
+            23227
+          ],
+          "blind_index": 81,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 35,
+      "pair": [
+        {
+          "pair_index": 71,
+          "endpoint": "first",
+          "emitted_track_id": 81,
+          "source_frame": 22898,
+          "foot_x_px": 868.5,
+          "foot_y_px": 748.5,
+          "time_bin": 71,
+          "time_bin_inclusive": [
+            22898,
+            22944
+          ],
+          "blind_index": 157,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 71,
+          "endpoint": "second",
+          "emitted_track_id": 81,
+          "source_frame": 22928,
+          "foot_x_px": 1120.5,
+          "foot_y_px": 744.75,
+          "time_bin": 71,
+          "time_bin_inclusive": [
+            22898,
+            22944
+          ],
+          "blind_index": 155,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 36,
+      "pair": [
+        {
+          "pair_index": 9,
+          "endpoint": "first",
+          "emitted_track_id": 18,
+          "source_frame": 19982,
+          "foot_x_px": 976.5,
+          "foot_y_px": 506.25,
+          "time_bin": 9,
+          "time_bin_inclusive": [
+            19976,
+            20022
+          ],
+          "blind_index": 111,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 9,
+          "endpoint": "second",
+          "emitted_track_id": 18,
+          "source_frame": 20012,
+          "foot_x_px": 39.9375,
+          "foot_y_px": 972.0,
+          "time_bin": 9,
+          "time_bin_inclusive": [
+            19976,
+            20022
+          ],
+          "blind_index": 109,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 37,
+      "pair": [
+        {
+          "pair_index": 37,
+          "endpoint": "first",
+          "emitted_track_id": 44,
+          "source_frame": 21336,
+          "foot_x_px": 822.0,
+          "foot_y_px": 534.0,
+          "time_bin": 37,
+          "time_bin_inclusive": [
+            21295,
+            21342
+          ],
+          "blind_index": 57,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 37,
+          "endpoint": "second",
+          "emitted_track_id": 44,
+          "source_frame": 21366,
+          "foot_x_px": 850.5,
+          "foot_y_px": 530.625,
+          "time_bin": 37,
+          "time_bin_inclusive": [
+            21295,
+            21342
+          ],
+          "blind_index": 124,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 38,
+      "pair": [
+        {
+          "pair_index": 48,
+          "endpoint": "first",
+          "emitted_track_id": 46,
+          "source_frame": 21835,
+          "foot_x_px": 462.375,
+          "foot_y_px": 559.5,
+          "time_bin": 48,
+          "time_bin_inclusive": [
+            21814,
+            21860
+          ],
+          "blind_index": 38,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 48,
+          "endpoint": "second",
+          "emitted_track_id": 46,
+          "source_frame": 21865,
+          "foot_x_px": 801.1875,
+          "foot_y_px": 572.25,
+          "time_bin": 48,
+          "time_bin_inclusive": [
+            21814,
+            21860
+          ],
+          "blind_index": 32,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 39,
+      "pair": [
+        {
+          "pair_index": 24,
+          "endpoint": "first",
+          "emitted_track_id": 33,
+          "source_frame": 20725,
+          "foot_x_px": 1449.0,
+          "foot_y_px": 880.5,
+          "time_bin": 24,
+          "time_bin_inclusive": [
+            20683,
+            20729
+          ],
+          "blind_index": 67,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 24,
+          "endpoint": "second",
+          "emitted_track_id": 33,
+          "source_frame": 20755,
+          "foot_x_px": 1747.5,
+          "foot_y_px": 958.5,
+          "time_bin": 24,
+          "time_bin_inclusive": [
+            20683,
+            20729
+          ],
+          "blind_index": 5,
+          "person_verdict": "PERSON NOT PLAYER IN PLAY"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 40,
+      "pair": [
+        {
+          "pair_index": 13,
+          "endpoint": "first",
+          "emitted_track_id": 7,
+          "source_frame": 20191,
+          "foot_x_px": 1254.75,
+          "foot_y_px": 505.875,
+          "time_bin": 13,
+          "time_bin_inclusive": [
+            20164,
+            20210
+          ],
+          "blind_index": 14,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 13,
+          "endpoint": "second",
+          "emitted_track_id": 7,
+          "source_frame": 20221,
+          "foot_x_px": 1162.5,
+          "foot_y_px": 467.625,
+          "time_bin": 13,
+          "time_bin_inclusive": [
+            20164,
+            20210
+          ],
+          "blind_index": 92,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 41,
+      "pair": [
+        {
+          "pair_index": 49,
+          "endpoint": "first",
+          "emitted_track_id": 42,
+          "source_frame": 21886,
+          "foot_x_px": 162.1875,
+          "foot_y_px": 564.75,
+          "time_bin": 49,
+          "time_bin_inclusive": [
+            21861,
+            21907
+          ],
+          "blind_index": 39,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 49,
+          "endpoint": "second",
+          "emitted_track_id": 42,
+          "source_frame": 21916,
+          "foot_x_px": 571.125,
+          "foot_y_px": 536.25,
+          "time_bin": 49,
+          "time_bin_inclusive": [
+            21861,
+            21907
+          ],
+          "blind_index": 17,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 42,
+      "pair": [
+        {
+          "pair_index": 3,
+          "endpoint": "first",
+          "emitted_track_id": 14,
+          "source_frame": 19729,
+          "foot_x_px": 400.125,
+          "foot_y_px": 976.5,
+          "time_bin": 3,
+          "time_bin_inclusive": [
+            19693,
+            19739
+          ],
+          "blind_index": 90,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 3,
+          "endpoint": "second",
+          "emitted_track_id": 14,
+          "source_frame": 19759,
+          "foot_x_px": 243.796875,
+          "foot_y_px": 421.125,
+          "time_bin": 3,
+          "time_bin_inclusive": [
+            19693,
+            19739
+          ],
+          "blind_index": 18,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 43,
+      "pair": [
+        {
+          "pair_index": 56,
+          "endpoint": "first",
+          "emitted_track_id": 55,
+          "source_frame": 22191,
+          "foot_x_px": 1644.0,
+          "foot_y_px": 792.75,
+          "time_bin": 56,
+          "time_bin_inclusive": [
+            22191,
+            22237
+          ],
+          "blind_index": 114,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 56,
+          "endpoint": "second",
+          "emitted_track_id": 55,
+          "source_frame": 22221,
+          "foot_x_px": 1534.5,
+          "foot_y_px": 780.75,
+          "time_bin": 56,
+          "time_bin_inclusive": [
+            22191,
+            22237
+          ],
+          "blind_index": 159,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 44,
+      "pair": [
+        {
+          "pair_index": 16,
+          "endpoint": "first",
+          "emitted_track_id": 29,
+          "source_frame": 20349,
+          "foot_x_px": 1268.25,
+          "foot_y_px": 717.0,
+          "time_bin": 16,
+          "time_bin_inclusive": [
+            20306,
+            20352
+          ],
+          "blind_index": 85,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 16,
+          "endpoint": "second",
+          "emitted_track_id": 29,
+          "source_frame": 20379,
+          "foot_x_px": 1515.0,
+          "foot_y_px": 973.5,
+          "time_bin": 16,
+          "time_bin_inclusive": [
+            20306,
+            20352
+          ],
+          "blind_index": 121,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 45,
+      "pair": [
+        {
+          "pair_index": 19,
+          "endpoint": "first",
+          "emitted_track_id": 34,
+          "source_frame": 20476,
+          "foot_x_px": 1330.5,
+          "foot_y_px": 840.0,
+          "time_bin": 19,
+          "time_bin_inclusive": [
+            20447,
+            20493
+          ],
+          "blind_index": 93,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 19,
+          "endpoint": "second",
+          "emitted_track_id": 34,
+          "source_frame": 20506,
+          "foot_x_px": 1403.25,
+          "foot_y_px": 755.25,
+          "time_bin": 19,
+          "time_bin_inclusive": [
+            20447,
+            20493
+          ],
+          "blind_index": 135,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 46,
+      "pair": [
+        {
+          "pair_index": 34,
+          "endpoint": "first",
+          "emitted_track_id": 39,
+          "source_frame": 21177,
+          "foot_x_px": 517.125,
+          "foot_y_px": 398.625,
+          "time_bin": 34,
+          "time_bin_inclusive": [
+            21154,
+            21200
+          ],
+          "blind_index": 136,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 34,
+          "endpoint": "second",
+          "emitted_track_id": 39,
+          "source_frame": 21207,
+          "foot_x_px": 791.25,
+          "foot_y_px": 677.25,
+          "time_bin": 34,
+          "time_bin_inclusive": [
+            21154,
+            21200
+          ],
+          "blind_index": 46,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 47,
+      "pair": [
+        {
+          "pair_index": 4,
+          "endpoint": "first",
+          "emitted_track_id": 11,
+          "source_frame": 19770,
+          "foot_x_px": 1188.0,
+          "foot_y_px": 664.125,
+          "time_bin": 4,
+          "time_bin_inclusive": [
+            19740,
+            19786
+          ],
+          "blind_index": 65,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 4,
+          "endpoint": "second",
+          "emitted_track_id": 11,
+          "source_frame": 19800,
+          "foot_x_px": 1176.0,
+          "foot_y_px": 532.5,
+          "time_bin": 4,
+          "time_bin_inclusive": [
+            19740,
+            19786
+          ],
+          "blind_index": 29,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 48,
+      "pair": [
+        {
+          "pair_index": 15,
+          "endpoint": "first",
+          "emitted_track_id": 24,
+          "source_frame": 20258,
+          "foot_x_px": 882.0,
+          "foot_y_px": 508.875,
+          "time_bin": 15,
+          "time_bin_inclusive": [
+            20258,
+            20305
+          ],
+          "blind_index": 137,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 15,
+          "endpoint": "second",
+          "emitted_track_id": 24,
+          "source_frame": 20288,
+          "foot_x_px": 1069.5,
+          "foot_y_px": 450.75,
+          "time_bin": 15,
+          "time_bin_inclusive": [
+            20258,
+            20305
+          ],
+          "blind_index": 61,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 49,
+      "pair": [
+        {
+          "pair_index": 36,
+          "endpoint": "first",
+          "emitted_track_id": 41,
+          "source_frame": 21265,
+          "foot_x_px": 1365.75,
+          "foot_y_px": 481.5,
+          "time_bin": 36,
+          "time_bin_inclusive": [
+            21248,
+            21294
+          ],
+          "blind_index": 95,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 36,
+          "endpoint": "second",
+          "emitted_track_id": 41,
+          "source_frame": 21295,
+          "foot_x_px": 1378.5,
+          "foot_y_px": 453.75,
+          "time_bin": 36,
+          "time_bin_inclusive": [
+            21248,
+            21294
+          ],
+          "blind_index": 22,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 50,
+      "pair": [
+        {
+          "pair_index": 45,
+          "endpoint": "first",
+          "emitted_track_id": 53,
+          "source_frame": 21696,
+          "foot_x_px": 231.796875,
+          "foot_y_px": 728.25,
+          "time_bin": 45,
+          "time_bin_inclusive": [
+            21673,
+            21719
+          ],
+          "blind_index": 115,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 45,
+          "endpoint": "second",
+          "emitted_track_id": 53,
+          "source_frame": 21726,
+          "foot_x_px": 367.5,
+          "foot_y_px": 736.5,
+          "time_bin": 45,
+          "time_bin_inclusive": [
+            21673,
+            21719
+          ],
+          "blind_index": 74,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 51,
+      "pair": [
+        {
+          "pair_index": 10,
+          "endpoint": "first",
+          "emitted_track_id": 26,
+          "source_frame": 20066,
+          "foot_x_px": 59.765625,
+          "foot_y_px": 800.25,
+          "time_bin": 10,
+          "time_bin_inclusive": [
+            20023,
+            20069
+          ],
+          "blind_index": 84,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 10,
+          "endpoint": "second",
+          "emitted_track_id": 26,
+          "source_frame": 20096,
+          "foot_x_px": 288.375,
+          "foot_y_px": 768.75,
+          "time_bin": 10,
+          "time_bin_inclusive": [
+            20023,
+            20069
+          ],
+          "blind_index": 26,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 52,
+      "pair": [
+        {
+          "pair_index": 53,
+          "endpoint": "first",
+          "emitted_track_id": 60,
+          "source_frame": 22073,
+          "foot_x_px": 159.84375,
+          "foot_y_px": 893.25,
+          "time_bin": 53,
+          "time_bin_inclusive": [
+            22050,
+            22096
+          ],
+          "blind_index": 40,
+          "person_verdict": "PERSON NOT PLAYER IN PLAY"
+        },
+        {
+          "pair_index": 53,
+          "endpoint": "second",
+          "emitted_track_id": 60,
+          "source_frame": 22103,
+          "foot_x_px": 536.625,
+          "foot_y_px": 742.5,
+          "time_bin": 53,
+          "time_bin_inclusive": [
+            22050,
+            22096
+          ],
+          "blind_index": 97,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 53,
+      "pair": [
+        {
+          "pair_index": 42,
+          "endpoint": "first",
+          "emitted_track_id": 45,
+          "source_frame": 21552,
+          "foot_x_px": 897.75,
+          "foot_y_px": 434.625,
+          "time_bin": 42,
+          "time_bin_inclusive": [
+            21531,
+            21577
+          ],
+          "blind_index": 142,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 42,
+          "endpoint": "second",
+          "emitted_track_id": 45,
+          "source_frame": 21582,
+          "foot_x_px": 466.5,
+          "foot_y_px": 639.0,
+          "time_bin": 42,
+          "time_bin_inclusive": [
+            21531,
+            21577
+          ],
+          "blind_index": 27,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 54,
+      "pair": [
+        {
+          "pair_index": 74,
+          "endpoint": "first",
+          "emitted_track_id": 87,
+          "source_frame": 23086,
+          "foot_x_px": 1524.0,
+          "foot_y_px": 852.75,
+          "time_bin": 74,
+          "time_bin_inclusive": [
+            23040,
+            23086
+          ],
+          "blind_index": 63,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 74,
+          "endpoint": "second",
+          "emitted_track_id": 87,
+          "source_frame": 23116,
+          "foot_x_px": 1266.0,
+          "foot_y_px": 726.75,
+          "time_bin": 74,
+          "time_bin_inclusive": [
+            23040,
+            23086
+          ],
+          "blind_index": 36,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 55,
+      "pair": [
+        {
+          "pair_index": 29,
+          "endpoint": "first",
+          "emitted_track_id": 31,
+          "source_frame": 20930,
+          "foot_x_px": 651.75,
+          "foot_y_px": 873.75,
+          "time_bin": 29,
+          "time_bin_inclusive": [
+            20918,
+            20964
+          ],
+          "blind_index": 131,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 29,
+          "endpoint": "second",
+          "emitted_track_id": 31,
+          "source_frame": 20960,
+          "foot_x_px": 370.3125,
+          "foot_y_px": 976.5,
+          "time_bin": 29,
+          "time_bin_inclusive": [
+            20918,
+            20964
+          ],
+          "blind_index": 55,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 56,
+      "pair": [
+        {
+          "pair_index": 43,
+          "endpoint": "first",
+          "emitted_track_id": 47,
+          "source_frame": 21596,
+          "foot_x_px": 1075.5,
+          "foot_y_px": 432.0,
+          "time_bin": 43,
+          "time_bin_inclusive": [
+            21578,
+            21624
+          ],
+          "blind_index": 99,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 43,
+          "endpoint": "second",
+          "emitted_track_id": 47,
+          "source_frame": 21626,
+          "foot_x_px": 1191.0,
+          "foot_y_px": 486.75,
+          "time_bin": 43,
+          "time_bin_inclusive": [
+            21578,
+            21624
+          ],
+          "blind_index": 21,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 57,
+      "pair": [
+        {
+          "pair_index": 32,
+          "endpoint": "first",
+          "emitted_track_id": 7,
+          "source_frame": 21072,
+          "foot_x_px": 1345.5,
+          "foot_y_px": 519.75,
+          "time_bin": 32,
+          "time_bin_inclusive": [
+            21060,
+            21106
+          ],
+          "blind_index": 75,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 32,
+          "endpoint": "second",
+          "emitted_track_id": 7,
+          "source_frame": 21102,
+          "foot_x_px": 637.5,
+          "foot_y_px": 440.625,
+          "time_bin": 32,
+          "time_bin_inclusive": [
+            21060,
+            21106
+          ],
+          "blind_index": 123,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 58,
+      "pair": [
+        {
+          "pair_index": 80,
+          "endpoint": "first",
+          "emitted_track_id": 89,
+          "source_frame": 23361,
+          "foot_x_px": 987.75,
+          "foot_y_px": 453.375,
+          "time_bin": 80,
+          "time_bin_inclusive": [
+            23322,
+            23369
+          ],
+          "blind_index": 2,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 80,
+          "endpoint": "second",
+          "emitted_track_id": 89,
+          "source_frame": 23391,
+          "foot_x_px": 997.5,
+          "foot_y_px": 426.0,
+          "time_bin": 80,
+          "time_bin_inclusive": [
+            23322,
+            23369
+          ],
+          "blind_index": 72,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 59,
+      "pair": [
+        {
+          "pair_index": 78,
+          "endpoint": "first",
+          "emitted_track_id": 42,
+          "source_frame": 23263,
+          "foot_x_px": 1654.5,
+          "foot_y_px": 966.0,
+          "time_bin": 78,
+          "time_bin_inclusive": [
+            23228,
+            23274
+          ],
+          "blind_index": 89,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 78,
+          "endpoint": "second",
+          "emitted_track_id": 42,
+          "source_frame": 23293,
+          "foot_x_px": 1659.0,
+          "foot_y_px": 945.0,
+          "time_bin": 78,
+          "time_bin_inclusive": [
+            23228,
+            23274
+          ],
+          "blind_index": 69,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    },
+    {
+      "blind_index": 60,
+      "pair": [
+        {
+          "pair_index": 23,
+          "endpoint": "first",
+          "emitted_track_id": 36,
+          "source_frame": 20655,
+          "foot_x_px": 340.875,
+          "foot_y_px": 975.0,
+          "time_bin": 23,
+          "time_bin_inclusive": [
+            20636,
+            20682
+          ],
+          "blind_index": 66,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 23,
+          "endpoint": "second",
+          "emitted_track_id": 36,
+          "source_frame": 20685,
+          "foot_x_px": 113.6484375,
+          "foot_y_px": 632.25,
+          "time_bin": 23,
+          "time_bin_inclusive": [
+            20636,
+            20682
+          ],
+          "blind_index": 59,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "DIFFERENT PERSON"
+    },
+    {
+      "blind_index": 61,
+      "pair": [
+        {
+          "pair_index": 40,
+          "endpoint": "first",
+          "emitted_track_id": 46,
+          "source_frame": 21451,
+          "foot_x_px": 888.0,
+          "foot_y_px": 478.875,
+          "time_bin": 40,
+          "time_bin_inclusive": [
+            21437,
+            21483
+          ],
+          "blind_index": 6,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 40,
+          "endpoint": "second",
+          "emitted_track_id": 46,
+          "source_frame": 21481,
+          "foot_x_px": 938.25,
+          "foot_y_px": 480.75,
+          "time_bin": 40,
+          "time_bin_inclusive": [
+            21437,
+            21483
+          ],
+          "blind_index": 127,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 62,
+      "pair": [
+        {
+          "pair_index": 26,
+          "endpoint": "first",
+          "emitted_track_id": 32,
+          "source_frame": 20780,
+          "foot_x_px": 510.75,
+          "foot_y_px": 695.25,
+          "time_bin": 26,
+          "time_bin_inclusive": [
+            20777,
+            20823
+          ],
+          "blind_index": 86,
+          "person_verdict": "PLAYER"
+        },
+        {
+          "pair_index": 26,
+          "endpoint": "second",
+          "emitted_track_id": 32,
+          "source_frame": 20810,
+          "foot_x_px": 507.75,
+          "foot_y_px": 679.5,
+          "time_bin": 26,
+          "time_bin_inclusive": [
+            20777,
+            20823
+          ],
+          "blind_index": 141,
+          "person_verdict": "PLAYER"
+        }
+      ],
+      "verdict": "SAME PERSON"
+    }
+  ]
+}
