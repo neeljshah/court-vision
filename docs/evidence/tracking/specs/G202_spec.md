@@ -31,6 +31,27 @@ players. **At 2-3 survivors a hull has zero area**, which is precisely the `team
 primary spacing feature, it makes it UNDEFINED. `min_players = 6` for basketball encodes the same
 requirement.
 
+**SECOND AMENDMENT 2026-09-04 -- YOUR BASELINE IS STALE AND YOU MUST RE-MEASURE IT, NOT INHERIT IT.**
+The "15 raw boxes, 2-3 survivors" observation predates TWO production defects that were found and fixed
+on 2026-09-03, both of which sit directly on the selection path:
+  1. **`src/tracking/osnet_reid.py` was running re-identification on an UNTRAINED network.** When the
+     OSNet load failed, a broad handler installed `mobilenet_v2(weights=None)` -- randomly initialised --
+     set `available = True`, and emitted no signal. Fixing it made re-ID **6.8x faster** (0.103 s ->
+     0.0152 s for 17 crops), which is itself evidence the fallback was live. **Appearance embeddings
+     used for player association were therefore NOISE at the time frame 474 was observed.**
+  2. **`src/tracking/ball_detect_track.py` was resolving to a generic COCO `yolov8n.pt`** rather than the
+     fine-tuned ball model, by the same silent-substitution shape.
+  Root cause of both: `data/` and `models/` are gitignored, so the git-archive deploy carried no weights.
+  G218 has since classified 19 handlers of this shape, 18 of them on the tracking hot path.
+
+**So "15 raw, 2-3 survivors" may already be OBSOLETE. Re-measure it as the FIRST thing you do and report
+the current number beside the historical one.** **If survivors have improved, say so plainly -- that is a
+real result and it would mean a production defect, not the selector, was the dominant cause.** If they
+have not, the census proceeds as written and is now measured on a route whose re-ID actually works.
+**Do NOT quote the historical 2-3 as current.** **A11: record the SHA-256 of the deployed
+`osnet_reid.py`, `ball_detect_track.py` and their weight files, so a later reader can tell which side of
+the fix your run is on.**
+
 PART 1 -- THE CENSUS (this is the deliverable; do this first and completely):
   Instrument in your own process to record, per frame, over a bounded run:
     a. raw detector box count;
