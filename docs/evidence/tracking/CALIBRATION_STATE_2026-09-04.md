@@ -234,8 +234,42 @@ calibration per ~50 frames" as a requirement any more.**
 |---|---|---|
 | **G241** | how far does the seed hold CONTIGUOUSLY? | **NOT VALIDATED, stopped on a control I mis-specified.** Its by-product matters: the propagation GEOMETRY reproduced bit-exactly (zero unequal records over 1,200 frames), while 808 of 1,201 DETECTOR records differed. Re-issued as **G241b** with the control narrowed to geometry. |
 | **G242** | does a distant frame re-acquire DIRECTLY from the same seed? | **ACCEPT, and the result is a negative -- see 7.5.** Yes on same-end views out to +154,401 frames, but G222's acceptance rule accepted 89/89 including replays, graphics and the wrong hoop end. |
-| **G243** | does any of this work on AMATEUR fixed-camera footage? | RUNNING. The stated goal is arbitrary footage; a fixed camera is the easy case, so a failure there bounds the ambition. |
-| **G244** | does ANY diagnostic separate a correct court from a wrong one? | QUEUED. Made urgent by 7.5. |
+| **G241b** | the same question with the control narrowed to geometry | **ANSWERED -- see 7.6. The unit is the CAMERA SHOT, and the first shot ends at distance 4,000.** |
+| **G243** | does any of this work on AMATEUR footage? | **FALSIFIED: the named clip existed nowhere, and the corpus was 9 clips of pure professional broadcast.** My premise error. |
+| **G245** | acquire amateur footage, since there was none | **ACCEPT.** `basketball__amateur_jh3fnwMi7dM.mp4` landed: 1280x720, 3,601 frames, 120.1 s, high-school coaches camera, near-fixed, arcs at both ends and the centre circle visible. |
+| **G243b** | amateur calibration against the real clip | RUNNING, with a new clustered-vs-spread label-geometry arm. |
+| **G244** | does ANY diagnostic separate a correct court from a wrong one? | RUNNING. Made urgent by 7.5, extended by 7.6. |
+
+### 7.6 G241b: the operational unit is the CAMERA SHOT, not a frame count
+
+**The corrected control PASSED exactly** -- all 1,200 post-seed geometry records equal
+record-for-record, zero unequal pairs, all maps finite. Extending to a predeclared
+10,000-frame target then produced the programme's first named failure horizon.
+
+**The direct matcher stays finite through all 10,000 frames. The EYE CHECK fails at
+distance 4,000.** Renders at 0, 1,000, 2,000 and 3,000 follow the independent painted
+arc and sidelines; at 4,000 the broadcast has cut to a tight player close-up, no
+painted court remains, and the projected court is visibly off. The 9,000 and 10,000
+renders are also unusable.
+
+**The cause is named and independently corroborated.** A hard scene inventory found 15
+`scene > 0.40` cut candidates over the span. The first close-up transition matches a
+candidate at about distance 3,876, and **the match series then drops abruptly in a
+single frame -- 310 at distance 3,932 to 182 at 3,933 -- falling to 81 near 4,440.** A
+second abrupt drop appears at distance 9,823 (327 to 162). **This is a cut followed by
+sustained loss of seed-view overlap, NOT G215's chained-pan decay** -- and G241b was
+not chaining.
+
+**Labels per hour: `ceil(108000/4000) = 27` for that observed first shot.** It is the
+repeated-span arithmetic for one shot, not a corpus-wide rate. **The `ceil(108000/10000)
+= 11` figure describes finite direct-map persistence only and is NOT an operational
+labelling claim**, because the eye check had already failed at 4,000.
+
+**Consequence for the programme:** a hand label covers **a camera shot**, so the cost of
+calibrating a game scales with its edit rate, not its length. That reframes the whole
+labelling-throughput question -- and it makes automatic cut detection, not automatic
+calibration, the cheapest available lever. The single-frame collapse at both cuts is
+why G244 now also asks whether that drop is separable from ordinary variation.
 
 ### 7.5 G242: match acceptance is NOT geometry validity
 
