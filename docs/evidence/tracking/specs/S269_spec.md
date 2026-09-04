@@ -1,4 +1,4 @@
-GAP S269 | sport wnba | worktree a13 | log cx_s269_wnba_oncourt_five_lineup_state
+GAP S269 | sport wnba | worktree a15 | log cx_s269_wnba_oncourt_five_lineup_state
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: successor to S253 (DONE 4dd9e24eb) and S84 (SCREEN_NULL, NBA). S253's module is named "nba_..." but its
   ONLY source is data/domains/wnba/cdn_backfill (168 WNBA games, 2026-04-25..2026-07-04, per the register row
