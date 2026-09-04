@@ -1,0 +1,2650 @@
+{
+  "video": {
+    "path": "/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4",
+    "bytes": 2931985407,
+    "resolution": [
+      1920,
+      1080
+    ]
+  },
+  "source_frame": 19599,
+  "repeats": 5,
+  "rungs_px": [
+    0,
+    2,
+    5,
+    10,
+    20,
+    40,
+    100
+  ],
+  "records": [
+    {
+      "repeat": 0,
+      "image_sha256": "686c94a7738c3e1ede2b39ea98cb09f096eead96826ff543baf4585d4c8f4270",
+      "conditions": [
+        {
+          "rung_px": 0,
+          "offset": {
+            "sample_points": 15649,
+            "found": 1775,
+            "no_candidate": 13874,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 34
+          },
+          "image_signals": {
+            "edge_response_contrast": -51.244564056396484,
+            "line_detector_agreement": 0.047661526698101184,
+            "marking_contrast": -112.49740674800024,
+            "coverage": 0.3043193985698227,
+            "on_curve_samples": 31388,
+            "control_samples": 21023,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12713.866472354532,
+            "corners_px_role_order": [
+              [
+                350.0,
+                400.0
+              ],
+              [
+                835.0,
+                420.0
+              ],
+              [
+                390.0,
+                696.0
+              ],
+              [
+                990.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 2,
+          "offset": {
+            "sample_points": 15649,
+            "found": 1759,
+            "no_candidate": 13890,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 31
+          },
+          "image_signals": {
+            "edge_response_contrast": -51.26318359375,
+            "line_detector_agreement": 0.04782082324455206,
+            "marking_contrast": -112.46930848565546,
+            "coverage": 0.30432877786860146,
+            "on_curve_samples": 31388,
+            "control_samples": 21031,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12688.09793400822,
+            "corners_px_role_order": [
+              [
+                352.0,
+                400.0
+              ],
+              [
+                837.0,
+                420.0
+              ],
+              [
+                392.0,
+                696.0
+              ],
+              [
+                992.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 5,
+          "offset": {
+            "sample_points": 15649,
+            "found": 1763,
+            "no_candidate": 13886,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 35
+          },
+          "image_signals": {
+            "edge_response_contrast": -51.106544494628906,
+            "line_detector_agreement": 0.04810602440345344,
+            "marking_contrast": -112.31831368777893,
+            "coverage": 0.3043428856359016,
+            "on_curve_samples": 31389,
+            "control_samples": 21036,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12650.10607124819,
+            "corners_px_role_order": [
+              [
+                355.0,
+                400.0
+              ],
+              [
+                840.0,
+                420.0
+              ],
+              [
+                395.0,
+                696.0
+              ],
+              [
+                995.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 10,
+          "offset": {
+            "sample_points": 15655,
+            "found": 1770,
+            "no_candidate": 13885,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 30
+          },
+          "image_signals": {
+            "edge_response_contrast": -50.086265563964844,
+            "line_detector_agreement": 0.048663970190133445,
+            "marking_contrast": -112.17790119264538,
+            "coverage": 0.30442476189709233,
+            "on_curve_samples": 31399,
+            "control_samples": 21056,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12588.556152684694,
+            "corners_px_role_order": [
+              [
+                360.0,
+                400.0
+              ],
+              [
+                845.0,
+                420.0
+              ],
+              [
+                400.0,
+                696.0
+              ],
+              [
+                1000.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 20,
+          "offset": {
+            "sample_points": 15661,
+            "found": 1765,
+            "no_candidate": 13896,
+            "median": 5.0,
+            "p90": 19.0,
+            "max": 24.0,
+            "bound_count": 43
+          },
+          "image_signals": {
+            "edge_response_contrast": -49.170047760009766,
+            "line_detector_agreement": 0.0495702005730659,
+            "marking_contrast": -111.9671980985311,
+            "coverage": 0.30453172545786905,
+            "on_curve_samples": 31410,
+            "control_samples": 21087,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12472.14220971617,
+            "corners_px_role_order": [
+              [
+                370.0,
+                400.0
+              ],
+              [
+                855.0,
+                420.0
+              ],
+              [
+                410.0,
+                696.0
+              ],
+              [
+                1010.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 40,
+          "offset": {
+            "sample_points": 15676,
+            "found": 1762,
+            "no_candidate": 13914,
+            "median": 5.0,
+            "p90": 19.90000000000009,
+            "max": 24.0,
+            "bound_count": 41
+          },
+          "image_signals": {
+            "edge_response_contrast": -48.36991500854492,
+            "line_detector_agreement": 0.04977735368956743,
+            "marking_contrast": -111.74945618605994,
+            "coverage": 0.3048075588721658,
+            "on_curve_samples": 31440,
+            "control_samples": 21167,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12266.427954063274,
+            "corners_px_role_order": [
+              [
+                390.0,
+                400.0
+              ],
+              [
+                875.0,
+                420.0
+              ],
+              [
+                430.0,
+                696.0
+              ],
+              [
+                1030.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 100,
+          "offset": {
+            "sample_points": 15764,
+            "found": 1652,
+            "no_candidate": 14112,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 18
+          },
+          "image_signals": {
+            "edge_response_contrast": -50.397621154785156,
+            "line_detector_agreement": 0.04846874209060997,
+            "marking_contrast": -107.62230824811738,
+            "coverage": 0.3063741817853954,
+            "on_curve_samples": 31608,
+            "control_samples": 21757,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 11872.941825625876,
+            "corners_px_role_order": [
+              [
+                450.0,
+                400.0
+              ],
+              [
+                935.0,
+                420.0
+              ],
+              [
+                490.0,
+                696.0
+              ],
+              [
+                1090.0,
+                730.0
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "repeat": 1,
+      "image_sha256": "686c94a7738c3e1ede2b39ea98cb09f096eead96826ff543baf4585d4c8f4270",
+      "conditions": [
+        {
+          "rung_px": 0,
+          "offset": {
+            "sample_points": 15649,
+            "found": 1775,
+            "no_candidate": 13874,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 34
+          },
+          "image_signals": {
+            "edge_response_contrast": -51.244564056396484,
+            "line_detector_agreement": 0.047661526698101184,
+            "marking_contrast": -112.49740674800024,
+            "coverage": 0.3043193985698227,
+            "on_curve_samples": 31388,
+            "control_samples": 21023,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12713.866472354532,
+            "corners_px_role_order": [
+              [
+                350.0,
+                400.0
+              ],
+              [
+                835.0,
+                420.0
+              ],
+              [
+                390.0,
+                696.0
+              ],
+              [
+                990.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 2,
+          "offset": {
+            "sample_points": 15649,
+            "found": 1759,
+            "no_candidate": 13890,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 31
+          },
+          "image_signals": {
+            "edge_response_contrast": -51.26318359375,
+            "line_detector_agreement": 0.04782082324455206,
+            "marking_contrast": -112.46930848565546,
+            "coverage": 0.30432877786860146,
+            "on_curve_samples": 31388,
+            "control_samples": 21031,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12688.09793400822,
+            "corners_px_role_order": [
+              [
+                352.0,
+                400.0
+              ],
+              [
+                837.0,
+                420.0
+              ],
+              [
+                392.0,
+                696.0
+              ],
+              [
+                992.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 5,
+          "offset": {
+            "sample_points": 15649,
+            "found": 1763,
+            "no_candidate": 13886,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 35
+          },
+          "image_signals": {
+            "edge_response_contrast": -51.106544494628906,
+            "line_detector_agreement": 0.04810602440345344,
+            "marking_contrast": -112.31831368777893,
+            "coverage": 0.3043428856359016,
+            "on_curve_samples": 31389,
+            "control_samples": 21036,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12650.10607124819,
+            "corners_px_role_order": [
+              [
+                355.0,
+                400.0
+              ],
+              [
+                840.0,
+                420.0
+              ],
+              [
+                395.0,
+                696.0
+              ],
+              [
+                995.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 10,
+          "offset": {
+            "sample_points": 15655,
+            "found": 1770,
+            "no_candidate": 13885,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 30
+          },
+          "image_signals": {
+            "edge_response_contrast": -50.086265563964844,
+            "line_detector_agreement": 0.048663970190133445,
+            "marking_contrast": -112.17790119264538,
+            "coverage": 0.30442476189709233,
+            "on_curve_samples": 31399,
+            "control_samples": 21056,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12588.556152684694,
+            "corners_px_role_order": [
+              [
+                360.0,
+                400.0
+              ],
+              [
+                845.0,
+                420.0
+              ],
+              [
+                400.0,
+                696.0
+              ],
+              [
+                1000.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 20,
+          "offset": {
+            "sample_points": 15661,
+            "found": 1765,
+            "no_candidate": 13896,
+            "median": 5.0,
+            "p90": 19.0,
+            "max": 24.0,
+            "bound_count": 43
+          },
+          "image_signals": {
+            "edge_response_contrast": -49.170047760009766,
+            "line_detector_agreement": 0.0495702005730659,
+            "marking_contrast": -111.9671980985311,
+            "coverage": 0.30453172545786905,
+            "on_curve_samples": 31410,
+            "control_samples": 21087,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12472.14220971617,
+            "corners_px_role_order": [
+              [
+                370.0,
+                400.0
+              ],
+              [
+                855.0,
+                420.0
+              ],
+              [
+                410.0,
+                696.0
+              ],
+              [
+                1010.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 40,
+          "offset": {
+            "sample_points": 15676,
+            "found": 1762,
+            "no_candidate": 13914,
+            "median": 5.0,
+            "p90": 19.90000000000009,
+            "max": 24.0,
+            "bound_count": 41
+          },
+          "image_signals": {
+            "edge_response_contrast": -48.36991500854492,
+            "line_detector_agreement": 0.04977735368956743,
+            "marking_contrast": -111.74945618605994,
+            "coverage": 0.3048075588721658,
+            "on_curve_samples": 31440,
+            "control_samples": 21167,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12266.427954063274,
+            "corners_px_role_order": [
+              [
+                390.0,
+                400.0
+              ],
+              [
+                875.0,
+                420.0
+              ],
+              [
+                430.0,
+                696.0
+              ],
+              [
+                1030.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 100,
+          "offset": {
+            "sample_points": 15764,
+            "found": 1652,
+            "no_candidate": 14112,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 18
+          },
+          "image_signals": {
+            "edge_response_contrast": -50.397621154785156,
+            "line_detector_agreement": 0.04846874209060997,
+            "marking_contrast": -107.62230824811738,
+            "coverage": 0.3063741817853954,
+            "on_curve_samples": 31608,
+            "control_samples": 21757,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 11872.941825625876,
+            "corners_px_role_order": [
+              [
+                450.0,
+                400.0
+              ],
+              [
+                935.0,
+                420.0
+              ],
+              [
+                490.0,
+                696.0
+              ],
+              [
+                1090.0,
+                730.0
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "repeat": 2,
+      "image_sha256": "686c94a7738c3e1ede2b39ea98cb09f096eead96826ff543baf4585d4c8f4270",
+      "conditions": [
+        {
+          "rung_px": 0,
+          "offset": {
+            "sample_points": 15649,
+            "found": 1775,
+            "no_candidate": 13874,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 34
+          },
+          "image_signals": {
+            "edge_response_contrast": -51.244564056396484,
+            "line_detector_agreement": 0.047661526698101184,
+            "marking_contrast": -112.49740674800024,
+            "coverage": 0.3043193985698227,
+            "on_curve_samples": 31388,
+            "control_samples": 21023,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12713.866472354532,
+            "corners_px_role_order": [
+              [
+                350.0,
+                400.0
+              ],
+              [
+                835.0,
+                420.0
+              ],
+              [
+                390.0,
+                696.0
+              ],
+              [
+                990.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 2,
+          "offset": {
+            "sample_points": 15649,
+            "found": 1759,
+            "no_candidate": 13890,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 31
+          },
+          "image_signals": {
+            "edge_response_contrast": -51.26318359375,
+            "line_detector_agreement": 0.04782082324455206,
+            "marking_contrast": -112.46930848565546,
+            "coverage": 0.30432877786860146,
+            "on_curve_samples": 31388,
+            "control_samples": 21031,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12688.09793400822,
+            "corners_px_role_order": [
+              [
+                352.0,
+                400.0
+              ],
+              [
+                837.0,
+                420.0
+              ],
+              [
+                392.0,
+                696.0
+              ],
+              [
+                992.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 5,
+          "offset": {
+            "sample_points": 15649,
+            "found": 1763,
+            "no_candidate": 13886,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 35
+          },
+          "image_signals": {
+            "edge_response_contrast": -51.106544494628906,
+            "line_detector_agreement": 0.04810602440345344,
+            "marking_contrast": -112.31831368777893,
+            "coverage": 0.3043428856359016,
+            "on_curve_samples": 31389,
+            "control_samples": 21036,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12650.10607124819,
+            "corners_px_role_order": [
+              [
+                355.0,
+                400.0
+              ],
+              [
+                840.0,
+                420.0
+              ],
+              [
+                395.0,
+                696.0
+              ],
+              [
+                995.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 10,
+          "offset": {
+            "sample_points": 15655,
+            "found": 1770,
+            "no_candidate": 13885,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 30
+          },
+          "image_signals": {
+            "edge_response_contrast": -50.086265563964844,
+            "line_detector_agreement": 0.048663970190133445,
+            "marking_contrast": -112.17790119264538,
+            "coverage": 0.30442476189709233,
+            "on_curve_samples": 31399,
+            "control_samples": 21056,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12588.556152684694,
+            "corners_px_role_order": [
+              [
+                360.0,
+                400.0
+              ],
+              [
+                845.0,
+                420.0
+              ],
+              [
+                400.0,
+                696.0
+              ],
+              [
+                1000.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 20,
+          "offset": {
+            "sample_points": 15661,
+            "found": 1765,
+            "no_candidate": 13896,
+            "median": 5.0,
+            "p90": 19.0,
+            "max": 24.0,
+            "bound_count": 43
+          },
+          "image_signals": {
+            "edge_response_contrast": -49.170047760009766,
+            "line_detector_agreement": 0.0495702005730659,
+            "marking_contrast": -111.9671980985311,
+            "coverage": 0.30453172545786905,
+            "on_curve_samples": 31410,
+            "control_samples": 21087,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12472.14220971617,
+            "corners_px_role_order": [
+              [
+                370.0,
+                400.0
+              ],
+              [
+                855.0,
+                420.0
+              ],
+              [
+                410.0,
+                696.0
+              ],
+              [
+                1010.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 40,
+          "offset": {
+            "sample_points": 15676,
+            "found": 1762,
+            "no_candidate": 13914,
+            "median": 5.0,
+            "p90": 19.90000000000009,
+            "max": 24.0,
+            "bound_count": 41
+          },
+          "image_signals": {
+            "edge_response_contrast": -48.36991500854492,
+            "line_detector_agreement": 0.04977735368956743,
+            "marking_contrast": -111.74945618605994,
+            "coverage": 0.3048075588721658,
+            "on_curve_samples": 31440,
+            "control_samples": 21167,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12266.427954063274,
+            "corners_px_role_order": [
+              [
+                390.0,
+                400.0
+              ],
+              [
+                875.0,
+                420.0
+              ],
+              [
+                430.0,
+                696.0
+              ],
+              [
+                1030.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 100,
+          "offset": {
+            "sample_points": 15764,
+            "found": 1652,
+            "no_candidate": 14112,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 18
+          },
+          "image_signals": {
+            "edge_response_contrast": -50.397621154785156,
+            "line_detector_agreement": 0.04846874209060997,
+            "marking_contrast": -107.62230824811738,
+            "coverage": 0.3063741817853954,
+            "on_curve_samples": 31608,
+            "control_samples": 21757,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 11872.941825625876,
+            "corners_px_role_order": [
+              [
+                450.0,
+                400.0
+              ],
+              [
+                935.0,
+                420.0
+              ],
+              [
+                490.0,
+                696.0
+              ],
+              [
+                1090.0,
+                730.0
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "repeat": 3,
+      "image_sha256": "686c94a7738c3e1ede2b39ea98cb09f096eead96826ff543baf4585d4c8f4270",
+      "conditions": [
+        {
+          "rung_px": 0,
+          "offset": {
+            "sample_points": 15649,
+            "found": 1775,
+            "no_candidate": 13874,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 34
+          },
+          "image_signals": {
+            "edge_response_contrast": -51.244564056396484,
+            "line_detector_agreement": 0.047661526698101184,
+            "marking_contrast": -112.49740674800024,
+            "coverage": 0.3043193985698227,
+            "on_curve_samples": 31388,
+            "control_samples": 21023,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12713.866472354532,
+            "corners_px_role_order": [
+              [
+                350.0,
+                400.0
+              ],
+              [
+                835.0,
+                420.0
+              ],
+              [
+                390.0,
+                696.0
+              ],
+              [
+                990.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 2,
+          "offset": {
+            "sample_points": 15649,
+            "found": 1759,
+            "no_candidate": 13890,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 31
+          },
+          "image_signals": {
+            "edge_response_contrast": -51.26318359375,
+            "line_detector_agreement": 0.04782082324455206,
+            "marking_contrast": -112.46930848565546,
+            "coverage": 0.30432877786860146,
+            "on_curve_samples": 31388,
+            "control_samples": 21031,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12688.09793400822,
+            "corners_px_role_order": [
+              [
+                352.0,
+                400.0
+              ],
+              [
+                837.0,
+                420.0
+              ],
+              [
+                392.0,
+                696.0
+              ],
+              [
+                992.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 5,
+          "offset": {
+            "sample_points": 15649,
+            "found": 1763,
+            "no_candidate": 13886,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 35
+          },
+          "image_signals": {
+            "edge_response_contrast": -51.106544494628906,
+            "line_detector_agreement": 0.04810602440345344,
+            "marking_contrast": -112.31831368777893,
+            "coverage": 0.3043428856359016,
+            "on_curve_samples": 31389,
+            "control_samples": 21036,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12650.10607124819,
+            "corners_px_role_order": [
+              [
+                355.0,
+                400.0
+              ],
+              [
+                840.0,
+                420.0
+              ],
+              [
+                395.0,
+                696.0
+              ],
+              [
+                995.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 10,
+          "offset": {
+            "sample_points": 15655,
+            "found": 1770,
+            "no_candidate": 13885,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 30
+          },
+          "image_signals": {
+            "edge_response_contrast": -50.086265563964844,
+            "line_detector_agreement": 0.048663970190133445,
+            "marking_contrast": -112.17790119264538,
+            "coverage": 0.30442476189709233,
+            "on_curve_samples": 31399,
+            "control_samples": 21056,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12588.556152684694,
+            "corners_px_role_order": [
+              [
+                360.0,
+                400.0
+              ],
+              [
+                845.0,
+                420.0
+              ],
+              [
+                400.0,
+                696.0
+              ],
+              [
+                1000.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 20,
+          "offset": {
+            "sample_points": 15661,
+            "found": 1765,
+            "no_candidate": 13896,
+            "median": 5.0,
+            "p90": 19.0,
+            "max": 24.0,
+            "bound_count": 43
+          },
+          "image_signals": {
+            "edge_response_contrast": -49.170047760009766,
+            "line_detector_agreement": 0.0495702005730659,
+            "marking_contrast": -111.9671980985311,
+            "coverage": 0.30453172545786905,
+            "on_curve_samples": 31410,
+            "control_samples": 21087,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12472.14220971617,
+            "corners_px_role_order": [
+              [
+                370.0,
+                400.0
+              ],
+              [
+                855.0,
+                420.0
+              ],
+              [
+                410.0,
+                696.0
+              ],
+              [
+                1010.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 40,
+          "offset": {
+            "sample_points": 15676,
+            "found": 1762,
+            "no_candidate": 13914,
+            "median": 5.0,
+            "p90": 19.90000000000009,
+            "max": 24.0,
+            "bound_count": 41
+          },
+          "image_signals": {
+            "edge_response_contrast": -48.36991500854492,
+            "line_detector_agreement": 0.04977735368956743,
+            "marking_contrast": -111.74945618605994,
+            "coverage": 0.3048075588721658,
+            "on_curve_samples": 31440,
+            "control_samples": 21167,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12266.427954063274,
+            "corners_px_role_order": [
+              [
+                390.0,
+                400.0
+              ],
+              [
+                875.0,
+                420.0
+              ],
+              [
+                430.0,
+                696.0
+              ],
+              [
+                1030.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 100,
+          "offset": {
+            "sample_points": 15764,
+            "found": 1652,
+            "no_candidate": 14112,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 18
+          },
+          "image_signals": {
+            "edge_response_contrast": -50.397621154785156,
+            "line_detector_agreement": 0.04846874209060997,
+            "marking_contrast": -107.62230824811738,
+            "coverage": 0.3063741817853954,
+            "on_curve_samples": 31608,
+            "control_samples": 21757,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 11872.941825625876,
+            "corners_px_role_order": [
+              [
+                450.0,
+                400.0
+              ],
+              [
+                935.0,
+                420.0
+              ],
+              [
+                490.0,
+                696.0
+              ],
+              [
+                1090.0,
+                730.0
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "repeat": 4,
+      "image_sha256": "686c94a7738c3e1ede2b39ea98cb09f096eead96826ff543baf4585d4c8f4270",
+      "conditions": [
+        {
+          "rung_px": 0,
+          "offset": {
+            "sample_points": 15649,
+            "found": 1775,
+            "no_candidate": 13874,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 34
+          },
+          "image_signals": {
+            "edge_response_contrast": -51.244564056396484,
+            "line_detector_agreement": 0.047661526698101184,
+            "marking_contrast": -112.49740674800024,
+            "coverage": 0.3043193985698227,
+            "on_curve_samples": 31388,
+            "control_samples": 21023,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12713.866472354532,
+            "corners_px_role_order": [
+              [
+                350.0,
+                400.0
+              ],
+              [
+                835.0,
+                420.0
+              ],
+              [
+                390.0,
+                696.0
+              ],
+              [
+                990.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 2,
+          "offset": {
+            "sample_points": 15649,
+            "found": 1759,
+            "no_candidate": 13890,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 31
+          },
+          "image_signals": {
+            "edge_response_contrast": -51.26318359375,
+            "line_detector_agreement": 0.04782082324455206,
+            "marking_contrast": -112.46930848565546,
+            "coverage": 0.30432877786860146,
+            "on_curve_samples": 31388,
+            "control_samples": 21031,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12688.09793400822,
+            "corners_px_role_order": [
+              [
+                352.0,
+                400.0
+              ],
+              [
+                837.0,
+                420.0
+              ],
+              [
+                392.0,
+                696.0
+              ],
+              [
+                992.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 5,
+          "offset": {
+            "sample_points": 15649,
+            "found": 1763,
+            "no_candidate": 13886,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 35
+          },
+          "image_signals": {
+            "edge_response_contrast": -51.106544494628906,
+            "line_detector_agreement": 0.04810602440345344,
+            "marking_contrast": -112.31831368777893,
+            "coverage": 0.3043428856359016,
+            "on_curve_samples": 31389,
+            "control_samples": 21036,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12650.10607124819,
+            "corners_px_role_order": [
+              [
+                355.0,
+                400.0
+              ],
+              [
+                840.0,
+                420.0
+              ],
+              [
+                395.0,
+                696.0
+              ],
+              [
+                995.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 10,
+          "offset": {
+            "sample_points": 15655,
+            "found": 1770,
+            "no_candidate": 13885,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 30
+          },
+          "image_signals": {
+            "edge_response_contrast": -50.086265563964844,
+            "line_detector_agreement": 0.048663970190133445,
+            "marking_contrast": -112.17790119264538,
+            "coverage": 0.30442476189709233,
+            "on_curve_samples": 31399,
+            "control_samples": 21056,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12588.556152684694,
+            "corners_px_role_order": [
+              [
+                360.0,
+                400.0
+              ],
+              [
+                845.0,
+                420.0
+              ],
+              [
+                400.0,
+                696.0
+              ],
+              [
+                1000.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 20,
+          "offset": {
+            "sample_points": 15661,
+            "found": 1765,
+            "no_candidate": 13896,
+            "median": 5.0,
+            "p90": 19.0,
+            "max": 24.0,
+            "bound_count": 43
+          },
+          "image_signals": {
+            "edge_response_contrast": -49.170047760009766,
+            "line_detector_agreement": 0.0495702005730659,
+            "marking_contrast": -111.9671980985311,
+            "coverage": 0.30453172545786905,
+            "on_curve_samples": 31410,
+            "control_samples": 21087,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12472.14220971617,
+            "corners_px_role_order": [
+              [
+                370.0,
+                400.0
+              ],
+              [
+                855.0,
+                420.0
+              ],
+              [
+                410.0,
+                696.0
+              ],
+              [
+                1010.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 40,
+          "offset": {
+            "sample_points": 15676,
+            "found": 1762,
+            "no_candidate": 13914,
+            "median": 5.0,
+            "p90": 19.90000000000009,
+            "max": 24.0,
+            "bound_count": 41
+          },
+          "image_signals": {
+            "edge_response_contrast": -48.36991500854492,
+            "line_detector_agreement": 0.04977735368956743,
+            "marking_contrast": -111.74945618605994,
+            "coverage": 0.3048075588721658,
+            "on_curve_samples": 31440,
+            "control_samples": 21167,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 12266.427954063274,
+            "corners_px_role_order": [
+              [
+                390.0,
+                400.0
+              ],
+              [
+                875.0,
+                420.0
+              ],
+              [
+                430.0,
+                696.0
+              ],
+              [
+                1030.0,
+                730.0
+              ]
+            ]
+          }
+        },
+        {
+          "rung_px": 100,
+          "offset": {
+            "sample_points": 15764,
+            "found": 1652,
+            "no_candidate": 14112,
+            "median": 5.0,
+            "p90": 18.0,
+            "max": 24.0,
+            "bound_count": 18
+          },
+          "image_signals": {
+            "edge_response_contrast": -50.397621154785156,
+            "line_detector_agreement": 0.04846874209060997,
+            "marking_contrast": -107.62230824811738,
+            "coverage": 0.3063741817853954,
+            "on_curve_samples": 31608,
+            "control_samples": 21757,
+            "lsd_segments": 6946
+          },
+          "quad": {
+            "is_convex": true,
+            "signed_area_px2": 161745.0,
+            "winding_inverted_relative_seed": false,
+            "corner_order_consistent_with_seed": true,
+            "projected_area_ratio_to_seed": 1.0,
+            "bbox_aspect_ratio": 1.9393939971923828,
+            "outside_corner_fraction": 0.0,
+            "homography_condition_number": 11872.941825625876,
+            "corners_px_role_order": [
+              [
+                450.0,
+                400.0
+              ],
+              [
+                935.0,
+                420.0
+              ],
+              [
+                490.0,
+                696.0
+              ],
+              [
+                1090.0,
+                730.0
+              ]
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "disk_guard": {
+    "data_megabytes": 33155,
+    "probe_bytes_removed": 1048576
+  },
+  "remote_temp_bytes_removed": 51477,
+  "preregistration_sha256": "08caf0c869c62583b7c55afdf7b5ed250644eaf9351d3f9ca28ecd4387537b41",
+  "input_sha256": {
+    "g247_measurement": "05be8b9d4b71c2f865683c4cf6d498b0997ad6108681414ae2e29f88ad37b87b",
+    "g248_route": "3774ea0c1bf881e77f9c85b843dd22c2bb1a679e3489718643d6f6721829d29a",
+    "g252_route": "df16ab790d863b35989460f80e06f134de03864e38a4e55d8d50a655439ce866",
+    "g247_route": "369312e8315a787c68aacd081c88fada66c66653ac462023eef46808e3faaa3a",
+    "g258_route": "d8c9ef8fa9b739b88714446e75963ea4a3f41145a93c04d8ae8f3615f42fa91d"
+  },
+  "analysis": {
+    "detection_rule": "sealed g258_preregistration.json",
+    "signals": {
+      "offset_p90_px": {
+        "control_median": 18.0,
+        "control_range": 0.0,
+        "floor": 1.0,
+        "spearman_rho": 0.4899789435061115,
+        "nondecreasing": false,
+        "smallest_detected_px": 40,
+        "rungs": [
+          {
+            "rung_px": 0,
+            "repeat_values": [
+              18.0,
+              18.0,
+              18.0,
+              18.0,
+              18.0
+            ],
+            "median": 18.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 2,
+            "repeat_values": [
+              18.0,
+              18.0,
+              18.0,
+              18.0,
+              18.0
+            ],
+            "median": 18.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 5,
+            "repeat_values": [
+              18.0,
+              18.0,
+              18.0,
+              18.0,
+              18.0
+            ],
+            "median": 18.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 10,
+            "repeat_values": [
+              18.0,
+              18.0,
+              18.0,
+              18.0,
+              18.0
+            ],
+            "median": 18.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 20,
+            "repeat_values": [
+              19.0,
+              19.0,
+              19.0,
+              19.0,
+              19.0
+            ],
+            "median": 19.0,
+            "delta_from_control": 1.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 40,
+            "repeat_values": [
+              19.90000000000009,
+              19.90000000000009,
+              19.90000000000009,
+              19.90000000000009,
+              19.90000000000009
+            ],
+            "median": 19.90000000000009,
+            "delta_from_control": 1.900000000000091,
+            "saturated": false,
+            "detected": true
+          },
+          {
+            "rung_px": 100,
+            "repeat_values": [
+              18.0,
+              18.0,
+              18.0,
+              18.0,
+              18.0
+            ],
+            "median": 18.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          }
+        ]
+      },
+      "edge_response_contrast": {
+        "control_median": -51.244564056396484,
+        "control_range": 0.0,
+        "floor": 1.0,
+        "spearman_rho": 0.7500000000000002,
+        "nondecreasing": false,
+        "smallest_detected_px": 10,
+        "rungs": [
+          {
+            "rung_px": 0,
+            "repeat_values": [
+              -51.244564056396484,
+              -51.244564056396484,
+              -51.244564056396484,
+              -51.244564056396484,
+              -51.244564056396484
+            ],
+            "median": -51.244564056396484,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 2,
+            "repeat_values": [
+              -51.26318359375,
+              -51.26318359375,
+              -51.26318359375,
+              -51.26318359375,
+              -51.26318359375
+            ],
+            "median": -51.26318359375,
+            "delta_from_control": -0.018619537353515625,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 5,
+            "repeat_values": [
+              -51.106544494628906,
+              -51.106544494628906,
+              -51.106544494628906,
+              -51.106544494628906,
+              -51.106544494628906
+            ],
+            "median": -51.106544494628906,
+            "delta_from_control": 0.13801956176757812,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 10,
+            "repeat_values": [
+              -50.086265563964844,
+              -50.086265563964844,
+              -50.086265563964844,
+              -50.086265563964844,
+              -50.086265563964844
+            ],
+            "median": -50.086265563964844,
+            "delta_from_control": 1.1582984924316406,
+            "saturated": false,
+            "detected": true
+          },
+          {
+            "rung_px": 20,
+            "repeat_values": [
+              -49.170047760009766,
+              -49.170047760009766,
+              -49.170047760009766,
+              -49.170047760009766,
+              -49.170047760009766
+            ],
+            "median": -49.170047760009766,
+            "delta_from_control": 2.0745162963867188,
+            "saturated": false,
+            "detected": true
+          },
+          {
+            "rung_px": 40,
+            "repeat_values": [
+              -48.36991500854492,
+              -48.36991500854492,
+              -48.36991500854492,
+              -48.36991500854492,
+              -48.36991500854492
+            ],
+            "median": -48.36991500854492,
+            "delta_from_control": 2.8746490478515625,
+            "saturated": false,
+            "detected": true
+          },
+          {
+            "rung_px": 100,
+            "repeat_values": [
+              -50.397621154785156,
+              -50.397621154785156,
+              -50.397621154785156,
+              -50.397621154785156,
+              -50.397621154785156
+            ],
+            "median": -50.397621154785156,
+            "delta_from_control": 0.8469429016113281,
+            "saturated": false,
+            "detected": false
+          }
+        ]
+      },
+      "marking_contrast": {
+        "control_median": -112.49740674800024,
+        "control_range": 0.0,
+        "floor": 1.0,
+        "spearman_rho": 1.0,
+        "nondecreasing": true,
+        "smallest_detected_px": 100,
+        "rungs": [
+          {
+            "rung_px": 0,
+            "repeat_values": [
+              -112.49740674800024,
+              -112.49740674800024,
+              -112.49740674800024,
+              -112.49740674800024,
+              -112.49740674800024
+            ],
+            "median": -112.49740674800024,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 2,
+            "repeat_values": [
+              -112.46930848565546,
+              -112.46930848565546,
+              -112.46930848565546,
+              -112.46930848565546,
+              -112.46930848565546
+            ],
+            "median": -112.46930848565546,
+            "delta_from_control": 0.028098262344784075,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 5,
+            "repeat_values": [
+              -112.31831368777893,
+              -112.31831368777893,
+              -112.31831368777893,
+              -112.31831368777893,
+              -112.31831368777893
+            ],
+            "median": -112.31831368777893,
+            "delta_from_control": 0.17909306022131943,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 10,
+            "repeat_values": [
+              -112.17790119264538,
+              -112.17790119264538,
+              -112.17790119264538,
+              -112.17790119264538,
+              -112.17790119264538
+            ],
+            "median": -112.17790119264538,
+            "delta_from_control": 0.3195055553548656,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 20,
+            "repeat_values": [
+              -111.9671980985311,
+              -111.9671980985311,
+              -111.9671980985311,
+              -111.9671980985311,
+              -111.9671980985311
+            ],
+            "median": -111.9671980985311,
+            "delta_from_control": 0.5302086494691451,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 40,
+            "repeat_values": [
+              -111.74945618605994,
+              -111.74945618605994,
+              -111.74945618605994,
+              -111.74945618605994,
+              -111.74945618605994
+            ],
+            "median": -111.74945618605994,
+            "delta_from_control": 0.7479505619403,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 100,
+            "repeat_values": [
+              -107.62230824811738,
+              -107.62230824811738,
+              -107.62230824811738,
+              -107.62230824811738,
+              -107.62230824811738
+            ],
+            "median": -107.62230824811738,
+            "delta_from_control": 4.875098499882867,
+            "saturated": false,
+            "detected": true
+          }
+        ]
+      },
+      "line_detector_agreement": {
+        "control_median": 0.047661526698101184,
+        "control_range": 0.0,
+        "floor": 0.01,
+        "spearman_rho": 0.7857142857142859,
+        "nondecreasing": false,
+        "smallest_detected_px": null,
+        "rungs": [
+          {
+            "rung_px": 0,
+            "repeat_values": [
+              0.047661526698101184,
+              0.047661526698101184,
+              0.047661526698101184,
+              0.047661526698101184,
+              0.047661526698101184
+            ],
+            "median": 0.047661526698101184,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 2,
+            "repeat_values": [
+              0.04782082324455206,
+              0.04782082324455206,
+              0.04782082324455206,
+              0.04782082324455206,
+              0.04782082324455206
+            ],
+            "median": 0.04782082324455206,
+            "delta_from_control": 0.00015929654645087388,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 5,
+            "repeat_values": [
+              0.04810602440345344,
+              0.04810602440345344,
+              0.04810602440345344,
+              0.04810602440345344,
+              0.04810602440345344
+            ],
+            "median": 0.04810602440345344,
+            "delta_from_control": 0.0004444977053522578,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 10,
+            "repeat_values": [
+              0.048663970190133445,
+              0.048663970190133445,
+              0.048663970190133445,
+              0.048663970190133445,
+              0.048663970190133445
+            ],
+            "median": 0.048663970190133445,
+            "delta_from_control": 0.0010024434920322609,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 20,
+            "repeat_values": [
+              0.0495702005730659,
+              0.0495702005730659,
+              0.0495702005730659,
+              0.0495702005730659,
+              0.0495702005730659
+            ],
+            "median": 0.0495702005730659,
+            "delta_from_control": 0.0019086738749647184,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 40,
+            "repeat_values": [
+              0.04977735368956743,
+              0.04977735368956743,
+              0.04977735368956743,
+              0.04977735368956743,
+              0.04977735368956743
+            ],
+            "median": 0.04977735368956743,
+            "delta_from_control": 0.0021158269914662436,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 100,
+            "repeat_values": [
+              0.04846874209060997,
+              0.04846874209060997,
+              0.04846874209060997,
+              0.04846874209060997,
+              0.04846874209060997
+            ],
+            "median": 0.04846874209060997,
+            "delta_from_control": 0.0008072153925087894,
+            "saturated": false,
+            "detected": false
+          }
+        ]
+      },
+      "coverage": {
+        "control_median": 0.3043193985698227,
+        "control_range": 0.0,
+        "floor": 0.01,
+        "spearman_rho": 1.0,
+        "nondecreasing": true,
+        "smallest_detected_px": null,
+        "rungs": [
+          {
+            "rung_px": 0,
+            "repeat_values": [
+              0.3043193985698227,
+              0.3043193985698227,
+              0.3043193985698227,
+              0.3043193985698227,
+              0.3043193985698227
+            ],
+            "median": 0.3043193985698227,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 2,
+            "repeat_values": [
+              0.30432877786860146,
+              0.30432877786860146,
+              0.30432877786860146,
+              0.30432877786860146,
+              0.30432877786860146
+            ],
+            "median": 0.30432877786860146,
+            "delta_from_control": 9.37929877875554e-06,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 5,
+            "repeat_values": [
+              0.3043428856359016,
+              0.3043428856359016,
+              0.3043428856359016,
+              0.3043428856359016,
+              0.3043428856359016
+            ],
+            "median": 0.3043428856359016,
+            "delta_from_control": 2.3487066078908825e-05,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 10,
+            "repeat_values": [
+              0.30442476189709233,
+              0.30442476189709233,
+              0.30442476189709233,
+              0.30442476189709233,
+              0.30442476189709233
+            ],
+            "median": 0.30442476189709233,
+            "delta_from_control": 0.00010536332726962527,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 20,
+            "repeat_values": [
+              0.30453172545786905,
+              0.30453172545786905,
+              0.30453172545786905,
+              0.30453172545786905,
+              0.30453172545786905
+            ],
+            "median": 0.30453172545786905,
+            "delta_from_control": 0.0002123268880463436,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 40,
+            "repeat_values": [
+              0.3048075588721658,
+              0.3048075588721658,
+              0.3048075588721658,
+              0.3048075588721658,
+              0.3048075588721658
+            ],
+            "median": 0.3048075588721658,
+            "delta_from_control": 0.00048816030234311025,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 100,
+            "repeat_values": [
+              0.3063741817853954,
+              0.3063741817853954,
+              0.3063741817853954,
+              0.3063741817853954,
+              0.3063741817853954
+            ],
+            "median": 0.3063741817853954,
+            "delta_from_control": 0.0020547832155726753,
+            "saturated": false,
+            "detected": false
+          }
+        ]
+      },
+      "quad_projected_area_ratio_to_seed": {
+        "control_median": 1.0,
+        "control_range": 0.0,
+        "floor": 0.01,
+        "spearman_rho": NaN,
+        "nondecreasing": true,
+        "smallest_detected_px": null,
+        "rungs": [
+          {
+            "rung_px": 0,
+            "repeat_values": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "median": 1.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 2,
+            "repeat_values": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "median": 1.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 5,
+            "repeat_values": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "median": 1.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 10,
+            "repeat_values": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "median": 1.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 20,
+            "repeat_values": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "median": 1.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 40,
+            "repeat_values": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "median": 1.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 100,
+            "repeat_values": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "median": 1.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          }
+        ]
+      },
+      "quad_bbox_aspect_ratio": {
+        "control_median": 1.9393939971923828,
+        "control_range": 0.0,
+        "floor": 0.01,
+        "spearman_rho": NaN,
+        "nondecreasing": true,
+        "smallest_detected_px": null,
+        "rungs": [
+          {
+            "rung_px": 0,
+            "repeat_values": [
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828
+            ],
+            "median": 1.9393939971923828,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 2,
+            "repeat_values": [
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828
+            ],
+            "median": 1.9393939971923828,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 5,
+            "repeat_values": [
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828
+            ],
+            "median": 1.9393939971923828,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 10,
+            "repeat_values": [
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828
+            ],
+            "median": 1.9393939971923828,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 20,
+            "repeat_values": [
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828
+            ],
+            "median": 1.9393939971923828,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 40,
+            "repeat_values": [
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828
+            ],
+            "median": 1.9393939971923828,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 100,
+            "repeat_values": [
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828,
+              1.9393939971923828
+            ],
+            "median": 1.9393939971923828,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          }
+        ]
+      },
+      "quad_outside_corner_fraction": {
+        "control_median": 0.0,
+        "control_range": 0.0,
+        "floor": 0.01,
+        "spearman_rho": NaN,
+        "nondecreasing": true,
+        "smallest_detected_px": null,
+        "rungs": [
+          {
+            "rung_px": 0,
+            "repeat_values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "median": 0.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 2,
+            "repeat_values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "median": 0.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 5,
+            "repeat_values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "median": 0.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 10,
+            "repeat_values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "median": 0.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 20,
+            "repeat_values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "median": 0.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 40,
+            "repeat_values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "median": 0.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          },
+          {
+            "rung_px": 100,
+            "repeat_values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "median": 0.0,
+            "delta_from_control": 0.0,
+            "saturated": false,
+            "detected": false
+          }
+        ]
+      }
+    }
+  }
+}
