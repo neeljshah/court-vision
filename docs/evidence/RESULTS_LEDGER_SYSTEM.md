@@ -449,3 +449,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-04 | intelligence census | S223 | 158/158 paths; labels 49/55/54; checkpoint 5/1593 games and 915/465249 ticks; JSON exact | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | 196aed9e1
 2026-09-03 | harness | S221 | 12/12 construct cases reproduced; every runner-B claim count and sport-NULL startup count was 0 | ACCEPT (verified: codex-sol, contract A/B/Q) | 30bade068
 2026-09-03 | in-game calibration | S207 | NBA premise counterexample: 661 games, 79,554 ticks | FALSIFIED (verified: codex-sol, contract A/B/Q) | 85737c5be
+2026-09-04 | pregame calibration | S205 | 12 cells refit exactly; CPCV isotonic differs from sealed S05 by 0.020533142 | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 218e3f7d6
