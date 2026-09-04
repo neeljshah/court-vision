@@ -603,6 +603,47 @@ against noisy eye labels, and it is the strongest form the negative can take. Wi
 7.10 it means: **there is no automatic validity signal, hand-built statistics are
 exhausted, and the next instrument must be learned.**
 
+---
+
+## 7.16 THE PRIORITY REVERSAL: association, not calibration, is the binding defect
+
+**Everything above is about obtaining a map. G267 measured what the map is FOR**,
+and the answer reorders the programme.
+
+Projecting detector boxes through **G233d's validated map** across 3,801 frames of
+one shot -- 30,071 finite box feet, 98 emitted association IDs, 29,973 consecutive
+same-ID steps:
+
+| quantity | value |
+|---|---|
+| **same-ID steps above 40 ft/s** | **4,090 / 29,973 = 0.136** |
+| p99 step speed | **700.118 ft/s** |
+| max step speed | **100,457.241 ft/s** |
+| max inter-detection distance | **3,269.030 ft on a 94-ft court** |
+| exactly coincident pairs | **2** |
+
+**13.6 pct of tracked steps are physically impossible, through a calibration we
+had just validated.** And **physics needs no eye gate** -- which matters enormously
+given 7.7 and 7.15, where the eye resolves 20 px and no hand-built signal beats it.
+
+**It is not the geometry.** 48.0 pct of implausible steps coincide with an
+association-ID discontinuity, 53.9 pct with a >100 px image jump, 1,723 with
+neither. G267 correctly refused to assign cause, **but the shape points at
+detection and identity association.** Identity is validated nowhere in this
+programme.
+
+**So the honest reordering: calibration is now roughly good enough (5 px median /
+19 px p90) and is NO LONGER what stands between this system and usable tracking.
+Association is.** That is a better problem: it is measurable without a human,
+cheap to recompute, and drivable -- **the implausible-step fraction is the
+objective quality metric every eye-gated row in this document lacked.**
+
+**Caveats that travel with it:** the population is detector boxes, not
+authenticated players -- officials, bench, spectators and duplicates included
+(G225 found 19 boxes yielding 2 visibly on-court people). One clip, one shot, one
+arena, and **one draw of a non-deterministic detector** (G241). A plausible
+distribution would be necessary, never sufficient.
+
 ## NOT VERIFIED
 
 - Whether a trained basketball calibration model would work; nothing was trained
