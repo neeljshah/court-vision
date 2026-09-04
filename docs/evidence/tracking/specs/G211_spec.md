@@ -1,4 +1,4 @@
-GAP G211 | sport wnba | worktree a6 | log g211_per_frame_cost_attribution
+GAP G211 | sport wnba | worktree a4 | log g211_per_frame_cost_attribution
 
 **AMENDED 2026-09-03 AFTER THE ORCHESTRATOR RE-READ THE CODE. Two premises in this spec were WRONG
 and you must not inherit them:**
@@ -18,8 +18,21 @@ per-frame cost and the remainder is CPU-side. That is independently corroborated
 0-2 pct utilisation in every observation, including under **8 concurrent route jobs** where it used
 **5,524 MiB of 24,576 MiB at 0 pct** with load average 63.5 of 256 cores.
 
-**HELD -- DO NOT DISPATCH UNTIL G203 HAS REPORTED.** G203 holds the pod and this row needs a QUIET
-machine to measure cost honestly.
+**HOLD PARTIALLY LIFTED -- AMENDED 2026-09-04 BY THE ORCHESTRATOR. G203 HAS REPORTED. The QUIET-MACHINE
+requirement STANDS and is the binding condition now.** This row measures TIME, so a contended pod
+produces a number that means nothing -- that is the exact error the contention warning below describes.
+**Before you measure anything, check what else is running on the pod (`ps`, `nvidia-smi`, `uptime`) and
+if another measurement row or a multi-worker arm is active, WAIT and say you waited.** The daemon and
+keeper are permanent residents and cannot be stopped (never kill them); record them as the floor and
+report every timing against that recorded floor.
+
+**ONE FINDING FROM TONIGHT THAT SHARPENS THIS ROW: the GPU is idle even under heavy load.** Observed
+directly on the pod under EIGHT concurrent route jobs: `nvidia-smi` reported **0 pct utilisation with
+5,956 MiB of 24,576 MiB used**, while load average sat near 57 of 256 cores. Separately, **OPS-NVDEC-UNUSED
+established that `decord` on the pod is built WITHOUT CUDA, so all video decode runs on CPU and the
+3090's hardware decoder is completely unused.** So the CPU-bound conclusion is no longer a hypothesis
+from one profile line; it is corroborated from three independent directions. **Your job is to say WHICH
+CPU work dominates, precisely enough that someone could act on it.**
 
 **MEASUREMENT AND PROPOSAL ONLY. Change NO production code in `src/`** -- human-gated, READ and wrap in
 your own process only. `scripts/run_clip.py` is NOT human-gated and may be changed **only if** the

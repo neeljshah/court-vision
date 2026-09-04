@@ -1,8 +1,15 @@
-GAP G202 | sport wnba / ncaa_basketball | worktree a6 | log g202_basketball_selection_census
-**HELD -- DO NOT DISPATCH UNTIL G198 HAS REPORTED.** This row measures QUALITY, and quality on a
-non-reproducible route is unrepeatable (G189). Dispatch only after G198, and **run it under whatever
-determinism configuration G198 establishes**; if G198 finds none, run n=3 and report DISTRIBUTIONS,
-never a single number.
+GAP G202 | sport wnba / ncaa_basketball | worktree a3 | log g202_basketball_selection_census
+**HOLD LIFTED AND THE DETERMINISM QUESTION IS SETTLED -- AMENDED 2026-09-04 BY THE ORCHESTRATOR.**
+The original hold said to wait for G198 and to run under whatever determinism configuration it
+established. **G198 has reported, and so have G190, G195, G199 and G203. NO DETERMINISTIC MODE EXISTS.**
+G203 eliminated the last enumerated candidate by showing decode is byte-identical -- 1,200 frame hashes
+per run across three fresh processes, zero differences -- so **the route consumes identical pixels in
+identical order and its output still differs, with no identified source.** **Therefore this spec's own
+stated fallback is now BINDING: run n=3 per configuration and report DISTRIBUTIONS, never a single
+number.** Do not spend this row hunting determinism; that search is separately funded and has consumed
+six rows. **Report the spread across your three runs as a first-class result** -- if survivor counts
+vary widely between identical runs, that variance is itself a finding about how repeatable any quality
+number on this route can be.
 
 **MEASUREMENT ONLY for the census half. Change NO production code in `src/`** -- human-gated, READ and
 wrap in your own process only. Deploy nothing into the pod checkout (B5).
