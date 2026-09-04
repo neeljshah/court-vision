@@ -1,4 +1,4 @@
-GAP S307 | sport nba (in-game) | worktree aXX | log cx_s307_conformal_band_sharpening
+GAP S307 | sport nba (in-game) | worktree a16 | log cx_s307_conformal_band_sharpening
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: two independent lanes today measured the S123 incumbent's STATIC conformal band as far too wide: S294
   (a17 candidate 9975d7499, full source 465,249 / 1,593, six S86 blocks) reports ALL-cell empirical coverage
