@@ -1,6 +1,7 @@
 GAP S302 | sport all | worktree aXX | log cx_s302_cpcv_scalar_future_plant
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
-CONTEXT: codex test audit (docs/research/codex_test_audit_2026-09-04.md section D): the scalar CPCV route
+CONTEXT: codex test audit (the orchestrator-held codex test audit (local-only; NOT a lane input) section D): the
+  scalar CPCV route
   (cpcv_engine.py cpcv_evaluate)
   has purge and symmetric-embargo assertions but NO score-sensitive planted-label test: a future same-team row that
   leaks into the target's train set would not change any asserted number. cpcv_distribution.py (S268) has one.

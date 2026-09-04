@@ -1,6 +1,7 @@
 GAP S295 | sport all | worktree a17 | log cx_s295_strict_redaction_wrapper
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
-CONTEXT: codex gap audit (docs/research/codex_gap_audit_signals_2026-09-04.md gap 6): walkforward.py:19-21,125
+CONTEXT: codex gap audit (the orchestrator-held codex gap audit (local-only; NOT a lane input) gap 6):
+  walkforward.py:19-21,125
   leaves strict_redaction False by default and callbacks can close over raw arrays (s272_ingame_tail_recal.py:74,107),
   so an undeclared settled field is readable by a predictor. Additive wrapper only; engines byte-identical.
 WHERE: local construct only; no data store.
