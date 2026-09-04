@@ -1,0 +1,115 @@
+{
+  "by_g278_geometry_category_descriptive_only": {
+    "a": {
+      "all_sample_frames": 51,
+      "boxes_per_visible_person": 0.6877637130801688,
+      "boxes_per_visible_player": 0.7511520737327189,
+      "cannot_count_frames": 6,
+      "counted_frames": 45,
+      "on_court_detector_boxes": 326,
+      "visible_other_people": 40,
+      "visible_players": 434
+    },
+    "b": {
+      "all_sample_frames": 2,
+      "boxes_per_visible_person": 0.3333333333333333,
+      "boxes_per_visible_player": 0.35,
+      "cannot_count_frames": 0,
+      "counted_frames": 2,
+      "on_court_detector_boxes": 7,
+      "visible_other_people": 1,
+      "visible_players": 20
+    },
+    "c": {
+      "all_sample_frames": 8,
+      "boxes_per_visible_person": 0.42105263157894735,
+      "boxes_per_visible_player": 0.45714285714285713,
+      "cannot_count_frames": 1,
+      "counted_frames": 7,
+      "on_court_detector_boxes": 32,
+      "visible_other_people": 6,
+      "visible_players": 70
+    }
+  },
+  "detector_box_denominators": {
+    "all_61_frames_finite_boxes": 508,
+    "all_61_frames_on_court_boxes": 402,
+    "counted_frames_finite_boxes": 461,
+    "counted_frames_on_court_boxes": 365
+  },
+  "inputs": {
+    "docs\\evidence\\tracking\\g267_court_space_physical_plausibility_artifact\\g267_measurement.json": {
+      "bytes": 12446681,
+      "sha256": "0903d4ee8afac9999e37ca07d14ec81ea59e66ca485a99c21fd27ed959cee2b5"
+    },
+    "docs\\evidence\\tracking\\g278_census_stratified_followup_artifact\\part_a\\blind_labels.csv": {
+      "bytes": 313,
+      "sha256": "2c06f2311a7ac4a1330ce9caf1313b2195faa4e291c7160337891acf5dd0619c"
+    },
+    "docs\\evidence\\tracking\\g284_detector_recall_bound_artifact\\pass_1_blind_counts.csv": {
+      "bytes": 2344,
+      "sha256": "8d0fe1c77fd044556051f919d2fe2b37001aa0b73a54d575f10e015e5a55fc0a"
+    },
+    "docs\\evidence\\tracking\\g284_detector_recall_bound_artifact\\recount_blind_counts.csv": {
+      "bytes": 1046,
+      "sha256": "89f33f8001fb084673351499884f699316d6f1c262d234c8ee75b9f8346b495c"
+    }
+  },
+  "precision_adjusted_assumption": {
+    "expected_player_boxes": 217.98611111111111,
+    "expected_player_boxes_per_visible_person": 0.38176201595641174,
+    "expected_player_boxes_per_visible_player": 0.4160040288379983,
+    "g273_sampled_detector_box_precision": 0.5972222222222222
+  },
+  "raw_box_to_visible_person_ratios": {
+    "aggregate_boxes_per_visible_person": 0.6392294220665499,
+    "aggregate_boxes_per_visible_player": 0.6965648854961832,
+    "per_frame_boxes_per_visible_person": {
+      "max": 1.3,
+      "mean": 0.6471941638608305,
+      "median": 0.6181818181818182,
+      "min": 0.18181818181818182,
+      "n": 54,
+      "q25": 0.4041666666666667,
+      "q75": 0.9068181818181817
+    },
+    "per_frame_boxes_per_visible_player": {
+      "max": 1.3,
+      "mean": 0.7012345679012346,
+      "median": 0.6833333333333333,
+      "min": 0.2,
+      "n": 54,
+      "q25": 0.42500000000000004,
+      "q75": 0.975
+    }
+  },
+  "recount_agreement": {
+    "all_visible_people_count": {
+      "exact": 21,
+      "n": 23,
+      "within_one": 22
+    },
+    "countability_status_exact": 23,
+    "other_people_count": {
+      "exact": 21,
+      "n": 23,
+      "within_one": 23
+    },
+    "player_count": {
+      "exact": 22,
+      "n": 23,
+      "within_one": 22
+    },
+    "recount_frames": 24
+  },
+  "sample": {
+    "all_frames": 61,
+    "cannot_count_frames": 7,
+    "counted_frames": 54
+  },
+  "visible_people_denominators": {
+    "all_visible_people": 571,
+    "other_people": 47,
+    "players": 524
+  }
+}
