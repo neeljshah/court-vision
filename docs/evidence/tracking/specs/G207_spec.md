@@ -1,6 +1,11 @@
 GAP G207 | sport all | worktree a3 | log g207_pod_ledger_rescore_census
-**HELD -- DO NOT DISPATCH UNTIL G203 HAS REPORTED.** G203 is measuring byte identity on the pod and
-must not share the machine.
+**HOLD LIFTED 2026-09-03 by the orchestrator, with the reasoning recorded so it can be challenged.**
+G203 is still running on the pod, but (a) it measures BYTE IDENTITY of decoded frames, not timing,
+and file reads cannot change decoded pixel values; (b) it is ALREADY running alongside
+`track_daemon --workers 10`, a supervisor and an in-game capture process, so the machine is not
+quiet in any case; and (c) this row only reads CSVs and runs arithmetic -- **no decode, no
+inference, no `run_clip.py`, no `ffprobe -count_frames`.** Those three conditions are binding:
+if your work would violate any of them, STOP and say so instead.
 
 **MEASUREMENT ONLY. Change NO production code.** `src/` is HUMAN-GATED: READ only.
 **Never kill, restart or deploy over the pod daemon or keeper**, and never delete any corpus source.
