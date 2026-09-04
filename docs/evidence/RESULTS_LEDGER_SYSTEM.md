@@ -502,3 +502,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-04 | hook | S269 | docs(harness): S269 spec -- raw CDN store wording corrected (was unreachable behind a self-junction, repaired) | LANDED (auto; verifier line pending) | 53f1f0a83
 2026-09-04 | nba | S259 | per-phase recalibration: nine buckets all >= 30 clusters, BH survivors none, late|blowout_gt12 worse -- measured NULL; attempt 2 REJECTED for missing sealed prereg + embargo cutoff; code NOT landed, memos landed | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 5e6df8cd8 .
 2026-09-04 | harness | S267 | fixed 1e-9 match missed on 4/4 per-unit ECE targets; premise 0/3 explicit consumers | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 270dcc83b
+2026-09-04 | WNBA in-game | S269 | 5,647 stamps/167 games vs 18,650 ticks/85 games; direct overlap 0/85; no calibration comparison scored | FALSIFIED (verified: codex-sol, contract A/B/Q) | 0b3abd403
