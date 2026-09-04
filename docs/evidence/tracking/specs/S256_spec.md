@@ -6,8 +6,7 @@ CONTEXT: S247 CLOSED AT LIMIT (fc0084261): 0/661 archive game clusters had a rat
   (53.7065 pct) qualify with player_snapshot_date < game_date AND team_snapshot_date < game_date. This row scores the
   simulator on those 355 clusters. It is the third-arm measurement S216/S247 could not make.
 PREMISE (step 0, INFORMATIONAL, NO STOP RULE): re-measure and print: cluster_qualification.csv qualifying count (expect
-  355 of 661); archive s92_nba_lineup_dynamic_2026-09-03_all.csv = 79,554 ticks / 661 games / 2024-10-25..2026-04-06;
-  market Brier 0.142876712852 < recal_null 0.144293050901 (order CONFIRMED in S216 attempt 2). Proceed regardless.
+  355 of 661); archive = 79,554 ticks / 661 games; market 0.142876712852 < recal_null 0.144293050901. Proceed regardless.
 LIMIT (step 1): if fewer than 30 qualifying clusters can be joined to BOTH snapshot parquets by (game_id, snapshot
   dates from cluster_qualification.csv), report CLOSED AT LIMIT and score nothing. Print the joined count.
 CHANGE (step 2): smallest additive change -- one new module under scripts/platformkit/ingame/ that IMPORTS
