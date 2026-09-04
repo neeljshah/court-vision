@@ -1,4 +1,4 @@
-GAP S207 | sport all (in-game) | worktree aXX | log cx_s207_ingame_gap_decomposition
+GAP S207 | sport all (in-game) | worktree a16 | log cx_s207_ingame_gap_decomposition
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: docs/evidence/calibration-decomposition.md decomposes the in-game gap for two corpora only -- "mlb | 78,986 |
 0.237684 | 0.206653 | +0.0310 | +0.0066 | -0.0235" and "soccer_intl | 9,003 | 0.227887 | 0.142726 | +0.0852 | +0.0394
