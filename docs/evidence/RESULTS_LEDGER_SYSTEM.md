@@ -446,3 +446,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-03 | in-game refresh layer | S222 | premise FALSIFIED: 12/13 sources present; player_rates.parquet absent; bullpen 71,523 rows through 2026-07-02, 8 rows/2 teams | FALSIFIED (verified: codex-sol, contract A/B/Q) | 6f9851888
 2026-09-03 | intelligence foundry queue | S232 | 24 sources classify 2/11/11; dry-run 3510 equals grammar enumeration | ACCEPT (verified: codex-sol, contract A/B/Q) | 30e7c122f
 2026-09-03 | signals-ingame | S214 | premise falsified: 0/2 named stores present; 1 guarded module reader; census not run | ACCEPT (verified: codex-sol, contract A/B/Q) | 03ffb2001573d225caa3d5496af4cddc37c49a7d
+2026-09-04 | intelligence census | S223 | 158/158 paths; labels 49/55/54; checkpoint 5/1593 games and 915/465249 ticks; JSON exact | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | 196aed9e1
