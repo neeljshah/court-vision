@@ -1,4 +1,4 @@
-GAP S220 | sport mlb (in-game) | worktree aXX | log cx_s220_mlb_event_lead_time
+GAP S220 | sport mlb (in-game) | worktree a15 | log cx_s220_mlb_event_lead_time
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S96 measured the NBA in-play line UNDER-reacting to scoring events and drifting (slopes +0.23 / +0.30 / +0.48
   at k = 3/5/10) with a positive placebo on non-event ticks. The same quantity has never been measured for MLB, where
