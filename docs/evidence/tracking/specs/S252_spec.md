@@ -1,4 +1,4 @@
-GAP S252 | sport tennis (in-game) | worktree aXX | log cx_s252_tennis_point_feed_decision
+GAP S252 | sport tennis (in-game) | worktree a15 | log cx_s252_tennis_point_feed_decision
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S215 CLOSED AT LIMIT: 0 recoverable tennis point-level state rows keyless. ingame_api_census_2026-09-04.md
   names paid/unofficial feeds with no cost/cadence/terms comparison anywhere on disk. DECISION row: no code.
