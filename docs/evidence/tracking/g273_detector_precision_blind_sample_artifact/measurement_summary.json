@@ -23,5 +23,1273 @@
   "crop_size_px": [
     512,
     640
+  ],
+  "counts": {
+    "PLAYER": 43,
+    "PERSON NOT PLAYER IN PLAY": 9,
+    "NOT A PERSON": 15,
+    "CANNOT JUDGE": 5
+  },
+  "fractions": {
+    "PLAYER": 0.5972222222222222,
+    "PERSON NOT PLAYER IN PLAY": 0.125,
+    "NOT A PERSON": 0.20833333333333334,
+    "CANNOT JUDGE": 0.06944444444444445
+  },
+  "useful_player_yield": {
+    "count": 43,
+    "fraction": 0.5972222222222222
+  },
+  "person_or_not_person_not_player": {
+    "count": 24,
+    "fraction": 0.3333333333333333
+  },
+  "positions_by_class": {
+    "PLAYER": {
+      "n": 43,
+      "foot_x_px": {
+        "min": 249.1875,
+        "median": 927.75,
+        "max": 1836.0
+      },
+      "foot_y_px": {
+        "min": 296.625,
+        "median": 562.5,
+        "max": 972.0
+      },
+      "court_x_ft": {
+        "min": 13.860787391662598,
+        "median": 31.021039962768555,
+        "max": 62.080322265625
+      },
+      "court_y_ft": {
+        "min": -10.07996940612793,
+        "median": 8.179834365844727,
+        "max": 27.757488250732422
+      }
+    },
+    "PERSON NOT PLAYER IN PLAY": {
+      "n": 9,
+      "foot_x_px": {
+        "min": 80.625,
+        "median": 993.0,
+        "max": 1830.0
+      },
+      "foot_y_px": {
+        "min": 633.0,
+        "median": 784.5,
+        "max": 954.0
+      },
+      "court_x_ft": {
+        "min": 8.415947914123535,
+        "median": 31.90263557434082,
+        "max": 56.18510055541992
+      },
+      "court_y_ft": {
+        "min": 11.375821113586426,
+        "median": 22.832368850708008,
+        "max": 26.880775451660156
+      }
+    },
+    "NOT A PERSON": {
+      "n": 15,
+      "foot_x_px": {
+        "min": 421.875,
+        "median": 888.75,
+        "max": 1867.5
+      },
+      "foot_y_px": {
+        "min": 388.5,
+        "median": 860.25,
+        "max": 973.5
+      },
+      "court_x_ft": {
+        "min": 16.86825180053711,
+        "median": 34.42207336425781,
+        "max": 50.30929183959961
+      },
+      "court_y_ft": {
+        "min": -1.9024959802627563,
+        "median": 24.649932861328125,
+        "max": 31.379980087280273
+      }
+    },
+    "CANNOT JUDGE": {
+      "n": 5,
+      "foot_x_px": {
+        "min": 438.375,
+        "median": 863.8125,
+        "max": 903.0
+      },
+      "foot_y_px": {
+        "min": 142.875,
+        "median": 594.0,
+        "max": 971.25
+      },
+      "court_x_ft": {
+        "min": 17.264514923095703,
+        "median": 30.362377166748047,
+        "max": 40.06389236450195
+      },
+      "court_y_ft": {
+        "min": -27.311479568481445,
+        "median": 11.850936889648438,
+        "max": 31.24873924255371
+      }
+    }
+  },
+  "unblinded_rows": [
+    {
+      "blind_index": 1,
+      "emitted_track_id": 37,
+      "source_frame": 20917,
+      "frame_bin": 25,
+      "frame_bin_inclusive": [
+        20866,
+        20917
+      ],
+      "foot_x_px": 888.75,
+      "foot_y_px": 396.75,
+      "court_x_ft": 35.13649368286133,
+      "court_y_ft": -1.9024959802627563,
+      "render": "blind_renders/blind_001.jpg",
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "blind_index": 2,
+      "emitted_track_id": 46,
+      "source_frame": 21628,
+      "frame_bin": 39,
+      "frame_bin_inclusive": [
+        21605,
+        21656
+      ],
+      "foot_x_px": 789.75,
+      "foot_y_px": 471.75,
+      "court_x_ft": 30.74578094482422,
+      "court_y_ft": 3.93841290473938,
+      "render": "blind_renders/blind_002.jpg",
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "blind_index": 3,
+      "emitted_track_id": 68,
+      "source_frame": 22963,
+      "frame_bin": 64,
+      "frame_bin_inclusive": [
+        22924,
+        22976
+      ],
+      "foot_x_px": 854.8125,
+      "foot_y_px": 837.0,
+      "court_x_ft": 29.499460220336914,
+      "court_y_ft": 23.839881896972656,
+      "render": "blind_renders/blind_003.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 4,
+      "emitted_track_id": 49,
+      "source_frame": 21834,
+      "frame_bin": 43,
+      "frame_bin_inclusive": [
+        21816,
+        21868
+      ],
+      "foot_x_px": 1121.25,
+      "foot_y_px": 868.5,
+      "court_x_ft": 34.51765441894531,
+      "court_y_ft": 25.163694381713867,
+      "render": "blind_renders/blind_004.jpg",
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "blind_index": 5,
+      "emitted_track_id": 20,
+      "source_frame": 20702,
+      "frame_bin": 21,
+      "frame_bin_inclusive": [
+        20654,
+        20706
+      ],
+      "foot_x_px": 1348.5,
+      "foot_y_px": 681.0,
+      "court_x_ft": 43.45159912109375,
+      "court_y_ft": 15.357254981994629,
+      "render": "blind_renders/blind_005.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 6,
+      "emitted_track_id": 42,
+      "source_frame": 22986,
+      "frame_bin": 65,
+      "frame_bin_inclusive": [
+        22977,
+        23029
+      ],
+      "foot_x_px": 573.0,
+      "foot_y_px": 651.0,
+      "court_x_ft": 24.228702545166016,
+      "court_y_ft": 13.270425796508789,
+      "render": "blind_renders/blind_006.jpg",
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "blind_index": 7,
+      "emitted_track_id": 4,
+      "source_frame": 20023,
+      "frame_bin": 9,
+      "frame_bin_inclusive": [
+        20021,
+        20073
+      ],
+      "foot_x_px": 928.5,
+      "foot_y_px": 538.5,
+      "court_x_ft": 33.986419677734375,
+      "court_y_ft": 8.179834365844727,
+      "render": "blind_renders/blind_007.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 8,
+      "emitted_track_id": 24,
+      "source_frame": 20290,
+      "frame_bin": 14,
+      "frame_bin_inclusive": [
+        20285,
+        20337
+      ],
+      "foot_x_px": 1068.0,
+      "foot_y_px": 451.875,
+      "court_x_ft": 39.91196060180664,
+      "court_y_ft": 1.6869457960128784,
+      "render": "blind_renders/blind_008.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 9,
+      "emitted_track_id": 69,
+      "source_frame": 22918,
+      "frame_bin": 63,
+      "frame_bin_inclusive": [
+        22872,
+        22923
+      ],
+      "foot_x_px": 648.0,
+      "foot_y_px": 803.25,
+      "court_x_ft": 23.197004318237305,
+      "court_y_ft": 23.590797424316406,
+      "render": "blind_renders/blind_009.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 10,
+      "emitted_track_id": 15,
+      "source_frame": 20106,
+      "frame_bin": 10,
+      "frame_bin_inclusive": [
+        20074,
+        20125
+      ],
+      "foot_x_px": 315.75,
+      "foot_y_px": 708.0,
+      "court_x_ft": 14.897554397583008,
+      "court_y_ft": 19.825149536132812,
+      "render": "blind_renders/blind_010.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 11,
+      "emitted_track_id": 54,
+      "source_frame": 21751,
+      "frame_bin": 41,
+      "frame_bin_inclusive": [
+        21710,
+        21762
+      ],
+      "foot_x_px": 614.25,
+      "foot_y_px": 483.0,
+      "court_x_ft": 25.04669761657715,
+      "court_y_ft": 5.312539577484131,
+      "render": "blind_renders/blind_011.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 12,
+      "emitted_track_id": 25,
+      "source_frame": 20568,
+      "frame_bin": 19,
+      "frame_bin_inclusive": [
+        20549,
+        20601
+      ],
+      "foot_x_px": 993.0,
+      "foot_y_px": 822.75,
+      "court_x_ft": 31.90263557434082,
+      "court_y_ft": 23.480472564697266,
+      "render": "blind_renders/blind_012.jpg",
+      "verdict": "PERSON NOT PLAYER IN PLAY"
+    },
+    {
+      "blind_index": 13,
+      "emitted_track_id": 73,
+      "source_frame": 22637,
+      "frame_bin": 58,
+      "frame_bin_inclusive": [
+        22608,
+        22659
+      ],
+      "foot_x_px": 1830.0,
+      "foot_y_px": 726.0,
+      "court_x_ft": 55.129119873046875,
+      "court_y_ft": 16.404739379882812,
+      "render": "blind_renders/blind_013.jpg",
+      "verdict": "PERSON NOT PLAYER IN PLAY"
+    },
+    {
+      "blind_index": 14,
+      "emitted_track_id": 31,
+      "source_frame": 20486,
+      "frame_bin": 17,
+      "frame_bin_inclusive": [
+        20443,
+        20495
+      ],
+      "foot_x_px": 524.25,
+      "foot_y_px": 615.0,
+      "court_x_ft": 21.19231605529785,
+      "court_y_ft": 14.09860897064209,
+      "render": "blind_renders/blind_014.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 15,
+      "emitted_track_id": 42,
+      "source_frame": 21237,
+      "frame_bin": 32,
+      "frame_bin_inclusive": [
+        21235,
+        21287
+      ],
+      "foot_x_px": 1359.75,
+      "foot_y_px": 489.75,
+      "court_x_ft": 48.022727966308594,
+      "court_y_ft": 3.909571409225464,
+      "render": "blind_renders/blind_015.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 16,
+      "emitted_track_id": 2,
+      "source_frame": 20820,
+      "frame_bin": 24,
+      "frame_bin_inclusive": [
+        20813,
+        20865
+      ],
+      "foot_x_px": 1441.5,
+      "foot_y_px": 652.5,
+      "court_x_ft": 46.58858871459961,
+      "court_y_ft": 13.507591247558594,
+      "render": "blind_renders/blind_016.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 17,
+      "emitted_track_id": 6,
+      "source_frame": 19649,
+      "frame_bin": 1,
+      "frame_bin_inclusive": [
+        19599,
+        19650
+      ],
+      "foot_x_px": 833.25,
+      "foot_y_px": 883.5,
+      "court_x_ft": 27.30040168762207,
+      "court_y_ft": 26.610544204711914,
+      "render": "blind_renders/blind_017.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 18,
+      "emitted_track_id": 25,
+      "source_frame": 20534,
+      "frame_bin": 18,
+      "frame_bin_inclusive": [
+        20496,
+        20548
+      ],
+      "foot_x_px": 1101.0,
+      "foot_y_px": 825.75,
+      "court_x_ft": 34.59114456176758,
+      "court_y_ft": 23.31038475036621,
+      "render": "blind_renders/blind_018.jpg",
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "blind_index": 19,
+      "emitted_track_id": 15,
+      "source_frame": 20265,
+      "frame_bin": 13,
+      "frame_bin_inclusive": [
+        20232,
+        20284
+      ],
+      "foot_x_px": 786.75,
+      "foot_y_px": 699.75,
+      "court_x_ft": 27.881128311157227,
+      "court_y_ft": 18.02754783630371,
+      "render": "blind_renders/blind_019.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 20,
+      "emitted_track_id": 11,
+      "source_frame": 19793,
+      "frame_bin": 4,
+      "frame_bin_inclusive": [
+        19757,
+        19809
+      ],
+      "foot_x_px": 1265.25,
+      "foot_y_px": 532.875,
+      "court_x_ft": 44.19929504394531,
+      "court_y_ft": 6.740589141845703,
+      "render": "blind_renders/blind_020.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 21,
+      "emitted_track_id": 7,
+      "source_frame": 21308,
+      "frame_bin": 33,
+      "frame_bin_inclusive": [
+        21288,
+        21340
+      ],
+      "foot_x_px": 1248.75,
+      "foot_y_px": 388.125,
+      "court_x_ft": 47.21546173095703,
+      "court_y_ft": -3.120573043823242,
+      "render": "blind_renders/blind_021.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 22,
+      "emitted_track_id": 45,
+      "source_frame": 21381,
+      "frame_bin": 34,
+      "frame_bin_inclusive": [
+        21341,
+        21392
+      ],
+      "foot_x_px": 861.0,
+      "foot_y_px": 744.75,
+      "court_x_ft": 29.393016815185547,
+      "court_y_ft": 20.113061904907227,
+      "render": "blind_renders/blind_022.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 23,
+      "emitted_track_id": 61,
+      "source_frame": 22383,
+      "frame_bin": 53,
+      "frame_bin_inclusive": [
+        22344,
+        22395
+      ],
+      "foot_x_px": 733.5,
+      "foot_y_px": 436.125,
+      "court_x_ft": 29.422950744628906,
+      "court_y_ft": 1.6497749090194702,
+      "render": "blind_renders/blind_023.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 24,
+      "emitted_track_id": 15,
+      "source_frame": 20348,
+      "frame_bin": 15,
+      "frame_bin_inclusive": [
+        20338,
+        20389
+      ],
+      "foot_x_px": 825.75,
+      "foot_y_px": 865.5,
+      "court_x_ft": 27.281417846679688,
+      "court_y_ft": 25.855058670043945,
+      "render": "blind_renders/blind_024.jpg",
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "blind_index": 25,
+      "emitted_track_id": 40,
+      "source_frame": 21490,
+      "frame_bin": 36,
+      "frame_bin_inclusive": [
+        21446,
+        21498
+      ],
+      "foot_x_px": 80.625,
+      "foot_y_px": 724.875,
+      "court_x_ft": 8.415947914123535,
+      "court_y_ft": 21.414289474487305,
+      "render": "blind_renders/blind_025.jpg",
+      "verdict": "PERSON NOT PLAYER IN PLAY"
+    },
+    {
+      "blind_index": 26,
+      "emitted_track_id": 57,
+      "source_frame": 22330,
+      "frame_bin": 52,
+      "frame_bin_inclusive": [
+        22291,
+        22343
+      ],
+      "foot_x_px": 931.5,
+      "foot_y_px": 464.25,
+      "court_x_ft": 35.327083587646484,
+      "court_y_ft": 3.0754458904266357,
+      "render": "blind_renders/blind_026.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 27,
+      "emitted_track_id": 38,
+      "source_frame": 20777,
+      "frame_bin": 23,
+      "frame_bin_inclusive": [
+        20760,
+        20812
+      ],
+      "foot_x_px": 1272.0,
+      "foot_y_px": 866.25,
+      "court_x_ft": 38.24555206298828,
+      "court_y_ft": 24.649932861328125,
+      "render": "blind_renders/blind_027.jpg",
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "blind_index": 28,
+      "emitted_track_id": 87,
+      "source_frame": 23113,
+      "frame_bin": 67,
+      "frame_bin_inclusive": [
+        23083,
+        23135
+      ],
+      "foot_x_px": 1280.25,
+      "foot_y_px": 724.875,
+      "court_x_ft": 45.02705764770508,
+      "court_y_ft": 15.720010757446289,
+      "render": "blind_renders/blind_028.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 29,
+      "emitted_track_id": 4,
+      "source_frame": 20006,
+      "frame_bin": 8,
+      "frame_bin_inclusive": [
+        19968,
+        20020
+      ],
+      "foot_x_px": 1248.0,
+      "foot_y_px": 461.25,
+      "court_x_ft": 45.36326217651367,
+      "court_y_ft": 1.8290531635284424,
+      "render": "blind_renders/blind_029.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 30,
+      "emitted_track_id": 15,
+      "source_frame": 19900,
+      "frame_bin": 6,
+      "frame_bin_inclusive": [
+        19862,
+        19914
+      ],
+      "foot_x_px": 1271.25,
+      "foot_y_px": 833.25,
+      "court_x_ft": 38.72251510620117,
+      "court_y_ft": 23.185346603393555,
+      "render": "blind_renders/blind_030.jpg",
+      "verdict": "PERSON NOT PLAYER IN PLAY"
+    },
+    {
+      "blind_index": 31,
+      "emitted_track_id": 47,
+      "source_frame": 21984,
+      "frame_bin": 46,
+      "frame_bin_inclusive": [
+        21974,
+        22026
+      ],
+      "foot_x_px": 927.75,
+      "foot_y_px": 732.75,
+      "court_x_ft": 31.292991638183594,
+      "court_y_ft": 19.336849212646484,
+      "render": "blind_renders/blind_031.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 32,
+      "emitted_track_id": 44,
+      "source_frame": 22173,
+      "frame_bin": 49,
+      "frame_bin_inclusive": [
+        22133,
+        22184
+      ],
+      "foot_x_px": 740.25,
+      "foot_y_px": 466.125,
+      "court_x_ft": 29.25598907470703,
+      "court_y_ft": 3.8667125701904297,
+      "render": "blind_renders/blind_032.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 33,
+      "emitted_track_id": 45,
+      "source_frame": 21404,
+      "frame_bin": 35,
+      "frame_bin_inclusive": [
+        21393,
+        21445
+      ],
+      "foot_x_px": 837.75,
+      "foot_y_px": 756.0,
+      "court_x_ft": 28.663599014282227,
+      "court_y_ft": 20.734437942504883,
+      "render": "blind_renders/blind_033.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 34,
+      "emitted_track_id": 15,
+      "source_frame": 21174,
+      "frame_bin": 30,
+      "frame_bin_inclusive": [
+        21129,
+        21181
+      ],
+      "foot_x_px": 1216.5,
+      "foot_y_px": 706.875,
+      "court_x_ft": 39.41180419921875,
+      "court_y_ft": 17.35449981689453,
+      "render": "blind_renders/blind_034.jpg",
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "blind_index": 35,
+      "emitted_track_id": 14,
+      "source_frame": 20143,
+      "frame_bin": 11,
+      "frame_bin_inclusive": [
+        20126,
+        20178
+      ],
+      "foot_x_px": 1815.0,
+      "foot_y_px": 954.0,
+      "court_x_ft": 49.50938034057617,
+      "court_y_ft": 26.880775451660156,
+      "render": "blind_renders/blind_035.jpg",
+      "verdict": "PERSON NOT PLAYER IN PLAY"
+    },
+    {
+      "blind_index": 36,
+      "emitted_track_id": 25,
+      "source_frame": 20442,
+      "frame_bin": 16,
+      "frame_bin_inclusive": [
+        20390,
+        20442
+      ],
+      "foot_x_px": 680.25,
+      "foot_y_px": 860.25,
+      "court_x_ft": 23.706031799316406,
+      "court_y_ft": 26.03387451171875,
+      "render": "blind_renders/blind_036.jpg",
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "blind_index": 37,
+      "emitted_track_id": 94,
+      "source_frame": 23377,
+      "frame_bin": 72,
+      "frame_bin_inclusive": [
+        23347,
+        23399
+      ],
+      "foot_x_px": 421.875,
+      "foot_y_px": 973.5,
+      "court_x_ft": 16.86825180053711,
+      "court_y_ft": 31.379980087280273,
+      "render": "blind_renders/blind_037.jpg",
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "blind_index": 38,
+      "emitted_track_id": 68,
+      "source_frame": 22771,
+      "frame_bin": 61,
+      "frame_bin_inclusive": [
+        22766,
+        22818
+      ],
+      "foot_x_px": 1122.0,
+      "foot_y_px": 877.5,
+      "court_x_ft": 34.42207336425781,
+      "court_y_ft": 25.55301284790039,
+      "render": "blind_renders/blind_038.jpg",
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "blind_index": 39,
+      "emitted_track_id": 80,
+      "source_frame": 23067,
+      "frame_bin": 66,
+      "frame_bin_inclusive": [
+        23030,
+        23082
+      ],
+      "foot_x_px": 536.25,
+      "foot_y_px": 840.0,
+      "court_x_ft": 20.060558319091797,
+      "court_y_ft": 25.70772361755371,
+      "render": "blind_renders/blind_039.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 40,
+      "emitted_track_id": 1,
+      "source_frame": 19730,
+      "frame_bin": 3,
+      "frame_bin_inclusive": [
+        19704,
+        19756
+      ],
+      "foot_x_px": 1836.0,
+      "foot_y_px": 866.25,
+      "court_x_ft": 51.87254333496094,
+      "court_y_ft": 23.115915298461914,
+      "render": "blind_renders/blind_040.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 41,
+      "emitted_track_id": 47,
+      "source_frame": 21903,
+      "frame_bin": 44,
+      "frame_bin_inclusive": [
+        21869,
+        21920
+      ],
+      "foot_x_px": 1440.0,
+      "foot_y_px": 562.5,
+      "court_x_ft": 48.69126510620117,
+      "court_y_ft": 8.093552589416504,
+      "render": "blind_renders/blind_041.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 42,
+      "emitted_track_id": 78,
+      "source_frame": 22671,
+      "frame_bin": 59,
+      "frame_bin_inclusive": [
+        22660,
+        22712
+      ],
+      "foot_x_px": 863.8125,
+      "foot_y_px": 585.75,
+      "court_x_ft": 31.43877601623535,
+      "court_y_ft": 11.25898265838623,
+      "render": "blind_renders/blind_042.jpg",
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 43,
+      "emitted_track_id": 68,
+      "source_frame": 22860,
+      "frame_bin": 62,
+      "frame_bin_inclusive": [
+        22819,
+        22871
+      ],
+      "foot_x_px": 1080.75,
+      "foot_y_px": 696.75,
+      "court_x_ft": 36.69413375854492,
+      "court_y_ft": 16.41318702697754,
+      "render": "blind_renders/blind_043.jpg",
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "blind_index": 44,
+      "emitted_track_id": 15,
+      "source_frame": 21928,
+      "frame_bin": 45,
+      "frame_bin_inclusive": [
+        21921,
+        21973
+      ],
+      "foot_x_px": 564.75,
+      "foot_y_px": 783.0,
+      "court_x_ft": 21.276607513427734,
+      "court_y_ft": 22.832368850708008,
+      "render": "blind_renders/blind_044.jpg",
+      "verdict": "PERSON NOT PLAYER IN PLAY"
+    },
+    {
+      "blind_index": 45,
+      "emitted_track_id": 25,
+      "source_frame": 20220,
+      "frame_bin": 12,
+      "frame_bin_inclusive": [
+        20179,
+        20231
+      ],
+      "foot_x_px": 1867.5,
+      "foot_y_px": 973.5,
+      "court_x_ft": 50.30929183959961,
+      "court_y_ft": 27.522275924682617,
+      "render": "blind_renders/blind_045.jpg",
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "blind_index": 46,
+      "emitted_track_id": 7,
+      "source_frame": 20962,
+      "frame_bin": 26,
+      "frame_bin_inclusive": [
+        20918,
+        20970
+      ],
+      "foot_x_px": 1755.0,
+      "foot_y_px": 972.0,
+      "court_x_ft": 47.7847900390625,
+      "court_y_ft": 27.757488250732422,
+      "render": "blind_renders/blind_046.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 47,
+      "emitted_track_id": 62,
+      "source_frame": 22504,
+      "frame_bin": 56,
+      "frame_bin_inclusive": [
+        22502,
+        22554
+      ],
+      "foot_x_px": 973.5,
+      "foot_y_px": 405.75,
+      "court_x_ft": 37.78499221801758,
+      "court_y_ft": -1.3985952138900757,
+      "render": "blind_renders/blind_047.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 48,
+      "emitted_track_id": 42,
+      "source_frame": 22192,
+      "frame_bin": 50,
+      "frame_bin_inclusive": [
+        22185,
+        22237
+      ],
+      "foot_x_px": 1505.25,
+      "foot_y_px": 559.5,
+      "court_x_ft": 50.71208572387695,
+      "court_y_ft": 7.665253162384033,
+      "render": "blind_renders/blind_048.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 49,
+      "emitted_track_id": 18,
+      "source_frame": 19924,
+      "frame_bin": 7,
+      "frame_bin_inclusive": [
+        19915,
+        19967
+      ],
+      "foot_x_px": 599.25,
+      "foot_y_px": 508.5,
+      "court_x_ft": 24.26409339904785,
+      "court_y_ft": 7.101576805114746,
+      "render": "blind_renders/blind_049.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 50,
+      "emitted_track_id": 45,
+      "source_frame": 22066,
+      "frame_bin": 47,
+      "frame_bin_inclusive": [
+        22027,
+        22079
+      ],
+      "foot_x_px": 1069.5,
+      "foot_y_px": 518.25,
+      "court_x_ft": 38.609291076660156,
+      "court_y_ft": 6.370491027832031,
+      "render": "blind_renders/blind_050.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 51,
+      "emitted_track_id": 45,
+      "source_frame": 22471,
+      "frame_bin": 55,
+      "frame_bin_inclusive": [
+        22449,
+        22501
+      ],
+      "foot_x_px": 522.375,
+      "foot_y_px": 471.75,
+      "court_x_ft": 22.2822322845459,
+      "court_y_ft": 4.932775020599365,
+      "render": "blind_renders/blind_051.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 52,
+      "emitted_track_id": 2,
+      "source_frame": 19669,
+      "frame_bin": 2,
+      "frame_bin_inclusive": [
+        19651,
+        19703
+      ],
+      "foot_x_px": 951.75,
+      "foot_y_px": 841.5,
+      "court_x_ft": 30.668546676635742,
+      "court_y_ft": 24.456130981445312,
+      "render": "blind_renders/blind_052.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 53,
+      "emitted_track_id": 25,
+      "source_frame": 21106,
+      "frame_bin": 29,
+      "frame_bin_inclusive": [
+        21077,
+        21128
+      ],
+      "foot_x_px": 528.0,
+      "foot_y_px": 388.5,
+      "court_x_ft": 23.60765838623047,
+      "court_y_ft": -0.37593206763267517,
+      "render": "blind_renders/blind_053.jpg",
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "blind_index": 54,
+      "emitted_track_id": 42,
+      "source_frame": 21674,
+      "frame_bin": 40,
+      "frame_bin_inclusive": [
+        21657,
+        21709
+      ],
+      "foot_x_px": 723.75,
+      "foot_y_px": 862.5,
+      "court_x_ft": 24.774425506591797,
+      "court_y_ft": 26.00675392150879,
+      "render": "blind_renders/blind_054.jpg",
+      "verdict": "PERSON NOT PLAYER IN PLAY"
+    },
+    {
+      "blind_index": 55,
+      "emitted_track_id": 35,
+      "source_frame": 21031,
+      "frame_bin": 28,
+      "frame_bin_inclusive": [
+        21024,
+        21076
+      ],
+      "foot_x_px": 1040.25,
+      "foot_y_px": 873.75,
+      "court_x_ft": 32.46869659423828,
+      "court_y_ft": 25.620601654052734,
+      "render": "blind_renders/blind_055.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 56,
+      "emitted_track_id": 42,
+      "source_frame": 21217,
+      "frame_bin": 31,
+      "frame_bin_inclusive": [
+        21182,
+        21234
+      ],
+      "foot_x_px": 1341.0,
+      "foot_y_px": 480.0,
+      "court_x_ft": 47.701480865478516,
+      "court_y_ft": 3.2979846000671387,
+      "render": "blind_renders/blind_056.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 57,
+      "emitted_track_id": 45,
+      "source_frame": 21807,
+      "frame_bin": 42,
+      "frame_bin_inclusive": [
+        21763,
+        21815
+      ],
+      "foot_x_px": 249.1875,
+      "foot_y_px": 402.375,
+      "court_x_ft": 13.860787391662598,
+      "court_y_ft": 0.8241404294967651,
+      "render": "blind_renders/blind_057.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 58,
+      "emitted_track_id": 44,
+      "source_frame": 21554,
+      "frame_bin": 38,
+      "frame_bin_inclusive": [
+        21552,
+        21604
+      ],
+      "foot_x_px": 540.75,
+      "foot_y_px": 668.25,
+      "court_x_ft": 21.319765090942383,
+      "court_y_ft": 17.080081939697266,
+      "render": "blind_renders/blind_058.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 59,
+      "emitted_track_id": 86,
+      "source_frame": 23190,
+      "frame_bin": 69,
+      "frame_bin_inclusive": [
+        23188,
+        23240
+      ],
+      "foot_x_px": 1743.0,
+      "foot_y_px": 426.0,
+      "court_x_ft": 62.080322265625,
+      "court_y_ft": -2.3873770236968994,
+      "render": "blind_renders/blind_059.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 60,
+      "emitted_track_id": 48,
+      "source_frame": 21533,
+      "frame_bin": 37,
+      "frame_bin_inclusive": [
+        21499,
+        21551
+      ],
+      "foot_x_px": 783.0,
+      "foot_y_px": 511.5,
+      "court_x_ft": 29.972936630249023,
+      "court_y_ft": 6.814840316772461,
+      "render": "blind_renders/blind_060.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 61,
+      "emitted_track_id": 49,
+      "source_frame": 22115,
+      "frame_bin": 48,
+      "frame_bin_inclusive": [
+        22080,
+        22132
+      ],
+      "foot_x_px": 628.5,
+      "foot_y_px": 862.5,
+      "court_x_ft": 22.40519905090332,
+      "court_y_ft": 26.274600982666016,
+      "render": "blind_renders/blind_061.jpg",
+      "verdict": "NOT A PERSON"
+    },
+    {
+      "blind_index": 62,
+      "emitted_track_id": 56,
+      "source_frame": 22253,
+      "frame_bin": 51,
+      "frame_bin_inclusive": [
+        22238,
+        22290
+      ],
+      "foot_x_px": 637.875,
+      "foot_y_px": 588.75,
+      "court_x_ft": 24.7570858001709,
+      "court_y_ft": 12.218306541442871,
+      "render": "blind_renders/blind_062.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 63,
+      "emitted_track_id": 47,
+      "source_frame": 22436,
+      "frame_bin": 54,
+      "frame_bin_inclusive": [
+        22396,
+        22448
+      ],
+      "foot_x_px": 1770.0,
+      "foot_y_px": 633.0,
+      "court_x_ft": 56.18510055541992,
+      "court_y_ft": 11.375821113586426,
+      "render": "blind_renders/blind_063.jpg",
+      "verdict": "PERSON NOT PLAYER IN PLAY"
+    },
+    {
+      "blind_index": 64,
+      "emitted_track_id": 35,
+      "source_frame": 20616,
+      "frame_bin": 20,
+      "frame_bin_inclusive": [
+        20602,
+        20653
+      ],
+      "foot_x_px": 1150.5,
+      "foot_y_px": 533.25,
+      "court_x_ft": 40.7932243347168,
+      "court_y_ft": 7.071527004241943,
+      "render": "blind_renders/blind_064.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 65,
+      "emitted_track_id": 8,
+      "source_frame": 19858,
+      "frame_bin": 5,
+      "frame_bin_inclusive": [
+        19810,
+        19861
+      ],
+      "foot_x_px": 377.625,
+      "foot_y_px": 594.0,
+      "court_x_ft": 17.003835678100586,
+      "court_y_ft": 13.26126766204834,
+      "render": "blind_renders/blind_065.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 66,
+      "emitted_track_id": 83,
+      "source_frame": 23317,
+      "frame_bin": 71,
+      "frame_bin_inclusive": [
+        23294,
+        23346
+      ],
+      "foot_x_px": 645.0,
+      "foot_y_px": 296.625,
+      "court_x_ft": 28.48649024963379,
+      "court_y_ft": -10.07996940612793,
+      "render": "blind_renders/blind_066.jpg",
+      "verdict": "PLAYER"
+    },
+    {
+      "blind_index": 67,
+      "emitted_track_id": 34,
+      "source_frame": 20745,
+      "frame_bin": 22,
+      "frame_bin_inclusive": [
+        20707,
+        20759
+      ],
+      "foot_x_px": 861.0,
+      "foot_y_px": 784.5,
+      "court_x_ft": 28.964231491088867,
+      "court_y_ft": 22.063610076904297,
+      "render": "blind_renders/blind_067.jpg",
+      "verdict": "PERSON NOT PLAYER IN PLAY"
+    },
+    {
+      "blind_index": 68,
+      "emitted_track_id": 69,
+      "source_frame": 22722,
+      "frame_bin": 60,
+      "frame_bin_inclusive": [
+        22713,
+        22765
+      ],
+      "foot_x_px": 829.3125,
+      "foot_y_px": 594.0,
+      "court_x_ft": 30.362377166748047,
+      "court_y_ft": 11.850936889648438,
+      "render": "blind_renders/blind_068.jpg",
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 69,
+      "emitted_track_id": 2,
+      "source_frame": 21000,
+      "frame_bin": 27,
+      "frame_bin_inclusive": [
+        20971,
+        21023
+      ],
+      "foot_x_px": 438.375,
+      "foot_y_px": 971.25,
+      "court_x_ft": 17.264514923095703,
+      "court_y_ft": 31.24873924255371,
+      "render": "blind_renders/blind_069.jpg",
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 70,
+      "emitted_track_id": 83,
+      "source_frame": 23285,
+      "frame_bin": 70,
+      "frame_bin_inclusive": [
+        23241,
+        23293
+      ],
+      "foot_x_px": 903.0,
+      "foot_y_px": 910.5,
+      "court_x_ft": 28.743167877197266,
+      "court_y_ft": 27.55293083190918,
+      "render": "blind_renders/blind_070.jpg",
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 71,
+      "emitted_track_id": 87,
+      "source_frame": 23172,
+      "frame_bin": 68,
+      "frame_bin_inclusive": [
+        23136,
+        23187
+      ],
+      "foot_x_px": 868.5,
+      "foot_y_px": 142.875,
+      "court_x_ft": 40.06389236450195,
+      "court_y_ft": -27.311479568481445,
+      "render": "blind_renders/blind_071.jpg",
+      "verdict": "CANNOT JUDGE"
+    },
+    {
+      "blind_index": 72,
+      "emitted_track_id": 64,
+      "source_frame": 22564,
+      "frame_bin": 57,
+      "frame_bin_inclusive": [
+        22555,
+        22607
+      ],
+      "foot_x_px": 858.0,
+      "foot_y_px": 600.0,
+      "court_x_ft": 31.021039962768555,
+      "court_y_ft": 12.261513710021973,
+      "render": "blind_renders/blind_072.jpg",
+      "verdict": "PLAYER"
+    }
   ]
 }

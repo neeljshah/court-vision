@@ -1,4 +1,8 @@
-from scripts.platformkit.tracking.g273_detector_precision_blind_sample import blind_order, select_evenly
+from scripts.platformkit.tracking.g273_detector_precision_blind_sample import (
+    blind_order,
+    map_commitment,
+    select_evenly,
+)
 
 
 def test_all_detection_sample_uses_each_frame_bin_without_id_or_speed_filtering():
@@ -9,3 +13,8 @@ def test_all_detection_sample_uses_each_frame_bin_without_id_or_speed_filtering(
     assert len({row["source_frame"] for row in sample}) == 12
     ordered = blind_order(sample)
     assert sorted(row["blind_index"] for row in ordered) == list(range(1, 13))
+
+
+def test_unblind_commitment_is_canonical_json_not_file_whitespace():
+    mapping = [{"blind_index": 1, "source_frame": 100}]
+    assert map_commitment(mapping) == map_commitment([{"source_frame": 100, "blind_index": 1}])

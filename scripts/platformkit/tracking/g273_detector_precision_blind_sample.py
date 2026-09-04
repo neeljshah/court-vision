@@ -28,6 +28,12 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def map_commitment(mapping: list[dict[str, Any]]) -> str:
+    """Hash the canonical JSON representation used by the blind commitment."""
+    payload = json.dumps(mapping, sort_keys=True, separators=(",", ":")).encode("ascii")
+    return hashlib.sha256(payload).hexdigest()
+
+
 def records(input_path: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     """Load every finite retained G267 detection, without any downstream condition."""
     source = json.loads(input_path.read_text(encoding="ascii"))
@@ -105,8 +111,8 @@ def prepare(input_path: Path, video: Path, output: Path) -> dict[str, int | str]
     ordered = blind_order(select_evenly(rows))
     output.mkdir(parents=True, exist_ok=True)
     mapping = unblind_map(ordered)
-    map_bytes = json.dumps(mapping, sort_keys=True, separators=(",", ":")).encode("ascii")
-    (output / "blind_order_commitment.json").write_text(json.dumps({"sample_size": len(ordered), "sample_seed": SAMPLE_SEED, "blind_seed": BLIND_SEED, "unblind_map_sha256": hashlib.sha256(map_bytes).hexdigest(), "sampling": "one uniformly random finite retained detection from each equal-width source-frame bin; no speed, jump, association outcome, position, or ID condition", "crop_policy": "512x640 native-pixel crop centred on retained footpoint; no box drawn, reconstructed, or inferred"}, indent=2) + "\n", encoding="ascii")
+    commitment = map_commitment(mapping)
+    (output / "blind_order_commitment.json").write_text(json.dumps({"sample_size": len(ordered), "sample_seed": SAMPLE_SEED, "blind_seed": BLIND_SEED, "unblind_map_sha256": commitment, "sampling": "one uniformly random finite retained detection from each equal-width source-frame bin; no speed, jump, association outcome, position, or ID condition", "crop_policy": "512x640 native-pixel crop centred on retained footpoint; no box drawn, reconstructed, or inferred"}, indent=2) + "\n", encoding="ascii")
     with (output / "blind_presentation_order.csv").open("w", newline="", encoding="ascii") as handle:
         writer = csv.writer(handle); writer.writerow(("blind_index", "render"))
         writer.writerows((row["blind_index"], "blind_renders/blind_%03d.jpg" % row["blind_index"]) for row in ordered)
@@ -116,12 +122,15 @@ def prepare(input_path: Path, video: Path, output: Path) -> dict[str, int | str]
     render(video, ordered, output)
     (output / "unblind_map.json").write_text(json.dumps(mapping, indent=2, allow_nan=False) + "\n", encoding="ascii")
     (output / "measurement_summary.json").write_text(json.dumps({"input_artifact": str(input_path), "input_sha256": sha256(input_path), "inherited_source": source["input"], "retained_detection_count": len(rows), "sample_size": len(ordered), "frame_bin_count": len({row["frame_bin"] for row in ordered}), "distinct_sample_frames": len({row["source_frame"] for row in ordered}), "distinct_emitted_ids": len({row["track_id"] for row in ordered}), "crop_size_px": [CROP_WIDTH, CROP_HEIGHT]}, indent=2) + "\n", encoding="ascii")
-    return {"retained": len(rows), "sample": len(ordered), "map_sha256": hashlib.sha256(map_bytes).hexdigest()}
+    return {"retained": len(rows), "sample": len(ordered), "map_sha256": commitment}
 
 
 def summarize(output: Path) -> dict[str, Any]:
     """Unblind committed verdicts and compute category counts and descriptive positions."""
     mapping = {row["blind_index"]: row for row in json.loads((output / "unblind_map.json").read_text(encoding="ascii"))}
+    commitment = json.loads((output / "blind_order_commitment.json").read_text(encoding="ascii"))
+    if map_commitment([mapping[index] for index in sorted(mapping)]) != commitment["unblind_map_sha256"]:
+        raise RuntimeError("unblind map does not match blind commitment")
     with (output / "blind_verdicts.csv").open(newline="", encoding="ascii") as handle:
         verdicts = {int(row["blind_index"]): row["verdict"] for row in csv.DictReader(handle)}
     if set(verdicts) != set(mapping) or any(value not in VERDICTS for value in verdicts.values()):
