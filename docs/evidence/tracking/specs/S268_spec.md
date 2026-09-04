@@ -1,4 +1,4 @@
-GAP S268 | sport mlb | worktree a16 | log cx_s268_distributional_evaluator_route
+GAP S268 | sport mlb | worktree a17 | log cx_s268_distributional_evaluator_route
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: successor to S260 (CLOSED AT LIMIT 3493e217c) and S244 (CLOSED AT LIMIT 4f9206946). Verified: walkforward.py
   def walk_forward:122, "raise ValueError(...out of [0,1])":149; cpcv_engine.py def cpcv_evaluate:93,
