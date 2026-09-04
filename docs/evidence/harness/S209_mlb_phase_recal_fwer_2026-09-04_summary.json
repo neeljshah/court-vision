@@ -1,0 +1,557 @@
+{
+  "bh_survivors": [],
+  "buckets": [
+    {
+      "bh_adjusted_p": 0.918094962035635,
+      "bh_rank": 15,
+      "bh_survivor": false,
+      "bh_threshold": 0.05,
+      "brier_incumbent": 0.22325963075615118,
+      "brier_recal": 0.22604893272210708,
+      "bucket": "early|leading",
+      "ci95": [
+        -0.016389745506285774,
+        0.017841330510334926
+      ],
+      "delta": 0.0008983705086411889,
+      "label_after_bh": "NO_CHANGE",
+      "loses_label_under_bh": false,
+      "n_games": 83,
+      "n_informative": 964,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.918094962035635,
+      "replication": {
+        "brier_incumbent": 0.23920401093565422,
+        "brier_recal": 0.2348927783791578,
+        "ci95": [
+          -0.01694659932541161,
+          0.024656180881281495
+        ],
+        "delta": 0.004034603274875457,
+        "n_games": 60,
+        "n_informative": 691,
+        "raw_p": 0.7115504886703116
+      },
+      "replication_label": "NOT REPLICATED"
+    },
+    {
+      "bh_adjusted_p": 0.918094962035635,
+      "bh_rank": 14,
+      "bh_survivor": false,
+      "bh_threshold": 0.04666666666666667,
+      "brier_incumbent": 0.09267514153852068,
+      "brier_recal": 0.1062772426704121,
+      "bucket": "early|leading_big",
+      "ci95": [
+        -0.020217096684961508,
+        0.026725509675995844
+      ],
+      "delta": 0.0018699011668405529,
+      "label_after_bh": "NO_CHANGE",
+      "loses_label_under_bh": false,
+      "n_games": 26,
+      "n_informative": 207,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.8816862602750944,
+      "replication": {
+        "brier_incumbent": 0.11692338482599325,
+        "brier_recal": 0.12547575295200614,
+        "ci95": [
+          -0.027802169598332708,
+          0.04249683663787783
+        ],
+        "delta": 0.005245891603012977,
+        "n_games": 16,
+        "n_informative": 112,
+        "raw_p": 0.778126906893134
+      },
+      "replication_label": "NOT REPLICATED"
+    },
+    {
+      "bh_adjusted_p": 0.906064625780194,
+      "bh_rank": 13,
+      "bh_survivor": false,
+      "bh_threshold": 0.043333333333333335,
+      "brier_incumbent": 0.245914449314375,
+      "brier_recal": 0.24761602920971215,
+      "bucket": "early|tied",
+      "ci95": [
+        -0.014795618144011808,
+        0.011602659832529953
+      ],
+      "delta": -0.0018261747726027464,
+      "label_after_bh": "NO_CHANGE",
+      "loses_label_under_bh": false,
+      "n_games": 126,
+      "n_informative": 2027,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.7852560090095014,
+      "replication": {
+        "brier_incumbent": 0.2480513003389527,
+        "brier_recal": 0.25260930701203466,
+        "ci95": [
+          -0.01783353786668919,
+          0.013065129194610838
+        ],
+        "delta": -0.002676573683228092,
+        "n_games": 90,
+        "n_informative": 1316,
+        "raw_p": 0.7337317583805485
+      },
+      "replication_label": "NOT REPLICATED"
+    },
+    {
+      "bh_adjusted_p": 0.5001669192911526,
+      "bh_rank": 5,
+      "bh_survivor": false,
+      "bh_threshold": 0.016666666666666666,
+      "brier_incumbent": 0.20402177797371263,
+      "brier_recal": 0.2016951988857925,
+      "bucket": "early|trailing",
+      "ci95": [
+        -0.02230754311253195,
+        0.0035692603516160443
+      ],
+      "delta": -0.009335480109468644,
+      "label_after_bh": "NO_CHANGE",
+      "loses_label_under_bh": false,
+      "n_games": 84,
+      "n_informative": 873,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.16672230643038422,
+      "replication": {
+        "brier_incumbent": 0.21335055218668816,
+        "brier_recal": 0.22205088468184858,
+        "ci95": [
+          -0.025024572745872126,
+          0.003917038361310149
+        ],
+        "delta": -0.010754965727422195,
+        "n_games": 56,
+        "n_informative": 496,
+        "raw_p": 0.1435540743937017
+      },
+      "replication_label": "NOT REPLICATED"
+    },
+    {
+      "bh_adjusted_p": 0.6838676312803668,
+      "bh_rank": 11,
+      "bh_survivor": false,
+      "bh_threshold": 0.03666666666666667,
+      "brier_incumbent": 0.1486012433476526,
+      "brier_recal": 0.1475032305904502,
+      "bucket": "early|trailing_big",
+      "ci95": [
+        -0.02266813464436848,
+        0.009844921162657477
+      ],
+      "delta": -0.005454223041587829,
+      "label_after_bh": "NO_CHANGE",
+      "loses_label_under_bh": false,
+      "n_games": 33,
+      "n_informative": 363,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.5171986479591448,
+      "replication": {
+        "brier_incumbent": 0.11386760425816529,
+        "brier_recal": 0.11643684743563121,
+        "ci95": [
+          -0.007927120475717161,
+          0.008473265218917248
+        ],
+        "delta": -0.0002699416657491385,
+        "n_games": 12,
+        "n_informative": 100,
+        "raw_p": 0.9535332524680294
+      },
+      "replication_label": "NOT REPLICATED"
+    },
+    {
+      "bh_adjusted_p": 0.6838676312803668,
+      "bh_rank": 12,
+      "bh_survivor": false,
+      "bh_threshold": 0.04000000000000001,
+      "brier_incumbent": 0.18161884728508956,
+      "brier_recal": 0.17440016743750325,
+      "bucket": "late|leading",
+      "ci95": [
+        -0.011561065581727027,
+        0.023218760749688115
+      ],
+      "delta": 0.005425788536853563,
+      "label_after_bh": "NO_CHANGE",
+      "loses_label_under_bh": false,
+      "n_games": 54,
+      "n_informative": 660,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.5470941050242933,
+      "replication": {
+        "brier_incumbent": 0.2444255936096864,
+        "brier_recal": 0.22699490785104637,
+        "ci95": [
+          -0.0122140702837904,
+          0.029477979942664326
+        ],
+        "delta": 0.007987178508990264,
+        "n_games": 43,
+        "n_informative": 467,
+        "raw_p": 0.45380748988963915
+      },
+      "replication_label": "NOT REPLICATED"
+    },
+    {
+      "bh_adjusted_p": 0.21416412625200987,
+      "bh_rank": 1,
+      "bh_survivor": false,
+      "bh_threshold": 0.0033333333333333335,
+      "brier_incumbent": 0.03709796876191086,
+      "brier_recal": 0.028937218100996184,
+      "bucket": "late|leading_big",
+      "ci95": [
+        0.008761613159179242,
+        0.05720416840640121
+      ],
+      "delta": 0.03164308979045024,
+      "label_after_bh": "NO_CHANGE",
+      "loses_label_under_bh": true,
+      "n_games": 50,
+      "n_informative": 349,
+      "raw_label": "IMPROVED",
+      "raw_p": 0.014277608416800657,
+      "replication": {
+        "brier_incumbent": 0.043497102999977735,
+        "brier_recal": 0.03430016763968806,
+        "ci95": [
+          0.0010065096554911694,
+          0.0655708122972178
+        ],
+        "delta": 0.031092375514558415,
+        "n_games": 33,
+        "n_informative": 222,
+        "raw_p": 0.06611021422891357
+      },
+      "replication_label": "NOT REPLICATED"
+    },
+    {
+      "bh_adjusted_p": 0.6075908742877362,
+      "bh_rank": 8,
+      "bh_survivor": false,
+      "bh_threshold": 0.02666666666666667,
+      "brier_incumbent": 0.23747500149451284,
+      "brier_recal": 0.26364961211073773,
+      "bucket": "late|tied",
+      "ci95": [
+        -0.03747617200576167,
+        0.013282819996811395
+      ],
+      "delta": -0.012826060429585387,
+      "label_after_bh": "NO_CHANGE",
+      "loses_label_under_bh": false,
+      "n_games": 41,
+      "n_informative": 448,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.353117936007186,
+      "replication": {
+        "brier_incumbent": 0.2371055239513749,
+        "brier_recal": 0.2763853001384361,
+        "ci95": [
+          -0.04391944200276268,
+          0.005589636198635239
+        ],
+        "delta": -0.019348913167155965,
+        "n_games": 35,
+        "n_informative": 361,
+        "raw_p": 0.1306555478929763
+      },
+      "replication_label": "NOT REPLICATED"
+    },
+    {
+      "bh_adjusted_p": 0.3821696956530074,
+      "bh_rank": 3,
+      "bh_survivor": false,
+      "bh_threshold": 0.010000000000000002,
+      "brier_incumbent": 0.10020134426499615,
+      "brier_recal": 0.10150232722033031,
+      "bucket": "late|trailing",
+      "ci95": [
+        -0.01749091710820654,
+        4.4557759644054786e-05
+      ],
+      "delta": -0.007924329139610544,
+      "label_after_bh": "NO_CHANGE",
+      "loses_label_under_bh": false,
+      "n_games": 54,
+      "n_informative": 721,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.08308026384866649,
+      "replication": {
+        "brier_incumbent": 0.0781869370573381,
+        "brier_recal": 0.07709784271739757,
+        "ci95": [
+          -0.013369581159509208,
+          0.0006151321588190963
+        ],
+        "delta": -0.0061049446481967855,
+        "n_games": 44,
+        "n_informative": 541,
+        "raw_p": 0.09689311759428902
+      },
+      "replication_label": "NOT REPLICATED"
+    },
+    {
+      "bh_adjusted_p": 0.6075908742877362,
+      "bh_rank": 6,
+      "bh_survivor": false,
+      "bh_threshold": 0.020000000000000004,
+      "brier_incumbent": 0.05833785507926718,
+      "brier_recal": 0.0641731830004066,
+      "bucket": "late|trailing_big",
+      "ci95": [
+        -0.02016460543587614,
+        0.0045472695023299715
+      ],
+      "delta": -0.007126109296682253,
+      "label_after_bh": "NO_CHANGE",
+      "loses_label_under_bh": false,
+      "n_games": 48,
+      "n_informative": 492,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.25940944517426334,
+      "replication": {
+        "brier_incumbent": 0.037186525142616486,
+        "brier_recal": 0.03924696599112002,
+        "ci95": [
+          -0.011989593858979127,
+          0.010365185263363143
+        ],
+        "delta": -0.0009263230518178928,
+        "n_games": 30,
+        "n_informative": 265,
+        "raw_p": 0.8691923333722223
+      },
+      "replication_label": "NOT REPLICATED"
+    },
+    {
+      "bh_adjusted_p": 0.6838676312803668,
+      "bh_rank": 10,
+      "bh_survivor": false,
+      "bh_threshold": 0.03333333333333333,
+      "brier_incumbent": 0.21352973476812992,
+      "brier_recal": 0.21400403231893103,
+      "bucket": "mid|leading",
+      "ci95": [
+        -0.00914300339171719,
+        0.020691199812472486
+      ],
+      "delta": 0.004965093932220492,
+      "label_after_bh": "NO_CHANGE",
+      "loses_label_under_bh": false,
+      "n_games": 77,
+      "n_informative": 1157,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.516700661165721,
+      "replication": {
+        "brier_incumbent": 0.2590513365466341,
+        "brier_recal": 0.25240824658396316,
+        "ci95": [
+          -0.009048484239596429,
+          0.027727523684873925
+        ],
+        "delta": 0.008914515878861195,
+        "n_games": 57,
+        "n_informative": 801,
+        "raw_p": 0.3503582678902766
+      },
+      "replication_label": "NOT REPLICATED"
+    },
+    {
+      "bh_adjusted_p": 0.6075908742877362,
+      "bh_rank": 7,
+      "bh_survivor": false,
+      "bh_threshold": 0.023333333333333334,
+      "brier_incumbent": 0.05012211781512099,
+      "brier_recal": 0.05192068782455047,
+      "bucket": "mid|leading_big",
+      "ci95": [
+        -0.004688703053867253,
+        0.016524145928002276
+      ],
+      "delta": 0.005157321284736745,
+      "label_after_bh": "NO_CHANGE",
+      "loses_label_under_bh": false,
+      "n_games": 42,
+      "n_informative": 538,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.34983486278009845,
+      "replication": {
+        "brier_incumbent": 0.06966955406397492,
+        "brier_recal": 0.06965574897404196,
+        "ci95": [
+          -0.00551095241481964,
+          0.02040404722454593
+        ],
+        "delta": 0.006675608064507384,
+        "n_games": 31,
+        "n_informative": 360,
+        "raw_p": 0.33355089960790296
+      },
+      "replication_label": "NOT REPLICATED"
+    },
+    {
+      "bh_adjusted_p": 0.6075908742877362,
+      "bh_rank": 9,
+      "bh_survivor": false,
+      "bh_threshold": 0.030000000000000002,
+      "brier_incumbent": 0.239524339287496,
+      "brier_recal": 0.24473650774276487,
+      "bucket": "mid|tied",
+      "ci95": [
+        -0.024079897513185584,
+        0.008717050432792594
+      ],
+      "delta": -0.007685472291352878,
+      "label_after_bh": "NO_CHANGE",
+      "loses_label_under_bh": false,
+      "n_games": 69,
+      "n_informative": 664,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.3645545245726417,
+      "replication": {
+        "brier_incumbent": 0.2415753040578107,
+        "brier_recal": 0.25296077300507236,
+        "ci95": [
+          -0.023564151187400906,
+          0.013952284222678383
+        ],
+        "delta": -0.005105214792696243,
+        "n_games": 56,
+        "n_informative": 531,
+        "raw_p": 0.6007106886158209
+      },
+      "replication_label": "NOT REPLICATED"
+    },
+    {
+      "bh_adjusted_p": 0.29049219366373846,
+      "bh_rank": 2,
+      "bh_survivor": false,
+      "bh_threshold": 0.006666666666666667,
+      "brier_incumbent": 0.16153105471054405,
+      "brier_recal": 0.1575509410204884,
+      "bucket": "mid|trailing",
+      "ci95": [
+        -0.023186185821891133,
+        -0.0010326446577010257
+      ],
+      "delta": -0.011963636030126455,
+      "label_after_bh": "NO_CHANGE",
+      "loses_label_under_bh": true,
+      "n_games": 66,
+      "n_informative": 963,
+      "raw_label": "WORSE",
+      "raw_p": 0.038732292488498465,
+      "replication": {
+        "brier_incumbent": 0.14554651314858943,
+        "brier_recal": 0.1389269080644326,
+        "ci95": [
+          -0.020353103414479434,
+          0.005277917858912092
+        ],
+        "delta": -0.007538521687189556,
+        "n_games": 45,
+        "n_informative": 664,
+        "raw_p": 0.25811264592336913
+      },
+      "replication_label": "NOT REPLICATED"
+    },
+    {
+      "bh_adjusted_p": 0.3821696956530074,
+      "bh_rank": 4,
+      "bh_survivor": false,
+      "bh_threshold": 0.013333333333333334,
+      "brier_incumbent": 0.06373598864362783,
+      "brier_recal": 0.06491413171363207,
+      "bucket": "mid|trailing_big",
+      "ci95": [
+        -0.01564046532835885,
+        0.00046782603463296025
+      ],
+      "delta": -0.00703078771787733,
+      "label_after_bh": "NO_CHANGE",
+      "loses_label_under_bh": false,
+      "n_games": 41,
+      "n_informative": 661,
+      "raw_label": "NO_CHANGE",
+      "raw_p": 0.10191191884080197,
+      "replication": {
+        "brier_incumbent": 0.02846245082512182,
+        "brier_recal": 0.028550070449844055,
+        "ci95": [
+          -0.01767060528302282,
+          0.0038847512931916425
+        ],
+        "delta": -0.006626901551114585,
+        "n_games": 26,
+        "n_informative": 364,
+        "raw_p": 0.2551626987545409
+      },
+      "replication_label": "NOT REPLICATED"
+    }
+  ],
+  "corpus_units": [
+    {
+      "iso_week": 27,
+      "n_eval_games": 41,
+      "n_eval_ticks": 15207,
+      "n_informative_games": 41,
+      "n_informative_ticks": 3796,
+      "unit": "ISO week 27"
+    },
+    {
+      "iso_week": 28,
+      "n_eval_games": 90,
+      "n_eval_ticks": 18713,
+      "n_informative_games": 90,
+      "n_informative_ticks": 7291,
+      "unit": "ISO week 28"
+    }
+  ],
+  "denominator": {
+    "n_buckets": 15,
+    "n_eval_ticks": 33920,
+    "n_informative_game_clusters": 127,
+    "n_informative_ticks": 11087
+  },
+  "eligible_corpus_units": 2,
+  "not_verified": [
+    "No preregistration seal predating the first score is available for this archive-only re-score (Q1).",
+    "The inherited S88 archive is not a purged, symmetric-embargo OOS evaluation (Q4).",
+    "The original S88 full-window estimate includes both ISO-week sides; week 28 is a disjoint corpus-unit re-score, not a new store.",
+    "No model was refit and no serving path, parameter artifact, or flag was changed."
+  ],
+  "pooled": {
+    "brier_incumbent": 0.17460335288909629,
+    "brier_recal": 0.17607984816266978,
+    "ci95": [
+      -0.011405036929259278,
+      0.005215357341008108
+    ],
+    "delta": -0.002889991600398369,
+    "n_games": 127,
+    "n_informative": 11087,
+    "raw_p": 0.5012777353527745
+  },
+  "q": 0.05,
+  "replication_rule": "BH survivor plus same-direction game-clustered CI in ISO week 28",
+  "replication_unit": "ISO week 28",
+  "reproduction_diffs": {
+    "late|leading_big": 6.938893903907228e-18,
+    "mid|trailing": 6.938893903907228e-18,
+    "pooled": 3.0357660829594124e-18
+  },
+  "s209": "mlb_phase_recal_fwer",
+  "source": {
+    "bytes": 4311731,
+    "path": "docs/evidence/harness/s88_phase_recal_2026-09-04.csv",
+    "sha256": "b7cc67e0ff39a8f20b9b12e981ce93c2ace55374b38d9805e092ada99f9ba91d"
+  }
+}
