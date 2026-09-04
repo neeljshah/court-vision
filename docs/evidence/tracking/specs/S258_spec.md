@@ -1,4 +1,4 @@
-GAP S258 | sport nba | worktree aXX | log cx_s258_incumbent_conformal_band_v2
+GAP S258 | sport nba | worktree a15 | log cx_s258_incumbent_conformal_band_v2
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S238 CLOSED AT LIMIT (see its register row). Attempt 2 sealed a prereg and built the incumbent conformal
   band correctly but scored the 232,951-tick / 797-game SCREEN CSV and claimed the full source was absent, while
