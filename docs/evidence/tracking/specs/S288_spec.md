@@ -37,4 +37,4 @@ EVIDENCE: docs/evidence/harness/S288_staleness_gated_blend_2026-09-04.md + summa
   CSV + per-fold parameter table (each under 50 MB).
 TEST: one per-file test (planted future row; one game's paired loss recomputed from the archived series), under
   200 MB; run only that file.
-REPORT: cutoffs, per-fold (floor, scale), the all-ticks and per-bin table with CIs, test line, SHA. No push. NEVER PARK.
+REPORT: cutoffs, per-fold (floor, scale), all-ticks and per-bin table with CIs, test line, SHA. No push. NEVER PARK.
