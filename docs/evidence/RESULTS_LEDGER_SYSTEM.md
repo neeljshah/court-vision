@@ -497,3 +497,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-04 | MLB in-game calibration evidence | S263 | premise falsified: 47,104 unique full-artifact ticks contain all 33,920 published ticks plus 13,184 first-three-date ticks | FALSIFIED (verified: codex-sol, contract A/B/Q) | 9fcba3013
 2026-09-04 | NBA boxscore calibration | S262 | 7 candidates enumerated, 0 usable sources, n=0 | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 4543791f3
 2026-09-04 | MLB in-game calibration partitions | S264 | 47104-row premise has 4 shared game_ids; 33920-row game-first-date table has 0; alias max abs calibration diff 0.0 | REPARTITIONED (verified: codex-sol, contract A/B/Q) | 61b9b89b9
+2026-09-04 | NBA in-game calibration | S266 | construct 30 games/180 ticks; simulator Brier 0.255904134115 vs recal_null 0.178516135761; CI [-0.156878091676, 0.002102094968]; peak RSS 489.89 MB | ACCEPT (verified: codex-sol, contract A/B/Q) | afb5a9460
