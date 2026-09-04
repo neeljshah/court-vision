@@ -1,4 +1,4 @@
-GAP S253 | sport nba (in-game) | worktree aXX | log cx_s253_nba_oncourt_five_cdn_subs
+GAP S253 | sport nba (in-game) | worktree a17 | log cx_s253_nba_oncourt_five_cdn_subs
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S218 attempt 2b (a16, S218_nba_live_field_census_2026-09-04.md) measured on_court_five
   ABSENT_FROM_PAYLOAD 0/2,008 ESPN payloads, PRESENT_BUT_DROPPED 168/168 CDN boxscore payloads (parser drops it);
