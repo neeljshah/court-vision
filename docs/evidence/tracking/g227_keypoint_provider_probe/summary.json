@@ -1,0 +1,45 @@
+{
+  "abstentions": 17,
+  "candidate": "basketball_keypoint_provider_default",
+  "closest_render": "closest_00_ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s03__f003973.jpg",
+  "corner_recall_g205": 0,
+  "corner_total": 68,
+  "frames_all_four_g205": 0,
+  "frames_total": 17,
+  "min_edge_support": 0.16,
+  "named_corner_proposals": 0,
+  "named_corner_proposals_per_frame": 0.0,
+  "proposed_but_missed_frames": 0,
+  "render_indices": [
+    0,
+    4,
+    8,
+    12,
+    16
+  ],
+  "selected_paint_quads": 0,
+  "selected_paint_quads_per_frame": 0.0,
+  "splits": {
+    "ncaa_basketball": {
+      "abstentions": 8,
+      "all_four_g205": 0,
+      "corner_recall_g205": 0,
+      "corner_total": 32,
+      "frames": 8,
+      "named_corner_proposals": 0,
+      "proposed_but_missed_frames": 0,
+      "selected_paint_quads": 0
+    },
+    "wnba": {
+      "abstentions": 9,
+      "all_four_g205": 0,
+      "corner_recall_g205": 0,
+      "corner_total": 36,
+      "frames": 9,
+      "named_corner_proposals": 0,
+      "proposed_but_missed_frames": 0,
+      "selected_paint_quads": 0
+    }
+  },
+  "tolerance_px": 12.0
+}

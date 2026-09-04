@@ -12,6 +12,12 @@
 |---|---|---|---|---|
 | G224 | ncaa_basketball / wnba | One fixed tennis-derived white top-hat configuration (contrast 45; 11-px 720p kernel scaled by native height) worsened detected basketball paint-line geometry on all 17 exhaustive frames: real search remains 0/17, the label-assisted oracle falls 1/17 to 0/17, selected-line median/max rises 10.234792/59.693249 to 19.066443/93.543805 px over 68 roles per arm, while G205 proposals fall 1928.06 to 367.53 per frame. The transfer is CLOSED AT LIMIT; no production change is proposed. | g224_tophat_line_evidence_transfer_2026-09-04.md; g224_tophat_line_evidence_transfer_artifact/ | CLOSED AT LIMIT (negative transfer; no production change). |
 
+## G227 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G227 | ncaa_basketball / wnba | The existing semantically named paint-quad provider was measured in one declared default arm (`min_edge_support=0.16`) on all 17 G140 frames using native pixels and the unchanged G205 12 px scorer. It selected no paint quad, emitted no named corner proposal, and abstained on every frame: 0/17 all-four and 0/68 corner availability. NCAA is 0/8, 0/32, 8 abstentions; WNBA is 0/9, 0/36, 9 abstentions. This is a low-proposal-count abstention result, not a high-volume proposal-miss result. The 16 ft canonical lane model was retained but is downstream of paint selection, so it does not plausibly explain either league's pre-selection abstention. | g227_keypoint_provider_probe_2026-09-04.md; g227_keypoint_provider_probe/ | CLOSED AT LIMIT (last untested in-repo classical provider abstains; no production change). |
+
 ## G103 result register
 
 ## G126 result register
