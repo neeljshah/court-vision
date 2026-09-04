@@ -10,7 +10,7 @@ n_loser_paths / quantile-90 / above_0_8 to its own ascii render) -- but the arch
 (S86_nba_every_tick_2026-09-03.md) never quotes it: the code runs the diagnostic, nobody published it. A separate,
 DIFFERENT number is on record -- S58 trial B: model > 0.8 on the eventual loser in 11.4 pct of lost games vs the
 market's 5.6 pct -- but that is not JP's bin-level reliability-of-the-diagnostic breakdown either.
-PREMISE ADDENDUM (2026-09-04, S207): an NBA artifact ALREADY carries max-loser-WP + Murphy decomposition: docs/evidence/calibration/nba_ingame_baseline_2026-09-03.json (read it first)
+PREMISE ADDENDUM (S207): docs/evidence/calibration/nba_ingame_baseline_2026-09-03.json already has max-loser-WP+Murphy
 PREMISE (step 0): reproduce that `s86_nba_every_tick.py` calls `max_loser_wp` and that neither its archived JSON
 nor its memo carries the result; rerun `wp_diagnostics.max_loser_wp` + `wp_diagnostics.reliability` on the SAME
 S86 per-tick series and print the quantiles/above_0_8/above_0_9 alongside a NEW reliability table binned on the
