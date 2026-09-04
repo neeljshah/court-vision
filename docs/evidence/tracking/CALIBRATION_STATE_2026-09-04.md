@@ -389,6 +389,61 @@ court corners, which players almost never occupy, have never been checked.** Tha
 is G249, and if they are visible an eligible frame may already exist in the footage
 we have.
 
+---
+
+## 7.10 CLOSED: no hand-built signal indicates court validity (four rows, four families)
+
+**G248 completed the sweep.** Its four pre-registered projected-line/image-agreement
+signals -- edge-response contrast against perpendicular controls, line-detector
+agreement, marking contrast, and coverage -- **none separates** the classes.
+
+| signal family | row | result |
+|---|---|---|
+| the acceptance rule | G242 | accepts **89/89** |
+| match statistics and dynamics | G244 | all interpenetrate; cut drops inside ordinary variation |
+| projected-quad shape | G247 | seven checks, all overlapping; every invalid map is a well-formed quad |
+| projected-line vs image structure | G248 | four signals, all overlapping |
+
+**Stated at full strength: there is no available hand-built automatic validity
+signal. Every "it held for N frames" claim in this programme is carried by renders
+alone.** The next instrument has to be a trained model or a different sensor, not
+another hand-built statistic.
+
+**One number in G248 is unexplained and may explain all four negatives at once.**
+Edge-response contrast is **negative for the VALID class** (median -47.33) and
+almost identical for INVALID (-45.15). On frames a human called correct, the
+projected lines sit on *less* edge structure than nearby control points. **If the
+projections were landing on painted lines that should be positive.** The hypothesis
+-- **eye-valid but not pixel-accurate** -- is what G252 tests, and the programme has
+never measured how accurate a "valid" calibration actually is.
+
+## 7.11 CLOSED: point-based calibration of amateur footage, on five sources
+
+| row | result |
+|---|---|
+| **G249** | Court corners are **never occluded when in frame (0/61 across all four)** -- the hypothesis was right. But **both near corners are outside the image in 61/61 frames**: camera framing, not players. |
+| **G250** | **Zero same-frame four-point candidates** across 20 inventoried features. Largest usable set: **three points, all collinear on the centre line.** Cross-frame combination invalid because the camera pans. |
+| **G251** | **4 of 4 further sources rejected.** Three because foreground crowd, bench or scorer table hides the camera-side boundary; one -- the only whole-court view -- because a multi-use gym's overlapping markings made point identity ambiguous. |
+
+**The cause is structural, not incidental: amateur cameras sit on the near sideline,
+so near-side geometry is systematically hidden by crowd, benches and cropping.**
+Acquiring more sources of that shape will not help, which is why G251's screen-out
+rate is the useful number rather than a disappointment.
+
+**G250's acquisition criterion is now the gate for any future amateur source:** a
+camera must show, in one frame, at least four distinct named unoccluded painted
+intersections spanning two dimensions of the court, including some near-side
+geometry -- and the review must report the four-point quadrilateral area fraction
+and the minimum point-to-other-three distance, rejecting a near-zero spread.
+
+**What this does NOT close.** A homography has 8 degrees of freedom; **a line
+correspondence gives 2 constraints and a conic gives 5.** The amateur clip reliably
+shows the far sideline, the centre line and the centre circle -- **2 lines + 1 conic
+= 9 constraints**, sufficient in principle from exactly the geometry that is
+available. **That is G253**, and it runs a lines-only positive control on G233d's
+validated WNBA seed first: if it cannot reproduce a known-good calibration on clean
+broadcast footage, it closes cheaply and nothing is lost.
+
 ## NOT VERIFIED
 
 - Whether a trained basketball calibration model would work; nothing was trained
