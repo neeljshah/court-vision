@@ -1,4 +1,4 @@
-GAP S211 | sport all (in-game) | worktree aXX | log cx_s211_ingame_headline_rederive
+GAP S211 | sport all (in-game) | worktree a18 | log cx_s211_ingame_headline_rederive
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: SIGNAL_INVENTORY_REDTEAM_2026-09-03.md line 199, verbatim: "- The two static->conditional Brier pairs
 (0.209->0.159, 0.241->0.126) were read from `docs/evidence/ingame-conditioning.md`, not re-run." They are the flagship
