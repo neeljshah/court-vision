@@ -1,4 +1,4 @@
-GAP S245 | sport nba (in-game) | worktree aXX | log cx_s245_ingame_live_boxscore_update
+GAP S245 | sport nba (in-game) | worktree a17 | log cx_s245_ingame_live_boxscore_update
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: no store on disk carries a 5-man on-floor stamp keyed to period+clock, so lineup-grain live
 box score is BLOCKED. possession_states_{2024_25,2025_26} (30,383 / 30,199 rows, seconds_remaining,
