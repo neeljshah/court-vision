@@ -1,0 +1,30 @@
+{
+  "source": "manual line endpoints placed on the fresh frame-19599 decode before any G253 fit",
+  "lines": [
+    {
+      "name": "near_baseline",
+      "image_endpoints": [[430.0, 403.5], [760.0, 416.0]],
+      "court_endpoints": [[0.0, 0.0], [50.0, 0.0]]
+    },
+    {
+      "name": "left_lane_boundary",
+      "image_endpoints": [[359.0, 467.0], [383.0, 647.0]],
+      "court_endpoints": [[17.0, 0.0], [17.0, 19.0]]
+    },
+    {
+      "name": "right_lane_boundary",
+      "image_endpoints": [[861.0, 470.0], [968.0, 686.0]],
+      "court_endpoints": [[33.0, 0.0], [33.0, 19.0]]
+    },
+    {
+      "name": "near_free_throw_line",
+      "image_endpoints": [[465.0, 700.0], [900.0, 723.0]],
+      "court_endpoints": [[17.0, 19.0], [33.0, 19.0]]
+    }
+  ],
+  "published_homography_image_to_court": [
+    [0.050071754999888064, 0.01225404716365722, 2.3351407383547964],
+    [-0.0047586809476217904, 0.1153980129798286, -44.493666860263815],
+    [3.054485397744623e-05, 0.0011147252900901028, 1.0]
+  ]
+}

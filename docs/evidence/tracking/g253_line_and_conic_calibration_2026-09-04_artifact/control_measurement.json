@@ -1,0 +1,71 @@
+{
+  "input_image": "docs\\evidence\\tracking\\g253_line_and_conic_calibration_2026-09-04_artifact\\control_seed_frame_19599.jpg",
+  "native_resolution_px": [
+    1920,
+    1080
+  ],
+  "line_names": [
+    "near_baseline",
+    "left_lane_boundary",
+    "right_lane_boundary",
+    "near_free_throw_line"
+  ],
+  "line_fit_homography_image_to_court": [
+    [
+      0.049814191579082755,
+      0.012106674793965622,
+      2.382662102314414
+    ],
+    [
+      -0.0043500048696123415,
+      0.11484012855776558,
+      -44.46748977912508
+    ],
+    [
+      3.254917273333284e-05,
+      0.0010985169929204593,
+      1.0
+    ]
+  ],
+  "published_homography_image_to_court": [
+    [
+      0.050071754999888064,
+      0.01225404716365722,
+      2.3351407383547964
+    ],
+    [
+      -0.0047586809476217904,
+      0.1153980129798286,
+      -44.493666860263815
+    ],
+    [
+      3.054485397744623e-05,
+      0.0011147252900901028,
+      1.0
+    ]
+  ],
+  "line_design_condition_number": 2.930052411357541,
+  "line_design_singular_values": [
+    2.3769470828277957,
+    2.3264780542072323,
+    2.216693973335056,
+    2.09605705476325,
+    1.7994811145121288,
+    1.4487850183559876,
+    1.1994321663147354,
+    0.811230227013761,
+    1.0704081774300581e-16
+  ],
+  "projected_court_discrepancy_px": {
+    "all_sample_points": 634.0,
+    "all_median_px": 12.615578651428223,
+    "all_p90_px": 280.21807861328125,
+    "all_max_px": 12807.05078125,
+    "shared_in_frame_sample_points": 231.0,
+    "shared_in_frame_median_px": 2.848759889602661,
+    "shared_in_frame_p90_px": 3.9923770427703857,
+    "shared_in_frame_max_px": 4.343563079833984
+  },
+  "line_render": "docs\\evidence\\tracking\\g253_line_and_conic_calibration_2026-09-04_artifact\\control_lines_only_render.jpg",
+  "published_render": "docs\\evidence\\tracking\\g253_line_and_conic_calibration_2026-09-04_artifact\\control_published_render.jpg"
+}

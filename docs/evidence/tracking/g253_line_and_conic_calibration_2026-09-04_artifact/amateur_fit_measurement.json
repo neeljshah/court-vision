@@ -1,0 +1,24 @@
+{
+  "homography_image_to_court": [
+    [
+      -0.016964985688211878,
+      0.43326576312637743,
+      -82.3095541360741
+    ],
+    [
+      -0.1528514362199151,
+      0.2556061279500158,
+      150.07184060959338
+    ],
+    [
+      -0.0006687104024960311,
+      0.006078261531845628,
+      1.0
+    ]
+  ],
+  "fitted_objective_residual_not_validation_evidence": 0.004509751322651355,
+  "jacobian_condition_number": 40.36933389526808,
+  "image_line_angle_deg": 87.59962794537728,
+  "observed_conic_circumference_fraction": 0.58,
+  "render": "docs\\evidence\\tracking\\g253_line_and_conic_calibration_2026-09-04_artifact\\amateur_line_conic_render.jpg"
+}

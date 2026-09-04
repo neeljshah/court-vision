@@ -1,0 +1,26 @@
+{
+  "source_path": "/workspace/nba-ai-system/data/footage_corpus/basketball__amateur_jh3fnwMi7dM.mp4",
+  "source_bytes": 24523745,
+  "source_sha256": "773e77669a8876c0c8807baa8f733530ed00413f989cdec49ca078229b9e1bea",
+  "frame_zero_based": 540,
+  "native_resolution_px": [1280, 720],
+  "exact_decode_bgr_sha256": "2fabad9a2d8e17e851446ae3bef98d9c4fc138ac7b9d80988a1086dfaeb2d31a",
+  "fitted_inputs_before_fit": [
+    {
+      "name": "far_sideline",
+      "crop": "amateur_identity_crops/far_sideline_zoom.jpg",
+      "what_is_at_it": "The dark painted far court boundary separates the hardwood from the blue bleacher-side apron; it is continuous across the crop."
+    },
+    {
+      "name": "centre_line",
+      "crop": "amateur_identity_crops/centre_line_zoom.jpg",
+      "what_is_at_it": "The dark-blue longitudinal centre line runs continuously through the centre-circle logo and below it."
+    },
+    {
+      "name": "centre_circle",
+      "crop": "amateur_identity_crops/centre_circle_zoom.jpg",
+      "what_is_at_it": "The dark-blue centre-circle circumference is visible around the logo, but players and the logo obscure portions of its upper interior boundary."
+    }
+  ],
+  "frame_count_check": "ffprobe container metadata reports 3729, while a full no-seek ffmpeg decoded-frame pass reports 3601; 3601 is the decoded-frame count used by G249/G250 and by this row."
+}

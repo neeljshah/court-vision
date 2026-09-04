@@ -1,0 +1,31 @@
+{
+  "court_model": "assumed high-school-style 84x50 ft court, with centre line y=42 ft and centre circle radius 6 ft; it is not a new production sport key",
+  "lines": [
+    {
+      "name": "far_sideline",
+      "image_endpoints": [[154.3, 195.8], [1278.2, 240.2]],
+      "court_endpoints": [[0.0, 0.0], [0.0, 84.0]]
+    },
+    {
+      "name": "centre_line",
+      "image_endpoints": [[866.5, 225.0], [867.5, 640.0]],
+      "court_endpoints": [[0.0, 42.0], [50.0, 42.0]]
+    }
+  ],
+  "image_centre_circle_ellipse": {
+    "center_px": [868.0, 390.0],
+    "semi_axes_px": [137.0, 61.0],
+    "angle_degrees": 0.0,
+    "observed_circumference_fraction": 0.58,
+    "fraction_method": "single-labeller visual arc accounting: visible left and lower arcs plus short right and upper segments; logo and players obscure the remainder"
+  },
+  "court_centre_circle": {
+    "center_ft": [25.0, 42.0],
+    "radius_ft": 6.0
+  },
+  "solver": {
+    "fixed_seed": 253,
+    "fixed_random_starts": 64,
+    "objective": "two normalised line correspondences plus normalised conic-coefficient correspondence; the fitted residual is an optimisation diagnostic, not validation evidence"
+  }
+}
