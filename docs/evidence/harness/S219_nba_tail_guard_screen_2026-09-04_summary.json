@@ -1,0 +1,273 @@
+{
+  "bar": 0.004,
+  "composite": {
+    "bar_ci_bh_pass": false,
+    "bh_adjusted_p": 0.0,
+    "bh_q05": true,
+    "brier_guard": 0.1794863356079014,
+    "brier_incumbent": 0.07656591388808874,
+    "brier_market": 0.07578659437625314,
+    "d_hi": null,
+    "d_lo": null,
+    "dm_ci95": [
+      -0.10585034249670858,
+      -0.09999050094291662
+    ],
+    "dm_p_raw": 0.0,
+    "ece_guard": 0.2750060498479218,
+    "ece_incumbent": 0.00514622607966622,
+    "ece_market": 0.006978623241560282,
+    "improvement_vs_incumbent": -0.1029204217198126,
+    "member": "composite",
+    "n_eff": 5094.125171784011,
+    "n_games": 1056,
+    "n_ticks": 306735,
+    "selection_by_outer_fold": {
+      "F2": "hi_0.10_lo_0.25",
+      "F3": "hi_0.10_lo_0.25",
+      "F4": "hi_0.10_lo_0.25",
+      "F5": "hi_0.10_lo_0.35"
+    },
+    "tail_guard": 0.0,
+    "tail_incumbent": 0.23863636363636365,
+    "tail_market": 0.20928030303030304
+  },
+  "confident_cut": 0.3,
+  "grid": [
+    [
+      0.05,
+      0.15
+    ],
+    [
+      0.05,
+      0.25
+    ],
+    [
+      0.05,
+      0.35
+    ],
+    [
+      0.1,
+      0.15
+    ],
+    [
+      0.1,
+      0.25
+    ],
+    [
+      0.1,
+      0.35
+    ]
+  ],
+  "incumbent": "ladder_base",
+  "input": {
+    "bytes": 2829826,
+    "path": "C:\\Users\\neelj\\nba-track-a17\\data\\cache\\inplay_odds\\nba_checkpoints_full.parquet",
+    "source_games": 1593,
+    "source_rows": 465249
+  },
+  "members": [
+    {
+      "bar_ci_bh_pass": false,
+      "bh_adjusted_p": 0.0,
+      "bh_q05": true,
+      "brier_guard": 0.20963701962367484,
+      "brier_incumbent": 0.07656591388808874,
+      "brier_market": 0.07578659437625314,
+      "d_hi": 0.05,
+      "d_lo": 0.15,
+      "dm_ci95": [
+        -0.13679539915379052,
+        -0.12934681231738154
+      ],
+      "dm_p_raw": 0.0,
+      "ece_guard": 0.3206163990808739,
+      "ece_incumbent": 0.00514622607966622,
+      "ece_market": 0.006978623241560282,
+      "improvement_vs_incumbent": -0.13307110573558603,
+      "member": "hi_0.05_lo_0.15",
+      "n_eff": 4651.201545621753,
+      "n_games": 1056,
+      "n_ticks": 306735,
+      "tail_guard": 0.0,
+      "tail_incumbent": 0.23863636363636365,
+      "tail_market": 0.20928030303030304
+    },
+    {
+      "bar_ci_bh_pass": false,
+      "bh_adjusted_p": 0.0,
+      "bh_q05": true,
+      "brier_guard": 0.2085129483911103,
+      "brier_incumbent": 0.07656591388808874,
+      "brier_market": 0.07578659437625314,
+      "d_hi": 0.05,
+      "d_lo": 0.25,
+      "dm_ci95": [
+        -0.13546997559083776,
+        -0.1284240934152052
+      ],
+      "dm_p_raw": 0.0,
+      "ece_guard": 0.3118017815208101,
+      "ece_incumbent": 0.00514622607966622,
+      "ece_market": 0.006978623241560282,
+      "improvement_vs_incumbent": -0.13194703450302148,
+      "member": "hi_0.05_lo_0.25",
+      "n_eff": 5127.346443928902,
+      "n_games": 1056,
+      "n_ticks": 306735,
+      "tail_guard": 0.0,
+      "tail_incumbent": 0.23863636363636365,
+      "tail_market": 0.20928030303030304
+    },
+    {
+      "bar_ci_bh_pass": false,
+      "bh_adjusted_p": 0.0,
+      "bh_q05": true,
+      "brier_guard": 0.2084442147076834,
+      "brier_incumbent": 0.07656591388808874,
+      "brier_market": 0.07578659437625314,
+      "d_hi": 0.05,
+      "d_lo": 0.35,
+      "dm_ci95": [
+        -0.13537457375511663,
+        -0.1283820278840726
+      ],
+      "dm_p_raw": 0.0,
+      "ece_guard": 0.3107101716658894,
+      "ece_incumbent": 0.00514622607966622,
+      "ece_market": 0.006978623241560282,
+      "improvement_vs_incumbent": -0.13187830081959462,
+      "member": "hi_0.05_lo_0.35",
+      "n_eff": 5212.856799859522,
+      "n_games": 1056,
+      "n_ticks": 306735,
+      "tail_guard": 0.0,
+      "tail_incumbent": 0.23863636363636365,
+      "tail_market": 0.20928030303030304
+    },
+    {
+      "bar_ci_bh_pass": false,
+      "bh_adjusted_p": 0.0,
+      "bh_q05": true,
+      "brier_guard": 0.18063789171195951,
+      "brier_incumbent": 0.07656591388808874,
+      "brier_market": 0.07578659437625314,
+      "d_hi": 0.1,
+      "d_lo": 0.15,
+      "dm_ci95": [
+        -0.10721871756165133,
+        -0.10092523808609025
+      ],
+      "dm_p_raw": 0.0,
+      "ece_guard": 0.2840918746542517,
+      "ece_incumbent": 0.00514622607966622,
+      "ece_market": 0.006978623241560282,
+      "improvement_vs_incumbent": -0.10407197782387079,
+      "member": "hi_0.10_lo_0.15",
+      "n_eff": 4537.939042449287,
+      "n_games": 1056,
+      "n_ticks": 306735,
+      "tail_guard": 0.0,
+      "tail_incumbent": 0.23863636363636365,
+      "tail_market": 0.20928030303030304
+    },
+    {
+      "bar_ci_bh_pass": false,
+      "bh_adjusted_p": 0.0,
+      "bh_q05": true,
+      "brier_guard": 0.17951382047939493,
+      "brier_incumbent": 0.07656591388808874,
+      "brier_market": 0.07578659437625314,
+      "d_hi": 0.1,
+      "d_lo": 0.25,
+      "dm_ci95": [
+        -0.10588474908035196,
+        -0.10001106410226045
+      ],
+      "dm_p_raw": 0.0,
+      "ece_guard": 0.2752772570941879,
+      "ece_incumbent": 0.00514622607966622,
+      "ece_market": 0.006978623241560282,
+      "improvement_vs_incumbent": -0.1029479065913062,
+      "member": "hi_0.10_lo_0.25",
+      "n_eff": 5064.86747572817,
+      "n_games": 1056,
+      "n_ticks": 306735,
+      "tail_guard": 0.0,
+      "tail_incumbent": 0.23863636363636365,
+      "tail_market": 0.20928030303030304
+    },
+    {
+      "bar_ci_bh_pass": false,
+      "bh_adjusted_p": 0.0,
+      "bh_q05": true,
+      "brier_guard": 0.17944508679596813,
+      "brier_incumbent": 0.07656591388808874,
+      "brier_market": 0.07578659437625314,
+      "d_hi": 0.1,
+      "d_lo": 0.35,
+      "dm_ci95": [
+        -0.10578884441107896,
+        -0.09996950140467968
+      ],
+      "dm_p_raw": 0.0,
+      "ece_guard": 0.27418564723926714,
+      "ece_incumbent": 0.00514622607966622,
+      "ece_market": 0.006978623241560282,
+      "improvement_vs_incumbent": -0.10287917290787932,
+      "member": "hi_0.10_lo_0.35",
+      "n_eff": 5165.945587246141,
+      "n_games": 1056,
+      "n_ticks": 306735,
+      "tail_guard": 0.0,
+      "tail_incumbent": 0.23863636363636365,
+      "tail_market": 0.20928030303030304
+    }
+  ],
+  "n_qualifying_games": 1345,
+  "n_scored_games": 1056,
+  "n_scored_ticks": 306735,
+  "paired_loss_series": "C:\\Users\\neelj\\nba-track-a17\\docs\\evidence\\harness\\S219_nba_tail_guard_screen_2026-09-04_per_game_paired_losses.csv",
+  "premise_s58": {
+    "bytes": 314075,
+    "denominator": 711,
+    "market_tail_count": 40,
+    "market_tail_share": 0.05625879043600562,
+    "model_tail_count": 81,
+    "model_tail_share": 0.11392405063291139,
+    "path": "C:\\Users\\neelj\\nba-track-a17\\docs\\evidence\\harness\\neff_requote_2026-09-04\\restored_sources\\s58_trialB_nba_halftime_asof_pergame_2026-09-03.csv"
+  },
+  "selection_tick_counts": {
+    "F1": {
+      "available_ticks": 0,
+      "embargoed_ticks": 0,
+      "scored_ticks": 80259,
+      "selected_ticks": 0
+    },
+    "F2": {
+      "available_ticks": 80259,
+      "embargoed_ticks": 3554,
+      "scored_ticks": 75563,
+      "selected_ticks": 76705
+    },
+    "F3": {
+      "available_ticks": 155822,
+      "embargoed_ticks": 1695,
+      "scored_ticks": 77853,
+      "selected_ticks": 154127
+    },
+    "F4": {
+      "available_ticks": 233675,
+      "embargoed_ticks": 2663,
+      "scored_ticks": 75904,
+      "selected_ticks": 231012
+    },
+    "F5": {
+      "available_ticks": 309579,
+      "embargoed_ticks": 0,
+      "scored_ticks": 77415,
+      "selected_ticks": 309579
+    }
+  },
+  "verdict": "SCREEN_NULL"
+}
