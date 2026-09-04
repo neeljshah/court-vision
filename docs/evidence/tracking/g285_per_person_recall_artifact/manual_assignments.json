@@ -1,0 +1,15 @@
+{
+  "person_matches": [
+    {"blind_id": 2, "player_slot": 5, "primary_marker_index": 7, "near_boundary": "YES"},
+    {"blind_id": 23, "player_slot": 3, "primary_marker_index": 3, "near_boundary": "YES"},
+    {"blind_id": 23, "player_slot": 5, "primary_marker_index": 4, "near_boundary": "NO"},
+    {"blind_id": 54, "player_slot": 3, "primary_marker_index": 3, "near_boundary": "YES"}
+  ],
+  "marker_matches": [
+    {"blind_id": 2, "marker_index": 7, "player_slot": 5},
+    {"blind_id": 23, "marker_index": 3, "player_slot": 3},
+    {"blind_id": 23, "marker_index": 4, "player_slot": 5},
+    {"blind_id": 23, "marker_index": 8, "player_slot": 5},
+    {"blind_id": 54, "marker_index": 3, "player_slot": 3}
+  ]
+}

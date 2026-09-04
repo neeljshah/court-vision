@@ -1,0 +1,20 @@
+{
+  "g270_on_court_marker_observations": 365,
+  "judgeable_frames": 54,
+  "matched_visible_players": 4,
+  "near_boundary_player_verdicts": 3,
+  "recall_wilson_95": {
+    "estimate": 0.007633587786259542,
+    "lower": 0.0029724417783286473,
+    "upper": 0.01946129968478107
+  },
+  "sealed_visible_player_slots": 524,
+  "unmatched_marker_rate": 0.9863013698630136,
+  "unmatched_marker_wilson_95": {
+    "estimate": 0.9863013698630136,
+    "lower": 0.9683381991409405,
+    "upper": 0.9941349489022597
+  },
+  "unmatched_markers": 360,
+  "unmatched_visible_players": 520
+}
