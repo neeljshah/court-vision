@@ -1,4 +1,4 @@
-GAP S266 | sport nba (in-game) | worktree aXX | log cx_s266_nba_sim_third_arm_construct
+GAP S266 | sport nba (in-game) | worktree a17 | log cx_s266_nba_sim_third_arm_construct
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S247 and S256 both CLOSED AT LIMIT on the same wall: the simulator third arm on all 355 as-of clusters
   (S255, b559352ed) needs ~900 MB, the laptop RAM guard kills it, and contract B5 forbids a pod run before ACCEPT.
