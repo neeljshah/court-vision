@@ -1,4 +1,4 @@
-GAP S232 | sport all | worktree aXX | log cx_s232_intel_foundry_queue_wiring
+GAP S232 | sport all | worktree a13 | log cx_s232_intel_foundry_queue_wiring
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: intelligence-derived candidates cannot reach the pod screening runner today, so every family above stays a
 one-off script. Three extension points need no shared-module edit: (i) a parquet matching foundry/catalogue.GLOBS
