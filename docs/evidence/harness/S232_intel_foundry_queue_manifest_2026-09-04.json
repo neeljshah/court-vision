@@ -1,0 +1,176 @@
+{
+  "schema": "s232-intel-foundry-queue-v1",
+  "canonical_queue": "data/cache/eval_gate/hypotheses.sqlite",
+  "row_floor": 30,
+  "notes": "This is an exhaustive normalized list of candidate feature stores declared by S223-S231. Base corpora, labels, and market inputs are not candidate feature stores. A store is GLOB-REACHABLE only when its exact declared path matches catalogue.GLOBS. NEEDS-ONE-NAMED-LINE means a dated parquet at or above the declared row floor that would otherwise be usable. NOT-ENUMERABLE records JSON-only, snapshot-only, undated, or unresolved logical sources without substituting another path.",
+  "stores": [
+    {
+      "id": "s226_possession_2024_25",
+      "declared_by": ["S226"],
+      "path": "data/cache/ingame/possession_states_2024_25.parquet",
+      "classification": "GLOB-REACHABLE",
+      "reason": "Present dated state parquet; exact match to data/cache/ingame/*states*.parquet."
+    },
+    {
+      "id": "s226_possession_2025_26",
+      "declared_by": ["S226"],
+      "path": "data/cache/ingame/possession_states_2025_26.parquet",
+      "classification": "GLOB-REACHABLE",
+      "reason": "Present dated state parquet; exact match to data/cache/ingame/*states*.parquet."
+    },
+    {
+      "id": "s226_foul_state",
+      "declared_by": ["S226"],
+      "path": "data/cache/ingame/inplay_foul_state.parquet",
+      "classification": "NEEDS-ONE-NAMED-LINE",
+      "reason": "Declared single-state parquet does not match either GLOB and is absent here; no pbp-state substitute is assumed."
+    },
+    {
+      "id": "s226_atlas_player_foul_tendency",
+      "declared_by": ["S226"],
+      "path": "data/cache/atlas_player_foul_tendency.parquet",
+      "classification": "NOT-ENUMERABLE",
+      "reason": "Snapshot-only atlas source at as_of 2026-05-31 must not support an as-of enumeration or join."
+    },
+    {
+      "id": "s226_atlas_team_rotation_patterns",
+      "declared_by": ["S226"],
+      "path": "data/cache/atlas_team_rotation_patterns.parquet",
+      "classification": "NOT-ENUMERABLE",
+      "reason": "Snapshot-only atlas source at as_of 2026-05-31 must not support an as-of enumeration or join."
+    },
+    {
+      "id": "s224_s227_garbage_time",
+      "declared_by": ["S224", "S227"],
+      "path": "data/intelligence/garbage_time_segments.parquet",
+      "classification": "NEEDS-ONE-NAMED-LINE",
+      "reason": "Declared dated intelligence parquet is not covered by a GLOB; data/intelligence is absent in this worktree."
+    },
+    {
+      "id": "s225_s228_momentum",
+      "declared_by": ["S225", "S228"],
+      "path": "data/intelligence/momentum_signals.parquet",
+      "classification": "NEEDS-ONE-NAMED-LINE",
+      "reason": "Declared as-of feature parquet is not covered by a GLOB; data/intelligence is absent in this worktree."
+    },
+    {
+      "id": "s228_per_player_calibration",
+      "declared_by": ["S228"],
+      "path": "data/intelligence/per_player_calibration.parquet",
+      "classification": "NEEDS-ONE-NAMED-LINE",
+      "reason": "Declared rolling calibration feature parquet is not covered by a GLOB; data/intelligence is absent in this worktree."
+    },
+    {
+      "id": "s228_gt_weighted_forms",
+      "declared_by": ["S228"],
+      "path": "data/intelligence/gt_weighted_forms.parquet",
+      "classification": "NEEDS-ONE-NAMED-LINE",
+      "reason": "Declared dated feature parquet is not covered by a GLOB; data/intelligence is absent in this worktree."
+    },
+    {
+      "id": "s228_schedule_strength",
+      "declared_by": ["S228"],
+      "path": "data/intelligence/schedule_strength_7d.parquet",
+      "classification": "NEEDS-ONE-NAMED-LINE",
+      "reason": "Declared dated feature parquet is not covered by a GLOB; data/intelligence is absent in this worktree."
+    },
+    {
+      "id": "s229_player_def_archetype",
+      "declared_by": ["S229"],
+      "path": "data/intelligence/player_def_archetype_sidecar.parquet",
+      "classification": "NEEDS-ONE-NAMED-LINE",
+      "reason": "Declared as-of sidecar is not covered by a GLOB; data/intelligence is absent in this worktree."
+    },
+    {
+      "id": "s229_player_def_archetype_null",
+      "declared_by": ["S229"],
+      "path": "data/intelligence/player_def_archetype_sidecar_null.parquet",
+      "classification": "NEEDS-ONE-NAMED-LINE",
+      "reason": "Declared planted-null sidecar is not covered by a GLOB; data/intelligence is absent in this worktree."
+    },
+    {
+      "id": "s229_player_opp_splits",
+      "declared_by": ["S229"],
+      "path": "data/intelligence/player_opp_splits_sidecar.parquet",
+      "classification": "NEEDS-ONE-NAMED-LINE",
+      "reason": "Declared as-of sidecar is not covered by a GLOB; data/intelligence is absent in this worktree."
+    },
+    {
+      "id": "s230_matchup_grid",
+      "declared_by": ["S230"],
+      "path": "data/intelligence/matchup_grid.parquet",
+      "classification": "NEEDS-ONE-NAMED-LINE",
+      "reason": "Declared dated pairing parquet is not covered by a GLOB; data/intelligence is absent in this worktree."
+    },
+    {
+      "id": "s231_confidence_ensemble",
+      "declared_by": ["S231"],
+      "path": "data/intelligence/confidence_ensemble.parquet",
+      "classification": "NEEDS-ONE-NAMED-LINE",
+      "reason": "Declared as-of weighting parquet is not covered by a GLOB; data/intelligence is absent in this worktree."
+    },
+    {
+      "id": "s225_hot_night_rows",
+      "declared_by": ["S225"],
+      "path": "ingame_hypothesis_hot_night row parquet",
+      "classification": "NOT-ENUMERABLE",
+      "reason": "The declaration supplies no parquet path or dated catalogue store, so it cannot be enumerated without an invented path."
+    },
+    {
+      "id": "s225_scheme_fit_rows",
+      "declared_by": ["S225"],
+      "path": "ingame_hypothesis_scheme_fit row parquet",
+      "classification": "NOT-ENUMERABLE",
+      "reason": "The declaration supplies no parquet path or dated catalogue store, so it cannot be enumerated without an invented path."
+    },
+    {
+      "id": "s228_closing_props",
+      "declared_by": ["S228"],
+      "path": "data/cache/cv_fix/closing_props/*.json",
+      "classification": "NOT-ENUMERABLE",
+      "reason": "JSON market payloads require the S228 tidy parser and are not a parquet feature store."
+    },
+    {
+      "id": "s229_atlas_player_matchup_splits",
+      "declared_by": ["S229"],
+      "path": "data/cache/atlas_player_matchup_splits.parquet",
+      "classification": "NOT-ENUMERABLE",
+      "reason": "Snapshot-only atlas source is blocked on S223 and cannot support an as-of enumeration."
+    },
+    {
+      "id": "s229_atlas_player_isolation_profile",
+      "declared_by": ["S229"],
+      "path": "data/cache/atlas_player_isolation_profile.parquet",
+      "classification": "NOT-ENUMERABLE",
+      "reason": "Snapshot-only atlas source is blocked on S223 and cannot support an as-of enumeration."
+    },
+    {
+      "id": "s229_atlas_player_vs_scheme_splits",
+      "declared_by": ["S229"],
+      "path": "data/cache/atlas_player_vs_scheme_splits.parquet",
+      "classification": "NOT-ENUMERABLE",
+      "reason": "Snapshot-only atlas source is blocked on S223 and cannot support an as-of enumeration."
+    },
+    {
+      "id": "s229_atlas_team_defensive_scheme",
+      "declared_by": ["S229"],
+      "path": "data/cache/atlas_team_defensive_scheme.parquet",
+      "classification": "NOT-ENUMERABLE",
+      "reason": "Snapshot-only atlas source is blocked on S223 and cannot support an as-of enumeration."
+    },
+    {
+      "id": "s230_archetype_scheme_interactions",
+      "declared_by": ["S230"],
+      "path": "data/intelligence/archetype_scheme_interactions.parquet",
+      "classification": "NOT-ENUMERABLE",
+      "reason": "Explicitly undated frozen-list input; it cannot be used as a time-indexed candidate store."
+    },
+    {
+      "id": "s230_position_scheme_interactions",
+      "declared_by": ["S230"],
+      "path": "data/intelligence/position_scheme_interactions.parquet",
+      "classification": "NOT-ENUMERABLE",
+      "reason": "Explicitly undated frozen-list input; it cannot be used as a time-indexed candidate store."
+    }
+  ]
+}
