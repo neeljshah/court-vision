@@ -82,6 +82,29 @@ daemon's own basketball command is different -- `run_clip.py --video ... --game-
 `wnba_01`, so a configuration that DOES emit rows exists. **Finding which configurations emit rows and
 which emit none is itself a first-class result of this row.**
 
+**FIFTH AMENDMENT 2026-09-04 -- A NATURAL EXPERIMENT IS ALREADY SITTING IN THE DAEMON LEDGER AND YOU
+SHOULD MINE IT BEFORE RUNNING ANYTHING.**
+
+Tallied from `data/tracking/track_daemon_ledger.jsonl` on the pod (54 entries): **`ncaa_basketball` 4
+thin / 1 tracked, `wnba` 5 thin / 3 tracked, and EVERY thin result is EXACTLY 0 rows** -- recorded row
+counts `ncaa_basketball [0,0,0,0]` and `wnba [0,0,0,0,0]`. Against that, **`baseball` 24 tracked,
+`football` 4 tracked, `soccer` 4 tracked, `tennis` 3 tracked, with ZERO thin results across those 32
+jobs.** **So 9 of 13 basketball jobs emit nothing, against 1 of 41 for every other sport combined, and
+this happened under the DAEMON's own command (`run_clip.py --frames 3000 --data-dir <dir>`), not
+G211b's.**
+
+**THE CONTRAST IS THE OPPORTUNITY: FOUR basketball jobs DID track. Nine did not.** **Before you run a
+single new job, mine that difference** -- which `game_id`s succeeded, which clips they came from, their
+resolution, duration, view, and anything else the ledger and the tracking directories record. **If the
+four successes share a property the nine failures lack, you have the answer for the cost of reading
+JSON.** Name the ELIGIBLE DENOMINATOR as those 13 basketball entries and say which you could and could
+not characterise.
+
+**Only then instrument.** And when you do, remember the daemon's `thin` label is its own
+(`MIN_TRACKING_ROWS = 500`, `footage_bridge.py:92-93`, *'a failed detection pass wearing a successful
+exit code'*) -- **these runs exited 0. A zero-row basketball run does not announce itself as a failure,
+which is why this went unnoticed until tonight.**
+
 **FOURTH AMENDMENT 2026-09-04 -- THE ORCHESTRATOR HAS READ THE CODE AND CAN HAND YOU THE EXACT LINE TO
 INSTRUMENT. This is the single most useful thing in this spec; start here.**
 
