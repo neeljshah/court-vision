@@ -1102,6 +1102,66 @@ duplicates again.
 
 ---
 
+---
+
+## 7.25 SUSPENDED: the recall thread cannot be reconciled with G273, and section 7.24 must be re-read
+
+Section 7.24 concluded that detection fails on **both** axes. **The recall half of
+that conclusion is now suspended.** The precision half is untouched.
+
+### The contradiction
+
+| row | design | result |
+|---|---|---|
+| **G273** | blind, sealed; 512x640 crop at full resolution centred on each footpoint | **15/72 = 0.208 NOT A PERSON** -- about four in five detections have something person-like at their location |
+| **G285b** | locate-then-match; Pass A coordinates sealed before any detection access; no human judges any tolerance | **7/143 = 0.049 recall at 50 px**; 81/88 footpoints match no located player |
+
+**Both blind, both sealed, disagreeing by roughly an order of magnitude.**
+G285b's design specifically removed the fault that invalidated G285 -- the eye
+only locates, the computer matches -- **and the answer barely moved, 0.0076 to
+0.049.** So the judgement-scale artifact was real but was not the main cause.
+
+### Four diagnostics: three causes ruled out, one real but insufficient
+
+1. **Coordinate space -- not the cause.** Frames are 1920x1080; G267 declares
+   1920x1080 with `foot_x` 16.7..1900.5 and `foot_y` 50.4..1063.5.
+2. **Global frame-index offset -- not the cause.** Mean nearest-footpoint
+   distance is 175-253 px at every offset in +/-63, **with no minimum at zero.**
+   If footpoints sat on players, offset 0 would be sharply better.
+3. **Per-frame frame-index offset -- not the cause.** Searching +/-120 per frame
+   gives scattered best offsets (+76, -83, +31, +120, -107, ...) and **even the
+   best of 241 candidates leaves 52-216 px** -- chance improvement, not
+   misalignment.
+4. **Systematic vertical offset -- REAL but insufficient.** Median x agrees
+   (located 899.0, detector 880.5) while **median y differs by +147.1 px**, the
+   detector lower in **12 of 15** frames. **But removing the per-frame median-y
+   offset barely helps: 0.056 to 0.063 at 50 px.** **The two point sets are
+   different positions, not offset ones.**
+
+### What is suspended and what stands
+
+**Suspended -- all three rest on joining committed frames to per-frame detection
+records, and that join is what is in question:** G284's **0.416** upper bound,
+G285's rejected **0.0076**, and G285b's **0.049**. **None may be quoted as a
+recall figure.**
+
+**Untouched -- none of these uses that join:** G273's **0.597** precision,
+G272b's defect split, G276b's endpoint baseline, G279's threshold curve, G281's
+**0.935** identity purity.
+
+**So section 7.24's priority claim now rests on precision alone.** Detection
+precision at 0.597 remains measured and poor; **whether recall is also poor is
+no longer established either way.**
+
+### The next step is one picture, not more statistics
+
+Render a single frame at full resolution, in tiles, with **located players in one
+colour and detector footpoints in another.** A human will see in seconds what
+four numerical diagnostics could not settle: whether the footpoints are on people
+at all.
+
+---
+
 ## NOT VERIFIED
 
 - Whether a trained basketball calibration model would work; nothing was trained
