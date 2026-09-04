@@ -1,4 +1,4 @@
-GAP S296 | sport nba | worktree aXX | log cx_s296_full_boxscore_oof
+GAP S296 | sport nba | worktree a17 | log cx_s296_full_boxscore_oof
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 DEPENDENCY: dispatch after S271 lands. If its memo or ledger line is absent at run time, run the landed S271 module
   path only if present; otherwise CLOSE AT LIMIT and state the reason.
