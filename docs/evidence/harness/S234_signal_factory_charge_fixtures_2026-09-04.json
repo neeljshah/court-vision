@@ -1,0 +1,46 @@
+{
+  "spec_id": "S234",
+  "kind": "CONSTRUCT",
+  "preregistration_path": "docs/evidence/harness/S234_signal_factory_charge_prereg_2026-09-04.md",
+  "prereg_sha256": "CA1F27779B9B4A8EC918219ABCA7B4270258DD957F9B994E51E62D84091A8060",
+  "real_fwer_ledger_opened": false,
+  "shared_evaluator": {
+    "route": "scripts/platformkit/eval_gate/cpcv_engine.py:cpcv_evaluate",
+    "n_states": 8,
+    "n_groups": 4,
+    "n_test_groups": 1,
+    "embargo_days": 1,
+    "purge": "symmetric calendar-day and imported team/matchup purge",
+    "record_count": 8,
+    "n_train_values": [4, 5]
+  },
+  "paired_k_differentials": [
+    {
+      "fixture_id": "zero_screens",
+      "cluster_id": "s234_construct",
+      "timestamp": "2026-09-04T00:00:00+00:00",
+      "screened_n": 0,
+      "k_currently_charged": 1,
+      "k_true": 1,
+      "k_proposed_scratch": 1
+    },
+    {
+      "fixture_id": "one_screen",
+      "cluster_id": "s234_construct",
+      "timestamp": "2026-09-04T00:00:01+00:00",
+      "screened_n": 1,
+      "k_currently_charged": 1,
+      "k_true": 1,
+      "k_proposed_scratch": 1
+    },
+    {
+      "fixture_id": "two_hundred_screens",
+      "cluster_id": "s234_construct",
+      "timestamp": "2026-09-04T00:00:02+00:00",
+      "screened_n": 200,
+      "k_currently_charged": 1,
+      "k_true": 200,
+      "k_proposed_scratch": 200
+    }
+  ]
+}
