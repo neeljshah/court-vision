@@ -183,6 +183,7 @@ claimed, so the candidate can pre-empt the gap rather than be caught by it.
 - 5-way NNLS stack: **0.709 acc / 0.193 Brier** (3-fold walk-forward).
 - Full-season season backtest (2025-26, leak-free WF, truncation-invariance proven): Brier **0.208** (model) vs Brier **0.198** (closing line) — well-calibrated but does not beat the market. Spread/total CLV ≈ 0 (explains 0.13%/0.29% of the move; corr-with-outcome = 0.001).
 - **PBP Finals replay (G1–G3):** win-prob Brier **0.34–0.40** in-series — worse than a coin flip. Cleanest proof that the playoff market is efficient.
+- **Per-regime recalibration, honest keys (S212, 2026-09-04, fresh-process reproducible):** after-ECE with date-group train-only regime keys -- nba **0.022205**, mlb **0.009672**, soccer **0.009192**, tennis **0.016928**. Supersedes the earlier S05 screen (nba 0.024843 / mlb 0.008077 / soccer 0.009302 / tennis 0.008403), whose tercile key was fitted on the scored rows (leak; tennis was flattered about 2x). Calibration only; no market comparison implied. Artifact: docs/evidence/harness/S212_regime_key_clean_rerun_2026-09-04.md (landing 6226fb042).
 
 ### Betting edge vs real closing lines — "the market is efficient"
 
