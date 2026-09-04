@@ -1,0 +1,72 @@
+{
+  "attempt": "2b",
+  "feature_purge_rows_at_or_after": 0,
+  "gap_id": "S271",
+  "heldout": "2025-10-01..2026-05-31",
+  "per_stat": {
+    "ast": {
+      "coverage_ci95": [
+        0.896317964137938,
+        0.9043498373761395
+      ],
+      "empirical_coverage": 0.9004177679256543,
+      "input_bytes": 846879,
+      "input_path": "data/cache/ast_q50_oof_int95.parquet",
+      "n_game_clusters": 1266,
+      "n_rows": 23458,
+      "nominal_coverage": 0.8,
+      "pinball_q50": 0.7204395443370123,
+      "pinball_q50_ci95": [
+        0.7124337473892157,
+        0.7281570695819278
+      ]
+    },
+    "pts": {
+      "coverage_ci95": [
+        0.8897599231586296,
+        0.8985272255604967
+      ],
+      "empirical_coverage": 0.8940659902805014,
+      "input_bytes": 869923,
+      "input_path": "data/cache/pts_q50_oof_int95.parquet",
+      "n_game_clusters": 1266,
+      "n_rows": 23458,
+      "nominal_coverage": 0.8,
+      "pinball_q50": 2.4903820847345974,
+      "pinball_q50_ci95": [
+        2.4639772747937596,
+        2.516856070915167
+      ]
+    },
+    "reb": {
+      "coverage_ci95": [
+        0.9033385772482591,
+        0.9115629152330295
+      ],
+      "empirical_coverage": 0.9074942450336773,
+      "input_bytes": 842533,
+      "input_path": "data/cache/reb_q50_oof_int95.parquet",
+      "n_game_clusters": 1266,
+      "n_rows": 23458,
+      "nominal_coverage": 0.8,
+      "pinball_q50": 0.9942932969977898,
+      "pinball_q50_ci95": [
+        0.9829246562295565,
+        1.0056820329486273
+      ]
+    }
+  },
+  "preregistration": "docs/evidence/harness/S271_boxscore_quantile_prereg_2026-09-04_attempt2b.md",
+  "preregistration_seal_sha256": "a613951b134a47a6c6e1bf7d3c17331e3e2b1c09eab584a75c415a185cfd71e9",
+  "route_sha256": {
+    "scripts/platformkit/boxscore_quantile_producer.py": "75b834398dcb5b0da13b39bdc78e5aff536ac9bcaeab36e298bff31df0f57792",
+    "scripts/platformkit/eval_gate/cpcv_engine.py": "6f622dc107b432df0bdc1f4700e44d900de5c5adaad9657e15a22c579269c6e6",
+    "scripts/platformkit/eval_gate/quantile_walkforward.py": "f5e447995db2a57d8d648b6288e4dcd040f7728d7143f8ecaab84581d4cea6d6",
+    "scripts/platformkit/eval_gate/walkforward.py": "1058f981a328121802a996e8d46ff9502212a026918c723b7ebe28f49dce0c69"
+  },
+  "rss_mb_after": 489.51953125,
+  "rss_mb_before": 217.3125,
+  "sample_bytes": 2301381,
+  "sample_path": "docs/evidence/harness/S271_boxscore_quantile_producer_sample_2026-09-04_attempt2b.parquet",
+  "wall_seconds": 68.2147255204618
+}

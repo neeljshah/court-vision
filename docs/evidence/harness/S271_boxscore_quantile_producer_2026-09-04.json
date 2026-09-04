@@ -1,0 +1,68 @@
+{
+  "feature_purge_rows_at_or_after": 0,
+  "gap_id": "S271",
+  "heldout": "2025-10-01..2026-05-31",
+  "per_stat": {
+    "ast": {
+      "coverage_ci95": [
+        0.8964142050582201,
+        0.9044465511835874
+      ],
+      "empirical_coverage": 0.9004177679256543,
+      "input_bytes": 846879,
+      "input_path": "data/cache/ast_q50_oof_int95.parquet",
+      "n_game_date_clusters": 199,
+      "n_rows": 23458,
+      "nominal_coverage": 0.8,
+      "pinball_q50": 0.7204395443370124,
+      "pinball_q50_ci95": [
+        0.7125883526707519,
+        0.7276653350139071
+      ],
+      "shared_evaluator_records": 23458
+    },
+    "pts": {
+      "coverage_ci95": [
+        0.889661124520483,
+        0.8981981054371772
+      ],
+      "empirical_coverage": 0.8940659902805014,
+      "input_bytes": 869923,
+      "input_path": "data/cache/pts_q50_oof_int95.parquet",
+      "n_game_date_clusters": 199,
+      "n_rows": 23458,
+      "nominal_coverage": 0.8,
+      "pinball_q50": 2.4903820847345974,
+      "pinball_q50_ci95": [
+        2.46101141444376,
+        2.5199278734064494
+      ],
+      "shared_evaluator_records": 23458
+    },
+    "reb": {
+      "coverage_ci95": [
+        0.9034145232403569,
+        0.911678654744431
+      ],
+      "empirical_coverage": 0.9074942450336773,
+      "input_bytes": 842533,
+      "input_path": "data/cache/reb_q50_oof_int95.parquet",
+      "n_game_date_clusters": 199,
+      "n_rows": 23458,
+      "nominal_coverage": 0.8,
+      "pinball_q50": 0.99429329699779,
+      "pinball_q50_ci95": [
+        0.9815681317611183,
+        1.006778277739069
+      ],
+      "shared_evaluator_records": 23458
+    }
+  },
+  "preregistration": "docs/evidence/harness/S271_boxscore_quantile_prereg_2026-09-04.md",
+  "preregistration_seal_sha256": "49058380e65a769345a4a93310170d1abedd10350132de489706b7edb5d809d9",
+  "rss_mb_after": 245.1171875,
+  "rss_mb_before": 143.10546875,
+  "sample_bytes": 2264895,
+  "sample_path": "docs/evidence/harness/S271_boxscore_quantile_producer_sample_2026-09-04.parquet",
+  "shared_evaluator": "cpcv_evaluate(n_groups=2,n_test_groups=1,embargo_days=1)"
+}
