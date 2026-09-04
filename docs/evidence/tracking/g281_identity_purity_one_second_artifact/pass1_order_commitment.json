@@ -1,0 +1,13 @@
+{
+  "sample_size_pairs": 80,
+  "sample_size_endpoint_crops": 160,
+  "gap_frames": 30,
+  "gap_seconds": 1.0,
+  "sample_seed": 28120260904,
+  "pass1_blind_seed": 28120904,
+  "unblind_map_sha256": "af0400154174f5bdcf48c235c78d32e19e0132a4c8895c58ac9f9ec161c62103",
+  "per_id_cap": 4,
+  "sampling": "one seeded draw per equal-width first-frame bin from every finite, same-ID, both-endpoints-on-court 30-frame pair; no speed, displacement, jump, or outcome condition",
+  "presentation": "all endpoints pooled and randomized; order has no pair, endpoint, track ID, or source-frame field",
+  "crop_policy": "512x640 native-pixel footpoint-centred crops, no detector box drawn, reconstructed, or inferred"
+}

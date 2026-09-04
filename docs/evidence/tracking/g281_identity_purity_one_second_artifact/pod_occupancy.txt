@@ -1,0 +1,5 @@
+G281_OBSERVED_PYTHON_WORKTREES=/workspace/wt/a17
+G281_OCCUPANT lane=/workspace/wt/a17 pid=3128174 args=python -m scripts.platformkit.eval_gate.s276_incumbent_conformal_band_full_attempt2
+G281_PEER_WORKTREES=/workspace/wt/a17
+G281_PEER_WORKTREE_COUNT=1
+0 %, 0 %, 1 MiB, 24576 MiB
