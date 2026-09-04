@@ -1,4 +1,4 @@
-GAP S271 | sport nba | worktree a15 | log cx_s271_boxscore_quantile_producer
+GAP S271 | sport nba | worktree a18 | log cx_s271_boxscore_quantile_producer
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: successor to S262 (CLOSED AT LIMIT, box score q50 census). Verified this session (Python parquet read):
   data/cache/{pts,reb,ast}_q50_oof_int95.parquet each has 101,765 rows, columns player_id/date/target_<stat>/
