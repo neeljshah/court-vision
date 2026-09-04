@@ -1,0 +1,33 @@
+{
+  "source": {
+    "path": "/workspace/nba-ai-system/data/footage_corpus/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4",
+    "bytes": 3580059573,
+    "sha256": "9b35bd59d8b5b0e04737389b6661d7f8d37fac07a348056b081a6815ff5eea40",
+    "resolution_px": [1920, 1080],
+    "declared_frames": 205444,
+    "fps": "30000/1001",
+    "duration_seconds": 6855.014
+  },
+  "survey": {
+    "method": "one no-input-seek sequential pod decode; select every 685th decoded frame; review all retained contact-sheet tiles",
+    "stride_frames": 685,
+    "sampled_frames": 300,
+    "frame_indices": "0, 685, ..., 204815",
+    "usable_configuration_definition": "physical far sideline, centre line, identifiable painted centre-circle conic, and far-end lane lines must all be independently discernible; logo artwork is not a court conic",
+    "usable_configuration_count": 0,
+    "failure_head": "the Final Four centre logo obscures/replaces the identifiable painted centre circle in every sampled wide view"
+  },
+  "near_miss": {
+    "source_frame": 129465,
+    "jpeg": "candidate_frame_129465.jpg",
+    "jpeg_bytes": 455153,
+    "jpeg_sha256": "794a331404ce0607ad26d9062c9efdee371296c1d65d4567357ea57ec2934794",
+    "native_bgr_sha256": "3d320252581566d5e415604ec8a12a41e565c1efb3b2d372658d704aa6180fd6",
+    "identity_observation": "far sideline and centre line are visible, but centre_circle_zoom.jpg shows only logo artwork and no identifiable painted circle circumference"
+  },
+  "survey_pages": [
+    "survey/survey_01.jpg", "survey/survey_02.jpg", "survey/survey_03.jpg", "survey/survey_04.jpg", "survey/survey_05.jpg",
+    "survey/survey_06.jpg", "survey/survey_07.jpg", "survey/survey_08.jpg", "survey/survey_09.jpg", "survey/survey_10.jpg",
+    "survey/survey_11.jpg", "survey/survey_12.jpg", "survey/survey_13.jpg", "survey/survey_14.jpg", "survey/survey_15.jpg"
+  ]
+}
