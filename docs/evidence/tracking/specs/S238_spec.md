@@ -1,4 +1,4 @@
-GAP S238 | sport nba | worktree aXX | log cx_s238_conformal_band_s123_incumbent
+GAP S238 | sport nba | worktree a13XX | log cx_s238_conformal_band_s123_incumbent
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: simulation_methods_2026-09-04.md section on gap-table rows: "Conformal / honest uncertainty bands --
 absent on every `predict_live` path; point Brier/ECE only ... new row (unallocated): split-conformal band around
