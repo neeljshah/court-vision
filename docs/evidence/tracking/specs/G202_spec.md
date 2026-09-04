@@ -52,6 +52,36 @@ have not, the census proceeds as written and is now measured on a route whose re
 `osnet_reid.py`, `ball_detect_track.py` and their weight files, so a later reader can tell which side of
 the fix your run is on.**
 
+**THIRD AMENDMENT 2026-09-04 -- G211b HAS HANDED THIS ROW A SHARPER AND MORE ALARMING PREMISE THAN THE
+ONE IT WAS WRITTEN WITH.** Two attempts to measure per-frame cost on this exact clip have now failed for
+the same reason, and it is squarely this row's subject:
+
+  **`run_clip.py --video wnba__wnba_01.mp4 --frames 1200 --no-show --skip-features` processed 1,380
+  SOURCE FRAMES, made 400 calls into `AdvancedFeetDetector.get_players_pos`, and emitted ZERO TRACKING
+  ROWS, exiting 3 after Stage 1.** No call reached `crops_step3`, `osnet`, `assign_state` or `render`.
+
+**So on the programme's reference clip, in that configuration, the funnel does not narrow from 15 boxes
+to 2-3 survivors -- it goes to NOTHING.** **Establish first whether that reproduces**, and report it as
+your baseline alongside the historical figure. **If it does reproduce, the census question becomes "why
+does a frame with detections produce no emitted row at all", which is more fundamental than the survivor
+count and takes priority.**
+
+**TWO CAUSE CLAIMS OF MINE HAVE ALREADY BEEN RETRACTED ON THIS EXACT QUESTION -- DO NOT INHERIT EITHER.**
+`--skip-features` is NOT the cause: `scripts/run_clip.py:715-725` shows it guards only Stage 3 Feature
+Engineering, which runs AFTER tracking, and G211b failed in Stage 1. (It is also distinct from
+`--skip-tracking` at `:420-422`, which is the flag that actually bypasses Stage 1.) **Do not repeat the
+mistake either: read the gate that rejects before naming it.**
+
+**THE LEAD I WOULD FOLLOW, offered as a lead and NOT as a finding:** `_is_gameplay`
+(`unified_pipeline.py:992`) returns True only when YOLO detects ENOUGH players, and it is sticky via
+`_gameplay_cache_until` / `_no_gameplay_until`; basketball also carries a `min_players` requirement.
+**400 detector calls that never reach cropping is consistent with frames being rejected as
+non-gameplay.** **Verify or refute that with the code and the run, do not assume it.** Note that the
+daemon's own basketball command is different -- `run_clip.py --video ... --game-id ... --no-show
+--frames 3000 --data-dir <dir>` (`track_daemon.py:83-105`) -- and G207 scored **3,377 rows** for
+`wnba_01`, so a configuration that DOES emit rows exists. **Finding which configurations emit rows and
+which emit none is itself a first-class result of this row.**
+
 PART 1 -- THE CENSUS (this is the deliverable; do this first and completely):
   Instrument in your own process to record, per frame, over a bounded run:
     a. raw detector box count;
