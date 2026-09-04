@@ -1,0 +1,30 @@
+{
+  "source": "/workspace/nba-ai-system/data/footage_corpus/soccer__soccer_Z6NTDyxcODs.mp4",
+  "stride_seconds": 5,
+  "sample_count": 1195,
+  "sample_times_seconds": {
+    "first": 0,
+    "last": 5970
+  },
+  "screening_rule": "All four physical paint-line intersections must be in-frame, individually distinguishable, and unoccluded at native-frame confirmation; partial or inferred rectangles do not count.",
+  "configuration_counts": {
+    "full_penalty_area_16_5m_by_40_32m": 0,
+    "full_goal_area_5_5m_by_18_32m": 0,
+    "legal_two_line_plus_conic_fallback": 0
+  },
+  "panel_layout": "10x10 chronological tiles at 192x108 with 2-pixel padding and margin",
+  "panels": [
+    {"file": "survey_panel_01.jpg", "sample_indices": "0-99", "times_seconds": "0-495"},
+    {"file": "survey_panel_02.jpg", "sample_indices": "100-199", "times_seconds": "500-995"},
+    {"file": "survey_panel_03.jpg", "sample_indices": "200-299", "times_seconds": "1000-1495"},
+    {"file": "survey_panel_04.jpg", "sample_indices": "300-399", "times_seconds": "1500-1995"},
+    {"file": "survey_panel_05.jpg", "sample_indices": "400-499", "times_seconds": "2000-2495"},
+    {"file": "survey_panel_06.jpg", "sample_indices": "500-599", "times_seconds": "2500-2995"},
+    {"file": "survey_panel_07.jpg", "sample_indices": "600-699", "times_seconds": "3000-3495"},
+    {"file": "survey_panel_08.jpg", "sample_indices": "700-799", "times_seconds": "3500-3995"},
+    {"file": "survey_panel_09.jpg", "sample_indices": "800-899", "times_seconds": "4000-4495"},
+    {"file": "survey_panel_10.jpg", "sample_indices": "900-999", "times_seconds": "4500-4995"},
+    {"file": "survey_panel_11.jpg", "sample_indices": "1000-1099", "times_seconds": "5000-5495"},
+    {"file": "survey_panel_12.jpg", "sample_indices": "1100-1194", "times_seconds": "5500-5970"}
+  ]
+}
