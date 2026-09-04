@@ -1,4 +1,4 @@
-GAP S216 | sport nba (in-game) | worktree aXX | log cx_s216_nba_sim_engine_vs_line
+GAP S216 | sport nba (in-game) | worktree a13 | log cx_s216_nba_sim_engine_vs_line
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: the possession Monte Carlo (src/sim/basketball_sim.simulate_game, and the CUDA-batched
   src/sim/fast_sim.simulate_game_fast) has never priced an in-play tick.
