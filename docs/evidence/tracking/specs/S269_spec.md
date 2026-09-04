@@ -1,7 +1,7 @@
 GAP S269 | sport wnba | worktree a15 | log cx_s269_wnba_oncourt_five_lineup_state
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: successor to S253 (DONE 4dd9e24eb) and S84 (SCREEN_NULL, NBA). S253's module is named "nba_..." but its
-  ONLY source is the S253 stamps.csv artifact (raw CDN store was unreachable 07:34-07:50 behind a self-junction; repaired; OUT OF SCOPE) (168 WNBA games,
+  ONLY source is the S253 stamps.csv artifact (raw CDN store OUT OF SCOPE; see INPUT RULE) (168 WNBA games,
   2026-04-25..2026-07-04, per the register row) -- verified: no NBA CDN archive exists. This row is WNBA,
   correcting a false "nba" premise per contract clause S2. All 85 priced S206 games fall inside S253's 167 qualifying
   games (verified this session: comm -12 of the two id sets returns 85/85). S84's NBA lineup screen was
