@@ -1,0 +1,688 @@
+{
+  "attacks": [
+    {
+      "exception": "S295 requires a declarative predictor specification; callbacks are forbidden",
+      "exception_type": "TypeError",
+      "form": "closure",
+      "mode": "walk_forward",
+      "rejected": true
+    },
+    {
+      "exception": "S295 requires a declarative predictor specification; callbacks are forbidden",
+      "exception_type": "TypeError",
+      "form": "module_global",
+      "mode": "walk_forward",
+      "rejected": true
+    },
+    {
+      "exception": "S295 requires a declarative predictor specification; callbacks are forbidden",
+      "exception_type": "TypeError",
+      "form": "default_argument",
+      "mode": "walk_forward",
+      "rejected": true
+    },
+    {
+      "exception": "S295 requires a declarative predictor specification; callbacks are forbidden",
+      "exception_type": "TypeError",
+      "form": "closure",
+      "mode": "cpcv_evaluate",
+      "rejected": true
+    },
+    {
+      "exception": "S295 requires a declarative predictor specification; callbacks are forbidden",
+      "exception_type": "TypeError",
+      "form": "module_global",
+      "mode": "cpcv_evaluate",
+      "rejected": true
+    },
+    {
+      "exception": "S295 requires a declarative predictor specification; callbacks are forbidden",
+      "exception_type": "TypeError",
+      "form": "default_argument",
+      "mode": "cpcv_evaluate",
+      "rejected": true
+    }
+  ],
+  "before_condition": {
+    "callback_readable": true,
+    "declared_brier": 0.5625,
+    "declared_records": [
+      {
+        "game_id": "game_0",
+        "loss": 0.5625,
+        "p_close": 0.5,
+        "p_model": 0.75,
+        "stable_tick_key": "walk_forward|wf|game_0|2024-01-10T19:00:00",
+        "ts": "2024-01-10T19:00:00",
+        "y": 0
+      },
+      {
+        "game_id": "game_0",
+        "loss": 0.5625,
+        "p_close": 0.5,
+        "p_model": 0.25,
+        "stable_tick_key": "walk_forward|wf|game_0|2024-01-10T20:00:00",
+        "ts": "2024-01-10T20:00:00",
+        "y": 1
+      },
+      {
+        "game_id": "game_1",
+        "loss": 0.5625,
+        "p_close": 0.5,
+        "p_model": 0.75,
+        "stable_tick_key": "walk_forward|wf|game_1|2024-01-17T19:00:00",
+        "ts": "2024-01-17T19:00:00",
+        "y": 0
+      },
+      {
+        "game_id": "game_1",
+        "loss": 0.5625,
+        "p_close": 0.5,
+        "p_model": 0.25,
+        "stable_tick_key": "walk_forward|wf|game_1|2024-01-17T20:00:00",
+        "ts": "2024-01-17T20:00:00",
+        "y": 1
+      },
+      {
+        "game_id": "game_2",
+        "loss": 0.5625,
+        "p_close": 0.5,
+        "p_model": 0.75,
+        "stable_tick_key": "walk_forward|wf|game_2|2024-01-24T19:00:00",
+        "ts": "2024-01-24T19:00:00",
+        "y": 0
+      },
+      {
+        "game_id": "game_2",
+        "loss": 0.5625,
+        "p_close": 0.5,
+        "p_model": 0.25,
+        "stable_tick_key": "walk_forward|wf|game_2|2024-01-24T20:00:00",
+        "ts": "2024-01-24T20:00:00",
+        "y": 1
+      },
+      {
+        "game_id": "game_3",
+        "loss": 0.5625,
+        "p_close": 0.5,
+        "p_model": 0.75,
+        "stable_tick_key": "walk_forward|wf|game_3|2024-01-31T19:00:00",
+        "ts": "2024-01-31T19:00:00",
+        "y": 0
+      },
+      {
+        "game_id": "game_3",
+        "loss": 0.5625,
+        "p_close": 0.5,
+        "p_model": 0.25,
+        "stable_tick_key": "walk_forward|wf|game_3|2024-01-31T20:00:00",
+        "ts": "2024-01-31T20:00:00",
+        "y": 1
+      }
+    ],
+    "oracle_brier": 0.0,
+    "oracle_records": [
+      {
+        "game_id": "game_0",
+        "loss": 0.0,
+        "p_close": 0.5,
+        "p_model": 0.0,
+        "stable_tick_key": "walk_forward|wf|game_0|2024-01-10T19:00:00",
+        "ts": "2024-01-10T19:00:00",
+        "y": 0
+      },
+      {
+        "game_id": "game_0",
+        "loss": 0.0,
+        "p_close": 0.5,
+        "p_model": 1.0,
+        "stable_tick_key": "walk_forward|wf|game_0|2024-01-10T20:00:00",
+        "ts": "2024-01-10T20:00:00",
+        "y": 1
+      },
+      {
+        "game_id": "game_1",
+        "loss": 0.0,
+        "p_close": 0.5,
+        "p_model": 0.0,
+        "stable_tick_key": "walk_forward|wf|game_1|2024-01-17T19:00:00",
+        "ts": "2024-01-17T19:00:00",
+        "y": 0
+      },
+      {
+        "game_id": "game_1",
+        "loss": 0.0,
+        "p_close": 0.5,
+        "p_model": 1.0,
+        "stable_tick_key": "walk_forward|wf|game_1|2024-01-17T20:00:00",
+        "ts": "2024-01-17T20:00:00",
+        "y": 1
+      },
+      {
+        "game_id": "game_2",
+        "loss": 0.0,
+        "p_close": 0.5,
+        "p_model": 0.0,
+        "stable_tick_key": "walk_forward|wf|game_2|2024-01-24T19:00:00",
+        "ts": "2024-01-24T19:00:00",
+        "y": 0
+      },
+      {
+        "game_id": "game_2",
+        "loss": 0.0,
+        "p_close": 0.5,
+        "p_model": 1.0,
+        "stable_tick_key": "walk_forward|wf|game_2|2024-01-24T20:00:00",
+        "ts": "2024-01-24T20:00:00",
+        "y": 1
+      },
+      {
+        "game_id": "game_3",
+        "loss": 0.0,
+        "p_close": 0.5,
+        "p_model": 0.0,
+        "stable_tick_key": "walk_forward|wf|game_3|2024-01-31T19:00:00",
+        "ts": "2024-01-31T19:00:00",
+        "y": 0
+      },
+      {
+        "game_id": "game_3",
+        "loss": 0.0,
+        "p_close": 0.5,
+        "p_model": 1.0,
+        "stable_tick_key": "walk_forward|wf|game_3|2024-01-31T20:00:00",
+        "ts": "2024-01-31T20:00:00",
+        "y": 1
+      }
+    ],
+    "strict_redaction_default": false
+  },
+  "detection": {
+    "successes": 6,
+    "total": 6,
+    "wilson_95": [
+      0.6096657120978346,
+      1.0
+    ]
+  },
+  "input": {
+    "external_files_opened": [],
+    "kind": "generated_local_construct",
+    "raw_states": [
+      {
+        "away": "A0",
+        "devig_close_prob": 0.5,
+        "feature_avail": {
+          "p": "2024-01-09T19:00:00"
+        },
+        "features": {
+          "p": 0.75
+        },
+        "game_id": "game_0",
+        "home": "H0",
+        "outcome": 0,
+        "settled_plant": 0,
+        "state_ts": "2024-01-10T19:00:00"
+      },
+      {
+        "away": "A0",
+        "devig_close_prob": 0.5,
+        "feature_avail": {
+          "p": "2024-01-09T20:00:00"
+        },
+        "features": {
+          "p": 0.25
+        },
+        "game_id": "game_0",
+        "home": "H0",
+        "outcome": 1,
+        "settled_plant": 1,
+        "state_ts": "2024-01-10T20:00:00"
+      },
+      {
+        "away": "A1",
+        "devig_close_prob": 0.5,
+        "feature_avail": {
+          "p": "2024-01-16T19:00:00"
+        },
+        "features": {
+          "p": 0.75
+        },
+        "game_id": "game_1",
+        "home": "H1",
+        "outcome": 0,
+        "settled_plant": 0,
+        "state_ts": "2024-01-17T19:00:00"
+      },
+      {
+        "away": "A1",
+        "devig_close_prob": 0.5,
+        "feature_avail": {
+          "p": "2024-01-16T20:00:00"
+        },
+        "features": {
+          "p": 0.25
+        },
+        "game_id": "game_1",
+        "home": "H1",
+        "outcome": 1,
+        "settled_plant": 1,
+        "state_ts": "2024-01-17T20:00:00"
+      },
+      {
+        "away": "A2",
+        "devig_close_prob": 0.5,
+        "feature_avail": {
+          "p": "2024-01-23T19:00:00"
+        },
+        "features": {
+          "p": 0.75
+        },
+        "game_id": "game_2",
+        "home": "H2",
+        "outcome": 0,
+        "settled_plant": 0,
+        "state_ts": "2024-01-24T19:00:00"
+      },
+      {
+        "away": "A2",
+        "devig_close_prob": 0.5,
+        "feature_avail": {
+          "p": "2024-01-23T20:00:00"
+        },
+        "features": {
+          "p": 0.25
+        },
+        "game_id": "game_2",
+        "home": "H2",
+        "outcome": 1,
+        "settled_plant": 1,
+        "state_ts": "2024-01-24T20:00:00"
+      },
+      {
+        "away": "A3",
+        "devig_close_prob": 0.5,
+        "feature_avail": {
+          "p": "2024-01-30T19:00:00"
+        },
+        "features": {
+          "p": 0.75
+        },
+        "game_id": "game_3",
+        "home": "H3",
+        "outcome": 0,
+        "settled_plant": 0,
+        "state_ts": "2024-01-31T19:00:00"
+      },
+      {
+        "away": "A3",
+        "devig_close_prob": 0.5,
+        "feature_avail": {
+          "p": "2024-01-30T20:00:00"
+        },
+        "features": {
+          "p": 0.25
+        },
+        "game_id": "game_3",
+        "home": "H3",
+        "outcome": 1,
+        "settled_plant": 1,
+        "state_ts": "2024-01-31T20:00:00"
+      }
+    ]
+  },
+  "prereg_path": "docs\\evidence\\harness\\S295_strict_redaction_wrapper_prereg_2026-09-04.md",
+  "prereg_sha256": "6e4a9b70c8425d661678c1d3620cc6d7346a511313d943e2be4ec7d7d1478e75",
+  "replays": [
+    {
+      "baseline_brier": 0.5625,
+      "baseline_records": [
+        {
+          "game_id": "game_0",
+          "loss": 0.5625,
+          "p_close": 0.5,
+          "p_model": 0.75,
+          "stable_tick_key": "walk_forward|wf|game_0|2024-01-10T19:00:00",
+          "ts": "2024-01-10T19:00:00",
+          "y": 0
+        },
+        {
+          "game_id": "game_0",
+          "loss": 0.5625,
+          "p_close": 0.5,
+          "p_model": 0.25,
+          "stable_tick_key": "walk_forward|wf|game_0|2024-01-10T20:00:00",
+          "ts": "2024-01-10T20:00:00",
+          "y": 1
+        },
+        {
+          "game_id": "game_1",
+          "loss": 0.5625,
+          "p_close": 0.5,
+          "p_model": 0.75,
+          "stable_tick_key": "walk_forward|wf|game_1|2024-01-17T19:00:00",
+          "ts": "2024-01-17T19:00:00",
+          "y": 0
+        },
+        {
+          "game_id": "game_1",
+          "loss": 0.5625,
+          "p_close": 0.5,
+          "p_model": 0.25,
+          "stable_tick_key": "walk_forward|wf|game_1|2024-01-17T20:00:00",
+          "ts": "2024-01-17T20:00:00",
+          "y": 1
+        },
+        {
+          "game_id": "game_2",
+          "loss": 0.5625,
+          "p_close": 0.5,
+          "p_model": 0.75,
+          "stable_tick_key": "walk_forward|wf|game_2|2024-01-24T19:00:00",
+          "ts": "2024-01-24T19:00:00",
+          "y": 0
+        },
+        {
+          "game_id": "game_2",
+          "loss": 0.5625,
+          "p_close": 0.5,
+          "p_model": 0.25,
+          "stable_tick_key": "walk_forward|wf|game_2|2024-01-24T20:00:00",
+          "ts": "2024-01-24T20:00:00",
+          "y": 1
+        },
+        {
+          "game_id": "game_3",
+          "loss": 0.5625,
+          "p_close": 0.5,
+          "p_model": 0.75,
+          "stable_tick_key": "walk_forward|wf|game_3|2024-01-31T19:00:00",
+          "ts": "2024-01-31T19:00:00",
+          "y": 0
+        },
+        {
+          "game_id": "game_3",
+          "loss": 0.5625,
+          "p_close": 0.5,
+          "p_model": 0.25,
+          "stable_tick_key": "walk_forward|wf|game_3|2024-01-31T20:00:00",
+          "ts": "2024-01-31T20:00:00",
+          "y": 1
+        }
+      ],
+      "isolated_brier": 0.5625,
+      "isolated_records": [
+        {
+          "game_id": "game_0",
+          "loss": 0.5625,
+          "p_close": 0.5,
+          "p_model": 0.75,
+          "stable_tick_key": "walk_forward|wf|game_0|2024-01-10T19:00:00",
+          "ts": "2024-01-10T19:00:00",
+          "y": 0
+        },
+        {
+          "game_id": "game_0",
+          "loss": 0.5625,
+          "p_close": 0.5,
+          "p_model": 0.25,
+          "stable_tick_key": "walk_forward|wf|game_0|2024-01-10T20:00:00",
+          "ts": "2024-01-10T20:00:00",
+          "y": 1
+        },
+        {
+          "game_id": "game_1",
+          "loss": 0.5625,
+          "p_close": 0.5,
+          "p_model": 0.75,
+          "stable_tick_key": "walk_forward|wf|game_1|2024-01-17T19:00:00",
+          "ts": "2024-01-17T19:00:00",
+          "y": 0
+        },
+        {
+          "game_id": "game_1",
+          "loss": 0.5625,
+          "p_close": 0.5,
+          "p_model": 0.25,
+          "stable_tick_key": "walk_forward|wf|game_1|2024-01-17T20:00:00",
+          "ts": "2024-01-17T20:00:00",
+          "y": 1
+        },
+        {
+          "game_id": "game_2",
+          "loss": 0.5625,
+          "p_close": 0.5,
+          "p_model": 0.75,
+          "stable_tick_key": "walk_forward|wf|game_2|2024-01-24T19:00:00",
+          "ts": "2024-01-24T19:00:00",
+          "y": 0
+        },
+        {
+          "game_id": "game_2",
+          "loss": 0.5625,
+          "p_close": 0.5,
+          "p_model": 0.25,
+          "stable_tick_key": "walk_forward|wf|game_2|2024-01-24T20:00:00",
+          "ts": "2024-01-24T20:00:00",
+          "y": 1
+        },
+        {
+          "game_id": "game_3",
+          "loss": 0.5625,
+          "p_close": 0.5,
+          "p_model": 0.75,
+          "stable_tick_key": "walk_forward|wf|game_3|2024-01-31T19:00:00",
+          "ts": "2024-01-31T19:00:00",
+          "y": 0
+        },
+        {
+          "game_id": "game_3",
+          "loss": 0.5625,
+          "p_close": 0.5,
+          "p_model": 0.25,
+          "stable_tick_key": "walk_forward|wf|game_3|2024-01-31T20:00:00",
+          "ts": "2024-01-31T20:00:00",
+          "y": 1
+        }
+      ],
+      "mode": "walk_forward",
+      "replay_error": 0.0,
+      "rss": {
+        "after_bytes": 149508096,
+        "before_bytes": 149942272
+      }
+    },
+    {
+      "baseline_brier": 0.5625,
+      "baseline_records": [
+        {
+          "game_id": "game_0",
+          "loss": 0.5625,
+          "n_train": 6,
+          "p_close": 0.5,
+          "p_model": 0.75,
+          "split_id": 0,
+          "stable_tick_key": "cpcv_evaluate|0|game_0|2024-01-10T19:00:00",
+          "ts": "2024-01-10T19:00:00",
+          "y": 0
+        },
+        {
+          "game_id": "game_0",
+          "loss": 0.5625,
+          "n_train": 6,
+          "p_close": 0.5,
+          "p_model": 0.25,
+          "split_id": 0,
+          "stable_tick_key": "cpcv_evaluate|0|game_0|2024-01-10T20:00:00",
+          "ts": "2024-01-10T20:00:00",
+          "y": 1
+        },
+        {
+          "game_id": "game_1",
+          "loss": 0.5625,
+          "n_train": 6,
+          "p_close": 0.5,
+          "p_model": 0.75,
+          "split_id": 1,
+          "stable_tick_key": "cpcv_evaluate|1|game_1|2024-01-17T19:00:00",
+          "ts": "2024-01-17T19:00:00",
+          "y": 0
+        },
+        {
+          "game_id": "game_1",
+          "loss": 0.5625,
+          "n_train": 6,
+          "p_close": 0.5,
+          "p_model": 0.25,
+          "split_id": 1,
+          "stable_tick_key": "cpcv_evaluate|1|game_1|2024-01-17T20:00:00",
+          "ts": "2024-01-17T20:00:00",
+          "y": 1
+        },
+        {
+          "game_id": "game_2",
+          "loss": 0.5625,
+          "n_train": 6,
+          "p_close": 0.5,
+          "p_model": 0.75,
+          "split_id": 2,
+          "stable_tick_key": "cpcv_evaluate|2|game_2|2024-01-24T19:00:00",
+          "ts": "2024-01-24T19:00:00",
+          "y": 0
+        },
+        {
+          "game_id": "game_2",
+          "loss": 0.5625,
+          "n_train": 6,
+          "p_close": 0.5,
+          "p_model": 0.25,
+          "split_id": 2,
+          "stable_tick_key": "cpcv_evaluate|2|game_2|2024-01-24T20:00:00",
+          "ts": "2024-01-24T20:00:00",
+          "y": 1
+        },
+        {
+          "game_id": "game_3",
+          "loss": 0.5625,
+          "n_train": 6,
+          "p_close": 0.5,
+          "p_model": 0.75,
+          "split_id": 3,
+          "stable_tick_key": "cpcv_evaluate|3|game_3|2024-01-31T19:00:00",
+          "ts": "2024-01-31T19:00:00",
+          "y": 0
+        },
+        {
+          "game_id": "game_3",
+          "loss": 0.5625,
+          "n_train": 6,
+          "p_close": 0.5,
+          "p_model": 0.25,
+          "split_id": 3,
+          "stable_tick_key": "cpcv_evaluate|3|game_3|2024-01-31T20:00:00",
+          "ts": "2024-01-31T20:00:00",
+          "y": 1
+        }
+      ],
+      "isolated_brier": 0.5625,
+      "isolated_records": [
+        {
+          "game_id": "game_0",
+          "loss": 0.5625,
+          "n_train": 6,
+          "p_close": 0.5,
+          "p_model": 0.75,
+          "split_id": 0,
+          "stable_tick_key": "cpcv_evaluate|0|game_0|2024-01-10T19:00:00",
+          "ts": "2024-01-10T19:00:00",
+          "y": 0
+        },
+        {
+          "game_id": "game_0",
+          "loss": 0.5625,
+          "n_train": 6,
+          "p_close": 0.5,
+          "p_model": 0.25,
+          "split_id": 0,
+          "stable_tick_key": "cpcv_evaluate|0|game_0|2024-01-10T20:00:00",
+          "ts": "2024-01-10T20:00:00",
+          "y": 1
+        },
+        {
+          "game_id": "game_1",
+          "loss": 0.5625,
+          "n_train": 6,
+          "p_close": 0.5,
+          "p_model": 0.75,
+          "split_id": 1,
+          "stable_tick_key": "cpcv_evaluate|1|game_1|2024-01-17T19:00:00",
+          "ts": "2024-01-17T19:00:00",
+          "y": 0
+        },
+        {
+          "game_id": "game_1",
+          "loss": 0.5625,
+          "n_train": 6,
+          "p_close": 0.5,
+          "p_model": 0.25,
+          "split_id": 1,
+          "stable_tick_key": "cpcv_evaluate|1|game_1|2024-01-17T20:00:00",
+          "ts": "2024-01-17T20:00:00",
+          "y": 1
+        },
+        {
+          "game_id": "game_2",
+          "loss": 0.5625,
+          "n_train": 6,
+          "p_close": 0.5,
+          "p_model": 0.75,
+          "split_id": 2,
+          "stable_tick_key": "cpcv_evaluate|2|game_2|2024-01-24T19:00:00",
+          "ts": "2024-01-24T19:00:00",
+          "y": 0
+        },
+        {
+          "game_id": "game_2",
+          "loss": 0.5625,
+          "n_train": 6,
+          "p_close": 0.5,
+          "p_model": 0.25,
+          "split_id": 2,
+          "stable_tick_key": "cpcv_evaluate|2|game_2|2024-01-24T20:00:00",
+          "ts": "2024-01-24T20:00:00",
+          "y": 1
+        },
+        {
+          "game_id": "game_3",
+          "loss": 0.5625,
+          "n_train": 6,
+          "p_close": 0.5,
+          "p_model": 0.75,
+          "split_id": 3,
+          "stable_tick_key": "cpcv_evaluate|3|game_3|2024-01-31T19:00:00",
+          "ts": "2024-01-31T19:00:00",
+          "y": 0
+        },
+        {
+          "game_id": "game_3",
+          "loss": 0.5625,
+          "n_train": 6,
+          "p_close": 0.5,
+          "p_model": 0.25,
+          "split_id": 3,
+          "stable_tick_key": "cpcv_evaluate|3|game_3|2024-01-31T20:00:00",
+          "ts": "2024-01-31T20:00:00",
+          "y": 1
+        }
+      ],
+      "mode": "cpcv_evaluate",
+      "replay_error": 0.0,
+      "rss": {
+        "after_bytes": 150220800,
+        "before_bytes": 150179840
+      }
+    }
+  ],
+  "schema": "S295_strict_redaction_wrapper_v1",
+  "sign_convention": "improvement = baseline loss minus candidate loss; positive = candidate better"
+}

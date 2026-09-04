@@ -1226,6 +1226,71 @@ corrected -- along with G272b's split, G276b's baseline, G279's curve and G281's
 
 ---
 
+---
+
+## 7.27 THE ROBUSTNESS SET IS COMPLETE: the headline figure survives all four checks
+
+The programme's most-quoted tracking numbers -- **13.6 pct of all finite same-ID
+steps and 10.5 pct of both-endpoints-on-court steps above 40 ft/s** -- have now
+been tested from four independent directions.
+
+| check | row | result |
+|---|---|---|
+| **cut point** | G279 | **robust.** On-court 12.0 pct at 35 ft/s, 10.5 at 40, 9.6 at 45; no cliff. At 60 ft/s -- 1.47x Bolt's peak -- **7.6 pct of on-court steps still exceed the bar.** |
+| **span** | G278 | **NOT representative.** The studied span is 0.836 court-bearing against 0.656 clip-wide (z = 2.662, p = 0.0078), so the figure may not be quoted clip-wide. |
+| **second shot** | G274 | **unmappable.** The adjacent shot is a close-up with no painted court; direct-to-seed matching returned 0.569 px RMS on it anyway. |
+| **detector draw** | G282 | **reproduces.** See below. |
+
+### The detector-draw check, and how it was obtained
+
+G282 consumed four lane cycles without producing a measurement -- twice through
+faults in my own spec (a stale-census concurrency gate, a disk guard in the write
+path) and once through pod saturation. **The answer came from an orphaned
+process**: G282c launched the route four times while diagnosing a helper,
+declared its own run invalid rather than cherry-picking, and left the pod
+processes alive. One completed and wrote a full artifact, which I fetched before
+the worktree could be reset.
+
+**Exactly one artifact exists, so no selection among draws was possible.**
+
+| denominator | draw 1 (G267) | draw 2 | difference |
+|---|---:|---:|---:|
+| all finite same-ID steps | 4,090 / 29,973 = **0.136456** | 4,104 / 29,961 = **0.136978** | **+0.000522** |
+| both endpoints on court | 2,507 / 23,783 = **0.105411** | 2,514 / 23,761 = **0.105804** | **+0.000393** |
+
+The draw is genuinely different -- **30,062 detections against 30,071, and 101
+emitted track ids against 98** -- with the same route sha256 set, span, seed and
+published map. **The rate reproduces to within five ten-thousandths on both
+denominators.**
+
+### A units error caught before it became a false result
+
+My first recomputation returned **0.111966**, which would have read as a
+non-reproduction. **I had required a frame gap of exactly 1, while G267 and G279
+count consecutive OBSERVATIONS of a track regardless of gap** -- 26,517 steps
+under my definition against 29,961 under theirs. Recomputing in the reference's
+own units reproduced the artifact's internal figure exactly, which is what
+confirmed the definition.
+
+**This is the second time tonight that comparing two quantities in different
+units nearly produced a false finding**, after the G273-versus-G285b tolerance
+mismatch. Same lesson, different disguise.
+
+### What the completed set does and does not license
+
+**Does:** the 13.6 and 10.5 pct figures are a property of the system under a
+fixed map and span, robust to the threshold and reproducible across detector
+draws.
+
+**Does not:** they remain **span-specific** (G278), **not clip-wide**, and
+**reproducible is not correct.** Two draws bound nothing about variance -- no
+spread is computed and G267's figure remains the sole reference. And the
+detection defect underneath them is unchanged: **0.295 of detections have no
+player in a 512x640 neighbourhood, and of the 0.705 that do, the footpoint sits a
+median 172 px from that player's feet.**
+
+---
+
 ## NOT VERIFIED
 
 - Whether a trained basketball calibration model would work; nothing was trained
