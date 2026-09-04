@@ -1,6 +1,24 @@
 {
   "base_rate": 0.5112686816597432,
   "bin_edge_rule": "np.linspace(0, 1, bins + 1) equal-width edges, bin k = [lo, hi) except the last = [lo, hi] -- the SAME rule eval_gate.scoring.ece and calib_decomp.decompose bin by (gap S42)",
+  "by_corpus_unit": [
+    {
+      "corpus_unit": "ATP",
+      "date_max": "2025-12-17",
+      "date_min": "2015-01-04",
+      "ece_after": 0.004324740569758456,
+      "ece_before": 0.03946118154824402,
+      "n": 30616
+    },
+    {
+      "corpus_unit": "WTA",
+      "date_max": "2025-11-01",
+      "date_min": "2015-01-19",
+      "ece_after": 0.010498138462957506,
+      "ece_before": 0.038484340043022605,
+      "n": 11270
+    }
+  ],
   "corpus_date_column": "event_date",
   "devigged_close_column": null,
   "diagnostic_in_sample_isotonic": {
@@ -9,8 +27,16 @@
     "delta": 0.0022727279010088808
   },
   "dropped_rows": 0,
-  "ece_after": 0.008403089761848824,
+  "ece_after": 0.0042712669796741804,
   "ece_before": 0.03869098889818134,
+  "evaluation": {
+    "assertion": "every calibrated prediction came from cpcv_evaluate",
+    "engine": "cpcv_evaluate",
+    "n_groups": 8,
+    "n_test_groups": 1,
+    "purge": "shared evaluator same-team and matchup purge",
+    "symmetric_embargo_days": 1
+  },
   "input_rows": 41886,
   "max_loser_wp": {
     "above_0_8": 892,
@@ -23,8 +49,8 @@
     }
   },
   "murphy_after": {
-    "reliability": 0.00013934776115065827,
-    "resolution": 0.03103590509145616,
+    "reliability": 6.58480619866118e-05,
+    "resolution": 0.03130409029876583,
     "uncertainty": 0.24987301681365137
   },
   "murphy_before": {
@@ -32,7 +58,7 @@
     "resolution": 0.03171607585586237,
     "uncertainty": 0.24987301681365137
   },
-  "order_basis": "POSITIONAL-ORDER",
+  "order_basis": "event_date",
   "prediction_column": "p_base",
   "prereg_path": "docs/evidence/harness/S05_calibration_prereg_2026-09-03.md",
   "prereg_seal_sha256": "9051BB6E3BD89F7309A799F9739C8E61EA6DB3530E52AD87666568220591DF8A",
@@ -133,93 +159,93 @@
   "reliability_bins_after": [
     {
       "bin": "0.0-0.1",
-      "gap": 0.050140462670597144,
+      "gap": 0.04573246521558001,
       "hi": 0.1,
       "lo": 0.0,
-      "mean_predicted_prob": 0.06117012978900788,
-      "n": 557,
-      "observed_win_freq": 0.11131059245960502
+      "mean_predicted_prob": 0.060036765553650756,
+      "n": 520,
+      "observed_win_freq": 0.10576923076923077
     },
     {
       "bin": "0.1-0.2",
-      "gap": 0.0017547874793414076,
+      "gap": 0.007105548181820964,
       "hi": 0.2,
       "lo": 0.1,
-      "mean_predicted_prob": 0.13636180444890972,
-      "n": 1115,
-      "observed_win_freq": 0.13811659192825113
+      "mean_predicted_prob": 0.147533627075911,
+      "n": 1261,
+      "observed_win_freq": 0.15463917525773196
     },
     {
       "bin": "0.2-0.3",
-      "gap": 0.006596092751390892,
+      "gap": 0.0086186708301082,
       "hi": 0.30000000000000004,
       "lo": 0.2,
-      "mean_predicted_prob": 0.25305408818950176,
-      "n": 3316,
-      "observed_win_freq": 0.25965018094089265
+      "mean_predicted_prob": 0.25899513027166043,
+      "n": 3449,
+      "observed_win_freq": 0.26761380110176863
     },
     {
       "bin": "0.3-0.4",
-      "gap": 0.0023644270378013754,
+      "gap": -0.005684363099076772,
       "hi": 0.4,
       "lo": 0.30000000000000004,
-      "mean_predicted_prob": 0.3456375143956236,
-      "n": 6181,
-      "observed_win_freq": 0.348001941433425
+      "mean_predicted_prob": 0.3463660656597008,
+      "n": 5897,
+      "observed_win_freq": 0.340681702560624
     },
     {
       "bin": "0.4-0.5",
-      "gap": -0.0018120085763465577,
+      "gap": 0.002712443713990653,
       "hi": 0.5,
       "lo": 0.4,
-      "mean_predicted_prob": 0.4582730097404909,
-      "n": 8590,
-      "observed_win_freq": 0.45646100116414434
+      "mean_predicted_prob": 0.4561159907241999,
+      "n": 9594,
+      "observed_win_freq": 0.45882843443819055
     },
     {
       "bin": "0.5-0.6",
-      "gap": -0.010428786780390498,
+      "gap": -7.988902918876217e-05,
       "hi": 0.6000000000000001,
       "lo": 0.5,
-      "mean_predicted_prob": 0.5409107144912338,
-      "n": 8300,
-      "observed_win_freq": 0.5304819277108433
+      "mean_predicted_prob": 0.5430871116161881,
+      "n": 7615,
+      "observed_win_freq": 0.5430072225869993
     },
     {
       "bin": "0.6-0.7",
-      "gap": -0.011709691546744283,
+      "gap": -0.0029195270824980968,
       "hi": 0.7000000000000001,
       "lo": 0.6000000000000001,
-      "mean_predicted_prob": 0.6507157862490415,
-      "n": 6399,
-      "observed_win_freq": 0.6390060947022972
+      "mean_predicted_prob": 0.6390657518860512,
+      "n": 5854,
+      "observed_win_freq": 0.6361462248035531
     },
     {
       "bin": "0.7-0.8",
-      "gap": -0.00789345358562854,
+      "gap": -0.002129811791519165,
       "hi": 0.8,
       "lo": 0.7000000000000001,
-      "mean_predicted_prob": 0.7528877867930331,
-      "n": 5294,
-      "observed_win_freq": 0.7449943332074046
+      "mean_predicted_prob": 0.7436019841434043,
+      "n": 5570,
+      "observed_win_freq": 0.7414721723518851
     },
     {
       "bin": "0.8-0.9",
-      "gap": -0.034251518747761,
+      "gap": 0.0035006558601733406,
       "hi": 0.9,
       "lo": 0.8,
-      "mean_predicted_prob": 0.8632507307256964,
-      "n": 1269,
-      "observed_win_freq": 0.8289992119779354
+      "mean_predicted_prob": 0.8567403079952484,
+      "n": 1660,
+      "observed_win_freq": 0.8602409638554217
     },
     {
       "bin": "0.9-1.0",
-      "gap": -0.026927519311731984,
+      "gap": -0.046185050978677866,
       "hi": 1.0,
       "lo": 0.9,
-      "mean_predicted_prob": 0.926349484629651,
-      "n": 865,
-      "observed_win_freq": 0.8994219653179191
+      "mean_predicted_prob": 0.9345970681460598,
+      "n": 466,
+      "observed_win_freq": 0.8884120171673819
     }
   ],
   "reproduction": {
@@ -231,9 +257,12 @@
   },
   "reproduction_max_abs_diff": 0.0,
   "scored_rows": 41886,
-  "sharpness_after": 0.03479011149543342,
+  "sharpness_after": 0.03333721347193892,
   "sharpness_before": 0.0476306202696155,
   "sport": "tennis",
   "status": "OK",
-  "verdict": "FLATTENED"
+  "verdict": "FLATTENED",
+  "walk_partition_is_identity": true,
+  "walk_sort_within_unit_is_noop": true,
+  "walk_unit_col": "corpus_unit"
 }
