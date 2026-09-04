@@ -1,4 +1,4 @@
-GAP S281 | sport nba (in-game) | worktree a17 | log cx_s281_ingame_momentum_microstructure
+GAP S281 | sport nba (in-game) | worktree a16 | log cx_s281_ingame_momentum_microstructure
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: hypothesis: within-game momentum (a recent scoring run, a run just ending) is priced late by the
   venue, so it improves recal_null more on stale ticks (S277's staleness definition). Verified via a one-column
