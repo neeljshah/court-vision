@@ -1,0 +1,25 @@
+{
+  "verdict": "CLOSED_AT_LIMIT",
+  "archive_path": "data/cache/eval_gate/s92_nba_lineup_dynamic_2026-09-03_all.csv",
+  "archive_sha256": "f498a7a040201571270183a79a025cd87d91ed5060f244b69964a150eab7d0f6",
+  "archive_ticks": 79554,
+  "archive_game_clusters": 661,
+  "archive_date_range": ["2024-10-25", "2026-04-06"],
+  "snapshot_paths": {
+    "player_rates": "data/cache/team_system/player_rates.parquet",
+    "team_rates": "data/cache/team_system/team_rates.json"
+  },
+  "snapshot_utc_dates": {
+    "player_rates": "2026-06-07",
+    "team_rates": "2026-06-07"
+  },
+  "qualifying_game_clusters": 0,
+  "excluded_game_clusters": 661,
+  "scored_ticks": 0,
+  "three_arm_metrics": null,
+  "simulator_improvement": null,
+  "game_clustered_ci_95": null,
+  "paired_loss_series": "docs/evidence/harness/S247_nba_sim_engine_vs_line_v2_2026-09-04_paired_losses.csv",
+  "excluded_game_enumeration": "docs/evidence/harness/S247_nba_sim_engine_vs_line_v2_2026-09-04.md#excluded-game-clusters",
+  "src_tree_sha256": "c049174dad1911b1884e59c461b4a9a7da571210d98dacc7e8cb3b97519d095d"
+}
