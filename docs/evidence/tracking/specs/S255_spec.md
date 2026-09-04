@@ -1,4 +1,4 @@
-GAP S255 | sport nba (in-game) | worktree aXX | log cx_s255_asof_rate_snapshot_producer
+GAP S255 | sport nba (in-game) | worktree a16 | log cx_s255_asof_rate_snapshot_producer
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S247 (a13, S247_nba_sim_engine_vs_line_v2_2026-09-04.md) CLOSED AT LIMIT: the predicate
   player_snapshot_date < game_date and team_snapshot_date < game_date returns 0/661 qualifying game clusters
