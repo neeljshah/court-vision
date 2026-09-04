@@ -1,4 +1,4 @@
-GAP S274 | sport mlb | worktree a5 | log cx_s274_mlb_distribution_evaluator_route
+GAP S274 | sport mlb | worktree a15 | log cx_s274_mlb_distribution_evaluator_route
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S244 re-issue. S244 (SUCCESS: NOT SCORABLE) landed the naive-only MLB batter/pitcher baseline via its OWN
   date-cutoff loop, calling neither shared evaluator: CRPS 0.5098297809224259, pinball q10 0.08655308369594088,
