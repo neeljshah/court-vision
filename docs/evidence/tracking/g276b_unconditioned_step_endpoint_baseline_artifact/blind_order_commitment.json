@@ -1,0 +1,10 @@
+{
+  "sample_size_steps": 60,
+  "sample_size_endpoint_crops": 120,
+  "sample_seed": 27620260904,
+  "blind_seed": 27620904,
+  "unblind_map_sha256": "3b044829b2e25358137f31acae3b14ddd5b084903525178a9adb0b4c193d50e8",
+  "population": "finite, consecutive same-emitted-ID steps with both retained footpoints inside the declared court; no speed, displacement, jump, or downstream condition",
+  "crop_policy": "512x640 native-pixel footpoint-centred crops; no detector box drawn, reconstructed, or inferred",
+  "presentation": "both endpoints pooled then shuffled into one order; the presentation CSV has no step, endpoint, ID, frame, or pair field"
+}
