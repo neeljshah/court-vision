@@ -1,4 +1,4 @@
-GAP S277 | sport nba (in-game) | worktree a13 | log cx_s277_ingame_market_staleness
+GAP S277 | sport nba (in-game) | worktree a15 | log cx_s277_ingame_market_staleness
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: hypothesis (S213 latency memo): recal_null's conditional Brier improvement over raw market_prob
   concentrates on ticks where the venue price is STALE relative to the state feed. Verified via a one-column
