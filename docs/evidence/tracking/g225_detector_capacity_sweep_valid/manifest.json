@@ -1,0 +1,56 @@
+[
+  {
+    "model": "yolov8n",
+    "repetition": 1,
+    "returncode": 0,
+    "artifact": "docs\\evidence\\tracking\\g225_detector_capacity_sweep_valid\\yolov8n_r1"
+  },
+  {
+    "model": "yolov8n",
+    "repetition": 2,
+    "returncode": 0,
+    "artifact": "docs\\evidence\\tracking\\g225_detector_capacity_sweep_valid\\yolov8n_r2"
+  },
+  {
+    "model": "yolov8n",
+    "repetition": 3,
+    "returncode": 0,
+    "artifact": "docs\\evidence\\tracking\\g225_detector_capacity_sweep_valid\\yolov8n_r3"
+  },
+  {
+    "model": "yolov8s",
+    "repetition": 1,
+    "returncode": 0,
+    "artifact": "docs\\evidence\\tracking\\g225_detector_capacity_sweep_valid\\yolov8s_r1"
+  },
+  {
+    "model": "yolov8s",
+    "repetition": 2,
+    "returncode": 0,
+    "artifact": "docs\\evidence\\tracking\\g225_detector_capacity_sweep_valid\\yolov8s_r2"
+  },
+  {
+    "model": "yolov8s",
+    "repetition": 3,
+    "returncode": 0,
+    "artifact": "docs\\evidence\\tracking\\g225_detector_capacity_sweep_valid\\yolov8s_r3"
+  },
+  {
+    "model": "yolov8m",
+    "repetition": 1,
+    "returncode": 0,
+    "artifact": "docs\\evidence\\tracking\\g225_detector_capacity_sweep_valid\\yolov8m_r1"
+  },
+  {
+    "model": "yolov8m",
+    "repetition": 2,
+    "returncode": 0,
+    "artifact": "docs\\evidence\\tracking\\g225_detector_capacity_sweep_valid\\yolov8m_r2"
+  },
+  {
+    "model": "yolov8m",
+    "repetition": 3,
+    "returncode": 0,
+    "artifact": "docs\\evidence\\tracking\\g225_detector_capacity_sweep_valid\\yolov8m_r3"
+  }
+]

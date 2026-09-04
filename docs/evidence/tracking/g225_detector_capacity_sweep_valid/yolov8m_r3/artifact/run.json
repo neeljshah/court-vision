@@ -1,0 +1,8 @@
+{
+  "model": "yolov8m",
+  "repetition": 3,
+  "game_id": "g225_yolov8m_r3_1788510023",
+  "started_epoch": 1788510026.2124102,
+  "ended_epoch": 1788510143.269402,
+  "wall_seconds": 117.05699181556702
+}

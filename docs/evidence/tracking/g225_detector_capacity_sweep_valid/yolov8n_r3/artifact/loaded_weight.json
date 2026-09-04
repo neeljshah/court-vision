@@ -1,0 +1,7 @@
+{
+  "requested": "yolov8n.pt",
+  "reported_path": "yolov8n.pt",
+  "resolved_path": "/workspace/nba-ai-system/yolov8n.pt",
+  "exists": true,
+  "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+}

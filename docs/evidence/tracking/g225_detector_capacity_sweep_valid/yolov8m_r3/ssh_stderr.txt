@@ -1,0 +1,9 @@
+kill: (2977964): No such process
+Traceback (most recent call last):
+  File "<stdin>", line 6, in <module>
+  File "/usr/lib/python3.12/subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ps', '-p', '2977964', '-o', 'pcpu=,rss=']' returned non-zero exit status 1.

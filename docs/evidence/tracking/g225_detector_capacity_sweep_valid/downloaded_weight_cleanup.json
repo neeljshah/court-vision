@@ -1,0 +1,15 @@
+{
+  "returncode": 0,
+  "stderr": "",
+  "removed": [
+    {
+      "path": "/workspace/nba-ai-system/yolov8s.pt",
+      "bytes_freed": 22588772
+    },
+    {
+      "path": "/workspace/nba-ai-system/yolov8m.pt",
+      "bytes_freed": 52136884
+    }
+  ],
+  "total_bytes_freed": 74725656
+}

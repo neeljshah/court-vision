@@ -1,0 +1,663 @@
+{
+  "evaluated_frames_per_run": 6000,
+  "full_clip_evaluated_frames": 58143,
+  "runs": [
+    {
+      "model": "yolov8n",
+      "repetition": 1,
+      "game_id": "g225_yolov8n_r1_1788509139",
+      "weight": {
+        "requested": "yolov8n.pt",
+        "reported_path": "yolov8n.pt",
+        "resolved_path": "/workspace/nba-ai-system/yolov8n.pt",
+        "exists": true,
+        "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+      },
+      "raw_boxes_per_frame": {
+        "min": 0,
+        "median": 11.0,
+        "p90": 16,
+        "max": 27
+      },
+      "raw_box_total": 64171,
+      "survivor_rows": 64171,
+      "survivors_per_frame": {
+        "min": 0,
+        "median": 11.0,
+        "p90": 16,
+        "max": 27
+      },
+      "wall_seconds": 96.22643423080444,
+      "wall_seconds_per_frame": 0.01603773903846741,
+      "projected_full_clip_seconds": 932.4822609136105,
+      "gpu_utilization_pct": {
+        "min": 0.0,
+        "median": 12.0,
+        "p90": 13.0,
+        "max": 14.0
+      },
+      "gpu_memory_mib": {
+        "min": 1.0,
+        "median": 374.0,
+        "p90": 374.0,
+        "max": 374.0
+      },
+      "runner_cpu_pct": {
+        "min": 83.3,
+        "median": 470.0,
+        "p90": 483.0,
+        "max": 1094.0
+      },
+      "runner_rss_kib": {
+        "min": 0,
+        "median": 1707320,
+        "p90": 1723404,
+        "max": 1757760
+      },
+      "resource_samples": 91,
+      "disk_guard": [
+        "PASS bytes=4194304",
+        "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8  /workspace/nba-ai-system/data/.g225_dd_write_probe"
+      ],
+      "route_context_before": [
+        "2026-09-04T08:05:40Z",
+        "32424\t/workspace/nba-ai-system/data",
+        "NVIDIA GeForce RTX 3090, 0, 1, 24576",
+        "               total        used        free      shared  buff/cache   available",
+        "Mem:     1081949794304 78397140992 217716850688  2582712320 799348162560 1003552653312",
+        "Swap:              0           0           0",
+        "e4abc2f5e4e4fb2a977ca6beb2fed854e33e829eb0a5d96cef8645680f6181c5  /workspace/nba-ai-system/scripts/platformkit/adapter_run.py",
+        "1ecf483df26b19c44d1fa25297caed845e5952fbfdd9b704f95a6125f4366c15  /workspace/nba-ai-system/domains/basketball/tracking/adapter.py",
+        "a25ef1fb801d3770546711601dcbaacaf599778d01e01bf18d6432140718b6d7  /workspace/nba-ai-system/scripts/platformkit/detection/shim.py",
+        "0dc67ff28e40e1c8b1dba9b191ea5f61d3b15f8904167402c54e9e75c2e2300c  /workspace/nba-ai-system/scripts/platformkit/tracking_timebase.py",
+        "59f60428c5e82460f13e009a04db05d0b27e4a567aff33a324fb7b40bea87f1d  /workspace/nba-ai-system/scripts/platformkit/tracking_harness.py",
+        "72d21ae1dddded5bc6903dcbbd442de3f47240d5491305c1b6bd933bd007197e  /workspace/nba-ai-system/scripts/platformkit/tracking_schema.py",
+        "5129bb37e4e23aba93883239078825292136feb331c82ac85c56ee31298cb931  /workspace/nba-ai-system/scripts/platformkit/tracking/run_environment.py"
+      ]
+    },
+    {
+      "model": "yolov8n",
+      "repetition": 2,
+      "game_id": "g225_yolov8n_r2_1788509240",
+      "weight": {
+        "requested": "yolov8n.pt",
+        "reported_path": "yolov8n.pt",
+        "resolved_path": "/workspace/nba-ai-system/yolov8n.pt",
+        "exists": true,
+        "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+      },
+      "raw_boxes_per_frame": {
+        "min": 0,
+        "median": 11.0,
+        "p90": 16,
+        "max": 27
+      },
+      "raw_box_total": 64171,
+      "survivor_rows": 64171,
+      "survivors_per_frame": {
+        "min": 0,
+        "median": 11.0,
+        "p90": 16,
+        "max": 27
+      },
+      "wall_seconds": 96.17798209190369,
+      "wall_seconds_per_frame": 0.016029663681983948,
+      "projected_full_clip_seconds": 932.0127354615927,
+      "gpu_utilization_pct": {
+        "min": 0.0,
+        "median": 12.0,
+        "p90": 13.0,
+        "max": 14.0
+      },
+      "gpu_memory_mib": {
+        "min": 1.0,
+        "median": 374.0,
+        "p90": 374.0,
+        "max": 374.0
+      },
+      "runner_cpu_pct": {
+        "min": 283.0,
+        "median": 476.0,
+        "p90": 483.0,
+        "max": 993.0
+      },
+      "runner_rss_kib": {
+        "min": 20220,
+        "median": 1705716,
+        "p90": 1721504,
+        "max": 1743648
+      },
+      "resource_samples": 91,
+      "disk_guard": [
+        "PASS bytes=4194304",
+        "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8  /workspace/nba-ai-system/data/.g225_dd_write_probe"
+      ],
+      "route_context_before": [
+        "2026-09-04T08:07:22Z",
+        "32439\t/workspace/nba-ai-system/data",
+        "NVIDIA GeForce RTX 3090, 0, 1, 24576",
+        "               total        used        free      shared  buff/cache   available",
+        "Mem:     1081949794304 76112134144 217516711936  2356215808 801606774784 1005837660160",
+        "Swap:              0           0           0",
+        "e4abc2f5e4e4fb2a977ca6beb2fed854e33e829eb0a5d96cef8645680f6181c5  /workspace/nba-ai-system/scripts/platformkit/adapter_run.py",
+        "1ecf483df26b19c44d1fa25297caed845e5952fbfdd9b704f95a6125f4366c15  /workspace/nba-ai-system/domains/basketball/tracking/adapter.py",
+        "a25ef1fb801d3770546711601dcbaacaf599778d01e01bf18d6432140718b6d7  /workspace/nba-ai-system/scripts/platformkit/detection/shim.py",
+        "0dc67ff28e40e1c8b1dba9b191ea5f61d3b15f8904167402c54e9e75c2e2300c  /workspace/nba-ai-system/scripts/platformkit/tracking_timebase.py",
+        "59f60428c5e82460f13e009a04db05d0b27e4a567aff33a324fb7b40bea87f1d  /workspace/nba-ai-system/scripts/platformkit/tracking_harness.py",
+        "72d21ae1dddded5bc6903dcbbd442de3f47240d5491305c1b6bd933bd007197e  /workspace/nba-ai-system/scripts/platformkit/tracking_schema.py",
+        "5129bb37e4e23aba93883239078825292136feb331c82ac85c56ee31298cb931  /workspace/nba-ai-system/scripts/platformkit/tracking/run_environment.py"
+      ]
+    },
+    {
+      "model": "yolov8n",
+      "repetition": 3,
+      "game_id": "g225_yolov8n_r3_1788509342",
+      "weight": {
+        "requested": "yolov8n.pt",
+        "reported_path": "yolov8n.pt",
+        "resolved_path": "/workspace/nba-ai-system/yolov8n.pt",
+        "exists": true,
+        "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+      },
+      "raw_boxes_per_frame": {
+        "min": 0,
+        "median": 11.0,
+        "p90": 16,
+        "max": 27
+      },
+      "raw_box_total": 64171,
+      "survivor_rows": 64171,
+      "survivors_per_frame": {
+        "min": 0,
+        "median": 11.0,
+        "p90": 16,
+        "max": 27
+      },
+      "wall_seconds": 97.14895176887512,
+      "wall_seconds_per_frame": 0.016191491961479187,
+      "projected_full_clip_seconds": 941.4219171162844,
+      "gpu_utilization_pct": {
+        "min": 0.0,
+        "median": 12.0,
+        "p90": 13.0,
+        "max": 14.0
+      },
+      "gpu_memory_mib": {
+        "min": 1.0,
+        "median": 374.0,
+        "p90": 374.0,
+        "max": 635.0
+      },
+      "runner_cpu_pct": {
+        "min": 291.0,
+        "median": 465.0,
+        "p90": 473.0,
+        "max": 1033.0
+      },
+      "runner_rss_kib": {
+        "min": 0,
+        "median": 1704438.0,
+        "p90": 1720552,
+        "max": 1738812
+      },
+      "resource_samples": 92,
+      "disk_guard": [
+        "PASS bytes=4194304",
+        "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8  /workspace/nba-ai-system/data/.g225_dd_write_probe"
+      ],
+      "route_context_before": [
+        "2026-09-04T08:09:04Z",
+        "32457\t/workspace/nba-ai-system/data",
+        "NVIDIA GeForce RTX 3090, 0, 1, 24576",
+        "               total        used        free      shared  buff/cache   available",
+        "Mem:     1081949794304 77162385408 218528358400  2364600320 799553335296 1004787408896",
+        "Swap:              0           0           0",
+        "e4abc2f5e4e4fb2a977ca6beb2fed854e33e829eb0a5d96cef8645680f6181c5  /workspace/nba-ai-system/scripts/platformkit/adapter_run.py",
+        "1ecf483df26b19c44d1fa25297caed845e5952fbfdd9b704f95a6125f4366c15  /workspace/nba-ai-system/domains/basketball/tracking/adapter.py",
+        "a25ef1fb801d3770546711601dcbaacaf599778d01e01bf18d6432140718b6d7  /workspace/nba-ai-system/scripts/platformkit/detection/shim.py",
+        "0dc67ff28e40e1c8b1dba9b191ea5f61d3b15f8904167402c54e9e75c2e2300c  /workspace/nba-ai-system/scripts/platformkit/tracking_timebase.py",
+        "59f60428c5e82460f13e009a04db05d0b27e4a567aff33a324fb7b40bea87f1d  /workspace/nba-ai-system/scripts/platformkit/tracking_harness.py",
+        "72d21ae1dddded5bc6903dcbbd442de3f47240d5491305c1b6bd933bd007197e  /workspace/nba-ai-system/scripts/platformkit/tracking_schema.py",
+        "5129bb37e4e23aba93883239078825292136feb331c82ac85c56ee31298cb931  /workspace/nba-ai-system/scripts/platformkit/tracking/run_environment.py"
+      ]
+    },
+    {
+      "model": "yolov8s",
+      "repetition": 1,
+      "game_id": "g225_yolov8s_r1_1788509445",
+      "weight": {
+        "requested": "yolov8s.pt",
+        "reported_path": "yolov8s.pt",
+        "resolved_path": "/workspace/nba-ai-system/yolov8s.pt",
+        "exists": true,
+        "sha256": "1f47a78bf100391c2a140b7ac73a1caae18c32779be7d310658112f7ac9aa78a"
+      },
+      "raw_boxes_per_frame": {
+        "min": 0,
+        "median": 20.0,
+        "p90": 27,
+        "max": 41
+      },
+      "raw_box_total": 113733,
+      "survivor_rows": 113733,
+      "survivors_per_frame": {
+        "min": 0,
+        "median": 20.0,
+        "p90": 27,
+        "max": 41
+      },
+      "wall_seconds": 107.71814346313477,
+      "wall_seconds_per_frame": 0.01795302391052246,
+      "projected_full_clip_seconds": 1043.8426692295075,
+      "gpu_utilization_pct": {
+        "min": 0.0,
+        "median": 16.0,
+        "p90": 18.0,
+        "max": 19.0
+      },
+      "gpu_memory_mib": {
+        "min": 1.0,
+        "median": 418.0,
+        "p90": 418.0,
+        "max": 418.0
+      },
+      "runner_cpu_pct": {
+        "min": 209.0,
+        "median": 411.0,
+        "p90": 424.0,
+        "max": 972.0
+      },
+      "runner_rss_kib": {
+        "min": 20884,
+        "median": 1731840.0,
+        "p90": 1757628,
+        "max": 1790468
+      },
+      "resource_samples": 102,
+      "disk_guard": [
+        "PASS bytes=4194304",
+        "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8  /workspace/nba-ai-system/data/.g225_dd_write_probe"
+      ],
+      "route_context_before": [
+        "2026-09-04T08:10:46Z",
+        "32474\t/workspace/nba-ai-system/data",
+        "NVIDIA GeForce RTX 3090, 0, 1, 24576",
+        "               total        used        free      shared  buff/cache   available",
+        "Mem:     1081949794304 81213239296 311549734912  2372829184 702489341952 1000736555008",
+        "Swap:              0           0           0",
+        "e4abc2f5e4e4fb2a977ca6beb2fed854e33e829eb0a5d96cef8645680f6181c5  /workspace/nba-ai-system/scripts/platformkit/adapter_run.py",
+        "1ecf483df26b19c44d1fa25297caed845e5952fbfdd9b704f95a6125f4366c15  /workspace/nba-ai-system/domains/basketball/tracking/adapter.py",
+        "a25ef1fb801d3770546711601dcbaacaf599778d01e01bf18d6432140718b6d7  /workspace/nba-ai-system/scripts/platformkit/detection/shim.py",
+        "0dc67ff28e40e1c8b1dba9b191ea5f61d3b15f8904167402c54e9e75c2e2300c  /workspace/nba-ai-system/scripts/platformkit/tracking_timebase.py",
+        "59f60428c5e82460f13e009a04db05d0b27e4a567aff33a324fb7b40bea87f1d  /workspace/nba-ai-system/scripts/platformkit/tracking_harness.py",
+        "72d21ae1dddded5bc6903dcbbd442de3f47240d5491305c1b6bd933bd007197e  /workspace/nba-ai-system/scripts/platformkit/tracking_schema.py",
+        "5129bb37e4e23aba93883239078825292136feb331c82ac85c56ee31298cb931  /workspace/nba-ai-system/scripts/platformkit/tracking/run_environment.py"
+      ]
+    },
+    {
+      "model": "yolov8s",
+      "repetition": 2,
+      "game_id": "g225_yolov8s_r2_1788509558",
+      "weight": {
+        "requested": "yolov8s.pt",
+        "reported_path": "yolov8s.pt",
+        "resolved_path": "/workspace/nba-ai-system/yolov8s.pt",
+        "exists": true,
+        "sha256": "1f47a78bf100391c2a140b7ac73a1caae18c32779be7d310658112f7ac9aa78a"
+      },
+      "raw_boxes_per_frame": {
+        "min": 0,
+        "median": 20.0,
+        "p90": 27,
+        "max": 41
+      },
+      "raw_box_total": 113733,
+      "survivor_rows": 113733,
+      "survivors_per_frame": {
+        "min": 0,
+        "median": 20.0,
+        "p90": 27,
+        "max": 41
+      },
+      "wall_seconds": 106.49184966087341,
+      "wall_seconds_per_frame": 0.01774864161014557,
+      "projected_full_clip_seconds": 1031.9592691386938,
+      "gpu_utilization_pct": {
+        "min": 0.0,
+        "median": 16.0,
+        "p90": 18.0,
+        "max": 20.0
+      },
+      "gpu_memory_mib": {
+        "min": 1.0,
+        "median": 418.0,
+        "p90": 418.0,
+        "max": 418.0
+      },
+      "runner_cpu_pct": {
+        "min": 66.6,
+        "median": 416.0,
+        "p90": 428.0,
+        "max": 1186.0
+      },
+      "runner_rss_kib": {
+        "min": 19452,
+        "median": 1750252,
+        "p90": 1776656,
+        "max": 1807620
+      },
+      "resource_samples": 101,
+      "disk_guard": [
+        "PASS bytes=4194304",
+        "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8  /workspace/nba-ai-system/data/.g225_dd_write_probe"
+      ],
+      "route_context_before": [
+        "2026-09-04T08:12:40Z",
+        "32500\t/workspace/nba-ai-system/data",
+        "NVIDIA GeForce RTX 3090, 0, 1, 24576",
+        "               total        used        free      shared  buff/cache   available",
+        "Mem:     1081949794304 81777242112 305322110976  2372829184 708152897536 1000172552192",
+        "Swap:              0           0           0",
+        "e4abc2f5e4e4fb2a977ca6beb2fed854e33e829eb0a5d96cef8645680f6181c5  /workspace/nba-ai-system/scripts/platformkit/adapter_run.py",
+        "1ecf483df26b19c44d1fa25297caed845e5952fbfdd9b704f95a6125f4366c15  /workspace/nba-ai-system/domains/basketball/tracking/adapter.py",
+        "a25ef1fb801d3770546711601dcbaacaf599778d01e01bf18d6432140718b6d7  /workspace/nba-ai-system/scripts/platformkit/detection/shim.py",
+        "0dc67ff28e40e1c8b1dba9b191ea5f61d3b15f8904167402c54e9e75c2e2300c  /workspace/nba-ai-system/scripts/platformkit/tracking_timebase.py",
+        "59f60428c5e82460f13e009a04db05d0b27e4a567aff33a324fb7b40bea87f1d  /workspace/nba-ai-system/scripts/platformkit/tracking_harness.py",
+        "72d21ae1dddded5bc6903dcbbd442de3f47240d5491305c1b6bd933bd007197e  /workspace/nba-ai-system/scripts/platformkit/tracking_schema.py",
+        "5129bb37e4e23aba93883239078825292136feb331c82ac85c56ee31298cb931  /workspace/nba-ai-system/scripts/platformkit/tracking/run_environment.py"
+      ]
+    },
+    {
+      "model": "yolov8s",
+      "repetition": 3,
+      "game_id": "g225_yolov8s_r3_1788509670",
+      "weight": {
+        "requested": "yolov8s.pt",
+        "reported_path": "yolov8s.pt",
+        "resolved_path": "/workspace/nba-ai-system/yolov8s.pt",
+        "exists": true,
+        "sha256": "1f47a78bf100391c2a140b7ac73a1caae18c32779be7d310658112f7ac9aa78a"
+      },
+      "raw_boxes_per_frame": {
+        "min": 0,
+        "median": 20.0,
+        "p90": 27,
+        "max": 41
+      },
+      "raw_box_total": 113733,
+      "survivor_rows": 113733,
+      "survivors_per_frame": {
+        "min": 0,
+        "median": 20.0,
+        "p90": 27,
+        "max": 41
+      },
+      "wall_seconds": 107.69834041595459,
+      "wall_seconds_per_frame": 0.017949723402659098,
+      "projected_full_clip_seconds": 1043.650767800808,
+      "gpu_utilization_pct": {
+        "min": 0.0,
+        "median": 16.0,
+        "p90": 18.0,
+        "max": 20.0
+      },
+      "gpu_memory_mib": {
+        "min": 1.0,
+        "median": 418.0,
+        "p90": 418.0,
+        "max": 679.0
+      },
+      "runner_cpu_pct": {
+        "min": 100.0,
+        "median": 411.0,
+        "p90": 419.0,
+        "max": 1189.0
+      },
+      "runner_rss_kib": {
+        "min": 19808,
+        "median": 1727806.0,
+        "p90": 1754232,
+        "max": 1785632
+      },
+      "resource_samples": 102,
+      "disk_guard": [
+        "PASS bytes=4194304",
+        "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8  /workspace/nba-ai-system/data/.g225_dd_write_probe"
+      ],
+      "route_context_before": [
+        "2026-09-04T08:14:31Z",
+        "32526\t/workspace/nba-ai-system/data",
+        "NVIDIA GeForce RTX 3090, 0, 1, 24576",
+        "               total        used        free      shared  buff/cache   available",
+        "Mem:     1081949794304 83780886528 301997170688  2372829184 709474209792 998168907776",
+        "Swap:              0           0           0",
+        "e4abc2f5e4e4fb2a977ca6beb2fed854e33e829eb0a5d96cef8645680f6181c5  /workspace/nba-ai-system/scripts/platformkit/adapter_run.py",
+        "1ecf483df26b19c44d1fa25297caed845e5952fbfdd9b704f95a6125f4366c15  /workspace/nba-ai-system/domains/basketball/tracking/adapter.py",
+        "a25ef1fb801d3770546711601dcbaacaf599778d01e01bf18d6432140718b6d7  /workspace/nba-ai-system/scripts/platformkit/detection/shim.py",
+        "0dc67ff28e40e1c8b1dba9b191ea5f61d3b15f8904167402c54e9e75c2e2300c  /workspace/nba-ai-system/scripts/platformkit/tracking_timebase.py",
+        "59f60428c5e82460f13e009a04db05d0b27e4a567aff33a324fb7b40bea87f1d  /workspace/nba-ai-system/scripts/platformkit/tracking_harness.py",
+        "72d21ae1dddded5bc6903dcbbd442de3f47240d5491305c1b6bd933bd007197e  /workspace/nba-ai-system/scripts/platformkit/tracking_schema.py",
+        "5129bb37e4e23aba93883239078825292136feb331c82ac85c56ee31298cb931  /workspace/nba-ai-system/scripts/platformkit/tracking/run_environment.py"
+      ]
+    },
+    {
+      "model": "yolov8m",
+      "repetition": 1,
+      "game_id": "g225_yolov8m_r1_1788509783",
+      "weight": {
+        "requested": "yolov8m.pt",
+        "reported_path": "yolov8m.pt",
+        "resolved_path": "/workspace/nba-ai-system/yolov8m.pt",
+        "exists": true,
+        "sha256": "5d4a90cdc7a21786cc59cd19778e9eafff836df9e2da32524737c7ee6efe4fe5"
+      },
+      "raw_boxes_per_frame": {
+        "min": 0,
+        "median": 16.0,
+        "p90": 25,
+        "max": 35
+      },
+      "raw_box_total": 98979,
+      "survivor_rows": 98979,
+      "survivors_per_frame": {
+        "min": 0,
+        "median": 16.0,
+        "p90": 25,
+        "max": 35
+      },
+      "wall_seconds": 113.88790011405945,
+      "wall_seconds_per_frame": 0.018981316685676576,
+      "projected_full_clip_seconds": 1103.6306960552931,
+      "gpu_utilization_pct": {
+        "min": 0.0,
+        "median": 30.0,
+        "p90": 31.0,
+        "max": 35.0
+      },
+      "gpu_memory_mib": {
+        "min": 1.0,
+        "median": 482.0,
+        "p90": 482.0,
+        "max": 482.0
+      },
+      "runner_cpu_pct": {
+        "min": 80.0,
+        "median": 395.5,
+        "p90": 405.0,
+        "max": 1298.0
+      },
+      "runner_rss_kib": {
+        "min": 15692,
+        "median": 1734330.0,
+        "p90": 1757400,
+        "max": 1810532
+      },
+      "resource_samples": 108,
+      "disk_guard": [
+        "PASS bytes=4194304",
+        "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8  /workspace/nba-ai-system/data/.g225_dd_write_probe"
+      ],
+      "route_context_before": [
+        "2026-09-04T08:16:25Z",
+        "32550\t/workspace/nba-ai-system/data",
+        "NVIDIA GeForce RTX 3090, 0, 1, 24576",
+        "               total        used        free      shared  buff/cache   available",
+        "Mem:     1081949794304 81750450176 305470865408  2372829184 708030836736 1000199344128",
+        "Swap:              0           0           0",
+        "e4abc2f5e4e4fb2a977ca6beb2fed854e33e829eb0a5d96cef8645680f6181c5  /workspace/nba-ai-system/scripts/platformkit/adapter_run.py",
+        "1ecf483df26b19c44d1fa25297caed845e5952fbfdd9b704f95a6125f4366c15  /workspace/nba-ai-system/domains/basketball/tracking/adapter.py",
+        "a25ef1fb801d3770546711601dcbaacaf599778d01e01bf18d6432140718b6d7  /workspace/nba-ai-system/scripts/platformkit/detection/shim.py",
+        "0dc67ff28e40e1c8b1dba9b191ea5f61d3b15f8904167402c54e9e75c2e2300c  /workspace/nba-ai-system/scripts/platformkit/tracking_timebase.py",
+        "59f60428c5e82460f13e009a04db05d0b27e4a567aff33a324fb7b40bea87f1d  /workspace/nba-ai-system/scripts/platformkit/tracking_harness.py",
+        "72d21ae1dddded5bc6903dcbbd442de3f47240d5491305c1b6bd933bd007197e  /workspace/nba-ai-system/scripts/platformkit/tracking_schema.py",
+        "5129bb37e4e23aba93883239078825292136feb331c82ac85c56ee31298cb931  /workspace/nba-ai-system/scripts/platformkit/tracking/run_environment.py"
+      ]
+    },
+    {
+      "model": "yolov8m",
+      "repetition": 2,
+      "game_id": "g225_yolov8m_r2_1788509903",
+      "weight": {
+        "requested": "yolov8m.pt",
+        "reported_path": "yolov8m.pt",
+        "resolved_path": "/workspace/nba-ai-system/yolov8m.pt",
+        "exists": true,
+        "sha256": "5d4a90cdc7a21786cc59cd19778e9eafff836df9e2da32524737c7ee6efe4fe5"
+      },
+      "raw_boxes_per_frame": {
+        "min": 0,
+        "median": 16.0,
+        "p90": 25,
+        "max": 35
+      },
+      "raw_box_total": 98979,
+      "survivor_rows": 98979,
+      "survivors_per_frame": {
+        "min": 0,
+        "median": 16.0,
+        "p90": 25,
+        "max": 35
+      },
+      "wall_seconds": 114.35428500175476,
+      "wall_seconds_per_frame": 0.01905904750029246,
+      "projected_full_clip_seconds": 1108.1501988095044,
+      "gpu_utilization_pct": {
+        "min": 0.0,
+        "median": 29.0,
+        "p90": 31.0,
+        "max": 35.0
+      },
+      "gpu_memory_mib": {
+        "min": 1.0,
+        "median": 482.0,
+        "p90": 482.0,
+        "max": 743.0
+      },
+      "runner_cpu_pct": {
+        "min": 100.0,
+        "median": 406.0,
+        "p90": 412.0,
+        "max": 1317.0
+      },
+      "runner_rss_kib": {
+        "min": 20000,
+        "median": 1726334.0,
+        "p90": 1748384,
+        "max": 1774208
+      },
+      "resource_samples": 108,
+      "disk_guard": [
+        "PASS bytes=4194304",
+        "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8  /workspace/nba-ai-system/data/.g225_dd_write_probe"
+      ],
+      "route_context_before": [
+        "2026-09-04T08:18:24Z",
+        "32572\t/workspace/nba-ai-system/data",
+        "NVIDIA GeForce RTX 3090, 0, 1, 24576",
+        "               total        used        free      shared  buff/cache   available",
+        "Mem:     1081949794304 81061462016 306969452544  2598879232 707447320576 1000888332288",
+        "Swap:              0           0           0",
+        "e4abc2f5e4e4fb2a977ca6beb2fed854e33e829eb0a5d96cef8645680f6181c5  /workspace/nba-ai-system/scripts/platformkit/adapter_run.py",
+        "1ecf483df26b19c44d1fa25297caed845e5952fbfdd9b704f95a6125f4366c15  /workspace/nba-ai-system/domains/basketball/tracking/adapter.py",
+        "a25ef1fb801d3770546711601dcbaacaf599778d01e01bf18d6432140718b6d7  /workspace/nba-ai-system/scripts/platformkit/detection/shim.py",
+        "0dc67ff28e40e1c8b1dba9b191ea5f61d3b15f8904167402c54e9e75c2e2300c  /workspace/nba-ai-system/scripts/platformkit/tracking_timebase.py",
+        "59f60428c5e82460f13e009a04db05d0b27e4a567aff33a324fb7b40bea87f1d  /workspace/nba-ai-system/scripts/platformkit/tracking_harness.py",
+        "72d21ae1dddded5bc6903dcbbd442de3f47240d5491305c1b6bd933bd007197e  /workspace/nba-ai-system/scripts/platformkit/tracking_schema.py",
+        "5129bb37e4e23aba93883239078825292136feb331c82ac85c56ee31298cb931  /workspace/nba-ai-system/scripts/platformkit/tracking/run_environment.py"
+      ]
+    },
+    {
+      "model": "yolov8m",
+      "repetition": 3,
+      "game_id": "g225_yolov8m_r3_1788510023",
+      "weight": {
+        "requested": "yolov8m.pt",
+        "reported_path": "yolov8m.pt",
+        "resolved_path": "/workspace/nba-ai-system/yolov8m.pt",
+        "exists": true,
+        "sha256": "5d4a90cdc7a21786cc59cd19778e9eafff836df9e2da32524737c7ee6efe4fe5"
+      },
+      "raw_boxes_per_frame": {
+        "min": 0,
+        "median": 16.0,
+        "p90": 25,
+        "max": 35
+      },
+      "raw_box_total": 98979,
+      "survivor_rows": 98979,
+      "survivors_per_frame": {
+        "min": 0,
+        "median": 16.0,
+        "p90": 25,
+        "max": 35
+      },
+      "wall_seconds": 117.05699181556702,
+      "wall_seconds_per_frame": 0.019509498635927835,
+      "projected_full_clip_seconds": 1134.340779188752,
+      "gpu_utilization_pct": {
+        "min": 0.0,
+        "median": 29.0,
+        "p90": 31.0,
+        "max": 34.0
+      },
+      "gpu_memory_mib": {
+        "min": 1.0,
+        "median": 482.0,
+        "p90": 482.0,
+        "max": 482.0
+      },
+      "runner_cpu_pct": {
+        "min": 80.0,
+        "median": 375.0,
+        "p90": 387.0,
+        "max": 1159.0
+      },
+      "runner_rss_kib": {
+        "min": 15832,
+        "median": 1729348,
+        "p90": 1751772,
+        "max": 1786780
+      },
+      "resource_samples": 111,
+      "disk_guard": [
+        "PASS bytes=4194304",
+        "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8  /workspace/nba-ai-system/data/.g225_dd_write_probe"
+      ],
+      "route_context_before": [
+        "2026-09-04T08:20:24Z",
+        "32595\t/workspace/nba-ai-system/data",
+        "NVIDIA GeForce RTX 3090, 0, 1, 24576",
+        "               total        used        free      shared  buff/cache   available",
+        "Mem:     1081949794304 85953744896 304373903360  2372829184 704925855744 995996049408",
+        "Swap:              0           0           0",
+        "e4abc2f5e4e4fb2a977ca6beb2fed854e33e829eb0a5d96cef8645680f6181c5  /workspace/nba-ai-system/scripts/platformkit/adapter_run.py",
+        "1ecf483df26b19c44d1fa25297caed845e5952fbfdd9b704f95a6125f4366c15  /workspace/nba-ai-system/domains/basketball/tracking/adapter.py",
+        "a25ef1fb801d3770546711601dcbaacaf599778d01e01bf18d6432140718b6d7  /workspace/nba-ai-system/scripts/platformkit/detection/shim.py",
+        "0dc67ff28e40e1c8b1dba9b191ea5f61d3b15f8904167402c54e9e75c2e2300c  /workspace/nba-ai-system/scripts/platformkit/tracking_timebase.py",
+        "59f60428c5e82460f13e009a04db05d0b27e4a567aff33a324fb7b40bea87f1d  /workspace/nba-ai-system/scripts/platformkit/tracking_harness.py",
+        "72d21ae1dddded5bc6903dcbbd442de3f47240d5491305c1b6bd933bd007197e  /workspace/nba-ai-system/scripts/platformkit/tracking_schema.py",
+        "5129bb37e4e23aba93883239078825292136feb331c82ac85c56ee31298cb931  /workspace/nba-ai-system/scripts/platformkit/tracking/run_environment.py"
+      ]
+    }
+  ]
+}
