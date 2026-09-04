@@ -1,4 +1,4 @@
-GAP S219 | sport nba (in-game) | worktree aXX | log cx_s219_nba_tail_guard_screen
+GAP S219 | sport nba (in-game) | worktree a17 | log cx_s219_nba_tail_guard_screen
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: both in-game model sides fail in the same place -- premature confidence on the eventual loser.
 PREMISE (step 0): re-measure and print from the archived series, no refit: the S58 trial B tail shares 11.4 pct model
