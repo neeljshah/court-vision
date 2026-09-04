@@ -31,10 +31,11 @@ ADAPTERS = {
     "soccer": ("domains.soccer.tracking.adapter", "SoccerAdapter"),
     "baseball": ("domains.baseball.tracking.adapter", "BaseballAdapter"),
     "football": ("domains.football.tracking.adapter", "FootballAdapter"),
+    "basketball": ("domains.basketball.tracking.adapter", "BasketballAdapter"),
 }
 # Sports whose adapter must be asked for player-only tracking rather than
 # raising, because it cannot honestly produce ball positions.
-PLAYER_ONLY = {"baseball", "soccer"}
+PLAYER_ONLY = {"baseball", "basketball", "soccer"}
 # Sports asked for IMAGE-SPACE rows because their court calibration is measured
 # never to succeed on broadcast footage, so the court path emits nothing and the
 # detector's work is simply discarded. Image rows declare coordinate_space and
@@ -44,7 +45,7 @@ PLAYER_ONLY = {"baseball", "soccer"}
 #           "accepted" frames it used to report were a stale cached homography.
 # Add a sport here only once its adapter supports image_space=True AND its
 # calibration failure is MEASURED, not assumed.
-IMAGE_SPACE = {"baseball", "football", "soccer"}
+IMAGE_SPACE = {"baseball", "basketball", "football", "soccer"}
 TEACHER_META = {"baseball"}
 # Persisted declaration consumed by tracking_schema at the sole normalized-table
 # decision point. Tennis runs MotionDiffDetector; every other current adapter

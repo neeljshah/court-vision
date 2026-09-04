@@ -9,7 +9,14 @@ def test_soccer_is_asked_for_image_space():
 
 
 def test_uncalibratable_broadcast_sports_are_asked_for_image_space():
-    assert {"baseball", "football"} <= IMAGE_SPACE
+    assert {"baseball", "basketball", "football"} <= IMAGE_SPACE
+
+
+def test_basketball_is_registered_for_player_only_image_space_output():
+    assert ADAPTERS["basketball"] == (
+        "domains.basketball.tracking.adapter", "BasketballAdapter"
+    )
+    assert "basketball" in PLAYER_ONLY
 
 
 def test_image_space_sports_are_known_adapters():
