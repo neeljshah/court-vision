@@ -1,4 +1,4 @@
-GAP S210 | sport all (in-game) | worktree aXX | log cx_s210_ingame_power_audit
+GAP S210 | sport all (in-game) | worktree a15 | log cx_s210_ingame_power_audit
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: memory note ingame_signals_first_2026_09_03, verbatim: "MLB in-game: every screen is NULL by construction at
 41 game-clusters (CI half-width ~0.005 > the 0.004 bar)". Register row S93 agrees, CLOSED AT LIMIT. Yet the standing
