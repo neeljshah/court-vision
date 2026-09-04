@@ -185,11 +185,16 @@ def test_the_default_report_still_reproduces_the_landed_nba_artifact():
     landed_path = _REPO / "docs" / "evidence" / "calibration" / "nba_reliability_2026-09-03.json"
     _require_default_report_evidence(landed_path, _REPO / "data" / "cache" / "combo")
     landed = json.loads(landed_path.read_text(encoding="utf-8"))
+    per_unit_path = _REPO / "docs" / "evidence" / "calibration" / "nba_reliability_per_unit_2026-09-03.json"
+    per_unit_landed = json.loads(per_unit_path.read_text(encoding="utf-8"))
     report = build_report(load_gate_corpus("nba"), "nba")
 
     for key in ("scored_rows", "base_rate", "ece_before", "ece_after", "verdict",
                 "sharpness_before", "sharpness_after", "order_basis"):
         assert report[key] == landed[key], key
+    for key in ("scored_rows", "base_rate", "ece_before", "ece_after", "verdict",
+                "sharpness_before", "sharpness_after"):
+        assert report["per_unit"][key] == per_unit_landed[key], key
     assert report["murphy_after"] == landed["murphy_after"]
     assert report["reliability_bins_after"] == landed["reliability_bins_after"]
 

@@ -48,6 +48,7 @@ def test_calibration_number_nba_returns_real_data_not_no_data():
     assert result["source_artifact"].startswith("docs/evidence/calibration/nba_reliability_")
     assert result["as_of"] == result["source_artifact"].rsplit("_", 1)[-1][:-len(".json")]
     assert result["improved_ece"] == 0.024842541854003943
+    assert result["per_unit_ece"] == result["improved_ece"]
     assert result["prereg_seal_sha256"]
 
 

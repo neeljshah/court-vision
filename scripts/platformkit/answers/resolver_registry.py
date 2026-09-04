@@ -620,9 +620,7 @@ _SCOREBOARD_ROW_RE = re.compile(
     re.MULTILINE,
 )
 
-
 _RELIABILITY_DIR = os.path.join("docs", "evidence", "calibration")
-
 
 def _tracked_reliability(sport: str) -> str | None:
     """Newest TRACKED per-sport reliability artifact written by S05b, e.g.
@@ -641,13 +639,15 @@ def _reliability_answer(sport: str, path: str) -> dict | None:
     try:
         with open(path, encoding="utf-8") as fh:
             v = json.load(fh)
+        basis = v.get("per_unit", v)
         brier = lambda m: round(m["reliability"] - m["resolution"] + m["uncertainty"], 6)  # noqa: E731
         return {"status": "ok", "category": "calibration_number", "sport": sport,
                 "source_artifact": path.replace("\\", "/"),
                 "as_of": os.path.basename(path).rsplit("_", 1)[-1][:-len(".json")],
                 "n": int(v["input_rows"]),
                 "baseline_brier": brier(v["murphy_before"]), "improved_brier": brier(v["murphy_after"]),
-                "baseline_ece": v["ece_before"], "improved_ece": v["ece_after"],
+                "baseline_ece": basis["ece_before"], "improved_ece": basis["ece_after"],
+                "per_unit_ece": basis["ece_after"],
                 "method": v["recalibration"], "verdict": v["verdict"],
                 "prereg_path": v.get("prereg_path"), "prereg_seal_sha256": v.get("prereg_seal_sha256"),
                 "note": "tracked S05b reliability artifact; Brier from the stored Murphy "

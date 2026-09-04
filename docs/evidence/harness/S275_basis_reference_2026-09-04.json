@@ -1,0 +1,13 @@
+{
+  "artifact": "S275 basis reference",
+  "prereg_path": "docs/evidence/harness/S275_prereg_final_2026-09-04.md",
+  "prereg_seal_sha256": "C43FB0B12DA955B80658500D4D85F156A3AC43521C9395FCAF9DE1C3084E1BB4",
+  "method": "build_report direct positional and per_unit calls; existing expanding walk-forward route unchanged",
+  "corpus_reading": "one sport corpus opened at a time",
+  "values": {
+    "nba": {"positional_ece_after": 0.024842541854003943, "per_unit_ece_after": 0.02658341055583162},
+    "mlb": {"positional_ece_after": 0.008076824645850213, "per_unit_ece_after": 0.012665595930047123},
+    "soccer": {"positional_ece_after": 0.009301788688995382, "per_unit_ece_after": 0.028722088828783483},
+    "tennis": {"positional_ece_after": 0.008403089761848824, "per_unit_ece_after": 0.015402723519068535}
+  }
+}

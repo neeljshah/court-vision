@@ -91,12 +91,24 @@ def _no_metrics(sport: str, status: str, **extra: Any) -> dict[str, Any]:
     return _stamp(report, sport)
 
 
+_BASIS_SUMMARY_KEYS = (
+    "scored_rows", "base_rate", "ece_before", "ece_after", "verdict",
+    "sharpness_before", "sharpness_after", "murphy_after", "reliability_bins_after",
+)
+
+
+def _basis_summary(report: Mapping[str, Any]) -> dict[str, Any]:
+    """Return the immutable consumer fields for one fixed walk basis."""
+    return {key: report[key] for key in _BASIS_SUMMARY_KEYS}
+
+
 def build_report(records: Any, sport: str, *, bins: int = 10, min_n: int = 200,
                   order_by: str | None = None, unit_col: str | None = None,
                   key_source: str = "global", include_rows: bool = False,
                   key_timing: str = "date_group",
                   fallback_source: str = "prior_date",
-                  train_refit_every: int = 20) -> dict:
+                  train_refit_every: int = 20,
+                  _include_basis_summaries: bool = True) -> dict:
     """Build one sport's evidence report from every finite/binary corpus row.
 
     ``order_by`` / ``unit_col`` (gap S50) are OPT-IN and default OFF: given both,
@@ -242,7 +254,21 @@ def build_report(records: Any, sport: str, *, bins: int = 10, min_n: int = 200,
             }
             for index, row in enumerate(usable)
         ]
-    return _stamp(result, sport, "event_date" if walked else "POSITIONAL-ORDER")
+    result = _stamp(result, sport, "event_date" if walked else "POSITIONAL-ORDER")
+    if not _include_basis_summaries:
+        return result
+    common = {
+        "bins": bins, "min_n": min_n, "key_source": key_source,
+        "key_timing": key_timing, "fallback_source": fallback_source,
+        "train_refit_every": train_refit_every,
+        "_include_basis_summaries": False,
+    }
+    positional = result if not walked else build_report(records, sport, **common)
+    per_unit = result if walked else build_report(
+        records, sport, order_by="event_date", unit_col="corpus_unit", **common)
+    result["positional"] = _basis_summary(positional)
+    result["per_unit"] = _basis_summary(per_unit)
+    return result
 
 
 def _unavailable(sport: str, error: Exception) -> dict[str, Any]:
