@@ -437,3 +437,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-03 | hook | S201 | S201: CLOSED AT LIMIT -- required S92 archive absent | LANDED (auto; verifier line pending) | 4b27ec7f4
 2026-09-03 | NBA fatigue-conditioned forms | S201 | required S92 archive absent; 0/2 files available and no scored comparison | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 4b27ec7f4
 2026-09-03 | in-game cycle observability | S186 | 30/30 driven cycles retained all required counters and the full failure map; cycle 1 remained readable after cycle 30 | ACCEPT (verified: codex-sol, contract A/B/Q) | 331837c03
+2026-09-03 | replication wiring | S203 | premise falsified: measured 0/6 enumerated writers wired (spec baseline 1/6); 2 unrelated callers | ACCEPT (verified: codex-sol, contract A/B/Q) | 66ccf59a6
