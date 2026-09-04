@@ -230,11 +230,37 @@ calibration per ~50 frames" as a requirement any more.**
 
 ### 7.4 The three rows now open against this
 
-| row | question | why it matters |
+| row | question | outcome |
 |---|---|---|
-| **G241** | how far does the seed hold CONTIGUOUSLY, and what breaks it? | 1,200 frames = 90 labels/hour; 10,000 = 11 |
-| **G242** | does a distant frame re-acquire DIRECTLY from the same seed? | if yes the unit is an arena-camera, not a span, and labels/hour approaches 1 |
-| **G243** | does any of this work on AMATEUR fixed-camera footage? | the stated goal is arbitrary footage; a fixed camera is the easy case, so a failure there bounds the ambition |
+| **G241** | how far does the seed hold CONTIGUOUSLY? | **NOT VALIDATED, stopped on a control I mis-specified.** Its by-product matters: the propagation GEOMETRY reproduced bit-exactly (zero unequal records over 1,200 frames), while 808 of 1,201 DETECTOR records differed. Re-issued as **G241b** with the control narrowed to geometry. |
+| **G242** | does a distant frame re-acquire DIRECTLY from the same seed? | **ACCEPT, and the result is a negative -- see 7.5.** Yes on same-end views out to +154,401 frames, but G222's acceptance rule accepted 89/89 including replays, graphics and the wrong hoop end. |
+| **G243** | does any of this work on AMATEUR fixed-camera footage? | RUNNING. The stated goal is arbitrary footage; a fixed camera is the easy case, so a failure there bounds the ambition. |
+| **G244** | does ANY diagnostic separate a correct court from a wrong one? | QUEUED. Made urgent by 7.5. |
+
+### 7.5 G242: match acceptance is NOT geometry validity
+
+**This is the most consequential result of the night and it constrains every
+other row here.** G242 sampled the whole game at stride 2000 and matched 89
+frames directly against the G233d seed. **G222's unchanged acceptance rule
+accepted 89 of 89 -- 1.000000.** Opening all 89 overlays showed the accepted set
+was 52 normal court views, 29 tight player/bench/crowd views, 6 replay/overhead
+and 2 graphic/partial. **Frame 8000 is the other hoop end, where the projected
+court plainly misses the paint, and it passed.**
+
+**So inlier count, inlier ratio and RMS residual have never been shown to
+indicate that a court is correct.** RMS is the most misleading of the three: it
+measures fit to the matched features, which the wrong hoop end also has.
+
+**What survives, and it is substantial:** judged on independent painted geometry
+and never on the fitted corners, the court visibly agrees at the seed and at
+same-end views 74000, 122000 and **174000 -- +154,401 frames from the seed.**
+One hand label really does re-acquire a correct court across an entire game on
+same-end views. **What is missing is any automatic way to know which frames those
+are.** Until G244 answers that, **every "it held for N frames" claim in this
+document is carried by its RENDERS alone**, and must be stated that way.
+
+G242's literal `ceil(30*3600/174430) = 1` label per hour is **arithmetic only and
+is not a usable rate**, because the same rule accepts visibly invalid maps.
 
 **A separate and unrelated result:** G240 hashed three fresh basketball-adapter
 runs and found the emitted tables **byte-identical** (SHA-256
