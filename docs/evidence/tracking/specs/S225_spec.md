@@ -1,4 +1,4 @@
-GAP S225 | sport nba (in-game) | worktree aXX | log cx_s225_ingame_intel_conditioning_rerun
+GAP S225 | sport nba (in-game) | worktree a16 | log cx_s225_ingame_intel_conditioning_rerun
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: two in-game conditioning layers exist and were never scored against a market.
 ingame_hypothesis_{hot_night,scheme_fit}.json plus row parquets hold 7,350 rows / 1,225 games (2024-25) and 444 / 74
