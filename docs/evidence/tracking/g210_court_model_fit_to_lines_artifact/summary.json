@@ -1,0 +1,16 @@
+{
+  "frames_all_four": 0,
+  "frames_total": 17,
+  "corner_errors_px": {
+    "min": 59.873129959796216,
+    "median": 468.82030057372947,
+    "p90": 991.9522828704568,
+    "max": 1992.190319097611
+  },
+  "fits": 17,
+  "configuration": {
+    "max_hypotheses": 2048,
+    "max_groups": 24,
+    "seed": 210
+  }
+}
