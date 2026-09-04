@@ -1,4 +1,4 @@
-GAP S222 | sport all (in-game) | worktree aXX | log cx_s222_refresh_layer_census
+GAP S222 | sport all (in-game) | worktree a16 | log cx_s222_refresh_layer_census
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: the in-game engine is conditioned by more than live feeds. Four regularly-refreshed classes feed it through
   as-of joins -- play-by-play archives (pbp_states_*, pbp_foul_states_*, possession_states_*), Statcast pitch grain
