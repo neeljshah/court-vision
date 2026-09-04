@@ -18,6 +18,12 @@
 |---|---|---|---|---|
 | G227 | ncaa_basketball / wnba | The existing semantically named paint-quad provider was measured in one declared default arm (`min_edge_support=0.16`) on all 17 G140 frames using native pixels and the unchanged G205 12 px scorer. It selected no paint quad, emitted no named corner proposal, and abstained on every frame: 0/17 all-four and 0/68 corner availability. NCAA is 0/8, 0/32, 8 abstentions; WNBA is 0/9, 0/36, 9 abstentions. This is a low-proposal-count abstention result, not a high-volume proposal-miss result. The 16 ft canonical lane model was retained but is downstream of paint selection, so it does not plausibly explain either league's pre-selection abstention. | g227_keypoint_provider_probe_2026-09-04.md; g227_keypoint_provider_probe/ | CLOSED AT LIMIT (last untested in-repo classical provider abstains; no production change). |
 
+## G229 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G229 | ncaa_basketball / wnba | Local unchanged-gate replay reproduced G227 exactly: 17/17 abstentions, 0/17 all-four frames, and 0/68 labelled corners. First rejection was `_candidate_quads` on the sole 640x360 input and the combined `_paint` area-and-shortest-side gate on the remaining 16; none reached line support or baseline-adjacency naming, and landmark co-occurrence was none on every frame. The closest same-candidate geometry margin was 0.534 of its bar, while the closest overlays are non-paint rectangles or broadcast graphics. No threshold relaxation, production change, or pod activity occurred. | g229_keypoint_gate_funnel_2026-09-04.md; g229_keypoint_gate_funnel/ | CLOSED AT LIMIT (G227 closure survives; rejecting gates now evidenced). |
+
 ## G103 result register
 
 ## G126 result register
