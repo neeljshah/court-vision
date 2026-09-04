@@ -1,0 +1,57 @@
+{
+  "attempt": 2,
+  "construct": {
+    "blockers": [
+      "S20: week bar unmet",
+      "S18: blocked on S20"
+    ],
+    "days_to_first_reading": 98,
+    "n_settled_today": 4,
+    "settlement_rate_per_day": 2.0
+  },
+  "construct_hand_computation": "ceil((200 - 4) / 2.0) = 98",
+  "inputs": {
+    "execution_status": {
+      "bytes": 947,
+      "path": "C:/Users/neelj/nba-track-a17/data/frontend/analytics/execution_status.json",
+      "resolution": "n/a JSON",
+      "sha256": "4029d6b0bf489fb8eecf9aa30517f9f78366711214aeb0cb0ea18698f1bf291f"
+    },
+    "ledger": {
+      "bytes": 18584,
+      "path": "C:/Users/neelj/nba-track-a17/data/frontend/clv_ledger.jsonl",
+      "resolution": "n/a JSONL",
+      "sha256": "f492d8fea427ac0e6ea2dada4b8a6dbfe3e092e81579305419b11f64f432c521"
+    }
+  },
+  "not_verified": [
+    "No OOS predictive comparison exists; walk_forward and cpcv_evaluate are not applicable.",
+    "No settlement-rate field exists in the current stores beyond the dated settled history inspected.",
+    "No future settled reading, multi-sport completion, seven-day completion, deployment, or live capture was verified."
+  ],
+  "premise": {
+    "execution_n_settled": "INSUFFICIENT",
+    "execution_row_classes_settled": 0,
+    "ledger_row_classes": {
+      "integrity_flagged": 0,
+      "legacy_missing_bet_id": 2,
+      "open_with_bet_id": 18,
+      "settled_status": 0
+    },
+    "ledger_row_count": 20,
+    "row_class_rule": "legacy when bet_id is absent; otherwise open when status is open"
+  },
+  "preregistration": "docs/evidence/harness/S239_clv_countdown_prereg_attempt2_2026-09-04.md",
+  "preregistration_commit": "59567cb8898f5ebf4bdb3df0240601197fa78e7f",
+  "preregistration_seal_sha256": "4cdd7a5304229b35b0c65dc2bb0ddf04db26d27a4d58cd86861957d062d69e75",
+  "real_store": {
+    "blockers": [
+      "S20: week bar unmet",
+      "S18: blocked on S20"
+    ],
+    "days_to_first_reading": "UNDEFINED",
+    "n_settled_today": 0,
+    "settlement_rate_per_day": null
+  },
+  "verdict": "ACCEPT"
+}

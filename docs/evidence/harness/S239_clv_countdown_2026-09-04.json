@@ -1,0 +1,9 @@
+{
+  "blockers": [
+    "S20: week bar unmet",
+    "S18: blocked on S20"
+  ],
+  "days_to_first_reading": "UNDEFINED",
+  "n_settled_today": 0,
+  "settlement_rate_per_day": null
+}
