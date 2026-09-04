@@ -478,10 +478,27 @@ max -- over 231 of 634 sampled points, those both in frame and shared.** Over al
 634 the p90 is 280 px: expected off-frame divergence, not failure. **Quote that
 denominator with the claim.**
 
-**Hold it provisionally.** n=1 frame, 1 labeller, an assumed court model, and
-hand-fitted lines are no more automatic than hand-fitted points. **G255 is
-independently blind-judging it and measuring its withheld-geometry offset**, because
-the amateur gate has no objective anchor the control has.
+**RETRACTED IN PART -- G255 HAS NOW RUN AND THE AMATEUR PASS IS NOT REPLICATED.**
+G255 blind-judged the same render on the same withheld geometry, committing its
+verdicts before reading G253's, and returned **CANNOT JUDGE**: the arc and
+painted-end evidence is *"too faint, occluded, and visually ambiguous at this
+render scale to support a PASS or a FAIL"*. **Two labellers, one frame --
+disagreement, not replication.** The offsets agree: the amateur withheld geometry
+measures **median 12.0 px / p90 18.0 over 80 samples**, against the control's
+**median 5.0 px / p90 16.0 over 689** -- **more than twice the WNBA median.**
+
+**So "the first calibration of non-broadcast footage" must NOT be claimed. It is
+UNRESOLVED, not refuted.**
+
+**What survives is the more important half: THE METHOD IS REPLICATED.** G255
+independently called the WNBA lines-only control **PASS**, agreeing with G253, and
+that control has an objective anchor. **Line-and-conic calibration is validated on
+broadcast footage; only its amateur application is open.**
+
+**The process failure was mine.** G253 reported its amateur result honestly as
+one-labeller, one-frame eye evidence; **I promoted it to a headline before it was
+checked.** The check cost one cheap row. **Any eye-gated result that becomes a
+headline must be independently re-judged first.**
 
 **The transferable lesson: when four identifiable points do not exist, count
 CONSTRAINTS, not points.** Lines and conics survive occlusion and cropping far
