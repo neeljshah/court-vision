@@ -504,3 +504,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-04 | harness | S267 | fixed 1e-9 match missed on 4/4 per-unit ECE targets; premise 0/3 explicit consumers | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 270dcc83b
 2026-09-04 | WNBA in-game | S269 | 5,647 stamps/167 games vs 18,650 ticks/85 games; direct overlap 0/85; no calibration comparison scored | FALSIFIED (verified: codex-sol, contract A/B/Q) | 0b3abd403
 2026-09-04 | distributional CPCV route | S268 | fixture Brier match delta 0.0; purge Brier delta 0.007575757575757569; four MLB loss deltas 0.0 on 777 clusters/3,000 rows | ACCEPT (verified: codex-sol, contract A/B/Q) | 58f70ad4a
+2026-09-04 | NBA in-game calibration | S272 | all-ticks Brier 0.073354 vs 0.073317, delta -0.000037; tail ECE 0.001245 vs 0.001493 | BEHIND / ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | c39fbf996
