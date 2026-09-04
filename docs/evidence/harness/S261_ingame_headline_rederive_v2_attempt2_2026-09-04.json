@@ -1,0 +1,140 @@
+{
+  "evaluation": {
+    "engine": "cpcv_evaluate",
+    "n_groups": 8,
+    "n_test_groups": 2,
+    "same_matchup_embargo_days": 3,
+    "same_team_purge_hours": 48,
+    "strict_redaction": true,
+    "symmetric_calendar_embargo_days": 1
+  },
+  "helper_sha256": "E4EDB0C004B1E0461EC34D09B08BB3C6BE05EDB1F4430509ED18E608B5AEBB77",
+  "prereg_seal_sha256": "1DCB38B6CBB59694CD4A722AA843BE9694905ADC292B9A17ACE9F95D29E984FB",
+  "preregistration": "S261_ingame_headline_rederive_v2_attempt2_prereg_2026-09-04.md",
+  "route_sha256": {
+    "cpcv_engine": "7D3A5492F26D7E7F150498AE5FF341BD56BA7AC86ED385626034F4A9A1560036",
+    "s261_base": "6C1689F0878EBD02209E562B74622729647B60A1FE3E8D3D4A81560CEB4610FA"
+  },
+  "run_scope": "full_local",
+  "sample_game_path_limit": 0,
+  "schema_version": 4,
+  "sports": {
+    "mlb": {
+      "brier": {
+        "conditional": 0.1279975595325734,
+        "score": 0.1282283473795321,
+        "static": 0.24897282410431879
+      },
+      "checkpoint_count": 69763,
+      "cpcv_path_evaluation_count": 488341,
+      "exclusions": {
+        "invalid_inning": 2458,
+        "tied_final_score": 2246
+      },
+      "game_path_count": 23279,
+      "inputs": [
+        {
+          "bytes": 343723,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\games.parquet",
+          "resolution": "not_applicable_parquet"
+        },
+        {
+          "bytes": 659985,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\pitchers.parquet",
+          "resolution": "not_applicable_parquet"
+        }
+      ],
+      "prior_share_ci": {
+        "finite_resamples": 10000,
+        "lower": 0.0005919733087687374,
+        "method": "game_cluster_bootstrap_percentile",
+        "n_eff": 23279,
+        "reported": true,
+        "resamples": 10000,
+        "seed": 21120260904,
+        "upper": 0.0032629680718753136
+      },
+      "public_value_abs_diff": {
+        "conditional": 0.00199755953257377,
+        "static": 0.00797282410431543
+      },
+      "public_value_abs_diff_exact": {
+        "conditional": "0.00199755953257377",
+        "static": "0.00797282410431543"
+      },
+      "public_value_status": {
+        "conditional": "NOT REPRODUCED",
+        "static": "NOT REPRODUCED"
+      },
+      "reproduction_abs_diff": {
+        "conditional": 0.0,
+        "score": 0.0,
+        "static": 0.0
+      },
+      "series_path": "C:\\Users\\neelj\\nba-track-a13\\docs\\evidence\\harness\\S261_mlb_per_state_losses_attempt2_2026-09-04.csv",
+      "shares": {
+        "model_prior_contribution": 0.00023078784695867993,
+        "model_prior_share": 0.0019077275654297851,
+        "score_only_share": 0.9980922724345702,
+        "static_minus_conditional": 0.12097526457174537,
+        "total_calibration_change": 0.12097526457174537
+      }
+    },
+    "nba": {
+      "brier": {
+        "conditional": 0.16324678066236556,
+        "score": 0.17235318274013145,
+        "static": 0.21883250084408853
+      },
+      "checkpoint_count": 3939,
+      "cpcv_path_evaluation_count": 27573,
+      "exclusions": {
+        "invalid_inning": 0,
+        "tied_final_score": 0
+      },
+      "game_path_count": 1313,
+      "inputs": [
+        {
+          "bytes": 28744,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\basketball_nba\\linescores.parquet",
+          "resolution": "not_applicable_parquet"
+        }
+      ],
+      "prior_share_ci": {
+        "finite_resamples": 10000,
+        "lower": 0.11469448235798907,
+        "method": "game_cluster_bootstrap_percentile",
+        "n_eff": 1313,
+        "reported": true,
+        "resamples": 10000,
+        "seed": 21120260904,
+        "upper": 0.2268243890140245
+      },
+      "public_value_abs_diff": {
+        "conditional": 0.004246780662365,
+        "static": 0.00983250084408843
+      },
+      "public_value_abs_diff_exact": {
+        "conditional": "0.00424678066236500",
+        "static": "0.00983250084408843"
+      },
+      "public_value_status": {
+        "conditional": "NOT REPRODUCED",
+        "static": "NOT REPRODUCED"
+      },
+      "reproduction_abs_diff": {
+        "conditional": 0.0,
+        "score": 0.0,
+        "static": 0.0
+      },
+      "series_path": "C:\\Users\\neelj\\nba-track-a13\\docs\\evidence\\harness\\S261_nba_per_state_losses_attempt2_2026-09-04.csv",
+      "shares": {
+        "model_prior_contribution": 0.00910640207776589,
+        "model_prior_share": 0.16382628574380056,
+        "score_only_share": 0.8361737142561995,
+        "static_minus_conditional": 0.055585720181722975,
+        "total_calibration_change": 0.055585720181722975
+      }
+    }
+  }
+}

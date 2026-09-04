@@ -93,7 +93,8 @@ def _blocked_indices(states: List[dict], stamps: List[datetime], test_idx: Seque
 def cpcv_evaluate(states: List[dict], predictor: Predictor, n_groups: int = 8,
                   n_test_groups: int = 2, embargo_days: int = 1,
                   *, strict_redaction: bool = False,
-                  allow_keys: Sequence[str] = ()) -> List[dict]:
+                  allow_keys: Sequence[str] = (), record_consumer: Callable[[dict], None] | None = None,
+                  collect_records: bool = True) -> List[dict]:
     """Combinatorial purged cross-validation over walk_forward-shaped states.
 
     ``states`` are walk_forward-shaped dicts (game_id, state_ts, home, away,
@@ -124,11 +125,15 @@ def cpcv_evaluate(states: List[dict], predictor: Predictor, n_groups: int = 8,
                           True)
             if not 0.0 <= p <= 1.0:
                 raise ValueError(f"predictor returned {p} out of [0,1]")
-            records.append({
+            record = {
                 "split_id": split_id, "game_id": test["game_id"], "ts": test["state_ts"],
                 "p_model": float(p), "p_close": test.get("devig_close_prob"),
                 "y": int(test["outcome"]), "n_train": len(train_states),
-            })
+            }
+            if record_consumer is not None:
+                record_consumer(record)
+            if collect_records:
+                records.append(record)
     # cpcv_splits raises "No usable CPCV path" itself when it yields nothing,
     # and every yielded path has a non-empty test index, so records is non-empty.
     return records
