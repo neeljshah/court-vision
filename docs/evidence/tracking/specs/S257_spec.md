@@ -1,4 +1,4 @@
-GAP S257 | sport all | worktree aXX | log cx_s257_event_date_default_v2
+GAP S257 | sport all | worktree a17 | log cx_s257_event_date_default_v2
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S235 CLOSED AT LIMIT (353d276aa). Attempt 1 wrongly declared the premise falsified; attempt 2 confirmed
   the premise (no-flag calibration_report.py main still walks POSITIONAL order, lines 259-268) and resealed the
