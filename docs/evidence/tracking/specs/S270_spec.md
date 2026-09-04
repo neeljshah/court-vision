@@ -1,4 +1,4 @@
-GAP S270 | sport all (in-game) | worktree a14 | log cx_s270_ingame_power_feasibility
+GAP S270 | sport all (in-game) | worktree a16 | log cx_s270_ingame_power_feasibility
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: successor to S259 (in-game power audit v5, sha d7cbf4e34, committed in worktree a16 and reachable from
   this repo's object store via `git show d7cbf4e34:docs/evidence/harness/S259_ingame_power_audit_v5_2026-09-04.md`;
