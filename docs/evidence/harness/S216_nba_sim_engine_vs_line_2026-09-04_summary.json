@@ -1,0 +1,54 @@
+{
+  "row": "S216",
+  "attempt": 2,
+  "sport": "nba",
+  "verdict": "FALSIFIED",
+  "stop_step": "step_0_premise",
+  "attempt_1_disposition": "STORE_VISIBILITY_ARTEFACT_SUPERSEDED",
+  "reason": "Visible S92 archives reproduce S123 ordering but do not satisfy the stipulated S86 corpus denominator, game count, or date range.",
+  "required_s86_corpus": {
+    "ticks": 465249,
+    "games": 1593,
+    "date_min": "2024-10-22",
+    "date_max": "2026-06-13"
+  },
+  "visible_archives": [
+    {
+      "path": "data/cache/eval_gate/s92_nba_lineup_dynamic_2026-09-03_all.csv",
+      "bytes": 38630145,
+      "ticks": 79554,
+      "games": 661,
+      "date_min": "2024-10-25",
+      "date_max": "2026-04-06",
+      "brier": {
+        "market": 0.142876712852,
+        "recal_null": 0.144293050901,
+        "ladder_base": 0.146849530547
+      }
+    },
+    {
+      "path": "data/cache/eval_gate/s92_nba_lineup_dynamic_2026-09-03_rated.csv",
+      "bytes": 16420946,
+      "ticks": 33713,
+      "games": 284,
+      "date_min": "2024-10-25",
+      "date_max": "2025-04-13",
+      "brier": {
+        "market": 0.144100776926,
+        "recal_null": 0.146842905353,
+        "ladder_base": 0.153323943143
+      }
+    }
+  ],
+  "platformkit_src_sim_imports": [],
+  "s123_market_default_byte_identical": true,
+  "scored_ticks": 0,
+  "paired_loss_series": null,
+  "limit_verdict": "NOT_ASSESSED",
+  "not_verified": [
+    "strictly-prior rate-snapshot coverage",
+    "simulator pricing",
+    "three-arm S216 scoring",
+    "clustered interval and tail shares"
+  ]
+}
