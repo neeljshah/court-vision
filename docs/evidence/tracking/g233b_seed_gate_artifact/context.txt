@@ -1,0 +1,9 @@
+2026-09-04T06:35:18Z
+31961	/workspace/nba-ai-system/data
+/workspace/nba-ai-system/data/footage_corpus/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds.mp4|3580059573
+width=1920
+height=1080
+avg_frame_rate=30000/1001
+nb_frames=205444
+f9655c338c92be6bcf90be998eac8b2904aaee52346b2f1593a2814458c737a3  streamed/scripts/platformkit/tracking/g196_homography_from_labelled_corners.py
+19660d292917664dde6e8f02978e9cf78e4fed16bba532c04f5f91dd0b105f74  streamed/scripts/platformkit/tracking/g233b_ncaa_seed_gate.py
