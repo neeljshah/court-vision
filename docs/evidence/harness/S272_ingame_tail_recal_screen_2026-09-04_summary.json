@@ -1,0 +1,189 @@
+{
+  "bar": 0.004,
+  "bootstraps": 2000,
+  "embargo_days": 1,
+  "folds": [
+    {
+      "fallback_market": true,
+      "games": 656,
+      "season": "2024-25",
+      "shared_train_games": 937,
+      "ticks": 198344,
+      "train_games": 0
+    },
+    {
+      "fallback_market": false,
+      "games": 937,
+      "season": "2025-26",
+      "shared_train_games": 656,
+      "ticks": 266905,
+      "train_games": 656
+    }
+  ],
+  "input": {
+    "bytes": 2829826,
+    "path": "data/cache/inplay_odds/nba_checkpoints_full.parquet",
+    "resolution": "not applicable",
+    "rows": 465249
+  },
+  "metrics": {
+    "all": {
+      "candidate_brier": 0.07335361389463317,
+      "candidate_brier_ci95": [
+        0.06946119622996445,
+        0.07750223807602871
+      ],
+      "improvement": -3.66683380326361e-05,
+      "improvement_ci95": [
+        -7.042297493210607e-05,
+        -8.368211469821433e-06
+      ],
+      "incumbent_brier": 0.07331694555660052,
+      "incumbent_brier_ci95": [
+        0.06943176768823454,
+        0.07745901131838874
+      ],
+      "n_games": 1593,
+      "n_ticks": 465249
+    },
+    "tail": {
+      "candidate_brier": 0.006840435259547861,
+      "candidate_brier_ci95": [
+        0.005204580483027185,
+        0.008699957775116673
+      ],
+      "candidate_ece": 0.0012445847823605697,
+      "candidate_ece_ci95": [
+        0.00028891037575692847,
+        0.0031194717969680917
+      ],
+      "improvement": -5.525368770597466e-05,
+      "improvement_ci95": [
+        -0.00010910938807261643,
+        -8.930454174971499e-06
+      ],
+      "incumbent_brier": 0.006785181571841887,
+      "incumbent_brier_ci95": [
+        0.005173390345119122,
+        0.008618077817597415
+      ],
+      "incumbent_ece": 0.0014934098749201806,
+      "incumbent_ece_ci95": [
+        0.0005786291467696226,
+        0.0032928277233518627
+      ],
+      "n_games": 1590,
+      "n_ticks": 308756
+    }
+  },
+  "mode": "SEALED_SCREEN",
+  "paired_losses": "docs/evidence/harness/S272_ingame_tail_recal_screen_2026-09-04_paired_losses.csv",
+  "prereg_sha256": "bd33af6d49a43150916e7d4d6a0dd6e15a520165aab9a2834159042b39ed006d",
+  "preregistration_path": "docs/evidence/harness/S272_ingame_tail_recal_prereg_2026-09-04.md",
+  "route_sha256": "4bb4d92c3095bf0d109bc6e02361683624c0e9b39d4e4c3cf6dd02f622464d76",
+  "rss_bytes": 458616832,
+  "season_metrics": {
+    "2024-25": {
+      "all": {
+        "candidate_brier": 0.07039710215585043,
+        "candidate_brier_ci95": [
+          0.06482023057772028,
+          0.07595644829436912
+        ],
+        "improvement": 0.0,
+        "improvement_ci95": [
+          0.0,
+          0.0
+        ],
+        "incumbent_brier": 0.07039710215585043,
+        "incumbent_brier_ci95": [
+          0.06482023057772028,
+          0.07595644829436912
+        ],
+        "n_games": 656,
+        "n_ticks": 198344
+      },
+      "tail": {
+        "candidate_brier": 0.006772195638997709,
+        "candidate_brier_ci95": [
+          0.00433680156918002,
+          0.009667195529027105
+        ],
+        "candidate_ece": 0.0018333062310591933,
+        "candidate_ece_ci95": [
+          0.0007524080795952335,
+          0.005043511775007671
+        ],
+        "improvement": 0.0,
+        "improvement_ci95": [
+          0.0,
+          0.0
+        ],
+        "incumbent_brier": 0.006772195638997709,
+        "incumbent_brier_ci95": [
+          0.00433680156918002,
+          0.009667195529027105
+        ],
+        "incumbent_ece": 0.0018333062310591933,
+        "incumbent_ece_ci95": [
+          0.0007524080795952335,
+          0.005043511775007671
+        ],
+        "n_games": 656,
+        "n_ticks": 135290
+      }
+    },
+    "2025-26": {
+      "all": {
+        "candidate_brier": 0.07555067413822965,
+        "candidate_brier_ci95": [
+          0.07029586515925862,
+          0.08073649107661648
+        ],
+        "improvement": -6.391752721509868e-05,
+        "improvement_ci95": [
+          -0.0001234907121720738,
+          -9.804913839214436e-06
+        ],
+        "incumbent_brier": 0.07548675661101455,
+        "incumbent_brier_ci95": [
+          0.07027197317467129,
+          0.08064474246256319
+        ],
+        "n_games": 937,
+        "n_ticks": 266905
+      },
+      "tail": {
+        "candidate_brier": 0.006893656860692928,
+        "candidate_brier_ci95": [
+          0.004854609072408228,
+          0.009138780141409574
+        ],
+        "candidate_ece": 0.003645100590677879,
+        "candidate_ece_ci95": [
+          0.001404468996604853,
+          0.005994009229637286
+        ],
+        "improvement": -9.834727036621798e-05,
+        "improvement_ci95": [
+          -0.00018711941979898786,
+          -1.886595248561666e-05
+        ],
+        "incumbent_brier": 0.0067953095903267105,
+        "incumbent_brier_ci95": [
+          0.004792199190474519,
+          0.009012535483260746
+        ],
+        "incumbent_ece": 0.001981363836952785,
+        "incumbent_ece_ci95": [
+          0.001051389294173841,
+          0.004455154265902691
+        ],
+        "n_games": 934,
+        "n_ticks": 173466
+      }
+    }
+  },
+  "seed": 272,
+  "verdict": "BEHIND"
+}
