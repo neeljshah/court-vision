@@ -1,0 +1,427 @@
+{
+  "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s03__f003973": {
+    "homography_image_to_court": [
+      [
+        0.025684730711826094,
+        -0.06488254435534684,
+        26.540150875464626
+      ],
+      [
+        -0.013026058049438497,
+        -0.0004659032592232554,
+        10.90864754504239
+      ],
+      [
+        -0.0002377888595961918,
+        -0.001296828092701652,
+        1.0
+      ]
+    ],
+    "support_length_px": 12681.017904447157,
+    "supported_groups": 14,
+    "group_count": 832,
+    "configuration_space": 17126139363840,
+    "hypotheses_tested": 16384,
+    "valid_hypotheses": 2630
+  },
+  "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p__s13__f015785": {
+    "homography_image_to_court": [
+      [
+        0.004634293572597409,
+        -0.08605945676440864,
+        77.3763938414426
+      ],
+      [
+        -0.3008174314541525,
+        -1.0023348290150195e-05,
+        389.75651630688657
+      ],
+      [
+        0.002266845734628189,
+        0.000309468387397788,
+        1.0
+      ]
+    ],
+    "support_length_px": 24050.308391293765,
+    "supported_groups": 23,
+    "group_count": 657,
+    "configuration_space": 6646465549440,
+    "hypotheses_tested": 16384,
+    "valid_hypotheses": 2589
+  },
+  "ncaa_basketball__ncaa_basketball_IB-_u4gW3ds__s14__f028171": {
+    "homography_image_to_court": [
+      [
+        -0.05243912871627079,
+        0.055935948181482044,
+        5.794051383372678
+      ],
+      [
+        0.02958464369972252,
+        -7.027754707787271e-06,
+        -0.8001800800105925
+      ],
+      [
+        -0.0026331012787950436,
+        -2.2718795566912483e-05,
+        1.0
+      ]
+    ],
+    "support_length_px": 3383.3513537467343,
+    "supported_groups": 11,
+    "group_count": 82,
+    "configuration_space": 1511187840,
+    "hypotheses_tested": 16384,
+    "valid_hypotheses": 1659
+  },
+  "ncaa_basketball__ncaa_basketball_mRkuGgeECak__s08__f016871": {
+    "homography_image_to_court": [
+      [
+        -0.03095861021791027,
+        -0.0013162265834235141,
+        29.112046902622843
+      ],
+      [
+        -0.05542787005557112,
+        -0.009453532988998556,
+        67.44736718901021
+      ],
+      [
+        -0.0010129518151075862,
+        -0.00010679081695175989,
+        1.0
+      ]
+    ],
+    "support_length_px": 16005.515601486159,
+    "supported_groups": 26,
+    "group_count": 900,
+    "configuration_space": 23462456565600,
+    "hypotheses_tested": 16384,
+    "valid_hypotheses": 3054
+  },
+  "ncaa_basketball__ncaa_basketball_sRtHQbywiTE__s03__f006925": {
+    "homography_image_to_court": [
+      [
+        -0.19303735674518477,
+        -0.01153096723870315,
+        118.75313929207432
+      ],
+      [
+        -0.03782033950225573,
+        -0.012687241192247583,
+        28.520936953848413
+      ],
+      [
+        -0.0009595800038382074,
+        -0.00022945362970677467,
+        1.0
+      ]
+    ],
+    "support_length_px": 13790.342397136426,
+    "supported_groups": 18,
+    "group_count": 336,
+    "configuration_space": 450689339520,
+    "hypotheses_tested": 16384,
+    "valid_hypotheses": 2335
+  },
+  "ncaa_basketball__ncaa_basketball_tiUvyvWOCxo__s01__f002920": {
+    "homography_image_to_court": [
+      [
+        1.0122272793585323,
+        -1.4678264313175544,
+        -257.5394783590613
+      ],
+      [
+        0.7025439337803501,
+        -5.754239059210379,
+        1402.6997880182018
+      ],
+      [
+        0.03159731490728441,
+        -0.07687442598355204,
+        1.0
+      ]
+    ],
+    "support_length_px": 6231.367976965942,
+    "supported_groups": 13,
+    "group_count": 334,
+    "configuration_space": 440006688864,
+    "hypotheses_tested": 16384,
+    "valid_hypotheses": 2667
+  },
+  "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s02__f005760": {
+    "homography_image_to_court": [
+      [
+        -0.014910487335004712,
+        -0.005902328308253658,
+        21.001445736455352
+      ],
+      [
+        -0.006386460271244827,
+        -0.010129586655191664,
+        4.687999325784457
+      ],
+      [
+        -0.0007988031472226006,
+        -0.00018978502985207433,
+        1.0
+      ]
+    ],
+    "support_length_px": 23397.096008147808,
+    "supported_groups": 21,
+    "group_count": 726,
+    "configuration_space": 9918682567200,
+    "hypotheses_tested": 16384,
+    "valid_hypotheses": 2734
+  },
+  "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s10__f020340": {
+    "homography_image_to_court": [
+      [
+        -0.0037093237553524182,
+        -0.018156960718039558,
+        21.967081971933254
+      ],
+      [
+        -0.01176182652139112,
+        -0.0505217416698636,
+        34.20781199709407
+      ],
+      [
+        -0.0007287968239905839,
+        -0.0005270834286237644,
+        1.0
+      ]
+    ],
+    "support_length_px": 8118.6246623245,
+    "supported_groups": 8,
+    "group_count": 617,
+    "configuration_space": 5166683565120,
+    "hypotheses_tested": 16384,
+    "valid_hypotheses": 2932
+  },
+  "wnba__wnba_01_1080p__s01__f001600": {
+    "homography_image_to_court": [
+      [
+        -0.01645296278699559,
+        -0.00489822150873958,
+        17.564979101349728
+      ],
+      [
+        -0.03376877598205643,
+        -0.009665692085689046,
+        26.87432833392737
+      ],
+      [
+        -0.0009953209757374965,
+        -0.0001472838413163417,
+        1.0
+      ]
+    ],
+    "support_length_px": 26153.56680244748,
+    "supported_groups": 21,
+    "group_count": 729,
+    "configuration_space": 10083990780864,
+    "hypotheses_tested": 16384,
+    "valid_hypotheses": 2944
+  },
+  "wnba__wnba_01_1080p__s03__f004062": {
+    "homography_image_to_court": [
+      [
+        -0.03956896957506459,
+        0.0025082825909778336,
+        48.38637336592324
+      ],
+      [
+        -0.016578801453995914,
+        -0.03160542668578133,
+        31.89055116507558
+      ],
+      [
+        -0.0008056988004070492,
+        -0.000386199860765565,
+        1.0
+      ]
+    ],
+    "support_length_px": 16366.827766049999,
+    "supported_groups": 19,
+    "group_count": 647,
+    "configuration_space": 6250070000160,
+    "hypotheses_tested": 16384,
+    "valid_hypotheses": 2950
+  },
+  "wnba__wnba_01_1080p__s06__f007539": {
+    "homography_image_to_court": [
+      [
+        0.005628662888950679,
+        -0.0007334835038896272,
+        -0.06684246842977537
+      ],
+      [
+        0.00367586882842482,
+        0.0028433150035451966,
+        -5.244674760357972
+      ],
+      [
+        -0.0007474264879699841,
+        -1.5028161666110011e-05,
+        1.0
+      ]
+    ],
+    "support_length_px": 16646.874494514348,
+    "supported_groups": 17,
+    "group_count": 665,
+    "configuration_space": 6976920000960,
+    "hypotheses_tested": 16384,
+    "valid_hypotheses": 3231
+  },
+  "wnba__wnba_02__s11__f021983": {
+    "homography_image_to_court": [
+      [
+        -0.008098764051203898,
+        -0.10344938686126653,
+        57.51860913690655
+      ],
+      [
+        0.08064428679046627,
+        -0.006150009338403599,
+        2.157669551924238
+      ],
+      [
+        -0.0008967333746270378,
+        -5.706621361865786e-05,
+        1.0
+      ]
+    ],
+    "support_length_px": 4197.391482726202,
+    "supported_groups": 12,
+    "group_count": 374,
+    "configuration_space": 693106200864,
+    "hypotheses_tested": 16384,
+    "valid_hypotheses": 2876
+  },
+  "wnba__wnba_04__s06__f012223": {
+    "homography_image_to_court": [
+      [
+        -0.11403900660031187,
+        0.0036122392179612182,
+        50.98803072412844
+      ],
+      [
+        4.394955988809379e-05,
+        -0.0019164754597572773,
+        0.8770279695679166
+      ],
+      [
+        -0.0022079822003571183,
+        -0.00010590876453694129,
+        1.0
+      ]
+    ],
+    "support_length_px": 8389.638592965728,
+    "supported_groups": 17,
+    "group_count": 499,
+    "configuration_space": 2205314100864,
+    "hypotheses_tested": 16384,
+    "valid_hypotheses": 3072
+  },
+  "wnba__wnba_06__s03__f007237": {
+    "homography_image_to_court": [
+      [
+        0.0025195029720387783,
+        0.014042362231034175,
+        -17.147849304182557
+      ],
+      [
+        -0.06684126614196122,
+        0.0008728079915749891,
+        50.57885897713515
+      ],
+      [
+        -0.001619759969756443,
+        7.087678543883466e-05,
+        1.0
+      ]
+    ],
+    "support_length_px": 7221.706922287829,
+    "supported_groups": 11,
+    "group_count": 681,
+    "configuration_space": 7674639658560,
+    "hypotheses_tested": 16384,
+    "valid_hypotheses": 3204
+  },
+  "wnba__wnba_06__s07__f014099": {
+    "homography_image_to_court": [
+      [
+        -0.12344185988429764,
+        -0.012086326861031482,
+        115.20612074401458
+      ],
+      [
+        5.421839515128445e-06,
+        -0.0005153708127477954,
+        0.5109275259395738
+      ],
+      [
+        -0.001478945399840612,
+        6.439157975459501e-05,
+        1.0
+      ]
+    ],
+    "support_length_px": 9085.069579241737,
+    "supported_groups": 22,
+    "group_count": 727,
+    "configuration_space": 9973557712800,
+    "hypotheses_tested": 16384,
+    "valid_hypotheses": 3282
+  },
+  "wnba__wnba_06__s09__f018997": {
+    "homography_image_to_court": [
+      [
+        -0.03348934388207197,
+        -0.00024567624046986625,
+        33.931509880352685
+      ],
+      [
+        -0.060399724616156725,
+        0.00191013761396383,
+        63.667036075458064
+      ],
+      [
+        -0.001017356230056991,
+        2.739729477209904e-05,
+        1.0
+      ]
+    ],
+    "support_length_px": 8299.107771288973,
+    "supported_groups": 18,
+    "group_count": 671,
+    "configuration_space": 7232732511840,
+    "hypotheses_tested": 16384,
+    "valid_hypotheses": 3147
+  },
+  "wnba__wnba_07__s08__f016801": {
+    "homography_image_to_court": [
+      [
+        0.03919463220419947,
+        -0.005479288739053304,
+        -18.586558099216123
+      ],
+      [
+        -0.011278398957060305,
+        -0.010464588258443343,
+        25.033375379349796
+      ],
+      [
+        -0.0006348224721307098,
+        -0.0001664983135364909,
+        1.0
+      ]
+    ],
+    "support_length_px": 14504.990422423312,
+    "supported_groups": 16,
+    "group_count": 835,
+    "configuration_space": 17374941642240,
+    "hypotheses_tested": 16384,
+    "valid_hypotheses": 3190
+  }
+}

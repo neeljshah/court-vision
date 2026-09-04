@@ -1,0 +1,26 @@
+{
+  "frames_all_four": 0,
+  "frames_total": 17,
+  "corner_errors_px": {
+    "min": 12.793737855207182,
+    "median": 409.72614384471706,
+    "p90": 874.0069428672632,
+    "max": 1091.8390482950317
+  },
+  "oracle_frames_all_four": 1,
+  "oracle_median_max_corner_error_px": 28.841315992648475,
+  "oracle_corner_errors_px": {
+    "min": 2.233961103899768,
+    "median": 18.125794464648045,
+    "p90": 33.229817748406155,
+    "max": 92.77424120032879
+  },
+  "hypotheses_per_frame": 16384,
+  "render_indices": [
+    0,
+    4,
+    8,
+    12,
+    16
+  ]
+}
