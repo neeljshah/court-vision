@@ -1,0 +1,50 @@
+{
+  "purpose": "Commit this randomized opaque-board order and blind verdicts before opening unblind_key.json.",
+  "board_order": [
+    {
+      "board": "blind_board_01.jpg",
+      "sha256": "d65e93270e33884219b8639dd24fdcbda21d778ac3c5019e0478a1929e334a59"
+    },
+    {
+      "board": "blind_board_02.jpg",
+      "sha256": "60b97dd6a83376844f98ee97a78bb7d403ca5d1b417a9df3b9e9543697345139"
+    },
+    {
+      "board": "blind_board_03.jpg",
+      "sha256": "8015e50b6170865cb12d5324c44fd36ce6070b92bd4b14aafd504fbbb184ce70"
+    },
+    {
+      "board": "blind_board_04.jpg",
+      "sha256": "6ae031d925c2ebccd08b96f59cd712f4e1f5a3fa893e7624e558a5b7e75289e7"
+    },
+    {
+      "board": "blind_board_05.jpg",
+      "sha256": "5949f7de88ae7ad130e7b108965427ef07294cd8469254f6f89b12f0f4dc55ec"
+    },
+    {
+      "board": "blind_board_06.jpg",
+      "sha256": "d97f6b067c84f786bb74de5a9e736f9f873ea5bd48879a193236d45e6aa2eb51"
+    }
+  ],
+  "render_layout": {
+    "main_panel": "native 1280x720 frame at 1:1 pixels; no main-panel downscale",
+    "insets": {
+      "left_end_three_point_arc": [
+        0,
+        190,
+        500,
+        300
+      ],
+      "painted_end_markings": [
+        0,
+        300,
+        390,
+        250
+      ]
+    },
+    "composite_resolution_px": [
+      1280,
+      1110
+    ]
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "checkpoint": "Written before opening unblind_key.json. The condition assignment is unknown to the labeller at this checkpoint.",
+  "review_unit": "one full-resolution 1280x720 panel plus its two withheld-geometry zoom insets per opaque board",
+  "blind_board_order_and_verdicts": [
+    {
+      "board": "blind_board_01.jpg",
+      "verdict": "CANNOT JUDGE",
+      "reason": "The enlarged left arc and painted-end evidence remains visually ambiguous."
+    },
+    {
+      "board": "blind_board_02.jpg",
+      "verdict": "FAIL",
+      "reason": "The left arc is visibly displaced from the dark painted curve."
+    },
+    {
+      "board": "blind_board_03.jpg",
+      "verdict": "CANNOT JUDGE",
+      "reason": "The enlarged left arc and painted-end evidence remains visually ambiguous."
+    },
+    {
+      "board": "blind_board_04.jpg",
+      "verdict": "FAIL",
+      "reason": "The left arc is visibly displaced from the dark painted curve."
+    },
+    {
+      "board": "blind_board_05.jpg",
+      "verdict": "FAIL",
+      "reason": "The left arc and painted-end overlay are visibly displaced from the marks."
+    },
+    {
+      "board": "blind_board_06.jpg",
+      "verdict": "CANNOT JUDGE",
+      "reason": "The enlarged left arc and painted-end evidence remains visually ambiguous."
+    }
+  ]
+}
