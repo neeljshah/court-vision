@@ -476,3 +476,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-04 | season-block premise | S236 | full gates reproduce; tennis ATP/WTA 30616/11270 falsifies 25764/8002 premise | FALSIFIED (verified: codex-sol, contract A/B/Q) | f5204918b
 2026-09-04 | NBA in-play calibration | S237 | premise falsified: key present in 5/5 period and 15/15 period-margin cells; OT q90 0.787 | FALSIFIED (verified: codex-sol, contract A/B/Q) | ccf95d641
 2026-09-04 | nba | S235 | per-phase recalibration: nine buckets all >= 30 clusters, BH survivors none, late\|blowout_gt12 worse -- measured NULL; attempt 2 REJECTED for missing sealed prereg + embargo cutoff; code NOT landed, memos landed | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 353d276aa .
+2026-09-04 | NBA minutes distribution | S241 | required S233 evaluator path absent (0 matches); no scored metric | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 44bcabe10
