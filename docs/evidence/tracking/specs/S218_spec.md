@@ -1,4 +1,4 @@
-GAP S218 | sport nba (in-game; wnba enumerated too) | worktree aXX | log cx_s218_nba_live_field_census
+GAP S218 | sport nba (in-game; wnba enumerated too) | worktree a16 | log cx_s218_nba_live_field_census
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: the API census (docs/research/ingame_api_census_2026-09-04.md) ranks "NBA/WNBA live current-lineup delta"
   first and "NBA/WNBA foul-trouble and timeout-remaining as a first-class polled field" fourth among uncaptured
