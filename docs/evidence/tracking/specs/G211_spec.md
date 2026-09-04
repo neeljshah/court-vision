@@ -1,4 +1,23 @@
 GAP G211 | sport wnba | worktree a6 | log g211_per_frame_cost_attribution
+
+**AMENDED 2026-09-03 AFTER THE ORCHESTRATOR RE-READ THE CODE. Two premises in this spec were WRONG
+and you must not inherit them:**
+  1. **`assign_render` DOES NO RENDERING.** I asked you to investigate whether a headless run draws
+     overlays it does not need. It does not: the block between the `crops_step3` and `assign_render`
+     marks (`advanced_tracker.py:1472-1773`) contains **zero** drawing calls. **Drop that line of
+     enquiry.** The cost there is assignment and tracking-state work; find out what, specifically.
+  2. **THE SUB-PROFILE IS NOT A PARTITION AND MY PERCENTAGES WERE WITHDRAWN.** The entries sum to
+     **6.92 s against a stated `total=5.267 s`**, so they OVERLAP -- `assign_render` is measured from
+     the `crops_step3` mark and therefore SPANS the separately-timed `osnet` block. **Your first job
+     is to establish a DISJOINT decomposition** (fix the nesting in your own measurement wrappers, do
+     not edit `src/`), and to state explicitly how much time is unattributed. **Do not report any
+     stage as a percentage until the decomposition actually partitions the frame.**
+
+**What still stands and is the reason for the row:** detection (`yolo=0.095`) is a small fraction of
+per-frame cost and the remainder is CPU-side. That is independently corroborated by the GPU measuring
+0-2 pct utilisation in every observation, including under **8 concurrent route jobs** where it used
+**5,524 MiB of 24,576 MiB at 0 pct** with load average 63.5 of 256 cores.
+
 **HELD -- DO NOT DISPATCH UNTIL G203 HAS REPORTED.** G203 holds the pod and this row needs a QUIET
 machine to measure cost honestly.
 
