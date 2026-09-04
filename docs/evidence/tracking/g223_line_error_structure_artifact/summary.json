@@ -1,0 +1,124 @@
+{
+  "corner_relation": {
+    "spearman_corner_error_vs_max_role_angle": 0.07352941176470588,
+    "spearman_corner_error_vs_shallowness": -0.12254901960784316,
+    "top_frames": [
+      {
+        "audit_id": "wnba__wnba_01_1080p__s01__f001600",
+        "corner_error_rank": 1,
+        "max_abs_midpoint_offset_px": "30.781031838369",
+        "max_role_angle_error_deg": "20.148822056148",
+        "min_selected_intersection_angle_deg": "81.405789548226",
+        "oracle_max_corner_error_px": "92.774241200329",
+        "source_bytes": 621798,
+        "source_height_px": 1080,
+        "source_path": "C:\\Users\\neelj\\nba-track-a5\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\wnba__wnba_01_1080p__s01__f001600.jpg",
+        "source_sha256": "e9ead024840b53be902376b3cd76918ef36ae9d7b40527c5c413cc21ce9183f8",
+        "source_width_px": 1920,
+        "sport": "wnba"
+      },
+      {
+        "audit_id": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s02__f005760",
+        "corner_error_rank": 2,
+        "max_abs_midpoint_offset_px": "26.179441572953",
+        "max_role_angle_error_deg": "5.903038836957",
+        "min_selected_intersection_angle_deg": "71.331306802780",
+        "oracle_max_corner_error_px": "61.102801579856",
+        "source_bytes": 679804,
+        "source_height_px": 1080,
+        "source_path": "C:\\Users\\neelj\\nba-track-a5\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\ncaa_basketball__ncaa_basketball_zqBCKovJCQU__s02__f005760.jpg",
+        "source_sha256": "6d81d1810566bb3ba2830802066b2b60567b1def169f390091f240f1e529add7",
+        "source_width_px": 1920,
+        "sport": "ncaa_basketball"
+      },
+      {
+        "audit_id": "wnba__wnba_06__s03__f007237",
+        "corner_error_rank": 3,
+        "max_abs_midpoint_offset_px": "18.678209304740",
+        "max_role_angle_error_deg": "4.069909370585",
+        "min_selected_intersection_angle_deg": "80.625799648942",
+        "oracle_max_corner_error_px": "38.506943530561",
+        "source_bytes": 598645,
+        "source_height_px": 1080,
+        "source_path": "C:\\Users\\neelj\\nba-track-a5\\docs\\evidence\\tracking\\g130_recensus\\source_decodes\\wnba__wnba_06__s03__f007237.jpg",
+        "source_sha256": "e97a546a9b140d5feb6a664a67a3229c6e41651c8cf4a2c7e963d3eb5383376e",
+        "source_width_px": 1920,
+        "sport": "wnba"
+      }
+    ]
+  },
+  "decomposition_px": {
+    "abs_midpoint_offset": {
+      "max": 30.781031838369,
+      "mean": 8.366663440127175,
+      "median": 6.9677852781165,
+      "min": 0.186162854077,
+      "sample_sd": 6.903810545912783
+    },
+    "angle_error_deg": {
+      "max": 31.619943558554,
+      "mean": 3.8360022447416906,
+      "median": 1.8934575033745,
+      "min": 0.054814425218,
+      "sample_sd": 5.422015933821527
+    },
+    "endpoint_angle_component": {
+      "max": 59.693249497295,
+      "mean": 9.155991663115234,
+      "median": 6.856945758277,
+      "min": 0.174932062333,
+      "sample_sd": 9.225411458190068
+    }
+  },
+  "frames_total": 17,
+  "g217_control": {
+    "max_mean_abs_distance_px": 59.693249497295,
+    "median_mean_abs_distance_px": 10.2347919059155
+  },
+  "label_repeatability_p90_px": 11.39,
+  "machine": "local Windows worktree C:/Users/neelj/nba-track-a5; no pod access",
+  "per_role_signed_distance_px": {
+    "lane_left": {
+      "max": 26.179441572953,
+      "mean": 0.44645692422494154,
+      "median": -0.780549547393,
+      "min": -18.529477609186,
+      "negative_n": 12,
+      "positive_n": 5,
+      "sample_sd": 11.483474363914727,
+      "zero_n": 0
+    },
+    "lane_right": {
+      "max": 12.772889747363,
+      "mean": -4.595488757971999,
+      "median": -3.487893260664,
+      "min": -30.781031838369,
+      "negative_n": 12,
+      "positive_n": 5,
+      "sample_sd": 10.132987195837197,
+      "zero_n": 0
+    },
+    "near_baseline": {
+      "max": 20.880914316348,
+      "mean": 1.8185892606194118,
+      "median": -0.943562746587,
+      "min": -16.28756880854,
+      "negative_n": 10,
+      "positive_n": 7,
+      "sample_sd": 11.37295012419891,
+      "zero_n": 0
+    },
+    "near_free_throw": {
+      "max": 19.928250513264,
+      "mean": -1.543534481981765,
+      "median": 0.874111097571,
+      "min": -18.67820930474,
+      "negative_n": 8,
+      "positive_n": 9,
+      "sample_sd": 10.2227413780259,
+      "zero_n": 0
+    }
+  },
+  "selections_total": 68,
+  "sign_convention": "True lines use G217 ordered ROLE_PAIRS. Each selected line is unit-normalized and multiplied by -1 only when its normal has negative dot product with that role's true-line normal. Positive signed distance is therefore the selected line's displacement toward that fixed true-line normal."
+}
