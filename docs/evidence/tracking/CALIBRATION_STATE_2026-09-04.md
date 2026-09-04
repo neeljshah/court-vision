@@ -14,18 +14,19 @@ no longer support is its diagnosis of what basketball is missing.**
 
 ## 1. The one-paragraph state
 
-**Read section 4 before acting on sections 1-3.** Sections 1-3 are the per-frame
+**Read section 7 first. It supersedes the conclusion of sections 1-5.** Sections 1-3 are the per-frame
 corner-detection story and remain correct: the fitter and court model contribute
 zero error, the detector's line geometry is the lever, no in-repo option improves
 it, and a human census says the footage is far more solvable (62.36 pct) than our
 detectors achieve. **Section 4 then shows those experiments were never what
 production uses** -- the court model is anchored to a generic panorama of a
 different venue, and the homography acceptance thresholds sit at or below the
-mathematical floor. **Section 5 shows the hand-labelled alternative has failed
-three times, and that none of the three was a fair test**: no seeded attempt has
-yet used a frame G196 actually validated. Propagation itself is not the
-obstacle -- G222 measured direct-to-seed holding across all 1,200 frames tested
-at a flat 0.26-0.38 px reprojection residual.
+mathematical floor. **Section 5's account of three
+hand-labelled failures is now CLOSED, not open**: all three failed on
+bookkeeping, G236b then located the one G196-validated frame, and **G233d passed
+its gate there -- see section 7.** Propagation itself was never the obstacle --
+G222 measured direct-to-seed holding across all 1,200 frames tested at a flat
+0.26-0.38 px reprojection residual.
 
 ---
 
@@ -172,6 +173,75 @@ with `POD_GIT_PRESENT=no` and no incremental deploy path. That deployment is
 held as a gated decision.
 
 ---
+
+---
+
+## 7. RESOLVED, 2026-09-04: seeded calibration works, and the horizon is open
+
+**G233d is the first basketball court coordinates this programme has produced.**
+
+Sections 1-5 were written while every seeded attempt had failed. **G236b closed
+the gap** by locating the one G196 **eye-validated** still inside a corpus video:
+`wnba__wnba_01_1080p__s01__f001600` appears in `wnba__wnba_01.mp4` at zero-based
+frame **19599** (refined MAD **0.903** against a stride-5 scan median of
+**40.66**). **G233d seeded there and PASSED**, judged on the independent near
+three-point curve and a visible sideline -- never on the four fitted corners.
+
+| quantity | G233d value |
+|---|---|
+| gate at distance 0 | **PASS** on independent geometry |
+| contiguous frames held | **all 1,200 tested** (to source frame 20799) |
+| direct matches / inliers | 452-1,863 / 421-1,848 |
+| inlier ratio | 0.839901-0.991948 |
+| RMS residual | **0.299365-0.702623 px** |
+| in-court fraction by band | 0.828-0.918 |
+| labels per hour | `ceil(108000/1200) = 90` -- **a floor, not a rate** |
+
+### 7.1 Why section 4's architecture finding and this result agree
+
+Section 4 argued the legacy route matches broadcast frames against a generic
+panorama of a **different venue**, yielding 5-7 SIFT inliers. **G233d matching
+WITHIN the same clip got 421-1,848 -- roughly one hundred times more.** That is
+independent corroboration of section 4's diagnosis from the opposite direction:
+the features were always there; the reference geometry was foreign.
+
+### 7.2 The ~50-frame ceiling was an artifact of the instrument
+
+G215's ~50-frame validity figure came from **chained** frame-to-frame
+composition, where error compounds multiplicatively; a smooth pan alone destroyed
+it. G222 and G233d match **DIRECTLY against the seed**, so nothing compounds.
+Same footage, same labels, roughly 24x the horizon. **Do not quote "one
+calibration per ~50 frames" as a requirement any more.**
+
+### 7.3 What is still NOT true
+
+- **Automatic calibration remains 0 of 17.** This path consumes a hand label.
+  Every classical in-repo automatic route is closed on measurement: G217 (fitter
+  contributes zero error), G223 (scatter), G224 (top-hat made it worse,
+  28.84 -> 60.05 px), G227 (quad provider abstains 17/17), G229 (best margin
+  0.534 of bar).
+- **1,200 frames is where the run stopped, not where it broke.** The horizon is
+  unmeasured.
+- **Plausibility is necessary, never sufficient.** The in-court fraction counts
+  officials, bench and spectators; G225 found one frame with 19 raw boxes and 2
+  visibly on-court players.
+- **One clip, one seed, one camera, one labeller, one eye judgement.** G140's p90
+  label repeatability is 11.39 px.
+
+### 7.4 The three rows now open against this
+
+| row | question | why it matters |
+|---|---|---|
+| **G241** | how far does the seed hold CONTIGUOUSLY, and what breaks it? | 1,200 frames = 90 labels/hour; 10,000 = 11 |
+| **G242** | does a distant frame re-acquire DIRECTLY from the same seed? | if yes the unit is an arena-camera, not a span, and labels/hour approaches 1 |
+| **G243** | does any of this work on AMATEUR fixed-camera footage? | the stated goal is arbitrary footage; a fixed camera is the easy case, so a failure there bounds the ambition |
+
+**A separate and unrelated result:** G240 hashed three fresh basketball-adapter
+runs and found the emitted tables **byte-identical** (SHA-256
+`979b0e2e...49df75`, 64,171 rows each), with zero differing row positions in
+every pair. Three runs on one clip in one configuration is an existence check,
+not a determinism proof -- but it is the programme's first repeatable measurement
+path, and it is stronger than G225's equal row counts.
 
 ## NOT VERIFIED
 
