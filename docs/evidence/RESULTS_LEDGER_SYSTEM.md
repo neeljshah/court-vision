@@ -517,3 +517,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-04 | in-game calibration | S280 | 40 clusters; calibration improvement 0.0006980605, 95 pct metric CI [-0.0019271681, 0.0002133248], below 0.004 bar | NULL (verified: codex-sol, contract A/B/Q) | a6dbbaf27
 2026-09-04 | in-game calibration | S282 | fixed chain joined 29/1,593 game clusters, below frozen n=30 scoring rail | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 31163f800
 2026-09-04 | NBA in-game calibration | S279 | Brier 0.073546695 vs 0.073546695; delta 0 [0,0]; 465249 ticks/1593 clusters; 49 zero weights | NULL / ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | 0dc649c03
+2026-09-04 | in-game calibration | S284 | 35 clusters; calibration improvement -0.0161008389, 95 pct CI [-0.0626914427, 0.0274674735], below 0.004 bar | REJECT (verified: codex-sol, contract A/B/Q) | 0ccbe3dec
