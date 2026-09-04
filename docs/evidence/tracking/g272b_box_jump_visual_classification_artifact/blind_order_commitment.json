@@ -1,0 +1,6 @@
+{
+  "sample_size": 48,
+  "blind_seed": 272200904,
+  "unblind_map_sha256": "79add41fd808b69005bf26aa5e798e9c3b76c8ec07a384732ffa789f242ade20",
+  "render_policy": "512x640 full-source-resolution crops centred on retained footpoints; no detector box geometry exists or is inferred"
+}
