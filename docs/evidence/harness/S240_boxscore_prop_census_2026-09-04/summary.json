@@ -1,0 +1,56 @@
+{
+  "summary_table": [
+    {
+      "blocking_count": null,
+      "game_cluster_count": 77,
+      "market_price_null_count": 0,
+      "market_price_null_share_denominator": 48515,
+      "real_market_price_cluster_count": 77,
+      "real_market_price_cluster_denominator": 77,
+      "real_market_price_source_count": 77,
+      "source_count": 77,
+      "sport": "nba",
+      "unparsed_source_count": 0,
+      "verdict": "SCORABLE"
+    },
+    {
+      "blocking_count": "real_market_price_cluster_count=0; requires >=30",
+      "game_cluster_count": 777,
+      "market_price_null_count": 3000,
+      "market_price_null_share_denominator": 3000,
+      "real_market_price_cluster_count": 0,
+      "real_market_price_cluster_denominator": 777,
+      "real_market_price_source_count": 0,
+      "source_count": 3000,
+      "sport": "mlb",
+      "unparsed_source_count": 0,
+      "verdict": "NOT SCORABLE"
+    },
+    {
+      "blocking_count": "real_market_price_cluster_count=0; requires >=30",
+      "game_cluster_count": 0,
+      "market_price_null_count": 0,
+      "market_price_null_share_denominator": 0,
+      "real_market_price_cluster_count": 0,
+      "real_market_price_cluster_denominator": 0,
+      "real_market_price_source_count": 0,
+      "source_count": 0,
+      "sport": "soccer",
+      "unparsed_source_count": 0,
+      "verdict": "NOT SCORABLE"
+    },
+    {
+      "blocking_count": "real_market_price_cluster_count=0; requires >=30",
+      "game_cluster_count": 389,
+      "market_price_null_count": 3000,
+      "market_price_null_share_denominator": 3000,
+      "real_market_price_cluster_count": 0,
+      "real_market_price_cluster_denominator": 389,
+      "real_market_price_source_count": 0,
+      "source_count": 3000,
+      "sport": "tennis",
+      "unparsed_source_count": 0,
+      "verdict": "NOT SCORABLE"
+    }
+  ]
+}

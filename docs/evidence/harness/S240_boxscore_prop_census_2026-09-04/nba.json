@@ -1,0 +1,30 @@
+{
+  "blocking_count": null,
+  "date_range": {
+    "end": "2026-04-11",
+    "start": "2025-12-11"
+  },
+  "distinct_player_count": 357,
+  "distinct_stat_count": 3,
+  "game_cluster_count": 77,
+  "market_price_field": "price",
+  "market_price_null_count": 0,
+  "market_price_null_share": 0.0,
+  "market_price_null_share_denominator": 48515,
+  "market_price_observed_count": 48515,
+  "real_market_price_cluster_basis": "closing_props JSON file",
+  "real_market_price_cluster_count": 77,
+  "real_market_price_cluster_denominator": 77,
+  "real_market_price_row_count": 48515,
+  "real_market_price_source_count": 77,
+  "source_absolute_path": "C:/Users/neelj/nba-track-a17/data/cache/cv_fix/closing_props",
+  "source_count": 77,
+  "source_exists": true,
+  "source_path": "data/cache/cv_fix/closing_props",
+  "source_unit": "files",
+  "sport": "nba",
+  "store_bytes": 6491336,
+  "tidy_row_count": 48515,
+  "unparsed_source_count": 0,
+  "verdict": "SCORABLE"
+}

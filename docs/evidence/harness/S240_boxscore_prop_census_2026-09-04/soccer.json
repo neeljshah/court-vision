@@ -1,0 +1,30 @@
+{
+  "blocking_count": "real_market_price_cluster_count=0; requires >=30",
+  "date_range": {
+    "end": null,
+    "start": null
+  },
+  "distinct_player_count": 0,
+  "distinct_stat_count": 0,
+  "game_cluster_count": 0,
+  "market_price_field": "market_prob",
+  "market_price_null_count": 0,
+  "market_price_null_share": null,
+  "market_price_null_share_denominator": 0,
+  "market_price_observed_count": 0,
+  "real_market_price_cluster_basis": "source date",
+  "real_market_price_cluster_count": 0,
+  "real_market_price_cluster_denominator": 0,
+  "real_market_price_row_count": 0,
+  "real_market_price_source_count": 0,
+  "source_absolute_path": "C:/Users/neelj/nba-track-a17/data/frontend/prop_history_corpus_soccer.jsonl",
+  "source_count": 0,
+  "source_exists": true,
+  "source_path": "data/frontend/prop_history_corpus_soccer.jsonl",
+  "source_unit": "rows",
+  "sport": "soccer",
+  "store_bytes": 0,
+  "tidy_row_count": 0,
+  "unparsed_source_count": 0,
+  "verdict": "NOT SCORABLE"
+}

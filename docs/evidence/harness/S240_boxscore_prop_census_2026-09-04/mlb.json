@@ -1,0 +1,30 @@
+{
+  "blocking_count": "real_market_price_cluster_count=0; requires >=30",
+  "date_range": {
+    "end": "2026-06-19",
+    "start": "2022-04-19"
+  },
+  "distinct_player_count": 22,
+  "distinct_stat_count": 1,
+  "game_cluster_count": 777,
+  "market_price_field": "market_prob",
+  "market_price_null_count": 3000,
+  "market_price_null_share": 1.0,
+  "market_price_null_share_denominator": 3000,
+  "market_price_observed_count": 0,
+  "real_market_price_cluster_basis": "source date",
+  "real_market_price_cluster_count": 0,
+  "real_market_price_cluster_denominator": 777,
+  "real_market_price_row_count": 0,
+  "real_market_price_source_count": 0,
+  "source_absolute_path": "C:/Users/neelj/nba-track-a17/data/frontend/prop_history_corpus_mlb.jsonl",
+  "source_count": 3000,
+  "source_exists": true,
+  "source_path": "data/frontend/prop_history_corpus_mlb.jsonl",
+  "source_unit": "rows",
+  "sport": "mlb",
+  "store_bytes": 1283918,
+  "tidy_row_count": 3000,
+  "unparsed_source_count": 0,
+  "verdict": "NOT SCORABLE"
+}
