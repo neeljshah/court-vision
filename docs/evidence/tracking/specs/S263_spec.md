@@ -1,4 +1,4 @@
-GAP S263 | sport nba | worktree a14 | log cx_s263_s88_preburn_companion
+GAP S263 | sport nba | worktree a15 | log cx_s263_s88_preburn_companion
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: docs/evidence/harness/S88_phase_recal_2026-09-04.md:52 states "n_burn_in_dates=3, n_eval_ticks=33,920
   of 47,104, n_informative_ticks=11,087 (32.7 pct)". The published paired-loss CSV
