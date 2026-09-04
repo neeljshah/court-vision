@@ -1,0 +1,67 @@
+{
+  "cadence": {
+    "gap_max_sec": 869.0,
+    "gap_p50_sec": 31.0,
+    "gap_p90_sec": 82.0,
+    "n_games": 401,
+    "n_ticks": 79566
+  },
+  "classes": {
+    "out_recorded": {
+      "event": {
+        "max_sec": null,
+        "n": 0,
+        "p50_sec": null,
+        "p90_sec": null,
+        "right_censored": 0
+      },
+      "observation_floor_sec": 31.0,
+      "placebo": {
+        "max_sec": null,
+        "n": 0,
+        "p50_sec": null,
+        "p90_sec": null,
+        "right_censored": 0
+      }
+    },
+    "pitching_change": {
+      "event": {
+        "max_sec": null,
+        "n": 0,
+        "p50_sec": null,
+        "p90_sec": null,
+        "right_censored": 0
+      },
+      "observation_floor_sec": 31.0,
+      "placebo": {
+        "max_sec": null,
+        "n": 0,
+        "p50_sec": null,
+        "p90_sec": null,
+        "right_censored": 0
+      }
+    },
+    "run_scored": {
+      "event": {
+        "max_sec": null,
+        "n": 0,
+        "p50_sec": null,
+        "p90_sec": null,
+        "right_censored": 0
+      },
+      "observation_floor_sec": 31.0,
+      "placebo": {
+        "max_sec": null,
+        "n": 0,
+        "p50_sec": null,
+        "p90_sec": null,
+        "right_censored": 0
+      }
+    }
+  },
+  "component": "s220_mlb_event_lead_time",
+  "frozen_move_threshold": 0.004,
+  "game_clusters": 0,
+  "verdict": "CLOSED AT LIMIT",
+  "window_sec": 120.0
+}
