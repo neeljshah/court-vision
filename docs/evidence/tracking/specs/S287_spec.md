@@ -36,4 +36,4 @@ EVIDENCE: docs/evidence/harness/S287_nba_sim_third_arm_full_pod_2026-09-04.md + 
   (fetched from the pod; each under 50 MB) + the pod log tail.
 TEST: one per-file test: the 30-cluster restriction reproduces S266's archived numbers from the fetched series
   (< 200 MB locally); run only that file.
-REPORT: denominators, three-arm table, CI, pod RSS, md5 parity, restriction check, test line, SHA. No push. NEVER PARK.
+REPORT: denominators, three-arm table, CI, pod RSS, md5 parity, restriction check, test, SHA. No push. NEVER PARK.
