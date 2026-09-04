@@ -561,3 +561,9 @@ LOW behind G25b.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G230 | tennis | Exhaustive local measurement of 22935 committed rows, with player denominators separated from ball rows. All three tables declare `court_feet`; out-of-bounds and real-frame-gap speed distributions are reported without a pass/fail interpretation. The available track-edge test does not place most beyond-29-ft/s pairs at observed boundaries in `tennis_01` or `tennis_02`; `tennis_ref01` is split. The CSV cannot test unobserved inter-ID gaps. Plausibility is necessary, never sufficient, and establishes no coordinate correctness. No gate or threshold was introduced. | `g230_physical_plausibility_audit_2026-09-04.md`; `g230_physical_plausibility_audit_2026-09-04.json` | ACCEPT (descriptive measurement only; no gate, threshold, production change, or pod action). |
+
+## G240 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G240 | wnba | Three fresh direct basketball-adapter runs on `wnba__wnba_01.mp4` with `--max-frames 6000` each emitted 64,171 rows and the identical SHA-256 `979b0e2ec9820fbeadad9d640a555b37b61405916b08b03d6bda40480e49df75`. Exhaustive pairwise row comparison found no content, coordinate, track-ID, ordering, or float-serialization difference. Denominator: three runs, one clip, one configuration; this is not a general determinism claim. | `g240_adapter_determinism_hash_2026-09-04.md` | ACCEPT (bounded content-repeatability measurement; no production change). |
