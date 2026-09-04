@@ -1,4 +1,4 @@
-GAP S223 | sport all | worktree aXX | log cx_s223_intel_pool_asof_census
+GAP S223 | sport all | worktree a15 | log cx_s223_intel_pool_asof_census
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: the intelligence pool has never been inventoried with grain, rows and AS-OF SAFETY. Measured 2026-09-04
 (INTELLIGENCE_SIGNALS_PROGRAM_2026-09-04.md section 1): 8 of 45 data/cache/atlas_*.parquet stores sampled evenly carry
