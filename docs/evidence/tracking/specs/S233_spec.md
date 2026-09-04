@@ -1,4 +1,4 @@
-GAP S233 | sport all | worktree aXX | log cx_s233_walkforward_embargo_prereg
+GAP S233 | sport all | worktree a17 | log cx_s233_walkforward_embargo_prereg
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: S208 was REJECTed on Q1 AND Q4 (docs/evidence/harness/S208_VERIFY_2026-09-03.md, a16 worktree): its own
 walk_forward "only asserts train date < test date; it implements neither a purge cutoff nor symmetric embargo",
