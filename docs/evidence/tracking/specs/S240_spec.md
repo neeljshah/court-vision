@@ -1,4 +1,4 @@
-GAP S240 | sport all | worktree aXX | log cx_s240_boxscore_prop_census
+GAP S240 | sport all | worktree a17 | log cx_s240_boxscore_prop_census
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: BOX_SCORE_PROGRAM_2026-09-04.md section (a) lists prop-line stores but only NBA's 77-file
 count was reproduced live; MLB/tennis prop_history_corpus_*.jsonl (3,000 rows each) were sampled on
