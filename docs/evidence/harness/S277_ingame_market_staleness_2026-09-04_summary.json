@@ -1,0 +1,95 @@
+{
+  "all_assignment": {
+    "first_tick_exclusion": 1593,
+    "fresh_games": 1593,
+    "fresh_ticks": 232157,
+    "middle_ticks": 185214,
+    "stale_games": 1138,
+    "stale_ticks": 46285
+  },
+  "bar": 0.004,
+  "bootstraps": 2000,
+  "embargo_days": 1,
+  "input": {
+    "bytes": 2829826,
+    "path": "data/cache/inplay_odds/nba_checkpoints_full.parquet",
+    "resolution": "not applicable",
+    "rows": 465249
+  },
+  "metrics": {
+    "fresh": {
+      "improvement": -0.001257557985985903,
+      "improvement_ci95": [
+        -0.0025636843559055725,
+        -8.6577672322599e-05
+      ],
+      "market_brier": 0.14440068732280936,
+      "market_brier_ci95": [
+        0.13745679563017538,
+        0.1515261011265805
+      ],
+      "n_games": 1582,
+      "n_ticks": 230331,
+      "recal_null_brier": 0.14565824530879526,
+      "recal_null_brier_ci95": [
+        0.13865119259945433,
+        0.15288989654817473
+      ]
+    },
+    "interaction_stale_minus_fresh": {
+      "ci95": [
+        7.42325276026007e-05,
+        0.0025490254377273976
+      ],
+      "value": 0.0012478961016901572
+    },
+    "pooled": {
+      "improvement": -0.0006361758044508568,
+      "improvement_ci95": [
+        -0.0012820237790929715,
+        -4.715333154210551e-05
+      ],
+      "market_brier": 0.07278600830971078,
+      "market_brier_ci95": [
+        0.06905566127510299,
+        0.07671927927784171
+      ],
+      "n_games": 1582,
+      "n_ticks": 460365,
+      "recal_null_brier": 0.07342218411416164,
+      "recal_null_brier_ci95": [
+        0.06969558628322137,
+        0.07734410578089644
+      ]
+    },
+    "stale": {
+      "improvement": -9.661884295745891e-06,
+      "improvement_ci95": [
+        -2.6535333715700984e-05,
+        7.876080625761213e-07
+      ],
+      "market_brier": 9.173166724504392e-05,
+      "market_brier_ci95": [
+        3.628508153654818e-07,
+        0.0002547428241208874
+      ],
+      "n_games": 1132,
+      "n_ticks": 46106,
+      "recal_null_brier": 0.00010139355154078982,
+      "recal_null_brier_ci95": [
+        7.0354577643803e-07,
+        0.00028150055153953075
+      ]
+    }
+  },
+  "mode": "SEALED_STRATIFICATION",
+  "paired_losses": "docs/evidence/harness/S277_ingame_market_staleness_2026-09-04_paired_losses.csv",
+  "prereg_sha256": "fa3e0a0c500b14e8cd0e9549a9febb1268a5ba3045f949e0e780b7545b434393",
+  "preregistration_path": "docs/evidence/harness/S277_ingame_market_staleness_prereg_2026-09-04.md",
+  "recal_seed_ticks": 3302,
+  "route_sha256": "4d049fa277cf70143b0e99df7e2360adab22c09417b6c46c27b4fe3bd6f37a16",
+  "rss_bytes": 647430144,
+  "scored_ticks": 460365,
+  "seed": 277,
+  "verdict": "NULL"
+}
