@@ -1,4 +1,4 @@
-GAP S248 | sport nba (in-game) | worktree aXX | log cx_s248_nba_fatigue_conditioned_v2
+GAP S248 | sport nba (in-game) | worktree a15 | log cx_s248_nba_fatigue_conditioned_v2
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S201 CLOSED AT LIMIT (S201_VERIFY) because the two S92 archive CSVs were absent from that worktree, not
   because the fatigue premise was wrong. S216 attempt 2 independently re-opened the _all archive and reconfirmed its
