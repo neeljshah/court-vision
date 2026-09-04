@@ -1,0 +1,866 @@
+{
+  "arms": {
+    "e4": {
+      "n_input_games": 269,
+      "n_input_ticks": 79919,
+      "nominals": {
+        "0.80": {
+          "cells": {
+            "ALL": {
+              "coverage": 0.88,
+              "deviation": 0.07999999999999996,
+              "group_size": 1331,
+              "mean_interval_half_width": 0.023098556405905236,
+              "mean_interval_width": 0.04619711281181047,
+              "mean_miss": 0.0009869179298645644,
+              "n": 66588,
+              "n_games": 226,
+              "n_groups": 50,
+              "nominal": 0.8,
+              "within_tolerance": false
+            },
+            "OT": {
+              "coverage": 1.0,
+              "deviation": 0.19999999999999996,
+              "group_size": 451,
+              "mean_interval_half_width": 0.011735355837333782,
+              "mean_interval_width": 0.023470711674667563,
+              "mean_miss": 0.0,
+              "n": 2711,
+              "n_games": 14,
+              "n_groups": 6,
+              "nominal": 0.8,
+              "within_tolerance": false
+            },
+            "P1": {
+              "coverage": 0.5333333333333333,
+              "deviation": -0.2666666666666667,
+              "group_size": 418,
+              "mean_interval_half_width": 0.06364223080824533,
+              "mean_interval_width": 0.12728446161649065,
+              "mean_miss": 0.013212882120021537,
+              "n": 6279,
+              "n_games": 226,
+              "n_groups": 15,
+              "nominal": 0.8,
+              "within_tolerance": false
+            },
+            "P2": {
+              "coverage": 0.5,
+              "deviation": -0.30000000000000004,
+              "group_size": 413,
+              "mean_interval_half_width": 0.06134096194557757,
+              "mean_interval_width": 0.12268192389115513,
+              "mean_miss": 0.012009246720867629,
+              "n": 9929,
+              "n_games": 226,
+              "n_groups": 24,
+              "nominal": 0.8,
+              "within_tolerance": false
+            },
+            "P3": {
+              "coverage": 0.7222222222222222,
+              "deviation": -0.07777777777777783,
+              "group_size": 413,
+              "mean_interval_half_width": 0.04286803224368971,
+              "mean_interval_width": 0.08573606448737942,
+              "mean_miss": 0.004118471860848779,
+              "n": 7438,
+              "n_games": 226,
+              "n_groups": 18,
+              "nominal": 0.8,
+              "within_tolerance": false
+            },
+            "P4": {
+              "coverage": 0.86,
+              "deviation": 0.05999999999999994,
+              "group_size": 804,
+              "mean_interval_half_width": 0.004443470095017117,
+              "mean_interval_width": 0.008886940190034234,
+              "mean_miss": 0.004402341551108363,
+              "n": 40231,
+              "n_games": 226,
+              "n_groups": 50,
+              "nominal": 0.8,
+              "within_tolerance": false
+            }
+          },
+          "folds": [
+            {
+              "embargo_cut": "2024-12-27",
+              "fold": 1,
+              "n_test_games": 48,
+              "n_test_ticks": 13406,
+              "n_train_games": 41,
+              "n_train_ticks": 12783,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2025-01-27",
+              "test_start": "2024-12-28",
+              "train_date_max": "2024-12-26"
+            },
+            {
+              "embargo_cut": "2025-01-27",
+              "fold": 2,
+              "n_test_games": 40,
+              "n_test_ticks": 13360,
+              "n_train_games": 88,
+              "n_train_ticks": 25851,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2025-11-08",
+              "test_start": "2025-01-28",
+              "train_date_max": "2025-01-25"
+            },
+            {
+              "embargo_cut": "2025-11-08",
+              "fold": 3,
+              "n_test_games": 44,
+              "n_test_ticks": 13570,
+              "n_train_games": 129,
+              "n_train_ticks": 39545,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2026-01-07",
+              "test_start": "2025-11-09",
+              "train_date_max": "2025-11-06"
+            },
+            {
+              "embargo_cut": "2026-01-07",
+              "fold": 4,
+              "n_test_games": 46,
+              "n_test_ticks": 13237,
+              "n_train_games": 173,
+              "n_train_ticks": 53094,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2026-02-25",
+              "test_start": "2026-01-08",
+              "train_date_max": "2026-01-06"
+            },
+            {
+              "embargo_cut": "2026-02-25",
+              "fold": 5,
+              "n_test_games": 48,
+              "n_test_ticks": 13015,
+              "n_train_games": 219,
+              "n_train_ticks": 66317,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2026-06-08",
+              "test_start": "2026-02-26",
+              "train_date_max": "2026-02-24"
+            }
+          ],
+          "n_scored_games": 226,
+          "n_scored_ticks": 66588
+        },
+        "0.90": {
+          "cells": {
+            "ALL": {
+              "coverage": 0.92,
+              "deviation": 0.020000000000000018,
+              "group_size": 1331,
+              "mean_interval_half_width": 0.03266180421175063,
+              "mean_interval_width": 0.06532360842350125,
+              "mean_miss": 0.0002482131818646289,
+              "n": 66588,
+              "n_games": 226,
+              "n_groups": 50,
+              "nominal": 0.9,
+              "within_tolerance": false
+            },
+            "OT": {
+              "coverage": 1.0,
+              "deviation": 0.09999999999999998,
+              "group_size": 451,
+              "mean_interval_half_width": 0.02291658163219275,
+              "mean_interval_width": 0.0458331632643855,
+              "mean_miss": 0.0,
+              "n": 2711,
+              "n_games": 14,
+              "n_groups": 6,
+              "nominal": 0.9,
+              "within_tolerance": false
+            },
+            "P1": {
+              "coverage": 0.7333333333333333,
+              "deviation": -0.16666666666666674,
+              "group_size": 418,
+              "mean_interval_half_width": 0.08144391062846795,
+              "mean_interval_width": 0.1628878212569359,
+              "mean_miss": 0.006961905789565141,
+              "n": 6279,
+              "n_games": 226,
+              "n_groups": 15,
+              "nominal": 0.9,
+              "within_tolerance": false
+            },
+            "P2": {
+              "coverage": 0.6666666666666666,
+              "deviation": -0.2333333333333334,
+              "group_size": 413,
+              "mean_interval_half_width": 0.07694998790078787,
+              "mean_interval_width": 0.15389997580157574,
+              "mean_miss": 0.004741972121683267,
+              "n": 9929,
+              "n_games": 226,
+              "n_groups": 24,
+              "nominal": 0.9,
+              "within_tolerance": false
+            },
+            "P3": {
+              "coverage": 0.8333333333333334,
+              "deviation": -0.06666666666666665,
+              "group_size": 413,
+              "mean_interval_half_width": 0.049636886012476726,
+              "mean_interval_width": 0.09927377202495345,
+              "mean_miss": 0.0026264201642838634,
+              "n": 7438,
+              "n_games": 226,
+              "n_groups": 18,
+              "nominal": 0.9,
+              "within_tolerance": false
+            },
+            "P4": {
+              "coverage": 0.92,
+              "deviation": 0.020000000000000018,
+              "group_size": 804,
+              "mean_interval_half_width": 0.011636362051031739,
+              "mean_interval_width": 0.023272724102063477,
+              "mean_miss": 0.003004338257677651,
+              "n": 40231,
+              "n_games": 226,
+              "n_groups": 50,
+              "nominal": 0.9,
+              "within_tolerance": false
+            }
+          },
+          "folds": [
+            {
+              "embargo_cut": "2024-12-27",
+              "fold": 1,
+              "n_test_games": 48,
+              "n_test_ticks": 13406,
+              "n_train_games": 41,
+              "n_train_ticks": 12783,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2025-01-27",
+              "test_start": "2024-12-28",
+              "train_date_max": "2024-12-26"
+            },
+            {
+              "embargo_cut": "2025-01-27",
+              "fold": 2,
+              "n_test_games": 40,
+              "n_test_ticks": 13360,
+              "n_train_games": 88,
+              "n_train_ticks": 25851,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2025-11-08",
+              "test_start": "2025-01-28",
+              "train_date_max": "2025-01-25"
+            },
+            {
+              "embargo_cut": "2025-11-08",
+              "fold": 3,
+              "n_test_games": 44,
+              "n_test_ticks": 13570,
+              "n_train_games": 129,
+              "n_train_ticks": 39545,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2026-01-07",
+              "test_start": "2025-11-09",
+              "train_date_max": "2025-11-06"
+            },
+            {
+              "embargo_cut": "2026-01-07",
+              "fold": 4,
+              "n_test_games": 46,
+              "n_test_ticks": 13237,
+              "n_train_games": 173,
+              "n_train_ticks": 53094,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2026-02-25",
+              "test_start": "2026-01-08",
+              "train_date_max": "2026-01-06"
+            },
+            {
+              "embargo_cut": "2026-02-25",
+              "fold": 5,
+              "n_test_games": 48,
+              "n_test_ticks": 13015,
+              "n_train_games": 219,
+              "n_train_ticks": 66317,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2026-06-08",
+              "test_start": "2026-02-26",
+              "train_date_max": "2026-02-24"
+            }
+          ],
+          "n_scored_games": 226,
+          "n_scored_ticks": 66588
+        }
+      },
+      "source_kind": "market"
+    },
+    "ladder_base": {
+      "n_input_games": 262,
+      "n_input_ticks": 77509,
+      "nominals": {
+        "0.80": {
+          "cells": {
+            "ALL": {
+              "coverage": 0.76,
+              "deviation": -0.040000000000000036,
+              "group_size": 1283,
+              "mean_interval_half_width": 0.09957727047399356,
+              "mean_interval_width": 0.19915454094798712,
+              "mean_miss": 9.099195843634082e-08,
+              "n": 64169,
+              "n_games": 217,
+              "n_groups": 50,
+              "nominal": 0.8,
+              "within_tolerance": false
+            },
+            "OT": {
+              "coverage": 0.8333333333333334,
+              "deviation": 0.033333333333333326,
+              "group_size": 451,
+              "mean_interval_half_width": 0.06643014723589846,
+              "mean_interval_width": 0.13286029447179692,
+              "mean_miss": 0.0005123328822108456,
+              "n": 2711,
+              "n_games": 14,
+              "n_groups": 6,
+              "nominal": 0.8,
+              "within_tolerance": false
+            },
+            "P1": {
+              "coverage": 0.9333333333333333,
+              "deviation": 0.1333333333333333,
+              "group_size": 401,
+              "mean_interval_half_width": 0.1664098733524881,
+              "mean_interval_width": 0.3328197467049762,
+              "mean_miss": 0.0002401371353200769,
+              "n": 6028,
+              "n_games": 217,
+              "n_groups": 15,
+              "nominal": 0.8,
+              "within_tolerance": false
+            },
+            "P2": {
+              "coverage": 0.9565217391304348,
+              "deviation": 0.15652173913043477,
+              "group_size": 414,
+              "mean_interval_half_width": 0.15969106589502718,
+              "mean_interval_width": 0.31938213179005437,
+              "mean_miss": 0.0014595869916278288,
+              "n": 9543,
+              "n_games": 217,
+              "n_groups": 23,
+              "nominal": 0.8,
+              "within_tolerance": false
+            },
+            "P3": {
+              "coverage": 1.0,
+              "deviation": 0.19999999999999996,
+              "group_size": 421,
+              "mean_interval_half_width": 0.11391757779487767,
+              "mean_interval_width": 0.22783515558975534,
+              "mean_miss": 0.0,
+              "n": 7160,
+              "n_games": 217,
+              "n_groups": 17,
+              "nominal": 0.8,
+              "within_tolerance": false
+            },
+            "P4": {
+              "coverage": 0.58,
+              "deviation": -0.22000000000000008,
+              "group_size": 774,
+              "mean_interval_half_width": 0.07402718608128073,
+              "mean_interval_width": 0.14805437216256145,
+              "mean_miss": 3.0969577723571715e-07,
+              "n": 38727,
+              "n_games": 217,
+              "n_groups": 50,
+              "nominal": 0.8,
+              "within_tolerance": false
+            }
+          },
+          "folds": [
+            {
+              "embargo_cut": "2025-01-01",
+              "fold": 1,
+              "n_test_games": 45,
+              "n_test_ticks": 12958,
+              "n_train_games": 42,
+              "n_train_ticks": 12544,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2025-04-13",
+              "test_start": "2025-01-02",
+              "train_date_max": "2024-12-30"
+            },
+            {
+              "embargo_cut": "2025-04-17",
+              "fold": 2,
+              "n_test_games": 41,
+              "n_test_ticks": 13309,
+              "n_train_games": 90,
+              "n_train_ticks": 26298,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2025-11-11",
+              "test_start": "2025-04-18",
+              "train_date_max": "2025-04-13"
+            },
+            {
+              "embargo_cut": "2025-11-11",
+              "fold": 3,
+              "n_test_games": 41,
+              "n_test_ticks": 12807,
+              "n_train_games": 127,
+              "n_train_ticks": 38523,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2026-01-09",
+              "test_start": "2025-11-12",
+              "train_date_max": "2025-11-10"
+            },
+            {
+              "embargo_cut": "2026-01-09",
+              "fold": 4,
+              "n_test_games": 43,
+              "n_test_ticks": 12352,
+              "n_train_games": 169,
+              "n_train_ticks": 51522,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2026-02-26",
+              "test_start": "2026-01-10",
+              "train_date_max": "2026-01-08"
+            },
+            {
+              "embargo_cut": "2026-03-04",
+              "fold": 5,
+              "n_test_games": 47,
+              "n_test_ticks": 12743,
+              "n_train_games": 215,
+              "n_train_ticks": 64766,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2026-06-08",
+              "test_start": "2026-03-05",
+              "train_date_max": "2026-02-26"
+            }
+          ],
+          "n_scored_games": 217,
+          "n_scored_ticks": 64169
+        },
+        "0.90": {
+          "cells": {
+            "ALL": {
+              "coverage": 1.0,
+              "deviation": 0.09999999999999998,
+              "group_size": 1283,
+              "mean_interval_half_width": 0.1673124758309098,
+              "mean_interval_width": 0.3346249516618196,
+              "mean_miss": 0.0,
+              "n": 64169,
+              "n_games": 217,
+              "n_groups": 50,
+              "nominal": 0.9,
+              "within_tolerance": false
+            },
+            "OT": {
+              "coverage": 0.8333333333333334,
+              "deviation": -0.06666666666666665,
+              "group_size": 451,
+              "mean_interval_half_width": 0.14871447862222623,
+              "mean_interval_width": 0.29742895724445245,
+              "mean_miss": 0.0005123328822108456,
+              "n": 2711,
+              "n_games": 14,
+              "n_groups": 6,
+              "nominal": 0.9,
+              "within_tolerance": false
+            },
+            "P1": {
+              "coverage": 1.0,
+              "deviation": 0.09999999999999998,
+              "group_size": 401,
+              "mean_interval_half_width": 0.2440089596079384,
+              "mean_interval_width": 0.4880179192158768,
+              "mean_miss": 0.0,
+              "n": 6028,
+              "n_games": 217,
+              "n_groups": 15,
+              "nominal": 0.9,
+              "within_tolerance": false
+            },
+            "P2": {
+              "coverage": 1.0,
+              "deviation": 0.09999999999999998,
+              "group_size": 414,
+              "mean_interval_half_width": 0.23994361628334912,
+              "mean_interval_width": 0.47988723256669824,
+              "mean_miss": 0.0,
+              "n": 9543,
+              "n_games": 217,
+              "n_groups": 23,
+              "nominal": 0.9,
+              "within_tolerance": false
+            },
+            "P3": {
+              "coverage": 1.0,
+              "deviation": 0.09999999999999998,
+              "group_size": 421,
+              "mean_interval_half_width": 0.16615594601299885,
+              "mean_interval_width": 0.3323118920259977,
+              "mean_miss": 0.0,
+              "n": 7160,
+              "n_games": 217,
+              "n_groups": 17,
+              "nominal": 0.9,
+              "within_tolerance": false
+            },
+            "P4": {
+              "coverage": 1.0,
+              "deviation": 0.09999999999999998,
+              "group_size": 774,
+              "mean_interval_half_width": 0.13898789241831117,
+              "mean_interval_width": 0.27797578483662233,
+              "mean_miss": 0.0,
+              "n": 38727,
+              "n_games": 217,
+              "n_groups": 50,
+              "nominal": 0.9,
+              "within_tolerance": false
+            }
+          },
+          "folds": [
+            {
+              "embargo_cut": "2025-01-01",
+              "fold": 1,
+              "n_test_games": 45,
+              "n_test_ticks": 12958,
+              "n_train_games": 42,
+              "n_train_ticks": 12544,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2025-04-13",
+              "test_start": "2025-01-02",
+              "train_date_max": "2024-12-30"
+            },
+            {
+              "embargo_cut": "2025-04-17",
+              "fold": 2,
+              "n_test_games": 41,
+              "n_test_ticks": 13309,
+              "n_train_games": 90,
+              "n_train_ticks": 26298,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2025-11-11",
+              "test_start": "2025-04-18",
+              "train_date_max": "2025-04-13"
+            },
+            {
+              "embargo_cut": "2025-11-11",
+              "fold": 3,
+              "n_test_games": 41,
+              "n_test_ticks": 12807,
+              "n_train_games": 127,
+              "n_train_ticks": 38523,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2026-01-09",
+              "test_start": "2025-11-12",
+              "train_date_max": "2025-11-10"
+            },
+            {
+              "embargo_cut": "2026-01-09",
+              "fold": 4,
+              "n_test_games": 43,
+              "n_test_ticks": 12352,
+              "n_train_games": 169,
+              "n_train_ticks": 51522,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2026-02-26",
+              "test_start": "2026-01-10",
+              "train_date_max": "2026-01-08"
+            },
+            {
+              "embargo_cut": "2026-03-04",
+              "fold": 5,
+              "n_test_games": 47,
+              "n_test_ticks": 12743,
+              "n_train_games": 215,
+              "n_train_ticks": 64766,
+              "status": "OK",
+              "symmetric_embargo_days": 1,
+              "test_end": "2026-06-08",
+              "test_start": "2026-03-05",
+              "train_date_max": "2026-02-26"
+            }
+          ],
+          "n_scored_games": 217,
+          "n_scored_ticks": 64169
+        }
+      },
+      "source_kind": "ladder_base"
+    }
+  },
+  "code_identity": {
+    "aci_online": "17dbb28395158d0366cafddf9e309152722076960783fb8d30d53e14db12136c",
+    "s101": "4dbadc319b76a0e9c6e4ea53e3c683f242176774290917bebee894344c2cf93f",
+    "s123": "476ed9fdfb714b93c5b722f8e99fb1266cdb5987a729495f12e84d2b62ea08ed",
+    "s258_sample": "8e28c05c9de06111df1ac17064784b5ff3791512b61b0d43e2681fe574a0022a",
+    "s86": "2e197d14cce6d86ed80db6482cf37b08201c61944b930197cbf6317a1140fa68"
+  },
+  "design": {
+    "coverage_max_groups": 50,
+    "coverage_min_group": 400,
+    "folds": 5,
+    "nominals": [
+      0.9,
+      0.8
+    ],
+    "purge": "game-disjoint",
+    "symmetric_embargo_days": 1
+  },
+  "generated_at": "2026-09-04T10:19:58.681204+00:00",
+  "local_peak_rss_bytes": 335458304,
+  "paired_loss_series": {
+    "path": "C:\\Users\\neelj\\nba-track-a15\\docs\\evidence\\harness\\S258_incumbent_conformal_band_v2_sample_paired_loss.csv",
+    "sha256": "31acaeee493186f3d37e5373c1708cbd2b7dba0e50da70d8385a219bee416191"
+  },
+  "prereg": {
+    "path": "C:\\Users\\neelj\\nba-track-a15\\docs\\evidence\\harness\\S258_preregistration_incumbent_conformal_band_v2_sample.md",
+    "seal_sha256": "3c36c78bc78e5e372c87170831d388af87bd2eb1fad734ddf7ca69868c89f87a"
+  },
+  "row": "S258 attempt 1d",
+  "s101_regression": {
+    "cells": [
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P1",
+        "nominal": 0.9,
+        "replay_coverage": 0.7333333333333333,
+        "route_coverage": 0.7333333333333333
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P2",
+        "nominal": 0.9,
+        "replay_coverage": 0.6666666666666666,
+        "route_coverage": 0.6666666666666666
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P3",
+        "nominal": 0.9,
+        "replay_coverage": 0.8333333333333334,
+        "route_coverage": 0.8333333333333334
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P4",
+        "nominal": 0.9,
+        "replay_coverage": 0.92,
+        "route_coverage": 0.92
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "OT",
+        "nominal": 0.9,
+        "replay_coverage": 1.0,
+        "route_coverage": 1.0
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "ALL",
+        "nominal": 0.9,
+        "replay_coverage": 0.92,
+        "route_coverage": 0.92
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P1",
+        "nominal": 0.8,
+        "replay_coverage": 0.5333333333333333,
+        "route_coverage": 0.5333333333333333
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P2",
+        "nominal": 0.8,
+        "replay_coverage": 0.5,
+        "route_coverage": 0.5
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P3",
+        "nominal": 0.8,
+        "replay_coverage": 0.7222222222222222,
+        "route_coverage": 0.7222222222222222
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P4",
+        "nominal": 0.8,
+        "replay_coverage": 0.86,
+        "route_coverage": 0.86
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "OT",
+        "nominal": 0.8,
+        "replay_coverage": 1.0,
+        "route_coverage": 1.0
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "ALL",
+        "nominal": 0.8,
+        "replay_coverage": 0.88,
+        "route_coverage": 0.88
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P1",
+        "nominal": 0.9,
+        "replay_coverage": 0.7333333333333333,
+        "route_coverage": 0.7333333333333333
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P2",
+        "nominal": 0.9,
+        "replay_coverage": 0.8333333333333334,
+        "route_coverage": 0.8333333333333334
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P3",
+        "nominal": 0.9,
+        "replay_coverage": 0.8333333333333334,
+        "route_coverage": 0.8333333333333334
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P4",
+        "nominal": 0.9,
+        "replay_coverage": 0.92,
+        "route_coverage": 0.92
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "OT",
+        "nominal": 0.9,
+        "replay_coverage": 0.5,
+        "route_coverage": 0.5
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "ALL",
+        "nominal": 0.9,
+        "replay_coverage": 0.92,
+        "route_coverage": 0.92
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P1",
+        "nominal": 0.8,
+        "replay_coverage": 0.6666666666666666,
+        "route_coverage": 0.6666666666666666
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P2",
+        "nominal": 0.8,
+        "replay_coverage": 0.75,
+        "route_coverage": 0.75
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P3",
+        "nominal": 0.8,
+        "replay_coverage": 0.7777777777777778,
+        "route_coverage": 0.7777777777777778
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P4",
+        "nominal": 0.8,
+        "replay_coverage": 0.9,
+        "route_coverage": 0.9
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "OT",
+        "nominal": 0.8,
+        "replay_coverage": 0.3333333333333333,
+        "route_coverage": 0.3333333333333333
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "ALL",
+        "nominal": 0.8,
+        "replay_coverage": 0.92,
+        "route_coverage": 0.92
+      }
+    ],
+    "max_abs_coverage_diff": 0.0,
+    "n_cells": 24,
+    "passes": true,
+    "sample_games": 269,
+    "sample_ticks": 79919,
+    "tolerance": 1e-09
+  },
+  "source": {
+    "bytes": 2829826,
+    "n_games": 1593,
+    "n_ticks": 465249,
+    "path": "C:\\Users\\neelj\\nba-track-a15\\data\\cache\\inplay_odds\\nba_checkpoints_full.parquet",
+    "resolution": "Parquet tabular input; no pixel resolution",
+    "sample_bytes": 817494,
+    "sample_games": 269,
+    "sample_path": "C:\\Users\\neelj\\nba-track-a15\\docs\\evidence\\harness\\S258_incumbent_conformal_band_v2_source_sample.parquet",
+    "sample_seed": 258104,
+    "sample_sha256": "3bd1e4bf61458f7fe0738abde5e20592986849b08b7d2d603f0eeeaa9da67f4c",
+    "sample_ticks": 79919
+  }
+}

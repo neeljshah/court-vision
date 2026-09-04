@@ -1,0 +1,26 @@
+S258 source 465249 ticks / 1593 games
+e4 nominal 0.90 P1 n 37621 coverage 0.94 half_width 0.09293170442168637 absent None
+e4 nominal 0.90 P2 n 58364 coverage 1.0 half_width 0.11340404461757089 absent None
+e4 nominal 0.90 P3 n 44519 coverage 1.0 half_width 0.0681989432912834 absent None
+e4 nominal 0.90 P4 n 234328 coverage 1.0 half_width 0.01049736582410571 absent None
+e4 nominal 0.90 OT n 12162 coverage 0.9666666666666667 half_width 0.02353953015770012 absent None
+e4 nominal 0.90 ALL n 386994 coverage 0.98 half_width 0.041078517548052675 absent None
+e4 nominal 0.80 P1 n 37621 coverage 0.92 half_width 0.07021652525426282 absent None
+e4 nominal 0.80 P2 n 58364 coverage 0.98 half_width 0.0843064099965375 absent None
+e4 nominal 0.80 P3 n 44519 coverage 0.96 half_width 0.05603362832185368 absent None
+e4 nominal 0.80 P4 n 234328 coverage 0.98 half_width 0.00681321532878072 absent None
+e4 nominal 0.80 OT n 12162 coverage 0.8666666666666667 half_width 0.009209693285538278 absent None
+e4 nominal 0.80 ALL n 386994 coverage 0.98 half_width 0.0304014462643232 absent None
+ladder_base nominal 0.90 P1 n 37398 coverage 1.0 half_width 0.14702827422867057 absent None
+ladder_base nominal 0.90 P2 n 58009 coverage 1.0 half_width 0.14645071578865845 absent None
+ladder_base nominal 0.90 P3 n 44277 coverage 1.0 half_width 0.09568802298021765 absent None
+ladder_base nominal 0.90 P4 n 233016 coverage 0.64 half_width 0.029242594278881654 absent None
+ladder_base nominal 0.90 OT n 12162 coverage 0.9333333333333333 half_width 0.0665614857761732 absent None
+ladder_base nominal 0.90 ALL n 384862 coverage 0.78 half_width 0.06717818480513235 absent None
+ladder_base nominal 0.80 P1 n 37398 coverage 0.94 half_width 0.11524108660830898 absent None
+ladder_base nominal 0.80 P2 n 58009 coverage 1.0 half_width 0.10930907934734227 absent None
+ladder_base nominal 0.80 P3 n 44277 coverage 1.0 half_width 0.07359636090922744 absent None
+ladder_base nominal 0.80 P4 n 233016 coverage 0.58 half_width 0.02094636175289745 absent None
+ladder_base nominal 0.80 OT n 12162 coverage 0.6333333333333333 half_width 0.04245927555451782 absent None
+ladder_base nominal 0.80 ALL n 384862 coverage 0.74 half_width 0.050164710969781805 absent None
+S101 STATIC max_abs_coverage_diff 0
