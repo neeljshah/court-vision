@@ -1,4 +1,4 @@
-GAP S231 | sport all | worktree aXX | log cx_s231_signal_combination_shrinkage
+GAP S231 | sport all | worktree a17 | log cx_s231_signal_combination_shrinkage
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: how signals are WEIGHTED has never been tested; only SELECTION has. S114's nested top-k over 564 screened NBA
 in-game hypotheses: best arm k=5 at -0.000400 vs the raw in-play line, DM CI [-0.000934, +0.000133]; k=5 beat k=1 by
