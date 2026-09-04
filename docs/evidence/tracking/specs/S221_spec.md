@@ -1,4 +1,4 @@
-GAP S221 | sport all (harness) | worktree aXX | log cx_s221_pod_multirunner_probe
+GAP S221 | sport all (harness) | worktree a13 | log cx_s221_pod_multirunner_probe
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: the program wants the pod pushed hard, and the measured ceiling is one runner: S16_pod_hour section 4 records
   3,780 T1 screens in one pod hour against a bar of 200, QUEUE-BOUND, with a sustained 9,331.5 screens/hour while
