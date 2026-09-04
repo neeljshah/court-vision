@@ -1,4 +1,4 @@
-GAP S237 | sport nba | worktree aXX | log cx_s237_max_loser_wp_tick_diagnostic
+GAP S237 | sport nba | worktree a16 | log cx_s237_max_loser_wp_tick_diagnostic
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: JP (memory jp_calibration_feedback_2026_08_31): the diagnostic is "per game, the MAX WP assigned to the
 eventual LOSER" and "always check reliability plots", not just a summary Brier. MODEL_QUALITY_PROGRAM_2026-09-04.md
