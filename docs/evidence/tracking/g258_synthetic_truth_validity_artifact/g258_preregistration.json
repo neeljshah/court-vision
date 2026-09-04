@@ -1,0 +1,52 @@
+{
+  "gap": "G258",
+  "status": "sealed_before_measurement",
+  "question": "For a known synthetic image-plane projected-court translation of the G233d/G247 seed map, which fixed projection signals distinguish a nonzero rung from the 0 px control?",
+  "seed": {
+    "video_path": "/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4",
+    "source_frame": 19599,
+    "scale": 1.0,
+    "matrix_source": "docs/evidence/tracking/g247_projected_quad_validity_artifact/g247_measurement.json record source_frame 19599"
+  },
+  "rungs_projected_court_displacement_px": [0, 2, 5, 10, 20, 40, 100],
+  "perturbation": {
+    "definition": "Let H be the persisted G247 image-to-court matrix and P=inverse(H). For rung N, render/project with P_N=T(N,0)P, where T(N,0) translates image coordinates N pixels camera-right. Measure using H_N=inverse(P_N). Every finite projected court point moves exactly N horizontal image pixels.",
+    "not_a_real_calibration_error": true
+  },
+  "control_repeats": {
+    "count": 5,
+    "definition": "Five independently streamed ffmpeg select=eq(n,19599) decodes of the same named frame, retained only in worker memory. They estimate source-decode and measurement-route spread without changing the map or relabeling."
+  },
+  "fixed_methods": {
+    "offset": "G252 Canny low=50 high=150 aperture=3 L2gradient=true; 4 px projected sampling; integer normal search -24..+24; retain no-candidate count; conditional found distances are right-censored at 24 px.",
+    "image_agreement": "G248 edge-response and marking contrast use 3 px and 9 px controls on both normal sides; LSD_REFINE_STD agreement has 4 px distance and 15 degree unoriented tangent tolerance; projected geometry samples every 2 px.",
+    "quad": "G247 role order and perimeter [0,1,3,2], convexity, signed area, winding, corner order, area ratio, aspect ratio, outside-corner fraction, and normalized 3x3 condition number."
+  },
+  "structurally_inapplicable": [
+    "match_count",
+    "inlier_count",
+    "inlier_ratio",
+    "match_rms_reprojection_px"
+  ],
+  "detection_rule_before_measurement": {
+    "definition": "For each stated scalar, a rung is detected only if its five-repeat median differs from the 0 px five-repeat median by more than max(three times the 0 px repeat range, practical_floor), and every rung repeat is strictly outside the 0 px repeat min-to-max interval in that same direction. This is a sensitivity declaration, not a production threshold and is never used to report ladder accuracy.",
+    "primary_scalars": {
+      "offset": "pooled found-distance p90; practical_floor=1.0 px; a rung with p90=24 px is censored/saturated and cannot establish resolution at that rung",
+      "edge_response_contrast": "G248 scalar; practical_floor=1.0 gradient units",
+      "marking_contrast": "G248 scalar; practical_floor=1.0 grayscale units",
+      "line_detector_agreement": "G248 scalar; practical_floor=0.01 fraction",
+      "coverage": "G248 scalar; practical_floor=0.01 fraction",
+      "quad_projected_area_ratio_to_seed": "G247 scalar; practical_floor=0.01 ratio",
+      "quad_bbox_aspect_ratio": "G247 scalar; practical_floor=0.01 ratio",
+      "quad_outside_corner_fraction": "G247 scalar; practical_floor=0.01 fraction"
+    },
+    "saturation": "Any offset scalar at the 24 px search bound is right-censored and is reported as saturation, not detection. Other signals have no fixed measurement ceiling; a mathematically invariant quad scalar is reported invariant rather than detected."
+  },
+  "monotonicity": "Report Spearman rho over the seven rung medians in stated displacement order. For the offset primary, also state whether medians are nondecreasing. Rho is descriptive only and is not a detection criterion.",
+  "limits": [
+    "One G233d seed, one frame, one clip, one arena, and five repeated decodes; no population inference.",
+    "The 0 px control is only as good as the seed, which G257 constrains to roughly 20 px by eye.",
+    "Synthetic uniform translation is not a real non-uniform calibration error.",
+    "Detecting displacement from a known start is easier than validating an unknown map and does not bear on automatic calibration, which remains 0/17."
+  ]
+}
