@@ -1,0 +1,514 @@
+{
+  "brier_match_delta": 0.0,
+  "normal_brier": 0.25,
+  "normal_record_count": 33,
+  "planted_state_count": 1,
+  "purge_off_brier": 0.24242424242424243,
+  "purge_on_minus_off_brier": 0.007575757575757569,
+  "regular_state_count": 32,
+  "scalar_brier": 0.25,
+  "scalar_record_count": 33,
+  "seed": 268,
+  "states": [
+    {
+      "away": "AWAY-0",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-01T00:00:00"
+      },
+      "features": {
+        "x": 0.041319711367190814
+      },
+      "game_id": "regular-0",
+      "home": "HOME-0",
+      "outcome": 1.0,
+      "state_ts": "2024-01-01T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-1",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-02T00:00:00"
+      },
+      "features": {
+        "x": 0.84258171261232
+      },
+      "game_id": "regular-1",
+      "home": "HOME-1",
+      "outcome": 1.0,
+      "state_ts": "2024-01-02T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-2",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-03T00:00:00"
+      },
+      "features": {
+        "x": 0.7954166276405624
+      },
+      "game_id": "regular-2",
+      "home": "HOME-2",
+      "outcome": 0.0,
+      "state_ts": "2024-01-03T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-3",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-04T00:00:00"
+      },
+      "features": {
+        "x": 0.2236323720553507
+      },
+      "game_id": "regular-3",
+      "home": "HOME-3",
+      "outcome": 1.0,
+      "state_ts": "2024-01-04T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-4",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-05T00:00:00"
+      },
+      "features": {
+        "x": 0.7097043745457995
+      },
+      "game_id": "regular-4",
+      "home": "HOME-4",
+      "outcome": 0.0,
+      "state_ts": "2024-01-05T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-5",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-06T00:00:00"
+      },
+      "features": {
+        "x": 0.3438984241681412
+      },
+      "game_id": "regular-5",
+      "home": "HOME-5",
+      "outcome": 0.0,
+      "state_ts": "2024-01-06T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-6",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-07T00:00:00"
+      },
+      "features": {
+        "x": 0.1796212075284871
+      },
+      "game_id": "regular-6",
+      "home": "HOME-6",
+      "outcome": 0.0,
+      "state_ts": "2024-01-07T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-7",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-08T00:00:00"
+      },
+      "features": {
+        "x": 0.20089330486720258
+      },
+      "game_id": "regular-7",
+      "home": "HOME-7",
+      "outcome": 1.0,
+      "state_ts": "2024-01-08T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-8",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-09T00:00:00"
+      },
+      "features": {
+        "x": 0.9646734135088212
+      },
+      "game_id": "regular-8",
+      "home": "HOME-8",
+      "outcome": 1.0,
+      "state_ts": "2024-01-09T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-9",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-10T00:00:00"
+      },
+      "features": {
+        "x": 0.8144639608331874
+      },
+      "game_id": "regular-9",
+      "home": "HOME-9",
+      "outcome": 0.0,
+      "state_ts": "2024-01-10T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-10",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-11T00:00:00"
+      },
+      "features": {
+        "x": 0.9262639896492263
+      },
+      "game_id": "regular-10",
+      "home": "HOME-10",
+      "outcome": 0.0,
+      "state_ts": "2024-01-11T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-11",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-12T00:00:00"
+      },
+      "features": {
+        "x": 0.5372092378299818
+      },
+      "game_id": "regular-11",
+      "home": "HOME-11",
+      "outcome": 0.0,
+      "state_ts": "2024-01-12T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-12",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-13T00:00:00"
+      },
+      "features": {
+        "x": 0.35324997854002327
+      },
+      "game_id": "regular-12",
+      "home": "HOME-12",
+      "outcome": 1.0,
+      "state_ts": "2024-01-13T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-13",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-14T00:00:00"
+      },
+      "features": {
+        "x": 0.2914155007320376
+      },
+      "game_id": "regular-13",
+      "home": "HOME-13",
+      "outcome": 0.0,
+      "state_ts": "2024-01-14T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "OPPONENT",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-15T00:00:00"
+      },
+      "features": {
+        "x": 0.603237855456771
+      },
+      "game_id": "target",
+      "home": "TARGET",
+      "outcome": 1.0,
+      "state_ts": "2024-01-15T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-15",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-16T00:00:00"
+      },
+      "features": {
+        "x": 0.889687293842006
+      },
+      "game_id": "regular-15",
+      "home": "HOME-15",
+      "outcome": 0.0,
+      "state_ts": "2024-01-16T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-16",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-17T00:00:00"
+      },
+      "features": {
+        "x": 0.8172088187998378
+      },
+      "game_id": "regular-16",
+      "home": "HOME-16",
+      "outcome": 0.0,
+      "state_ts": "2024-01-17T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-17",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-18T00:00:00"
+      },
+      "features": {
+        "x": 0.16380330513162245
+      },
+      "game_id": "regular-17",
+      "home": "HOME-17",
+      "outcome": 0.0,
+      "state_ts": "2024-01-18T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-18",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-19T00:00:00"
+      },
+      "features": {
+        "x": 0.12695741475225042
+      },
+      "game_id": "regular-18",
+      "home": "HOME-18",
+      "outcome": 1.0,
+      "state_ts": "2024-01-19T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-19",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-20T00:00:00"
+      },
+      "features": {
+        "x": 0.6015836863163304
+      },
+      "game_id": "regular-19",
+      "home": "HOME-19",
+      "outcome": 0.0,
+      "state_ts": "2024-01-20T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-20",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-21T00:00:00"
+      },
+      "features": {
+        "x": 0.3556565297507862
+      },
+      "game_id": "regular-20",
+      "home": "HOME-20",
+      "outcome": 1.0,
+      "state_ts": "2024-01-21T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-21",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-22T00:00:00"
+      },
+      "features": {
+        "x": 0.5934485580306433
+      },
+      "game_id": "regular-21",
+      "home": "HOME-21",
+      "outcome": 0.0,
+      "state_ts": "2024-01-22T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-22",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-23T00:00:00"
+      },
+      "features": {
+        "x": 0.7868500347610604
+      },
+      "game_id": "regular-22",
+      "home": "HOME-22",
+      "outcome": 1.0,
+      "state_ts": "2024-01-23T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-23",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-24T00:00:00"
+      },
+      "features": {
+        "x": 0.4390051050391812
+      },
+      "game_id": "regular-23",
+      "home": "HOME-23",
+      "outcome": 1.0,
+      "state_ts": "2024-01-24T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-24",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-25T00:00:00"
+      },
+      "features": {
+        "x": 0.574368067429173
+      },
+      "game_id": "regular-24",
+      "home": "HOME-24",
+      "outcome": 0.0,
+      "state_ts": "2024-01-25T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-25",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-26T00:00:00"
+      },
+      "features": {
+        "x": 0.2318935336236666
+      },
+      "game_id": "regular-25",
+      "home": "HOME-25",
+      "outcome": 0.0,
+      "state_ts": "2024-01-26T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-26",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-27T00:00:00"
+      },
+      "features": {
+        "x": 0.38776612432671786
+      },
+      "game_id": "regular-26",
+      "home": "HOME-26",
+      "outcome": 0.0,
+      "state_ts": "2024-01-27T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-27",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-28T00:00:00"
+      },
+      "features": {
+        "x": 0.9473064889343407
+      },
+      "game_id": "regular-27",
+      "home": "HOME-27",
+      "outcome": 1.0,
+      "state_ts": "2024-01-28T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-28",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-29T00:00:00"
+      },
+      "features": {
+        "x": 0.4130396997159965
+      },
+      "game_id": "regular-28",
+      "home": "HOME-28",
+      "outcome": 0.0,
+      "state_ts": "2024-01-29T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-29",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-30T00:00:00"
+      },
+      "features": {
+        "x": 0.5462816816640352
+      },
+      "game_id": "regular-29",
+      "home": "HOME-29",
+      "outcome": 1.0,
+      "state_ts": "2024-01-30T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-30",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-01-31T00:00:00"
+      },
+      "features": {
+        "x": 0.6772294224223943
+      },
+      "game_id": "regular-30",
+      "home": "HOME-30",
+      "outcome": 0.0,
+      "state_ts": "2024-01-31T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "AWAY-31",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "x": "2024-02-01T00:00:00"
+      },
+      "features": {
+        "x": 0.8289178790036613
+      },
+      "game_id": "regular-31",
+      "home": "HOME-31",
+      "outcome": 0.0,
+      "state_ts": "2024-02-01T19:00:00",
+      "truth_wp": 0.5
+    },
+    {
+      "away": "LEAK-OPPONENT",
+      "devig_close_prob": 0.5,
+      "feature_avail": {
+        "planted_label": "2024-01-17T00:00:00",
+        "x": "2024-01-17T00:00:00"
+      },
+      "features": {
+        "planted_label": 1.0,
+        "x": 0.402340997372884
+      },
+      "game_id": "planted-leak",
+      "home": "TARGET",
+      "outcome": 1.0,
+      "state_ts": "2024-01-17T18:00:00",
+      "truth_wp": 0.5
+    }
+  ],
+  "target_honest_brier": 0.25,
+  "target_leaky_brier": 0.0,
+  "target_leaky_is_strictly_lower": true
+}
