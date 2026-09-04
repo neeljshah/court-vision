@@ -3,7 +3,7 @@ CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -
 CONTEXT: successor to S253 (DONE 4dd9e24eb) and S84 (SCREEN_NULL, NBA). S253's module is named "nba_..." but its
   ONLY source is the S253 stamps.csv artifact (raw CDN store: dangling link, OUT OF SCOPE) (168 WNBA games,
   2026-04-25..2026-07-04, per the register row) -- verified: no NBA CDN archive exists. This row is WNBA,
-  correcting a false "nba" premise per contract clause S2. All 85 priced S206 games fall inside S253 qualifyingnside S
+  correcting a false "nba" premise per contract clause S2. All 85 priced S206 games fall inside S253's 167 qualifying
   games (verified this session: comm -12 of the two id sets returns 85/85). S84's NBA lineup screen was
   SCREEN_NULL (-0.000455, CI [-0.003920,+0.003009], 284 clusters); S206's WNBA Stern-state screen was also
   SCREEN_NULL (brier_candidate 0.154859 vs brier_null 0.155244, CI [-0.000210,+0.000980]) -- a third null here
