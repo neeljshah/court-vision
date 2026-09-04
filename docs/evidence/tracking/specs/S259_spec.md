@@ -1,4 +1,4 @@
-GAP S259 | sport all (in-game) | worktree aXX | log cx_s259_ingame_power_audit_v2
+GAP S259 | sport all (in-game) | worktree a16 | log cx_s259_ingame_power_audit_v2
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S210 CLOSED AT LIMIT (see its register row; attempt 1 was a store-visibility artefact). Attempt 2b was
   rejected on exact points: S102 counted at n=1,926,350 where its memo specifies 192,635 per hypothesis; S94
