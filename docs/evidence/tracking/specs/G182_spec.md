@@ -1,4 +1,4 @@
-GAP G182 | sport tennis | worktree a5 | log cx_g182_calibration_unavailable_cause
+GAP G182 | sport tennis | worktree a7 | log cx_g182_calibration_unavailable_cause
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it (A2, A3, A7, Q8); self-check B.
 RAILS: heavy work ON THE POD under nohup, batched, never poll. One store at a time, never a whole
 store over 300 MB. NEVER kill, restart or deploy over the pod daemon or keeper. Never launch

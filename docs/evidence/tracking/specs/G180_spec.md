@@ -1,4 +1,4 @@
-GAP G180 | sport all | worktree a2 | log cx_g180_corpus_retention
+GAP G180 | sport all | worktree a6 | log cx_g180_corpus_retention
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md -- read it (A5, A7, B3, B4, Q8); self-check B.
 **B3 is the rule this row lives or dies by: missing is not bad, and deleting a source whose result is
 NOT durable is exactly the fall-through loss B3 forbids.** Read it before writing a line.
