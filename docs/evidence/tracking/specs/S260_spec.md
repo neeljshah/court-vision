@@ -1,4 +1,4 @@
-GAP S260 | sport mlb | worktree a13 | log cx_s260_mlb_batter_pitcher_line_q4
+GAP S260 | sport mlb | worktree a17 | log cx_s260_mlb_batter_pitcher_line_q4
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: S244 REJECT (e1bd3c1b0, docs/evidence/harness/S244_VERIFY_2026-09-04.md:23,31). Q4 FAIL: OOS scoring in
   scripts/platformkit/mlb_batter_pitcher_line_dist.py:95-138 is a custom fold loop, not walk_forward/cpcv_evaluate.
