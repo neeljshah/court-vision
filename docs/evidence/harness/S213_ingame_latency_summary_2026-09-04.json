@@ -1,0 +1,1016 @@
+{
+  "denominator": "all printed in-play ticks for that sport's listed source store",
+  "gap": "S213",
+  "ingame_metadata_scan": {
+    "inputs": [
+      {
+        "bytes": 19939,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\_soccer_singles_archive\\soccer_states__eng1.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 20606,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\_soccer_singles_archive\\soccer_states__eng1_2324.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 19779,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\_soccer_singles_archive\\soccer_states__esp1.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 20016,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\_soccer_singles_archive\\soccer_states__esp1_2324.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 17923,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\_soccer_singles_archive\\soccer_states__fra1.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 17618,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\_soccer_singles_archive\\soccer_states__fra1_2324.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 17774,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\_soccer_singles_archive\\soccer_states__ger1.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 18007,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\_soccer_singles_archive\\soccer_states__ger1_2324.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 20122,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\_soccer_singles_archive\\soccer_states__ita1.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 19968,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\_soccer_singles_archive\\soccer_states__ita1_2324.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 20925,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\finals_replay_eval.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 57411,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\mlb_atbat_states__2022.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 55481,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\mlb_atbat_states__2023.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 503175,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\mlb_pitch_states__2022.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 549621,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\mlb_pitch_states__2023.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 534664,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\mlb_pitch_states__2024.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 496094,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\mlb_pitch_states__2025.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 234626,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\mlb_pitch_states__2026.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 27122,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\mlb_rung6_composite.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 133332,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\mlb_states__2021.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 139220,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\mlb_states__2022.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 138484,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\mlb_states__2023.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 133819,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\mlb_states__2024.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 160492,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\pbp_foul_states_2024_25.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 161230,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\pbp_foul_states_2025_26.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 93621,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\pbp_states_2024_25.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 92842,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\pbp_states_2025_26.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 249491,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\possession_states_2024_25.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 247926,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\possession_states_2025_26.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 4405872,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\sim2_possessions.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 49812,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_cardstates__combo_eng_ger.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 47658,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_cardstates__combo_esp_ita.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 39212,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_shotstates__eng1.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 38974,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_shotstates__esp1.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 33283,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_shotstates__ger1.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 39320,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_shotstates__ita1.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 237777,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_shotxgstates__combo_eng_ger.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 257965,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_shotxgstates__combo_esp_ita.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 128904,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_shotxgstates__eng1.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 126528,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_shotxgstates__esp1.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 107211,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_shotxgstates__ger1.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 129774,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_shotxgstates__ita1.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 58416,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_states__combo_eng_ger.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 83725,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_states__combo_esp_ita.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 21717,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_states__eng1.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 21537,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_states__esp1.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 19048,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_states__ger1.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 21502,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_states__ita1.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 10028,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\soccer_states__wc_2026.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 557856,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\tennis_gamestate__atp.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 196262,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\tennis_gamestate__wta.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 4319245,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\tennis_setdetail__atp.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 1240709,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\tennis_setdetail__wta.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 783216,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\tennis_states__atp.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      },
+      {
+        "bytes": 285269,
+        "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\ingame\\tennis_states__wta.parquet",
+        "resolution": "N/A (structured Parquet state metadata)"
+      }
+    ],
+    "parquet_files_metadata_scanned": 55,
+    "with_both_fields": 0,
+    "with_captured_at": 1,
+    "with_independent_source_ts": 0
+  },
+  "metric": "captured_at minus independent source_ts in seconds",
+  "quantile_method": "nearest-rank: ceil(p*n)-1 on the archived per-tick CSV",
+  "sports": [
+    {
+      "coverage_pct": 0.0,
+      "inputs": [
+        {
+          "bytes": 25140428,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\inplay_odds\\nba_price_series.parquet",
+          "resolution": "N/A (structured Parquet tick)"
+        }
+      ],
+      "lag_max_sec": null,
+      "lag_p50_sec": null,
+      "lag_p90_sec": null,
+      "n_game_clusters": 1835,
+      "n_inplay_ticks": 8399632,
+      "n_paired_clusters": 0,
+      "n_paired_ticks": 0,
+      "not_measurable_reason": "absent our receive timestamp field: captured_at",
+      "receive_timestamp_field": null,
+      "source_timestamp_field": "ts (Kalshi price-series clock)",
+      "sport": "nba",
+      "status": "NOT_MEASURABLE"
+    },
+    {
+      "coverage_pct": 0.0,
+      "inputs": [
+        {
+          "bytes": 3270899,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\inplay_odds\\wnba_price_series.parquet",
+          "resolution": "N/A (structured Parquet tick)"
+        }
+      ],
+      "lag_max_sec": null,
+      "lag_p50_sec": null,
+      "lag_p90_sec": null,
+      "n_game_clusters": 287,
+      "n_inplay_ticks": 967102,
+      "n_paired_clusters": 0,
+      "n_paired_ticks": 0,
+      "not_measurable_reason": "absent our receive timestamp field: captured_at",
+      "receive_timestamp_field": null,
+      "source_timestamp_field": "ts (Kalshi price-series clock)",
+      "sport": "wnba",
+      "status": "NOT_MEASURABLE"
+    },
+    {
+      "coverage_pct": 91.539248,
+      "inputs": [
+        {
+          "bytes": 91355,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822708.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 239442,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822709.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 151714,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822710.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 207224,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822711.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 33684,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822712.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 139246,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822713.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 58214,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822715.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 60737,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822716.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 191056,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822875.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 101121,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822876.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 299382,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822877.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 156048,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822878.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 53321,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822879.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 186920,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822880.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 63410,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822881.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 50881,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822882.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 87951,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822951.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 178392,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822953.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 173811,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822954.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 154691,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822955.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 139185,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822956.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 121329,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822957.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 37778,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\822958.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 92250,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823029.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 146665,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823030.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 138050,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823032.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 211654,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823033.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 274032,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823034.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 58252,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823035.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 7575,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823036.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 223590,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823062.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 52256,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823117.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 52555,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823118.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 332,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823120.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 155943,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823198.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 119046,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823199.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 337987,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823200.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 287618,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823201.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 262674,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823202.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 138063,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823203.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 139229,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823274.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 233408,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823276.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 262419,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823277.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 250794,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823278.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 284378,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823279.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 133597,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823280.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 193555,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823356.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 178686,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823357.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 159777,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823358.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 195428,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823359.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 119241,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823360.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 135019,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823361.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 189204,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823443.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 48960,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823525.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 60303,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823526.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 80103,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823602.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 205324,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823603.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 206796,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823604.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 154470,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823605.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 137250,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823606.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 108981,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823607.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 68188,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823681.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 170179,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823682.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 150718,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823683.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 212219,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823684.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 178629,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823685.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 62601,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823687.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 92672,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823842.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 196711,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823844.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 154704,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823845.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 248755,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823846.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 145753,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823847.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 117848,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823848.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 165032,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823925.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 213276,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823926.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 272902,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823927.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 231206,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823928.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 159064,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823929.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 16364,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823931.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 332,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\823933.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 334,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824013.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 100547,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824089.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 41292,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824091.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 17537,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824171.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 50564,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824172.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 161784,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824249.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 84288,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824250.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 220682,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824251.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 185832,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824252.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 141818,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824253.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 140646,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824254.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 59775,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824333.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 332,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824336.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 60148,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824413.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 18140,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824415.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 332,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824417.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 84953,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824491.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 189243,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824492.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 163946,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824493.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 199286,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824494.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 100504,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824495.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 176677,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824496.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 46179,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824497.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 18401,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824499.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 63846,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824574.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 169216,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824575.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 141108,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824576.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 174951,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824577.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 153057,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824578.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 62384,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824579.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 43628,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824656.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 142196,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824813.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 92090,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824814.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 154505,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824815.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 156838,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824816.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 150737,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824817.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 70475,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824820.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 20899,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824900.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 50800,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824902.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 77307,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824980.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 334,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\824982.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 61953,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\825061.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        },
+        {
+          "bytes": 1923,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\domains\\mlb\\gumbo_live\\_archive\\825062.jsonl",
+          "resolution": "N/A (structured JSONL tick)"
+        }
+      ],
+      "lag_max_sec": 1660.0,
+      "lag_p50_sec": 41.0,
+      "lag_p90_sec": 102.0,
+      "n_game_clusters": 123,
+      "n_inplay_ticks": 44015,
+      "n_paired_clusters": 90,
+      "n_paired_ticks": 40291,
+      "not_measurable_reason": null,
+      "receive_timestamp_field": "captured_at",
+      "source_timestamp_field": "ts (GUMBO source timestamp)",
+      "sport": "mlb",
+      "status": "MEASURED"
+    },
+    {
+      "coverage_pct": 0.0,
+      "inputs": [
+        {
+          "bytes": 626996,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\inplay_odds\\soccer_price_series.parquet",
+          "resolution": "N/A (structured Parquet tick)"
+        },
+        {
+          "bytes": 5827874,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\inplay_odds\\soccer_intl_price_series.parquet",
+          "resolution": "N/A (structured Parquet tick)"
+        }
+      ],
+      "lag_max_sec": null,
+      "lag_p50_sec": null,
+      "lag_p90_sec": null,
+      "n_game_clusters": 324,
+      "n_inplay_ticks": 2466338,
+      "n_paired_clusters": 0,
+      "n_paired_ticks": 0,
+      "not_measurable_reason": "absent our receive timestamp field: captured_at",
+      "receive_timestamp_field": null,
+      "source_timestamp_field": "ts (Kalshi price-series clock)",
+      "sport": "soccer",
+      "status": "NOT_MEASURABLE"
+    },
+    {
+      "coverage_pct": 0.0,
+      "inputs": [
+        {
+          "bytes": 4948107,
+          "path": "C:\\Users\\neelj\\nba-ai-system\\data\\cache\\inplay_odds\\tennis_price_series.parquet",
+          "resolution": "N/A (structured Parquet tick)"
+        }
+      ],
+      "lag_max_sec": null,
+      "lag_p50_sec": null,
+      "lag_p90_sec": null,
+      "n_game_clusters": 986,
+      "n_inplay_ticks": 1854100,
+      "n_paired_clusters": 0,
+      "n_paired_ticks": 0,
+      "not_measurable_reason": "absent our receive timestamp field: captured_at",
+      "receive_timestamp_field": null,
+      "source_timestamp_field": "ts (Kalshi price-series clock)",
+      "sport": "tennis",
+      "status": "NOT_MEASURABLE"
+    }
+  ]
+}
