@@ -1,4 +1,4 @@
-GAP S246 | sport all (pregame) | worktree aXX | log cx_s246_boxscore_scoring_harness
+GAP S246 | sport all (pregame) | worktree a15 | log cx_s246_boxscore_scoring_harness
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: S241-S245 need a shared leak-free scoring spine so numbers are comparable, not each
 re-deriving CRPS/pinball independently. S233 landed eval_gate/walkforward_embargo_prereg.py
