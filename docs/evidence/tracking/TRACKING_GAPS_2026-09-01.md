@@ -1,5 +1,10 @@
 # Tracking gap register -- 2026-09-01 (living; one gap = one lane)
 
+## G217 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G217 | ncaa_basketball / wnba | Local reproduction separates G210b's 0/17 label-free branch from its 1/17 detected-line oracle at 28.841315992648475 px median maximum corner error. The oracle-selected detected groups miss their intended labelled paint lines by median 10.2347919059155 px across all 68 role-frame selections. Replacing only those detected geometries with exact label-derived paint lines while retaining the same solver, court model, projection, scorer, labels, 12 px threshold, and exhaustive 17-frame construct yields 17/17 and 0.0 px median maximum error. This refutes G214's claim that detection quality cannot lift the result much because four-point homographies are inherently too difficult at 12 px; current detector-line geometry is the live lever, while automatic calibration remains unproven because the control uses labels. | g217_oracle_error_decomposition_2026-09-04.md; g217_oracle_error_decomposition_artifact/ | ACCEPT (attribution; no production change). |
 ## G103 result register
 
 ## G126 result register
