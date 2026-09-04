@@ -1162,6 +1162,70 @@ at all.
 
 ---
 
+---
+
+## 7.26 RESOLVED: the contradiction was a tolerance mismatch, and it corrects how 0.597 must be read
+
+Section 7.25 suspended the recall thread over an apparent order-of-magnitude
+contradiction between G273 and G285b. **It was not a contradiction.** The two
+rows measured quantities whose spatial tolerances differ by roughly 10x, and the
+resolution needed no new lane -- only committed data.
+
+### The test
+
+G273's criterion was a **512x640 crop centred on the footpoint**: a person
+anywhere within **+/-256 px horizontally and +/-320 px vertically**. G285b's was
+**within 50 px**. Applying G273's actual box to G285b's sealed located-player
+coordinates over the same 15 frames:
+
+| direction | result | compare |
+|---|---:|---|
+| footpoints with a located player inside a 512x640 crop | **79 / 112 = 0.705** | G273 measured **0.792** |
+| located players with a footpoint inside such a box | **114 / 143 = 0.797** | -- |
+
+**These agree within sampling noise**, and the residual gap is expected: G285b
+located **players only**, while G273 counted **any person**.
+
+### What the footpoints actually do
+
+Distance from each footpoint to the nearest located player's feet, n = 112:
+
+| min | p25 | **median** | p75 | p90 | max |
+|---:|---:|---:|---:|---:|---:|
+| 10.0 | 106.2 | **243.3** | 360.4 | 484.8 | 798.3 |
+
+within 25 px **0.036** · 50 px **0.071** · 100 px **0.205** · 200 px **0.411** ·
+320 px **0.661**
+
+**A detection typically has a player somewhere in its neighbourhood but sits
+about 240 px from that player's feet.**
+
+### The correction, and it is to my own reading
+
+**G273's `43/72 = 0.597` "PLAYER on the court of play" does NOT mean the
+detection is ON a player. It means a player was visible in a 512x640
+neighbourhood.** That criterion is **localisation-blind**, and I quoted it in
+sections 7.20 and 7.24, in the evidence packet and inside G284's arithmetic as
+though it certified position. **It does not.**
+
+### Consequences
+
+1. **The recall thread is unsuspended, reframed.** G285b's 0.049 at 50 px is a
+   legitimate **localisation** measure, not a refutation of G273.
+2. **G284's 0.416 is withdrawn as a recall bound.** It multiplied a count by
+   0.597 on the assumption that 0.597 certified position.
+3. **This independently corroborates G272b**, which attributed **29 pct of jump
+   steps to footpoint localisation.** Localisation is now measured as bad in
+   absolute terms, not merely as a defect category.
+4. **The +147 px systematic vertical offset** found in section 7.25 is a symptom
+   of the same thing and needs no separate explanation.
+
+**Unchanged:** G273's counts and protocol -- only their interpretation is
+corrected -- along with G272b's split, G276b's baseline, G279's curve and G281's
+0.935 purity.
+
+---
+
 ## NOT VERIFIED
 
 - Whether a trained basketball calibration model would work; nothing was trained
