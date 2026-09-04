@@ -1,0 +1,44 @@
+{
+  "code_sha256": "8d32563c23104ff19eea2c83db665647807e5432504492a738d3bbc6e7b2578a",
+  "evaluator_records": 61796,
+  "inputs": [
+    {
+      "bytes": 25140428,
+      "path": "data/cache/inplay_odds/nba_price_series.parquet",
+      "resolution": "parquet",
+      "sha256": "3db7d0444d800cfe487ab48c4780a9283b3a621511e0b259975a4339b970bd5b"
+    },
+    {
+      "bytes": 2829826,
+      "path": "data/cache/inplay_odds/nba_checkpoints_full.parquet",
+      "resolution": "parquet",
+      "sha256": "5ea6498d88bf7548395c700c7239641dcbd1d641bdaddb5a6b63fcf0ea8909e5"
+    }
+  ],
+  "premise": {
+    "checkpoint_ticks_with_asof_kalshi": 8828,
+    "exact_overlap_by_market_type": {
+      "moneyline": 40,
+      "spread": 9
+    },
+    "kalshi_events_parsed": 62,
+    "kalshi_events_total": 62,
+    "missing_asof_ticks": 0,
+    "parsed_exact_overlap": 49,
+    "scored_moneyline_games": 40
+  },
+  "spec": "S280",
+  "summary": {
+    "augmented_brier": 0.12891112151862477,
+    "bar": 0.004,
+    "game_clustered_ci95": [
+      -0.0019271681112867855,
+      0.0002133248411028257
+    ],
+    "improvement_vs_null": 0.0006980605078076834,
+    "metric_augmented_brier_minus_recal_null_brier": -0.0006980605078076834,
+    "n_game_clusters": 40,
+    "n_ticks": 8828,
+    "recal_null_brier": 0.12960918202643246
+  }
+}
