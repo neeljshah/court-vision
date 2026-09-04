@@ -715,6 +715,60 @@ refused to allocate a single cause and anyone quoting it must too. Identity is
 unvalidated everywhere in this programme, and the population is detector boxes --
 officials, bench and spectators included -- not authenticated players.
 
+---
+
+## 7.19 WHAT THE WHOLE CHAIN ACTUALLY RESTS ON, stated so nobody has to rediscover it
+
+Everything in sections 7.16 to 7.18 -- the priority reversal, the 10.5 pct
+on-court implausible-step figure, the 79-of-98 id spread, the 58 pct with 83+ px
+image displacement, and the 50 pct not-a-person share -- was measured on
+**ONE camera shot, source frames 19599 to 23399, of ONE clip,
+`wnba__wnba_01.mp4`, in ONE arena, from ONE draw of a non-deterministic
+detector, with ONE labeller on the eye-judged parts.**
+
+That is not a hedge added at the end. It is the single largest open risk in the
+programme, and two rows are open against it right now:
+
+| row | what it removes | what it cannot remove |
+|---|---|---|
+| **G273** | that the 50 pct not-a-person rate comes from a **biased subsample** -- jump steps are exactly where non-people would concentrate. It samples ALL retained detections, unconditioned. | still one clip, one shot, one labeller |
+| **G274** | that the whole profile is a property of **one camera shot** rather than of the system | still one clip, one arena |
+
+### The corpus limits how far this can go, and the limit is structural
+
+Verified on the pod, 2026-09-04: the corpus is **10 clips**, of which
+**only three are basketball-family** -- `wnba__wnba_01`, one NCAA clip, and a
+23 MB amateur clip. The rest are tennis, MLB/baseball and soccer.
+
+**`wnba__wnba_01.mp4` is the only clip in the corpus with a validated
+calibration map.** Section 7.14 established that hand-fitted calibration does not
+generalise, for camera reasons rather than algorithmic ones. So:
+
+- **Every COURT-SPACE measure -- including the 40 ft/s plausibility test that
+  the entire chain is built on -- is confined to this one clip** until somebody
+  produces a second hand label. There is no way around that with the current
+  corpus.
+- **Every IMAGE-SPACE measure is map-free and does port to other clips.** That
+  is the only route to a cross-clip result that exists today.
+- **But a raw pixel threshold does NOT port.** Clips differ in resolution and
+  zoom, so "83 px" means different things in different clips. A cross-clip row
+  must normalise (frame diagonal, say) and compare distribution shape, or it is
+  comparing nothing.
+
+### The consequence for how these numbers may be quoted
+
+Until G274 reports, **no figure in sections 7.16 to 7.18 may be described as a
+property of the tracking system.** They are properties of a measured shot. The
+distinction is not pedantic: if G274 finds a different profile in a second shot,
+the correct reading becomes that the defect depends on framing or play context,
+and the first shot's numbers would be actively misleading as system-wide claims.
+
+**A "no valid map exists for a second shot" result from G274 is a full success**
+and would itself be the finding: that the chain cannot be extended at all without
+new hand labels, which converts a measurement problem into a labelling one.
+
+---
+
 ## NOT VERIFIED
 
 - Whether a trained basketball calibration model would work; nothing was trained
