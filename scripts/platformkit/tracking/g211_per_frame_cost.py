@@ -26,7 +26,7 @@ def _wrapper(token: str, frames: int) -> str:
 def remote_script(token: str, frames: int) -> str:
     """Return a streamed wrapper that leaves the pod checkout untouched."""
     code = _wrapper(token, frames)
-    commands = ["#!/usr/bin/env bash", "set -u", f"ROOT=/tmp/g211_{token}; mkdir -p \"$ROOT\"", "context() {", " { date -u +%FT%TZ; echo \"cores=$(nproc)\"; uptime; free -b", " nvidia-smi --query-gpu=name,utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits", " echo TOP_CPU; ps -eo pid=,ppid=,pcpu=,pmem=,rss=,etime=,args= --sort=-pcpu | head -40", f" echo SOURCE_HASHES; sha256sum {PROJECT}/scripts/run_clip.py {PROJECT}/src/pipeline/unified_pipeline.py {PROJECT}/src/tracking/advanced_tracker.py", f" echo INPUT; stat -c '%n|%s' {VIDEO}; ffprobe -v error -select_streams v:0 -show_entries stream=width,height,nb_frames -of csv=p=0 {VIDEO}", " } > \"$ROOT/context_$1.txt\"", "}", "context before", "START=$(date +%s.%N); set +e", f"(cd {PROJECT} && echo {code} | base64 -d | /usr/local/bin/python -) > \"$ROOT/route.log\" 2>&1", "RC=$?; set -e; END=$(date +%s.%N)", "python3 - \"$ROOT/timing.json\" \"$START\" \"$END\" \"$RC\" <<'PY'", "import json,sys", "p,s,e,r=sys.argv[1:];json.dump({'started_epoch':float(s),'ended_epoch':float(e),'wall_seconds':float(e)-float(s),'exit_code':int(r)},open(p,'w'),sort_keys=True)", "PY", "context after", "tar -C \"$ROOT\" -czf - . | base64 -w0", f"rm -rf \"$ROOT\" \"/tmp/g211_{token}_data\""]
+    commands = ["#!/usr/bin/env bash", "set -u", f"ROOT=/tmp/g211_{token}; DATA=/tmp/g211_{token}_data; PROBE=/tmp/g211_probe_{token}", "dd if=/dev/zero of=\"$PROBE\" bs=1M count=1 conv=fsync status=none", "rm -f \"$PROBE\"", "mkdir -p \"$ROOT\"", "context() {", " { date -u +%FT%TZ; echo \"cores=$(nproc)\"; echo DATA_DU_MB; du -sm /workspace/nba-ai-system/data; uptime; free -b", " nvidia-smi --query-gpu=name,utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits", " echo TOP_CPU; ps -eo pid=,ppid=,pcpu=,pmem=,rss=,etime=,args= --sort=-pcpu | head -40", f" echo SOURCE_HASHES; sha256sum {PROJECT}/scripts/run_clip.py {PROJECT}/src/pipeline/unified_pipeline.py {PROJECT}/src/tracking/advanced_tracker.py", f" echo INPUT; stat -c '%n|%s' {VIDEO}; ffprobe -v error -select_streams v:0 -show_entries stream=width,height,nb_frames -of csv=p=0 {VIDEO}", " } > \"$ROOT/context_$1.txt\"", "}", "context before", "START=$(date +%s.%N); set +e", f"(cd {PROJECT} && echo {code} | base64 -d | /usr/local/bin/python -) > \"$ROOT/route.log\" 2>&1", "RC=$?; set -e; END=$(date +%s.%N)", "python3 - \"$ROOT/timing.json\" \"$START\" \"$END\" \"$RC\" <<'PY'", "import json,sys", "p,s,e,r=sys.argv[1:];json.dump({'started_epoch':float(s),'ended_epoch':float(e),'wall_seconds':float(e)-float(s),'exit_code':int(r)},open(p,'w'),sort_keys=True)", "PY", "context after", "du -sb \"$ROOT\" \"$DATA\" 2>/dev/null > \"$ROOT/cleanup_bytes.txt\" || du -sb \"$ROOT\" > \"$ROOT/cleanup_bytes.txt\"", "tar -C \"$ROOT\" -czf - . | base64 -w0", "rm -rf \"$ROOT\" \"$DATA\""]
     return "\n".join(commands) + "\n"
 
 def bundle(stdout: bytes) -> dict[str, Any]:
@@ -56,21 +56,21 @@ def summarize(raw: dict[str, Any]) -> dict[str, Any]:
     totals = sorted(row["total"] for row in rows)
     q = lambda p: totals[round((len(totals)-1)*p)] if totals else 0.0
     means = {x: sum(row[x] for row in rows)/len(rows) for x in (*STAGES, "total")} if rows else {}
-    return {"timing":raw["json"]["timing.json"],"frame_rows":rows,"n_frames":len(rows),"distribution_seconds":{"median":q(.5),"p90":q(.9),"max":q(1)},"mean_stage_seconds":means,"mean_unattributed_seconds":means.get("total",0)-sum(means.get(x,0) for x in STAGES),"load_context_before":raw["text"].get("context_before.txt",""),"load_context_after":raw["text"].get("context_after.txt",""),"route_log":raw["text"].get("route.log","")}
+    return {"timing":raw["json"]["timing.json"],"frame_rows":rows,"n_frames":len(rows),"distribution_seconds":{"median":q(.5),"p90":q(.9),"max":q(1)},"mean_stage_seconds":means,"mean_unattributed_seconds":means.get("total",0)-sum(means.get(x,0) for x in STAGES),"load_context_before":raw["text"].get("context_before.txt",""),"load_context_after":raw["text"].get("context_after.txt",""),"cleanup_bytes":raw["text"].get("cleanup_bytes.txt",""),"route_log":raw["text"].get("route.log","")}
 
-def run(output: Path, ssh_config: Path, frames: int, attempts: int) -> int:
+def run(output: Path, ssh_config: Path, ssh_host: str, frames: int, attempts: int) -> int:
     """Measure immediately and repeat only discarded floor-shifted attempts."""
     discarded=[]
     for attempt in range(1, attempts+1):
-        done=subprocess.run(["ssh","-F",str(ssh_config),"config.pod","bash -s"],input=remote_script(f"{int(time.time())}_{attempt}",frames).encode(),stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=False)
+        done=subprocess.run(["ssh","-F",str(ssh_config),ssh_host,"bash -s"],input=remote_script(f"{int(time.time())}_{attempt}",frames).encode(),stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=False)
         record=summarize(bundle(done.stdout)); record["ssh_exit_code"]=done.returncode; record["ssh_stderr"]=done.stderr.decode(errors="replace"); record["floor_shifted"]=floor_shifted(record["load_context_before"],record["load_context_after"])
-        if done.returncode or record["timing"]["exit_code"]: output.write_text(json.dumps({"discarded":discarded,"failed":record},indent=2)+"\n"); return done.returncode or record["timing"]["exit_code"]
         if record["floor_shifted"]: discarded.append(record); continue
+        if done.returncode or record["timing"]["exit_code"]: output.write_text(json.dumps({"discarded":discarded,"failed":record},indent=2)+"\n"); return done.returncode or record["timing"]["exit_code"]
         output.write_text(json.dumps({"discarded":discarded,"accepted":record},indent=2)+"\n"); return 0
     output.write_text(json.dumps({"discarded":discarded,"failed":"floor_changed_every_attempt"},indent=2)+"\n"); return 2
 
 def main() -> int:
-    parser=argparse.ArgumentParser(description=__doc__); parser.add_argument("--output",type=Path,required=True); parser.add_argument("--ssh-config",type=Path,required=True); parser.add_argument("--frames",type=int,default=360); parser.add_argument("--attempts",type=int,default=3)
-    args=parser.parse_args(); return run(args.output,args.ssh_config,args.frames,args.attempts)
+    parser=argparse.ArgumentParser(description=__doc__); parser.add_argument("--output",type=Path,required=True); parser.add_argument("--ssh-config",type=Path,required=True); parser.add_argument("--ssh-host",default="pod"); parser.add_argument("--frames",type=int,default=360); parser.add_argument("--attempts",type=int,default=3)
+    args=parser.parse_args(); return run(args.output,args.ssh_config,args.ssh_host,args.frames,args.attempts)
 
 if __name__ == "__main__": raise SystemExit(main())
