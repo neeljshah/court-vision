@@ -1,0 +1,73 @@
+semantic_hash,feature,transform,params,column
+024109aeda145d5a4a5165e66ec634bed4bd6e162edf5a5abbf6fc31cee68772,away_max_player_pfs,ew,"(('halflife', 10),)",away_max_player_pfs|ew10
+087a774d95e5bea07921314320f02b80c6654962a5999285d4dc4749681967ae,poss_since_lead_change,delta_vs_prior,(),poss_since_lead_change|dprior
+0af0e7ee7fff8dc4c3fdd02dd6417300492bfa5856d7ad5a4470d9b060748add,run_diff,raw,(),run_diff|raw
+0b8c70a565ec0b2e27e8f99145da64d851091f4ff91667a4d09dc16dbf039a6b,away_max_player_pfs,ew,"(('halflife', 5),)",away_max_player_pfs|ew5
+1140c27bcce385b63f27f4248920c63c84db73a97be3f91db4aa107231584942,pf_imbalance,delta_vs_prior,(),pf_imbalance|dprior
+156dba3cac4cb837386b065648711b504d8a715dbd1eec843b04dd62264dac24,seconds_remaining,delta_vs_prior,(),seconds_remaining|dprior
+16533320a176235a001f37bea91314a6d89856cb9920dba7f72221ab984c4989,seconds_remaining,ew,"(('halflife', 10),)",seconds_remaining|ew10
+16b45495fcc8de80ece5ad072d1083cca0604c8ea431978c035bc2ea60dc88f2,away_starter_fouled_out_indicator,ew,"(('halflife', 10),)",away_starter_fouled_out_indicator|ew10
+1736b60b23f2827494cb25d7435cb62ca0a88e3e4b50d130ff1ec1de32d0a921,home_starter_fouled_out_indicator,ew,"(('halflife', 10),)",home_starter_fouled_out_indicator|ew10
+191f37f1733a6b8627e7152ac18ccf9b2b8baca632a3db874d03c0ac2d3d8f3f,away_max_player_pfs,delta_vs_prior,(),away_max_player_pfs|dprior
+19349fc9b67ff1a67639cc4f9e2568b2242d0404b4984c0baa8a71a5a6917c07,home_team_pfs_cum,ew,"(('halflife', 20),)",home_team_pfs_cum|ew20
+26478bfdf46a20d72e72e772e7a02c8292e06e04ae4dc75c24bbcca443a7f1f2,seconds_remaining,ew,"(('halflife', 5),)",seconds_remaining|ew5
+2ca03335404467a267cf1293a69f33428d038dea789d2bb34c5a7d8d3d7d8e2b,possessions_elapsed,ew,"(('halflife', 5),)",possessions_elapsed|ew5
+2f1f9a202c24a43bf1b7b8562e1c1dea6a611e8859986705c8493b086d25359a,away_starter_fouled_out_indicator,raw,(),away_starter_fouled_out_indicator|raw
+2fdf10da2a5b15d611d879d1c75546ff6721a2e51cb32bce33279a18aa50f057,home_max_player_pfs,delta_vs_prior,(),home_max_player_pfs|dprior
+3269920d7bff518ae25d003bce4e7194bc3d0cf49c2a12d26ea765aa79551b16,seconds_remaining,raw,(),seconds_remaining|raw
+33d5086878cea245068eb42b864a1b6b30b364a2a86a07b074cdc65aec0f2542,possessions_elapsed,raw,(),possessions_elapsed|raw
+3482327d2aec1b0c716c5292f171de7ac220418bdd7f92e631ee74d02e9b65b6,poss_since_lead_change,raw,(),poss_since_lead_change|raw
+355f730140a54475ae3e0831c952d4ce1dc19212d3883daaf77a6031b13bef66,home_team_pfs_cum,ew,"(('halflife', 10),)",home_team_pfs_cum|ew10
+3b0920d14a28a686f14edaaef5c4eda79708c432adb8c4ec7c4ace578a5393ad,home_max_player_pfs,raw,(),home_max_player_pfs|raw
+4b848f8d29aa5c9fb82aa4f05b2babfdb703e1c02b4c7e272b97ee2a169bcb9f,run_diff,ew,"(('halflife', 5),)",run_diff|ew5
+4c7392abe95f807829fe58e2d3f9e9a5bdcf3df13cc497c1cec8bfe122803542,home_starter_fouled_out_indicator,delta_vs_prior,(),home_starter_fouled_out_indicator|dprior
+4cfc120b57551d2d33ea74790861532f4715bc5cc2df55f9a47a89398a9d94ff,pf_imbalance,ew,"(('halflife', 10),)",pf_imbalance|ew10
+4db547777bcdcbe61de64cdbe8d023887b4f659027cb5b85941dd4c5aa556bfe,pf_imbalance,ew,"(('halflife', 20),)",pf_imbalance|ew20
+4f8bd9f83cddcd51f94e76b81a1786ea31efdf0e3b142c42820c8627309c189b,home_starter_fouled_out_indicator,ew,"(('halflife', 5),)",home_starter_fouled_out_indicator|ew5
+511ac563b45beb36066bcaae9a240c4cf74a622c063114b30941c89f8b0dc941,home_team_pfs_cum,ew,"(('halflife', 3),)",home_team_pfs_cum|ew3
+528e57abf2c38dd6f99af0a7369e932bf401be3905a07394cefb13abf0a7c046,pf_imbalance,ew,"(('halflife', 3),)",pf_imbalance|ew3
+52fa9b9f81c1be2c39e867c485e107bba2574f453c860d8be449efcd63366ad2,seconds_remaining,ew,"(('halflife', 20),)",seconds_remaining|ew20
+5a32c80308f76a2f6645710496c3ad66f1f540673b5b068fe2686131770c9850,poss_since_lead_change,ew,"(('halflife', 20),)",poss_since_lead_change|ew20
+61cb089685b9b64af9a95a888f73b5f94a7c4710af9bbba3857623d933cc3ee7,pace_so_far,raw,(),pace_so_far|raw
+655db95cf68dbbc27e2bf52199a54817f18c736d78092a576c6bd7ebe5cd4f65,poss_since_lead_change,ew,"(('halflife', 5),)",poss_since_lead_change|ew5
+67e60a533645ead07ca5744d38a441a7a1bebb9d13219c78ae2256062f318579,home_starter_fouled_out_indicator,ew,"(('halflife', 20),)",home_starter_fouled_out_indicator|ew20
+6bc6390eee0d6d3a6749203861bb710a6da9a4e28e1b2a984420bf6c04d191b3,away_team_pfs_cum,ew,"(('halflife', 20),)",away_team_pfs_cum|ew20
+6d6bae80ea4e434e81747bf2598527cb1b6a71c6ab92dcedcdc9b7c6f5b7e282,away_starter_fouled_out_indicator,delta_vs_prior,(),away_starter_fouled_out_indicator|dprior
+796cdb00f03cffe4d5139cce1f98104abab9c4a3ac72c11da32a07e34ddaaa3a,home_starter_fouled_out_indicator,raw,(),home_starter_fouled_out_indicator|raw
+7ff18c9aedd61e9390ec2566526d9fe36082b2f0f1a1b748a50cb31d59969bdb,away_max_player_pfs,ew,"(('halflife', 20),)",away_max_player_pfs|ew20
+828e46ca610766227b5ab4701715075fe3fc730b1bfe411b545b5cc0fbb6aa40,home_max_player_pfs,ew,"(('halflife', 3),)",home_max_player_pfs|ew3
+83bbd670437155f442b810824b4560d2d22959047ec65fa8f6a26b0fbe685720,pace_so_far,ew,"(('halflife', 5),)",pace_so_far|ew5
+864955aa5f6c3b942eddd3ebf761fc5d876ca7801b61740c51c3e15afe36a79c,possessions_elapsed,ew,"(('halflife', 3),)",possessions_elapsed|ew3
+8a55856cbabf7147c1e79fd7f8b3fb6644c51b9b14fbdfbe04be67a792fd0365,home_team_pfs_cum,raw,(),home_team_pfs_cum|raw
+8b5b321c00f1a745f5b75f2ebb6541007d9fe8752607a13825ef67b2845b7df0,home_max_player_pfs,ew,"(('halflife', 10),)",home_max_player_pfs|ew10
+8ceee93710aad815a76a3eef682a521f8382177d0ffd9c7e4e5e1bb6ad93c408,pf_imbalance,ew,"(('halflife', 5),)",pf_imbalance|ew5
+8f41415c55bffe7bb78ccb8f84627fbf406e0ece999b8b9843e85db26185187b,run_diff,delta_vs_prior,(),run_diff|dprior
+97b749518bc1ca9448a7855cea90cf38bd5f9d6590ea93c5d6c2e6d2d2b5e054,away_team_pfs_cum,ew,"(('halflife', 10),)",away_team_pfs_cum|ew10
+9a44c9ce6ef1b2db1494a858d0bc62045bf681c21c0c2456a4a0434183088104,seconds_remaining,ew,"(('halflife', 3),)",seconds_remaining|ew3
+9a7d90bc310e0ae03bc0e474cab105353dc90724619b56fabd21a53fef1b71f5,pace_so_far,ew,"(('halflife', 10),)",pace_so_far|ew10
+9e88f9bc99265df1cd3f49373756035f0f3e333f601cdd71938acba580e2dc99,away_team_pfs_cum,ew,"(('halflife', 3),)",away_team_pfs_cum|ew3
+a3873abfaed8548071c5e64b3afb4940a160be56d0042b35811c0fdeddc1d4b7,pace_so_far,ew,"(('halflife', 20),)",pace_so_far|ew20
+b111396d86427826f5dd63b5593041a50b88078d071d25d099e155b261b6252d,away_team_pfs_cum,delta_vs_prior,(),away_team_pfs_cum|dprior
+b3e320042ff939a98d74525776222c3f98f2f1b662898b4b4eac4bc7d1030ad2,possessions_elapsed,ew,"(('halflife', 10),)",possessions_elapsed|ew10
+b73d6b4b2939a0c6b6e6d8ecfbcf99435610a465749ef8dd2cb53d93cc5357d5,home_starter_fouled_out_indicator,ew,"(('halflife', 3),)",home_starter_fouled_out_indicator|ew3
+ba86c0e709e995ddb5fe9003a0282d6448885c0cac38c84f1edb8981b2e56d8f,poss_since_lead_change,ew,"(('halflife', 3),)",poss_since_lead_change|ew3
+be98e68a155f886f4c2ab37ace140c5165c171ff48a733f746e003f8b650ca65,away_starter_fouled_out_indicator,ew,"(('halflife', 5),)",away_starter_fouled_out_indicator|ew5
+c6066af3ebd24ab55f94d2ae672e3ce387b77581637a4d4907132b474dfa214c,home_team_pfs_cum,delta_vs_prior,(),home_team_pfs_cum|dprior
+c7ed5491430fa763c377b6a24e9d7e6070672cc60aa5055c3fc598becd80740b,run_diff,ew,"(('halflife', 3),)",run_diff|ew3
+cbd3ccfb6ed64f439b14718af19d3fff624d5a880bae8337a4c5692155b4ff01,poss_since_lead_change,ew,"(('halflife', 10),)",poss_since_lead_change|ew10
+cc84aafbc5e509e4764fe780a1eea6f5c3be2aaf8b29c71a73716fae30876703,possessions_elapsed,delta_vs_prior,(),possessions_elapsed|dprior
+ce5e9c96a5bfd1efec7bcc377b6a3f3842ee7cc6c4d5aa10dfcf0207ccda7944,away_starter_fouled_out_indicator,ew,"(('halflife', 20),)",away_starter_fouled_out_indicator|ew20
+cf2ffba47711ba186a9551b3b9237183cb25b9e09702862f2bf29e5eaaa3f185,pace_so_far,delta_vs_prior,(),pace_so_far|dprior
+d30b001740f0fee288aac1a6810a14ac6fd87da4870524bd34c5551f618ecfd0,home_max_player_pfs,ew,"(('halflife', 5),)",home_max_player_pfs|ew5
+d57877b5078425915e52dbbfc7d788c00d2bf3278b16995844fc8c7948de6d31,away_team_pfs_cum,raw,(),away_team_pfs_cum|raw
+d74bb6391915fd785a51110954b2962aa01f57fb838426a73db61ed2e1b26e7d,away_starter_fouled_out_indicator,ew,"(('halflife', 3),)",away_starter_fouled_out_indicator|ew3
+d9c7613c248916ae08208958fdbf1dbe3ecca535febb317a9af49e4ca12e129c,away_max_player_pfs,ew,"(('halflife', 3),)",away_max_player_pfs|ew3
+dc42274864970490b6196dbda2d7fc161691ebb0750c760515bdc4c4b85b7560,run_diff,ew,"(('halflife', 10),)",run_diff|ew10
+de74bdae194a399b6571abfffe3f322da09bdc7be301381c43d8a6ce49e6500c,pace_so_far,ew,"(('halflife', 3),)",pace_so_far|ew3
+e0f4ae6e62ab094ae9aa5d240e7b3c93b2130cbb5d131bafbcda2c1af00f0411,away_max_player_pfs,raw,(),away_max_player_pfs|raw
+e2303bff0faa8b6df915048efea172ec8dabd9515112d359ec4978b21928378a,possessions_elapsed,ew,"(('halflife', 20),)",possessions_elapsed|ew20
+eb7e84818e7fe3ec22ee7837b0bab40a0e32b58ca0f0cd722ede27e4b6a76725,home_max_player_pfs,ew,"(('halflife', 20),)",home_max_player_pfs|ew20
+f5b7674f268a95bd86da8ff6c7f368808dec27657924bb60cb47b4896dc1c7e6,home_team_pfs_cum,ew,"(('halflife', 5),)",home_team_pfs_cum|ew5
+f8d2b9aa847e81e574b3d38fabc3dd14b1ec3607f4ed2e0bfc45fe5e7e2ebad7,run_diff,ew,"(('halflife', 20),)",run_diff|ew20
+f93266eb7f3da9c48d84c3121d8618c6acabc06d44afc07f3dca62bfae0979fe,away_team_pfs_cum,ew,"(('halflife', 5),)",away_team_pfs_cum|ew5
+fca7574030c94a7889560e70d8e9a907b178b85f411d4fe248be3ed2bce05cac,pf_imbalance,raw,(),pf_imbalance|raw
