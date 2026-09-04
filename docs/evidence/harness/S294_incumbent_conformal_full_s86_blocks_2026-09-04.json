@@ -1,0 +1,461 @@
+{
+  "census": {
+    "excluded_by_reason": {},
+    "games_loaded": 1593,
+    "games_scorable": 1593,
+    "games_scored": 1593,
+    "ticks_loaded": 465249,
+    "ticks_scorable": 465249,
+    "ticks_scored": 465249
+  },
+  "code_identity": {
+    "aci_online": "17dbb28395158d0366cafddf9e309152722076960783fb8d30d53e14db12136c",
+    "cpcv_engine": "8da9186c9b8da1d726733ec345850281e2de83ac268ed19aaeb09cccf053cbb5",
+    "s101": "4dbadc319b76a0e9c6e4ea53e3c683f242176774290917bebee894344c2cf93f",
+    "s123": "476ed9fdfb714b93c5b722f8e99fb1266cdb5987a729495f12e84d2b62ea08ed",
+    "s265": "697d7ae649686ec580e9059e62744ce288bd27b6383e311c3c94d881fff817ff",
+    "s276_attempt2": "c9641c39d8e4cb0706ed171b7fbb4fa4746176eb35f12359af0e00fb9715f525",
+    "s86": "2e197d14cce6d86ed80db6482cf37b08201c61944b930197cbf6317a1140fa68",
+    "s94": "c113c1c502e9a056b0e148f6be3ba91bb295aa0caf5237cd1c249354edc8e4fc"
+  },
+  "design": {
+    "blocks": [
+      {
+        "block_id": 0,
+        "first_game_date": "2024-10-22",
+        "last_game_date": "2024-12-08",
+        "n_games": 248,
+        "n_ticks": 78255
+      },
+      {
+        "block_id": 1,
+        "first_game_date": "2024-12-09",
+        "last_game_date": "2025-01-27",
+        "n_games": 289,
+        "n_ticks": 80259
+      },
+      {
+        "block_id": 2,
+        "first_game_date": "2025-01-28",
+        "last_game_date": "2025-11-05",
+        "n_games": 238,
+        "n_ticks": 75563
+      },
+      {
+        "block_id": 3,
+        "first_game_date": "2025-11-06",
+        "last_game_date": "2026-01-02",
+        "n_games": 277,
+        "n_ticks": 77853
+      },
+      {
+        "block_id": 4,
+        "first_game_date": "2026-01-03",
+        "last_game_date": "2026-02-26",
+        "n_games": 264,
+        "n_ticks": 75904
+      },
+      {
+        "block_id": 5,
+        "first_game_date": "2026-03-01",
+        "last_game_date": "2026-06-13",
+        "n_games": 277,
+        "n_ticks": 77415
+      }
+    ],
+    "coverage_max_groups": 50,
+    "coverage_min_group": 400,
+    "engine": "cpcv_evaluate",
+    "group_source": "s94_nba_early_shrinkage.fold_dates",
+    "n_groups": 6,
+    "n_test_groups": 1,
+    "purge": "game-disjoint",
+    "symmetric_embargo_days": 1
+  },
+  "generated_at": "2026-09-04T20:35:56.516590+00:00",
+  "paired_loss_series": {
+    "path": "docs/evidence/harness/S294_incumbent_conformal_full_s86_blocks_paired_loss_2026-09-04.csv.gz",
+    "sha256": "cc22b1b4a3d473366938163bd87f9f1e0086732d6c36958cc562cc1d7633fd48"
+  },
+  "pod_rss": {
+    "peak_bytes": 2110668800
+  },
+  "prereg": {
+    "path": "docs/evidence/harness/S294_preregistration_incumbent_conformal_full_s86_blocks_2026-09-04.md",
+    "seal_sha256": "0591642749e4dbf7bf71207b094e34759fe0c91fa9441f3296a1b79066503b90"
+  },
+  "row": "S294",
+  "s101_regression": {
+    "cells": [
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P1",
+        "committed_coverage": 0.9361702127659575,
+        "nominal": 0.9,
+        "replayed_coverage": 0.9361702127659575
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P2",
+        "committed_coverage": 0.94,
+        "nominal": 0.9,
+        "replayed_coverage": 0.94
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P3",
+        "committed_coverage": 0.96,
+        "nominal": 0.9,
+        "replayed_coverage": 0.96
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P4",
+        "committed_coverage": 0.98,
+        "nominal": 0.9,
+        "replayed_coverage": 0.98
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "OT",
+        "committed_coverage": 0.9411764705882353,
+        "nominal": 0.9,
+        "replayed_coverage": 0.9411764705882353
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "ALL",
+        "committed_coverage": 0.96,
+        "nominal": 0.9,
+        "replayed_coverage": 0.96
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P1",
+        "committed_coverage": 0.851063829787234,
+        "nominal": 0.8,
+        "replayed_coverage": 0.851063829787234
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P2",
+        "committed_coverage": 0.94,
+        "nominal": 0.8,
+        "replayed_coverage": 0.94
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P3",
+        "committed_coverage": 0.84,
+        "nominal": 0.8,
+        "replayed_coverage": 0.84
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "P4",
+        "committed_coverage": 0.96,
+        "nominal": 0.8,
+        "replayed_coverage": 0.96
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "OT",
+        "committed_coverage": 0.8235294117647058,
+        "nominal": 0.8,
+        "replayed_coverage": 0.8235294117647058
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "market",
+        "cell": "ALL",
+        "committed_coverage": 0.96,
+        "nominal": 0.8,
+        "replayed_coverage": 0.96
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P1",
+        "committed_coverage": 0.9574468085106383,
+        "nominal": 0.9,
+        "replayed_coverage": 0.9574468085106383
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P2",
+        "committed_coverage": 0.88,
+        "nominal": 0.9,
+        "replayed_coverage": 0.88
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P3",
+        "committed_coverage": 0.94,
+        "nominal": 0.9,
+        "replayed_coverage": 0.94
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P4",
+        "committed_coverage": 0.94,
+        "nominal": 0.9,
+        "replayed_coverage": 0.94
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "OT",
+        "committed_coverage": 0.6470588235294118,
+        "nominal": 0.9,
+        "replayed_coverage": 0.6470588235294118
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "ALL",
+        "committed_coverage": 0.98,
+        "nominal": 0.9,
+        "replayed_coverage": 0.98
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P1",
+        "committed_coverage": 0.8936170212765957,
+        "nominal": 0.8,
+        "replayed_coverage": 0.8936170212765957
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P2",
+        "committed_coverage": 0.86,
+        "nominal": 0.8,
+        "replayed_coverage": 0.86
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P3",
+        "committed_coverage": 0.86,
+        "nominal": 0.8,
+        "replayed_coverage": 0.86
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "P4",
+        "committed_coverage": 0.94,
+        "nominal": 0.8,
+        "replayed_coverage": 0.94
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "OT",
+        "committed_coverage": 0.47058823529411764,
+        "nominal": 0.8,
+        "replayed_coverage": 0.47058823529411764
+      },
+      {
+        "abs_difference": 0.0,
+        "arm": "model",
+        "cell": "ALL",
+        "committed_coverage": 0.98,
+        "nominal": 0.8,
+        "replayed_coverage": 0.98
+      }
+    ],
+    "committed_json": "data/cache/eval_gate/s101_aci_coverage_2026-09-03.json",
+    "max_abs_coverage_diff": 0.0,
+    "n_cells": 24,
+    "passes": true,
+    "retained_screen": "inputs/s101_aci_coverage_2026-09-03_ticks.csv.gz",
+    "tolerance": 1e-09
+  },
+  "s101_ticks_input": {
+    "bytes": 18426107,
+    "local_reference": "data/cache/eval_gate/s101_aci_coverage_2026-09-03_ticks.csv.gz",
+    "md5": "2dd8f53f9ec629cb5764e6201dad539a",
+    "used_path": "/workspace/wt/a17/inputs/s101_aci_coverage_2026-09-03_ticks.csv.gz"
+  },
+  "source": {
+    "loaded": {
+      "n_games": 1593,
+      "n_ticks": 465249
+    },
+    "path": "data/cache/inplay_odds/nba_checkpoints_full.parquet"
+  },
+  "static": {
+    "0.80": {
+      "cells": {
+        "ALL": {
+          "coverage": 1.0,
+          "deviation": 0.19999999999999996,
+          "group_size": 9304,
+          "mean_interval_half_width": 0.01995203797318392,
+          "mean_interval_width": 0.03990407594636784,
+          "mean_miss": 0.0,
+          "n": 465249,
+          "n_groups": 50,
+          "nominal": 0.8,
+          "within_tolerance": false
+        },
+        "OT": {
+          "coverage": 0.7777777777777778,
+          "deviation": -0.022222222222222254,
+          "group_size": 410,
+          "mean_interval_half_width": 0.02655268139314466,
+          "mean_interval_width": 0.05310536278628932,
+          "mean_miss": 0.00905727965046769,
+          "n": 14765,
+          "n_groups": 36,
+          "nominal": 0.8,
+          "within_tolerance": false
+        },
+        "P1": {
+          "coverage": 0.84,
+          "deviation": 0.039999999999999925,
+          "group_size": 888,
+          "mean_interval_half_width": 0.06207300810900662,
+          "mean_interval_width": 0.12414601621801324,
+          "mean_miss": 0.003308035041316584,
+          "n": 44428,
+          "n_groups": 50,
+          "nominal": 0.8,
+          "within_tolerance": false
+        },
+        "P2": {
+          "coverage": 0.78,
+          "deviation": -0.020000000000000018,
+          "group_size": 1376,
+          "mean_interval_half_width": 0.046818262975226135,
+          "mean_interval_width": 0.09363652595045227,
+          "mean_miss": 0.0032321118450015845,
+          "n": 68825,
+          "n_groups": 50,
+          "nominal": 0.8,
+          "within_tolerance": false
+        },
+        "P3": {
+          "coverage": 0.88,
+          "deviation": 0.07999999999999996,
+          "group_size": 1052,
+          "mean_interval_half_width": 0.03699134568031799,
+          "mean_interval_width": 0.07398269136063598,
+          "mean_miss": 0.0018984554675753695,
+          "n": 52645,
+          "n_groups": 50,
+          "nominal": 0.8,
+          "within_tolerance": false
+        },
+        "P4": {
+          "coverage": 0.8,
+          "deviation": 0.0,
+          "group_size": 5691,
+          "mean_interval_half_width": 0.0033844559022345577,
+          "mean_interval_width": 0.006768911804469115,
+          "mean_miss": 0.0037494685358597777,
+          "n": 284586,
+          "n_groups": 50,
+          "nominal": 0.8,
+          "within_tolerance": true
+        }
+      },
+      "n_scored_games": 1593,
+      "n_scored_ticks": 465249
+    },
+    "0.90": {
+      "cells": {
+        "ALL": {
+          "coverage": 1.0,
+          "deviation": 0.09999999999999998,
+          "group_size": 9304,
+          "mean_interval_half_width": 0.03111479645515688,
+          "mean_interval_width": 0.06222959291031376,
+          "mean_miss": 0.0,
+          "n": 465249,
+          "n_groups": 50,
+          "nominal": 0.9,
+          "within_tolerance": false
+        },
+        "OT": {
+          "coverage": 0.8888888888888888,
+          "deviation": -0.011111111111111183,
+          "group_size": 410,
+          "mean_interval_half_width": 0.05669969453555631,
+          "mean_interval_width": 0.11339938907111262,
+          "mean_miss": 0.0016164427992461589,
+          "n": 14765,
+          "n_groups": 36,
+          "nominal": 0.9,
+          "within_tolerance": true
+        },
+        "P1": {
+          "coverage": 0.92,
+          "deviation": 0.020000000000000018,
+          "group_size": 888,
+          "mean_interval_half_width": 0.07833455932862617,
+          "mean_interval_width": 0.15666911865725233,
+          "mean_miss": 0.0015983495349678133,
+          "n": 44428,
+          "n_groups": 50,
+          "nominal": 0.9,
+          "within_tolerance": false
+        },
+        "P2": {
+          "coverage": 0.9,
+          "deviation": 0.0,
+          "group_size": 1376,
+          "mean_interval_half_width": 0.06273060918282243,
+          "mean_interval_width": 0.12546121836564486,
+          "mean_miss": 0.0006938041194699953,
+          "n": 68825,
+          "n_groups": 50,
+          "nominal": 0.9,
+          "within_tolerance": true
+        },
+        "P3": {
+          "coverage": 0.94,
+          "deviation": 0.039999999999999925,
+          "group_size": 1052,
+          "mean_interval_half_width": 0.049578907273506834,
+          "mean_interval_width": 0.09915781454701367,
+          "mean_miss": 0.0008472002551695068,
+          "n": 52645,
+          "n_groups": 50,
+          "nominal": 0.9,
+          "within_tolerance": false
+        },
+        "P4": {
+          "coverage": 0.9,
+          "deviation": 0.0,
+          "group_size": 5691,
+          "mean_interval_half_width": 0.011354053909007029,
+          "mean_interval_width": 0.022708107818014057,
+          "mean_miss": 0.0018811277677390926,
+          "n": 284586,
+          "n_groups": 50,
+          "nominal": 0.9,
+          "within_tolerance": true
+        }
+      },
+      "n_scored_games": 1593,
+      "n_scored_ticks": 465249
+    }
+  }
+}

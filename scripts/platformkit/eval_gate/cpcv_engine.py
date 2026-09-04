@@ -23,6 +23,7 @@ never computes or claims a betting edge.
 from __future__ import annotations
 
 import copy
+import itertools
 from bisect import bisect_left, bisect_right
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -93,8 +94,7 @@ def _blocked_indices(states: List[dict], stamps: List[datetime], test_idx: Seque
 def cpcv_evaluate(states: List[dict], predictor: Predictor, n_groups: int = 8,
                   n_test_groups: int = 2, embargo_days: int = 1,
                   *, strict_redaction: bool = False,
-                  allow_keys: Sequence[str] = (), record_consumer: Callable[[dict], None] | None = None,
-                  collect_records: bool = True) -> List[dict]:
+                  allow_keys: Sequence[str] = (), group_key: str | None = None) -> List[dict]:
     """Combinatorial purged cross-validation over walk_forward-shaped states.
 
     ``states`` are walk_forward-shaped dicts (game_id, state_ts, home, away,
@@ -104,14 +104,35 @@ def cpcv_evaluate(states: List[dict], predictor: Predictor, n_groups: int = 8,
     walk_forward's (game_id, ts, p_model, p_close, y) plus split_id and n_train,
     so per-path matrices feed a PBO estimator later. ``n_train`` is the
     diagnostic that surfaces a path whose train set the purges emptied.
+
+    When ``group_key`` is supplied, its ordered values define the CPCV groups
+    exactly. This is for frozen external block designs whose tick balance must
+    not be replaced by cpcv.py's equal-distinct-date partition.
     """
     # Deep copy mirrors walk_forward's mutation guard (red-team 2026-09-01).
     ordered = copy.deepcopy(sorted(states, key=lambda s: s["state_ts"]))
     stamps = [datetime.fromisoformat(s["state_ts"]) for s in ordered]
 
     records: List[dict] = []
-    splits = cpcv_splits([s["state_ts"] for s in ordered], n_groups=n_groups,
-                         n_test_groups=n_test_groups, embargo_blocks=0)
+    if group_key is None:
+        splits = cpcv_splits([s["state_ts"] for s in ordered], n_groups=n_groups,
+                             n_test_groups=n_test_groups, embargo_blocks=0)
+    else:
+        labels = [state[group_key] for state in ordered]
+        groups = list(dict.fromkeys(labels))
+        if len(groups) != n_groups:
+            raise ValueError("Expected %d frozen groups, found %d" % (n_groups, len(groups)))
+        if not 1 <= n_test_groups < n_groups:
+            raise ValueError("n_test_groups must be in [1, n_groups)")
+        positions = list(range(len(ordered)))
+        splits = []
+        for chosen in itertools.combinations(groups, n_test_groups):
+            test = [i for i, label in enumerate(labels) if label in chosen]
+            train = [i for i in positions if i not in set(test)]
+            if train and test:
+                splits.append((train, test))
+        if not splits:
+            raise ValueError("No usable frozen-group CPCV path")
     for split_id, (train_idx, test_idx) in enumerate(splits):
         blocked = _blocked_indices(ordered, stamps, test_idx, embargo_days)
         train_indices = [i for i in train_idx if i not in blocked]
@@ -125,15 +146,11 @@ def cpcv_evaluate(states: List[dict], predictor: Predictor, n_groups: int = 8,
                           True)
             if not 0.0 <= p <= 1.0:
                 raise ValueError(f"predictor returned {p} out of [0,1]")
-            record = {
+            records.append({
                 "split_id": split_id, "game_id": test["game_id"], "ts": test["state_ts"],
                 "p_model": float(p), "p_close": test.get("devig_close_prob"),
                 "y": int(test["outcome"]), "n_train": len(train_states),
-            }
-            if record_consumer is not None:
-                record_consumer(record)
-            if collect_records:
-                records.append(record)
+            })
     # cpcv_splits raises "No usable CPCV path" itself when it yields nothing,
     # and every yielded path has a non-empty test index, so records is non-empty.
     return records

@@ -1,0 +1,22 @@
+CENSUS ticks_loaded=465249 ticks_scorable=465249 ticks_scored=465249 games_loaded=1593 games_scorable=1593 games_scored=1593 excluded={}
+BLOCK 0 first=2024-10-22 last=2024-12-08 n_ticks=78255 n_games=248
+BLOCK 1 first=2024-12-09 last=2025-01-27 n_ticks=80259 n_games=289
+BLOCK 2 first=2025-01-28 last=2025-11-05 n_ticks=75563 n_games=238
+BLOCK 3 first=2025-11-06 last=2026-01-02 n_ticks=77853 n_games=277
+BLOCK 4 first=2026-01-03 last=2026-02-26 n_ticks=75904 n_games=264
+BLOCK 5 first=2026-03-01 last=2026-06-13 n_ticks=77415 n_games=277
+STATIC nominal=0.90 cell=P1 n=44428 coverage=0.92 half_width=0.07833455932862617 absent=None
+STATIC nominal=0.90 cell=P2 n=68825 coverage=0.9 half_width=0.06273060918282243 absent=None
+STATIC nominal=0.90 cell=P3 n=52645 coverage=0.94 half_width=0.049578907273506834 absent=None
+STATIC nominal=0.90 cell=P4 n=284586 coverage=0.9 half_width=0.011354053909007029 absent=None
+STATIC nominal=0.90 cell=OT n=14765 coverage=0.8888888888888888 half_width=0.05669969453555631 absent=None
+STATIC nominal=0.90 cell=ALL n=465249 coverage=1.0 half_width=0.03111479645515688 absent=None
+STATIC nominal=0.80 cell=P1 n=44428 coverage=0.84 half_width=0.06207300810900662 absent=None
+STATIC nominal=0.80 cell=P2 n=68825 coverage=0.78 half_width=0.046818262975226135 absent=None
+STATIC nominal=0.80 cell=P3 n=52645 coverage=0.88 half_width=0.03699134568031799 absent=None
+STATIC nominal=0.80 cell=P4 n=284586 coverage=0.8 half_width=0.0033844559022345577 absent=None
+STATIC nominal=0.80 cell=OT n=14765 coverage=0.7777777777777778 half_width=0.02655268139314466 absent=None
+STATIC nominal=0.80 cell=ALL n=465249 coverage=1.0 half_width=0.01995203797318392 absent=None
+S101_24_CELL_MAX_ABS_COVERAGE_DIFF=0.0
+S101_TICKS_MD5 local_reference=data/cache/eval_gate/s101_aci_coverage_2026-09-03_ticks.csv.gz used_path=/workspace/wt/a17/inputs/s101_aci_coverage_2026-09-03_ticks.csv.gz bytes=18426107 md5=2dd8f53f9ec629cb5764e6201dad539a
+POD_PEAK_RSS_BYTES=2110668800
