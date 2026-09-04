@@ -462,3 +462,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-03 | nba in-game calibration | S247 | rates coverage 0/661 game clusters; no three-arm score | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | fc0084261
 2026-09-03 | nba in-game | S255 | 355/661 clusters (53.7065%) received qualifying strictly-prior snapshots; premise confirmed; two metadata counts corrected | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | b559352ed
 2026-09-03 | NBA in-game | S253 | 167 clusters; 5647/5647 complete ticks (100.00 pct), duplicate 0, imbalance 0; memo NOT VERIFIED heading required | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | 4dd9e24eb
+2026-09-04 | NBA in-game tail calibration | S224 | 465249 ticks/1593 games; ECE 0.001167; 0/20 scorable; minimum MDE 0.093962 | ACCEPT WITH CORRECTIONS (verified: codex-sol acceptance PASS; single Q6 prose word corrected per verifier diff; contract A/B/Q) | 4e88e7a2f
