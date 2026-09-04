@@ -1,0 +1,127 @@
+{
+  "coverage": {
+    "games": 1593,
+    "garbage_time_labeled_games": 0,
+    "missing_p0_rows": 0,
+    "ticks": 465249
+  },
+  "crps_fitted": 2.8277592364956847,
+  "crps_fixed": 2.8312217515206974,
+  "difference_ci95": [
+    0.00041916919724256494,
+    0.0066408736272779885
+  ],
+  "difference_fixed_minus_fitted": 0.0034625150250127217,
+  "dropped_games": 0,
+  "fixed_sigma": 13.5,
+  "frozen_ladder": [
+    5,
+    10,
+    15,
+    20,
+    25,
+    30
+  ],
+  "n_eff": 1593,
+  "per_game_series": "C:\\Users\\neelj\\nba-track-a17\\docs\\evidence\\harness\\S227_margin_tail_crps_2026-09-04_per_game.csv",
+  "prereg_sha256_payload": "53915e8b77ccd7336a088b71052c325956bc4c62c0bda60679d5954c9c0b0eb7",
+  "preregistration": "docs/evidence/harness/S227_margin_tail_crps_prereg_2026-09-04.md",
+  "tail_coverage": [
+    {
+      "arm": "fixed",
+      "coverage_gap": 0.012291213843128035,
+      "empirical_tail_rate": 0.7903327055869429,
+      "event_count": 366023,
+      "ladder": 5,
+      "nominal_tail_rate": 0.7780414917438149
+    },
+    {
+      "arm": "fitted",
+      "coverage_gap": 0.015346679064879076,
+      "empirical_tail_rate": 0.7903327055869429,
+      "event_count": 366023,
+      "ladder": 5,
+      "nominal_tail_rate": 0.7749860265220638
+    },
+    {
+      "arm": "fixed",
+      "coverage_gap": -0.0020425595122778306,
+      "empirical_tail_rate": 0.5499058380414312,
+      "event_count": 251442,
+      "ladder": 10,
+      "nominal_tail_rate": 0.5519483975537091
+    },
+    {
+      "arm": "fitted",
+      "coverage_gap": -0.001361926587045148,
+      "empirical_tail_rate": 0.5499058380414312,
+      "event_count": 251442,
+      "ladder": 10,
+      "nominal_tail_rate": 0.5512677646284764
+    },
+    {
+      "arm": "fixed",
+      "coverage_gap": -0.01617740703817827,
+      "empirical_tail_rate": 0.34149403640929066,
+      "event_count": 155780,
+      "ladder": 15,
+      "nominal_tail_rate": 0.35767144344746893
+    },
+    {
+      "arm": "fitted",
+      "coverage_gap": -0.016909833432983024,
+      "empirical_tail_rate": 0.34149403640929066,
+      "event_count": 155780,
+      "ladder": 15,
+      "nominal_tail_rate": 0.3584038698422737
+    },
+    {
+      "arm": "fixed",
+      "coverage_gap": -0.014209594639050832,
+      "empirical_tail_rate": 0.20652856246076584,
+      "event_count": 92132,
+      "ladder": 20,
+      "nominal_tail_rate": 0.22073815709981667
+    },
+    {
+      "arm": "fitted",
+      "coverage_gap": -0.014987757446364797,
+      "empirical_tail_rate": 0.20652856246076584,
+      "event_count": 92132,
+      "ladder": 20,
+      "nominal_tail_rate": 0.22151631990713064
+    },
+    {
+      "arm": "fixed",
+      "coverage_gap": -0.007316749979636217,
+      "empirical_tail_rate": 0.12492153170119272,
+      "event_count": 55841,
+      "ladder": 25,
+      "nominal_tail_rate": 0.13223828168082893
+    },
+    {
+      "arm": "fitted",
+      "coverage_gap": -0.007391104552623928,
+      "empirical_tail_rate": 0.12492153170119272,
+      "event_count": 55841,
+      "ladder": 25,
+      "nominal_tail_rate": 0.13231263625381665
+    },
+    {
+      "arm": "fixed",
+      "coverage_gap": -0.0035990464560824303,
+      "empirical_tail_rate": 0.06905210295040803,
+      "event_count": 30473,
+      "ladder": 30,
+      "nominal_tail_rate": 0.07265114940649046
+    },
+    {
+      "arm": "fitted",
+      "coverage_gap": -0.0032985541173275595,
+      "empirical_tail_rate": 0.06905210295040803,
+      "event_count": 30473,
+      "ladder": 30,
+      "nominal_tail_rate": 0.0723506570677356
+    }
+  ]
+}
