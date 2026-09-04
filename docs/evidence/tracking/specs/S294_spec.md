@@ -1,4 +1,4 @@
-GAP S294 | sport nba (in-game) | worktree aXX | log cx_s294_incumbent_conformal_full_s86_blocks
+GAP S294 | sport nba (in-game) | worktree a17 | log cx_s294_incumbent_conformal_full_s86_blocks
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: S276 CLOSED AT LIMIT (attempt 2 candidate 19cae3f4c in worktree a17, verify memo 194b75dd7 REJECT): the
   full source WAS replayed on the pod (465,249 ticks / 1,593 games; 12 grouped cells and the S101 24-cell
