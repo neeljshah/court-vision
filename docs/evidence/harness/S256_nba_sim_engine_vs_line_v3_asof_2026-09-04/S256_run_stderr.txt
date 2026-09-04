@@ -1,0 +1,20 @@
+Traceback (most recent call last):
+  File "C:\Users\neelj\anaconda3\envs\basketball_ai\lib\runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "C:\Users\neelj\anaconda3\envs\basketball_ai\lib\runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "C:\Users\neelj\nba-track-a18\scripts\platformkit\ingame\s256_nba_sim_engine_v3.py", line 243, in <module>
+    raise SystemExit(main())
+  File "C:\Users\neelj\nba-track-a18\scripts\platformkit\ingame\s256_nba_sim_engine_v3.py", line 233, in main
+    summary, scored, per_game = evaluate()
+  File "C:\Users\neelj\nba-track-a18\scripts\platformkit\ingame\s256_nba_sim_engine_v3.py", line 202, in evaluate
+    scored = grid.merge(pred[["game", "state_ts", "p_simulator"]], on=["game", "state_ts"], validate="one_to_one")
+  File "C:\Users\neelj\anaconda3\envs\basketball_ai\lib\site-packages\pandas\core\frame.py", line 10859, in merge
+    return merge(
+  File "C:\Users\neelj\anaconda3\envs\basketball_ai\lib\site-packages\pandas\core\reshape\merge.py", line 170, in merge
+    op = _MergeOperation(
+  File "C:\Users\neelj\anaconda3\envs\basketball_ai\lib\site-packages\pandas\core\reshape\merge.py", line 813, in __init__
+    self._validate_validate_kwd(validate)
+  File "C:\Users\neelj\anaconda3\envs\basketball_ai\lib\site-packages\pandas\core\reshape\merge.py", line 1649, in _validate_validate_kwd
+    raise MergeError(
+pandas.errors.MergeError: Merge keys are not unique in either left or right dataset; not a one-to-one merge
