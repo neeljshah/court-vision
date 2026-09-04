@@ -512,3 +512,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-04 | nba in-game calibration | S277 | stale improvement -0.000009662 [-0.000026535, 0.000000788]; interaction 0.001247896 [0.000074233, 0.002549025]; 461947 per-tick CPCV records | NULL (verified: codex-sol, contract A/B/Q) | 33801c3df
 2026-09-04 | harness | S261 | full CPCV archive reproduced exactly at NBA n_eff 1,313 and MLB n_eff 23,279; committed-reader and landing fallback passed | ACCEPT (verified: codex-sol, contract A/B/Q) | c39a65723
 2026-09-04 | calibration basis consumers | S275 | 8/8 within S50 1e-6 and second-run 1e-9; flip diff 0.0 | ACCEPT (verified: codex-sol, contract A/B/Q) | 17f8b6218
+2026-09-04 | in-game calibration power | S278 | S82 n=158 MDE80=0.006669480610; S119 n=284 MDE80=0.006677222590; S84 n=284 MDE80=0.004947967696 | REMAINS UNDERPOWERED, SINGLE-WINDOW (verified: codex-sol, contract A/B/Q) | 38d46d08f
