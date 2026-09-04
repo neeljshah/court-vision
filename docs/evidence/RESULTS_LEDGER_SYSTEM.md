@@ -451,3 +451,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-03 | in-game calibration | S207 | NBA premise counterexample: 661 games, 79,554 ticks | FALSIFIED (verified: codex-sol, contract A/B/Q) | 85737c5be
 2026-09-04 | pregame calibration | S205 | 12 cells refit exactly; CPCV isotonic differs from sealed S05 by 0.020533142 | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 218e3f7d6
 2026-09-03 | box-score scoring harness | S246 | prerequisite utility absent: 0 tree, index, source-test, and history paths; cited commit has 2 memo paths | FALSIFIED (verified: codex-sol, contract A/B/Q) | 10cef6055
+2026-09-03 | signals-ingame | S215 | 1,854,100 rows classified; 986 events; 0 recoverable state rows | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | e405395bb
