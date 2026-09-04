@@ -1,0 +1,50 @@
+bytes,category,detail,grain,joined_columns,joined_ticks,path,status,temporal_column,penalty,weight
+59224,atlas,"tick grid lacks as_of,player_id","['player_id', 'as_of']",[],0,data/cache/atlas_player_durability_load.parquet,UNAVAILABLE_TICK_GRAIN,as_of,maximum,0.0
+77810,atlas,"tick grid lacks as_of,player_id","['player_id', 'as_of']",[],0,data/cache/atlas_player_playmaking_network.parquet,UNAVAILABLE_TICK_GRAIN,as_of,maximum,0.0
+101876,atlas,"tick grid lacks as_of,player_id","['player_id', 'as_of']",[],0,data/cache/atlas_player_quarter_shape_fatigue.parquet,UNAVAILABLE_TICK_GRAIN,as_of,maximum,0.0
+84198,atlas,"tick grid lacks as_of,player_id","['player_id', 'as_of']",[],0,data/cache/atlas_player_rebounding_profile.parquet,UNAVAILABLE_TICK_GRAIN,as_of,maximum,0.0
+80419,intelligence,tick grid lacks player_id,"['game_id', 'player_id', 'game_date']",[],0,data/intelligence/anomaly_log.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+12898,intelligence,tick grid lacks player_id,"['game_id', 'player_id', 'game_date']",[],0,data/intelligence/archetype_outlier_signals.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+261703,intelligence,"tick grid lacks date,player_id","['player_id', 'date']",[],0,data/intelligence/atlas_features_sidecar.parquet,UNAVAILABLE_TICK_GRAIN,date,maximum,0.0
+1727217,intelligence,"tick grid lacks date,player_id","['player_id', 'date']",[],0,data/intelligence/blk_residual_head_v1.parquet,UNAVAILABLE_TICK_GRAIN,date,maximum,0.0
+399511,intelligence,tick grid lacks player_id,"['player_id', 'game_date']",[],0,data/intelligence/built_signals_sidecar.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+2984098,intelligence,"tick grid lacks asof_date,player_id,stat","['player_id', 'stat', 'asof_date']",[],0,data/intelligence/confidence_ensemble.parquet,UNAVAILABLE_TICK_GRAIN,asof_date,maximum,0.0
+49269,intelligence,"tick grid lacks asof_date,player_id","['player_id', 'asof_date']",[],0,data/intelligence/cv_consistency_kelly.parquet,UNAVAILABLE_TICK_GRAIN,asof_date,maximum,0.0
+14348,intelligence,matching current-game keys would violate strict-prior date rule,['game_date'],[],0,data/intelligence/cv_coverage_gates.parquet,UNAVAILABLE_STRICT_PRIOR_KEY,game_date,maximum,0.0
+12958,intelligence,tick grid lacks player_id,"['player_id', 'game_date']",[],0,data/intelligence/cv_coverage_interactions.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+8785,intelligence,tick grid lacks player_id,"['game_id', 'player_id', 'game_date']",[],0,data/intelligence/cv_fatigue_trajectories.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+389105,intelligence,tick grid lacks player_id,"['player_id', 'game_date']",[],0,data/intelligence/cv_pace_features_sidecar.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+21094,intelligence,matching current-game keys would violate strict-prior date rule,"['game_id', 'game_date']",[],0,data/intelligence/cv_pace_per_game.parquet,UNAVAILABLE_STRICT_PRIOR_KEY,game_date,maximum,0.0
+14678,intelligence,tick grid lacks player_id,"['player_id', 'game_date']",[],0,data/intelligence/cv_shot_clock_features_sidecar.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+8033,intelligence,tick grid lacks player_id,"['game_id', 'player_id', 'game_date']",[],0,data/intelligence/cv_shot_clock_per_game.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+17607,intelligence,tick grid lacks player_id,"['player_id', 'game_date']",[],0,data/intelligence/cv_shot_range_features_sidecar.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+12030,intelligence,tick grid lacks player_id,"['game_id', 'player_id', 'game_date']",[],0,data/intelligence/cv_shot_range_per_game.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+13070,intelligence,tick grid lacks player_id,"['player_id', 'game_date']",[],0,data/intelligence/cv_shot_type_features_sidecar.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+12966,intelligence,tick grid lacks player_id,"['game_id', 'player_id', 'game_date']",[],0,data/intelligence/cv_shot_types_per_game.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+13240,intelligence,"tick grid lacks date,player_id,stat","['player_id', 'stat', 'date']",[],0,data/intelligence/daily_picks_retro_2026-04-25_to_2026-05-24.parquet,UNAVAILABLE_TICK_GRAIN,date,maximum,0.0
+15832,intelligence,"tick grid lacks date,player_id,stat","['player_id', 'stat', 'date']",[],0,data/intelligence/daily_picks_retro_v1_vs_v2_comparison.parquet,UNAVAILABLE_TICK_GRAIN,date,maximum,0.0
+583194,intelligence,tick grid lacks player_id,"['game_id', 'player_id', 'game_date']",[],0,data/intelligence/ft_rate_predictions.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+225688,intelligence,matching current-game keys would violate strict-prior date rule,"['game_id', 'game_date']",[],0,data/intelligence/game_similarity_index.parquet,UNAVAILABLE_STRICT_PRIOR_KEY,game_date,maximum,0.0
+425106,intelligence,tick grid lacks player_id,"['game_id', 'player_id', 'game_date']",[],0,data/intelligence/garbage_time_player_aggregates.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+6850050,intelligence,tick grid lacks player_id,"['game_id', 'player_id', 'game_date']",[],0,data/intelligence/gt_weighted_forms.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+784008,intelligence,tick grid lacks player_id,"['game_id', 'player_id', 'game_date']",[],0,data/intelligence/ingame_momentum.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+141940,intelligence,"tick grid lacks opp_team_id,team_id","['game_id', 'team_id', 'opp_team_id', 'game_date']",[],0,data/intelligence/matchup_grid.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+5622181,intelligence,"tick grid lacks asof_date,player_id,stat","['player_id', 'stat', 'asof_date']",[],0,data/intelligence/momentum_signals.parquet,UNAVAILABLE_TICK_GRAIN,asof_date,maximum,0.0
+10162349,intelligence,tick grid lacks player_id,"['game_id', 'player_id', 'game_date']",[],0,data/intelligence/non_gt_forms_sidecar.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+21180,intelligence,tick grid lacks team_id,"['team_id', 'game_date']",[],0,data/intelligence/opp_defensive_intensity.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+448211,intelligence,tick grid lacks player_id,"['game_id', 'player_id', 'game_date']",[],0,data/intelligence/opp_minutes_predictions.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+17578,intelligence,tick grid lacks player_id,"['game_id', 'player_id', 'game_date']",[],0,data/intelligence/opp_normalized_cv.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+17393,intelligence,tick grid lacks team_id,"['team_id', 'game_date']",[],0,data/intelligence/opp_paint_allowance.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+235794,intelligence,tick grid lacks player_id,"['player_id', 'game_date']",[],0,data/intelligence/parlay_correlation_retro_validation.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+272307,intelligence,tick grid lacks player_id,"['player_id', 'game_date']",[],0,data/intelligence/parlay_correlation_retro_validation_v2.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+147074,intelligence,"tick grid lacks date,player_id","['player_id', 'date']",[],0,data/intelligence/per_archetype_residual_v1.parquet,UNAVAILABLE_TICK_GRAIN,date,maximum,0.0
+11143409,intelligence,"tick grid lacks asof_date,player_id,stat","['player_id', 'stat', 'asof_date']",[],0,data/intelligence/per_player_calibration.parquet,UNAVAILABLE_TICK_GRAIN,asof_date,maximum,0.0
+9812855,intelligence,tick grid lacks player_id,"['player_id', 'game_date']",[],0,data/intelligence/player_def_archetype_sidecar.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+9799223,intelligence,tick grid lacks player_id,"['player_id', 'game_date']",[],0,data/intelligence/player_def_archetype_sidecar_null.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+87960,intelligence,tick grid lacks player_id,"['game_id', 'player_id', 'game_date']",[],0,data/intelligence/player_development_v2.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+5013638,intelligence,tick grid lacks player_id,"['player_id', 'game_date']",[],0,data/intelligence/player_opp_splits_sidecar.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+3460398,intelligence,"tick grid lacks date,player_id","['player_id', 'date']",[],0,data/intelligence/pts_decomposition_predictions.parquet,UNAVAILABLE_TICK_GRAIN,date,maximum,0.0
+16744,intelligence,"tick grid lacks date,player_id,stat","['player_id', 'stat', 'date']",[],0,data/intelligence/retro_bet_audit.parquet,UNAVAILABLE_TICK_GRAIN,date,maximum,0.0
+1025217,intelligence,tick grid lacks player_id,"['game_id', 'player_id', 'game_date']",[],0,data/intelligence/schedule_strength_7d.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+47435,intelligence,tick grid lacks player_id,"['game_id', 'player_id', 'game_date']",[],0,data/intelligence/streak_signatures.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0
+24255,intelligence,tick grid lacks team_id,"['team_id', 'game_date']",[],0,data/intelligence/team_tempo_spacing.parquet,UNAVAILABLE_TICK_GRAIN,game_date,maximum,0.0

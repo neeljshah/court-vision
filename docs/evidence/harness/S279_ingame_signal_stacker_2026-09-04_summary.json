@@ -1,0 +1,760 @@
+{
+  "bar": 0.004,
+  "cpcv": {
+    "n_groups": 2,
+    "n_test_groups": 1,
+    "stable_key": "game_id|ts|source_row",
+    "states": 465249,
+    "symmetric_embargo_days": 1
+  },
+  "imputed_ticks": 465249,
+  "join_manifest": [
+    {
+      "bytes": 59224,
+      "category": "atlas",
+      "detail": "tick grid lacks as_of,player_id",
+      "grain": [
+        "player_id",
+        "as_of"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/cache/atlas_player_durability_load.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "as_of"
+    },
+    {
+      "bytes": 77810,
+      "category": "atlas",
+      "detail": "tick grid lacks as_of,player_id",
+      "grain": [
+        "player_id",
+        "as_of"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/cache/atlas_player_playmaking_network.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "as_of"
+    },
+    {
+      "bytes": 101876,
+      "category": "atlas",
+      "detail": "tick grid lacks as_of,player_id",
+      "grain": [
+        "player_id",
+        "as_of"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/cache/atlas_player_quarter_shape_fatigue.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "as_of"
+    },
+    {
+      "bytes": 84198,
+      "category": "atlas",
+      "detail": "tick grid lacks as_of,player_id",
+      "grain": [
+        "player_id",
+        "as_of"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/cache/atlas_player_rebounding_profile.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "as_of"
+    },
+    {
+      "bytes": 80419,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/anomaly_log.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 12898,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/archetype_outlier_signals.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 261703,
+      "category": "intelligence",
+      "detail": "tick grid lacks date,player_id",
+      "grain": [
+        "player_id",
+        "date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/atlas_features_sidecar.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "date"
+    },
+    {
+      "bytes": 1727217,
+      "category": "intelligence",
+      "detail": "tick grid lacks date,player_id",
+      "grain": [
+        "player_id",
+        "date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/blk_residual_head_v1.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "date"
+    },
+    {
+      "bytes": 399511,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/built_signals_sidecar.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 2984098,
+      "category": "intelligence",
+      "detail": "tick grid lacks asof_date,player_id,stat",
+      "grain": [
+        "player_id",
+        "stat",
+        "asof_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/confidence_ensemble.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "asof_date"
+    },
+    {
+      "bytes": 49269,
+      "category": "intelligence",
+      "detail": "tick grid lacks asof_date,player_id",
+      "grain": [
+        "player_id",
+        "asof_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/cv_consistency_kelly.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "asof_date"
+    },
+    {
+      "bytes": 14348,
+      "category": "intelligence",
+      "detail": "matching current-game keys would violate strict-prior date rule",
+      "grain": [
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/cv_coverage_gates.parquet",
+      "status": "UNAVAILABLE_STRICT_PRIOR_KEY",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 12958,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/cv_coverage_interactions.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 8785,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/cv_fatigue_trajectories.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 389105,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/cv_pace_features_sidecar.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 21094,
+      "category": "intelligence",
+      "detail": "matching current-game keys would violate strict-prior date rule",
+      "grain": [
+        "game_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/cv_pace_per_game.parquet",
+      "status": "UNAVAILABLE_STRICT_PRIOR_KEY",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 14678,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/cv_shot_clock_features_sidecar.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 8033,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/cv_shot_clock_per_game.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 17607,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/cv_shot_range_features_sidecar.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 12030,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/cv_shot_range_per_game.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 13070,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/cv_shot_type_features_sidecar.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 12966,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/cv_shot_types_per_game.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 13240,
+      "category": "intelligence",
+      "detail": "tick grid lacks date,player_id,stat",
+      "grain": [
+        "player_id",
+        "stat",
+        "date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/daily_picks_retro_2026-04-25_to_2026-05-24.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "date"
+    },
+    {
+      "bytes": 15832,
+      "category": "intelligence",
+      "detail": "tick grid lacks date,player_id,stat",
+      "grain": [
+        "player_id",
+        "stat",
+        "date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/daily_picks_retro_v1_vs_v2_comparison.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "date"
+    },
+    {
+      "bytes": 583194,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/ft_rate_predictions.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 225688,
+      "category": "intelligence",
+      "detail": "matching current-game keys would violate strict-prior date rule",
+      "grain": [
+        "game_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/game_similarity_index.parquet",
+      "status": "UNAVAILABLE_STRICT_PRIOR_KEY",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 425106,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/garbage_time_player_aggregates.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 6850050,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/gt_weighted_forms.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 784008,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/ingame_momentum.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 141940,
+      "category": "intelligence",
+      "detail": "tick grid lacks opp_team_id,team_id",
+      "grain": [
+        "game_id",
+        "team_id",
+        "opp_team_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/matchup_grid.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 5622181,
+      "category": "intelligence",
+      "detail": "tick grid lacks asof_date,player_id,stat",
+      "grain": [
+        "player_id",
+        "stat",
+        "asof_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/momentum_signals.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "asof_date"
+    },
+    {
+      "bytes": 10162349,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/non_gt_forms_sidecar.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 21180,
+      "category": "intelligence",
+      "detail": "tick grid lacks team_id",
+      "grain": [
+        "team_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/opp_defensive_intensity.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 448211,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/opp_minutes_predictions.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 17578,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/opp_normalized_cv.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 17393,
+      "category": "intelligence",
+      "detail": "tick grid lacks team_id",
+      "grain": [
+        "team_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/opp_paint_allowance.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 235794,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/parlay_correlation_retro_validation.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 272307,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/parlay_correlation_retro_validation_v2.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 147074,
+      "category": "intelligence",
+      "detail": "tick grid lacks date,player_id",
+      "grain": [
+        "player_id",
+        "date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/per_archetype_residual_v1.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "date"
+    },
+    {
+      "bytes": 11143409,
+      "category": "intelligence",
+      "detail": "tick grid lacks asof_date,player_id,stat",
+      "grain": [
+        "player_id",
+        "stat",
+        "asof_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/per_player_calibration.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "asof_date"
+    },
+    {
+      "bytes": 9812855,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/player_def_archetype_sidecar.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 9799223,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/player_def_archetype_sidecar_null.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 87960,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/player_development_v2.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 5013638,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/player_opp_splits_sidecar.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 3460398,
+      "category": "intelligence",
+      "detail": "tick grid lacks date,player_id",
+      "grain": [
+        "player_id",
+        "date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/pts_decomposition_predictions.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "date"
+    },
+    {
+      "bytes": 16744,
+      "category": "intelligence",
+      "detail": "tick grid lacks date,player_id,stat",
+      "grain": [
+        "player_id",
+        "stat",
+        "date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/retro_bet_audit.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "date"
+    },
+    {
+      "bytes": 1025217,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/schedule_strength_7d.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 47435,
+      "category": "intelligence",
+      "detail": "tick grid lacks player_id",
+      "grain": [
+        "game_id",
+        "player_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/streak_signatures.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    },
+    {
+      "bytes": 24255,
+      "category": "intelligence",
+      "detail": "tick grid lacks team_id",
+      "grain": [
+        "team_id",
+        "game_date"
+      ],
+      "joined_columns": [],
+      "joined_ticks": 0,
+      "path": "data/intelligence/team_tempo_spacing.parquet",
+      "status": "UNAVAILABLE_TICK_GRAIN",
+      "temporal_column": "game_date"
+    }
+  ],
+  "metric": {
+    "ci95_game_clustered": [
+      0.0,
+      0.0
+    ],
+    "n_clusters": 1593,
+    "recal_null_brier": 0.0735466947423636,
+    "stacker_brier": 0.0735466947423636,
+    "stacker_minus_recal_null_brier": 0.0
+  },
+  "mode": "SEALED_CPCV",
+  "paired_losses_csv": "docs/evidence/harness/S279_ingame_signal_stacker_2026-09-04_paired_losses.csv",
+  "prereg_sha256": "be8beb5ba9f50ebab84d967a6db625467962186f9651df30bf727fc0b8309961",
+  "preregistration_path": "docs/evidence/harness/S279_ingame_signal_stacker_prereg_2026-09-04.md",
+  "route_sha256": "349d4980d62efc582ed6c4b528f0120c8f32d0c3f137e185d0ad3643c36b00fb",
+  "rss_bytes": 371331072,
+  "shrinkage": {
+    "path": [
+      0.01,
+      0.1,
+      1.0,
+      10.0,
+      100.0,
+      "maximum"
+    ],
+    "reason": "all 49 strict-prior player/team joins unavailable on tick grid",
+    "selected": "maximum"
+  },
+  "source": {
+    "bytes": 2829826,
+    "games": 1593,
+    "path": "data/cache/inplay_odds/nba_checkpoints_full.parquet",
+    "resolution": "not applicable",
+    "rows": 465249
+  },
+  "spec_id": "S279",
+  "verdict": "NULL",
+  "weights_csv": "docs/evidence/harness/S279_ingame_signal_stacker_2026-09-04_weights.csv"
+}
