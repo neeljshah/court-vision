@@ -31,6 +31,22 @@ its own docstring contrasts with "never Hough-line order".** Its module docstrin
 emits no landmark for a line simply because it is the nth Hough segment", which is precisely the failure
 mode G205 exhibited at ~1,928 proposals per frame.
 
+**CONTEXT THAT CHANGES WHAT A NULL RESULT MEANS -- G68D, landed 2026-09-02.** A human-labelled census
+of **1,650 sampled decoded tiles across 11 basketball clips** found paint **PAINT_SOLVABLE in
+1,029/1,650 = 62.36 pct, Wilson 95 pct [0.6000, 0.6467]**, spread throughout every clip, with a further
+**207/1,650 = 12.55 pct COURT_NO_PAINT** (a court view whose paint was not fittable). **So human
+judgement says a fittable paint is present in roughly SIX frames in TEN, while automatic search scores
+0/17 and even the detected-line oracle reaches only 1/17.** **The 1/17 figure is therefore a property of
+the LSD-intersection pipeline, NOT a ceiling imposed by the footage.** That gap is the reason this row
+is worth running rather than a reason to expect failure.
+
+**IF YOU SCORE 0/17, THE MOST USEFUL THING YOU CAN ADD IS WHICH GATE REJECTED.**
+`scripts/platformkit/basketball_gate_funnel.py` already exists for exactly this -- its docstring says it
+"replays its actual paint gates on real frames and counts the first one that rejects each frame" and
+reports landmark co-occurrence, "which answers whether a partial paint can furnish a four-point solve".
+**Reuse it rather than writing your own funnel**, and report the first-rejecting-gate distribution over
+the 17 frames beside your score. A 0/17 with a named dominant gate is far more actionable than a bare 0.
+
 THE QUESTION: **does `BasketballKeypointProvider` propose the four paint corners on the 17 labelled
 frames, scored by exactly the same protocol as every prior row?**
 
