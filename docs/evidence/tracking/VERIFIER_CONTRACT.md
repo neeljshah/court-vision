@@ -136,3 +136,5 @@ A12 SHARED RAILS ARE PART OF THE LANDING. `tests/platformkit/test_loc_rail_scope
     for everyone else -- this repo is shared, and a rail is a shared surface.
     A file pushed over the 300-line rail is also a split candidate the next time it
     is touched; note it, do not split it opportunistically inside an unrelated row.
+
+B5 NOTE (2026-09-04 09:35 CDT, user decision): heavy compute MAY run on the pod BEFORE ACCEPT, but only as a compute-only run in a per-worktree scratch directory /workspace/wt/<aN>/ via ~/bin/pod_run (ships the lane python tree, links the pod data tree read-only, fetches outputs back). The deployed tree /workspace/nba-ai-system is never written before ACCEPT; backtest_fwer.jsonl, hypotheses*.sqlite and data/registry never reach the pod; no pod process is ever killed or restarted by a lane. A verifier does not reject a pod scratch run under B5.
