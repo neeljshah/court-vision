@@ -1,4 +1,4 @@
-GAP S239 | sport all | worktree aXX | log cx_s239_clv_countdown_metric
+GAP S239 | sport all | worktree a17 | log cx_s239_clv_countdown_metric
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: quant_principles_2026-09-04.md: "CLV as the sports-specific yardstick... JOB_EVIDENCE_PACKET's own
 do-not-claim list: no real close-based CLV reading exists yet [see JOB_EVIDENCE_PACKET.md's retracted-figure
