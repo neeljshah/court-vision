@@ -1,0 +1,67 @@
+{
+  "bar": 0.004,
+  "bootstraps": 2000,
+  "embargo_days": 1,
+  "evaluator_ticks": 461947,
+  "input": {
+    "bytes": 2829826,
+    "path": "data/cache/inplay_odds/nba_checkpoints_full.parquet",
+    "resolution": "not applicable",
+    "rows": 465249
+  },
+  "metrics": {
+    "fresh": {
+      "improvement": -0.007715231490566534,
+      "improvement_ci95": [
+        -0.00988491457404277,
+        -0.005628991939320038
+      ],
+      "n_games": 1582,
+      "n_ticks": 230331,
+      "recal_null_brier": 0.14565824530879526,
+      "recal_null_plus_momentum_brier": 0.1533734767993618
+    },
+    "interaction_stale_minus_fresh": {
+      "ci95": [
+        0.0050372299278182665,
+        0.009356471390556382
+      ],
+      "value": 0.007159293390384968
+    },
+    "pooled": {
+      "improvement": -0.00410378177717597,
+      "improvement_ci95": [
+        -0.00520997279399928,
+        -0.0030568980455891576
+      ],
+      "n_games": 1582,
+      "n_ticks": 460365,
+      "recal_null_brier": 0.07342218411416164,
+      "recal_null_plus_momentum_brier": 0.0775259658913376
+    },
+    "stale": {
+      "improvement": -0.0005559381001815657,
+      "improvement_ci95": [
+        -0.0006431799425282095,
+        -0.00041278359945298
+      ],
+      "n_games": 1132,
+      "n_ticks": 46106,
+      "recal_null_brier": 0.00010139355154078979,
+      "recal_null_plus_momentum_brier": 0.0006573316517223555
+    }
+  },
+  "mode": "SEALED_ADDITIVE_CPCV",
+  "paired_losses": "docs/evidence/harness/S281_ingame_momentum_microstructure_2026-09-04_state_differentials.csv",
+  "prereg_sha256": "10ddf9f7845b2a63cf02ac30247100b82ec06f8a5ad871978d0ab1c5cea1202b",
+  "preregistration_path": "docs/evidence/harness/S281_ingame_momentum_microstructure_2026-09-04_PREREG.md",
+  "recal_seed_ticks": 3302,
+  "route_sha256": "2f3237ecc060fa65b00becdf7916e818c55c8bebceb4cb3d054c9026d13fbdc6",
+  "rss_before_bytes": 218234880,
+  "rss_bytes": 1184382976,
+  "run_threshold": 6.0,
+  "scored_ticks": 460365,
+  "seed": 281,
+  "verdict": "NULL",
+  "window_s": 120
+}
