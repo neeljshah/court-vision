@@ -1,4 +1,4 @@
-GAP S235 | sport all | worktree aXX | log cx_s235_event_date_walk_default
+GAP S235 | sport all | worktree a18 | log cx_s235_event_date_walk_default
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: S50 (LANDED, opt-in via `--per-unit`, `calibration_report.py:340-342`) switches the gate-corpus walk from
 row order to a true per-`corpus_unit` `event_date` chronology; it is NOT the default and no caller has switched
