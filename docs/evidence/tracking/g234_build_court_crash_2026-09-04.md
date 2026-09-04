@@ -108,3 +108,27 @@ present as success.
   merged without evidence.**
 - OpenCV 5.0.0 is an unusual major version; no check was made of whether an older OpenCV tolerated this
   input.
+
+---
+
+## Addendum 2026-09-04: the resize behaviour is now tested, not asserted
+
+The memo above claimed that `cv2.resize` "rejects a destination whose area is not positive". That was
+read from the traceback, not tested. It is now tested locally:
+
+```
+local cv2 4.11.0
+resize (940, 0) -> cv2.error: ... resize.cpp:4211: error: (-215:Assertion failed) ...
+resize (0, 500) -> cv2.error: ... resize.cpp:4211: error: (-215:Assertion failed) ...
+resize (940, 500) -> OK shape (500, 940, 3)
+```
+
+**Either zero dimension raises; a valid pair succeeds.** The local build is OpenCV **4.11.0** raising at
+`resize.cpp:4211`, against the pod's **5.0.0** raising at `resize.cpp:4217` — the same assertion, a few
+lines apart across major versions. So the failure mode reproduces on a different OpenCV build, and the
+error is not specific to the pod's unusual 5.0.0.
+
+**This still does not observe `rectified.shape` on a failing run**, which remains the open link and is
+what G235 is specified to measure. What it removes is the weaker of the two assumptions: a zero
+dimension definitely produces this exact error, so if the shape does turn out to carry a zero, the chain
+is complete.
