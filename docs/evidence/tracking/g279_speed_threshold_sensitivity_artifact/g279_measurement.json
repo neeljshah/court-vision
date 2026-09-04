@@ -1,0 +1,182 @@
+{
+  "input": {
+    "retained_g267_artifact": "docs\\evidence\\tracking\\g267_court_space_physical_plausibility_artifact\\g267_measurement.json",
+    "bytes": 12446681,
+    "sha256": "0903d4ee8afac9999e37ca07d14ec81ea59e66ca485a99c21fd27ed959cee2b5",
+    "opened_video": false,
+    "inherited_source_video": {
+      "absolute_path": "/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4",
+      "bytes": 2931985407,
+      "resolution_px": [
+        1920,
+        1080
+      ],
+      "seed_frame": 19599,
+      "source_frame_span_inclusive": [
+        19599,
+        23399
+      ],
+      "fps": 30.0
+    }
+  },
+  "route_sha256": {
+    "scripts/platformkit/tracking/g279_speed_threshold_sensitivity.py": "20d39c07202d4ecc7f94928a2d7c154be74a9602ec5b8a8f391fa132bf9f1301",
+    "scripts/platformkit/tracking/g267_court_space_physical_plausibility.py": "85f0fddfc0eb1d1845605052103711890b98f930392833971e4a6a308cffe1ac",
+    "scripts/platformkit/tracking/g270_implausibility_conditioned_on_position.py": "fa5a75fe2fad224c36e53dd9329e7ac72887e09324a8bc15c55c2b2aa9c04606"
+  },
+  "analysis": {
+    "population": "detector boxes and emitted association IDs, not authenticated players",
+    "method": "consecutive retained finite observations within each same track_id; speed is court distance times 30 fps divided by actual frame gap",
+    "reproduction": {
+      "g267_all_steps_strictly_over_40_ft_per_s": {
+        "numerator": 4090,
+        "denominator": 29973,
+        "fraction": 0.13645614386280985
+      },
+      "g270_both_endpoints_on_court_strictly_over_40_ft_per_s": {
+        "numerator": 2507,
+        "denominator": 23783,
+        "fraction": 0.10541142833116092
+      }
+    },
+    "thresholds_ft_per_s": [
+      20.0,
+      25.0,
+      26.5,
+      30.0,
+      35.0,
+      40.0,
+      45.0,
+      50.0,
+      60.0
+    ],
+    "contextual_references_ft_per_s": {
+      "26.5": "NBA average top speed",
+      "40.0": "published fixed strict-over threshold",
+      "40.7": "Bolt peak"
+    },
+    "all_finite_same_id_steps": {
+      "curve": {
+        "20.0": {
+          "strictly_above_threshold_steps": 7131,
+          "denominator_steps": 29973,
+          "fraction": 0.2379141227104394
+        },
+        "25.0": {
+          "strictly_above_threshold_steps": 5941,
+          "denominator_steps": 29973,
+          "fraction": 0.1982117238848297
+        },
+        "26.5": {
+          "strictly_above_threshold_steps": 5652,
+          "denominator_steps": 29973,
+          "fraction": 0.18856971274146733
+        },
+        "30.0": {
+          "strictly_above_threshold_steps": 5128,
+          "denominator_steps": 29973,
+          "fraction": 0.171087311914056
+        },
+        "35.0": {
+          "strictly_above_threshold_steps": 4532,
+          "denominator_steps": 29973,
+          "fraction": 0.15120274914089346
+        },
+        "40.0": {
+          "strictly_above_threshold_steps": 4090,
+          "denominator_steps": 29973,
+          "fraction": 0.13645614386280985
+        },
+        "45.0": {
+          "strictly_above_threshold_steps": 3802,
+          "denominator_steps": 29973,
+          "fraction": 0.12684749607980517
+        },
+        "50.0": {
+          "strictly_above_threshold_steps": 3570,
+          "denominator_steps": 29973,
+          "fraction": 0.11910719647682914
+        },
+        "60.0": {
+          "strictly_above_threshold_steps": 3155,
+          "denominator_steps": 29973,
+          "fraction": 0.10526140192840223
+        }
+      },
+      "speed_distribution_ft_per_s": {
+        "median": 7.761990378643652,
+        "p90": 65.5708886687634,
+        "p99": 700.1175628540014,
+        "p99_9": 2482.3795012010214,
+        "max": 100457.2405144016
+      }
+    },
+    "both_endpoints_on_court_same_id_steps": {
+      "court_condition": "both endpoint feet inside inclusive 0 <= x <= 50 and 0 <= y <= 94 ft",
+      "curve": {
+        "20.0": {
+          "strictly_above_threshold_steps": 4833,
+          "denominator_steps": 23783,
+          "fraction": 0.20321237858974897
+        },
+        "25.0": {
+          "strictly_above_threshold_steps": 3913,
+          "denominator_steps": 23783,
+          "fraction": 0.16452928562418534
+        },
+        "26.5": {
+          "strictly_above_threshold_steps": 3692,
+          "denominator_steps": 23783,
+          "fraction": 0.15523693394441407
+        },
+        "30.0": {
+          "strictly_above_threshold_steps": 3295,
+          "denominator_steps": 23783,
+          "fraction": 0.13854433839296976
+        },
+        "35.0": {
+          "strictly_above_threshold_steps": 2849,
+          "denominator_steps": 23783,
+          "fraction": 0.1197914476727074
+        },
+        "40.0": {
+          "strictly_above_threshold_steps": 2507,
+          "denominator_steps": 23783,
+          "fraction": 0.10541142833116092
+        },
+        "45.0": {
+          "strictly_above_threshold_steps": 2281,
+          "denominator_steps": 23783,
+          "fraction": 0.09590884245048985
+        },
+        "50.0": {
+          "strictly_above_threshold_steps": 2113,
+          "denominator_steps": 23783,
+          "fraction": 0.08884497330025648
+        },
+        "60.0": {
+          "strictly_above_threshold_steps": 1807,
+          "denominator_steps": 23783,
+          "fraction": 0.07597864020518857
+        }
+      },
+      "speed_distribution_ft_per_s": {
+        "median": 7.117341504192182,
+        "p90": 42.75331633403963,
+        "p99": 417.77391502347,
+        "p99_9": 870.4356646782918,
+        "max": 1368.623363261668
+      }
+    },
+    "unmeasurable_or_conditionally_excluded_accounting": {
+      "all_retained_detection_records": 30071,
+      "finite_detection_records": 30071,
+      "nonfinite_detection_records": 0,
+      "same_id_steps_eligible_after_finite_endpoint_requirement": 29973,
+      "steps_excluded_by_both_endpoints_on_court_condition": 6190,
+      "one_endpoint_on_court_steps": 1001,
+      "neither_endpoint_on_court_steps": 5189,
+      "both_endpoints_on_court_steps": 23783
+    }
+  }
+}
