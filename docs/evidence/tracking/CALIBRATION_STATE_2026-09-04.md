@@ -567,6 +567,42 @@ resolution (7.7-7.8), a blind-ladder gate that a single look cannot fake (G257,
 now standard in every new spec), and four independently closed hand-built validity
 families (7.10) so no one re-runs them.
 
+---
+
+## 7.15 DEFINITIVE: no hand-built signal detects a court error below 40 px, and the eye does better
+
+G260 re-ran the displacement ladder with the design G258 should have had: **paired
+within-frame**, every one of **35 pre-enumerated frames** measured unperturbed and
+at each rung, so scene content cancels inside each difference. No frames excluded.
+
+**The sign-agreement count across the 35 frames is what decides it** -- chance is
+17.5:
+
+| signal | sign agreement at 10 px | verdict |
+|---|---:|---|
+| **Coverage** | **35/35** | **detects at 40 px**, monotone |
+| Edge response | 20/35 | none -- non-monotone |
+| LSD agreement | 24/35 | none -- non-monotone |
+| Marking contrast | 20/35 | none -- non-monotone |
+| Offset p90 | 0/35 usable | none |
+| Quad area / aspect / outside fraction | 0/35 | structurally insensitive |
+
+**Only coverage has a consistent sign, and even it needs 40 px.** Coverage is the
+fraction of projected curve still inside the image -- so it detects a large
+displacement because geometry falls off-frame, which is a crude geometric effect,
+not a validity signal.
+
+**So the machine's best is 40 px while the eye (7.7) resolves 20 px. THE HUMAN IS
+BETTER THAN EVERY HAND-BUILT SIGNAL WE HAVE.** That is the exact opposite of
+G258's withdrawn 10 px claim, whose control had zero variance by construction --
+edge response, the signal it named, agrees in sign on only 20 of 35 frames at
+10 px, which is chance.
+
+**This closes the validity question against KNOWN ground truth**, not merely
+against noisy eye labels, and it is the strongest form the negative can take. With
+7.10 it means: **there is no automatic validity signal, hand-built statistics are
+exhausted, and the next instrument must be learned.**
+
 ## NOT VERIFIED
 
 - Whether a trained basketball calibration model would work; nothing was trained
