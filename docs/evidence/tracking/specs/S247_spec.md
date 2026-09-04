@@ -1,4 +1,4 @@
-GAP S247 | sport nba (in-game) | worktree aXX | log cx_s247_nba_sim_engine_vs_line_v2
+GAP S247 | sport nba (in-game) | worktree a13 | log cx_s247_nba_sim_engine_vs_line_v2
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S216 stopped twice: attempt 1 on store visibility, attempt 2 (S216_..._2026-09-04.md) FALSIFIED because the
   program-memo premise (465,249 ticks / 1,593 games) does not match the archive actually on disk. This re-issue
