@@ -1,4 +1,4 @@
-GAP S241 | sport nba (pregame) | worktree aXX | log cx_s241_nba_minutes_distribution
+GAP S241 | sport nba (pregame) | worktree a16 | log cx_s241_nba_minutes_distribution
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: points = minutes x rate, so minutes is the box-score keystone. Four point-estimate minutes
 modules exist (src/prediction/minutes_predictor.py, minutes_floor_model.py, minutes_aware_props.py,
