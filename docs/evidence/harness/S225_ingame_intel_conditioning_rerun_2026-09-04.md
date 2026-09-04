@@ -105,3 +105,5 @@ The archived 2024-25 `cond_prior` and `cond_val` values remain unverified as
 historical same-season-fit artifacts. Attempt 2 does not use those values as
 out-of-sample inputs; it does not independently validate their archived source
 construction.
+
+NOTE (orchestrator, 2026-09-04 00:25 CDT): the 20-column state archive `S225_ingame_intel_conditioning_rerun_2026-09-04_state_differentials.csv` (274,290,586 bytes) exceeds the GitHub 100 MB file limit and is LOCAL-ONLY (gitignored); it was removed from the unpushed history before the first push. The seven-column per-game file and the summary JSON carry every number the acceptance rule scores.

@@ -571,3 +571,6 @@ webapp/.next_corrupt_*/
 
 # graft's local graph cache — regenerable, not committed (run `graft build`).
 graft/
+
+# evidence archives over the GitHub 100 MB limit stay local-only (S225 state archive, 274 MB)
+docs/evidence/harness/*_state_differentials.csv
