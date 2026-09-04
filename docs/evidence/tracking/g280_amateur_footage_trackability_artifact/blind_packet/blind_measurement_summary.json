@@ -1,0 +1,30 @@
+{
+  "sample_size": 72,
+  "counts": {
+    "PLAYER": 25,
+    "PERSON NOT PLAYER IN PLAY": 10,
+    "NOT A PERSON": 37,
+    "CANNOT JUDGE": 0
+  },
+  "fractions": {
+    "PLAYER": 0.3472222222222222,
+    "PERSON NOT PLAYER IN PLAY": 0.1388888888888889,
+    "NOT A PERSON": 0.5138888888888888,
+    "CANNOT JUDGE": 0.0
+  },
+  "g273_two_proportion_tests": {
+    "PLAYER": {
+      "pooled_p": 0.4722222222222222,
+      "se": 0.08320463312783069,
+      "z": -3.004640374003149,
+      "nominal_two_sided_p": 0.002658950311044042
+    },
+    "NOT A PERSON": {
+      "pooled_p": 0.3611111111111111,
+      "se": 0.08005377993421565,
+      "z": 3.8168785509771848,
+      "nominal_two_sided_p": 0.00013515065311269417
+    }
+  },
+  "nominal_note": "two-sided nominal p values; no multiplicity correction"
+}

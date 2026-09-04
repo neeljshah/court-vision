@@ -1,0 +1,938 @@
+[
+  {
+    "blind_index": 1,
+    "frame": 3378,
+    "track_id": 2,
+    "frame_bin": 68,
+    "frame_bin_inclusive": [
+      3350,
+      3399
+    ],
+    "x": 1110.3819580078125,
+    "y": 296.7098999023437,
+    "render": "blind_renders/blind_001.jpg"
+  },
+  {
+    "blind_index": 2,
+    "frame": 825,
+    "track_id": 29,
+    "frame_bin": 17,
+    "frame_bin_inclusive": [
+      800,
+      849
+    ],
+    "x": 1109.4013671875,
+    "y": 576.290771484375,
+    "render": "blind_renders/blind_002.jpg"
+  },
+  {
+    "blind_index": 3,
+    "frame": 2562,
+    "track_id": 24,
+    "frame_bin": 52,
+    "frame_bin_inclusive": [
+      2550,
+      2599
+    ],
+    "x": 349.553955078125,
+    "y": 651.05859375,
+    "render": "blind_renders/blind_003.jpg"
+  },
+  {
+    "blind_index": 4,
+    "frame": 1185,
+    "track_id": 39,
+    "frame_bin": 24,
+    "frame_bin_inclusive": [
+      1150,
+      1199
+    ],
+    "x": 1189.31982421875,
+    "y": 362.91314697265625,
+    "render": "blind_renders/blind_004.jpg"
+  },
+  {
+    "blind_index": 5,
+    "frame": 156,
+    "track_id": 13,
+    "frame_bin": 4,
+    "frame_bin_inclusive": [
+      150,
+      199
+    ],
+    "x": 202.73272705078125,
+    "y": 552.4559326171875,
+    "render": "blind_renders/blind_005.jpg"
+  },
+  {
+    "blind_index": 6,
+    "frame": 3114,
+    "track_id": 2,
+    "frame_bin": 63,
+    "frame_bin_inclusive": [
+      3100,
+      3149
+    ],
+    "x": 1113.736328125,
+    "y": 298.7704467773437,
+    "render": "blind_renders/blind_006.jpg"
+  },
+  {
+    "blind_index": 7,
+    "frame": 2190,
+    "track_id": 19,
+    "frame_bin": 44,
+    "frame_bin_inclusive": [
+      2150,
+      2199
+    ],
+    "x": 56.555885314941406,
+    "y": 104.61614990234376,
+    "render": "blind_renders/blind_007.jpg"
+  },
+  {
+    "blind_index": 8,
+    "frame": 1953,
+    "track_id": 14,
+    "frame_bin": 40,
+    "frame_bin_inclusive": [
+      1950,
+      1999
+    ],
+    "x": 326.09197998046875,
+    "y": 531.5711669921875,
+    "render": "blind_renders/blind_008.jpg"
+  },
+  {
+    "blind_index": 9,
+    "frame": 1149,
+    "track_id": 35,
+    "frame_bin": 23,
+    "frame_bin_inclusive": [
+      1100,
+      1149
+    ],
+    "x": 498.1353759765625,
+    "y": 364.0169982910156,
+    "render": "blind_renders/blind_009.jpg"
+  },
+  {
+    "blind_index": 10,
+    "frame": 1290,
+    "track_id": 24,
+    "frame_bin": 26,
+    "frame_bin_inclusive": [
+      1250,
+      1299
+    ],
+    "x": 785.7888793945312,
+    "y": 445.5982666015625,
+    "render": "blind_renders/blind_010.jpg"
+  },
+  {
+    "blind_index": 11,
+    "frame": 1413,
+    "track_id": 2,
+    "frame_bin": 29,
+    "frame_bin_inclusive": [
+      1400,
+      1449
+    ],
+    "x": 443.6312255859375,
+    "y": 437.5302734375,
+    "render": "blind_renders/blind_011.jpg"
+  },
+  {
+    "blind_index": 12,
+    "frame": 441,
+    "track_id": 13,
+    "frame_bin": 9,
+    "frame_bin_inclusive": [
+      400,
+      449
+    ],
+    "x": 96.66870880126952,
+    "y": 575.158447265625,
+    "render": "blind_renders/blind_012.jpg"
+  },
+  {
+    "blind_index": 13,
+    "frame": 3078,
+    "track_id": 42,
+    "frame_bin": 62,
+    "frame_bin_inclusive": [
+      3050,
+      3099
+    ],
+    "x": 1041.229949951172,
+    "y": 399.5291137695313,
+    "render": "blind_renders/blind_013.jpg"
+  },
+  {
+    "blind_index": 14,
+    "frame": 72,
+    "track_id": 16,
+    "frame_bin": 2,
+    "frame_bin_inclusive": [
+      50,
+      99
+    ],
+    "x": 522.6325531005859,
+    "y": 670.6129150390625,
+    "render": "blind_renders/blind_014.jpg"
+  },
+  {
+    "blind_index": 15,
+    "frame": 3525,
+    "track_id": 3,
+    "frame_bin": 71,
+    "frame_bin_inclusive": [
+      3500,
+      3549
+    ],
+    "x": 1164.4591064453125,
+    "y": 326.83514404296875,
+    "render": "blind_renders/blind_015.jpg"
+  },
+  {
+    "blind_index": 16,
+    "frame": 3330,
+    "track_id": 25,
+    "frame_bin": 67,
+    "frame_bin_inclusive": [
+      3300,
+      3349
+    ],
+    "x": 948.5075073242188,
+    "y": 399.2973327636719,
+    "render": "blind_renders/blind_016.jpg"
+  },
+  {
+    "blind_index": 17,
+    "frame": 2232,
+    "track_id": 2,
+    "frame_bin": 45,
+    "frame_bin_inclusive": [
+      2200,
+      2249
+    ],
+    "x": 506.296630859375,
+    "y": 426.8242492675781,
+    "render": "blind_renders/blind_017.jpg"
+  },
+  {
+    "blind_index": 18,
+    "frame": 2061,
+    "track_id": 1,
+    "frame_bin": 42,
+    "frame_bin_inclusive": [
+      2050,
+      2099
+    ],
+    "x": 103.82970428466795,
+    "y": 362.24072265625,
+    "render": "blind_renders/blind_018.jpg"
+  },
+  {
+    "blind_index": 19,
+    "frame": 3579,
+    "track_id": 28,
+    "frame_bin": 72,
+    "frame_bin_inclusive": [
+      3550,
+      3600
+    ],
+    "x": 969.2431640625,
+    "y": 641.2894287109375,
+    "render": "blind_renders/blind_019.jpg"
+  },
+  {
+    "blind_index": 20,
+    "frame": 546,
+    "track_id": 18,
+    "frame_bin": 11,
+    "frame_bin_inclusive": [
+      500,
+      549
+    ],
+    "x": 647.2703857421875,
+    "y": 255.1917724609375,
+    "render": "blind_renders/blind_020.jpg"
+  },
+  {
+    "blind_index": 21,
+    "frame": 2748,
+    "track_id": 8,
+    "frame_bin": 55,
+    "frame_bin_inclusive": [
+      2700,
+      2749
+    ],
+    "x": 625.6629638671875,
+    "y": 541.0932006835938,
+    "render": "blind_renders/blind_021.jpg"
+  },
+  {
+    "blind_index": 22,
+    "frame": 2463,
+    "track_id": 15,
+    "frame_bin": 50,
+    "frame_bin_inclusive": [
+      2450,
+      2499
+    ],
+    "x": 824.8912963867188,
+    "y": 396.6294555664063,
+    "render": "blind_renders/blind_022.jpg"
+  },
+  {
+    "blind_index": 23,
+    "frame": 1059,
+    "track_id": 33,
+    "frame_bin": 22,
+    "frame_bin_inclusive": [
+      1050,
+      1099
+    ],
+    "x": 844.628662109375,
+    "y": 651.382080078125,
+    "render": "blind_renders/blind_023.jpg"
+  },
+  {
+    "blind_index": 24,
+    "frame": 387,
+    "track_id": 23,
+    "frame_bin": 8,
+    "frame_bin_inclusive": [
+      350,
+      399
+    ],
+    "x": 543.5504150390625,
+    "y": 498.5027465820313,
+    "render": "blind_renders/blind_024.jpg"
+  },
+  {
+    "blind_index": 25,
+    "frame": 1770,
+    "track_id": 15,
+    "frame_bin": 36,
+    "frame_bin_inclusive": [
+      1750,
+      1799
+    ],
+    "x": 842.258056640625,
+    "y": 688.6157836914062,
+    "render": "blind_renders/blind_025.jpg"
+  },
+  {
+    "blind_index": 26,
+    "frame": 2853,
+    "track_id": 40,
+    "frame_bin": 58,
+    "frame_bin_inclusive": [
+      2850,
+      2899
+    ],
+    "x": 576.1051635742188,
+    "y": 350.0377197265625,
+    "render": "blind_renders/blind_026.jpg"
+  },
+  {
+    "blind_index": 27,
+    "frame": 1569,
+    "track_id": 40,
+    "frame_bin": 32,
+    "frame_bin_inclusive": [
+      1550,
+      1599
+    ],
+    "x": 467.6458435058594,
+    "y": 275.2167053222656,
+    "render": "blind_renders/blind_027.jpg"
+  },
+  {
+    "blind_index": 28,
+    "frame": 210,
+    "track_id": 24,
+    "frame_bin": 5,
+    "frame_bin_inclusive": [
+      200,
+      249
+    ],
+    "x": 991.15380859375,
+    "y": 285.7883605957031,
+    "render": "blind_renders/blind_028.jpg"
+  },
+  {
+    "blind_index": 29,
+    "frame": 2046,
+    "track_id": 3,
+    "frame_bin": 41,
+    "frame_bin_inclusive": [
+      2000,
+      2049
+    ],
+    "x": 379.24896240234375,
+    "y": 195.8153381347656,
+    "render": "blind_renders/blind_029.jpg"
+  },
+  {
+    "blind_index": 30,
+    "frame": 2529,
+    "track_id": 32,
+    "frame_bin": 51,
+    "frame_bin_inclusive": [
+      2500,
+      2549
+    ],
+    "x": 1241.1605224609375,
+    "y": 222.92123413085935,
+    "render": "blind_renders/blind_030.jpg"
+  },
+  {
+    "blind_index": 31,
+    "frame": 3012,
+    "track_id": 32,
+    "frame_bin": 61,
+    "frame_bin_inclusive": [
+      3000,
+      3049
+    ],
+    "x": 154.47006225585938,
+    "y": 269.6476135253906,
+    "render": "blind_renders/blind_031.jpg"
+  },
+  {
+    "blind_index": 32,
+    "frame": 1491,
+    "track_id": 28,
+    "frame_bin": 30,
+    "frame_bin_inclusive": [
+      1450,
+      1499
+    ],
+    "x": 764.2958984375,
+    "y": 456.3416137695313,
+    "render": "blind_renders/blind_032.jpg"
+  },
+  {
+    "blind_index": 33,
+    "frame": 864,
+    "track_id": 30,
+    "frame_bin": 18,
+    "frame_bin_inclusive": [
+      850,
+      899
+    ],
+    "x": 835.4801025390625,
+    "y": 684.8934936523438,
+    "render": "blind_renders/blind_033.jpg"
+  },
+  {
+    "blind_index": 34,
+    "frame": 2763,
+    "track_id": 41,
+    "frame_bin": 56,
+    "frame_bin_inclusive": [
+      2750,
+      2799
+    ],
+    "x": 410.2886352539063,
+    "y": 677.2608642578125,
+    "render": "blind_renders/blind_034.jpg"
+  },
+  {
+    "blind_index": 35,
+    "frame": 936,
+    "track_id": 5,
+    "frame_bin": 19,
+    "frame_bin_inclusive": [
+      900,
+      949
+    ],
+    "x": 600.4986572265625,
+    "y": 317.1114501953125,
+    "render": "blind_renders/blind_035.jpg"
+  },
+  {
+    "blind_index": 36,
+    "frame": 1026,
+    "track_id": 24,
+    "frame_bin": 21,
+    "frame_bin_inclusive": [
+      1000,
+      1049
+    ],
+    "x": 686.882568359375,
+    "y": 436.482666015625,
+    "render": "blind_renders/blind_036.jpg"
+  },
+  {
+    "blind_index": 37,
+    "frame": 972,
+    "track_id": 3,
+    "frame_bin": 20,
+    "frame_bin_inclusive": [
+      950,
+      999
+    ],
+    "x": 357.1866149902344,
+    "y": 676.8909912109375,
+    "render": "blind_renders/blind_037.jpg"
+  },
+  {
+    "blind_index": 38,
+    "frame": 1662,
+    "track_id": 10,
+    "frame_bin": 34,
+    "frame_bin_inclusive": [
+      1650,
+      1699
+    ],
+    "x": 394.9287109375,
+    "y": 298.2899780273437,
+    "render": "blind_renders/blind_038.jpg"
+  },
+  {
+    "blind_index": 39,
+    "frame": 3405,
+    "track_id": 41,
+    "frame_bin": 69,
+    "frame_bin_inclusive": [
+      3400,
+      3449
+    ],
+    "x": 1218.8695068359375,
+    "y": 539.53857421875,
+    "render": "blind_renders/blind_039.jpg"
+  },
+  {
+    "blind_index": 40,
+    "frame": 2145,
+    "track_id": 1,
+    "frame_bin": 43,
+    "frame_bin_inclusive": [
+      2100,
+      2149
+    ],
+    "x": 186.5594482421875,
+    "y": 231.8121032714844,
+    "render": "blind_renders/blind_040.jpg"
+  },
+  {
+    "blind_index": 41,
+    "frame": 1386,
+    "track_id": 4,
+    "frame_bin": 28,
+    "frame_bin_inclusive": [
+      1350,
+      1399
+    ],
+    "x": 545.9902954101562,
+    "y": 287.64471435546875,
+    "render": "blind_renders/blind_041.jpg"
+  },
+  {
+    "blind_index": 42,
+    "frame": 759,
+    "track_id": 32,
+    "frame_bin": 16,
+    "frame_bin_inclusive": [
+      750,
+      799
+    ],
+    "x": 198.0663299560547,
+    "y": 287.91619873046875,
+    "render": "blind_renders/blind_042.jpg"
+  },
+  {
+    "blind_index": 43,
+    "frame": 2325,
+    "track_id": 39,
+    "frame_bin": 47,
+    "frame_bin_inclusive": [
+      2300,
+      2349
+    ],
+    "x": 655.1871337890625,
+    "y": 289.77301025390625,
+    "render": "blind_renders/blind_043.jpg"
+  },
+  {
+    "blind_index": 44,
+    "frame": 1215,
+    "track_id": 14,
+    "frame_bin": 25,
+    "frame_bin_inclusive": [
+      1200,
+      1249
+    ],
+    "x": 727.430908203125,
+    "y": 713.3101196289062,
+    "render": "blind_renders/blind_044.jpg"
+  },
+  {
+    "blind_index": 45,
+    "frame": 3288,
+    "track_id": 45,
+    "frame_bin": 66,
+    "frame_bin_inclusive": [
+      3250,
+      3299
+    ],
+    "x": 606.590087890625,
+    "y": 376.09771728515625,
+    "render": "blind_renders/blind_045.jpg"
+  },
+  {
+    "blind_index": 46,
+    "frame": 2949,
+    "track_id": 3,
+    "frame_bin": 59,
+    "frame_bin_inclusive": [
+      2900,
+      2949
+    ],
+    "x": 453.7325744628906,
+    "y": 297.20068359375,
+    "render": "blind_renders/blind_046.jpg"
+  },
+  {
+    "blind_index": 47,
+    "frame": 1737,
+    "track_id": 8,
+    "frame_bin": 35,
+    "frame_bin_inclusive": [
+      1700,
+      1749
+    ],
+    "x": 591.0008544921875,
+    "y": 355.25494384765625,
+    "render": "blind_renders/blind_047.jpg"
+  },
+  {
+    "blind_index": 48,
+    "frame": 1536,
+    "track_id": 37,
+    "frame_bin": 31,
+    "frame_bin_inclusive": [
+      1500,
+      1549
+    ],
+    "x": 839.7349853515625,
+    "y": 687.22705078125,
+    "render": "blind_renders/blind_048.jpg"
+  },
+  {
+    "blind_index": 49,
+    "frame": 117,
+    "track_id": 1,
+    "frame_bin": 3,
+    "frame_bin_inclusive": [
+      100,
+      149
+    ],
+    "x": 668.6982421875,
+    "y": 699.78857421875,
+    "render": "blind_renders/blind_049.jpg"
+  },
+  {
+    "blind_index": 50,
+    "frame": 1830,
+    "track_id": 2,
+    "frame_bin": 37,
+    "frame_bin_inclusive": [
+      1800,
+      1849
+    ],
+    "x": 1185.207763671875,
+    "y": 463.5126037597656,
+    "render": "blind_renders/blind_050.jpg"
+  },
+  {
+    "blind_index": 51,
+    "frame": 2670,
+    "track_id": 6,
+    "frame_bin": 54,
+    "frame_bin_inclusive": [
+      2650,
+      2699
+    ],
+    "x": 1203.046630859375,
+    "y": 93.5042724609375,
+    "render": "blind_renders/blind_051.jpg"
+  },
+  {
+    "blind_index": 52,
+    "frame": 2277,
+    "track_id": 36,
+    "frame_bin": 46,
+    "frame_bin_inclusive": [
+      2250,
+      2299
+    ],
+    "x": 603.6993408203125,
+    "y": 351.69586181640625,
+    "render": "blind_renders/blind_052.jpg"
+  },
+  {
+    "blind_index": 53,
+    "frame": 21,
+    "track_id": 22,
+    "frame_bin": 1,
+    "frame_bin_inclusive": [
+      0,
+      49
+    ],
+    "x": 20.28526306152344,
+    "y": 400.658447265625,
+    "render": "blind_renders/blind_053.jpg"
+  },
+  {
+    "blind_index": 54,
+    "frame": 3240,
+    "track_id": 47,
+    "frame_bin": 65,
+    "frame_bin_inclusive": [
+      3200,
+      3249
+    ],
+    "x": 605.8463745117188,
+    "y": 615.4456787109375,
+    "render": "blind_renders/blind_054.jpg"
+  },
+  {
+    "blind_index": 55,
+    "frame": 3456,
+    "track_id": 45,
+    "frame_bin": 70,
+    "frame_bin_inclusive": [
+      3450,
+      3499
+    ],
+    "x": 605.851318359375,
+    "y": 375.61767578125,
+    "render": "blind_renders/blind_055.jpg"
+  },
+  {
+    "blind_index": 56,
+    "frame": 1923,
+    "track_id": 6,
+    "frame_bin": 39,
+    "frame_bin_inclusive": [
+      1900,
+      1949
+    ],
+    "x": 807.64453125,
+    "y": 567.7440185546875,
+    "render": "blind_renders/blind_056.jpg"
+  },
+  {
+    "blind_index": 57,
+    "frame": 624,
+    "track_id": 30,
+    "frame_bin": 13,
+    "frame_bin_inclusive": [
+      600,
+      649
+    ],
+    "x": 1239.740234375,
+    "y": 459.6917114257813,
+    "render": "blind_renders/blind_057.jpg"
+  },
+  {
+    "blind_index": 58,
+    "frame": 699,
+    "track_id": 19,
+    "frame_bin": 14,
+    "frame_bin_inclusive": [
+      650,
+      699
+    ],
+    "x": 971.3743896484376,
+    "y": 634.315673828125,
+    "render": "blind_renders/blind_058.jpg"
+  },
+  {
+    "blind_index": 59,
+    "frame": 291,
+    "track_id": 10,
+    "frame_bin": 6,
+    "frame_bin_inclusive": [
+      250,
+      299
+    ],
+    "x": 613.4471435546875,
+    "y": 437.7103271484375,
+    "render": "blind_renders/blind_059.jpg"
+  },
+  {
+    "blind_index": 60,
+    "frame": 2367,
+    "track_id": 25,
+    "frame_bin": 48,
+    "frame_bin_inclusive": [
+      2350,
+      2399
+    ],
+    "x": 508.3067626953125,
+    "y": 648.564208984375,
+    "render": "blind_renders/blind_060.jpg"
+  },
+  {
+    "blind_index": 61,
+    "frame": 1644,
+    "track_id": 6,
+    "frame_bin": 33,
+    "frame_bin_inclusive": [
+      1600,
+      1649
+    ],
+    "x": 860.9403686523438,
+    "y": 337.85107421875,
+    "render": "blind_renders/blind_061.jpg"
+  },
+  {
+    "blind_index": 62,
+    "frame": 3162,
+    "track_id": 33,
+    "frame_bin": 64,
+    "frame_bin_inclusive": [
+      3150,
+      3199
+    ],
+    "x": 635.0084228515625,
+    "y": 319.57525634765625,
+    "render": "blind_renders/blind_062.jpg"
+  },
+  {
+    "blind_index": 63,
+    "frame": 1326,
+    "track_id": 15,
+    "frame_bin": 27,
+    "frame_bin_inclusive": [
+      1300,
+      1349
+    ],
+    "x": 1111.05859375,
+    "y": 298.935302734375,
+    "render": "blind_renders/blind_063.jpg"
+  },
+  {
+    "blind_index": 64,
+    "frame": 2997,
+    "track_id": 5,
+    "frame_bin": 60,
+    "frame_bin_inclusive": [
+      2950,
+      2999
+    ],
+    "x": 754.8218994140625,
+    "y": 322.6959228515625,
+    "render": "blind_renders/blind_064.jpg"
+  },
+  {
+    "blind_index": 65,
+    "frame": 1854,
+    "track_id": 35,
+    "frame_bin": 38,
+    "frame_bin_inclusive": [
+      1850,
+      1899
+    ],
+    "x": 500.9129943847656,
+    "y": 353.90802001953125,
+    "render": "blind_renders/blind_065.jpg"
+  },
+  {
+    "blind_index": 66,
+    "frame": 2628,
+    "track_id": 40,
+    "frame_bin": 53,
+    "frame_bin_inclusive": [
+      2600,
+      2649
+    ],
+    "x": 166.3114013671875,
+    "y": 434.4771118164063,
+    "render": "blind_renders/blind_066.jpg"
+  },
+  {
+    "blind_index": 67,
+    "frame": 324,
+    "track_id": 23,
+    "frame_bin": 7,
+    "frame_bin_inclusive": [
+      300,
+      349
+    ],
+    "x": 267.7858581542969,
+    "y": 500.82275390625,
+    "render": "blind_renders/blind_067.jpg"
+  },
+  {
+    "blind_index": 68,
+    "frame": 2829,
+    "track_id": 36,
+    "frame_bin": 57,
+    "frame_bin_inclusive": [
+      2800,
+      2849
+    ],
+    "x": 1202.958984375,
+    "y": 594.1237182617188,
+    "render": "blind_renders/blind_068.jpg"
+  },
+  {
+    "blind_index": 69,
+    "frame": 2427,
+    "track_id": 17,
+    "frame_bin": 49,
+    "frame_bin_inclusive": [
+      2400,
+      2449
+    ],
+    "x": 485.25103759765625,
+    "y": 648.5167846679688,
+    "render": "blind_renders/blind_069.jpg"
+  },
+  {
+    "blind_index": 70,
+    "frame": 723,
+    "track_id": 6,
+    "frame_bin": 15,
+    "frame_bin_inclusive": [
+      700,
+      749
+    ],
+    "x": 578.8422241210938,
+    "y": 319.00555419921875,
+    "render": "blind_renders/blind_070.jpg"
+  },
+  {
+    "blind_index": 71,
+    "frame": 591,
+    "track_id": 13,
+    "frame_bin": 12,
+    "frame_bin_inclusive": [
+      550,
+      599
+    ],
+    "x": 239.31643676757807,
+    "y": 624.6428833007812,
+    "render": "blind_renders/blind_071.jpg"
+  },
+  {
+    "blind_index": 72,
+    "frame": 468,
+    "track_id": 15,
+    "frame_bin": 10,
+    "frame_bin_inclusive": [
+      450,
+      499
+    ],
+    "x": 111.9203643798828,
+    "y": 405.1194458007813,
+    "render": "blind_renders/blind_072.jpg"
+  }
+]
