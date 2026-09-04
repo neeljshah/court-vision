@@ -1,0 +1,1236 @@
+{
+  "discarded": [],
+  "failed": {
+    "timing": {
+      "ended_epoch": 1788498180.543353,
+      "exit_code": 3,
+      "started_epoch": 1788498131.9879565,
+      "wall_seconds": 48.55539655685425
+    },
+    "frame_rows": [
+      {
+        "pre_yolo": 0.0002838820219039917,
+        "yolo": 0.23999233916401863,
+        "post_yolo": 0.002124851569533348,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.24240107275545597
+      },
+      {
+        "pre_yolo": 1.819990575313568e-05,
+        "yolo": 2.9088929295539856e-05,
+        "post_yolo": 0.0015994329005479813,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0016467217355966568
+      },
+      {
+        "pre_yolo": 1.5253201127052307e-05,
+        "yolo": 2.5499612092971802e-05,
+        "post_yolo": 0.001535080373287201,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.001575833186507225
+      },
+      {
+        "pre_yolo": 1.5128403902053833e-05,
+        "yolo": 2.3951753973960876e-05,
+        "post_yolo": 0.00150253064930439,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0015416108071804047
+      },
+      {
+        "pre_yolo": 2.289004623889923e-05,
+        "yolo": 3.10409814119339e-05,
+        "post_yolo": 0.002525782212615013,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0025797132402658463
+      },
+      {
+        "pre_yolo": 1.2760981917381287e-05,
+        "yolo": 2.0487233996391296e-05,
+        "post_yolo": 0.0020205117762088776,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.00205375999212265
+      },
+      {
+        "pre_yolo": 1.1339783668518066e-05,
+        "yolo": 0.21912078000605106,
+        "post_yolo": 0.0019360445439815521,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.22106816433370113
+      },
+      {
+        "pre_yolo": 1.446157693862915e-05,
+        "yolo": 2.1072104573249817e-05,
+        "post_yolo": 0.0014910995960235596,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0015266332775354385
+      },
+      {
+        "pre_yolo": 1.1267140507698059e-05,
+        "yolo": 1.981295645236969e-05,
+        "post_yolo": 0.0014882702380418777,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0015193503350019455
+      },
+      {
+        "pre_yolo": 1.4469027519226074e-05,
+        "yolo": 2.237968146800995e-05,
+        "post_yolo": 0.0015408527106046677,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0015777014195919037
+      },
+      {
+        "pre_yolo": 1.0889023542404175e-05,
+        "yolo": 1.950003206729889e-05,
+        "post_yolo": 0.0016081016510725021,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0016384907066822052
+      },
+      {
+        "pre_yolo": 1.6551464796066284e-05,
+        "yolo": 2.2629275918006897e-05,
+        "post_yolo": 0.001570969820022583,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0016101505607366562
+      },
+      {
+        "pre_yolo": 1.1900439858436584e-05,
+        "yolo": 2.0410865545272827e-05,
+        "post_yolo": 0.0015579815953969955,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.001590292900800705
+      },
+      {
+        "pre_yolo": 1.2010335922241211e-05,
+        "yolo": 0.22197677567601204,
+        "post_yolo": 0.0016105901449918747,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.22359937615692616
+      },
+      {
+        "pre_yolo": 2.2299587726593018e-05,
+        "yolo": 5.201995372772217e-05,
+        "post_yolo": 0.003268873319029808,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0033431928604841232
+      },
+      {
+        "pre_yolo": 2.1228566765785217e-05,
+        "yolo": 3.090128302574158e-05,
+        "post_yolo": 0.016892824321985245,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.01694495417177677
+      },
+      {
+        "pre_yolo": 2.7028843760490417e-05,
+        "yolo": 3.998167812824249e-05,
+        "post_yolo": 0.008929116651415825,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.008996127173304558
+      },
+      {
+        "pre_yolo": 1.780875027179718e-05,
+        "yolo": 2.6769936084747314e-05,
+        "post_yolo": 0.013510080054402351,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.013554658740758896
+      },
+      {
+        "pre_yolo": 2.15284526348114e-05,
+        "yolo": 3.1558796763420105e-05,
+        "post_yolo": 0.0017730221152305603,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0018261093646287918
+      },
+      {
+        "pre_yolo": 2.4219974875450134e-05,
+        "yolo": 3.540702164173126e-05,
+        "post_yolo": 0.0021690931171178818,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.002228720113635063
+      },
+      {
+        "pre_yolo": 1.5132129192352295e-05,
+        "yolo": 0.23661475628614426,
+        "post_yolo": 0.0017074383795261383,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.23833732679486275
+      },
+      {
+        "pre_yolo": 1.8630176782608032e-05,
+        "yolo": 3.1750649213790894e-05,
+        "post_yolo": 0.0016518402844667435,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0017022211104631424
+      },
+      {
+        "pre_yolo": 1.818127930164337e-05,
+        "yolo": 3.008916974067688e-05,
+        "post_yolo": 0.0017551910132169724,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0018034614622592926
+      },
+      {
+        "pre_yolo": 1.9952654838562012e-05,
+        "yolo": 3.2510608434677124e-05,
+        "post_yolo": 0.0016125012189149857,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0016649644821882248
+      },
+      {
+        "pre_yolo": 2.1239742636680603e-05,
+        "yolo": 3.392063081264496e-05,
+        "post_yolo": 0.0016969796270132065,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.001752140000462532
+      },
+      {
+        "pre_yolo": 1.9567087292671204e-05,
+        "yolo": 3.094039857387543e-05,
+        "post_yolo": 0.0016941111534833908,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0017446186393499374
+      },
+      {
+        "pre_yolo": 1.8659979104995728e-05,
+        "yolo": 3.283284604549408e-05,
+        "post_yolo": 0.001587849110364914,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0016393419355154037
+      },
+      {
+        "pre_yolo": 1.6473233699798584e-05,
+        "yolo": 0.22630557604134083,
+        "post_yolo": 0.0020189620554447174,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.22834101133048534
+      },
+      {
+        "pre_yolo": 6.381981074810028e-05,
+        "yolo": 9.420886635780334e-05,
+        "post_yolo": 0.001796763390302658,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0019547920674085617
+      },
+      {
+        "pre_yolo": 2.728775143623352e-05,
+        "yolo": 4.611164331436157e-05,
+        "post_yolo": 0.002035493031144142,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0021088924258947372
+      },
+      {
+        "pre_yolo": 2.9947608709335327e-05,
+        "yolo": 4.1931867599487305e-05,
+        "post_yolo": 0.002213001251220703,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0022848807275295258
+      },
+      {
+        "pre_yolo": 2.9239803552627563e-05,
+        "yolo": 3.821961581707001e-05,
+        "post_yolo": 0.0018524527549743652,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0019199121743440628
+      },
+      {
+        "pre_yolo": 1.963973045349121e-05,
+        "yolo": 3.1031668186187744e-05,
+        "post_yolo": 0.0016292203217744827,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0016798917204141617
+      },
+      {
+        "pre_yolo": 1.9786879420280457e-05,
+        "yolo": 2.711266279220581e-05,
+        "post_yolo": 0.0017935000360012054,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0018403995782136917
+      },
+      {
+        "pre_yolo": 1.6633421182632446e-05,
+        "yolo": 0.22588787600398064,
+        "post_yolo": 0.0018682312220335007,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.22777274064719677
+      },
+      {
+        "pre_yolo": 1.8559396266937256e-05,
+        "yolo": 3.186054527759552e-05,
+        "post_yolo": 0.001618649810552597,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0016690697520971298
+      },
+      {
+        "pre_yolo": 2.4860724806785583e-05,
+        "yolo": 4.3099746108055115e-05,
+        "post_yolo": 0.0017721913754940033,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.001840151846408844
+      },
+      {
+        "pre_yolo": 2.0839273929595947e-05,
+        "yolo": 3.4049153327941895e-05,
+        "post_yolo": 0.0018198508769273758,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0018747393041849136
+      },
+      {
+        "pre_yolo": 2.177990972995758e-05,
+        "yolo": 3.2629817724227905e-05,
+        "post_yolo": 0.0016321521252393723,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0016865618526935577
+      },
+      {
+        "pre_yolo": 1.950003206729889e-05,
+        "yolo": 3.621913492679596e-05,
+        "post_yolo": 0.0016755107790231705,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0017312299460172653
+      },
+      {
+        "pre_yolo": 2.251937985420227e-05,
+        "yolo": 3.488175570964813e-05,
+        "post_yolo": 0.0017636511474847794,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0018210522830486298
+      },
+      {
+        "pre_yolo": 1.7449259757995605e-05,
+        "yolo": 0.23008663021028042,
+        "post_yolo": 0.0018088854849338531,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.23191296495497227
+      },
+      {
+        "pre_yolo": 1.905113458633423e-05,
+        "yolo": 3.160163760185242e-05,
+        "post_yolo": 0.0016410592943429947,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0016917120665311813
+      },
+      {
+        "pre_yolo": 2.2739171981811523e-05,
+        "yolo": 3.431178629398346e-05,
+        "post_yolo": 0.001774640753865242,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.001831691712141037
+      },
+      {
+        "pre_yolo": 1.94404274225235e-05,
+        "yolo": 3.216974437236786e-05,
+        "post_yolo": 0.0018346216529607773,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0018862318247556686
+      },
+      {
+        "pre_yolo": 2.110004425048828e-05,
+        "yolo": 3.120116889476776e-05,
+        "post_yolo": 0.0016705188900232315,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0017228201031684875
+      },
+      {
+        "pre_yolo": 1.9667670130729675e-05,
+        "yolo": 3.1732022762298584e-05,
+        "post_yolo": 0.0026268605142831802,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0026782602071762085
+      },
+      {
+        "pre_yolo": 2.036057412624359e-05,
+        "yolo": 3.089010715484619e-05,
+        "post_yolo": 0.0018117111176252365,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0018629617989063263
+      },
+      {
+        "pre_yolo": 2.3873522877693176e-05,
+        "yolo": 0.23861041478812695,
+        "post_yolo": 0.0017687920480966568,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.2404030803591013
+      },
+      {
+        "pre_yolo": 2.027861773967743e-05,
+        "yolo": 3.0452385544776917e-05,
+        "post_yolo": 0.001819150522351265,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0018698815256357193
+      },
+      {
+        "pre_yolo": 2.097897231578827e-05,
+        "yolo": 3.3307820558547974e-05,
+        "post_yolo": 0.0026168841868638992,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0026711709797382355
+      },
+      {
+        "pre_yolo": 1.9200146198272705e-05,
+        "yolo": 3.071129322052002e-05,
+        "post_yolo": 0.0016584694385528564,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0017083808779716492
+      },
+      {
+        "pre_yolo": 6.780028343200684e-05,
+        "yolo": 7.767975330352783e-05,
+        "post_yolo": 0.002103172242641449,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0022486522793769836
+      },
+      {
+        "pre_yolo": 2.0712614059448242e-05,
+        "yolo": 2.9919669032096863e-05,
+        "post_yolo": 0.0020764898508787155,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0021271221339702606
+      },
+      {
+        "pre_yolo": 2.0507723093032837e-05,
+        "yolo": 3.0159950256347656e-05,
+        "post_yolo": 0.002076171338558197,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0021268390119075775
+      },
+      {
+        "pre_yolo": 1.54934823513031e-05,
+        "yolo": 0.23711125552654266,
+        "post_yolo": 0.0018285922706127167,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.23895534127950668
+      },
+      {
+        "pre_yolo": 2.1150335669517517e-05,
+        "yolo": 2.9809772968292236e-05,
+        "post_yolo": 0.0021016132086515427,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0021525733172893524
+      },
+      {
+        "pre_yolo": 1.83936208486557e-05,
+        "yolo": 3.0027702450752258e-05,
+        "post_yolo": 0.0020383410155773163,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0020867623388767242
+      },
+      {
+        "pre_yolo": 2.1539628505706787e-05,
+        "yolo": 3.0290335416793823e-05,
+        "post_yolo": 0.0017339419573545456,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0017857719212770462
+      },
+      {
+        "pre_yolo": 6.618164479732513e-05,
+        "yolo": 5.5208802223205566e-05,
+        "post_yolo": 0.0066238343715667725,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.006745224818587303
+      },
+      {
+        "pre_yolo": 2.0172446966171265e-05,
+        "yolo": 2.9567629098892212e-05,
+        "post_yolo": 0.00162443146109581,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0016741715371608734
+      },
+      {
+        "pre_yolo": 2.204999327659607e-05,
+        "yolo": 3.119930624961853e-05,
+        "post_yolo": 0.0018108822405338287,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0018641315400600433
+      },
+      {
+        "pre_yolo": 1.4400109648704529e-05,
+        "yolo": 0.2237324547022581,
+        "post_yolo": 0.0020434819161891937,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.225790336728096
+      },
+      {
+        "pre_yolo": 1.7570331692695618e-05,
+        "yolo": 2.611987292766571e-05,
+        "post_yolo": 0.0017829332500696182,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0018266234546899796
+      },
+      {
+        "pre_yolo": 1.7520040273666382e-05,
+        "yolo": 2.619996666908264e-05,
+        "post_yolo": 0.0019186194986104965,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0019623395055532455
+      },
+      {
+        "pre_yolo": 2.0330771803855896e-05,
+        "yolo": 2.61794775724411e-05,
+        "post_yolo": 0.002071879804134369,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.002118390053510666
+      },
+      {
+        "pre_yolo": 2.1301209926605225e-05,
+        "yolo": 2.7630478143692017e-05,
+        "post_yolo": 0.0017931703478097916,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0018421020358800888
+      },
+      {
+        "pre_yolo": 1.743994653224945e-05,
+        "yolo": 2.70698219537735e-05,
+        "post_yolo": 0.0017830319702625275,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0018275417387485504
+      },
+      {
+        "pre_yolo": 2.4380162358283997e-05,
+        "yolo": 3.618001937866211e-05,
+        "post_yolo": 0.0020804107189178467,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.002140970900654793
+      },
+      {
+        "pre_yolo": 1.6199424862861633e-05,
+        "yolo": 0.22578180767595768,
+        "post_yolo": 0.001987023279070854,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.2277850303798914
+      },
+      {
+        "pre_yolo": 2.1919608116149902e-05,
+        "yolo": 3.048032522201538e-05,
+        "post_yolo": 0.0018601622432470322,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0019125621765851974
+      },
+      {
+        "pre_yolo": 1.77919864654541e-05,
+        "yolo": 2.8127804398536682e-05,
+        "post_yolo": 0.002296673133969307,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0023425929248332977
+      },
+      {
+        "pre_yolo": 2.242065966129303e-05,
+        "yolo": 2.9210001230239868e-05,
+        "post_yolo": 0.00177721306681633,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0018288437277078629
+      },
+      {
+        "pre_yolo": 2.028048038482666e-05,
+        "yolo": 2.789124846458435e-05,
+        "post_yolo": 0.0017314907163381577,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0017796624451875687
+      },
+      {
+        "pre_yolo": 1.7900019884109497e-05,
+        "yolo": 2.90796160697937e-05,
+        "post_yolo": 0.0019529517740011215,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0019999314099550247
+      },
+      {
+        "pre_yolo": 1.9179657101631165e-05,
+        "yolo": 2.6220455765724182e-05,
+        "post_yolo": 0.0016882792115211487,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.001733679324388504
+      },
+      {
+        "pre_yolo": 1.673959195613861e-05,
+        "yolo": 0.22795573808252811,
+        "post_yolo": 0.0019282102584838867,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.22990068793296814
+      },
+      {
+        "pre_yolo": 1.8419697880744934e-05,
+        "yolo": 2.7021393179893494e-05,
+        "post_yolo": 0.0019114594906568527,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.001956900581717491
+      },
+      {
+        "pre_yolo": 1.735985279083252e-05,
+        "yolo": 2.5779008865356445e-05,
+        "post_yolo": 0.0017566811293363571,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.001799819990992546
+      },
+      {
+        "pre_yolo": 1.7609447240829468e-05,
+        "yolo": 2.7710571885108948e-05,
+        "post_yolo": 0.0016802717000246048,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0017255917191505432
+      },
+      {
+        "pre_yolo": 1.7201527953147888e-05,
+        "yolo": 2.392008900642395e-05,
+        "post_yolo": 0.0019183792173862457,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0019595008343458176
+      },
+      {
+        "pre_yolo": 2.6911497116088867e-05,
+        "yolo": 3.800913691520691e-05,
+        "post_yolo": 0.0017674416303634644,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0018323622643947601
+      },
+      {
+        "pre_yolo": 2.091936767101288e-05,
+        "yolo": 0.00021412968635559082,
+        "post_yolo": 0.0019081030040979385,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0021431520581245422
+      },
+      {
+        "pre_yolo": 1.4100223779678345e-05,
+        "yolo": 0.2212749719619751,
+        "post_yolo": 0.002424292266368866,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.22371336445212364
+      },
+      {
+        "pre_yolo": 1.8050894141197205e-05,
+        "yolo": 2.834014594554901e-05,
+        "post_yolo": 0.0017326213419437408,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.001779012382030487
+      },
+      {
+        "pre_yolo": 1.887977123260498e-05,
+        "yolo": 2.677924931049347e-05,
+        "post_yolo": 0.002275163307785988,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0023208223283290863
+      },
+      {
+        "pre_yolo": 1.4288350939750671e-05,
+        "yolo": 2.1811574697494507e-05,
+        "post_yolo": 0.001948641613125801,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0019847415387630463
+      },
+      {
+        "pre_yolo": 1.885928213596344e-05,
+        "yolo": 2.5101006031036377e-05,
+        "post_yolo": 0.0023055188357830048,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0023494791239500046
+      },
+      {
+        "pre_yolo": 1.9980594515800476e-05,
+        "yolo": 3.076717257499695e-05,
+        "post_yolo": 0.0016821417957544327,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.00173288956284523
+      },
+      {
+        "pre_yolo": 1.9568949937820435e-05,
+        "yolo": 3.102980554103851e-05,
+        "post_yolo": 0.0020620524883270264,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0021126512438058853
+      },
+      {
+        "pre_yolo": 1.380033791065216e-05,
+        "yolo": 0.21709574200212955,
+        "post_yolo": 0.004179293289780617,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.22128883562982082
+      },
+      {
+        "pre_yolo": 1.990795135498047e-05,
+        "yolo": 2.843327820301056e-05,
+        "post_yolo": 0.001613229513168335,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.001661570742726326
+      },
+      {
+        "pre_yolo": 2.3350119590759277e-05,
+        "yolo": 3.491900861263275e-05,
+        "post_yolo": 0.001887032762169838,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.00194530189037323
+      },
+      {
+        "pre_yolo": 1.953914761543274e-05,
+        "yolo": 2.761930227279663e-05,
+        "post_yolo": 0.0017146524041891098,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0017618108540773392
+      },
+      {
+        "pre_yolo": 1.7931684851646423e-05,
+        "yolo": 2.6298686861991882e-05,
+        "post_yolo": 0.0016184020787477493,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0016626324504613876
+      },
+      {
+        "pre_yolo": 2.1969899535179138e-05,
+        "yolo": 2.9029324650764465e-05,
+        "post_yolo": 0.0019549913704395294,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.002005990594625473
+      },
+      {
+        "pre_yolo": 1.9459053874015808e-05,
+        "yolo": 2.790801227092743e-05,
+        "post_yolo": 0.0016919616609811783,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0017393287271261215
+      },
+      {
+        "pre_yolo": 1.4619901776313782e-05,
+        "yolo": 0.2608532253652811,
+        "post_yolo": 0.0017653629183769226,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.26263320818543434
+      },
+      {
+        "pre_yolo": 2.063065767288208e-05,
+        "yolo": 3.1229108572006226e-05,
+        "post_yolo": 0.0019146241247653961,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0019664838910102844
+      },
+      {
+        "pre_yolo": 1.8268823623657227e-05,
+        "yolo": 3.178045153617859e-05,
+        "post_yolo": 0.0024862829595804214,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0025363322347402573
+      },
+      {
+        "pre_yolo": 1.9701197743415833e-05,
+        "yolo": 2.7799978852272034e-05,
+        "post_yolo": 0.0017259512096643448,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0017734523862600327
+      },
+      {
+        "pre_yolo": 1.890026032924652e-05,
+        "yolo": 4.0220096707344055e-05,
+        "post_yolo": 0.0024454835802316666,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.002504603937268257
+      },
+      {
+        "pre_yolo": 1.87605619430542e-05,
+        "yolo": 2.9960647225379944e-05,
+        "post_yolo": 0.001701071858406067,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.001749793067574501
+      },
+      {
+        "pre_yolo": 1.8652528524398804e-05,
+        "yolo": 2.9826536774635315e-05,
+        "post_yolo": 0.0017011333256959915,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0017496123909950256
+      },
+      {
+        "pre_yolo": 1.0959804058074951e-05,
+        "yolo": 0.22215274721384048,
+        "post_yolo": 0.0024453215301036835,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.22460902854800224
+      },
+      {
+        "pre_yolo": 1.6240403056144714e-05,
+        "yolo": 2.5559216737747192e-05,
+        "post_yolo": 0.0016568303108215332,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0016986299306154251
+      },
+      {
+        "pre_yolo": 1.5640631318092346e-05,
+        "yolo": 2.7349218726158142e-05,
+        "post_yolo": 0.0016870610415935516,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0017300508916378021
+      },
+      {
+        "pre_yolo": 1.6860663890838623e-05,
+        "yolo": 2.961978316307068e-05,
+        "post_yolo": 0.002315472811460495,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0023619532585144043
+      },
+      {
+        "pre_yolo": 1.800060272216797e-05,
+        "yolo": 2.7999281883239746e-05,
+        "post_yolo": 0.0016153808683156967,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0016613807529211044
+      },
+      {
+        "pre_yolo": 1.9239261746406555e-05,
+        "yolo": 2.6650726795196533e-05,
+        "post_yolo": 0.0015904717147350311,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0016363617032766342
+      },
+      {
+        "pre_yolo": 2.0021572709083557e-05,
+        "yolo": 2.7529895305633545e-05,
+        "post_yolo": 0.0021634604781866074,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0022110119462013245
+      },
+      {
+        "pre_yolo": 1.841038465499878e-05,
+        "yolo": 0.22831526957452297,
+        "post_yolo": 0.002152891829609871,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.23048657178878784
+      },
+      {
+        "pre_yolo": 1.9330531358718872e-05,
+        "yolo": 2.8369948267936707e-05,
+        "post_yolo": 0.0016028620302677155,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.001650562509894371
+      },
+      {
+        "pre_yolo": 1.9680708646774292e-05,
+        "yolo": 2.9008835554122925e-05,
+        "post_yolo": 0.003267694264650345,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.003316383808851242
+      },
+      {
+        "pre_yolo": 1.8699094653129578e-05,
+        "yolo": 2.6460736989974976e-05,
+        "post_yolo": 0.0017015188932418823,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0017466787248849869
+      },
+      {
+        "pre_yolo": 2.032145857810974e-05,
+        "yolo": 2.8189271688461304e-05,
+        "post_yolo": 0.0016384515911340714,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0016869623214006424
+      },
+      {
+        "pre_yolo": 1.8659979104995728e-05,
+        "yolo": 2.674013376235962e-05,
+        "post_yolo": 0.0021890904754400253,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.0022344905883073807
+      },
+      {
+        "pre_yolo": 4.132091999053955e-05,
+        "yolo": 4.423968493938446e-05,
+        "post_yolo": 0.001669401302933693,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.001754961907863617
+      },
+      {
+        "pre_yolo": 1.41095370054245e-05,
+        "yolo": 0.24190893024206161,
+        "post_yolo": 0.001699281856417656,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.2436223216354847
+      },
+      {
+        "pre_yolo": 1.8788501620292664e-05,
+        "yolo": 2.690032124519348e-05,
+        "post_yolo": 0.00487099401652813,
+        "crops_step3": 0.0,
+        "osnet": 0.0,
+        "assign_state": 0.0,
+        "render": 0.0,
+        "total": 0.004916682839393616
+      }
+    ],
+    "n_frames": 120,
+    "distribution_seconds": {
+      "median": 0.0019125621765851974,
+      "p90": 0.225790336728096,
+      "max": 0.26263320818543434
+    },
+    "mean_stage_seconds": {
+      "pre_yolo": 2.2540070737401645e-05,
+      "yolo": 0.034568032280852395,
+      "post_yolo": 0.0022469472605735064,
+      "crops_step3": 0.0,
+      "osnet": 0.0,
+      "assign_state": 0.0,
+      "render": 0.0,
+      "total": 0.036837519612163305
+    },
+    "mean_unattributed_seconds": 0.0,
+    "load_context_before": "2026-09-04T05:02:11Z\ncores=256\n 05:02:11 up 147 days, 19:16,  0 user,  load average: 43.59, 22.37, 20.93\n               total        used        free      shared  buff/cache   available\nMem:     1081949794304 150993489920 378396889088  2355212288 563491180544 930956304384\nSwap:              0           0           0\nNVIDIA GeForce RTX 3090, 0, 354, 24576\nTOP_CPU\n2857211 2857203  100  0.0  4224       00:00 ps -eo pid=,ppid=,pcpu=,pmem=,rss=,etime=,args= --sort=-pcpu\n2390989   33064 69.5  0.1 1797820  02:20:19 /usr/local/bin/python -m scripts.platformkit.adapter_run tennis data/footage_bridge/tennis__tennis_03.mp4 tennis_03\n1999712       1 17.4  0.1 1547708  03:29:03 /usr/local/bin/python -m scripts.platformkit.foundry_runner --db data/cache/eval_gate/hypotheses.sqlite --sport mlb,nba,soccer,tennis --predictor real --batch 50 --screen-rows 800 --poll-seconds 30\n  36783       1 12.8  0.0 542928   14:44:34 /usr/local/bin/python -u -m scripts.platformkit.ingame.inplay_capture_runner\n  36195       1  5.7  0.0 732916   14:44:41 /usr/local/bin/python -u -m predict_service.scheduler --interval 600\n2857203 2857192  5.5  0.0  3564       00:00 bash -s\n2857192     571  1.9  0.0  9940       00:01 sshd: root@notty\n  36714       1  1.7  0.0 52220    14:44:35 /usr/local/bin/python -u -m scripts.platformkit.odds_provider.inplay_runner\n  36848       1  0.4  0.0 367356   14:44:33 /usr/local/bin/python -u -m scripts.platformkit.pm_trading.pm_paper_tick_runner\n  36420       1  0.3  0.0 651560   14:44:38 /usr/local/bin/python -u -m scripts.platformkit.pm_trading.auto_loop --forever\n  33064   33061  0.2  0.0 329492   14:48:12 python -u -m scripts.platformkit.track_daemon --workers 10 --forever --interval 15\n  36323       1  0.1  0.0 69336    14:44:40 /usr/local/bin/python -u -m predict_service.app\n  37006       1  0.0  0.0 45640    14:44:32 /usr/local/bin/python -u -m scripts.platformkit.pm_trading.kalshi_scan_runner\n  37020       1  0.0  0.0 43048    14:44:31 /usr/local/bin/python -u -m scripts.platformkit.pm_trading.pm_close_capture_runner\n  37085       1  0.0  0.0 197784   14:44:30 /usr/local/bin/python -u -m scripts.platformkit.ingame.ingame_paper_settle --interval 900\n  36570       1  0.0  0.0 41172    14:44:36 /usr/local/bin/python -u -m scripts.platformkit.paper.bankroll_daemon\n  37176       1  0.0  0.0 39312    14:44:29 /usr/local/bin/python -u -m scripts.platformkit.paper.settle_sweep_daemon --interval 3600\n  37268       1  0.0  0.0 39300    14:44:28 /usr/local/bin/python -u -m scripts.platformkit.evidence.exec_evidence_daemon --interval 3600\n    571       1  0.0  0.0  4248    15:27:28 sshd: /usr/sbin/sshd [listener] 0 of 10-100 startups\n    582     576  0.0  0.0 103700   15:27:28 /usr/local/bin/python /usr/local/bin/jupyter-lab --allow-root --no-browser --port=8888 --ip=* --FileContentsManager.delete_to_trash=False --ServerApp.terminado_settings={\"shell_command\":[\"/bin/bash\"]} --IdentityProvider.token=b0vl5s9fmgxrql4ats8c --ServerApp.allow_origin=* --ServerApp.preferred_dir=/workspace\n      1       0  0.0  0.0   820    15:27:31 /sbin/docker-init -- /opt/nvidia/nvidia_entrypoint.sh /start.sh\n  33061       1  0.0  0.0  3492    14:48:12 bash /workspace/keep_track_daemon.sh\n2581104     571  0.0  0.0  9956    01:58:31 sshd: root@notty\n    492       1  0.0  0.0  3384    15:27:30 /bin/bash /start.sh\n    523       1  0.0  0.0  3516    15:27:30 nginx: master process /usr/sbin/nginx\n    524     523  0.0  0.0  5232    15:27:30 nginx: worker process\n    576     492  0.0  0.0  2228    15:27:28 /bin/bash /start.sh\n    584     492  0.0  0.0  1500    15:27:28 sleep infinity\n2854080   33061  0.0  0.0  1992       00:17 sleep 60\n2857212 2857203  0.0  0.0  1884       00:00 head -40\nSOURCE_HASHES\n7aec5d57e0357ff4585deabeb7a18bbc5bcb2c197cefe5fad591c16ca3bc761b  /workspace/nba-ai-system/scripts/run_clip.py\n047dd04e9b12b588c560f68dbab32aa1855f791c2e1a46f19f4e082f50c4f331  /workspace/nba-ai-system/src/pipeline/unified_pipeline.py\ndf2ae698ae03e804f67639434d8303638aea9087c3169c016af5a3734dd474d7  /workspace/nba-ai-system/src/tracking/advanced_tracker.py\nINPUT\n/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4|2931985407\n1920,1080,174430\n",
+    "load_context_after": "2026-09-04T05:03:00Z\ncores=256\n 05:03:00 up 147 days, 19:17,  0 user,  load average: 27.05, 21.15, 20.59\n               total        used        free      shared  buff/cache   available\nMem:     1081949794304 151276834816 378018357248  2355212288 563586453504 930672959488\nSwap:              0           0           0\nNVIDIA GeForce RTX 3090, 0, 354, 24576\nTOP_CPU\n2390989   33064 69.9  0.1 1798484  02:21:08 /usr/local/bin/python -m scripts.platformkit.adapter_run tennis data/footage_bridge/tennis__tennis_03.mp4 tennis_03\n1999712       1 17.5  0.1 1550636  03:29:52 /usr/local/bin/python -m scripts.platformkit.foundry_runner --db data/cache/eval_gate/hypotheses.sqlite --sport mlb,nba,soccer,tennis --predictor real --batch 50 --screen-rows 800 --poll-seconds 30\n  36783       1 12.8  0.0 542928   14:45:23 /usr/local/bin/python -u -m scripts.platformkit.ingame.inplay_capture_runner\n  36195       1  5.7  0.0 732916   14:45:30 /usr/local/bin/python -u -m predict_service.scheduler --interval 600\n  36714       1  1.7  0.0 52220    14:45:24 /usr/local/bin/python -u -m scripts.platformkit.odds_provider.inplay_runner\n  36848       1  0.4  0.0 364856   14:45:22 /usr/local/bin/python -u -m scripts.platformkit.pm_trading.pm_paper_tick_runner\n  36420       1  0.3  0.0 651560   14:45:27 /usr/local/bin/python -u -m scripts.platformkit.pm_trading.auto_loop --forever\n  33064   33061  0.2  0.0 329492   14:49:00 python -u -m scripts.platformkit.track_daemon --workers 10 --forever --interval 15\n  36323       1  0.1  0.0 69336    14:45:29 /usr/local/bin/python -u -m predict_service.app\n  37006       1  0.0  0.0 45640    14:45:21 /usr/local/bin/python -u -m scripts.platformkit.pm_trading.kalshi_scan_runner\n  37020       1  0.0  0.0 43048    14:45:20 /usr/local/bin/python -u -m scripts.platformkit.pm_trading.pm_close_capture_runner\n2857192     571  0.0  0.0  9940       00:50 sshd: root@notty\n  37085       1  0.0  0.0 197784   14:45:19 /usr/local/bin/python -u -m scripts.platformkit.ingame.ingame_paper_settle --interval 900\n2857203 2857192  0.0  0.0  3584       00:49 bash -s\n  36570       1  0.0  0.0 41172    14:45:25 /usr/local/bin/python -u -m scripts.platformkit.paper.bankroll_daemon\n  37176       1  0.0  0.0 39312    14:45:18 /usr/local/bin/python -u -m scripts.platformkit.paper.settle_sweep_daemon --interval 3600\n  37268       1  0.0  0.0 39300    14:45:17 /usr/local/bin/python -u -m scripts.platformkit.evidence.exec_evidence_daemon --interval 3600\n    571       1  0.0  0.0  4248    15:28:16 sshd: /usr/sbin/sshd [listener] 0 of 10-100 startups\n    582     576  0.0  0.0 103700   15:28:16 /usr/local/bin/python /usr/local/bin/jupyter-lab --allow-root --no-browser --port=8888 --ip=* --FileContentsManager.delete_to_trash=False --ServerApp.terminado_settings={\"shell_command\":[\"/bin/bash\"]} --IdentityProvider.token=b0vl5s9fmgxrql4ats8c --ServerApp.allow_origin=* --ServerApp.preferred_dir=/workspace\n      1       0  0.0  0.0   820    15:28:19 /sbin/docker-init -- /opt/nvidia/nvidia_entrypoint.sh /start.sh\n  33061       1  0.0  0.0  3492    14:49:01 bash /workspace/keep_track_daemon.sh\n2581104     571  0.0  0.0  9956    01:59:20 sshd: root@notty\n    492       1  0.0  0.0  3384    15:28:19 /bin/bash /start.sh\n    523       1  0.0  0.0  3516    15:28:19 nginx: master process /usr/sbin/nginx\n    524     523  0.0  0.0  5232    15:28:19 nginx: worker process\n    576     492  0.0  0.0  2228    15:28:16 /bin/bash /start.sh\n    584     492  0.0  0.0  1500    15:28:16 sleep infinity\n2865504   33061  0.0  0.0  1916       00:06 sleep 60\n2866507 2857203  0.0  0.0  4124       00:00 ps -eo pid=,ppid=,pcpu=,pmem=,rss=,etime=,args= --sort=-pcpu\n2866508 2857203  0.0  0.0  1960       00:00 head -40\nSOURCE_HASHES\n7aec5d57e0357ff4585deabeb7a18bbc5bcb2c197cefe5fad591c16ca3bc761b  /workspace/nba-ai-system/scripts/run_clip.py\n047dd04e9b12b588c560f68dbab32aa1855f791c2e1a46f19f4e082f50c4f331  /workspace/nba-ai-system/src/pipeline/unified_pipeline.py\ndf2ae698ae03e804f67639434d8303638aea9087c3169c016af5a3734dd474d7  /workspace/nba-ai-system/src/tracking/advanced_tracker.py\nINPUT\n/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4|2931985407\n1920,1080,174430\n",
+    "route_log": "DATABASE_URL not set \u2014 _pg_write_tracking_rows will skip (SQLite-only mode). Set DATABASE_URL=postgresql://... to enable PostgreSQL writes.\nWARN: YOLO-NAS shot-detection weights not found (looked for: None). Shot-attempt / made-basket detection will be disabled. Ball tracking is unaffected (uses separate yolov8n_ball engine). To restore: place YOLO-NAS weights at the configured path.\nWARN: YOLO-NAS shot-detection weights not found (looked for: None). Shot-attempt / made-basket detection will be disabled. Ball tracking is unaffected (uses separate yolov8n_ball engine). To restore: place YOLO-NAS weights at the configured path.\n[preflight] Sampling 10 frames for person detection...\n[preflight] OK -- median persons/frame = 8.0\n\n============================================================\n Stage 1 / 3 -- Tracking\n============================================================\n Video : /workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4\nWARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\nWARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n_build_court: rectified portrait (1711x3404) \u2014 rotated 90\u00b0 \u2192 landscape (3404x1711)\n Pano cache hit: pano_wnba__wnba_01.png\n[unified_pipeline] Using static Rectify1.npy for 'wnba__wnba_01.mp4' \u2014 per-clip M1 will be updated during gameplay\nWARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\nWARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\nWARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\nWARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\nWARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\n[PROFILE f=180] gameplay=0.045s  homog=0.187s  players=0.249s  ball=0.550s  TOTAL=1.031s\n[SUBPROFILE] yolo=0.240\n\r Frame 180...\r Frame 183...\r Frame 186...\r Frame 189...\r Frame 192...\r Frame 195...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 198...\r Frame 201...\r Frame 204...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 207...\r Frame 210...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 213...\r Frame 216...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 219...\r Frame 222...\r Frame 225...\r Frame 228...\r Frame 231...\r Frame 234...\r Frame 237...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 240...\r Frame 243...\r Frame 246...\r Frame 249...\r Frame 252...\r Frame 255...\r Frame 258...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 261...\r Frame 264...\r Frame 267...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n[court_detector] detection failed \u2014 fallback to Rectify1.npy\n\r Frame 270...\r Frame 273...\r Frame 276...\r Frame 279...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 282...\r Frame 285...\r Frame 288...\r Frame 291...\r Frame 294...\r Frame 297...\r Frame 300...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 303...\r Frame 306...\r Frame 309...\r Frame 312...\r Frame 315...\r Frame 318...\r Frame 321...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 324...\r Frame 327...\n[PROFILE f=330] gameplay=0.000s  homog=0.000s  players=0.004s  ball=0.041s  TOTAL=0.046s\n[SUBPROFILE] yolo=0.000\n\r Frame 330...\r Frame 333...\r Frame 336...\r Frame 339...\r Frame 342...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 345...\r Frame 348...\r Frame 351...\r Frame 354...\r Frame 357...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 360...[court_detector] detection failed \u2014 fallback to Rectify1.npy\n\r Frame 363...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 366...\r Frame 369...\r Frame 372...\r Frame 375...\r Frame 378...\r Frame 381...\r Frame 384...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 387...\r Frame 390...\r Frame 393...\r Frame 396...\r Frame 399...\r Frame 402...\r Frame 405...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 408...\r Frame 411...\r Frame 414...\r Frame 417...\r Frame 420...\r Frame 423...\r Frame 426...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 429...\r Frame 432...\r Frame 435...\r Frame 438...\r Frame 441...\r Frame 444...\r Frame 447...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\nWARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 450...\r Frame 453...[court_detector] detection failed \u2014 fallback to Rectify1.npy\n\r Frame 456...\r Frame 459...\r Frame 462...\r Frame 465...\r Frame 468...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 471...\r Frame 474...\r Frame 477...\n[PROFILE f=480] gameplay=0.000s  homog=0.000s  players=0.003s  ball=0.042s  TOTAL=0.045s\n[SUBPROFILE] yolo=0.000\n\r Frame 480...\r Frame 483...\r Frame 486...\r Frame 489...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 492...\r Frame 495...\r Frame 498...\r Frame 501...\r Frame 504...\r Frame 507...\r Frame 510...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 513...\r Frame 516...\r Frame 519...\r Frame 522...\r Frame 525...\r Frame 528...\r Frame 531...WARNING \u26a0\ufe0f 'half' is deprecated and will be removed in the future. Use 'quantize' instead.\n\r Frame 534...\r Frame 537...\n  [poss_id_remap] no possession_id found in possessions.csv \u2014 skipped\n\n Frames processed : 540\n Track stability  : 1.000\n Est. ID switches : 0\n  [mem] GPU memory released for post-processing\n\n[WARN] tracking_data.csv not written -- Stage 1 produced 0 rows.\n       Possible causes: gameplay not detected, homography mismatch,\n       or all frames filtered as dead-ball.  Skipping Stage 2.\n",
+    "ssh_exit_code": 0,
+    "ssh_stderr": "",
+    "floor_shifted": true
+  }
+}
