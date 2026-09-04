@@ -671,6 +671,50 @@ is a tracking-quality score for authenticated people: the denominator is detecto
 boxes including officials, bench and spectators, and identity is unvalidated
 everywhere in this programme.
 
+---
+
+## 7.18 THE COMPLETE DIAGNOSTIC CHAIN: the detector's boxes jump
+
+G271 closed the last two open questions about the 10.5 pct on-court
+implausibility, and the chain is now complete.
+
+**Systemic, not concentrated.** Of 98 emitted ids, the worst 5 give **20.8 pct** of
+on-court impossible steps and the worst 10 give **35.5 pct**; **19 have zero, so
+79 of 98 (80.6 pct) are affected.** Discarding a few bad tracks buys nothing.
+
+**The box moved -- it is not a projection artifact.**
+
+| descriptive bin | share of on-court impossible steps |
+|---|---:|
+| image displacement **above 83 px** (box-jump) | **1,454 / 2,507 = 0.580** |
+| 17-83 px (indeterminate) | 835 / 2,507 = 0.333 |
+| below 17 px (projection-amplified) | 218 / 2,507 = 0.087 |
+
+**83+ px in ONE frame on a 1920-wide image is the box landing on a different
+body.**
+
+### The chain, every link measured, none of it eye-gated
+
+1. **Calibration is fine** -- 5 px median / 19 px p90 (7.12).
+2. **Association cannot repair the implausibility** -- constraining it only
+   fragments tracks, 98 to 139 ids (G269).
+3. **It is not off-court projection** -- 61.3 pct of impossible steps are fully on
+   court (7.17).
+4. **It is not a handful of bad tracks** -- 79 of 98 ids affected (G271).
+5. **The detector's boxes jump 83+ px between frames on the same id** (G271).
+
+**So the binding defect on tracking quality sits UPSTREAM of every calibration
+question in this document.** That is the single most useful thing tonight
+produced, and unlike everything in 7.1-7.15 **it is measurable without a human
+eye** -- which matters precisely because 7.7 and 7.15 showed the eye resolves only
+20 px and no hand-built signal beats it.
+
+**What is NOT established:** which of detection motion, association, wrong-person
+or duplicate boxes, map error, or real movement causes any individual jump. G271
+refused to allocate a single cause and anyone quoting it must too. Identity is
+unvalidated everywhere in this programme, and the population is detector boxes --
+officials, bench and spectators included -- not authenticated players.
+
 ## NOT VERIFIED
 
 - Whether a trained basketball calibration model would work; nothing was trained
