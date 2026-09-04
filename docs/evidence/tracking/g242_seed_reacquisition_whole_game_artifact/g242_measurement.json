@@ -1,0 +1,1252 @@
+{
+  "video": {
+    "path": "/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4",
+    "declared_frames": 174430,
+    "resolution": [
+      1920,
+      1080
+    ]
+  },
+  "seed": {
+    "frame": 19599,
+    "scale": 1.0,
+    "labels_px": [
+      [
+        350.0,
+        400.0
+      ],
+      [
+        835.0,
+        420.0
+      ],
+      [
+        390.0,
+        696.0
+      ],
+      [
+        990.0,
+        730.0
+      ]
+    ],
+    "court_points_ft": [
+      [
+        17.0,
+        0.0
+      ],
+      [
+        33.0,
+        0.0
+      ],
+      [
+        17.0,
+        19.0
+      ],
+      [
+        33.0,
+        19.0
+      ]
+    ],
+    "homography_image_to_court": [
+      [
+        0.050071754999888064,
+        0.01225404716365722,
+        2.3351407383547964
+      ],
+      [
+        -0.0047586809476217904,
+        0.1153980129798286,
+        -44.493666860263815
+      ],
+      [
+        3.054485397744623e-05,
+        0.0011147252900901028,
+        1.0
+      ]
+    ],
+    "published_matrix_max_abs_difference": 0.0,
+    "exact_decode_reference_mad": 1.0870476466049384,
+    "sequential_seed_mad": 0.0
+  },
+  "sampling": {
+    "method": "one sequential cv2.VideoCapture decode pass from frame 0 through 174429; sample set is stride-2000 frames 0..174000 plus explicit seed",
+    "sample_frames": [
+      0,
+      2000,
+      4000,
+      6000,
+      8000,
+      10000,
+      12000,
+      14000,
+      16000,
+      18000,
+      19599,
+      20000,
+      22000,
+      24000,
+      26000,
+      28000,
+      30000,
+      32000,
+      34000,
+      36000,
+      38000,
+      40000,
+      42000,
+      44000,
+      46000,
+      48000,
+      50000,
+      52000,
+      54000,
+      56000,
+      58000,
+      60000,
+      62000,
+      64000,
+      66000,
+      68000,
+      70000,
+      72000,
+      74000,
+      76000,
+      78000,
+      80000,
+      82000,
+      84000,
+      86000,
+      88000,
+      90000,
+      92000,
+      94000,
+      96000,
+      98000,
+      100000,
+      102000,
+      104000,
+      106000,
+      108000,
+      110000,
+      112000,
+      114000,
+      116000,
+      118000,
+      120000,
+      122000,
+      124000,
+      126000,
+      128000,
+      130000,
+      132000,
+      134000,
+      136000,
+      138000,
+      140000,
+      142000,
+      144000,
+      146000,
+      148000,
+      150000,
+      152000,
+      154000,
+      156000,
+      158000,
+      160000,
+      162000,
+      164000,
+      166000,
+      168000,
+      170000,
+      172000,
+      174000
+    ],
+    "denominator": 89,
+    "index_mapping_check": {
+      "sampled_frame": 100000,
+      "method": "independent ffmpeg select=eq(n,N) decode with no input-side seek",
+      "mad_bgr": 0.0
+    }
+  },
+  "g222_acceptance": "unchanged estimate_motion: ORB nfeatures=2000 fastThreshold=12; BF Hamming ratio < 0.75; at least 4 matches; cv2.findHomography RANSAC 3.0; finite matrix",
+  "records": [
+    {
+      "source_frame": 0,
+      "signed_distance_frames": -19599,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 147,
+        "inliers": 113,
+        "inlier_ratio": 0.7687074829931972,
+        "rms_reprojection_px": 0.3186911940574646
+      },
+      "render_path": "acquired_renders/frame_000000.jpg"
+    },
+    {
+      "source_frame": 2000,
+      "signed_distance_frames": -17599,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 376,
+        "inliers": 297,
+        "inlier_ratio": 0.7898936170212766,
+        "rms_reprojection_px": 0.5251101851463318
+      },
+      "render_path": "acquired_renders/frame_002000.jpg"
+    },
+    {
+      "source_frame": 4000,
+      "signed_distance_frames": -15599,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 267,
+        "inliers": 234,
+        "inlier_ratio": 0.8764044943820225,
+        "rms_reprojection_px": 0.5214274525642395
+      },
+      "render_path": "acquired_renders/frame_004000.jpg"
+    },
+    {
+      "source_frame": 6000,
+      "signed_distance_frames": -13599,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 273,
+        "inliers": 235,
+        "inlier_ratio": 0.8608058608058609,
+        "rms_reprojection_px": 0.5860236287117004
+      },
+      "render_path": "acquired_renders/frame_006000.jpg"
+    },
+    {
+      "source_frame": 8000,
+      "signed_distance_frames": -11599,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 566,
+        "inliers": 528,
+        "inlier_ratio": 0.9328621908127208,
+        "rms_reprojection_px": 0.5939241051673889
+      },
+      "render_path": "acquired_renders/frame_008000.jpg"
+    },
+    {
+      "source_frame": 10000,
+      "signed_distance_frames": -9599,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 510,
+        "inliers": 473,
+        "inlier_ratio": 0.9274509803921569,
+        "rms_reprojection_px": 0.5974953770637512
+      },
+      "render_path": "acquired_renders/frame_010000.jpg"
+    },
+    {
+      "source_frame": 12000,
+      "signed_distance_frames": -7599,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 337,
+        "inliers": 274,
+        "inlier_ratio": 0.8130563798219584,
+        "rms_reprojection_px": 0.615990161895752
+      },
+      "render_path": "acquired_renders/frame_012000.jpg"
+    },
+    {
+      "source_frame": 14000,
+      "signed_distance_frames": -5599,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 149,
+        "inliers": 111,
+        "inlier_ratio": 0.7449664429530202,
+        "rms_reprojection_px": 0.34525376558303833
+      },
+      "render_path": "acquired_renders/frame_014000.jpg"
+    },
+    {
+      "source_frame": 16000,
+      "signed_distance_frames": -3599,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 459,
+        "inliers": 426,
+        "inlier_ratio": 0.9281045751633987,
+        "rms_reprojection_px": 0.4264374077320099
+      },
+      "render_path": "acquired_renders/frame_016000.jpg"
+    },
+    {
+      "source_frame": 18000,
+      "signed_distance_frames": -1599,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 274,
+        "inliers": 228,
+        "inlier_ratio": 0.8321167883211679,
+        "rms_reprojection_px": 0.5079323649406433
+      },
+      "render_path": "acquired_renders/frame_018000.jpg"
+    },
+    {
+      "source_frame": 19599,
+      "signed_distance_frames": 0,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 2000,
+        "inliers": 2000,
+        "inlier_ratio": 1.0,
+        "rms_reprojection_px": 0.0
+      },
+      "render_path": "acquired_renders/frame_019599.jpg"
+    },
+    {
+      "source_frame": 20000,
+      "signed_distance_frames": 401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 543,
+        "inliers": 513,
+        "inlier_ratio": 0.9447513812154696,
+        "rms_reprojection_px": 0.4000231921672821
+      },
+      "render_path": "acquired_renders/frame_020000.jpg"
+    },
+    {
+      "source_frame": 22000,
+      "signed_distance_frames": 2401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 601,
+        "inliers": 564,
+        "inlier_ratio": 0.9384359400998337,
+        "rms_reprojection_px": 0.3832303583621979
+      },
+      "render_path": "acquired_renders/frame_022000.jpg"
+    },
+    {
+      "source_frame": 24000,
+      "signed_distance_frames": 4401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 108,
+        "inliers": 63,
+        "inlier_ratio": 0.5833333333333334,
+        "rms_reprojection_px": 0.5086588263511658
+      },
+      "render_path": "acquired_renders/frame_024000.jpg"
+    },
+    {
+      "source_frame": 26000,
+      "signed_distance_frames": 6401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 488,
+        "inliers": 399,
+        "inlier_ratio": 0.8176229508196722,
+        "rms_reprojection_px": 0.4729779064655304
+      },
+      "render_path": "acquired_renders/frame_026000.jpg"
+    },
+    {
+      "source_frame": 28000,
+      "signed_distance_frames": 8401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 299,
+        "inliers": 255,
+        "inlier_ratio": 0.8528428093645485,
+        "rms_reprojection_px": 0.3313688039779663
+      },
+      "render_path": "acquired_renders/frame_028000.jpg"
+    },
+    {
+      "source_frame": 30000,
+      "signed_distance_frames": 10401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 261,
+        "inliers": 221,
+        "inlier_ratio": 0.8467432950191571,
+        "rms_reprojection_px": 0.34969860315322876
+      },
+      "render_path": "acquired_renders/frame_030000.jpg"
+    },
+    {
+      "source_frame": 32000,
+      "signed_distance_frames": 12401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 440,
+        "inliers": 407,
+        "inlier_ratio": 0.925,
+        "rms_reprojection_px": 0.5106703639030457
+      },
+      "render_path": "acquired_renders/frame_032000.jpg"
+    },
+    {
+      "source_frame": 34000,
+      "signed_distance_frames": 14401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 492,
+        "inliers": 458,
+        "inlier_ratio": 0.9308943089430894,
+        "rms_reprojection_px": 0.4993782341480255
+      },
+      "render_path": "acquired_renders/frame_034000.jpg"
+    },
+    {
+      "source_frame": 36000,
+      "signed_distance_frames": 16401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 343,
+        "inliers": 274,
+        "inlier_ratio": 0.7988338192419825,
+        "rms_reprojection_px": 0.5091923475265503
+      },
+      "render_path": "acquired_renders/frame_036000.jpg"
+    },
+    {
+      "source_frame": 38000,
+      "signed_distance_frames": 18401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 312,
+        "inliers": 271,
+        "inlier_ratio": 0.8685897435897436,
+        "rms_reprojection_px": 0.5257123112678528
+      },
+      "render_path": "acquired_renders/frame_038000.jpg"
+    },
+    {
+      "source_frame": 40000,
+      "signed_distance_frames": 20401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 373,
+        "inliers": 331,
+        "inlier_ratio": 0.8873994638069705,
+        "rms_reprojection_px": 0.521399974822998
+      },
+      "render_path": "acquired_renders/frame_040000.jpg"
+    },
+    {
+      "source_frame": 42000,
+      "signed_distance_frames": 22401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 291,
+        "inliers": 247,
+        "inlier_ratio": 0.8487972508591065,
+        "rms_reprojection_px": 0.5263459086418152
+      },
+      "render_path": "acquired_renders/frame_042000.jpg"
+    },
+    {
+      "source_frame": 44000,
+      "signed_distance_frames": 24401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 658,
+        "inliers": 631,
+        "inlier_ratio": 0.958966565349544,
+        "rms_reprojection_px": 0.4757981300354004
+      },
+      "render_path": "acquired_renders/frame_044000.jpg"
+    },
+    {
+      "source_frame": 46000,
+      "signed_distance_frames": 26401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 465,
+        "inliers": 446,
+        "inlier_ratio": 0.9591397849462365,
+        "rms_reprojection_px": 0.3876452147960663
+      },
+      "render_path": "acquired_renders/frame_046000.jpg"
+    },
+    {
+      "source_frame": 48000,
+      "signed_distance_frames": 28401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 399,
+        "inliers": 342,
+        "inlier_ratio": 0.8571428571428571,
+        "rms_reprojection_px": 0.4565640389919281
+      },
+      "render_path": "acquired_renders/frame_048000.jpg"
+    },
+    {
+      "source_frame": 50000,
+      "signed_distance_frames": 30401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 391,
+        "inliers": 329,
+        "inlier_ratio": 0.8414322250639387,
+        "rms_reprojection_px": 0.3804676830768585
+      },
+      "render_path": "acquired_renders/frame_050000.jpg"
+    },
+    {
+      "source_frame": 52000,
+      "signed_distance_frames": 32401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 350,
+        "inliers": 310,
+        "inlier_ratio": 0.8857142857142857,
+        "rms_reprojection_px": 0.5011486411094666
+      },
+      "render_path": "acquired_renders/frame_052000.jpg"
+    },
+    {
+      "source_frame": 54000,
+      "signed_distance_frames": 34401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 287,
+        "inliers": 258,
+        "inlier_ratio": 0.8989547038327527,
+        "rms_reprojection_px": 0.49884751439094543
+      },
+      "render_path": "acquired_renders/frame_054000.jpg"
+    },
+    {
+      "source_frame": 56000,
+      "signed_distance_frames": 36401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 739,
+        "inliers": 671,
+        "inlier_ratio": 0.9079837618403248,
+        "rms_reprojection_px": 0.5196743607521057
+      },
+      "render_path": "acquired_renders/frame_056000.jpg"
+    },
+    {
+      "source_frame": 58000,
+      "signed_distance_frames": 38401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 612,
+        "inliers": 574,
+        "inlier_ratio": 0.9379084967320261,
+        "rms_reprojection_px": 0.5186300277709961
+      },
+      "render_path": "acquired_renders/frame_058000.jpg"
+    },
+    {
+      "source_frame": 60000,
+      "signed_distance_frames": 40401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 383,
+        "inliers": 334,
+        "inlier_ratio": 0.8720626631853786,
+        "rms_reprojection_px": 0.4351188838481903
+      },
+      "render_path": "acquired_renders/frame_060000.jpg"
+    },
+    {
+      "source_frame": 62000,
+      "signed_distance_frames": 42401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 264,
+        "inliers": 209,
+        "inlier_ratio": 0.7916666666666666,
+        "rms_reprojection_px": 0.35243165493011475
+      },
+      "render_path": "acquired_renders/frame_062000.jpg"
+    },
+    {
+      "source_frame": 64000,
+      "signed_distance_frames": 44401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 539,
+        "inliers": 507,
+        "inlier_ratio": 0.9406307977736549,
+        "rms_reprojection_px": 0.5482159852981567
+      },
+      "render_path": "acquired_renders/frame_064000.jpg"
+    },
+    {
+      "source_frame": 66000,
+      "signed_distance_frames": 46401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 312,
+        "inliers": 265,
+        "inlier_ratio": 0.8493589743589743,
+        "rms_reprojection_px": 0.4804439842700958
+      },
+      "render_path": "acquired_renders/frame_066000.jpg"
+    },
+    {
+      "source_frame": 68000,
+      "signed_distance_frames": 48401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 315,
+        "inliers": 260,
+        "inlier_ratio": 0.8253968253968254,
+        "rms_reprojection_px": 0.34088635444641113
+      },
+      "render_path": "acquired_renders/frame_068000.jpg"
+    },
+    {
+      "source_frame": 70000,
+      "signed_distance_frames": 50401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 87,
+        "inliers": 50,
+        "inlier_ratio": 0.5747126436781609,
+        "rms_reprojection_px": 1.4003139734268188
+      },
+      "render_path": "acquired_renders/frame_070000.jpg"
+    },
+    {
+      "source_frame": 72000,
+      "signed_distance_frames": 52401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 221,
+        "inliers": 187,
+        "inlier_ratio": 0.8461538461538461,
+        "rms_reprojection_px": 0.7588157057762146
+      },
+      "render_path": "acquired_renders/frame_072000.jpg"
+    },
+    {
+      "source_frame": 74000,
+      "signed_distance_frames": 54401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 482,
+        "inliers": 395,
+        "inlier_ratio": 0.8195020746887967,
+        "rms_reprojection_px": 0.5350982546806335
+      },
+      "render_path": "acquired_renders/frame_074000.jpg"
+    },
+    {
+      "source_frame": 76000,
+      "signed_distance_frames": 56401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 539,
+        "inliers": 499,
+        "inlier_ratio": 0.9257884972170687,
+        "rms_reprojection_px": 0.43470069766044617
+      },
+      "render_path": "acquired_renders/frame_076000.jpg"
+    },
+    {
+      "source_frame": 78000,
+      "signed_distance_frames": 58401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 181,
+        "inliers": 131,
+        "inlier_ratio": 0.7237569060773481,
+        "rms_reprojection_px": 0.3309136629104614
+      },
+      "render_path": "acquired_renders/frame_078000.jpg"
+    },
+    {
+      "source_frame": 80000,
+      "signed_distance_frames": 60401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 375,
+        "inliers": 284,
+        "inlier_ratio": 0.7573333333333333,
+        "rms_reprojection_px": 0.5925236344337463
+      },
+      "render_path": "acquired_renders/frame_080000.jpg"
+    },
+    {
+      "source_frame": 82000,
+      "signed_distance_frames": 62401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 244,
+        "inliers": 182,
+        "inlier_ratio": 0.7459016393442623,
+        "rms_reprojection_px": 0.45829328894615173
+      },
+      "render_path": "acquired_renders/frame_082000.jpg"
+    },
+    {
+      "source_frame": 84000,
+      "signed_distance_frames": 64401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 357,
+        "inliers": 311,
+        "inlier_ratio": 0.8711484593837535,
+        "rms_reprojection_px": 0.4947943389415741
+      },
+      "render_path": "acquired_renders/frame_084000.jpg"
+    },
+    {
+      "source_frame": 86000,
+      "signed_distance_frames": 66401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 352,
+        "inliers": 312,
+        "inlier_ratio": 0.8863636363636364,
+        "rms_reprojection_px": 0.39085179567337036
+      },
+      "render_path": "acquired_renders/frame_086000.jpg"
+    },
+    {
+      "source_frame": 88000,
+      "signed_distance_frames": 68401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 149,
+        "inliers": 118,
+        "inlier_ratio": 0.7919463087248322,
+        "rms_reprojection_px": 0.39296433329582214
+      },
+      "render_path": "acquired_renders/frame_088000.jpg"
+    },
+    {
+      "source_frame": 90000,
+      "signed_distance_frames": 70401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 557,
+        "inliers": 496,
+        "inlier_ratio": 0.8904847396768402,
+        "rms_reprojection_px": 0.4996319115161896
+      },
+      "render_path": "acquired_renders/frame_090000.jpg"
+    },
+    {
+      "source_frame": 92000,
+      "signed_distance_frames": 72401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 453,
+        "inliers": 409,
+        "inlier_ratio": 0.9028697571743929,
+        "rms_reprojection_px": 0.6945767402648926
+      },
+      "render_path": "acquired_renders/frame_092000.jpg"
+    },
+    {
+      "source_frame": 94000,
+      "signed_distance_frames": 74401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 181,
+        "inliers": 113,
+        "inlier_ratio": 0.6243093922651933,
+        "rms_reprojection_px": 0.3926239311695099
+      },
+      "render_path": "acquired_renders/frame_094000.jpg"
+    },
+    {
+      "source_frame": 96000,
+      "signed_distance_frames": 76401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 308,
+        "inliers": 248,
+        "inlier_ratio": 0.8051948051948052,
+        "rms_reprojection_px": 0.3392985463142395
+      },
+      "render_path": "acquired_renders/frame_096000.jpg"
+    },
+    {
+      "source_frame": 98000,
+      "signed_distance_frames": 78401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 367,
+        "inliers": 331,
+        "inlier_ratio": 0.9019073569482289,
+        "rms_reprojection_px": 0.5517556071281433
+      },
+      "render_path": "acquired_renders/frame_098000.jpg"
+    },
+    {
+      "source_frame": 100000,
+      "signed_distance_frames": 80401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 260,
+        "inliers": 221,
+        "inlier_ratio": 0.85,
+        "rms_reprojection_px": 0.6343245506286621
+      },
+      "render_path": "acquired_renders/frame_100000.jpg"
+    },
+    {
+      "source_frame": 102000,
+      "signed_distance_frames": 82401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 548,
+        "inliers": 497,
+        "inlier_ratio": 0.906934306569343,
+        "rms_reprojection_px": 0.3887919783592224
+      },
+      "render_path": "acquired_renders/frame_102000.jpg"
+    },
+    {
+      "source_frame": 104000,
+      "signed_distance_frames": 84401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 656,
+        "inliers": 624,
+        "inlier_ratio": 0.9512195121951219,
+        "rms_reprojection_px": 0.39375853538513184
+      },
+      "render_path": "acquired_renders/frame_104000.jpg"
+    },
+    {
+      "source_frame": 106000,
+      "signed_distance_frames": 86401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 322,
+        "inliers": 282,
+        "inlier_ratio": 0.8757763975155279,
+        "rms_reprojection_px": 0.4088447391986847
+      },
+      "render_path": "acquired_renders/frame_106000.jpg"
+    },
+    {
+      "source_frame": 108000,
+      "signed_distance_frames": 88401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 140,
+        "inliers": 92,
+        "inlier_ratio": 0.6571428571428571,
+        "rms_reprojection_px": 0.423849880695343
+      },
+      "render_path": "acquired_renders/frame_108000.jpg"
+    },
+    {
+      "source_frame": 110000,
+      "signed_distance_frames": 90401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 330,
+        "inliers": 298,
+        "inlier_ratio": 0.9030303030303031,
+        "rms_reprojection_px": 0.40265509486198425
+      },
+      "render_path": "acquired_renders/frame_110000.jpg"
+    },
+    {
+      "source_frame": 112000,
+      "signed_distance_frames": 92401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 391,
+        "inliers": 357,
+        "inlier_ratio": 0.9130434782608695,
+        "rms_reprojection_px": 0.4482799470424652
+      },
+      "render_path": "acquired_renders/frame_112000.jpg"
+    },
+    {
+      "source_frame": 114000,
+      "signed_distance_frames": 94401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 130,
+        "inliers": 100,
+        "inlier_ratio": 0.7692307692307693,
+        "rms_reprojection_px": 0.27889084815979004
+      },
+      "render_path": "acquired_renders/frame_114000.jpg"
+    },
+    {
+      "source_frame": 116000,
+      "signed_distance_frames": 96401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 533,
+        "inliers": 501,
+        "inlier_ratio": 0.9399624765478424,
+        "rms_reprojection_px": 0.5757217407226562
+      },
+      "render_path": "acquired_renders/frame_116000.jpg"
+    },
+    {
+      "source_frame": 118000,
+      "signed_distance_frames": 98401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 405,
+        "inliers": 333,
+        "inlier_ratio": 0.8222222222222222,
+        "rms_reprojection_px": 0.5655037760734558
+      },
+      "render_path": "acquired_renders/frame_118000.jpg"
+    },
+    {
+      "source_frame": 120000,
+      "signed_distance_frames": 100401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 273,
+        "inliers": 243,
+        "inlier_ratio": 0.8901098901098901,
+        "rms_reprojection_px": 0.38197165727615356
+      },
+      "render_path": "acquired_renders/frame_120000.jpg"
+    },
+    {
+      "source_frame": 122000,
+      "signed_distance_frames": 102401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 292,
+        "inliers": 225,
+        "inlier_ratio": 0.7705479452054794,
+        "rms_reprojection_px": 0.4929548501968384
+      },
+      "render_path": "acquired_renders/frame_122000.jpg"
+    },
+    {
+      "source_frame": 124000,
+      "signed_distance_frames": 104401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 124,
+        "inliers": 88,
+        "inlier_ratio": 0.7096774193548387,
+        "rms_reprojection_px": 1.2470663785934448
+      },
+      "render_path": "acquired_renders/frame_124000.jpg"
+    },
+    {
+      "source_frame": 126000,
+      "signed_distance_frames": 106401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 137,
+        "inliers": 114,
+        "inlier_ratio": 0.8321167883211679,
+        "rms_reprojection_px": 0.46627047657966614
+      },
+      "render_path": "acquired_renders/frame_126000.jpg"
+    },
+    {
+      "source_frame": 128000,
+      "signed_distance_frames": 108401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 237,
+        "inliers": 199,
+        "inlier_ratio": 0.8396624472573839,
+        "rms_reprojection_px": 0.6092791557312012
+      },
+      "render_path": "acquired_renders/frame_128000.jpg"
+    },
+    {
+      "source_frame": 130000,
+      "signed_distance_frames": 110401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 224,
+        "inliers": 175,
+        "inlier_ratio": 0.78125,
+        "rms_reprojection_px": 0.6967836022377014
+      },
+      "render_path": "acquired_renders/frame_130000.jpg"
+    },
+    {
+      "source_frame": 132000,
+      "signed_distance_frames": 112401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 115,
+        "inliers": 86,
+        "inlier_ratio": 0.7478260869565218,
+        "rms_reprojection_px": 0.4384867548942566
+      },
+      "render_path": "acquired_renders/frame_132000.jpg"
+    },
+    {
+      "source_frame": 134000,
+      "signed_distance_frames": 114401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 261,
+        "inliers": 222,
+        "inlier_ratio": 0.8505747126436781,
+        "rms_reprojection_px": 0.6661705374717712
+      },
+      "render_path": "acquired_renders/frame_134000.jpg"
+    },
+    {
+      "source_frame": 136000,
+      "signed_distance_frames": 116401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 127,
+        "inliers": 98,
+        "inlier_ratio": 0.7716535433070866,
+        "rms_reprojection_px": 0.4383756220340729
+      },
+      "render_path": "acquired_renders/frame_136000.jpg"
+    },
+    {
+      "source_frame": 138000,
+      "signed_distance_frames": 118401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 119,
+        "inliers": 86,
+        "inlier_ratio": 0.7226890756302521,
+        "rms_reprojection_px": 0.5314493179321289
+      },
+      "render_path": "acquired_renders/frame_138000.jpg"
+    },
+    {
+      "source_frame": 140000,
+      "signed_distance_frames": 120401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 114,
+        "inliers": 89,
+        "inlier_ratio": 0.7807017543859649,
+        "rms_reprojection_px": 0.4280489683151245
+      },
+      "render_path": "acquired_renders/frame_140000.jpg"
+    },
+    {
+      "source_frame": 142000,
+      "signed_distance_frames": 122401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 441,
+        "inliers": 416,
+        "inlier_ratio": 0.9433106575963719,
+        "rms_reprojection_px": 0.5132791996002197
+      },
+      "render_path": "acquired_renders/frame_142000.jpg"
+    },
+    {
+      "source_frame": 144000,
+      "signed_distance_frames": 124401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 652,
+        "inliers": 620,
+        "inlier_ratio": 0.950920245398773,
+        "rms_reprojection_px": 0.5185481905937195
+      },
+      "render_path": "acquired_renders/frame_144000.jpg"
+    },
+    {
+      "source_frame": 146000,
+      "signed_distance_frames": 126401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 308,
+        "inliers": 234,
+        "inlier_ratio": 0.7597402597402597,
+        "rms_reprojection_px": 0.42196112871170044
+      },
+      "render_path": "acquired_renders/frame_146000.jpg"
+    },
+    {
+      "source_frame": 148000,
+      "signed_distance_frames": 128401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 115,
+        "inliers": 65,
+        "inlier_ratio": 0.5652173913043478,
+        "rms_reprojection_px": 0.32621529698371887
+      },
+      "render_path": "acquired_renders/frame_148000.jpg"
+    },
+    {
+      "source_frame": 150000,
+      "signed_distance_frames": 130401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 289,
+        "inliers": 246,
+        "inlier_ratio": 0.8512110726643599,
+        "rms_reprojection_px": 0.4317792057991028
+      },
+      "render_path": "acquired_renders/frame_150000.jpg"
+    },
+    {
+      "source_frame": 152000,
+      "signed_distance_frames": 132401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 232,
+        "inliers": 193,
+        "inlier_ratio": 0.8318965517241379,
+        "rms_reprojection_px": 0.5049585103988647
+      },
+      "render_path": "acquired_renders/frame_152000.jpg"
+    },
+    {
+      "source_frame": 154000,
+      "signed_distance_frames": 134401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 277,
+        "inliers": 246,
+        "inlier_ratio": 0.8880866425992779,
+        "rms_reprojection_px": 0.39906543493270874
+      },
+      "render_path": "acquired_renders/frame_154000.jpg"
+    },
+    {
+      "source_frame": 156000,
+      "signed_distance_frames": 136401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 249,
+        "inliers": 206,
+        "inlier_ratio": 0.8273092369477911,
+        "rms_reprojection_px": 0.32673704624176025
+      },
+      "render_path": "acquired_renders/frame_156000.jpg"
+    },
+    {
+      "source_frame": 158000,
+      "signed_distance_frames": 138401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 299,
+        "inliers": 266,
+        "inlier_ratio": 0.8896321070234113,
+        "rms_reprojection_px": 0.499606192111969
+      },
+      "render_path": "acquired_renders/frame_158000.jpg"
+    },
+    {
+      "source_frame": 160000,
+      "signed_distance_frames": 140401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 334,
+        "inliers": 300,
+        "inlier_ratio": 0.8982035928143712,
+        "rms_reprojection_px": 0.39614373445510864
+      },
+      "render_path": "acquired_renders/frame_160000.jpg"
+    },
+    {
+      "source_frame": 162000,
+      "signed_distance_frames": 142401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 245,
+        "inliers": 198,
+        "inlier_ratio": 0.8081632653061225,
+        "rms_reprojection_px": 0.6696102619171143
+      },
+      "render_path": "acquired_renders/frame_162000.jpg"
+    },
+    {
+      "source_frame": 164000,
+      "signed_distance_frames": 144401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 199,
+        "inliers": 164,
+        "inlier_ratio": 0.8241206030150754,
+        "rms_reprojection_px": 0.37196066975593567
+      },
+      "render_path": "acquired_renders/frame_164000.jpg"
+    },
+    {
+      "source_frame": 166000,
+      "signed_distance_frames": 146401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 328,
+        "inliers": 282,
+        "inlier_ratio": 0.8597560975609756,
+        "rms_reprojection_px": 0.44550850987434387
+      },
+      "render_path": "acquired_renders/frame_166000.jpg"
+    },
+    {
+      "source_frame": 168000,
+      "signed_distance_frames": 148401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 276,
+        "inliers": 236,
+        "inlier_ratio": 0.855072463768116,
+        "rms_reprojection_px": 0.4501033127307892
+      },
+      "render_path": "acquired_renders/frame_168000.jpg"
+    },
+    {
+      "source_frame": 170000,
+      "signed_distance_frames": 150401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 309,
+        "inliers": 266,
+        "inlier_ratio": 0.86084142394822,
+        "rms_reprojection_px": 0.48365333676338196
+      },
+      "render_path": "acquired_renders/frame_170000.jpg"
+    },
+    {
+      "source_frame": 172000,
+      "signed_distance_frames": 152401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 259,
+        "inliers": 223,
+        "inlier_ratio": 0.861003861003861,
+        "rms_reprojection_px": 0.31369122862815857
+      },
+      "render_path": "acquired_renders/frame_172000.jpg"
+    },
+    {
+      "source_frame": 174000,
+      "signed_distance_frames": 154401,
+      "acquired_g222_unchanged": true,
+      "direct_seed": {
+        "matches": 254,
+        "inliers": 215,
+        "inlier_ratio": 0.8464566929133859,
+        "rms_reprojection_px": 0.35741981863975525
+      },
+      "render_path": "acquired_renders/frame_174000.jpg"
+    }
+  ],
+  "source_sha256": {
+    "scripts.platformkit.tracking.g196_homography_from_labelled_corners": "f9655c338c92be6bcf90be998eac8b2904aaee52346b2f1593a2814458c737a3",
+    "scripts.platformkit.tracking.g215_temporal_homography_propagation": "b3eb085fa0b57af006af19ff29f1e5d2f2bf5b61addc649940b998cc52b6442a",
+    "scripts.platformkit.tracking.g222_direct_to_seed_propagation": "2b99a30f3ff6dd1d633e0d088dee150c379f655e2fb78556589b5a948743d8c4"
+  },
+  "failed_contact_sheets": [],
+  "artifact_bytes_before_cleanup": 10446708,
+  "disk_guard": {
+    "data_megabytes": 32924,
+    "probe_bytes_removed": 1048576
+  }
+}
