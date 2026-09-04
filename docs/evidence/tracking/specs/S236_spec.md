@@ -1,4 +1,4 @@
-GAP S236 | sport all | worktree aXX | log cx_s236_season_block_partition
+GAP S236 | sport all | worktree a17 | log cx_s236_season_block_partition
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: REDTEAM SF-11: `combo/fwer_budget.min_corpora_eff` caps at `n_corpora`; NBA has 2 `corpus_unit`s
 (2024-25: 1,225 rows, 2025-26: 589), MLB 2 (era_2010_2021: 27,983, era_2022_2026: 11,179 -- S50 line 96-97), tennis
