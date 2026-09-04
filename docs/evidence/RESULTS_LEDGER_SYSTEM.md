@@ -473,3 +473,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-04 | nba pregame calibration | S230 | 1,814 paired rows; incumbent/interaction ECE 0.053327859/0.026757281, Brier 0.210959665/0.213678446, log-loss 0.609781029/0.632114278; pregame n=220 and n_eff=2 | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | e236352ce
 
 2026-09-04 | screen-width accounting | S234 | 200-screen construct: current K +1, screened-charge K +200; direct shared-counter integration gated | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 0c42b0db2
+2026-09-04 | season-block premise | S236 | full gates reproduce; tennis ATP/WTA 30616/11270 falsifies 25764/8002 premise | FALSIFIED (verified: codex-sol, contract A/B/Q) | f5204918b
