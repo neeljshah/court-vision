@@ -1,4 +1,4 @@
-GAP S227 | sport nba (in-game) | worktree aXX | log cx_s227_margin_tail_crps
+GAP S227 | sport nba (in-game) | worktree a17 | log cx_s227_margin_tail_crps
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q -- read it first. S-row: eye check = n/a.
 CONTEXT: every in-game arm on record is binary (home win) and therefore blind to the margin tail, where the blowout
 and wild-outcome questions live. S58 trial B and S103 record that the repricer's FIXED margin sigma of 13.5
