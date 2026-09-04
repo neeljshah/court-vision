@@ -5,12 +5,10 @@ CONTEXT: S276 CLOSED AT LIMIT (attempt 2 candidate 19cae3f4c in worktree a17, ve
   regression exact; peak pod RSS printed) and rejected ONLY because (a) the CPCV groups were five equal-date
   groups instead of S86's six tick-balanced date blocks (scripts/platformkit/eval_gate/s94_nba_early_shrinkage.py
   lines 93-103; cpcv.py lines 47-55) and (b) the prior dated S276 memo and JSON were edited in place. This row
-  applies the verifier CORRECTION DIFFs verbatim. Recover code with `git show 19cae3f4c --stat` then
-  `git show 19cae3f4c:<path> > <path>` for the scripts/ and tests/ files (never the docs/ artifacts).
+  applies the verifier CORRECTION DIFFs verbatim. Recover code: `git show 19cae3f4c:<path> > <path>` (scripts/tests).
 PREMISE (step 0, INFORMATIONAL): print the six S86 block boundaries (first/last game_date, n_ticks, n_games per
   block) from s94_nba_early_shrinkage.py's block routine on the frozen grid; print n_ticks/n_games via a game_id-
-  only stream (expect 465,249 / 1,593); quote S265's worst cell (OT 0.833333333) and widest half-width (P2 0.90,
-  0.207218181) from its landed memo.
+  only stream (expect 465,249 / 1,593); quote S265's worst cell and widest half-width from its landed memo.
 CHANGE (step 1, the verifier's CORRECTION DIFFs verbatim): "restore the two prior dated artifacts byte-for-byte
   and publish their correction under a new dated erratum name"; "derive CPCV groups from the exact six S86
   tick-balanced blocks, hold each block once with the fixed embargo, reseal, rerun, and rearchive". Additive
