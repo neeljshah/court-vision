@@ -1,4 +1,4 @@
-GAP S249 | sport nba (in-game) | worktree aXX | log cx_s249_nba_cdn_livedata_capture
+GAP S249 | sport nba (in-game) | worktree a18 | log cx_s249_nba_cdn_livedata_capture
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) -- read first. S-row: eye check = n/a.
 CONTEXT: S218 attempt 2 census: on_court_five and substitution_event are needed for lineup-on-floor derivation but
   no raw NBA CDN liveData boxscore/playbyplay archive exists on disk; only ESPN payloads are archived.
