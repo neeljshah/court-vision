@@ -92,3 +92,24 @@ allowlisted file, raise its entry in `tests/platformkit/test_loc_rail_scope.py` 
 COMMIT: explicit pathspec only, no push. **If your work spans several commits, make EVERY commit before
 you finish.** Report the sha.
 NEVER PARK.
+
+---
+
+**AMENDMENT 2026-09-04 12:25 -- TWO CORRECTIONS TO THE HOLD RULE AND THE DISK FIGURE.
+Both were measured just now; treat these as overriding the text above.**
+
+**1. COUNT DISTINCT LANE WORKTREES, NOT PYTHON PIDs.** The hold rule above says to hold until a pod lane
+is free, and a sibling row is currently holding on a FALSE reading because **one lane routinely shows two
+python PIDs** -- a module runner and its child, both with the same `cwd`. A direct check just now returned
+`LANE 3084857 /workspace/wt/a17` and `LANE 3085457 /workspace/wt/a17`: **two PIDs, ONE occupied lane.**
+**So: collect the `cwd` of every python process under `/workspace/wt/a*`, reduce to the SET of distinct
+worktree directories, and compare THAT count against 2.** Exclude your own process, your checker and its
+parent as before. **Report the distinct-worktree set you observed, not just the number.**
+
+**2. THE DISK FIGURE ABOVE IS STALE. `du -sm /workspace` is 40,059 MB right now**, not about 36,400, so
+free space against the 50 GB quota is roughly **10 GB, not 13.6 GB** -- **the peer session under
+`/workspace/wt` is consuming steadily and disk, not GPU, is now the binding constraint** (the GPU measured
+1 MiB used and 0 pct utilisation at the same moment). **Re-measure `du -sm /workspace` yourself before
+writing anything, budget against what you actually observe, keep crops and any decode modest, and STOP and
+report if the `dd conv=fsync` probe fails.** **Do NOT delete any corpus source or the two abandoned
+partials in the bridge directory** to make room; report the shortfall instead.
