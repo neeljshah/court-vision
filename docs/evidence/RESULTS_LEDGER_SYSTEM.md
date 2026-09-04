@@ -519,3 +519,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-04 | NBA in-game calibration | S279 | Brier 0.073546695 vs 0.073546695; delta 0 [0,0]; 465249 ticks/1593 clusters; 49 zero weights | NULL / ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | 0dc649c03
 2026-09-04 | in-game calibration | S284 | 35 clusters; calibration improvement -0.0161008389, 95 pct CI [-0.0626914427, 0.0274674735], below 0.004 bar | REJECT (verified: codex-sol, contract A/B/Q) | 0ccbe3dec
 2026-09-04 | NBA in-game calibration | S285 | static-band coverage gap -0.066666667 at both nominal levels; 95 pct CIs [-0.142857143, 0.060000000] and [-0.180000000, 0.093437500] | NULL (verified: codex-sol, contract A/B/Q) | 0aa0afd9f
+2026-09-04 | NBA in-game momentum microstructure | S281 | pooled Brier 0.073422184 to 0.077525966, delta -0.004103782 [-0.005209973,-0.003056898], n=460365/1582 | NULL (verified: codex-sol, contract A/B/Q) | 984e5b87e
