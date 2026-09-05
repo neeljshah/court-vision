@@ -1,0 +1,165 @@
+{
+  "reproduction": {
+    "baseline": {
+      "numerator": 4090,
+      "denominator": 29973,
+      "rate": 0.13645614386280985
+    },
+    "gap1_share_implausible": {
+      "numerator": 2961,
+      "denominator": 4090,
+      "rate": 0.723960880195599
+    },
+    "gap1_share_plausible": {
+      "numerator": 23562,
+      "denominator": 25883,
+      "rate": 0.9103272418189545
+    },
+    "gap1_rate": {
+      "numerator": 2961,
+      "denominator": 26523,
+      "rate": 0.11163895486935867
+    },
+    "gap_above1_rate": {
+      "numerator": 1129,
+      "denominator": 3450,
+      "rate": 0.3272463768115942
+    },
+    "gap_above1_share_all": {
+      "numerator": 3450,
+      "denominator": 29973,
+      "rate": 0.11510359323391052
+    },
+    "gap_above1_share_implausible": {
+      "numerator": 1129,
+      "denominator": 4090,
+      "rate": 0.276039119804401
+    }
+  },
+  "per_gap": [
+    {
+      "gap_bucket": "1",
+      "eligible_steps_at_gap": 26523,
+      "implausible_steps": 2961,
+      "implausible_rate": 0.11163895486935867,
+      "median_gap_frames": 1,
+      "small_cell": "OK (>=30 steps)",
+      "median_court_displacement_ft": 0.23773273810206458,
+      "median_image_displacement_px": 5.625781195754062,
+      "median_speed_ft_per_s": 7.131982143061937
+    },
+    {
+      "gap_bucket": "2",
+      "eligible_steps_at_gap": 1413,
+      "implausible_steps": 448,
+      "implausible_rate": 0.3170559094125973,
+      "median_gap_frames": 2,
+      "small_cell": "OK (>=30 steps)",
+      "median_court_displacement_ft": 0.9689810579295893,
+      "median_image_displacement_px": 27.093587802282666,
+      "median_speed_ft_per_s": 14.53471586894384
+    },
+    {
+      "gap_bucket": "3",
+      "eligible_steps_at_gap": 616,
+      "implausible_steps": 228,
+      "implausible_rate": 0.37012987012987014,
+      "median_gap_frames": 3.0,
+      "small_cell": "OK (>=30 steps)",
+      "median_court_displacement_ft": 1.6884888214500138,
+      "median_image_displacement_px": 43.94779588624378,
+      "median_speed_ft_per_s": 16.884888214500137
+    },
+    {
+      "gap_bucket": "4",
+      "eligible_steps_at_gap": 383,
+      "implausible_steps": 157,
+      "implausible_rate": 0.40992167101827676,
+      "median_gap_frames": 4,
+      "small_cell": "OK (>=30 steps)",
+      "median_court_displacement_ft": 2.939385317865106,
+      "median_image_displacement_px": 73.15191812249356,
+      "median_speed_ft_per_s": 22.045389883988296
+    },
+    {
+      "gap_bucket": "5",
+      "eligible_steps_at_gap": 219,
+      "implausible_steps": 67,
+      "implausible_rate": 0.3059360730593607,
+      "median_gap_frames": 5,
+      "small_cell": "OK (>=30 steps)",
+      "median_court_displacement_ft": 2.1631015847056148,
+      "median_image_displacement_px": 64.50436031773356,
+      "median_speed_ft_per_s": 12.978609508233689
+    },
+    {
+      "gap_bucket": "6-10",
+      "eligible_steps_at_gap": 504,
+      "implausible_steps": 177,
+      "implausible_rate": 0.35119047619047616,
+      "median_gap_frames": 7.0,
+      "small_cell": "OK (>=30 steps)",
+      "median_court_displacement_ft": 5.989297775509179,
+      "median_image_displacement_px": 143.79982388849334,
+      "median_speed_ft_per_s": 23.642146880294995
+    },
+    {
+      "gap_bucket": "above 10",
+      "eligible_steps_at_gap": 315,
+      "implausible_steps": 52,
+      "implausible_rate": 0.16507936507936508,
+      "median_gap_frames": 16,
+      "small_cell": "OK (>=30 steps)",
+      "median_court_displacement_ft": 6.777805041971588,
+      "median_image_displacement_px": 178.6008118682555,
+      "median_speed_ft_per_s": 12.420706078131564
+    }
+  ],
+  "loglog_fits": {
+    "court_displacement_ft": {
+      "exponent": 1.2215852733946047,
+      "standard_error": 0.1854028951843451,
+      "intercept_log": -1.0004702181645169,
+      "median_cells": 7,
+      "residual_degrees_of_freedom": 5,
+      "interpretation": "DESCRIPTIVE on dependent data; not an inferential test"
+    },
+    "image_displacement_px": {
+      "exponent": 1.2393370464731777,
+      "standard_error": 0.1825168124063522,
+      "intercept_log": 2.234482807578239,
+      "median_cells": 7,
+      "residual_degrees_of_freedom": 5,
+      "interpretation": "DESCRIPTIVE on dependent data; not an inferential test"
+    }
+  },
+  "fit_method": "Unweighted ln(median distance) ~ intercept + exponent * ln(median gap); seven buckets, all eligible steps",
+  "standardized_rate": 0.11163895486935867,
+  "gap_composition_share": 0.18186934124711795,
+  "gap_above1_rate_ratio_to_gap1": 2.9312920135676843,
+  "overlap_implausible_steps": {
+    "gap1_small_image": 623,
+    "gap1_larger_image": 2338,
+    "gap_above1_small_image": 7,
+    "gap_above1_larger_image": 1122
+  },
+  "overlap_denominator": "4090 eligible implausible steps; cells partition this set",
+  "historical_bimodal_overlap": null,
+  "historical_bimodal_overlap_reason": "The sole input has no historical bimodal membership flag or sealed ID list; not assumed disjoint.",
+  "limits": [
+    "One clip, span 19599-23399, one non-deterministic draw",
+    "Detector-box observations, not authenticated players",
+    "No ground truth; eye check NONE; not clip-wide",
+    "Retained-record gaps cannot distinguish absent from dropped detections",
+    "Rate decomposition is not causal attribution"
+  ],
+  "source": {
+    "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g289_implausible_step_decomposition_artifact/steps.csv",
+    "bytes": 6336759,
+    "sha256": "180e5b2bc8d7adbcebfd19dcb8128a8e9a872aa839c32d96e9f68e6a62bb24a0",
+    "resolution": "CSV: no raster; inherited coordinates 1920x1080 px"
+  },
+  "machine": "DESKTOP-VUIITL8",
+  "python": "3.10.0",
+  "execution": "Local CPU; no video, decode, GPU or pod"
+}

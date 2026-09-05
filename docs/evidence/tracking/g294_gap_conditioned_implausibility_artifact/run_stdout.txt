@@ -1,0 +1,32 @@
+REPRODUCTION FIRST (all required figures MATCH):
+baseline: 4090/29973 = 0.136456144
+gap1_share_implausible: 2961/4090 = 0.723960880
+gap1_share_plausible: 23562/25883 = 0.910327242
+gap1_rate: 2961/26523 = 0.111638955
+gap_above1_rate: 1129/3450 = 0.327246377
+gap_above1_share_all: 3450/29973 = 0.115103593
+gap_above1_share_implausible: 1129/4090 = 0.276039120
+rate ratio gap>1/gap1: 2.931292014
+
+Every metric cell names the eligible steps at that gap.
+| Gap | Median gap (frames) | Implausible rate | Median court ft | Median image px | Median speed ft/s | Cell mark |
+|---|---|---|---|---|---|---|
+| 1 | 1 (26523 eligible steps at this gap) | 2961/26523 = 0.111639 (26523 eligible steps at this gap) | 0.237733 (26523 eligible steps at this gap) | 5.625781 (26523 eligible steps at this gap) | 7.131982 (26523 eligible steps at this gap) | OK (>=30 steps) |
+| 2 | 2 (1413 eligible steps at this gap) | 448/1413 = 0.317056 (1413 eligible steps at this gap) | 0.968981 (1413 eligible steps at this gap) | 27.093588 (1413 eligible steps at this gap) | 14.534716 (1413 eligible steps at this gap) | OK (>=30 steps) |
+| 3 | 3 (616 eligible steps at this gap) | 228/616 = 0.370130 (616 eligible steps at this gap) | 1.688489 (616 eligible steps at this gap) | 43.947796 (616 eligible steps at this gap) | 16.884888 (616 eligible steps at this gap) | OK (>=30 steps) |
+| 4 | 4 (383 eligible steps at this gap) | 157/383 = 0.409922 (383 eligible steps at this gap) | 2.939385 (383 eligible steps at this gap) | 73.151918 (383 eligible steps at this gap) | 22.045390 (383 eligible steps at this gap) | OK (>=30 steps) |
+| 5 | 5 (219 eligible steps at this gap) | 67/219 = 0.305936 (219 eligible steps at this gap) | 2.163102 (219 eligible steps at this gap) | 64.504360 (219 eligible steps at this gap) | 12.978610 (219 eligible steps at this gap) | OK (>=30 steps) |
+| 6-10 | 7 (504 eligible steps at this gap) | 177/504 = 0.351190 (504 eligible steps at this gap) | 5.989298 (504 eligible steps at this gap) | 143.799824 (504 eligible steps at this gap) | 23.642147 (504 eligible steps at this gap) | OK (>=30 steps) |
+| above 10 | 16 (315 eligible steps at this gap) | 52/315 = 0.165079 (315 eligible steps at this gap) | 6.777805 (315 eligible steps at this gap) | 178.600812 (315 eligible steps at this gap) | 12.420706 (315 eligible steps at this gap) | OK (>=30 steps) |
+
+Unweighted ln(median distance) ~ intercept + exponent * ln(median gap); seven buckets, all eligible steps
+court_displacement_ft: exponent=1.221585, SE=0.185403; 7 medians, residual df=5
+image_displacement_px: exponent=1.239337, SE=0.182517; 7 medians, residual df=5
+DESCRIPTIVE on dependent data, not an inferential test; no p-value.
+standardized rate (gap1): 0.111638955
+gap-composition share: 0.181869341
+Overlap counts, denominator 4090 eligible implausible steps:
+gap1_small_image: 623/4090
+gap1_larger_image: 2338/4090
+gap_above1_small_image: 7/4090
+gap_above1_larger_image: 1122/4090
