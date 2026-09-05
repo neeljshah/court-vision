@@ -10,11 +10,18 @@ IMPORT and RUN them; you may NOT edit them. Build any new harness in `scripts/pl
     belongs in `pod_run`.
   - **The blind classification and the arithmetic are LOCAL**, on crops fetched back.
 
-**HOLD RULE -- COUNT DISTINCT LANE WORKTREES, NOT PYTHON PIDs.** One lane routinely shows TWO python PIDs
-sharing one `cwd`. **Reduce to the SET of distinct `/workspace/wt/a*` directories and compare THAT to 2.**
-Exclude your own process, your checker and its parent. **Report the SET you observed**, and record
-`nvidia-smi` utilisation as evidence only -- **do NOT act on it and do NOT propose a new N.** **This row
-needs the GPU, so it MUST hold for a free lane. Do NOT interrupt a running row.**
+**HOLD RULE, REPLACED BY THE VERIFIER 2026-09-04 21:00 -- GATE ON THE GPU, NOT ON A LANE COUNT.**
+**The old lane-count gate (hold while more than 2 distinct `/workspace/wt/a*` directories are occupied)
+held this row out for five hours and it was gating on the WRONG RESOURCE.** Measured by the verifier at
+2026-09-04 20:50: `nvidia-smi` **0 pct utilisation, 1 MiB of 24,576 MiB used, and ZERO compute
+processes**; 256 cores at load15 = 107.88; 834 GB of 1,007 GB RAM available; `dd conv=fsync` on
+`/workspace` **passed at 28 MB/s**. The five occupied worktrees (a13, a14, a15, a16, a17) are all running
+**CPU-only simulation** rows. **THE GATE FOR THIS ROW IS THE GPU: re-run `nvidia-smi
+--query-compute-apps=pid,used_memory --format=csv,noheader` yourself and PROCEED IF IT IS EMPTY or free
+VRAM exceeds what your run needs.** **Report your own measurement, and report the occupied-worktree SET as
+CONTEXT ONLY.** **Do NOT interrupt a running row. Never count python PIDs** -- one lane routinely shows two
+PIDs sharing one `cwd` (G274). **THIS IS AN OPERATIONAL GATE, NOT AN EVIDENTIARY BAR: no threshold, no
+acceptance bar and no p-value in this spec has moved or may move.**
 
 **READ THE LANDED G273 AND G280b MEMOS AND THE G280b-CONFOUND LEDGER ROW FIRST.**
 
@@ -72,10 +79,17 @@ METHOD:
  10. **The population is detector boxes, not authenticated players.** **Name every denominator; never say
      "players" unqualified.**
 
-**DISK GUARD, POD SIDE:** `df` is NON-AUTHORITATIVE. **Guard on `du -sm /workspace`** -- about
-**40,060 MB at 2026-09-04 14:50**, roughly **10 GB free** against the 50 GB quota, and **a peer session
-writes under `/workspace/wt`.** **Re-measure yourself.** **`dd conv=fsync` probe before writing, STOP and
-report if it fails ON THE POD.** **A downsampled span plus two detection runs plus crops is the bulk --
+**DISK GUARD, POD SIDE, CORRECTED 2026-09-04 21:00:** `df` is NON-AUTHORITATIVE (it reports the 929T
+MooseFS cluster, not the 50 GB quota). **`du -sm /workspace` is a NETWORK filesystem walk: under load it
+takes minutes or RETURNS NOTHING, and an EMPTY result means UNKNOWN, NEVER 0.** A lane that parsed empty
+`du` output as 0 lost a COMPLETED 3,801-frame pass (G282b), and a monitor that did the same raised a false
+"corpus deleted" alarm. **So: `v=$(timeout 90 du -sm /workspace | cut -f1); [ -z "$v" ] && v=UNKNOWN`,
+report `v` VERBATIM, and NEVER STOP ON UNKNOWN.** The verifier measured UNKNOWN twice at 2026-09-04 20:52
+under peer load; last known good was about **40,060 MB at 14:50**, roughly **10 GB free** of the 50 GB
+quota, and **a peer session writes under `/workspace/wt`. THE ONLY STOPPING CONDITION IS A FAILED
+`dd conv=fsync` PROBE ON THE POD** -- cheap, decisive, and it PASSED for the verifier at 28 MB/s at 20:52.
+**NOTHING MAY SIT BETWEEN A COMPLETED PASS AND ITS COMMITTED ARTIFACT: run the guard BEFORE the pass, never
+in the write path of a result.** **A downsampled span plus two detection runs plus crops is the bulk --
 downsample ONLY the span you need, delete your own intermediate video when done and report the bytes, and
 keep crops modest.** **Do NOT delete any corpus source, and do NOT delete the two abandoned bridge
 partials (`baseball__npb_05.mp4.part` 2.4 GB, `football__football_m8UWuQoflJo.mp4.part` 4.7 GB): they are

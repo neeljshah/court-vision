@@ -31,8 +31,24 @@ WHERE THIS ROW RUNS (step -1, MANDATORY -- state it PER STEP, not per row):
   DISK GUARD SCOPE: `du -sm /workspace` and the `dd conv=fsync` probe are POD-side
   and belong INSIDE the pod_run command. A missing /workspace in the local checkout
   is NOT a disk failure -- it means move that step to pod_run, not STOP.
-  HOLD RULE: count DISTINCT /workspace/wt/a* worktree directories, never python
-  PIDs -- one lane routinely shows two PIDs sharing one cwd (G274).
+  HOLD RULE, CORRECTED 2026-09-04 21:00: GATE ON THE RESOURCE THE ROW ACTUALLY
+  CONTENDS FOR, NOT ON A LANE COUNT. The old rule -- count DISTINCT
+  /workspace/wt/a* directories and hold at 2 -- is a PROXY, and it held a GPU row
+  out for five hours while the GPU sat at 0 pct with ZERO compute processes and
+  24,575 of 24,576 MiB free, because five peer lanes were running CPU-only
+  simulations on a 256-core box at load15 = 108. Measure the real constraint:
+    - GPU rows (detection, decode-to-tensor): `nvidia-smi
+      --query-compute-apps=pid,used_memory --format=csv,noheader` EMPTY, or free
+      VRAM above what the run needs. THAT is the gate for a GPU row.
+    - any row that WRITES: the `dd conv=fsync` probe must pass.
+    - CPU-heavy rows: load15 (field 3 of /proc/loadavg) below `nproc`.
+  Still NEVER interrupt a running row, and still never count python PIDs -- one
+  lane routinely shows two PIDs sharing one cwd (G274). Report the SET of
+  occupied worktrees as CONTEXT and report the gate measurement you gated on.
+  THIS IS NOT MOVING A BAR. An EVIDENTIARY threshold (a speed bar, an acceptance
+  bar, a p-value) may NEVER be moved to let a result pass. An OPERATIONAL
+  resource gate IS replaced when it is measured to gate on the wrong resource.
+  Keep the two categories apart and say plainly which one you touched.
   DISK GUARD, CORRECTED 2026-09-04: `du -sm /workspace` is a NETWORK filesystem
   walk (MooseFS) and under load it takes minutes or returns NOTHING. An empty
   result means UNKNOWN, NEVER 0 -- a monitor that parsed empty as 0 raised a
