@@ -1,0 +1,30 @@
+{
+  "n": 72,
+  "categories": ["A", "B", "C", "D", "E", "F", "G"],
+  "matrix_rows_g287_columns_g297": [
+    [5, 0, 9, 1, 0, 0, 0],
+    [6, 4, 6, 1, 0, 0, 0],
+    [2, 0, 13, 0, 2, 0, 0],
+    [0, 0, 0, 12, 1, 0, 0],
+    [0, 0, 1, 0, 7, 0, 0],
+    [0, 0, 1, 0, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0]
+  ],
+  "g287_marginal": [15, 17, 17, 13, 8, 2, 0],
+  "g297_marginal": [13, 4, 30, 14, 10, 1, 0],
+  "raw_agreement_n": 42,
+  "raw_agreement": 0.5833333333333334,
+  "chance_agreement": 0.2000385802469136,
+  "cohens_kappa": 0.4791415481070654,
+  "cohens_kappa_se": 0.071140720753999,
+  "cohens_kappa_nominal_wald_95": [0.33970573542922733, 0.6185773607849034],
+  "on_player_g287_n": 32,
+  "on_player_g297_n": 17,
+  "mcnemar_reference_on_player_g297_not": 17,
+  "mcnemar_reference_not_g297_on_player": 2,
+  "mcnemar_discordant_n": 19,
+  "mcnemar_nominal_exact_two_sided_p": 0.000728607177734375,
+  "sealing_sha": "2607641d6d6f5308e23baca18acb3a32bb25a402",
+  "reference_rater": "G287 gpt-5.6-terra",
+  "fresh_rater": "G297 gpt-5.6-sol"
+}
