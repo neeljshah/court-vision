@@ -1,0 +1,404 @@
+{
+  "all_ids": 98,
+  "all_retained_detections": 30071,
+  "eligible_ids": 84,
+  "excluded_short_ids": [
+    9,
+    12,
+    21,
+    27,
+    28,
+    43,
+    50,
+    51,
+    58,
+    59,
+    79,
+    92,
+    96,
+    98
+  ],
+  "excluded_short_detections": 81,
+  "minimum_observations": 20,
+  "arbitrary_cuts": true,
+  "primary_cut_px": 25,
+  "classification": "observation_count >= minimum AND footpoint_bbox_diagonal_px < cut",
+  "cuts": [
+    {
+      "diagonal_cut_px": 10,
+      "eligible_ids": 84,
+      "static_ids": [],
+      "static_id_count": 0,
+      "static_id_share": 0.0,
+      "static_detections": 0,
+      "all_retained_detections": 30071,
+      "detection_share": 0.0,
+      "bands": [
+        {
+          "band": "top_strip_0_89",
+          "all_band_detections": 24,
+          "all_retained_detections": 30071,
+          "static_band_detections": 0,
+          "all_static_detections": 0,
+          "share_all_retained": 0.0,
+          "share_static_detections": null,
+          "static_share_of_band": 0.0,
+          "static_ids_touching_band": []
+        },
+        {
+          "band": "score_bug_90_300",
+          "all_band_detections": 1084,
+          "all_retained_detections": 30071,
+          "static_band_detections": 0,
+          "all_static_detections": 0,
+          "share_all_retained": 0.0,
+          "share_static_detections": null,
+          "static_share_of_band": 0.0,
+          "static_ids_touching_band": []
+        },
+        {
+          "band": "lower_third_850_980",
+          "all_band_detections": 9561,
+          "all_retained_detections": 30071,
+          "static_band_detections": 0,
+          "all_static_detections": 0,
+          "share_all_retained": 0.0,
+          "share_static_detections": null,
+          "static_share_of_band": 0.0,
+          "static_ids_touching_band": []
+        },
+        {
+          "band": "bottom_strip_990_1079",
+          "all_band_detections": 19,
+          "all_retained_detections": 30071,
+          "static_band_detections": 0,
+          "all_static_detections": 0,
+          "share_all_retained": 0.0,
+          "share_static_detections": null,
+          "static_share_of_band": 0.0,
+          "static_ids_touching_band": []
+        },
+        {
+          "band": "other",
+          "all_band_detections": 19383,
+          "all_retained_detections": 30071,
+          "static_band_detections": 0,
+          "all_static_detections": 0,
+          "share_all_retained": 0.0,
+          "share_static_detections": null,
+          "static_share_of_band": 0.0,
+          "static_ids_touching_band": []
+        }
+      ]
+    },
+    {
+      "diagonal_cut_px": 25,
+      "eligible_ids": 84,
+      "static_ids": [],
+      "static_id_count": 0,
+      "static_id_share": 0.0,
+      "static_detections": 0,
+      "all_retained_detections": 30071,
+      "detection_share": 0.0,
+      "bands": [
+        {
+          "band": "top_strip_0_89",
+          "all_band_detections": 24,
+          "all_retained_detections": 30071,
+          "static_band_detections": 0,
+          "all_static_detections": 0,
+          "share_all_retained": 0.0,
+          "share_static_detections": null,
+          "static_share_of_band": 0.0,
+          "static_ids_touching_band": []
+        },
+        {
+          "band": "score_bug_90_300",
+          "all_band_detections": 1084,
+          "all_retained_detections": 30071,
+          "static_band_detections": 0,
+          "all_static_detections": 0,
+          "share_all_retained": 0.0,
+          "share_static_detections": null,
+          "static_share_of_band": 0.0,
+          "static_ids_touching_band": []
+        },
+        {
+          "band": "lower_third_850_980",
+          "all_band_detections": 9561,
+          "all_retained_detections": 30071,
+          "static_band_detections": 0,
+          "all_static_detections": 0,
+          "share_all_retained": 0.0,
+          "share_static_detections": null,
+          "static_share_of_band": 0.0,
+          "static_ids_touching_band": []
+        },
+        {
+          "band": "bottom_strip_990_1079",
+          "all_band_detections": 19,
+          "all_retained_detections": 30071,
+          "static_band_detections": 0,
+          "all_static_detections": 0,
+          "share_all_retained": 0.0,
+          "share_static_detections": null,
+          "static_share_of_band": 0.0,
+          "static_ids_touching_band": []
+        },
+        {
+          "band": "other",
+          "all_band_detections": 19383,
+          "all_retained_detections": 30071,
+          "static_band_detections": 0,
+          "all_static_detections": 0,
+          "share_all_retained": 0.0,
+          "share_static_detections": null,
+          "static_share_of_band": 0.0,
+          "static_ids_touching_band": []
+        }
+      ]
+    },
+    {
+      "diagonal_cut_px": 50,
+      "eligible_ids": 84,
+      "static_ids": [],
+      "static_id_count": 0,
+      "static_id_share": 0.0,
+      "static_detections": 0,
+      "all_retained_detections": 30071,
+      "detection_share": 0.0,
+      "bands": [
+        {
+          "band": "top_strip_0_89",
+          "all_band_detections": 24,
+          "all_retained_detections": 30071,
+          "static_band_detections": 0,
+          "all_static_detections": 0,
+          "share_all_retained": 0.0,
+          "share_static_detections": null,
+          "static_share_of_band": 0.0,
+          "static_ids_touching_band": []
+        },
+        {
+          "band": "score_bug_90_300",
+          "all_band_detections": 1084,
+          "all_retained_detections": 30071,
+          "static_band_detections": 0,
+          "all_static_detections": 0,
+          "share_all_retained": 0.0,
+          "share_static_detections": null,
+          "static_share_of_band": 0.0,
+          "static_ids_touching_band": []
+        },
+        {
+          "band": "lower_third_850_980",
+          "all_band_detections": 9561,
+          "all_retained_detections": 30071,
+          "static_band_detections": 0,
+          "all_static_detections": 0,
+          "share_all_retained": 0.0,
+          "share_static_detections": null,
+          "static_share_of_band": 0.0,
+          "static_ids_touching_band": []
+        },
+        {
+          "band": "bottom_strip_990_1079",
+          "all_band_detections": 19,
+          "all_retained_detections": 30071,
+          "static_band_detections": 0,
+          "all_static_detections": 0,
+          "share_all_retained": 0.0,
+          "share_static_detections": null,
+          "static_share_of_band": 0.0,
+          "static_ids_touching_band": []
+        },
+        {
+          "band": "other",
+          "all_band_detections": 19383,
+          "all_retained_detections": 30071,
+          "static_band_detections": 0,
+          "all_static_detections": 0,
+          "share_all_retained": 0.0,
+          "share_static_detections": null,
+          "static_share_of_band": 0.0,
+          "static_ids_touching_band": []
+        }
+      ]
+    }
+  ],
+  "distributions": {
+    "all_ids": {
+      "observation_count": {
+        "ids_total": 98,
+        "ids_defined": 98,
+        "ids_undefined": 0,
+        "min": 1,
+        "p10": 9.700000000000001,
+        "p25": 52.0,
+        "median": 120.0,
+        "p75": 452.0,
+        "p90": 841.6999999999997,
+        "p95": 1148.1499999999994,
+        "max": 1639
+      },
+      "path_length_px": {
+        "ids_total": 98,
+        "ids_defined": 98,
+        "ids_undefined": 0,
+        "min": 0.0,
+        "p10": 227.27406744454018,
+        "p25": 1392.9771634170347,
+        "median": 5001.952277664994,
+        "p75": 18304.305801082293,
+        "p90": 32195.659300544354,
+        "p95": 41002.37136220397,
+        "max": 58983.425399738866
+      },
+      "footpoint_bbox_diagonal_px": {
+        "ids_total": 98,
+        "ids_defined": 98,
+        "ids_undefined": 0,
+        "min": 0.0,
+        "p10": 147.66922007392813,
+        "p25": 628.2719069574741,
+        "median": 1408.606090603574,
+        "p75": 1858.5085058804545,
+        "p90": 2019.7292254764666,
+        "p95": 2050.927365233594,
+        "max": 2085.201304601762
+      },
+      "median_step_displacement_px": {
+        "ids_total": 98,
+        "ids_defined": 95,
+        "ids_undefined": 3,
+        "min": 0.375,
+        "p10": 1.6531844105571671,
+        "p25": 4.802343178074636,
+        "median": 7.501171691951729,
+        "p75": 11.041477579235353,
+        "p90": 17.237504204641986,
+        "p95": 31.681602357719612,
+        "max": 405.10293830704313
+      }
+    },
+    "eligible_ids": {
+      "observation_count": {
+        "ids_total": 84,
+        "ids_defined": 84,
+        "ids_undefined": 0,
+        "min": 20,
+        "p10": 47.6,
+        "p25": 85.75,
+        "median": 200.5,
+        "p75": 506.25,
+        "p90": 930.6000000000001,
+        "p95": 1190.8499999999997,
+        "max": 1639
+      },
+      "path_length_px": {
+        "ids_total": 84,
+        "ids_defined": 84,
+        "ids_undefined": 0,
+        "min": 167.74286688706584,
+        "p10": 888.000557654014,
+        "p25": 2413.350069937938,
+        "median": 8061.7937689594855,
+        "p75": 22866.52154460639,
+        "p90": 33157.11265833692,
+        "p95": 43121.35060618988,
+        "max": 58983.425399738866
+      },
+      "footpoint_bbox_diagonal_px": {
+        "ids_total": 84,
+        "ids_defined": 84,
+        "ids_undefined": 0,
+        "min": 99.8761391127155,
+        "p10": 444.06025569122113,
+        "p25": 848.9787200474044,
+        "median": 1638.2701198876298,
+        "p75": 1929.0823678349302,
+        "p90": 2030.0473883251757,
+        "p95": 2056.000062946814,
+        "max": 2085.201304601762
+      },
+      "median_step_displacement_px": {
+        "ids_total": 84,
+        "ids_defined": 84,
+        "ids_undefined": 0,
+        "min": 0.375,
+        "p10": 2.1016344539513643,
+        "p25": 4.864564230278369,
+        "median": 7.574850481170453,
+        "p75": 10.630852143839611,
+        "p90": 14.996544826588714,
+        "p95": 21.01677241432919,
+        "max": 41.489644792405734
+      }
+    }
+  },
+  "steps": 29973,
+  "frame_records": 3801,
+  "unique_frame_id_observations": 30071,
+  "source_frame_span_inclusive": [
+    19599,
+    23399
+  ],
+  "limits": "STATIC IS NOT THE SAME AS FURNITURE. A player standing still, a track living entirely during a held camera, or a short id in a static shot all look static, and this row has NO image evidence and NO eye check to tell them apart -- naming furniture would need crops this row does not render. The camera moves, so screen-fixed overlay graphics are static in image space while the court is not; that is the signal being used and it is INDIRECT. ONE clip, ONE span (19599-23399), ONE draw of a non-deterministic route (G241: 808 of 1,201 records differed). Per G278 the span is measurably friendlier than the clip (0.836 vs 0.656, p=0.0078), so nothing may be quoted clip-wide. The population is detector-box observations, not authenticated players. The lower-third band also contains the near court; occupancy is not evidence of furniture. Motion cannot attribute a share of G281's 0.935 purity to furniture; no per-track identity labels, ground truth, or purity recomputation.",
+  "zero_image_steps": 1228,
+  "zero_image_median_court_ft": 0.0014900273903968204,
+  "inputs": [
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a3\\docs\\evidence\\tracking\\g267_court_space_physical_plausibility_artifact\\g267_measurement.json",
+      "bytes": 12446681,
+      "sha256": "0903d4ee8afac9999e37ca07d14ec81ea59e66ca485a99c21fd27ed959cee2b5",
+      "resolution": "not raster; coordinates at 1920x1080"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a3\\docs\\evidence\\tracking\\g289_implausible_step_decomposition_artifact\\steps.csv",
+      "bytes": 6336759,
+      "sha256": "180e5b2bc8d7adbcebfd19dcb8128a8e9a872aa839c32d96e9f68e6a62bb24a0",
+      "resolution": "not raster; coordinates at 1920x1080"
+    }
+  ],
+  "inherited_video_metadata_not_opened": {
+    "absolute_path": "/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4",
+    "bytes": 2931985407,
+    "resolution_px": [
+      1920,
+      1080
+    ],
+    "seed_frame": 19599,
+    "source_frame_span_inclusive": [
+      19599,
+      23399
+    ],
+    "fps": 30.0
+  },
+  "code": [
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a3\\scripts\\platformkit\\tracking\\g299_static_track_share.py",
+      "bytes": 11123,
+      "sha256": "c281b41e7d2d909097ba9e53481d42fa0b314fb9b792dbbfd19291c96fcde27a",
+      "resolution": "not applicable (Python source)"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a3\\scripts\\platformkit\\tracking\\verifier_footpoint_analyses.py",
+      "bytes": 10462,
+      "sha256": "a0da6bd99dc5c6b257340be8d125ea48d5420bec29c54f473e1150d03974151c",
+      "resolution": "not applicable (Python source)"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a3\\scripts\\platformkit\\tracking\\g289_implausible_step_decomposition.py",
+      "bytes": 9655,
+      "sha256": "6663b97b45fcffa8c13731afa3affe90f426a5badd54435655da6c47883df9b9",
+      "resolution": "not applicable (Python source)"
+    }
+  ],
+  "machine": {
+    "host": "DESKTOP-VUIITL8",
+    "system": "Windows",
+    "python": "3.10.0",
+    "worktree": "C:\\Users\\neelj\\nba-track-a3",
+    "reason": "Local CPU arithmetic on committed coordinates"
+  }
+}

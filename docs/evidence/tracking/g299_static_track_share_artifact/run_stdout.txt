@@ -1,0 +1,4 @@
+CENSUS: 30071 retained detector-box observations, 98 IDs, 29973 steps
+ARBITRARY diagonal <10 px, n>=20: 0/84 eligible IDs; 0/30071 retained detections = 0.000000000
+ARBITRARY diagonal <25 px, n>=20: 0/84 eligible IDs; 0/30071 retained detections = 0.000000000
+ARBITRARY diagonal <50 px, n>=20: 0/84 eligible IDs; 0/30071 retained detections = 0.000000000
