@@ -1291,6 +1291,85 @@ median 172 px from that player's feet.**
 
 ---
 
+---
+
+## 7.28 WHAT THE DETECTOR ACTUALLY MARKS -- and a correction to how I first reported it
+
+Two rows asked what lies under a detection's footpoint. **They asked different
+questions, I conflated them, and the correction matters.**
+
+### G286, the PAIRED question
+
+For 79 detections that had a hand-located player inside a 512x640 crop: is the
+footpoint on **that** player's feet? **0 of 79.** Bare floor 40/79 = 0.506,
+graphic or ticker 29/79 = 0.367, a different person 7/79 = 0.089, the paired
+player's body 3/79 = 0.038. Direction below in 37/79.
+
+**Mis-pairing was ruled out by design** -- the "different person" category exists
+to catch it, and at 0.089 it did not explain the result. **So the localisation
+finding stands: a median 172 px from the paired player's feet.**
+
+### G287, the UNPAIRED question
+
+On G273's own **72 sealed unconditioned crops**, re-judged blind with verdicts
+committed before un-blinding: is the footpoint on **a** player's feet?
+
+| under the centre cross | count | fraction |
+|---|---:|---:|
+| **player's feet** | 15/72 | **0.208** |
+| player's body, not feet | 17/72 | 0.236 |
+| bare court or floor | 17/72 | 0.236 |
+| graphic or score ticker | 13/72 | **0.181** |
+| a person, not a player | 8/72 | 0.111 |
+| other | 2/72 | 0.028 |
+| cannot judge | 0/72 | 0 |
+
+**About one footpoint in five is on a player's feet; about two in five are on a
+player somewhere.**
+
+### The decisive cross-tab
+
+**G273's 43 PLAYER verdicts split into 13 feet, 15 body-not-feet, 12 floor,
+2 graphic and 1 basketball.** Fewer than a third of the detections G273 called
+PLAYER have the footpoint on a player's feet. **0.597 overstates the point-level
+"on a player's feet" claim by 0.389.**
+
+### My error, stated plainly
+
+**I reported G286's zero as though it were a property of the detector.** It was a
+property of a paired question, on a located set averaging ~9.5 players per frame,
+so any footpoint on an unlocated player scored as floor or different-person.
+**"The detector essentially never marks a player's feet" was wrong. The
+unconditioned rate is 0.208.** That sentence had reached the ledger, this
+synthesis, the evidence packet and a memory title; all four are corrected.
+
+**Lesson: a paired result does not transfer to the unpaired question.**
+
+### The graphics share also halves, as a spatial check predicted
+
+Unconditioned graphics are **0.181** against G286's conditioned 0.367. Before
+G287 ran, a spatial histogram of all 30,071 detections showed the classic overlay
+regions essentially empty -- **top band 25/30,071 and bottom band 19/30,071, both
+0.001** -- so what is being called "graphic" is more likely **court-surface
+decoration** than overlay furniture. **That check called the direction correctly
+in advance.**
+
+### Label stability, reported not reconciled
+
+Point-level person total **0.556** against G273's crop-level **0.722**. Same
+labeller, so this is refinement plus repeatability, **not** independent
+validation -- and a stricter point-level criterion should produce exactly this
+gap.
+
+### What survives unchanged
+
+G286's counts for the question it asked; the **median 172 px** localisation
+figure; and the headline **13.6 / 10.5 pct** implausible-step rates, which remain
+robust to the cut point (G279) and reproducible across detector draws to +0.0005
+(G282).
+
+---
+
 ## NOT VERIFIED
 
 - Whether a trained basketball calibration model would work; nothing was trained
