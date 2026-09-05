@@ -1,0 +1,210 @@
+{
+  "arm": "B",
+  "weight": {
+    "path": "/workspace/nba-ai-system/yolov8n.pt",
+    "bytes": 6549796,
+    "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+  },
+  "settings": {
+    "classes": [
+      0
+    ],
+    "conf": 0.3,
+    "verbose": false,
+    "imgsz": 1920,
+    "half": true,
+    "device": 0
+  },
+  "frames": [
+    19630,
+    19879,
+    20190,
+    20440,
+    20689,
+    20938,
+    21187,
+    21499,
+    21686,
+    21935,
+    22247,
+    22496,
+    22683,
+    22994,
+    23368
+  ],
+  "total_detections": 617,
+  "environment": {
+    "python": "3.12.3",
+    "torch": "2.8.0+cu128",
+    "ultralytics": "8.4.138",
+    "opencv": "5.0.0",
+    "cuda": "12.8",
+    "cudnn": 91002,
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "half": true,
+    "device": 0,
+    "cudnn_benchmark": true,
+    "pythonhashseed": "298"
+  },
+  "route": "imported FeetDetector constructor and get_players_pos; capture raw model boxes",
+  "route_files": [
+    {
+      "path": "/workspace/wt/a6/scripts/platformkit/tracking/g298_detect.py",
+      "bytes": 8625,
+      "sha256": "74745d5d89387124d04384d12e6510a9cb72513e45992eac15e22879a36654a4"
+    },
+    {
+      "path": "/workspace/wt/a6/scripts/platformkit/tracking/g298_compare.py",
+      "bytes": 5442,
+      "sha256": "27b85ceeb184eb566b1b5b5be50ebbd6875c036ee32e48e7f61cf0e752308528"
+    },
+    {
+      "path": "/workspace/wt/a6/src/tracking/player_detection.py",
+      "bytes": 10226,
+      "sha256": "532389342b93e259e01f2d177ea34ccb1f52dc1c4b9b7f62aed2bf07c7df785a"
+    },
+    {
+      "path": "/workspace/wt/a6/src/tracking/utils/plot_tools.py",
+      "bytes": 466,
+      "sha256": "2de8a457e56bb38cb69651b4a3020ef31a29401ea88e023f65348c22f9c30841"
+    }
+  ],
+  "source_video": {
+    "path": "/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4",
+    "bytes": 2931985407,
+    "sha256": "f361ad7a32ccc6d98ae8e98eee0b090f5e121f9425182e24a31c282ca226c678",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "fps": 30.0
+  },
+  "decoded_frames": [
+    {
+      "source_frame": 19630,
+      "resolution": [
+        1920,
+        1080
+      ],
+      "decoded_bgr_sha256": "ab161c2ed2de4fa195d6724b8a3f5f195423d7ef151e1946d46dedd3670e3609"
+    },
+    {
+      "source_frame": 19879,
+      "resolution": [
+        1920,
+        1080
+      ],
+      "decoded_bgr_sha256": "a217c7f60911b7e6b564689ad9a8f402c08373cbd008f5d748cc9de07359b5b3"
+    },
+    {
+      "source_frame": 20190,
+      "resolution": [
+        1920,
+        1080
+      ],
+      "decoded_bgr_sha256": "18ac6ec42a80c3c73c6d050343b594b1487ef3a54e0c2c9c1e198af2943e67f7"
+    },
+    {
+      "source_frame": 20440,
+      "resolution": [
+        1920,
+        1080
+      ],
+      "decoded_bgr_sha256": "d60956ed1438f382879d7772fe86289937693f9527004e3d86bcf1406efa3c9b"
+    },
+    {
+      "source_frame": 20689,
+      "resolution": [
+        1920,
+        1080
+      ],
+      "decoded_bgr_sha256": "24ee4cf501b89e59d8787f3dae769acdbeaf11854b833b3048569178b567bba9"
+    },
+    {
+      "source_frame": 20938,
+      "resolution": [
+        1920,
+        1080
+      ],
+      "decoded_bgr_sha256": "6bea5f13ec9207ea5ad63cbe84a47cc7dd1bc49ae8eb9f76111fccadb31548fe"
+    },
+    {
+      "source_frame": 21187,
+      "resolution": [
+        1920,
+        1080
+      ],
+      "decoded_bgr_sha256": "2f468dde0092e25859f71a9a1cb1ab870f0c540551aa5be050c9f7dfb99d2d95"
+    },
+    {
+      "source_frame": 21499,
+      "resolution": [
+        1920,
+        1080
+      ],
+      "decoded_bgr_sha256": "8f42cb8612abfb58a2bd3003661f5dce2f8d825d174895f18685df9128451b25"
+    },
+    {
+      "source_frame": 21686,
+      "resolution": [
+        1920,
+        1080
+      ],
+      "decoded_bgr_sha256": "5678a14ff1bdf57a065401163c9105c119f7ed02f66efad0e5b2056c549d8cda"
+    },
+    {
+      "source_frame": 21935,
+      "resolution": [
+        1920,
+        1080
+      ],
+      "decoded_bgr_sha256": "4718d5c9db31a6c6a1c33c7fc8fa3a9755c96fa0c29074d4e7e085f8fcf372e9"
+    },
+    {
+      "source_frame": 22247,
+      "resolution": [
+        1920,
+        1080
+      ],
+      "decoded_bgr_sha256": "c536ae4d3b6ba040de2c4776e8e2701807fc3bec6954f8c2f23d279861430f84"
+    },
+    {
+      "source_frame": 22496,
+      "resolution": [
+        1920,
+        1080
+      ],
+      "decoded_bgr_sha256": "556400ef5add35b8651f2c112982327fd138f1ad3f656ea2cbf55b3248b85316"
+    },
+    {
+      "source_frame": 22683,
+      "resolution": [
+        1920,
+        1080
+      ],
+      "decoded_bgr_sha256": "f777e8da2ecbbbdad74156837d3068b2658c238ac0bfa6dd5b3508a81b82e9f8"
+    },
+    {
+      "source_frame": 22994,
+      "resolution": [
+        1920,
+        1080
+      ],
+      "decoded_bgr_sha256": "a457f3b78cef29342aefca3455b54d0ff5f00766f3611f1b46030912f0623a33"
+    },
+    {
+      "source_frame": 23368,
+      "resolution": [
+        1920,
+        1080
+      ],
+      "decoded_bgr_sha256": "11543d9495732e2153dd5f3e0ed3e1bcd1510bb86fdbfaaf5987ea86d286ecab"
+    }
+  ],
+  "located_feet": {
+    "path": "/workspace/wt/a6/docs/evidence/tracking/g285b_locate_then_match_recall_artifact/located_feet.csv",
+    "bytes": 5694,
+    "sha256": "ed52cd937f19a2c344ac700491738d49823cb8e8f31df90a9d84db8bc98ee8b3"
+  },
+  "detections_sha256": "31e44c45dbbedaf3af7f7f6b514b903ad1294a1ec1230087dfa4496a4e780e47"
+}

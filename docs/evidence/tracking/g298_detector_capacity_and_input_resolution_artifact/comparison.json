@@ -1,0 +1,188 @@
+{
+  "eligible_denominator": 143,
+  "frames": [
+    19630,
+    19879,
+    20190,
+    20440,
+    20689,
+    20938,
+    21187,
+    21499,
+    21686,
+    21935,
+    22247,
+    22496,
+    22683,
+    22994,
+    23368
+  ],
+  "tolerances_px": [
+    25,
+    50,
+    100
+  ],
+  "A_byte_identical": true,
+  "located_feet_sha256": "ed52cd937f19a2c344ac700491738d49823cb8e8f31df90a9d84db8bc98ee8b3",
+  "arms": {
+    "A": {
+      "recall": {
+        "25": {
+          "matched": 3,
+          "eligible_denominator": 143,
+          "recall": 0.02097902097902098
+        },
+        "50": {
+          "matched": 8,
+          "eligible_denominator": 143,
+          "recall": 0.055944055944055944
+        },
+        "100": {
+          "matched": 25,
+          "eligible_denominator": 143,
+          "recall": 0.17482517482517482
+        }
+      },
+      "total_detections": 112,
+      "counts_per_frame": {
+        "19630": 8,
+        "19879": 7,
+        "20190": 3,
+        "20440": 11,
+        "20689": 10,
+        "20938": 9,
+        "21187": 5,
+        "21499": 10,
+        "21686": 11,
+        "21935": 8,
+        "22247": 5,
+        "22496": 6,
+        "22683": 7,
+        "22994": 4,
+        "23368": 8
+      },
+      "mean_detections_per_frame": 7.466666666666667,
+      "median_nearest_px": 202.23748416156684
+    },
+    "B": {
+      "recall": {
+        "25": {
+          "matched": 15,
+          "eligible_denominator": 143,
+          "recall": 0.1048951048951049
+        },
+        "50": {
+          "matched": 36,
+          "eligible_denominator": 143,
+          "recall": 0.2517482517482518
+        },
+        "100": {
+          "matched": 73,
+          "eligible_denominator": 143,
+          "recall": 0.5104895104895105
+        }
+      },
+      "total_detections": 617,
+      "counts_per_frame": {
+        "19630": 45,
+        "19879": 61,
+        "20190": 62,
+        "20440": 48,
+        "20689": 28,
+        "20938": 12,
+        "21187": 18,
+        "21499": 61,
+        "21686": 62,
+        "21935": 62,
+        "22247": 80,
+        "22496": 52,
+        "22683": 6,
+        "22994": 8,
+        "23368": 12
+      },
+      "mean_detections_per_frame": 41.13333333333333,
+      "median_nearest_px": 96.46242791885346
+    },
+    "C": {
+      "recall": {
+        "25": {
+          "matched": 14,
+          "eligible_denominator": 143,
+          "recall": 0.0979020979020979
+        },
+        "50": {
+          "matched": 30,
+          "eligible_denominator": 143,
+          "recall": 0.2097902097902098
+        },
+        "100": {
+          "matched": 65,
+          "eligible_denominator": 143,
+          "recall": 0.45454545454545453
+        }
+      },
+      "total_detections": 470,
+      "counts_per_frame": {
+        "19630": 36,
+        "19879": 46,
+        "20190": 42,
+        "20440": 42,
+        "20689": 45,
+        "20938": 13,
+        "21187": 15,
+        "21499": 50,
+        "21686": 37,
+        "21935": 37,
+        "22247": 37,
+        "22496": 38,
+        "22683": 6,
+        "22994": 5,
+        "23368": 21
+      },
+      "mean_detections_per_frame": 31.333333333333332,
+      "median_nearest_px": 107.83784122468327
+    }
+  },
+  "paired_tests": {
+    "A_vs_B": {
+      "25": {
+        "lost": 1,
+        "gained": 13,
+        "discordant": 14,
+        "nominal_p": 0.0018310546875
+      },
+      "50": {
+        "lost": 1,
+        "gained": 29,
+        "discordant": 30,
+        "nominal_p": 5.774199962615967e-08
+      },
+      "100": {
+        "lost": 0,
+        "gained": 48,
+        "discordant": 48,
+        "nominal_p": 7.105427357601002e-15
+      }
+    },
+    "B_vs_C": {
+      "25": {
+        "lost": 5,
+        "gained": 4,
+        "discordant": 9,
+        "nominal_p": 1.0
+      },
+      "50": {
+        "lost": 7,
+        "gained": 1,
+        "discordant": 8,
+        "nominal_p": 0.0703125
+      },
+      "100": {
+        "lost": 10,
+        "gained": 2,
+        "discordant": 12,
+        "nominal_p": 0.03857421875
+      }
+    }
+  }
+}

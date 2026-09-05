@@ -1,0 +1,164 @@
+{
+  "task_owned_files": [
+    {
+      "path": "/workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/A.csv",
+      "bytes": 6423
+    },
+    {
+      "path": "/workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/A_repeat.csv",
+      "bytes": 6423
+    },
+    {
+      "path": "/workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/A_repeat_summary.json",
+      "bytes": 5280
+    },
+    {
+      "path": "/workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/A_summary.json",
+      "bytes": 5273
+    },
+    {
+      "path": "/workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/B.csv",
+      "bytes": 34619
+    },
+    {
+      "path": "/workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/B_summary.json",
+      "bytes": 5274
+    },
+    {
+      "path": "/workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/C.csv",
+      "bytes": 26413
+    },
+    {
+      "path": "/workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/C_summary.json",
+      "bytes": 5281
+    },
+    {
+      "path": "/workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/determinism.json",
+      "bytes": 233
+    },
+    {
+      "path": "/workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/execution.lock",
+      "bytes": 8
+    },
+    {
+      "path": "/workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/probes.json",
+      "bytes": 536
+    },
+    {
+      "path": "/workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/scratch_bytes.json",
+      "bytes": 584
+    },
+    {
+      "path": "/workspace/wt/a6/g298_code/docs/evidence/tracking/g285b_locate_then_match_recall_artifact/located_feet.csv",
+      "bytes": 5694
+    },
+    {
+      "path": "/workspace/wt/a6/g298_code/scripts/__init__.py",
+      "bytes": 82
+    },
+    {
+      "path": "/workspace/wt/a6/g298_code/scripts/platformkit/__init__.py",
+      "bytes": 0
+    },
+    {
+      "path": "/workspace/wt/a6/g298_code/scripts/platformkit/tracking/__init__.py",
+      "bytes": 196
+    },
+    {
+      "path": "/workspace/wt/a6/g298_code/scripts/platformkit/tracking/association.py",
+      "bytes": 7619
+    },
+    {
+      "path": "/workspace/wt/a6/g298_code/scripts/platformkit/tracking/g298_compare.py",
+      "bytes": 5442
+    },
+    {
+      "path": "/workspace/wt/a6/g298_code/scripts/platformkit/tracking/g298_detect.py",
+      "bytes": 8625
+    },
+    {
+      "path": "/workspace/wt/a6/g298_code/src/__init__.py",
+      "bytes": 0
+    },
+    {
+      "path": "/workspace/wt/a6/g298_code/src/tracking/__init__.py",
+      "bytes": 965
+    },
+    {
+      "path": "/workspace/wt/a6/g298_code/src/tracking/player_detection.py",
+      "bytes": 10226
+    },
+    {
+      "path": "/workspace/wt/a6/g298_code/src/tracking/utils/__init__.py",
+      "bytes": 0
+    },
+    {
+      "path": "/workspace/wt/a6/g298_code/src/tracking/utils/plot_tools.py",
+      "bytes": 466
+    },
+    {
+      "path": "/workspace/wt/a6/g298_scratch/Ultralytics/settings.json",
+      "bytes": 441
+    },
+    {
+      "path": "/workspace/wt/a6/g298_scratch/fsync_probe.bin",
+      "bytes": 8388608
+    },
+    {
+      "path": "/workspace/wt/a6/g298_scratch/matplotlib/fontlist-v3.11.0.json",
+      "bytes": 29302
+    },
+    {
+      "path": "/workspace/wt/a6/g298_scratch/preflight_fsync_probe.bin",
+      "bytes": 8388608
+    },
+    {
+      "path": "/workspace/wt/a6/g298_scratch/wrapper_fsync_probe.bin",
+      "bytes": 8388608
+    },
+    {
+      "path": "/workspace/wt/a6/g298_scratch/yolov8x.pt",
+      "bytes": 136890692
+    },
+    {
+      "path": "/workspace/wt/a6/pod_run_20260904215838.log",
+      "bytes": 76
+    },
+    {
+      "path": "/workspace/wt/a6/pod_run_20260904220142.log",
+      "bytes": 30548
+    },
+    {
+      "path": "/workspace/wt/a6/pod_run_20260904220933.log",
+      "bytes": 509
+    },
+    {
+      "path": "/workspace/wt/a6/pod_run_20260904221053.log",
+      "bytes": 76
+    },
+    {
+      "path": "/workspace/wt/a6/scripts/platformkit/tracking/g298_compare.py",
+      "bytes": 5442
+    },
+    {
+      "path": "/workspace/wt/a6/scripts/platformkit/tracking/g298_detect.py",
+      "bytes": 8625
+    },
+    {
+      "path": "/workspace/wt/a6/scripts/platformkit/tracking/g298_report.py",
+      "bytes": 14638
+    },
+    {
+      "path": "/workspace/wt/a6/scripts/platformkit/tracking/g298_wrapper.py",
+      "bytes": 1549
+    },
+    {
+      "path": "/workspace/wt/a6/scripts/platformkit/tracking/test_g298_compare.py",
+      "bytes": 2959
+    }
+  ],
+  "bytes_added_retained": 162286343,
+  "bytes_freed": 8388608,
+  "freed_reason": "original pod_run quota probe only; harness freed zero",
+  "whole_volume_net_growth": "UNKNOWN; bulk restaging overwrote existing files"
+}

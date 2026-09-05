@@ -1,0 +1,213 @@
+{
+  "independent_scipy_reproduction": "PASS",
+  "inputs_and_code": [
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g285b_locate_then_match_recall_artifact\\located_feet.csv",
+      "bytes": 5694,
+      "sha256": "ed52cd937f19a2c344ac700491738d49823cb8e8f31df90a9d84db8bc98ee8b3"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\src\\tracking\\player_detection.py",
+      "bytes": 10226,
+      "sha256": "532389342b93e259e01f2d177ea34ccb1f52dc1c4b9b7f62aed2bf07c7df785a"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\src\\tracking\\utils\\plot_tools.py",
+      "bytes": 466,
+      "sha256": "2de8a457e56bb38cb69651b4a3020ef31a29401ea88e023f65348c22f9c30841"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\scripts\\platformkit\\tracking\\g298_audit.py",
+      "bytes": 3889,
+      "sha256": "763694d94e905ce1865ea08b3da9e73bbab512b0bb1c6fca43c56e5b903fe577"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\scripts\\platformkit\\tracking\\g298_collect.sh",
+      "bytes": 1227,
+      "sha256": "f5dba876af764930cb75b60ee95b6417884d5d82ccff76c57b453169d746938a"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\scripts\\platformkit\\tracking\\g298_compare.py",
+      "bytes": 5442,
+      "sha256": "27b85ceeb184eb566b1b5b5be50ebbd6875c036ee32e48e7f61cf0e752308528"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\scripts\\platformkit\\tracking\\g298_detect.py",
+      "bytes": 8625,
+      "sha256": "74745d5d89387124d04384d12e6510a9cb72513e45992eac15e22879a36654a4"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\scripts\\platformkit\\tracking\\g298_pod_run.sh",
+      "bytes": 2971,
+      "sha256": "ecb1e77ab2affeb8f87deb037754c887d9d52a8984154a982355cf55c1e64a92"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\scripts\\platformkit\\tracking\\g298_pod_run_minimal.sh",
+      "bytes": 2740,
+      "sha256": "6085dbe4781973abf4a6c3e64a61f2bf4cfa439fd80f6a777aa5091dbeabef2f"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\scripts\\platformkit\\tracking\\g298_report.py",
+      "bytes": 18981,
+      "sha256": "76fd7bbb7e079dc168d65e28e0b61e27b1a46535e9584600fb74975aa3815ecf"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\scripts\\platformkit\\tracking\\g298_run.sh",
+      "bytes": 1823,
+      "sha256": "16e85cc09daa6d6ee3502ea7ac61909e50827da2c39e2c27fca51f3b29112a7e"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\scripts\\platformkit\\tracking\\g298_wrapper.py",
+      "bytes": 1549,
+      "sha256": "21bca2a862a3b12207f289f880f9f3c498607280a94d185d9172ab814822289b"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\scripts\\platformkit\\tracking\\test_g298_compare.py",
+      "bytes": 2959,
+      "sha256": "942bf4b9edf66088de7abfdc70633fa031dbb82ec7fef9dee324360ad5d31a9e"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\A.csv",
+      "bytes": 6423,
+      "sha256": "e94fbd23fde46f54187e42cdab95fd0fbb4a9435ef617be2efb367585f3d47de"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\A_repeat.csv",
+      "bytes": 6423,
+      "sha256": "e94fbd23fde46f54187e42cdab95fd0fbb4a9435ef617be2efb367585f3d47de"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\A_repeat_summary.json",
+      "bytes": 5280,
+      "sha256": "de619994e0075754cccc66e6b898e89c96ffd050d7e97d8b8a26eba3ed613d7d"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\A_summary.json",
+      "bytes": 5273,
+      "sha256": "81936d095c399cc51f473d3154d70e5df1dd5936bd19fcc1cab1232e20133c6c"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\attempt_import_failure.txt",
+      "bytes": 2207,
+      "sha256": "af433b7e77661854bb4ae4405b0fa3b7f86444bcce36c8d18ecd8aa34d5115cd"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\B.csv",
+      "bytes": 34619,
+      "sha256": "31e44c45dbbedaf3af7f7f6b514b903ad1294a1ec1230087dfa4496a4e780e47"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\B_summary.json",
+      "bytes": 5274,
+      "sha256": "2b43708e4e39e066162d8446a3bfe5897486cd05463b2e9a598607fc9b30a3c5"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\C.csv",
+      "bytes": 26413,
+      "sha256": "a7b17167cbc1bb311e0b780201291fd69ef07989aa6055bf5a0f43bf41c58d10"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\C_summary.json",
+      "bytes": 5281,
+      "sha256": "2600ac29de0d7161f51a2807febde805465557996f402febedfa3414f0702733"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\comparison.json",
+      "bytes": 4151,
+      "sha256": "fdc3e9f01ea3995e48c2576086e1bf3d6a5995b15e2d379a2ba3637d10243eec"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\compute_complete.log",
+      "bytes": 30548,
+      "sha256": "9af4120f1cea735c0fb9895db2e9af0ffe1fce9d459cdace0dfb0af672af4629"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\compute_live.log",
+      "bytes": 749,
+      "sha256": "59d39efe01766ecc8e029f89b71a692d2aa5728c6822e7b7b4683721e70270b4"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\determinism.json",
+      "bytes": 233,
+      "sha256": "7efd37cd8285b20b059cbfad705a5d0d608083bce51a9b26183af7b801f1b64e"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\earlier_probes.txt",
+      "bytes": 1320,
+      "sha256": "1bc2a54c57d397ced5877b845893eff2550a25f2b442c1506c4068ce17c1bb3f"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\paired_feet.csv",
+      "bytes": 13124,
+      "sha256": "7376752cd7950b057ef1059f15c80c85c5fc75845d1807af0c3cfcd663b1bd4b"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\pod_owned_bytes.json",
+      "bytes": 5044,
+      "sha256": "f8b77e2ff977e1568dc1e4e9ddeb6daf401290cf0e6d18193c0891afbf22dc22"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\pod_run.log",
+      "bytes": 1952,
+      "sha256": "e32a59c27c1a51725c99d808c8ed3512297228f5a42c0e81daf175fc84837144"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\pod_run_fsync.log",
+      "bytes": 28249,
+      "sha256": "1b8b3f7d4aadac30a4eb437c01638b36c544beaececa18ce2061a12f4ad5c1e7"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\pod_run_minimal.log",
+      "bytes": 3381,
+      "sha256": "7dfec28d84222ad57f18731d99655753145765c18348b984369f3cc7cf0e2eb8"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\preflight.log",
+      "bytes": 112,
+      "sha256": "a49872fa9329a747ffb128b1cc34b67e8218263e6ab10bf85d6a914a2d9f1cca"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\probes.json",
+      "bytes": 536,
+      "sha256": "5bd7e78f4fb64c76d229948650d3c7b923f3b4ba1001efa49952cb9981a42998"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\route_identity_notes.json",
+      "bytes": 521,
+      "sha256": "0dfd0e60b4fb85239e2407caeb42a1d5bf77218fa15213f20c780fc00131aa74"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\runner_launch_version.py.txt",
+      "bytes": 8195,
+      "sha256": "6ebe89a35afbd2e2e51bdf42ab726a4e7d150e79f9d7418807e23dfdd17dc209"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\runner_live_snapshot.py.txt",
+      "bytes": 8625,
+      "sha256": "74745d5d89387124d04384d12e6510a9cb72513e45992eac15e22879a36654a4"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\scratch_bytes.json",
+      "bytes": 584,
+      "sha256": "5b1996963726ba19883192934c0392be86becf18ba9fbb4745059492f5ea518b"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\status.txt",
+      "bytes": 1264,
+      "sha256": "c16e74a0dece33fd9794d193f5b944ecaafc9541b774ffcee98f1efd1683e9b1"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\status_running.txt",
+      "bytes": 4322,
+      "sha256": "17cd9fa946fdd41e559eeb9acc859f81016e63baef630066cf7e58e1a29ed6b5"
+    },
+    {
+      "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g298_detector_capacity_and_input_resolution_artifact\\status_staging.txt",
+      "bytes": 2130,
+      "sha256": "f88deed668a8dff32375851916b486e034206707eaabd9db78880a07ac2d50bb"
+    }
+  ],
+  "artifact_bytes_excluding_inventory": 212233
+}

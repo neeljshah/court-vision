@@ -1,0 +1,17 @@
+{
+  "retained_files_bytes": {
+    "g298_scratch/yolov8x.pt": 136890692,
+    "g298_scratch/fsync_probe.bin": 8388608,
+    "g298_scratch/wrapper_fsync_probe.bin": 8388608,
+    "g298_scratch/preflight_fsync_probe.bin": 8388608,
+    "g298_scratch/matplotlib/fontlist-v3.11.0.json": 29302,
+    "g298_scratch/Ultralytics/settings.json": 441
+  },
+  "retained_bytes": 162086259,
+  "bytes_freed_by_harness": 0,
+  "nano_unchanged": {
+    "path": "/workspace/nba-ai-system/yolov8n.pt",
+    "bytes": 6549796,
+    "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+  }
+}

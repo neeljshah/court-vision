@@ -1,0 +1,30 @@
+8+0 records in
+8+0 records out
+8388608 bytes (8.4 MB, 8.0 MiB) copied, 0.291681 s, 28.8 MB/s
+POD /workspace UNKNOWN; /workspace/wt UNKNOWN (MooseFS walk omitted; successful fsync is the disk gate)
+SHIPPED
+__init__.py
+__pycache__
+_pts_oof_harness.py
+POD_PID=3291962
+== pod log tail (/workspace/wt/a6/pod_run_20260904220933.log)
+Traceback (most recent call last):
+  File "/workspace/wt/a6/g298_code/scripts/platformkit/tracking/g298_detect.py", line 14, in <module>
+    from scripts.platformkit.tracking.g298_compare import bottom_centre, read_locations, sha256, write_csv
+  File "/workspace/wt/a6/g298_code/scripts/platformkit/tracking/__init__.py", line 3, in <module>
+    from .association import Track, Tracker, apply_motion, associate
+ModuleNotFoundError: No module named 'scripts.platformkit.tracking.association'
+POD_RUN_DONE rc=1
+
+RSS_PEAK_KB=VmHWM: 2075356 kB
+scp: /workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/A.csv: No such file or directory
+FETCH FAILED docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/A.csv
+scp: /workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/A_summary.json: No such file or directory
+FETCH FAILED docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/A_summary.json
+scp: /workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/A_repeat.csv: No such file or directory
+FETCH FAILED docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/A_repeat.csv
+scp: /workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/A_repeat_summary.json: No such file or directory
+FETCH FAILED docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/A_repeat_summary.json
+scp: /workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/B.csv: No such file or directory
+FETCH FAILED docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/B.csv
+scp: /workspace/wt/a6/docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact/B_summary.json: No such file or directory

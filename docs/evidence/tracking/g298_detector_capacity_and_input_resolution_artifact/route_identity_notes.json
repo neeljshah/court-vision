@@ -1,0 +1,5 @@
+{
+  "launch_version_reconstructed_from_prelaunch_patches_sha256": "6ebe89a35afbd2e2e51bdf42ab726a4e7d150e79f9d7418807e23dfdd17dc209",
+  "disk_snapshot_sha256": "74745d5d89387124d04384d12e6510a9cb72513e45992eac15e22879a36654a4",
+  "difference": "Only importlib/sys/types imports, load_production helper, and normal package import versus direct-file import; all detection/scoring/frame code identical. Delayed staging replaced the on-disk bootstrap during the already-running process; Python did not hot-reload it."
+}

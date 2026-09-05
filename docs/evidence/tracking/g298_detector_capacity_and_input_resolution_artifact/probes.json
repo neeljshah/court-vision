@@ -1,0 +1,25 @@
+[
+  {
+    "command": [
+      "nvidia-smi",
+      "--query-gpu=memory.used,memory.total",
+      "--format=csv,noheader"
+    ],
+    "returncode": 0,
+    "stdout": "356 MiB, 24576 MiB\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "dd",
+      "if=/dev/zero",
+      "of=/workspace/wt/a6/g298_scratch/fsync_probe.bin",
+      "bs=1M",
+      "count=8",
+      "conv=fsync"
+    ],
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "8+0 records in\n8+0 records out\n8388608 bytes (8.4 MB, 8.0 MiB) copied, 0.206576 s, 40.6 MB/s\n"
+  }
+]

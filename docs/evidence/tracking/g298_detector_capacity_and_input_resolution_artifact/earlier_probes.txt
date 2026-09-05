@@ -1,0 +1,31 @@
+Earlier probe stdout/stderr preserved from tool receipts before the recovery launcher reused preflight.log.
+
+Initial exact query:
+nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader
+356 MiB, 24576 MiB
+
+First preflight dd if=/dev/zero of=/workspace/wt/a6/g298_scratch/preflight_fsync_probe.bin bs=1M count=8 conv=fsync:
+8+0 records in
+8+0 records out
+8388608 bytes (8.4 MB, 8.0 MiB) copied, 0.202646 s, 41.4 MB/s
+
+Original installed pod_run's legacy non-fsync quota probe (its tail output):
+8388608 bytes (8.4 MB, 8.0 MiB) copied, 0.296593 s, 28.3 MB/s
+
+Second preflight, same exact GPU query and dd conv=fsync command:
+356 MiB, 24576 MiB
+8+0 records in
+8+0 records out
+8388608 bytes (8.4 MB, 8.0 MiB) copied, 0.293816 s, 28.6 MB/s
+
+Third preflight, same exact GPU query and dd conv=fsync command:
+356 MiB, 24576 MiB
+8+0 records in
+8+0 records out
+8388608 bytes (8.4 MB, 8.0 MiB) copied, 0.20667 s, 40.6 MB/s
+
+Fourth preflight is in preflight.log. Wrapper fsync probes are in pod_run_fsync.log,
+attempt_import_failure.txt and pod_run_minimal.log; the inference runner's probes
+are in probes.json and compute_complete.log. Intermediate exact GPU queries all
+read 356 MiB, 24576 MiB; retained status receipts are status.txt,
+status_staging.txt and status_running.txt. No query was used to wait on a lane.

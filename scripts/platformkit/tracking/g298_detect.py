@@ -1,0 +1,178 @@
+"""Pod-only G298 detection experiment, importing the unchanged production path."""
+from __future__ import annotations
+
+import argparse
+import gc
+import hashlib
+import inspect
+import importlib
+import json
+import os
+import platform
+import subprocess
+import sys
+import types
+from pathlib import Path
+
+from scripts.platformkit.tracking.g298_compare import bottom_centre, read_locations, sha256, write_csv
+
+FIELDS = ["source_frame", "detection_index", "x1", "y1", "x2", "y2", "confidence",
+          "foot_x_px", "foot_y_px"]
+
+
+def load_production() -> object:
+    """Import the unedited file without src.tracking's unrelated eager imports."""
+    directory = Path(__file__).resolve().parents[3] / "src/tracking"
+    package = types.ModuleType("_g298_production")
+    package.__path__ = [str(directory)]
+    sys.modules[package.__name__] = package
+    return importlib.import_module("_g298_production.player_detection")
+
+
+def probe(command: list[str]) -> dict:
+    """Record exact operational probe output and status."""
+    result = subprocess.run(command, capture_output=True, text=True)
+    record = {"command": command, "returncode": result.returncode,
+              "stdout": result.stdout, "stderr": result.stderr}
+    print(json.dumps(record), flush=True)
+    return record
+
+
+def identity(path: Path) -> dict:
+    """Record the full input or route identity."""
+    return {"path": str(path.resolve()), "bytes": path.stat().st_size, "sha256": sha256(path)}
+
+
+class CaptureModel:
+    """Capture raw detections before the production method's downstream logic."""
+
+    def __init__(self, model: object) -> None:
+        self.model = model
+        self.result = None
+        self.call = None
+
+    def __call__(self, frame: object, **kwargs: object) -> object:
+        self.call = kwargs
+        result = self.model(frame, **kwargs)
+        self.result = result[0]
+        return result
+
+
+def run(args: argparse.Namespace) -> None:
+    """Run A, repeat A, then B/C on exactly the same decoded frames."""
+    import cv2
+    import numpy as np
+    import torch
+    import ultralytics
+    from ultralytics import YOLO
+    player_detection = load_production()
+
+    root = Path.cwd().resolve()
+    assert str(root) == "/workspace/wt/a6", "pod scratch only"
+    output = args.output.resolve()
+    output.mkdir(parents=True, exist_ok=True)
+    # A delayed legacy pod_run must not launch a second experiment.
+    try:
+        with (output / "execution.lock").open("x") as stream:
+            stream.write(str(os.getpid()) + "\n")
+    except FileExistsError:
+        print("G298 already claimed; no duplicate detection run launched", flush=True)
+        return
+    scratch = root / "g298_scratch"
+    scratch.mkdir(exist_ok=True)
+    gpu = probe(["nvidia-smi", "--query-gpu=memory.used,memory.total", "--format=csv,noheader"])
+    used, total = [int(s.strip().split()[0]) for s in gpu["stdout"].strip().splitlines()[0].split(",")]
+    assert total - used > 6000, "need 6000 MiB free for this batch-one experiment"
+    disk = probe(["dd", "if=/dev/zero", f"of={scratch / 'fsync_probe.bin'}", "bs=1M",
+                  "count=8", "conv=fsync"])
+    (output / "probes.json").write_text(json.dumps([gpu, disk], indent=2) + "\n")
+    if disk["returncode"] != 0:
+        raise RuntimeError("FAILED dd conv=fsync probe")
+    # Keep the probe: no source, partial download, or other process is removed.
+    locations = read_locations(args.located_feet)
+    frames = sorted({int(r["source_frame"]) for r in locations})
+    video = args.video.resolve()
+    source = identity(video)
+    assert source["sha256"] == "f361ad7a32ccc6d98ae8e98eee0b090f5e121f9425182e24a31c282ca226c678"
+    capture = cv2.VideoCapture(str(video))
+    source["resolution"] = [int(capture.get(cv2.CAP_PROP_FRAME_WIDTH)),
+                            int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT))]
+    source["fps"] = capture.get(cv2.CAP_PROP_FPS)
+    assert source["resolution"] == [1920, 1080] and source["fps"] == 30
+    images, frame_records = {}, []
+    for frame_id in frames:
+        capture.set(cv2.CAP_PROP_POS_FRAMES, frame_id)
+        ok, image = capture.read()
+        assert ok and image.shape == (1080, 1920, 3)
+        assert int(capture.get(cv2.CAP_PROP_POS_FRAMES)) == frame_id + 1
+        images[frame_id] = image
+        frame_records.append({"source_frame": frame_id, "resolution": [1920, 1080],
+                              "decoded_bgr_sha256": hashlib.sha256(image.tobytes()).hexdigest()})
+    capture.release()
+    nano = Path("/workspace/nba-ai-system/yolov8n.pt")
+    nano_before = identity(nano)
+    link = scratch / "yolov8n.pt"
+    if not link.exists():
+        link.symlink_to(nano)
+    assert link.resolve() == nano.resolve()
+    os.chdir(scratch)
+    routes = [identity(Path(__file__)), identity(Path(inspect.getfile(bottom_centre))),
+              identity(Path(inspect.getfile(player_detection))),
+              identity(Path(inspect.getfile(player_detection.plt_plot)))]
+    environment = {"python": platform.python_version(), "torch": torch.__version__,
+                   "ultralytics": ultralytics.__version__, "opencv": cv2.__version__,
+                   "cuda": torch.version.cuda, "cudnn": torch.backends.cudnn.version(),
+                   "gpu": torch.cuda.get_device_name(0), "half": True, "device": 0,
+                   "cudnn_benchmark": True, "pythonhashseed": os.environ.get("PYTHONHASHSEED")}
+    for arm, size, weight in (("A", 640, "yolov8n.pt"), ("A_repeat", 640, "yolov8n.pt"),
+                              ("B", 1920, "yolov8n.pt"), ("C", 1920, "yolov8x.pt")):
+        detector = player_detection.FeetDetector([])
+        if weight == "yolov8x.pt":
+            detector.model = YOLO(str(scratch / weight))
+            detector.model(np.zeros((640, 640, 3), dtype=np.uint8), verbose=False,
+                           half=detector._use_half, device=detector._device)
+        detector._infer_imgsz = size
+        recorder = CaptureModel(detector.model)
+        detector.model = recorder
+        rows = []
+        for frame_id in frames:
+            detector.get_players_pos(np.eye(3), np.eye(3), images[frame_id].copy(),
+                                     frame_id, np.zeros((2, 2, 3), dtype=np.uint8))
+            boxes = recorder.result.boxes
+            for index, (box, confidence) in enumerate(zip(boxes.xyxy.cpu().tolist(), boxes.conf.cpu().tolist())):
+                fx, fy = bottom_centre(box)
+                rows.append(dict(zip(FIELDS, [frame_id, index, *box, confidence, fx, fy])))
+        write_csv(output / f"{arm}.csv", rows, FIELDS)
+        metadata = {"arm": arm, "weight": identity(scratch / weight), "settings": recorder.call,
+                    "frames": frames, "total_detections": len(rows), "environment": environment,
+                    "route": "imported FeetDetector constructor and get_players_pos; capture raw model boxes",
+                    "route_files": routes, "source_video": source, "decoded_frames": frame_records,
+                    "located_feet": identity(args.located_feet),
+                    "detections_sha256": sha256(output / f"{arm}.csv")}
+        (output / f"{arm}_summary.json").write_text(json.dumps(metadata, indent=2) + "\n")
+        print(f"ARM {arm}: {len(rows)} detections, {len(frames)} frames", flush=True)
+        del detector, recorder, boxes
+        gc.collect()
+        torch.cuda.empty_cache()
+        if arm == "A_repeat":
+            same = (output / "A.csv").read_bytes() == (output / "A_repeat.csv").read_bytes()
+            (output / "determinism.json").write_text(json.dumps({"byte_identical": same,
+                "A_sha256": sha256(output / "A.csv"), "A_repeat_sha256": sha256(output / "A_repeat.csv"),
+                "comparison_before_B_C": True}, indent=2) + "\n")
+            print(f"A byte-identical repeat: {same}; checked before B/C", flush=True)
+    assert identity(nano) == nano_before, "original nano weight changed"
+    sizes = {str(p.relative_to(root)): p.stat().st_size for p in scratch.rglob("*")
+             if p.is_file() and not p.is_symlink()}
+    (output / "scratch_bytes.json").write_text(json.dumps({"retained_files_bytes": sizes,
+        "retained_bytes": sum(sizes.values()), "bytes_freed_by_harness": 0,
+        "nano_unchanged": nano_before}, indent=2) + "\n")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--video", type=Path, required=True)
+    parser.add_argument("--located-feet", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    args.located_feet = args.located_feet.resolve()
+    run(args)
