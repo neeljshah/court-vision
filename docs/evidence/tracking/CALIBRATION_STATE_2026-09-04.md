@@ -1345,14 +1345,36 @@ synthesis, the evidence packet and a memory title; all four are corrected.
 
 **Lesson: a paired result does not transfer to the unpaired question.**
 
-### The graphics share also halves, as a spatial check predicted
+### The graphics share halves, and my explanation for it was refuted
 
-Unconditioned graphics are **0.181** against G286's conditioned 0.367. Before
-G287 ran, a spatial histogram of all 30,071 detections showed the classic overlay
-regions essentially empty -- **top band 25/30,071 and bottom band 19/30,071, both
-0.001** -- so what is being called "graphic" is more likely **court-surface
-decoration** than overlay furniture. **That check called the direction correctly
-in advance.**
+Unconditioned graphics are **0.181** against G286's conditioned 0.367 -- that
+reduction is real and was expected from the conditioning.
+
+**My explanation for what "graphic" meant was wrong.** I ran a spatial histogram
+of all 30,071 detections, found the "classic overlay regions essentially empty"
+(top band 25/30,071 and bottom band 19/30,071, both 0.001), and inferred that
+"graphic" meant **court-surface decoration** rather than overlay furniture.
+**G288 refuted it outright: 13 of 13 graphic crops are OVERLAY furniture** --
+score bug, lower-third ticker, transition wipe -- with **zero** court decoration
+and **zero** courtside signage.
+
+**My check tested the wrong bands.** I measured 90-pixel strips at the extreme
+frame edges, but a lower-third ticker in a 1080-line broadcast sits at roughly
+**y 850-980** and a score bug at **y 90-300**. Re-measured there: **0.318 and
+0.036 of all detections**, against 0.001 in each strip I actually tested. **The
+negative was an artifact of region choice, not evidence about the world.**
+
+The 0.318 is *not* proof that a third of detections are overlays -- the same band
+holds the near half of the court and the courtside area. It is simply no longer
+evidence against them.
+
+**So the mechanism is overlay graphics**: score bugs and tickers are detected,
+retained, and projected inside the 50x94 ft court rectangle, where the on-court
+filter accepts them.
+
+**Floor crops, for completeness:** plain court 14/17, a painted line 1/17,
+floor lettering 1/17, cannot tell 1/17. **Footpoints on painted court lines are
+rare** and do not connect to the calibration-decoration finding.
 
 ### Label stability, reported not reconciled
 
