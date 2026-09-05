@@ -51,3 +51,15 @@ def test_crop_box_is_G273s_512x640_and_split_counts_both_sides():
     assert out["in_box"] == 1
     assert out["no_player_fraction"] == 0.5
     assert out["median_px_when_player_present"] == 100.0
+
+
+def test_axis_null_is_the_box_aspect_not_one_half():
+    # The acceptance box is 1.25:1 tall, so a uniform-in-box offset already puts
+    # 0.6098 of squared offset on the vertical axis. Reading a vertical share
+    # against 0.5 instead of against this null overstates vertical dominance.
+    from scripts.platformkit.tracking.verifier_footpoint_analyses import axis_null_check
+
+    out = axis_null_check([], {})
+    assert out["uniform_in_box_null"] == CROP_HALF_H**2 / (CROP_HALF_W**2 + CROP_HALF_H**2)
+    assert round(out["uniform_in_box_null"], 4) == 0.6098
+    assert out["isotropic_null"] == 0.5

@@ -1,0 +1,13 @@
+REPRODUCED n=112, in_box=79 (0.705), no_player=0.295, median=172.36 px
+dx=detection_x-located_x; dy=detection_y-located_y; image y increases DOWNWARD
+|dx| median=75.750 px; Q1=38.750; Q3=147.875; IQR=109.125; squared share=0.351337
+dx signs: {'positive': 40, 'negative': 39, 'zero': 0, 'eligible_nonzero_pairs': 79, 'positive_fraction_of_all_pairs': 0.5063291139240507, 'negative_fraction_of_all_pairs': 0.4936708860759494, 'nominal_two_sided_p': 1.0, 'multiplicity_correction': 'none'}
+|dy| median=103.250 px; Q1=42.594; Q3=214.250; IQR=171.656; squared share=0.648663
+dy signs: {'positive': 50, 'negative': 29, 'zero': 0, 'eligible_nonzero_pairs': 79, 'positive_fraction_of_all_pairs': 0.6329113924050633, 'negative_fraction_of_all_pairs': 0.3670886075949367, 'nominal_two_sided_p': 0.023819792858001267, 'multiplicity_correction': 'none'}
+Squared-offset share SUM=1.000
+Median pair |dy|/|dx|=1.408257
+Second located foot in box: 57/79
+foot_y low: 164.625..537.0 px; median |dy|=64.000 px; eligible in-box pairs=27
+foot_y middle: 555.375..734.25 px; median |dy|=58.125 px; eligible in-box pairs=26
+foot_y high: 744.75..975.0 px; median |dy|=215.625 px; eligible in-box pairs=26
+EXCLUDED no located foot in box: 33/112 = 0.295

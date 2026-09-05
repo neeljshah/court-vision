@@ -1,0 +1,6 @@
+python -m pytest scripts/platformkit/tracking/test_g290_footpoint_offset_axis_decomposition.py -q -p no:cacheprovider
+...                                                                      [100%]
+3 passed in 1.17s
+python -m pytest tests/platformkit/test_loc_rail_scope.py -q -p no:cacheprovider
+.                                                                        [100%]
+1 passed in 0.61s

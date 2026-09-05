@@ -115,6 +115,53 @@ def footpoint_player_split(records, located):
     }
 
 
+def axis_null_check(records, located):
+    """G290 verifier note: the acceptance box is 512 wide x 640 tall, so it is 1.25:1 TALL.
+
+    Any offset distribution truncated by it is pushed toward vertical dominance before
+    any defect exists. A uniform-in-box null already puts 0.6098 of squared offset on
+    the vertical axis, so G290's 0.6487 must be read against 0.6098, NOT against 0.5.
+    The square 512x512 sub-box removes the geometric preference -- but it also truncates
+    exactly the large-|dy| tail that carries the signal, so it is CONSERVATIVE, not
+    unbiased. Report both; neither alone settles it.
+    """
+    pairs = []
+    for rec in records:
+        pts = located.get(rec["source_frame"])
+        if not pts:
+            continue
+        for det in rec.get("detections") or []:
+            if not det.get("finite"):
+                continue
+            fx, fy = det["foot_x_px"], det["foot_y_px"]
+            near = [
+                (px, py)
+                for px, py in pts
+                if abs(px - fx) <= CROP_HALF_W and abs(py - fy) <= CROP_HALF_H
+            ]
+            if near:
+                px, py = min(near, key=lambda q: math.hypot(q[0] - fx, q[1] - fy))
+                pairs.append((fx - px, fy - py))
+
+    def share(rows):
+        sx = sum(dx * dx for dx, _ in rows)
+        sy = sum(dy * dy for _, dy in rows)
+        return sy / (sx + sy) if sx + sy else None  # no pairs: the nulls still stand
+
+    half = min(CROP_HALF_W, CROP_HALF_H)
+    square = [q for q in pairs if abs(q[0]) <= half and abs(q[1]) <= half]
+    return {
+        "n_full_box": len(pairs),
+        "vertical_share_full_box": share(pairs),
+        "uniform_in_box_null": CROP_HALF_H ** 2 / (CROP_HALF_W ** 2 + CROP_HALF_H ** 2),
+        "n_square_sub_box": len(square),
+        "vertical_share_square": share(square),
+        "isotropic_null": 0.5,
+        "downward_full_box": (sum(1 for _, dy in pairs if dy > 0), sum(1 for _, dy in pairs if dy)),
+        "downward_square": (sum(1 for _, dy in square if dy > 0), sum(1 for _, dy in square if dy)),
+    }
+
+
 def overlay_bands(records):
     """Detection share by image row band.
 

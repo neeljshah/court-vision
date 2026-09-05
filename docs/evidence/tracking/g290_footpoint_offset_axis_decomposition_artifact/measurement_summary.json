@@ -1,0 +1,163 @@
+{
+  "eligible_in_box_pairs": 79,
+  "axes": {
+    "x": {
+      "median_absolute_px": 75.75,
+      "q1_absolute_px": 38.75,
+      "q3_absolute_px": 147.875,
+      "iqr_px": 109.125,
+      "sum_squared_px2": 1126380.8505859375,
+      "squared_offset_share": 0.35133695918972785,
+      "sign_test": {
+        "positive": 40,
+        "negative": 39,
+        "zero": 0,
+        "eligible_nonzero_pairs": 79,
+        "positive_fraction_of_all_pairs": 0.5063291139240507,
+        "negative_fraction_of_all_pairs": 0.4936708860759494,
+        "nominal_two_sided_p": 1.0,
+        "multiplicity_correction": "none"
+      }
+    },
+    "y": {
+      "median_absolute_px": 103.25,
+      "q1_absolute_px": 42.59375,
+      "q3_absolute_px": 214.25,
+      "iqr_px": 171.65625,
+      "sum_squared_px2": 2079603.6640625,
+      "squared_offset_share": 0.6486630408102722,
+      "sign_test": {
+        "positive": 50,
+        "negative": 29,
+        "zero": 0,
+        "eligible_nonzero_pairs": 79,
+        "positive_fraction_of_all_pairs": 0.6329113924050633,
+        "negative_fraction_of_all_pairs": 0.3670886075949367,
+        "nominal_two_sided_p": 0.023819792858001267,
+        "multiplicity_correction": "none"
+      }
+    }
+  },
+  "squared_offset_share_sum": 1.0,
+  "median_pair_absolute_dy_over_dx": 1.408256880733945,
+  "ratio_eligible_pairs": 79,
+  "ratio_zero_dx_pairs": 0,
+  "ratio_undefined_zero_zero_pairs": 0,
+  "pairs_with_second_located_foot_in_box": 57,
+  "unique_observation_keys": 79,
+  "foot_y_tercile_cutpoints_px": [
+    537.0,
+    734.25
+  ],
+  "tercile_definition": "detector foot_y_px: low <= c1; c1 < middle <= c2; high > c2",
+  "terciles": [
+    {
+      "tercile": "low",
+      "eligible_in_box_pairs": 27,
+      "foot_y_min_px": 164.625,
+      "foot_y_max_px": 537.0,
+      "median_absolute_dy_px": 64.0
+    },
+    {
+      "tercile": "middle",
+      "eligible_in_box_pairs": 26,
+      "foot_y_min_px": 555.375,
+      "foot_y_max_px": 734.25,
+      "median_absolute_dy_px": 58.125
+    },
+    {
+      "tercile": "high",
+      "eligible_in_box_pairs": 26,
+      "foot_y_min_px": 744.75,
+      "foot_y_max_px": 975.0,
+      "median_absolute_dy_px": 215.625
+    }
+  ],
+  "reproduction": {
+    "n": 112,
+    "in_box": 79,
+    "in_box_fraction": 0.7053571428571429,
+    "no_player_fraction": 0.29464285714285715,
+    "median_px_when_player_present": 172.35954426720906
+  },
+  "excluded_no_located_foot_in_box": 33,
+  "convention": "dx=detection_x-located_x; dy=detection_y-located_y; image y increases DOWNWARD",
+  "units": "image pixels; no ground-plane conversion",
+  "machine": "local CPU arithmetic in C:/Users/neelj/nba-track-a3; committed coordinates only",
+  "population": "detector-box observations CONDITIONED on a located player in the box",
+  "located_frames": 15,
+  "located_foot_observations": 143,
+  "source_frame_selection": [
+    19630,
+    19879,
+    20190,
+    20440,
+    20689,
+    20938,
+    21187,
+    21499,
+    21686,
+    21935,
+    22247,
+    22496,
+    22683,
+    22994,
+    23368
+  ],
+  "source_video_metadata_only_not_opened": {
+    "absolute_path": "/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4",
+    "bytes": 2931985407,
+    "resolution_px": [
+      1920,
+      1080
+    ],
+    "seed_frame": 19599,
+    "source_frame_span_inclusive": [
+      19599,
+      23399
+    ],
+    "fps": 30.0
+  },
+  "inputs": [
+    {
+      "absolute_path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g285b_locate_then_match_recall_artifact/located_feet.csv",
+      "bytes": 5694,
+      "sha256": "ed52cd937f19a2c344ac700491738d49823cb8e8f31df90a9d84db8bc98ee8b3",
+      "coordinate_resolution_px": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "absolute_path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g267_court_space_physical_plausibility_artifact/g267_measurement.json",
+      "bytes": 12446681,
+      "sha256": "0903d4ee8afac9999e37ca07d14ec81ea59e66ca485a99c21fd27ed959cee2b5",
+      "coordinate_resolution_px": [
+        1920,
+        1080
+      ]
+    }
+  ],
+  "route": [
+    {
+      "absolute_path": "C:/Users/neelj/nba-track-a3/scripts/platformkit/tracking/g290_footpoint_offset_axis_decomposition.py",
+      "bytes": 10493,
+      "sha256": "5b72379d50a4e67bc63393bf1672991f6be67acd7a0c7b1cd353bdb8ed0da6ee",
+      "coordinate_resolution_px": null
+    },
+    {
+      "absolute_path": "C:/Users/neelj/nba-track-a3/scripts/platformkit/tracking/verifier_footpoint_analyses.py",
+      "bytes": 8342,
+      "sha256": "558b8fd7ecce0b0123107c5962fd1061f7c2c2ff08ffd2a1b13f857baa0b4672",
+      "coordinate_resolution_px": null
+    }
+  ],
+  "limits": [
+    "33/112 excluded; no transfer to the unconditioned population",
+    "one clip, one span, one labeller (also prior verdicts), one non-deterministic draw",
+    "hand locations are not ground truth; nearest-foot pairing is an assumption",
+    "no eye check; no independent validation; observations are not authenticated players",
+    "G241: 808/1201 records differed; G278: span 0.836 vs clip 0.656, p=0.0078",
+    "nominal sign p-values: no multiplicity correction or dependence adjustment"
+  ]
+}
