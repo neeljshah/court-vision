@@ -1,0 +1,474 @@
+{
+  "eligible_steps": 29973,
+  "implausible_steps": 4090,
+  "implausible_rate": 0.13645614386280985,
+  "partition": [
+    {
+      "image_px_bucket": "0",
+      "count": 17,
+      "share": 0.004156479217603912,
+      "median_secant_scale_ft_per_px": null,
+      "median_court_ft": 7.063755914854787
+    },
+    {
+      "image_px_bucket": "(0,5]",
+      "count": 157,
+      "share": 0.038386308068459656,
+      "median_secant_scale_ft_per_px": 2.2995369183861745,
+      "median_court_ft": 5.6188614380867845
+    },
+    {
+      "image_px_bucket": "(5,20]",
+      "count": 456,
+      "share": 0.11149144254278728,
+      "median_secant_scale_ft_per_px": 0.34651739746042715,
+      "median_court_ft": 3.485952739346164
+    },
+    {
+      "image_px_bucket": "(20,50]",
+      "count": 749,
+      "share": 0.18312958435207824,
+      "median_secant_scale_ft_per_px": 0.06239327598862103,
+      "median_court_ft": 1.8930386147003184
+    },
+    {
+      "image_px_bucket": "(50,150]",
+      "count": 814,
+      "share": 0.19902200488997554,
+      "median_secant_scale_ft_per_px": 0.04343198625656825,
+      "median_court_ft": 3.777285423727668
+    },
+    {
+      "image_px_bucket": ">150",
+      "count": 1897,
+      "share": 0.4638141809290954,
+      "median_secant_scale_ft_per_px": 0.04290616700623066,
+      "median_court_ft": 14.658074705815855
+    }
+  ],
+  "partition_share_sum": 1.0,
+  "image_le_20_count": 630,
+  "zero_pixel_steps": 1228,
+  "zero_pixel_court_moved": 1207,
+  "zero_pixel_implausible": 17,
+  "y_deciles": [
+    {
+      "decile": 1,
+      "lower_exclusive_px": null,
+      "upper_inclusive_px": 412.875,
+      "eligible_steps_with_midpoint_in_decile": 2999,
+      "implausible": 525,
+      "implausible_rate": 0.17505835278426143,
+      "median_secant_scale_ft_per_px": 0.06531296363907882
+    },
+    {
+      "decile": 2,
+      "lower_exclusive_px": 412.875,
+      "upper_inclusive_px": 490.5,
+      "eligible_steps_with_midpoint_in_decile": 3003,
+      "implausible": 442,
+      "implausible_rate": 0.1471861471861472,
+      "median_secant_scale_ft_per_px": 0.05441341221329802
+    },
+    {
+      "decile": 3,
+      "lower_exclusive_px": 490.5,
+      "upper_inclusive_px": 556.125,
+      "eligible_steps_with_midpoint_in_decile": 2996,
+      "implausible": 435,
+      "implausible_rate": 0.1451935914552737,
+      "median_secant_scale_ft_per_px": 0.0503213109866845
+    },
+    {
+      "decile": 4,
+      "lower_exclusive_px": 556.125,
+      "upper_inclusive_px": 623.625,
+      "eligible_steps_with_midpoint_in_decile": 3001,
+      "implausible": 384,
+      "implausible_rate": 0.1279573475508164,
+      "median_secant_scale_ft_per_px": 0.04642134873819406
+    },
+    {
+      "decile": 5,
+      "lower_exclusive_px": 623.625,
+      "upper_inclusive_px": 694.125,
+      "eligible_steps_with_midpoint_in_decile": 2992,
+      "implausible": 472,
+      "implausible_rate": 0.15775401069518716,
+      "median_secant_scale_ft_per_px": 0.04411831485317051
+    },
+    {
+      "decile": 6,
+      "lower_exclusive_px": 694.125,
+      "upper_inclusive_px": 783.0,
+      "eligible_steps_with_midpoint_in_decile": 3000,
+      "implausible": 614,
+      "implausible_rate": 0.20466666666666666,
+      "median_secant_scale_ft_per_px": 0.03987256408869591
+    },
+    {
+      "decile": 7,
+      "lower_exclusive_px": 783.0,
+      "upper_inclusive_px": 858.75,
+      "eligible_steps_with_midpoint_in_decile": 3015,
+      "implausible": 452,
+      "implausible_rate": 0.14991708126036485,
+      "median_secant_scale_ft_per_px": 0.03831048341963979
+    },
+    {
+      "decile": 8,
+      "lower_exclusive_px": 858.75,
+      "upper_inclusive_px": 928.125,
+      "eligible_steps_with_midpoint_in_decile": 2975,
+      "implausible": 423,
+      "implausible_rate": 0.14218487394957982,
+      "median_secant_scale_ft_per_px": 0.026863992526334736
+    },
+    {
+      "decile": 9,
+      "lower_exclusive_px": 928.125,
+      "upper_inclusive_px": 970.875,
+      "eligible_steps_with_midpoint_in_decile": 3028,
+      "implausible": 242,
+      "implausible_rate": 0.07992073976221929,
+      "median_secant_scale_ft_per_px": 0.027270323922250976
+    },
+    {
+      "decile": 10,
+      "lower_exclusive_px": 970.875,
+      "upper_inclusive_px": null,
+      "eligible_steps_with_midpoint_in_decile": 2964,
+      "implausible": 101,
+      "implausible_rate": 0.03407557354925776,
+      "median_secant_scale_ft_per_px": 0.024116289484326293
+    }
+  ],
+  "gaps": {
+    "implausible": {
+      "eligible_steps": 4090,
+      "median": 1.0,
+      "p90": 4.0,
+      "max": 28,
+      "gap_gt_1_count": 1129,
+      "distribution": [
+        {
+          "frame_gap": 1,
+          "count": 2961,
+          "share": 0.723960880195599
+        },
+        {
+          "frame_gap": 2,
+          "count": 448,
+          "share": 0.10953545232273838
+        },
+        {
+          "frame_gap": 3,
+          "count": 228,
+          "share": 0.05574572127139364
+        },
+        {
+          "frame_gap": 4,
+          "count": 157,
+          "share": 0.038386308068459656
+        },
+        {
+          "frame_gap": 5,
+          "count": 67,
+          "share": 0.016381418092909536
+        },
+        {
+          "frame_gap": 6,
+          "count": 58,
+          "share": 0.014180929095354523
+        },
+        {
+          "frame_gap": 7,
+          "count": 45,
+          "share": 0.011002444987775062
+        },
+        {
+          "frame_gap": 8,
+          "count": 27,
+          "share": 0.006601466992665036
+        },
+        {
+          "frame_gap": 9,
+          "count": 29,
+          "share": 0.0070904645476772615
+        },
+        {
+          "frame_gap": 10,
+          "count": 18,
+          "share": 0.004400977995110024
+        },
+        {
+          "frame_gap": 11,
+          "count": 8,
+          "share": 0.0019559902200488996
+        },
+        {
+          "frame_gap": 12,
+          "count": 10,
+          "share": 0.0024449877750611247
+        },
+        {
+          "frame_gap": 13,
+          "count": 4,
+          "share": 0.0009779951100244498
+        },
+        {
+          "frame_gap": 14,
+          "count": 6,
+          "share": 0.001466992665036675
+        },
+        {
+          "frame_gap": 15,
+          "count": 5,
+          "share": 0.0012224938875305623
+        },
+        {
+          "frame_gap": 16,
+          "count": 6,
+          "share": 0.001466992665036675
+        },
+        {
+          "frame_gap": 17,
+          "count": 1,
+          "share": 0.00024449877750611245
+        },
+        {
+          "frame_gap": 18,
+          "count": 3,
+          "share": 0.0007334963325183374
+        },
+        {
+          "frame_gap": 19,
+          "count": 2,
+          "share": 0.0004889975550122249
+        },
+        {
+          "frame_gap": 20,
+          "count": 3,
+          "share": 0.0007334963325183374
+        },
+        {
+          "frame_gap": 22,
+          "count": 2,
+          "share": 0.0004889975550122249
+        },
+        {
+          "frame_gap": 25,
+          "count": 1,
+          "share": 0.00024449877750611245
+        },
+        {
+          "frame_gap": 28,
+          "count": 1,
+          "share": 0.00024449877750611245
+        }
+      ]
+    },
+    "plausible": {
+      "eligible_steps": 25883,
+      "median": 1,
+      "p90": 1.0,
+      "max": 30,
+      "gap_gt_1_count": 2321,
+      "distribution": [
+        {
+          "frame_gap": 1,
+          "count": 23562,
+          "share": 0.9103272418189545
+        },
+        {
+          "frame_gap": 2,
+          "count": 965,
+          "share": 0.03728315883012016
+        },
+        {
+          "frame_gap": 3,
+          "count": 388,
+          "share": 0.014990534327550903
+        },
+        {
+          "frame_gap": 4,
+          "count": 226,
+          "share": 0.008731599891820886
+        },
+        {
+          "frame_gap": 5,
+          "count": 152,
+          "share": 0.005872580458215817
+        },
+        {
+          "frame_gap": 6,
+          "count": 96,
+          "share": 0.003708998184136306
+        },
+        {
+          "frame_gap": 7,
+          "count": 71,
+          "share": 0.0027431132403508093
+        },
+        {
+          "frame_gap": 8,
+          "count": 70,
+          "share": 0.0027044778425993894
+        },
+        {
+          "frame_gap": 9,
+          "count": 52,
+          "share": 0.0020090406830738324
+        },
+        {
+          "frame_gap": 10,
+          "count": 38,
+          "share": 0.0014681451145539543
+        },
+        {
+          "frame_gap": 11,
+          "count": 25,
+          "share": 0.0009658849437854962
+        },
+        {
+          "frame_gap": 12,
+          "count": 25,
+          "share": 0.0009658849437854962
+        },
+        {
+          "frame_gap": 13,
+          "count": 28,
+          "share": 0.0010817911370397558
+        },
+        {
+          "frame_gap": 14,
+          "count": 25,
+          "share": 0.0009658849437854962
+        },
+        {
+          "frame_gap": 15,
+          "count": 20,
+          "share": 0.000772707955028397
+        },
+        {
+          "frame_gap": 16,
+          "count": 24,
+          "share": 0.0009272495460340765
+        },
+        {
+          "frame_gap": 17,
+          "count": 15,
+          "share": 0.0005795309662712978
+        },
+        {
+          "frame_gap": 18,
+          "count": 14,
+          "share": 0.0005408955685198779
+        },
+        {
+          "frame_gap": 19,
+          "count": 13,
+          "share": 0.0005022601707684581
+        },
+        {
+          "frame_gap": 20,
+          "count": 8,
+          "share": 0.0003090831820113588
+        },
+        {
+          "frame_gap": 21,
+          "count": 9,
+          "share": 0.00034771857976277865
+        },
+        {
+          "frame_gap": 22,
+          "count": 8,
+          "share": 0.0003090831820113588
+        },
+        {
+          "frame_gap": 23,
+          "count": 6,
+          "share": 0.00023181238650851911
+        },
+        {
+          "frame_gap": 24,
+          "count": 8,
+          "share": 0.0003090831820113588
+        },
+        {
+          "frame_gap": 25,
+          "count": 5,
+          "share": 0.00019317698875709926
+        },
+        {
+          "frame_gap": 26,
+          "count": 8,
+          "share": 0.0003090831820113588
+        },
+        {
+          "frame_gap": 27,
+          "count": 7,
+          "share": 0.00027044778425993894
+        },
+        {
+          "frame_gap": 28,
+          "count": 4,
+          "share": 0.0001545415910056794
+        },
+        {
+          "frame_gap": 29,
+          "count": 7,
+          "share": 0.00027044778425993894
+        },
+        {
+          "frame_gap": 30,
+          "count": 4,
+          "share": 0.0001545415910056794
+        }
+      ]
+    }
+  },
+  "input": {
+    "path": "C:\\Users\\neelj\\nba-track-a6\\docs\\evidence\\tracking\\g267_court_space_physical_plausibility_artifact\\g267_measurement.json",
+    "bytes": 12052299,
+    "sha256": "183b195f0f3ea7b8a81c47a384c229b4e10ca464dc32f2ecfc1a52ccef6fdedb",
+    "coordinate_resolution_px": [
+      1920,
+      1080
+    ],
+    "inherited_video_metadata_not_opened": {
+      "absolute_path": "/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01.mp4",
+      "bytes": 2931985407,
+      "resolution_px": [
+        1920,
+        1080
+      ],
+      "seed_frame": 19599,
+      "source_frame_span_inclusive": [
+        19599,
+        23399
+      ],
+      "fps": 30.0
+    }
+  },
+  "machine": {
+    "host": "DESKTOP-VUIITL8",
+    "system": "Windows",
+    "python": "3.10.0",
+    "reason": "Local CPU arithmetic on committed JSON; no video opened"
+  },
+  "secant_definition": "Average ft-per-px along the step, NOT the local Jacobian. For a short step the two converge; for a long one they do not. That limit requires a single fixed differentiable mapping and a fixed direction. G267 composes a per-frame map, so the empirical ratio can include map changes and is not an isolated spatial amplification measurement. Zero pixels yields null, including 0/0; no steps excluded.",
+  "limits": "Detector-box observations, not authenticated players; about 0.208 on feet and 0.181 on overlay graphics (G286/G287), not shares of implausible steps. One clip, span 19599-23399, one non-deterministic draw; G241 808/1201 differed. G282 second-draw rate 0.136978 vs 0.136456, stable rate but not individual steps. G278 span friendlier than clip: 0.836 vs 0.656, p=0.0078; not clip-wide. No ground truth of any kind, no verified player positions, no eye check. Geometry of committed mapping only; cannot establish the homography is wrong.",
+  "code": {
+    "C:\\Users\\neelj\\nba-track-a6\\scripts\\platformkit\\tracking\\g289_implausible_step_decomposition.py": {
+      "bytes": 9477,
+      "sha256": "98328998b2e42a7435e42513089247bf371ff0994ec17930c9b75fb0d153c48b",
+      "resolution": "not applicable (Python source)"
+    },
+    "C:\\Users\\neelj\\nba-track-a6\\scripts\\platformkit\\tracking\\verifier_footpoint_analyses.py": {
+      "bytes": 8342,
+      "sha256": "558b8fd7ecce0b0123107c5962fd1061f7c2c2ff08ffd2a1b13f857baa0b4672",
+      "resolution": "not applicable (Python source)"
+    }
+  }
+}
