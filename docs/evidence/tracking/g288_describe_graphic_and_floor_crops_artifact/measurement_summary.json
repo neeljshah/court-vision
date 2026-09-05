@@ -1,0 +1,21 @@
+{
+  "c_breakdown": {
+    "C1": 14,
+    "C2": 1,
+    "C3": 1,
+    "C4": 0,
+    "C5": 1
+  },
+  "d_breakdown": {
+    "D1": 13,
+    "D2": 0,
+    "D3": 0,
+    "D4": 0
+  },
+  "label_stability_observations": 1,
+  "n_selected_detector_box_observations": 30,
+  "selected_g287_categories": {
+    "C": 17,
+    "D": 13
+  }
+}
