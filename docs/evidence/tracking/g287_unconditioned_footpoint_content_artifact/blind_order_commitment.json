@@ -1,0 +1,20 @@
+{
+  "fresh_random_seed": 28720260904,
+  "source_blind_render_directory": "C:\\Users\\neelj\\nba-track-a5\\docs\\evidence\\tracking\\g273_detector_precision_blind_sample_artifact\\blind_renders",
+  "source_jpeg_count": 72,
+  "source_jpeg_total_bytes": 3746759,
+  "source_jpeg_resolution": "512x640",
+  "blind_presentation_order_sha256": "cdf6e7d62d1c3e5c9d543f5e2bab37c0f9d900c085ee7e52b989d4e7ea1f1b25",
+  "blind_verdicts_sha256": "7df58afc23e26429f8b91ef1b09a9a48bb14846dd91119f7135e0b1aa066c637",
+  "judgment_target": "red centre cross only",
+  "unblinded_before_commit": false,
+  "categories": {
+    "A": "PLAYER_FEET",
+    "B": "PLAYER_BODY_NOT_FEET",
+    "C": "BARE_COURT_OR_FLOOR",
+    "D": "BROADCAST_GRAPHIC_OR_SCORE_TICKER",
+    "E": "PERSON_NOT_PLAYER_IN_PLAY",
+    "F": "SOMETHING_ELSE_REQUIRES_FREE_TEXT",
+    "G": "CANNOT_JUDGE"
+  }
+}
