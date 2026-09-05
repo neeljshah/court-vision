@@ -1,4 +1,4 @@
-GAP S301 | sport all | worktree aXX | log cx_s301_unique_state_key_routes
+GAP S301 | sport all | worktree a16 | log cx_s301_unique_state_key_routes
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: routes are cpcv_engine.cpcv_evaluate, walkforward.walk_forward, and
   cpcv_distribution.cpcv_evaluate_distributional; none rejects duplicate state keys.
