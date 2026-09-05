@@ -1390,6 +1390,104 @@ figure; and the headline **13.6 / 10.5 pct** implausible-step rates, which remai
 robust to the cut point (G279) and reproducible across detector draws to +0.0005
 (G282).
 
+## 7.29 THE MECHANISM SEARCH FAILED HONESTLY: no candidate explains more than 15 pct
+
+**G289 partitioned all 4,090 implausible steps by IMAGE displacement, exhaustively,
+with the shares summing to a printed 1.000.** The result closes a hypothesis and
+opens nothing:
+
+| candidate | share of the 4,090 | status |
+|---|---:|---|
+| small image move amplified by the mapping (<=20 px) | **0.154** | **REFUTED as the mechanism** |
+| bimodal track ids | 0.045 | withdrawn 2026-09-04 |
+| zero image motion (per-frame map inconsistency) | 0.004 | footnote |
+| alternation (jump returns within 5 frames) | -- | refuted, 0.876 do not return |
+| **genuinely large image displacement (>20 px)** | **0.846** | **UNEXPLAINED** |
+
+**1,897 of the 4,090 moved more than 150 px in the image.** The detector footpoint
+really does leap across the frame between consecutive observations of one track id.
+
+**The projective-amplification story is dead.** A homography's ft-per-pixel scale
+does grow without bound toward the horizon, and the implausible rate does fall
+about fivefold from the far decile (0.175) to the near one (0.034) -- but the
+profile is **NOT monotone** (decile 6 peaks at 0.205), and only 0.154 of implausible
+steps are the small image moves that amplification would have to act on.
+
+**The verifier's own contribution here was a correction, not a finding.** The 17
+zero-image-motion implausible steps looked like proof of an unstable homography.
+Median court movement at zero image motion is **0.0016 ft** -- numerical noise.
+Three steps move 39-44 ft. **Mapping instability is a 0.4 pct footnote, and I
+withdrew the claim before it reached a document.**
+
+**What this section is really recording is that the honest answer is "we do not
+know".** Three mechanisms have now been proposed and three have been measured
+away. The standing rule that produced this -- *state the share of the outcome your
+mechanism accounts for, in the same sentence* -- is what stopped a fourth wrong
+story being written.
+
+---
+
+## 7.30 THE EYE-LABEL FOUNDATION CRACKED: 0.597 is not a rater-robust quantity
+
+**This is the most consequential result of 2026-09-04 and it invalidates a way of
+speaking, not a set of numbers.**
+
+**G291 had an independent rater (`gpt-6-astra`) re-judge G273's own 72 sealed
+crops under G273's own crop-level rule.** Everything about the crops, the
+categories and the blinding was held fixed. Only the rater changed:
+
+- PLAYER **60/72 = 0.833** against G273's **43/72 = 0.597**
+- raw agreement **47/72 = 0.653**, Cohen's kappa **0.283 (SE 0.079)**
+- exact McNemar **p = 0.0000763**
+- the second rater used **NOT A PERSON zero times in 72**, against 15/72; under
+  that rate a zero count has probability **4.96e-08**
+
+**The cause is not perception, it is the rule.** G291's own free text: the second
+rater "sees recognizable players ELSEWHERE IN THE CROP". A 512x640 crop is
+**26.7 pct x 59.3 pct of a 1080p frame** and routinely holds several people, so
+"what does the crop show" admits both readings and **both raters followed the rule
+as written**.
+
+**I checked this myself rather than take it on inference.** I opened three of the
+ten crops in the decisive cell. In `blind_061` the centre cross sits squarely on
+the **ESPN score bug**, with the player the second rater described running across
+the top of the crop. In `blind_024` it sits at the top edge of the same score bug.
+In `blind_002` it sits on the painted lane a short distance beside a player's shoe.
+**Three of three: the point is not on a person, and the second rater's PLAYER
+verdict comes from crop content.** Two of the three also **visually confirm G288's
+overlay-furniture result** -- the footpoint is on a broadcast score bug, which
+projects inside the court rectangle and is accepted as an on-court position.
+
+### Scope of the damage, stated so it is neither minimised nor overstated
+
+1. **Absolute crop-level LEVELS are not rater-robust.** G273's 0.597 and 0.208 and
+   G280b's 0.347 and 0.514 must not be quoted as properties of the detector.
+2. **A comparison made INSIDE ONE ROW, from ONE pooled blind order judged in ONE
+   session, is materially better protected** -- the same rater bias applies to both
+   arms, so the DIFFERENCE survives where the LEVELS do not. G283's two resolution
+   arms are built that way by design.
+3. **A comparison ACROSS ROWS is only partly protected** even when the same model
+   labelled both, because the sessions differ. **G280b-against-G273 is in that
+   weaker class and its z = -3.005 must now be read with that caveat.**
+4. **The CENTRE-CROSS rule is not implicated.** It is unambiguous by construction,
+   and it is what the programme's real numbers use (0.208 feet, ~0.44 player,
+   0.181 overlay). **Its own inter-rater agreement was unmeasured -- which is
+   exactly why G295 was written.**
+
+### What this changes about how the programme works
+
+**Rater matching is now a design parameter, not an afterthought.** Rows compared
+against a landed G287/G273 baseline are dispatched on `gpt-5.6-terra` deliberately;
+new hard-reasoning rows go to `gpt-6-astra`. A comparison row on a different model
+would confound the effect with labeller variance -- which is the whole content of
+this section.
+
+**And the ground-truth set is next.** The one located-players set is 143
+observations on 15 frames from a single locator inside a span G278 measured to be
+friendlier than its own clip. G296 rebuilds it clip-wide with **two independent
+locators and a measured agreement rate**, because a single-rater ground truth would
+repeat this mistake at the foundation of everything above it.
+
 ---
 
 ## NOT VERIFIED
