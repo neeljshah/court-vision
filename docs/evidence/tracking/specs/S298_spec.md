@@ -14,10 +14,10 @@ CHANGE: compare Poisson, negative-binomial, hurdle, and zero-inflated count fore
 ACCEPTANCE RULE:
   metric = discrete log score, ranked probability score, zero reliability, randomized PIT.
   before = no OOS mixture-count comparison for STL/BLK on these player-games.
-  bar = Poisson log score minus each candidate log score, all families reported, with family-corrected paired CIs;
-        PIT seed = 298.
-  sign = improvement = baseline loss minus candidate loss; positive = candidate better; compared with the frozen
-         +0.004 bar.
+  bar = Holm-adjusted paired 95 pct lower bound > 0 over the 6 stat x family comparisons (STL/BLK x NB2/hurdle-
+    NB2/ZINB); no family omitted after scoring; families selected on inner strictly-past folds only.
+  sign = improvement = Poisson log score minus candidate log score (discrete log-score units, primary); RPS,
+    zero reliability and randomized PIT secondary; the NBA Brier bar +0.004 does not apply to count log scores.
   n = every held-out player-game and >= 30 held-out game clusters per fold.
   eye check = n/a; reproduction = replay PMFs and paired scores from the archive.
   must not move = source parquets, quantile models, and calibration files.

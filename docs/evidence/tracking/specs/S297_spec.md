@@ -15,9 +15,10 @@ ACCEPTANCE RULE:
            baseline.
   before = no scored minutes quantiles; heuristic floor/ceiling are not quantiles.
   bar = baseline CRPS minus candidate CRPS > 0 with CI lower > 0; NULL is valid.
-  sign = improvement = baseline loss minus candidate loss; positive = candidate better; compared with the frozen
-         +0.004 bar.
-  n = all held-out roster player-games and >= 30 held-out game clusters per fold; retain zero-minute rows.
+  sign = improvement = baseline CRPS minus candidate CRPS (minutes CRPS units, primary); DNP log/Brier, PTS CRPS
+    and tail pinball secondary; the NBA in-game Brier bar +0.004 is NOT a CRPS threshold and does not apply.
+  n = all held-out RECORDED player-games (an absent roster player is NOT a zero; never manufacture DNP labels)
+    and >= 30 held-out game clusters per fold; retain zero-minute rows; nominal q10-q90 interval is 0.80.
   eye check = n/a; reproduction = refit one fold and replay paired scores.
   must not move = source parquets and existing minutes modules.
 NON-TAUTOLOGY: never condition evaluation on playing or on target minutes >0.
