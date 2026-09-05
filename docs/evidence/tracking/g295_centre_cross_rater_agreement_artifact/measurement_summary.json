@@ -1,0 +1,484 @@
+{
+  "n": 72,
+  "categories": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G"
+  ],
+  "matrix": [
+    [
+      2,
+      0,
+      13,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      3,
+      4,
+      8,
+      1,
+      1,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      14,
+      0,
+      2,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      9,
+      3,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      1,
+      0,
+      7,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      1,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "reference_marginal": [
+    15,
+    17,
+    17,
+    13,
+    8,
+    2,
+    0
+  ],
+  "second_marginal": [
+    6,
+    4,
+    37,
+    10,
+    13,
+    2,
+    0
+  ],
+  "raw_agreement": 0.5138888888888888,
+  "chance_agreement": 0.19772376543209877,
+  "kappa": 0.39408511661457074,
+  "kappa_se": 0.06889905549829752,
+  "kappa_nominal_wald_95": [
+    0.2590429678379076,
+    0.5291272653912339
+  ],
+  "per_category": [
+    {
+      "category": "A",
+      "reference_n": 15,
+      "second_n": 6,
+      "both_n": 2,
+      "positive_agreement": 0.19047619047619047,
+      "reference_retention": 0.13333333333333333,
+      "second_overlap": 0.3333333333333333,
+      "binary_agreement": 0.7638888888888888
+    },
+    {
+      "category": "B",
+      "reference_n": 17,
+      "second_n": 4,
+      "both_n": 4,
+      "positive_agreement": 0.38095238095238093,
+      "reference_retention": 0.23529411764705882,
+      "second_overlap": 1.0,
+      "binary_agreement": 0.8194444444444444
+    },
+    {
+      "category": "C",
+      "reference_n": 17,
+      "second_n": 37,
+      "both_n": 14,
+      "positive_agreement": 0.5185185185185185,
+      "reference_retention": 0.8235294117647058,
+      "second_overlap": 0.3783783783783784,
+      "binary_agreement": 0.6388888888888888
+    },
+    {
+      "category": "D",
+      "reference_n": 13,
+      "second_n": 10,
+      "both_n": 9,
+      "positive_agreement": 0.782608695652174,
+      "reference_retention": 0.6923076923076923,
+      "second_overlap": 0.9,
+      "binary_agreement": 0.9305555555555556
+    },
+    {
+      "category": "E",
+      "reference_n": 8,
+      "second_n": 13,
+      "both_n": 7,
+      "positive_agreement": 0.6666666666666666,
+      "reference_retention": 0.875,
+      "second_overlap": 0.5384615384615384,
+      "binary_agreement": 0.9027777777777778
+    },
+    {
+      "category": "F",
+      "reference_n": 2,
+      "second_n": 2,
+      "both_n": 1,
+      "positive_agreement": 0.5,
+      "reference_retention": 0.5,
+      "second_overlap": 0.5,
+      "binary_agreement": 0.9722222222222222
+    },
+    {
+      "category": "G",
+      "reference_n": 0,
+      "second_n": 0,
+      "both_n": 0,
+      "positive_agreement": null,
+      "reference_retention": null,
+      "second_overlap": null,
+      "binary_agreement": 1.0
+    }
+  ],
+  "sealing_sha": "886d98ae64a145d05b95f05ed1fd58a950fb67e3",
+  "reference_rater": "G287 gpt-5.6-terra",
+  "second_rater": "G295 gpt-6-astra",
+  "machine": "C:/Users/neelj/nba-track-a4",
+  "exposure": "Required READ FIRST G288 memo disclosed 30 G287 C/D crop labels before judging; CSV remains unopened. G291 memo disclosed crop-level judgments. This is not fully blind.",
+  "mcnemar": {
+    "n": 72,
+    "reference_player_second_nonplayer": 23,
+    "reference_nonplayer_second_player": 1,
+    "discordant_n": 24,
+    "nominal_exact_two_sided_p": 2.9802322387695312e-06,
+    "second_minus_reference": -0.3055555555555556,
+    "paired_delta_se": 0.058136451415040535,
+    "nominal_paired_wald_95": [
+      -0.41950300032903504,
+      -0.19160811078207612
+    ]
+  },
+  "labels": [
+    "PLAYER'S FEET",
+    "PLAYER'S BODY not feet",
+    "BARE COURT OR FLOOR",
+    "BROADCAST GRAPHIC OR SCORE TICKER",
+    "PERSON not a player in play",
+    "SOMETHING ELSE",
+    "CANNOT JUDGE"
+  ],
+  "disagreements": [
+    {
+      "crop": "blind_035.jpg",
+      "position": 6,
+      "reference": "D",
+      "second": "F",
+      "detail": "Cross sits on dark chair/backrest furniture below the blue-shirted worker and above the ticker.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_049.jpg",
+      "position": 7,
+      "reference": "A",
+      "second": "C",
+      "detail": "Cross is on grey floor just below and right of the jumping players shoes.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_069.jpg",
+      "position": 9,
+      "reference": "A",
+      "second": "C",
+      "detail": "Cross centre is in the narrow grey floor gap left of the right shoe, immediately above the ticker.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_009.jpg",
+      "position": 10,
+      "reference": "A",
+      "second": "C",
+      "detail": "Cross is on black painted floor between the players feet.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_065.jpg",
+      "position": 11,
+      "reference": "A",
+      "second": "C",
+      "detail": "Cross is on grey floor below the running players forward shoe.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_063.jpg",
+      "position": 12,
+      "reference": "E",
+      "second": "C",
+      "detail": "Cross centre is just below the referees black shoe on grey floor.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_032.jpg",
+      "position": 13,
+      "reference": "B",
+      "second": "C",
+      "detail": "Cross is on grey floor below the airborne yellow shoes, inside the arc.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_051.jpg",
+      "position": 14,
+      "reference": "B",
+      "second": "C",
+      "detail": "Cross centre sits on floor immediately below and left of the purple shoe heel.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_019.jpg",
+      "position": 16,
+      "reference": "A",
+      "second": "C",
+      "detail": "Cross is on grey floor below and left of the white-uniformed players yellow shoe.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_054.jpg",
+      "position": 18,
+      "reference": "D",
+      "second": "E",
+      "detail": "Cross centre meets the red-shirted courtside persons lower torso just above the score panel.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_064.jpg",
+      "position": 21,
+      "reference": "B",
+      "second": "C",
+      "detail": "Cross centre is on dark floor just left of the green shoe, beneath the other players blue shoe.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_062.jpg",
+      "position": 25,
+      "reference": "A",
+      "second": "C",
+      "detail": "Cross is on grey floor between and below the defenders spread feet.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_058.jpg",
+      "position": 26,
+      "reference": "B",
+      "second": "A",
+      "detail": "Cross meets the dark-uniformed players light-blue sock and shoe region behind the white player.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_029.jpg",
+      "position": 27,
+      "reference": "A",
+      "second": "C",
+      "detail": "Cross is on grey floor just right and below the running players green shoe.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_052.jpg",
+      "position": 29,
+      "reference": "B",
+      "second": "C",
+      "detail": "Cross is on grey floor/white arc below the purple shoe and between the white players legs.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_030.jpg",
+      "position": 30,
+      "reference": "C",
+      "second": "E",
+      "detail": "Cross is on the light-shirted seated spectators upper back beneath the referee.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_039.jpg",
+      "position": 31,
+      "reference": "B",
+      "second": "C",
+      "detail": "Cross is on dark floor and white line immediately left of the central players shoe heel.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_033.jpg",
+      "position": 35,
+      "reference": "B",
+      "second": "E",
+      "detail": "Cross meets the top-left hair boundary of the seated blond spectator beneath the player.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_055.jpg",
+      "position": 38,
+      "reference": "B",
+      "second": "D",
+      "detail": "Cross lies within the Atlanta score graphic over the players lower body.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_016.jpg",
+      "position": 39,
+      "reference": "A",
+      "second": "C",
+      "detail": "Cross is on grey floor below and between the green shoes.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_014.jpg",
+      "position": 42,
+      "reference": "A",
+      "second": "C",
+      "detail": "Cross is on grey floor immediately below and left of the purple shoes.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_043.jpg",
+      "position": 43,
+      "reference": "C",
+      "second": "E",
+      "detail": "Cross meets the standing blue-shirted bench persons dark shoe at the sideline.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_072.jpg",
+      "position": 45,
+      "reference": "B",
+      "second": "C",
+      "detail": "Cross is on grey floor and arc between the walking players shoes.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_023.jpg",
+      "position": 48,
+      "reference": "F",
+      "second": "C",
+      "detail": "Cross is on grey floor beneath the dribbling player and ball.",
+      "reference_detail": "basketball"
+    },
+    {
+      "crop": "blind_031.jpg",
+      "position": 50,
+      "reference": "B",
+      "second": "C",
+      "detail": "Cross is on grey floor below the running players light shoes.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_010.jpg",
+      "position": 53,
+      "reference": "A",
+      "second": "C",
+      "detail": "Cross is on grey floor below the blue-clad players purple shoes.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_048.jpg",
+      "position": 55,
+      "reference": "B",
+      "second": "A",
+      "detail": "Cross meets the white-uniformed players ankle/white shoe over the midcourt logo.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_020.jpg",
+      "position": 57,
+      "reference": "A",
+      "second": "C",
+      "detail": "Cross is on grey floor immediately left of the white players light shoe.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_022.jpg",
+      "position": 58,
+      "reference": "C",
+      "second": "A",
+      "detail": "Cross meets the toe edge of the blue-clad players white shoe.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_021.jpg",
+      "position": 59,
+      "reference": "B",
+      "second": "A",
+      "detail": "Cross meets the dark-uniformed players black shoe at the painted lane boundary.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_002.jpg",
+      "position": 60,
+      "reference": "A",
+      "second": "C",
+      "detail": "Cross centre is on black painted floor just right of the crouching defenders shoe.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_036.jpg",
+      "position": 63,
+      "reference": "D",
+      "second": "E",
+      "detail": "Cross is on the blue-shirted courtside workers lower back just above the Indiana graphic.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_066.jpg",
+      "position": 64,
+      "reference": "A",
+      "second": "C",
+      "detail": "Cross is on reflective grey floor left and below the purple shoes.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_050.jpg",
+      "position": 65,
+      "reference": "B",
+      "second": "C",
+      "detail": "Cross is on black painted court near the floor lettering below the ballhandler.",
+      "reference_detail": ""
+    },
+    {
+      "crop": "blind_061.jpg",
+      "position": 67,
+      "reference": "D",
+      "second": "E",
+      "detail": "Cross centre meets the dark-shirted seated spectators lower back immediately above the Indiana panel.",
+      "reference_detail": ""
+    }
+  ]
+}

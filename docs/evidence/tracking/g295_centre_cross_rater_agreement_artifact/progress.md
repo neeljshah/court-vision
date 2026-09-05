@@ -1,0 +1,1 @@
+72 original images viewed in sealed randomized order. Seal 886d98ae64a145d05b95f05ed1fd58a950fb67e3 predates CSV opening. Focused tests 5 passed; LOC rail 1 passed. Statsmodels/scipy independently reproduce arithmetic. Memo and ledger prepared together. rg unavailable; used Select-String. No writes outside a4.

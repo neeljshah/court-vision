@@ -1,0 +1,727 @@
+{
+  "seed": 10592600515899348815,
+  "rule": "Judge only what is under the small red centre cross.",
+  "exposure": "Required READ FIRST G288 memo disclosed 30 G287 C/D crop labels before judging; CSV remains unopened. G291 memo disclosed crop-level judgments. This is not fully blind.",
+  "images": [
+    {
+      "crop": "blind_045.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_045.jpg",
+      "bytes": 23564,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "0ba75c5c42655ec2838c7e3e38b0fb7932a159356b5b51617cd8afd118341064"
+    },
+    {
+      "crop": "blind_071.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_071.jpg",
+      "bytes": 26265,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "22d10155af93c1f6229d9fea91d34d385e158863298a4a34a26e5d2d97df7b2b"
+    },
+    {
+      "crop": "blind_053.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_053.jpg",
+      "bytes": 50875,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "41e5f5ef77acad9d91eefc5b2d02dc9effd3b84877e92450c3988112e5e89973"
+    },
+    {
+      "crop": "blind_025.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_025.jpg",
+      "bytes": 41823,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "0b84d0ca12e7e7e3d09285db903b92f64f18d84803c1d925218c247a079059c8"
+    },
+    {
+      "crop": "blind_041.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_041.jpg",
+      "bytes": 66834,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "a34acf9083acf2e109ecfcccf33bedb4947c29c65d18045882db80901f44cbc6"
+    },
+    {
+      "crop": "blind_035.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_035.jpg",
+      "bytes": 29330,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "6fa15d20c20a23f96ab1f60855d41279e12ac8518b77cfb3fe9f98371a7a52a2"
+    },
+    {
+      "crop": "blind_049.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_049.jpg",
+      "bytes": 58167,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "559741b7957b3ac72df55286d812f3b9305e2307e1c9dd848755e9bf3427056d"
+    },
+    {
+      "crop": "blind_047.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_047.jpg",
+      "bytes": 70912,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "2950a7928d3ec49deabde8937b5b1c0304f8b5090c6ab59342fe36dc12662335"
+    },
+    {
+      "crop": "blind_069.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_069.jpg",
+      "bytes": 37517,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "6591a2cb356f846a376051daf4940c157fa103566586d2dbbb143705ab78f623"
+    },
+    {
+      "crop": "blind_009.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_009.jpg",
+      "bytes": 66501,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "9e04ca9662572a3e61bc950a0df10087054668a9b3bb6cbe41947061967df904"
+    },
+    {
+      "crop": "blind_065.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_065.jpg",
+      "bytes": 44448,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "b7eb8f4c3df0979f1547aaa2000db7b2145ad30a994c457af31d7dfff776ad18"
+    },
+    {
+      "crop": "blind_063.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_063.jpg",
+      "bytes": 45495,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "d68a4d415974e253e5b06814f5e0ea42fd5da4ddc796ed5e17e4e83c311a0e47"
+    },
+    {
+      "crop": "blind_032.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_032.jpg",
+      "bytes": 63175,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "fb885d7b8e9451248b84d9eb284e8ec482fca3dff684b8fda6bbd0fed984eee0"
+    },
+    {
+      "crop": "blind_051.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_051.jpg",
+      "bytes": 49477,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "4d7aa1ac07ae698f59bfe7642ef7753d51eb1208ca83d89abdf133d0d3c78e55"
+    },
+    {
+      "crop": "blind_007.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_007.jpg",
+      "bytes": 46509,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "bc7920627817c2495a1a4eaeef0293f0130a214b8b44ecd34c5ef535a09a1294"
+    },
+    {
+      "crop": "blind_019.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_019.jpg",
+      "bytes": 66220,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "00de171a59ea4e5d696b4866e39c6e3e2cfa95b0ca01156d802069a65109e8e3"
+    },
+    {
+      "crop": "blind_056.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_056.jpg",
+      "bytes": 55325,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "5d4961b2fdec6f83c611fa0b045a2d03b94c320cae2da294fbf3db9adb1ce763"
+    },
+    {
+      "crop": "blind_054.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_054.jpg",
+      "bytes": 53462,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "cb3fa6a60def1527776d3e2d7d8208b2204beb35b8af3511daaa1dd0bb1d4334"
+    },
+    {
+      "crop": "blind_040.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_040.jpg",
+      "bytes": 36603,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "5b132e0b77e936138e3cf6bd6264b723abe0b6041e65624ff3b80b982fab9fd9"
+    },
+    {
+      "crop": "blind_034.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_034.jpg",
+      "bytes": 53335,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "2208ef2bf0d24d3f88f0d6cc9254e02b70283d90c9955da273d99f6cd82a35e4"
+    },
+    {
+      "crop": "blind_064.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_064.jpg",
+      "bytes": 64847,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "94cbdc3f0eafdb4eb6c42053f01a7421f29f3bedee9645815fed092f79634519"
+    },
+    {
+      "crop": "blind_026.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_026.jpg",
+      "bytes": 72172,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "6ad45b8ff6e7133955fa086699ce82451fe8b8569766ee449db4436405714f5a"
+    },
+    {
+      "crop": "blind_046.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_046.jpg",
+      "bytes": 29710,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "27d0254a3f9f02b89fdebba3f491fc086a32532cfa279a355ea166258b1dfcc7"
+    },
+    {
+      "crop": "blind_042.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_042.jpg",
+      "bytes": 42932,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "550f4313a5cd639800eb936be2a9a525982f8459a5b21c75c5e779aa52f29f86"
+    },
+    {
+      "crop": "blind_062.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_062.jpg",
+      "bytes": 67985,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "0c9caf3f506a1eb889148367398950eaffb90ffb7f4d58c653218c3a09b74bf7"
+    },
+    {
+      "crop": "blind_058.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_058.jpg",
+      "bytes": 66117,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "8e4875b77de0fbd5901b48848e9d14ba94b61979780566102c19105883d3b11a"
+    },
+    {
+      "crop": "blind_029.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_029.jpg",
+      "bytes": 58037,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "aa717fe2a6e910672af8274366b64e94124221a875266481b09f821beb02067e"
+    },
+    {
+      "crop": "blind_001.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_001.jpg",
+      "bytes": 36271,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "f050c86b482056e56c7791a15e439dd14f4f7f252ba4fadebd8de4e8b228d01a"
+    },
+    {
+      "crop": "blind_052.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_052.jpg",
+      "bytes": 53301,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "ce957951df02a1bef1b905a8a7b0a4f95708d59ab331c96b724bd8ab710ccac9"
+    },
+    {
+      "crop": "blind_030.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_030.jpg",
+      "bytes": 50812,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "9db76f327ae472af3ba0e6f68ac8884a687fe0269ea12112cda5115bc8cba28f"
+    },
+    {
+      "crop": "blind_039.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_039.jpg",
+      "bytes": 54277,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "853fb8f37ebe22d4ec1f8e6b260ec3d32ec73fbae795574ad8fb1103613b0dd2"
+    },
+    {
+      "crop": "blind_037.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_037.jpg",
+      "bytes": 34530,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "912a448c9e03624c9aa65d39ae6977a2e027365220677cc4a0693ac054d7a5b3"
+    },
+    {
+      "crop": "blind_008.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_008.jpg",
+      "bytes": 68741,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "e4648d8e13671ecaabcaef523679852a90cba48c93ecbcdec0ab795600d1b378"
+    },
+    {
+      "crop": "blind_070.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_070.jpg",
+      "bytes": 36422,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "c610d2415dfa29d1582c9ce197aba78361ead78b0406f174102df8f0b08519c5"
+    },
+    {
+      "crop": "blind_033.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_033.jpg",
+      "bytes": 61056,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "9123e07af8c08ff89138e3bee592c754d3be07a463a7d29f43e547d599702681"
+    },
+    {
+      "crop": "blind_057.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_057.jpg",
+      "bytes": 66866,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "93aa40baf84a3fb805bef718249ed7fcd8a585474236e4bd050be514968e5b5f"
+    },
+    {
+      "crop": "blind_013.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_013.jpg",
+      "bytes": 26383,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "ef33f9e16f130ba7083879846527da487b183927ac8947896383d12a90fd4be3"
+    },
+    {
+      "crop": "blind_055.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_055.jpg",
+      "bytes": 45976,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "82253db61a275043c592ccb6985465ec9f369866b5584a8c7e3f2441d9855c18"
+    },
+    {
+      "crop": "blind_016.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_016.jpg",
+      "bytes": 53516,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "8c47c5b014db73eaad3fe75dd06289503f47bd51a2ec2b16b29b797bf49a387e"
+    },
+    {
+      "crop": "blind_005.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_005.jpg",
+      "bytes": 49425,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "2b59d03042eac2be60c76087883fef110c9ecf83cc3932c03fa675c8baeded05"
+    },
+    {
+      "crop": "blind_018.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_018.jpg",
+      "bytes": 54737,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "bf0ddaa148f183e6c4efea9a8c2eb6b0b3b729995edfe5f0d8c59c3f5c357770"
+    },
+    {
+      "crop": "blind_014.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_014.jpg",
+      "bytes": 44622,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "7da40d44813d1951241bd23117fb152df2d7cbcc84c3ee53603ea3df89cc8ff2"
+    },
+    {
+      "crop": "blind_043.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_043.jpg",
+      "bytes": 71088,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "112bea6fd4c791e7ba35a4ae9fdd7f0982e4eccf6d70f3755a9dd8bf64921eb8"
+    },
+    {
+      "crop": "blind_006.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_006.jpg",
+      "bytes": 62222,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "87e1def5d0302c3d4f0aac2a17f7410fb2dc74adb3aeb9390b41c2d8c86efea1"
+    },
+    {
+      "crop": "blind_072.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_072.jpg",
+      "bytes": 61781,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "dba3f15eab0087b696c305d585a7d0968fefb334397fca0592404521db559560"
+    },
+    {
+      "crop": "blind_059.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_059.jpg",
+      "bytes": 31118,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "9dbda43469d134a6a4add1d8598b40a0a38acbf2ddff458af86908a537b7bedc"
+    },
+    {
+      "crop": "blind_017.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_017.jpg",
+      "bytes": 53129,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "0667b36df42ffdac718ad08916778e3ece2d56465cb954421e2e9156af96980f"
+    },
+    {
+      "crop": "blind_023.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_023.jpg",
+      "bytes": 49238,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "48393cc85600495f184e30069c72513c9097c23345b6d00dbd2f15e558bd38fd"
+    },
+    {
+      "crop": "blind_004.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_004.jpg",
+      "bytes": 43701,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "475c3d6e83c701a2d05e1b79ec1176ba46ef50c4c73274c30eb3f39c5d2c53cc"
+    },
+    {
+      "crop": "blind_031.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_031.jpg",
+      "bytes": 54735,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "12737c90e58e7bcd7bfd5db5b517437c9c0201f324278e1c8ce8910683f34d8c"
+    },
+    {
+      "crop": "blind_038.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_038.jpg",
+      "bytes": 44045,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "b59bb7ced16260dbd6a254ea011760954ab45e31ce84076eec3b7491b64167c4"
+    },
+    {
+      "crop": "blind_003.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_003.jpg",
+      "bytes": 51836,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "2855306e80f480e8872883eb097afc7e5d6c029b5e01baca73a3c8bcfe7d6a2e"
+    },
+    {
+      "crop": "blind_010.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_010.jpg",
+      "bytes": 57328,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "4e7ea07c51a1e42b4500a5ac3dc083f38910a4a50217418cfcc0cd578e2e7601"
+    },
+    {
+      "crop": "blind_012.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_012.jpg",
+      "bytes": 51130,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "d786f22b7f4f9611e5f53cf02fb41aa23da38b7c77fa4ccb05e3be7bbb278877"
+    },
+    {
+      "crop": "blind_048.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_048.jpg",
+      "bytes": 58060,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "a9e9e21b1d64270824cee1f113ab06a654d0eea10c4405b75aa457d326b05993"
+    },
+    {
+      "crop": "blind_027.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_027.jpg",
+      "bytes": 39523,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "f79e2de755577603c2169e0c156dc33145eaf6125af8677c88a05792b1a18c1e"
+    },
+    {
+      "crop": "blind_020.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_020.jpg",
+      "bytes": 51678,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "586c3983f42d8b5448107a02d335d9aff1145fff7b1acdc1d332ee699b5f924a"
+    },
+    {
+      "crop": "blind_022.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_022.jpg",
+      "bytes": 66052,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "6f5e478634faac442242410b862c3686d24e8e464e15133da6315b7859c7f1b2"
+    },
+    {
+      "crop": "blind_021.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_021.jpg",
+      "bytes": 57837,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "64bbaa14ebca1c13ea36c7cc055520dbcdda98a09e6951b4aa6154591d03009d"
+    },
+    {
+      "crop": "blind_002.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_002.jpg",
+      "bytes": 71256,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "e407ab3e77e8a5a59f611f717d8fa824b5ebfb123e83bbbcb738c531d613bbcb"
+    },
+    {
+      "crop": "blind_028.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_028.jpg",
+      "bytes": 59358,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "74e0c391bfd134248a9f627f03fbbf186bbef06720e6adca5adfa1c35d55a3b6"
+    },
+    {
+      "crop": "blind_024.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_024.jpg",
+      "bytes": 53248,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "fa9b1f9be4dfbd77f1f524098c7396d1b528b96be401f1287281b7e0599d6ff7"
+    },
+    {
+      "crop": "blind_036.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_036.jpg",
+      "bytes": 50261,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "aaf9ad843b07938d2870426980c737dfe4b7213299806d234181a667b3fe1f1d"
+    },
+    {
+      "crop": "blind_066.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_066.jpg",
+      "bytes": 37983,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "1cdb76e6a0aa800aac51f4ce3a90f05d64c650f8eab1563c7eeb62b84d87d0eb"
+    },
+    {
+      "crop": "blind_050.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_050.jpg",
+      "bytes": 62341,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "5a323c548b44b226893ea067bd549d892f18d64b5701676682aff61190840a7b"
+    },
+    {
+      "crop": "blind_060.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_060.jpg",
+      "bytes": 61197,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "925faca0196920ae07520d09bc60af5635754c45361aa61c6f78a86f30174e78"
+    },
+    {
+      "crop": "blind_061.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_061.jpg",
+      "bytes": 52572,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "c8e6a3f749b0281beeec7c52f17f2bffbb12e219496fcd6b42ea98f728a5c619"
+    },
+    {
+      "crop": "blind_015.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_015.jpg",
+      "bytes": 55914,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "40497a839815e52222fc825a5868cea3a90f058aedf5cf3923624fedb79b5079"
+    },
+    {
+      "crop": "blind_011.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_011.jpg",
+      "bytes": 76829,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "1b91d0f4c7950626e9b3db99983078f789f52d76d140a46e018a56f571528d36"
+    },
+    {
+      "crop": "blind_067.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_067.jpg",
+      "bytes": 50258,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "0602ac4e20c7e00ddbc14ea10340f1317e704d2c0b8a5901b0a7e0ba79cef4d9"
+    },
+    {
+      "crop": "blind_044.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_044.jpg",
+      "bytes": 44022,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "27e069207194c5cf5959996ff348988a04b55afc4567b0e85e2c86c7e374d8f1"
+    },
+    {
+      "crop": "blind_068.jpg",
+      "path": "C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g273_detector_precision_blind_sample_artifact/blind_renders/blind_068.jpg",
+      "bytes": 42447,
+      "resolution": [
+        512,
+        640
+      ],
+      "sha256": "f370b1d465709399dcc792313a49fab8a5eedf612d542f036a5aabcd1d22757c"
+    }
+  ]
+}

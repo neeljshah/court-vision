@@ -1,0 +1,1 @@
+37/72 agreement; kappa 0.394085 SE 0.068899; on-player 32 vs 10; 21 player-to-floor disagreements. Partial reference exposure from required G288 reading prevents fully blind claim. No original labels changed.
