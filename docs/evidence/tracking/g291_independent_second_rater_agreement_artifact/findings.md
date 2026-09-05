@@ -1,0 +1,1 @@
+Whole-crop judgments diverge systematically on mixed-content images. 0/15 NOT A PERSON reference labels reproduced. This is reproducibility, never correctness; neither model is a human. Close-up in-play uncertainty and peripheral partial-player context are exposed in immutable notes. No label was revised after unblinding.

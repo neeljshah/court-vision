@@ -1,0 +1,578 @@
+[
+  {
+    "crop_id": "blind_027",
+    "viewing_position": 1,
+    "reference": "NOT A PERSON",
+    "second": "PERSON NOT PLAYER IN PLAY",
+    "free_text": "Standing and seated spectators dominate the crop beneath a scoreboard; only shoes at the far top edge, no identifiable player in play.",
+    "source_frame": 20777
+  },
+  {
+    "crop_id": "blind_032",
+    "viewing_position": 2,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Multiple uniformed players contest the play on court; spectators and a sideline staff member also visible.",
+    "source_frame": 22173
+  },
+  {
+    "crop_id": "blind_066",
+    "viewing_position": 3,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Sky 15 and Fever 52 stand on the court, with another player partly cut off below.",
+    "source_frame": 23317
+  },
+  {
+    "crop_id": "blind_006",
+    "viewing_position": 4,
+    "reference": "NOT A PERSON",
+    "second": "PLAYER",
+    "free_text": "A cropped blue-uniformed player and leg are visible at the right edge on court; bench staff stand across the sideline.",
+    "source_frame": 22986
+  },
+  {
+    "crop_id": "blind_053",
+    "viewing_position": 5,
+    "reference": "NOT A PERSON",
+    "second": "PLAYER",
+    "free_text": "Blue and white uniformed players are clearly visible on court, alongside an official near the sideline.",
+    "source_frame": 21106
+  },
+  {
+    "crop_id": "blind_047",
+    "viewing_position": 6,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Several white and dark uniformed players are on court in front of the bench.",
+    "source_frame": 22504
+  },
+  {
+    "crop_id": "blind_002",
+    "viewing_position": 7,
+    "reference": "NOT A PERSON",
+    "second": "PLAYER",
+    "free_text": "Several uniformed players defend and move around the painted lane.",
+    "source_frame": 21628
+  },
+  {
+    "crop_id": "blind_012",
+    "viewing_position": 8,
+    "reference": "PERSON NOT PLAYER IN PLAY",
+    "second": "PLAYER",
+    "free_text": "A dark-uniformed player runs behind referee 11; spectators and graphics occupy the lower crop.",
+    "source_frame": 20568
+  },
+  {
+    "crop_id": "blind_007",
+    "viewing_position": 9,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "White and dark uniformed players run across the court; an official runs below.",
+    "source_frame": 20023
+  },
+  {
+    "crop_id": "blind_021",
+    "viewing_position": 10,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Dark-uniformed player 31 and white-uniformed opponents move on court near the lane.",
+    "source_frame": 21308
+  },
+  {
+    "crop_id": "blind_054",
+    "viewing_position": 11,
+    "reference": "PERSON NOT PLAYER IN PLAY",
+    "second": "PLAYER",
+    "free_text": "Cropped uniformed players with shorts and legs are visible on court at the top; foreground spectators and scoreboard dominate below.",
+    "source_frame": 21674
+  },
+  {
+    "crop_id": "blind_022",
+    "viewing_position": 12,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Blue-uniformed player 10 and white-uniformed player 52 are clearly visible on court above the scoreboard.",
+    "source_frame": 21381
+  },
+  {
+    "crop_id": "blind_016",
+    "viewing_position": 13,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Several clearly uniformed players stand and walk on court; white 22 holds a basketball.",
+    "source_frame": 20820
+  },
+  {
+    "crop_id": "blind_003",
+    "viewing_position": 14,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Close partial view of players legs and basketball shoes moving across the painted court; white shorts visible at right.",
+    "source_frame": 22963
+  },
+  {
+    "crop_id": "blind_051",
+    "viewing_position": 15,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Three uniformed players move on court with a referee farther back.",
+    "source_frame": 22471
+  },
+  {
+    "crop_id": "blind_069",
+    "viewing_position": 16,
+    "reference": "CANNOT JUDGE",
+    "second": "PLAYER",
+    "free_text": "Close cropped blue and black player uniforms, arms, shorts and basketball shoes are visible above broadcast graphics.",
+    "source_frame": 21000
+  },
+  {
+    "crop_id": "blind_043",
+    "viewing_position": 17,
+    "reference": "NOT A PERSON",
+    "second": "PERSON NOT PLAYER IN PLAY",
+    "free_text": "Standing blue-clad bench staff and seated spectators are visible beyond an otherwise empty foreground court.",
+    "source_frame": 22860
+  },
+  {
+    "crop_id": "blind_065",
+    "viewing_position": 18,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Dark and blue uniformed player runs across court with another player behind.",
+    "source_frame": 19858
+  },
+  {
+    "crop_id": "blind_062",
+    "viewing_position": 19,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Dark-uniformed defender and white 52 are visible on court above foreground spectators.",
+    "source_frame": 22253
+  },
+  {
+    "crop_id": "blind_017",
+    "viewing_position": 20,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "White 22 and a dark-uniformed opponent stand on court beside referee 11; scoreboard covers lower bodies.",
+    "source_frame": 19649
+  },
+  {
+    "crop_id": "blind_010",
+    "viewing_position": 21,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Blue and white uniformed players stand near the sideline with referee 11.",
+    "source_frame": 20106
+  },
+  {
+    "crop_id": "blind_025",
+    "viewing_position": 22,
+    "reference": "PERSON NOT PLAYER IN PLAY",
+    "second": "PLAYER",
+    "free_text": "White-uniformed player and dark-uniformed defender face each other on court; spectators below and black padding at left.",
+    "source_frame": 21490
+  },
+  {
+    "crop_id": "blind_028",
+    "viewing_position": 23,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "White player 8 faces a close foreground white-uniformed player on the court.",
+    "source_frame": 23113
+  },
+  {
+    "crop_id": "blind_013",
+    "viewing_position": 24,
+    "reference": "PERSON NOT PLAYER IN PLAY",
+    "second": "PERSON NOT PLAYER IN PLAY",
+    "free_text": "Close motion-blurred official in gray and black with orange collar; no player in play identifiable.",
+    "source_frame": 22637
+  },
+  {
+    "crop_id": "blind_014",
+    "viewing_position": 25,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Blue-uniformed ball handler faces a white-uniformed defender on court.",
+    "source_frame": 20486
+  },
+  {
+    "crop_id": "blind_057",
+    "viewing_position": 26,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Two dark and blue uniformed players run out of the painted lane; official at left.",
+    "source_frame": 21807
+  },
+  {
+    "crop_id": "blind_061",
+    "viewing_position": 27,
+    "reference": "NOT A PERSON",
+    "second": "PLAYER",
+    "free_text": "A white-uniformed player with red shoes runs across the top of the crop; foreground is spectators, media staff and graphics.",
+    "source_frame": 22115
+  },
+  {
+    "crop_id": "blind_060",
+    "viewing_position": 28,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Dark-uniformed defender faces white-uniformed opponent near the lane.",
+    "source_frame": 21533
+  },
+  {
+    "crop_id": "blind_044",
+    "viewing_position": 29,
+    "reference": "PERSON NOT PLAYER IN PLAY",
+    "second": "PLAYER",
+    "free_text": "A dark and blue uniformed player runs at the top, with a referee and spectators beneath.",
+    "source_frame": 21928
+  },
+  {
+    "crop_id": "blind_005",
+    "viewing_position": 30,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "White-uniformed ball handler in bright green shoes runs across court; other players partly visible above.",
+    "source_frame": 20702
+  },
+  {
+    "crop_id": "blind_042",
+    "viewing_position": 31,
+    "reference": "CANNOT JUDGE",
+    "second": "PLAYER",
+    "free_text": "Close view of a dark-uniformed player beside a referee; the player torso and braided hair fill the right side, court itself out of view.",
+    "source_frame": 22671
+  },
+  {
+    "crop_id": "blind_033",
+    "viewing_position": 32,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Blue 10 faces white 52 on court above spectators and graphics.",
+    "source_frame": 21404
+  },
+  {
+    "crop_id": "blind_052",
+    "viewing_position": 33,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Dark and blue 15 and white-uniformed players move on court beside referee 11.",
+    "source_frame": 19669
+  },
+  {
+    "crop_id": "blind_041",
+    "viewing_position": 34,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "White-uniformed players and dark 25 are positioned on court near the lane.",
+    "source_frame": 21903
+  },
+  {
+    "crop_id": "blind_067",
+    "viewing_position": 35,
+    "reference": "PERSON NOT PLAYER IN PLAY",
+    "second": "PLAYER",
+    "free_text": "Referee 11 dominates center, but cropped dark shorts, legs and blue basketball shoes of a player are visible on court at upper right.",
+    "source_frame": 20745
+  },
+  {
+    "crop_id": "blind_004",
+    "viewing_position": 36,
+    "reference": "NOT A PERSON",
+    "second": "PLAYER",
+    "free_text": "Two cropped but recognizable uniformed players run across the upper court; spectators and scoreboard fill most of the image.",
+    "source_frame": 21834
+  },
+  {
+    "crop_id": "blind_068",
+    "viewing_position": 37,
+    "reference": "CANNOT JUDGE",
+    "second": "CANNOT JUDGE",
+    "free_text": "Tight close-up of white-uniformed players huddling; no court or bench context to establish whether they are players in play.",
+    "source_frame": 22722
+  },
+  {
+    "crop_id": "blind_037",
+    "viewing_position": 38,
+    "reference": "NOT A PERSON",
+    "second": "PLAYER",
+    "free_text": "Overhead view of white and dark uniformed players standing beside the painted court line above graphics.",
+    "source_frame": 23377
+  },
+  {
+    "crop_id": "blind_045",
+    "viewing_position": 39,
+    "reference": "NOT A PERSON",
+    "second": "PERSON NOT PLAYER IN PLAY",
+    "free_text": "Seated spectators and a headset-wearing courtside worker; empty court above and large black padding, no player visible.",
+    "source_frame": 20220
+  },
+  {
+    "crop_id": "blind_018",
+    "viewing_position": 40,
+    "reference": "NOT A PERSON",
+    "second": "PLAYER",
+    "free_text": "Dark-uniformed player 25 and other partial players are visible on court beside referee 11.",
+    "source_frame": 20534
+  },
+  {
+    "crop_id": "blind_011",
+    "viewing_position": 41,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Multiple white and dark uniformed players move through and around the lane.",
+    "source_frame": 21751
+  },
+  {
+    "crop_id": "blind_026",
+    "viewing_position": 42,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Dark-uniformed ball handler and blue-legged teammate face white-uniformed defenders on court.",
+    "source_frame": 22330
+  },
+  {
+    "crop_id": "blind_001",
+    "viewing_position": 43,
+    "reference": "NOT A PERSON",
+    "second": "PLAYER",
+    "free_text": "Partial dark-uniformed player with blue headband is visible on the court side of the blue sideline; bench staff behind.",
+    "source_frame": 20917
+  },
+  {
+    "crop_id": "blind_040",
+    "viewing_position": 44,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "White-uniformed player runs across the center-court logo; black padding at right.",
+    "source_frame": 19730
+  },
+  {
+    "crop_id": "blind_009",
+    "viewing_position": 45,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Close partial view of dark-uniformed players in defensive stances on the painted court.",
+    "source_frame": 22918
+  },
+  {
+    "crop_id": "blind_035",
+    "viewing_position": 46,
+    "reference": "PERSON NOT PLAYER IN PLAY",
+    "second": "PERSON NOT PLAYER IN PLAY",
+    "free_text": "Two headset-wearing courtside workers and seated spectators; no player visible on the empty court above.",
+    "source_frame": 20143
+  },
+  {
+    "crop_id": "blind_070",
+    "viewing_position": 47,
+    "reference": "CANNOT JUDGE",
+    "second": "CANNOT JUDGE",
+    "free_text": "Close cropped white jersey, shoulder and braided hair above graphics; no location context to decide player in play versus bench.",
+    "source_frame": 23285
+  },
+  {
+    "crop_id": "blind_059",
+    "viewing_position": 48,
+    "reference": "PLAYER",
+    "second": "CANNOT JUDGE",
+    "free_text": "Close portrait of a blue-headband player in dark jersey; background too restricted to establish court of play versus bench.",
+    "source_frame": 23190
+  },
+  {
+    "crop_id": "blind_034",
+    "viewing_position": 49,
+    "reference": "NOT A PERSON",
+    "second": "PLAYER",
+    "free_text": "White and dark uniformed players contest a play in the painted lane, several arms raised.",
+    "source_frame": 21174
+  },
+  {
+    "crop_id": "blind_020",
+    "viewing_position": 50,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Multiple white and dark uniformed players move around the lane; referee in lower left.",
+    "source_frame": 19793
+  },
+  {
+    "crop_id": "blind_031",
+    "viewing_position": 51,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Dark-uniformed player 25 runs toward the lane with other players visible above.",
+    "source_frame": 21984
+  },
+  {
+    "crop_id": "blind_036",
+    "viewing_position": 52,
+    "reference": "NOT A PERSON",
+    "second": "PERSON NOT PLAYER IN PLAY",
+    "free_text": "Referee runs past headset-wearing courtside workers; only clipped shoes at the top edge, no identifiable player body.",
+    "source_frame": 20442
+  },
+  {
+    "crop_id": "blind_064",
+    "viewing_position": 53,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Dark-uniformed players and white-uniformed opponents cluster in the lane; white 22 nearby.",
+    "source_frame": 20616
+  },
+  {
+    "crop_id": "blind_019",
+    "viewing_position": 54,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Blue-legged defender guards a white-uniformed player while others move around the lane.",
+    "source_frame": 20265
+  },
+  {
+    "crop_id": "blind_072",
+    "viewing_position": 55,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Several uniformed players walk around the painted lane with officials nearby.",
+    "source_frame": 22564
+  },
+  {
+    "crop_id": "blind_039",
+    "viewing_position": 56,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Close view of dark-uniformed players and white opponents on court, one carrying the ball.",
+    "source_frame": 23067
+  },
+  {
+    "crop_id": "blind_023",
+    "viewing_position": 57,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Dark-uniformed player dribbles up court with teammate and white-uniformed defender.",
+    "source_frame": 22383
+  },
+  {
+    "crop_id": "blind_046",
+    "viewing_position": 58,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Partial white basketball shorts and thigh with court floor visibly behind; graphics cover the lower crop.",
+    "source_frame": 20962
+  },
+  {
+    "crop_id": "blind_058",
+    "viewing_position": 59,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "White 8 gestures near dark-uniformed defenders and another white player on court.",
+    "source_frame": 21554
+  },
+  {
+    "crop_id": "blind_071",
+    "viewing_position": 60,
+    "reference": "CANNOT JUDGE",
+    "second": "PERSON NOT PLAYER IN PLAY",
+    "free_text": "Courtside personnel behind monitors and a cropped foreground head; no identifiable player in play.",
+    "source_frame": 23172
+  },
+  {
+    "crop_id": "blind_063",
+    "viewing_position": 61,
+    "reference": "PERSON NOT PLAYER IN PLAY",
+    "second": "PERSON NOT PLAYER IN PLAY",
+    "free_text": "Referee runs along an otherwise empty visible court; spectators below and black padding at right.",
+    "source_frame": 22436
+  },
+  {
+    "crop_id": "blind_015",
+    "viewing_position": 62,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Blue-legged player and white-uniformed opponents stand on court near the sideline.",
+    "source_frame": 21237
+  },
+  {
+    "crop_id": "blind_056",
+    "viewing_position": 63,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Dark and blue uniformed player stands on court with white-uniformed opponents and another dark-uniformed teammate.",
+    "source_frame": 21217
+  },
+  {
+    "crop_id": "blind_049",
+    "viewing_position": 64,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "White-uniformed shooter is contested by a dark-uniformed defender; blue 15 stands lower on court.",
+    "source_frame": 19924
+  },
+  {
+    "crop_id": "blind_038",
+    "viewing_position": 65,
+    "reference": "NOT A PERSON",
+    "second": "CANNOT JUDGE",
+    "free_text": "Tight white-uniformed player torso and face above scoreboard; insufficient surroundings to establish in-play versus off-court status.",
+    "source_frame": 22771
+  },
+  {
+    "crop_id": "blind_050",
+    "viewing_position": 66,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "White-uniformed ball handler drives through the lane among dark-uniformed defenders.",
+    "source_frame": 22066
+  },
+  {
+    "crop_id": "blind_029",
+    "viewing_position": 67,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "White-uniformed ball handler and teammate run out of lane with a dark-uniformed defender following.",
+    "source_frame": 20006
+  },
+  {
+    "crop_id": "blind_048",
+    "viewing_position": 68,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "White-uniformed ball handler, defender and another white player run across center court.",
+    "source_frame": 22192
+  },
+  {
+    "crop_id": "blind_008",
+    "viewing_position": 69,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "White-uniformed shooter is contested by dark-uniformed opponent with other players around the arc.",
+    "source_frame": 20290
+  },
+  {
+    "crop_id": "blind_024",
+    "viewing_position": 70,
+    "reference": "NOT A PERSON",
+    "second": "PLAYER",
+    "free_text": "Dark-uniformed player 20 raises an arm while a white-uniformed player moves beside her above the scoreboard.",
+    "source_frame": 20348
+  },
+  {
+    "crop_id": "blind_030",
+    "viewing_position": 71,
+    "reference": "PERSON NOT PLAYER IN PLAY",
+    "second": "PLAYER",
+    "free_text": "Referee 11 dominates center; cropped players lower legs and basketball shoes are visible in the painted lane at the top.",
+    "source_frame": 19900
+  },
+  {
+    "crop_id": "blind_055",
+    "viewing_position": 72,
+    "reference": "PLAYER",
+    "second": "PLAYER",
+    "free_text": "Close dark and blue basketball uniform, shorts and arms on the court side of the blue sideline; graphics obscure lower body.",
+    "source_frame": 21031
+  }
+]
