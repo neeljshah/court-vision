@@ -522,3 +522,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-04 | NBA in-game momentum microstructure | S281 | pooled Brier 0.073422184 to 0.077525966, delta -0.004103782 [-0.005209973,-0.003056898], n=460365/1582 | NULL (verified: codex-sol, contract A/B/Q) | 984e5b87e
 2026-09-04 | NBA in-game calibration | S294 | 465249 ticks/1593 games; 12/12 grouped cells and S101 24/24 exact; S276 blobs restored | ACCEPT (verified: codex-sol, contract A/B/Q) | fa91420f0
 2026-09-04 | evaluator isolation | S295 | 6/6 fixed callback attacks rejected; valid walk-forward and CPCV replay errors 0 | ACCEPT (verified: codex-sol, contract A/B/Q) | 1290ed95e
+2026-09-04 | hook | S301 | docs(harness): dispatch S301 to a16 (S307 stopped: premise falsified by the astra audit) | LANDED (auto; verifier line pending) | aa9ebcdda
