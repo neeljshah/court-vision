@@ -1,0 +1,25 @@
+source_frame,court_visible,shot_description,players_located
+0,true,Wide center-court opening shot with standing foreground crowd and overlapping center-circle players,6
+7584,true,Close-up low sideline court action with players and bench behind,7
+15168,true,Wide half-court stopped play with players around the right paint,9
+22752,true,Close-up of five white-uniform teammates huddling by blue court markings; all feet outside shot,0
+30335,true,Wide right half-court action with a dark-uniform drive into traffic,10
+37919,true,Wide right half-court pass with a central airborne player and near-corner occlusion,8
+45503,true,Wide right half-court ball handling; entire source image is visibly soft and motion-blurred,8
+53087,true,Wide right half-court pass with score graphic covering foreground feet,8
+60671,true,Tight player close-up with a small blue floor and white marking fragment at lower left,0
+68255,true,Wide left half-court drive near right elbow with overlapping feet,10
+75839,true,Wide right basket after scoring with players running left; several feet airborne or overlapped,8
+83423,true,Wide left-baseline inbound and transition; foreground feet covered by graphic,4
+91006,true,Wide left-basket rebound with clustered white players under hoop,10
+98590,true,Wide right-half-court action with running players and a near-right screen,7
+106174,true,Wide left-half-court perimeter pass with overlapping screen and foreground score graphic,9
+113758,true,Close-up white player raising hands beside clearly visible sideline; feet outside shot,0
+121342,true,Wide transition through midcourt with ten judged on-court players including one cropped at right edge,9
+128926,true,Close-up two main on-court players and partial teammate; seated bench behind is excluded from player role,0
+136510,false,Close-up timeout bench huddle with staff and seated players; no court geometry or on-court players,0
+144094,true,Wide right-basket stoppage with nine on-court players visible and one set of feet occluded,8
+151677,true,Wide overtime half-court possession with nine on-court players visible,9
+159261,false,Tight timeout bench staff huddle; no court geometry and no on-court players,0
+166845,true,Close-up dark-uniform players and foreground white opponent beside visible blue sideline; no feet in shot,0
+174429,false,Final-score close-up of three dark-uniform players; no court geometry and all feet outside shot,0

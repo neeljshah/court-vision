@@ -1,0 +1,32 @@
+{
+  "frames": 24,
+  "person_rows": 296,
+  "player_rows": 163,
+  "player_points": 130,
+  "players_without_coordinates": 33,
+  "court_visible_frames": 21,
+  "zero_located_frames": 8,
+  "confidence_all_rows": {
+    "approximate": 209,
+    "confident": 82,
+    "guess": 5
+  },
+  "confidence_player_points": {
+    "approximate": 119,
+    "confident": 9,
+    "guess": 2
+  },
+  "confidence_all_points": {
+    "approximate": 185,
+    "confident": 21,
+    "guess": 5
+  },
+  "role_counts": {
+    "player_on_court": 163,
+    "official": 41,
+    "other": 5,
+    "spectator_or_media": 31,
+    "bench_or_coach": 56
+  },
+  "location_commit": "eab39f126f87ecd5c9b4f63d1ce19d55f0d4d6c3"
+}

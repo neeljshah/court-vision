@@ -1,0 +1,13 @@
+{
+  "command": "dd if=/dev/zero of=/workspace/wt/a12/g296b_fsync_probe bs=1M count=8 conv=fsync",
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "8+0 records in\n8+0 records out\n8388608 bytes (8.4 MB, 8.0 MiB) copied, 0.303088 s, 27.7 MB/s\n",
+  "loadavg": [
+    107.33642578125,
+    133.0634765625,
+    113.70068359375
+  ],
+  "nproc": 256,
+  "workspace_du_mb": "UNKNOWN (not measured; network walk)"
+}

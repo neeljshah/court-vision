@@ -1,0 +1,297 @@
+source_frame,person_index,role,feet_visible,foot_x_px,foot_y_px,confidence,note
+0,1,player_on_court,false,,,approximate,Rear dark-uniform player at center-left; feet blocked by nearer people
+0,2,player_on_court,true,900,443,approximate,Rear white-uniform player at center; visible white shoe contact beside jump circle
+0,3,player_on_court,true,852,482,approximate,Near dark-uniform center-circle player with blue lower legs; two-foot contact midpoint
+0,4,player_on_court,true,920,482,approximate,Near white-uniform center-circle player; visible shoe-contact midpoint
+0,5,player_on_court,true,1020,422,approximate,Rear white-uniform player bending at right of center; feet overlap nearer player
+0,6,player_on_court,true,1049,432,approximate,Dark-uniform player bending at right of center; visible dark shoe contacts
+0,7,player_on_court,true,1087,459,approximate,Rightmost white-uniform player in green shoes
+0,8,official,true,883,450,approximate,Gray-backed official between the two center-circle foreground players
+0,9,official,false,,,confident,Near-right official with number on gray back; feet behind foreground crowd
+0,10,official,true,586,343,approximate,Far sideline gray-shirted official left of center
+0,11,other,false,,,approximate,Near sideline light-blue long-sleeved staff figure; lower body blocked by crowd
+7584,1,player_on_court,true,94,689,confident,Far-left white number 21; visible floor contacts
+7584,2,player_on_court,true,378,774,approximate,Left dark-uniform player with blue sleeve and blue leg covering; spread contact midpoint
+7584,3,player_on_court,true,616,775,confident,White number 22; right green shoe grounded and left foot raised
+7584,4,player_on_court,true,716,803,confident,Central dark-uniform player in mint shoes; contact midpoint
+7584,5,player_on_court,true,947,726,approximate,Dark number 15 behind central players; purple shoes in motion
+7584,6,player_on_court,true,1185,817,confident,Foreground right white-uniform player; contact midpoint between white shoes
+7584,7,player_on_court,true,1190,739,approximate,Almost entirely occluded player behind foreground white player; visible yellow-green shoe and lower leg
+7584,8,official,true,1866,750,confident,Gray-shirted official at right image edge
+7584,9,spectator_or_media,true,1622,710,confident,Seated courtside woman in pink outer layer
+7584,10,spectator_or_media,true,1742,720,confident,Seated courtside woman in black with light outer layer
+7584,11,bench_or_coach,true,30,650,approximate,Far-left seated bench staff in light shirt; shoe partly behind on-court player
+7584,12,bench_or_coach,true,184,646,approximate,Seated dark warmup bench member left side with pink shoes
+7584,13,bench_or_coach,true,254,649,approximate,Adjacent seated dark warmup bench member with bright shoes
+15168,1,player_on_court,true,366,435,approximate,Left dark number 15 in purple shoes
+15168,2,player_on_court,true,531,523,approximate,White player behind left dark player; yellow shoe contacts
+15168,3,player_on_court,true,569,543,approximate,Left-center dark player with blue sleeve and lower leg
+15168,4,player_on_court,false,,,approximate,Rear white number 22 raising arm; feet blocked by nearer dark number 20
+15168,5,player_on_court,true,947,552,approximate,Dark number 20 at left edge of paint; contact midpoint
+15168,6,player_on_court,true,1197,544,approximate,Front blonde white player under basket; visible shoe contacts
+15168,7,player_on_court,true,1238,526,approximate,White player behind blonde teammate; yellow shoes
+15168,8,player_on_court,true,1250,489,approximate,Rear dark player under hoop; green shoe visible through overlap
+15168,9,player_on_court,true,1358,516,approximate,Dark number 1 at right side of paint
+15168,10,player_on_court,true,1424,550,approximate,White number 2 right of paint
+15168,11,official,true,414,398,approximate,Far-left gray official beside dark number 15
+15168,12,official,true,1167,363,approximate,Far-baseline official in front of bench
+15168,13,official,true,1247,744,confident,Foreground official number 11
+15168,14,bench_or_coach,true,826,318,approximate,Standing blue-top coach at far sideline
+15168,15,spectator_or_media,true,1638,390,approximate,Seated baseline photographer in dark clothing
+15168,16,spectator_or_media,false,,,confident,Foreground-left camera operator; feet below crowd and graphic
+22752,1,player_on_court,false,,,confident,Close-up left white-headband player; lower body outside shot
+22752,2,player_on_court,false,,,confident,Close-up blonde white-headband player; feet outside shot
+22752,3,player_on_court,false,,,confident,Close-up central white-uniform player facing camera; feet outside shot
+22752,4,player_on_court,false,,,confident,Foreground right white player with long braids; feet outside shot
+22752,5,player_on_court,false,,,approximate,Fifth white teammate partly visible between central player and braided foreground player
+22752,6,other,true,446,143,guess,Background shoe-only person at upper left; role cannot be resolved
+22752,7,other,true,1093,123,guess,Background gray-and-yellow shoe-only person; role cannot be resolved
+22752,8,other,true,1414,153,guess,Background red-and-white shoe-only person; role cannot be resolved
+30335,1,player_on_court,true,640,445,approximate,Left dark number 4 outside arc
+30335,2,player_on_court,true,831,395,approximate,Rear-left dark player near far sideline
+30335,3,player_on_court,true,1035,365,approximate,Rear dark number 00 near bench
+30335,4,player_on_court,true,899,502,approximate,White player at left edge of paint with pink shoes
+30335,5,player_on_court,true,979,555,approximate,Central blonde white defender; shoes partly overlap driving player
+30335,6,player_on_court,true,1043,545,approximate,White number 21 in defensive stance; blue shoe-contact midpoint
+30335,7,player_on_court,true,1134,472,approximate,Rear-right white player with bright green shoes
+30335,8,player_on_court,true,932,575,approximate,Dark driving player with blue leggings; motion-blurred spread contacts
+30335,9,player_on_court,true,1354,620,approximate,White defender on right edge of paint
+30335,10,player_on_court,true,1689,638,approximate,Right-corner dark player; left green shoe grounded and other foot lifted
+30335,11,official,true,682,376,approximate,Far sideline gray official
+30335,12,official,true,1788,609,approximate,Right baseline official
+30335,13,official,true,961,855,approximate,Near sideline official in walking stride
+30335,14,bench_or_coach,true,784,348,approximate,Standing far-sideline blue-shirt coach
+30335,15,spectator_or_media,true,1667,428,approximate,Right-baseline seated dark-clothed photographer
+30335,16,spectator_or_media,false,,,confident,Foreground-left television camera operator behind crowd
+37919,1,player_on_court,true,341,714,approximate,Near-left dark player with blue sleeve; spread shoe contacts
+37919,2,player_on_court,true,478,465,approximate,Rear-left dark number 15
+37919,3,player_on_court,true,681,504,approximate,Rear-left white player with green shoes
+37919,4,player_on_court,true,608,658,approximate,White number 21 left of paint
+37919,5,player_on_court,true,830,693,approximate,Dark number 20 near free-throw arc
+37919,6,player_on_court,false,,,confident,Central white number 7 airborne; shoes visible but no floor contact exists in this frame
+37919,7,player_on_court,true,1167,525,approximate,Rear white player with pink shoes
+37919,8,player_on_court,true,1230,527,approximate,Rear dark player behind pink-shoed defender; visible green shoe contact
+37919,9,player_on_court,true,1517,695,approximate,Right-side blonde white player
+37919,10,player_on_court,false,,,approximate,Near-right dark number 00; feet occluded by foreground spectators
+37919,11,official,true,369,396,approximate,Far-left walking gray official
+37919,12,official,true,1455,399,approximate,Far-right baseline gray official
+37919,13,official,false,,,confident,Near official number 5; feet blocked by foreground heads
+37919,14,bench_or_coach,true,704,347,approximate,Far sideline standing blue-top coach
+37919,15,spectator_or_media,true,1645,421,approximate,Right-baseline seated dark-clothed photographer
+37919,16,spectator_or_media,false,,,confident,Near-left television camera operator; feet hidden by crowd
+45503,1,player_on_court,true,399,746,approximate,Blurry near-left dark ball handler; right shoe appears grounded
+45503,2,player_on_court,true,702,690,approximate,White defender facing ball handler; green shoes
+45503,3,player_on_court,true,770,586,approximate,Central dark screener; visible dark shoe contact
+45503,4,player_on_court,true,875,611,approximate,Central dark player with blue lower legs moving around screen
+45503,5,player_on_court,true,919,604,approximate,Central foreground white defender; contact amid overlapping legs
+45503,6,player_on_court,false,,,approximate,Second white defender behind central dark player; feet blocked by overlap
+45503,7,player_on_court,true,851,392,approximate,Rear dark player near far sideline
+45503,8,player_on_court,true,1006,469,approximate,Rear white defender near free-throw line
+45503,9,player_on_court,true,1533,720,approximate,Right-side white player with yellow shoes
+45503,10,player_on_court,false,,,approximate,Dark player partly cut off at extreme right; feet outside visible court area
+45503,11,official,true,57,415,approximate,Far-left official near image edge
+45503,12,official,true,1635,469,approximate,Right-baseline official
+45503,13,official,false,,,confident,Near official number 11; feet blocked by crowd and graphic
+45503,14,bench_or_coach,true,651,362,approximate,Far-sideline standing blue-top coach
+45503,15,spectator_or_media,false,,,confident,Near-left television camera operator; feet outside usable shot
+53087,1,player_on_court,true,380,631,approximate,Left dark player in pale shoes
+53087,2,player_on_court,true,591,636,approximate,Left white defender with yellow shoes
+53087,3,player_on_court,true,588,453,approximate,Rear-left dark number 10
+53087,4,player_on_court,true,735,496,approximate,Rear-left white defender in pink shoes
+53087,5,player_on_court,false,,,confident,Foreground dark number 15; both feet behind score graphic
+53087,6,player_on_court,true,784,815,approximate,Foreground white number 22; spread green shoe contacts
+53087,7,player_on_court,false,,,approximate,Rear-right white defender with long braids; feet blocked by nearer white number 25
+53087,8,player_on_court,true,1329,505,approximate,Rear-right dark player by baseline
+53087,9,player_on_court,true,1263,711,approximate,White number 25 near right paint edge; yellow shoe contacts
+53087,10,player_on_court,true,1533,787,approximate,Right dark player in mint shoes
+53087,11,official,true,253,463,approximate,Far-left gray official
+53087,12,official,true,1426,441,approximate,Far-right gray official
+53087,13,official,false,,,confident,Near official number 5; feet behind scoreboard
+53087,14,bench_or_coach,true,423,421,approximate,Far-left standing blue-top coach
+53087,15,spectator_or_media,true,1646,480,approximate,Seated baseline photographer at right
+60671,1,player_on_court,false,,,confident,Tight close-up of dark-uniform player with blue headband and goggles; feet outside shot
+60671,2,bench_or_coach,false,,,approximate,Out-of-focus black-pants bench-side person at left; shoes mostly obscured by graphic and foreground
+60671,3,spectator_or_media,false,,,approximate,Out-of-focus seated background person at upper right; feet not visible
+60671,4,spectator_or_media,false,,,approximate,Second seated background person cropped at far right; feet not visible
+68255,1,player_on_court,true,167,697,approximate,Near-left dark player; one pale shoe visible beside crowd
+68255,2,player_on_court,true,360,594,approximate,Left white defender with yellow shoes
+68255,3,player_on_court,true,698,632,approximate,Central white defender with white shoes
+68255,4,player_on_court,true,811,762,approximate,Near-center dark player with blue leggings and purple shoes
+68255,5,player_on_court,true,720,449,approximate,Rear paint white defender; blue shoe visible below overlap
+68255,6,player_on_court,true,753,422,approximate,Rear paint dark player behind white defender; green shoe visible
+68255,7,player_on_court,true,1184,467,approximate,Rear-right white defender engaging ball handler
+68255,8,player_on_court,true,1190,471,guess,Rear-right dark ball handler with blue leg covering; planted contact partly overlaps white defender
+68255,9,player_on_court,true,1146,581,approximate,Dark number 00 near right arc
+68255,10,player_on_court,true,1047,574,approximate,White defender with bright green shoes at right arc
+68255,11,official,true,132,489,approximate,Left-baseline official
+68255,12,official,true,1072,333,approximate,Far-sideline official
+68255,13,official,true,1015,793,approximate,Near official number 5; visible shoe contact by crowd edge
+68255,14,bench_or_coach,true,1015,315,approximate,Far-sideline standing coach in dark clothing and light shoes
+68255,15,spectator_or_media,true,235,382,approximate,Seated left-baseline photographer
+68255,16,spectator_or_media,false,,,confident,Near-right headset commentator at desk; feet not visible
+68255,17,spectator_or_media,false,,,confident,Adjacent near-right headset commentator; feet not visible
+75839,1,player_on_court,true,252,494,approximate,Far-left dark player running away; left shoe grounded
+75839,2,player_on_court,false,,,approximate,Left-center dark runner; both visible shoes appear airborne with no defensible floor contact
+75839,3,player_on_court,true,1100,410,approximate,Rear dark player near far sideline; pale shoe contacts
+75839,4,player_on_court,true,1059,384,guess,Almost hidden white runner behind rear dark player; green shoe contact visible at left
+75839,5,player_on_court,true,915,452,approximate,Blonde white player at rear-left of paint
+75839,6,player_on_court,true,1058,580,approximate,Central white player with long braids and blue shoes
+75839,7,player_on_court,true,627,712,approximate,Near-left white number 52 in pink shoes
+75839,8,player_on_court,true,1277,510,approximate,Dark ball handler under right basket; visible planted shoe
+75839,9,player_on_court,true,1725,580,approximate,Right-baseline dark player in green shoes
+75839,10,official,true,1452,394,approximate,Far-right baseline official
+75839,11,official,false,,,confident,Near official with lower body blocked by foreground people and graphic
+75839,12,bench_or_coach,true,1175,333,approximate,Standing blue-top coach by bench
+75839,13,spectator_or_media,true,1671,441,approximate,Seated dark-clothed baseline photographer
+83423,1,player_on_court,true,358,648,approximate,Left-baseline white inbounding player; contact midpoint
+83423,2,player_on_court,true,660,773,approximate,Foreground dark runner with blue sleeve and leggings; trailing sole at floor
+83423,3,player_on_court,true,770,738,approximate,White player almost fully overlapped by dark runner; yellow shoe visible
+83423,4,player_on_court,true,1153,646,approximate,Rear dark runner; right black shoe grounded
+83423,5,player_on_court,false,,,approximate,Right white runner in pink shoes; both shoes airborne and no floor contact visible
+83423,6,player_on_court,false,,,confident,Near white player in pink shoes; foot contacts covered by score graphic
+83423,7,official,true,567,495,approximate,Left-baseline official
+83423,8,official,false,,,confident,Near-right official cropped by score graphic
+83423,9,bench_or_coach,true,1839,470,approximate,Far-right standing dark-clothed coach
+83423,10,bench_or_coach,true,816,382,approximate,Seated white number 21 on bench; not an on-court player
+83423,11,bench_or_coach,true,978,402,approximate,Seated white-uniform player at center-right bench; not an on-court player
+83423,12,spectator_or_media,true,252,537,approximate,Seated left-baseline photographer
+91006,1,player_on_court,true,370,588,approximate,Dark number 11 left of basket; lower legs partly overlap white player
+91006,2,player_on_court,true,411,672,approximate,Near-left blonde white player; spread contacts
+91006,3,player_on_court,true,595,565,approximate,Central white player in pink shoes under hoop
+91006,4,player_on_court,true,633,553,approximate,Second central white player with yellow shoes; heavily overlapping legs
+91006,5,player_on_court,true,668,608,approximate,White number 22 in green shoes in paint
+91006,6,player_on_court,true,899,470,approximate,Rear white player in pink shoes; left shoe contact
+91006,7,player_on_court,true,250,806,approximate,Near-left dark player with blue leg covering; shoe partly beside crowd
+91006,8,player_on_court,true,900,789,approximate,Near dark number 20; spread pale shoe contacts
+91006,9,player_on_court,true,1357,576,approximate,Right dark player with green shoes
+91006,10,player_on_court,true,1332,421,approximate,Far-right dark player at sideline in purple shoes
+91006,11,official,true,441,417,approximate,Left-baseline official
+91006,12,official,true,1511,433,approximate,Far-right sideline official
+91006,13,official,false,,,confident,Near official; feet behind crowd
+91006,14,bench_or_coach,true,945,345,approximate,Far-sideline standing dark-clothed coach
+91006,15,spectator_or_media,true,177,442,approximate,Seated left-baseline photographer
+98590,1,player_on_court,false,,,approximate,Left white ball handler with pink shoes; both shoes airborne and no visible floor contact
+98590,2,player_on_court,true,702,441,approximate,Rear white number 21; blue shoe visible behind dark number 11
+98590,3,player_on_court,true,659,521,approximate,Left-center dark number 11; spread black shoe contacts
+98590,4,player_on_court,true,811,443,approximate,Rear-left dark runner; right pale shoe contact
+98590,5,player_on_court,true,945,487,approximate,Rear-center dark defender in wide stance
+98590,6,player_on_court,false,,,approximate,Right dark player behind blonde defender; visible trailing shoe raised and other foot blocked
+98590,7,player_on_court,true,1324,721,approximate,Near-right blonde white defender
+98590,8,player_on_court,true,1480,769,approximate,Near-right dark player with blue leggings and purple shoes
+98590,9,player_on_court,true,1548,790,approximate,Near-right white screener in yellow shoes
+98590,10,official,true,48,858,approximate,Near-left official partly outside image
+98590,11,official,true,529,340,approximate,Far-left sideline official
+98590,12,bench_or_coach,true,840,312,approximate,Far-sideline standing blue-top coach
+98590,13,spectator_or_media,false,,,confident,Near-left television camera operator; feet hidden
+106174,1,player_on_court,true,493,786,approximate,Near-left dark player in green shoes
+106174,2,player_on_court,true,702,627,approximate,White paint defender; right shoe visible beside official
+106174,3,player_on_court,true,1004,754,approximate,Near-center white defender with yellow shoes
+106174,4,player_on_court,false,,,approximate,Near dark player with blue leggings; lifted purple shoe visible but planted foot hidden at graphic edge
+106174,5,player_on_court,true,1642,618,approximate,Right dark number 10; blue leg covering
+106174,6,player_on_court,true,1421,596,approximate,Right blonde white defender in white shoes
+106174,7,player_on_court,true,1344,456,approximate,Rear-right dark number 00 with raised ball; spread foot contacts
+106174,8,player_on_court,true,1128,460,approximate,White defender behind white number 25; visible green shoe
+106174,9,player_on_court,true,1091,535,approximate,Central white number 25 in yellow shoes
+106174,10,player_on_court,true,1036,513,approximate,Central dark screener behind white number 25; shoe partly overlapping
+106174,11,official,true,480,411,approximate,Left-baseline official
+106174,12,official,true,1734,429,approximate,Far-right sideline official
+106174,13,official,false,,,confident,Near official number 11; feet occluded by crowd
+106174,14,bench_or_coach,true,1137,355,approximate,Far-sideline standing dark-clothed coach
+106174,15,spectator_or_media,true,265,440,approximate,Seated left-baseline photographer
+113758,1,player_on_court,false,,,confident,Close-up white player raising both hands; feet outside shot and graphic
+113758,2,spectator_or_media,true,214,497,approximate,Courtside seated person's visible black boot at upper left
+113758,3,spectator_or_media,true,517,498,approximate,Adjacent courtside person's visible white shoe; upper body cropped
+121342,1,player_on_court,true,196,534,approximate,Left white runner leaving paint; left shoe contact
+121342,2,player_on_court,true,607,439,approximate,White ball handler with green shoes; right shoe at floor
+121342,3,player_on_court,true,728,724,approximate,Near white number 21 with blue shoes; leading shoe contact
+121342,4,player_on_court,true,1349,721,approximate,Right blonde white runner; leading shoe contact
+121342,5,player_on_court,true,1707,398,approximate,Far-right white runner in yellow shoes
+121342,6,player_on_court,true,988,650,approximate,Central dark runner with blue leg covering; leading sole contact
+121342,7,player_on_court,true,1075,552,approximate,Rear-central dark runner; green shoe visible beside overlap
+121342,8,player_on_court,true,1578,570,approximate,Right-center dark defender near center logo
+121342,9,player_on_court,true,1804,694,approximate,Near-right dark runner crossing center logo
+121342,10,player_on_court,false,,,approximate,Partial dark-uniform figure at extreme right edge; feet outside shot
+121342,11,official,true,420,382,approximate,Far-left running gray official; trailing shoe contact
+121342,12,official,false,,,confident,Near running gray official; feet occluded by spectators
+121342,13,bench_or_coach,true,958,322,approximate,Far sideline standing dark-clothed coach
+121342,14,spectator_or_media,false,,,confident,Near-right headset commentator at desk; feet hidden
+128926,1,player_on_court,false,,,confident,Foreground white player with braids; feet below graphic
+128926,2,player_on_court,false,,,confident,Dark number 5 facing camera; feet below graphic
+128926,3,player_on_court,false,,,approximate,Partial blonde white teammate at lower-left edge; feet outside shot
+128926,4,bench_or_coach,true,129,383,confident,Far-left seated warmup bench player; one white shoe visible
+128926,5,bench_or_coach,true,258,404,confident,Second seated warmup bench player in pink shoes
+128926,6,bench_or_coach,true,470,418,confident,Seated white number 5 in red shoes; bench role
+128926,7,bench_or_coach,true,701,417,approximate,Seated white number 25 in yellow shoes; bench role
+128926,8,bench_or_coach,true,746,453,approximate,Seated towel-draped white player with knee pads; red shoe visible beside foreground
+128926,9,bench_or_coach,true,1206,450,confident,Seated warmup bench player with knee pads; one white shoe visible
+128926,10,bench_or_coach,true,1372,470,confident,Right seated warmup bench player with white shoes
+128926,11,bench_or_coach,true,1770,505,confident,Seated coach at right holding orange board
+136510,1,bench_or_coach,false,,,confident,Seated dark number 5 at timeout bench; feet blocked
+136510,2,bench_or_coach,false,,,confident,Seated dark player with blue headband near center; feet blocked
+136510,3,bench_or_coach,true,1260,779,approximate,Seated dark player with goggles and blue leggings; one purple shoe visible under seat
+136510,4,bench_or_coach,false,,,confident,Seated dark-uniform player with light braids at right; feet blocked
+136510,5,bench_or_coach,false,,,confident,Foreground dark number 4 at bench huddle; feet below graphic
+136510,6,bench_or_coach,false,,,confident,Standing dark-uniform player with blue headband at right; feet blocked
+136510,7,bench_or_coach,false,,,confident,Near-right black-jacketed team member with curly hair; feet below graphic
+136510,8,bench_or_coach,true,1755,945,confident,Right gray-pants staff member in black cap; white shoe contact visible
+136510,9,bench_or_coach,false,,,confident,Gray-patterned-top coach at lower left-center; feet hidden
+136510,10,bench_or_coach,false,,,confident,Foreground black-hooded team member at center; feet hidden
+136510,11,bench_or_coach,false,,,confident,Foreground blue warmup member with long braids and towel; feet below graphic
+136510,12,bench_or_coach,false,,,confident,Standing blue warmup member at left foreground; feet below graphic
+136510,13,bench_or_coach,false,,,confident,Blue warmup member at lower-left edge; feet outside shot
+136510,14,bench_or_coach,false,,,confident,Partial blue staff member at extreme left; feet hidden
+136510,15,bench_or_coach,false,,,confident,Back-left blue-shirt staff member holding orange board; feet behind seats
+136510,16,bench_or_coach,false,,,confident,Back-row blue staff member left of center; feet behind seats
+136510,17,bench_or_coach,false,,,confident,Back-row braided blue staff member at center; feet behind seats
+136510,18,bench_or_coach,false,,,confident,Back-row blue staff member taking bottle; feet behind seats
+136510,19,bench_or_coach,false,,,confident,Back-row blue staff member handing bottle; feet behind seats
+136510,20,bench_or_coach,false,,,confident,Back-right blue staff member holding towel; feet behind seats
+136510,21,bench_or_coach,false,,,approximate,Partial blue staff member at extreme upper right; feet outside shot
+136510,22,bench_or_coach,false,,,approximate,Seated light-haired staff member partly visible behind standing left warmup member
+144094,1,player_on_court,true,139,612,confident,Far-left dark player in purple shoes
+144094,2,player_on_court,true,257,800,approximate,Left blonde white player; visible white shoe beside dark number 20
+144094,3,player_on_court,true,341,922,confident,Near-left dark number 20; pale shoe contacts
+144094,4,player_on_court,false,,,approximate,Rear dark number 10; feet occluded by two white players
+144094,5,player_on_court,true,768,738,approximate,Central foreground white player in white shoes
+144094,6,player_on_court,true,850,678,confident,Central white number 21 in blue shoes
+144094,7,player_on_court,true,1140,606,approximate,Rear dark number 5; green shoe visible beside official
+144094,8,player_on_court,true,1105,770,confident,White number 0 near right paint edge; yellow shoes
+144094,9,player_on_court,true,1378,817,confident,Right dark number 00 bent forward; two shoe contacts
+144094,10,official,true,1195,664,confident,Central official handling stoppage
+144094,11,official,false,,,confident,Foreground official behind score graphic
+144094,12,bench_or_coach,true,524,454,approximate,Standing blue-top coach at far left sideline
+144094,13,spectator_or_media,true,1667,558,approximate,Right-baseline seated dark-clothed photographer
+144094,14,spectator_or_media,true,1500,477,approximate,Right-baseline seated photographer in white cap
+144094,15,spectator_or_media,true,1454,451,approximate,Adjacent seated photographer holding long white lens
+151677,1,player_on_court,true,312,455,approximate,Left white number 22 dribbling in green shoes
+151677,2,player_on_court,true,500,475,approximate,Dark defender with blue sleeve facing ball handler
+151677,3,player_on_court,true,724,558,approximate,Central white runner with white shoes; leading shoe contact
+151677,4,player_on_court,true,1068,538,approximate,Central dark defender with green shoes
+151677,5,player_on_court,true,1492,385,approximate,Rear-right dark player by far arc
+151677,6,player_on_court,true,1542,324,approximate,Rear-right blonde white player near far sideline
+151677,7,player_on_court,true,1651,489,approximate,Dark number 00 in right paint; shoe contact midpoint
+151677,8,player_on_court,true,1442,754,approximate,Near-right white number 0 in yellow shoes
+151677,9,player_on_court,true,1539,709,approximate,Near-right dark player in purple shoes; left shoe visible beside official
+151677,10,official,true,217,358,approximate,Far-left official
+151677,11,official,true,1899,351,approximate,Far-right baseline official partly cropped
+151677,12,official,false,,,confident,Near-right official number 5; feet blocked by foreground crowd
+151677,13,bench_or_coach,true,638,330,approximate,Far-sideline blue-top coach with both arms raised
+151677,14,spectator_or_media,false,,,confident,Near-left headset commentator at desk; feet hidden
+151677,15,spectator_or_media,false,,,confident,Adjacent near-left headset commentator; feet hidden
+159261,1,bench_or_coach,false,,,confident,Central blue-shirted staff member with braided hair at timeout bench; feet outside close-up
+159261,2,bench_or_coach,false,,,confident,Foreground-right blue-shirted staff member with braided hair; feet outside close-up
+159261,3,bench_or_coach,false,,,confident,Blue-shirted staff member obscuring left half of shot; feet outside shot
+159261,4,bench_or_coach,false,,,confident,Black team-shirt member behind central staff member; feet outside shot
+159261,5,bench_or_coach,false,,,confident,Black team-jacket member at upper right; feet outside shot
+159261,6,bench_or_coach,false,,,approximate,Partial head of seated team member at lower left-center; feet outside shot
+166845,1,player_on_court,false,,,confident,Central dark number 10 with blue sleeve and headband; feet outside close-up
+166845,2,player_on_court,false,,,confident,Rear dark player with goggles and blue headband; feet outside close-up
+166845,3,player_on_court,false,,,confident,Foreground white-uniform player with braids; feet outside close-up
+166845,4,player_on_court,false,,,approximate,Partial dark-uniform player behind foreground white player's right shoulder; feet outside shot
+166845,5,spectator_or_media,true,129,701,approximate,Seated courtside spectator at left holding phone; visible sandal
+166845,6,spectator_or_media,true,295,684,approximate,Standing courtside spectator in light trousers and brown shoes
+166845,7,spectator_or_media,true,435,664,approximate,Courtside spectator in striped skirt; visible shoe beside on-court player
+174429,1,player_on_court,false,,,confident,Left dark-uniform player with light ponytail; feet outside final close-up
+174429,2,player_on_court,false,,,confident,Central dark-uniform player with goggles above blue headband; feet outside shot
+174429,3,player_on_court,false,,,confident,Right dark-uniform player with blue headband; feet outside shot
+174429,4,other,false,,,approximate,Partial foreground head at lower right; role cannot be determined from visible fragment

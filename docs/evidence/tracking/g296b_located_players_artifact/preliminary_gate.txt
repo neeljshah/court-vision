@@ -1,0 +1,19 @@
+Pass B preliminary gate, pod /workspace/wt/a12.
+Command:
+dd if=/dev/zero of=/workspace/wt/a12/g296b_fsync_probe bs=1M count=8 conv=fsync
+8+0 records in
+8+0 records out
+8388608 bytes (8.4 MB, 8.0 MiB) copied, 0.300794 s, 27.9 MB/s
+cat /proc/loadavg
+23.75 92.68 100.94 580/17913 3285039
+nproc
+256
+
+A prior PowerShell/bash quoting attempt returned only the following and was
+NOT accepted as a gate measurement (it did not execute the intended command):
+0+0 records in
+0+0 records out
+0 bytes copied, 0.0899199 s, 0.0 kB/s
+
+pod_run's additional default 8 MiB write probe (not the fsync gate):
+8388608 bytes (8.4 MB, 8.0 MiB) copied, 0.195083 s, 43.0 MB/s
