@@ -1,0 +1,11 @@
+{
+  "eligible_jump_steps": 1897,
+  "sampled_steps": 36,
+  "endpoint_crops": 72,
+  "sample_seed": 29220260904,
+  "blind_seed": 29220904,
+  "unblind_map_sha256": "4cd29ff39bdf41b8815a6989ae094e87dfb87539ccaeadcac4ad4410f795a498",
+  "selection": "one seeded uniform eligible G289 step per equal-width before-source-frame bin; no track ID, location, speed, or condition beyond implausible and image displacement above 150 px",
+  "presentation": "both endpoints pooled and randomized; no pair, endpoint, frame, ID, or coordinate is exposed",
+  "crop_policy": "512x640 native-pixel crop centred on the footpoint; padded at boundaries; red cross marker 19 px thickness 2 plus red circle radius 8 thickness 2; JPEG quality 88"
+}

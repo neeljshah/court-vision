@@ -1,0 +1,335 @@
+{
+  "endpoint_crops": 72,
+  "sampled_steps": 36,
+  "category_counts": {
+    "A": 8,
+    "B": 21,
+    "C": 11,
+    "D": 17,
+    "E": 14,
+    "F": 1,
+    "G": 0
+  },
+  "baseline_category_counts": {
+    "A": 15,
+    "B": 17,
+    "C": 17,
+    "D": 13,
+    "E": 8,
+    "F": 2,
+    "G": 0
+  },
+  "on_player": {
+    "large_jump_endpoints": 29,
+    "historical_g287": 32,
+    "unpaired_two_proportion": {
+      "pooled_p": 0.4236111111111111,
+      "se": 0.08235504734824173,
+      "z": -0.5059394415800338,
+      "nominal_two_sided_p": 0.6128991628603545
+    },
+    "nominal_note": "two-sided nominal p with no multiplicity correction; independent endpoint samples require an unpaired test, not McNemar"
+  },
+  "joint_pairs": [
+    {
+      "pair_index": 1,
+      "step_index": 576,
+      "track_id": 2,
+      "time_bin": 1,
+      "before_category": "D",
+      "after_category": "D"
+    },
+    {
+      "pair_index": 2,
+      "step_index": 1025,
+      "track_id": 16,
+      "time_bin": 2,
+      "before_category": "D",
+      "after_category": "D"
+    },
+    {
+      "pair_index": 3,
+      "step_index": 2364,
+      "track_id": 7,
+      "time_bin": 3,
+      "before_category": "B",
+      "after_category": "A"
+    },
+    {
+      "pair_index": 4,
+      "step_index": 3156,
+      "track_id": 17,
+      "time_bin": 4,
+      "before_category": "B",
+      "after_category": "B"
+    },
+    {
+      "pair_index": 5,
+      "step_index": 3667,
+      "track_id": 1,
+      "time_bin": 5,
+      "before_category": "D",
+      "after_category": "D"
+    },
+    {
+      "pair_index": 6,
+      "step_index": 4943,
+      "track_id": 26,
+      "time_bin": 6,
+      "before_category": "A",
+      "after_category": "D"
+    },
+    {
+      "pair_index": 7,
+      "step_index": 5669,
+      "track_id": 24,
+      "time_bin": 7,
+      "before_category": "A",
+      "after_category": "B"
+    },
+    {
+      "pair_index": 8,
+      "step_index": 6859,
+      "track_id": 32,
+      "time_bin": 8,
+      "before_category": "D",
+      "after_category": "B"
+    },
+    {
+      "pair_index": 9,
+      "step_index": 7821,
+      "track_id": 34,
+      "time_bin": 9,
+      "before_category": "D",
+      "after_category": "D"
+    },
+    {
+      "pair_index": 10,
+      "step_index": 9042,
+      "track_id": 18,
+      "time_bin": 10,
+      "before_category": "B",
+      "after_category": "D"
+    },
+    {
+      "pair_index": 11,
+      "step_index": 9757,
+      "track_id": 29,
+      "time_bin": 11,
+      "before_category": "D",
+      "after_category": "D"
+    },
+    {
+      "pair_index": 12,
+      "step_index": 11844,
+      "track_id": 15,
+      "time_bin": 12,
+      "before_category": "A",
+      "after_category": "C"
+    },
+    {
+      "pair_index": 13,
+      "step_index": 12948,
+      "track_id": 15,
+      "time_bin": 13,
+      "before_category": "D",
+      "after_category": "B"
+    },
+    {
+      "pair_index": 14,
+      "step_index": 13863,
+      "track_id": 31,
+      "time_bin": 14,
+      "before_category": "E",
+      "after_category": "E"
+    },
+    {
+      "pair_index": 15,
+      "step_index": 14586,
+      "track_id": 32,
+      "time_bin": 15,
+      "before_category": "B",
+      "after_category": "C"
+    },
+    {
+      "pair_index": 16,
+      "step_index": 15308,
+      "track_id": 33,
+      "time_bin": 16,
+      "before_category": "A",
+      "after_category": "B"
+    },
+    {
+      "pair_index": 17,
+      "step_index": 15478,
+      "track_id": 7,
+      "time_bin": 17,
+      "before_category": "B",
+      "after_category": "C"
+    },
+    {
+      "pair_index": 18,
+      "step_index": 16716,
+      "track_id": 7,
+      "time_bin": 18,
+      "before_category": "C",
+      "after_category": "B"
+    },
+    {
+      "pair_index": 19,
+      "step_index": 17466,
+      "track_id": 46,
+      "time_bin": 19,
+      "before_category": "B",
+      "after_category": "E"
+    },
+    {
+      "pair_index": 20,
+      "step_index": 19330,
+      "track_id": 42,
+      "time_bin": 20,
+      "before_category": "E",
+      "after_category": "B"
+    },
+    {
+      "pair_index": 21,
+      "step_index": 19748,
+      "track_id": 55,
+      "time_bin": 21,
+      "before_category": "B",
+      "after_category": "C"
+    },
+    {
+      "pair_index": 22,
+      "step_index": 20299,
+      "track_id": 55,
+      "time_bin": 22,
+      "before_category": "E",
+      "after_category": "A"
+    },
+    {
+      "pair_index": 23,
+      "step_index": 20932,
+      "track_id": 42,
+      "time_bin": 23,
+      "before_category": "E",
+      "after_category": "E"
+    },
+    {
+      "pair_index": 24,
+      "step_index": 22031,
+      "track_id": 61,
+      "time_bin": 24,
+      "before_category": "E",
+      "after_category": "D"
+    },
+    {
+      "pair_index": 25,
+      "step_index": 22487,
+      "track_id": 42,
+      "time_bin": 25,
+      "before_category": "A",
+      "after_category": "C"
+    },
+    {
+      "pair_index": 26,
+      "step_index": 23062,
+      "track_id": 47,
+      "time_bin": 26,
+      "before_category": "B",
+      "after_category": "C"
+    },
+    {
+      "pair_index": 27,
+      "step_index": 23770,
+      "track_id": 57,
+      "time_bin": 27,
+      "before_category": "D",
+      "after_category": "A"
+    },
+    {
+      "pair_index": 28,
+      "step_index": 24273,
+      "track_id": 64,
+      "time_bin": 28,
+      "before_category": "D",
+      "after_category": "C"
+    },
+    {
+      "pair_index": 29,
+      "step_index": 25799,
+      "track_id": 61,
+      "time_bin": 29,
+      "before_category": "E",
+      "after_category": "E"
+    },
+    {
+      "pair_index": 30,
+      "step_index": 25854,
+      "track_id": 69,
+      "time_bin": 30,
+      "before_category": "B",
+      "after_category": "E"
+    },
+    {
+      "pair_index": 31,
+      "step_index": 26594,
+      "track_id": 55,
+      "time_bin": 31,
+      "before_category": "E",
+      "after_category": "B"
+    },
+    {
+      "pair_index": 32,
+      "step_index": 27148,
+      "track_id": 81,
+      "time_bin": 32,
+      "before_category": "B",
+      "after_category": "C"
+    },
+    {
+      "pair_index": 33,
+      "step_index": 28111,
+      "track_id": 86,
+      "time_bin": 33,
+      "before_category": "B",
+      "after_category": "C"
+    },
+    {
+      "pair_index": 34,
+      "step_index": 28537,
+      "track_id": 69,
+      "time_bin": 34,
+      "before_category": "C",
+      "after_category": "E"
+    },
+    {
+      "pair_index": 35,
+      "step_index": 29012,
+      "track_id": 69,
+      "time_bin": 35,
+      "before_category": "F",
+      "after_category": "B"
+    },
+    {
+      "pair_index": 36,
+      "step_index": 29175,
+      "track_id": 42,
+      "time_bin": 36,
+      "before_category": "E",
+      "after_category": "B"
+    }
+  ],
+  "joint_distribution": {
+    "at_least_one_non_player_c_to_f": 32,
+    "both_non_player_c_to_f": 11,
+    "both_on_player_a_or_b": 4,
+    "pairs_with_cannot_judge": 0
+  },
+  "direction_among_mixed_player_non_player_pairs": {
+    "mixed_pairs": 21,
+    "non_player_before": 9,
+    "non_player_after": 12,
+    "nominal_binomial_two_sided_p": 0.6636238098144531
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "g267_path": "docs\\evidence\\tracking\\g267_court_space_physical_plausibility_artifact\\g267_measurement.json",
+  "g267_bytes": 12052299,
+  "g267_sha256": "183b195f0f3ea7b8a81c47a384c229b4e10ca464dc32f2ecfc1a52ccef6fdedb",
+  "g273_stored_map_sha256": "2851f20e00b4416459f546fedca62ab714dfd7862d74409d8d254a883f172294",
+  "g273_recreated_map_sha256": "2851f20e00b4416459f546fedca62ab714dfd7862d74409d8d254a883f172294",
+  "g273_selector_reproduces_stored_map": true,
+  "g273_stored_records": 72
+}
