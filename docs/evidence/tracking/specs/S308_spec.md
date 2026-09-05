@@ -24,7 +24,8 @@ must not move=S294/S307 bytes, 400-tick rail or 0.004 global Brier bar.
 NON-TAUTOLOGY: equal group construction in calibration/test; report phase and ALL separately.
 EVIDENCE: docs/evidence/harness/S308_band_functional_validity_2026-09-04.md plus memberships, train dependencies and
   intervals.
-TEST: python -m pytest tests/platformkit/test_s308_band_functional_validity.py -q -p no:cacheprovider (run only that file)
+TEST: python -m pytest tests/platformkit/test_s308_band_functional_validity.py -q -p no:cacheprovider (run only that
+  file)
 Test changing an outer-test outcome cannot alter calibration residuals, widths or fitted predictions.
 BAN: never write data/ or docs/research/; new evidence only; no deploy, flags, registry or shared-ledger writes.
 REPORT: validity result, every coverage/width/score, RSS, test, NOT VERIFIED; SCREEN only; NEVER PARK.

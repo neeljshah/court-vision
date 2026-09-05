@@ -24,7 +24,8 @@ ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
   before        = S272 tail-candidate minus recal_null improvement -0.000037 [-0.000070,-0.000008]; no fine-bin
                   log loss exists.
   Also print recal_null minus market Brier on the exact all-tick rows before applying the non-inferiority rule.
-  bar           = frozen +0.004 all-ticks Brier bar untouched; all-ticks improvement CI LOWER BOUND > -0.0005 (preregistered
+  bar           = frozen +0.004 all-ticks Brier bar untouched; all-ticks improvement CI LOWER BOUND > -0.0005
+  (preregistered
                   non-inferiority tolerance = 1/8 of the bar; a CI merely not below 0 proves nothing)
   sign          = improvement = baseline loss minus candidate loss; positive = candidate better; compared with
                   the frozen +0.004 bar.

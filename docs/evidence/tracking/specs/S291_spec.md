@@ -24,7 +24,8 @@ ACCEPTANCE RULE (the verifier applies exactly this and nothing else):
                   95 pct CI on the comeback-state subset; PLUS all-ticks Brier improvement CI (non-inferiority)
   before        = no prior row conditioned on margin+clock jointly; 133,319/1,113 is the first measurement of
                   this state's size
-  bar           = frozen +0.004 all-ticks Brier bar untouched; all-ticks improvement CI LOWER BOUND > -0.0005 (preregistered
+  bar           = frozen +0.004 all-ticks Brier bar untouched; all-ticks improvement CI LOWER BOUND > -0.0005
+  (preregistered
                   non-inferiority tolerance = 1/8 of the bar; a CI merely not below 0 proves nothing)
   n             = 133,319 ticks / 1,113 game clusters (>= 30)
   eye check     = n/a (S-row); reproduction = verifier recomputes remaining_s, the subset mask, log-loss,
