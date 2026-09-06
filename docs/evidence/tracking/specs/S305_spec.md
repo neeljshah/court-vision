@@ -1,4 +1,4 @@
-GAP S305 | sport all | worktree aXX | log cx_s305_master_failing_tests_repair
+GAP S305 | sport all | worktree a19 | log cx_s305_master_failing_tests_repair
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: codex test audit (the orchestrator-held codex test audit (local-only; NOT a lane input) section B): two
   tests fail identically on
