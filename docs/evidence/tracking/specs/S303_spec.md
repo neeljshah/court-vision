@@ -1,4 +1,4 @@
-GAP S303 | sport all | worktree aXX | log cx_s303_prereg_committed_object_seals
+GAP S303 | sport all | worktree a21 | log cx_s303_prereg_committed_object_seals
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: codex test audit (the orchestrator-held codex test audit (local-only; NOT a lane input) section D):
   persisted-artifact seal tests
