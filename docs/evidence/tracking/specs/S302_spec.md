@@ -1,4 +1,4 @@
-GAP S302 | sport all | worktree aXX | log cx_s302_cpcv_scalar_future_plant
+GAP S302 | sport all | worktree a20 | log cx_s302_cpcv_scalar_future_plant
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: codex test audit (the orchestrator-held codex test audit (local-only; NOT a lane input) section D): the
   scalar CPCV route
