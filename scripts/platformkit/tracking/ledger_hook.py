@@ -20,7 +20,9 @@ LEDGERS = {
     "G": REPO / "docs" / "evidence" / "tracking" / "RESULTS_LEDGER.md",
     "S": REPO / "docs" / "evidence" / "RESULTS_LEDGER_SYSTEM.md",
 }
-ID_RE = re.compile(r"\b([GS])(\d{2,3}[a-z]?)\b")
+# 2026-09-05: anchored at the subject START -- landing commits are 'S301: ACCEPT -- ...'; a docs/dispatch commit that merely
+# MENTIONS an id ('docs(harness): dispatch S301 to a16') wrote three bogus LANDED lines on 2026-09-04.
+ID_RE = re.compile(r"^([GS])(\d{2,3}[a-z]?)")
 LAND_RE = re.compile(
     r"\b(land(ed|ing)?|ACCEPT|REJECT|CLOSED AT LIMIT|NOT VALIDATED|FALSIFIED|NULL|BEHIND|AHEAD)\b", re.I)
 COMMIT_RE = re.compile(r"\bgit\b[^\n;&|]*\bcommit\b")
@@ -53,7 +55,7 @@ def main():
     if not head:
         return
     sha, subject = head
-    m_id = ID_RE.search(subject)
+    m_id = ID_RE.match(subject)
     if not m_id or not LAND_RE.search(subject):
         return
     ledger = LEDGERS[m_id.group(1)]
