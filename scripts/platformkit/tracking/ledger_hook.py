@@ -22,7 +22,7 @@ LEDGERS = {
 }
 # 2026-09-05: anchored at the subject START -- landing commits are 'S301: ACCEPT -- ...'; a docs/dispatch commit that merely
 # MENTIONS an id ('docs(harness): dispatch S301 to a16') wrote three bogus LANDED lines on 2026-09-04.
-ID_RE = re.compile(r"^([GS])(\d{2,3}[a-z]?)")
+ID_RE = re.compile(r"^([GS])(\d{2,3}[a-z]?)\b")
 LAND_RE = re.compile(
     r"\b(land(ed|ing)?|ACCEPT|REJECT|CLOSED AT LIMIT|NOT VALIDATED|FALSIFIED|NULL|BEHIND|AHEAD)\b", re.I)
 COMMIT_RE = re.compile(r"\bgit\b[^\n;&|]*\bcommit\b")
