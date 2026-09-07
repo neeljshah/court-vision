@@ -528,3 +528,5 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-07 | eval-gate state keys | S301 | 3/3 duplicate rejection; 3/3 simultaneous acceptance; 3/3 guard-off max abs loss diff 0.0 | ACCEPT (verified: codex-sol, contract A/B/Q) | 7f44e33f4
 2026-09-07 | hook | S306 | S306: ACCEPT WITH CORRECTIONS -- 4/4 construct behaviors for the S106 archive re-quote join; prereg unmatched-row count corrected to two and seal recomputed | LANDED (auto; verifier line pending) | 188d90a10
 2026-09-07 | harness | S306 | 4/4 construct behaviors; 0 prior direct importer tests; route SHA-256 unchanged | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | 188d90a10
+2026-09-07 | hook | S304 | S304: ACCEPT WITH CORRECTIONS -- s108 features as-of guards; 4/4 exact behavior assertions, 3 passed 1 strict xfail | LANDED (auto; verifier line pending) | d2c14ceae
+2026-09-07 | eval_gate guards | S304 | 4/4 exact assertions; 3 passed, 1 strict xfail | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | d2c14ceae
