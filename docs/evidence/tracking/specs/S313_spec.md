@@ -1,4 +1,4 @@
-GAP S313 | sport all | worktree aXX | log cx_s313_answers_roundtrip
+GAP S313 | sport all | worktree a22 | log cx_s313_answers_roundtrip
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: allocated 2026-09-07 by the orchestrator's harness finish audit (orchestrator-held; NOT a lane input). This is THE single real harness <->
   intelligence/answers connection row: one measured S-result -> receipt -> the actual resolver/composer answer, plus the completion manifest. S23 (bbf49a597),
