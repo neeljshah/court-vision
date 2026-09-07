@@ -522,3 +522,5 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-04 | evaluator isolation | S295 | 6/6 fixed callback attacks rejected; valid walk-forward and CPCV replay errors 0 | ACCEPT (verified: codex-sol, contract A/B/Q) | 1290ed95e
 2026-09-07 | nba | S286 | CLOSED AT LIMIT -- interrupted, superseded by the completion pass | CLOSED AT LIMIT (orchestrator; finish audit)
 2026-09-07 | nba | S288 | CLOSED AT LIMIT -- interrupted, superseded by the completion pass | CLOSED AT LIMIT (orchestrator; finish audit)
+2026-09-07 | hook | S283 | S283: ACCEPT -- 465249 ticks/1593 games; Brier improvement -0.140383703 CI [-0.142998852,-0.137763256], below the frozen +0.004 bar (BEHIND, calibration only) | LANDED (auto; verifier line pending) | 0370b17e0
+2026-09-07 | nba in-game calibration | S283 | 465249 ticks/1593 games; Brier improvement -0.140383703, CI [-0.142998852,-0.137763256], below +0.004 | ACCEPT (verified: codex-sol, contract A/B/Q) | 0370b17e0
