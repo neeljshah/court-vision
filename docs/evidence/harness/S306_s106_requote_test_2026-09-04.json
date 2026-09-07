@@ -1,0 +1,44 @@
+{
+  "gap": "S306",
+  "date": "2026-09-07",
+  "kind": "CONSTRUCT",
+  "n": 4,
+  "preregistration": {
+    "path": "docs/evidence/harness/S306_s106_requote_test_prereg_2026-09-04.md",
+    "seal_sha256_lf": "4986edbfa8b20c917e87f41adf0fbb77899801b72a362b2af5e27a6bd4db8f10",
+    "seal_verification": "test reads file and LF-normalizes bytes above seal line"
+  },
+  "premise": {
+    "binding_before_condition": "0 direct importer tests for scripts/platformkit/eval_gate/s106_requote.py",
+    "held": true,
+    "landed_rows": ["S106", "S121", "S137", "S143"]
+  },
+  "route": {
+    "path": "scripts/platformkit/eval_gate/s106_requote.py",
+    "sha256_before": "6556ed197cbf6e2f18cd60d4c5237c35379f09821b31542a6803cec8fe5b2c7a",
+    "sha256_after": "6556ed197cbf6e2f18cd60d4c5237c35379f09821b31542a6803cec8fe5b2c7a",
+    "byte_identical": true
+  },
+  "fixture": {
+    "n_rows": 3,
+    "matched_cluster": "A#2",
+    "unmatched_cluster": "B#1",
+    "before_ci95": [0.09999999999999967, 0.10000000000000037]
+  },
+  "behaviours": [
+    {"name": "matched sequence", "result": "PASS"},
+    {"name": "unmatched sequence", "result": "PASS"},
+    {"name": "row count identity", "result": "PASS"},
+    {"name": "before CI reproduction", "result": "PASS"}
+  ],
+  "test": {
+    "command": "python -m pytest tests/platformkit/eval_gate/test_s106_requote.py -q -p no:cacheprovider",
+    "result": "4 passed in 0.42s"
+  },
+  "sign_convention": "improvement = baseline loss minus candidate loss; positive = candidate better",
+  "not_verified": [
+    "No production archive re-quote output was reproduced.",
+    "No out-of-sample calibration comparison or evaluator run was needed.",
+    "No commit SHA can be verified because index access is sandbox-denied."
+  ]
+}
