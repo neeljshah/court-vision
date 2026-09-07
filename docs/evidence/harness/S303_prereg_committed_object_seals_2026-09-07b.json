@@ -1,0 +1,48 @@
+{
+  "row": "S303",
+  "version": "2026-09-07b",
+  "preregistration": {
+    "path": "docs/evidence/harness/S303_prereg_committed_object_checker_2026-09-07b.md",
+    "lf_normalized_pre_seal_bytes": 1451,
+    "sha256": "04997d7e2b2e8e8731986ff99bc850fcbfbf2cadfca7554663035b7293f31b1d"
+  },
+  "behavioral_mapping_count": 8,
+  "selection_source": "committed",
+  "mappings": [
+    {"reader": "scripts/platformkit/test_s261_ingame_headline_rederive_v2_attempt2.py", "sealed_path": "docs/evidence/harness/S261_ingame_headline_rederive_v2_attempt2_prereg_2026-09-04.md", "content_sha256": "53ee33196469425ad696a51bceb3216d9faa9277144330b4ca2b11660719be6e"},
+    {"reader": "scripts/platformkit/ingame/s272_ingame_tail_recal.py", "sealed_path": "docs/evidence/harness/S272_ingame_tail_recal_prereg_2026-09-04.md", "content_sha256": "40781d73913b27e8d85fd9b016b6b1221bba40945a4c52a9587424f607fe7576"},
+    {"reader": "scripts/platformkit/ingame/s277_ingame_market_staleness.py", "sealed_path": "docs/evidence/harness/S277_ingame_market_staleness_prereg_2026-09-04_attempt2.md", "content_sha256": "a13d81b90fe74a12ab7a0ad51359eb41e143dc9dae0d35fb0366dbd03d2b9e48"},
+    {"reader": "tests/platformkit/ingame/test_s265_incumbent_conformal_band_sample.py", "sealed_path": "docs/evidence/harness/S265_preregistration_incumbent_conformal_band_sample_2026-09-04.md", "content_sha256": "ea6017138a123d5bf8ffc5bf4fcfd485d621a167168b70e04a4fc4135550f3b2"},
+    {"reader": "tests/platformkit/test_s268_distributional_evaluator_route.py", "sealed_path": "docs/evidence/harness/S268_distributional_evaluator_route_prereg_2026-09-04_attempt2.md", "content_sha256": "7bb9d50227faf331360d77e387cd6a25fe74dd4aec7f10de298e573758a7141e"},
+    {"reader": "tests/platformkit/test_s270_ingame_power_feasibility.py", "sealed_path": "docs/evidence/harness/S270_attempt_1c_S82_prereg_2026-09-04_v2.md", "content_sha256": "e7743fec398daf1027b79b868b4bfa8ba8b89939403e06706083a6479b2832ec"},
+    {"reader": "tests/platformkit/test_s273_mlb_ingame_latency_screen.py", "sealed_path": "docs/evidence/harness/S273_mlb_ingame_latency_screen_2026-09-04_PREREG.md", "content_sha256": "cb18ea1f28eb2242ebc29d7baf263f6e3d65fce47aea65c5a2df0ff328aea124"},
+    {"reader": "tests/platformkit/test_s274_mlb_distribution_evaluator_route.py", "sealed_path": "docs/evidence/harness/S274_mlb_distribution_evaluator_route_prereg_2026-09-04.md", "content_sha256": "ec46a5675fcf10dd938b17f6b08c3b28504b9fafff192ec3519bf06326388608"}
+  ],
+  "checker_behavior": {
+    "dirty": "8/8 committed fixture bytes selected",
+    "fallback": "working file selected only after proven HEAD absence",
+    "absent": "reported without error",
+    "error": "non-repository, bad revision, and unreadable object returned code 2"
+  },
+  "retained_anchor_seals": {
+    "matched": 6,
+    "mismatched": 0,
+    "paths": [
+      "docs/evidence/harness/S261_ingame_headline_rederive_v2_attempt2_prereg_2026-09-04.md",
+      "docs/evidence/harness/S265_preregistration_incumbent_conformal_band_sample_2026-09-04.md",
+      "docs/evidence/harness/S268_distributional_evaluator_route_prereg_2026-09-04_attempt2.md",
+      "docs/evidence/harness/S270_attempt_1c_S82_prereg_2026-09-04_v2.md",
+      "docs/evidence/harness/S273_mlb_ingame_latency_screen_2026-09-04_PREREG.md",
+      "docs/evidence/harness/S274_mlb_distribution_evaluator_route_prereg_2026-09-04.md"
+    ]
+  },
+  "tests": [
+    "python -m pytest tests/platformkit/test_prereg_committed_object_seals.py -q -p no:cacheprovider -> 18 passed in 4.65s",
+    "python -m pytest tests/platformkit/test_loc_rail_scope.py -q -p no:cacheprovider -> 1 passed in 1.14s"
+  ],
+  "sha": "NOT CREATED (sandbox); files ready for lane_commit",
+  "not_verified": [
+    "No commit, archive landing, push, deployment, or pod action was performed.",
+    "No register, ledger, data path, threshold, or feature flag was written."
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "row": "S303",
+  "mode": "local_construct",
+  "verdict": "ACCEPT",
+  "preregistration": {
+    "path": "docs/evidence/harness/S303_prereg_committed_object_seals_2026-09-07.md",
+    "seal_sha256": "9d15650f1491bfcdebd9dee88c0b847483aa9e26745fecb697f6c894114770dc",
+    "seal_basis": "LF-normalized bytes above SHA256_SEAL"
+  },
+  "historic_audit": {
+    "row_count": 15,
+    "tracked_test_count": 8,
+    "declared_anchor_count": 6,
+    "tracked_tests": [
+      "scripts/platformkit/test_s261_ingame_headline_rederive_v2_attempt2.py",
+      "scripts/platformkit/ingame/test_s272_ingame_tail_recal.py",
+      "scripts/platformkit/ingame/test_s277_ingame_market_staleness.py",
+      "tests/platformkit/ingame/test_s265_incumbent_conformal_band_sample.py",
+      "tests/platformkit/test_s268_distributional_evaluator_route.py",
+      "tests/platformkit/test_s270_ingame_power_feasibility.py",
+      "tests/platformkit/test_s273_mlb_ingame_latency_screen.py",
+      "tests/platformkit/test_s274_mlb_distribution_evaluator_route.py"
+    ]
+  },
+  "anchors": [
+    {
+      "path": "docs/evidence/harness/S261_ingame_headline_rederive_v2_attempt2_prereg_2026-09-04.md",
+      "bytes": 3145,
+      "seal_sha256": "1dcb38b6cbb59694cd4a722aa843be9694905adc292b9a17ace9f95d29e984fb",
+      "match": true
+    },
+    {
+      "path": "docs/evidence/harness/S265_preregistration_incumbent_conformal_band_sample_2026-09-04.md",
+      "bytes": 2405,
+      "seal_sha256": "17aa1f6cdee9207aa83fd8addcefb58931ade103fb464b72d5068a6a74f451f8",
+      "match": true
+    },
+    {
+      "path": "docs/evidence/harness/S268_distributional_evaluator_route_prereg_2026-09-04_attempt2.md",
+      "bytes": 3304,
+      "seal_sha256": "cfbeb06cb7678d45b892f9941fcab389b21039d8f8e592eed2ad256ea596eff3",
+      "match": true
+    },
+    {
+      "path": "docs/evidence/harness/S270_attempt_1c_S82_prereg_2026-09-04_v2.md",
+      "bytes": 2491,
+      "seal_sha256": "561246d2d2bd4c6621cbdb96157c36df110a66e74a8295fca3521e357b56c32f",
+      "match": true
+    },
+    {
+      "path": "docs/evidence/harness/S273_mlb_ingame_latency_screen_2026-09-04_PREREG.md",
+      "bytes": 2550,
+      "seal_sha256": "c00dc738ec7882ac50cec06eb8d82b448105dd721cb3948fb918cbce75e53da3",
+      "match": true
+    },
+    {
+      "path": "docs/evidence/harness/S274_mlb_distribution_evaluator_route_prereg_2026-09-04.md",
+      "bytes": 3707,
+      "seal_sha256": "059b9f66161845a9582c99fab16c9fb3949e3f8c02f7d80940e5813fe91c3ed0",
+      "match": true
+    }
+  ],
+  "construct_cases": {
+    "committed_anchor_matches": "6/6",
+    "dirty_working_file": "passed",
+    "uncommitted_fallback": "passed",
+    "focused_test": "8 passed"
+  },
+  "test_command": "python -m pytest tests/platformkit/test_prereg_committed_object_seals.py -q -p no:cacheprovider",
+  "charged": false,
+  "register_or_ledger_written": false
+}
