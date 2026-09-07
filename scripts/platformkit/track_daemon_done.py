@@ -18,6 +18,7 @@ from scripts.platformkit.tracking_harness import evaluate
 
 
 VERDICT_FILE = "harness_verdict.json"
+ROUTE_COUNT_SIDECAR = "evaluated_frame_count.json"
 _ADAPTER_MAX_FRAMES = 30000
 _REQUIRED = frozenset(("passed", "failure_heads", "coverage_pct",
                        "coordinate_space", "rung", "evaluated_at", "csv_fsynced"))
@@ -104,6 +105,40 @@ def _source_fps(frame: pd.DataFrame) -> float | None:
     return float(values[0])
 
 
+def _route_max_frames(tracking: Path, game_id: str) -> int | None:
+    """Return the route's own frame cap, as run_clip.py recorded it beside the CSV."""
+    try:
+        value = json.loads((tracking / game_id / ROUTE_COUNT_SIDECAR)
+                           .read_text(encoding="utf-8")).get("max_frames")
+    except (OSError, ValueError, AttributeError):
+        return None
+    # bool is an int in Python, so an unguarded isinstance turns True into a cap of 1.
+    if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+        return None
+    return value
+
+
+def _capped_attempt(emitted: pd.DataFrame, evaluated_frames: int | None,
+                    stride: int | None, max_frames: int | None
+                    ) -> tuple[int | None, float | None]:
+    """Return the frames the route could attempt under its OWN cap, and the emitted share.
+
+    ``evaluated_frames`` is ceil(decoded/stride) and ignores the route's ``max_frames``,
+    so ``coverage_pct`` understates the attempted share by roughly 10x-30x (G309, G312).
+    Strictly ADDITIVE: no existing field is recomputed from either return value, and a
+    missing or unusable cap yields (None, None) rather than an invented default.
+    """
+    if evaluated_frames is None or stride is None or stride <= 0 or max_frames is None:
+        return None, None
+    attempted = min(evaluated_frames, -(-max_frames // stride))
+    if attempted <= 0:
+        return None, None
+    frames = int(emitted["frame"].dropna().nunique()) if "frame" in emitted else 0
+    # ponytail: unrounded on purpose. Rounding coverage_pct to 4 dp is what forced G309's
+    # ledger-agreement check off exact equality; round at the reader, not at the writer.
+    return attempted, frames / attempted
+
+
 def _evaluated_denominator(decoded: int, source_fps: float | None,
                            max_frames: int = _ADAPTER_MAX_FRAMES) -> tuple[range, int | None]:
     """Return adapter-evaluated source indices and their declared sampling stride."""
@@ -187,6 +222,14 @@ def adjudicate(video: Path, sport: str, game_id: str, tracking: Path,
     except Exception as exc:
         failures.append("ungraded: %s" % str(exc)[:120])
         passed = False
+    route_max_frames = _route_max_frames(tracking, game_id)
+    attempted_capped, capped_share = _capped_attempt(
+        emitted, evaluated_frames, stride, route_max_frames)
+    if attempted_capped is None:
+        # G312 correction (codex-sol): the three keys are ONE contract. A cap read
+        # from a sidecar but not applicable -- unknown stride -- is not a cap we may
+        # report, or the row reads as capped when nothing was capped.
+        route_max_frames = None
     payload = {"passed": passed, "failure_heads": failures[:4],
                "coverage_pct": round(float(coverage), 4),
                "harness_coverage_pct": (round(harness_coverage_pct, 4)
@@ -195,7 +238,11 @@ def adjudicate(video: Path, sport: str, game_id: str, tracking: Path,
                "rung": _rung(_coordinate_space(emitted)),
                "evaluated_at": int(time.time()), "csv_fsynced": True,
                "decoded_frames": decoded, "evaluated_frames": evaluated_frames,
-               "stride": stride}
+               "stride": stride,
+               # ADDITIVE (G312). Nothing above this line changes.
+               "route_max_frames": route_max_frames,
+               "attempted_frames_capped": attempted_capped,
+               "coverage_attempted_capped_pct": capped_share}
     if publish:
         write_adjudicated(tracking, game_id, payload)
     return payload

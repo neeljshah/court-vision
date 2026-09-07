@@ -1,0 +1,14 @@
+game_id,sport,stride,decoded_frames,frames_emitted,ledger_evaluated_frames,ledger_coverage_pct,route_max_frames,attempted_frames_capped,coverage_attempted_capped_pct,capped_over_ledger_coverage_ratio,agrees_within_1e9
+den_phx_2025,nba,6,35227,494,5872,0.014,3000,500,0.988,70.57142857142857,True
+g220c_jh3fnwMi7dM,basketball,3,28801,1000,9601,0.0347,3000,1000,1.0,28.81844380403458,True
+ncaa_basketball_IB-_u4gW3ds_1080p,ncaa_basketball,3,17983,976,5995,0.0543,3000,1000,0.976,17.974217311233886,True
+ncaa_basketball_WFl3V7ZY4ss,ncaa_basketball,3,25193,990,8398,0.0393,3000,1000,0.99,25.190839694656486,True
+ncaa_basketball_mRkuGgeECak,ncaa_basketball,3,28905,979,9635,0.0339,3000,1000,0.979,28.87905604719764,True
+ncaa_basketball_sRtHQbywiTE,ncaa_basketball,3,28904,721,9635,0.0249,3000,1000,0.721,28.955823293172692,True
+ncaa_basketball_zqBCKovJCQU,ncaa_basketball,3,28939,1000,9647,0.0346,3000,1000,1.0,28.901734104046245,True
+okc_dal_2025,nba,6,35516,482,5920,0.0136,3000,500,0.964,70.88235294117648,True
+wnba_01_1080p,wnba,3,18001,970,6001,0.0539,3000,1000,0.97,17.99628942486085,True
+wnba_02,wnba,3,28808,1000,9603,0.0347,3000,1000,1.0,28.81844380403458,True
+wnba_04,wnba,3,28819,910,9607,0.0316,3000,1000,0.91,28.79746835443038,True
+wnba_05,wnba,3,28815,949,9605,0.0329,3000,1000,0.949,28.84498480243161,True
+wnba_06,wnba,3,28674,997,9558,0.0348,3000,1000,0.997,28.649425287356323,True
