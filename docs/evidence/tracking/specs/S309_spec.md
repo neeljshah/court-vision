@@ -32,3 +32,25 @@ BAN: never write data/ or docs/research/; new evidence only; no deploy, flags, r
 REPORT: correction deltas, exclusions, RSS, test result, NOT VERIFIED; SCREEN only, no promotion; NEVER PARK.
 BAN2: never write data/ or docs/research/; never rewrite an existing artifact (new dated filenames). The memo
   ENDS with an explicit NOT VERIFIED list and states the sign convention of every delta.
+
+## VERSION 2026-09-07 (finish audit)
+ABSORBS S300 and S299 (MERGED 2026-09-07; no separate dispatch). EVERY acceptance clause above is RETAINED UNCHANGED;
+the clauses below are ADDED, and each absorbed check is verified SEPARATELY BEFORE either transformation.
+FROM S300 -- exhaustive side accounting and venue overlap: nba_price_series.parquet row group 0 has 171,546/200,000 rows
+  sharing event+venue+ts with another side. Build ONE canonical home-side probability row per venue/event/timestamp:
+  filter moneyline; Polymarket side=home is canonical; for Kalshi use side == parsed home, else complement the parsed
+  away side. Account EVERY excluded source row by reason in a full accounting table; keep every source column and add
+  aliases only. ADDED BARS: 0 duplicate canonical keys; 1,593/1,593 Polymarket games joined; probability replay error
+  <= 1e-12; cross-venue game overlap PRINTED, and that arm is CLOSED AT LIMIT below 30 games. ADDED TESTS: complements,
+  duplicate timestamps, two venue namespaces.
+FROM S299 -- explicit design comparison, run AFTER S293 lands (strict-past generation alone is NOT this test): score ONE
+  frozen tail calibrator (the S272 one) under BOTH forward-only walk-forward AND symmetric CPCV on the same 465,249
+  ticks / 1,593 games, one prediction per game-tick per design, and report paired design differences with CIs. RETAINED
+  S299 before values: S272 candidate improvement -0.000037 and tail ECE change -0.000248. ADDED BARS: exact S272 replay
+  to 1e-12 FIRST, else stop and report NOT REPRODUCED; the DESIGN-SENSITIVE label uses ONLY the preregistered primary
+  paired Brier CI and applies when that CI EXCLUDES ZERO; tail log loss and ECE stay NAMED SECONDARY diagnostics and
+  every secondary score is still published. Forward-only is the deployment headline; CPCV is the labelled robustness
+  companion. No promotion; nothing charged. ADDED TEST: future blocks never enter the forward fit. Archive fold
+  membership, fitted parameters and tick losses; retain the HISTORICAL replay SEPARATELY from the strict-past fits.
+ORDER: S293 precedes the absorbed S299 part. Retained throughout: the frozen +0.004 bar, the source stores, the
+incumbent implementation, the S272/S280 artifacts and all prior dated evidence.

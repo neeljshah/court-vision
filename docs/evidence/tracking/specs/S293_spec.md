@@ -36,3 +36,26 @@ NON-TAUTOLOGY: the replay uses every one of the 310,349 archived data rows, not 
 EVIDENCE: docs/evidence/harness/S293_tail_metric_rail_2026-09-04.md + summary JSON + the replay script itself.
 TEST: one per-file test replaying one archived game's rows and asserting log_loss/tail_log_loss are finite.
 REPORT: replay deltas, new-field sample, both SHA-256 identities, test line, SHA. No push. NEVER PARK.
+
+## VERSION 2026-09-07 (finish audit)
+ABSORBS S289 and S291 as DIAGNOSTIC TABLES with FROZEN MASKS (MERGED 2026-09-07; no separate dispatch). EVERY acceptance
+clause above is RETAINED UNCHANGED; the clauses below are ADDED. S293 owns the metric IMPLEMENTATION only -- S310 owns
+fitting a candidate, and neither absorbed table fits anything.
+FROM S289 -- favorite-longshot fine bins (frozen mask): per-bin LOG-LOSS and reliability (empirical outcome rate vs mean
+  market_prob) for recal_null vs market through the UNCHANGED route, on the six measured bins [0.01,0.05) 9,226 ticks /
+  649 games, [0.05,0.10) 8,982/691, [0.10,0.20) 15,778/826, [0.80,0.90) 23,912/1,005, [0.90,0.95) 13,123/871,
+  [0.95,0.99) 12,624/827 -- each >= 30, every bin published INCLUDING any that hurts recal_null, none dropped to
+  improve a mean.
+FROM S291 -- comeback states (frozen mask): remaining_s = (4-period)*720 + game_clock_s for period <= 4, restricted to
+  abs(margin) >= 12 AND remaining_s <= 720, measuring 133,319 ticks / 1,113 games (outcome_home_win split
+  77,516/55,803); trailing-team win rate vs market-implied and vs recal_null with log loss and reliability. The mask is
+  fixed BEFORE scoring by margin and clock alone; ticks where the trailing team still LOST are reported, never
+  restricted to completed comebacks.
+RETAINED COMPARISON BAR, NOT AN INSTRUMENT-SUCCESS CRITERION: the S289/S291 full-grid all-ticks non-inferiority result,
+  improvement CI LOWER BOUND > -0.0005 (the preregistered tolerance = 1/8 of the frozen +0.004 bar; a CI merely not
+  below 0 proves nothing). It is published as a COMPARISON RESULT; S293 neither passes nor fails on it.
+ADDED ACCOUNTING: OT (periods 5-6, 14,765 ticks), zero-clock and trailing-side transformations are accounted
+  EXPLICITLY; every declared bin is published including failures; epsilon = 1e-15 with endpoint and clipping counts
+  printed; a bad log score is NEVER silently dropped. apply_incumbent stays byte-identical (SHA-256 printed).
+ADDED TESTS: direct loss arithmetic, endpoints, mixed-grain refusal, and a trailing-side/OT fixture; the per-tick
+outputs are regenerated on the pod through the unchanged route.

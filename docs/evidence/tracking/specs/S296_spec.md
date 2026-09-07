@@ -32,3 +32,27 @@ REQUIRED EVIDENCE DURABILITY: archive samples, fold dates, paired scores, and so
 RE-EMITTED TABLES: game_id, player_id, date, all observed fields, all forecast fields.
 TEST: one per-file test for strict prior dates, quantile order, and box-score identities.
 REPORT: premise counts, the metric table with CIs, RSS, test line, SHA. No push. NEVER PARK.
+
+## VERSION 2026-09-07 (finish audit)
+ABSORBS the S292 feasibility PREFLIGHT and the full field list (MERGED 2026-09-07; no separate dispatch). EVERY
+acceptance clause above is RETAINED UNCHANGED; the clauses below are ADDED.
+PREFLIGHT FROM S292 -- runs BEFORE any fit; a count that fails to reproduce is FALSIFIED and closes the preflight
+  honestly. Label each of the four archived inputs TESTABLE or NOT_TESTABLE_TODAY with its exact blocking fact:
+  data/cache/prop_calibration_history.parquet 4,942 player-stat AGGREGATE rows (7 stats, no per-game rows);
+  data/cache/props_eval_nba_calibration.json overall n=356,678, aggregate only; data/cache/prop_sigma_scale.json rolling
+  scale factors with no archived per-game residuals; data/frontend/prop_history_corpus.jsonl 3,000 rows with
+  market_prob NULL on ALL 3,000 (no market comparison possible), 15 unique prop_player ids, 619 unique player-game
+  pairs, model_prob tail bins <= 0.05: 21 rows and >= 0.90: 20 rows (both below n=30). n = 4 (CONSTRUCT, exhaustive).
+  RETAINED DISTINCTION: aggregate vs per-bet granularity and the LACK of market comparisons are reported as blocking
+  facts, never omitted; S262/S271 already distinguish absent intervals from new quantiles.
+ADDED FULL FIELD LIST -- archive full PMFs or joint samples PLUS q10/q50/q90 for each of: min, pts, reb, oreb, dreb,
+  ast, stl, blk, tov, fgm, fga, fg3m, fg3a, ftm, fta, pf, plus_minus. RECOUNT the two exact boxscore parquets before
+  fitting (union 78,767 unique player-games / 3,645 games, zero overlap, zero source algebra violations). PRESERVE
+  recorded zero-minute players and DISTINGUISH missing roster records from observed DNPs. The baseline is the
+  strict-past empirical and the candidate is strict-past too.
+ADDED BARS: 0 future-label dependencies, 0 sample algebra violations, no missing keyed fields; per-field CRPS, pinball
+  and coverage plus joint train-scaled ENERGY CIs; >= 30 held-out games per scored fold; nominal q10-q90 = 0.80 with
+  endpoint exceedances and discrete atoms reported. ALL comparative NULLs are valid results. CRPS, pinball, log score
+  and energy have their OWN units -- the +0.004 bar is not their threshold.
+ADDED TESTS: key uniqueness, truncation, an unseen player, a DNP, signed plus_minus, makes <= attempts, and the PTS/REB
+identities checked ON SAMPLES (never on marginal quantiles), plus an independent fold and score replay.
