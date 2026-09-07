@@ -532,3 +532,5 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-07 | eval_gate guards | S304 | 4/4 exact assertions; 3 passed, 1 strict xfail | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | d2c14ceae
 2026-09-07 | hook | S302 | S302: ACCEPT WITH CORRECTIONS -- CPCV scalar future-plant detected: absent=True, real=0.5, control=0.9, delta=0.4 | LANDED (auto; verifier line pending) | adce89d8d
 2026-09-07 | harness | S302 | absent=True; real=0.5; control=0.9; delta=0.4 | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | adce89d8d
+2026-09-07 | hook | S305 | S305: CLOSED AT LIMIT -- locked global ECE 0.039002202208806645 unreproducible; legacy and current routines both return 0.024842541854003943 on 1814 rows (max row diff 0.0) | LANDED (auto; verifier line pending) | 53347fa92
+2026-09-07 | calibration harness | S305 | legacy and current global ECE both 0.024842541854003943; locked 0.039002202208806645; specified repair output-identical | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q) | 53347fa92
