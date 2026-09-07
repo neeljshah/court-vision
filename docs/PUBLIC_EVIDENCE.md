@@ -40,7 +40,7 @@ agentic loop that re-validates every stage. Each stage refines the one above it.
 
 ## The one-paragraph version
 
-End-to-end NBA intelligence system, intensive solo build (3,206 commits, Mar–Jul 2026),
+End-to-end NBA intelligence system, intensive solo build (5,504 commits, Mar–Sep 2026),
 human-architected over an agentic build pipeline. Broadcast video → court coordinates (CV pipeline
 on a consumer GPU at **~$0.10–0.13/game**) → 151-file intelligence layer (`data/intelligence/`) → 7 prop models +
 in-play snapshot heads → devig / sim / decision engines → calibrated predictions → 1,249-dossier
@@ -172,7 +172,7 @@ the honest version was written down and the inflated one retired:
 | endQ3 Brier 0.119 "Pinnacle-class" | Q4 feature leak (`halftime_pace_shift`, `trailing_team_q4_usg_hhi`); source file reads 0.1354, not 0.1191 | Leak-free ~0.141 (caught own pipeline Q4 leak) |
 | +54% in-play ROI | L5-proxy model-quality ceiling, not a tradeable/realized result | No $ figure quoted; first real CLV Oct 2026 |
 | "Season edge proven" | Full-season WF: CLV ≈ 0; model explains 0.13%/0.29% of line move | Market is efficient; well-calibrated but does not beat the close |
-| "13-month build" / "hand-typed 3,206 commits" | Git history spans ~3 months; ~91% commits agent-authored under direction | ~3-month build; solo human architect/director of an agentic pipeline |
+| "13-month build" / "hand-typed 5,504 commits" | Git history spans ~6 months (2026-03-09 to 2026-09-07); the large majority of commits are agent-authored under direction | ~6-month build; solo human architect/director of an agentic pipeline |
 
 Full do-not-claim list with source-code root causes: **[JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)**.
 
