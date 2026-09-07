@@ -1,0 +1,18 @@
+{
+  "construct_cases": 1,
+  "control_cases": 1,
+  "control_target_probability": 0.9,
+  "control_target_train_ids": [
+    "g1",
+    "g2",
+    "g3"
+  ],
+  "difference": 0.4,
+  "engine_sha256": "5accfbe490031acb084a8e4375a082b00d842cf4011a76c6d27dfc2c7db614a5",
+  "plant_absent_from_real_target_train": true,
+  "real_target_probability": 0.5,
+  "real_target_train_ids": [
+    "g3"
+  ],
+  "target_game_id": "g0"
+}
