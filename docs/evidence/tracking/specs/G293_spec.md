@@ -1,6 +1,25 @@
-GAP G293 | sport soccer + tennis | worktree a7 | log g293_cross_sport_footpoint_content
+GAP G293 | sport soccer | worktree a7 | log g293_cross_sport_footpoint_content
 **MEASUREMENT ONLY. `src/` and `domains/` are READ and IMPORT only.** Build in
 `scripts/platformkit/tracking/`.
+
+**ATTEMPT 2. PREFLIGHT IS ALREADY DONE -- DO NOT REPEAT IT AND DO NOT STOP ON IT.**
+Attempt 1 (`1e3a4f97a`) completed preflight, produced NO measurement, made NO commit and stopped. That was
+a lane failure against an explicit instruction and a breach of NEVER PARK. **Its preflight result stands
+and was verified independently by the verifier against the committed `g277_per_run_summary.csv`:**
+  - **TENNIS IS UNUSABLE and its arm is REMOVED FROM THIS SPEC.** All 4 tennis runs fail eligibility -- 3
+    `data_incomplete` (tennis_01 19,437 rows; tennis_02 1,637; tennis_ref01 1,861) and 1
+    `schema_incompatible` (tennis_smoke, missing `source_duration`). **0 of 4 comparable.** **Do NOT
+    re-assess tennis, do NOT try to rescue a tennis run, and do NOT report tennis eligibility again.**
+  - **ALL 4 SOCCER RUNS ARE `comparable`:** soccer_Z6NTDyxcODs (240,661 rows), soccer_c1mzmBGHQr4
+    (182,403), soccer_dnR5C6WLJI4 (237,203), soccer_kSgNjoaqCpI (230,794). The chosen source was confirmed
+    present on the pod at attempt 1: `soccer__soccer_Z6NTDyxcODs.mp4`, 2,341,768,743 bytes, 1920x1080,
+    30 fps.
+**THIS ROW IS NOW SOCCER-ONLY AND IT IS A ONE-SPORT ROW BY DESIGN, NOT BY FALLBACK. A one-sport result is
+the FULL SUCCESS here; the cross-sport framing has already been re-scoped by the preflight.**
+**STOPPING BEFORE THE SOCCER NUMBERS EXIST IS A FAILED SECOND ATTEMPT AND THE ROW IS CLOSED AT LIMIT.**
+**Re-verify the chosen soccer source is still present on the pod (the pod was reallocated since attempt 1)
+and, if it is NOT, say so plainly, pick the next eligible soccer run from the four above, and CONTINUE --
+a missing single source is a run-selection event, not a stopping condition.**
 
 **RATER NOTE, DO NOT CHANGE IT: THIS ROW IS DISPATCHED ON `gpt-5.6-terra` ON PURPOSE**, because its whole
 comparison is against G287's landed WNBA baseline, which that model labelled. **A rater change would
@@ -37,13 +56,12 @@ is the bottleneck for arbitrary footage and that is the headline for the whole p
 THE QUESTION: **does the unconditioned footpoint-content profile replicate outside basketball?**
 
 METHOD:
-  1. **CHOOSE ONE SOCCER RUN AND ONE TENNIS RUN** from `g277_per_run_summary.csv` (4 runs each are
-     listed). **Require `analysis_status` comparable, no `schema_missing_fields`, and a source video
-     PRESENT ON THE POD -- verify presence and say how you verified it.** **If a chosen sport has no
-     usable run, say so plainly and report the row for whichever sports DO have one; a one-sport result is
-     an honest partial success.** **State the selection rule BEFORE you look at any crop, and name the
-     runs you rejected and why.**
-  2. **SAMPLE 48 RETAINED DETECTIONS PER RUN, UNCONDITIONED**, by the same one-per-time-bin rule G273 and
+  1. **CHOOSE ONE SOCCER RUN** from the four named above as eligible in the attempt-1 preflight. **Require
+     the source video PRESENT ON THE POD -- verify presence and say how you verified it.** **If your first
+     choice is absent, take the next one on that list and CONTINUE; do not stop, and do not re-assess
+     eligibility from `g277_per_run_summary.csv`.** **State which run you chose and which you rejected and
+     why, BEFORE you look at any crop.** **THE TENNIS ARM DOES NOT EXIST IN THIS ATTEMPT.**
+  2. **SAMPLE 48 RETAINED DETECTIONS FROM THAT RUN, UNCONDITIONED**, by the same one-per-time-bin rule G273 and
      G280 used. **Report frame and id coverage per run.** **48, not 72: say plainly that the smaller
      denominator gives WIDER intervals than G287's 72 and do not compare precision of estimates as if
      they were equal.**
@@ -53,30 +71,29 @@ METHOD:
      **Report each run's native resolution and the crop's frame fraction, and ALSO render at the size
      covering the same FRACTION as 512x640 does at 1080p. Report both and say which you treat as primary
      and why.**
-  4. **CLASSIFY ALL ARMS BLIND IN ONE POOLED RANDOMISED ORDER so you cannot tell which sport a crop came
-     from. Commit the order and verdicts in their OWN commit BEFORE un-blinding or joining anything.**
+  4. **CLASSIFY BOTH CROP-SIZE ARMS BLIND IN ONE POOLED RANDOMISED ORDER so you cannot tell which arm a crop
+     came from. Commit the order and verdicts in their OWN commit BEFORE un-blinding or joining anything.**
   5. **CATEGORIES ARE G287's, JUDGED AT THE CENTRE CROSS, GENERALISED ONLY IN WORDING, NEVER IN MEANING**:
      (a) a PLAYER'S FEET; (b) a PLAYER'S BODY but not feet; (c) the BARE PLAYING SURFACE (court, pitch,
      grass, clay, dirt); (d) a BROADCAST GRAPHIC OR SCORE TICKER; (e) a PERSON who is not a player in play
      (official, coach, ball kid, crowd); (f) SOMETHING ELSE, free text; (g) CANNOT JUDGE, kept separate.
      **FREE TEXT IS MANDATORY ON EVERY ROW.** **State the wording generalisation explicitly and confirm
      you did not change any category's meaning.**
-  6. **REPORT THE SEVEN COUNTS PER SPORT, AND COMPARE EACH SPORT'S "ON A PLAYER AT ALL" RATE -- (a)+(b) --
+  6. **REPORT THE SEVEN COUNTS FOR SOCCER, AND COMPARE ITS "ON A PLAYER AT ALL" RATE -- (a)+(b) --
      TO G287's LANDED WNBA BASELINE** (read its committed verdicts, do NOT quote from memory).
      **Two-proportion test per comparison: pooled p, SE, z, NOMINAL two-sided p.** **You are making
-     MULTIPLE comparisons: say that every p is nominal, that NO multiplicity correction is applied, and
-     do NOT declare a best or worst sport.** **Overlapping confidence intervals are NOT a test.**
-  7. **REPORT THE (d) GRAPHIC SHARE PER SPORT.** WNBA was 0.181. **A broadcast-furniture failure should
+     MULTIPLE comparisons across the two crop sizes and seven categories: say that every p is nominal and
+     that NO multiplicity correction is applied.** **Overlapping confidence intervals are NOT a test.**
+  7. **REPORT THE (d) GRAPHIC SHARE FOR SOCCER.** WNBA was 0.181. **A broadcast-furniture failure should
      appear wherever there is broadcast furniture; if it does not, say so.**
-  8. **ANSWER IN ONE SENTENCE WITH NUMBERS: does the WNBA footpoint-content profile replicate outside
-     basketball?** **REPLICATES means the detector, not the broadcast, is the bottleneck for arbitrary
+  8. **ANSWER IN ONE SENTENCE WITH NUMBERS: does the WNBA footpoint-content profile replicate on soccer?** **REPLICATES means the detector, not the broadcast, is the bottleneck for arbitrary
      footage -- the headline for the whole programme. DOES NOT REPLICATE means the WNBA figure is
-     clip-specific and must never again be quoted as a system-wide property. TOO NOISY AT 48 PER SPORT is
+     clip-specific and must never again be quoted as a system-wide property. TOO NOISY AT 48 is
      an honest result. ALL are full successes and I want whichever is true stated bluntly.**
   9. **Propose NO filter, threshold, gate, retrain or production change. Do NOT touch `src/`. Do NOT move
      any bar. Do NOT change any landed verdict, count or artifact. DOWNLOAD NO FOOTAGE.**
 
-**HONEST LIMITATIONS to state, not discover:** ONE run per sport, ONE labeller, and the runs are ONE draw
+**HONEST LIMITATIONS to state, not discover:** ONE soccer run, ONE labeller, and the runs are ONE draw
 each of a route that is **non-deterministic on the research path (G241: 808 of 1,201 records differed)** --
 **state which route each run used and whether it is the deterministic stride-3 production route or the
 every-frame research route, because they are not the same measurement.** **A single run is not a sport**:
@@ -90,17 +107,17 @@ what a bounding box contained.** The population is detector-box observations, no
 ACCEPTANCE RULE:
   metric        = the stated selection rule with rejected runs named; per-run native resolution, crop
                   fraction and route; per-run sampling with frame and id coverage; the committed pooled
-                  blind order and verdicts; the seven counts per sport at BOTH crop sizes; each sport's
+                  blind order and verdicts; the seven soccer counts at BOTH crop sizes; the soccer
                   (a)+(b) rate against G287's WNBA baseline with a two-proportion test and nominal p; the
-                  (d) graphic share per sport; and the one-sentence replication answer
+                  (d) graphic share; and the one-sentence replication answer
   before        = every footpoint-content figure in the programme (0.208 feet, ~0.44 player, 0.181
                   graphic) comes from ONE WNBA clip, with no measurement of whether it is a property of
                   that broadcast or of the detector
   bar           = **NO pass bar.** **Replication makes the detector the programme-wide bottleneck for
                   arbitrary footage. Non-replication makes the WNBA figure clip-specific and it must never
-                  again be quoted as system-wide. Too noisy at 48 per sport is honest. ALL are full
+                  again be quoted as system-wide. Too noisy at 48 is honest. ALL are full
                   successes.**
-  n             = 1 soccer run, 1 tennis run, 48 detections each, 1 labeller, 1 draw per run, compared to
+  n             = 1 soccer run, 48 detections, 1 labeller, 1 draw, compared to
                   G287's 72 WNBA detections -- name every denominator in the verdict line, name the
                   detector-box population, and never say "players" unqualified
   eye check     = the blind classification IS the measurement. A COARSE categorical judgement at the
@@ -108,11 +125,11 @@ ACCEPTANCE RULE:
   must not move = G287's, G273's, G288's and G277's verdicts, counts and category definitions; every
                   threshold and verdict; `src/` and `domains/` (READ and IMPORT ONLY); the corpus, every
                   source video, and both bridge partial downloads
-EVIDENCE: `docs/evidence/tracking/g293_cross_sport_footpoint_content_2026-09-04.md` with the selection
+EVIDENCE: `docs/evidence/tracking/g293_cross_sport_footpoint_content_2026-09-07.md` with the selection
 rule and rejections, per-run resolution, crop fraction and route, the sampling, the sealed order sha, the
-per-sport counts at both crop sizes, the tests with nominal p and the multiplicity statement, the graphic
+soccer counts at both crop sizes, the tests with nominal p and the multiplicity statement, the graphic
 shares, the one-sentence answer, every disk-guard probe verbatim, and a NOT VERIFIED list. **ADD A
-RESULTS_LEDGER.md ROW IN THE SAME COMMIT AS THE MEMO.** Commit BEFORE reporting (A7).
+RESULTS_LEDGER.md ROW IN THE SAME COMMIT AS THE MEMO, by APPENDING one line -- NEVER rewrite that file.** Commit BEFORE reporting (A7).
 TEST: a per-file test for any harness added, pasted -- **pin the one-per-time-bin sampler and the 512x640
 crop geometry.** **NEVER a full pytest.** **If a commit grows an allowlisted file, raise its entry in
 `tests/platformkit/test_loc_rail_scope.py` in the SAME commit (contract A12).**
