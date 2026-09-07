@@ -1,4 +1,4 @@
-GAP S309 | sport nba | worktree aXX | log cx_s309_canonical_loss_audit
+GAP S309 | sport nba | worktree a15 | log cx_s309_canonical_loss_audit
 CONTEXT: allocated from the GPT-6 Astra research memo (orchestrator-held; NOT a lane input); all inputs below
   are tracked paths or data/ stores; verify each by printing path, rows, columns and first 3 ids.
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q1-Q9; B5 NOTE.
