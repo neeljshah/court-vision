@@ -1,0 +1,51 @@
+{
+  "row": "S304",
+  "kind": "construct",
+  "spec": "docs/evidence/tracking/specs/S304_spec.md",
+  "verifier_contract": "docs/evidence/tracking/VERIFIER_CONTRACT.md",
+  "preregistration": {
+    "path": "docs/evidence/harness/S304_s108_features_asof_guards_2026-09-04_prereg.md",
+    "seal_sha256": "38e294679e91920b894ce28b345b1d6eff65277743e111cbfd4cc125d9eb9a70",
+    "seal_method": "sha256 of UTF-8 LF-normalized bytes above Seal-SHA256:",
+    "normalized_prefix_bytes": 2676,
+    "verified_before_test": true
+  },
+  "premise": {
+    "direct_importer_census": "NO_DIRECT_IMPORTER_TESTS",
+    "public_behavior_locations": {
+      "asof_sources": "scripts/platformkit/eval_gate/s108_features.py:28",
+      "_add": "scripts/platformkit/eval_gate/s108_features.py:35",
+      "build": "scripts/platformkit/eval_gate/s108_features.py:40"
+    }
+  },
+  "construct": {
+    "n": 4,
+    "bar": "4/4 asserted behaviors with exact fixture values",
+    "passing": 3,
+    "xfail": 1,
+    "bar_met": true,
+    "behaviors": [
+      {"name": "same_game_name_refused_before_value_access", "result": "pass"},
+      {"name": "duplicate_key_source_refused_whole", "result": "pass"},
+      {"name": "first_source_wins_second_fills_gaps", "result": "pass"},
+      {"name": "missing_value_adds_indicator", "result": "xfail", "finding": "one-finite-value source is dropped before missingness is added"}
+    ]
+  },
+  "test": {
+    "command": "python -m pytest tests/platformkit/eval_gate/test_s108_features.py -q",
+    "output": "3 passed, 1 xfailed in 3.91s"
+  },
+  "module_identity": {
+    "path": "scripts/platformkit/eval_gate/s108_features.py",
+    "sha256": "b59eea4051a5232bc44612c73540cdd127e2bbd84bce980ad771265a30388c0e",
+    "baseline_sha256": "b59eea4051a5232bc44612c73540cdd127e2bbd84bce980ad771265a30388c0e",
+    "byte_identical": true
+  },
+  "delta_convention": "No comparison was calculated. For a later comparison, delta equals baseline loss minus candidate loss; positive means lower candidate loss.",
+  "verdict": "ACCEPT WITH CORRECTIONS",
+  "not_verified": [
+    "The missingness-indicator behavior is a named NEW GAP.",
+    "Candidate commit SHA is 8a8b8a38d883d53b5bf6a8356fe333a6357a9ea2; landing into master is by explicit-path extraction.",
+    "The verifier reran the test on committed candidate bytes (3 passed, 1 xfailed); see docs/evidence/harness/S304_VERIFY_2026-09-07.md:8."
+  ]
+}
