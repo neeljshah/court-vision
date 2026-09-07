@@ -1,4 +1,4 @@
-GAP S304 | sport all | worktree aXX | log cx_s304_s108_features_asof_guards
+GAP S304 | sport all | worktree a18 | log cx_s304_s108_features_asof_guards
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: codex test audit (the orchestrator-held codex test audit (local-only; NOT a lane input) section A):
   scripts/platformkit/eval_gate/s108_features.py
