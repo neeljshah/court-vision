@@ -1,0 +1,50 @@
+{
+  "construct": "two named test-file pass counts and global-key ece_after equality",
+  "inputs": [
+    {
+      "bytes": 15004,
+      "path": "scripts/platformkit/eval_gate/calibration_report.py",
+      "resolution": null,
+      "sha256": "52522E49F668A0A89386C7A0565F90C5BA481B35FAC41FF7C1849A42B6A27BF5"
+    },
+    {
+      "bytes": 2950,
+      "path": "scripts/platformkit/answers/test_calibration_scoreboard_regex.py",
+      "resolution": null,
+      "sha256": "940E57C3B2D037A1AC108084AEDB5F171490367E4752C2DEAEFDB442510763DC"
+    },
+    {
+      "bytes": 7774,
+      "path": "docs/evidence/calibration/nba_reliability_2026-09-03.json",
+      "resolution": null,
+      "sha256": "167250677F777FD1E1D5528A19CECE3CC4D883ED591139387452ACF69A04FC78"
+    }
+  ],
+  "legacy_replay": {
+    "historical_path": "6226fb042^:scripts/platformkit/eval_gate/calibration_report.py",
+    "historical_route_sha256": "349E3578279E0A600D2404FA68F8162BE7FB94B3D816563F2A95E111205450D7",
+    "legacy_ece_after": 0.024842541854003943,
+    "max_abs_output_diff_from_s212": 0.0,
+    "scored_rows": 1814
+  },
+  "locked_ece_after": 0.039002202208806645,
+  "pod_run": {
+    "job_count": 1,
+    "master_form_answers_exit_code": 1,
+    "pod_scratch": "/workspace/wt/a19",
+    "repaired_answers_exit_code": 1,
+    "repaired_report_exit_code": 1,
+    "s305_regression_exit_code": 1,
+    "status": "POD_RUN_DONE; /usr/local/bin/python has no pytest"
+  },
+  "prereg": {
+    "path": "docs/evidence/harness/S305_master_failing_tests_repair_prereg_2026-09-07.md",
+    "seal_sha256": "2DD1F3E6C53A283A6E5CD3CE7DE8E0DD3A48BC1017F7D9E2BD42EC793E8E0C83"
+  },
+  "premise_before": {
+    "report_test_failed": 1,
+    "report_test_passed": 9,
+    "report_test_value": 0.024842541854003943
+  },
+  "verdict": "CLOSED AT LIMIT"
+}
