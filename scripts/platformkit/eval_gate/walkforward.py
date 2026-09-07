@@ -26,6 +26,8 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Callable, Dict, List, Sequence, Tuple
 
+from scripts.platformkit.eval_gate.state_key_guard import assert_unique_state_keys
+
 PURGE_HOURS = 48
 EMBARGO_DAYS = 3
 
@@ -123,8 +125,11 @@ def walk_forward(states: List[dict],
                  predict_fn: Callable[[List[dict], dict, bool], float],
                  select_inside: bool = True,
                  *, strict_redaction: bool = False,
-                 allow_keys: Sequence[str] = ()) -> WalkForwardResult:
+                 allow_keys: Sequence[str] = (),
+                 guard_state_keys: bool = False) -> WalkForwardResult:
     """Expanding-window walk-forward with purge + embargo + vintage. Returns per-state records."""
+    if guard_state_keys:
+        assert_unique_state_keys(states)
     # Deep copy: predictor-side mutation of train/test dicts must never reach the
     # caller's states (cross-invocation plant attack -- red-team 2026-09-01).
     states = copy.deepcopy(sorted(states, key=lambda s: s["state_ts"]))

@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Callable, List, Sequence
 
 from scripts.platformkit.eval_gate import cpcv_engine
+from scripts.platformkit.eval_gate.state_key_guard import assert_unique_state_keys
 
 DistributionalPredictor = Callable[[List[dict], dict, bool], Sequence[float]]
 ScoreFunction = Callable[[Sequence[float], float], dict[str, float]]
@@ -19,12 +20,15 @@ def cpcv_evaluate_distributional(
         states: List[dict], predictor: DistributionalPredictor,
         score_fn: ScoreFunction, n_groups: int = 8, n_test_groups: int = 2,
         embargo_days: int = 1, *, strict_redaction: bool = False,
-        allow_keys: Sequence[str] = (), debug_disable_purge: bool = False) -> List[dict]:
+        allow_keys: Sequence[str] = (), debug_disable_purge: bool = False,
+        guard_state_keys: bool = False) -> List[dict]:
     """Score empirical forecasts with CPCV's existing splits and symmetric purge.
 
     The debug switch exists only for a synthetic leak construct. Scored callers
     must retain its default False value.
     """
+    if guard_state_keys:
+        assert_unique_state_keys(states)
     ordered = copy.deepcopy(sorted(states, key=lambda state: state["state_ts"]))
     stamps = [datetime.fromisoformat(state["state_ts"]) for state in ordered]
     records: List[dict] = []

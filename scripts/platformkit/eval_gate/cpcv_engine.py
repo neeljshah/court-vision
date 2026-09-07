@@ -39,6 +39,7 @@ from scripts.platformkit.eval_gate.walkforward import (
     assert_vintage,
     redact_test_view,
 )
+from scripts.platformkit.eval_gate.state_key_guard import assert_unique_state_keys
 
 Predictor = Callable[[List[dict], dict, bool], float]
 
@@ -94,7 +95,8 @@ def _blocked_indices(states: List[dict], stamps: List[datetime], test_idx: Seque
 def cpcv_evaluate(states: List[dict], predictor: Predictor, n_groups: int = 8,
                   n_test_groups: int = 2, embargo_days: int = 1,
                   *, strict_redaction: bool = False,
-                  allow_keys: Sequence[str] = (), group_key: str | None = None) -> List[dict]:
+                  allow_keys: Sequence[str] = (), group_key: str | None = None,
+                  guard_state_keys: bool = False) -> List[dict]:
     """Combinatorial purged cross-validation over walk_forward-shaped states.
 
     ``states`` are walk_forward-shaped dicts (game_id, state_ts, home, away,
@@ -109,6 +111,8 @@ def cpcv_evaluate(states: List[dict], predictor: Predictor, n_groups: int = 8,
     exactly. This is for frozen external block designs whose tick balance must
     not be replaced by cpcv.py's equal-distinct-date partition.
     """
+    if guard_state_keys:
+        assert_unique_state_keys(states)
     # Deep copy mirrors walk_forward's mutation guard (red-team 2026-09-01).
     ordered = copy.deepcopy(sorted(states, key=lambda s: s["state_ts"]))
     stamps = [datetime.fromisoformat(s["state_ts"]) for s in ordered]
