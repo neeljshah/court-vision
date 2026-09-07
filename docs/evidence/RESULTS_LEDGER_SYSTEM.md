@@ -526,3 +526,5 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-07 | nba in-game calibration | S283 | 465249 ticks/1593 games; Brier improvement -0.140383703, CI [-0.142998852,-0.137763256], below +0.004 | ACCEPT (verified: codex-sol, contract A/B/Q) | 0370b17e0
 2026-09-07 | hook | S301 | S301: ACCEPT -- guard duplicate evaluator state keys; 3/3 duplicate rejection, 3/3 simultaneous acceptance, 3/3 guard-off max abs loss diff 0.0 | LANDED (auto; verifier line pending) | 7f44e33f4
 2026-09-07 | eval-gate state keys | S301 | 3/3 duplicate rejection; 3/3 simultaneous acceptance; 3/3 guard-off max abs loss diff 0.0 | ACCEPT (verified: codex-sol, contract A/B/Q) | 7f44e33f4
+2026-09-07 | hook | S306 | S306: ACCEPT WITH CORRECTIONS -- 4/4 construct behaviors for the S106 archive re-quote join; prereg unmatched-row count corrected to two and seal recomputed | LANDED (auto; verifier line pending) | 188d90a10
+2026-09-07 | harness | S306 | 4/4 construct behaviors; 0 prior direct importer tests; route SHA-256 unchanged | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | 188d90a10
