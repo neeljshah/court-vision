@@ -530,3 +530,5 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-07 | harness | S306 | 4/4 construct behaviors; 0 prior direct importer tests; route SHA-256 unchanged | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | 188d90a10
 2026-09-07 | hook | S304 | S304: ACCEPT WITH CORRECTIONS -- s108 features as-of guards; 4/4 exact behavior assertions, 3 passed 1 strict xfail | LANDED (auto; verifier line pending) | d2c14ceae
 2026-09-07 | eval_gate guards | S304 | 4/4 exact assertions; 3 passed, 1 strict xfail | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | d2c14ceae
+2026-09-07 | hook | S302 | S302: ACCEPT WITH CORRECTIONS -- CPCV scalar future-plant detected: absent=True, real=0.5, control=0.9, delta=0.4 | LANDED (auto; verifier line pending) | adce89d8d
+2026-09-07 | harness | S302 | absent=True; real=0.5; control=0.9; delta=0.4 | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q) | adce89d8d
