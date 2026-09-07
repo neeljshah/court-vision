@@ -524,3 +524,5 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-07 | nba | S288 | CLOSED AT LIMIT -- interrupted, superseded by the completion pass | CLOSED AT LIMIT (orchestrator; finish audit)
 2026-09-07 | hook | S283 | S283: ACCEPT -- 465249 ticks/1593 games; Brier improvement -0.140383703 CI [-0.142998852,-0.137763256], below the frozen +0.004 bar (BEHIND, calibration only) | LANDED (auto; verifier line pending) | 0370b17e0
 2026-09-07 | nba in-game calibration | S283 | 465249 ticks/1593 games; Brier improvement -0.140383703, CI [-0.142998852,-0.137763256], below +0.004 | ACCEPT (verified: codex-sol, contract A/B/Q) | 0370b17e0
+2026-09-07 | hook | S301 | S301: ACCEPT -- guard duplicate evaluator state keys; 3/3 duplicate rejection, 3/3 simultaneous acceptance, 3/3 guard-off max abs loss diff 0.0 | LANDED (auto; verifier line pending) | 7f44e33f4
+2026-09-07 | eval-gate state keys | S301 | 3/3 duplicate rejection; 3/3 simultaneous acceptance; 3/3 guard-off max abs loss diff 0.0 | ACCEPT (verified: codex-sol, contract A/B/Q) | 7f44e33f4
