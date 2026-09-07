@@ -1,4 +1,9 @@
-GAP G296 | sport wnba | worktrees a10 (pass A) and a12 (pass B) | logs g296a_locate_pass_a / g296b_locate_pass_b
+GAP G296a | sport wnba | worktree a10 | log g296a_locate_pass_a
+**PASS B HAS ALREADY LANDED (`3eeef35cf`) AND ITS OUTPUT IS IN THIS REPO AT
+`docs/evidence/tracking/g296b_located_players_artifact/`. DO NOT OPEN IT, DO NOT LIST IT, DO NOT READ
+`g296b_located_players_2026-09-04.md`, AND DO NOT LOOK AT ITS FRAMES.** Your independence from it is the
+entire asset this row builds; reading it destroys the row and there is no way to undo that. **The verifier
+merges the two passes; you never see pass B.**
 **MEASUREMENT ONLY. `src/` and `domains/` are READ and IMPORT only.** Build in
 `scripts/platformkit/tracking/`.
 
@@ -10,16 +15,18 @@ seeing it would destroy your independence. **Say in your memo which pass you are
 the other.** The verifier merges the two passes and measures their agreement; **your independence IS the
 asset being built.**
 
-**WHERE THIS ROW RUNS (step -1, MANDATORY, PER STEP):**
-  - **FRAME EXTRACTION IS ON THE POD** -- the source video is there. Use **`~/bin/pod_run <your aN>
-    --ship <harness> --fetch <the extracted frames and manifest> -- <cmd>`**.
-  - **THE LOCATION WORK IS LOCAL**, on frames fetched back.
-  - **GATE: CPU DECODE, NOT THE GPU.** Other rows hold the GPU. **Gate on the `dd conv=fsync` probe on
-    `/workspace` and load15 below `nproc` -- NOT a lane count and NOT `nvidia-smi`.** **Do NOT hold for a
-    free lane; do NOT interrupt a running row.** Report the gate measurement you used.
-  - **DISK GUARD:** `du -sm /workspace` is a MooseFS NETWORK walk -- **empty output means UNKNOWN, NEVER
-    0, and NEVER stop on UNKNOWN.** **The only stopping condition is a FAILED `dd conv=fsync` probe on the
-    pod.** You extract 24 JPEGs. **Download nothing. Delete no corpus source and neither bridge partial.**
+**WHERE THIS ROW RUNS (step -1, MANDATORY, PER STEP) -- AMENDED 2026-09-07: THIS ROW IS NOW FULLY LOCAL.**
+  - **THE POD IS NOT USED AND MUST NOT BE USED.** Attempt 1 died mid-extract against a pre-reallocation pod
+    address (`pod_run_local_stderr.txt`: "Connection to 213.192.2.123 closed by remote host", rc=1). That
+    address is dead and `~/bin/pod_run` has not been re-pointed. **Do NOT call `pod_run`, do NOT ssh
+    anywhere, do NOT scp, and do NOT write an ssh override.**
+  - **FRAME EXTRACTION IS LOCAL**, from `data/videos/bridge/wnba_01.f137.mp4` -- see step 1 for the exact
+    identity checks, which are BINDING.
+  - **THE LOCATION WORK IS LOCAL**, on the frames you just extracted.
+  - **GATE: none.** No pod, no GPU, no shared resource. Decoding is CPU-only and reads one local file.
+  - **DISK GUARD: none needed.** You write 24 JPEGs under `docs/evidence/`. **Download nothing, delete
+    nothing, and do not touch any file under `data/` -- it is read-only to you and gitignored.**
+  - **HEADLESS ONLY.** Never `cv2.imshow`; write images to disk and read them back.
 
 **WHY THIS ROW EXISTS -- EVERY RECALL QUESTION IN THE PROGRAMME IS UNDERPOWERED, AND THE ONE GROUND-TRUTH
 SET IT HAS WAS BUILT BY A SINGLE RATER.**
@@ -40,11 +47,26 @@ p = 0.0078)**, so nothing built on it may be quoted clip-wide.
 THE QUESTION: **build a two-rater, clip-wide, agreement-measured set of hand-located player feet.**
 
 METHOD:
-  1. **EXTRACT EXACTLY THESE 24 FRAMES, CLIP-WIDE, FROM `wnba__wnba_01.mp4`** (2,796 MB, 1920x1080,
-     30 fps, **174,430 frames**, sha256 begins `f361ad7a32ccc6d98ae8e98e`): **frame index
-     `round(i * 174429 / 23)` for `i = 0..23`.** **Both passes must use exactly these indices -- print the
-     list you extracted and confirm it matches that formula.** **State the exact ffmpeg command and
-     confirm the frames are full 1920x1080 native, NOT cropped and NOT resized.**
+  1. **EXTRACT EXACTLY THESE 24 FRAMES, CLIP-WIDE, FROM THE LOCAL FILE
+     `data/videos/bridge/wnba_01.f137.mp4`: frame index `round(i * 174429 / 23)` for `i = 0..23`.**
+     **Print the list you extracted and confirm it matches that formula.** **State the exact ffmpeg command
+     and confirm the frames are full 1920x1080 native, NOT cropped and NOT resized.**
+     **BINDING IDENTITY CHECK BEFORE YOU EXTRACT ANYTHING -- run `ffprobe` and report all four values
+     verbatim; if ANY of them differs, STOP and report SOURCE MISMATCH rather than extracting:**
+     **width 1920, height 1080, avg_frame_rate 30/1, duration 5814.333333 s (= 174,430 frames at 30 fps).**
+     Measured on 2026-09-07: 2,841,750,689 bytes, sha256
+     `f2421bc24e5cbb28f41fa79f9ea755b2eeff4daebd48dc5496cc97e5617cf9d3`.
+     **HONESTY NOTE YOU MUST CARRY INTO THE MEMO, NOT DISCOVER:** the original spec named the POD file
+     `wnba__wnba_01.mp4` (2,796 MB, sha256 beginning `f361ad7a32ccc6d98ae8e98e`). **The local file's sha256
+     does NOT match that prefix.** It has the same resolution, frame rate and frame count, and the most
+     likely reason is that the local copy is the video-only DASH stream while the pod file was the muxed
+     version -- **but that is a HYPOTHESIS, not a verified fact, and you must state it as one.** **Whether
+     frame index N is the same picture in both files is therefore NOT established here; establishing it is
+     the VERIFIER's job at merge time, because it requires looking at pass B and you may not.** **Say all
+     of this plainly in your memo and put it in the NOT VERIFIED list.**
+     **DO NOT USE `data/footage_corpus/g130_recensus/wnba__wnba_01_1080p.mp4`** -- measured on 2026-09-07 it
+     is 308,078,882 bytes and only **18,060 frames (600.067 s)**, so 22 of the 24 required indices do not
+     exist in it. **A silent short read there would produce a set that looks right and is not.**
   2. **FOR EVERY FRAME, LOCATE THE FEET OF EVERY PLAYER YOU JUDGE TO BE A PLAYER ON THE COURT OF PLAY**,
      as an (x, y) image pixel coordinate at the point where that player contacts the floor. **One point
      per player.** **If a player's feet are occluded or out of frame, record the player with
@@ -62,7 +84,7 @@ METHOD:
      and **report the counts of each.** **A point you would not defend to within about 20 px is
      `approximate` at best.** **Do NOT drop uncertain points; label them.**
   6. **SCHEMA, EXACT, so the two passes merge without interpretation** -- one CSV
-     `docs/evidence/tracking/g296<your pass letter>_located_players_artifact/located_players.csv` with the
+     `docs/evidence/tracking/g296a_located_players_artifact/located_players.csv` with the
      header **`source_frame,person_index,role,feet_visible,foot_x_px,foot_y_px,confidence,note`**, plus a
      per-frame CSV `frames.csv` with
      **`source_frame,court_visible,shot_description,players_located`**. **`role` is one of
@@ -101,10 +123,11 @@ ACCEPTANCE RULE:
   must not move = G285b's located feet and counts; G267's retained records; G273's, G287's, G288's and
                   G291's verdicts; every threshold and verdict; `src/` and `domains/` (READ and IMPORT
                   ONLY); the corpus, every source video, and both bridge partial downloads
-EVIDENCE: `docs/evidence/tracking/g296<pass letter>_located_players_2026-09-04.md` with the frame list and
+EVIDENCE: `docs/evidence/tracking/g296a_located_players_2026-09-07.md` with the frame list and
 formula check, the ffmpeg command, the schema confirmation, per-frame summary, confidence counts, the
-pre-join commit sha, every disk-guard probe verbatim, and a NOT VERIFIED list. **ADD A RESULTS_LEDGER.md
-ROW IN THE SAME COMMIT AS THE MEMO.** Commit BEFORE reporting (A7).
+pre-join commit sha, the ffprobe identity check verbatim, and a NOT VERIFIED list that names the sha256
+mismatch against the pod file. **ADD A RESULTS_LEDGER.md ROW IN THE SAME COMMIT AS THE MEMO, by APPENDING
+one line -- NEVER rewrite that file.** Commit BEFORE reporting (A7).
 TEST: a per-file test for any harness added, pasted -- **pin the 24 frame indices against the formula and
 pin the exact CSV headers.** **NEVER a full pytest.** **If a commit grows an allowlisted file, raise its
 entry in `tests/platformkit/test_loc_rail_scope.py` in the SAME commit (contract A12).**
