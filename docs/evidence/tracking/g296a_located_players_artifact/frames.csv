@@ -1,0 +1,25 @@
+source_frame,court_visible,shot_description,players_located
+0,true,wide opening-tip court view,6
+7584,true,low-angle live-play court view,7
+15168,true,wide free-throw-side live-play view,9
+22752,false,player huddle close-up,0
+30335,true,wide half-court live-play view,8
+37919,true,wide half-court live-play view,9
+45503,true,half-court live-play view with frame-boundary crop,7
+53087,true,half-court live-play view with frame-boundary crop,8
+60671,false,player facial close-up,0
+68255,true,wide half-court live-play view,8
+75839,true,wide half-court live-play view,8
+83423,true,wide half-court live-play view,8
+91006,true,wide half-court live-play view,9
+98590,true,wide half-court transition view,9
+106174,true,wide half-court live-play view,10
+113758,false,player close-up,0
+121342,true,wide transition live-play view,9
+128926,true,close stoppage view with player feet out of crop,0
+136510,false,bench timeout view,0
+144094,true,overtime free-throw setup,8
+151677,true,overtime wide live-play view,8
+159261,false,bench close-up,0
+166845,false,player close-up,0
+174429,false,post-game player close-up,0

@@ -1,0 +1,150 @@
+source_frame,person_index,role,feet_visible,foot_x_px,foot_y_px,confidence,note
+0,1,player_on_court,true,844,472,approximate,opening tip player
+0,2,player_on_court,true,884,480,approximate,opening tip player
+0,3,player_on_court,true,916,476,approximate,opening tip player
+0,4,player_on_court,true,962,476,approximate,opening tip player
+0,5,player_on_court,true,1012,462,approximate,opening tip player
+0,6,player_on_court,true,1063,482,approximate,opening tip player
+0,7,official,true,1350,576,approximate,official near right sideline
+7584,1,player_on_court,true,76,777,approximate,frame-boundary player
+7584,2,player_on_court,true,302,781,approximate,black uniform player
+7584,3,player_on_court,true,548,785,approximate,white uniform player
+7584,4,player_on_court,true,713,765,approximate,black uniform player
+7584,5,player_on_court,true,946,778,approximate,black uniform player
+7584,6,player_on_court,true,1114,820,approximate,white uniform player
+7584,7,player_on_court,true,1245,830,approximate,white uniform player
+7584,8,official,false,,,approximate,official at right crop with feet out of frame
+15168,1,player_on_court,true,366,423,approximate,black uniform player
+15168,2,player_on_court,true,543,520,approximate,white uniform player
+15168,3,player_on_court,true,574,535,approximate,black uniform player
+15168,4,player_on_court,true,927,442,approximate,white uniform player
+15168,5,player_on_court,true,951,549,approximate,black uniform player
+15168,6,player_on_court,true,1188,526,approximate,white uniform player
+15168,7,player_on_court,true,1240,512,approximate,white uniform player
+15168,8,player_on_court,true,1338,494,approximate,black uniform player
+15168,9,player_on_court,true,1432,535,approximate,white uniform player
+15168,10,official,true,1232,740,approximate,official foreground
+30335,1,player_on_court,true,635,443,approximate,black uniform player
+30335,2,player_on_court,true,812,387,approximate,black uniform player
+30335,3,player_on_court,true,905,574,approximate,black uniform player
+30335,4,player_on_court,true,947,543,approximate,white uniform player
+30335,5,player_on_court,true,1034,547,approximate,white uniform player
+30335,6,player_on_court,true,1118,483,approximate,white uniform player
+30335,7,player_on_court,true,1363,608,approximate,white uniform player
+30335,8,player_on_court,true,1701,640,approximate,black uniform player
+30335,9,official,true,978,821,approximate,official foreground
+37919,1,player_on_court,true,454,454,approximate,black uniform player
+37919,2,player_on_court,true,667,503,approximate,white uniform player
+37919,3,player_on_court,true,582,633,approximate,white uniform player
+37919,4,player_on_court,true,799,688,approximate,black uniform player
+37919,5,player_on_court,true,1018,586,approximate,white uniform player
+37919,6,player_on_court,true,1180,523,approximate,white uniform player
+37919,7,player_on_court,true,1235,523,approximate,black uniform player
+37919,8,player_on_court,true,1513,689,approximate,white uniform player
+37919,9,player_on_court,true,1587,721,approximate,black uniform player
+37919,10,official,true,1176,799,approximate,official foreground
+45503,1,player_on_court,true,350,746,approximate,ball handler
+45503,2,player_on_court,true,697,686,approximate,white uniform defender
+45503,3,player_on_court,true,787,584,approximate,black uniform player
+45503,4,player_on_court,true,875,602,approximate,black uniform player
+45503,5,player_on_court,true,919,600,approximate,white uniform player
+45503,6,player_on_court,true,1513,715,approximate,white uniform player
+45503,7,player_on_court,true,1881,730,approximate,frame-boundary black uniform player
+45503,8,official,true,1291,853,approximate,official foreground
+53087,1,player_on_court,true,399,608,approximate,black uniform player
+53087,2,player_on_court,true,590,629,approximate,white uniform player
+53087,3,player_on_court,true,635,798,approximate,black uniform ball handler
+53087,4,player_on_court,true,789,810,approximate,white uniform defender
+53087,5,player_on_court,true,1000,528,approximate,white uniform player
+53087,6,player_on_court,true,1222,498,approximate,black uniform player
+53087,7,player_on_court,true,1263,682,approximate,white uniform player
+53087,8,player_on_court,true,1512,786,approximate,black uniform player
+53087,9,official,true,1218,815,approximate,official foreground
+68255,1,player_on_court,true,361,690,approximate,black uniform player
+68255,2,player_on_court,true,383,565,approximate,white uniform player
+68255,3,player_on_court,true,701,487,approximate,white uniform player
+68255,4,player_on_court,true,719,464,approximate,black uniform player
+68255,5,player_on_court,true,1030,560,approximate,white uniform player
+68255,6,player_on_court,true,1170,571,approximate,black uniform player
+68255,7,player_on_court,true,1249,575,approximate,white uniform player
+68255,8,player_on_court,true,1275,461,approximate,black uniform ball handler
+68255,9,official,true,966,760,approximate,official foreground
+75839,1,player_on_court,true,274,485,approximate,black uniform player
+75839,2,player_on_court,true,387,568,approximate,white uniform player
+75839,3,player_on_court,true,695,710,approximate,black uniform player
+75839,4,player_on_court,true,724,428,approximate,white uniform player
+75839,5,player_on_court,true,1056,517,approximate,white uniform player
+75839,6,player_on_court,true,1168,417,approximate,black uniform player
+75839,7,player_on_court,true,1284,761,approximate,white uniform player
+75839,8,player_on_court,true,1531,783,approximate,black uniform player
+75839,9,official,true,685,725,approximate,official foreground
+83423,1,player_on_court,true,255,480,approximate,black uniform runner
+83423,2,player_on_court,true,633,478,approximate,black uniform runner
+83423,3,player_on_court,true,872,446,approximate,white uniform player
+83423,4,player_on_court,true,1053,568,approximate,white uniform player
+83423,5,player_on_court,true,1316,489,approximate,black uniform player
+83423,6,player_on_court,true,1308,500,approximate,white uniform player
+83423,7,player_on_court,true,1684,541,approximate,black uniform player
+83423,8,player_on_court,true,1714,578,approximate,black uniform player
+83423,9,official,true,971,786,approximate,official foreground
+91006,1,player_on_court,true,332,557,approximate,black uniform player
+91006,2,player_on_court,true,374,651,approximate,white uniform player
+91006,3,player_on_court,true,571,531,approximate,white uniform player
+91006,4,player_on_court,true,646,598,approximate,white uniform player
+91006,5,player_on_court,true,673,590,approximate,black uniform player
+91006,6,player_on_court,true,900,763,approximate,black uniform player
+91006,7,player_on_court,true,1342,562,approximate,black uniform player
+91006,8,player_on_court,true,1359,562,approximate,white uniform player
+91006,9,player_on_court,true,913,785,approximate,black uniform player
+91006,10,official,true,463,408,approximate,official near baseline
+98590,1,player_on_court,true,471,448,approximate,white uniform ball handler
+98590,2,player_on_court,true,622,490,approximate,black uniform defender
+98590,3,player_on_court,true,761,432,approximate,white uniform player
+98590,4,player_on_court,true,924,448,approximate,black uniform player
+98590,5,player_on_court,true,1047,488,approximate,black uniform player
+98590,6,player_on_court,true,1278,582,approximate,black uniform player
+98590,7,player_on_court,true,1317,694,approximate,white uniform player
+98590,8,player_on_court,true,1450,713,approximate,black uniform player
+98590,9,player_on_court,true,1567,775,approximate,white uniform player
+98590,10,official,true,17,819,approximate,official at frame-boundary
+106174,1,player_on_court,true,511,767,approximate,black uniform player
+106174,2,player_on_court,true,686,613,approximate,white uniform player
+106174,3,player_on_court,true,1044,505,approximate,black uniform player
+106174,4,player_on_court,true,1112,510,approximate,white uniform player
+106174,5,player_on_court,true,1310,443,approximate,black uniform shooter
+106174,6,player_on_court,true,1403,570,approximate,white uniform player
+106174,7,player_on_court,true,1627,613,approximate,black uniform player
+106174,8,player_on_court,true,1744,448,approximate,white uniform player
+106174,9,player_on_court,true,1164,819,approximate,black uniform player
+106174,10,player_on_court,true,1002,722,approximate,white uniform player
+106174,11,official,true,673,769,approximate,official foreground
+121342,1,player_on_court,true,220,516,approximate,white uniform runner
+121342,2,player_on_court,true,494,422,approximate,white uniform runner
+121342,3,player_on_court,true,711,708,approximate,white uniform runner
+121342,4,player_on_court,true,970,648,approximate,black uniform runner
+121342,5,player_on_court,true,1007,648,approximate,black uniform runner
+121342,6,player_on_court,true,1314,702,approximate,white uniform runner
+121342,7,player_on_court,true,1567,556,approximate,black uniform runner
+121342,8,player_on_court,true,1768,671,approximate,black uniform runner
+121342,9,player_on_court,true,1681,392,approximate,white uniform runner
+121342,10,official,true,803,801,approximate,official in transition
+128926,1,player_on_court,false,,,approximate,white uniform player feet below crop
+128926,2,player_on_court,false,,,approximate,black uniform player feet below crop
+144094,1,player_on_court,true,218,609,approximate,black uniform player
+144094,2,player_on_court,true,289,760,approximate,white uniform player
+144094,3,player_on_court,true,770,705,approximate,white uniform player
+144094,4,player_on_court,true,840,678,approximate,white uniform player
+144094,5,player_on_court,true,1060,599,approximate,black uniform player
+144094,6,player_on_court,true,1075,761,approximate,white uniform player
+144094,7,player_on_court,true,1358,789,approximate,black uniform player
+144094,8,player_on_court,true,1500,495,approximate,black uniform player
+144094,9,official,true,1165,663,approximate,official near lane
+151677,1,player_on_court,true,275,448,approximate,white uniform ball handler
+151677,2,player_on_court,true,490,453,approximate,black uniform defender
+151677,3,player_on_court,true,691,544,approximate,white uniform player
+151677,4,player_on_court,true,1040,522,approximate,black uniform player
+151677,5,player_on_court,true,1490,368,approximate,black uniform player
+151677,6,player_on_court,true,1624,488,approximate,black uniform player
+151677,7,player_on_court,true,1458,753,approximate,white uniform player
+151677,8,player_on_court,true,1531,718,approximate,black uniform player
+151677,9,official,true,1584,730,approximate,official foreground
