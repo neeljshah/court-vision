@@ -1,4 +1,4 @@
-GAP S310 | sport nba | worktree aXX | log cx_s310_tail_beta_offset
+GAP S310 | sport nba | worktree a16 | log cx_s310_tail_beta_offset
 CONTEXT: allocated from the GPT-6 Astra research memo (orchestrator-held; NOT a lane input); all inputs below
   are tracked paths or data/ stores; verify each by printing path, rows, columns and first 3 ids.
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q1-Q9; B5 NOTE.
