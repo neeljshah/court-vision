@@ -132,3 +132,61 @@ manifest reads p90 <= 12 px AND max <= 24 px. **If a commit grows an allowlisted
 in `tests/platformkit/test_loc_rail_scope.py` in the SAME commit (contract A12).**
 COMMIT: explicit pathspec only, no push. **Make EVERY commit before you finish.** ASCII stdout.
 **NEVER PARK.**
+
+## VERSION 2026-09-07b (attempt 2: proposal-verify instrument)
+
+**EVERY CLAUSE ABOVE STILL BINDS. The ACCEPTANCE RULE for the packet is UNCHANGED** -- same 60/40/20
+counts, same 4/3/3 negative split, same >=4 distinct shots, same 240 held-out correspondences, same six
+landmarks across >=3 marking structures, same >4 px adjudication threshold, same frame-good rule
+(p90 <= 12 px AND max <= 24 px) and the same sealing order. **No bar moves.** Only the LOCATOR STEP
+(step 1.4 above) is replaced, because attempt 1 measured it to be the wrong instrument.
+
+**WHY: attempt 1 is closed INSTRUMENT NOT VALIDATED** (`g304_e1_packet_attempt1_closure_2026-09-07.md`,
+worktree a4). Two blind MODEL locators over a 15-name vocabulary produced **0 of 78 co-located pairs
+within 4 px**, medians 207.9 px (Gateway Center, 65 pairs) and 437.3 px (Climate Pledge, 13 pairs); a
+third MODEL adjudicator resolved 12 of 136 items and **0 of 23 eligible frames reached E1-ready**.
+Free-form text-model localization on crops does not reach the precision this packet needs.
+
+**THE ATTEMPT-2 LOCATOR STEP -- PROPOSAL-VERIFY (raters judge, they do not locate):**
+  1. **PROPOSALS ARE GENERATED ALGORITHMICALLY, NEVER BY A RATER.** For each eligible frame, at NATIVE
+     1920x1080 resolution, derive candidate landmark points from the existing in-repo line providers:
+     `domains/basketball/tracking/line_calibration.py` (`detect_lsd_segments` plus the candidate line
+     grouping) and the semantic provider `domains/basketball/tracking/keypoints.py`
+     (`BasketballKeypointProvider`), plus line-intersection candidates formed between grouped segments
+     near the vocabulary's named structures. **`domains/` stays READ AND IMPORT ONLY** -- no edit, no
+     threshold change, no re-tune; a provider that abstains on a frame simply yields no proposal there
+     (G227 measured that abstention and it is not a failure of this row).
+  2. **RENDER each proposal as a MARKED NATIVE CROP** -- the crop at native scale with the proposed
+     point marked and its candidate name stated. No projection, no homography, no detector output and
+     no other rater's decision is visible on the crop.
+  3. **TWO INDEPENDENT MODEL RATERS, DIFFERENT MODELS, name both.** Each rater returns a BINARY
+     **ACCEPT or REJECT** for every proposal -- never a free coordinate. A rater may additionally
+     supply a **nudge of <= 8 px**, and **a nudge without a written justification is discarded and the
+     proposal reverts to the unnudged point.** Any correction beyond 8 px is a REJECT, not a nudge.
+  4. **A LANDMARK EXISTS only where BOTH raters ACCEPT and their nudged points lie within 4 px of each
+     other.** Everything else -- split accept/reject, both-accept with nudges > 4 px apart -- is a
+     DISAGREEMENT and goes to **adjudication exactly as clause 1.5 above requires**, with the same
+     rule that unresolved labels mean INSTRUMENT NOT VALIDATED and are neither omitted frames nor
+     successful abstentions, and that agreement alone never establishes correctness.
+  5. **REPORT INTER-RATER AGREEMENT ON THE BINARY DECISIONS AS COHEN'S KAPPA, with every denominator
+     named** (proposals per frame, per arena and in total, accept rate per rater, raw agreement, kappa).
+     Kappa is a REPORTED FIELD, never a pass condition, and it is not a substitute for adjudication.
+  6. **A FRAME IS E1-READY ONLY WITH >= 6 ACCEPTED LANDMARKS ACROSS >= 3 DISTINCT MARKING STRUCTURES.**
+     A frame with 5 accepted landmarks is short, not partially good. **No frame is dropped**: a frame
+     that cannot be filled stays in the manifest marked UNRESOLVED and counts against the instrument.
+  7. **Everything else is unchanged**: the sealed inventories and their seals stand, the eligibility
+     classification stands as a candidate-pool census, and every landmark coordinate from attempt 1 is
+     VOID and may not seed, prime or be shown to any attempt-2 rater or proposal generator.
+
+**TWO ATTEMPTS MAXIMUM. Attempt 2 is this instrument.** If proposal-verify also fails to fill the
+packet, the row closes with the achieved yield, the kappa, and the annotation burden reported, and
+G306-G308 stay blocked -- that is a LIMIT statement about the instrument, not a refutation of any
+registration route.
+
+**THE ALTERNATIVE IS HUMAN ANNOTATION, AND IT IS A USER DECISION, NOT AN AGENT ONE.** Human annotation
+of the eligible frames is the only path that does not rest on model raters. This spec does not schedule
+it, does not estimate it as adopted work, and no agent may substitute it for attempt 2. Surface it with
+the measured annotation burden and let the user choose.
+
+WHERE: **worktree a7, AFTER ITS CURRENT LANE EXITS** -- do not dispatch attempt 2 into a busy worktree.
+Entirely local, no pod and no GPU, as in every clause above.
