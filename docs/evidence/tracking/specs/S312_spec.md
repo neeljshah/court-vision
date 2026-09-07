@@ -37,3 +37,39 @@ TEST: exactly one new per-file test with full package imports covering: tracking
   is refused; shuffled-teacher and ID-only controls; qualified vs unqualified teacher; fold replay. Run only that file.
 BAN: never write data/ or docs/research/; no gated-tree change; no flag flip; no registry write; no forced git operation; calibration language only.
 REPORT: census counts, the four-arm table with CIs, the provenance zeros, RSS, test line, SHA, NOT VERIFIED list. No push. NEVER PARK.
+
+## VERSION 2026-09-07b (astra feasibility)
+AMENDMENT SOURCE: docs/research/astra_teach_feasibility_2026-09-07.md section "S312 critique + minimal amendment" items 1-5, adjudicated 2026-09-07.
+SCOPE: ADDITIVE ONLY. Every bar, threshold, count and clause above stands unchanged and binding verbatim -- delta Brier >= 0.004 vs IDs, DM lower > 0,
+  launch-K p < 0.05, Brier(student) - Brier(student+IDs) <= 0.004, n_eff >= 30, the 20-cluster floor, the >= 30-game scored-row rail, the added attribution
+  bar (paired lower > 0 vs the matched no-teacher API arm) and every provenance zero. NOTHING BELOW RELAXES A TRACKING BAR.
+A1 TEACHER_QUALIFICATION (item 1): "QUALIFIED" had no image-space definition, so a court-coordinate G-route FAIL was being read as disqualifying observed
+  pixels while a self-consistency pass was being read as validating them; neither inference is licensed. Declare teacher_qualification PER SIGNAL from
+  independent evidence only: (a) independent OBSERVATION evidence -- rows are observed, never inferred/default coordinates and never a PASS_NO_BALL
+  placeholder; (b) independent IDENTITY evidence -- a verified NBA player_id or independently qualified team labels, never a local track_id and never a
+  dominant colour; (c) independent TIME-ALIGNMENT evidence -- >= 2 clock anchors per live interval with source event order breaking identical clocks;
+  (d) the ATTEMPTED-INTERVAL denominator, abstentions counted as failures. Record the G-route registration verdict and the producer/harness hash
+  SEPARATELY from teacher_qualification: neither substitutes for the other, and the registration verdict is never edited by this row.
+A2 CENSUS-FIRST BRANCHING (item 2): the spec assumed an available joined corpus. That assumption is replaced by a mandatory branch taken BEFORE any fit.
+  If the authoritative source census establishes no qualified real teacher corpus for the frozen sport/target, report BLOCKED naming the missing
+  qualification, source, join or history prerequisite. Synthetic data cannot substitute and does not close this row. If the authoritative inventory is
+  itself unavailable, that is BLOCKED: census prerequisite unavailable -- it is NOT proof of corpus absence. A qualified but UNDERSIZED corpus is
+  INSUFFICIENT. A measured NULL requires an actual valid four-arm comparison and nothing less.
+A3 N_teacher_train VS N_API_test (item 3): "100 pct of scored rows trace to qualified teacher/train inputs" conflated training provenance with per-test-game
+  tracking. Publish N_teacher_train and N_API_test as SEPARATE counts. INFERENCE DEPENDENCY BOUNDARY: held-out video may establish ELIGIBILITY ONLY --
+  never a teacher target, never a feature, never a fitted transform, never a prediction-time lookup value. The frozen tracked-game evaluation population is
+  preserved as written. A later scope amendment admitting API-only test games with no video is a DIFFERENT preregistered population: preregister it
+  explicitly, retain every numerical bar, still publish the tracked/API/outcome intersection, and never apply it silently inside this row.
+A4 PURGE SCOPE AND EMBARGO (item 4): "purge by actual games and teams" is underspecified -- removing every appearance of all held-out NBA teams can empty
+  training. BEFORE fitting, freeze and publish the team-group purge scope, the nonzero embargo duration, and the resulting per-fold train/test counts.
+  Empty or degenerate folds are INSUFFICIENT; they are never a NULL and never a reason to relax the purge.
+A5 LAUNCH-K CONTRADICTION (item 5): launch-K p < 0.05 is required while "This row authorizes NO charge" forbids its prerequisite. RESOLUTION FOR THIS ROW:
+  STOP BEFORE SCORED ACCEPTANCE pending authorization of the named isolated pre-metric research charge. K = 1 is NEVER used silently. A lane reaching the
+  scoring step without that authorization reports BLOCKED (launch-K charge unauthorized), publishing its census, qualification and fold counts, and does
+  not score.
+A6 CONSTRUCT EVIDENCE STAYS SEPARATE (item 6): runtime-purity and future-teacher-refusal may be exercised NOW as CONSTRUCTS, but real fold replay and real
+  attribution cannot be tested without real qualified inputs. Construct evidence never counts toward completion of this row.
+A7 The execution BAN above (never write data/ or docs/research/) is unchanged for this lane. The feasibility memo cited here was produced under a separate
+  research charge; it changes neither this spec's bars nor any prior dated evidence artifact.
+BLOCKED-ON: S314 (TEACH-0 teacher packet qualification + alignment) must land before this row's CHANGE step may be dispatched. S315 (TEACH-1 visible
+  ball-control duration) is the first predictive trial and is itself BLOCKED-ON S314.
