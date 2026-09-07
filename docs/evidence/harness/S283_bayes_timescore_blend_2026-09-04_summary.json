@@ -1,0 +1,106 @@
+{
+  "bar": 0.004,
+  "evaluation": {
+    "embargo_days": 1,
+    "engine": "cpcv_evaluate",
+    "n_groups": 5,
+    "n_test_groups": 1,
+    "symmetric_purge": true
+  },
+  "folds": [
+    {
+      "chosen_k": 0.5,
+      "n_scored_ticks": 183867,
+      "n_train": 280353,
+      "split_id": 0,
+      "train_grid_brier": {
+        "0.5": 0.21193943355936154,
+        "1.0": 0.22129586067544046,
+        "2.0": 0.23114217935542467,
+        "4.0": 0.23837916354455663
+      },
+      "train_parent_fallback_rows": 157
+    },
+    {
+      "chosen_k": 0.5,
+      "n_scored_ticks": 75409,
+      "n_train": 384502,
+      "split_id": 1,
+      "train_grid_brier": {
+        "0.5": 0.21199353473491203,
+        "1.0": 0.22175981136434816,
+        "2.0": 0.23195513582011068,
+        "4.0": 0.23941786540385104
+      },
+      "train_parent_fallback_rows": 45
+    },
+    {
+      "chosen_k": 0.5,
+      "n_scored_ticks": 77756,
+      "n_train": 383394,
+      "split_id": 2,
+      "train_grid_brier": {
+        "0.5": 0.21099093128511343,
+        "1.0": 0.22084422538046153,
+        "2.0": 0.23125633881347324,
+        "4.0": 0.23897596170076701
+      },
+      "train_parent_fallback_rows": 184
+    },
+    {
+      "chosen_k": 0.5,
+      "n_scored_ticks": 66891,
+      "n_train": 390771,
+      "split_id": 3,
+      "train_grid_brier": {
+        "0.5": 0.21367312107469502,
+        "1.0": 0.22278293161002366,
+        "2.0": 0.2323055925499019,
+        "4.0": 0.23926565521001658
+      },
+      "train_parent_fallback_rows": 189
+    },
+    {
+      "chosen_k": 0.5,
+      "n_scored_ticks": 61326,
+      "n_train": 398946,
+      "split_id": 4,
+      "train_grid_brier": {
+        "0.5": 0.21599678111217688,
+        "1.0": 0.2249908053269408,
+        "2.0": 0.23432130835327156,
+        "4.0": 0.24107452272117952
+      },
+      "train_parent_fallback_rows": 181
+    }
+  ],
+  "input": {
+    "bytes": 2829826,
+    "path": "data/cache/inplay_odds/nba_checkpoints_full.parquet",
+    "resolution": "tabular tick",
+    "rows": 465249
+  },
+  "metrics": {
+    "blended_brier": 0.21383684535532485,
+    "blended_ece": 0.03807666104171555,
+    "improvement": -0.14038370348743115,
+    "improvement_ci95": [
+      -0.142998852410778,
+      -0.137763255533433
+    ],
+    "recal_null_brier": 0.0734531418678937,
+    "recal_null_ece": 0.004746441182602817
+  },
+  "n_game_clusters": 1593,
+  "n_ticks": 465249,
+  "paired_loss_path": "docs/evidence/harness/S283_bayes_timescore_blend_2026-09-04_paired_loss.csv",
+  "prereg_sha256": "e60457016bc5cb8ba10ed8d460a4593334456bed9a55ea2aedca3bfcd97cf224",
+  "preregistration_path": "docs/evidence/harness/S283_bayes_timescore_blend_2026-09-04_prereg_attempt2.md",
+  "route_sha256": "861e9d387fbeaf65f78d082734ede26257b240307850e2bf120f16f1f1760bfb",
+  "rss_bytes": 1437413376,
+  "sparsity": {
+    "full_cell_ticks": 465060,
+    "period_bucket_parent_ticks": 189
+  },
+  "verdict": "BELOW_FROZEN_BAR"
+}
