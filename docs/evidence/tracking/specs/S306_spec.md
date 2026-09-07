@@ -1,4 +1,4 @@
-GAP S306 | sport mlb | worktree aXX | log cx_s306_s106_requote_test
+GAP S306 | sport mlb | worktree a16 | log cx_s306_s106_requote_test
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: codex test audit (the orchestrator-held codex test audit (local-only; NOT a lane input) section A):
   scripts/platformkit/eval_gate/s106_requote.py is
