@@ -1,4 +1,4 @@
-GAP S293 | sport nba (in-game) | worktree aXX | log cx_s293_tail_metric_rail
+GAP S293 | sport nba (in-game) | worktree a14 | log cx_s293_tail_metric_rail
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: the shared evaluator route S268/S272 both used is scripts/platformkit/eval_gate/cpcv_engine.py:93
   def cpcv_evaluate (records p_model/p_close/y/split_id/n_train) and scripts/platformkit/eval_gate/
