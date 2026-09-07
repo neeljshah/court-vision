@@ -537,3 +537,5 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-07 | harness ops | S311 | launchers hardened: pod_run argv/safe_path/status checks; loops bind verify sha, auto lane_commit, dedupe; matrix 6/6 (reviewer), smoke rc=0 | APPLIED (orchestrator; Opus reviews x2) | S311_ops_applied_2026-09-07.md
 2026-09-07 | hook | S314 | S314: BLOCKED -- ACCEPT WITH CORRECTIONS; PBP reproduced for 3 pod games, before-condition still fails on independent observation labels | LANDED (auto; verifier line pending) | ef4504489
 2026-09-07 | tracking teacher packet | S314 | 3 PBP histories reproduced; current N_qualified=0 because independent labels are absent | BLOCKED (verified: codex-sol, contract A/B/Q) | ef4504489
+2026-09-07 | hook | S303 | S303: ACCEPT -- additive committed-object checker; 8/8 mappings behaviorally select committed bytes under dirty working files | LANDED (auto; verifier line pending) | d44c67da4
+2026-09-07 | committed-object seal checks | S303 | 8/8 behavioral committed selections and 6/6 retained seals match | ACCEPT (verified: codex-sol, contract A/B/Q) | d44c67da4
