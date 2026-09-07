@@ -1,0 +1,104 @@
+[
+ {
+  "game_id": "0022500575",
+  "espn_event_id": "401810430",
+  "date": "20260114",
+  "home": "DAL",
+  "away": "DEN",
+  "source_host": "sports.core.api.espn.com",
+  "plays_url": "https://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401810430/competitions/401810430/plays?limit=1000",
+  "events_url": "https://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events?dates=20260114",
+  "as_of_utc": "2026-09-07T22:52:12Z",
+  "n_plays": 477,
+  "rows_by_period": {
+   "1": 105,
+   "2": 126,
+   "3": 127,
+   "4": 119
+  },
+  "files": [
+   "C:/Users/neelj/nba-ai-system/data/nba/pbp_0022500575_p1.json",
+   "C:/Users/neelj/nba-ai-system/data/nba/pbp_0022500575_p2.json",
+   "C:/Users/neelj/nba-ai-system/data/nba/pbp_0022500575_p3.json",
+   "C:/Users/neelj/nba-ai-system/data/nba/pbp_0022500575_p4.json"
+  ],
+  "candidates_on_date": [
+   "401810426=TOR @ IND",
+   "401810427=CLE @ PHI",
+   "401810428=UTAH @ CHI",
+   "401810429=BKN @ NO",
+   "401810430=DEN @ DAL",
+   "401810431=NY @ SAC",
+   "401810432=WSH @ LAC"
+  ]
+ },
+ {
+  "game_id": "0022500594",
+  "espn_event_id": "401810449",
+  "date": "20260117",
+  "home": "ATL",
+  "away": "BOS",
+  "source_host": "sports.core.api.espn.com",
+  "plays_url": "https://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401810449/competitions/401810449/plays?limit=1000",
+  "events_url": "https://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events?dates=20260117",
+  "as_of_utc": "2026-09-07T22:52:25Z",
+  "n_plays": 481,
+  "rows_by_period": {
+   "1": 116,
+   "2": 112,
+   "3": 126,
+   "4": 127
+  },
+  "files": [
+   "C:/Users/neelj/nba-ai-system/data/nba/pbp_0022500594_p1.json",
+   "C:/Users/neelj/nba-ai-system/data/nba/pbp_0022500594_p2.json",
+   "C:/Users/neelj/nba-ai-system/data/nba/pbp_0022500594_p3.json",
+   "C:/Users/neelj/nba-ai-system/data/nba/pbp_0022500594_p4.json"
+  ],
+  "candidates_on_date": [
+   "401810448=UTAH @ DAL",
+   "401810449=BOS @ ATL",
+   "401810450=IND @ DET",
+   "401810451=PHX @ NY",
+   "401810452=OKC @ MIA",
+   "401810453=MIN @ SA",
+   "401810454=CHA @ GS",
+   "401810455=WSH @ DEN",
+   "401810456=LAL @ POR"
+  ]
+ },
+ {
+  "game_id": "0022500630",
+  "espn_event_id": "401810485",
+  "date": "20260122",
+  "home": "DAL",
+  "away": "GSW",
+  "source_host": "sports.core.api.espn.com",
+  "plays_url": "https://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401810485/competitions/401810485/plays?limit=1000",
+  "events_url": "https://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events?dates=20260122",
+  "as_of_utc": "2026-09-07T22:52:41Z",
+  "n_plays": 520,
+  "rows_by_period": {
+   "1": 133,
+   "2": 140,
+   "3": 113,
+   "4": 134
+  },
+  "files": [
+   "C:/Users/neelj/nba-ai-system/data/nba/pbp_0022500630_p1.json",
+   "C:/Users/neelj/nba-ai-system/data/nba/pbp_0022500630_p2.json",
+   "C:/Users/neelj/nba-ai-system/data/nba/pbp_0022500630_p3.json",
+   "C:/Users/neelj/nba-ai-system/data/nba/pbp_0022500630_p4.json"
+  ],
+  "candidates_on_date": [
+   "401810482=CHA @ ORL",
+   "401810483=HOU @ PHI",
+   "401810484=DEN @ WSH",
+   "401810485=GS @ DAL",
+   "401810486=CHI @ MIN",
+   "401810487=SA @ UTAH",
+   "401810488=LAL @ LAC",
+   "401810489=MIA @ POR"
+  ]
+ }
+]
