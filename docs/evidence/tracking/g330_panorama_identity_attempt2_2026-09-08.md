@@ -38,11 +38,9 @@ The first execution of the scored run was DISCARDED and re-run on identical seal
 - Attempt 1's 181/199 ledger mapping is NOT reproduced here and is NOT claimed: it required a stem list that was never archived.
 - ARM V deliberately omits the builder's general-fallback substitution (prereg section 4), so NOT BUILDABLE is a property of the stitch, not of the route's end state.
 - Feet inside the court for ARM V is confounded by `Rectify1.npy` being calibrated for the fallback's space (885-888), stated in advance, never read as ARM V being worse.
-- Only YOLOv8n person boxes plus the route's foot formula were replicated; `AdvancedFeetDetector` (Kalman, Hungarian, OSNet re-identification) was not instantiated.
-- Each arm is a `__new__` instance carrying only what `_get_homography` and its drift check read; components a full `__init__` builds (OCR, resolver, re-identification) are absent and do not touch that method.
+- Only YOLOv8n person boxes plus the route's foot formula were replicated; `AdvancedFeetDetector` (Kalman, Hungarian, OSNet re-identification) was not instantiated. Each arm is a `__new__` instance carrying only what `_get_homography` and its drift check read; components a full `__init__` builds (OCR, resolver, re-identification) are absent and do not touch that method.
 - The census is a snapshot of a tree the running daemon is actively writing (000294 pod files here; attempt 1 measured 000263 hours earlier).
-- The four non-fallback identical groups are not explained by this row.
-- kornia is absent on the pod, so the route takes its SIFT path there; a kornia-equipped producer would match through LoFTR instead and is not measured.
+- The four non-fallback identical groups are not explained by this row. kornia is absent on the pod, so the route takes its SIFT path there; a kornia-equipped producer would match through LoFTR instead and is not measured.
 - Three sections are a screening sample, not the programme. Q7 applies to the census only.
 Wall time: scored proxy run 000547 s on the pod, pod census about 000300 s, whole row about 003400 s. Local video copies deleted; no video committed. Tests: 17 passed (G330), 1 passed (LOC rail).
 ## SHA-256 (LF-normalised bytes)
@@ -55,4 +53,8 @@ Wall time: scored proxy run 000547 s on the pod, pod census about 000300 s, whol
     bcef1542626faaeb9c9e5cdfb6d492e1125b6b7e1417b8da7f4ddfd94e06e089  g330_panorama_identity.py
     03075ef884b2e7c259936fd8ec560dea824eba19e3bc538de68e5e08f750d678  test_g330_panorama_identity.py
     69d50cdae01facc6c44ab5a7897cd6c6fb842c68bae8a3ec1ad7d5f4f9daf395  G330_PROPOSED_pano_cache_key.md
+## Landing 2026-09-08 (verifier codex-sol: ACCEPT)
+- NEW GAP: the local-only PROPOSED file `docs/research/organization-sprint/G330_PROPOSED_pano_cache_key.md:3-5` still carries attempt-1 counts, including the 181/199 mapping this memo disclaims at line 38 as never archived; refresh or remove that prose before reuse.
+- NEW GAP: `scripts/platformkit/tracking/g330_panorama_identity.py:217-285` replicates the builder's logic instead of invoking the source builder; the resulting detector/init parity limit is disclosed at lines 39-41 of this landed memo.
+- NEW GAP: `tests/platformkit/test_g330_panorama_identity.py:1-3` says the construct uses no cv2, but the tests at `:193-231` import and execute cv2.
 Vocabulary follows contract Q6; automated scan required.
