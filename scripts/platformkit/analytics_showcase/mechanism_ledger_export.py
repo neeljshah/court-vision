@@ -1,6 +1,6 @@
 """Mechanism-ledger EXPORT -- surface every verdict row we already committed.
 
-287 verdict rows live in domains/*/knowledge/validation_ledger.jsonl (4 sports)
+291 verdict rows live in domains/*/knowledge/validation_ledger.jsonl (4 sports)
 but nothing renders them. This dumps them: per sport, every named mechanism with
 its verdict, an evidence pointer (corpus + note), and as_of (run_ts if recorded);
 plus per-sport and overall verdict-bucket counts.

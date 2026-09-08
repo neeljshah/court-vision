@@ -1,0 +1,26 @@
+{
+  "captured_utc": "2026-09-08T05:50Z",
+  "harness_health_probe": {
+    "as_of": "2026-09-02T05:42:37.630316+00:00",
+    "multiplicity_ledger_K": 14,
+    "reading": "the live consumer is up and answering; it is the LEDGER CONTENT, not the consumer, that differs",
+    "source_artifact": "data/frontend/analytics/harness_health.json",
+    "staleness_days": 6.006,
+    "status": "ok",
+    "tool": "mcp__courtvision__harness_health"
+  },
+  "routes": [
+    {
+      "envelope_category": "mechanism_effect",
+      "envelope_source_artifact": "domains/<sport>/knowledge/validation_ledger.jsonl",
+      "envelope_status": "not_supported",
+      "id": "R2",
+      "note_head": "no mechanism matched 'what does the evidence say about s310 ingame tail beta offset' in domains/basketball_nba/knowledge/validation_ledger.jsonl. Registered hypotheses: [74 names, none of them s296_/s310_/s312_/s293_]",
+      "question": "what does the evidence say about s310 ingame tail beta offset",
+      "reading": "correct fail-closed refusal of the numeric claim on a tree without the receipt rows",
+      "sport": "nba"
+    }
+  ],
+  "tool": "mcp__courtvision__ask",
+  "what_this_is": "The LIVE resident MCP consumer (courtvision server, tool 'ask') answered from the MAIN repo working tree C:/Users/neelj/nba-ai-system at 99f8eda65, whose domains/basketball_nba/knowledge/validation_ledger.jsonl is sha256 1d32d42fc81edf713baa9dedde2c1117ac504b488047e367d515d65cc69c9478 with 85 rows -- it does not carry the four rows this lane appended in the worktree. This file is therefore the PRE-CONNECTION baseline and is the evidence for the LIVE NOT VERIFIED liveness label."
+}

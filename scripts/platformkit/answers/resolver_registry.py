@@ -74,6 +74,7 @@ from scripts.platformkit.answers import effect_graph as _eg
 from scripts.platformkit.answers import h2h_history_resolver as _h2h_history
 from scripts.platformkit.answers import leaderboard_resolver as _lb
 from scripts.platformkit.answers import player_compare as _pc
+from scripts.platformkit.answers import receipt_guard as _guard
 from scripts.platformkit.answers import schedule_context_resolver as _schedule
 from scripts.platformkit.answers import streaks_resolver as _streaks
 from scripts.platformkit.answers import winprob_dispatch as _winprob
@@ -831,9 +832,15 @@ def mechanism_effect(sport: str, mechanism: str) -> dict:
                 "note": f"{len(matches)} distinct registered hypotheses match "
                         f"'{mechanism}' in {path} -- name one of {matches}"}
     name = matches[0]
+    # S313 fix 2b: a receipt-bearing row must verify against the artifacts it
+    # names before any number is composed from it.
+    refusal = _guard.check_rows(by_name[name], path)
+    if refusal is not None:
+        return {"status": refusal["status"], "category": "mechanism_effect", "sport": sport,
+                "source_artifact": path, "note": refusal["note"]}
     as_of = datetime.fromtimestamp(os.path.getmtime(path), tz=timezone.utc).isoformat()
-    findings = [{"verdict": r["verdict"], "effect_local": r["effect"], "n": r["n"], "p": r.get("p"),
-                 "corpus": r["corpus"], "note": r["note"]} for r in by_name[name]]
+    findings = [{"verdict": r["verdict"], "effect_local": r["effect"], "n": _guard.composed_n(r),
+                 "p": r.get("p"), "corpus": r["corpus"], "note": r["note"]} for r in by_name[name]]
     return {"status": "ok", "category": "mechanism_effect", "sport": sport, "source_artifact": path,
             "as_of": as_of, "hypothesis": name, "findings": findings,
             "framing": "LOCAL single-corpus finding(s) -- not a market-beating or causal claim"}

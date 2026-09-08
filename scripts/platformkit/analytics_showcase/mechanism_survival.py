@@ -1,5 +1,5 @@
 """Mechanism survival analytics over domains/*/knowledge/validation_ledger.jsonl
-(4 sports, ~287 rows total): what share of hypotheses tested confirm, broken out
+(4 sports, 291 rows total): what share of hypotheses tested confirm, broken out
 by sport and by mechanism category (keyword-bucketed on the hypothesis name).
 
 A NULL/REJECT is honest market-efficiency evidence, not a failure. No $/edge/ROI
