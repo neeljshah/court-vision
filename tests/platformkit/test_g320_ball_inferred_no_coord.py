@@ -83,9 +83,9 @@ def test_seven_flagged_rows_without_a_coordinate(tmp_path):
     # B2: the new class must not drift from the field G314 already published.
     assert got["inferred_no_coord"] == got["inferred_without_coords"]
 
-    # The class is its OWN class: it is folded into neither of the two totals a
-    # census reports, which is exactly why a census reading only those two
-    # miscounts these rows.
+    # The class is its OWN class: it is reported separately while retained in
+    # the inclusive ball_inferred total, which is exactly why a census reading
+    # only the two headline totals miscounts these rows.
     assert got["ball_detected"] == 11
     assert got["ball_inferred"] == 10
     assert got["inferred_with_coords"] == 3
