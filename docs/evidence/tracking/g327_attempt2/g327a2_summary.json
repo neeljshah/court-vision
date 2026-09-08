@@ -1,0 +1,816 @@
+{
+ "screening_only": true,
+ "ground_truth": null,
+ "topcut": 60,
+ "route_kwargs": {
+  "classes": "[0]",
+  "conf": "0.22",
+  "verbose": "False",
+  "imgsz": "640",
+  "half": "True",
+  "device": "0"
+ },
+ "registered_conf": 0.3,
+ "conf_source": "route _fill_conf_threshold",
+ "env": {
+  "python": "3.12.3",
+  "torch": "2.8.0+cu128",
+  "ultralytics": "8.4.143",
+  "cv2": "4.14.0",
+  "gpu": "NVIDIA GeForce RTX 3090"
+ },
+ "gated_before": {
+  "src/tracking/player_detection.py": "c3bc2f7d4c4fda366f83523dd0aac86e47a40fecaf26e36b490d5a8c73ca5cc7",
+  "src/tracking/advanced_tracker.py": "df2ae698ae03e804f67639434d8303638aea9087c3169c016af5a3734dd474d7",
+  "yolov8n.pt": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+ },
+ "provenance": {
+  "g327_arms.py": "02368e4fd372237674af4f976c31c3015a0a1d0411ea965eea040aceaf7ea6ce",
+  "g327_sources.py": "459507ecfe5b8efd380a5b605b69bb89ff496fce8fd1b3860d21563d472780bb",
+  "g327_report.py": "686e4fbf3bea036f588544a857ade0888593399b87be21104d03dee2176734a1",
+  "g327_detector_batch_stability.py": "a0e02a4c0ad155ca8893976fce19d58402e2cd18c6fa5e91d219714da63c6150"
+ },
+ "snapshot_provenance": {
+  "g327_arms.py": "02368e4fd372237674af4f976c31c3015a0a1d0411ea965eea040aceaf7ea6ce",
+  "g327_sources.py": "459507ecfe5b8efd380a5b605b69bb89ff496fce8fd1b3860d21563d472780bb",
+  "g327_report.py": "686e4fbf3bea036f588544a857ade0888593399b87be21104d03dee2176734a1",
+  "g327_detector_batch_stability.py": "a0e02a4c0ad155ca8893976fce19d58402e2cd18c6fa5e91d219714da63c6150"
+ },
+ "selection_rule": {
+  "min_width": 1280,
+  "n_games": 3,
+  "corpus": "/workspace/nba-ai-system/data/footage_corpus",
+  "order": "mtime descending, first clip per game id",
+  "selected": [
+   "nba__m7K0J4wzDn4_s2070",
+   "nba__4PH6yOSvcs4_s2932",
+   "wnba__6FlZaoWSfFw_s90"
+  ]
+ },
+ "verified": [
+  {
+   "slot": 1,
+   "game": "nba__m7K0J4wzDn4_s2070",
+   "ok": 40,
+   "n": 40,
+   "reason": ""
+  },
+  {
+   "slot": 2,
+   "game": "nba__4PH6yOSvcs4_s2932",
+   "ok": 40,
+   "n": 40,
+   "reason": ""
+  },
+  {
+   "slot": 3,
+   "game": "wnba__6FlZaoWSfFw_s90",
+   "ok": 40,
+   "n": 40,
+   "reason": ""
+  }
+ ],
+ "games": [
+  {
+   "slot": 1,
+   "game": "nba__m7K0J4wzDn4_s2070",
+   "source": {
+    "path": "/workspace/nba-ai-system/data/footage_corpus/nba__m7K0J4wzDn4_s2070.mp4",
+    "bytes": 41073189,
+    "width": 1920,
+    "height": 1080,
+    "fps": "60000/1001",
+    "nb_frames": "8044",
+    "duration_s": 134.200733,
+    "game": "nba__m7K0J4wzDn4_s2070",
+    "game_id": "nba__m7K0J4wzDn4",
+    "mtime": 1788856892.0,
+    "anchor": 8043
+   },
+   "frame_indices": [
+    0,
+    206,
+    412,
+    619,
+    825,
+    1031,
+    1237,
+    1444,
+    1650,
+    1856,
+    2062,
+    2269,
+    2475,
+    2681,
+    2887,
+    3093,
+    3300,
+    3506,
+    3712,
+    3918,
+    4125,
+    4331,
+    4537,
+    4743,
+    4950,
+    5156,
+    5362,
+    5568,
+    5774,
+    5981,
+    6187,
+    6393,
+    6599,
+    6806,
+    7012,
+    7218,
+    7424,
+    7631,
+    7837,
+    8043
+   ],
+   "fed_shape": [
+    1020,
+    1920,
+    3
+   ],
+   "stack_sha256": "766136cbe92d32c2454c7197def9cce07d5993833e108ef0713ccd21136df246",
+   "arms": {
+    "single": {
+     "batch": 1,
+     "ms_per_frame_us": 44832,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       1,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 40,
+     "zero_box_frames": 0
+    },
+    "single_repeat": {
+     "batch": 1,
+     "ms_per_frame_us": 49756,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       1,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 40,
+     "zero_box_frames": 0
+    },
+    "batch2": {
+     "batch": 2,
+     "ms_per_frame_us": 52632,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       2,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 40,
+     "zero_box_frames": 0
+    },
+    "batch8": {
+     "batch": 8,
+     "ms_per_frame_us": 47821,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 40,
+     "zero_box_frames": 0
+    },
+    "pad": {
+     "batch": 8,
+     "ms_per_frame_us": 15304,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "[352, 640]",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 40,
+     "zero_box_frames": 0
+    },
+    "fp32": {
+     "batch": 8,
+     "ms_per_frame_us": 52388,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "False",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float32"
+     ],
+     "boxes_total": 40,
+     "zero_box_frames": 0
+    },
+    "nmsord": {
+     "batch": 8,
+     "ms_per_frame_us": 14820,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 40,
+     "zero_box_frames": 0
+    }
+   }
+  },
+  {
+   "slot": 2,
+   "game": "nba__4PH6yOSvcs4_s2932",
+   "source": {
+    "path": "/workspace/nba-ai-system/data/footage_corpus/nba__4PH6yOSvcs4_s2932.mp4",
+    "bytes": 48368543,
+    "width": 1920,
+    "height": 1080,
+    "fps": "60000/1001",
+    "nb_frames": "7826",
+    "duration_s": 130.563767,
+    "game": "nba__4PH6yOSvcs4_s2932",
+    "game_id": "nba__4PH6yOSvcs4",
+    "mtime": 1788856374.0,
+    "anchor": 7825
+   },
+   "frame_indices": [
+    0,
+    201,
+    401,
+    602,
+    803,
+    1003,
+    1204,
+    1404,
+    1605,
+    1806,
+    2006,
+    2207,
+    2408,
+    2608,
+    2809,
+    3010,
+    3210,
+    3411,
+    3612,
+    3812,
+    4013,
+    4213,
+    4414,
+    4615,
+    4815,
+    5016,
+    5217,
+    5417,
+    5618,
+    5819,
+    6019,
+    6220,
+    6421,
+    6621,
+    6822,
+    7022,
+    7223,
+    7424,
+    7624,
+    7825
+   ],
+   "fed_shape": [
+    1020,
+    1920,
+    3
+   ],
+   "stack_sha256": "07260d5f38645d6e773de45de1fbb746cb1cfed76b00c1b30409155b1c0e10c7",
+   "arms": {
+    "single": {
+     "batch": 1,
+     "ms_per_frame_us": 44947,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       1,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 40,
+     "zero_box_frames": 0
+    },
+    "single_repeat": {
+     "batch": 1,
+     "ms_per_frame_us": 44804,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       1,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 40,
+     "zero_box_frames": 0
+    },
+    "batch2": {
+     "batch": 2,
+     "ms_per_frame_us": 32417,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       2,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 40,
+     "zero_box_frames": 0
+    },
+    "batch8": {
+     "batch": 8,
+     "ms_per_frame_us": 15006,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 40,
+     "zero_box_frames": 0
+    },
+    "pad": {
+     "batch": 8,
+     "ms_per_frame_us": 15003,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "[352, 640]",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 40,
+     "zero_box_frames": 0
+    },
+    "fp32": {
+     "batch": 8,
+     "ms_per_frame_us": 15302,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "False",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float32"
+     ],
+     "boxes_total": 40,
+     "zero_box_frames": 0
+    },
+    "nmsord": {
+     "batch": 8,
+     "ms_per_frame_us": 15226,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 40,
+     "zero_box_frames": 0
+    }
+   }
+  },
+  {
+   "slot": 3,
+   "game": "wnba__6FlZaoWSfFw_s90",
+   "source": {
+    "path": "/workspace/nba-ai-system/data/footage_corpus/wnba__6FlZaoWSfFw_s90.mp4",
+    "bytes": 61722800,
+    "width": 1920,
+    "height": 1080,
+    "fps": "30000/1001",
+    "nb_frames": "3909",
+    "duration_s": 130.4303,
+    "game": "wnba__6FlZaoWSfFw_s90",
+    "game_id": "wnba__6FlZaoWSfFw",
+    "mtime": 1788855619.0,
+    "anchor": 3908
+   },
+   "frame_indices": [
+    0,
+    100,
+    200,
+    301,
+    401,
+    501,
+    601,
+    701,
+    802,
+    902,
+    1002,
+    1102,
+    1202,
+    1303,
+    1403,
+    1503,
+    1603,
+    1703,
+    1804,
+    1904,
+    2004,
+    2104,
+    2205,
+    2305,
+    2405,
+    2505,
+    2605,
+    2706,
+    2806,
+    2906,
+    3006,
+    3106,
+    3207,
+    3307,
+    3407,
+    3507,
+    3607,
+    3708,
+    3808,
+    3908
+   ],
+   "fed_shape": [
+    1020,
+    1920,
+    3
+   ],
+   "stack_sha256": "d6f1278743233fb4a57d6e54c91942427e98291ca115d6a8d341085ba366ca08",
+   "arms": {
+    "single": {
+     "batch": 1,
+     "ms_per_frame_us": 47427,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       1,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 507,
+     "zero_box_frames": 0
+    },
+    "single_repeat": {
+     "batch": 1,
+     "ms_per_frame_us": 49926,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       1,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 507,
+     "zero_box_frames": 0
+    },
+    "batch2": {
+     "batch": 2,
+     "ms_per_frame_us": 32576,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       2,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 507,
+     "zero_box_frames": 0
+    },
+    "batch8": {
+     "batch": 8,
+     "ms_per_frame_us": 17397,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 507,
+     "zero_box_frames": 0
+    },
+    "pad": {
+     "batch": 8,
+     "ms_per_frame_us": 17611,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "[352, 640]",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 507,
+     "zero_box_frames": 0
+    },
+    "fp32": {
+     "batch": 8,
+     "ms_per_frame_us": 15251,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "False",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float32"
+     ],
+     "boxes_total": 507,
+     "zero_box_frames": 0
+    },
+    "nmsord": {
+     "batch": 8,
+     "ms_per_frame_us": 15291,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 507,
+     "zero_box_frames": 0
+    }
+   }
+  }
+ ],
+ "arm_rows": {
+  "single": 587,
+  "single_repeat": 587,
+  "batch2": 587,
+  "batch8": 587,
+  "pad": 587,
+  "fp32": 587,
+  "nmsord": 587
+ },
+ "gated_after": {
+  "src/tracking/player_detection.py": "c3bc2f7d4c4fda366f83523dd0aac86e47a40fecaf26e36b490d5a8c73ca5cc7",
+  "src/tracking/advanced_tracker.py": "df2ae698ae03e804f67639434d8303638aea9087c3169c016af5a3734dd474d7",
+  "yolov8n.pt": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+ },
+ "gated_unchanged": true
+}

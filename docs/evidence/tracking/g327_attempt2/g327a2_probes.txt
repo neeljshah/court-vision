@@ -1,0 +1,41 @@
+$ nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader
+rc=0
+1730 MiB, 24576 MiB
+
+
+$ nvidia-smi --query-compute-apps=pid,used_memory --format=csv,noheader
+rc=0
+2742101, 426 MiB
+2811929, 426 MiB
+2827874, 426 MiB
+2831376, 426 MiB
+
+
+$ bash -lc ps -o pid,etime,rss,args -p 929149,1039858
+rc=0
+    PID     ELAPSED   RSS COMMAND
+1039858    01:58:35 12292 python3 /workspace/vol_guard.py 43200
+
+
+$ df -m /workspace
+rc=0
+Filesystem                  1M-blocks      Used Available Use% Mounted on
+mfs#eu-cz-1.runpod.net:9421 973872723 601890655 371982068  62% /workspace
+
+
+$ dd if=/dev/zero of=/workspace/wt/a21/g327a2/out/fsync.bin bs=1M count=8 conv=fsync
+rc=0
+8+0 records in
+8+0 records out
+8388608 bytes (8.4 MB, 8.0 MiB) copied, 0.0968498 s, 86.6 MB/s
+
+
+$ nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader
+rc=0
+2325 MiB, 24576 MiB
+
+
+$ bash -lc ps -o pid,etime,rss,args -p 929149,1039858
+rc=0
+    PID     ELAPSED   RSS COMMAND
+1039858    02:00:05 12292 python3 /workspace/vol_guard.py 43200

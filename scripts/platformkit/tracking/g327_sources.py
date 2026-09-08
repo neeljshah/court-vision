@@ -137,3 +137,19 @@ def decode(path: str, idxs: list[int], topcut: int) -> tuple[list, str, list]:
         frames.append(frame)
     cap.release()
     return frames, digest.hexdigest(), per_frame
+
+
+def save_frames(path, frames: list) -> None:
+    """PERSIST the snapshot. Attempt 1 held its decoded frames in MEMORY only and
+    recorded their hashes; when the process ended and the rotating corpus deleted all
+    three clips, the sealed sample became unreachable and unverifiable. Writing the
+    bytes is what makes the sealed hash list checkable by anyone, later."""
+    import numpy as np
+    np.save(path, np.stack(frames), allow_pickle=False)
+
+
+def load_frames(path) -> list:
+    """The snapshot back as per-frame arrays. Each is a contiguous view of the stack,
+    so `tobytes()` reproduces the bytes that were hashed at snapshot time."""
+    import numpy as np
+    return list(np.load(path, allow_pickle=False))

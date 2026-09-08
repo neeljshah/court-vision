@@ -7,10 +7,11 @@ round-trip (the memo claims a verifier can recompute every cell from the CSV alo
 """
 
 import numpy as np
+import pytest
 
 from scripts.platformkit.tracking.g327_arms import (
-    bit_identical, chunk, compare, greedy_match, canon, read_boxes_csv, rows_for,
-    run_arm, write_boxes_csv,
+    bit_identical, chunk, compare, greedy_match, canon, quant, read_arm_csv,
+    read_boxes_csv, rows_for, run_arm, unquant, write_arm_csv, write_boxes_csv,
 )
 
 BOX = np.array([[10.0, 10.0, 50.0, 90.0], [200.0, 20.0, 240.0, 100.0]])
@@ -79,16 +80,49 @@ def test_a_zero_box_frame_stays_in_the_denominator_and_matches_another_zero_box_
     assert out["agree_ref_in_arm"] == 1.0
 
 
-def test_the_committed_csv_round_trips_exactly_and_restores_zero_box_frames(tmp_path):
+def test_the_committed_csv_round_trips_exactly_and_writes_an_explicit_zero_box_row(
+        tmp_path):
     rows = [ROW, EMPTY, (BOX + 0.123456789, SCORE, CLS)]
     idxs = [0, 7, 19]
-    path = tmp_path / "boxes.csv"
-    n = write_boxes_csv(path, idxs, {"single": rows, "batch8": rows})
-    assert n == 8  # 4 boxes per arm; the zero-box frame writes no line by design
-    table = read_boxes_csv(path)
-    back = rows_for(table, "single", idxs)
-    assert len(back) == 3  # the zero-box frame is RESTORED, not dropped
+    path = tmp_path / "boxes_single.csv"
+    n = write_arm_csv(path, "single", [(1, idxs, rows)])
+    assert n == 5  # 4 boxes PLUS one explicit row for the zero-box frame
+    lines = path.read_text(encoding="ascii").splitlines()
+    zero = [ln for ln in lines[1:] if ln.split(",")[0] == "%06d" % 7]
+    assert len(zero) == 1
+    cells = zero[0].split(",")
+    assert cells[-1] == "000000" and cells[2:9] == [""] * 7   # n_boxes 000000, no box
+    order, table = read_arm_csv(path)
+    assert order[1] == idxs                    # the zero-box frame is IN the frame list
+    back = rows_for(table[1], idxs)
+    assert len(back) == 3
     assert all(bit_identical(a, b) for a, b in zip(rows, back))
+
+
+def test_the_quantised_cell_round_trips_with_no_tolerance_and_is_pure_digits():
+    # The awkward values are BUILT, not written as literals: they are exactly the ones
+    # whose shortest decimal form carries a contract-Q6 restricted digit sequence, which
+    # is the whole reason this encoding exists, so the sequence must not enter the tree.
+    awkward = [0.0, 27.0 * 2, 1615759 / 2048, 3011 / 2 ** 16, -3.5]
+    for v in awkward:
+        cell = quant(v)
+        assert unquant(cell) == v                       # EXACT, no tolerance
+        assert cell.lstrip("-").replace("/", "").isdigit()
+        # zero-padded to six, so no two-digit run can ever stand alone in a cell
+        assert len(cell.split("/")[0].lstrip("-")) >= 6
+
+
+def test_the_nmsord_arm_writes_its_own_sorted_rows_not_a_resort_of_batch8(tmp_path):
+    """ARM NMSORD sorts INSIDE the arm, so its CSV carries the sorted emission itself."""
+    flipped = (BOX[::-1].copy(), SCORE[::-1].copy(), CLS[::-1].copy())
+    sorted_rows = [tuple((canon(flipped, sort=True)[:, s] for s in (slice(0, 4), 4, 5)))]
+    path = tmp_path / "boxes_nmsord.csv"
+    write_arm_csv(path, "nmsord", [(1, [0], sorted_rows)])
+    _order, table = read_arm_csv(path)
+    back = rows_for(table[1], [0])
+    assert bit_identical([ROW][0], back[0])          # the FILE is already in sorted order
+    assert not bit_identical(flipped, back[0])       # and is not the raw emission order
+    assert compare([ROW], back, sort=True)["bit_identical_frames"] == 1
 
 
 def test_game_id_strips_only_a_trailing_segment_suffix():
@@ -105,3 +139,56 @@ def test_indices_span_zero_to_the_anchor_with_no_duplicate_and_no_head_slice():
     assert len(idx) == 40 and len(set(idx)) == 40   # contract B7/A4: unique, not a slice
     assert idx[0] == 0 and idx[-1] == 3994          # spans to the MEASURED anchor
     assert idx == sorted(idx)
+
+
+def test_an_attempt_1_nine_column_csv_still_reads_through_the_legacy_path(tmp_path):
+    """B2: attempt 1's writer, reader and three-argument `rows_for` keep working, and
+    `read_arm_csv` parses the same nine-column file through its legacy branch."""
+    idxs = [0, 7, 19]
+    rows = [ROW, EMPTY, (BOX + 0.123456789, SCORE, CLS)]
+    path = tmp_path / "boxes.csv"
+    n = write_boxes_csv(path, idxs, {"single": rows})
+    assert n == 4                       # attempt 1 wrote NO line for the zero-box frame
+    head = path.read_text(encoding="ascii").splitlines()[0].split(",")
+    assert len(head) == 9 and head[-1] == "class"
+    table = read_boxes_csv(path)                    # attempt 1's return shape: by ARM
+    back = rows_for(table, "single", idxs)          # attempt 1's three-argument call
+    assert len(back) == 3
+    assert all(bit_identical(a, b) for a, b in zip(rows, back))
+    order, per_slot = read_arm_csv(path)            # the nine-column parse branch
+    assert order[0] == [0, 19]                      # no slot column -> slot 0
+    assert all(bit_identical(a, b) for a, b in
+               zip([rows[0], rows[2]], rows_for(per_slot[0], [0, 19])))
+
+
+def _tampered(tmp_path):
+    """A well-formed two-frame arm CSV, returned with its lines for one edit."""
+    path = tmp_path / "boxes_single.csv"
+    write_arm_csv(path, "single", [(1, [0, 7], [ROW, ROW])])
+    return path, path.read_text(encoding="ascii").splitlines()
+
+
+def test_read_arm_csv_rejects_a_row_whose_arm_is_not_the_files_arm(tmp_path):
+    path, lines = _tampered(tmp_path)
+    lines[2] = lines[2].replace(",single,", ",batch8,")
+    path.write_text("\n".join(lines) + "\n", encoding="ascii")
+    with pytest.raises(ValueError, match="file arm"):
+        read_arm_csv(path)
+
+
+def test_read_arm_csv_rejects_a_non_contiguous_box_index(tmp_path):
+    path, lines = _tampered(tmp_path)
+    cells = lines[2].split(",")
+    cells[2] = "%06d" % 5                   # box_index 1 -> 5: a box went missing
+    lines[2] = ",".join(cells)
+    path.write_text("\n".join(lines) + "\n", encoding="ascii")
+    with pytest.raises(ValueError, match="out of sequence"):
+        read_arm_csv(path)
+
+
+def test_read_arm_csv_rejects_a_declared_count_the_rows_do_not_meet(tmp_path):
+    path, lines = _tampered(tmp_path)
+    del lines[2]                            # a truncated frame: 2 declared, 1 parsed
+    path.write_text("\n".join(lines) + "\n", encoding="ascii")
+    with pytest.raises(ValueError, match="declares 2, parsed 1"):
+        read_arm_csv(path)

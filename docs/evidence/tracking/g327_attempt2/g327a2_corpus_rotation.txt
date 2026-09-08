@@ -1,0 +1,55 @@
+=== [A] raw ls of the whole corpus, time style %Y%m%d_%H%M%S UTC, taken 20260908_090257 ===
+-rw-rw-rw- 1 root root 33120099 20260908_041343 /workspace/nba-ai-system/data/footage_corpus/nba__0022500081_s2436.mp4
+-rw-rw-rw- 1 root root 29931165 20260908_041103 /workspace/nba-ai-system/data/footage_corpus/nba__0022500081_s357.mp4
+-rw-rw-rw- 1 root root 34065292 20260908_044652 /workspace/nba-ai-system/data/footage_corpus/nba__0022500081_s4812.mp4
+-rw-rw-rw- 1 root root  6943784 20260908_052301 /workspace/nba-ai-system/data/footage_corpus/nba__0022500081_s8673.mp4
+-rw-rw-rw- 1 root root  8197108 20260907_225003 /workspace/nba-ai-system/data/footage_corpus/nba__0022500575_s4500.mp4
+-rw-rw-rw- 1 root root  3380672 20260907_225043 /workspace/nba-ai-system/data/footage_corpus/nba__0022500575_s9300.mp4
+-rw-rw-rw- 1 root root  9320310 20260907_234323 /workspace/nba-ai-system/data/footage_corpus/nba__0022500592_s2700.mp4
+-rw-rw-rw- 1 root root  8495399 20260907_234216 /workspace/nba-ai-system/data/footage_corpus/nba__0022500592_s300.mp4
+-rw-rw-rw- 1 root root  9383742 20260907_234403 /workspace/nba-ai-system/data/footage_corpus/nba__0022500592_s4500.mp4
+-rw-rw-rw- 1 root root  2396170 20260907_234520 /workspace/nba-ai-system/data/footage_corpus/nba__0022500592_s9300.mp4
+-rw-rw-rw- 1 root root 11420535 20260907_224125 /workspace/nba-ai-system/data/footage_corpus/nba__0022500594_s4500.mp4
+-rw-rw-rw- 1 root root  7739663 20260908_003314 /workspace/nba-ai-system/data/footage_corpus/nba__0022500621_s2100.mp4
+-rw-rw-rw- 1 root root  7722393 20260908_003423 /workspace/nba-ai-system/data/footage_corpus/nba__0022500621_s6000.mp4
+-rw-rw-rw- 1 root root 10577982 20260908_003443 /workspace/nba-ai-system/data/footage_corpus/nba__0022500621_s7200.mp4
+-rw-rw-rw- 1 root root 46710488 20260908_083229 /workspace/nba-ai-system/data/footage_corpus/nba__4PH6yOSvcs4_s1511.mp4
+-rw-rw-rw- 1 root root 48368543 20260908_083254 /workspace/nba-ai-system/data/footage_corpus/nba__4PH6yOSvcs4_s2932.mp4
+-rw-rw-rw- 1 root root 41073189 20260908_084132 /workspace/nba-ai-system/data/footage_corpus/nba__m7K0J4wzDn4_s2070.mp4
+-rw-rw-rw- 1 root root 35810642 20260908_084151 /workspace/nba-ai-system/data/footage_corpus/nba__m7K0J4wzDn4_s4050.mp4
+-rw-rw-rw- 1 root root 71290409 20260908_063406 /workspace/nba-ai-system/data/footage_corpus/ncaa_basketball__N-eE7ZwTuno_s3990.mp4
+-rw-rw-rw- 1 root root 61722800 20260908_082019 /workspace/nba-ai-system/data/footage_corpus/wnba__6FlZaoWSfFw_s90.mp4
+=== [A] count ===
+20
+=== [A] the three clips THIS row snapshotted ===
+-rw-rw-rw- 1 root root 41073189 20260908_084132 /workspace/nba-ai-system/data/footage_corpus/nba__m7K0J4wzDn4_s2070.mp4
+-rw-rw-rw- 1 root root 48368543 20260908_083254 /workspace/nba-ai-system/data/footage_corpus/nba__4PH6yOSvcs4_s2932.mp4
+-rw-rw-rw- 1 root root 61722800 20260908_082019 /workspace/nba-ai-system/data/footage_corpus/wnba__6FlZaoWSfFw_s90.mp4
+
+=== [B] the SAME raw command again, taken 20260908_090323 ===
+-rw-rw-rw- 1 root root 33120099 20260908_041343 /workspace/nba-ai-system/data/footage_corpus/nba__0022500081_s2436.mp4
+-rw-rw-rw- 1 root root 29931165 20260908_041103 /workspace/nba-ai-system/data/footage_corpus/nba__0022500081_s357.mp4
+-rw-rw-rw- 1 root root 34065292 20260908_044652 /workspace/nba-ai-system/data/footage_corpus/nba__0022500081_s4812.mp4
+-rw-rw-rw- 1 root root  6943784 20260908_052301 /workspace/nba-ai-system/data/footage_corpus/nba__0022500081_s8673.mp4
+-rw-rw-rw- 1 root root  8197108 20260907_225003 /workspace/nba-ai-system/data/footage_corpus/nba__0022500575_s4500.mp4
+-rw-rw-rw- 1 root root  3380672 20260907_225043 /workspace/nba-ai-system/data/footage_corpus/nba__0022500575_s9300.mp4
+-rw-rw-rw- 1 root root  9320310 20260907_234323 /workspace/nba-ai-system/data/footage_corpus/nba__0022500592_s2700.mp4
+-rw-rw-rw- 1 root root  8495399 20260907_234216 /workspace/nba-ai-system/data/footage_corpus/nba__0022500592_s300.mp4
+-rw-rw-rw- 1 root root  9383742 20260907_234403 /workspace/nba-ai-system/data/footage_corpus/nba__0022500592_s4500.mp4
+-rw-rw-rw- 1 root root  2396170 20260907_234520 /workspace/nba-ai-system/data/footage_corpus/nba__0022500592_s9300.mp4
+-rw-rw-rw- 1 root root 11420535 20260907_224125 /workspace/nba-ai-system/data/footage_corpus/nba__0022500594_s4500.mp4
+-rw-rw-rw- 1 root root  7739663 20260908_003314 /workspace/nba-ai-system/data/footage_corpus/nba__0022500621_s2100.mp4
+-rw-rw-rw- 1 root root  7722393 20260908_003423 /workspace/nba-ai-system/data/footage_corpus/nba__0022500621_s6000.mp4
+-rw-rw-rw- 1 root root 10577982 20260908_003443 /workspace/nba-ai-system/data/footage_corpus/nba__0022500621_s7200.mp4
+-rw-rw-rw- 1 root root 46710488 20260908_083229 /workspace/nba-ai-system/data/footage_corpus/nba__4PH6yOSvcs4_s1511.mp4
+-rw-rw-rw- 1 root root 48368543 20260908_083254 /workspace/nba-ai-system/data/footage_corpus/nba__4PH6yOSvcs4_s2932.mp4
+-rw-rw-rw- 1 root root 41073189 20260908_084132 /workspace/nba-ai-system/data/footage_corpus/nba__m7K0J4wzDn4_s2070.mp4
+-rw-rw-rw- 1 root root 35810642 20260908_084151 /workspace/nba-ai-system/data/footage_corpus/nba__m7K0J4wzDn4_s4050.mp4
+-rw-rw-rw- 1 root root 71290409 20260908_063406 /workspace/nba-ai-system/data/footage_corpus/ncaa_basketball__N-eE7ZwTuno_s3990.mp4
+-rw-rw-rw- 1 root root 61722800 20260908_082019 /workspace/nba-ai-system/data/footage_corpus/wnba__6FlZaoWSfFw_s90.mp4
+=== [B] count ===
+20
+=== [B] vol_guard and the named track_daemon pid, observed only, never signalled ===
+    PID     ELAPSED   RSS COMMAND
+1039858    02:05:18 12292 python3 /workspace/vol_guard.py 43200
+=== end ===

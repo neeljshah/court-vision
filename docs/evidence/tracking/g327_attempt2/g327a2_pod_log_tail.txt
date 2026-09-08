@@ -1,0 +1,40 @@
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ARM slot=3 batch2 {"batch": 2, "ms_per_frame_us": 32576, "kwargs": {"classes": "[0]", "conf": "0.22", "verbose": "False", "imgsz": "640", "half": "True", "device": "0"}, "tensor_shapes": [[2, 3, 352, 640]], "tensor_dtypes": ["torch.float16"], "boxes_total": 507, "zero_box_frames": 0}
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ARM slot=3 batch8 {"batch": 8, "ms_per_frame_us": 17397, "kwargs": {"classes": "[0]", "conf": "0.22", "verbose": "False", "imgsz": "640", "half": "True", "device": "0"}, "tensor_shapes": [[8, 3, 352, 640]], "tensor_dtypes": ["torch.float16"], "boxes_total": 507, "zero_box_frames": 0}
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ARM slot=3 pad {"batch": 8, "ms_per_frame_us": 17611, "kwargs": {"classes": "[0]", "conf": "0.22", "verbose": "False", "imgsz": "[352, 640]", "half": "True", "device": "0"}, "tensor_shapes": [[8, 3, 352, 640]], "tensor_dtypes": ["torch.float16"], "boxes_total": 507, "zero_box_frames": 0}
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ARM slot=3 fp32 {"batch": 8, "ms_per_frame_us": 15251, "kwargs": {"classes": "[0]", "conf": "0.22", "verbose": "False", "imgsz": "640", "half": "False", "device": "0"}, "tensor_shapes": [[8, 3, 352, 640]], "tensor_dtypes": ["torch.float32"], "boxes_total": 507, "zero_box_frames": 0}
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ARM slot=3 nmsord {"batch": 8, "ms_per_frame_us": 15291, "kwargs": {"classes": "[0]", "conf": "0.22", "verbose": "False", "imgsz": "640", "half": "True", "device": "0"}, "tensor_shapes": [[8, 3, 352, 640]], "tensor_dtypes": ["torch.float16"], "boxes_total": 507, "zero_box_frames": 0}
+{"command": ["nvidia-smi", "--query-gpu=memory.used,memory.total", "--format=csv,noheader"], "rc": 0, "stdout": "2325 MiB, 24576 MiB\n", "stderr": ""}
+{"command": ["bash", "-lc", "ps -o pid,etime,rss,args -p 929149,1039858"], "rc": 0, "stdout": "    PID     ELAPSED   RSS COMMAND\n1039858    02:00:05 12292 python3 /workspace/vol_guard.py 43200\n", "stderr": ""}
+WROTE /workspace/wt/a21/g327a2/out/g327a2_summary.json
+DETECT_DONE rc=0
