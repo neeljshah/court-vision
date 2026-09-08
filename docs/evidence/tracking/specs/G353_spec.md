@@ -12,7 +12,7 @@ sha256-verified G348 fixture windows (`docs/evidence/tracking/g348_gate_executio
 re-fetch read-only from the pod by the paths named there if the local scratch copies are gone; never write
 under `/workspace/nba-ai-system`), the G348 planted-defect constructors, the 2 committed WNBA tables.
 
-**WHY THIS ROW EXISTS.** G348 measured that 0 of 607 pod tracking tables carry a `court_calibration.json`
+**WHY THIS ROW EXISTS.** G348 measured that 0 of 603 archived pod tracking tables carry a `court_calibration.json`
 sidecar, that 602 of 607 headers declare `coordinate_space=image_px`, and that the rail
 (`tracking_schema.py` `_validate_coordinate_space`, `SPORT_COORDINATE_SPACES` court spaces only) makes
 `coordinate_contract` REJECT 30 of 30 real windows (Wilson 95 pct CI 0.8865 to 1.0) so that every one of the
