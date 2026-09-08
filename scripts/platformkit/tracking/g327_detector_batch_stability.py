@@ -89,16 +89,29 @@ def snapshot(args) -> None:
     print("WROTE %s" % (out / "g327a2_snapshot.json"), flush=True)
 
 
-def verify_snapshot(manifest: dict, snap: Path) -> list:
+def _refuse(g: dict, detail: str, fatal: bool) -> None:
+    """Stop the run, or DROP the game with an explicit line when the caller opted out."""
+    if fatal:
+        raise ValueError("game %s slot %s: %s" % (g["game"], g["slot"], detail))
+    print("DROPPED slot=%s %s: %s" % (g["slot"], g["game"], detail), flush=True)
+
+
+def verify_snapshot(manifest: dict, snap: Path, fatal: bool = True) -> list:
     """Reload each snapshotted game and re-hash EVERY frame against the sealed list.
 
-    A game with any mismatched or missing frame is DROPPED, with its reason recorded, and
-    the run continues on what verifies -- never silently, and never with a substitute."""
+    `fatal=True` (the DEFAULT, and what every rerun gets) RAISES on the first missing or
+    mismatched frame, naming the game, the slot and the frame id. It is a deliberate change
+    of default from the landed drop-and-continue, because scoring a silently reduced frame
+    set is the defect; it cannot move a committed number, since the committed attempt-2
+    snapshot verifies whole. `fatal=False` stays reachable and reproduces the landed
+    behaviour: the game is DROPPED with its reason recorded and an explicit line, and the
+    run continues on what verifies -- never silently, and never with a substitute."""
     kept = []
     for g in manifest["games"]:
         path, n = snap / g["npy"], len(g["frame_sha256"])
         if not path.is_file():
             g["verified"] = {"ok": 0, "n": n, "reason": "snapshot file absent"}
+            _refuse(g, "snapshot file %s is absent" % g["npy"], fatal)
             continue
         frames = load_frames(path)
         got = [hashlib.sha256(f.tobytes()).hexdigest() for f in frames]
@@ -109,6 +122,13 @@ def verify_snapshot(manifest: dict, snap: Path) -> list:
               % (g["slot"], g["game"], ok, n), flush=True)
         if ok == n and len(frames) == len(g["frame_indices"]):
             kept.append((g, frames))
+            continue
+        ids = g["frame_indices"]
+        bad = [i for i, (a, b) in enumerate(zip(got, g["frame_sha256"])) if a != b]
+        _refuse(g, ("frame id %s hash mismatch (%d of %d frames match)"
+                    % (ids[bad[0]] if bad[0] < len(ids) else bad[0], ok, n)) if bad else
+                ("%d frames reloaded for %d sealed frame ids" % (len(frames), len(ids))),
+                fatal)
     return kept
 
 

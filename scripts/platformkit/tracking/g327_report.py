@@ -141,7 +141,7 @@ def score(args) -> None:
     artifact = Path(args.artifact)
     order, tables = {}, {}
     for arm in (REF,) + ARM_ORDER:
-        o, t = read_arm_csv(artifact / ("g327a2_boxes_%s.csv" % arm))
+        o, t = read_arm_csv(artifact / ("g327a2_boxes_%s.csv" % arm), expected_arm=arm)
         order[arm], tables[arm] = o, t
     slots = sorted(order[REF])
     meta = load_arms(artifact)

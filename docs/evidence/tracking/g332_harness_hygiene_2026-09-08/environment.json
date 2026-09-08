@@ -1,0 +1,47 @@
+{
+  "captured_utc": "2026-09-08T14:04:54Z",
+  "cgroup_cpu_quota": null,
+  "cpu_count": 12,
+  "git": {
+    "dirty": true,
+    "head_sha": "89ff84be33d88bf6b96cc9db0cf9bcd3a64b4f38",
+    "unavailable_reason": null
+  },
+  "host": {
+    "hostname": "DESKTOP-VUIITL8",
+    "role": "local",
+    "role_rule": "role is 'pod' when /workspace/nba-ai-system exists, else 'local'"
+  },
+  "libraries": {
+    "cv2": "4.11.0",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scipy": "1.15.1",
+    "sklearn": "1.6.1",
+    "torch": "2.2.0+cu121",
+    "ultralytics": "8.3.64"
+  },
+  "modules": [
+    {
+      "path": "scripts/platformkit/tracking/census_recomputable.py",
+      "sha256": "7517d3acdb36f9d9eb036810c5d7335ce8a7af74ba423f7691db055be6f862ba",
+      "unavailable_reason": null
+    }
+  ],
+  "platform": "Windows-10-10.0.26200-SP0",
+  "python_version": "3.10.0",
+  "schema": "g62_environment_sidecar_v1",
+  "seed": null,
+  "seed_reason": "no seeded randomness on this route",
+  "threads": {
+    "MKL_NUM_THREADS": null,
+    "OMP_NUM_THREADS": null,
+    "torch_num_threads": 6
+  },
+  "torch_build": {
+    "cuda_available": true,
+    "cuda_version": "12.1",
+    "cudnn_version": 8801,
+    "unavailable_reason": null
+  }
+}

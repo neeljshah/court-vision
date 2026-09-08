@@ -45,7 +45,7 @@ def _by_line(report: dict) -> dict[int, dict]:
 
 def test_the_check_pins_all_four_verdicts_on_a_construct(tmp_path):
     memo = _build(tmp_path)
-    report = scan_memo(memo, tmp_path)
+    report = scan_memo(memo, tmp_path, construct_only=True)
 
     assert report["exists"] is True
     assert set(report["artifacts"]) == {"census.csv", "snapshots.json"}
@@ -77,12 +77,12 @@ def test_the_check_pins_all_four_verdicts_on_a_construct(tmp_path):
 
 def test_a_clock_time_and_a_path_are_not_parsed_as_counts(tmp_path):
     memo = _build(tmp_path)
-    report = scan_memo(memo, tmp_path)
+    report = scan_memo(memo, tmp_path, construct_only=True)
     assert 6 not in _by_line(report), "line 6 holds only a clock time and a path"
 
 
 def test_an_uncommitted_memo_is_absent_not_skipped(tmp_path):
-    report = scan_memo("never_written.md", tmp_path)
+    report = scan_memo("never_written.md", tmp_path, construct_only=True)
     assert report["exists"] is False
     assert report["totals"] == {ABSENT: 1}
     assert report["n"] == 0
@@ -91,7 +91,8 @@ def test_an_uncommitted_memo_is_absent_not_skipped(tmp_path):
 
 def test_csv_zero_pads_every_integer_cell(tmp_path):
     memo = _build(tmp_path)
-    reports = [scan_memo(memo, tmp_path), scan_memo("never_written.md", tmp_path)]
+    reports = [scan_memo(memo, tmp_path, construct_only=True),
+               scan_memo("never_written.md", tmp_path, construct_only=True)]
     out = tmp_path / "sweep.csv"
     write_csv(reports, out, {memo: "CONSTRUCT"})
     lines = out.read_text(encoding="ascii").splitlines()

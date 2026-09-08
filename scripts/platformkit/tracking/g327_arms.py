@@ -195,15 +195,17 @@ def write_arm_csv(path, arm: str, games: list) -> int:
     return n
 
 
-def read_arm_csv(path) -> tuple[dict, dict]:
+def read_arm_csv(path, expected_arm: str | None = None) -> tuple[dict, dict]:
     """Inverse of `write_arm_csv`: `(order, table)` where `order` maps slot -> the frame
     indices IN FILE ORDER, zero-box frames included, and `table` maps slot -> frame ->
     boxes. The scorer builds every reported value from this and from nothing else.
 
-    A MALFORMED ROW RAISES: the arm cell must match the file's arm, box indices must run
-    0..n-1 inside a frame, and `n_boxes` must equal the boxes parsed -- a truncated or
-    spliced CSV would otherwise reconstruct into a plausible table. Attempt-1's nine
-    columns carry no `slot`/`n_boxes`: slot 0, declared-count check skipped."""
+    A MALFORMED ROW RAISES: the arm cell must match the file's arm AND `expected_arm`
+    when one is given -- a WHOLLY mislabelled file, one arm's rows saved under another
+    arm's name, is self-consistent and nothing else catches it. Box indices must run
+    0..n-1 inside a frame and `n_boxes` must equal the boxes parsed, or a truncated or
+    spliced CSV would reconstruct into a plausible table. Attempt-1's nine columns carry
+    no `slot`/`n_boxes`: slot 0, declared-count check skipped."""
     order: dict = {}
     table: dict = {}
     declared: dict = {}
@@ -223,8 +225,9 @@ def read_arm_csv(path) -> tuple[dict, dict]:
             slot = "000000" if legacy else cells[9]
             if file_arm is None:
                 file_arm = a
-            elif a != file_arm:
-                raise ValueError("row arm %r is not the file arm %r" % (a, file_arm))
+            if a != file_arm or (expected_arm is not None and a != expected_arm):
+                raise ValueError("row arm %r is not the file arm %r or the expected arm %r"
+                                 % (a, file_arm, expected_arm))
             s, i = int(slot), int(f)
             seen = order.setdefault(s, [])
             if not seen or seen[-1] != i:
