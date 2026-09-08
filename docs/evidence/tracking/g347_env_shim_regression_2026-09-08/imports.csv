@@ -1,0 +1,5 @@
+interpreter,import,before_ok,after_ok,shim_action,traceback_ref
+conda basketball_ai,YOLO,000000,000001,onnx_stub_for_mldtypes_attribute_error,tracebacks/conda_yolo_before.txt
+conda basketball_ai,osnet_reid,000001,000001,onnx_stub_for_mldtypes_attribute_error,tracebacks/conda_osnet_before.txt
+system python,YOLO,000001,000001,none,tracebacks/system_yolo_after.txt
+system python,osnet_reid,000000,000000,none,tracebacks/system_osnet_after.txt

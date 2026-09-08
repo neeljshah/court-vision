@@ -1,0 +1,3 @@
+SHIM_ACTION onnx_stub_for_mldtypes_attribute_error
+IMPORT_OK
+exit=0

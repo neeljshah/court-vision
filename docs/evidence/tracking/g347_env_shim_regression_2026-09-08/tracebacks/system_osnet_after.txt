@@ -1,0 +1,76 @@
+
+A module that was compiled using NumPy 1.x cannot be run in
+NumPy 2.2.6 as it may crash. To support both 1.x and 2.x
+versions of NumPy, modules must be compiled with NumPy 2.0.
+Some module may need to rebuild instead e.g. with 'pybind11>=2.12'.
+
+If you are a user of the module, the easiest solution will be to
+downgrade to 'numpy<2' or try to upgrade the affected module.
+We expect that some modules will need time to support NumPy 2.
+
+Traceback (most recent call last):  File "C:\Users\neelj\nba-track-a22\.g347_tmp\probe.py", line 20, in <module>
+    import src.tracking.osnet_reid  # noqa: F401
+  File "C:\Users\neelj\nba-track-a22\src\tracking\__init__.py", line 3, in <module>
+    from .ball_detect_track import BallDetectTrack
+  File "C:\Users\neelj\nba-track-a22\src\tracking\ball_detect_track.py", line 21, in <module>
+    import torch as _torch
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\__init__.py", line 1471, in <module>
+    from .functional import *  # noqa: F403
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\functional.py", line 9, in <module>
+    import torch.nn.functional as F
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\nn\__init__.py", line 1, in <module>
+    from .modules import *  # noqa: F403
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\nn\modules\__init__.py", line 35, in <module>
+    from .transformer import TransformerEncoder, TransformerDecoder, \
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\nn\modules\transformer.py", line 20, in <module>
+    device: torch.device = torch.device(torch._C._get_default_device()),  # torch.device('cpu'),
+C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\nn\modules\transformer.py:20: UserWarning: Failed to initialize NumPy: _ARRAY_API not found (Triggered internally at ..\torch\csrc\utils\tensor_numpy.cpp:84.)
+  device: torch.device = torch.device(torch._C._get_default_device()),  # torch.device('cpu'),
+C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torchreid\reid\metrics\rank.py:11: UserWarning: Cython evaluation (very fast so highly recommended) is unavailable, now use python evaluation.
+  warnings.warn(
+SHIM_ACTION none
+Traceback (most recent call last):
+  File "C:\Users\neelj\nba-track-a22\.g347_tmp\probe.py", line 20, in <module>
+    import src.tracking.osnet_reid  # noqa: F401
+  File "C:\Users\neelj\nba-track-a22\src\tracking\__init__.py", line 5, in <module>
+    from .video_handler import VideoHandler, TOPCUT
+  File "C:\Users\neelj\nba-track-a22\src\tracking\video_handler.py", line 7, in <module>
+    from .advanced_tracker import AdvancedFeetDetector
+  File "C:\Users\neelj\nba-track-a22\src\tracking\advanced_tracker.py", line 51, in <module>
+    from .osnet_reid import DeepAppearanceExtractor as _DeepAppearanceExtractor
+  File "C:\Users\neelj\nba-track-a22\src\tracking\osnet_reid.py", line 198, in <module>
+    import torchreid as _torchreid
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torchreid\__init__.py", line 1, in <module>
+    from torchreid.reid import data, engine, losses, metrics, models, optim, utils
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torchreid\reid\__init__.py", line 3, in <module>
+    from torchreid.reid import data, engine, losses, metrics, models, optim, utils
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torchreid\reid\engine\__init__.py", line 3, in <module>
+    from torchreid.reid.engine.image import ImageSoftmaxEngine, ImageTripletEngine
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torchreid\reid\engine\image\__init__.py", line 3, in <module>
+    from torchreid.reid.engine.image.softmax import ImageSoftmaxEngine
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torchreid\reid\engine\image\softmax.py", line 6, in <module>
+    from torchreid.reid.engine.engine import Engine
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torchreid\reid\engine\engine.py", line 9, in <module>
+    from torch.utils.tensorboard import SummaryWriter
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\utils\tensorboard\__init__.py", line 12, in <module>
+    from .writer import FileWriter, SummaryWriter  # noqa: F401
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\utils\tensorboard\writer.py", line 15, in <module>
+    from tensorboard.summary.writer.event_file_writer import EventFileWriter
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\summary\__init__.py", line 22, in <module>
+    from tensorboard.summary import v1  # noqa: F401
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\summary\v1.py", line 23, in <module>
+    from tensorboard.plugins.histogram import summary as _histogram_summary
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\plugins\histogram\summary.py", line 35, in <module>
+    from tensorboard.plugins.histogram import summary_v2
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\plugins\histogram\summary_v2.py", line 35, in <module>
+    from tensorboard.util import tensor_util
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\util\tensor_util.py", line 20, in <module>
+    from tensorboard.compat.tensorflow_stub import dtypes, compat, tensor_shape
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\compat\tensorflow_stub\__init__.py", line 22, in <module>
+    from .dtypes import as_dtype  # noqa
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\compat\tensorflow_stub\dtypes.py", line 326, in <module>
+    np.bool8: (False, True),
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\numpy\__init__.py", line 427, in __getattr__
+    raise AttributeError("module {!r} has no attribute "
+AttributeError: module 'numpy' has no attribute 'bool8'. Did you mean: 'bool'?
+exit=1

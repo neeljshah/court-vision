@@ -1,0 +1,10 @@
+WARNING Ultralytics settings reset to default values. This may be due to a possible problem with your settings or a recent ultralytics package update. 
+View Ultralytics Settings with 'yolo settings' or at 'C:\Users\neelj\AppData\Roaming\Ultralytics\settings.json'
+Update Settings with 'yolo settings key=value', i.e. 'yolo settings runs_dir=path/to/dir'. For help see https://docs.ultralytics.com/quickstart/#ultralytics-settings.
+C:\Users\neelj\anaconda3\envs\basketball_ai\lib\site-packages\requests\__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.2.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+  warnings.warn(
+Traceback (most recent call last):
+  File "C:\Users\neelj\nba-track-a22\.g347_tmp\probe.py", line 18, in <module>
+    from ultralytics import YOLO  # noqa: F401
+ImportError: cannot import name 'YOLO' from 'ultralytics' (C:\Users\neelj\anaconda3\envs\basketball_ai\lib\site-packages\ultralytics\__init__.py)
+exit=1

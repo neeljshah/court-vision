@@ -606,3 +606,6 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 2026-09-08 | tracking | G339 | joins 907/1000 and 803/1000 reproduced; census artifact has 37 rows but at least 2 semantic readers are omitted and frame-join count is 7 versus claimed 8 | REJECT (verified: codex-sol, contract A/B/Q)
 2026-09-08 | tracking | G339 | premise holds; census 66 rows/63 files but omits direct readers; joins 907/1000 and 803/1000 reproduced | REJECT (verified: codex-sol, contract A/B/Q)
 2026-09-08 | tracking | G339 | premise holds; 1023/1023 hits classified, 117 semantic rows plus 193 named exclusions, joins 907/1000 and 803/1000 | ACCEPT (verified: codex-sol, contract A/B/Q)
+2026-09-08 | hook | G347 | G347: preregistration (landed alone, Q1) | LANDED (auto; verifier line pending) | fc1b4c6ef
+2026-09-08 | tracking | G347 | probe-first shim: conda YOLO 0 to 1, conda osnet_reid 1 to 1, system YOLO 1 to 1 (no longer regresses, was 1 to 0 in G340), system osnet_reid 0 to 0 (unchanged, unrelated numpy.bool8); premise TRUE for the pre-fix shim (uncaught protobuf ImportError); both focused conda tests pass, 0 packages installed | DONE
+2026-09-08 | tracking | G347 | premise true; conda YOLO 0->1 and osnet_reid 1->1; system YOLO 1->1 and osnet_reid 0->0; focused tests 2/2 and 3/3 | ACCEPT (verified: codex-sol, contract A/B/Q)

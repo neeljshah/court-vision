@@ -1,0 +1,287 @@
+F.F                                                                      [100%]
+================================== FAILURES ===================================
+_____ test_known_mldtypes_attribute_error_gets_only_the_onnx_placeholder ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000021266089EA0>
+
+    def test_known_mldtypes_attribute_error_gets_only_the_onnx_placeholder(monkeypatch):
+        monkeypatch.delitem(sys.modules, "onnx", raising=False)
+    
+        def broken(name):
+            assert name == "onnx"
+            raise AttributeError("module ml_dtypes has no attribute float4_e2m1fn")
+    
+        monkeypatch.setattr(env_shim.importlib, "import_module", broken)
+>       assert env_shim.prepare_route_imports() == env_shim.ONNX_ML_DTYPES_STUB
+E       AssertionError: assert 'none' == 'onnx_stub_fo...tribute_error'
+E         
+E         - onnx_stub_for_mldtypes_attribute_error
+E         + none
+
+tests\platformkit\test_g340_env_shim.py:15: AssertionError
+________________ test_current_route_imports_after_preparation _________________
+
+    def test_current_route_imports_after_preparation():
+        env_shim.prepare_route_imports()
+        from ultralytics import YOLO  # noqa: F401
+>       import src.tracking.osnet_reid  # noqa: F401
+
+tests\platformkit\test_g340_env_shim.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\tracking\__init__.py:5: in <module>
+    from .video_handler import VideoHandler, TOPCUT
+src\tracking\video_handler.py:7: in <module>
+    from .advanced_tracker import AdvancedFeetDetector
+src\tracking\advanced_tracker.py:51: in <module>
+    from .osnet_reid import DeepAppearanceExtractor as _DeepAppearanceExtractor
+src\tracking\osnet_reid.py:198: in <module>
+    import torchreid as _torchreid
+..\AppData\Local\Programs\Python\Python310\lib\site-packages\torchreid\__init__.py:1: in <module>
+    from torchreid.reid import data, engine, losses, metrics, models, optim, utils
+..\AppData\Local\Programs\Python\Python310\lib\site-packages\torchreid\reid\__init__.py:3: in <module>
+    from torchreid.reid import data, engine, losses, metrics, models, optim, utils
+..\AppData\Local\Programs\Python\Python310\lib\site-packages\torchreid\reid\engine\__init__.py:3: in <module>
+    from torchreid.reid.engine.image import ImageSoftmaxEngine, ImageTripletEngine
+..\AppData\Local\Programs\Python\Python310\lib\site-packages\torchreid\reid\engine\image\__init__.py:3: in <module>
+    from torchreid.reid.engine.image.softmax import ImageSoftmaxEngine
+..\AppData\Local\Programs\Python\Python310\lib\site-packages\torchreid\reid\engine\image\softmax.py:6: in <module>
+    from torchreid.reid.engine.engine import Engine
+..\AppData\Local\Programs\Python\Python310\lib\site-packages\torchreid\reid\engine\engine.py:9: in <module>
+    from torch.utils.tensorboard import SummaryWriter
+..\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\utils\tensorboard\__init__.py:12: in <module>
+    from .writer import FileWriter, SummaryWriter  # noqa: F401
+..\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\utils\tensorboard\writer.py:15: in <module>
+    from tensorboard.summary.writer.event_file_writer import EventFileWriter
+..\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\summary\__init__.py:22: in <module>
+    from tensorboard.summary import v1  # noqa: F401
+..\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\summary\v1.py:23: in <module>
+    from tensorboard.plugins.histogram import summary as _histogram_summary
+..\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\plugins\histogram\summary.py:35: in <module>
+    from tensorboard.plugins.histogram import summary_v2
+..\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\plugins\histogram\summary_v2.py:35: in <module>
+    from tensorboard.util import tensor_util
+..\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\util\tensor_util.py:20: in <module>
+    from tensorboard.compat.tensorflow_stub import dtypes, compat, tensor_shape
+..\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\compat\tensorflow_stub\__init__.py:22: in <module>
+    from .dtypes import as_dtype  # noqa
+..\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\compat\tensorflow_stub\dtypes.py:326: in <module>
+    np.bool8: (False, True),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+attr = 'bool8'
+
+    def __getattr__(attr):
+        # Warn for expired attributes
+        import warnings
+    
+        if attr == "linalg":
+            import numpy.linalg as linalg
+            return linalg
+        elif attr == "fft":
+            import numpy.fft as fft
+            return fft
+        elif attr == "dtypes":
+            import numpy.dtypes as dtypes
+            return dtypes
+        elif attr == "random":
+            import numpy.random as random
+            return random
+        elif attr == "polynomial":
+            import numpy.polynomial as polynomial
+            return polynomial
+        elif attr == "ma":
+            import numpy.ma as ma
+            return ma
+        elif attr == "ctypeslib":
+            import numpy.ctypeslib as ctypeslib
+            return ctypeslib
+        elif attr == "exceptions":
+            import numpy.exceptions as exceptions
+            return exceptions
+        elif attr == "testing":
+            import numpy.testing as testing
+            return testing
+        elif attr == "matlib":
+            import numpy.matlib as matlib
+            return matlib
+        elif attr == "f2py":
+            import numpy.f2py as f2py
+            return f2py
+        elif attr == "typing":
+            import numpy.typing as typing
+            return typing
+        elif attr == "rec":
+            import numpy.rec as rec
+            return rec
+        elif attr == "char":
+            import numpy.char as char
+            return char
+        elif attr == "array_api":
+            raise AttributeError("`numpy.array_api` is not available from "
+                                 "numpy 2.0 onwards", name=None)
+        elif attr == "core":
+            import numpy.core as core
+            return core
+        elif attr == "strings":
+            import numpy.strings as strings
+            return strings
+        elif attr == "distutils":
+            if 'distutils' in __numpy_submodules__:
+                import numpy.distutils as distutils
+                return distutils
+            else:
+                raise AttributeError("`numpy.distutils` is not available from "
+                                     "Python 3.12 onwards", name=None)
+    
+        if attr in __future_scalars__:
+            # And future warnings for those that will change, but also give
+            # the AttributeError
+            warnings.warn(
+                f"In the future `np.{attr}` will be defined as the "
+                "corresponding NumPy scalar.", FutureWarning, stacklevel=2)
+    
+        if attr in __former_attrs__:
+            raise AttributeError(__former_attrs__[attr], name=None)
+    
+        if attr in __expired_attributes__:
+            raise AttributeError(
+                f"`np.{attr}` was removed in the NumPy 2.0 release. "
+                f"{__expired_attributes__[attr]}",
+                name=None
+            )
+    
+        if attr == "chararray":
+            warnings.warn(
+                "`np.chararray` is deprecated and will be removed from "
+                "the main namespace in the future. Use an array with a string "
+                "or bytes dtype instead.", DeprecationWarning, stacklevel=2)
+            import numpy.char as char
+            return char.chararray
+    
+>       raise AttributeError("module {!r} has no attribute "
+                             "{!r}".format(__name__, attr))
+E       AttributeError: module 'numpy' has no attribute 'bool8'. Did you mean: 'bool'?
+
+..\AppData\Local\Programs\Python\Python310\lib\site-packages\numpy\__init__.py:427: AttributeError
+---------------------------- Captured stderr call -----------------------------
+
+A module that was compiled using NumPy 1.x cannot be run in
+NumPy 2.2.6 as it may crash. To support both 1.x and 2.x
+versions of NumPy, modules must be compiled with NumPy 2.0.
+Some module may need to rebuild instead e.g. with 'pybind11>=2.12'.
+
+If you are a user of the module, the easiest solution will be to
+downgrade to 'numpy<2' or try to upgrade the affected module.
+We expect that some modules will need time to support NumPy 2.
+
+Traceback (most recent call last):  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\pytest\__main__.py", line 9, in <module>
+    raise SystemExit(pytest.console_main())
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\config\__init__.py", line 223, in console_main
+    code = main()
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\config\__init__.py", line 199, in main
+    ret: ExitCode | int = config.hook.pytest_cmdline_main(config=config)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\main.py", line 365, in pytest_cmdline_main
+    return wrap_session(config, _main)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\main.py", line 318, in wrap_session
+    session.exitstatus = doit(config, session) or 0
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\main.py", line 372, in _main
+    config.hook.pytest_runtestloop(session=session)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\main.py", line 396, in pytest_runtestloop
+    item.config.hook.pytest_runtest_protocol(item=item, nextitem=nextitem)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\runner.py", line 118, in pytest_runtest_protocol
+    runtestprotocol(item, nextitem=nextitem)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\runner.py", line 137, in runtestprotocol
+    reports.append(call_and_report(item, "call", log))
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\runner.py", line 244, in call_and_report
+    call = CallInfo.from_call(
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\runner.py", line 353, in from_call
+    result: TResult | None = func()
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\runner.py", line 245, in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\runner.py", line 179, in pytest_runtest_call
+    item.runtest()
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py", line 1720, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\_pytest\python.py", line 166, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File "C:\Users\neelj\nba-track-a22\tests\platformkit\test_g340_env_shim.py", line 30, in test_current_route_imports_after_preparation
+    from ultralytics import YOLO  # noqa: F401
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\ultralytics\__init__.py", line 11, in <module>
+    from ultralytics.models import NAS, RTDETR, SAM, YOLO, FastSAM, YOLOWorld
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\ultralytics\models\__init__.py", line 3, in <module>
+    from .fastsam import FastSAM
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\ultralytics\models\fastsam\__init__.py", line 3, in <module>
+    from .model import FastSAM
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\ultralytics\models\fastsam\model.py", line 5, in <module>
+    from ultralytics.engine.model import Model
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\ultralytics\engine\model.py", line 8, in <module>
+    import torch
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\__init__.py", line 1471, in <module>
+    from .functional import *  # noqa: F403
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\functional.py", line 9, in <module>
+    import torch.nn.functional as F
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\nn\__init__.py", line 1, in <module>
+    from .modules import *  # noqa: F403
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\nn\modules\__init__.py", line 35, in <module>
+    from .transformer import TransformerEncoder, TransformerDecoder, \
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\nn\modules\transformer.py", line 20, in <module>
+    device: torch.device = torch.device(torch._C._get_default_device()),  # torch.device('cpu'),
+============================== warnings summary ===============================
+tests/platformkit/test_g340_env_shim.py::test_current_route_imports_after_preparation
+  C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\nn\modules\transformer.py:20: UserWarning: Failed to initialize NumPy: _ARRAY_API not found (Triggered internally at ..\torch\csrc\utils\tensor_numpy.cpp:84.)
+    device: torch.device = torch.device(torch._C._get_default_device()),  # torch.device('cpu'),
+
+tests/platformkit/test_g340_env_shim.py::test_current_route_imports_after_preparation
+tests/platformkit/test_g340_env_shim.py::test_current_route_imports_after_preparation
+  C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\thop\profile.py:12: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    if LooseVersion(torch.__version__) < LooseVersion("1.0.0"):
+
+tests/platformkit/test_g340_env_shim.py::test_current_route_imports_after_preparation
+tests/platformkit/test_g340_env_shim.py::test_current_route_imports_after_preparation
+  C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\thop\profile.py:68: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    if LooseVersion(torch.__version__) >= LooseVersion("1.1.0"):
+
+tests/platformkit/test_g340_env_shim.py::test_current_route_imports_after_preparation
+  C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torchreid\reid\metrics\rank.py:11: UserWarning: Cython evaluation (very fast so highly recommended) is unavailable, now use python evaluation.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/platformkit/test_g340_env_shim.py::test_known_mldtypes_attribute_error_gets_only_the_onnx_placeholder
+FAILED tests/platformkit/test_g340_env_shim.py::test_current_route_imports_after_preparation
+2 failed, 1 passed, 6 warnings in 22.49s
+exit=1

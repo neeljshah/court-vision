@@ -1,0 +1,5 @@
+SHIM_ACTION onnx_stub_for_mldtypes_attribute_error
+C:\Users\neelj\anaconda3\envs\basketball_ai\lib\site-packages\requests\__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.2.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+  warnings.warn(
+IMPORT_OK
+exit=0

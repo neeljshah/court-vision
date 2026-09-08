@@ -1,0 +1,24 @@
+Traceback (most recent call last):
+  File "<string>", line 6, in <module>
+  File "C:\Users\neelj\nba-track-a22\.g347_tmp/env_shim_old_src.py", line 36, in prepare_route_imports
+    action = _onnx_preflight()
+  File "C:\Users\neelj\nba-track-a22\.g347_tmp/env_shim_old_src.py", line 20, in _onnx_preflight
+    importlib.import_module("onnx")
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\importlib\__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\onnx\__init__.py", line 78, in <module>
+    from onnx.external_data_helper import (
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\onnx\external_data_helper.py", line 14, in <module>
+    from onnx.onnx_pb import (
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\onnx\onnx_pb.py", line 4, in <module>
+    from .onnx_ml_pb2 import *  # noqa
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\onnx\onnx_ml_pb2.py", line 5, in <module>
+    from google.protobuf.internal import builder as _builder
+ImportError: cannot import name 'builder' from 'google.protobuf.internal' (C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\google\protobuf\internal\__init__.py)
+exit=1

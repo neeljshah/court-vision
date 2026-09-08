@@ -1,0 +1,42 @@
+{
+  "captured_utc": "2026-09-08T18:12:07Z",
+  "cgroup_cpu_quota": null,
+  "cpu_count": 12,
+  "git": {
+    "dirty": true,
+    "head_sha": "1ba800b19c4daa9d26df294f930e9b9bec2ddf1b",
+    "unavailable_reason": null
+  },
+  "host": {
+    "hostname": "DESKTOP-VUIITL8",
+    "role": "local",
+    "role_rule": "role is 'pod' when /workspace/nba-ai-system exists, else 'local'"
+  },
+  "import_shim": "onnx_stub_for_mldtypes_attribute_error",
+  "libraries": {
+    "cv2": "4.13.0",
+    "numpy": "1.26.4",
+    "pandas": "2.3.3",
+    "scipy": "1.15.3",
+    "sklearn": "1.7.2",
+    "torch": "2.1.2+cu121",
+    "ultralytics": "8.4.21"
+  },
+  "modules": [],
+  "platform": "Windows-10-10.0.26200-SP0",
+  "python_version": "3.10.20",
+  "schema": "g62_environment_sidecar_v1",
+  "seed": null,
+  "seed_reason": "no seeded randomness on this route",
+  "threads": {
+    "MKL_NUM_THREADS": null,
+    "OMP_NUM_THREADS": null,
+    "torch_num_threads": 6
+  },
+  "torch_build": {
+    "cuda_available": true,
+    "cuda_version": "12.1",
+    "cudnn_version": 8801,
+    "unavailable_reason": null
+  }
+}
