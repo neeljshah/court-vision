@@ -1,4 +1,4 @@
-GAP G346 | sport all | worktree aX | log cx_g346_frozen_video_gate
+GAP G346 | sport all | worktree a10 | log cx_g346_frozen_video_gate
 
 **CORPUS DEFECT ROW: FROZEN / STATIC VIDEO SECTIONS (local + pod census; codex PREPARES, a finisher
 MEASURES).** `src/`, `kernel/`, `api/` and `intel/` are READ and IMPORT only. Build in `scripts/platformkit/`
