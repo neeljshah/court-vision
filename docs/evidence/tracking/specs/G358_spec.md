@@ -1,4 +1,4 @@
-GAP G358 | sport all (basketball fixtures first) | worktree aX | log cx_g358_full_section_gate_execution_v2
+GAP G358 | sport all (basketball fixtures first) | worktree a12 | log cx_g358_full_section_gate_execution_v2
 
 **HARNESS ROW, SUCCESSOR TO G356 (PREMISE FALSE 2026-09-08: the >= 300 evaluated-frame floor the G356 spec
 set was wrong-scaled for the daemon's stride; only 2 G346 LIVE sections cleared it). Codex PREPARES, a
