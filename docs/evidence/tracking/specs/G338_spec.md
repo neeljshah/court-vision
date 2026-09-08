@@ -69,3 +69,16 @@ COMMIT: explicit pathspec only. ASCII stdout. Prereg sealed as its OWN commit fi
 line `SEAL sha256 <hex>` over the LF-normalised bytes above it). **NEVER PARK.**
 
 VERSION 2026-09-08
+
+---
+**VERSION 2026-09-08b (orchestrator amendment after codex attempt 1 stopped on the G337 dependency).**
+G337 is SUPERSEDED (its court-polygon gate needs G334's validated calibration). Replace every reference to
+"the G337 non-player gate" with the G325 FRAME-CONTAINMENT rule only: a box counts if its unpadded
+rectangle intersects the decoded frame (no colour, size or polygon gate). The players-per-frame band
+(a) is therefore computed on in-frame person boxes and will include referees/bench; state that and
+report the band share as a screening number. The court-polygon share (c) stays labelled as inherited
+from the fallback homography. Division of labour: the codex lane prepares the arm runner, the
+plausibility scorer, the prereg (sealed alone) and the tests on a synthetic construct; an orchestrator
+FINISHER runs the arms on the pod and writes the measured memo. The lane must NOT stop on missing
+sections or missing pod access: it reports `PREPARED FOR FINISHER` with the exact commands the finisher
+runs. A missing `data/registry` in the worktree is expected (local-only; never write it).
