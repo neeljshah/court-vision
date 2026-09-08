@@ -31,8 +31,9 @@ span; per-frame burden = wall time / frames handled.
 
 - Eligibility, sealed 60 (a3, `cx_g304e_eligibility.log` tag `g304e`, 2026-09-07T16:33:05 to 16:51:09 -05:00, matches the
   standing memo's mtime): 1084 s / 60 rows = 18.1 s/row.
-- Eligibility, extension 75 (a20, no named log for this lane; self-reported in
-  `g304_eligibility_ext_sol_2026-09-07.md:8`): ~2100 s / 75 rows = ~28 s/row.
+- Eligibility, extension 75 (a20, `cx_g304e2_eligibility_ext.log` tag `g304e2`, 2026-09-07T17:40:56 to 18:01:42 -05:00,
+  rotated to `done_g304e2_eligibility_ext.log:1,442`; this MEASURED span supersedes the self-reported estimate in
+  `g304_eligibility_ext_sol_2026-09-07.md:8`): 1246 s / 75 rows = 16.6 s/row.
 - Locator pass 1, 23 eligible (a7, `cx_g304p1_locator_pass1.log` tag `g304p1b`, 2026-09-07T17:23:01 to 17:50:12 -05:00, matches
   the standing memo's mtime): 1631 s / 23 frames = 70.9 s/frame.
 - Locator pass 2, 23 eligible (a3, `cx_g304p2_locator_pass2.log` tag `g304p2b`, 2026-09-07T17:23:11 to 17:31:41 -05:00, matches
