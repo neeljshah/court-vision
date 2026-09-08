@@ -74,3 +74,16 @@ COMMIT: explicit pathspec only. ASCII stdout. Prereg sealed as its OWN commit fi
 line `SEAL sha256 <hex>` over the LF-normalised bytes above it). **NEVER PARK.**
 
 VERSION 2026-09-08
+
+---
+**VERSION 2026-09-08b (orchestrator amendment after attempt 1 stopped PARTIAL, 828ddf4c7 in a16).** The sealed
+rule "100 states with at least 5 per non-empty stratum" was infeasible: the parquet populates 63 non-empty
+strata (period x |margin| bucket x clock bucket), which needs >= 315 states. ATTEMPT 2 seals: n = 5 states per
+non-empty stratum (so n = 5 x the number of non-empty strata, expected 315; if a stratum holds fewer than 5
+eligible states take all of them and say so), drawn with the sealed seed from the FULL strata table printed in
+the prereg (stratum, n eligible, n drawn). Every check, the replay arms (full history / future deleted /
+availability delayed 60 s), the bar (0 accepted future / terminal / wrong-target states; 0 prefix prediction
+changes) and the verdict vocabulary stand. The audit and replay cost is linear in n and stays local. The
+codex lane reuses the landed attempt-1 module `scripts/platformkit/ingame/s320_state_audit.py` (fix the
+selection rule; no other change), seals a NEW prereg named `..._2026-09-08b_prereg.md` ALONE first, and exits
+`PREPARED FOR FINISHER`. A missing `data/registry` in the worktree is expected.
