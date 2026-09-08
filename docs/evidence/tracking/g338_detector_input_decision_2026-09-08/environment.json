@@ -1,0 +1,66 @@
+{
+  "python": "3.12.3",
+  "torch": "2.8.0+cu128",
+  "ultralytics": "8.4.143",
+  "conf": 0.22,
+  "classes": [
+    0,
+    32
+  ],
+  "route_sha256": {
+    "src/tracking/advanced_tracker.py": "df2ae698ae03e804f67639434d8303638aea9087c3169c016af5a3734dd474d7",
+    "src/pipeline/unified_pipeline.py": "047dd04e9b12b588c560f68dbab32aa1855f791c2e1a46f19f4e082f50c4f331"
+  },
+  "g62_sidecar": {
+    "captured_utc": "2026-09-08T16:59:55Z",
+    "cgroup_cpu_quota": "/sys/fs/cgroup/cpu/cpu.cfs_quota_us=2720000",
+    "cpu_count": 256,
+    "git": {
+      "head_sha": null,
+      "dirty": null,
+      "unavailable_reason": "git rev-parse exit 128: fatal: not a git repository (or any parent up to mount point /)\nStopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FI"
+    },
+    "host": {
+      "hostname": "771c926940a2",
+      "role": "pod",
+      "role_rule": "role is 'pod' when /workspace/nba-ai-system exists, else 'local'"
+    },
+    "libraries": {
+      "cv2": "4.14.0",
+      "numpy": "2.1.2",
+      "pandas": "2.3.3",
+      "scipy": "1.18.1",
+      "sklearn": "1.9.0",
+      "torch": "2.8.0+cu128",
+      "ultralytics": "8.4.143"
+    },
+    "modules": [
+      {
+        "path": "src/pipeline/unified_pipeline.py",
+        "sha256": "047dd04e9b12b588c560f68dbab32aa1855f791c2e1a46f19f4e082f50c4f331",
+        "unavailable_reason": null
+      },
+      {
+        "path": "src/tracking/advanced_tracker.py",
+        "sha256": "df2ae698ae03e804f67639434d8303638aea9087c3169c016af5a3734dd474d7",
+        "unavailable_reason": null
+      }
+    ],
+    "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.39",
+    "python_version": "3.12.3",
+    "schema": "g62_environment_sidecar_v1",
+    "seed": null,
+    "seed_reason": "no seeded randomness on this route",
+    "threads": {
+      "MKL_NUM_THREADS": null,
+      "OMP_NUM_THREADS": "1",
+      "torch_num_threads": 128
+    },
+    "torch_build": {
+      "cuda_available": true,
+      "cuda_version": "12.8",
+      "cudnn_version": 91002,
+      "unavailable_reason": null
+    }
+  }
+}

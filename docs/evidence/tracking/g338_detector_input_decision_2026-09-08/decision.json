@@ -1,0 +1,10 @@
+{
+  "recommended_imgsz": null,
+  "sections_qualified": {
+    "640": 0,
+    "960": 0,
+    "1280": 0,
+    "1920": 0
+  },
+  "failure_mode": "required six-section resolution/arm matrix incomplete"
+}

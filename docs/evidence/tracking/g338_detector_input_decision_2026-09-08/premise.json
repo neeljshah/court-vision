@@ -1,0 +1,38 @@
+{
+  "binding_before_condition": "1920 person rows >= 1.5 * 640 on same frames",
+  "sections": [
+    {
+      "section": "000001",
+      "person_rows_640": 635,
+      "person_rows_1920": 2536,
+      "ratio": 3.9937007874015746
+    }
+  ],
+  "premise_false": false,
+  "undecodable_sealed_indices": [
+    {
+      "section": "000001",
+      "frame_index": 7841
+    },
+    {
+      "section": "000002",
+      "frame_index": 3932
+    },
+    {
+      "section": "000002",
+      "frame_index": 3999
+    },
+    {
+      "section": "000005",
+      "frame_index": 7854
+    },
+    {
+      "section": "000005",
+      "frame_index": 7988
+    },
+    {
+      "section": "000006",
+      "frame_index": 7907
+    }
+  ]
+}
