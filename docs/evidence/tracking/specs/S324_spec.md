@@ -1,4 +1,4 @@
-GAP S324 | sport mlb | worktree aX | log cx_s324_mlb_baseout_count
+GAP S324 | sport mlb | worktree a17 | log cx_s324_mlb_baseout_count
 
 **MODEL ROW (S register; astra 2026-09-08 per-sport row 3, MLB).** `src/`, `kernel/`, `api/` and `intel/` are
 READ and IMPORT only. Build in `scripts/platformkit/ingame/` and `domains/mlb/`. NEVER write `data/registry/`,
