@@ -96,3 +96,15 @@ rule 2) therefore defines M0 as follows and labels it everywhere as "first in-pl
   (c) S320 must be CLEAN on master before the finisher scores; if S320 landed VIOLATION, the finisher commits the
       prepared harness and reports BLOCKED-ON S320.
 Everything else in VERSION 2026-09-08 stands (landmarks, folds, embargo, bar C, tests, division of labour).
+
+---
+**VERSION 2026-09-08c (orchestrator amendment, 14:50 CDT).** S320 attempt 2 (313 sealed states) found 0 ACCEPTED
+terminal / future / wrong-target states and 0 prefix prediction changes, with the availability and polarity checks
+NOT VERIFIED because the parquet carries no received_at or side field (verdict PARTIAL, not VIOLATION). The
+gate for this row's finisher is therefore: S320 landed on master with 0 accepted violations (CLEAN or PARTIAL);
+the finisher states in the memo that historical availability is NOT VERIFIED and that S328 (external as-of
+replay with delay sweeps) is the falsification of any bar-C result. The M0 used is the first in-play quote at
+tip (AT_TIP per S327 kinds, close_sec_after_tip ~ 0 from an independently recorded start); every result is an
+AT_TIP-CONDITIONED experiment under this resealed rule, never a claim against the original pre-start bar
+(astra midday review 2026-09-08); report the sensitivity note: an at-tip quote may carry early in-game
+information, direction unidentified, bounded only where paired PRE_START quotes exist (none today).

@@ -318,7 +318,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G348  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G351  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
@@ -953,3 +953,21 @@ sidecar that reports no evaluated-frame count. Neither belongs to a closed row, 
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G347 | all | DONE 2026-09-08 abc62dfe5 (ACCEPT verified codex-sol) -- env_shim.py is now probe-first: a clean route import is a strict no-op (system YOLO 1 -> 1, previously regressed to 0 by an uncaught protobuf ImportError), conda stays 2/2 via the ml_dtypes/onnx stub, system osnet_reid stays 0 -> 0 (torchreid / numpy 2, untouched); protobuf 3.19.6 / onnx 1.17.0 pin PROPOSED (unexecuted); verifier NEW GAPs: conda osnet receives a YOLO-triggered shim action although clean (per-route no-op untested), the G340 mocked-preflight test is environment-dependent. Original text: OPEN -- allocated 2026-09-08 at the G340 landing (verifier NEW GAP). ENV SHIM REGRESSION: scripts/platformkit/env_shim.py catches only ModuleNotFoundError and AttributeError in _onnx_preflight, so the system interpreter's plain protobuf ImportError (cannot import name builder from google.protobuf.internal) escapes and turns a clean YOLO import (before_ok=1) into a failure (after_ok=0); row = catch ImportError as well, make prepare_route_imports() a strict no-op whenever the route already imports cleanly (probe first, shim only on failure), add the protobuf/onnx pin to the PROPOSED environment fix, and re-run the 2 x 2 table (bar: no interpreter regresses; conda stays 2/2). Spec: docs/evidence/tracking/specs/G347_spec.md -> worktree a22. | docs/evidence/tracking/g347_env_shim_regression_2026-09-08.md | DONE |
+
+## G348 allocation register (2026-09-08)
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G348 | basketball | OPEN -- allocated 2026-09-08 (astra midday review item B; codex build + finisher; follows G343 CLOSED AT LIMIT). GATE EXECUTION ON VALID FIXTURES: G343 found the coordinate contract intercepts 100 pct of every window so no metric gate has ever executed on a real table; row = census authentic calibration sidecars on the pod (never fabricate one), >= 30 non-frozen windows from >= 3 games with an unchanged positive control and contract-valid corrupted twins (frozen trajectory, id merge, scale/translate, mirror, ball shift), per-gate reached / evaluated / rejected denominators, per-defect detection with Wilson intervals (bar: every gate evaluates on the unchanged fixture; detection >= 0.80 and false rejection <= 0.05 per applicable defect; UNIDENTIFIABLE defects named; contract refusal never counted as detection). Spec: docs/evidence/tracking/specs/G348_spec.md -> worktree TBD. | (pending) | OPEN |
+
+## G349 allocation register (2026-09-08)
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G349 | basketball | OPEN -- allocated 2026-09-08 (astra midday review item D; codex build + finisher; follows G344 PARTIAL; dispatch after G344 lands). BALL OWNERSHIP SURVIVAL: G344's ownership hypothesis survives on 1 of 1,560 real frames while 200/200 synthetic cases pass; row = stage-by-stage survival table (frame join, source age, coordinate compatibility incl. source_height, radius, 3-frame history prerequisite, motion agreement, abstention) on the 24 G344 windows, corrections only for proven join / unit / timing defects (failing-then-passing tests), then a resealed evaluation on >= 30 live windows from >= 3 games (NBA + WNBA) with >= 100 eligible motion pairs, both denominators reported, the >= 20 pp shuffle bar applied as sealed, and a consumer-blindness control (swap / remove the ball input). No radius loosening. Spec: docs/evidence/tracking/specs/G349_spec.md -> worktree TBD. | (pending) | OPEN |
+
+## G350 allocation register (2026-09-08)
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G350 | basketball | OPEN -- allocated 2026-09-08 (astra midday review item E; codex build + orchestrator-run blind raters + finisher; dispatch after G341 lands). WIDE-CUE VALIDATION: G341's router reports 96.6-100 pct WIDE while contact sheets show close-ups; row = 60 sealed held-out shots from >= 6 games balanced by predicted class, two blind model raters (terra, sol) + a third adjudicator, Cohen kappa as the label-quality proxy (no human labels available), confusion vs the router, precision(WIDE) >= 0.95 and recall(USABLE_WIDE) >= 0.80 with Wilson intervals, 0 propagation across annotated cuts; else the WIDE cue is marked NOT VALIDATED and G341 / G334 must gate on UNKNOWN-safe rules. Spec: docs/evidence/tracking/specs/G350_spec.md -> worktree TBD. | (pending) | OPEN |
