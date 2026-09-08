@@ -1,0 +1,98 @@
+{
+ "_correction_2026-09-07": "G317_VERIFY_2026-09-07.md CORRECTION applied: this census globbed data/footage_bridge only and missed data/footage_corpus, where tracked sources are moved after completion. 'segments_without_source_video' and 'ffprobe_reproduction' were therefore stale and are now []. Corrected values: 0 of 25 ledgered segments lack a source video (see g317_ffprobe_reproduction_2026-09-07.json, which searches both roots); the verifier independently recomputed 0 of 26 on a later live snapshot. The premise counts in this file are unaffected: they read the ledger, not the video roots.",
+ "code_identity": {
+  "scripts/platformkit/track_daemon.py": "204a892086e9c62a66ff2e9789fa31033f316c7cafc7d548a3e09e0b80da5ada",
+  "scripts/platformkit/track_daemon_sources.py": "f9dc862669fd36f7661f1021194705ca9a101c5c9855d520a067a75e45081bd3",
+  "scripts/platformkit/tracking/source_timebase.py": "b16f74a94c3ce968e3909567dbf319df24837badf71b2d36253d3a897120be13"
+ },
+ "csv_incomplete": [
+  {
+   "columns_absent": [
+    "source_fps",
+    "source_height",
+    "source_duration"
+   ],
+   "first_record_empty": [],
+   "game_id": "0022500575_s3900",
+   "has_first_record": true,
+   "is_segment": true
+  },
+  {
+   "columns_absent": [
+    "source_fps",
+    "source_height",
+    "source_duration"
+   ],
+   "first_record_empty": [],
+   "game_id": "0022500575_s8700",
+   "has_first_record": true,
+   "is_segment": true
+  },
+  {
+   "columns_absent": [
+    "source_fps",
+    "source_height",
+    "source_duration"
+   ],
+   "first_record_empty": [],
+   "game_id": "0022500594_s8700",
+   "has_first_record": true,
+   "is_segment": true
+  },
+  {
+   "columns_absent": [
+    "source_fps",
+    "source_height",
+    "source_duration"
+   ],
+   "first_record_empty": [],
+   "game_id": "0022500630_s1500",
+   "has_first_record": true,
+   "is_segment": true
+  }
+ ],
+ "csv_segment_total": 26,
+ "csv_total": 46,
+ "cv2_version": "4.14.0",
+ "ffprobe_reproduction": [],
+ "ledgers": {
+  "data/tracking/track_daemon_ledger.jsonl": {
+   "all_rows_missing": [],
+   "bytes": 62308,
+   "exists": true,
+   "malformed_lines": 0,
+   "rows_total": 58,
+   "segment_ids": [
+    "0022500575_s1500",
+    "0022500575_s2100",
+    "0022500575_s2700",
+    "0022500575_s300",
+    "0022500575_s3300",
+    "0022500575_s4500",
+    "0022500575_s5400",
+    "0022500575_s6000",
+    "0022500575_s8100",
+    "0022500575_s9300",
+    "0022500594_s1500",
+    "0022500594_s2100",
+    "0022500594_s2700",
+    "0022500594_s300",
+    "0022500594_s3300",
+    "0022500594_s3900",
+    "0022500594_s4500",
+    "0022500594_s5400",
+    "0022500594_s6000",
+    "0022500594_s6600",
+    "0022500594_s8100",
+    "0022500594_s900",
+    "0022500594_s9300",
+    "0022500630_s2700",
+    "0022500630_s300"
+   ],
+   "segment_rows_missing": [],
+   "segment_rows_total": 25,
+   "sha256": "5024ce9dd03f9f6ee6afbf560145e0ad64e31c74e95ee997653c25781299acf6"
+  }
+ },
+ "segments_without_source_video": []
+}

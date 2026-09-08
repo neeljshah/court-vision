@@ -1,0 +1,123 @@
+{
+ "reproduction": [
+  {
+   "bytes": 13632393,
+   "duration_delta_seconds": -5.1727,
+   "fps_matches_ledger": true,
+   "game_id": "0022500575_s1500",
+   "height_matches_ledger": true,
+   "ledger": {
+    "source_duration": 155.22173333333333,
+    "source_fps": 29.97002997002997,
+    "source_height": 360
+   },
+   "ledger_source_resolution": "640x360",
+   "path": "data/footage_corpus/nba__0022500575_s1500.mp4",
+   "run_1": {
+    "ffprobe_format_duration": 150.049,
+    "ffprobe_fps": 29.97002997002997,
+    "ffprobe_height": 360,
+    "ffprobe_nb_frames": "4652",
+    "ffprobe_width": 640
+   },
+   "run_1_equals_run_2": true,
+   "run_2": {
+    "ffprobe_format_duration": 150.049,
+    "ffprobe_fps": 29.97002997002997,
+    "ffprobe_height": 360,
+    "ffprobe_nb_frames": "4652",
+    "ffprobe_width": 640
+   },
+   "sha256": "f59744c4f428fb2df2143b6b3f26a8bdce8a5e9d4abe7b6e3ef4bda45ec0e7c5"
+  },
+  {
+   "bytes": 10826546,
+   "duration_delta_seconds": -1.8712,
+   "fps_matches_ledger": true,
+   "game_id": "0022500575_s2100",
+   "height_matches_ledger": true,
+   "ledger": {
+    "source_duration": 131.96516666666668,
+    "source_fps": 29.97002997002997,
+    "source_height": 360
+   },
+   "ledger_source_resolution": "640x360",
+   "path": "data/footage_corpus/nba__0022500575_s2100.mp4",
+   "run_1": {
+    "ffprobe_format_duration": 130.094,
+    "ffprobe_fps": 29.97002997002997,
+    "ffprobe_height": 360,
+    "ffprobe_nb_frames": "3955",
+    "ffprobe_width": 640
+   },
+   "run_1_equals_run_2": true,
+   "run_2": {
+    "ffprobe_format_duration": 130.094,
+    "ffprobe_fps": 29.97002997002997,
+    "ffprobe_height": 360,
+    "ffprobe_nb_frames": "3955",
+    "ffprobe_width": 640
+   },
+   "sha256": "d8f2f64e583c2a8b5895335ce8018d1dc72eb0069f743a40b4ca717f1d29d06a"
+  },
+  {
+   "bytes": 13263966,
+   "duration_delta_seconds": -2.0716,
+   "fps_matches_ledger": true,
+   "game_id": "0022500575_s2700",
+   "height_matches_ledger": true,
+   "ledger": {
+    "source_duration": 152.11863333333335,
+    "source_fps": 29.97002997002997,
+    "source_height": 360
+   },
+   "ledger_source_resolution": "640x360",
+   "path": "data/footage_corpus/nba__0022500575_s2700.mp4",
+   "run_1": {
+    "ffprobe_format_duration": 150.047,
+    "ffprobe_fps": 29.97002997002997,
+    "ffprobe_height": 360,
+    "ffprobe_nb_frames": "4559",
+    "ffprobe_width": 640
+   },
+   "run_1_equals_run_2": true,
+   "run_2": {
+    "ffprobe_format_duration": 150.047,
+    "ffprobe_fps": 29.97002997002997,
+    "ffprobe_height": 360,
+    "ffprobe_nb_frames": "4559",
+    "ffprobe_width": 640
+   },
+   "sha256": "bc75ad6d2e8e7d9f8c0f977668f276c34a169457dd96c915934966ec0616c767"
+  }
+ ],
+ "segment_rows_total": 25,
+ "segments_with_video": [
+  "0022500575_s1500",
+  "0022500575_s2100",
+  "0022500575_s2700",
+  "0022500575_s300",
+  "0022500575_s3300",
+  "0022500575_s4500",
+  "0022500575_s5400",
+  "0022500575_s6000",
+  "0022500575_s8100",
+  "0022500575_s9300",
+  "0022500594_s1500",
+  "0022500594_s2100",
+  "0022500594_s2700",
+  "0022500594_s300",
+  "0022500594_s3300",
+  "0022500594_s3900",
+  "0022500594_s4500",
+  "0022500594_s5400",
+  "0022500594_s6000",
+  "0022500594_s6600",
+  "0022500594_s8100",
+  "0022500594_s900",
+  "0022500594_s9300",
+  "0022500630_s2700",
+  "0022500630_s300"
+ ],
+ "segments_without_video": []
+}
