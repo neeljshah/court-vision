@@ -1,0 +1,7 @@
+section,arm,pano_source,pano_sha256,n_frames,feet_total,fit_frames,good_matches_total,fit_corr_total,fit_inliers_total,fit_inlier_ratio_in_sample,heldout_corr_total,heldout_inliers_total,heldout_inlier_ratio,heldout_median_px,valid_homography_frames,valid_homography_share,feet_evaluated,feet_inside,feet_inside_share,note
+basketball__nbl-WTEUwPcy7X8_s90,F,pano_enhanced.png,69024f8ef08d1e6093ddaf2bda0dd5df8630eab5f1b6b202daa08df8e47e5fff,000040,000408,000019,001451,000730,000082,82/730,000721,000006,6/721,1026.297,000040,40/40,000408,000001,1/408,panorama the route used
+basketball__nbl-WTEUwPcy7X8_s90,V,built_from_section,-,000040,000408,-,-,-,-,-,-,-,-,-,-,-,-,-,-,NOT BUILDABLE: route validity gate rejected 1878x1070
+nba__0022401198_s2784,F,pano_enhanced.png,69024f8ef08d1e6093ddaf2bda0dd5df8630eab5f1b6b202daa08df8e47e5fff,000040,000313,000012,000794,000400,000050,50/400,000394,000004,4/394,999.944,000040,40/40,000313,000009,9/313,panorama the route used
+nba__0022401198_s2784,V,built_from_section,-,000040,000313,-,-,-,-,-,-,-,-,-,-,-,-,-,-,NOT BUILDABLE: route validity gate rejected 1232x710
+nba__0022500081_s4812,F,pano_enhanced.png,69024f8ef08d1e6093ddaf2bda0dd5df8630eab5f1b6b202daa08df8e47e5fff,000040,000149,000014,000735,000367,000060,60/367,000359,000007,7/359,1217.711,000040,40/40,000149,000000,0/149,panorama the route used
+nba__0022500081_s4812,V,built_from_section,-,000040,000149,000002,000008,000000,000000,0/0,000000,000000,0/0,-,000010,10/40,000060,000000,0/60,built 4260x710 from 30 frames

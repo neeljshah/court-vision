@@ -98,9 +98,9 @@ def frac(num: int, den: int) -> str:
 def pano_provenance_fields(video_path: str, pano_path: str) -> dict:
     """NEW sidecar fields only -- what panorama a game was registered against.
 
-    Additive by construction: this returns three field names that appear nowhere in the route's
-    existing tracking sidecars, so a producer can merge them into its own record without changing
-    or reinterpreting any field it already writes.
+    Additive by construction: this returns the four field names below, none of which appears in the
+    route's existing tracking sidecars, so a producer can merge them into its own record without
+    changing or reinterpreting any field it already writes.
     """
     p = Path(pano_path)
     name = p.name
