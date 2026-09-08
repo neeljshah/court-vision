@@ -1,0 +1,21 @@
+panel,game_id,frame,player_id,rank,ratio,label,note
+wnba_06_01,wnba_06,1761,9,32,0.524074,crowd,seated spectators in the courtside stands at the left frame border
+wnba_06_02,wnba_06,1773,3,94,0.612037,other,mostly the padded courtside barrier; one seated table worker across the box top
+wnba_06_03,wnba_06,1800,7,156,0.759259,other,courtside table furniture and padded barrier; only a sliver of a player at the right border
+wnba_06_04,wnba_06,942,1,218,0.869444,one_player_close,one on-court player in a broadcast close-up; the box fits her
+wnba_06_05,wnba_06,1869,5,280,0.943519,one_player_close,one on-court player in a close-up; a second player's hair clips the left border
+0022400909_s3307_01,0022400909_s3307,939,1,119,0.556944,crowd,a seated spectator in the stands behind the bench area
+0022400909_s3307_02,0022400909_s3307,1122,10,357,0.613889,crowd,a standing spectator in the stands behind the coach
+0022400909_s3307_03,0022400909_s3307,1053,3,595,0.693056,one_player_close,one on-court player with the ball in a close-up; crowd behind him but he fills the box
+0022400909_s3307_04,0022400909_s3307,738,1,833,0.808333,one_player_close,one on-court player in a close-up; a second player clips the right border only
+0022400909_s3307_05,0022400909_s3307,702,10,1071,0.931944,one_player_close,one on-court player from the waist down in an extreme close-up; head above the frame
+0022500575_s5400_01,0022500575_s5400,1434,1,65,0.519444,crowd,blurred standing spectators at the right frame border during an in-arena promotion
+0022500575_s5400_02,0022500575_s5400,549,4,194,0.621256,other,wide game shot; the box runs about 1.7x the player's height and its top third is stands and backboard
+0022500575_s5400_03,0022500575_s5400,429,9,323,0.736111,unreadable,the box region is near-black on a dark transition frame; no call is supported
+0022500575_s5400_04,0022500575_s5400,531,1,452,0.793357,crowd,stands and courtside seating at the left border above bare court floor
+0022500575_s5400_05,0022500575_s5400,3075,3,581,0.870646,bench_or_courtside,one person in a denim jacket standing at the sideline during a timeout promotion
+0022500594_s2700_01,0022500594_s2700,1908,6,92,0.555556,bench_or_courtside,a promotion contestant in a team hoodie standing on court during a stoppage
+0022500594_s2700_02,0022500594_s2700,1176,6,275,0.633333,bench_or_courtside,two credentialed game staff at the sideline during the same promotion
+0022500594_s2700_03,0022500594_s2700,117,1,457,0.708333,bench_or_courtside,the in-arena host with a broadcast microphone
+0022500594_s2700_04,0022500594_s2700,528,6,640,0.769444,bench_or_courtside,the same in-arena host with the microphone
+0022500594_s2700_05,0022500594_s2700,9,1,823,0.777578,bench_or_courtside,the same in-arena host with the microphone
