@@ -127,7 +127,7 @@ machines: a transcription defect in S266, not a change of input.
 
 The landed S266 module was imported unchanged; its last commit is still `afb5a9460`. Nothing under
 `src/` was touched, the S255 artifacts and the S92 archive were opened read-only, and `recal_null`
-defaults were not altered. The entrypoint is 119 lines and its test 73 lines after the
+defaults were not altered. The entrypoint is 119 lines and its test 71 lines after the
 repeatability assertion below, both within the 300-line rail.
 
 ## Where it ran, and the run itself
@@ -288,5 +288,26 @@ The pod compute ran 9 hours 23 minutes of wall time. That finishing pass spent a
 relaunching it and about 20 minutes on fetching, reproduction, the failure diagnosis and this
 memo. The 2026-09-08 repeatability pass added about one hour, nearly all of it waiting on the
 two sequential pod runs.
+
+## Corrections applied at landing 2026-09-08 (verifier codex-sol)
+
+- Line 130 of this memo read `its test 73 lines`; the focused test is 71 lines at the
+  landed blob `78a5d1c675361231554f17b5591487ca3c301824`. Corrected to `71`. No
+  threshold, no bar, no measured number and no verdict changes.
+
+The verifier recorded two NEW GAPs alongside that correction. Both are filed at
+landing as S317 in docs/evidence/HARNESS_GAPS_2026-09-03.md:
+
+- The per-game paired-loss series cannot independently reproduce ECE. It stores a
+  state key in its `timestamp` field and carries no probabilities and no outcomes,
+  so only the tick series supports the Q9 recomputation. Q9 was outside that
+  verdict's scope, and no archived artifact was rewritten to repair it.
+- The S92 archive used lane scratch at `/workspace/wt/a13/data/cache/eval_gate/`,
+  outside the preregistered `inputs/` subdirectory. No deployed-tree write is
+  evidenced; both locations are lane scratch and the md5 and SHA-256 matched on
+  both sides.
+
+The cross-environment cause this memo attributes the unmet replay bar to is filed
+separately as S316.
 
 Vocabulary follows contract Q6; automated scan required.
