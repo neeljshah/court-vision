@@ -161,3 +161,32 @@ of any registration route. Human annotation remains a USER DECISION, not an agen
 this preregistration does not schedule it.
 
 SEAL SHA256 (LF-normalized bytes above this line): 78f1a4f2b78245ec151bb4ba4e1b690a16efbbdd0aff02ab08d9af4c7bd41335
+
+## AMENDMENT 1 -- SELECTION RULE, MADE BEFORE ANY RATING WAS SEEN
+
+Recorded by the builder in worktree a11. NO PROPOSAL HAD BEEN RATED BY ANYONE WHEN THIS
+AMENDMENT WAS MADE, and no rater had been dispatched. The amendment is motivated by a
+GENERATOR-SIDE count only -- never by any accept/reject outcome, because none existed.
+
+MEASUREMENT THAT MOTIVATED IT (63 eligible frames, pre-cap, families run independently):
+  lsd_intersect  5772 candidates   shitomasi  5040 candidates   semantic  0 candidates
+  Under the section 5 rule as originally sealed, the cap kept 35 lsd_intersect and 721
+  shitomasi -- 0.6 percent of the LSD family survived.
+CAUSE: the two families' scores are not on a comparable scale. `shitomasi` scores start at
+0.99 by construction (1 - rank/80) while `lsd_intersect` scores are min(support)/1920 and
+sit near 0.1-0.3, so the name round-robin took a Shi-Tomasi corner at the head of nearly
+every name bucket. The precise family -- the one whose intersections the per-file test
+recovers to 1.76 px on a synthetic court -- was crowded out by the coarser one.
+
+AMENDED SECTION 5 SELECTION (this supersedes the original step 2; steps 1 and 3 stand):
+  1. drop any proposal within 5 px of an already-kept proposal carrying the SAME name
+     (the higher score survives) -- UNCHANGED;
+  2. round-robin over SOURCE FAMILIES first, and within each family round-robin over
+     distinct names in descending score, so no family can monopolise the cap;
+  3. ties broken by (name, source, x, y) ascending -- UNCHANGED.
+CAP stays 12. Every other section of this preregistration is UNCHANGED and still binds.
+Scores are NOT renormalised: comparing family scores to each other remains invalid, and the
+amended rule simply stops doing it.
+
+The original seal below covers the text above this amendment and remains valid for it.
+AMENDED SEAL SHA256 (LF-normalized bytes above this line, includes AMENDMENT 1): 3d60dcda526c14e78b1f1a98ca0c4d4e72c3f928f96fb426f0fac18b4a322696
