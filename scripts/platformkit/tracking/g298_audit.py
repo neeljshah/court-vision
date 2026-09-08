@@ -8,6 +8,7 @@ import numpy as np
 from scipy.spatial.distance import cdist
 from scipy.stats import binomtest
 
+from scripts.platformkit.hash_lf import sha256_lf
 from scripts.platformkit.tracking.g298_compare import read_csv, sha256
 
 OUT = Path("docs/evidence/tracking/g298_detector_capacity_and_input_resolution_artifact")
@@ -25,8 +26,11 @@ def audit() -> None:
         assert meta["decoded_frames"] == metadata["A"]["decoded_frames"]
         assert meta["frames"] == result["frames"]
         assert meta["environment"] == metadata["A"]["environment"]
+        # G326: located_feet's committed seal was taken on CRLF bytes, so it is raw-byte
+        # only and does NOT reproduce on an LF checkout. Re-sealing it belongs to G285b.
         assert meta["located_feet"]["sha256"] == sha256(LOCATED)
-        assert meta["detections_sha256"] == sha256(OUT / f"{arm}.csv")
+        # G326: this seal was taken on LF bytes, so raw hashing failed on a CRLF clone.
+        assert meta["detections_sha256"] == sha256_lf(OUT / f"{arm}.csv")
         expected = dict(metadata["A"]["settings"], imgsz=640 if arm.startswith("A") else 1920)
         assert meta["settings"] == expected
     assert metadata["A"]["weight"] == metadata["B"]["weight"]

@@ -172,6 +172,8 @@ def analyze(path: Path) -> dict[str, Any]:
     if name not in EXPECTED_HASHES:
         raise ValueError(f"unknown G231 input: {path}")
     raw = path.read_bytes()
+    # G326: all three EXPECTED_HASHES seals equal the RAW (CRLF) digest on this checkout, so
+    # they cannot reproduce on an LF clone. Left raw-byte deliberately; re-sealing is G231's.
     digest = hashlib.sha256(raw).hexdigest()
     if digest != EXPECTED_HASHES[name]:
         raise ValueError(f"SHA-256 mismatch for {path}: {digest}")
