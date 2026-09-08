@@ -212,7 +212,7 @@ it (see NEW GAPS); the artifact content is unaffected and its hash is above.
 ## Tests
 
 `python -m pytest tests/platformkit/test_s293_tail_metric_rail.py -q -p no:cacheprovider`
--> 4 passed in 2.13s. The file grew from 2 tests to 4:
+-> 5 passed in 2.27s (re-measured at landing). The file grew from 2 tests to 5:
 
 - `test_s293_prereg_and_one_archived_game_tail_log_losses_are_finite` -- seal
   check plus one archived game's finite tail log losses.
@@ -225,6 +225,10 @@ it (see NEW GAPS); the artifact content is unaffected and its hash is above.
 - `test_s293_reliability_cells_below_thirty_publish_n_but_no_score` -- NEW. A
   40-row cell scores, a 6-row cell publishes `n = 6` with null scored fields and
   `suppressed_below_min_n` true, and an empty bin publishes `n = 0` unflagged.
+- `test_s293_comeback_excludes_ot_period_from_n_ticks_but_counts_it_separately`
+  -- NEW in fix 2b (test line 61). The `_comeback` period-cap fixture: periods
+  1-3 cannot enter the comeback mask, the period-4 row does, and the period-5
+  (OT) row lands only in the period-cap exclusion counters.
 
 ## Contract self-check
 
