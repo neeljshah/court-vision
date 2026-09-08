@@ -1,4 +1,4 @@
-GAP G344 | sport basketball | worktree aX | log cx_g344_ball_shadow_possession
+GAP G344 | sport basketball | worktree a16 | log cx_g344_ball_shadow_possession
 
 **BALL EVIDENCE -> SHADOW POSSESSION STATE (label-free; local; codex PREPARES, a finisher MEASURES).**
 `src/`, `kernel/`, `api/` and `intel/` are READ and IMPORT only. Build in `scripts/platformkit/tracking/`.
