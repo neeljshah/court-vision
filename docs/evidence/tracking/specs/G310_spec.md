@@ -103,3 +103,35 @@ TEST: exactly one new per-file test for the PROXY COMPUTATION on a synthetic con
 frame, distinct ids, median track length and the p95 normalised displacement against hand-computed
 values, and pin the bottom-centre footpoint convention. Run that ONE file. **NEVER a full pytest.**
 COMMIT: explicit pathspec only, no push. ASCII stdout. **NEVER PARK.**
+
+---
+**ATTEMPT 2 -- VERSION 2026-09-08b (orchestrator amendment after the attempt-1 REJECT, verify memo
+`G310_VERIFY_2026-09-08.md`, candidate 195d1c456).** Attempt 1 failed Q1 (its sealed prereg said no arm
+preceded sealing while the memo used a seven-run pre-prereg pilot), B9 (`player_id` is a reusable
+tracker slot 1-10, so distinct ids / track length / step proxies were keyed on the wrong unit) and the
+result bar (1/3 games, 2/7 runs; two of the three 1920x1080 whole-game sources were destroyed by the
+2026-09-08 05:26Z volume-quota prune). Attempt 2 rules, binding on top of the rule above:
+  1. **FRESH PREREG, SEALED ALONE, HONEST ABOUT THE PILOT.** State that a pre-prereg pilot and the
+     attempt-1 runs exist, are exploratory, and are NOT the headline. State the source set BEFORE any
+     recomputation: the runs whose row-level outputs survive in the pod job root
+     `/workspace/wt/a1/g310_out` (name each run, arm and source), and the census result for
+     whole-game 1920x1080 sources still on the pod (expected: none -- probe by ffprobe and size, print
+     the table). If fewer than 3 whole-game 1920x1080 sources exist, say in the prereg that the 3/3
+     bar is UNREACHABLE and the row will CLOSE AT LIMIT on source availability. No GPU re-run.
+  2. **NON-RECYCLED TRACK-INSTANCE KEY.** Inspect `tracking_data.csv` columns first. If a persistent
+     track/instance id exists, use it and cite the producer line. If only the slot `player_id` exists,
+     define an INSTANCE as a maximal run of emitted frames for one slot with frame gap <= G and
+     bottom-centre displacement <= J * source_height between consecutive rows, with G and J fixed in
+     the prereg and a sensitivity line at one alternative (G, J) pair. Recompute distinct instances,
+     median instance length (rows) and the p95 normalised step on that key, per run.
+  3. **ROWS PER FRAME with its exact denominator** (emitted frames from `evaluated_frame_count.json`
+     or the count of distinct frame ids in the CSV -- say which, and print both when they differ).
+  4. **ARCHIVE THE MINIMAL PER-RUN COLUMNS** (frame id, slot, instance id, bbox bottom-centre x/y, the
+     ball rows) as gzipped CSV under `docs/evidence/tracking/g310_attempt2/`, each file <= 5 MB
+     (shard if larger), with SHA-256s, so every median and p95 is recomputable from committed bytes.
+  5. Verdict is **CLOSED AT LIMIT (source availability)** unless 3 whole-game 1920x1080 sources
+     exist; the proxy table over the surviving runs is reported as SCREENING with the no-ground-truth
+     sentence, the sign convention, and per-arm wall seconds from the run logs.
+  6. Memo `docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md` (<= 60 lines),
+     one ledger `>>` row in the same commit, test extended for the instance key on a synthetic
+     construct (hand-pinned). Attempt-1 memo, prereg and verify memo are frozen; do not edit them.
