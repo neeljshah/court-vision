@@ -598,3 +598,5 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-08 | in-game calibration | S316 | n=180: local and pod thread arms each show max p_simulator delta 0.0; cross-host/build differs on 171 ticks (max 0.359375), while the same-host version arm is n=0, so version versus hardware/build remains unisolated | PARTIAL (verified: codex-sol, contract A/B/Q)
 2026-09-08 | in-game calibration | S325 | rating-derived p0 and 0 domestic price joins across 4 leagues | INSUFFICIENT
 2026-09-08 | in-game calibration | S325 | rating-derived p0 in 1,442 domestic games; 0 date-overlap price joins; price stores have 12 columns | INSUFFICIENT (verified: codex-sol, contract A/B/Q)
+2026-09-08 | in-game calibration | S324 | Elo p0 and fewer than 300 games in every corpus; ML joins 0/0/0/0/59 | INSUFFICIENT
+2026-09-08 | in-game calibration | S324 | Elo p0; games 199/200/243/231/100; ML joins 0/0/0/0/59 | INSUFFICIENT (verified: codex-sol, contract A/B/Q)
