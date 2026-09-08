@@ -1,4 +1,4 @@
-GAP S323 | sport all | worktree aX | log cx_s323_adapter_contract_leak_test
+GAP S323 | sport all | worktree a19 | log cx_s323_adapter_contract_leak_test
 
 **HARNESS ROW (S register; astra 2026-09-08 "one harness, many adapters").** `src/`, `kernel/`, `api/` and
 `intel/` are READ and IMPORT only. Build in `scripts/platformkit/eval_gate/` and `domains/<sport>/`. NEVER
