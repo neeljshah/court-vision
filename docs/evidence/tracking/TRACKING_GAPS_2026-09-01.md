@@ -318,7 +318,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G339  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G340  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
@@ -899,3 +899,9 @@ sidecar that reports no evaluated-frame count. Neither belongs to a closed row, 
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G338 | basketball | OPEN -- allocated 2026-09-08 (codex build + finisher). DETECTOR INPUT-SIZE DECISION BY PLAUSIBILITY: G310 found native 1920 input gives ~2x person rows vs 640 with fewer ball detections and a 2.7x higher p95 footpoint step (MIXED, no ground truth). Row = arms 640/960/1280/1920(+tiling) on 6 sections; plausibility per arm: players per frame in the 8-13 band after the G337 gate, box height 5.5-7.5 ft via the (fallback) homography, inside-frame/inside-court shares, 3-frame persistence (false-box proxy), ball count reported; decision = smallest imgsz within 5 pct of the best on >= 4/6 sections keeping >= 0.8x throughput; DETECTOR_IMGSZ flag default 640 (byte-identical default path). Spec: docs/evidence/tracking/specs/G338_spec.md -> worktree a20. | (pending) | OPEN |
+
+## G339 allocation register (2026-09-08)
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G339 | basketball | OPEN -- allocated 2026-09-08 (codex build, local). BALL TABLE CONSUMERS: G335 attempt 2 showed the ball IS detected (per-clip ball_tracking.csv, median detected share 0.8667; 10/485 clips zero) and that tracking tables carry no cls column, so the open question is consumption: which downstream readers (possession sim, features, EventDetector, daemon adjudication, harness, intel) read ball_tracking.csv, which expect inline ball rows, which are ball-blind. Row = exhaustive reader census with file:line and class, the writer contract, a ball_join harness with a per-frame joined view + report on the two committed WNBA tables, and a PROPOSED <= 10-line consumer change for the first ball-blind sim-path reader. Spec: docs/evidence/tracking/specs/G339_spec.md -> worktree a13. | (pending) | OPEN |
