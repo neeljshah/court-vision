@@ -17,13 +17,10 @@ import time
 from pathlib import Path
 
 from scripts.platformkit.track_daemon_done import (
-    adjudicate,
-    read_adjudicated,
-    retain,
-    tracking_rows,
-    write_adjudicated,
+    adjudicate, read_adjudicated, retain, tracking_rows, write_adjudicated,
 )
 from scripts.platformkit.track_daemon_ledger import corrupt_entry, mark_degenerate
+from scripts.platformkit.track_daemon_slots import slots_in_use
 from scripts.platformkit.track_daemon_sources import (
     claimable as _claimable_sources,
     reap_orphans as _reap_orphans,
@@ -333,7 +330,7 @@ def _finish(name: str, job: dict, timed_out: bool = False,
         job["log"].unlink(missing_ok=True)
     except OSError as exc:
         print("cleanup failed %s: %s" % (job["log"], exc), flush=True)
-def tick(active: dict, workers: int) -> None:
+def tick(active: dict, workers: int, adjudication_holds_slot: bool = False) -> None:
     """Reap finished jobs, then fill free slots. One pass, never blocking."""
     for name, job in list(active.items()):
         adjudication = job.get("adjudication")
@@ -360,7 +357,7 @@ def tick(active: dict, workers: int) -> None:
             except OSError as exc:
                 print("kill failed %s: %s" % (job["game_id"], exc), flush=True)
             _finish(name, active.pop(name), timed_out=True)
-    tracking_active = sum(1 for job in active.values() if "adjudication" not in job)
+    tracking_active = slots_in_use(active, adjudication_holds_slot)
     for path, sport, game_id in claimable(active):
         if tracking_active >= workers:
             break
@@ -420,6 +417,7 @@ def main(argv: list) -> int:
     parser.add_argument("--workers", type=int, default=10)
     parser.add_argument("--forever", action="store_true")
     parser.add_argument("--interval", type=int, default=20)
+    parser.add_argument("--adjudication-holds-slot", action="store_true")
     args = parser.parse_args(argv[1:])
 
     STAGE.mkdir(parents=True, exist_ok=True)
@@ -430,7 +428,7 @@ def main(argv: list) -> int:
         print("could not publish pid: %s" % exc, flush=True)
     active: dict = {}
     while True:
-        tick(active, args.workers)
+        tick(active, args.workers, args.adjudication_holds_slot)
         if not args.forever and not active:
             return 0
         time.sleep(args.interval)
