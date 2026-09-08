@@ -1,4 +1,4 @@
-GAP S326 | sport tennis | worktree aX | log cx_s326_tennis_serve_set_recursion
+GAP S326 | sport tennis | worktree a11 | log cx_s326_tennis_serve_set_recursion
 
 **MODEL ROW (S register; astra 2026-09-08 per-sport row 7, tennis).** `src/`, `kernel/`, `api/` and `intel/`
 are READ and IMPORT only. Build in `scripts/platformkit/ingame/` and `domains/tennis/`. NEVER write
