@@ -1,0 +1,46 @@
+{
+  "construct": "all four S290 capability rows",
+  "measurement": "selected-column raw-spine recount plus actual close-join recount where a raw p_close column is absent",
+  "rows": [
+    {
+      "sport": "nba",
+      "path": "data/cache/combo/gate_corpus_nba_close.parquet",
+      "bytes": 217484,
+      "rows": 1814,
+      "p_close": {"present": true, "nonnull": 563, "tail_lte_015": 25, "tail_gte_085": 60, "tail_n": 85, "min": 0.055, "max": 0.945},
+      "capability_status": "CAPABILITY_ONLY",
+      "answer_connection_status": "NOT_TESTABLE"
+    },
+    {
+      "sport": "mlb",
+      "path": "data/cache/combo/gate_corpus_mlb_close.parquet",
+      "bytes": 1656711,
+      "rows": 39162,
+      "p_close": {"present": true, "nonnull": 910, "tail_lte_015": 1, "tail_gte_085": 1, "tail_n": 2, "min": 0.01, "max": 0.99},
+      "capability_status": "NOT_TESTABLE_TODAY",
+      "blocking_fact": "pooled raw close tail n is 2, below 30",
+      "answer_connection_status": "NOT_TESTABLE"
+    },
+    {
+      "sport": "soccer",
+      "path": "data/cache/combo/gate_corpus_soccer.parquet",
+      "bytes": 6053712,
+      "rows": 25834,
+      "p_close": {"present": false},
+      "actual_close_join": {"corpus_denominator": 25834, "joined": 16322, "unjoined": 9512, "valid_close_count": 16322, "vintage": "SYNTHETIC"},
+      "capability_status": "CAPABILITY_ONLY",
+      "answer_connection_status": "NOT_TESTABLE"
+    },
+    {
+      "sport": "tennis",
+      "path": "data/cache/combo/gate_corpus_tennis.parquet",
+      "bytes": 2745405,
+      "rows": 41886,
+      "p_close": {"present": false},
+      "actual_close_join": {"corpus_denominator": 41886, "joined": 33766, "unjoined": 8120, "valid_close_count": 33685, "vintage": "SYNTHETIC"},
+      "capability_status": "CAPABILITY_ONLY",
+      "answer_connection_status": "NOT_TESTABLE"
+    }
+  ],
+  "p_base_substituted_for_close": false
+}

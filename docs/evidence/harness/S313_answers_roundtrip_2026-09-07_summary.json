@@ -1,0 +1,21 @@
+{
+  "gap": "S313",
+  "date": "2026-09-07",
+  "verdict": "NOT_TESTABLE",
+  "scored_comparison": false,
+  "preregistration": null,
+  "commit_status": "SANDBOX_DENIED; lane_commit must use the four explicit S313 evidence paths",
+  "funnel_stage_receipts": {"required": 6, "carrying_real_trace_receipt": 0},
+  "connection_entries": {"required": 2, "carrying_real_trace_receipt": 0},
+  "s71_recheck": {"command": "python -m pytest tests/platformkit/mcp_server/test_envelope_contract.py -q -p no:cacheprovider", "output": "5 failed, 46 passed in 71.92s", "red_probes": ["W01", "W02", "W03", "W04", "H01"], "bar": "<= 1", "holds": true},
+  "s275_recheck": {"command": "python -m pytest scripts/platformkit/eval_gate/test_s275_key_explicit_consumers.py -q -p no:cacheprovider", "output": "1 passed in 2.17s", "holds": true},
+  "upstream_absent": [
+    "docs/evidence/harness/S296_full_boxscore_oof_2026-09-04.md",
+    "docs/evidence/harness/S310_tail_beta_offset_2026-09-04.md",
+    "docs/evidence/harness/S312_teach_connection_2026-09-07.md"
+  ],
+  "artifacts": {
+    "route_status": "docs/evidence/harness/S313_answers_roundtrip_2026-09-07_route_status.md",
+    "capability_manifest": "docs/evidence/harness/S313_answers_roundtrip_2026-09-07_capability_manifest.json"
+  }
+}
