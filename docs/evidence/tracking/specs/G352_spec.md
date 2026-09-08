@@ -51,6 +51,16 @@ METHOD:
      with the render of one frame per bucket per section (<= 200 KB).
   6. CHANGE NOTHING ELSE. No src hook.
 
+**BINDING CARRY-OVER FROM THE G334 VERIFY REJECT (2026-09-08, codex-sol):**
+  (a) BUILD GATE before any real frame is scored: a rendered-synthetic known-H recovery test on the DETECTED-line
+      path (not exact-line stubs) must pass at <= 1 px projection gap with `fit.reason == "valid"`; if the fitter
+      cannot recover a rendered H the row STOPS as PARTIAL naming the fitter, and no broadcast frame is scored.
+  (b) Per-point residuals are archived (`residuals.csv`, one row per template point per frame) and every
+      per-section forward metric is the median over TEMPLATE POINTS, never a median of frame medians.
+  (c) Renders come from a SEALED even frame sample (the index rule in the prereg), never the first valid frame.
+  (d) Any section with fewer than the sealed 60 decodable frames makes the verdict PARTIAL naming the section;
+      no section is reported as met at 59/60.
+  (e) The premise recomputation archives its route correspondences as CSV (never prose-only counts).
 **HONEST LIMITATIONS to state, not discover:** zoom-ins and replays cannot be labelled automatically (G242);
 the court template is assumed where G342 abstains; a synthetic-court pass is not a broadcast pass; six
 sections are a screening; the objective change is preregistered here, never derived from the scored frames.
