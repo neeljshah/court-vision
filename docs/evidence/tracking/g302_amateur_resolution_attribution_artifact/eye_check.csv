@@ -1,0 +1,19 @@
+arm,frame_bin,blind_index,render,source_frame,foot_x_px,foot_y_px,verdict
+arm1_broadcast_1080_native,6,133,blind_133.jpg,19842,759.0,823.5,PLAYER
+arm1_broadcast_1080_native,18,139,blind_139.jpg,20433,1366.5,678.0,PLAYER
+arm1_broadcast_1080_native,30,12,blind_012.jpg,20997,1731.0,589.5,PERSON NOT PLAYER IN PLAY
+arm1_broadcast_1080_native,42,42,blind_042.jpg,21582,694.875,862.5,PERSON NOT PLAYER IN PLAY
+arm1_broadcast_1080_native,54,153,blind_153.jpg,22170,408.0,628.5,PLAYER
+arm1_broadcast_1080_native,66,72,blind_072.jpg,22761,1233.75,921.0,CANNOT JUDGE
+arm2_broadcast_720_downscaled,6,212,blind_212.jpg,19842,505.75,549.5,PLAYER
+arm2_broadcast_720_downscaled,18,161,blind_161.jpg,20433,910.0,451.75,PLAYER
+arm2_broadcast_720_downscaled,30,78,blind_078.jpg,21027,1091.0,497.0,PERSON NOT PLAYER IN PLAY
+arm2_broadcast_720_downscaled,42,214,blind_214.jpg,21582,60.03125,385.5,PERSON NOT PLAYER IN PLAY
+arm2_broadcast_720_downscaled,54,31,blind_031.jpg,22170,588.5,312.5,PLAYER
+arm2_broadcast_720_downscaled,66,80,blind_080.jpg,22728,543.875,398.25,PERSON NOT PLAYER IN PLAY
+arm3_amateur_720_native,6,44,blind_044.jpg,264,134.21875,327.5,PERSON NOT PLAYER IN PLAY
+arm3_amateur_720_native,18,160,blind_160.jpg,828,761.0,544.0,PLAYER
+arm3_amateur_720_native,30,41,blind_041.jpg,1398,655.0,233.25,PLAYER
+arm3_amateur_720_native,42,148,blind_148.jpg,1983,1218.0,95.25,PERSON NOT PLAYER IN PLAY
+arm3_amateur_720_native,54,108,blind_108.jpg,2556,490.5,682.0,PERSON NOT PLAYER IN PLAY
+arm3_amateur_720_native,66,106,blind_106.jpg,3129,798.0,464.5,PLAYER

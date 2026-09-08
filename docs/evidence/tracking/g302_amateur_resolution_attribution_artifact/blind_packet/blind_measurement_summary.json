@@ -1,0 +1,83 @@
+{
+  "sample_size_per_arm": 72,
+  "counts": {
+    "arm1_broadcast_1080_native": {
+      "PLAYER": 34,
+      "PERSON NOT PLAYER IN PLAY": 32,
+      "NOT A PERSON": 2,
+      "CANNOT JUDGE": 4
+    },
+    "arm2_broadcast_720_downscaled": {
+      "PLAYER": 33,
+      "PERSON NOT PLAYER IN PLAY": 32,
+      "NOT A PERSON": 3,
+      "CANNOT JUDGE": 4
+    },
+    "arm3_amateur_720_native": {
+      "PLAYER": 33,
+      "PERSON NOT PLAYER IN PLAY": 39,
+      "NOT A PERSON": 0,
+      "CANNOT JUDGE": 0
+    }
+  },
+  "fractions": {
+    "arm1_broadcast_1080_native": {
+      "PLAYER": 0.4722222222222222,
+      "PERSON NOT PLAYER IN PLAY": 0.4444444444444444,
+      "NOT A PERSON": 0.027777777777777776,
+      "CANNOT JUDGE": 0.05555555555555555
+    },
+    "arm2_broadcast_720_downscaled": {
+      "PLAYER": 0.4583333333333333,
+      "PERSON NOT PLAYER IN PLAY": 0.4444444444444444,
+      "NOT A PERSON": 0.041666666666666664,
+      "CANNOT JUDGE": 0.05555555555555555
+    },
+    "arm3_amateur_720_native": {
+      "PLAYER": 0.4583333333333333,
+      "PERSON NOT PLAYER IN PLAY": 0.5416666666666666,
+      "NOT A PERSON": 0.0,
+      "CANNOT JUDGE": 0.0
+    }
+  },
+  "b_plus_c": {
+    "arm1_broadcast_1080_native": 34,
+    "arm2_broadcast_720_downscaled": 35,
+    "arm3_amateur_720_native": 39
+  },
+  "tests": {
+    "resolution_arm1_vs_arm2": {
+      "PLAYER": {
+        "pooled_p": 0.4652777777777778,
+        "se": 0.08313215170303488,
+        "z": 0.16707000365517846,
+        "nominal_two_sided_p": 0.8673149678735612
+      },
+      "NOT A PERSON": {
+        "pooled_p": 0.034722222222222224,
+        "se": 0.030512560940889045,
+        "z": -0.45518594508652893,
+        "nominal_two_sided_p": 0.6489754710660192
+      }
+    },
+    "amateur_at_matched_resolution_arm2_vs_arm3": {
+      "PLAYER": {
+        "pooled_p": 0.4583333333333333,
+        "se": 0.0830434773826486,
+        "z": 0.0,
+        "nominal_two_sided_p": 1.0
+      },
+      "NOT A PERSON": {
+        "pooled_p": 0.020833333333333332,
+        "se": 0.023804356251392513,
+        "z": 1.7503798979747347,
+        "nominal_two_sided_p": 0.08005278235757937
+      }
+    }
+  },
+  "player_drop_resolution": 0.013888888888888888,
+  "player_drop_amateur_matched": 0.0,
+  "player_drop_total_arm1_vs_arm3": 0.013888888888888888,
+  "nominal_note": "two-sided nominal p values; no multiplicity correction",
+  "unresolved_remainder": 0.2361111111111111
+}

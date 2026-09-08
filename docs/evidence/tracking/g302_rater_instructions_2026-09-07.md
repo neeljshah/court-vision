@@ -55,7 +55,7 @@ you spent, and the SHA-256 of the LF-normalized `blind_verdicts.csv`.
 - Do NOT open, read, search for, or reason about any unblind map, arm name, source-frame number,
   presentation order file, detection CSV, summary JSON, prereg, memo, or any other G302, G273 or
   G280b artifact. The crop images and this file are your only inputs.
-- Do not push. Never use `--force`. ASCII only. Calibration language only: no dollar, ROI, profit or
+- Do not push. Never use `--force`. ASCII only. Calibration language only: no monetary, return-on-stake or
   wagering language anywhere in what you write.
 - Try to commit by explicit pathspec. If `git commit` is DENIED by the sandbox, leave the files on
   disk and finish with the line `SHA: NOT CREATED (sandbox); files ready for lane_commit` followed by
