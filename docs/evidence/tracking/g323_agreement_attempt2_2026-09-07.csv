@@ -1,0 +1,29 @@
+statistic,value
+n,60
+po,0.700000
+pe,0.192500
+kappa,0.628483
+kappa_se_asymptotic,0.073264
+non_player_a,31
+non_player_b,30
+both_agreed_non_player,28
+gate_rejects_of_agreed,2
+premise_verdict,PREMISE HOLDS
+gate_verdict,"GATE MISSING (gate rejects 2 of 28 both-agreed NON_PLAYER = 0.071429, bar 0.50)"
+confusion_a__b,count
+broadcast_graphic__broadcast_graphic,1
+broadcast_graphic__crowd,1
+crowd__crowd,4
+crowd__player_bench_or_courtside,2
+crowd__referee_or_staff,5
+crowd__two_or_more_players,1
+crowd__unreadable,1
+off_frame_or_empty__broadcast_graphic,1
+off_frame_or_empty__off_frame_or_empty,4
+off_frame_or_empty__unreadable,1
+player_bench_or_courtside__player_bench_or_courtside,1
+player_on_court__player_on_court,17
+player_on_court__two_or_more_players,4
+referee_or_staff__referee_or_staff,9
+two_or_more_players__crowd,2
+two_or_more_players__two_or_more_players,6

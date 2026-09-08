@@ -1,0 +1,61 @@
+panel_id,rater,model,category,reason
+P01,A,claude-opus-5[1m],player_on_court,single white-jersey player standing in the paint
+P02,A,claude-opus-5[1m],crowd,spectators in the stands above the courtside board
+P03,A,claude-opus-5[1m],player_on_court,blue #34 fully inside; neighbours only clip the border
+P04,A,claude-opus-5[1m],player_on_court,single maroon #10 running on court
+P05,A,claude-opus-5[1m],player_bench_or_courtside,one seated uniformed player courtside in front of the boards
+P06,A,claude-opus-5[1m],crowd,seated spectators behind the sideline with a blurred foreground
+P07,A,claude-opus-5[1m],player_on_court,single white DREAM #3 on court
+P08,A,claude-opus-5[1m],crowd,one capped spectator seated in the seating bowl
+P09,A,claude-opus-5[1m],player_on_court,single blue-jersey player running; only a leg of another clips in
+P10,A,claude-opus-5[1m],crowd,motion-smeared stands; spectators still identifiable
+P11,A,claude-opus-5[1m],crowd,bald spectator in a gold shirt seated courtside
+P12,A,claude-opus-5[1m],broadcast_graphic,scorebug overlay dominates the box
+P13,A,claude-opus-5[1m],two_or_more_players,two uniformed players standing side by side
+P14,A,claude-opus-5[1m],off_frame_or_empty,crop is entirely black; box lies outside the decoded frame
+P15,A,claude-opus-5[1m],off_frame_or_empty,bare court floor and a sliver of overlay; no person
+P16,A,claude-opus-5[1m],player_on_court,single blue-jersey player under the basket
+P17,A,claude-opus-5[1m],crowd,courtside spectators in the front row
+P18,A,claude-opus-5[1m],player_on_court,single red-uniform player standing on the floor logo
+P19,A,claude-opus-5[1m],crowd,dark arena with spectators filling the lower box
+P20,A,claude-opus-5[1m],crowd,one capped person seated behind the courtside rail
+P21,A,claude-opus-5[1m],two_or_more_players,contested rebound; two uniformed players substantially inside
+P22,A,claude-opus-5[1m],two_or_more_players,several uniformed bench occupants; none dominant
+P23,A,claude-opus-5[1m],crowd,one person in a dress shirt behind the bench area
+P24,A,claude-opus-5[1m],player_on_court,single white-uniform player running
+P25,A,claude-opus-5[1m],two_or_more_players,several seated bench occupants in team black; none dominant
+P26,A,claude-opus-5[1m],player_on_court,single blue #7 on court
+P27,A,claude-opus-5[1m],player_on_court,white-uniform ball handler dominates; second figure only blurred
+P28,A,claude-opus-5[1m],referee_or_staff,person in all-black standing on the sideline; not a playing uniform
+P29,A,claude-opus-5[1m],crowd,front-row spectators behind the official
+P30,A,claude-opus-5[1m],off_frame_or_empty,arena LED ribbon signage only; no person
+P31,A,claude-opus-5[1m],referee_or_staff,official in striped shirt number 25
+P32,A,claude-opus-5[1m],player_on_court,single dark-green player running on court
+P33,A,claude-opus-5[1m],player_on_court,single white #2 on court
+P34,A,claude-opus-5[1m],referee_or_staff,official in striped shirt number 25
+P35,A,claude-opus-5[1m],player_on_court,single dark-green player on the centre logo
+P36,A,claude-opus-5[1m],player_on_court,single white #5 on court
+P37,A,claude-opus-5[1m],off_frame_or_empty,plain teal board; no person
+P38,A,claude-opus-5[1m],two_or_more_players,green #14 and #33 plus a red leg; two players inside
+P39,A,claude-opus-5[1m],broadcast_graphic,transition-wipe graphic dominates; court is a shrunken inset
+P40,A,claude-opus-5[1m],player_on_court,white-uniform player jumping; second player has no head inside
+P41,A,claude-opus-5[1m],player_on_court,single white-uniform player standing on court
+P42,A,claude-opus-5[1m],referee_or_staff,official in grey striped shirt under the basket
+P43,A,claude-opus-5[1m],two_or_more_players,white #5 and a blue-jersey player both head and torso inside
+P44,A,claude-opus-5[1m],crowd,heavy-set spectator in a replica jersey seated courtside
+P45,A,claude-opus-5[1m],referee_or_staff,official in striped shirt walking the sideline
+P46,A,claude-opus-5[1m],crowd,close blue-shirted spectator behind the bench
+P47,A,claude-opus-5[1m],off_frame_or_empty,tall box over bare paint floor; no person dominant
+P48,A,claude-opus-5[1m],off_frame_or_empty,thin sliver at the right frame border; box runs off-frame
+P49,A,claude-opus-5[1m],crowd,two spectators behind the bench; both non-players
+P50,A,claude-opus-5[1m],player_on_court,single white-uniform player running
+P51,A,claude-opus-5[1m],referee_or_staff,official in striped shirt number 25
+P52,A,claude-opus-5[1m],player_on_court,red-uniform player dominates the box
+P53,A,claude-opus-5[1m],referee_or_staff,grey quarter-zip staff torso plus scorebug
+P54,A,claude-opus-5[1m],player_on_court,single white DREAM #3 in the foreground
+P55,A,claude-opus-5[1m],two_or_more_players,parts of a dark and a red uniformed player; neither isolated
+P56,A,claude-opus-5[1m],two_or_more_players,white SPURS player and a blue-uniform player both inside
+P57,A,claude-opus-5[1m],player_on_court,single white #5 running
+P58,A,claude-opus-5[1m],player_on_court,single dark-green player walking the baseline
+P59,A,claude-opus-5[1m],referee_or_staff,staff member in a grey quarter-zip with arms crossed
+P60,A,claude-opus-5[1m],referee_or_staff,official number 26 dominates the box
