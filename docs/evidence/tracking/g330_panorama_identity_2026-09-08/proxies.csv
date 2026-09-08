@@ -1,0 +1,7 @@
+section,arm,pano_source,pano_sha256,n_frames,feet_total,good_matches_total,inliers_total,inlier_ratio,valid_homography_frames,valid_homography_share,feet_evaluated,feet_inside,feet_inside_share,note
+nba__0022400909_s4453,F,armF_nba__0022400909_s4453.png,bbb8df6bcb269acae3f580d854e003b3bcfbe98188d5929316f88da90bb5476f,000040,000302,000055,000008,8/55,000000,0/40,000000,000000,0/0,panorama the pod route used
+nba__0022400909_s4453,V,built_from_section,-,000040,000302,000079,000024,24/79,000000,0/40,000000,000000,0/0,built 4260x710 from 30 frames
+nba__0022401156_s2491,F,armF_nba__0022401156_s2491.png,69024f8ef08d1e6093ddaf2bda0dd5df8630eab5f1b6b202daa08df8e47e5fff,000040,000199,002885,000250,250/2885,000039,39/40,000199,000013,13/199,panorama the pod route used
+nba__0022401156_s2491,V,built_from_section,-,000040,000199,-,-,-,-,-,-,-,-,NOT BUILDABLE: route validity gate rejected 2052x710
+nba__0022401198_s2784,F,armF_nba__0022401198_s2784.png,69024f8ef08d1e6093ddaf2bda0dd5df8630eab5f1b6b202daa08df8e47e5fff,000040,000310,002413,000214,214/2413,000035,35/40,000288,000014,14/288,panorama the pod route used
+nba__0022401198_s2784,V,built_from_section,-,000040,000310,-,-,-,-,-,-,-,-,NOT BUILDABLE: route validity gate rejected 1135x710
