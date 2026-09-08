@@ -1,4 +1,4 @@
-GAP S329 | sport wnba + mlb + soccer (in season now; nba when the season starts) | worktree aX | log cx_s329_prospective_receipt_capture
+GAP S329 | sport wnba + mlb + soccer (in season now; nba when the season starts) | worktree a16 | log cx_s329_prospective_receipt_capture
 
 **DATA-CAPTURE ROW (S register; the fix S320 / S328 / S321 all named: receipts can only be captured
 PROSPECTIVELY, never backfilled). Codex PREPARES the capture job, tests and prereg; a finisher DEPLOYS it
