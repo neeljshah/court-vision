@@ -1,0 +1,134 @@
+{
+  "bootstraps": 10000,
+  "embargo_days_symmetric_nonzero": 1,
+  "evaluator": "scripts.platformkit.eval_gate.cpcv_engine.cpcv_evaluate",
+  "grain": {
+    "clusters": 1593,
+    "low_band_clusters": 570,
+    "low_band_positive_clusters": 26,
+    "low_band_states": 4420,
+    "rule": "one state per game_id, period and floor(game_clock_s / 30)",
+    "source_rows": 465249,
+    "states": 117964
+  },
+  "input": {
+    "bytes": 2829826,
+    "columns": [
+      "row_index",
+      "game_id",
+      "game_date",
+      "ts",
+      "period",
+      "game_clock_s",
+      "score_home",
+      "score_away",
+      "margin",
+      "market_prob",
+      "traded",
+      "market_ticker",
+      "outcome_home_win",
+      "venue"
+    ],
+    "first_three_game_ids": [
+      "401704627",
+      "401704627",
+      "401704627"
+    ],
+    "path": "data/cache/inplay_odds/nba_checkpoints_full.parquet",
+    "resolution": "not applicable",
+    "rows": 465249
+  },
+  "metrics": {
+    "global": {
+      "brier_improvement": [
+        -2.3269063393954617e-05,
+        [
+          -4.950280281673914e-05,
+          3.8891763890291716e-06
+        ],
+        1593
+      ],
+      "candidate_log_loss": 0.4585247064440958,
+      "log_improvement": [
+        -0.0003610978170105014,
+        [
+          -0.0009176343172623795,
+          0.0001233172520240853
+        ],
+        1593
+      ],
+      "log_loss": 0.45816360862708533
+    },
+    "high": {
+      "brier_improvement": [
+        -0.00033541146524065056,
+        [
+          -0.0005654615161822181,
+          7.27105547533498e-05
+        ],
+        718
+      ],
+      "candidate_log_loss": 0.12769044088825118,
+      "log_improvement": [
+        -0.004204200450609215,
+        [
+          -0.007379011851124381,
+          0.0015534613977393986
+        ],
+        718
+      ],
+      "log_loss": 0.12348624043764193
+    },
+    "low": {
+      "brier_improvement": [
+        -0.0001705213392212838,
+        [
+          -0.0007723287265868376,
+          0.00026279433877722546
+        ],
+        557
+      ],
+      "candidate_log_loss": 0.10338034446306023,
+      "log_improvement": [
+        -0.004089851241761723,
+        [
+          -0.018882211994238764,
+          0.005967349768546663
+        ],
+        557
+      ],
+      "log_loss": 0.09929049322129851
+    },
+    "tail": {
+      "brier_improvement": [
+        -0.0002679008192664905,
+        [
+          -0.0005693513494239653,
+          4.831775337958096e-05
+        ],
+        1267
+      ],
+      "candidate_log_loss": 0.11773720503975654,
+      "log_improvement": [
+        -0.004157382674783017,
+        [
+          -0.010714070882295819,
+          0.0014955447847864447
+        ],
+        1267
+      ],
+      "log_loss": 0.11357982236497353
+    }
+  },
+  "prereg_seal": "0b7ed9caa1bdb0e08b34fbf81fd19a7266cd00c2f6f86f1cdca4b5ba8cefafbd",
+  "preregistration": "docs/evidence/harness/S310_tail_beta_offset_2026-09-07_prereg.md",
+  "route_sha256": "0fc0f84e9fa21776105e469d9220d10c970159a1d54d8e448be60371696d821a",
+  "row": "S310",
+  "rss_bytes": 758407168,
+  "seed": 905,
+  "supplement": "docs/evidence/harness/S310_tail_beta_offset_2026-09-07_prereg_supplement.md",
+  "supplement_corrected": "docs/evidence/harness/S310_tail_beta_offset_2026-09-07_prereg_supplement_corrected.md",
+  "supplement_corrected_seal": "aaecd6956b75c305118a24b0156510e79cd483c1875e42ebd1afff704c5f0e00",
+  "supplement_seal": "4f9898cf09f46f91253286ba2ccd8047813b46fbd920bf6ad81b4740dc10a904",
+  "verdict": "CLOSED_AT_LIMIT"
+}
