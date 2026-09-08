@@ -1,4 +1,4 @@
-GAP G348 | sport basketball | worktree aX | log cx_g348_gate_execution_valid_fixtures
+GAP G348 | sport basketball | worktree a15 | log cx_g348_gate_execution_valid_fixtures
 
 **HARNESS-POWER ROW (astra midday review 2026-09-08, item B; follows G343 CLOSED AT LIMIT). Codex PREPARES,
 a finisher MEASURES.** `src/`, `kernel/`, `api/` and `intel/` are READ and IMPORT only. Build in
