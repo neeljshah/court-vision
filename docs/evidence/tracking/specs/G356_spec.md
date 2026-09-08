@@ -1,4 +1,4 @@
-GAP G356 | sport all (basketball fixtures first) | worktree aX | log cx_g356_full_section_gate_execution
+GAP G356 | sport all (basketball fixtures first) | worktree a3 | log cx_g356_full_section_gate_execution
 
 **HARNESS ROW, SUCCESSOR TO G353 (PARTIAL -- BAR NOT MET 2026-09-08). Codex PREPARES, a finisher MEASURES.**
 `src/`, `kernel/`, `api/` and `intel/` are READ and IMPORT only. Build in `scripts/platformkit/tracking/`
