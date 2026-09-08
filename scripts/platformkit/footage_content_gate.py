@@ -6,6 +6,7 @@ teacher-label corpus, not to change a score denominator.
 """
 from __future__ import annotations
 
+import argparse
 import json
 import shutil
 from dataclasses import asdict, dataclass
@@ -14,6 +15,8 @@ from typing import Iterable
 
 import cv2
 import numpy as np
+
+from scripts.platformkit.footage_liveness import LivenessMetrics, measure_liveness
 
 
 QUARANTINE_DIR = Path("data/footage_quarantine")
@@ -28,6 +31,7 @@ class GateMetrics:
     surface_fractions: list[float]
     border_fractions: list[float]
     cut_fraction: float
+    liveness: LivenessMetrics | None = None
 
 
 @dataclass(frozen=True)
@@ -130,15 +134,27 @@ def decide(metrics: GateMetrics) -> GateVerdict:
     return GateVerdict("accept", "playing_surface_and_shot_continuity_present", metrics)
 
 
-def screen(video: Path, sport: str) -> GateVerdict:
-    """Sample and decide a clip before staging it for tracking."""
-    return decide(sample_clip(video, sport))
+def screen(video: Path, sport: str, reject_frozen: bool = False) -> GateVerdict:
+    """Sample and report liveness; rejection is opt-in until feeder approval."""
+    base = sample_clip(video, sport)
+    try:
+        liveness = measure_liveness(video)
+    except (cv2.error, OSError, ValueError):
+        liveness = None
+    metrics = GateMetrics(base.sample_seconds, base.surface_fractions,
+                          base.border_fractions, base.cut_fraction,
+                          liveness)
+    verdict = decide(metrics)
+    if reject_frozen and metrics.liveness and metrics.liveness.verdict == "FROZEN":
+        return GateVerdict("reject", "frozen_video_liveness", metrics)
+    return verdict
 
 
-def screen_fail_open(video: Path, sport: str) -> GateVerdict:
+def screen_fail_open(video: Path, sport: str,
+                     reject_frozen: bool = False) -> GateVerdict:
     """Screen a clip without allowing a decoder outage to block ingest."""
     try:
-        return screen(video, sport)
+        return screen(video, sport, reject_frozen=reject_frozen)
     except (cv2.error, OSError, ValueError) as exc:
         return GateVerdict(
             "review", "screen_unavailable_fail_open: %s" % str(exc)[:100],
@@ -216,3 +232,19 @@ def summary(verdicts: Iterable[GateVerdict]) -> dict[str, int]:
     for verdict in verdicts:
         counts[verdict.decision] += 1
     return counts
+
+
+def main() -> None:
+    """Print a gate report; frozen rejection remains explicitly opt-in."""
+    parser = argparse.ArgumentParser(description="Screen one footage clip")
+    parser.add_argument("video", type=Path)
+    parser.add_argument("sport")
+    parser.add_argument("--reject-frozen", action="store_true",
+                        help="reject a reported FROZEN clip (default: report only)")
+    args = parser.parse_args()
+    print(json.dumps(asdict(screen_fail_open(args.video, args.sport,
+                                             reject_frozen=args.reject_frozen))))
+
+
+if __name__ == "__main__":
+    main()

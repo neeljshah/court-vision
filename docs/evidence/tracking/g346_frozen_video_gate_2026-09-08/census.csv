@@ -1,0 +1,2 @@
+scope,n_sections,n_frozen,n_live,n_unreadable,bpf_p10,bpf_p50,bpf_p90,delta_p10,delta_p50,delta_p90,n_frozen_with_ledger_rows,ledger_rows_from_frozen,n_ledger_only_absent_file
+all_sections,000057,000007,000050,000000,1138.752690,6180.493611,17389.283788,2.997593,29.991471,54.115193,000000,000000,000011
