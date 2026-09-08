@@ -89,3 +89,37 @@ COMMIT: explicit pathspec only. ASCII stdout. Prereg sealed as its OWN commit fi
 last line `SEAL sha256 <hex>` over the LF-normalised bytes above it). **NEVER PARK.**
 
 VERSION 2026-09-08
+
+---
+**ATTEMPT 2 -- VERSION 2026-09-08b (orchestrator amendment after the attempt-1 REJECT, verify memo
+`G330_VERIFY_2026-09-08.md`, candidate 39ee52eb0).** Attempt 1 failed Q1 (the sealed prereg named section
+s1588, which the rotating corpus deleted before scoring, so s4453 was scored), B7 (the first three sorted
+game prefixes is a head slice), B8 (RANSAC inliers counted on the correspondences that fitted the
+homography), and ran a bespoke stateless SIFT block instead of the route's stateful matcher
+(`unified_pipeline.py:1262-1309`: cut reuse, EMA, first-frame bootstrap); the memo also omitted one sha256
+group (2 files, 0 claimed videos). Binding for attempt 2, on top of the rule above:
+  1. **SNAPSHOT BEFORE SEAL.** Select 3 sections from 3 different games by a NON-HEAD rule fixed in the
+     prereg (e.g. rank every eligible corpus file by sha256 of its name with a sealed salt and take the
+     lowest three distinct games; state the rule and the salt), COPY them down first, and seal their file
+     sha256s and ffprobe dimensions in the prereg. The scored run reads only the local copies; corpus
+     rotation can no longer change the sample. If a copy fails mid-transfer, re-apply the rule to the
+     next candidate BEFORE sealing.
+  2. **THE ROUTE'S OWN MATCHER.** Arm F and arm V both run the production stateful matcher path
+     (import `unified_pipeline` read-only and call the frame->panorama step the daemon route calls, with
+     its cut reuse, EMA and first-frame bootstrap intact); the ONLY difference between arms is the
+     panorama image. If the matcher cannot be called without side effects on `data/`, redirect its cache
+     paths to a scratch dir and say so.
+  3. **HELD-OUT INLIERS (B8).** Split each frame's correspondences by a sealed rule (e.g. even/odd match
+     index) into a FIT set and a HELD-OUT set; fit the homography on FIT, report the inlier ratio and
+     median reprojection error on HELD-OUT, with n per frame. Also report the FIT-set ratio, labelled
+     as in-sample.
+  4. **EVERY sha256 GROUP** in the memo table, including groups with 0 claimed videos. Fix the sidecar
+     docstring/field mismatch (`g330_panorama_identity.py:101` vs `:107-112`).
+  5. **WHERE IT RUNS.** The proxy may run on the POD as CPU scratch inside `/workspace/wt/a1/` (`nice -n 19`,
+     `OMP_NUM_THREADS=2`, never touching `track_daemon` or `vol_guard.py`, no write outside that job root)
+     OR locally with peak RSS under 1.5 GB (the local RAM guard kills at 99 pct RAM; attempt 1 was killed at
+     3.79 GB). Say where it ran and print the peak RSS.
+  6. Census re-taken read-only after the seal (the pod listing is exploratory until then). Memo
+     `g330_panorama_identity_attempt2_2026-09-08.md` (<= 60 lines), artifacts under
+     `g330_panorama_identity_attempt2_2026-09-08/`, one ledger `>>` row. Attempt-1 files are frozen.
+     Bars, arms and the MEASURED/PARTIAL rule are unchanged.
