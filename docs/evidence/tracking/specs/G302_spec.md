@@ -129,3 +129,52 @@ full pytest.** **If a commit grows an allowlisted file, raise its entry in
 `tests/platformkit/test_loc_rail_scope.py` in the SAME commit (contract A12).**
 COMMIT: explicit pathspec only, no push. **Make EVERY commit before you finish.** ASCII stdout.
 **NEVER PARK.**
+
+## VERSION 2026-09-07b (attempt 2: source recovery + blind-sheet ordering)
+
+**EVERY CLAUSE ABOVE STILL BINDS. No bar moves** -- this row still has NO pass bar, still uses the four
+G273 categories unchanged, still needs 216 crops over 3 arms x 72, and still reports both nominal
+two-proportion tests with the no-correction statement.
+
+**WHY ATTEMPT 2 EXISTS.** Attempt 1 (worktree a5, `ebdd44ab3`) was REJECTED on exactly two findings
+(`G302_VERIFY_2026-09-07.md`): (1) the spec's named sources are MANDATORY but both were lost in the
+2026-09-07 pod rebuild, so SUBSTITUTE clips were measured and the prior gap was never decomposed;
+(2) the live in-play verdict sheet was added AFTER unblinding, so only a superseded sheet predated the
+map. Everything else in attempt 1 PASSED and its harness is reused where the verifier did not object.
+
+**AMENDMENT (orchestrator-authorized).** The two named source files were lost in the 2026-09-07 pod
+rebuild; attempt 2 RE-ACQUIRES the same YouTube sources at the ORIGINAL resolutions
+(`wnba_01` = `1zPhldjbJnU` at 1920x1080 H.264; `jh3fnwMi7dM` at 1280x720 H.264) and treats them as the
+G273 / G280 populations under an explicit IDENTITY CHECK, reported as a table in the memo:
+
+  - **Byte hash.** SHA-256 against the value recorded on master for that source. A re-encode CANNOT
+    match a byte hash and is reported as DIFFERENT, not as a failure. A hash that DOES match is
+    reported as IDENTICAL and is the strongest available identity evidence.
+  - **Container facts.** Duration within 1 s and resolution EQUAL to the originals recorded in the
+    `g273_*` / `g280_*` manifests on master.
+  - **Content reproduction (preferred where available).** Re-render the committed blind crops of the
+    prior row (G273's 72, G280b's 72) from the re-acquired file at the recorded source frame and
+    footpoint with the same crop geometry, and report the per-crop mean absolute pixel difference
+    against the committed JPEGs, excluding the central 48x48 px marker patch. A source that reproduces
+    all 72 committed crops at JPEG-requantization distance IS that row's population, frame for frame,
+    and this check SUPERSEDES the duration check when it passes.
+
+A source that fails every one of the three checks is NOT the row's population and the run STOPS with
+CLOSED AT LIMIT naming which check failed.
+
+**BLIND ORDER (the second rejection).** The completed verdict sheet, in the four fixed categories,
+is committed ALONE and BEFORE the unblind map exists on disk. Any rerate performed after unblinding is
+reported as NON-BLIND and is EXCLUDED from the headline; attempt 2 rates once, in the spec's categories,
+and does not rerate.
+
+**FRAME GRID.** Arms 1 and 2 draw from G273's own inherited span, source frames 19599..23399; arm 3
+draws from the G280 clip's own frames. All three arms use the IDENTICAL grid shape -- stride 3, 1152
+processed frames, 72 equal-width bins of 16 processed frames -- so detections per processed frame stay
+comparable. Arms 1 and 2 remain the SAME decode of the SAME frames, differing ONLY in the arm-2
+downscale to 1280x720 before the detector.
+
+**TRANSPORT.** If a re-acquired source is shipped to the pod as a `-c copy` section rather than whole,
+the section's frame offset is measured by the content-reproduction check and RECORDED IN THE PREREG
+before any detection runs.
+
+All other rules of VERSION 2026-09-07 stand.
