@@ -1,0 +1,358 @@
+{
+  "bar": 0.004,
+  "bootstraps": 10000,
+  "canonical": {
+    "branch_counts": {
+      "COMPLEMENT_AWAY": 21083,
+      "DIRECT_HOME": 4896419
+    },
+    "canonical_rows": 4917502,
+    "cross_venue_games": 40,
+    "cross_venue_verdict": "REPORTED",
+    "duplicate_keys": 0,
+    "polymarket_games_joined": 1593,
+    "polymarket_probability_replay_max_abs_error": 0.0,
+    "probability_replay_max_abs_error": 0.0,
+    "reason_counts": {
+      "CANONICAL": 4917502,
+      "COMPLEMENT_UNUSED_HOME_PRESENT": 114945,
+      "EXACT_DUPLICATE_TICK": 1417673,
+      "UNPARSEABLE_EVENT": 1642063
+    },
+    "source_moneyline_rows": 8092183,
+    "unaccounted_rows": 0
+  },
+  "design": {
+    "ci95": [
+      -3.410754264479642e-05,
+      0.001139144397060844
+    ],
+    "delta_forward_minus_cpcv": 0.0005298546252231641,
+    "design_sensitive": false,
+    "provenance": {
+      "cpcv": {
+        "evaluator": "scripts.platformkit.eval_gate.cpcv_engine.cpcv_evaluate",
+        "fits": 28,
+        "guard_state_keys": true,
+        "matchup_embargo_days": 3,
+        "n_groups": 8,
+        "n_test_groups": 2,
+        "paths": 28,
+        "paths_per_game": 7,
+        "purge_hours": 48,
+        "records": 11151,
+        "split_test_games": [
+          442,
+          426,
+          411,
+          410,
+          406,
+          404,
+          402,
+          432,
+          417,
+          416,
+          412,
+          410,
+          408,
+          401,
+          400,
+          396,
+          394,
+          392,
+          385,
+          381,
+          379,
+          377,
+          380,
+          378,
+          376,
+          374,
+          372,
+          370
+        ],
+        "split_train_states": [
+          1137,
+          1138,
+          1160,
+          1153,
+          1159,
+          1147,
+          1165,
+          1147,
+          1143,
+          1136,
+          1142,
+          1130,
+          1148,
+          1175,
+          1166,
+          1172,
+          1160,
+          1178,
+          1200,
+          1194,
+          1182,
+          1200,
+          1196,
+          1175,
+          1193,
+          1210,
+          1199,
+          1204
+        ],
+        "strict_redaction": true,
+        "symmetric_embargo": true,
+        "symmetric_embargo_days": 1
+      },
+      "forward": {
+        "evaluator": "scripts.platformkit.eval_gate.walkforward.walk_forward",
+        "fits": 1269,
+        "guard_state_keys": true,
+        "matchup_embargo_days": 3,
+        "max_train_states": 1592,
+        "min_train_states": 0,
+        "purge_hours": 48,
+        "records": 1593,
+        "select_inside": true,
+        "strict_redaction": true,
+        "symmetric_embargo": false,
+        "train_rule": "settled strictly before the test state timestamp"
+      },
+      "grain": "game_cluster: one evaluator state per game, one OOF probability per tick",
+      "n_states": 1593,
+      "n_ticks": 465249,
+      "record_agreement_max_abs_error": 2.220446049250313e-16
+    }
+  },
+  "embargo_days": 1,
+  "historical": {
+    "baseline_brier": 0.07331694555660052,
+    "baseline_replay_error": 0.0,
+    "candidate_brier": 0.07335361389463317,
+    "candidate_replay_error": 0.0,
+    "n_games": 1593,
+    "n_ticks": 465249
+  },
+  "inputs": [
+    {
+      "bytes": 2829826,
+      "columns": [
+        "game_id",
+        "game_date",
+        "ts",
+        "period",
+        "game_clock_s",
+        "score_home",
+        "score_away",
+        "margin",
+        "market_prob",
+        "traded",
+        "market_ticker",
+        "outcome_home_win",
+        "venue"
+      ],
+      "first_3_ids": [
+        "401704627",
+        "401704627",
+        "401704627"
+      ],
+      "path": "data/cache/inplay_odds/nba_checkpoints_full.parquet",
+      "rows": 465249,
+      "sha256": "5ea6498d88bf7548395c700c7239641dcbd1d641bdaddb5a6b63fcf0ea8909e5"
+    },
+    {
+      "bytes": 25140428,
+      "columns": [
+        "sport",
+        "venue",
+        "game_date",
+        "ticker_or_slug",
+        "event_key",
+        "market_type",
+        "side",
+        "ts",
+        "prob",
+        "traded",
+        "close_time",
+        "result_where_known"
+      ],
+      "first_3_ids": [
+        "KXNBAGAME-26APR26BOSPHI",
+        "KXNBAGAME-26APR26BOSPHI",
+        "KXNBAGAME-26APR26BOSPHI"
+      ],
+      "path": "data/cache/inplay_odds/nba_price_series.parquet",
+      "rows": 8399632,
+      "sha256": "3db7d0444d800cfe487ab48c4780a9283b3a621511e0b259975a4339b970bd5b"
+    },
+    {
+      "bytes": 46002,
+      "columns": [
+        "event_id",
+        "home_abbr",
+        "home_q1",
+        "home_q2",
+        "home_q3",
+        "home_q4",
+        "away_abbr",
+        "away_q1",
+        "away_q2",
+        "away_q3",
+        "away_q4",
+        "date",
+        "home_nba",
+        "away_nba",
+        "_date",
+        "game_id",
+        "match_confidence",
+        "season",
+        "source_linescores_file",
+        "as_of",
+        "corpus_id"
+      ],
+      "first_3_ids": [
+        "0022500001",
+        "0022500002",
+        "0022500004"
+      ],
+      "path": "data/domains/basketball_nba/espn_nba_game_bridge.parquet",
+      "rows": 1299,
+      "sha256": "e0e0ab68d6882bf77987dca2890a1896376ffe18d8e46d11656338a7ec037f4f"
+    }
+  ],
+  "prereg_sha256": "cd9e157abc95c2e699228069bfa40292621fc26f6e48fa0352b3d992e5f69cad",
+  "preregistration_path": "docs/evidence/harness/S309_canonical_loss_audit_2026-09-07b_preregistration.md",
+  "route_sha256": "67128d59bc9cd52a947c1ed40b1a347f30936886892f146a061f88a59ac74984",
+  "rss_bytes": 6866489344,
+  "s280": {
+    "equal_game_improvement": 0.0008286175416573804,
+    "n_games": 40,
+    "n_ticks": 8828,
+    "tick_minus_game": -0.0001305570338497043,
+    "tick_weighted_improvement": 0.0006980605078076761
+  },
+  "seed": 901,
+  "shared_route_sha256": {
+    "cpcv_engine": "5accfbe490031acb084a8e4375a082b00d842cf4011a76c6d27dfc2c7db614a5",
+    "walkforward": "c8a9b5b0f0f7c84dc5fdb0c7a4a27e0f7f2040f99326ef5376cde011df27bc2e"
+  },
+  "spec": "S309",
+  "tables": {
+    "all": {
+      "baseline_brier": 0.07390639109937615,
+      "candidate_brier": 0.07398484125349908,
+      "candidate_ece_10bin": 0.006105967776103877,
+      "candidate_log_loss": 0.22262400153776662,
+      "candidate_mde": 5.3709961358431566e-05,
+      "improvement_baseline_minus_candidate": -7.845015412293357e-05,
+      "improvement_ci95": [
+        -0.00013678092817918992,
+        -2.8628301509579176e-05
+      ],
+      "n_games": 1593,
+      "n_ticks": 465249
+    },
+    "positive_clock": {
+      "baseline_brier": 0.15276788003952815,
+      "candidate_brier": 0.15291434424203587,
+      "candidate_ece_10bin": 0.013511881947105982,
+      "candidate_log_loss": 0.45944616616642486,
+      "candidate_mde": 0.0001055656177245144,
+      "improvement_baseline_minus_candidate": -0.00014646420250769755,
+      "improvement_ci95": [
+        -0.0002603836694876424,
+        -5.168242591163821e-05
+      ],
+      "n_games": 1593,
+      "n_ticks": 194095
+    },
+    "unknown_status": {
+      "baseline_brier": 0.0008503167447673602,
+      "candidate_brier": 0.0008463937584249423,
+      "candidate_ece_10bin": 0.0014814789467726508,
+      "candidate_log_loss": 0.003450112618724218,
+      "candidate_mde": 5.685285335577143e-06,
+      "improvement_baseline_minus_candidate": 3.922986342417964e-06,
+      "improvement_ci95": [
+        -9.067553922755317e-07,
+        1.022119295609354e-05
+      ],
+      "n_games": 1592,
+      "n_ticks": 244183
+    },
+    "zero_clock": {
+      "baseline_brier": 0.017456474462192836,
+      "candidate_brier": 0.017486239416314154,
+      "candidate_ece_10bin": 0.002721508882930079,
+      "candidate_log_loss": 0.053104104934362524,
+      "candidate_mde": 2.4428894857196736e-05,
+      "improvement_baseline_minus_candidate": -2.9764954121318098e-05,
+      "improvement_ci95": [
+        -5.5830570767796523e-05,
+        -7.305430789914304e-06
+      ],
+      "n_games": 1593,
+      "n_ticks": 271154
+    }
+  },
+  "tables_cpcv_secondary": {
+    "all": {
+      "baseline_brier": 0.073423403291613,
+      "candidate_brier": 0.07345498662827593,
+      "candidate_ece_10bin": 0.004191955808040523,
+      "candidate_log_loss": 0.22045640053699736,
+      "candidate_mde": 2.7119933026069246e-05,
+      "improvement_baseline_minus_candidate": -3.158333666293752e-05,
+      "improvement_ci95": [
+        -5.955078870760931e-05,
+        -5.652875783034027e-06
+      ],
+      "n_games": 1593,
+      "n_ticks": 465249
+    },
+    "positive_clock": {
+      "baseline_brier": 0.15178844354046625,
+      "candidate_brier": 0.151843624042839,
+      "candidate_ece_10bin": 0.00973641307264549,
+      "candidate_log_loss": 0.4548315153985399,
+      "candidate_mde": 5.225033121796042e-05,
+      "improvement_baseline_minus_candidate": -5.518050237273872e-05,
+      "improvement_ci95": [
+        -0.00010992017735580702,
+        -6.032115775474582e-06
+      ],
+      "n_games": 1593,
+      "n_ticks": 194095
+    },
+    "unknown_status": {
+      "baseline_brier": 0.0008615275403414076,
+      "candidate_brier": 0.0008639186905766472,
+      "candidate_ece_10bin": 0.0014038581703883668,
+      "candidate_log_loss": 0.0035911821255738474,
+      "candidate_mde": 5.1445340839717235e-06,
+      "improvement_baseline_minus_candidate": -2.391150235239542e-06,
+      "improvement_ci95": [
+        -8.463055617004061e-06,
+        1.5273808966501415e-06
+      ],
+      "n_games": 1592,
+      "n_ticks": 244183
+    },
+    "zero_clock": {
+      "baseline_brier": 0.017328850059497043,
+      "candidate_brier": 0.01734354228675923,
+      "candidate_ece_10bin": 0.0017770216204636596,
+      "candidate_log_loss": 0.05268812893100549,
+      "candidate_mde": 1.2510380908493094e-05,
+      "improvement_baseline_minus_candidate": -1.4692227262186867e-05,
+      "improvement_ci95": [
+        -2.809204977192301e-05,
+        -2.990586081855787e-06
+      ],
+      "n_games": 1593,
+      "n_ticks": 271154
+    }
+  },
+  "verdict": "SCREEN_ONLY"
+}

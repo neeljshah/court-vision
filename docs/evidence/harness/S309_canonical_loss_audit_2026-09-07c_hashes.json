@@ -1,0 +1,9 @@
+{
+  "S309_canonical_loss_audit_2026-09-07c.json": "89f29559ac05bd25b855603ab55117ddfbbaf6e24a26f8600cc64701f1178f08",
+  "S309_canonical_loss_audit_2026-09-07c_accounting.parquet": "297586e2fa98e733d50f7abce36b95cdc488b0f3e59792cb766e55edb7b47d68",
+  "S309_canonical_loss_audit_2026-09-07c_fold_members.parquet": "cfe86e5d205414ebe898ec9f8f527bc97cb8540a01b889748c1dea8c8451ec48",
+  "S309_canonical_loss_audit_2026-09-07c_folds.json": "6093fd34aa9bbba4c2648679488a54a88ea7a1c1a2cdca050552c17a6635ed39",
+  "S309_canonical_loss_audit_2026-09-07c_keys.parquet": "581c332b893b426dc13bb3a8f1f27a8a37aaf1010cb31f90ed2fc9de5b08f41d",
+  "S309_canonical_loss_audit_2026-09-07c_paired_losses.parquet": "37fcde209fa9d6ae96ed24f858463fce4a4b898a69d31167e0b8a0e52254cea2",
+  "S309_canonical_loss_audit_2026-09-07c_supplement.md": "59294032c7b420362d744f9239ab17ad41aed5cdd3ce171d10386533292e8bf7"
+}
