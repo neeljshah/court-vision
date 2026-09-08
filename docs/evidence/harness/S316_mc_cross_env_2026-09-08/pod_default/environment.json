@@ -1,0 +1,67 @@
+{
+  "captured_utc": "2026-09-08T17:07:36Z",
+  "cgroup_cpu_quota": "/sys/fs/cgroup/cpu/cpu.cfs_quota_us=2720000",
+  "cpu_count": 256,
+  "git": {
+    "dirty": null,
+    "head_sha": null,
+    "unavailable_reason": "git rev-parse exit 128: fatal: not a git repository (or any parent up to mount point /)\nStopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FI"
+  },
+  "host": {
+    "hostname": "771c926940a2",
+    "role": "pod",
+    "role_rule": "role is 'pod' when /workspace/nba-ai-system exists, else 'local'"
+  },
+  "libraries": {
+    "cv2": "4.14.0",
+    "numpy": "2.1.2",
+    "pandas": "2.3.3",
+    "scipy": "1.18.1",
+    "sklearn": "1.9.0",
+    "torch": "2.8.0+cu128",
+    "ultralytics": "8.4.143"
+  },
+  "modules": [
+    {
+      "path": "scripts/platformkit/ingame/s256_nba_sim_engine_v3.py",
+      "sha256": "757b2bd9f88a85fe68da97c6fcb275b1b44e5f4926a801265eb7f6c7cc951e12",
+      "unavailable_reason": null
+    },
+    {
+      "path": "scripts/platformkit/ingame/s287_sim_full_pod.py",
+      "sha256": "b4d92bf2ce7860bcad1c14d85970baa6fdd394efeb677c2b03f03f2568c7811f",
+      "unavailable_reason": null
+    },
+    {
+      "path": "scripts/platformkit/ingame/s316_mc_cross_env.py",
+      "sha256": "d988a5011e9d625fc2d2c019f66a99520201fb3ef2e99127c53c7aec032ec50f",
+      "unavailable_reason": null
+    },
+    {
+      "path": "src/sim/basketball_sim.py",
+      "sha256": "adaeb60f2b31155c39b010bba51fe4ceca2f46c702a2532e67ee15f315988ef1",
+      "unavailable_reason": null
+    },
+    {
+      "path": "src/sim/fast_sim.py",
+      "sha256": "e348af5a842e8f48802e933d630410495d21c157c993e8867f2df31d4c2ae600",
+      "unavailable_reason": null
+    }
+  ],
+  "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.39",
+  "python_version": "3.12.3",
+  "schema": "g62_environment_sidecar_v1",
+  "seed": 2561001,
+  "seed_reason": "seed supplied by the caller",
+  "threads": {
+    "MKL_NUM_THREADS": null,
+    "OMP_NUM_THREADS": null,
+    "torch_num_threads": 128
+  },
+  "torch_build": {
+    "cuda_available": true,
+    "cuda_version": "12.8",
+    "cudnn_version": 91002,
+    "unavailable_reason": null
+  }
+}

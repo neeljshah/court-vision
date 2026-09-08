@@ -1,0 +1,1508 @@
+{
+  "arms": {
+    "market": {
+      "brier": 0.1802827388888889,
+      "ece_10": 0.10859444444444445
+    },
+    "recal_null": {
+      "brier": 0.1785161357607179,
+      "ece_10": 0.11585252141743639
+    },
+    "simulator": {
+      "brier": 0.2496853298611111,
+      "ece_10": 0.09340277777777779
+    }
+  },
+  "attempt": "S287 full qualified pod",
+  "bar": 0.004,
+  "ci95_game_clustered": [
+    -0.14948855021380078,
+    0.007150162013014355
+  ],
+  "code_identity": {
+    "s256_module_sha256": "757b2bd9f88a85fe68da97c6fcb275b1b44e5f4926a801265eb7f6c7cc951e12",
+    "s287_entrypoint_sha256": "b4d92bf2ce7860bcad1c14d85970baa6fdd394efeb677c2b03f03f2568c7811f"
+  },
+  "fills": [
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810022",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-04",
+      "team_snapshot_date": "2025-11-03",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810022",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-04",
+      "team_snapshot_date": "2025-11-03",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810022",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-04",
+      "team_snapshot_date": "2025-11-03",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810022",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-04",
+      "team_snapshot_date": "2025-11-03",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810022",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-04",
+      "team_snapshot_date": "2025-11-03",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810022",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-04",
+      "team_snapshot_date": "2025-11-03",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810042",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-08",
+      "team_snapshot_date": "2025-11-08",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810042",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-08",
+      "team_snapshot_date": "2025-11-08",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810042",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-08",
+      "team_snapshot_date": "2025-11-08",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810042",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-08",
+      "team_snapshot_date": "2025-11-08",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810042",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-08",
+      "team_snapshot_date": "2025-11-08",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810042",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-08",
+      "team_snapshot_date": "2025-11-08",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810056",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-10",
+      "team_snapshot_date": "2025-11-08",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810056",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-10",
+      "team_snapshot_date": "2025-11-08",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810056",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-10",
+      "team_snapshot_date": "2025-11-08",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810056",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-10",
+      "team_snapshot_date": "2025-11-08",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810056",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-10",
+      "team_snapshot_date": "2025-11-08",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810056",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-10",
+      "team_snapshot_date": "2025-11-08",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401809798",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-20",
+      "team_snapshot_date": "2025-11-14",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401809798",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-20",
+      "team_snapshot_date": "2025-11-14",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401809798",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-20",
+      "team_snapshot_date": "2025-11-14",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401809798",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-20",
+      "team_snapshot_date": "2025-11-14",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401809798",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-20",
+      "team_snapshot_date": "2025-11-14",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401809798",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-20",
+      "team_snapshot_date": "2025-11-14",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810130",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-22",
+      "team_snapshot_date": "2025-11-21",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810130",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-22",
+      "team_snapshot_date": "2025-11-21",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810130",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-22",
+      "team_snapshot_date": "2025-11-21",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810130",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-22",
+      "team_snapshot_date": "2025-11-21",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810130",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-22",
+      "team_snapshot_date": "2025-11-21",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810130",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-22",
+      "team_snapshot_date": "2025-11-21",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810156",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-29",
+      "team_snapshot_date": "2025-11-26",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810156",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-29",
+      "team_snapshot_date": "2025-11-26",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810156",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-29",
+      "team_snapshot_date": "2025-11-26",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810156",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-29",
+      "team_snapshot_date": "2025-11-26",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810156",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-29",
+      "team_snapshot_date": "2025-11-26",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810156",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-11-29",
+      "team_snapshot_date": "2025-11-26",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810179",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-02",
+      "team_snapshot_date": "2025-12-02",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810179",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-02",
+      "team_snapshot_date": "2025-12-02",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810183",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-02",
+      "team_snapshot_date": "2025-12-02",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810179",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-02",
+      "team_snapshot_date": "2025-12-02",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810183",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-02",
+      "team_snapshot_date": "2025-12-02",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810183",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-02",
+      "team_snapshot_date": "2025-12-02",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810179",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-02",
+      "team_snapshot_date": "2025-12-02",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810179",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-02",
+      "team_snapshot_date": "2025-12-02",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810183",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-02",
+      "team_snapshot_date": "2025-12-02",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810179",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-02",
+      "team_snapshot_date": "2025-12-02",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810183",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-02",
+      "team_snapshot_date": "2025-12-02",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810183",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-02",
+      "team_snapshot_date": "2025-12-02",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401836800",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-13",
+      "team_snapshot_date": "2025-12-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401836800",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-13",
+      "team_snapshot_date": "2025-12-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401836800",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-13",
+      "team_snapshot_date": "2025-12-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401836800",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-13",
+      "team_snapshot_date": "2025-12-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401836800",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-13",
+      "team_snapshot_date": "2025-12-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401836800",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-13",
+      "team_snapshot_date": "2025-12-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810233",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-17",
+      "team_snapshot_date": "2025-12-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810233",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-17",
+      "team_snapshot_date": "2025-12-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810233",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-17",
+      "team_snapshot_date": "2025-12-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810233",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-17",
+      "team_snapshot_date": "2025-12-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810233",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-17",
+      "team_snapshot_date": "2025-12-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810233",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-17",
+      "team_snapshot_date": "2025-12-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810249",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-19",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810249",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-19",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810249",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-19",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810249",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-19",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810249",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-19",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810249",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-19",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810253",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-20",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810253",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-20",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810253",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-20",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810255",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-20",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810253",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-20",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810255",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-20",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810253",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-20",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810255",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-20",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810253",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-20",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810255",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-20",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810255",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-20",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810255",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2025-12-20",
+      "team_snapshot_date": "2025-12-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810386",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-07",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810386",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-07",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810386",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-07",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810386",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-07",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810386",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-07",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810386",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-07",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810388",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-08",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810388",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-08",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810388",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-08",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810388",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-08",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810388",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-08",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810388",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-08",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810398",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-09",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810398",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-09",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810398",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-09",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810398",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-09",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810398",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-09",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810398",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-09",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810410",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-10",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810410",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-10",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810410",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-10",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810410",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-10",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810410",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-10",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810410",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-10",
+      "team_snapshot_date": "2026-01-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810533",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-27",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810533",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-27",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810533",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-27",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810533",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-27",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810533",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-27",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810533",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-27",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810539",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-28",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810539",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-28",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810541",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-28",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810539",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-28",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810541",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-28",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810539",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-28",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810541",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-28",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810539",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-28",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810539",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-28",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810541",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-28",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810541",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-28",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810541",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-28",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810549",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-29",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810549",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-29",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810549",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-29",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810549",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-29",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810549",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-29",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810549",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-01-29",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810570",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-01",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810570",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-01",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810570",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-01",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810570",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-01",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810570",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-01",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810570",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-01",
+      "team_snapshot_date": "2026-01-22",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810628",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-09",
+      "team_snapshot_date": "2026-02-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810628",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-09",
+      "team_snapshot_date": "2026-02-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810628",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-09",
+      "team_snapshot_date": "2026-02-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810628",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-09",
+      "team_snapshot_date": "2026-02-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810628",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-09",
+      "team_snapshot_date": "2026-02-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810628",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-09",
+      "team_snapshot_date": "2026-02-07",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810663",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-19",
+      "team_snapshot_date": "2026-02-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810663",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-19",
+      "team_snapshot_date": "2026-02-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810663",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-19",
+      "team_snapshot_date": "2026-02-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810663",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-19",
+      "team_snapshot_date": "2026-02-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810663",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-19",
+      "team_snapshot_date": "2026-02-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810663",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-02-19",
+      "team_snapshot_date": "2026-02-19",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810771",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-06",
+      "team_snapshot_date": "2026-03-06",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810771",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-06",
+      "team_snapshot_date": "2026-03-06",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810771",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-06",
+      "team_snapshot_date": "2026-03-06",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810771",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-06",
+      "team_snapshot_date": "2026-03-06",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810771",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-06",
+      "team_snapshot_date": "2026-03-06",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810771",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-06",
+      "team_snapshot_date": "2026-03-06",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810811",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-11",
+      "team_snapshot_date": "2026-03-11",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810811",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-11",
+      "team_snapshot_date": "2026-03-11",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810966",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-11",
+      "team_snapshot_date": "2026-03-11",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810811",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-11",
+      "team_snapshot_date": "2026-03-11",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810966",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-11",
+      "team_snapshot_date": "2026-03-11",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810966",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-11",
+      "team_snapshot_date": "2026-03-11",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810811",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-11",
+      "team_snapshot_date": "2026-03-11",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810811",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-11",
+      "team_snapshot_date": "2026-03-11",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810966",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-11",
+      "team_snapshot_date": "2026-03-11",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810966",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-11",
+      "team_snapshot_date": "2026-03-11",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810811",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-11",
+      "team_snapshot_date": "2026-03-11",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810966",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-11",
+      "team_snapshot_date": "2026-03-11",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810831",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-14",
+      "team_snapshot_date": "2026-03-13",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810831",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-14",
+      "team_snapshot_date": "2026-03-13",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810831",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-14",
+      "team_snapshot_date": "2026-03-13",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810831",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-14",
+      "team_snapshot_date": "2026-03-13",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810831",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-14",
+      "team_snapshot_date": "2026-03-13",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810831",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-14",
+      "team_snapshot_date": "2026-03-13",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810930",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-26",
+      "team_snapshot_date": "2026-03-18",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810930",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-26",
+      "team_snapshot_date": "2026-03-18",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810930",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-26",
+      "team_snapshot_date": "2026-03-18",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810930",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-26",
+      "team_snapshot_date": "2026-03-18",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810930",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-26",
+      "team_snapshot_date": "2026-03-18",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810930",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-03-26",
+      "team_snapshot_date": "2026-03-18",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810972",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-04-01",
+      "team_snapshot_date": "2026-03-30",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810972",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-04-01",
+      "team_snapshot_date": "2026-03-30",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810972",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-04-01",
+      "team_snapshot_date": "2026-03-30",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810972",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-04-01",
+      "team_snapshot_date": "2026-03-30",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810972",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-04-01",
+      "team_snapshot_date": "2026-03-30",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    },
+    {
+      "filled_fast_sim_fields": "ast_per_min,blk_per_min,dreb_per_min,fg3_pct,fg_mid,fg_paint,fg_rim,ft_pct,ft_share,height,int_d,oreb_per_min,perim_d,pf_per_min,self_create,stl_per_min,supp,tov_share,use_per_min,z_3,z_mid,z_paint,z_rim",
+      "game": "401810972",
+      "league_mean_field": "ft_rate_q50",
+      "player_snapshot_date": "2026-04-01",
+      "team_snapshot_date": "2026-03-30",
+      "transform": "date_mean_ft_rate_q50_scaled_baseline"
+    }
+  ],
+  "fills_csv": {
+    "path": "S287_fills.csv",
+    "rows": 180,
+    "sha256": "1895ff9f8225b6ff6bd7843346a7574d27eb01de1558314bc84ac7de5dcdf373"
+  },
+  "grid_seconds": [
+    120,
+    600,
+    1080,
+    1560,
+    2040,
+    2520
+  ],
+  "improvement_vs_recal_null": -0.07116919410039321,
+  "input_md5_pod": {
+    "player": "4a0ce91bea3cbbfef7995f35deb8a51b",
+    "qualification": "d56f07a199a5585cd00f978a65386f2b",
+    "team": "6e8df6951c7ecc7bc97e30fad8439c30"
+  },
+  "input_sha256_after": {
+    "archive": "f498a7a040201571270183a79a025cd87d91ed5060f244b69964a150eab7d0f6",
+    "player": "0d0697b7402907ed493b429d1f0f44e7afad85ec1aa14019a83e1c24e80f6d6e",
+    "qualification": "826f778104453f75bdf1e7517c2f0650bfa0a322318a346ca3a26df1575f487e",
+    "team": "42932c26f308097afbc1187aed2e9e8e2efb176258f213e1c5e492a270e5c00e"
+  },
+  "input_sha256_before": {
+    "archive": "f498a7a040201571270183a79a025cd87d91ed5060f244b69964a150eab7d0f6",
+    "player": "0d0697b7402907ed493b429d1f0f44e7afad85ec1aa14019a83e1c24e80f6d6e",
+    "qualification": "826f778104453f75bdf1e7517c2f0650bfa0a322318a346ca3a26df1575f487e",
+    "team": "42932c26f308097afbc1187aed2e9e8e2efb176258f213e1c5e492a270e5c00e"
+  },
+  "n_games": 30,
+  "n_ticks": 180,
+  "peak_rss_mb": 692.3359375,
+  "s316": {
+    "deterministic_algorithms": false,
+    "entrypoint_sha256": "d988a5011e9d625fc2d2c019f66a99520201fb3ef2e99127c53c7aec032ec50f",
+    "torch_threads_requested": null
+  },
+  "verdict": "BEHIND"
+}

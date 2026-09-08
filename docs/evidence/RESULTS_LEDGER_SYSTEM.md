@@ -591,3 +591,10 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-08 | nba in-game calibration | S320 | 63 non-empty strata require at least 315 states under sealed n=100; 0 selected, audited, or replayed | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q)
 2026-09-08 | in-game calibration | S326 | rating p0; zero eligible price joins | INSUFFICIENT
 2026-09-08 | tennis in-game calibration | S326 | ATP 29,572 matches/40,516 states and WTA 11,016/14,559; rating p0; 0 joinable price matches each | INSUFFICIENT (verified: codex-sol, contract A/B/Q)
+2026-09-08 | hook | S316 | S316: preregistration (landed alone, Q1) | LANDED (auto; verifier line pending) | abf029724
+2026-09-08 | in-game calibration | S316 | n=180: local and pod thread arms each show max p_simulator delta 0.0; cross-host/build differs on 171 ticks (max 0.359375), while the same-host version arm is n=0, so version versus hardware/build remains unisolated | PARTIAL (verified: codex-sol, contract A/B/Q)
+2026-09-08 | in-game calibration | S316 | n=180 local replay max delta 0.0 and thread-1 max delta 0.0; prereg commit postdated scored artifacts | REJECT (verified: codex-sol, contract A/B/Q)
+2026-09-08 | in-game calibration | S316 | n=180 premise exact and cross-environment max p delta 0.359375 on 171 ticks, but the established fills field was removed | REJECT (verified: codex-sol, contract A/B/Q)
+2026-09-08 | in-game calibration | S316 | n=180: local and pod thread arms each show max p_simulator delta 0.0; cross-host/build differs on 171 ticks (max 0.359375), while the same-host version arm is n=0, so version versus hardware/build remains unisolated | PARTIAL (verified: codex-sol, contract A/B/Q)
+2026-09-08 | in-game calibration | S325 | rating-derived p0 and 0 domestic price joins across 4 leagues | INSUFFICIENT
+2026-09-08 | in-game calibration | S325 | rating-derived p0 in 1,442 domestic games; 0 date-overlap price joins; price stores have 12 columns | INSUFFICIENT (verified: codex-sol, contract A/B/Q)

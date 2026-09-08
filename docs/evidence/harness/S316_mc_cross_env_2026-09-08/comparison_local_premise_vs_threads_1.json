@@ -1,0 +1,42 @@
+{
+  "candidate": "local_threads_1",
+  "control": "local_premise",
+  "n_clusters": 30,
+  "n_ticks": 180,
+  "simulator_brier_delta_candidate_minus_control": 0.0,
+  "simulator_ece_delta_candidate_minus_control": 0.0,
+  "tick_comparison": {
+    "loss_market": {
+      "max_abs_delta": 0.0,
+      "ticks_gt_1e9": 0
+    },
+    "loss_recal_null": {
+      "max_abs_delta": 0.0,
+      "ticks_gt_1e9": 0
+    },
+    "loss_simulator": {
+      "max_abs_delta": 0.0,
+      "ticks_gt_1e9": 0
+    },
+    "market_prob": {
+      "max_abs_delta": 0.0,
+      "ticks_gt_1e9": 0
+    },
+    "outcome_home_win": {
+      "max_abs_delta": 0.0,
+      "ticks_gt_1e9": 0
+    },
+    "p_null": {
+      "max_abs_delta": 0.0,
+      "ticks_gt_1e9": 0
+    },
+    "p_simulator": {
+      "max_abs_delta": 0.0,
+      "ticks_gt_1e9": 0
+    },
+    "paired_loss_recal_null_minus_simulator": {
+      "max_abs_delta": 0.0,
+      "ticks_gt_1e9": 0
+    }
+  }
+}

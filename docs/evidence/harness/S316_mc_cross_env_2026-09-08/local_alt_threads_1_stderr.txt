@@ -1,0 +1,56 @@
+
+A module that was compiled using NumPy 1.x cannot be run in
+NumPy 2.2.6 as it may crash. To support both 1.x and 2.x
+versions of NumPy, modules must be compiled with NumPy 2.0.
+Some module may need to rebuild instead e.g. with 'pybind11>=2.12'.
+
+If you are a user of the module, the easiest solution will be to
+downgrade to 'numpy<2' or try to upgrade the affected module.
+We expect that some modules will need time to support NumPy 2.
+
+Traceback (most recent call last):  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "C:\Users\neelj\nba-track-a2\scripts\platformkit\ingame\s316_mc_cross_env.py", line 134, in <module>
+    raise SystemExit(main())
+  File "C:\Users\neelj\nba-track-a2\scripts\platformkit\ingame\s316_mc_cross_env.py", line 125, in main
+    summary = run(args.game_ids.split(","), args.out_dir, args.torch_threads,
+  File "C:\Users\neelj\nba-track-a2\scripts\platformkit\ingame\s316_mc_cross_env.py", line 83, in run
+    import torch
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\__init__.py", line 1471, in <module>
+    from .functional import *  # noqa: F403
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\functional.py", line 9, in <module>
+    import torch.nn.functional as F
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\nn\__init__.py", line 1, in <module>
+    from .modules import *  # noqa: F403
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\nn\modules\__init__.py", line 35, in <module>
+    from .transformer import TransformerEncoder, TransformerDecoder, \
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\nn\modules\transformer.py", line 20, in <module>
+    device: torch.device = torch.device(torch._C._get_default_device()),  # torch.device('cpu'),
+C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\nn\modules\transformer.py:20: UserWarning: Failed to initialize NumPy: _ARRAY_API not found (Triggered internally at ..\torch\csrc\utils\tensor_numpy.cpp:84.)
+  device: torch.device = torch.device(torch._C._get_default_device()),  # torch.device('cpu'),
+Traceback (most recent call last):
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "C:\Users\neelj\nba-track-a2\scripts\platformkit\ingame\s316_mc_cross_env.py", line 134, in <module>
+    raise SystemExit(main())
+  File "C:\Users\neelj\nba-track-a2\scripts\platformkit\ingame\s316_mc_cross_env.py", line 125, in main
+    summary = run(args.game_ids.split(","), args.out_dir, args.torch_threads,
+  File "C:\Users\neelj\nba-track-a2\scripts\platformkit\ingame\s316_mc_cross_env.py", line 89, in run
+    summary, scored, per_game = repeat.score(game_ids)
+  File "C:\Users\neelj\nba-track-a2\scripts\platformkit\ingame\s287_sim_full_pod.py", line 75, in score
+    records = cpcv_evaluate(states, callback, n_groups=8, n_test_groups=1, embargo_days=EMBARGO_DAYS, strict_redaction=True)
+  File "C:\Users\neelj\nba-track-a2\scripts\platformkit\eval_gate\cpcv_engine.py", line 148, in cpcv_evaluate
+    p = predictor(train_states,
+  File "C:\Users\neelj\nba-track-a2\scripts\platformkit\ingame\s287_sim_full_pod.py", line 71, in callback
+    value = sim.price(test["features"])
+  File "C:\Users\neelj\nba-track-a2\scripts\platformkit\ingame\s256_nba_sim_engine_v3.py", line 182, in price
+    result = fast_sim.simulate_game_fast(team(features["home_ids"], "HOME"),
+  File "C:\Users\neelj\nba-track-a2\src\sim\fast_sim.py", line 191, in simulate_game_fast
+    npbox = {k: box[k].cpu().numpy() for k in _STATS}
+  File "C:\Users\neelj\nba-track-a2\src\sim\fast_sim.py", line 191, in <dictcomp>
+    npbox = {k: box[k].cpu().numpy() for k in _STATS}
+RuntimeError: Numpy is not available
