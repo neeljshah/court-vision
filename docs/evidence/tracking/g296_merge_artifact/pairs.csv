@@ -1,0 +1,227 @@
+frame,role,kind,a_index,b_index,ax,ay,bx,by,distance_px,a_note,b_note
+0,player_on_court,pair,1,3,844.0,472.0,852.0,482.0,12.806,opening tip player,Near dark-uniform center-circle player with blue lower legs; two-foot contact midpoint
+0,player_on_court,pair,2,2,884.0,480.0,900.0,443.0,40.311,opening tip player,Rear white-uniform player at center; visible white shoe contact beside jump circle
+0,player_on_court,pair,3,4,916.0,476.0,920.0,482.0,7.211,opening tip player,Near white-uniform center-circle player; visible shoe-contact midpoint
+0,player_on_court,pair,5,6,1012.0,462.0,1049.0,432.0,47.634,opening tip player,Dark-uniform player bending at right of center; visible dark shoe contacts
+0,player_on_court,pair,6,7,1063.0,482.0,1087.0,459.0,33.242,opening tip player,Rightmost white-uniform player in green shoes
+0,player_on_court,a_only,4,,962.0,476.0,,,,opening tip player,
+0,player_on_court,b_only,,5,,,1020.0,422.0,,,Rear white-uniform player bending at right of center; feet overlap nearer player
+7584,player_on_court,pair,4,4,713.0,765.0,716.0,803.0,38.118,black uniform player,Central dark-uniform player in mint shoes; contact midpoint
+7584,player_on_court,a_only,1,,76.0,777.0,,,,frame-boundary player,
+7584,player_on_court,a_only,2,,302.0,781.0,,,,black uniform player,
+7584,player_on_court,a_only,3,,548.0,785.0,,,,white uniform player,
+7584,player_on_court,a_only,5,,946.0,778.0,,,,black uniform player,
+7584,player_on_court,a_only,6,,1114.0,820.0,,,,white uniform player,
+7584,player_on_court,a_only,7,,1245.0,830.0,,,,white uniform player,
+7584,player_on_court,b_only,,1,,,94.0,689.0,,,Far-left white number 21; visible floor contacts
+7584,player_on_court,b_only,,2,,,378.0,774.0,,,Left dark-uniform player with blue sleeve and blue leg covering; spread contact midpoint
+7584,player_on_court,b_only,,3,,,616.0,775.0,,,White number 22; right green shoe grounded and left foot raised
+7584,player_on_court,b_only,,5,,,947.0,726.0,,,Dark number 15 behind central players; purple shoes in motion
+7584,player_on_court,b_only,,6,,,1185.0,817.0,,,Foreground right white-uniform player; contact midpoint between white shoes
+7584,player_on_court,b_only,,7,,,1190.0,739.0,,,Almost entirely occluded player behind foreground white player; visible yellow-green shoe and lower leg
+15168,player_on_court,pair,1,1,366.0,423.0,366.0,435.0,12.0,black uniform player,Left dark number 15 in purple shoes
+15168,player_on_court,pair,2,2,543.0,520.0,531.0,523.0,12.369,white uniform player,White player behind left dark player; yellow shoe contacts
+15168,player_on_court,pair,3,3,574.0,535.0,569.0,543.0,9.434,black uniform player,Left-center dark player with blue sleeve and lower leg
+15168,player_on_court,pair,5,5,951.0,549.0,947.0,552.0,5.0,black uniform player,Dark number 20 at left boundary of paint; contact midpoint
+15168,player_on_court,pair,6,6,1188.0,526.0,1197.0,544.0,20.125,white uniform player,Front blonde white player under basket; visible shoe contacts
+15168,player_on_court,pair,7,7,1240.0,512.0,1238.0,526.0,14.142,white uniform player,White player behind blonde teammate; yellow shoes
+15168,player_on_court,pair,8,9,1338.0,494.0,1358.0,516.0,29.732,black uniform player,Dark number 1 at right side of paint
+15168,player_on_court,pair,9,10,1432.0,535.0,1424.0,550.0,17.0,white uniform player,White number 2 right of paint
+15168,player_on_court,a_only,4,,927.0,442.0,,,,white uniform player,
+15168,player_on_court,b_only,,8,,,1250.0,489.0,,,Rear dark player under hoop; green shoe visible through overlap
+30335,player_on_court,pair,1,1,635.0,443.0,640.0,445.0,5.385,black uniform player,Left dark number 4 outside arc
+30335,player_on_court,pair,2,2,812.0,387.0,831.0,395.0,20.616,black uniform player,Rear-left dark player near far sideline
+30335,player_on_court,pair,3,8,905.0,574.0,932.0,575.0,27.019,black uniform player,Dark driving player with blue leggings; motion-blurred spread contacts
+30335,player_on_court,pair,4,5,947.0,543.0,979.0,555.0,34.176,white uniform player,Central blonde white defender; shoes partly overlap driving player
+30335,player_on_court,pair,5,6,1034.0,547.0,1043.0,545.0,9.22,white uniform player,White number 21 in defensive stance; blue shoe-contact midpoint
+30335,player_on_court,pair,6,7,1118.0,483.0,1134.0,472.0,19.416,white uniform player,Rear-right white player with bright green shoes
+30335,player_on_court,pair,7,9,1363.0,608.0,1354.0,620.0,15.0,white uniform player,White defender on right boundary of paint
+30335,player_on_court,pair,8,10,1701.0,640.0,1689.0,638.0,12.166,black uniform player,Right-corner dark player; left green shoe grounded and other foot lifted
+30335,player_on_court,b_only,,3,,,1035.0,365.0,,,Rear dark number 00 near bench
+30335,player_on_court,b_only,,4,,,899.0,502.0,,,White player at left boundary of paint with pink shoes
+37919,player_on_court,pair,1,2,454.0,454.0,478.0,465.0,26.401,black uniform player,Rear-left dark number 15
+37919,player_on_court,pair,2,3,667.0,503.0,681.0,504.0,14.036,white uniform player,Rear-left white player with green shoes
+37919,player_on_court,pair,6,7,1180.0,523.0,1167.0,525.0,13.153,white uniform player,Rear white player with pink shoes
+37919,player_on_court,pair,7,8,1235.0,523.0,1230.0,527.0,6.403,black uniform player,Rear dark player behind pink-shoed defender; visible green shoe contact
+37919,player_on_court,pair,8,9,1513.0,689.0,1517.0,695.0,7.211,white uniform player,Right-side blonde white player
+37919,player_on_court,a_only,3,,582.0,633.0,,,,white uniform player,
+37919,player_on_court,a_only,4,,799.0,688.0,,,,black uniform player,
+37919,player_on_court,a_only,5,,1018.0,586.0,,,,white uniform player,
+37919,player_on_court,a_only,9,,1587.0,721.0,,,,black uniform player,
+37919,player_on_court,b_only,,1,,,341.0,714.0,,,Near-left dark player with blue sleeve; spread shoe contacts
+37919,player_on_court,b_only,,4,,,608.0,658.0,,,White number 21 left of paint
+37919,player_on_court,b_only,,5,,,830.0,693.0,,,Dark number 20 near free-throw arc
+45503,player_on_court,pair,1,1,350.0,746.0,399.0,746.0,49.0,ball handler,Blurry near-left dark ball handler; right shoe appears grounded
+45503,player_on_court,pair,2,2,697.0,686.0,702.0,690.0,6.403,white uniform defender,White defender facing ball handler; green shoes
+45503,player_on_court,pair,3,3,787.0,584.0,770.0,586.0,17.117,black uniform player,Central dark screener; visible dark shoe contact
+45503,player_on_court,pair,4,4,875.0,602.0,875.0,611.0,9.0,black uniform player,Central dark player with blue lower legs moving around screen
+45503,player_on_court,pair,5,5,919.0,600.0,919.0,604.0,4.0,white uniform player,Central foreground white defender; contact amid overlapping legs
+45503,player_on_court,a_only,6,,1513.0,715.0,,,,white uniform player,
+45503,player_on_court,a_only,7,,1881.0,730.0,,,,frame-boundary black uniform player,
+45503,player_on_court,b_only,,7,,,851.0,392.0,,,Rear dark player near far sideline
+45503,player_on_court,b_only,,8,,,1006.0,469.0,,,Rear white defender near free-throw line
+45503,player_on_court,b_only,,9,,,1533.0,720.0,,,Right-side white player with yellow shoes
+53087,player_on_court,pair,1,1,399.0,608.0,380.0,631.0,29.833,black uniform player,Left dark player in pale shoes
+53087,player_on_court,pair,4,6,789.0,810.0,784.0,815.0,7.071,white uniform defender,Foreground white number 22; spread green shoe contacts
+53087,player_on_court,pair,7,9,1263.0,682.0,1263.0,711.0,29.0,white uniform player,White number 25 near right paint boundary; yellow shoe contacts
+53087,player_on_court,pair,8,10,1512.0,786.0,1533.0,787.0,21.024,black uniform player,Right dark player in mint shoes
+53087,player_on_court,a_only,2,,590.0,629.0,,,,white uniform player,
+53087,player_on_court,a_only,3,,635.0,798.0,,,,black uniform ball handler,
+53087,player_on_court,a_only,5,,1000.0,528.0,,,,white uniform player,
+53087,player_on_court,a_only,6,,1222.0,498.0,,,,black uniform player,
+53087,player_on_court,b_only,,2,,,591.0,636.0,,,Left white defender with yellow shoes
+53087,player_on_court,b_only,,3,,,588.0,453.0,,,Rear-left dark number 10
+53087,player_on_court,b_only,,4,,,735.0,496.0,,,Rear-left white defender in pink shoes
+53087,player_on_court,b_only,,8,,,1329.0,505.0,,,Rear-right dark player by baseline
+68255,player_on_court,pair,2,2,383.0,565.0,360.0,594.0,37.014,white uniform player,Left white defender with yellow shoes
+68255,player_on_court,pair,3,5,701.0,487.0,720.0,449.0,42.485,white uniform player,Rear paint white defender; blue shoe visible below overlap
+68255,player_on_court,pair,5,10,1030.0,560.0,1047.0,574.0,22.023,white uniform player,White defender with bright green shoes at right arc
+68255,player_on_court,pair,6,9,1170.0,571.0,1146.0,581.0,26.0,black uniform player,Dark number 00 near right arc
+68255,player_on_court,a_only,1,,361.0,690.0,,,,black uniform player,
+68255,player_on_court,a_only,4,,719.0,464.0,,,,black uniform player,
+68255,player_on_court,a_only,7,,1249.0,575.0,,,,white uniform player,
+68255,player_on_court,a_only,8,,1275.0,461.0,,,,black uniform ball handler,
+68255,player_on_court,b_only,,1,,,167.0,697.0,,,Near-left dark player; one pale shoe visible beside crowd
+68255,player_on_court,b_only,,3,,,698.0,632.0,,,Central white defender with white shoes
+68255,player_on_court,b_only,,4,,,811.0,762.0,,,Near-center dark player with blue leggings and purple shoes
+68255,player_on_court,b_only,,6,,,753.0,422.0,,,Rear paint dark player behind white defender; green shoe visible
+68255,player_on_court,b_only,,7,,,1184.0,467.0,,,Rear-right white defender engaging ball handler
+68255,player_on_court,b_only,,8,,,1190.0,471.0,,,Rear-right dark ball handler with blue leg covering; planted contact partly overlaps white defender
+75839,player_on_court,pair,1,1,274.0,485.0,252.0,494.0,23.77,black uniform player,Far-left dark player running away; left shoe grounded
+75839,player_on_court,a_only,2,,387.0,568.0,,,,white uniform player,
+75839,player_on_court,a_only,3,,695.0,710.0,,,,black uniform player,
+75839,player_on_court,a_only,4,,724.0,428.0,,,,white uniform player,
+75839,player_on_court,a_only,5,,1056.0,517.0,,,,white uniform player,
+75839,player_on_court,a_only,6,,1168.0,417.0,,,,black uniform player,
+75839,player_on_court,a_only,7,,1284.0,761.0,,,,white uniform player,
+75839,player_on_court,a_only,8,,1531.0,783.0,,,,black uniform player,
+75839,player_on_court,b_only,,3,,,1100.0,410.0,,,Rear dark player near far sideline; pale shoe contacts
+75839,player_on_court,b_only,,4,,,1059.0,384.0,,,Almost hidden white runner behind rear dark player; green shoe contact visible at left
+75839,player_on_court,b_only,,5,,,915.0,452.0,,,Blonde white player at rear-left of paint
+75839,player_on_court,b_only,,6,,,1058.0,580.0,,,Central white player with long braids and blue shoes
+75839,player_on_court,b_only,,7,,,627.0,712.0,,,Near-left white number 52 in pink shoes
+75839,player_on_court,b_only,,8,,,1277.0,510.0,,,Dark ball handler under right basket; visible planted shoe
+75839,player_on_court,b_only,,9,,,1725.0,580.0,,,Right-baseline dark player in green shoes
+83423,player_on_court,a_only,1,,255.0,480.0,,,,black uniform runner,
+83423,player_on_court,a_only,2,,633.0,478.0,,,,black uniform runner,
+83423,player_on_court,a_only,3,,872.0,446.0,,,,white uniform player,
+83423,player_on_court,a_only,4,,1053.0,568.0,,,,white uniform player,
+83423,player_on_court,a_only,5,,1316.0,489.0,,,,black uniform player,
+83423,player_on_court,a_only,6,,1308.0,500.0,,,,white uniform player,
+83423,player_on_court,a_only,7,,1684.0,541.0,,,,black uniform player,
+83423,player_on_court,a_only,8,,1714.0,578.0,,,,black uniform player,
+83423,player_on_court,b_only,,1,,,358.0,648.0,,,Left-baseline white inbounding player; contact midpoint
+83423,player_on_court,b_only,,2,,,660.0,773.0,,,Foreground dark runner with blue sleeve and leggings; trailing sole at floor
+83423,player_on_court,b_only,,3,,,770.0,738.0,,,White player almost fully overlapped by dark runner; yellow shoe visible
+83423,player_on_court,b_only,,4,,,1153.0,646.0,,,Rear dark runner; right black shoe grounded
+91006,player_on_court,pair,1,1,332.0,557.0,370.0,588.0,49.041,black uniform player,Dark number 11 left of basket; lower legs partly overlap white player
+91006,player_on_court,pair,2,2,374.0,651.0,411.0,672.0,42.544,white uniform player,Near-left blonde white player; spread contacts
+91006,player_on_court,pair,3,3,571.0,531.0,595.0,565.0,41.617,white uniform player,Central white player in pink shoes under hoop
+91006,player_on_court,pair,4,4,646.0,598.0,633.0,553.0,46.84,white uniform player,Second central white player with yellow shoes; heavily overlapping legs
+91006,player_on_court,pair,5,5,673.0,590.0,668.0,608.0,18.682,black uniform player,White number 22 in green shoes in paint
+91006,player_on_court,pair,8,9,1359.0,562.0,1357.0,576.0,14.142,white uniform player,Right dark player with green shoes
+91006,player_on_court,pair,9,8,913.0,785.0,900.0,789.0,13.601,black uniform player,Near dark number 20; spread pale shoe contacts
+91006,player_on_court,a_only,6,,900.0,763.0,,,,black uniform player,
+91006,player_on_court,a_only,7,,1342.0,562.0,,,,black uniform player,
+91006,player_on_court,b_only,,6,,,899.0,470.0,,,Rear white player in pink shoes; left shoe contact
+91006,player_on_court,b_only,,7,,,250.0,806.0,,,Near-left dark player with blue leg covering; shoe partly beside crowd
+91006,player_on_court,b_only,,10,,,1332.0,421.0,,,Far-right dark player at sideline in purple shoes
+98590,player_on_court,pair,2,3,622.0,490.0,659.0,521.0,48.27,black uniform defender,Left-center dark number 11; spread black shoe contacts
+98590,player_on_court,pair,7,7,1317.0,694.0,1324.0,721.0,27.893,white uniform player,Near-right blonde white defender
+98590,player_on_court,pair,9,9,1567.0,775.0,1548.0,790.0,24.207,white uniform player,Near-right white screener in yellow shoes
+98590,player_on_court,a_only,1,,471.0,448.0,,,,white uniform ball handler,
+98590,player_on_court,a_only,3,,761.0,432.0,,,,white uniform player,
+98590,player_on_court,a_only,4,,924.0,448.0,,,,black uniform player,
+98590,player_on_court,a_only,5,,1047.0,488.0,,,,black uniform player,
+98590,player_on_court,a_only,6,,1278.0,582.0,,,,black uniform player,
+98590,player_on_court,a_only,8,,1450.0,713.0,,,,black uniform player,
+98590,player_on_court,b_only,,2,,,702.0,441.0,,,Rear white number 21; blue shoe visible behind dark number 11
+98590,player_on_court,b_only,,4,,,811.0,443.0,,,Rear-left dark runner; right pale shoe contact
+98590,player_on_court,b_only,,5,,,945.0,487.0,,,Rear-center dark defender in wide stance
+98590,player_on_court,b_only,,8,,,1480.0,769.0,,,Near-right dark player with blue leggings and purple shoes
+106174,player_on_court,pair,1,1,511.0,767.0,493.0,786.0,26.173,black uniform player,Near-left dark player in green shoes
+106174,player_on_court,pair,2,2,686.0,613.0,702.0,627.0,21.26,white uniform player,White paint defender; right shoe visible beside official
+106174,player_on_court,pair,3,10,1044.0,505.0,1036.0,513.0,11.314,black uniform player,Central dark screener behind white number 25; shoe partly overlapping
+106174,player_on_court,pair,5,7,1310.0,443.0,1344.0,456.0,36.401,black uniform shooter,Rear-right dark number 00 with raised ball; spread foot contacts
+106174,player_on_court,pair,6,6,1403.0,570.0,1421.0,596.0,31.623,white uniform player,Right blonde white defender in white shoes
+106174,player_on_court,pair,7,5,1627.0,613.0,1642.0,618.0,15.811,black uniform player,Right dark number 10; blue leg covering
+106174,player_on_court,pair,10,3,1002.0,722.0,1004.0,754.0,32.062,white uniform player,Near-center white defender with yellow shoes
+106174,player_on_court,a_only,4,,1112.0,510.0,,,,white uniform player,
+106174,player_on_court,a_only,8,,1744.0,448.0,,,,white uniform player,
+106174,player_on_court,a_only,9,,1164.0,819.0,,,,black uniform player,
+106174,player_on_court,b_only,,8,,,1128.0,460.0,,,White defender behind white number 25; visible green shoe
+106174,player_on_court,b_only,,9,,,1091.0,535.0,,,Central white number 25 in yellow shoes
+121342,player_on_court,pair,1,1,220.0,516.0,196.0,534.0,30.0,white uniform runner,Left white runner leaving paint; left shoe contact
+121342,player_on_court,pair,3,3,711.0,708.0,728.0,724.0,23.345,white uniform runner,Near white number 21 with blue shoes; leading shoe contact
+121342,player_on_court,pair,4,6,970.0,648.0,988.0,650.0,18.111,black uniform runner,Central dark runner with blue leg covering; leading sole contact
+121342,player_on_court,pair,6,4,1314.0,702.0,1349.0,721.0,39.825,white uniform runner,Right blonde white runner; leading shoe contact
+121342,player_on_court,pair,7,8,1567.0,556.0,1578.0,570.0,17.804,black uniform runner,Right-center dark defender near center logo
+121342,player_on_court,pair,8,9,1768.0,671.0,1804.0,694.0,42.72,black uniform runner,Near-right dark runner crossing center logo
+121342,player_on_court,pair,9,5,1681.0,392.0,1707.0,398.0,26.683,white uniform runner,Far-right white runner in yellow shoes
+121342,player_on_court,a_only,2,,494.0,422.0,,,,white uniform runner,
+121342,player_on_court,a_only,5,,1007.0,648.0,,,,black uniform runner,
+121342,player_on_court,b_only,,2,,,607.0,439.0,,,White ball handler with green shoes; right shoe at floor
+121342,player_on_court,b_only,,7,,,1075.0,552.0,,,Rear-central dark runner; green shoe visible beside overlap
+144094,player_on_court,pair,6,8,1075.0,761.0,1105.0,770.0,31.321,white uniform player,White number 0 near right paint boundary; yellow shoes
+144094,player_on_court,pair,7,9,1358.0,789.0,1378.0,817.0,34.409,black uniform player,Right dark number 00 bent forward; two shoe contacts
+144094,player_on_court,a_only,1,,218.0,609.0,,,,black uniform player,
+144094,player_on_court,a_only,2,,289.0,760.0,,,,white uniform player,
+144094,player_on_court,a_only,3,,770.0,705.0,,,,white uniform player,
+144094,player_on_court,a_only,4,,840.0,678.0,,,,white uniform player,
+144094,player_on_court,a_only,5,,1060.0,599.0,,,,black uniform player,
+144094,player_on_court,a_only,8,,1500.0,495.0,,,,black uniform player,
+144094,player_on_court,b_only,,1,,,139.0,612.0,,,Far-left dark player in purple shoes
+144094,player_on_court,b_only,,2,,,257.0,800.0,,,Left blonde white player; visible white shoe beside dark number 20
+144094,player_on_court,b_only,,3,,,341.0,922.0,,,Near-left dark number 20; pale shoe contacts
+144094,player_on_court,b_only,,5,,,768.0,738.0,,,Central foreground white player in white shoes
+144094,player_on_court,b_only,,6,,,850.0,678.0,,,Central white number 21 in blue shoes
+144094,player_on_court,b_only,,7,,,1140.0,606.0,,,Rear dark number 5; green shoe visible beside official
+151677,player_on_court,pair,1,1,275.0,448.0,312.0,455.0,37.656,white uniform ball handler,Left white number 22 dribbling in green shoes
+151677,player_on_court,pair,2,2,490.0,453.0,500.0,475.0,24.166,black uniform defender,Dark defender with blue sleeve facing ball handler
+151677,player_on_court,pair,3,3,691.0,544.0,724.0,558.0,35.847,white uniform player,Central white runner with white shoes; leading shoe contact
+151677,player_on_court,pair,4,4,1040.0,522.0,1068.0,538.0,32.249,black uniform player,Central dark defender with green shoes
+151677,player_on_court,pair,5,5,1490.0,368.0,1492.0,385.0,17.117,black uniform player,Rear-right dark player by far arc
+151677,player_on_court,pair,6,7,1624.0,488.0,1651.0,489.0,27.019,black uniform player,Dark number 00 in right paint; shoe contact midpoint
+151677,player_on_court,pair,7,8,1458.0,753.0,1442.0,754.0,16.031,white uniform player,Near-right white number 0 in yellow shoes
+151677,player_on_court,pair,8,9,1531.0,718.0,1539.0,709.0,12.042,black uniform player,Near-right dark player in purple shoes; left shoe visible beside official
+151677,player_on_court,b_only,,6,,,1542.0,324.0,,,Rear-right blonde white player near far sideline
+0,official,a_only,7,,1350.0,576.0,,,,official near right sideline,
+0,official,b_only,,8,,,883.0,450.0,,,Gray-backed official between the two center-circle foreground players
+0,official,b_only,,10,,,586.0,343.0,,,Far sideline gray-shirted official left of center
+7584,official,b_only,,8,,,1866.0,750.0,,,Gray-shirted official at right image boundary
+15168,official,pair,10,13,1232.0,740.0,1247.0,744.0,15.524,official foreground,Foreground official number 11
+15168,official,b_only,,11,,,414.0,398.0,,,Far-left gray official beside dark number 15
+15168,official,b_only,,12,,,1167.0,363.0,,,Far-baseline official in front of bench
+30335,official,pair,9,13,978.0,821.0,961.0,855.0,38.013,official foreground,Near sideline official in walking stride
+30335,official,b_only,,11,,,682.0,376.0,,,Far sideline gray official
+30335,official,b_only,,12,,,1788.0,609.0,,,Right baseline official
+37919,official,a_only,10,,1176.0,799.0,,,,official foreground,
+37919,official,b_only,,11,,,369.0,396.0,,,Far-left walking gray official
+37919,official,b_only,,12,,,1455.0,399.0,,,Far-right baseline gray official
+45503,official,a_only,8,,1291.0,853.0,,,,official foreground,
+45503,official,b_only,,11,,,57.0,415.0,,,Far-left official near image boundary
+45503,official,b_only,,12,,,1635.0,469.0,,,Right-baseline official
+53087,official,a_only,9,,1218.0,815.0,,,,official foreground,
+53087,official,b_only,,11,,,253.0,463.0,,,Far-left gray official
+53087,official,b_only,,12,,,1426.0,441.0,,,Far-right gray official
+68255,official,a_only,9,,966.0,760.0,,,,official foreground,
+68255,official,b_only,,11,,,132.0,489.0,,,Left-baseline official
+68255,official,b_only,,12,,,1072.0,333.0,,,Far-sideline official
+68255,official,b_only,,13,,,1015.0,793.0,,,Near official number 5; visible shoe contact by crowd boundary
+75839,official,a_only,9,,685.0,725.0,,,,official foreground,
+75839,official,b_only,,10,,,1452.0,394.0,,,Far-right baseline official
+83423,official,a_only,9,,971.0,786.0,,,,official foreground,
+83423,official,b_only,,7,,,567.0,495.0,,,Left-baseline official
+91006,official,pair,10,11,463.0,408.0,441.0,417.0,23.77,official near baseline,Left-baseline official
+91006,official,b_only,,12,,,1511.0,433.0,,,Far-right sideline official
+98590,official,pair,10,10,17.0,819.0,48.0,858.0,49.82,official at frame-boundary,Near-left official partly outside image
+98590,official,b_only,,11,,,529.0,340.0,,,Far-left sideline official
+106174,official,a_only,11,,673.0,769.0,,,,official foreground,
+106174,official,b_only,,11,,,480.0,411.0,,,Left-baseline official
+106174,official,b_only,,12,,,1734.0,429.0,,,Far-right sideline official
+121342,official,a_only,10,,803.0,801.0,,,,official in transition,
+121342,official,b_only,,11,,,420.0,382.0,,,Far-left running gray official; trailing shoe contact
+144094,official,pair,9,10,1165.0,663.0,1195.0,664.0,30.017,official near lane,Central official handling stoppage
+151677,official,a_only,9,,1584.0,730.0,,,,official foreground,
+151677,official,b_only,,10,,,217.0,358.0,,,Far-left official
+151677,official,b_only,,11,,,1899.0,351.0,,,Far-right baseline official partly cropped

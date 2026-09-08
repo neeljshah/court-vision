@@ -1,0 +1,186 @@
+frame,kind,a_index,b_index,decision,note
+0,pair,1,3,B,A on lower leg; B at shoe-floor contact
+0,pair,2,2,B,B at dark shoe contact; A on open floor below
+0,pair,3,4,B,B at sole of green shoe; A on shoe upper
+0,pair,5,6,B,B at dark shoe contact; A on empty floor
+0,pair,6,7,B,B at yellow-green shoe base; A on empty floor
+0,a_only,4,,drop,mark on open floor with no visible foot at it
+0,b_only,,5,B,base of white shoe at court line
+7584,pair,4,4,B,A on shoe upper; B at sole
+7584,a_only,1,,drop,open floor no foot at mark
+7584,a_only,2,,drop,about 40 px below the shoe sole on the reflection
+7584,a_only,3,,drop,open floor near line no foot at mark
+7584,a_only,5,,drop,open floor no foot at mark
+7584,a_only,6,,drop,about 30 px below the white shoe sole
+7584,a_only,7,,drop,about 30 px below the white shoe sole
+7584,b_only,,1,B,base of dark blue shoes
+7584,b_only,,2,B,lower boundary of black shoe
+7584,b_only,,3,B,base of green shoe
+7584,b_only,,5,B,base of purple shoe
+7584,b_only,,6,B,floor midpoint between the two white shoes
+7584,b_only,,7,B,base of yellow-white shoe
+15168,pair,1,1,B,A on purple shoe upper; B at sole
+15168,pair,2,2,A,A at sole of right yellow shoe; B on floor to the left
+15168,pair,3,3,B,B at sole; A on shoe upper
+15168,pair,5,5,A,indistinguishable at crop resolution; sealed tie-break R9
+15168,pair,6,6,B,B at floor; A at ankle height
+15168,pair,7,7,B,A on yellow shoe upper; B at base
+15168,pair,8,9,A,A on the dark shoe; B on empty dark floor below
+15168,pair,9,10,B,A on blue shoe upper; B at base
+15168,a_only,4,,drop,mark on the player torso not a floor contact
+15168,b_only,,8,drop,mark on a shoe upper well above the floor plane
+30335,pair,1,1,A,indistinguishable at crop resolution; sealed tie-break R9
+30335,pair,2,2,A,A at the sole of the left white shoe; B on floor between feet
+30335,pair,3,8,drop,neither mark at a visible foot; open floor
+30335,pair,4,5,B,B at the purple-white shoe cluster base; A on empty dark floor
+30335,pair,5,6,drop,neither mark at a visible foot; open dark floor
+30335,pair,6,7,B,B at the yellow-green shoe base; A below on dark floor
+30335,pair,7,9,B,A on the white shoe body; B at its sole
+30335,pair,8,10,B,B at the dark green shoe base; A on floor to the right
+30335,b_only,,3,drop,about 30 px right of the nearest shoe on open floor
+30335,b_only,,4,B,base of the red shoe at the sideline; role judgement inherited from B
+37919,pair,1,2,B,B at floor between the purple shoes; A on the shoe upper
+37919,pair,2,3,B,B at the green shoe base; A on the shoe body
+37919,pair,6,7,A,A at floor midpoint between the red shoes; B left of them
+37919,pair,7,8,B,B at the mint shoe base; A beside it
+37919,pair,8,9,B,B at the sole; A on the shoe body
+37919,a_only,3,,drop,mark at sock height above both blue shoes
+37919,a_only,4,,A,on the white shoe upper within the pass stated precision
+37919,a_only,5,,A,floor beside the white shoe sole
+37919,a_only,9,,drop,mark on a thigh in a cluster of bending people
+37919,b_only,,1,drop,open floor about 30 px right of the shoes
+37919,b_only,,4,drop,open floor below-right of the two dark blue shoes
+37919,b_only,,5,drop,open floor between a shoe and a leg; no visible contact
+45503,pair,1,1,B,B at the blurred dark shoe; A on empty floor to the left
+45503,pair,2,2,B,B at the base of the yellow-green shoe; A on its upper
+45503,pair,3,3,A,A at the base of the dark shoe; B on floor to the left
+45503,pair,4,4,B,B at floor below the black-white shoe; A on its upper
+45503,a_only,6,,A,floor midpoint between the two yellow shoes
+45503,a_only,7,,drop,mark on a leg in the background crowd
+45503,b_only,,7,drop,blurred bench crowd; no floor contact at the mark
+45503,b_only,,8,drop,about 30 px below-left of the dark blue shoe
+45503,b_only,,9,drop,near-duplicate of A6 at 20.6 px; kept once as A6
+53087,pair,1,1,B,B at the base of the white-blue shoe; A on floor above
+53087,pair,4,6,drop,both marks mid-leg; no foot visible at either
+53087,pair,7,9,A,A on the yellow shoe; B on floor beside the body
+53087,pair,8,10,A,A nearer the base of the green shoe; B further right
+53087,a_only,2,,A,floor midpoint between the two yellow shoes
+53087,a_only,3,,drop,open floor left of the leg; no foot at the mark
+53087,a_only,5,,drop,black sideline strip; no feet at the mark
+53087,a_only,6,,drop,mark on a player torso
+53087,b_only,,2,drop,near-duplicate of A2 at 7.1 px; kept once as A2
+53087,b_only,,3,drop,mark on a persons head; not a floor contact
+53087,b_only,,4,B,base of the pink shoes
+53087,b_only,,8,drop,about 30 px below the dark shoes on the sideline strip
+68255,pair,2,2,B,B at floor level by the left yellow shoe; A on the right shoe upper
+68255,pair,3,5,drop,A on the player shorts; B on empty dark floor
+68255,pair,5,10,B,B at the base of the right green shoe; A on the shoe body
+68255,pair,6,9,B,B at floor between the two shoes; A on the shoe upper
+68255,a_only,1,,drop,seated bench crowd; not a court contact
+68255,a_only,4,,drop,mark on the player shorts
+68255,a_only,7,,drop,empty floor; no foot at the mark
+68255,a_only,8,,A,at the ankle just above the white shoe; within stated precision
+68255,b_only,,1,drop,seated crowd area; not a player floor contact
+68255,b_only,,3,B,base of the white shoe
+68255,b_only,,4,B,base of the purple shoes
+68255,b_only,,6,B,base of the blue shoe
+68255,b_only,,7,B,base of the white-pink shoe
+68255,b_only,,8,B,base of the second white-pink shoe
+75839,pair,1,1,B,B at the base of the dark shoe; A on empty floor to the right
+75839,a_only,2,,drop,empty floor; no foot at the mark
+75839,a_only,3,,drop,empty floor; no foot at the mark
+75839,a_only,4,,drop,empty floor above the line; the shoe is well below
+75839,a_only,5,,drop,mark on a leg in the bench area
+75839,a_only,6,,drop,empty floor; no foot at the mark
+75839,a_only,7,,drop,empty floor by the logo; no foot at the mark
+75839,a_only,8,,drop,empty floor above the crowd; no foot at the mark
+75839,b_only,,3,B,base of the white-black shoe
+75839,b_only,,4,B,base of the green shoe
+75839,b_only,,5,B,base of the black-white shoe
+75839,b_only,,6,B,base of the blue shoe
+75839,b_only,,7,B,base of the red shoe
+75839,b_only,,8,B,base of the grey-white shoe on the sideline strip
+75839,b_only,,9,B,base of the mint shoe
+83423,a_only,1,,drop,blue bench-side floor; the shoe is well below-left
+83423,a_only,2,,drop,blue graphic floor by the ball; no foot at the mark
+83423,a_only,3,,drop,empty floor; no foot at the mark
+83423,a_only,4,,drop,motion-blurred region; no floor contact at the mark
+83423,a_only,5,,drop,empty floor; no foot at the mark
+83423,a_only,6,,drop,empty floor near the line; no foot at the mark
+83423,a_only,7,,drop,empty floor; no foot at the mark
+83423,a_only,8,,drop,empty floor; no foot at the mark
+83423,b_only,,1,drop,about 30 px below both white shoes on the blue floor
+83423,b_only,,2,B,base of the white-black shoe
+83423,b_only,,3,B,base of the yellow shoe
+83423,b_only,,4,drop,about 30 px right of the black shoe on the sideline strip
+91006,pair,1,1,drop,neither mark at a visible foot; dark paint area
+91006,pair,2,2,A,A on the white-black shoe; B on empty floor below-right
+91006,pair,3,3,B,B at the base of the red shoe; A on the yellow shoe upper
+91006,pair,4,4,A,A at the base of the green shoe; B on the red shoe above
+91006,pair,5,5,A,A at floor level by the green shoes; B further left
+91006,pair,8,9,B,B at the left mint shoe base; A on floor between the shoes
+91006,pair,9,8,B,B closer under the right white-blue shoe; A on floor to the right
+91006,a_only,6,,A,floor beside the right white shoe base
+91006,a_only,7,,A,on the left mint shoe
+91006,b_only,,6,B,base of the red shoe
+91006,b_only,,7,drop,bench crowd; not a player floor contact
+91006,b_only,,10,B,base of the purple shoe
+98590,pair,2,3,A,A on the black shoe; B on empty floor below-right
+98590,pair,7,7,B,B at the base of the white-black shoe on the line; A on empty floor
+98590,pair,9,9,B,B at the left yellow shoe base; A on the right shoe upper
+98590,a_only,1,,drop,empty floor about 40 px from either red shoe
+98590,a_only,3,,drop,empty floor; no foot at the mark
+98590,a_only,4,,drop,empty floor above the line; the dark shoe is below
+98590,a_only,5,,drop,empty floor; no foot at the mark
+98590,a_only,6,,drop,mark on the player shorts and hand
+98590,a_only,8,,drop,mark mid-shin above the purple shoe
+98590,b_only,,2,B,base of the blue-grey shoe
+98590,b_only,,4,B,base of the light shoe
+98590,b_only,,5,drop,empty floor inside the arc; no foot at the mark
+98590,b_only,,8,drop,about 40 px left of the yellow shoe on open floor
+106174,pair,1,1,B,B at the mint shoe base; A on the shoe upper
+106174,pair,2,2,B,B at the white shoe base; A on the shoe upper
+106174,pair,3,10,B,B at the dark shoe base on the strip; A on the shoe body
+106174,pair,5,7,drop,neither mark at a visible foot; open floor
+106174,pair,6,6,A,A at the white shoe sole; B on empty floor below-right
+106174,pair,7,5,A,A at the base of the dark-white shoe; B on floor below-right
+106174,pair,10,3,B,B at the yellow-green shoe base on the line; A on floor above
+106174,a_only,4,,drop,near-duplicate of B9 at 32.6 px; kept once as B9
+106174,a_only,8,,drop,empty floor; no foot at the mark
+106174,a_only,9,,drop,mark on the calf of a blue-legged player
+106174,b_only,,8,B,base of the yellow-green shoe
+106174,b_only,,9,B,base of the left yellow shoe
+121342,pair,1,1,B,B at the white shoe base; A on the strip to the right
+121342,pair,3,3,B,B at the blue shoe base; A on the shoe upper
+121342,pair,4,6,B,B at the white-black shoe base; A on floor to the left
+121342,pair,6,4,B,B at the white shoe base; A on empty floor
+121342,pair,7,8,B,B at the dark shoe base; A on the shoe body
+121342,pair,8,9,B,B at floor level by the blurred blue shoe; A on the shoe body
+121342,pair,9,5,B,B at the yellow shoe base; A on floor to the left
+121342,a_only,2,,A,on the blurred green shoe
+121342,a_only,5,,drop,about 30 px right of the white-black shoe
+121342,b_only,,2,B,base of the yellow-green shoe
+121342,b_only,,7,B,base of the mint shoe
+144094,pair,6,8,A,A at the yellow shoe base; B on the dark floor to the right
+144094,pair,7,9,B,B at floor between the two red-dark shoes; A on a shoe upper
+144094,a_only,1,,drop,mark on the white shorts
+144094,a_only,2,,drop,mark on the black shorts
+144094,a_only,3,,drop,dark floor about 30 px from either white shoe
+144094,a_only,4,,drop,near-duplicate of B6 at 10.0 px; kept once as B6
+144094,a_only,5,,drop,mark on the white shorts
+144094,a_only,8,,drop,blue bench-side floor with seated people
+144094,b_only,,1,B,floor between the two purple shoes
+144094,b_only,,2,B,base of the white-pink shoe
+144094,b_only,,3,B,floor between the two light blue shoes
+144094,b_only,,5,drop,on the logo strip below the white shoes; no contact at the mark
+144094,b_only,,6,B,base of the blue shoe
+144094,b_only,,7,B,base of the green shoe
+151677,pair,1,1,A,A at the left green shoe base; B on the strip between the shoes
+151677,pair,2,2,A,A at the white-blue shoe; B on the logo floor below-left
+151677,pair,3,3,B,B at the white shoe base; A on empty floor to the left
+151677,pair,4,4,A,A at the mint shoe base; B on floor below-right
+151677,pair,5,5,B,B at the light blue shoe base; A on the shoe upper
+151677,pair,6,7,A,A at the dark shoe base; B on floor by the ball
+151677,pair,7,8,drop,both marks on the seated crowd; no floor contact
+151677,pair,8,9,B,B at the purple shoe base; A on a persons head below
+151677,b_only,,6,B,base of the white-black shoe

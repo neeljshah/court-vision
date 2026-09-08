@@ -1,0 +1,187 @@
+frame_id,player_ordinal,x,y,source,distance_px,note
+0,1,852,482,adjudicated_B,12.806,A on lower leg; B at shoe-floor contact
+0,2,900,443,adjudicated_B,40.311,B at dark shoe contact; A on open floor below
+0,3,920,482,adjudicated_B,7.211,B at sole of green shoe; A on shoe upper
+0,4,1020,422,adjudicated_B,,base of white shoe at court line
+0,5,1049,432,adjudicated_B,47.634,B at dark shoe contact; A on empty floor
+0,6,1087,459,adjudicated_B,33.242,B at yellow-green shoe base; A on empty floor
+0,0,962,476,dropped,,mark on open floor with no visible foot at it
+7584,1,94,689,adjudicated_B,,base of dark blue shoes
+7584,2,378,774,adjudicated_B,,lower boundary of black shoe
+7584,3,616,775,adjudicated_B,,base of green shoe
+7584,4,716,803,adjudicated_B,38.118,A on shoe upper; B at sole
+7584,5,947,726,adjudicated_B,,base of purple shoe
+7584,6,1185,817,adjudicated_B,,floor midpoint between the two white shoes
+7584,7,1190,739,adjudicated_B,,base of yellow-white shoe
+7584,0,76,777,dropped,,open floor no foot at mark
+7584,0,302,781,dropped,,about 40 px below the shoe sole on the reflection
+7584,0,548,785,dropped,,open floor near line no foot at mark
+7584,0,946,778,dropped,,open floor no foot at mark
+7584,0,1114,820,dropped,,about 30 px below the white shoe sole
+7584,0,1245,830,dropped,,about 30 px below the white shoe sole
+15168,1,366,435,adjudicated_B,12.000,A on purple shoe upper; B at sole
+15168,2,543,520,adjudicated_A,12.369,A at sole of right yellow shoe; B on floor to the left
+15168,3,569,543,adjudicated_B,9.434,B at sole; A on shoe upper
+15168,4,951,549,adjudicated_A,5.000,indistinguishable at crop resolution; sealed tie-break R9
+15168,5,1197,544,adjudicated_B,20.125,B at floor; A at ankle height
+15168,6,1238,526,adjudicated_B,14.142,A on yellow shoe upper; B at base
+15168,7,1338,494,adjudicated_A,29.732,A on the dark shoe; B on empty dark floor below
+15168,8,1424,550,adjudicated_B,17.000,A on blue shoe upper; B at base
+15168,0,927,442,dropped,,mark on the player torso not a floor contact
+15168,0,1250,489,dropped,,mark on a shoe upper well above the floor plane
+30335,1,635,443,adjudicated_A,5.385,indistinguishable at crop resolution; sealed tie-break R9
+30335,2,812,387,adjudicated_A,20.616,A at the sole of the left white shoe; B on floor between feet
+30335,3,899,502,adjudicated_B,,base of the red shoe at the sideline; role judgement inherited from B
+30335,4,979,555,adjudicated_B,34.176,B at the purple-white shoe cluster base; A on empty dark floor
+30335,5,1134,472,adjudicated_B,19.416,B at the yellow-green shoe base; A below on dark floor
+30335,6,1354,620,adjudicated_B,15.000,A on the white shoe body; B at its sole
+30335,7,1689,638,adjudicated_B,12.166,B at the dark green shoe base; A on floor to the right
+30335,0,905,574,dropped,27.019,neither mark at a visible foot; open floor
+30335,0,1034,547,dropped,9.220,neither mark at a visible foot; open dark floor
+30335,0,1035,365,dropped,,about 30 px right of the nearest shoe on open floor
+37919,1,478,465,adjudicated_B,26.401,B at floor between the purple shoes; A on the shoe upper
+37919,2,681,504,adjudicated_B,14.036,B at the green shoe base; A on the shoe body
+37919,3,799,688,adjudicated_A,,on the white shoe upper within the pass stated precision
+37919,4,1018,586,adjudicated_A,,floor beside the white shoe sole
+37919,5,1180,523,adjudicated_A,13.153,A at floor midpoint between the red shoes; B left of them
+37919,6,1230,527,adjudicated_B,6.403,B at the mint shoe base; A beside it
+37919,7,1517,695,adjudicated_B,7.211,B at the sole; A on the shoe body
+37919,0,582,633,dropped,,mark at sock height above both blue shoes
+37919,0,1587,721,dropped,,mark on a thigh in a cluster of bending people
+37919,0,341,714,dropped,,open floor about 30 px right of the shoes
+37919,0,608,658,dropped,,open floor below-right of the two dark blue shoes
+37919,0,830,693,dropped,,open floor between a shoe and a leg; no visible contact
+45503,1,399,746,adjudicated_B,49.000,B at the blurred dark shoe; A on empty floor to the left
+45503,2,702,690,adjudicated_B,6.403,B at the base of the yellow-green shoe; A on its upper
+45503,3,787,584,adjudicated_A,17.117,A at the base of the dark shoe; B on floor to the left
+45503,4,875,611,adjudicated_B,9.000,B at floor below the black-white shoe; A on its upper
+45503,5,919,602,agreed,4.000,distance within the sealed 4.0 px agreement tolerance
+45503,6,1513,715,adjudicated_A,,floor midpoint between the two yellow shoes
+45503,0,1881,730,dropped,,mark on a leg in the background crowd
+45503,0,851,392,dropped,,blurred bench crowd; no floor contact at the mark
+45503,0,1006,469,dropped,,about 30 px below-left of the dark blue shoe
+45503,0,1533,720,dropped,,near-duplicate of A6 at 20.6 px; kept once as A6
+53087,1,380,631,adjudicated_B,29.833,B at the base of the white-blue shoe; A on floor above
+53087,2,590,629,adjudicated_A,,floor midpoint between the two yellow shoes
+53087,3,735,496,adjudicated_B,,base of the pink shoes
+53087,4,1263,682,adjudicated_A,29.000,A on the yellow shoe; B on floor beside the body
+53087,5,1512,786,adjudicated_A,21.024,A nearer the base of the green shoe; B further right
+53087,0,789,810,dropped,7.071,both marks mid-leg; no foot visible at either
+53087,0,635,798,dropped,,open floor left of the leg; no foot at the mark
+53087,0,1000,528,dropped,,black sideline strip; no feet at the mark
+53087,0,1222,498,dropped,,mark on a player torso
+53087,0,591,636,dropped,,near-duplicate of A2 at 7.1 px; kept once as A2
+53087,0,588,453,dropped,,mark on a persons head; not a floor contact
+53087,0,1329,505,dropped,,about 30 px below the dark shoes on the sideline strip
+68255,1,360,594,adjudicated_B,37.014,B at floor level by the left yellow shoe; A on the right shoe upper
+68255,2,698,632,adjudicated_B,,base of the white shoe
+68255,3,753,422,adjudicated_B,,base of the blue shoe
+68255,4,811,762,adjudicated_B,,base of the purple shoes
+68255,5,1047,574,adjudicated_B,22.023,B at the base of the right green shoe; A on the shoe body
+68255,6,1146,581,adjudicated_B,26.000,B at floor between the two shoes; A on the shoe upper
+68255,7,1184,467,adjudicated_B,,base of the white-pink shoe
+68255,8,1190,471,adjudicated_B,,base of the second white-pink shoe
+68255,9,1275,461,adjudicated_A,,at the ankle just above the white shoe; within stated precision
+68255,0,701,487,dropped,42.485,A on the player shorts; B on empty dark floor
+68255,0,361,690,dropped,,seated bench crowd; not a court contact
+68255,0,719,464,dropped,,mark on the player shorts
+68255,0,1249,575,dropped,,empty floor; no foot at the mark
+68255,0,167,697,dropped,,seated crowd area; not a player floor contact
+75839,1,252,494,adjudicated_B,23.770,B at the base of the dark shoe; A on empty floor to the right
+75839,2,627,712,adjudicated_B,,base of the red shoe
+75839,3,915,452,adjudicated_B,,base of the black-white shoe
+75839,4,1058,580,adjudicated_B,,base of the blue shoe
+75839,5,1059,384,adjudicated_B,,base of the green shoe
+75839,6,1100,410,adjudicated_B,,base of the white-black shoe
+75839,7,1277,510,adjudicated_B,,base of the grey-white shoe on the sideline strip
+75839,8,1725,580,adjudicated_B,,base of the mint shoe
+75839,0,387,568,dropped,,empty floor; no foot at the mark
+75839,0,695,710,dropped,,empty floor; no foot at the mark
+75839,0,724,428,dropped,,empty floor above the line; the shoe is well below
+75839,0,1056,517,dropped,,mark on a leg in the bench area
+75839,0,1168,417,dropped,,empty floor; no foot at the mark
+75839,0,1284,761,dropped,,empty floor by the logo; no foot at the mark
+75839,0,1531,783,dropped,,empty floor above the crowd; no foot at the mark
+83423,1,660,773,adjudicated_B,,base of the white-black shoe
+83423,2,770,738,adjudicated_B,,base of the yellow shoe
+83423,0,255,480,dropped,,blue bench-side floor; the shoe is well below-left
+83423,0,633,478,dropped,,blue graphic floor by the ball; no foot at the mark
+83423,0,872,446,dropped,,empty floor; no foot at the mark
+83423,0,1053,568,dropped,,motion-blurred region; no floor contact at the mark
+83423,0,1316,489,dropped,,empty floor; no foot at the mark
+83423,0,1308,500,dropped,,empty floor near the line; no foot at the mark
+83423,0,1684,541,dropped,,empty floor; no foot at the mark
+83423,0,1714,578,dropped,,empty floor; no foot at the mark
+83423,0,358,648,dropped,,about 30 px below both white shoes on the blue floor
+83423,0,1153,646,dropped,,about 30 px right of the black shoe on the sideline strip
+91006,1,374,651,adjudicated_A,42.544,A on the white-black shoe; B on empty floor below-right
+91006,2,595,565,adjudicated_B,41.617,B at the base of the red shoe; A on the yellow shoe upper
+91006,3,646,598,adjudicated_A,46.840,A at the base of the green shoe; B on the red shoe above
+91006,4,673,590,adjudicated_A,18.682,A at floor level by the green shoes; B further left
+91006,5,899,470,adjudicated_B,,base of the red shoe
+91006,6,900,763,adjudicated_A,,floor beside the right white shoe base
+91006,7,900,789,adjudicated_B,13.601,B closer under the right white-blue shoe; A on floor to the right
+91006,8,1332,421,adjudicated_B,,base of the purple shoe
+91006,9,1342,562,adjudicated_A,,on the left mint shoe
+91006,10,1357,576,adjudicated_B,14.142,B at the left mint shoe base; A on floor between the shoes
+91006,0,332,557,dropped,49.041,neither mark at a visible foot; dark paint area
+91006,0,250,806,dropped,,bench crowd; not a player floor contact
+98590,1,622,490,adjudicated_A,48.270,A on the black shoe; B on empty floor below-right
+98590,2,702,441,adjudicated_B,,base of the blue-grey shoe
+98590,3,811,443,adjudicated_B,,base of the light shoe
+98590,4,1324,721,adjudicated_B,27.893,B at the base of the white-black shoe on the line; A on empty floor
+98590,5,1548,790,adjudicated_B,24.207,B at the left yellow shoe base; A on the right shoe upper
+98590,0,471,448,dropped,,empty floor about 40 px from either red shoe
+98590,0,761,432,dropped,,empty floor; no foot at the mark
+98590,0,924,448,dropped,,empty floor above the line; the dark shoe is below
+98590,0,1047,488,dropped,,empty floor; no foot at the mark
+98590,0,1278,582,dropped,,mark on the player shorts and hand
+98590,0,1450,713,dropped,,mark mid-shin above the purple shoe
+98590,0,945,487,dropped,,empty floor inside the arc; no foot at the mark
+98590,0,1480,769,dropped,,about 40 px left of the yellow shoe on open floor
+106174,1,493,786,adjudicated_B,26.173,B at the mint shoe base; A on the shoe upper
+106174,2,702,627,adjudicated_B,21.260,B at the white shoe base; A on the shoe upper
+106174,3,1004,754,adjudicated_B,32.062,B at the yellow-green shoe base on the line; A on floor above
+106174,4,1036,513,adjudicated_B,11.314,B at the dark shoe base on the strip; A on the shoe body
+106174,5,1091,535,adjudicated_B,,base of the left yellow shoe
+106174,6,1128,460,adjudicated_B,,base of the yellow-green shoe
+106174,7,1403,570,adjudicated_A,31.623,A at the white shoe sole; B on empty floor below-right
+106174,8,1627,613,adjudicated_A,15.811,A at the base of the dark-white shoe; B on floor below-right
+106174,0,1310,443,dropped,36.401,neither mark at a visible foot; open floor
+106174,0,1112,510,dropped,,near-duplicate of B9 at 32.6 px; kept once as B9
+106174,0,1744,448,dropped,,empty floor; no foot at the mark
+106174,0,1164,819,dropped,,mark on the calf of a blue-legged player
+121342,1,196,534,adjudicated_B,30.000,B at the white shoe base; A on the strip to the right
+121342,2,494,422,adjudicated_A,,on the blurred green shoe
+121342,3,607,439,adjudicated_B,,base of the yellow-green shoe
+121342,4,728,724,adjudicated_B,23.345,B at the blue shoe base; A on the shoe upper
+121342,5,988,650,adjudicated_B,18.111,B at the white-black shoe base; A on floor to the left
+121342,6,1075,552,adjudicated_B,,base of the mint shoe
+121342,7,1349,721,adjudicated_B,39.825,B at the white shoe base; A on empty floor
+121342,8,1578,570,adjudicated_B,17.804,B at the dark shoe base; A on the shoe body
+121342,9,1707,398,adjudicated_B,26.683,B at the yellow shoe base; A on floor to the left
+121342,10,1804,694,adjudicated_B,42.720,B at floor level by the blurred blue shoe; A on the shoe body
+121342,0,1007,648,dropped,,about 30 px right of the white-black shoe
+144094,1,139,612,adjudicated_B,,floor between the two purple shoes
+144094,2,257,800,adjudicated_B,,base of the white-pink shoe
+144094,3,341,922,adjudicated_B,,floor between the two light blue shoes
+144094,4,850,678,adjudicated_B,,base of the blue shoe
+144094,5,1075,761,adjudicated_A,31.321,A at the yellow shoe base; B on the dark floor to the right
+144094,6,1140,606,adjudicated_B,,base of the green shoe
+144094,7,1378,817,adjudicated_B,34.409,B at floor between the two red-dark shoes; A on a shoe upper
+144094,0,218,609,dropped,,mark on the white shorts
+144094,0,289,760,dropped,,mark on the black shorts
+144094,0,770,705,dropped,,dark floor about 30 px from either white shoe
+144094,0,840,678,dropped,,near-duplicate of B6 at 10.0 px; kept once as B6
+144094,0,1060,599,dropped,,mark on the white shorts
+144094,0,1500,495,dropped,,blue bench-side floor with seated people
+144094,0,768,738,dropped,,on the logo strip below the white shoes; no contact at the mark
+151677,1,275,448,adjudicated_A,37.656,A at the left green shoe base; B on the strip between the shoes
+151677,2,490,453,adjudicated_A,24.166,A at the white-blue shoe; B on the logo floor below-left
+151677,3,724,558,adjudicated_B,35.847,B at the white shoe base; A on empty floor to the left
+151677,4,1040,522,adjudicated_A,32.249,A at the mint shoe base; B on floor below-right
+151677,5,1492,385,adjudicated_B,17.117,B at the light blue shoe base; A on the shoe upper
+151677,6,1539,709,adjudicated_B,12.042,B at the purple shoe base; A on a persons head below
+151677,7,1542,324,adjudicated_B,,base of the white-black shoe
+151677,8,1624,488,adjudicated_A,27.019,A at the dark shoe base; B on floor by the ball
+151677,0,1458,753,dropped,16.031,both marks on the seated crowd; no floor contact

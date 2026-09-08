@@ -1,0 +1,490 @@
+{
+ "radius": 50.0,
+ "roles": {
+  "player_on_court": {
+   "total": {
+    "matched": 75,
+    "a_elig": 131,
+    "b_elig": 130,
+    "a_only": 56,
+    "b_only": 55,
+    "median_px": 23.345,
+    "p90_px": 42.138,
+    "over_adjudicate_threshold": 74,
+    "agree_share_of_A": 0.5725,
+    "agree_share_of_B": 0.5769
+   },
+   "per_frame": [
+    {
+     "frame": 0,
+     "a_elig": 6,
+     "b_elig": 6,
+     "matched": 5,
+     "a_only": 1,
+     "b_only": 1,
+     "median_px": 33.242
+    },
+    {
+     "frame": 7584,
+     "a_elig": 7,
+     "b_elig": 7,
+     "matched": 1,
+     "a_only": 6,
+     "b_only": 6,
+     "median_px": 38.118
+    },
+    {
+     "frame": 15168,
+     "a_elig": 9,
+     "b_elig": 9,
+     "matched": 8,
+     "a_only": 1,
+     "b_only": 1,
+     "median_px": 13.256
+    },
+    {
+     "frame": 22752,
+     "a_elig": 0,
+     "b_elig": 0,
+     "matched": 0,
+     "a_only": 0,
+     "b_only": 0,
+     "median_px": null
+    },
+    {
+     "frame": 30335,
+     "a_elig": 8,
+     "b_elig": 10,
+     "matched": 8,
+     "a_only": 0,
+     "b_only": 2,
+     "median_px": 17.208
+    },
+    {
+     "frame": 37919,
+     "a_elig": 9,
+     "b_elig": 8,
+     "matched": 5,
+     "a_only": 4,
+     "b_only": 3,
+     "median_px": 13.153
+    },
+    {
+     "frame": 45503,
+     "a_elig": 7,
+     "b_elig": 8,
+     "matched": 5,
+     "a_only": 2,
+     "b_only": 3,
+     "median_px": 9.0
+    },
+    {
+     "frame": 53087,
+     "a_elig": 8,
+     "b_elig": 8,
+     "matched": 4,
+     "a_only": 4,
+     "b_only": 4,
+     "median_px": 25.012
+    },
+    {
+     "frame": 60671,
+     "a_elig": 0,
+     "b_elig": 0,
+     "matched": 0,
+     "a_only": 0,
+     "b_only": 0,
+     "median_px": null
+    },
+    {
+     "frame": 68255,
+     "a_elig": 8,
+     "b_elig": 10,
+     "matched": 4,
+     "a_only": 4,
+     "b_only": 6,
+     "median_px": 31.507
+    },
+    {
+     "frame": 75839,
+     "a_elig": 8,
+     "b_elig": 8,
+     "matched": 1,
+     "a_only": 7,
+     "b_only": 7,
+     "median_px": 23.77
+    },
+    {
+     "frame": 83423,
+     "a_elig": 8,
+     "b_elig": 4,
+     "matched": 0,
+     "a_only": 8,
+     "b_only": 4,
+     "median_px": null
+    },
+    {
+     "frame": 91006,
+     "a_elig": 9,
+     "b_elig": 10,
+     "matched": 7,
+     "a_only": 2,
+     "b_only": 3,
+     "median_px": 41.617
+    },
+    {
+     "frame": 98590,
+     "a_elig": 9,
+     "b_elig": 7,
+     "matched": 3,
+     "a_only": 6,
+     "b_only": 4,
+     "median_px": 27.893
+    },
+    {
+     "frame": 106174,
+     "a_elig": 10,
+     "b_elig": 9,
+     "matched": 7,
+     "a_only": 3,
+     "b_only": 2,
+     "median_px": 26.173
+    },
+    {
+     "frame": 113758,
+     "a_elig": 0,
+     "b_elig": 0,
+     "matched": 0,
+     "a_only": 0,
+     "b_only": 0,
+     "median_px": null
+    },
+    {
+     "frame": 121342,
+     "a_elig": 9,
+     "b_elig": 9,
+     "matched": 7,
+     "a_only": 2,
+     "b_only": 2,
+     "median_px": 26.683
+    },
+    {
+     "frame": 128926,
+     "a_elig": 0,
+     "b_elig": 0,
+     "matched": 0,
+     "a_only": 0,
+     "b_only": 0,
+     "median_px": null
+    },
+    {
+     "frame": 136510,
+     "a_elig": 0,
+     "b_elig": 0,
+     "matched": 0,
+     "a_only": 0,
+     "b_only": 0,
+     "median_px": null
+    },
+    {
+     "frame": 144094,
+     "a_elig": 8,
+     "b_elig": 8,
+     "matched": 2,
+     "a_only": 6,
+     "b_only": 6,
+     "median_px": 32.865
+    },
+    {
+     "frame": 151677,
+     "a_elig": 8,
+     "b_elig": 9,
+     "matched": 8,
+     "a_only": 0,
+     "b_only": 1,
+     "median_px": 25.592
+    },
+    {
+     "frame": 159261,
+     "a_elig": 0,
+     "b_elig": 0,
+     "matched": 0,
+     "a_only": 0,
+     "b_only": 0,
+     "median_px": null
+    },
+    {
+     "frame": 166845,
+     "a_elig": 0,
+     "b_elig": 0,
+     "matched": 0,
+     "a_only": 0,
+     "b_only": 0,
+     "median_px": null
+    },
+    {
+     "frame": 174429,
+     "a_elig": 0,
+     "b_elig": 0,
+     "matched": 0,
+     "a_only": 0,
+     "b_only": 0,
+     "median_px": null
+    }
+   ]
+  },
+  "official": {
+   "total": {
+    "matched": 5,
+    "a_elig": 15,
+    "b_elig": 30,
+    "a_only": 10,
+    "b_only": 25,
+    "median_px": 30.017,
+    "p90_px": 45.097,
+    "over_adjudicate_threshold": 5,
+    "agree_share_of_A": 0.3333,
+    "agree_share_of_B": 0.1667
+   },
+   "per_frame": [
+    {
+     "frame": 0,
+     "a_elig": 1,
+     "b_elig": 2,
+     "matched": 0,
+     "a_only": 1,
+     "b_only": 2,
+     "median_px": null
+    },
+    {
+     "frame": 7584,
+     "a_elig": 0,
+     "b_elig": 1,
+     "matched": 0,
+     "a_only": 0,
+     "b_only": 1,
+     "median_px": null
+    },
+    {
+     "frame": 15168,
+     "a_elig": 1,
+     "b_elig": 3,
+     "matched": 1,
+     "a_only": 0,
+     "b_only": 2,
+     "median_px": 15.524
+    },
+    {
+     "frame": 22752,
+     "a_elig": 0,
+     "b_elig": 0,
+     "matched": 0,
+     "a_only": 0,
+     "b_only": 0,
+     "median_px": null
+    },
+    {
+     "frame": 30335,
+     "a_elig": 1,
+     "b_elig": 3,
+     "matched": 1,
+     "a_only": 0,
+     "b_only": 2,
+     "median_px": 38.013
+    },
+    {
+     "frame": 37919,
+     "a_elig": 1,
+     "b_elig": 2,
+     "matched": 0,
+     "a_only": 1,
+     "b_only": 2,
+     "median_px": null
+    },
+    {
+     "frame": 45503,
+     "a_elig": 1,
+     "b_elig": 2,
+     "matched": 0,
+     "a_only": 1,
+     "b_only": 2,
+     "median_px": null
+    },
+    {
+     "frame": 53087,
+     "a_elig": 1,
+     "b_elig": 2,
+     "matched": 0,
+     "a_only": 1,
+     "b_only": 2,
+     "median_px": null
+    },
+    {
+     "frame": 60671,
+     "a_elig": 0,
+     "b_elig": 0,
+     "matched": 0,
+     "a_only": 0,
+     "b_only": 0,
+     "median_px": null
+    },
+    {
+     "frame": 68255,
+     "a_elig": 1,
+     "b_elig": 3,
+     "matched": 0,
+     "a_only": 1,
+     "b_only": 3,
+     "median_px": null
+    },
+    {
+     "frame": 75839,
+     "a_elig": 1,
+     "b_elig": 1,
+     "matched": 0,
+     "a_only": 1,
+     "b_only": 1,
+     "median_px": null
+    },
+    {
+     "frame": 83423,
+     "a_elig": 1,
+     "b_elig": 1,
+     "matched": 0,
+     "a_only": 1,
+     "b_only": 1,
+     "median_px": null
+    },
+    {
+     "frame": 91006,
+     "a_elig": 1,
+     "b_elig": 2,
+     "matched": 1,
+     "a_only": 0,
+     "b_only": 1,
+     "median_px": 23.77
+    },
+    {
+     "frame": 98590,
+     "a_elig": 1,
+     "b_elig": 2,
+     "matched": 1,
+     "a_only": 0,
+     "b_only": 1,
+     "median_px": 49.82
+    },
+    {
+     "frame": 106174,
+     "a_elig": 1,
+     "b_elig": 2,
+     "matched": 0,
+     "a_only": 1,
+     "b_only": 2,
+     "median_px": null
+    },
+    {
+     "frame": 113758,
+     "a_elig": 0,
+     "b_elig": 0,
+     "matched": 0,
+     "a_only": 0,
+     "b_only": 0,
+     "median_px": null
+    },
+    {
+     "frame": 121342,
+     "a_elig": 1,
+     "b_elig": 1,
+     "matched": 0,
+     "a_only": 1,
+     "b_only": 1,
+     "median_px": null
+    },
+    {
+     "frame": 128926,
+     "a_elig": 0,
+     "b_elig": 0,
+     "matched": 0,
+     "a_only": 0,
+     "b_only": 0,
+     "median_px": null
+    },
+    {
+     "frame": 136510,
+     "a_elig": 0,
+     "b_elig": 0,
+     "matched": 0,
+     "a_only": 0,
+     "b_only": 0,
+     "median_px": null
+    },
+    {
+     "frame": 144094,
+     "a_elig": 1,
+     "b_elig": 1,
+     "matched": 1,
+     "a_only": 0,
+     "b_only": 0,
+     "median_px": 30.017
+    },
+    {
+     "frame": 151677,
+     "a_elig": 1,
+     "b_elig": 2,
+     "matched": 0,
+     "a_only": 1,
+     "b_only": 2,
+     "median_px": null
+    },
+    {
+     "frame": 159261,
+     "a_elig": 0,
+     "b_elig": 0,
+     "matched": 0,
+     "a_only": 0,
+     "b_only": 0,
+     "median_px": null
+    },
+    {
+     "frame": 166845,
+     "a_elig": 0,
+     "b_elig": 0,
+     "matched": 0,
+     "a_only": 0,
+     "b_only": 0,
+     "median_px": null
+    },
+    {
+     "frame": 174429,
+     "a_elig": 0,
+     "b_elig": 0,
+     "matched": 0,
+     "a_only": 0,
+     "b_only": 0,
+     "median_px": null
+    }
+   ]
+  }
+ },
+ "label_counts": {
+  "A": {
+   "rows": 149,
+   "no_coordinate": 3,
+   "by_role": {
+    "player_on_court": 133,
+    "official": 16
+   }
+  },
+  "B": {
+   "rows": 296,
+   "no_coordinate": 85,
+   "by_role": {
+    "player_on_court": 163,
+    "official": 41,
+    "other": 5,
+    "spectator_or_media": 31,
+    "bench_or_coach": 56
+   }
+  }
+ }
+}

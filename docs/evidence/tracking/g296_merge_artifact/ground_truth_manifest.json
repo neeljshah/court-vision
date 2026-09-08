@@ -1,0 +1,17 @@
+{
+ "ground_truth_csv": "docs/evidence/tracking/g296_ground_truth_2026-09-07.csv",
+ "sha256": "06b2cefa844a27061732f4c10bd1f29a1acc680068cca33f370aed6cb2f734d2",
+ "rows": 186,
+ "source_counts": {
+  "agreed": 1,
+  "adjudicated_A": 28,
+  "adjudicated_B": 84,
+  "dropped": 73
+ },
+ "accepted": 113,
+ "prereg": "docs/evidence/tracking/g296_merge_prereg_2026-09-07.md",
+ "inputs": {
+  "docs/evidence/tracking/g296a_located_players_artifact/located_players.csv": "ecae5665484f3e224599bc94a7105d9b0d82592b0bf6e6bbdd02820b8240e492",
+  "docs/evidence/tracking/g296b_located_players_artifact/located_players.csv": "d36659ff1dd0781a9c862794c45e712dcf832e53c99cce5212f982d8d47c1568"
+ }
+}
