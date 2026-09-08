@@ -1,0 +1,72 @@
+{
+  "all_reproduced": true,
+  "enumeration": "CONSTRUCT exhaustive",
+  "falsified": {},
+  "input_root": "C:/Users/neelj/nba-track-a17/data",
+  "inputs": {
+    "data/cache/prop_calibration_history.parquet": {
+      "blocking_fact": "player-stat AGGREGATE rows over 7 stats; no game_id column, so no per-game rows exist to join",
+      "bytes": 253851,
+      "label": "NOT_TESTABLE_TODAY",
+      "measured": {
+        "grain": "player-stat AGGREGATE",
+        "has_game_id": false,
+        "rows": 4942,
+        "stats": 7
+      },
+      "reproduced": true,
+      "sha256": "44e1d21d4c7115a3336f3647ac367f30cb1ee60aba8d96318db47e084d6f841f"
+    },
+    "data/cache/prop_sigma_scale.json": {
+      "blocking_fact": "rolling per-stat scale factors only; the per-game residuals they were derived from are not archived",
+      "bytes": 358,
+      "label": "NOT_TESTABLE_TODAY",
+      "measured": {
+        "has_per_game_residuals": false,
+        "scale_factor_stats": 7,
+        "window": 15
+      },
+      "reproduced": true,
+      "sha256": "8249e02ffa03ce729aaaebd6029ebd0e9f4163b861352802e8e6840a6e87eede"
+    },
+    "data/cache/props_eval_nba_calibration.json": {
+      "blocking_fact": "aggregate Brier/BSS/ECE summary only; no per-bet or per-game record is archived",
+      "bytes": 1231,
+      "label": "NOT_TESTABLE_TODAY",
+      "measured": {
+        "grain": "AGGREGATE summary only",
+        "overall_n": 356678,
+        "per_stat_keys": [
+          "ast",
+          "blk",
+          "fg3m",
+          "pts",
+          "reb",
+          "stl",
+          "tov"
+        ]
+      },
+      "reproduced": true,
+      "sha256": "6d6573253610ff826f0f6e9a924cba1fc2bde334a70fdf661792ac1e6bd02297"
+    },
+    "data/frontend/prop_history_corpus.jsonl": {
+      "blocking_fact": "market_prob is NULL on all 3,000 rows so no market comparison is possible; 15 unique prop_player ids over 619 player-game pairs, and both model_prob tail bins are below n=30",
+      "bytes": 1231617,
+      "label": "NOT_TESTABLE_TODAY",
+      "measured": {
+        "grain": "per-bet",
+        "market_prob_null": 3000,
+        "model_prob_ge_0_90": 20,
+        "model_prob_le_0_05": 21,
+        "rows": 3000,
+        "unique_player_game_pairs": 619,
+        "unique_prop_player": 15
+      },
+      "reproduced": true,
+      "sha256": "c9a4d07a61cd747e092aec1e41abc5cb98b8ea2a0b2fe7a2dbd1b927ff45ac3e"
+    }
+  },
+  "measured_on": "DESKTOP-VUIITL8",
+  "n_inputs": 4,
+  "retained_distinction": "aggregate versus per-bet granularity and the absence of any market comparison are blocking facts, reported and never omitted"
+}

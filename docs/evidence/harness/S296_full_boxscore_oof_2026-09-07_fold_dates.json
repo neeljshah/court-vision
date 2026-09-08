@@ -1,0 +1,37 @@
+{
+  "0": {
+    "max_date": "2024-02-09",
+    "min_date": "2023-10-24",
+    "n_held_out_games": 775,
+    "n_rows": 16705,
+    "status": "SCORED"
+  },
+  "1": {
+    "max_date": "2024-12-08",
+    "min_date": "2024-02-10",
+    "n_held_out_games": 812,
+    "n_rows": 17522,
+    "status": "SCORED"
+  },
+  "2": {
+    "max_date": "2025-03-30",
+    "min_date": "2024-12-09",
+    "n_held_out_games": 755,
+    "n_rows": 16088,
+    "status": "SCORED"
+  },
+  "3": {
+    "max_date": "2026-01-21",
+    "min_date": "2025-03-31",
+    "n_held_out_games": 768,
+    "n_rows": 16624,
+    "status": "SCORED"
+  },
+  "4": {
+    "max_date": "2026-06-05",
+    "min_date": "2026-01-22",
+    "n_held_out_games": 535,
+    "n_rows": 11828,
+    "status": "SCORED"
+  }
+}
