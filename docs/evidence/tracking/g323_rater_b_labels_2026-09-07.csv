@@ -1,0 +1,61 @@
+panel_id,rater,model,category,reason
+P01,B,gpt-5.6-sol,player_on_court,athlete alone on playing surface
+P02,B,gpt-5.6-sol,crowd,seated spectator in stands
+P03,B,gpt-5.6-sol,two_or_more_players,overlapping players in crop
+P04,B,gpt-5.6-sol,player_on_court,athlete alone on court
+P05,B,gpt-5.6-sol,player_bench_or_courtside,uniformed player seated courtside
+P06,B,gpt-5.6-sol,referee_or_staff,arena staff member behind official
+P07,B,gpt-5.6-sol,player_on_court,athlete alone on court
+P08,B,gpt-5.6-sol,referee_or_staff,credentialed staff member courtside
+P09,B,gpt-5.6-sol,two_or_more_players,two players overlap in crop
+P10,B,gpt-5.6-sol,crowd,blurred spectator in stands
+P11,B,gpt-5.6-sol,crowd,seated courtside spectator
+P12,B,gpt-5.6-sol,broadcast_graphic,score overlay fills target
+P13,B,gpt-5.6-sol,two_or_more_players,multiple players in target
+P14,B,gpt-5.6-sol,off_frame_or_empty,no visible subject in crop
+P15,B,gpt-5.6-sol,off_frame_or_empty,no visible tracked subject
+P16,B,gpt-5.6-sol,player_on_court,single blue uniform player
+P17,B,gpt-5.6-sol,crowd,seated courtside spectator
+P18,B,gpt-5.6-sol,player_on_court,single red uniform player
+P19,B,gpt-5.6-sol,two_or_more_players,multiple players under basket
+P20,B,gpt-5.6-sol,referee_or_staff,uniformed security staff member
+P21,B,gpt-5.6-sol,two_or_more_players,two white uniform players overlap
+P22,B,gpt-5.6-sol,crowd,seated spectator holding phone
+P23,B,gpt-5.6-sol,referee_or_staff,credentialed arena staff member
+P24,B,gpt-5.6-sol,two_or_more_players,opposing players overlap in crop
+P25,B,gpt-5.6-sol,crowd,spectators in seating area
+P26,B,gpt-5.6-sol,player_on_court,single blue uniform player
+P27,B,gpt-5.6-sol,two_or_more_players,opposing players overlap in crop
+P28,B,gpt-5.6-sol,referee_or_staff,black clad arena staff member
+P29,B,gpt-5.6-sol,referee_or_staff,suited arena staff member
+P30,B,gpt-5.6-sol,off_frame_or_empty,empty sideline and board
+P31,B,gpt-5.6-sol,referee_or_staff,referee in striped uniform
+P32,B,gpt-5.6-sol,player_on_court,single dark uniform player
+P33,B,gpt-5.6-sol,player_on_court,single white uniform player
+P34,B,gpt-5.6-sol,referee_or_staff,referee in striped uniform
+P35,B,gpt-5.6-sol,player_on_court,single dark uniform player
+P36,B,gpt-5.6-sol,player_on_court,single white uniform player
+P37,B,gpt-5.6-sol,off_frame_or_empty,plain background with no subject
+P38,B,gpt-5.6-sol,two_or_more_players,two players overlap in crop
+P39,B,gpt-5.6-sol,off_frame_or_empty,empty seating structure dominates
+P40,B,gpt-5.6-sol,two_or_more_players,opposing players overlap in crop
+P41,B,gpt-5.6-sol,player_on_court,single white uniform player
+P42,B,gpt-5.6-sol,referee_or_staff,referee on baseline
+P43,B,gpt-5.6-sol,two_or_more_players,several players in crop
+P44,B,gpt-5.6-sol,crowd,seated courtside spectator
+P45,B,gpt-5.6-sol,referee_or_staff,referee in black uniform
+P46,B,gpt-5.6-sol,player_bench_or_courtside,blue warmup player behind foreground
+P47,B,gpt-5.6-sol,off_frame_or_empty,empty sideline area
+P48,B,gpt-5.6-sol,off_frame_or_empty,rectangle falls outside visible frame
+P49,B,gpt-5.6-sol,crowd,spectators behind team area
+P50,B,gpt-5.6-sol,player_on_court,single white uniform player
+P51,B,gpt-5.6-sol,referee_or_staff,referee in striped uniform
+P52,B,gpt-5.6-sol,two_or_more_players,two players overlap in crop
+P53,B,gpt-5.6-sol,referee_or_staff,gray shirt staff member
+P54,B,gpt-5.6-sol,player_on_court,single white uniform player
+P55,B,gpt-5.6-sol,two_or_more_players,two players overlap in crop
+P56,B,gpt-5.6-sol,two_or_more_players,several players in crop
+P57,B,gpt-5.6-sol,player_on_court,single white uniform player
+P58,B,gpt-5.6-sol,player_on_court,single dark uniform player
+P59,B,gpt-5.6-sol,referee_or_staff,gray shirt staff member
+P60,B,gpt-5.6-sol,referee_or_staff,referee in striped uniform

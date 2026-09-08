@@ -1,0 +1,61 @@
+panel_id,rater,model,category,reason
+P01,A,claude-opus-5[1m],player_on_court,white-jersey player standing in play
+P02,A,claude-opus-5[1m],crowd,blurred spectator in a green shirt in the stands
+P03,A,claude-opus-5[1m],two_or_more_players,light #34 and a dark-jersey player both inside the border
+P04,A,claude-opus-5[1m],player_on_court,maroon #10 running in play
+P05,A,claude-opus-5[1m],player_bench_or_courtside,red-uniformed player seated on a courtside chair
+P06,A,claude-opus-5[1m],crowd,out-of-focus background spectators behind a close-up
+P07,A,claude-opus-5[1m],player_on_court,white BREAM #3 in play
+P08,A,claude-opus-5[1m],crowd,seated man in a cap in the stands
+P09,A,claude-opus-5[1m],player_on_court,blue-jersey player running
+P10,A,claude-opus-5[1m],unreadable,pale indistinct vertical blur -- no identifiable subject
+P11,A,claude-opus-5[1m],crowd,bald front-row spectator in a gold shirt
+P12,A,claude-opus-5[1m],broadcast_graphic,shot-clock/score bug element -- no person
+P13,A,claude-opus-5[1m],two_or_more_players,two distant players (blue and white) inside the border
+P14,A,claude-opus-5[1m],off_frame_or_empty,crop is black -- no image content
+P15,A,claude-opus-5[1m],off_frame_or_empty,bare court floor with a painted arc -- no person
+P16,A,claude-opus-5[1m],player_on_court,blue-jersey player airborne at the rim
+P17,A,claude-opus-5[1m],crowd,front-row spectator in a gold shirt plus a second head
+P18,A,claude-opus-5[1m],referee_or_staff,person in a light blazer standing in the courtside strip
+P19,A,claude-opus-5[1m],off_frame_or_empty,arena ceiling and structure above the court
+P20,A,claude-opus-5[1m],crowd,front-row spectator in a blue cap and jacket
+P21,A,claude-opus-5[1m],two_or_more_players,white shooter and a red-jersey defender inside the border
+P22,A,claude-opus-5[1m],crowd,blurred seated people in the sideline seating strip
+P23,A,claude-opus-5[1m],referee_or_staff,sideline staff member in a light collared jacket
+P24,A,claude-opus-5[1m],player_on_court,white-jersey player standing in play
+P25,A,claude-opus-5[1m],unreadable,dark blurred region -- subject not identifiable
+P26,A,claude-opus-5[1m],player_on_court,blue-jersey #7 standing in play
+P27,A,claude-opus-5[1m],player_on_court,blurred white-uniformed figure -- uniform discernible
+P28,A,claude-opus-5[1m],referee_or_staff,person in black standing on the courtside floor
+P29,A,claude-opus-5[1m],crowd,out-of-focus spectators behind a referee close-up
+P30,A,claude-opus-5[1m],off_frame_or_empty,sideline LED signage board -- no person
+P31,A,claude-opus-5[1m],referee_or_staff,striped official's shirt numbered 25
+P32,A,claude-opus-5[1m],player_on_court,green-jersey player running
+P33,A,claude-opus-5[1m],player_on_court,light-jersey #2 in play
+P34,A,claude-opus-5[1m],referee_or_staff,striped official's shirt numbered 25
+P35,A,claude-opus-5[1m],player_on_court,green-jersey player moving in play
+P36,A,claude-opus-5[1m],player_on_court,green-jersey #5 walking on court
+P37,A,claude-opus-5[1m],off_frame_or_empty,flat teal seatback surface -- no person
+P38,A,claude-opus-5[1m],player_on_court,dark-jersey #14 running
+P39,A,claude-opus-5[1m],off_frame_or_empty,empty light-blue bleacher seating
+P40,A,claude-opus-5[1m],two_or_more_players,white jumper above a maroon #10 inside the border
+P41,A,claude-opus-5[1m],player_on_court,white-jersey player standing in play
+P42,A,claude-opus-5[1m],referee_or_staff,official in grey top and black trousers
+P43,A,claude-opus-5[1m],player_on_court,light-jersey #5 standing
+P44,A,claude-opus-5[1m],crowd,seated spectator in a light blue shirt numbered 7
+P45,A,claude-opus-5[1m],referee_or_staff,official in grey top and black trousers walking
+P46,A,claude-opus-5[1m],unreadable,out-of-focus shoulder and partial ear -- not identifiable
+P47,A,claude-opus-5[1m],unreadable,mostly black with an indistinct figure
+P48,A,claude-opus-5[1m],off_frame_or_empty,flat green surface with a thin line -- no person
+P49,A,claude-opus-5[1m],crowd,seated spectator with long hair among fans in team shirts
+P50,A,claude-opus-5[1m],player_on_court,white-uniformed player walking on court
+P51,A,claude-opus-5[1m],referee_or_staff,striped official's shirt numbered 25
+P52,A,claude-opus-5[1m],player_on_court,red-jersey player running -- motion-blurred
+P53,A,claude-opus-5[1m],referee_or_staff,grey-jacketed sideline staff torso
+P54,A,claude-opus-5[1m],player_on_court,white DREAM #3 standing in play
+P55,A,claude-opus-5[1m],player_on_court,court floor with a partially visible red-jersey player
+P56,A,claude-opus-5[1m],player_bench_or_courtside,uniformed player standing in front of the bench
+P57,A,claude-opus-5[1m],player_on_court,white-jersey #5 standing in play
+P58,A,claude-opus-5[1m],player_on_court,dark-jersey player bending over on court
+P59,A,claude-opus-5[1m],unreadable,flat light-grey sleeve -- subject not identifiable
+P60,A,claude-opus-5[1m],referee_or_staff,striped official's shirt numbered 25
