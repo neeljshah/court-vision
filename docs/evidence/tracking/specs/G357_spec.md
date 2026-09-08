@@ -1,4 +1,4 @@
-GAP G357 | sport basketball | worktree aX | log cx_g357_ball_ownership_px_attempt2
+GAP G357 | sport basketball | worktree a2 | log cx_g357_ball_ownership_px_attempt2
 
 **ATTEMPT-2 ROW FOR G349 ON THE DEPLOYED G354 PIXEL FIELDS. Codex PREPARES, a finisher MEASURES once enough
 post-deploy clips exist.** `src/`, `kernel/`, `api/` and `intel/` are READ and IMPORT only. Build in
