@@ -121,6 +121,18 @@ Report the files you would deploy; do not deploy them.
 COMMIT: explicit pathspec, in the worktree, no push. Report the sha.
 NEVER PARK: poll your own jobs in a blocking loop; never end waiting.
 
+## VERSION 2026-09-08b
+
+Attempt 2 sample shape. Line 80's n = 200 frames per broadcast on 2 broadcasts predates VERSION
+2026-09-07b's multi-skin requirement; the attempt-2 candidate scored 100 evenly spaced frames on each
+of 4 broadcast skins (400 total). This amendment sets n = >= 100 frames per skin on >= 4 skins, >= 400
+total, as the accepted shape. DECLARED: this widening is written AFTER attempt 2's measurement was
+viewed; it changes the sample shape only -- the 0.90 parsed-clock bar, the sealed presence rule, the
+reader route, the eye-check rule and the NON-TAUTOLOGY clause are untouched -- and it was chosen
+because selecting 2 of the 4 measured skins post hoc would be outcome-contaminated. Eye-check scope:
+the NON-TAUTOLOGY reading (all sampled frames) governs. Record fields: frame_index and crop_box are
+the spec names; j and region_set are accepted aliases.
+
 ## VERSION 2026-09-07b
 
 Attempt 2. Sources = the >= 720p native sections now on the pod (list the clip ids, heights and
