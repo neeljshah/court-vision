@@ -586,3 +586,6 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-08 | hook | S317 | S317: ledger rows (memo's proposed line + verifier ACCEPT row) and register row DONE 2026-09-08 c348200f1; NEXT_GAP_ID stays S320 | LANDED (auto; verifier line pending) | b0ca258d0
 2026-09-08 | in-game calibration | S321 | M0 absent in source; 0 valid pre-start M0 games in 2024-25 (n=656) and 2025-26 (n=937) | INSUFFICIENT
 2026-09-08 | in-game calibration | S321 | M0 absent; 0 valid pre-start M0 games in 2024-25 (n=656) and 2025-26 (n=937); landmark states 178/257 | INSUFFICIENT (verified: codex-sol, contract A/B/Q)
+2026-09-08 | hook | S320 | S320: preregistration (landed alone, Q1) | LANDED (auto; verifier line pending) | b54a55ecf
+2026-09-08 | in-game calibration | S320 | CLOSED AT LIMIT: 63 non-empty period x margin x clock strata (need >=315 states at 5/stratum) exceed the sealed 100-state rule's 20-stratum limit; premise 465249 ticks / 1593 games / 271154 zero-clock ticks; 0 states selected, 0 audited, 0 replayed | CLOSED AT LIMIT
+2026-09-08 | nba in-game calibration | S320 | 63 non-empty strata require at least 315 states under sealed n=100; 0 selected, audited, or replayed | CLOSED AT LIMIT (verified: codex-sol, contract A/B/Q)
