@@ -1,4 +1,4 @@
-GAP S322 | sport nba | worktree aX | log cx_s322_sim_diagnostics
+GAP S322 | sport nba | worktree a7 | log cx_s322_sim_diagnostics
 
 **DIAGNOSTIC ROW (S register; astra 2026-09-08 possession-simulator hypotheses A, B, C).** `src/`, `kernel/`,
 `api/` and `intel/` are READ and IMPORT only. Build in `scripts/platformkit/ingame/`. NEVER write
