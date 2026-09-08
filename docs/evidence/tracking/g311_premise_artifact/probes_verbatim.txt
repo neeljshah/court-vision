@@ -1,0 +1,83 @@
+=== nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader ===
+4696 MiB, 24576 MiB
+
+=== nvidia-smi --query-compute-apps=pid,used_memory --format=csv,noheader ===
+1968643, 462 MiB
+1968662, 422 MiB
+2000991, 482 MiB
+2008571, 484 MiB
+2009919, 462 MiB
+2015233, 482 MiB
+2035341, 482 MiB
+2038985, 484 MiB
+2048423, 434 MiB
+2066852, 442 MiB
+
+=== disk guard: v=$(timeout 60 du -sm /workspace | cut -f1) ===
+du_workspace_mb=UNKNOWN
+
+=== dd conv=fsync write probe in /workspace/wt/a2 ===
+8+0 records out
+8388608 bytes (8.4 MB, 8.0 MiB) copied, 0.296363 s, 28.3 MB/s
+
+=== du -sm scratch ===
+1674	/workspace/wt/a2/g311
+8103	/workspace/wt
+
+=== sha256sum protected files ===
+c3bc2f7d4c4fda366f83523dd0aac86e47a40fecaf26e36b490d5a8c73ca5cc7  /workspace/nba-ai-system/src/tracking/player_detection.py
+f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36  /workspace/nba-ai-system/yolov8n.pt
+
+=== timestamp ===
+2026-09-07T23:24:55Z
+
+======= ATTEMPT 2, SECOND (INDEPENDENT) BUILD + THE HARNESS RUN =======
+  Build B = /workspace/mmlab_env (see g311_premise5.txt). The probes above
+  belong to Build A (/workspace/wt/a2/g311/pylib, g311_premise4.txt).
+
+=== nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader (pre-flight) ===
+3901 MiB, 24576 MiB
+  -> 20,675 MiB free, above the 8,192 MiB gate
+
+=== nvidia-smi --query-compute-apps=pid,used_memory --format=csv,noheader (pre-flight) ===
+554493, 482 MiB
+554476, 422 MiB
+554531, 484 MiB
+554511, 462 MiB
+554877, 484 MiB
+554783, 484 MiB
+554387, 484 MiB
+1006147, 530 MiB
+
+=== nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader (at run launch) ===
+7956 MiB, 24576 MiB
+  -> 16,620 MiB free, above the 8,192 MiB gate
+
+=== nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader (after run) ===
+8209 MiB, 24576 MiB
+
+=== disk guard: v=$(timeout 60 du -sm /workspace | cut -f1) (pre-flight and after) ===
+du_workspace_mb=UNKNOWN
+  (empty output is UNKNOWN, never 0, and is never a stop condition)
+
+=== dd conv=fsync write probe (pre-flight) ===
+8388608 bytes (8.4 MB, 8.0 MiB) copied, 0.105899 s, 79.2 MB/s
+
+=== dd conv=fsync write probe (after run) ===
+8388608 bytes (8.4 MB, 8.0 MiB) copied, 0.108908 s, 77.0 MB/s
+
+=== sha256sum deployed gated source + weights (BEFORE and AFTER, identical) ===
+c3bc2f7d4c4fda366f83523dd0aac86e47a40fecaf26e36b490d5a8c73ca5cc7  /workspace/nba-ai-system/src/tracking/player_detection.py
+f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36  /workspace/nba-ai-system/yolov8n.pt
+
+=== sha256sum the yolov8n.pt the run ACTUALLY loaded (job dir, cwd of the run) ===
+f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36  /workspace/wt/a2/jobs/g311a2b/yolov8n.pt
+  -> byte-identical to the deployed file: ultralytics did NOT auto-download a
+     substitute, so ARM Y ran the production weights.
+
+=== sha256sum the pinned RTMDet checkpoint (re-verified this attempt) ===
+229f527ca88498e8894a778a62a878a322b4a3ea2cae09ea537d34b7e907792b  /workspace/wt/a2/g311/rtmdet_m_coco.pth
+  224299609 bytes
+
+=== track_daemon, never stopped or signalled (alive after the run) ===
+288450 python3 -u scripts/platformkit/track_daemon.py --workers 16 --forever

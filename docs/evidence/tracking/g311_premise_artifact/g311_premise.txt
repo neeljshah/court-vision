@@ -1,0 +1,42 @@
+PREMISE_START 2026-09-07T22:09:55Z epoch=1788818995
+== BASE ENV ==
+python 3.12.3
+torch 2.8.0+cu128 12.8
+cv2 4.14.0
+numpy 2.1.2
+== CONSTRAINTS ==
+opencv-python-headless<5
+opencv-python<5
+numpy<3
+== ROUTE (i) mmengine/mmcv/mmdet, target-dir install, 12 min box ==
+ROUTE_I_RC=1 ELAPSED=11s
+        File "/tmp/pip-build-env-5itm3ckb/overlay/local/lib/python3.12/dist-packages/setuptools/build_meta.py", line 317, in run_setup
+          exec(code, locals())  # noqa: S102 # exec is intentional here
+          ^^^^^^^^^^^^^^^^^^^^
+        File "<string>", line 5, in <module>
+      ModuleNotFoundError: No module named 'pkg_resources'
+      [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+error: subprocess-exited-with-error
+
+? Getting requirements to build wheel did not run successfully.
+? exit code: 1
+??> See above for output.
+
+note: This error originates from a subprocess, and is likely not a problem with pip.
+== ROUTE (ii) onnxruntime-gpu + rtmlib ==
+ROUTE_II_RC=0 ELAPSED=152s
+   ???????????????????????????????????????? 82.1/82.1 MB 132.9 MB/s  0:00:00
+Using cached opencv_python-4.14.0.94-cp37-abi3-manylinux_2_28_x86_64.whl (77.4 MB)
+Using cached packaging-26.3-py3-none-any.whl (129 kB)
+Using cached tqdm-4.70.0-py3-none-any.whl (80 kB)
+Installing collected packages: flatbuffers, tqdm, protobuf, packaging, numpy, opencv-python, opencv-contrib-python, onnxruntime-gpu, onnxruntime, rtmlib
+
+Successfully installed flatbuffers-25.12.19 numpy-2.5.3 onnxruntime-1.29.0 onnxruntime-gpu-1.29.0 opencv-contrib-python-5.0.0.93 opencv-python-4.14.0.94 packaging-26.3 protobuf-7.36.1 rtmlib-0.0.16 tqdm-4.70.0
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+== RTMDet ONNX checkpoint (OpenMMLab mmpose rtmposev1 onnx_sdk, Apache-2.0) ==
+curl: (22) The requested URL returned error: 404
+CKPT_RC=22 URL=https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/onnx_sdk/rtmdet_m_640-8xb32_coco-person.zip ELAPSED=154s
+unzip:  cannot find or open rtmdet_m.zip, rtmdet_m.zip.zip or rtmdet_m.zip.ZIP.
+PREMISE_INSTALL_END ELAPSED=155s
