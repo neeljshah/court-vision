@@ -539,3 +539,5 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-07 | tracking teacher packet | S314 | 3 PBP histories reproduced; current N_qualified=0 because independent labels are absent | BLOCKED (verified: codex-sol, contract A/B/Q) | ef4504489
 2026-09-07 | hook | S303 | S303: ACCEPT -- additive committed-object checker; 8/8 mappings behaviorally select committed bytes under dirty working files | LANDED (auto; verifier line pending) | d44c67da4
 2026-09-07 | committed-object seal checks | S303 | 8/8 behavioral committed selections and 6/6 retained seals match | ACCEPT (verified: codex-sol, contract A/B/Q) | d44c67da4
+2026-09-07 | hook | S293 | S293: ACCEPT -- tail log-loss and tail reliability fields added additively beside Brier/ECE; replay exact to 2.6e-18; tail log loss BEHIND recal_null | LANDED (auto; verifier line pending) | 4a41c436e
+2026-09-07 | nba in-game calibration | S293 | 465249 ticks/1593 games; replay max delta 2.602085e-18; tail log-loss improvement -0.002071936078148484 | ACCEPT (verified: codex-sol, contract A/B/Q) | 4a41c436e
