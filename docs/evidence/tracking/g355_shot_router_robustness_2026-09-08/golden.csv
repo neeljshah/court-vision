@@ -1,0 +1,13 @@
+section,file,landed_rows,rerun_rows,anchor_rows,other_diff_rows,identical_flag
+nba__Hm7V4jOxlUI_s3633.mp4,shots.csv,000001,000001,000000,000000,000001
+nba__m7K0J4wzDn4_s2070.mp4,shots.csv,000001,000001,000000,000000,000001
+basketball__eurocup-mhi_fuXUPRE_s90.mp4,shots.csv,000005,000005,000000,000000,000001
+basketball__eurocup-qrWmO434a0k_s90.mp4,shots.csv,000005,000005,000000,000000,000001
+basketball__euroleague-a_GxgklBtEs_s6660.mp4,shots.csv,000001,000001,000000,000000,000001
+basketball__nbl-YqB41CtbFqA_s90.mp4,shots.csv,000005,000005,000000,000000,000001
+nba__Hm7V4jOxlUI_s3633.mp4,propagation.csv,000649,000650,000001,000000,000001
+nba__m7K0J4wzDn4_s2070.mp4,propagation.csv,000670,000671,000001,000000,000001
+basketball__eurocup-mhi_fuXUPRE_s90.mp4,propagation.csv,000646,000651,000005,000000,000001
+basketball__eurocup-qrWmO434a0k_s90.mp4,propagation.csv,000646,000651,000005,000000,000001
+basketball__euroleague-a_GxgklBtEs_s6660.mp4,propagation.csv,000650,000651,000001,000000,000001
+basketball__nbl-YqB41CtbFqA_s90.mp4,propagation.csv,000646,000651,000005,000000,000001

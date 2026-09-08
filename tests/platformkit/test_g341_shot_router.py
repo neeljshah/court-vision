@@ -114,7 +114,8 @@ def test_propagation_never_carries_a_mapping_across_a_routed_cut():
         RouteRecord(0, 0, "UNKNOWN", "UNKNOWN", 0.0, 1.0, 0, 0.0, None),
         RouteRecord(1, 1, "UNKNOWN", "UNKNOWN", 0.0, 1.0, 0, 0.0, None),
     ]
-    assert propagate_frames(frames, routes) == []
+    records = propagate_frames(frames, routes)
+    assert [record for record in records if record.state != "ANCHOR"] == []
 
 
 def test_preregistration_seal_uses_lf_normalized_prereg_file_bytes():

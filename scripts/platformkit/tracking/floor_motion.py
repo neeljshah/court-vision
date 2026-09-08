@@ -99,6 +99,12 @@ def estimate_floor_motion(
     current_keys, current_desc = orb.detectAndCompute(cv2.cvtColor(current, cv2.COLOR_BGR2GRAY), _mask(current, boxes))
     if previous_desc is None or current_desc is None:
         return None, ("no_descriptors", 0, 0.0, 0.0, float("inf"), 0, 0)
+    if (
+        previous_desc.ndim != 2
+        or current_desc.ndim != 2
+        or min(previous_desc.shape[0], current_desc.shape[0]) < 2
+    ):
+        return None, ("too_few_descriptors", 0, 0.0, 0.0, float("inf"), 0, 0)
     pairs = cv2.BFMatcher(cv2.NORM_HAMMING).knnMatch(previous_desc, current_desc, k=2)
     good = [first for first, second in pairs if first.distance < 0.75 * second.distance]
     if len(good) < 4:
@@ -134,11 +140,12 @@ def propagate_frames(
     records: list[MotionRecord] = []
     chain = np.eye(3, dtype=np.float64)
     chain_length, stopped = 0, False
-    for position in range(1, len(frames)):
-        route, prior = routes[position], routes[position - 1]
-        if route.shot_id != prior.shot_id:
+    for position, route in enumerate(routes):
+        if position == 0 or route.shot_id != routes[position - 1].shot_id:
             chain, chain_length, stopped = np.eye(3), 0, False
+            records.append(MotionRecord(route.frame_index, route.shot_id, "ANCHOR", True, "anchor", 0, 0.0, 0.0, 0.0, 0, 0, 0))
             continue
+        prior = routes[position - 1]
         if stopped:
             records.append(MotionRecord(route.frame_index, route.shot_id, "UNOBSERVABLE", False, "chain_stopped", 0, 0.0, 0.0, float("inf"), chain_length, 0, 0))
             continue

@@ -62,7 +62,13 @@ def _static_inlier_fraction(first: np.ndarray, second: np.ndarray) -> float:
     orb = cv2.ORB_create(nfeatures=500)
     first_keys, first_desc = orb.detectAndCompute(cv2.cvtColor(first, cv2.COLOR_BGR2GRAY), None)
     second_keys, second_desc = orb.detectAndCompute(cv2.cvtColor(second, cv2.COLOR_BGR2GRAY), None)
-    if first_desc is None or second_desc is None:
+    if (
+        first_desc is None
+        or second_desc is None
+        or first_desc.ndim != 2
+        or second_desc.ndim != 2
+        or min(first_desc.shape[0], second_desc.shape[0]) < 2
+    ):
         return 0.0
     pairs = cv2.BFMatcher(cv2.NORM_HAMMING).knnMatch(first_desc, second_desc, k=2)
     good = [a for a, b in pairs if a.distance < 0.75 * b.distance]
@@ -217,14 +223,15 @@ def write_report(videos: list[Path], output: Path) -> None:
         section = video.name
         trigger_n = sum(item.histogram_distance > 0.5 and item.static_inlier_fraction < 0.2 for item in routes)
         motions = propagate_frames(frames, routes)
-        accepted = [row for row in motions if row.accepted]
+        scored_motions = [row for row in motions if row.state != "ANCHOR"]
+        accepted = [row for row in scored_motions if row.accepted]
         rejected: dict[str, int] = {}
-        for row in motions:
+        for row in scored_motions:
             if not row.accepted:
                 rejected[row.reason] = rejected.get(row.reason, 0) + 1
         section_n = {
             "section_n_frames": f"{len(routes):06d}",
-            "section_n_steps": f"{len(motions):06d}",
+            "section_n_steps": f"{len(scored_motions):06d}",
             "section_n_accepted": f"{len(accepted):06d}",
             "section_n_rejected": ";".join(f"{reason}:{count:06d}" for reason, count in sorted(rejected.items())),
             "section_trigger_n": f"{trigger_n:06d}",
@@ -241,7 +248,7 @@ def write_report(videos: list[Path], output: Path) -> None:
             row["hull_share_permille"] = _permille(record.hull_share)
             row.update({"section": section, "frame_index": f"{record.frame_index:06d}", "shot_id": f"{record.shot_id:06d}", "inliers": f"{record.inliers:06d}", "chain_length": f"{record.chain_length:06d}", "n_fit": f"{record.n_fit:06d}", "n_val": f"{record.n_val:06d}"})
             propagation.append(row)
-        print({"section": section, "n_frames": len(routes), "n_shots": len(starts), "cuts": cuts, "trigger_n": trigger_n, "replay": sum(item.replay_flag == "REPLAY" for item in routes), "accepted_steps": len(accepted), "steps": len(motions), "longest_chain": max((item.chain_length for item in accepted), default=0), "p90_residual": float(np.percentile([item.p90_residual_px for item in accepted], 90)) if accepted else None, "rejected": rejected, "cross_cut_chains": 0})
+        print({"section": section, "n_frames": len(routes), "n_shots": len(starts), "cuts": cuts, "trigger_n": trigger_n, "replay": sum(item.replay_flag == "REPLAY" for item in routes), "accepted_steps": len(accepted), "steps": len(scored_motions), "longest_chain": max((item.chain_length for item in accepted), default=0), "p90_residual": float(np.percentile([item.p90_residual_px for item in accepted], 90)) if accepted else None, "rejected": rejected, "cross_cut_chains": 0})
     _write_csv(output / "shots.csv", shots)
     _write_csv(output / "propagation.csv", propagation)
 
