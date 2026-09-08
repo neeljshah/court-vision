@@ -1,4 +1,4 @@
-GAP S320 | sport nba | worktree aX | log cx_s320_timestamp_artifact_audit
+GAP S320 | sport nba | worktree a16 | log cx_s320_timestamp_artifact_audit
 
 **HARNESS ROW (S register; astra 2026-09-08 "biggest risk, cheapest two-hour falsification").** `src/`,
 `kernel/`, `api/` and `intel/` are READ and IMPORT only. Build in `scripts/platformkit/ingame/` and
