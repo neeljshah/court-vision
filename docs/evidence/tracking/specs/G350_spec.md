@@ -1,4 +1,4 @@
-GAP G350 | sport basketball | worktree aX | log cx_g350_wide_cue_validation
+GAP G350 | sport basketball | worktree a14 | log cx_g350_wide_cue_validation
 
 **VIEW-CLASS VALIDATION ROW (astra midday review 2026-09-08, item E; follows the G341 verifier NEW GAP).
 Codex PREPARES, a finisher MEASURES; model raters replace human annotation (no human input is available).**
