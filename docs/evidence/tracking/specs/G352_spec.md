@@ -1,4 +1,4 @@
-GAP G352 | sport basketball | worktree aX | log cx_g352_calibration_whole_template_objective
+GAP G352 | sport basketball | worktree a6 | log cx_g352_calibration_whole_template_objective
 
 **REGISTRATION ROW, SUCCESSOR TO G334 (preregistered objective change; codex PREPARES, an Opus finisher
 MEASURES on the pod).** `src/`, `kernel/`, `api/` and `intel/` are READ and IMPORT only. Build in
