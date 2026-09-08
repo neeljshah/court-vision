@@ -1,4 +1,4 @@
-GAP S298 | sport nba | worktree aXX | log cx_s298_rare_count_mixture
+GAP S298 | sport nba | worktree a10 | log cx_s298_rare_count_mixture
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: audit gap 4: rare counts (STL/BLK) have no OOS hurdle/mixture comparison (quantile_calibration.py:74-80);
   verified inputs = the two boxscore parquets; the per-player sparsity is the named risk.
