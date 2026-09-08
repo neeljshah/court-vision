@@ -1,0 +1,164 @@
+row,memo,line,kind,components,verdict,missing,artifacts
+G309,docs/evidence/tracking/g309_multigame_census_2026-09-07.md,000004,fraction,000013|000013,NOT RECOMPUTABLE,000013,
+G309,docs/evidence/tracking/g309_multigame_census_2026-09-07.md,000033,n_equals,000013,NOT RECOMPUTABLE,000013,
+G309,docs/evidence/tracking/g309_multigame_census_2026-09-07.md,000039,n_equals,000013,NOT RECOMPUTABLE,000013,
+G309,docs/evidence/tracking/g309_multigame_census_2026-09-07.md,000044,fraction,000015|000015,RECOMPUTABLE,,docs/evidence/tracking/g309_multigame_census_2026-09-07.csv
+G312,docs/evidence/tracking/g312_coverage_denominator_2026-09-07.md,000003,fraction,000013|000013,UNPARSED,,
+G312,docs/evidence/tracking/g312_coverage_denominator_2026-09-07.md,000026,fraction,000013|000013,RECOMPUTABLE,,docs/evidence/tracking/g312_coverage_denominator_readjudication_2026-09-07.csv
+G312,docs/evidence/tracking/g312_coverage_denominator_2026-09-07.md,000031,n_equals,000013,RECOMPUTABLE,,docs/evidence/tracking/g312_coverage_denominator_readjudication_2026-09-07.csv
+G312,docs/evidence/tracking/g312_coverage_denominator_2026-09-07.md,000035,fraction,003000|000003,NOT RECOMPUTABLE,000003|003000,
+G313,docs/evidence/tracking/g313_ten_id_cap_2026-09-07.md,000043,n_equals,000001,UNPARSED,,
+G317,docs/evidence/tracking/g317_segment_source_metadata_2026-09-07.md,000013,fraction,000056|000058|000058,NOT RECOMPUTABLE,000056,docs/evidence/tracking/g317_premise_census_2026-09-07.json
+G317,docs/evidence/tracking/g317_segment_source_metadata_2026-09-07.md,000014,fraction,000025|000025|000025,RECOMPUTABLE,,docs/evidence/tracking/g317_ffprobe_reproduction_2026-09-07.json
+G317,docs/evidence/tracking/g317_segment_source_metadata_2026-09-07.md,000014,fraction,000000|000000|000000,RECOMPUTABLE,,docs/evidence/tracking/g317_ffprobe_reproduction_2026-09-07.json
+G317,docs/evidence/tracking/g317_segment_source_metadata_2026-09-07.md,000014,fraction,000000|000000,RECOMPUTABLE,,docs/evidence/tracking/g317_ffprobe_reproduction_2026-09-07.json
+G317,docs/evidence/tracking/g317_segment_source_metadata_2026-09-07.md,000015,n_equals,000025,RECOMPUTABLE,,docs/evidence/tracking/g317_ffprobe_reproduction_2026-09-07.json
+G317,docs/evidence/tracking/g317_segment_source_metadata_2026-09-07.md,000044,fraction,000058|000058,RECOMPUTABLE,,docs/evidence/tracking/g317_premise_census_2026-09-07.json
+S314,docs/evidence/harness/S314_teach_packet_census_2026-09-07.md,000019,fraction,000014|002026,NOT RECOMPUTABLE,000014|002026,
+S314,docs/evidence/harness/S314_teach_packet_census_2026-09-07.md,000019,fraction,000017|002026,NOT RECOMPUTABLE,000017|002026,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000001,fraction,000018|000022,NOT RECOMPUTABLE,000018|000022,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000001,fraction,000004|000022,NOT RECOMPUTABLE,000004|000022,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000003,n_equals,000033,RECOMPUTABLE,,docs/evidence/tracking/g329_degenerate_resume_2026-09-08/census.csv
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000007,fraction,000004|000004,UNPARSED,,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000007,fraction,000002|000004,UNPARSED,,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000007,n_equals,000004,UNPARSED,,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000008,fraction,000009|000015,UNPARSED,,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000008,fraction,000009|000009,UNPARSED,,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000008,n_equals,000015,UNPARSED,,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000009,fraction,000009|000014,UNPARSED,,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000009,fraction,000000|000009,UNPARSED,,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000009,n_equals,000014,UNPARSED,,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000010,fraction,000008|000022,UNPARSED,,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000010,fraction,000009|000022,UNPARSED,,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000010,fraction,000004|000022,UNPARSED,,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000010,n_equals,000022,UNPARSED,,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000011,fraction,000001|000011,NOT RECOMPUTABLE,000001|000011,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000011,fraction,000010|000011,NOT RECOMPUTABLE,000010|000011,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000011,n_equals,000011,NOT RECOMPUTABLE,000011,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000012,fraction,000002|000004,NOT RECOMPUTABLE,000002|000004,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000012,fraction,000004|000008,NOT RECOMPUTABLE,000004|000008,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000030,fraction,000018|000022,NOT RECOMPUTABLE,000018|000022,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000030,fraction,000004|000022,NOT RECOMPUTABLE,000004|000022,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000032,fraction,000004|000014|000013,NOT RECOMPUTABLE,000004|000013|000014,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000036,fraction,000004|000008,NOT RECOMPUTABLE,000004|000008,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000037,fraction,000004|000022,NOT RECOMPUTABLE,000004|000022,
+G329a1,docs/evidence/tracking/g329_degenerate_resume_2026-09-08.md,000038,fraction,000010|000011,UNPARSED,,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000001,fraction,000018|000022,NOT RECOMPUTABLE,000018|000022,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000001,fraction,000004|000022,NOT RECOMPUTABLE,000004|000022,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000003,n_equals,000033,RECOMPUTABLE,,docs/evidence/tracking/g329_degenerate_resume_2026-09-08/census.csv
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000007,fraction,000004|000004,UNPARSED,,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000007,fraction,000002|000004,UNPARSED,,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000007,n_equals,000004,UNPARSED,,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000008,fraction,000009|000015,UNPARSED,,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000008,fraction,000009|000009,UNPARSED,,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000008,n_equals,000015,UNPARSED,,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000009,fraction,000009|000014,UNPARSED,,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000009,fraction,000000|000009,UNPARSED,,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000009,n_equals,000014,UNPARSED,,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000010,fraction,000009|000022,UNPARSED,,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000010,fraction,000008|000022,UNPARSED,,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000010,fraction,000004|000022,UNPARSED,,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000010,n_equals,000022,UNPARSED,,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000011,fraction,000001|000011,NOT RECOMPUTABLE,000001|000011,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000011,fraction,000010|000011,NOT RECOMPUTABLE,000010|000011,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000011,n_equals,000011,NOT RECOMPUTABLE,000011,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000012,fraction,000004|000011,NOT RECOMPUTABLE,000004|000011,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000042,fraction,000004|000008,NOT RECOMPUTABLE,000004|000008,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000043,fraction,000004|000022,NOT RECOMPUTABLE,000004|000022,
+G329a2,docs/evidence/tracking/g329_degenerate_resume_attempt2_2026-09-08.md,000044,fraction,000010|000011,UNPARSED,,
+G327a1,docs/evidence/tracking/g327_detector_batch_stability_2026-09-08.md,000000,none,,ABSENT,,
+G327a2,docs/evidence/tracking/g327_detector_batch_stability_attempt2_2026-09-08.md,000000,none,,ABSENT,,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000001,fraction,000181|000199,NOT RECOMPUTABLE,000181|000199,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000001,n_equals,000268,RECOMPUTABLE,,docs/evidence/tracking/g330_panorama_identity_2026-09-08/census.csv
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000010,fraction,000181|000199,NOT RECOMPUTABLE,000181|000199,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000020,fraction,000008|000055,UNPARSED,,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000020,fraction,000000|000040,UNPARSED,,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000020,fraction,000000|000000,UNPARSED,,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000021,fraction,000024|000079,UNPARSED,,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000021,fraction,000000|000040,UNPARSED,,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000021,fraction,000000|000000,UNPARSED,,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000022,fraction,000250|002885,UNPARSED,,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000022,fraction,000039|000040,UNPARSED,,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000022,fraction,000013|000199,UNPARSED,,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000024,fraction,000214|002413,UNPARSED,,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000024,fraction,000035|000040,UNPARSED,,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000024,fraction,000014|000288,UNPARSED,,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000030,fraction,000039|000040,NOT RECOMPUTABLE,000039|000040,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000030,fraction,000035|000040,NOT RECOMPUTABLE,000035|000040,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000030,fraction,000000|000040,NOT RECOMPUTABLE,000000|000040,
+G330a1,docs/evidence/tracking/g330_panorama_identity_2026-09-08.md,000036,fraction,000000|000000,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000001,fraction,000006|000721,NOT RECOMPUTABLE,000721,docs/evidence/tracking/g330_panorama_identity_2026-09-08/proxies.csv
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000001,fraction,000004|000394,NOT RECOMPUTABLE,000004|000394,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000001,fraction,000007|000359,NOT RECOMPUTABLE,000359,docs/evidence/tracking/g330_panorama_identity_2026-09-08/proxies.csv
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000001,fraction,000082|000730,NOT RECOMPUTABLE,000082|000730,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000001,fraction,000050|000400,NOT RECOMPUTABLE,000050|000400,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000001,fraction,000060|000367,NOT RECOMPUTABLE,000060|000367,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000001,n_equals,000299,RECOMPUTABLE,,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08/census.csv
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000021,fraction,000082|000730,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000021,fraction,000006|000721,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000021,fraction,000040|000040,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000021,fraction,000001|000408,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000023,fraction,000050|000400,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000023,fraction,000004|000394,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000023,fraction,000040|000040,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000023,fraction,000009|000313,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000025,fraction,000060|000367,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000025,fraction,000007|000359,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000025,fraction,000040|000040,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000025,fraction,000000|000149,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000026,fraction,000000|000000,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000026,fraction,000000|000000,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000026,fraction,000010|000040,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000026,fraction,000000|000060,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000027,fraction,000098|000049,NOT RECOMPUTABLE,000049|000098,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000028,fraction,000000|000000,NOT RECOMPUTABLE,000000,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000031,fraction,000082|000730,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000031,fraction,000050|000400,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000031,fraction,000060|000367,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000031,fraction,000006|000721,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000031,fraction,000004|000394,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000031,fraction,000007|000359,UNPARSED,,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000034,fraction,000010|000040,NOT RECOMPUTABLE,000010|000040,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000037,fraction,000040|000040,NOT RECOMPUTABLE,000040,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000038,fraction,000181|000199,NOT RECOMPUTABLE,000181|000199,
+G330a2,docs/evidence/tracking/g330_panorama_identity_attempt2_2026-09-08.md,000057,fraction,000181|000199,NOT RECOMPUTABLE,000181|000199,
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000001,fraction,000003|000003,RECOMPUTABLE,,docs/evidence/tracking/g215_temporal_homography_propagation_artifact/run_summary.json
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000001,n_equals,000010,RECOMPUTABLE,,docs/evidence/tracking/g215_temporal_homography_propagation_artifact/run_summary.json
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000008,fraction,000030|000001,RECOMPUTABLE,,docs/evidence/tracking/g215_temporal_homography_propagation_artifact/run_summary.json
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000008,fraction,000030|000001,RECOMPUTABLE,,docs/evidence/tracking/g215_temporal_homography_propagation_artifact/run_summary.json
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000008,fraction,030000|001001,NOT RECOMPUTABLE,030000,docs/evidence/tracking/g222_direct_to_seed_propagation_artifact/paired/run_summary.json
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000008,fraction,030000|001001,NOT RECOMPUTABLE,030000,docs/evidence/tracking/g222_direct_to_seed_propagation_artifact/paired/run_summary.json
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000008,fraction,030000|001001,NOT RECOMPUTABLE,030000,docs/evidence/tracking/g222_direct_to_seed_propagation_artifact/paired/run_summary.json
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000010,n_equals,000010,RECOMPUTABLE,,docs/evidence/tracking/g215_temporal_homography_propagation_artifact/run_summary.json
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000018,fraction,000414|000500,UNPARSED,,
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000019,fraction,000173|000500,UNPARSED,,
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000020,fraction,000000|000000,UNPARSED,,
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000021,fraction,000387|000500,UNPARSED,,
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000022,fraction,000261|000500,UNPARSED,,
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000023,fraction,000417|000500,UNPARSED,,
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000024,fraction,000325|000500,UNPARSED,,
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000025,fraction,000473|000500,UNPARSED,,
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000026,fraction,000001|000001,UNPARSED,,
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000027,fraction,000001|000001,UNPARSED,,
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000029,n_equals,000003,RECOMPUTABLE,,docs/evidence/tracking/g215_temporal_homography_propagation_artifact/run_summary.json
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000031,fraction,000214|000814,UNPARSED,,
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000031,fraction,000542|000714,UNPARSED,,
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000031,fraction,000363|000509,UNPARSED,,
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000040,fraction,000003|000003,RECOMPUTABLE,,docs/evidence/tracking/g215_temporal_homography_propagation_artifact/run_summary.json
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000058,fraction,000002|000003,RECOMPUTABLE,,docs/evidence/tracking/g215_temporal_homography_propagation_artifact/run_summary.json
+G310a2,docs/evidence/tracking/g310_native_input_arm_attempt2_2026-09-08.md,000058,fraction,000000|000085,NOT RECOMPUTABLE,000000,docs/evidence/tracking/g215_temporal_homography_propagation_artifact/run_summary.json
+G331,docs/evidence/tracking/g331_evaluated_frames_sidecar_2026-09-08.md,000001,fraction,000017|000017,NOT RECOMPUTABLE,000017,
+G331,docs/evidence/tracking/g331_evaluated_frames_sidecar_2026-09-08.md,000001,n_equals,000010,RECOMPUTABLE,,docs/evidence/tracking/g310_attempt2/g310_attempt2_proxies.json
+G331,docs/evidence/tracking/g331_evaluated_frames_sidecar_2026-09-08.md,000036,fraction,000013|000500,NOT RECOMPUTABLE,000013,docs/evidence/tracking/g310_attempt2/g310_attempt2_proxies.json
+G331,docs/evidence/tracking/g331_evaluated_frames_sidecar_2026-09-08.md,000036,fraction,000030|000500,NOT RECOMPUTABLE,000030,docs/evidence/tracking/g310_attempt2/g310_attempt2_proxies.json
+G331,docs/evidence/tracking/g331_evaluated_frames_sidecar_2026-09-08.md,000036,fraction,000030|000500,NOT RECOMPUTABLE,000030,docs/evidence/tracking/g310_attempt2/g310_attempt2_proxies.json
+G331,docs/evidence/tracking/g331_evaluated_frames_sidecar_2026-09-08.md,000036,fraction,000030|000500,NOT RECOMPUTABLE,000030,docs/evidence/tracking/g310_attempt2/g310_attempt2_proxies.json
+G331,docs/evidence/tracking/g331_evaluated_frames_sidecar_2026-09-08.md,000036,fraction,000030|000500,NOT RECOMPUTABLE,000030,docs/evidence/tracking/g310_attempt2/g310_attempt2_proxies.json
+G331,docs/evidence/tracking/g331_evaluated_frames_sidecar_2026-09-08.md,000036,fraction,000031|000500,NOT RECOMPUTABLE,000031,docs/evidence/tracking/g310_attempt2/g310_attempt2_proxies.json
+G331,docs/evidence/tracking/g331_evaluated_frames_sidecar_2026-09-08.md,000036,fraction,000042|000500,NOT RECOMPUTABLE,000042,docs/evidence/tracking/g310_attempt2/g310_attempt2_proxies.json
+G331,docs/evidence/tracking/g331_evaluated_frames_sidecar_2026-09-08.md,000036,fraction,000000|000001,RECOMPUTABLE,,docs/evidence/tracking/g310_attempt2/g310_attempt2_proxies.json
+G331,docs/evidence/tracking/g331_evaluated_frames_sidecar_2026-09-08.md,000040,n_equals,002014,UNPARSED,,
+G331,docs/evidence/tracking/g331_evaluated_frames_sidecar_2026-09-08.md,000040,n_equals,002458,UNPARSED,,
+G331,docs/evidence/tracking/g331_evaluated_frames_sidecar_2026-09-08.md,000040,n_equals,001714,UNPARSED,,
+G331,docs/evidence/tracking/g331_evaluated_frames_sidecar_2026-09-08.md,000040,n_equals,001299,UNPARSED,,
+G331,docs/evidence/tracking/g331_evaluated_frames_sidecar_2026-09-08.md,000054,fraction,000017|000017,NOT RECOMPUTABLE,000017,
