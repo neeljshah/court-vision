@@ -1,4 +1,4 @@
-GAP G349 | sport basketball | worktree aX | log cx_g349_ball_ownership_survival
+GAP G349 | sport basketball | worktree a16 | log cx_g349_ball_ownership_survival
 
 **DIAGNOSIS ROW (astra midday review 2026-09-08, item D; follows G344 PARTIAL). Codex PREPARES, a finisher
 MEASURES.** `src/`, `kernel/`, `api/` and `intel/` are READ and IMPORT only. Build in
