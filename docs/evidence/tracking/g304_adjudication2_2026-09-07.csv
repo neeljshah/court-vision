@@ -1,0 +1,14 @@
+proposal_id,row_id,arena,landmark_name,source,rater_A,rater_B,adjudication,adjudicator,reason_code
+wnba_01_05_p04,wnba_01_05,Gateway Center Arena,CORNER_NEAR_R,lsd_intersect,ACCEPT,REJECT,REJECT,Claude Opus 5 (MODEL),NOT_A_LINE
+wnba_01_05_p08,wnba_01_05,Gateway Center Arena,FT_LINE_L,lsd_intersect,REJECT,ACCEPT,REJECT,Claude Opus 5 (MODEL),OCCLUDED
+wnba_01_09_p04,wnba_01_09,Gateway Center Arena,CORNER_NEAR_R,lsd_intersect,ACCEPT,REJECT,REJECT,Claude Opus 5 (MODEL),OCCLUDED
+wnba_01_09_p07,wnba_01_09,Gateway Center Arena,FT_LINE_L,shitomasi,ACCEPT,REJECT,REJECT,Claude Opus 5 (MODEL),NOT_A_LINE
+wnba_01_13_p06,wnba_01_13,Gateway Center Arena,THREE_PT_BASE_R,lsd_intersect,REJECT,ACCEPT,REJECT,Claude Opus 5 (MODEL),WRONG_FEATURE
+wnba_01_14_p10,wnba_01_14,Gateway Center Arena,CORNER_NEAR_L,lsd_intersect,ACCEPT,REJECT,REJECT,Claude Opus 5 (MODEL),NOT_VISIBLE
+wnba_01_17_p10,wnba_01_17,Gateway Center Arena,LANE_BASE_L,lsd_intersect,REJECT,ACCEPT,UNRESOLVED,Claude Opus 5 (MODEL),NAME_SIDE_UNCONFIRMABLE
+wnba_01_17_p12,wnba_01_17,Gateway Center Arena,FT_LINE_L,lsd_intersect,REJECT,ACCEPT,UNRESOLVED,Claude Opus 5 (MODEL),NAME_SIDE_UNCONFIRMABLE
+wnba_01_e01_p12,wnba_01_e01,Gateway Center Arena,FT_LINE_L,lsd_intersect,REJECT,ACCEPT,REJECT,Claude Opus 5 (MODEL),NOT_A_LINE
+wnba_01_e14_p04,wnba_01_e14,Gateway Center Arena,FT_LINE_L,lsd_intersect,REJECT,ACCEPT,REJECT,Claude Opus 5 (MODEL),WRONG_FEATURE
+wnba_01_e16_p12,wnba_01_e16,Gateway Center Arena,FT_LINE_L,lsd_intersect,REJECT,ACCEPT,REJECT,Claude Opus 5 (MODEL),OFF_BY_TOO_MUCH
+wnba_01_e17_p03,wnba_01_e17,Gateway Center Arena,FT_LINE_L,shitomasi,REJECT,ACCEPT,REJECT,Claude Opus 5 (MODEL),NOT_A_LINE
+wnba_01_e17_p12,wnba_01_e17,Gateway Center Arena,FT_LINE_L,lsd_intersect,REJECT,ACCEPT,UNRESOLVED,Claude Opus 5 (MODEL),NAME_SIDE_UNCONFIRMABLE

@@ -1,0 +1,5 @@
+rater_name: codex
+rows_rated: 756
+accept_count: 4
+time_spent: 00:55:00
+sha256_lf_normalized_csv: cc814b9e0ce14de9cd8f6d20df309c3b0668cbe3d10232042f040ed3c7eee30f
