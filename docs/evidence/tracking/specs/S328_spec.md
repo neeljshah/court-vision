@@ -1,4 +1,4 @@
-GAP S328 | sport nba | worktree aX | log cx_s328_asof_join_falsification
+GAP S328 | sport nba | worktree a2 | log cx_s328_asof_join_falsification
 
 **HARNESS ROW (S register; astra midday review 2026-09-08: the cheapest timestamp falsification of the
 direct-state backbone). Codex PREPARES, a finisher MEASURES.** `src/`, `kernel/`, `api/` and `intel/` are
