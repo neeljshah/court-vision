@@ -15,7 +15,7 @@ def _row(frame, pid, x1, x2, y2):
 ROWS = [
     _row(2, "a", 0, 100, 208),     # footpoint (50, 208)
     _row(1, "a", 0, 100, 100),     # footpoint (50, 100)   step a1->a2 = 108 px
-    _row(3, "a", 0, 100, 262),     # footpoint (50, 262)   step a2->a3 =  54 px
+    _row(3, "a", 0, 100, 262),     # footpoint (50, 262)   step a2->a3 = 262-208 px
     _row(1, "b", 200, 400, 500),   # footpoint (300, 500)
     _row(2, "b", 200, 400, 716),   # footpoint (300, 716)  step b1->b2 = 216 px
     _row(1, "c", 10, 30, 40),      # footpoint (20, 40)    single row, no step
@@ -27,7 +27,7 @@ def test_footpoint_is_bbox_bottom_centre():
     assert footpoint(_row(1, "c", 10, 30, 40)) == (20.0, 40.0)
 
 
-def test_p95_is_nearest_rank_and_none_on_empty():
+def test_p95_is_rounded_linear_index_and_none_on_empty():
     assert p95([]) is None
     assert p95([0.05, 0.1, 0.2]) == 0.2          # index round(0.95 * 2) = 2
     assert p95([1.0]) == 1.0

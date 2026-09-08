@@ -77,7 +77,9 @@ def rows_per_frame(base: dict) -> dict:
     """Both candidate denominators printed; evaluated_frames wins when non-null."""
     evaluated = base.get("denominator_evaluated_frames")
     frames = base.get("frames_with_rows")
-    den, src = (evaluated, "evaluated_frames") if evaluated else (frames, "frames_with_rows")
+    # G331: `is not None`, so an explicit evaluated_frames of 0 is NOT read as absent.
+    den, src = ((evaluated, "evaluated_frames") if evaluated is not None
+                else (frames, "frames_with_rows"))
     return {
         "person_rows_per_frame": (base["person_rows"] / den) if den else None,
         "person_rows_per_frame_denominator": den,

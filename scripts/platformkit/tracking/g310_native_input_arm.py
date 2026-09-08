@@ -33,7 +33,8 @@ def footpoint(row: dict) -> tuple:
 
 
 def p95(values: list):
-    """Nearest-rank p95 on the sorted sample; None on an empty sample."""
+    """p95 at the ROUNDED LINEAR INDEX round(0.95 * (n - 1)), NOT nearest-rank; kept unchanged
+    so the committed G310 p95 columns keep their meaning (B2). G331 prints both estimators."""
     if not values:
         return None
     ordered = sorted(values)
@@ -55,7 +56,7 @@ def proxies(rows: list, ball_rows: list, evaluated_frames, source_height: int) -
     lengths = [len(v) for v in by_track.values()]
     detected = sum(1 for r in ball_rows
                    if str(r.get("detected", "")).strip().lower() in ("1", "true", "yes"))
-    den = float(evaluated_frames) if evaluated_frames else None
+    den = float(evaluated_frames) if evaluated_frames is not None else None  # G331: 0 is real
     return {
         "person_rows": len(rows),
         "denominator_evaluated_frames": evaluated_frames,
