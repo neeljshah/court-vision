@@ -8,6 +8,27 @@ from pathlib import Path
 import cv2
 
 
+# G318. probe_source() returns a five-key dict on BOTH paths, and a dict with
+# keys is always truthy, so a reader failure and a source that was never probed
+# reach the ledger as the same all-null row. Callers already branch on
+# `if source:`, so the outcome travels in this ADDITIVE `status` key rather than
+# in a falsy return. `ffprobe_rc` keeps the spec's name for "the reader would
+# not open it"; the reader here is cv2.VideoCapture, ffmpeg underneath.
+STATUS_OK = "ok"
+STATUS_MISSING = "failed:missing"
+STATUS_UNOPENABLE = "failed:ffprobe_rc"
+STATUS_NO_VIDEO_STREAM = "failed:no_video_stream"
+STATUS_PARSE = "failed:parse"
+STATUS_NOT_PROBED = "not_probed"
+
+
+def probe_status(source: dict | None) -> str:
+    """The probe outcome for one ledger row; `not_probed` when no probe ran."""
+    if isinstance(source, dict) and isinstance(source.get("status"), str):
+        return source["status"]
+    return STATUS_NOT_PROBED
+
+
 def probe_source(video: Path) -> dict[str, float | int | str | None]:
     """Return declared source timing and dimensions without full decoding."""
     capture = cv2.VideoCapture(str(video))
@@ -15,7 +36,9 @@ def probe_source(video: Path) -> dict[str, float | int | str | None]:
         if not capture.isOpened():
             return {"source_fps": None, "source_width": None,
                     "source_height": None, "source_resolution": None,
-                    "source_duration": None}
+                    "source_duration": None,
+                    "status": STATUS_MISSING if not os.path.exists(video)
+                    else STATUS_UNOPENABLE}
         fps = float(capture.get(cv2.CAP_PROP_FPS))
         frames = float(capture.get(cv2.CAP_PROP_FRAME_COUNT))
         width = int(capture.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -25,7 +48,9 @@ def probe_source(video: Path) -> dict[str, float | int | str | None]:
                 "source_width": width if width > 0 else None,
                 "source_height": height if height > 0 else None,
                 "source_resolution": resolution,
-                "source_duration": frames / fps if frames > 0 and fps > 0 else None}
+                "source_duration": frames / fps if frames > 0 and fps > 0 else None,
+                "status": (STATUS_NO_VIDEO_STREAM if resolution is None
+                           else STATUS_PARSE if fps <= 0 else STATUS_OK)}
     finally:
         capture.release()
 

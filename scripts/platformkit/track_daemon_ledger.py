@@ -7,6 +7,10 @@ import time
 def corrupt_entry(game_id: str, sport: str, size: int, retained: bool) -> dict:
     """Describe one invalid staged file, including failed-retain recovery.
 
+    Carries `probe_status` as `not_probed` (G318): this file is quarantined on
+    its size alone, before any probe runs, so the row must say so rather than
+    look like a probe that returned nothing.
+
     Carries the two additive booleans like every other new row (contract B2):
     a corrupt staged file is 0 rows in 0 s, which is degenerate by D2, and no
     tracker ran on a data dir, so it is never a resume.
@@ -21,7 +25,7 @@ def corrupt_entry(game_id: str, sport: str, size: int, retained: bool) -> dict:
             "coordinate_space": None, "rung": None,
             "evaluated_at": None, "seconds": 0, "finished_at": int(time.time()),
             "decoded_frames": None, "evaluated_frames": None, "stride": None,
-            "source_resolution": None,
+            "source_resolution": None, "probe_status": "not_probed",
             "degenerate": True, "resumed_partial": False,
             "fresh_solves": None, "rows_per_decoded_frame_step_change": None}
 

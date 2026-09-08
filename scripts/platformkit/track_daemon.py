@@ -26,7 +26,7 @@ from scripts.platformkit.track_daemon_sources import (
     reap_orphans as _reap_orphans,
     sibling_paths,
 )
-from scripts.platformkit.tracking.source_timebase import probe_source, stamp_tracking_csv
+from scripts.platformkit.tracking.source_timebase import probe_source, probe_status, stamp_tracking_csv
 
 STAGE = Path("data/footage_bridge")
 # Where a tracked video goes instead of being deleted. Re-staging one game is
@@ -315,7 +315,7 @@ def _finish(name: str, job: dict, timed_out: bool = False,
     manifest_frames, fresh_solves = _fresh_solve_summary(job["game_id"])
     entry.update(decoded_frames=(graded or {}).get("decoded_frames", manifest_frames),
                  evaluated_frames=(graded or {}).get("evaluated_frames"),
-                 stride=(graded or {}).get("stride"),
+                 stride=(graded or {}).get("stride"), probe_status=probe_status(source),
                  source_resolution=(source or {}).get("source_resolution"),
                  fresh_solves=fresh_solves)
     entry["rows_per_decoded_frame_step_change"] = _step_change(
