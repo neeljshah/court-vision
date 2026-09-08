@@ -1,0 +1,40 @@
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+/workspace/mmlab_env/mmdet/models/layers/se_layer.py:158: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/workspace/mmlab_env/mmdet/models/backbones/csp_darknet.py:118: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+Loads checkpoint by local backend from path: /workspace/wt/a2/g311/rtmdet_m_coco.pth
+The model and loaded state dict do not match exactly
+
+unexpected key in source state_dict: data_preprocessor.mean, data_preprocessor.std
+
+{"game": "wnba__wnba_06", "source": {"path": "/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_06.mp4", "width": 1920, "height": 1080, "fps": "30/1", "nb_frames": 28674, "duration_s": 960.033008, "bytes": 430058965}, "decoded": 40, "wall_s": 224.3, "batch_size": 8, "arm_Y": {"arm": "Y_yolov8n_AGPL", "decoded_frames": 40, "boxes_total": 326, "boxes_per_frame": 8.15, "zero_box_frames": 1, "ms_per_frame": 124.66677594929934, "peak_vram_mb": 61.8, "vram_method": "torch.cuda.max_memory_allocated", "distinct_ids": 283, "median_track_length": 1, "ms_per_frame_batch8": 42.66332918778062, "batch_size": 8, "warmup_frames_excluded": 3, "batch_vs_single": {"identical_box_counts": false, "max_abs_coord_delta_px": null}, "raw_rows": 326, "raw_csv": "g324_boxes_wnba__wnba_06_Y.csv"}, "arm_R": {"arm": "R_rtmdet_Apache2.0", "decoded_frames": 40, "boxes_total": 729, "boxes_per_frame": 18.225, "zero_box_frames": 0, "ms_per_frame": 2127.746948041022, "peak_vram_mb": 190.7, "vram_method": "torch.cuda.max_memory_allocated", "distinct_ids": 608, "median_track_length": 1.0, "ms_per_frame_batch8": 1950.105422316119, "batch_size": 8, "warmup_frames_excluded": 3, "batch_vs_single": {"identical_box_counts": true, "max_abs_coord_delta_px": 0.0}, "raw_rows": 729, "raw_csv": "g324_boxes_wnba__wnba_06_R.csv"}, "agreement": {"frames": 40, "boxes_a": 326, "boxes_b": 729, "matched": 291, "agree_a_in_b": 0.8926380368098159, "agree_b_in_a": 0.3991769547325103, "zero_box_frames_a": 1, "zero_box_frames_b": 0}}
+WROTE g324_out/g324_summary.json
+POD_RUN_DONE job=20260907230339_499150_9145 rc=0

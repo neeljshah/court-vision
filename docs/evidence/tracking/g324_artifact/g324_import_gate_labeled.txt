@@ -1,0 +1,19 @@
+POD COMMAND (via `ssh -F ~/.ssh/config.pod pod`, isolated env /workspace/mmlab_env, same
+PYTHONPATH-equivalent sys.path.insert(0, ...) as the harness gate; re-run of the import-gate
+probe ONLY -- no arms, no install steps re-run):
+
+/usr/local/bin/python -c "import sys; sys.path.insert(0, '/workspace/mmlab_env'); import platform, numpy, cv2, torch, mmcv, mmdet, mmengine; from mmcv.ops import batched_nms; print('python=' + platform.python_version()); print('numpy=' + numpy.__version__); print('cv2=' + cv2.__version__); print('torch=' + torch.__version__); print('mmcv=' + mmcv.__version__); print('mmdet=' + mmdet.__version__); print('mmengine=' + mmengine.__version__); print('mmcv.ops import OK')"
+
+START (UTC): 2026-09-08T05:28:31Z
+END   (UTC): 2026-09-08T05:29:11Z
+WALL SECONDS: 38.605
+
+STDOUT (verbatim):
+python=3.12.3
+numpy=2.1.2
+cv2=4.14.0
+torch=2.8.0+cu128
+mmcv=2.1.0
+mmdet=3.3.0
+mmengine=0.10.7
+mmcv.ops import OK

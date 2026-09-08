@@ -1,0 +1,6 @@
+c3bc2f7d4c4fda366f83523dd0aac86e47a40fecaf26e36b490d5a8c73ca5cc7  src/tracking/player_detection.py
+f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36  yolov8n.pt
+--- daemon ---
+288449 bash -c cd /workspace/nba-ai-system && PYTHONPATH=/workspace/nba-ai-system:/workspace/wt/_pylib nohup setsid python3 -u scripts/platformkit/track_daemon.py --workers 16 --forever </dev/null >/workspace/track_daemon_2026-09-07e.log 2>&1 & disown; exit 0
+288450 python3 -u scripts/platformkit/track_daemon.py --workers 16 --forever
+530708 bash -c cd /workspace/nba-ai-system && sha256sum src/tracking/player_detection.py yolov8n.pt data/models/yolov8n.pt 2>/dev/null; echo '--- daemon ---'; pgrep -af track_daemon | head -3

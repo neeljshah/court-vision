@@ -1,0 +1,22 @@
+SOURCE: pod `/workspace/wt/a2/jobs/20260907222928_461664_22971/pod_run.log`, retrieved via
+`ssh -F ~/.ssh/config.pod pod` (fix 1b, NEW GAP G324-SECOND-PREMISE-DURABILITY). This is the
+SECOND, INDEPENDENT premise measurement the memo cites at 416.8 s (34 minutes before the
+kept 267.8 s run), on the job that then aborted on a checkpoint path one directory too
+shallow before any model loaded or any number existed -- verbatim, unedited:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/wt/a2/jobs/20260907222928_461664_22971/scripts/platformkit/tracking/g324_apache_arm_rebudget.py", line 179, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/workspace/wt/a2/jobs/20260907222928_461664_22971/scripts/platformkit/tracking/g324_apache_arm_rebudget.py", line 162, in main
+    report["ckpt_sha256"] = sha256(a.rtmdet_ckpt)
+                            ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/wt/a2/jobs/20260907222928_461664_22971/scripts/platformkit/tracking/g311_apache_detector_arm.py", line 46, in sha256
+    with open(path, "rb") as fh:
+         ^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/workspace/wt/g311/rtmdet_m_coco.pth'
+SCREENING ONLY -- no labels, no renders, no eye check; neither arm is better.
+PREMISE {"limit_s": 3600.0, "wheel": "/workspace/mmlab_wheels/mmcv-2.1.0-cp312-cp312-linux_x86_64.whl", "wheel_bytes": 35202838, "wheel_sha256": "608637e5600ec15708acf451aa2e067d3e7b1e8c6dc40856e6f42d2e8ffaa9a1", "wheel_sha256_expected": "608637e5600ec15708acf451aa2e067d3e7b1e8c6dc40856e6f42d2e8ffaa9a1", "wheel_reused": true, "steps": [{"cmd": "/usr/local/bin/python -m pip install --target /workspace/mmlab_env --no-warn-script-location --no-deps --force-reinstall /workspace/mmlab_wheels/mmcv-2.1.0-cp312-cp312-linux_x86_64.whl", "rc": 0, "elapsed_s": 23.3, "tail": "Processing /workspace/mmlab_wheels/mmcv-2.1.0-cp312-cp312-linux_x86_64.whl\nInstalling collected packages: mmcv\nSuccessfully installed mmcv-2.1.0\nWARNING: Target directory /workspace/mmlab_env/mmcv already exists. Specify --upgrade to force replacement.\nWARNING: Target directory /workspace/mmlab_env/mmcv-2.1.0.dist-info already exists. Specify --upgrade to force replacement.\nWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.\n"}, {"cmd": "/usr/local/bin/python -m pip install --target /workspace/mmlab_env --no-warn-script-location -c /workspace/wt/a2/jobs/20260907222928_461664_22971/scripts/platformkit/tracking/g324_constraints.txt mmdet==3.3.0 mmengine==0.10.7", "rc": 0, "elapsed_s": 274.6, "tail": " replacement.\nWARNING: Target directory /workspace/mmlab_env/matplotlib-3.11.1.dist-info already exists. Specify --upgrade to force replacement.\nWARNING: Target directory /workspace/mmlab_env/mmengine already exists. Specify --upgrade to force replacement.\nWARNING: Target directory /workspace/mmlab_env/mmengine-0.10.7.dist-info already exists. Specify --upgrade to force replacement.\nWARNING: Target directory /workspace/mmlab_env/mmdet already exists. Specify --upgrade to force replacement.\nWARNING: Target directory /workspace/mmlab_env/mmdet-3.3.0.dist-info already exists. Specify --upgrade to force replacement.\nWARNING: Target directory /workspace/mmlab_env/bin already exists. Specify --upgrade to force replacement.\nWARNING: Target directory /workspace/mmlab_env/share already exists. Specify --upgrade to force replacement.\nWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.\n"}, {"cmd": "/usr/local/bin/python -c import sys; sys.path.insert(0, '/workspace/mmlab_env'); import mmcv, mmdet; print(mmcv.__version__, mmdet.__version__); from mmcv.ops import batched_nms", "rc": 0, "elapsed_s": 117.4, "tail": "2.1.0 3.3.0\n"}], "elapsed_s": 416.8, "gate_ok": true, "verdict": "PREMISE MET"}
+POD_RUN_DONE job=20260907222928_461664_22971 rc=1

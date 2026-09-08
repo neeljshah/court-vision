@@ -1,0 +1,12 @@
+2026-09-08T05:02:44Z
+c3bc2f7d4c4fda366f83523dd0aac86e47a40fecaf26e36b490d5a8c73ca5cc7  src/tracking/player_detection.py
+f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36  yolov8n.pt
+--- GPU ---
+7846 MiB, 24576 MiB
+--- DISK ---
+du_workspace_mb=UNKNOWN
+33554432 bytes (34 MB, 32 MiB) copied, 1.19694 s, 28.0 MB/s
+--- daemon alive ---
+3
+--- job weights ---
+f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36  /workspace/wt/a2/jobs/20260907230339_499150_9145/yolov8n.pt
