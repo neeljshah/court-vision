@@ -1,4 +1,4 @@
-GAP S297 | sport nba | worktree aXX | log cx_s297_minutes_dnp_distribution
+GAP S297 | sport nba | worktree a19 | log cx_s297_minutes_dnp_distribution
 CONTRACT: docs/evidence/tracking/VERIFIER_CONTRACT.md sections B and Q (Q1-Q9) and the B5 NOTE -- read first.
 CONTEXT: audit gap 3 (S241): minutes and DNP mass are not distributionally modeled; verified inputs are the two
   boxscore parquets above (zero-minute rows 326/77,744 and 221/1,023). DNP rows stay in the denominator.
