@@ -23,7 +23,7 @@ from scripts.platformkit.track_daemon_done import (
     tracking_rows,
     write_adjudicated,
 )
-from scripts.platformkit.track_daemon_ledger import corrupt_entry
+from scripts.platformkit.track_daemon_ledger import corrupt_entry, mark_degenerate
 from scripts.platformkit.track_daemon_sources import (
     claimable as _claimable_sources,
     reap_orphans as _reap_orphans,
@@ -323,9 +323,9 @@ def _finish(name: str, job: dict, timed_out: bool = False,
                  fresh_solves=fresh_solves)
     entry["rows_per_decoded_frame_step_change"] = _step_change(
         _previous_sport_entry(job["sport"]), entry)
-    _record_loudly(entry)
+    _record_loudly(mark_degenerate(entry, TRACKING / job["game_id"], job["started"]))
     print("%s %s %s rows=%d passed=%s %s"
-          % (job["game_id"], job["sport"], status, rows, entry["passed"],
+          % (job["game_id"], job["sport"], entry["status"], rows, entry["passed"],
              ";".join(entry["failure_heads"])[:90]), flush=True)
     for video in job.get("retained_videos", [job["video"]]):
         retain(video, CORPUS, lambda message: print(message, flush=True))
