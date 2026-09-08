@@ -1,0 +1,82 @@
+{
+ "wnba_01_1080p_armP": {
+  "person_rows": 1433,
+  "denominator_evaluated_frames": null,
+  "frames_with_rows": 458,
+  "person_rows_per_evaluated_frame": null,
+  "distinct_track_ids": 10,
+  "median_track_len_rows": 158.0,
+  "ball_rows_total": 500,
+  "ball_rows_detected": 414,
+  "p95_norm_footpoint_step": 0.3315283564001633,
+  "denominator_step_pairs": 1423,
+  "source_height": 1080,
+  "denominator_reason": "max_frames_is_detector_dependent_in_this_route",
+  "run_summary": {
+   "arm": "P",
+   "game_id": "wnba_01_1080p",
+   "video": "/workspace/wt/a1/jobs/20260907223158_464723_12590/data/footage_corpus/wnba__wnba_01_1080p.mp4",
+   "frames_requested": 1500,
+   "argv": [
+    "--video",
+    "/workspace/wt/a1/jobs/20260907223158_464723_12590/data/footage_corpus/wnba__wnba_01_1080p.mp4",
+    "--game-id",
+    "wnba_01_1080p",
+    "--no-show",
+    "--frames",
+    "1500",
+    "--data-dir",
+    "g310_out/wnba_01_1080p_armP"
+   ],
+   "rc": 0,
+   "wall_seconds": 1668.4,
+   "imgsz_at_construction": [
+    640
+   ],
+   "imgsz_observed_at_call_site": [
+    640
+   ],
+   "detector_calls_recorded": 73
+  }
+ },
+ "wnba_01_1080p_armN": {
+  "person_rows": 2940,
+  "denominator_evaluated_frames": null,
+  "frames_with_rows": 469,
+  "person_rows_per_evaluated_frame": null,
+  "distinct_track_ids": 10,
+  "median_track_len_rows": 267.5,
+  "ball_rows_total": 500,
+  "ball_rows_detected": 173,
+  "p95_norm_footpoint_step": 0.9010191798259714,
+  "denominator_step_pairs": 2930,
+  "source_height": 1080,
+  "denominator_reason": "max_frames_is_detector_dependent_in_this_route",
+  "run_summary": {
+   "arm": "N",
+   "game_id": "wnba_01_1080p",
+   "video": "/workspace/wt/a1/jobs/20260907223158_464723_12590/data/footage_corpus/wnba__wnba_01_1080p.mp4",
+   "frames_requested": 1500,
+   "argv": [
+    "--video",
+    "/workspace/wt/a1/jobs/20260907223158_464723_12590/data/footage_corpus/wnba__wnba_01_1080p.mp4",
+    "--game-id",
+    "wnba_01_1080p",
+    "--no-show",
+    "--frames",
+    "1500",
+    "--data-dir",
+    "g310_out/wnba_01_1080p_armN"
+   ],
+   "rc": 0,
+   "wall_seconds": 2193.4,
+   "imgsz_at_construction": [
+    1920
+   ],
+   "imgsz_observed_at_call_site": [
+    1920
+   ],
+   "detector_calls_recorded": 72
+  }
+ }
+}

@@ -1,0 +1,8 @@
+tag,game_id,arm,status,wall_seconds,ball_rows_detected,ball_rows_total,denominator_evaluated_frames,denominator_step_pairs,distinct_track_ids,frames_with_rows,median_track_len_rows,p95_norm_footpoint_step,person_rows,person_rows_per_evaluated_frame,source_height
+wnba_01_1080p_armP,wnba_01_1080p,P,COMPLETE,363.7,387,500,,2106,10,470,206.5,0.7477733292843668,2116,,1080
+wnba_01_1080p_armN,wnba_01_1080p,N,COMPLETE,776.6,261,500,,2984,10,470,325.5,0.9119331582128215,2994,,1080
+ncaa_basketball_IB-_u4gW3ds_1080p_armP,ncaa_basketball_IB-_u4gW3ds_1080p,P,COMPLETE,2603.4,325,500,,1943,10,470,194.0,0.5597901882577834,1953,,1080
+ncaa_basketball_IB-_u4gW3ds_1080p_armN,ncaa_basketball_IB-_u4gW3ds_1080p,N,COMPLETE,2155.9,473,500,,2339,10,487,229.5,0.6162550066296899,2349,,1080
+ncaa_basketball_mRkuGgeECak_armP,ncaa_basketball_mRkuGgeECak,P,BUDGET_LIMIT,3604.2,1,1,,0,1,1,1,,1,,1080
+ncaa_basketball_mRkuGgeECak_armN,ncaa_basketball_mRkuGgeECak,N,BUDGET_LIMIT,3604.5,1,1,,0,1,1,1,,1,,1080
+wnba_01_1080p_armP_repeat,wnba_01_1080p,P,COMPLETE,1293.0,417,500,,2175,10,470,216.0,0.7671238567415777,2185,,1080

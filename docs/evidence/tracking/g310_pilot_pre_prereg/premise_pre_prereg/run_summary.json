@@ -1,0 +1,26 @@
+{
+  "arm": "P",
+  "game_id": "wnba_01_1080p",
+  "video": "/workspace/wt/a1/data/footage_corpus/wnba__wnba_01_1080p.mp4",
+  "frames_requested": 60,
+  "argv": [
+    "--video",
+    "data/footage_corpus/wnba__wnba_01_1080p.mp4",
+    "--game-id",
+    "wnba_01_1080p",
+    "--no-show",
+    "--frames",
+    "60",
+    "--data-dir",
+    "docs/evidence/g310/premise"
+  ],
+  "rc": 3,
+  "wall_seconds": 26.8,
+  "imgsz_at_construction": [
+    640
+  ],
+  "imgsz_observed_at_call_site": [
+    640
+  ],
+  "detector_calls_recorded": 3
+}

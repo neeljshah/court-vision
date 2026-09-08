@@ -1,0 +1,713 @@
+{
+  "spec": "G310",
+  "generated_utc": "2026-09-08T02:06:49Z",
+  "frames_requested": 1500,
+  "wall_budget_s": 3600,
+  "native_imgsz": 1920,
+  "corpus_probed": [
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/basketball__g220c_jh3fnwMi7dM.mp4",
+      "raw": [
+        "1920",
+        "1080",
+        "30/1",
+        "28865",
+        "960.100000"
+      ],
+      "bytes": 346739796,
+      "width": 1920,
+      "height": 1080,
+      "fps_ratio": "30/1",
+      "nb_frames": "28865",
+      "duration_s": 960.1
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/nba__0022500575_s300.mp4",
+      "raw": [
+        "640",
+        "360",
+        "30000/1001",
+        "4528",
+        "150.049000"
+      ],
+      "bytes": 11336842,
+      "width": 640,
+      "height": 360,
+      "fps_ratio": "30000/1001",
+      "nb_frames": "4528",
+      "duration_s": 150.049
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/nba__0022500594_s2700.mp4",
+      "raw": [
+        "640",
+        "360",
+        "30/1",
+        "4541",
+        "150.033008"
+      ],
+      "bytes": 12548321,
+      "width": 640,
+      "height": 360,
+      "fps_ratio": "30/1",
+      "nb_frames": "4541",
+      "duration_s": 150.033008
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/nba__0022500594_s300.mp4",
+      "raw": [
+        "640",
+        "360",
+        "30/1",
+        "4541",
+        "150.033008"
+      ],
+      "bytes": 10290669,
+      "width": 640,
+      "height": 360,
+      "fps_ratio": "30/1",
+      "nb_frames": "4541",
+      "duration_s": 150.033008
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/nba__bos_mia_playoffs.mp4",
+      "raw": [
+        "1280",
+        "720",
+        "60000/1001",
+        "55153",
+        "920.183583"
+      ],
+      "bytes": 250646190,
+      "width": 1280,
+      "height": 720,
+      "fps_ratio": "60000/1001",
+      "nb_frames": "55153",
+      "duration_s": 920.183583
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/nba__den_phx_2025.mp4",
+      "raw": [
+        "1280",
+        "720",
+        "60000/1001",
+        "35227",
+        "587.766712"
+      ],
+      "bytes": 168615531,
+      "width": 1280,
+      "height": 720,
+      "fps_ratio": "60000/1001",
+      "nb_frames": "35227",
+      "duration_s": 587.766712
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/nba__gsw_lakers_2025.mp4",
+      "raw": [
+        "1280",
+        "720",
+        "60000/1001",
+        "41742",
+        "696.459320"
+      ],
+      "bytes": 194352842,
+      "width": 1280,
+      "height": 720,
+      "fps_ratio": "60000/1001",
+      "nb_frames": "41742",
+      "duration_s": 696.45932
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/nba__mem_nop_2025.mp4",
+      "raw": [
+        "1280",
+        "720",
+        "60000/1001",
+        "47505",
+        "792.589932"
+      ],
+      "bytes": 220803188,
+      "width": 1280,
+      "height": 720,
+      "fps_ratio": "60000/1001",
+      "nb_frames": "47505",
+      "duration_s": 792.589932
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/nba__mia_bkn_2025.mp4",
+      "raw": [
+        "1280",
+        "720",
+        "60000/1001",
+        "55302",
+        "922.691338"
+      ],
+      "bytes": 252652118,
+      "width": 1280,
+      "height": 720,
+      "fps_ratio": "60000/1001",
+      "nb_frames": "55302",
+      "duration_s": 922.691338
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/nba__mil_chi_2025.mp4",
+      "raw": [
+        "1280",
+        "720",
+        "60000/1001",
+        "54334",
+        "906.530249"
+      ],
+      "bytes": 258015436,
+      "width": 1280,
+      "height": 720,
+      "fps_ratio": "60000/1001",
+      "nb_frames": "54334",
+      "duration_s": 906.530249
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/nba__okc_dal_2025.mp4",
+      "raw": [
+        "1280",
+        "720",
+        "60000/1001",
+        "35516",
+        "592.573243"
+      ],
+      "bytes": 169475876,
+      "width": 1280,
+      "height": 720,
+      "fps_ratio": "60000/1001",
+      "nb_frames": "35516",
+      "duration_s": 592.573243
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+      "raw": [
+        "1920",
+        "1080",
+        "30000/1001",
+        "18115",
+        "600.099000"
+      ],
+      "bytes": 328260234,
+      "width": 1920,
+      "height": 1080,
+      "fps_ratio": "30000/1001",
+      "nb_frames": "18115",
+      "duration_s": 600.099
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+      "raw": [
+        "1920",
+        "1080",
+        "30000/1001",
+        "N/A",
+        "1920",
+        "1080",
+        "30000/1001",
+        "N/A",
+        "840.639800"
+      ],
+      "bytes": 449217352,
+      "width": 1920,
+      "height": 1080,
+      "fps_ratio": "30000/1001",
+      "nb_frames": "N/A",
+      "duration_s": 840.6398
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/ncaa_basketball__ncaa_basketball_mRkuGgeECak.mp4",
+      "raw": [
+        "1920",
+        "1080",
+        "30000/1001",
+        "28905",
+        "964.524500"
+      ],
+      "bytes": 487249282,
+      "width": 1920,
+      "height": 1080,
+      "fps_ratio": "30000/1001",
+      "nb_frames": "28905",
+      "duration_s": 964.5245
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/ncaa_basketball__ncaa_basketball_sRtHQbywiTE.mp4",
+      "raw": [
+        "1280",
+        "720",
+        "30000/1001",
+        "28904",
+        "964.466133"
+      ],
+      "bytes": 243724897,
+      "width": 1280,
+      "height": 720,
+      "fps_ratio": "30000/1001",
+      "nb_frames": "28904",
+      "duration_s": 964.466133
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/ncaa_basketball__ncaa_basketball_tiUvyvWOCxo.mp4",
+      "raw": [
+        "1280",
+        "720",
+        "30000/1001",
+        "28904",
+        "964.466133"
+      ],
+      "bytes": 247513963,
+      "width": 1280,
+      "height": 720,
+      "fps_ratio": "30000/1001",
+      "nb_frames": "28904",
+      "duration_s": 964.466133
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+      "raw": [
+        "1920",
+        "1080",
+        "30000/1001",
+        "28939",
+        "965.649967"
+      ],
+      "bytes": 467936551,
+      "width": 1920,
+      "height": 1080,
+      "fps_ratio": "30000/1001",
+      "nb_frames": "28939",
+      "duration_s": 965.649967
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/wnba__wnba_01_1080p.mp4",
+      "raw": [
+        "1920",
+        "1080",
+        "30/1",
+        "18060",
+        "600.067000"
+      ],
+      "bytes": 308078882,
+      "width": 1920,
+      "height": 1080,
+      "fps_ratio": "30/1",
+      "nb_frames": "18060",
+      "duration_s": 600.067
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/wnba__wnba_02.mp4",
+      "raw": [
+        "1280",
+        "720",
+        "30/1",
+        "28808",
+        "960.305667"
+      ],
+      "bytes": 138654331,
+      "width": 1280,
+      "height": 720,
+      "fps_ratio": "30/1",
+      "nb_frames": "28808",
+      "duration_s": 960.305667
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/wnba__wnba_04.mp4",
+      "raw": [
+        "1280",
+        "720",
+        "30/1",
+        "28819",
+        "960.688333"
+      ],
+      "bytes": 135744701,
+      "width": 1280,
+      "height": 720,
+      "fps_ratio": "30/1",
+      "nb_frames": "28819",
+      "duration_s": 960.688333
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/wnba__wnba_05.mp4",
+      "raw": [
+        "1280",
+        "720",
+        "30/1",
+        "28815",
+        "960.547000"
+      ],
+      "bytes": 136656761,
+      "width": 1280,
+      "height": 720,
+      "fps_ratio": "30/1",
+      "nb_frames": "28815",
+      "duration_s": 960.547
+    },
+    {
+      "path": "/workspace/wt/a1/data/footage_corpus/wnba__wnba_06.mp4",
+      "raw": [
+        "1920",
+        "1080",
+        "30/1",
+        "28674",
+        "960.033008"
+      ],
+      "bytes": 430058965,
+      "width": 1920,
+      "height": 1080,
+      "fps_ratio": "30/1",
+      "nb_frames": "28674",
+      "duration_s": 960.033008
+    }
+  ],
+  "eligible_1920x1080": [
+    "/workspace/wt/a1/data/footage_corpus/basketball__g220c_jh3fnwMi7dM.mp4",
+    "/workspace/wt/a1/data/footage_corpus/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+    "/workspace/wt/a1/data/footage_corpus/ncaa_basketball__ncaa_basketball_WFl3V7ZY4ss.mp4",
+    "/workspace/wt/a1/data/footage_corpus/ncaa_basketball__ncaa_basketball_mRkuGgeECak.mp4",
+    "/workspace/wt/a1/data/footage_corpus/ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+    "/workspace/wt/a1/data/footage_corpus/wnba__wnba_01_1080p.mp4",
+    "/workspace/wt/a1/data/footage_corpus/wnba__wnba_06.mp4"
+  ],
+  "rejected_count": 15,
+  "games_used": [
+    "wnba_01_1080p",
+    "ncaa_basketball_IB-_u4gW3ds_1080p",
+    "ncaa_basketball_mRkuGgeECak"
+  ],
+  "repeat_game": "wnba_01_1080p",
+  "gpu_probes": [
+    {
+      "query_gpu": "1918 MiB, 24576 MiB",
+      "query_compute_apps": "1785497, 462 MiB\n1811947, 462 MiB\n1815460, 484 MiB\n1818277, 484 MiB",
+      "free_mib": 22658
+    },
+    {
+      "query_gpu": "3316 MiB, 24576 MiB",
+      "query_compute_apps": "1835103, 462 MiB\n1835120, 462 MiB\n1835171, 462 MiB\n1835137, 462 MiB\n1835247, 462 MiB\n1835154, 462 MiB\n1835188, 482 MiB",
+      "free_mib": 21260
+    },
+    {
+      "query_gpu": "2221 MiB, 24576 MiB",
+      "query_compute_apps": "1908074, 486 MiB\n1914874, 426 MiB\n1915654, 426 MiB\n1916609, 426 MiB\n1918821, 426 MiB",
+      "free_mib": 22355
+    },
+    {
+      "query_gpu": "4736 MiB, 24576 MiB",
+      "query_compute_apps": "1968680, 482 MiB\n1968643, 484 MiB\n1968662, 484 MiB\n1968703, 484 MiB\n2000991, 462 MiB\n2008571, 482 MiB\n2009919, 462 MiB\n2015233, 482 MiB\n2035341, 426 MiB\n2038985, 336 MiB",
+      "free_mib": 19840
+    },
+    {
+      "query_gpu": "3093 MiB, 24576 MiB",
+      "query_compute_apps": "554271, 406 MiB\n554493, 406 MiB\n554476, 356 MiB\n554531, 356 MiB\n554511, 350 MiB\n554877, 364 MiB\n554783, 364 MiB\n554387, 368 MiB",
+      "free_mib": 21483
+    },
+    {
+      "query_gpu": "7735 MiB, 24576 MiB",
+      "query_compute_apps": "1694269, 462 MiB\n1694738, 462 MiB\n1694286, 476 MiB\n1694303, 616 MiB\n1694320, 462 MiB\n1695349, 462 MiB\n1695703, 462 MiB\n1694765, 498 MiB\n1696029, 462 MiB\n1695062, 462 MiB\n1695184, 482 MiB\n1694533, 484 MiB\n1694337, 462 MiB\n1694356, 484 MiB\n1887196, 426 MiB\n1932439, 358 MiB\n1944810, 256 MiB",
+      "free_mib": 16841
+    },
+    {
+      "query_gpu": "6750 MiB, 24576 MiB",
+      "query_compute_apps": "2073067, 484 MiB\n2075710, 474 MiB\n2099744, 478 MiB\n2136238, 484 MiB\n2336009, 482 MiB\n2354765, 462 MiB\n2357277, 482 MiB\n2367914, 426 MiB\n2367897, 426 MiB\n2369501, 426 MiB\n2373199, 426 MiB\n2379505, 426 MiB\n2379524, 426 MiB\n2382376, 426 MiB\n2387928, 356 MiB",
+      "free_mib": 17826
+    }
+  ],
+  "disk_du_sm_before": "15024",
+  "disk_du_sm_after": "UNKNOWN",
+  "runs": [
+    {
+      "tag": "wnba_01_1080p_armP",
+      "arm": "P",
+      "game_id": "wnba_01_1080p",
+      "status": "COMPLETE",
+      "rc": 0,
+      "wall_seconds": 363.7,
+      "log": "g310_out/wnba_01_1080p_armP.log",
+      "data_dir": "g310_out/wnba_01_1080p_armP",
+      "run_summary": {
+        "arm": "P",
+        "game_id": "wnba_01_1080p",
+        "video": "/workspace/wt/a1/data/footage_corpus/wnba__wnba_01_1080p.mp4",
+        "frames_requested": 1500,
+        "argv": [
+          "--video",
+          "/workspace/wt/a1/data/footage_corpus/wnba__wnba_01_1080p.mp4",
+          "--game-id",
+          "wnba_01_1080p",
+          "--no-show",
+          "--frames",
+          "1500",
+          "--data-dir",
+          "g310_out/wnba_01_1080p_armP"
+        ],
+        "rc": 0,
+        "wall_seconds": 351.2,
+        "imgsz_at_construction": [
+          640
+        ],
+        "imgsz_observed_at_call_site": [
+          640
+        ],
+        "detector_calls_recorded": 72
+      },
+      "proxies": {
+        "person_rows": 2116,
+        "denominator_evaluated_frames": null,
+        "frames_with_rows": 470,
+        "person_rows_per_evaluated_frame": null,
+        "distinct_track_ids": 10,
+        "median_track_len_rows": 206.5,
+        "ball_rows_total": 500,
+        "ball_rows_detected": 387,
+        "p95_norm_footpoint_step": 0.7477733292843668,
+        "denominator_step_pairs": 2106,
+        "source_height": 1080
+      }
+    },
+    {
+      "tag": "wnba_01_1080p_armN",
+      "arm": "N",
+      "game_id": "wnba_01_1080p",
+      "status": "COMPLETE",
+      "rc": 0,
+      "wall_seconds": 776.6,
+      "log": "g310_out/wnba_01_1080p_armN.log",
+      "data_dir": "g310_out/wnba_01_1080p_armN",
+      "run_summary": {
+        "arm": "N",
+        "game_id": "wnba_01_1080p",
+        "video": "/workspace/wt/a1/data/footage_corpus/wnba__wnba_01_1080p.mp4",
+        "frames_requested": 1500,
+        "argv": [
+          "--video",
+          "/workspace/wt/a1/data/footage_corpus/wnba__wnba_01_1080p.mp4",
+          "--game-id",
+          "wnba_01_1080p",
+          "--no-show",
+          "--frames",
+          "1500",
+          "--data-dir",
+          "g310_out/wnba_01_1080p_armN"
+        ],
+        "rc": 0,
+        "wall_seconds": 750.9,
+        "imgsz_at_construction": [
+          1920
+        ],
+        "imgsz_observed_at_call_site": [
+          1920
+        ],
+        "detector_calls_recorded": 72
+      },
+      "proxies": {
+        "person_rows": 2994,
+        "denominator_evaluated_frames": null,
+        "frames_with_rows": 470,
+        "person_rows_per_evaluated_frame": null,
+        "distinct_track_ids": 10,
+        "median_track_len_rows": 325.5,
+        "ball_rows_total": 500,
+        "ball_rows_detected": 261,
+        "p95_norm_footpoint_step": 0.9119331582128215,
+        "denominator_step_pairs": 2984,
+        "source_height": 1080
+      }
+    },
+    {
+      "tag": "ncaa_basketball_IB-_u4gW3ds_1080p_armP",
+      "arm": "P",
+      "game_id": "ncaa_basketball_IB-_u4gW3ds_1080p",
+      "status": "COMPLETE",
+      "rc": 0,
+      "wall_seconds": 2603.4,
+      "log": "g310_out/ncaa_basketball_IB-_u4gW3ds_1080p_armP.log",
+      "data_dir": "g310_out/ncaa_basketball_IB-_u4gW3ds_1080p_armP",
+      "run_summary": {
+        "arm": "P",
+        "game_id": "ncaa_basketball_IB-_u4gW3ds_1080p",
+        "video": "/workspace/wt/a1/data/footage_corpus/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+        "frames_requested": 1500,
+        "argv": [
+          "--video",
+          "/workspace/wt/a1/data/footage_corpus/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+          "--game-id",
+          "ncaa_basketball_IB-_u4gW3ds_1080p",
+          "--no-show",
+          "--frames",
+          "1500",
+          "--data-dir",
+          "g310_out/ncaa_basketball_IB-_u4gW3ds_1080p_armP"
+        ],
+        "rc": 0,
+        "wall_seconds": 2535.3,
+        "imgsz_at_construction": [
+          640
+        ],
+        "imgsz_observed_at_call_site": [
+          640
+        ],
+        "detector_calls_recorded": 72
+      },
+      "proxies": {
+        "person_rows": 1953,
+        "denominator_evaluated_frames": null,
+        "frames_with_rows": 470,
+        "person_rows_per_evaluated_frame": null,
+        "distinct_track_ids": 10,
+        "median_track_len_rows": 194.0,
+        "ball_rows_total": 500,
+        "ball_rows_detected": 325,
+        "p95_norm_footpoint_step": 0.5597901882577834,
+        "denominator_step_pairs": 1943,
+        "source_height": 1080
+      }
+    },
+    {
+      "tag": "ncaa_basketball_IB-_u4gW3ds_1080p_armN",
+      "arm": "N",
+      "game_id": "ncaa_basketball_IB-_u4gW3ds_1080p",
+      "status": "COMPLETE",
+      "rc": 0,
+      "wall_seconds": 2155.9,
+      "log": "g310_out/ncaa_basketball_IB-_u4gW3ds_1080p_armN.log",
+      "data_dir": "g310_out/ncaa_basketball_IB-_u4gW3ds_1080p_armN",
+      "run_summary": {
+        "arm": "N",
+        "game_id": "ncaa_basketball_IB-_u4gW3ds_1080p",
+        "video": "/workspace/wt/a1/data/footage_corpus/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+        "frames_requested": 1500,
+        "argv": [
+          "--video",
+          "/workspace/wt/a1/data/footage_corpus/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4",
+          "--game-id",
+          "ncaa_basketball_IB-_u4gW3ds_1080p",
+          "--no-show",
+          "--frames",
+          "1500",
+          "--data-dir",
+          "g310_out/ncaa_basketball_IB-_u4gW3ds_1080p_armN"
+        ],
+        "rc": 0,
+        "wall_seconds": 2078.2,
+        "imgsz_at_construction": [
+          1920
+        ],
+        "imgsz_observed_at_call_site": [
+          1920
+        ],
+        "detector_calls_recorded": 72
+      },
+      "proxies": {
+        "person_rows": 2349,
+        "denominator_evaluated_frames": null,
+        "frames_with_rows": 487,
+        "person_rows_per_evaluated_frame": null,
+        "distinct_track_ids": 10,
+        "median_track_len_rows": 229.5,
+        "ball_rows_total": 500,
+        "ball_rows_detected": 473,
+        "p95_norm_footpoint_step": 0.6162550066296899,
+        "denominator_step_pairs": 2339,
+        "source_height": 1080
+      }
+    },
+    {
+      "tag": "ncaa_basketball_mRkuGgeECak_armP",
+      "arm": "P",
+      "game_id": "ncaa_basketball_mRkuGgeECak",
+      "status": "BUDGET_LIMIT",
+      "rc": null,
+      "wall_seconds": 3604.2,
+      "log": "g310_out/ncaa_basketball_mRkuGgeECak_armP.log",
+      "data_dir": "g310_out/ncaa_basketball_mRkuGgeECak_armP",
+      "proxies": {
+        "person_rows": 1,
+        "denominator_evaluated_frames": null,
+        "frames_with_rows": 1,
+        "person_rows_per_evaluated_frame": null,
+        "distinct_track_ids": 1,
+        "median_track_len_rows": 1,
+        "ball_rows_total": 1,
+        "ball_rows_detected": 1,
+        "p95_norm_footpoint_step": null,
+        "denominator_step_pairs": 0,
+        "source_height": 1080
+      }
+    },
+    {
+      "tag": "ncaa_basketball_mRkuGgeECak_armN",
+      "arm": "N",
+      "game_id": "ncaa_basketball_mRkuGgeECak",
+      "status": "BUDGET_LIMIT",
+      "rc": null,
+      "wall_seconds": 3604.5,
+      "log": "g310_out/ncaa_basketball_mRkuGgeECak_armN.log",
+      "data_dir": "g310_out/ncaa_basketball_mRkuGgeECak_armN",
+      "proxies": {
+        "person_rows": 1,
+        "denominator_evaluated_frames": null,
+        "frames_with_rows": 1,
+        "person_rows_per_evaluated_frame": null,
+        "distinct_track_ids": 1,
+        "median_track_len_rows": 1,
+        "ball_rows_total": 1,
+        "ball_rows_detected": 1,
+        "p95_norm_footpoint_step": null,
+        "denominator_step_pairs": 0,
+        "source_height": 1080
+      }
+    },
+    {
+      "tag": "wnba_01_1080p_armP_repeat",
+      "arm": "P",
+      "game_id": "wnba_01_1080p",
+      "status": "COMPLETE",
+      "rc": 0,
+      "wall_seconds": 1293.0,
+      "log": "g310_out/wnba_01_1080p_armP_repeat.log",
+      "data_dir": "g310_out/wnba_01_1080p_armP_repeat",
+      "run_summary": {
+        "arm": "P",
+        "game_id": "wnba_01_1080p",
+        "video": "/workspace/wt/a1/data/footage_corpus/wnba__wnba_01_1080p.mp4",
+        "frames_requested": 1500,
+        "argv": [
+          "--video",
+          "/workspace/wt/a1/data/footage_corpus/wnba__wnba_01_1080p.mp4",
+          "--game-id",
+          "wnba_01_1080p",
+          "--no-show",
+          "--frames",
+          "1500",
+          "--data-dir",
+          "g310_out/wnba_01_1080p_armP_repeat"
+        ],
+        "rc": 0,
+        "wall_seconds": 1246.1,
+        "imgsz_at_construction": [
+          640
+        ],
+        "imgsz_observed_at_call_site": [
+          640
+        ],
+        "detector_calls_recorded": 72
+      },
+      "proxies": {
+        "person_rows": 2185,
+        "denominator_evaluated_frames": null,
+        "frames_with_rows": 470,
+        "person_rows_per_evaluated_frame": null,
+        "distinct_track_ids": 10,
+        "median_track_len_rows": 216.0,
+        "ball_rows_total": 500,
+        "ball_rows_detected": 417,
+        "p95_norm_footpoint_step": 0.7671238567415777,
+        "denominator_step_pairs": 2175,
+        "source_height": 1080
+      }
+    }
+  ]
+}
