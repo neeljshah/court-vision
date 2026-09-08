@@ -1,0 +1,15 @@
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\summary\v1.py", line 23, in <module>
+    from tensorboard.plugins.histogram import summary as _histogram_summary
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\plugins\histogram\summary.py", line 35, in <module>
+    from tensorboard.plugins.histogram import summary_v2
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\plugins\histogram\summary_v2.py", line 35, in <module>
+    from tensorboard.util import tensor_util
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\util\tensor_util.py", line 20, in <module>
+    from tensorboard.compat.tensorflow_stub import dtypes, compat, tensor_shape
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\compat\tensorflow_stub\__init__.py", line 22, in <module>
+    from .dtypes import as_dtype  # noqa
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\compat\tensorflow_stub\dtypes.py", line 326, in <module>
+    np.bool8: (False, True),
+  File "C:\Users\neelj\AppData\Local\Programs\Python\Python310\lib\site-packages\numpy\__init__.py", line 427, in __getattr__
+    raise AttributeError("module {!r} has no attribute "
+AttributeError: module 'numpy' has no attribute 'bool8'. Did you mean: 'bool'?

@@ -1,0 +1,48 @@
+{
+  "captured_utc": "2026-09-08T17:01:37Z",
+  "cgroup_cpu_quota": null,
+  "cpu_count": 12,
+  "git": {
+    "dirty": true,
+    "head_sha": "5e37f9c96eb0cb9d1513870d50316e8053c260b5",
+    "unavailable_reason": null
+  },
+  "host": {
+    "hostname": "DESKTOP-VUIITL8",
+    "role": "local",
+    "role_rule": "role is 'pod' when /workspace/nba-ai-system exists, else 'local'"
+  },
+  "import_shim": "shim_raised_ImportError: cannot import name 'builder' from 'google.protobuf.internal' (C:\\Users\\neelj\\App",
+  "libraries": {
+    "cv2": "4.11.0",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scipy": "1.15.1",
+    "sklearn": "1.6.1",
+    "torch": "2.2.0+cu121",
+    "ultralytics": "8.3.64"
+  },
+  "modules": [
+    {
+      "path": "scripts/platformkit/env_shim.py",
+      "sha256": "b4454c35ee54500f6e42cd91ef6f1e2c4a584a2ffcec3323059af455f53e874a",
+      "unavailable_reason": null
+    }
+  ],
+  "platform": "Windows-10-10.0.26200-SP0",
+  "python_version": "3.10.0",
+  "schema": "g62_environment_sidecar_v1",
+  "seed": null,
+  "seed_reason": "no seeded randomness on this route",
+  "threads": {
+    "MKL_NUM_THREADS": null,
+    "OMP_NUM_THREADS": null,
+    "torch_num_threads": 6
+  },
+  "torch_build": {
+    "cuda_available": true,
+    "cuda_version": "12.1",
+    "cudnn_version": 8801,
+    "unavailable_reason": null
+  }
+}

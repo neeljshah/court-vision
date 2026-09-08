@@ -11,7 +11,7 @@ from scripts.platformkit import env_sidecar
 from scripts.platformkit.env_sidecar import SCHEMA, SIDECAR_NAME, capture, read, write
 from scripts.platformkit.tracking import census_recomputable
 
-TOP_KEYS = {"captured_utc", "cgroup_cpu_quota", "cpu_count", "git", "host", "libraries",
+TOP_KEYS = {"captured_utc", "cgroup_cpu_quota", "cpu_count", "git", "host", "import_shim", "libraries",
             "modules", "platform", "python_version", "schema", "seed", "seed_reason", "threads",
             "torch_build"}
 SELF = "scripts/platformkit/env_sidecar.py"
@@ -36,6 +36,7 @@ def test_capture_carries_every_key_with_the_right_type():
     assert stamp["cgroup_cpu_quota"] is None or isinstance(stamp["cgroup_cpu_quota"], str)
     assert set(stamp["host"]) == {"hostname", "role", "role_rule"}
     assert stamp["host"]["role"] in ("pod", "local") and stamp["host"]["role_rule"]
+    assert isinstance(stamp["import_shim"], str)
     assert set(stamp["libraries"]) == set(env_sidecar.LIBRARIES)
     assert all(v is None or isinstance(v, str) for v in stamp["libraries"].values())
     assert set(stamp["threads"]) == {"MKL_NUM_THREADS", "OMP_NUM_THREADS", "torch_num_threads"}

@@ -23,6 +23,8 @@ POD_MARKER = "/workspace/nba-ai-system"
 ROLE_RULE = "role is 'pod' when " + POD_MARKER + " exists, else 'local'"
 CGROUP_FILES = ("/sys/fs/cgroup/cpu.max", "/sys/fs/cgroup/cpu/cpu.cfs_quota_us")
 NO_SEED = "no seeded randomness on this route"
+IMPORT_SHIM_NONE = "none"
+_IMPORT_SHIM = IMPORT_SHIM_NONE
 
 _FILE = globals().get("__file__", "")
 _ROOT = Path(_FILE).resolve().parents[2] if _FILE.endswith("env_sidecar.py") else Path.cwd()
@@ -96,6 +98,12 @@ def _modules(paths, root):
     return out
 
 
+def record_import_shim(action: str) -> None:
+    """Record the process-local route import workaround for the next sidecar."""
+    global _IMPORT_SHIM
+    _IMPORT_SHIM = action
+
+
 def capture(modules=None, seed=None, seed_reason=None, root=None) -> dict:
     """Run-environment stamp for this process; `modules` names the files that fix the result."""
     base = Path(root) if root is not None else _ROOT
@@ -112,6 +120,7 @@ def capture(modules=None, seed=None, seed_reason=None, root=None) -> dict:
         "cpu_count": os.cpu_count(),
         "git": _git(base),
         "host": {"hostname": hostname, "role": "pod" if Path(POD_MARKER).exists() else "local", "role_rule": ROLE_RULE},
+        "import_shim": _IMPORT_SHIM,
         "libraries": {name: str(getattr(_imported(name), "__version__", "") or "") or None for name in LIBRARIES},
         "modules": _modules(modules, base),
         "platform": platform.platform(),

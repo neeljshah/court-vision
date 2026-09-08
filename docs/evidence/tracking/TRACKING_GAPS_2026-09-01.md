@@ -318,7 +318,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G347  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G348  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
@@ -910,7 +910,7 @@ sidecar that reports no evaluated-frame count. Neither belongs to a closed row, 
 
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
-| G340 | all | OPEN -- allocated 2026-09-08 (codex prepares, finisher executes; local only). LOCAL ROUTE ENVIRONMENT: G333 found neither local interpreter starts the production route unaided (conda: onnx/ml_dtypes AttributeError escapes ultralytics; system py3.10.0: torchreid -> tensorboard -> np.bool8 gone in numpy 2); every local smoke has used an ad-hoc onnx stub. Row = tracebacks per interpreter, diagnosis chain, env_shim.prepare_route_imports() (no-op on a clean env, recorded in the G62 sidecar) + test, 2x2 before/after table, PROPOSED pin change (not applied), ENVIRONMENT_NOTES.md naming the interpreter every local measurement must use. Spec: docs/evidence/tracking/specs/G340_spec.md -> worktree a22. | (pending) | OPEN |
+| G340 | all | PARTIAL 2026-09-08 80d06ba72 (ACCEPT WITH CORRECTIONS verified codex-sol) -- shim fixes the conda interpreter (2/2 imports); the system interpreter stays broken after the shim (0/2) and the shim REGRESSES system YOLO (1 -> 0) via an uncaught protobuf ImportError in env_shim._onnx_preflight; pin change PROPOSED, 0 packages changed. Original text: OPEN -- allocated 2026-09-08 (codex prepares, finisher executes; local only). LOCAL ROUTE ENVIRONMENT: G333 found neither local interpreter starts the production route unaided (conda: onnx/ml_dtypes AttributeError escapes ultralytics; system py3.10.0: torchreid -> tensorboard -> np.bool8 gone in numpy 2); every local smoke has used an ad-hoc onnx stub. Row = tracebacks per interpreter, diagnosis chain, env_shim.prepare_route_imports() (no-op on a clean env, recorded in the G62 sidecar) + test, 2x2 before/after table, PROPOSED pin change (not applied), ENVIRONMENT_NOTES.md naming the interpreter every local measurement must use. Spec: docs/evidence/tracking/specs/G340_spec.md -> worktree a22. | docs/evidence/tracking/g340_local_route_env_2026-09-08.md | PARTIAL |
 
 ## G341 allocation register (2026-09-08)
 
@@ -947,3 +947,9 @@ sidecar that reports no evaluated-frame count. Neither belongs to a closed row, 
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G346 | all | OPEN -- allocated 2026-09-08 (codex build + finisher; from G338). FROZEN / STATIC VIDEO SECTIONS: G338 measured 2 of its 6 sealed sections as frozen video (inter-frame delta 0.18 and 2.65; ~1,200 bytes per frame vs 8,000-18,000 live) producing zero person rows at every detector input size, and found the 4 sections at 1280x720 all come from one game (resolution confounded with game). Row = an additive temporal liveness check in the ingest gate (60 sampled frames at 320x180: near-identical-pair share and bytes per frame; FROZEN reported, --reject-frozen default OFF), a sealed pod corpus census crossed with the ledger (how many frozen sections produced rows), a resolution x game table, and a PROPOSED feeder hook. Spec: docs/evidence/tracking/specs/G346_spec.md -> worktree TBD. | (pending) | OPEN |
+
+## G347 allocation register (2026-09-08)
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G347 | all | OPEN -- allocated 2026-09-08 at the G340 landing (verifier NEW GAP). ENV SHIM REGRESSION: scripts/platformkit/env_shim.py catches only ModuleNotFoundError and AttributeError in _onnx_preflight, so the system interpreter's plain protobuf ImportError (cannot import name builder from google.protobuf.internal) escapes and turns a clean YOLO import (before_ok=1) into a failure (after_ok=0); row = catch ImportError as well, make prepare_route_imports() a strict no-op whenever the route already imports cleanly (probe first, shim only on failure), add the protobuf/onnx pin to the PROPOSED environment fix, and re-run the 2 x 2 table (bar: no interpreter regresses; conda stays 2/2). Spec: TBD (orchestrator). | (pending) | OPEN |
