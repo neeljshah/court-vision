@@ -58,3 +58,13 @@ Local wall time: about 25 minutes. Proposed ledger line:
 - An independent verifier rerun or the orchestrator's explicit-path commits.
 - Whether historic rows omitted a scratch declaration for every input; the census only reports declared text.
 - Real timestamps beyond the committed S287 tick `ts` values, or any broader corpus.
+
+## Landing 2026-09-08 (verifier codex-sol: ACCEPT, no corrections)
+Landed on master by explicit path from `fe8b93c2f` (prereg `a20e43be5` alone first, as `8b2d7293b`); every extracted blob id is identical to a4's, so nothing was re-wrapped or re-dated. `PREREG_ARCHIVE_RULE.md` was sealed in the prereg commit rather than the metric commit, so it landed with the content commit `c348200f1`. On master as-is: 4 + 1 tests pass, the same counts this row and the verifier recorded.
+Interpreter line, the one the spec asks for, run at landing in conda `basketball_ai`: `python -c "import sys,numpy,pandas;print(sys.version.split()[0], numpy.__version__, pandas.__version__)"` prints `3.10.20 1.26.4 2.3.3`. This box also carries a second Python 3.10.0 with numpy 2.2.6 and pandas 2.2.3 on PATH; the counts above were produced under the conda one.
+NEW GAP: the memo does not print the exact committed-read marker its prereg promised, so a reader cannot confirm from the memo alone which committed bytes were read.
+NEW GAP: the 12-tick construct test does not assert simulator ECE, so the ECE path of the recomputation has no synthetic-fixture check.
+NEW GAP: master carried no S317 spec test before this landing, so the verifier's A1 baseline count could not be produced; it can be produced from this row forward.
+NEW GAP: the lane memo omitted the spec-requested interpreter line -- it is supplied above at landing, not by the lane.
+NEW GAP: the a4 lane could not create its own worktree `index.lock`, so both lane commits and the verify memo commit were made outside the lane's own helper.
+Vocabulary follows contract Q6; automated scan required.
