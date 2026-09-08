@@ -318,7 +318,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G343  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G346  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
@@ -923,3 +923,21 @@ sidecar that reports no evaluated-frame count. Neither belongs to a closed row, 
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G342 | basketball | OPEN -- allocated 2026-09-08 (codex build + finisher; astra plan section 5 and failure mode C). COURT TEMPLATE VARIANTS + SELECTION: G334 fits one NBA template while 4 of the 6 staged sections are FIBA-rule courts (28 x 15 m, 4.9 m lane, 6.75 m arc) and WNBA/NCAA differ in arc, lane and corner values; row = versioned NBA/WNBA/FIBA/NCAA templates in native rule units with cited sources, a renderer and semantic strokes, a selector (winner cost <= 0.8 x runner-up on >= 5 frames from >= 2 shots, >= 2 distinctive feature groups, 100-bootstrap same winner >= 90 pct, else UNKNOWN), synthetic validation on 4 x 200 renders x 2 arms with confusion matrices and the NBA-vs-WNBA/FIBA/NCAA separations; bar = true template wins outright >= 0.95 and wrong winner <= 0.02 per template on the true-H arm. PROPOSED hook for G334 only. Spec: docs/evidence/tracking/specs/G342_spec.md -> worktree a4. | (pending) | OPEN |
+
+## G343 allocation register (2026-09-08)
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G343 | basketball | OPEN -- allocated 2026-09-08 (codex build + finisher; astra ranked-rows item 8, the cheapest falsification). ATTACK TEST ON THE EVIDENCE PIPELINE: corrupt 24 sealed 2 s windows of cached tracking tables in five known ways (frozen trajectories, same-team id merge, ball time shift +30 frames, scale 0.9 + translate 5 pct, mirror) and run every existing harness gate through its own function; output = a POWER TABLE (rejection share per corruption per gate with n, A0 byte-identical) plus a named missing gate for every corruption rejected on < 0.50 of windows. Measurement row (verdict MEASURED); the expected finding is that today's gates have no power against self-consistent wrong tracks. Spec: docs/evidence/tracking/specs/G343_spec.md -> worktree TBD. | (pending) | OPEN |
+
+## G344 allocation register (2026-09-08)
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G344 | basketball | OPEN -- allocated 2026-09-08 (codex build + finisher; astra ranked row 5; dispatch after G339 lands). BALL EVIDENCE -> SHADOW POSSESSION STATE: per-frame state OBSERVED_VALID / INFERRED / ABSENT / AMBIGUOUS over the full frame denominator with source, age and confidence; ownership hypothesis = nearest player in a sealed image radius AND 3-frame motion agreement, else ABSTAIN with reason; 200 synthetic join cases (offset, cut, missing, duplicate, pass-through) must score 200/200; a +/- 1 s ball shuffle must drop motion agreement by >= 20 pp (else the evidence is decorative); prefix invariance. No consumer wired (astra row 6 owns consumption). Spec: docs/evidence/tracking/specs/G344_spec.md -> worktree TBD. | (pending) | OPEN |
+
+## G345 allocation register (2026-09-08)
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G345 | basketball | OPEN -- allocated 2026-09-08 (codex build + finisher; astra ranked row 4; dispatch after G336 lands). TRACKLET CONTINUITY ON FIXED DETECTIONS: G336 scored arms on different observation sets; this row scores the route association, G336's variant and an own two-stage IoU matcher with gated reconnects on byte-identical cached detections (G336 captures, 4 sections x 240 frames), generation-scoped ids, metrics = starts per 1,000 detection-supported pairs, coverage, simultaneous merges; 200 injected gaps and crossings (reconnect correctness >= 0.95, 0 merges); a reserved crop-correlation channel the associators never see; preregistered decision rule for a PROPOSED src change (starts -50 pct on >= 3/4 sections at <= 2 pp coverage loss). Anonymous tracklets, never player identities. Spec: docs/evidence/tracking/specs/G345_spec.md -> worktree TBD. | (pending) | OPEN |
