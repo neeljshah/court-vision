@@ -1,0 +1,167 @@
+row_id,source_id,arena,classification,negative_category,landmark_name,x,y,visible,confidence,note,locator_name
+wnba_01_01,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_L,524,379,1,0.62,frame-boundary,gpt-5.6-terra
+wnba_01_01,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_R,816,407,1,0.62,frame-boundary,gpt-5.6-terra
+wnba_01_01,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_L,651,506,1,0.62,frame-boundary,gpt-5.6-terra
+wnba_01_01,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_R,943,542,1,0.62,frame-boundary,gpt-5.6-terra
+wnba_01_01,wnba_01,Gateway Center Arena,ELIGIBLE,,KEY_TOP,1085,438,1,0.58,frame-boundary,gpt-5.6-terra
+wnba_01_01,wnba_01,Gateway Center Arena,ELIGIBLE,,THREE_PT_BASE_L,366,381,1,0.56,frame-boundary,gpt-5.6-terra
+wnba_01_03,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_L,540,374,1,0.63,frame-boundary,gpt-5.6-terra
+wnba_01_03,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_R,824,405,1,0.63,frame-boundary,gpt-5.6-terra
+wnba_01_03,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_L,670,500,1,0.63,frame-boundary,gpt-5.6-terra
+wnba_01_03,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_R,958,535,1,0.63,frame-boundary,gpt-5.6-terra
+wnba_01_03,wnba_01,Gateway Center Arena,ELIGIBLE,,KEY_TOP,1102,435,1,0.58,frame-boundary,gpt-5.6-terra
+wnba_01_03,wnba_01,Gateway Center Arena,ELIGIBLE,,THREE_PT_BASE_L,380,375,1,0.56,frame-boundary,gpt-5.6-terra
+wnba_01_04,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_L,536,378,1,0.62,frame-boundary,gpt-5.6-terra
+wnba_01_04,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_R,827,409,1,0.62,frame-boundary,gpt-5.6-terra
+wnba_01_04,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_L,662,505,1,0.62,frame-boundary,gpt-5.6-terra
+wnba_01_04,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_R,951,539,1,0.62,frame-boundary,gpt-5.6-terra
+wnba_01_04,wnba_01,Gateway Center Arena,ELIGIBLE,,KEY_TOP,1097,439,1,0.58,frame-boundary,gpt-5.6-terra
+wnba_01_04,wnba_01,Gateway Center Arena,ELIGIBLE,,THREE_PT_BASE_L,375,378,1,0.56,frame-boundary,gpt-5.6-terra
+wnba_01_05,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_L,528,375,1,0.61,frame-boundary,gpt-5.6-terra
+wnba_01_05,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_R,820,407,1,0.61,frame-boundary,gpt-5.6-terra
+wnba_01_05,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_L,654,501,1,0.61,frame-boundary,gpt-5.6-terra
+wnba_01_05,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_R,945,535,1,0.61,frame-boundary,gpt-5.6-terra
+wnba_01_05,wnba_01,Gateway Center Arena,ELIGIBLE,,KEY_TOP,1090,435,1,0.56,frame-boundary,gpt-5.6-terra
+wnba_01_05,wnba_01,Gateway Center Arena,ELIGIBLE,,THREE_PT_BASE_L,365,377,1,0.55,frame-boundary,gpt-5.6-terra
+wnba_01_07,wnba_01,Gateway Center Arena,ELIGIBLE,,CENTER_SIDELINE_NEAR,1538,815,1,0.64,frame-boundary,gpt-5.6-terra
+wnba_01_07,wnba_01,Gateway Center Arena,ELIGIBLE,,CENTER_SIDELINE_FAR,1541,285,1,0.64,frame-boundary,gpt-5.6-terra
+wnba_01_07,wnba_01,Gateway Center Arena,ELIGIBLE,,CENTER_CIRCLE_TOP,1515,416,1,0.55,frame-boundary,gpt-5.6-terra
+wnba_01_07,wnba_01,Gateway Center Arena,ELIGIBLE,,CENTER_CIRCLE_BOTTOM,1530,592,1,0.55,frame-boundary,gpt-5.6-terra
+wnba_01_07,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_L,520,398,1,0.52,frame-boundary,gpt-5.6-terra
+wnba_01_07,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_R,620,462,1,0.52,frame-boundary,gpt-5.6-terra
+wnba_01_09,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_L,1398,376,1,0.61,frame-boundary,gpt-5.6-terra
+wnba_01_09,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_R,1104,405,1,0.61,frame-boundary,gpt-5.6-terra
+wnba_01_09,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_L,1274,499,1,0.61,frame-boundary,gpt-5.6-terra
+wnba_01_09,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_R,980,535,1,0.61,frame-boundary,gpt-5.6-terra
+wnba_01_09,wnba_01,Gateway Center Arena,ELIGIBLE,,KEY_TOP,830,438,1,0.56,frame-boundary,gpt-5.6-terra
+wnba_01_09,wnba_01,Gateway Center Arena,ELIGIBLE,,THREE_PT_BASE_L,1615,376,1,0.54,frame-boundary,gpt-5.6-terra
+wnba_01_13,wnba_01,Gateway Center Arena,ELIGIBLE,,CENTER_SIDELINE_NEAR,545,818,1,0.64,frame-boundary,gpt-5.6-terra
+wnba_01_13,wnba_01,Gateway Center Arena,ELIGIBLE,,CENTER_SIDELINE_FAR,537,307,1,0.64,frame-boundary,gpt-5.6-terra
+wnba_01_13,wnba_01,Gateway Center Arena,ELIGIBLE,,CENTER_CIRCLE_TOP,511,438,1,0.54,frame-boundary,gpt-5.6-terra
+wnba_01_13,wnba_01,Gateway Center Arena,ELIGIBLE,,CENTER_CIRCLE_BOTTOM,503,580,1,0.54,frame-boundary,gpt-5.6-terra
+wnba_01_13,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_L,1370,390,1,0.52,frame-boundary,gpt-5.6-terra
+wnba_01_13,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_R,1600,440,1,0.52,frame-boundary,gpt-5.6-terra
+wnba_01_14,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_L,1390,365,1,0.62,frame-boundary,gpt-5.6-terra
+wnba_01_14,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_R,1093,398,1,0.62,frame-boundary,gpt-5.6-terra
+wnba_01_14,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_L,1270,490,1,0.62,frame-boundary,gpt-5.6-terra
+wnba_01_14,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_R,976,526,1,0.62,frame-boundary,gpt-5.6-terra
+wnba_01_14,wnba_01,Gateway Center Arena,ELIGIBLE,,KEY_TOP,820,430,1,0.57,frame-boundary,gpt-5.6-terra
+wnba_01_14,wnba_01,Gateway Center Arena,ELIGIBLE,,THREE_PT_BASE_L,1610,365,1,0.55,frame-boundary,gpt-5.6-terra
+wnba_01_17,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_L,490,350,1,0.60,frame-boundary,gpt-5.6-terra
+wnba_01_17,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_R,792,385,1,0.60,frame-boundary,gpt-5.6-terra
+wnba_01_17,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_L,635,478,1,0.60,frame-boundary,gpt-5.6-terra
+wnba_01_17,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_R,935,516,1,0.60,frame-boundary,gpt-5.6-terra
+wnba_01_17,wnba_01,Gateway Center Arena,ELIGIBLE,,KEY_TOP,1075,420,1,0.55,frame-boundary,gpt-5.6-terra
+wnba_01_17,wnba_01,Gateway Center Arena,ELIGIBLE,,THREE_PT_BASE_L,330,350,1,0.54,frame-boundary,gpt-5.6-terra
+wnba_01_19,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_L,530,377,1,0.60,frame-boundary,gpt-5.6-terra
+wnba_01_19,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_R,825,408,1,0.60,frame-boundary,gpt-5.6-terra
+wnba_01_19,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_L,660,502,1,0.60,frame-boundary,gpt-5.6-terra
+wnba_01_19,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_R,954,537,1,0.60,frame-boundary,gpt-5.6-terra
+wnba_01_19,wnba_01,Gateway Center Arena,ELIGIBLE,,KEY_TOP,1096,436,1,0.55,frame-boundary,gpt-5.6-terra
+wnba_01_19,wnba_01,Gateway Center Arena,ELIGIBLE,,THREE_PT_BASE_L,370,378,1,0.54,frame-boundary,gpt-5.6-terra
+wnba_01_20,wnba_01,Gateway Center Arena,ELIGIBLE,,CENTER_SIDELINE_NEAR,344,810,1,0.62,frame-boundary,gpt-5.6-terra
+wnba_01_20,wnba_01,Gateway Center Arena,ELIGIBLE,,CENTER_SIDELINE_FAR,350,305,1,0.62,frame-boundary,gpt-5.6-terra
+wnba_01_20,wnba_01,Gateway Center Arena,ELIGIBLE,,CENTER_CIRCLE_TOP,350,440,1,0.53,frame-boundary,gpt-5.6-terra
+wnba_01_20,wnba_01,Gateway Center Arena,ELIGIBLE,,CENTER_CIRCLE_BOTTOM,350,582,1,0.53,frame-boundary,gpt-5.6-terra
+wnba_01_20,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_L,1500,400,1,0.51,frame-boundary,gpt-5.6-terra
+wnba_01_20,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_R,1700,450,1,0.51,frame-boundary,gpt-5.6-terra
+wnba_01_21,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_L,535,376,1,0.61,frame-boundary,gpt-5.6-terra
+wnba_01_21,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_R,827,407,1,0.61,frame-boundary,gpt-5.6-terra
+wnba_01_21,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_L,664,503,1,0.61,frame-boundary,gpt-5.6-terra
+wnba_01_21,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_R,956,538,1,0.61,frame-boundary,gpt-5.6-terra
+wnba_01_21,wnba_01,Gateway Center Arena,ELIGIBLE,,KEY_TOP,1098,437,1,0.56,frame-boundary,gpt-5.6-terra
+wnba_01_21,wnba_01,Gateway Center Arena,ELIGIBLE,,THREE_PT_BASE_L,375,377,1,0.54,frame-boundary,gpt-5.6-terra
+wnba_01_22,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_L,528,377,1,0.60,frame-boundary,gpt-5.6-terra
+wnba_01_22,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_R,821,408,1,0.60,frame-boundary,gpt-5.6-terra
+wnba_01_22,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_L,656,503,1,0.60,frame-boundary,gpt-5.6-terra
+wnba_01_22,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_R,949,538,1,0.60,frame-boundary,gpt-5.6-terra
+wnba_01_22,wnba_01,Gateway Center Arena,ELIGIBLE,,KEY_TOP,1090,437,1,0.55,frame-boundary,gpt-5.6-terra
+wnba_01_22,wnba_01,Gateway Center Arena,ELIGIBLE,,THREE_PT_BASE_L,367,378,1,0.54,frame-boundary,gpt-5.6-terra
+wnba_01_25,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_L,1395,370,1,0.61,frame-boundary,gpt-5.6-terra
+wnba_01_25,wnba_01,Gateway Center Arena,ELIGIBLE,,LANE_BASE_R,1100,404,1,0.61,frame-boundary,gpt-5.6-terra
+wnba_01_25,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_L,1278,495,1,0.61,frame-boundary,gpt-5.6-terra
+wnba_01_25,wnba_01,Gateway Center Arena,ELIGIBLE,,FT_LINE_R,982,530,1,0.61,frame-boundary,gpt-5.6-terra
+wnba_01_25,wnba_01,Gateway Center Arena,ELIGIBLE,,KEY_TOP,830,435,1,0.56,frame-boundary,gpt-5.6-terra
+wnba_01_25,wnba_01,Gateway Center Arena,ELIGIBLE,,THREE_PT_BASE_L,1612,370,1,0.54,frame-boundary,gpt-5.6-terra
+wnba_04_03,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_NEAR,1540,826,1,0.42,frame-boundary,gpt-5.6-terra
+wnba_04_03,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_FAR,1470,310,1,0.42,frame-boundary,gpt-5.6-terra
+wnba_04_03,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_TOP,1160,444,1,0.40,frame-boundary,gpt-5.6-terra
+wnba_04_03,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_BOTTOM,1170,710,1,0.40,frame-boundary,gpt-5.6-terra
+wnba_04_03,wnba_04,Climate Pledge Arena,ELIGIBLE,,,,,0,0.00,shortfall: four vocabulary landmarks visible,gpt-5.6-terra
+wnba_04_04,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_NEAR,1505,820,1,0.42,frame-boundary,gpt-5.6-terra
+wnba_04_04,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_FAR,1435,309,1,0.42,frame-boundary,gpt-5.6-terra
+wnba_04_04,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_TOP,1125,443,1,0.40,frame-boundary,gpt-5.6-terra
+wnba_04_04,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_BOTTOM,1135,705,1,0.40,frame-boundary,gpt-5.6-terra
+wnba_04_04,wnba_04,Climate Pledge Arena,ELIGIBLE,,,,,0,0.00,shortfall: four vocabulary landmarks visible,gpt-5.6-terra
+wnba_04_06,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_NEAR,703,813,1,0.46,frame-boundary,gpt-5.6-terra
+wnba_04_06,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_FAR,699,275,1,0.46,frame-boundary,gpt-5.6-terra
+wnba_04_06,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_TOP,700,408,1,0.44,frame-boundary,gpt-5.6-terra
+wnba_04_06,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_BOTTOM,701,720,1,0.44,frame-boundary,gpt-5.6-terra
+wnba_04_06,wnba_04,Climate Pledge Arena,ELIGIBLE,,,,,0,0.00,shortfall: four vocabulary landmarks visible,gpt-5.6-terra
+wnba_04_09,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_NEAR,718,810,1,0.30,frame-boundary,gpt-5.6-terra
+wnba_04_09,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_FAR,714,275,1,0.30,frame-boundary,gpt-5.6-terra
+wnba_04_09,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_TOP,715,404,1,0.28,frame-boundary,gpt-5.6-terra
+wnba_04_09,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_BOTTOM,716,716,1,0.28,frame-boundary,gpt-5.6-terra
+wnba_04_09,wnba_04,Climate Pledge Arena,ELIGIBLE,,,,,0,0.00,shortfall: four vocabulary landmarks visible,gpt-5.6-terra
+wnba_04_12,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_NEAR,718,814,1,0.43,frame-boundary,gpt-5.6-terra
+wnba_04_12,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_FAR,714,277,1,0.43,frame-boundary,gpt-5.6-terra
+wnba_04_12,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_TOP,715,410,1,0.41,frame-boundary,gpt-5.6-terra
+wnba_04_12,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_BOTTOM,716,718,1,0.41,frame-boundary,gpt-5.6-terra
+wnba_04_12,wnba_04,Climate Pledge Arena,ELIGIBLE,,,,,0,0.00,shortfall: four vocabulary landmarks visible,gpt-5.6-terra
+wnba_04_16,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_NEAR,1020,816,1,0.40,frame-boundary,gpt-5.6-terra
+wnba_04_16,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_FAR,1017,276,1,0.40,frame-boundary,gpt-5.6-terra
+wnba_04_16,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_TOP,1018,408,1,0.38,frame-boundary,gpt-5.6-terra
+wnba_04_16,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_BOTTOM,1019,718,1,0.38,frame-boundary,gpt-5.6-terra
+wnba_04_16,wnba_04,Climate Pledge Arena,ELIGIBLE,,,,,0,0.00,shortfall: four vocabulary landmarks visible,gpt-5.6-terra
+wnba_04_17,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_NEAR,1035,813,1,0.39,frame-boundary,gpt-5.6-terra
+wnba_04_17,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_FAR,1032,276,1,0.39,frame-boundary,gpt-5.6-terra
+wnba_04_17,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_TOP,1033,409,1,0.37,frame-boundary,gpt-5.6-terra
+wnba_04_17,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_BOTTOM,1034,719,1,0.37,frame-boundary,gpt-5.6-terra
+wnba_04_17,wnba_04,Climate Pledge Arena,ELIGIBLE,,,,,0,0.00,shortfall: four vocabulary landmarks visible,gpt-5.6-terra
+wnba_04_20,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_NEAR,1650,816,1,0.36,frame-boundary,gpt-5.6-terra
+wnba_04_20,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_FAR,1640,516,1,0.36,frame-boundary,gpt-5.6-terra
+wnba_04_20,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_TOP,840,470,1,0.34,frame-boundary,gpt-5.6-terra
+wnba_04_20,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_BOTTOM,850,835,1,0.34,frame-boundary,gpt-5.6-terra
+wnba_04_20,wnba_04,Climate Pledge Arena,ELIGIBLE,,,,,0,0.00,shortfall: four vocabulary landmarks visible,gpt-5.6-terra
+wnba_04_22,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_NEAR,1480,814,1,0.42,frame-boundary,gpt-5.6-terra
+wnba_04_22,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_SIDELINE_FAR,1475,279,1,0.42,frame-boundary,gpt-5.6-terra
+wnba_04_22,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_TOP,1190,410,1,0.40,frame-boundary,gpt-5.6-terra
+wnba_04_22,wnba_04,Climate Pledge Arena,ELIGIBLE,,CENTER_CIRCLE_BOTTOM,1196,718,1,0.40,frame-boundary,gpt-5.6-terra
+wnba_04_22,wnba_04,Climate Pledge Arena,ELIGIBLE,,,,,0,0.00,shortfall: four vocabulary landmarks visible,gpt-5.6-terra
+wnba_01_02,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_01_06,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_01_08,wnba_01,Gateway Center Arena,NEGATIVE,graphics/transition,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_01_10,wnba_01,Gateway Center Arena,NEGATIVE,replay/alternate-camera,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_01_11,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_01_12,wnba_01,Gateway Center Arena,NEGATIVE,replay/alternate-camera,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_01_15,wnba_01,Gateway Center Arena,NEGATIVE,replay/alternate-camera,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_01_16,wnba_01,Gateway Center Arena,NEGATIVE,replay/alternate-camera,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_01_18,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_01_23,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_01_24,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_01_26,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_01_27,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_01_28,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_01_29,wnba_01,Gateway Center Arena,NEGATIVE,replay/alternate-camera,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_01_30,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_01,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_05,wnba_04,Climate Pledge Arena,NEGATIVE,close-up,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_07,wnba_04,Climate Pledge Arena,NEGATIVE,close-up,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_10,wnba_04,Climate Pledge Arena,NEGATIVE,close-up,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_11,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_13,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_14,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_15,wnba_04,Climate Pledge Arena,NEGATIVE,close-up,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_18,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_19,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_21,wnba_04,Climate Pledge Arena,NEGATIVE,close-up,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_23,wnba_04,Climate Pledge Arena,NEGATIVE,close-up,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_24,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_25,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_26,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_27,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_28,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_29,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_30,wnba_04,Climate Pledge Arena,NEGATIVE,close-up,,,,0,1.00,negative classification,gpt-5.6-terra
+wnba_04_02,wnba_04,Climate Pledge Arena,UNRESOLVABLE,,,,,0,0.00,fewer than three reliably identifiable marking structures,gpt-5.6-terra
+wnba_04_08,wnba_04,Climate Pledge Arena,UNRESOLVABLE,,,,,0,0.00,fewer than three reliably identifiable marking structures,gpt-5.6-terra

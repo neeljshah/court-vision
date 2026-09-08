@@ -1,0 +1,143 @@
+locator_name,row_id,source_id,arena,classification,negative_category,unresolved_reason,court_end,record_type,landmark_name,x,y,visible,confidence,note
+gpt-5.6-sol,wnba_01_01,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,CORNER_FAR_L,523,352,TRUE,0.90,clear
+gpt-5.6-sol,wnba_01_01,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,LANE_BASE_L,454,431,TRUE,0.86,clear
+gpt-5.6-sol,wnba_01_01,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,LANE_BASE_R,269,583,TRUE,0.92,clear
+gpt-5.6-sol,wnba_01_01,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,FT_LINE_L,951,410,TRUE,0.78,player-occlusion
+gpt-5.6-sol,wnba_01_01,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,FT_LINE_R,958,610,TRUE,0.88,clear
+gpt-5.6-sol,wnba_01_01,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,KEY_TOP,1265,526,TRUE,0.82,clear
+gpt-5.6-sol,wnba_01_02,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: player portrait; no usable court markings.
+gpt-5.6-sol,wnba_01_03,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,CORNER_FAR_L,574,365,TRUE,0.90,clear
+gpt-5.6-sol,wnba_01_03,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,LANE_BASE_L,489,420,TRUE,0.88,clear
+gpt-5.6-sol,wnba_01_03,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,LANE_BASE_R,284,552,TRUE,0.92,clear
+gpt-5.6-sol,wnba_01_03,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,FT_LINE_L,1008,421,TRUE,0.75,player-occlusion
+gpt-5.6-sol,wnba_01_03,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,FT_LINE_R,977,618,TRUE,0.90,clear
+gpt-5.6-sol,wnba_01_03,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,KEY_TOP,1268,520,TRUE,0.82,clear
+gpt-5.6-sol,wnba_01_04,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,CORNER_FAR_L,522,382,TRUE,0.90,clear
+gpt-5.6-sol,wnba_01_04,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,LANE_BASE_L,443,452,TRUE,0.90,clear
+gpt-5.6-sol,wnba_01_04,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,LANE_BASE_R,216,597,TRUE,0.90,clear
+gpt-5.6-sol,wnba_01_04,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,FT_LINE_L,1018,421,TRUE,0.77,player-occlusion
+gpt-5.6-sol,wnba_01_04,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,FT_LINE_R,959,661,TRUE,0.86,clear
+gpt-5.6-sol,wnba_01_04,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,KEY_TOP,1260,541,TRUE,0.80,clear
+gpt-5.6-sol,wnba_01_05,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,CORNER_FAR_L,610,375,TRUE,0.90,clear
+gpt-5.6-sol,wnba_01_05,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,LANE_BASE_L,510,476,TRUE,0.83,player-occlusion
+gpt-5.6-sol,wnba_01_05,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,LANE_BASE_R,287,609,TRUE,0.90,clear
+gpt-5.6-sol,wnba_01_05,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,FT_LINE_L,1155,501,TRUE,0.82,clear
+gpt-5.6-sol,wnba_01_05,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,FT_LINE_R,1097,624,TRUE,0.78,player-occlusion
+gpt-5.6-sol,wnba_01_05,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,KEY_TOP,1381,579,TRUE,0.88,clear
+gpt-5.6-sol,wnba_01_06,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,BASKET_END_CENTERED,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight rim and backboard shot; no court markings.
+gpt-5.6-sol,wnba_01_07,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,CENTER_SIDELINE_FAR,1543,307,TRUE,0.85,clear
+gpt-5.6-sol,wnba_01_07,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,CENTER_SIDELINE_NEAR,1492,809,TRUE,0.70,graphic-occlusion
+gpt-5.6-sol,wnba_01_07,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,CENTER_CIRCLE_TOP,1531,410,TRUE,0.75,motion-blur
+gpt-5.6-sol,wnba_01_07,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,CENTER_CIRCLE_BOTTOM,1518,611,TRUE,0.75,motion-blur
+gpt-5.6-sol,wnba_01_07,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,KEY_TOP,194,450,TRUE,0.72,frame-boundary
+gpt-5.6-sol,wnba_01_07,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,SHORTFALL,,,,FALSE,,visible_named_landmarks=5;required=6
+gpt-5.6-sol,wnba_01_08,wnba_01,Gateway Center Arena,NEGATIVE,graphics/transition,,LEFT_BASKET,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: split-screen interview and statistics layout shrinks and obscures the court.
+gpt-5.6-sol,wnba_01_09,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,CORNER_FAR_R,1138,493,TRUE,0.85,clear
+gpt-5.6-sol,wnba_01_09,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,LANE_BASE_L,1291,617,TRUE,0.75,clear
+gpt-5.6-sol,wnba_01_09,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,FT_LINE_L,710,648,TRUE,0.55,player-occlusion
+gpt-5.6-sol,wnba_01_09,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,KEY_TOP,1049,760,TRUE,0.60,graphic-occlusion
+gpt-5.6-sol,wnba_01_09,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,SHORTFALL,,,,FALSE,,visible_named_landmarks=4;required=6
+gpt-5.6-sol,wnba_01_10,wnba_01,Gateway Center Arena,NEGATIVE,replay/alternate-camera,,BASKET_END_CENTERED,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: centered behind-basket camera rather than the main sideline view.
+gpt-5.6-sol,wnba_01_11,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight player portrait; no court structures.
+gpt-5.6-sol,wnba_01_12,wnba_01,Gateway Center Arena,NEGATIVE,replay/alternate-camera,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight slow-motion action angle; no court structures.
+gpt-5.6-sol,wnba_01_13,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,CORNER_FAR_R,1604,319,TRUE,0.86,clear
+gpt-5.6-sol,wnba_01_13,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,THREE_PT_BASE_L,1652,340,TRUE,0.65,motion-blur
+gpt-5.6-sol,wnba_01_13,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,LANE_BASE_L,1698,404,TRUE,0.78,clear
+gpt-5.6-sol,wnba_01_13,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,FT_LINE_L,1163,405,TRUE,0.83,clear
+gpt-5.6-sol,wnba_01_13,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,FT_LINE_R,1185,516,TRUE,0.75,player-occlusion
+gpt-5.6-sol,wnba_01_13,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,KEY_TOP,881,459,TRUE,0.85,clear
+gpt-5.6-sol,wnba_01_14,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,CORNER_FAR_R,1305,361,TRUE,0.88,clear
+gpt-5.6-sol,wnba_01_14,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,LANE_BASE_L,1415,508,TRUE,0.82,clear
+gpt-5.6-sol,wnba_01_14,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,LANE_BASE_R,1738,632,TRUE,0.70,player-occlusion
+gpt-5.6-sol,wnba_01_14,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,FT_LINE_L,852,510,TRUE,0.82,clear
+gpt-5.6-sol,wnba_01_14,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,FT_LINE_R,832,646,TRUE,0.80,clear
+gpt-5.6-sol,wnba_01_14,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,KEY_TOP,575,576,TRUE,0.78,clear
+gpt-5.6-sol,wnba_01_15,wnba_01,Gateway Center Arena,NEGATIVE,replay/alternate-camera,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: low courtside action angle lacks three well-spread structures.
+gpt-5.6-sol,wnba_01_16,wnba_01,Gateway Center Arena,NEGATIVE,replay/alternate-camera,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: low courtside action angle lacks three well-spread structures.
+gpt-5.6-sol,wnba_01_17,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,CORNER_FAR_L,666,514,TRUE,0.90,clear
+gpt-5.6-sol,wnba_01_17,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,LANE_BASE_L,579,622,TRUE,0.88,clear
+gpt-5.6-sol,wnba_01_17,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,LANE_BASE_R,340,763,TRUE,0.90,clear
+gpt-5.6-sol,wnba_01_17,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,FT_LINE_L,1135,642,TRUE,0.84,clear
+gpt-5.6-sol,wnba_01_17,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,FT_LINE_R,1000,807,TRUE,0.82,clear
+gpt-5.6-sol,wnba_01_17,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,KEY_TOP,1367,743,TRUE,0.80,clear
+gpt-5.6-sol,wnba_01_18,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight player shot; no court structures.
+gpt-5.6-sol,wnba_01_19,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,CORNER_FAR_L,563,365,TRUE,0.88,clear
+gpt-5.6-sol,wnba_01_19,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,LANE_BASE_L,469,465,TRUE,0.84,clear
+gpt-5.6-sol,wnba_01_19,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,LANE_BASE_R,202,600,TRUE,0.88,clear
+gpt-5.6-sol,wnba_01_19,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,FT_LINE_L,956,492,TRUE,0.80,player-occlusion
+gpt-5.6-sol,wnba_01_19,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,FT_LINE_R,954,611,TRUE,0.84,clear
+gpt-5.6-sol,wnba_01_19,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,KEY_TOP,1228,550,TRUE,0.80,clear
+gpt-5.6-sol,wnba_01_20,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,CENTER_SIDELINE_FAR,490,329,TRUE,0.82,motion-blur
+gpt-5.6-sol,wnba_01_20,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,CENTER_SIDELINE_NEAR,497,811,TRUE,0.72,graphic-occlusion
+gpt-5.6-sol,wnba_01_20,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,CENTER_CIRCLE_TOP,490,486,TRUE,0.76,motion-blur
+gpt-5.6-sol,wnba_01_20,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,CENTER_CIRCLE_BOTTOM,494,626,TRUE,0.76,motion-blur
+gpt-5.6-sol,wnba_01_20,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,FT_LINE_L,1475,476,TRUE,0.80,clear
+gpt-5.6-sol,wnba_01_20,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,FT_LINE_R,1458,622,TRUE,0.80,clear
+gpt-5.6-sol,wnba_01_21,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,CORNER_FAR_L,565,341,TRUE,0.90,clear
+gpt-5.6-sol,wnba_01_21,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,LANE_BASE_L,471,431,TRUE,0.86,clear
+gpt-5.6-sol,wnba_01_21,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,LANE_BASE_R,202,609,TRUE,0.88,clear
+gpt-5.6-sol,wnba_01_21,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,FT_LINE_L,1132,504,TRUE,0.80,player-occlusion
+gpt-5.6-sol,wnba_01_21,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,FT_LINE_R,979,632,TRUE,0.84,clear
+gpt-5.6-sol,wnba_01_21,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,KEY_TOP,1374,561,TRUE,0.80,clear
+gpt-5.6-sol,wnba_01_22,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,CORNER_FAR_L,626,339,TRUE,0.90,clear
+gpt-5.6-sol,wnba_01_22,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,LANE_BASE_L,514,449,TRUE,0.86,clear
+gpt-5.6-sol,wnba_01_22,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,LANE_BASE_R,219,569,TRUE,0.90,clear
+gpt-5.6-sol,wnba_01_22,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,FT_LINE_L,1033,472,TRUE,0.76,player-occlusion
+gpt-5.6-sol,wnba_01_22,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,FT_LINE_R,1001,607,TRUE,0.80,player-occlusion
+gpt-5.6-sol,wnba_01_22,wnba_01,Gateway Center Arena,ELIGIBLE,,,LEFT_BASKET,LANDMARK,KEY_TOP,1270,541,TRUE,0.78,clear
+gpt-5.6-sol,wnba_01_23,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: player-on-floor close shot; only one isolated line segment.
+gpt-5.6-sol,wnba_01_24,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: bench and timeout close shot; no court structures.
+gpt-5.6-sol,wnba_01_25,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,CORNER_FAR_R,1390,365,TRUE,0.88,clear
+gpt-5.6-sol,wnba_01_25,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,LANE_BASE_L,1494,495,TRUE,0.82,clear
+gpt-5.6-sol,wnba_01_25,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,LANE_BASE_R,1760,620,TRUE,0.72,player-occlusion
+gpt-5.6-sol,wnba_01_25,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,FT_LINE_L,881,500,TRUE,0.78,clear
+gpt-5.6-sol,wnba_01_25,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,FT_LINE_R,1000,639,TRUE,0.76,clear
+gpt-5.6-sol,wnba_01_25,wnba_01,Gateway Center Arena,ELIGIBLE,,,RIGHT_BASKET,LANDMARK,KEY_TOP,657,573,TRUE,0.78,clear
+gpt-5.6-sol,wnba_01_26,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight bench and player shot; no court structures.
+gpt-5.6-sol,wnba_01_27,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight player shot; no court structures.
+gpt-5.6-sol,wnba_01_28,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: timeout personnel shot; no court structures.
+gpt-5.6-sol,wnba_01_29,wnba_01,Gateway Center Arena,NEGATIVE,replay/alternate-camera,,RIGHT_BASKET,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight elevated baseline angle lacks three well-spread structures.
+gpt-5.6-sol,wnba_01_30,wnba_01,Gateway Center Arena,NEGATIVE,close-up,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: timeout huddle and large score graphic; no court structures.
+gpt-5.6-sol,wnba_04_01,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,BASKET_END_CENTERED,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight low baseline view lacks three well-spread structures.
+gpt-5.6-sol,wnba_04_02,wnba_04,Climate Pledge Arena,UNRESOLVABLE,,gpt-5.6-sol MODEL: fewer than three reliably identifiable structures in a moving midcourt crop.,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: fewer than three reliably identifiable structures in a moving midcourt crop.
+gpt-5.6-sol,wnba_04_03,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,LANDMARK,CENTER_SIDELINE_FAR,1838,419,TRUE,0.48,motion-blur
+gpt-5.6-sol,wnba_04_03,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,LANDMARK,CENTER_CIRCLE_TOP,1640,590,TRUE,0.42,motion-blur
+gpt-5.6-sol,wnba_04_03,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,LANDMARK,CENTER_CIRCLE_BOTTOM,1320,854,TRUE,0.40,motion-blur
+gpt-5.6-sol,wnba_04_03,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,SHORTFALL,,,,FALSE,,visible_named_landmarks=3;required=6
+gpt-5.6-sol,wnba_04_04,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,SHORTFALL,,,,FALSE,,visible_named_landmarks=0;required=6
+gpt-5.6-sol,wnba_04_05,wnba_04,Climate Pledge Arena,NEGATIVE,close-up,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight player shot; no usable court structures.
+gpt-5.6-sol,wnba_04_06,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,LANDMARK,CENTER_SIDELINE_FAR,1397,579,TRUE,0.60,motion-blur
+gpt-5.6-sol,wnba_04_06,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,LANDMARK,CENTER_CIRCLE_TOP,1398,813,TRUE,0.55,motion-blur
+gpt-5.6-sol,wnba_04_06,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,SHORTFALL,,,,FALSE,,visible_named_landmarks=2;required=6
+gpt-5.6-sol,wnba_04_07,wnba_04,Climate Pledge Arena,NEGATIVE,close-up,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight player and action crop; no court structures.
+gpt-5.6-sol,wnba_04_08,wnba_04,Climate Pledge Arena,UNRESOLVABLE,,gpt-5.6-sol MODEL: fewer than three reliably identifiable structures in a midcourt crop.,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: fewer than three reliably identifiable structures in a midcourt crop.
+gpt-5.6-sol,wnba_04_09,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,LANDMARK,CENTER_CIRCLE_TOP,1450,789,TRUE,0.32,decode-corruption
+gpt-5.6-sol,wnba_04_09,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,SHORTFALL,,,,FALSE,,visible_named_landmarks=1;required=6
+gpt-5.6-sol,wnba_04_10,wnba_04,Climate Pledge Arena,NEGATIVE,close-up,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight player shot; only one line fragment.
+gpt-5.6-sol,wnba_04_11,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,BASKET_END_CENTERED,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight baseline camera lacks three well-spread structures.
+gpt-5.6-sol,wnba_04_12,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,LANDMARK,CENTER_SIDELINE_FAR,880,576,TRUE,0.58,motion-blur
+gpt-5.6-sol,wnba_04_12,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,LANDMARK,CENTER_CIRCLE_TOP,880,815,TRUE,0.52,motion-blur
+gpt-5.6-sol,wnba_04_12,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,SHORTFALL,,,,FALSE,,visible_named_landmarks=2;required=6
+gpt-5.6-sol,wnba_04_13,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,BASKET_END_CENTERED,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight baseline camera lacks three well-spread structures.
+gpt-5.6-sol,wnba_04_14,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,BASKET_END_CENTERED,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight baseline camera lacks three well-spread structures.
+gpt-5.6-sol,wnba_04_15,wnba_04,Climate Pledge Arena,NEGATIVE,close-up,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight player-on-floor shot; no court structures.
+gpt-5.6-sol,wnba_04_16,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,LANDMARK,CENTER_CIRCLE_TOP,412,806,TRUE,0.38,motion-blur
+gpt-5.6-sol,wnba_04_16,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,SHORTFALL,,,,FALSE,,visible_named_landmarks=1;required=6
+gpt-5.6-sol,wnba_04_17,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,LANDMARK,CENTER_SIDELINE_FAR,1000,557,TRUE,0.62,motion-blur
+gpt-5.6-sol,wnba_04_17,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,LANDMARK,CENTER_CIRCLE_TOP,1000,876,TRUE,0.55,motion-blur
+gpt-5.6-sol,wnba_04_17,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,SHORTFALL,,,,FALSE,,visible_named_landmarks=2;required=6
+gpt-5.6-sol,wnba_04_18,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,BASKET_END_CENTERED,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight baseline action camera rather than main sideline framing.
+gpt-5.6-sol,wnba_04_19,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,BASKET_END_CENTERED,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight baseline action camera rather than main sideline framing.
+gpt-5.6-sol,wnba_04_20,wnba_04,Climate Pledge Arena,ELIGIBLE,,,LEFT_BASKET,SHORTFALL,,,,FALSE,,visible_named_landmarks=0;required=6
+gpt-5.6-sol,wnba_04_21,wnba_04,Climate Pledge Arena,NEGATIVE,close-up,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight player shot; no court structures.
+gpt-5.6-sol,wnba_04_22,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,LANDMARK,CENTER_SIDELINE_FAR,1540,618,TRUE,0.45,motion-blur
+gpt-5.6-sol,wnba_04_22,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,LANDMARK,CENTER_CIRCLE_TOP,1390,704,TRUE,0.40,motion-blur
+gpt-5.6-sol,wnba_04_22,wnba_04,Climate Pledge Arena,ELIGIBLE,,,NOT_IDENTIFIABLE,SHORTFALL,,,,FALSE,,visible_named_landmarks=2;required=6
+gpt-5.6-sol,wnba_04_23,wnba_04,Climate Pledge Arena,NEGATIVE,close-up,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight player portrait; no court structures.
+gpt-5.6-sol,wnba_04_24,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,BASKET_END_CENTERED,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight baseline action camera lacks three well-spread structures.
+gpt-5.6-sol,wnba_04_25,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,BASKET_END_CENTERED,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight baseline action camera lacks three well-spread structures.
+gpt-5.6-sol,wnba_04_26,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,BASKET_END_CENTERED,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight baseline action camera lacks three well-spread structures.
+gpt-5.6-sol,wnba_04_27,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,BASKET_END_CENTERED,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight baseline action camera lacks three well-spread structures.
+gpt-5.6-sol,wnba_04_28,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,BASKET_END_CENTERED,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight baseline action camera lacks three well-spread structures.
+gpt-5.6-sol,wnba_04_29,wnba_04,Climate Pledge Arena,NEGATIVE,replay/alternate-camera,,BASKET_END_CENTERED,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: tight baseline action camera lacks three well-spread structures.
+gpt-5.6-sol,wnba_04_30,wnba_04,Climate Pledge Arena,NEGATIVE,close-up,,NOT_IDENTIFIABLE,FRAME,,,,FALSE,,gpt-5.6-sol MODEL: official and player close shot; no court structures.

@@ -1,0 +1,137 @@
+row_id,arena,landmark_name,x,y,source_outcome,distance_px,structure,presence,reason
+wnba_01_01,Gateway Center Arena,CORNER_FAR_L,,,unidentifiable,,court_boundary_corner,pass1_only,The named landmark is not locatable in this frame; pass 1 marked the out-of-bounds apron.
+wnba_01_01,Gateway Center Arena,FT_LINE_L,,,both_wrong,315.0,free_throw_line,both,"Neither marked point is on the named landmark: pass 1 is on a player's body, pass 2 is on paint away from the named point."
+wnba_01_01,Gateway Center Arena,FT_LINE_R,958,610,pass1,69.6,free_throw_line,both,Pass 1 is on the named corner (offset about 14 px); pass 2 is on paint away from the named point.
+wnba_01_01,Gateway Center Arena,KEY_TOP,,,both_wrong,200.4,free_throw_circle,both,"Neither marked point is on the named landmark: pass 1 is on open floor, pass 2 is on a player's body."
+wnba_01_01,Gateway Center Arena,LANE_BASE_L,,,both_wrong,87.2,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on the out-of-bounds apron, pass 2 is on the out-of-bounds apron."
+wnba_01_01,Gateway Center Arena,LANE_BASE_R,,,both_wrong,574.6,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on open floor, pass 2 is on a player's body."
+wnba_01_01,Gateway Center Arena,THREE_PT_BASE_L,,,both_wrong,,three_point_arc,pass2_only,Neither marked point is on the named landmark: pass 2 is on the out-of-bounds apron.
+wnba_01_03,Gateway Center Arena,CORNER_FAR_L,,,unidentifiable,,court_boundary_corner,pass1_only,The named landmark is not locatable in this frame; pass 1 marked a player's body.
+wnba_01_03,Gateway Center Arena,FT_LINE_L,,,both_wrong,347.1,free_throw_line,both,"Neither marked point is on the named landmark: pass 1 is on painted floor artwork, pass 2 is on a player's body."
+wnba_01_03,Gateway Center Arena,FT_LINE_R,977,618,pass1,85.1,free_throw_line,both,Pass 1 is on the named corner (offset about 15 px); pass 2 is on painted floor artwork.
+wnba_01_03,Gateway Center Arena,KEY_TOP,,,both_wrong,186.5,free_throw_circle,both,"Neither marked point is on the named landmark: pass 1 is on open floor, pass 2 is on a player's body."
+wnba_01_03,Gateway Center Arena,LANE_BASE_L,,,both_wrong,68.7,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on the out-of-bounds apron, pass 2 is on the out-of-bounds apron."
+wnba_01_03,Gateway Center Arena,LANE_BASE_R,,,both_wrong,559.7,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on paint away from the named point, pass 2 is on painted floor artwork."
+wnba_01_03,Gateway Center Arena,THREE_PT_BASE_L,,,both_wrong,,three_point_arc,pass2_only,Neither marked point is on the named landmark: pass 2 is on the out-of-bounds apron.
+wnba_01_04,Gateway Center Arena,CORNER_FAR_L,,,unidentifiable,,court_boundary_corner,pass1_only,The named landmark is not locatable in this frame; pass 1 marked the out-of-bounds apron.
+wnba_01_04,Gateway Center Arena,FT_LINE_L,,,both_wrong,365.8,free_throw_line,both,"Neither marked point is on the named landmark: pass 1 is on the out-of-bounds apron, pass 2 is on a player's body."
+wnba_01_04,Gateway Center Arena,FT_LINE_R,,,both_wrong,122.3,free_throw_line,both,"Neither marked point is on the named landmark: pass 1 is on a player's body, pass 2 is on painted floor artwork."
+wnba_01_04,Gateway Center Arena,KEY_TOP,,,both_wrong,192.3,free_throw_circle,both,"Neither marked point is on the named landmark: pass 1 is on open floor, pass 2 is on open floor."
+wnba_01_04,Gateway Center Arena,LANE_BASE_L,,,both_wrong,118.8,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on the out-of-bounds apron, pass 2 is on the out-of-bounds apron."
+wnba_01_04,Gateway Center Arena,LANE_BASE_R,,,both_wrong,639.3,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on paint away from the named point, pass 2 is on a player's body."
+wnba_01_04,Gateway Center Arena,THREE_PT_BASE_L,,,both_wrong,,three_point_arc,pass2_only,Neither marked point is on the named landmark: pass 2 is on the out-of-bounds apron.
+wnba_01_05,Gateway Center Arena,CORNER_FAR_L,,,unidentifiable,,court_boundary_corner,pass1_only,The named landmark is not locatable in this frame; pass 1 marked the out-of-bounds apron.
+wnba_01_05,Gateway Center Arena,FT_LINE_L,1155,501,pass1,501.0,free_throw_line,both,Pass 1 is on the named corner (offset about 9 px); pass 2 is on a player's body.
+wnba_01_05,Gateway Center Arena,FT_LINE_R,,,both_wrong,176.1,free_throw_line,both,"Neither marked point is on the named landmark: pass 1 is on paint away from the named point, pass 2 is on a player's body."
+wnba_01_05,Gateway Center Arena,KEY_TOP,,,both_wrong,324.7,free_throw_circle,both,"Neither marked point is on the named landmark: pass 1 is on open floor, pass 2 is on open floor."
+wnba_01_05,Gateway Center Arena,LANE_BASE_L,,,both_wrong,102.6,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on a player's body, pass 2 is on the out-of-bounds apron."
+wnba_01_05,Gateway Center Arena,LANE_BASE_R,,,both_wrong,570.0,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on open floor, pass 2 is on a player's body."
+wnba_01_05,Gateway Center Arena,THREE_PT_BASE_L,,,both_wrong,,three_point_arc,pass2_only,Neither marked point is on the named landmark: pass 2 is on the out-of-bounds apron.
+wnba_01_07,Gateway Center Arena,CENTER_CIRCLE_BOTTOM,,,unidentifiable,22.5,center_circle,both,"The named landmark is not locatable in this frame; pass 1 marked a player's body, pass 2 marked a player's body."
+wnba_01_07,Gateway Center Arena,CENTER_CIRCLE_TOP,,,unidentifiable,17.1,center_circle,both,"The named landmark is not locatable in this frame; pass 1 marked a vertical white structure that is not a court marking, pass 2 marked a vertical white structure that is not a court marking."
+wnba_01_07,Gateway Center Arena,CENTER_SIDELINE_FAR,,,unidentifiable,22.1,sideline,both,"The named landmark is not locatable in this frame; pass 1 marked an LED advertising board, pass 2 marked an LED advertising board."
+wnba_01_07,Gateway Center Arena,CENTER_SIDELINE_NEAR,,,unidentifiable,46.4,sideline,both,"The named landmark is not locatable in this frame; pass 1 marked the spectator seating, pass 2 marked the spectator seating."
+wnba_01_07,Gateway Center Arena,FT_LINE_L,,,both_wrong,,free_throw_line,pass2_only,Neither marked point is on the named landmark: pass 2 is on a player's body.
+wnba_01_07,Gateway Center Arena,FT_LINE_R,,,both_wrong,,free_throw_line,pass2_only,Neither marked point is on the named landmark: pass 2 is on a player's body.
+wnba_01_07,Gateway Center Arena,KEY_TOP,,,unidentifiable,,free_throw_circle,pass1_only,The named landmark is not locatable in this frame; pass 1 marked paint away from the named point.
+wnba_01_09,Gateway Center Arena,CORNER_FAR_R,,,unidentifiable,,court_boundary_corner,pass1_only,The named landmark is not locatable in this frame; pass 1 marked the out-of-bounds apron.
+wnba_01_09,Gateway Center Arena,FT_LINE_L,,,both_wrong,583.3,free_throw_line,both,"Neither marked point is on the named landmark: pass 1 is on a player's body, pass 2 is on the out-of-bounds apron."
+wnba_01_09,Gateway Center Arena,FT_LINE_R,,,both_wrong,,free_throw_line,pass2_only,Neither marked point is on the named landmark: pass 2 is on a player's body.
+wnba_01_09,Gateway Center Arena,KEY_TOP,,,both_wrong,389.4,free_throw_circle,both,"Neither marked point is on the named landmark: pass 1 is on open floor about 30 px inside the arc, pass 2 is on a player's body."
+wnba_01_09,Gateway Center Arena,LANE_BASE_L,,,both_wrong,263.7,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on a player's body, pass 2 is on a player's body."
+wnba_01_09,Gateway Center Arena,LANE_BASE_R,,,both_wrong,,lane_boundary,pass2_only,Neither marked point is on the named landmark: pass 2 is on the out-of-bounds apron.
+wnba_01_09,Gateway Center Arena,THREE_PT_BASE_L,,,both_wrong,,three_point_arc,pass2_only,Neither marked point is on the named landmark: pass 2 is on the spectator seating.
+wnba_01_13,Gateway Center Arena,CENTER_CIRCLE_BOTTOM,,,unidentifiable,,center_circle,pass2_only,The named landmark is not locatable in this frame; pass 2 marked open floor.
+wnba_01_13,Gateway Center Arena,CENTER_CIRCLE_TOP,,,unidentifiable,,center_circle,pass2_only,The named landmark is not locatable in this frame; pass 2 marked a player's body.
+wnba_01_13,Gateway Center Arena,CENTER_SIDELINE_FAR,,,unidentifiable,,sideline,pass2_only,The named landmark is not locatable in this frame; pass 2 marked the out-of-bounds apron.
+wnba_01_13,Gateway Center Arena,CENTER_SIDELINE_NEAR,,,unidentifiable,,sideline,pass2_only,The named landmark is not locatable in this frame; pass 2 marked the spectator seating.
+wnba_01_13,Gateway Center Arena,CORNER_FAR_R,,,unidentifiable,,court_boundary_corner,pass1_only,The named landmark is not locatable in this frame; pass 1 marked the out-of-bounds apron.
+wnba_01_13,Gateway Center Arena,FT_LINE_L,,,both_wrong,207.5,free_throw_line,both,"Neither marked point is on the named landmark: pass 1 is on a player's body, pass 2 is on paint away from the named point."
+wnba_01_13,Gateway Center Arena,FT_LINE_R,,,both_wrong,421.9,free_throw_line,both,"Neither marked point is on the named landmark: pass 1 is on a player's body, pass 2 is on painted floor artwork."
+wnba_01_13,Gateway Center Arena,KEY_TOP,,,both_wrong,,free_throw_circle,pass1_only,Neither marked point is on the named landmark: pass 1 is on the apex of a different arc.
+wnba_01_13,Gateway Center Arena,LANE_BASE_L,,,both_wrong,,lane_boundary,pass1_only,Neither marked point is on the named landmark: pass 1 is on painted floor artwork.
+wnba_01_13,Gateway Center Arena,THREE_PT_BASE_L,,,both_wrong,,three_point_arc,pass1_only,Neither marked point is on the named landmark: pass 1 is on the out-of-bounds apron.
+wnba_01_14,Gateway Center Arena,CORNER_FAR_R,,,unidentifiable,,court_boundary_corner,pass1_only,The named landmark is not locatable in this frame; pass 1 marked the out-of-bounds apron.
+wnba_01_14,Gateway Center Arena,FT_LINE_L,,,both_wrong,418.5,free_throw_line,both,"Neither marked point is on the named landmark: pass 1 is on a player's body, pass 2 is on paint away from the named point."
+wnba_01_14,Gateway Center Arena,FT_LINE_R,,,both_wrong,187.4,free_throw_line,both,"Neither marked point is on the named landmark: pass 1 is on a player's body, pass 2 is on painted floor artwork."
+wnba_01_14,Gateway Center Arena,KEY_TOP,,,both_wrong,285.2,free_throw_circle,both,"Neither marked point is on the named landmark: pass 1 is on open floor, pass 2 is on a player's body."
+wnba_01_14,Gateway Center Arena,LANE_BASE_L,,,both_wrong,145.2,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on paint away from the named point, pass 2 is on the out-of-bounds apron."
+wnba_01_14,Gateway Center Arena,LANE_BASE_R,,,both_wrong,686.1,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on open floor, pass 2 is on open floor."
+wnba_01_14,Gateway Center Arena,THREE_PT_BASE_L,,,both_wrong,,three_point_arc,pass2_only,Neither marked point is on the named landmark: pass 2 is on the spectator seating.
+wnba_01_17,Gateway Center Arena,CORNER_FAR_L,,,unidentifiable,,court_boundary_corner,pass1_only,The named landmark is not locatable in this frame; pass 1 marked the out-of-bounds apron.
+wnba_01_17,Gateway Center Arena,FT_LINE_L,,,both_wrong,526.2,free_throw_line,both,"Neither marked point is on the named landmark: pass 1 is on open floor, pass 2 is on the out-of-bounds apron."
+wnba_01_17,Gateway Center Arena,FT_LINE_R,1000,807,pass1,298.2,free_throw_line,both,Pass 1 is on the named corner (offset about 9 px); pass 2 is on the out-of-bounds apron.
+wnba_01_17,Gateway Center Arena,KEY_TOP,,,both_wrong,435.4,free_throw_circle,both,"Neither marked point is on the named landmark: pass 1 is on open floor, pass 2 is on the spectator seating."
+wnba_01_17,Gateway Center Arena,LANE_BASE_L,,,both_wrong,286.2,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on the out-of-bounds apron, pass 2 is on an LED advertising board."
+wnba_01_17,Gateway Center Arena,LANE_BASE_R,340,763,pass1,589.2,lane_boundary,both,Pass 1 is on the named corner (offset about 22 px); pass 2 is on the spectator seating.
+wnba_01_17,Gateway Center Arena,THREE_PT_BASE_L,,,both_wrong,,three_point_arc,pass2_only,Neither marked point is on the named landmark: pass 2 is on the spectator seating.
+wnba_01_19,Gateway Center Arena,CORNER_FAR_L,,,unidentifiable,,court_boundary_corner,pass1_only,The named landmark is not locatable in this frame; pass 1 marked the out-of-bounds apron.
+wnba_01_19,Gateway Center Arena,FT_LINE_L,,,both_wrong,296.2,free_throw_line,both,"Neither marked point is on the named landmark: pass 1 is on a player's body, pass 2 is on a player's body."
+wnba_01_19,Gateway Center Arena,FT_LINE_R,,,unidentifiable,74.0,free_throw_line,both,"The named landmark is not locatable in this frame; pass 1 marked a player's body, pass 2 marked a player's body."
+wnba_01_19,Gateway Center Arena,KEY_TOP,,,both_wrong,174.4,free_throw_circle,both,"Neither marked point is on the named landmark: pass 1 is on open floor, pass 2 is on a player's body."
+wnba_01_19,Gateway Center Arena,LANE_BASE_L,,,both_wrong,107.1,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on painted floor artwork, pass 2 is on the out-of-bounds apron."
+wnba_01_19,Gateway Center Arena,LANE_BASE_R,,,both_wrong,651.9,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on open floor, pass 2 is on a player's body."
+wnba_01_19,Gateway Center Arena,THREE_PT_BASE_L,,,both_wrong,,three_point_arc,pass2_only,Neither marked point is on the named landmark: pass 2 is on the out-of-bounds apron.
+wnba_01_20,Gateway Center Arena,CENTER_CIRCLE_BOTTOM,,,unidentifiable,150.6,center_circle,both,"The named landmark is not locatable in this frame; pass 1 marked painted floor artwork, pass 2 marked painted floor artwork."
+wnba_01_20,Gateway Center Arena,CENTER_CIRCLE_TOP,,,unidentifiable,147.4,center_circle,both,"The named landmark is not locatable in this frame; pass 1 marked a vertical white structure that is not a court marking, pass 2 marked open floor."
+wnba_01_20,Gateway Center Arena,CENTER_SIDELINE_FAR,,,unidentifiable,142.0,sideline,both,"The named landmark is not locatable in this frame; pass 1 marked an LED advertising board, pass 2 marked an LED advertising board."
+wnba_01_20,Gateway Center Arena,CENTER_SIDELINE_NEAR,,,unidentifiable,153.0,sideline,both,"The named landmark is not locatable in this frame; pass 1 marked the spectator seating, pass 2 marked the spectator seating."
+wnba_01_20,Gateway Center Arena,FT_LINE_L,1475,476,pass1,80.0,free_throw_line,both,Pass 1 is on the named corner (offset about 14 px); pass 2 is on open floor.
+wnba_01_20,Gateway Center Arena,FT_LINE_R,,,both_wrong,296.9,free_throw_line,both,"Neither marked point is on the named landmark: pass 1 is on a player's body, pass 2 is on paint away from the named point."
+wnba_01_21,Gateway Center Arena,CORNER_FAR_L,,,unidentifiable,,court_boundary_corner,pass1_only,The named landmark is not locatable in this frame; pass 1 marked the out-of-bounds apron.
+wnba_01_21,Gateway Center Arena,FT_LINE_L,1132,504,pass1,468.0,free_throw_line,both,Pass 1 is on the named corner (offset about 7 px); pass 2 is on a player's body.
+wnba_01_21,Gateway Center Arena,FT_LINE_R,979,632,pass1,96.8,free_throw_line,both,Pass 1 is on the named corner (offset about 7 px); pass 2 is on painted floor artwork.
+wnba_01_21,Gateway Center Arena,KEY_TOP,,,both_wrong,302.6,free_throw_circle,both,"Neither marked point is on the named landmark: pass 1 is on the apex of a different arc, pass 2 is on a player's body."
+wnba_01_21,Gateway Center Arena,LANE_BASE_L,,,both_wrong,84.4,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on paint away from the named point, pass 2 is on the out-of-bounds apron."
+wnba_01_21,Gateway Center Arena,LANE_BASE_R,,,both_wrong,656.8,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on a player's body, pass 2 is on open floor."
+wnba_01_21,Gateway Center Arena,THREE_PT_BASE_L,,,both_wrong,,three_point_arc,pass2_only,Neither marked point is on the named landmark: pass 2 is on the out-of-bounds apron.
+wnba_01_22,Gateway Center Arena,CORNER_FAR_L,,,unidentifiable,,court_boundary_corner,pass1_only,The named landmark is not locatable in this frame; pass 1 marked open floor.
+wnba_01_22,Gateway Center Arena,FT_LINE_L,1033,472,pass1,378.3,free_throw_line,both,Pass 1 is on the named corner (offset about 11 px); pass 2 is on a player's body.
+wnba_01_22,Gateway Center Arena,FT_LINE_R,,,both_wrong,86.4,free_throw_line,both,"Neither marked point is on the named landmark: pass 1 is on open floor, pass 2 is on paint away from the named point."
+wnba_01_22,Gateway Center Arena,KEY_TOP,,,both_wrong,207.9,free_throw_circle,both,"Neither marked point is on the named landmark: pass 1 is on a player's body, pass 2 is on open floor."
+wnba_01_22,Gateway Center Arena,LANE_BASE_L,,,both_wrong,73.3,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on paint away from the named point, pass 2 is on the out-of-bounds apron."
+wnba_01_22,Gateway Center Arena,LANE_BASE_R,,,both_wrong,623.2,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on open floor, pass 2 is on a player's body."
+wnba_01_22,Gateway Center Arena,THREE_PT_BASE_L,,,both_wrong,,three_point_arc,pass2_only,Neither marked point is on the named landmark: pass 2 is on the out-of-bounds apron.
+wnba_01_25,Gateway Center Arena,CORNER_FAR_R,,,unidentifiable,,court_boundary_corner,pass1_only,The named landmark is not locatable in this frame; pass 1 marked the out-of-bounds apron.
+wnba_01_25,Gateway Center Arena,FT_LINE_L,,,both_wrong,397.0,free_throw_line,both,"Neither marked point is on the named landmark: pass 1 is on open floor, pass 2 is on painted floor artwork."
+wnba_01_25,Gateway Center Arena,FT_LINE_R,,,both_wrong,110.5,free_throw_line,both,"Neither marked point is on the named landmark: pass 1 is on open floor about 25 px from the named corner, pass 2 is on painted floor artwork."
+wnba_01_25,Gateway Center Arena,KEY_TOP,,,both_wrong,221.3,free_throw_circle,both,"Neither marked point is on the named landmark: pass 1 is on a player's body, pass 2 is on a player's body."
+wnba_01_25,Gateway Center Arena,LANE_BASE_L,,,both_wrong,159.5,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on painted floor artwork, pass 2 is on the out-of-bounds apron."
+wnba_01_25,Gateway Center Arena,LANE_BASE_R,,,both_wrong,694.4,lane_boundary,both,"Neither marked point is on the named landmark: pass 1 is on a player's body, pass 2 is on open floor."
+wnba_01_25,Gateway Center Arena,THREE_PT_BASE_L,,,both_wrong,,three_point_arc,pass2_only,Neither marked point is on the named landmark: pass 2 is on the spectator seating.
+wnba_04_03,Climate Pledge Arena,CENTER_CIRCLE_BOTTOM,,,unidentifiable,207.9,center_circle,both,"The named landmark is not locatable in this frame; pass 1 marked open floor, pass 2 marked open floor."
+wnba_04_03,Climate Pledge Arena,CENTER_CIRCLE_TOP,,,unidentifiable,501.7,center_circle,both,"The named landmark is not locatable in this frame; pass 1 marked a player's body, pass 2 marked open floor."
+wnba_04_03,Climate Pledge Arena,CENTER_SIDELINE_FAR,,,unidentifiable,383.8,sideline,both,"The named landmark is not locatable in this frame; pass 1 marked the out-of-bounds apron, pass 2 marked an LED advertising board."
+wnba_04_03,Climate Pledge Arena,CENTER_SIDELINE_NEAR,,,unidentifiable,,sideline,pass2_only,The named landmark is not locatable in this frame; pass 2 marked open floor.
+wnba_04_04,Climate Pledge Arena,CENTER_CIRCLE_BOTTOM,,,unidentifiable,,center_circle,pass2_only,The named landmark is not locatable in this frame; pass 2 marked open floor.
+wnba_04_04,Climate Pledge Arena,CENTER_CIRCLE_TOP,,,unidentifiable,,center_circle,pass2_only,The named landmark is not locatable in this frame; pass 2 marked the spectator seating.
+wnba_04_04,Climate Pledge Arena,CENTER_SIDELINE_FAR,,,unidentifiable,,sideline,pass2_only,The named landmark is not locatable in this frame; pass 2 marked the spectator seating.
+wnba_04_04,Climate Pledge Arena,CENTER_SIDELINE_NEAR,,,unidentifiable,,sideline,pass2_only,The named landmark is not locatable in this frame; pass 2 marked painted floor artwork.
+wnba_04_06,Climate Pledge Arena,CENTER_CIRCLE_BOTTOM,,,unidentifiable,,center_circle,pass2_only,The named landmark is not locatable in this frame; pass 2 marked open floor.
+wnba_04_06,Climate Pledge Arena,CENTER_CIRCLE_TOP,,,unidentifiable,807.0,center_circle,both,"The named landmark is not locatable in this frame; pass 1 marked the mid-court logo badge, pass 2 marked an LED advertising board."
+wnba_04_06,Climate Pledge Arena,CENTER_SIDELINE_FAR,1397,579,pass1,761.3,sideline,both,Pass 1 is on the named point (offset about 6 px); pass 2 is on the spectator seating.
+wnba_04_06,Climate Pledge Arena,CENTER_SIDELINE_NEAR,,,unidentifiable,,sideline,pass2_only,The named landmark is not locatable in this frame; pass 2 marked open floor.
+wnba_04_09,Climate Pledge Arena,CENTER_CIRCLE_BOTTOM,,,unidentifiable,,center_circle,pass2_only,The named landmark is not locatable in this frame; pass 2 marked open floor.
+wnba_04_09,Climate Pledge Arena,CENTER_CIRCLE_TOP,,,unidentifiable,829.7,center_circle,both,"The named landmark is not locatable in this frame; pass 1 marked the mid-court logo badge, pass 2 marked an LED advertising board."
+wnba_04_09,Climate Pledge Arena,CENTER_SIDELINE_FAR,,,unidentifiable,,sideline,pass2_only,The named landmark is not locatable in this frame; pass 2 marked the spectator seating.
+wnba_04_09,Climate Pledge Arena,CENTER_SIDELINE_NEAR,,,unidentifiable,,sideline,pass2_only,The named landmark is not locatable in this frame; pass 2 marked open floor.
+wnba_04_12,Climate Pledge Arena,CENTER_CIRCLE_BOTTOM,,,unidentifiable,,center_circle,pass2_only,The named landmark is not locatable in this frame; pass 2 marked open floor.
+wnba_04_12,Climate Pledge Arena,CENTER_CIRCLE_TOP,,,unidentifiable,437.3,center_circle,both,"The named landmark is not locatable in this frame; pass 1 marked the mid-court logo badge, pass 2 marked an LED advertising board."
+wnba_04_12,Climate Pledge Arena,CENTER_SIDELINE_FAR,880,576,pass1,342.0,sideline,both,Pass 1 is on the named point (offset about 4 px); pass 2 is on the spectator seating.
+wnba_04_12,Climate Pledge Arena,CENTER_SIDELINE_NEAR,,,unidentifiable,,sideline,pass2_only,The named landmark is not locatable in this frame; pass 2 marked open floor.
+wnba_04_16,Climate Pledge Arena,CENTER_CIRCLE_BOTTOM,,,unidentifiable,,center_circle,pass2_only,The named landmark is not locatable in this frame; pass 2 marked open floor.
+wnba_04_16,Climate Pledge Arena,CENTER_CIRCLE_TOP,,,unidentifiable,725.0,center_circle,both,"The named landmark is not locatable in this frame; pass 1 marked the mid-court logo badge, pass 2 marked the out-of-bounds apron."
+wnba_04_16,Climate Pledge Arena,CENTER_SIDELINE_FAR,,,unidentifiable,,sideline,pass2_only,The named landmark is not locatable in this frame; pass 2 marked the spectator seating.
+wnba_04_16,Climate Pledge Arena,CENTER_SIDELINE_NEAR,,,unidentifiable,,sideline,pass2_only,The named landmark is not locatable in this frame; pass 2 marked open floor.
+wnba_04_17,Climate Pledge Arena,CENTER_CIRCLE_BOTTOM,,,unidentifiable,,center_circle,pass2_only,The named landmark is not locatable in this frame; pass 2 marked open floor.
+wnba_04_17,Climate Pledge Arena,CENTER_CIRCLE_TOP,,,unidentifiable,468.2,center_circle,both,"The named landmark is not locatable in this frame; pass 1 marked the mid-court logo badge, pass 2 marked an LED advertising board."
+wnba_04_17,Climate Pledge Arena,CENTER_SIDELINE_FAR,1000,557,pass1,282.8,sideline,both,Pass 1 is on the named point (offset about 7 px); pass 2 is on the spectator seating.
+wnba_04_17,Climate Pledge Arena,CENTER_SIDELINE_NEAR,,,unidentifiable,,sideline,pass2_only,The named landmark is not locatable in this frame; pass 2 marked open floor.
+wnba_04_20,Climate Pledge Arena,CENTER_CIRCLE_BOTTOM,,,unidentifiable,,center_circle,pass2_only,The named landmark is not locatable in this frame; pass 2 marked a player's body.
+wnba_04_20,Climate Pledge Arena,CENTER_CIRCLE_TOP,,,unidentifiable,,center_circle,pass2_only,The named landmark is not locatable in this frame; pass 2 marked a player's body.
+wnba_04_20,Climate Pledge Arena,CENTER_SIDELINE_FAR,,,unidentifiable,,sideline,pass2_only,The named landmark is not locatable in this frame; pass 2 marked open floor.
+wnba_04_20,Climate Pledge Arena,CENTER_SIDELINE_NEAR,,,unidentifiable,,sideline,pass2_only,The named landmark is not locatable in this frame; pass 2 marked open floor.
+wnba_04_22,Climate Pledge Arena,CENTER_CIRCLE_BOTTOM,,,unidentifiable,,center_circle,pass2_only,The named landmark is not locatable in this frame; pass 2 marked open floor.
+wnba_04_22,Climate Pledge Arena,CENTER_CIRCLE_TOP,,,unidentifiable,355.6,center_circle,both,"The named landmark is not locatable in this frame; pass 1 marked open floor, pass 2 marked an LED advertising board."
+wnba_04_22,Climate Pledge Arena,CENTER_SIDELINE_FAR,,,unidentifiable,345.2,sideline,both,"The named landmark is not locatable in this frame; pass 1 marked open floor, pass 2 marked the spectator seating."
+wnba_04_22,Climate Pledge Arena,CENTER_SIDELINE_NEAR,,,unidentifiable,,sideline,pass2_only,The named landmark is not locatable in this frame; pass 2 marked open floor.

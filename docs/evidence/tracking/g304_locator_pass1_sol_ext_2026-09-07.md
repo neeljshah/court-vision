@@ -1,0 +1,26 @@
+# G304 Extension Locator Pass 1 - gpt-5.6-sol MODEL
+
+- Scope: independent landmark annotation only; no registration, calibration fit, tracking, detector, prediction, or other model run.
+- Sealed manifest: `C:/Users/neelj/nba-track-a4/docs/evidence/tracking/g304_e1_extension_manifest_2026-09-07.json` at `346b976a3`; canonical payload SHA-256 `d4e7ba31fd663cb3a635ea83fe91f2f7829caabc3c8c748f1416382c977280f3`.
+- Blind eligibility: `C:/Users/neelj/nba-track-a20/docs/evidence/tracking/g304_eligibility_ext_sol_2026-09-07.csv` at `a4d5ac8b8`; 40 ELIGIBLE rows (wnba_01=15, wnba_04=25).
+- Source metadata transcribed from the sealed manifest: `C:/Users/neelj/nba-track-a4/data/videos/bridge/wnba_01.f137.mp4`, 2841750689 bytes, 1920x1080; `C:/Users/neelj/nba-track-a4/data/videos/bridge/wnba_04.f137.mp4`, 1114349874 bytes, 1920x1080. Source videos were not opened.
+- Render inputs opened headlessly: `C:/Users/neelj/nba-track-a4/g304_local_renders_ext/<row_id>.jpg`; all 40 are 1920x1080 and every byte hash matched the manifest decode_sha256.
+- Render bytes wnba_01: e01=358600,e02=353242,e05=341960,e06=404300,e07=399277,e08=255553,e09=380636,e10=400824,e11=386969,e12=303288,e14=341676,e16=321743,e17=367159,e18=330645,e27=380234.
+- Render bytes wnba_04: e01=230234,e02=220729,e06=223121,e07=238646,e09=166585,e11=228372,e14=179264,e16=172218,e17=210387,e18=180891,e24=239539,e25=229482,e26=220748,e27=199342,e30=228964,e33=216827,e34=229455,e37=229982,e38=169490,e39=234102,e41=203796,e42=228453,e43=238544,e44=239519,e45=238702.
+- Method: gpt-5.6-sol cut unscaled native crops with cv2 as image[180:1020,0:1920], inspected them headlessly with coordinate grids, and restored the +180 y offset for original 1920x1080 coordinates.
+- Notes use controlled evidence tokens only; a cropped point uses `frame-boundary`. No landmark was inferred solely to reach the six-point target.
+- Gateway Center Arena: 15 frames, 89 landmark records; 14 meet six landmarks across at least three marking structures; 1 SHORTFALL.
+- Climate Pledge Arena: 25 frames, 20 landmark records; 0 meet six landmarks; 25 SHORTFALL.
+- Landmarks/frame wnba_01: e01=6,e02=6,e05=6,e06=6,e07=6,e08=5,e09=6,e10=6,e11=6,e12=6,e14=6,e16=6,e17=6,e18=6,e27=6.
+- Landmarks/frame wnba_04 a: e01=0,e02=0,e06=0,e07=0,e09=0,e11=0,e14=2,e16=0,e17=2,e18=0,e24=2,e25=1,e26=1.
+- Landmarks/frame wnba_04 b: e27=0,e30=1,e33=2,e34=1,e37=0,e38=2,e39=2,e41=2,e42=0,e43=1,e44=1,e45=0.
+- Shortfall rows: wnba_01_e08; wnba_04_e01,e02,e06,e07,e09,e11,e14,e16,e17,e18,e24,e25,e26,e27,e30,e33,e34,e37,e38,e39,e41,e42,e43,e44,e45.
+- Native annotation and integrity-check time: approximately 30 minutes (18:06-18:36 CDT).
+- Status: INSTRUMENT NOT VALIDATED. Shortfalls are not omitted frames and are not successful abstentions.
+- NOT VERIFIED: coordinates have not been checked by a second locator or adjudicator.
+- NOT VERIFIED: inter-locator agreement, all differences over 4 px, court-end correctness, and accepted-negative behavior have not been evaluated.
+- NOT VERIFIED: arena labels were transcribed from the blind eligibility file and were not independently identity-verified.
+- NOT VERIFIED: no frame-good rate, registration residual, calibration quality, or tracking quality is established by this locator artifact.
+- Agreement alone would not establish correctness.
+- B1-B11 self-check: none triggered; this pass is exhaustive over all 40 ELIGIBLE rows and makes no fit, threshold-change, deploy, or repeated-route claim.
+- LF-normalized CSV SHA-256: `0ead610a681848fab86488c3119ff9fdb5a7e76f74b0a92b71686adcb5035fe0`.

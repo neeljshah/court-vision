@@ -1,0 +1,1545 @@
+{
+  "adjudication_threshold_px": 4,
+  "decode_recipe": {
+    "authoritative_value": "pts_seconds is authoritative; frame_index is derived from it and is never an independent input",
+    "extract_command": "ffmpeg -nostdin -v error -y -ss <pts_seconds> -i <source path> -frames:v 1 -q:v 2 <render_path_local>",
+    "ffprobe_stream": "codec_name=h264, codec_tag_string=avc1, width=1920, height=1080, pix_fmt=yuv420p, r_frame_rate=30/1, avg_frame_rate=30/1, time_base=1/15360, start_pts=0, start_time=0.000000; nb_frames=N/A on both sources",
+    "frame_index_rule": "frame_index = ceil(pts_seconds * 30), the first frame at or after the published six-decimal seek time, which is the frame the input-seek command above decodes",
+    "reproduction_check": "the command above reproduces a render byte-for-byte, so decode_sha256 is re-derivable from pts_seconds alone"
+  },
+  "eligibility_rule": "Identifiable, well-spread court evidence with six landmarks across at least three marking structures.",
+  "frame_good_rule": "p90 <= 12 px AND max <= 24 px",
+  "manifest_sha256_canonical_payload": "5806527e2d50c9830a12774e690e440dcda6a4e56fe04b933c676fd48aed14c1",
+  "measurement_scope": "Annotation inventory only; no registration, calibration, tracking, detector, prediction, or model run.",
+  "packet_id": "G304_E1_UNVALIDATED_INVENTORY_2026-09-07",
+  "primary_acceptance": ">=16/20 frame-good per arena; <=1/10 accepted negatives per arena; no accepted wrong-end map; abstentions fail; zero false acceptances among the 40 eligible frames.",
+  "rows": [
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "68eda49a080af85e429b64ccb0f88db9517aa84bd8ea4563168b518e3acba3cb",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 2908,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 96.905556,
+      "render_path_local": "g304_local_renders/wnba_01_01.jpg",
+      "row_id": "wnba_01_01",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "dc1962d4d855c4ffbaa0c68bc38dd17cdfa799611938cbf26e47f3b08550279d",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 8722,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 290.716667,
+      "render_path_local": "g304_local_renders/wnba_01_02.jpg",
+      "row_id": "wnba_01_02",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "00ee923cbd1d41bb581be35f0f2e10ab126e21a7b4e8418c0c8e1e04b890aa3e",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 14536,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 484.527778,
+      "render_path_local": "g304_local_renders/wnba_01_03.jpg",
+      "row_id": "wnba_01_03",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "961c8703d2df086f2fc44378ab4c64e7a7d5e09e90fdef6bd370158836fe82b1",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 20351,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 678.338889,
+      "render_path_local": "g304_local_renders/wnba_01_04.jpg",
+      "row_id": "wnba_01_04",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "f3804d82d3e015434f08e10296f7079cfe6fb49dae30a9246cf23fc95a11a2e7",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 26165,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 872.15,
+      "render_path_local": "g304_local_renders/wnba_01_05.jpg",
+      "row_id": "wnba_01_05",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "74631d80bb63b11d82467c45cf9e95ed80b9098d1fc7a0cbed09425732fe7edd",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 31979,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 1065.961111,
+      "render_path_local": "g304_local_renders/wnba_01_06.jpg",
+      "row_id": "wnba_01_06",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "7984d41e57302cba49f2d4019b4226d5e933e04a418a3a1aa9743a2cffb0da78",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 37794,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 1259.772222,
+      "render_path_local": "g304_local_renders/wnba_01_07.jpg",
+      "row_id": "wnba_01_07",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "29292ee7eed30086615b0197f623ada957097141e5ff9b6208fdae7aa9f5299c",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 43608,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 1453.583333,
+      "render_path_local": "g304_local_renders/wnba_01_08.jpg",
+      "row_id": "wnba_01_08",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "b2f255af93e95603a12131177c0a0bc25dc4555e25ec60df44cb16a9a1f3c648",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 49422,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 1647.394444,
+      "render_path_local": "g304_local_renders/wnba_01_09.jpg",
+      "row_id": "wnba_01_09",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "3a7ec4494957001dfb7c805f20a12c0c26cb00dda43b5810f31275181100924d",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 55237,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 1841.205555,
+      "render_path_local": "g304_local_renders/wnba_01_10.jpg",
+      "row_id": "wnba_01_10",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "be92ccd37441eceff086d6044fc7eb25fcfb7ac8b2296806aa1fdfd18cf7e5f4",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 61051,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 2035.016667,
+      "render_path_local": "g304_local_renders/wnba_01_11.jpg",
+      "row_id": "wnba_01_11",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "e15eeb900c24a731c29ea509a70135cf9b1ecfb908e9a0bcfb1ac27c4753c587",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 66865,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 2228.827778,
+      "render_path_local": "g304_local_renders/wnba_01_12.jpg",
+      "row_id": "wnba_01_12",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "3b4d48f93b19758c1c1f861c107e828855d08af790fc15480a7942a2a50f5403",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 72680,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 2422.638889,
+      "render_path_local": "g304_local_renders/wnba_01_13.jpg",
+      "row_id": "wnba_01_13",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "23486d120ed62e9580134cc64cf5f09c74c890fd605ecc86321fa8732c09b801",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 78494,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 2616.45,
+      "render_path_local": "g304_local_renders/wnba_01_14.jpg",
+      "row_id": "wnba_01_14",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "b3e04bf5ba78fba8d58a2aaed7744a2627fb79ae49363b7e2dfb89067a036292",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 84308,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 2810.261111,
+      "render_path_local": "g304_local_renders/wnba_01_15.jpg",
+      "row_id": "wnba_01_15",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "4bed139685f53fa276336f720e65834a71e817ebc1be3f141ac42e7f5600971b",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 90123,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 3004.072222,
+      "render_path_local": "g304_local_renders/wnba_01_16.jpg",
+      "row_id": "wnba_01_16",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "b80dcb6b88979b145ce90d2cb30b2b7a596c7a2f482b9a4c08d584203a6e79ad",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 95937,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 3197.883333,
+      "render_path_local": "g304_local_renders/wnba_01_17.jpg",
+      "row_id": "wnba_01_17",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "ef113c9ea80d99b24459562ee3fe32c64851713aba02227fab9ae39f93644257",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 101751,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 3391.694444,
+      "render_path_local": "g304_local_renders/wnba_01_18.jpg",
+      "row_id": "wnba_01_18",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "7307b2b001266e70121cf933843bd37ed9dc24a700705399de48006a1d221b5d",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 107566,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 3585.505555,
+      "render_path_local": "g304_local_renders/wnba_01_19.jpg",
+      "row_id": "wnba_01_19",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "95db7a66809de44cd70eb47cb7b44da5bb241ca59366144d05f6c51d361a7515",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 113380,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 3779.316666,
+      "render_path_local": "g304_local_renders/wnba_01_20.jpg",
+      "row_id": "wnba_01_20",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "c3465a272969839aeee9bf437f0e933a3ad9a77c0489583e78b919cafa602357",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 119194,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 3973.127778,
+      "render_path_local": "g304_local_renders/wnba_01_21.jpg",
+      "row_id": "wnba_01_21",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "d366ec3f740deae30cd2f7dc7f846ce35822b2eed6037b258b9142e12ee59b43",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 125009,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 4166.938889,
+      "render_path_local": "g304_local_renders/wnba_01_22.jpg",
+      "row_id": "wnba_01_22",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "32ab155a84090926ee41ee492336c06a229f9f103b23422ad768573273a5ec26",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 130823,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 4360.75,
+      "render_path_local": "g304_local_renders/wnba_01_23.jpg",
+      "row_id": "wnba_01_23",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "39a4032cac6a9b3cf3822e65c4ac3fc44a8e206b1eb82bbaccfafdf749ba1c28",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 136637,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 4554.561111,
+      "render_path_local": "g304_local_renders/wnba_01_24.jpg",
+      "row_id": "wnba_01_24",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "e33df6abd8716c077e631cbe0cfd8aef48c8421ecee71f6762673d297c38fbb4",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 142452,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 4748.372222,
+      "render_path_local": "g304_local_renders/wnba_01_25.jpg",
+      "row_id": "wnba_01_25",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "9ac9a983f63df4bcd7840fb414b7e1267eba6d861e707e355214783da81f6aac",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 148266,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 4942.183333,
+      "render_path_local": "g304_local_renders/wnba_01_26.jpg",
+      "row_id": "wnba_01_26",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "df6ecda4f65ee020e816a97516969ad681d4bfcf8c9e4cec8ee248b99e6299b8",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 154080,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 5135.994444,
+      "render_path_local": "g304_local_renders/wnba_01_27.jpg",
+      "row_id": "wnba_01_27",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "8a58c39f528c9524f003fd72bb5dda84cb8fec31b7df2e8aaaee900d8367c4e3",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 159895,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 5329.805555,
+      "render_path_local": "g304_local_renders/wnba_01_28.jpg",
+      "row_id": "wnba_01_28",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "f0d2d8ce16f2e6e52d38c9cfe2b334a3872dcd355bac3a0916220ca2901834ac",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 165709,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 5523.616666,
+      "render_path_local": "g304_local_renders/wnba_01_29.jpg",
+      "row_id": "wnba_01_29",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "5ced13dd58cd8b6228cef29b984664d6e7477306b4b4c1eee1b17a542981f4eb",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 171523,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 5717.427777,
+      "render_path_local": "g304_local_renders/wnba_01_30.jpg",
+      "row_id": "wnba_01_30",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_01"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "b3be360e6820e225b182bb2f72aaee0ec3cbcdd7816798a387ee9580b8835f91",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 1597,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 53.227778,
+      "render_path_local": "g304_local_renders/wnba_04_01.jpg",
+      "row_id": "wnba_04_01",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "9938d66f1ee3ad03d0cbafa2a36ab1ecbabd28052f24ddb05e9fe64d136a1ae1",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 4791,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 159.683333,
+      "render_path_local": "g304_local_renders/wnba_04_02.jpg",
+      "row_id": "wnba_04_02",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "91ebc51b806a29b468ea846aa3b006c28003e947eb9eb270aa0dd2f11aae43b3",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 7985,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 266.138889,
+      "render_path_local": "g304_local_renders/wnba_04_03.jpg",
+      "row_id": "wnba_04_03",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "b6aa84d3220c2e38a1e5428f26ec536b4233a6955a8d6240a5d6e01c607ff32c",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 11178,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 372.594444,
+      "render_path_local": "g304_local_renders/wnba_04_04.jpg",
+      "row_id": "wnba_04_04",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "afcb5f1e3222949a7c4a9b9796bbc7bc8c8c331081e0ffc2dbbc2724ce4475ad",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 14372,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 479.05,
+      "render_path_local": "g304_local_renders/wnba_04_05.jpg",
+      "row_id": "wnba_04_05",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "02876fe9a29eef8095b020d5ee1159c655a3959e01b17c0dd21cd2f577dd23d8",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 17566,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 585.505556,
+      "render_path_local": "g304_local_renders/wnba_04_06.jpg",
+      "row_id": "wnba_04_06",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "5a9bc5fefca3341c610dc20dbd0492d815ab52701f801afb71324dee1e79b642",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 20759,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 691.961111,
+      "render_path_local": "g304_local_renders/wnba_04_07.jpg",
+      "row_id": "wnba_04_07",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "5a62a7463048a34b841bcb63029d76106b76de9f6366e84ce4f67298162888a3",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 23953,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 798.416667,
+      "render_path_local": "g304_local_renders/wnba_04_08.jpg",
+      "row_id": "wnba_04_08",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "b722e0d2aa8d26a3bf8df47e04f5925a8d7ccf444dc2cc8415709551bd571900",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 27147,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 904.872222,
+      "render_path_local": "g304_local_renders/wnba_04_09.jpg",
+      "row_id": "wnba_04_09",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "f0b736f13ed24f1e5247a067ab553c3506af14c0910270ad129adcb644d4651a",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 30340,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 1011.327778,
+      "render_path_local": "g304_local_renders/wnba_04_10.jpg",
+      "row_id": "wnba_04_10",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "3d11b71bb86c31a0951aaba00938c20224aada950eee7f7fda8bf6562bbb57b9",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 33534,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 1117.783333,
+      "render_path_local": "g304_local_renders/wnba_04_11.jpg",
+      "row_id": "wnba_04_11",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "51e7d83e5326b6469fae766575ff5e0778f6eaa58cf7402c751d86aff77f1327",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 36728,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 1224.238889,
+      "render_path_local": "g304_local_renders/wnba_04_12.jpg",
+      "row_id": "wnba_04_12",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "adbe09c4b49e3b9827759a728014b0f4e7cf702d01a3e1b0e4cf212e84049e96",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 39921,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 1330.694445,
+      "render_path_local": "g304_local_renders/wnba_04_13.jpg",
+      "row_id": "wnba_04_13",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "fc4084522fe5bef353ca4410b0c66918a7d39cdbe491ef24fc0612a18efc685d",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 43115,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 1437.15,
+      "render_path_local": "g304_local_renders/wnba_04_14.jpg",
+      "row_id": "wnba_04_14",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "f2ccfd072dd1b5e85eb8dc6a83457a3830170b5a7660f4a7664b28addfa372b7",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 46309,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 1543.605556,
+      "render_path_local": "g304_local_renders/wnba_04_15.jpg",
+      "row_id": "wnba_04_15",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "032bd699ed2793a8f0a9d3029c1c84c68529f06bd709f5a7f669164ec7295d53",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 49502,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 1650.061111,
+      "render_path_local": "g304_local_renders/wnba_04_16.jpg",
+      "row_id": "wnba_04_16",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "582a1d157b83b9d572cee9d3f8f74b4c5c8941dec4f9dcc58bd089edca763470",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 52696,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 1756.516667,
+      "render_path_local": "g304_local_renders/wnba_04_17.jpg",
+      "row_id": "wnba_04_17",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "1ecaf9f11c488b6334a16f49aadf7c9b6015ddf88b686055d4c543d241a537a4",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 55890,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 1862.972222,
+      "render_path_local": "g304_local_renders/wnba_04_18.jpg",
+      "row_id": "wnba_04_18",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "7695e0260d2f7932da4c23bb338767582e9e662e69f201b00564372ac5046e8a",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 59083,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 1969.427778,
+      "render_path_local": "g304_local_renders/wnba_04_19.jpg",
+      "row_id": "wnba_04_19",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "0fa8e1f524ed8f6d39db600f11bba03b98fe994a688c1dd0f905cbdaec476f49",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 62277,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 2075.883334,
+      "render_path_local": "g304_local_renders/wnba_04_20.jpg",
+      "row_id": "wnba_04_20",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "eb66e84fbece4faa63b8384338ed2221179acdd5643b4ce85b436b8c370c18db",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 65471,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 2182.338889,
+      "render_path_local": "g304_local_renders/wnba_04_21.jpg",
+      "row_id": "wnba_04_21",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "d21b07c8f1acbd3ffd238af9acbad005fd11fe7acdbbd93c56f41462df29a482",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 68664,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 2288.794445,
+      "render_path_local": "g304_local_renders/wnba_04_22.jpg",
+      "row_id": "wnba_04_22",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "94983ac17f6532553eb65ad84260def6da8eab63555dbc7b76414a1f17d1d070",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 71858,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 2395.25,
+      "render_path_local": "g304_local_renders/wnba_04_23.jpg",
+      "row_id": "wnba_04_23",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "466a3dd3b1525fd0cc7c5b6909814c90a44f28afe9a1d0c4631e4382c795735b",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 75052,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 2501.705556,
+      "render_path_local": "g304_local_renders/wnba_04_24.jpg",
+      "row_id": "wnba_04_24",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "c0efe742814eebe0d5d86ce6bf947b2ea234015806d61ce9fd3f7f0f392736d6",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 78245,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 2608.161111,
+      "render_path_local": "g304_local_renders/wnba_04_25.jpg",
+      "row_id": "wnba_04_25",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "aab1526f2dc2bb22e9bf901a8788c2924843559725bac7ef0ae0f6a413d830cf",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 81439,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 2714.616667,
+      "render_path_local": "g304_local_renders/wnba_04_26.jpg",
+      "row_id": "wnba_04_26",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "fbb7bab5c8b34b21427f10200ff6fcce7b947d0c638ddebb5fce05bc00308f61",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 84633,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 2821.072223,
+      "render_path_local": "g304_local_renders/wnba_04_27.jpg",
+      "row_id": "wnba_04_27",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "b81a12d7b907c3f092661348136a004d7bc5f97b74389548caf7b196b4943965",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 87826,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 2927.527778,
+      "render_path_local": "g304_local_renders/wnba_04_28.jpg",
+      "row_id": "wnba_04_28",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "f18e01d28711032e4e0e09a4abe56de384a9922f27ccb9f88553a5508f2656d0",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 91020,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 3033.983334,
+      "render_path_local": "g304_local_renders/wnba_04_29.jpg",
+      "row_id": "wnba_04_29",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    },
+    {
+      "court_end_identity": "UNRESOLVED",
+      "decode_sha256": "8120f9d05230737eb04ea945b12d1445d9a56bf2f011f335a84f810106d15fee",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "frame_index": 94214,
+      "landmarks": [],
+      "league": "wnba",
+      "locator_annotations": [
+        {
+          "locator_kind": "model",
+          "locator_name": "Codex G304 visual review",
+          "status": "UNRESOLVED"
+        }
+      ],
+      "pts_seconds": 3140.438889,
+      "render_path_local": "g304_local_renders/wnba_04_30.jpg",
+      "row_id": "wnba_04_30",
+      "scope": "UNRESOLVED",
+      "selection_status": "UNRESOLVED_NO_INDEPENDENT_SECOND_LOCATOR",
+      "shot_identity": "UNRESOLVED",
+      "source_id": "wnba_04"
+    }
+  ],
+  "selection_rule": "Thirty evenly spaced PTS positions per full broadcast; no inference output was viewed.",
+  "source_rows": [
+    {
+      "bytes": 2841750689,
+      "duration_seconds": 5814.333333,
+      "fps": "30/1",
+      "height": 1080,
+      "id": "wnba_01",
+      "league": "wnba",
+      "path": "data/videos/bridge/wnba_01.f137.mp4",
+      "sha256": "f2421bc24e5cbb28f41fa79f9ea755b2eeff4daebd48dc5496cc97e5617cf9d3",
+      "width": 1920
+    },
+    {
+      "bytes": 1114349874,
+      "duration_seconds": 3193.666667,
+      "fps": "30/1",
+      "height": 1080,
+      "id": "wnba_04",
+      "league": "wnba",
+      "path": "data/videos/bridge/wnba_04.f137.mp4",
+      "sha256": "1331fba8c2544e3ef3f44ceb7ff2886d67faa3027cc07c4d6f1919d4d53dc166",
+      "width": 1920
+    }
+  ],
+  "status": "INSTRUMENT_NOT_VALIDATED",
+  "unresolved_reason": "Only one model locator was available; no second independent locator or adjudication was performed."
+}
