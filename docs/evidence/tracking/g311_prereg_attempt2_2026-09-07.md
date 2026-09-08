@@ -147,3 +147,49 @@ stopped or signalled.
 --- SEAL 2026-09-07 ---
 SHA-256 of the LF-normalized bytes above this seal line:
 76e2ebe5f9dfa35805ac40d17ec1b088b50ea101a63a7ee7692f45b4ecdb549c
+
+
+--- AMENDMENT 1, 2026-09-08 (post-seal, pre-measurement) ---
+
+Declared AFTER the first run aborted and BEFORE any detector ran, any frame was
+scored or any proxy existed. The first run reached `decode()` on game 1 and
+STOPPED there with `wnba__wnba_01_1080p.mp4: 1 of 40 frames failed to decode:
+[18059]`. No model was loaded, no box was emitted, no number was produced. The
+sealed index formula's top anchor, `nb_frames - 1`, is not a readable frame.
+
+MEASURED, not assumed. ffprobe's container `nb_frames` overcounts the range cv2
+can actually seek AND read. Binary search on the real cv2 seek path:
+
+    wnba_01_1080p            nb_frames 18060   last decodable 18000   gap  59
+    ncaa_IB-_u4gW3ds_1080p   nb_frames 18115   last decodable 17982   gap 132
+    wnba_06                  nb_frames 28674   last decodable 28673   gap   0
+
+AMENDED RULE: the 40 evenly spaced indices span 0 .. the LAST DECODABLE index,
+that anchor measured per clip. Formula otherwise identical:
+`round(i * last_decodable / 39)`, i = 0..39, no head slice. This moves only the
+top 0.33 percent (wnba_01_1080p) and 0.73 percent (ncaa) of two clips and does
+not move wnba_06 at all.
+
+UNCHANGED: 40 frames, even spacing, no head slice, both arms decoding the SAME
+frames from the SAME decode, all five proxy definitions, the sign convention,
+the 3,600 s per-game budget, the barred conclusions, and the games themselves.
+
+TWO FURTHER POST-SEAL CHANGES, both required to make ARM R run at all and
+neither touching the proxy arithmetic:
+
+1. torch 2.6+ defaults `torch.load` to `weights_only=True` and mmengine 0.10.7
+   never overrides it, so `init_detector` could not load the 2022 checkpoint.
+   Fixed by allowlisting exactly the 7 globals this pinned checkpoint needs
+   (`weights_only` stays TRUE -- no arbitrary code execution; the SHA-256 is
+   verified before load).
+2. The added measurement pushed the harness to 314 lines, over the 300-line
+   PlatformKit rail, so the pure proxy arithmetic moved verbatim to
+   `g311_proxies.py` (206 + 128 lines) and is re-exported. The LOC allowlist was
+   NOT edited.
+
+The original seal above (76e2ebe5f9dfa35805ac40d17ec1b088b50ea101a63a7ee7692f45b4ecdb549c)
+still verifies over the bytes above the SEAL line, which are untouched.
+
+--- AMENDMENT 1 SEAL ---
+SHA-256 of the LF-normalized amendment bytes above this line:
+83d07be34031105223cdf5855f97460954bbcef7d76dcfaca42af0b6818f42e1
