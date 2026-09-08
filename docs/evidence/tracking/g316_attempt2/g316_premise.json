@@ -1,0 +1,78 @@
+{
+ "0022400909_s900": {
+  "table": "/workspace/nba-ai-system/data/tracking/0022400909_s900/tracking_data.csv",
+  "N_rows": 5603,
+  "scoreboard_game_clock_filled": 0,
+  "scoreboard_period_filled": 5603,
+  "distinct_periods": [
+   "1",
+   "2",
+   "3",
+   "4"
+  ],
+  "period_value_counts": {
+   "1": 1033,
+   "2": 1594,
+   "3": 1531,
+   "4": 1445
+  },
+  "clip_seconds": 132.53
+ },
+ "mil_chi_2025": {
+  "table": "/workspace/nba-ai-system/data/tracking/mil_chi_2025/tracking_data.csv",
+  "N_rows": 2642,
+  "scoreboard_game_clock_filled": 0,
+  "scoreboard_period_filled": 2642,
+  "distinct_periods": [
+   "1",
+   "2",
+   "3",
+   "4"
+  ],
+  "period_value_counts": {
+   "1": 34,
+   "2": 392,
+   "3": 932,
+   "4": 1284
+  },
+  "clip_seconds": 906.47
+ },
+ "ncaa_basketball_zqBCKovJCQU": {
+  "table": "/workspace/nba-ai-system/data/tracking/ncaa_basketball_zqBCKovJCQU/tracking_data.csv",
+  "N_rows": 6623,
+  "scoreboard_game_clock_filled": 0,
+  "scoreboard_period_filled": 6623,
+  "distinct_periods": [
+   "1",
+   "2",
+   "3",
+   "4"
+  ],
+  "period_value_counts": {
+   "1": 1573,
+   "2": 1719,
+   "3": 1457,
+   "4": 1874
+  },
+  "clip_seconds": 965.6
+ },
+ "wnba_06": {
+  "table": "/workspace/nba-ai-system/data/tracking/wnba_06/tracking_data.csv",
+  "N_rows": 3606,
+  "scoreboard_game_clock_filled": 0,
+  "scoreboard_period_filled": 3606,
+  "distinct_periods": [
+   "1",
+   "2",
+   "3",
+   "4"
+  ],
+  "period_value_counts": {
+   "1": 987,
+   "2": 913,
+   "3": 775,
+   "4": 931
+  },
+  "clip_seconds": 955.8
+ }
+}

@@ -1,0 +1,71 @@
+{
+ "n_sampled": 400,
+ "n_unique": 400,
+ "per_skin": {
+  "C1 NBA national section": {
+   "sampled": 100,
+   "present": 93,
+   "rejected": 7,
+   "parsed": 67,
+   "unique_frames": 100,
+   "parsed_clock_rate": 0.7204,
+   "wilson95": [
+    0.6219,
+    0.8015
+   ],
+   "median_ocr_confidence_present": 0.7839,
+   "median_ocr_confidence_n": 92
+  },
+  "C2 NBA regional": {
+   "sampled": 100,
+   "present": 95,
+   "rejected": 5,
+   "parsed": 70,
+   "unique_frames": 100,
+   "parsed_clock_rate": 0.7368,
+   "wilson95": [
+    0.6403,
+    0.8149
+   ],
+   "median_ocr_confidence_present": 0.8541,
+   "median_ocr_confidence_n": 95
+  },
+  "C3 NCAA tournament": {
+   "sampled": 100,
+   "present": 95,
+   "rejected": 5,
+   "parsed": 78,
+   "unique_frames": 100,
+   "parsed_clock_rate": 0.8211,
+   "wilson95": [
+    0.732,
+    0.8852
+   ],
+   "median_ocr_confidence_present": 0.8663,
+   "median_ocr_confidence_n": 95
+  },
+  "C4 WNBA": {
+   "sampled": 100,
+   "present": 89,
+   "rejected": 11,
+   "parsed": 31,
+   "unique_frames": 100,
+   "parsed_clock_rate": 0.3483,
+   "wilson95": [
+    0.2575,
+    0.4517
+   ],
+   "median_ocr_confidence_present": 0.8014,
+   "median_ocr_confidence_n": 88
+  }
+ },
+ "pooled_present": 372,
+ "pooled_parsed": 246,
+ "pooled_parsed_clock_rate": 0.6613,
+ "pooled_wilson95": [
+  0.6118,
+  0.7075
+ ],
+ "bar": 0.9,
+ "median_ocr_confidence_note": "ADDED AT LANDING 2026-09-08 (verifier NEW GAP c, spec line 62): per-broadcast median reader confidence, recomputed from the committed g316_frame_records.jsonl over scoreboard-present frames carrying a non-null ocr_confidence (median_ocr_confidence_n per skin; present frames with a null confidence are excluded). Reproduces the memo table exactly. Additive only: no existing field, count or rate was changed."
+}

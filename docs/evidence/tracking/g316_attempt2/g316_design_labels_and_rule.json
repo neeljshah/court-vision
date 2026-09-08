@@ -1,0 +1,5293 @@
+{
+ "design_frames": 160,
+ "eye_present": 153,
+ "eye_absent": 7,
+ "rule_agreement": 159,
+ "false_negatives": [],
+ "false_positives": [
+  "wnba__wnba_02__f010.png"
+ ],
+ "sealed_rule": "white(BOT) >= 0.04 and edge(BOT) >= 0.07",
+ "frames": [
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 0,
+   "png": "basketball__g220c_jh3fnwMi7dM__f000.png",
+   "sha256": "54ed2b38bc34972f69a49d296ad5a6eac5be34a0eaf018149e7795f9b13bce56",
+   "t_sec": 12.00125,
+   "eye_label_present": true,
+   "white_bot": 0.1208,
+   "edge_bot": 0.1052,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.8495,
+     "white": 0.0375,
+     "dark": 0.3836
+    },
+    "BOT": {
+     "edge": 0.1052,
+     "white": 0.1208,
+     "dark": 0.8053
+    },
+    "BOTLEFT": {
+     "edge": 0.1903,
+     "white": 0.0729,
+     "dark": 1.0
+    },
+    "BOTRIGHT": {
+     "edge": 0.071,
+     "white": 0.2178,
+     "dark": 0.6461
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 1,
+   "png": "basketball__g220c_jh3fnwMi7dM__f001.png",
+   "sha256": "29314177a3555fd325361a02b4faa1a801e60a3a0213172ce3f7c61e7dc7b56a",
+   "t_sec": 36.00375,
+   "eye_label_present": true,
+   "white_bot": 0.0839,
+   "edge_bot": 0.1,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.8365,
+     "white": 0.0281,
+     "dark": 0.3547
+    },
+    "BOT": {
+     "edge": 0.1,
+     "white": 0.0839,
+     "dark": 0.8231
+    },
+    "BOTLEFT": {
+     "edge": 0.1818,
+     "white": 0.0322,
+     "dark": 1.0
+    },
+    "BOTRIGHT": {
+     "edge": 0.0511,
+     "white": 0.142,
+     "dark": 0.7128
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 2,
+   "png": "basketball__g220c_jh3fnwMi7dM__f002.png",
+   "sha256": "2a34395da111049ba93b4f3ee82ef88d78edac2e143041ba09641991d65ddf17",
+   "t_sec": 60.00625,
+   "eye_label_present": true,
+   "white_bot": 0.0786,
+   "edge_bot": 0.1609,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.8026,
+     "white": 0.0125,
+     "dark": 0.435
+    },
+    "BOT": {
+     "edge": 0.1609,
+     "white": 0.0786,
+     "dark": 0.5264
+    },
+    "BOTLEFT": {
+     "edge": 0.2803,
+     "white": 0.089,
+     "dark": 0.3433
+    },
+    "BOTRIGHT": {
+     "edge": 0.0237,
+     "white": 0.0786,
+     "dark": 0.9036
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 3,
+   "png": "basketball__g220c_jh3fnwMi7dM__f003.png",
+   "sha256": "da656e86aa20316d468d69d2517ddfee3a5dabddd98a886f4bf2dccd237c3334",
+   "t_sec": 84.00875,
+   "eye_label_present": true,
+   "white_bot": 0.0776,
+   "edge_bot": 0.1115,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.7521,
+     "white": 0.0156,
+     "dark": 0.4855
+    },
+    "BOT": {
+     "edge": 0.1115,
+     "white": 0.0776,
+     "dark": 0.5818
+    },
+    "BOTLEFT": {
+     "edge": 0.1847,
+     "white": 0.0578,
+     "dark": 0.9113
+    },
+    "BOTRIGHT": {
+     "edge": 0.0312,
+     "white": 0.1278,
+     "dark": 0.3284
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 4,
+   "png": "basketball__g220c_jh3fnwMi7dM__f004.png",
+   "sha256": "d713169eb036170aa460688d549a5061a5b59b3fad1e41d421049dcc7f6205d3",
+   "t_sec": 108.01125,
+   "eye_label_present": true,
+   "white_bot": 0.0573,
+   "edge_bot": 0.1073,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.7755,
+     "white": 0.0224,
+     "dark": 0.4083
+    },
+    "BOT": {
+     "edge": 0.1073,
+     "white": 0.0573,
+     "dark": 0.7565
+    },
+    "BOTLEFT": {
+     "edge": 0.1951,
+     "white": 0.0824,
+     "dark": 0.9769
+    },
+    "BOTRIGHT": {
+     "edge": 0.036,
+     "white": 0.1023,
+     "dark": 0.5807
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 5,
+   "png": "basketball__g220c_jh3fnwMi7dM__f005.png",
+   "sha256": "275d57cabf9facd5d322ea3f3c9b842da3ca1428a27678d2f8d7d4476ae06cf5",
+   "t_sec": 132.01375,
+   "eye_label_present": true,
+   "white_bot": 0.1062,
+   "edge_bot": 0.124,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.7885,
+     "white": 0.0328,
+     "dark": 0.4592
+    },
+    "BOT": {
+     "edge": 0.124,
+     "white": 0.1062,
+     "dark": 0.7664
+    },
+    "BOTLEFT": {
+     "edge": 0.2254,
+     "white": 0.0739,
+     "dark": 1.0
+    },
+    "BOTRIGHT": {
+     "edge": 0.0511,
+     "white": 0.1932,
+     "dark": 0.5754
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 6,
+   "png": "basketball__g220c_jh3fnwMi7dM__f006.png",
+   "sha256": "5b3dcb8b95a3ab624d93452dec8ba60e226c0a38e3c9f9d3b981fda65d9561f2",
+   "t_sec": 156.01625,
+   "eye_label_present": true,
+   "white_bot": 0.0724,
+   "edge_bot": 0.1615,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.8271,
+     "white": 0.0135,
+     "dark": 0.4167
+    },
+    "BOT": {
+     "edge": 0.1615,
+     "white": 0.0724,
+     "dark": 0.5271
+    },
+    "BOTLEFT": {
+     "edge": 0.2822,
+     "white": 0.0947,
+     "dark": 0.3665
+    },
+    "BOTRIGHT": {
+     "edge": 0.0312,
+     "white": 0.0616,
+     "dark": 0.8904
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 7,
+   "png": "basketball__g220c_jh3fnwMi7dM__f007.png",
+   "sha256": "8b2c4bc94b1d2d57f2b6f823472a1f8a17c2fe5278c2a8ea595bd9dd69db9ffc",
+   "t_sec": 180.01875,
+   "eye_label_present": true,
+   "white_bot": 0.0516,
+   "edge_bot": 0.1531,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.9521,
+     "white": 0.0214,
+     "dark": 0.3493
+    },
+    "BOT": {
+     "edge": 0.1531,
+     "white": 0.0516,
+     "dark": 0.6764
+    },
+    "BOTLEFT": {
+     "edge": 0.2784,
+     "white": 0.0824,
+     "dark": 0.4116
+    },
+    "BOTRIGHT": {
+     "edge": 0.0275,
+     "white": 0.0208,
+     "dark": 1.0
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 8,
+   "png": "basketball__g220c_jh3fnwMi7dM__f008.png",
+   "sha256": "02f06aa0c23cb94bc788a64162838f921961e8b3ca7afe9ccf5cb1a414ccd846",
+   "t_sec": 204.02125,
+   "eye_label_present": true,
+   "white_bot": 0.0833,
+   "edge_bot": 0.1578,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.8391,
+     "white": 0.0141,
+     "dark": 0.4215
+    },
+    "BOT": {
+     "edge": 0.1578,
+     "white": 0.0833,
+     "dark": 0.5455
+    },
+    "BOTLEFT": {
+     "edge": 0.2803,
+     "white": 0.0966,
+     "dark": 0.4332
+    },
+    "BOTRIGHT": {
+     "edge": 0.0256,
+     "white": 0.0616,
+     "dark": 0.8925
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 9,
+   "png": "basketball__g220c_jh3fnwMi7dM__f009.png",
+   "sha256": "7a69cfc351ae88be201655bee5c991cc61121dc50b89a839188eb77039cd28f0",
+   "t_sec": 228.02375,
+   "eye_label_present": true,
+   "white_bot": 0.0589,
+   "edge_bot": 0.101,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.6146,
+     "white": 0.0115,
+     "dark": 0.5071
+    },
+    "BOT": {
+     "edge": 0.101,
+     "white": 0.0589,
+     "dark": 0.4822
+    },
+    "BOTLEFT": {
+     "edge": 0.1828,
+     "white": 0.0701,
+     "dark": 0.8412
+    },
+    "BOTRIGHT": {
+     "edge": 0.0085,
+     "white": 0.0947,
+     "dark": 0.2532
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 10,
+   "png": "basketball__g220c_jh3fnwMi7dM__f010.png",
+   "sha256": "1b4cf3c66b9975c9cde8cf35b7bc831f70f6e8ccc57f8d993c57e40f855ca054",
+   "t_sec": 252.02625,
+   "eye_label_present": true,
+   "white_bot": 0.05,
+   "edge_bot": 0.1552,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.9615,
+     "white": 0.0266,
+     "dark": 0.3349
+    },
+    "BOT": {
+     "edge": 0.1552,
+     "white": 0.05,
+     "dark": 0.7893
+    },
+    "BOTLEFT": {
+     "edge": 0.2812,
+     "white": 0.0862,
+     "dark": 0.617
+    },
+    "BOTRIGHT": {
+     "edge": 0.0341,
+     "white": 0.0663,
+     "dark": 1.0
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 11,
+   "png": "basketball__g220c_jh3fnwMi7dM__f011.png",
+   "sha256": "fe1aa0f359d2fa91b458facceb2b8582f5f5a57c5318b8c1800dedb54c8f44d9",
+   "t_sec": 276.02875,
+   "eye_label_present": true,
+   "white_bot": 0.2109,
+   "edge_bot": 0.1562,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.913,
+     "white": 0.0891,
+     "dark": 0.3819
+    },
+    "BOT": {
+     "edge": 0.1562,
+     "white": 0.2109,
+     "dark": 1.0
+    },
+    "BOTLEFT": {
+     "edge": 0.2841,
+     "white": 0.2746,
+     "dark": 1.0
+    },
+    "BOTRIGHT": {
+     "edge": 0.0672,
+     "white": 0.2936,
+     "dark": 1.0
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 12,
+   "png": "basketball__g220c_jh3fnwMi7dM__f012.png",
+   "sha256": "f788dfecbeb08c070e39a532bf60a97137881dba81da9c3f672caaaec8605062",
+   "t_sec": 300.03125,
+   "eye_label_present": true,
+   "white_bot": 0.1068,
+   "edge_bot": 0.1161,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.8562,
+     "white": 0.0526,
+     "dark": 0.4113
+    },
+    "BOT": {
+     "edge": 0.1161,
+     "white": 0.1068,
+     "dark": 0.7629
+    },
+    "BOTLEFT": {
+     "edge": 0.2112,
+     "white": 0.0938,
+     "dark": 1.0
+    },
+    "BOTRIGHT": {
+     "edge": 0.0578,
+     "white": 0.1941,
+     "dark": 0.6399
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 13,
+   "png": "basketball__g220c_jh3fnwMi7dM__f013.png",
+   "sha256": "a69df333e33e396a0d2c835b73916e874172feb2b5352b3883c43a956366c1e4",
+   "t_sec": 324.03375,
+   "eye_label_present": true,
+   "white_bot": 0.0641,
+   "edge_bot": 0.0896,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.6792,
+     "white": 0.0052,
+     "dark": 0.524
+    },
+    "BOT": {
+     "edge": 0.0896,
+     "white": 0.0641,
+     "dark": 0.38
+    },
+    "BOTLEFT": {
+     "edge": 0.1629,
+     "white": 0.072,
+     "dark": 0.6586
+    },
+    "BOTRIGHT": {
+     "edge": 0.0256,
+     "white": 0.1117,
+     "dark": 0.0756
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 14,
+   "png": "basketball__g220c_jh3fnwMi7dM__f014.png",
+   "sha256": "d9c04c46f906168fe7193c620c5481172861a09848bd15a55ca15970a9728fba",
+   "t_sec": 348.03625,
+   "eye_label_present": true,
+   "white_bot": 0.0646,
+   "edge_bot": 0.1552,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.9286,
+     "white": 0.0109,
+     "dark": 0.3753
+    },
+    "BOT": {
+     "edge": 0.1552,
+     "white": 0.0646,
+     "dark": 0.841
+    },
+    "BOTLEFT": {
+     "edge": 0.2822,
+     "white": 0.1174,
+     "dark": 0.7109
+    },
+    "BOTRIGHT": {
+     "edge": 0.0199,
+     "white": 0.0777,
+     "dark": 1.0
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 15,
+   "png": "basketball__g220c_jh3fnwMi7dM__f015.png",
+   "sha256": "7c265e2e48b5160deb8e2055ebbfa30c74edd1c9bf43e8f7ba8fb1ed78dcd615",
+   "t_sec": 372.03875,
+   "eye_label_present": true,
+   "white_bot": 0.0578,
+   "edge_bot": 0.1583,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.9568,
+     "white": 0.0146,
+     "dark": 0.3724
+    },
+    "BOT": {
+     "edge": 0.1583,
+     "white": 0.0578,
+     "dark": 0.8669
+    },
+    "BOTLEFT": {
+     "edge": 0.2879,
+     "white": 0.1051,
+     "dark": 0.758
+    },
+    "BOTRIGHT": {
+     "edge": 0.0312,
+     "white": 0.0587,
+     "dark": 1.0
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 16,
+   "png": "basketball__g220c_jh3fnwMi7dM__f016.png",
+   "sha256": "6ccc3a9dc53f656150cae11eb4c02a76a30585688528409ed47e3584b6a6607a",
+   "t_sec": 396.04125,
+   "eye_label_present": true,
+   "white_bot": 0.1464,
+   "edge_bot": 0.1177,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.9083,
+     "white": 0.026,
+     "dark": 0.4079
+    },
+    "BOT": {
+     "edge": 0.1177,
+     "white": 0.1464,
+     "dark": 0.9703
+    },
+    "BOTLEFT": {
+     "edge": 0.2131,
+     "white": 0.1439,
+     "dark": 1.0
+    },
+    "BOTRIGHT": {
+     "edge": 0.0303,
+     "white": 0.2074,
+     "dark": 0.9459
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 17,
+   "png": "basketball__g220c_jh3fnwMi7dM__f017.png",
+   "sha256": "e321041054998d3666abc8b53cce01f9ea306dffddc004960e46cbef6b3b3cbf",
+   "t_sec": 420.04375,
+   "eye_label_present": true,
+   "white_bot": 0.0583,
+   "edge_bot": 0.1036,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.7328,
+     "white": 0.0141,
+     "dark": 0.4457
+    },
+    "BOT": {
+     "edge": 0.1036,
+     "white": 0.0583,
+     "dark": 0.6841
+    },
+    "BOTLEFT": {
+     "edge": 0.1884,
+     "white": 0.0758,
+     "dark": 0.9748
+    },
+    "BOTRIGHT": {
+     "edge": 0.0208,
+     "white": 0.0975,
+     "dark": 0.4508
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 18,
+   "png": "basketball__g220c_jh3fnwMi7dM__f018.png",
+   "sha256": "3b8d7eda28da63767a7a8a8401dabe0482e9fa64ab5830244e64885282d935f9",
+   "t_sec": 444.04625,
+   "eye_label_present": true,
+   "white_bot": 0.2693,
+   "edge_bot": 0.163,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.9255,
+     "white": 0.038,
+     "dark": 0.3821
+    },
+    "BOT": {
+     "edge": 0.163,
+     "white": 0.2693,
+     "dark": 1.0
+    },
+    "BOTLEFT": {
+     "edge": 0.2831,
+     "white": 0.2737,
+     "dark": 1.0
+    },
+    "BOTRIGHT": {
+     "edge": 0.1534,
+     "white": 0.3021,
+     "dark": 1.0
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 19,
+   "png": "basketball__g220c_jh3fnwMi7dM__f019.png",
+   "sha256": "3808ece802222a5ba31bea1f35ec58ef1e0d81bcd0b983cd9dc7e9456d1f3756",
+   "t_sec": 468.04875,
+   "eye_label_present": true,
+   "white_bot": 0.062,
+   "edge_bot": 0.1609,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.8104,
+     "white": 0.0156,
+     "dark": 0.3468
+    },
+    "BOT": {
+     "edge": 0.1609,
+     "white": 0.062,
+     "dark": 0.6746
+    },
+    "BOTLEFT": {
+     "edge": 0.2926,
+     "white": 0.1127,
+     "dark": 0.4254
+    },
+    "BOTRIGHT": {
+     "edge": 0.0246,
+     "white": 0.0786,
+     "dark": 0.9303
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 20,
+   "png": "basketball__g220c_jh3fnwMi7dM__f020.png",
+   "sha256": "9a74dd02be31aab36f580edcdd77f8092ba40b41b22b263002accc88dda14f8f",
+   "t_sec": 492.05125,
+   "eye_label_present": true,
+   "white_bot": 0.063,
+   "edge_bot": 0.1594,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.8214,
+     "white": 0.0063,
+     "dark": 0.4511
+    },
+    "BOT": {
+     "edge": 0.1594,
+     "white": 0.063,
+     "dark": 0.539
+    },
+    "BOTLEFT": {
+     "edge": 0.2803,
+     "white": 0.0938,
+     "dark": 0.3984
+    },
+    "BOTRIGHT": {
+     "edge": 0.0331,
+     "white": 0.0777,
+     "dark": 0.9329
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 21,
+   "png": "basketball__g220c_jh3fnwMi7dM__f021.png",
+   "sha256": "731a030ddc2bfe3cc0d295094947d2b540c2105b94000d563d8ba596a8f0cf89",
+   "t_sec": 516.05375,
+   "eye_label_present": true,
+   "white_bot": 0.074,
+   "edge_bot": 0.1583,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.8193,
+     "white": 0.0031,
+     "dark": 0.4534
+    },
+    "BOT": {
+     "edge": 0.1583,
+     "white": 0.074,
+     "dark": 0.5102
+    },
+    "BOTLEFT": {
+     "edge": 0.2812,
+     "white": 0.0928,
+     "dark": 0.3927
+    },
+    "BOTRIGHT": {
+     "edge": 0.0312,
+     "white": 0.0777,
+     "dark": 0.9169
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 22,
+   "png": "basketball__g220c_jh3fnwMi7dM__f022.png",
+   "sha256": "25fda1bc2fa69d30c12ae362c56cc7084cb98ce4d47a74e82ad3b72a2452315b",
+   "t_sec": 540.05625,
+   "eye_label_present": true,
+   "white_bot": 0.0906,
+   "edge_bot": 0.1125,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.6958,
+     "white": 0.0016,
+     "dark": 0.5277
+    },
+    "BOT": {
+     "edge": 0.1125,
+     "white": 0.0906,
+     "dark": 0.4915
+    },
+    "BOTLEFT": {
+     "edge": 0.2027,
+     "white": 0.071,
+     "dark": 0.8512
+    },
+    "BOTRIGHT": {
+     "edge": 0.0189,
+     "white": 0.1023,
+     "dark": 0.1997
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 23,
+   "png": "basketball__g220c_jh3fnwMi7dM__f023.png",
+   "sha256": "81fee022800799c768540d389635de778e462b1d9f7d394d4a35ecc55ecfcd27",
+   "t_sec": 564.05875,
+   "eye_label_present": true,
+   "white_bot": 0.0813,
+   "edge_bot": 0.1552,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.8115,
+     "white": 0.0089,
+     "dark": 0.4232
+    },
+    "BOT": {
+     "edge": 0.1552,
+     "white": 0.0813,
+     "dark": 0.5214
+    },
+    "BOTLEFT": {
+     "edge": 0.2803,
+     "white": 0.09,
+     "dark": 0.3641
+    },
+    "BOTRIGHT": {
+     "edge": 0.0341,
+     "white": 0.0795,
+     "dark": 0.9194
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 24,
+   "png": "basketball__g220c_jh3fnwMi7dM__f024.png",
+   "sha256": "798e0383aff447b969a1f40c0c8dffd9cd2c120cada45523698d91e6a5c6f1ea",
+   "t_sec": 588.06125,
+   "eye_label_present": true,
+   "white_bot": 0.0734,
+   "edge_bot": 0.0943,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.7396,
+     "white": 0.0125,
+     "dark": 0.4782
+    },
+    "BOT": {
+     "edge": 0.0943,
+     "white": 0.0734,
+     "dark": 0.659
+    },
+    "BOTLEFT": {
+     "edge": 0.1705,
+     "white": 0.0587,
+     "dark": 0.9827
+    },
+    "BOTRIGHT": {
+     "edge": 0.018,
+     "white": 0.1335,
+     "dark": 0.3973
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 25,
+   "png": "basketball__g220c_jh3fnwMi7dM__f025.png",
+   "sha256": "f583e627aa98b70947e851e2c0bee9915375f53261ae33cf694cea731db3a975",
+   "t_sec": 612.06375,
+   "eye_label_present": true,
+   "white_bot": 0.0693,
+   "edge_bot": 0.112,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.7349,
+     "white": 0.0094,
+     "dark": 0.4839
+    },
+    "BOT": {
+     "edge": 0.112,
+     "white": 0.0693,
+     "dark": 0.629
+    },
+    "BOTLEFT": {
+     "edge": 0.1989,
+     "white": 0.053,
+     "dark": 0.9594
+    },
+    "BOTRIGHT": {
+     "edge": 0.0208,
+     "white": 0.1259,
+     "dark": 0.3679
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 26,
+   "png": "basketball__g220c_jh3fnwMi7dM__f026.png",
+   "sha256": "c47d1ac3052602c42959fba38c5eaafca08e7664d8c49f56e2d59b44d62164d1",
+   "t_sec": 636.06625,
+   "eye_label_present": true,
+   "white_bot": 0.0667,
+   "edge_bot": 0.1516,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.987,
+     "white": 0.0167,
+     "dark": 0.3934
+    },
+    "BOT": {
+     "edge": 0.1516,
+     "white": 0.0667,
+     "dark": 0.625
+    },
+    "BOTLEFT": {
+     "edge": 0.2756,
+     "white": 0.1051,
+     "dark": 0.3731
+    },
+    "BOTRIGHT": {
+     "edge": 0.0256,
+     "white": 0.0445,
+     "dark": 0.9903
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 27,
+   "png": "basketball__g220c_jh3fnwMi7dM__f027.png",
+   "sha256": "3fd83bfd1c43371bbbc375b50433cffb96061788a86c11bb2f35827e86140f39",
+   "t_sec": 660.06875,
+   "eye_label_present": true,
+   "white_bot": 0.0859,
+   "edge_bot": 0.1562,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.9151,
+     "white": 0.0068,
+     "dark": 0.4338
+    },
+    "BOT": {
+     "edge": 0.1562,
+     "white": 0.0859,
+     "dark": 0.5856
+    },
+    "BOTLEFT": {
+     "edge": 0.2803,
+     "white": 0.0994,
+     "dark": 0.4086
+    },
+    "BOTRIGHT": {
+     "edge": 0.0237,
+     "white": 0.0758,
+     "dark": 0.9621
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 28,
+   "png": "basketball__g220c_jh3fnwMi7dM__f028.png",
+   "sha256": "572002fc9b06a29560ebd39ed7f5969641532f31351fd19041136a42cffe97f7",
+   "t_sec": 684.07125,
+   "eye_label_present": true,
+   "white_bot": 0.0604,
+   "edge_bot": 0.1234,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.6667,
+     "white": 0.0057,
+     "dark": 0.5237
+    },
+    "BOT": {
+     "edge": 0.1234,
+     "white": 0.0604,
+     "dark": 0.4747
+    },
+    "BOTLEFT": {
+     "edge": 0.2244,
+     "white": 0.072,
+     "dark": 0.8041
+    },
+    "BOTRIGHT": {
+     "edge": 0.0123,
+     "white": 0.1023,
+     "dark": 0.1708
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 29,
+   "png": "basketball__g220c_jh3fnwMi7dM__f029.png",
+   "sha256": "61c49f2f475b870fc0db2128bd606a2b5f7597aa8eb08b9596cd16967e661db0",
+   "t_sec": 708.07375,
+   "eye_label_present": true,
+   "white_bot": 0.0802,
+   "edge_bot": 0.1552,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.8354,
+     "white": 0.0036,
+     "dark": 0.4653
+    },
+    "BOT": {
+     "edge": 0.1552,
+     "white": 0.0802,
+     "dark": 0.555
+    },
+    "BOTLEFT": {
+     "edge": 0.2822,
+     "white": 0.0881,
+     "dark": 0.4609
+    },
+    "BOTRIGHT": {
+     "edge": 0.0284,
+     "white": 0.0777,
+     "dark": 0.9103
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 30,
+   "png": "basketball__g220c_jh3fnwMi7dM__f030.png",
+   "sha256": "42ead4a7e396f1f11b44e4bfee1e1909c5ff51f31361bf4e1d4ee52d973b5370",
+   "t_sec": 732.07625,
+   "eye_label_present": true,
+   "white_bot": 0.0604,
+   "edge_bot": 0.1536,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.8208,
+     "white": 0.0068,
+     "dark": 0.4216
+    },
+    "BOT": {
+     "edge": 0.1536,
+     "white": 0.0604,
+     "dark": 0.5193
+    },
+    "BOTLEFT": {
+     "edge": 0.2794,
+     "white": 0.0862,
+     "dark": 0.3793
+    },
+    "BOTRIGHT": {
+     "edge": 0.0388,
+     "white": 0.0777,
+     "dark": 0.9224
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 31,
+   "png": "basketball__g220c_jh3fnwMi7dM__f031.png",
+   "sha256": "add47713c8c7c0c18dd4983c25c4ec2894b895e499a2736b60d8ad6ef5dc9932",
+   "t_sec": 756.07875,
+   "eye_label_present": true,
+   "white_bot": 0.1781,
+   "edge_bot": 0.1078,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.9167,
+     "white": 0.1078,
+     "dark": 0.2735
+    },
+    "BOT": {
+     "edge": 0.1078,
+     "white": 0.1781,
+     "dark": 0.9998
+    },
+    "BOTLEFT": {
+     "edge": 0.196,
+     "white": 0.1932,
+     "dark": 0.9997
+    },
+    "BOTRIGHT": {
+     "edge": 0.0634,
+     "white": 0.2339,
+     "dark": 1.0
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 32,
+   "png": "basketball__g220c_jh3fnwMi7dM__f032.png",
+   "sha256": "49408d652b4d0c41d77dafc4e5fa591ac9e3b569821a8e695dc1007e3cabffcf",
+   "t_sec": 780.08125,
+   "eye_label_present": true,
+   "white_bot": 0.1536,
+   "edge_bot": 0.1203,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.9156,
+     "white": 0.0807,
+     "dark": 0.3399
+    },
+    "BOT": {
+     "edge": 0.1203,
+     "white": 0.1536,
+     "dark": 0.9015
+    },
+    "BOTLEFT": {
+     "edge": 0.2169,
+     "white": 0.1411,
+     "dark": 1.0
+    },
+    "BOTRIGHT": {
+     "edge": 0.0559,
+     "white": 0.215,
+     "dark": 0.8209
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 33,
+   "png": "basketball__g220c_jh3fnwMi7dM__f033.png",
+   "sha256": "67895634251a04fb3e4ed1844e61c4b98df4fc860ac749633382f7f1b1f1f6bc",
+   "t_sec": 804.08375,
+   "eye_label_present": true,
+   "white_bot": 0.0698,
+   "edge_bot": 0.0995,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.7953,
+     "white": 0.0234,
+     "dark": 0.4101
+    },
+    "BOT": {
+     "edge": 0.0995,
+     "white": 0.0698,
+     "dark": 0.875
+    },
+    "BOTLEFT": {
+     "edge": 0.1771,
+     "white": 0.0104,
+     "dark": 1.0
+    },
+    "BOTRIGHT": {
+     "edge": 0.0312,
+     "white": 0.1269,
+     "dark": 0.7728
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 34,
+   "png": "basketball__g220c_jh3fnwMi7dM__f034.png",
+   "sha256": "3a42efe2aa687165dbd9f9965292afe8892eb30858efaef3892016156fffc6fb",
+   "t_sec": 828.08625,
+   "eye_label_present": true,
+   "white_bot": 0.1016,
+   "edge_bot": 0.1172,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.6745,
+     "white": 0.013,
+     "dark": 0.5243
+    },
+    "BOT": {
+     "edge": 0.1172,
+     "white": 0.1016,
+     "dark": 0.4774
+    },
+    "BOTLEFT": {
+     "edge": 0.2131,
+     "white": 0.0739,
+     "dark": 0.7936
+    },
+    "BOTRIGHT": {
+     "edge": 0.0076,
+     "white": 0.1184,
+     "dark": 0.1926
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 35,
+   "png": "basketball__g220c_jh3fnwMi7dM__f035.png",
+   "sha256": "be3051c559542d6447ab7b5393e91864faea188cd3d3dde15c3c37eb37c5e1dc",
+   "t_sec": 852.08875,
+   "eye_label_present": true,
+   "white_bot": 0.0953,
+   "edge_bot": 0.1547,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.9083,
+     "white": 0.0271,
+     "dark": 0.3145
+    },
+    "BOT": {
+     "edge": 0.1547,
+     "white": 0.0953,
+     "dark": 0.8175
+    },
+    "BOTLEFT": {
+     "edge": 0.2803,
+     "white": 0.1373,
+     "dark": 0.6682
+    },
+    "BOTRIGHT": {
+     "edge": 0.0331,
+     "white": 0.1212,
+     "dark": 1.0
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 36,
+   "png": "basketball__g220c_jh3fnwMi7dM__f036.png",
+   "sha256": "b4da7c3e65eaf34bb55eb25e97dc9a922dd83c9d8160208b20c0c1152d48676d",
+   "t_sec": 876.09125,
+   "eye_label_present": true,
+   "white_bot": 0.0583,
+   "edge_bot": 0.1021,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.7161,
+     "white": 0.012,
+     "dark": 0.4815
+    },
+    "BOT": {
+     "edge": 0.1021,
+     "white": 0.0583,
+     "dark": 0.54
+    },
+    "BOTLEFT": {
+     "edge": 0.1856,
+     "white": 0.0379,
+     "dark": 0.8843
+    },
+    "BOTRIGHT": {
+     "edge": 0.0161,
+     "white": 0.1061,
+     "dark": 0.2794
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 37,
+   "png": "basketball__g220c_jh3fnwMi7dM__f037.png",
+   "sha256": "dbee83951b90d2f03d90c704da43336fc9ccb1299eba0df315761a4dde98be9c",
+   "t_sec": 900.09375,
+   "eye_label_present": true,
+   "white_bot": 0.1187,
+   "edge_bot": 0.1089,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.8344,
+     "white": 0.0526,
+     "dark": 0.3879
+    },
+    "BOT": {
+     "edge": 0.1089,
+     "white": 0.1187,
+     "dark": 0.779
+    },
+    "BOTLEFT": {
+     "edge": 0.1979,
+     "white": 0.1411,
+     "dark": 1.0
+    },
+    "BOTRIGHT": {
+     "edge": 0.0634,
+     "white": 0.1847,
+     "dark": 0.5982
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 38,
+   "png": "basketball__g220c_jh3fnwMi7dM__f038.png",
+   "sha256": "44e11165076c0b2fd2cd2161d2509188eb7cee8afece648eec8b8436e290c16a",
+   "t_sec": 924.09625,
+   "eye_label_present": true,
+   "white_bot": 0.188,
+   "edge_bot": 0.1068,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.9089,
+     "white": 0.1156,
+     "dark": 0.3593
+    },
+    "BOT": {
+     "edge": 0.1068,
+     "white": 0.188,
+     "dark": 1.0
+    },
+    "BOTLEFT": {
+     "edge": 0.1922,
+     "white": 0.2169,
+     "dark": 1.0
+    },
+    "BOTRIGHT": {
+     "edge": 0.0672,
+     "white": 0.2292,
+     "dark": 1.0
+    }
+   }
+  },
+  {
+   "clip": "basketball__g220c_jh3fnwMi7dM",
+   "j": 39,
+   "png": "basketball__g220c_jh3fnwMi7dM__f039.png",
+   "sha256": "f73cc35845a6cb0695f9f55a35b0113fd5644d14b9d4140c9cb885eba6884966",
+   "t_sec": 948.09875,
+   "eye_label_present": true,
+   "white_bot": 0.0771,
+   "edge_bot": 0.1141,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.724,
+     "white": 0.0177,
+     "dark": 0.4836
+    },
+    "BOT": {
+     "edge": 0.1141,
+     "white": 0.0771,
+     "dark": 0.6155
+    },
+    "BOTLEFT": {
+     "edge": 0.2055,
+     "white": 0.0625,
+     "dark": 0.9655
+    },
+    "BOTRIGHT": {
+     "edge": 0.0189,
+     "white": 0.1402,
+     "dark": 0.3354
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 0,
+   "png": "nba__den_phx_2025__f000.png",
+   "sha256": "1f70203c276bf20e84c8198b91ed3b39ac2fbb95c9d884a104348eed144e9adf",
+   "t_sec": 7.347084,
+   "eye_label_present": false,
+   "white_bot": 0.0367,
+   "edge_bot": 0.0633,
+   "rule_fired": false,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1297,
+     "white": 0.0844,
+     "dark": 0.7324
+    },
+    "BOT": {
+     "edge": 0.0633,
+     "white": 0.0367,
+     "dark": 0.807
+    },
+    "BOTLEFT": {
+     "edge": 0.0852,
+     "white": 0.0582,
+     "dark": 0.8337
+    },
+    "BOTRIGHT": {
+     "edge": 0.0952,
+     "white": 0.0369,
+     "dark": 0.812
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 1,
+   "png": "nba__den_phx_2025__f001.png",
+   "sha256": "283ad935e91f83333bb0ca8ca0c2e491a07821528ca97a130043efd6886daddf",
+   "t_sec": 22.041252,
+   "eye_label_present": true,
+   "white_bot": 0.3438,
+   "edge_bot": 0.1844,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1578,
+     "white": 0.0938,
+     "dark": 0.6817
+    },
+    "BOT": {
+     "edge": 0.1844,
+     "white": 0.3438,
+     "dark": 0.6742
+    },
+    "BOTLEFT": {
+     "edge": 0.0739,
+     "white": 0.1676,
+     "dark": 0.7862
+    },
+    "BOTRIGHT": {
+     "edge": 0.277,
+     "white": 0.5114,
+     "dark": 0.5579
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 2,
+   "png": "nba__den_phx_2025__f002.png",
+   "sha256": "35bebf7321cac7a8a7fbcfcfe98520b0ed13053184c9280e3624abfcf2b1698e",
+   "t_sec": 36.735419,
+   "eye_label_present": true,
+   "white_bot": 0.6344,
+   "edge_bot": 0.1805,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1742,
+     "white": 0.0969,
+     "dark": 0.6667
+    },
+    "BOT": {
+     "edge": 0.1805,
+     "white": 0.6344,
+     "dark": 0.716
+    },
+    "BOTLEFT": {
+     "edge": 0.1094,
+     "white": 0.6932,
+     "dark": 0.632
+    },
+    "BOTRIGHT": {
+     "edge": 0.3054,
+     "white": 0.6207,
+     "dark": 0.7905
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 3,
+   "png": "nba__den_phx_2025__f003.png",
+   "sha256": "475cb00cd5e88d3a027d0378e81e4786757b8dfed5a00922c31516be7bb335c3",
+   "t_sec": 51.429587,
+   "eye_label_present": true,
+   "white_bot": 0.1766,
+   "edge_bot": 0.2812,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0938,
+     "white": 0.1031,
+     "dark": 0.0698
+    },
+    "BOT": {
+     "edge": 0.2812,
+     "white": 0.1766,
+     "dark": 0.5186
+    },
+    "BOTLEFT": {
+     "edge": 0.321,
+     "white": 0.0838,
+     "dark": 0.6603
+    },
+    "BOTRIGHT": {
+     "edge": 0.2869,
+     "white": 0.2457,
+     "dark": 0.8082
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 4,
+   "png": "nba__den_phx_2025__f004.png",
+   "sha256": "39e10bd783cd211d551a3d894a4e05891dbc4d265aed24494dac5e77ae16c9a4",
+   "t_sec": 66.123755,
+   "eye_label_present": true,
+   "white_bot": 0.3828,
+   "edge_bot": 0.182,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.182,
+     "white": 0.0898,
+     "dark": 0.6214
+    },
+    "BOT": {
+     "edge": 0.182,
+     "white": 0.3828,
+     "dark": 0.8552
+    },
+    "BOTLEFT": {
+     "edge": 0.0895,
+     "white": 0.5185,
+     "dark": 0.8804
+    },
+    "BOTRIGHT": {
+     "edge": 0.2912,
+     "white": 0.331,
+     "dark": 0.9058
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 5,
+   "png": "nba__den_phx_2025__f005.png",
+   "sha256": "421d86204c637a8952d7967c7c9a79e070cf5c38752c568a7edcbb66bd9a7b6b",
+   "t_sec": 80.817923,
+   "eye_label_present": true,
+   "white_bot": 0.5539,
+   "edge_bot": 0.2039,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.15,
+     "white": 0.0891,
+     "dark": 0.6905
+    },
+    "BOT": {
+     "edge": 0.2039,
+     "white": 0.5539,
+     "dark": 0.7113
+    },
+    "BOTLEFT": {
+     "edge": 0.1207,
+     "white": 0.6193,
+     "dark": 0.5767
+    },
+    "BOTRIGHT": {
+     "edge": 0.3651,
+     "white": 0.6562,
+     "dark": 0.8537
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 6,
+   "png": "nba__den_phx_2025__f006.png",
+   "sha256": "bbe25d154713cec4270c160255d6350118f87beabad9d7dd783ef5bb6d6c0d81",
+   "t_sec": 95.512091,
+   "eye_label_present": true,
+   "white_bot": 0.6445,
+   "edge_bot": 0.2289,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1766,
+     "white": 0.0977,
+     "dark": 0.6362
+    },
+    "BOT": {
+     "edge": 0.2289,
+     "white": 0.6445,
+     "dark": 0.708
+    },
+    "BOTLEFT": {
+     "edge": 0.1705,
+     "white": 0.571,
+     "dark": 0.8
+    },
+    "BOTRIGHT": {
+     "edge": 0.3608,
+     "white": 0.8239,
+     "dark": 0.582
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 7,
+   "png": "nba__den_phx_2025__f007.png",
+   "sha256": "a6ee745cb7494b9c857e2d1fdc8906065af5ed71f699d0ed94a9ae4f9557caf1",
+   "t_sec": 110.206258,
+   "eye_label_present": true,
+   "white_bot": 0.5758,
+   "edge_bot": 0.2883,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1719,
+     "white": 0.0922,
+     "dark": 0.6708
+    },
+    "BOT": {
+     "edge": 0.2883,
+     "white": 0.5758,
+     "dark": 0.8382
+    },
+    "BOTLEFT": {
+     "edge": 0.2741,
+     "white": 0.6065,
+     "dark": 0.8868
+    },
+    "BOTRIGHT": {
+     "edge": 0.3608,
+     "white": 0.7457,
+     "dark": 0.7636
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 8,
+   "png": "nba__den_phx_2025__f008.png",
+   "sha256": "5473abcf5762fdd7d504213c117480bfd03d900e42cd5a4d9e53324618cdbdc7",
+   "t_sec": 124.900426,
+   "eye_label_present": true,
+   "white_bot": 0.0852,
+   "edge_bot": 0.1961,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0875,
+     "white": 0.0922,
+     "dark": 0.4075
+    },
+    "BOT": {
+     "edge": 0.1961,
+     "white": 0.0852,
+     "dark": 0.4096
+    },
+    "BOTLEFT": {
+     "edge": 0.0,
+     "white": 0.0696,
+     "dark": 0.3552
+    },
+    "BOTRIGHT": {
+     "edge": 0.3565,
+     "white": 0.1548,
+     "dark": 0.4125
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 9,
+   "png": "nba__den_phx_2025__f009.png",
+   "sha256": "3422f0534a3a928ce4abbed77ea69027d77982fbc5b081b158eac0885a15b039",
+   "t_sec": 139.594594,
+   "eye_label_present": true,
+   "white_bot": 0.6547,
+   "edge_bot": 0.2578,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1445,
+     "white": 0.0914,
+     "dark": 0.6971
+    },
+    "BOT": {
+     "edge": 0.2578,
+     "white": 0.6547,
+     "dark": 0.5163
+    },
+    "BOTLEFT": {
+     "edge": 0.1534,
+     "white": 0.6591,
+     "dark": 0.7375
+    },
+    "BOTRIGHT": {
+     "edge": 0.358,
+     "white": 0.7315,
+     "dark": 0.3588
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 10,
+   "png": "nba__den_phx_2025__f010.png",
+   "sha256": "0d553a46f72997ae8ad4e8f21fe110b53fe54d2e09aaac8be18e03b79bdf4ea0",
+   "t_sec": 154.288762,
+   "eye_label_present": true,
+   "white_bot": 0.6344,
+   "edge_bot": 0.2172,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1773,
+     "white": 0.1047,
+     "dark": 0.5907
+    },
+    "BOT": {
+     "edge": 0.2172,
+     "white": 0.6344,
+     "dark": 0.3421
+    },
+    "BOTLEFT": {
+     "edge": 0.0696,
+     "white": 0.6009,
+     "dark": 0.1297
+    },
+    "BOTRIGHT": {
+     "edge": 0.358,
+     "white": 0.7372,
+     "dark": 0.5423
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 11,
+   "png": "nba__den_phx_2025__f011.png",
+   "sha256": "ec88e78952045d4c915ae4574855a5fdbe005e43189d2f02245ff9fdadfc157e",
+   "t_sec": 168.98293,
+   "eye_label_present": true,
+   "white_bot": 0.5016,
+   "edge_bot": 0.2102,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1328,
+     "white": 0.0852,
+     "dark": 0.7236
+    },
+    "BOT": {
+     "edge": 0.2102,
+     "white": 0.5016,
+     "dark": 0.8876
+    },
+    "BOTLEFT": {
+     "edge": 0.0895,
+     "white": 0.3963,
+     "dark": 0.8398
+    },
+    "BOTRIGHT": {
+     "edge": 0.3821,
+     "white": 0.6974,
+     "dark": 0.9543
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 12,
+   "png": "nba__den_phx_2025__f012.png",
+   "sha256": "193b95e07c540dcfdc3baa46b2d2534a1e59465bd2cbb89377f667009ba35f1d",
+   "t_sec": 183.677098,
+   "eye_label_present": true,
+   "white_bot": 0.6203,
+   "edge_bot": 0.2734,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1656,
+     "white": 0.1172,
+     "dark": 0.6751
+    },
+    "BOT": {
+     "edge": 0.2734,
+     "white": 0.6203,
+     "dark": 0.4458
+    },
+    "BOTLEFT": {
+     "edge": 0.1449,
+     "white": 0.6818,
+     "dark": 0.7444
+    },
+    "BOTRIGHT": {
+     "edge": 0.3949,
+     "white": 0.733,
+     "dark": 0.2623
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 13,
+   "png": "nba__den_phx_2025__f013.png",
+   "sha256": "33b2a3360ec3c4e239bf95a7d7620e45d3d4b30b279d31cfdf974d6b2e41bafc",
+   "t_sec": 198.371265,
+   "eye_label_present": true,
+   "white_bot": 0.5117,
+   "edge_bot": 0.1938,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1742,
+     "white": 0.0914,
+     "dark": 0.7118
+    },
+    "BOT": {
+     "edge": 0.1938,
+     "white": 0.5117,
+     "dark": 0.7738
+    },
+    "BOTLEFT": {
+     "edge": 0.125,
+     "white": 0.6761,
+     "dark": 0.6932
+    },
+    "BOTRIGHT": {
+     "edge": 0.3466,
+     "white": 0.4176,
+     "dark": 0.9079
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 14,
+   "png": "nba__den_phx_2025__f014.png",
+   "sha256": "272d0feba8dd1739662de199f52b3f3ae4b80c67da286862b22f224a7b35bd44",
+   "t_sec": 213.065433,
+   "eye_label_present": true,
+   "white_bot": 0.4648,
+   "edge_bot": 0.2586,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.157,
+     "white": 0.0914,
+     "dark": 0.6357
+    },
+    "BOT": {
+     "edge": 0.2586,
+     "white": 0.4648,
+     "dark": 0.7882
+    },
+    "BOTLEFT": {
+     "edge": 0.2969,
+     "white": 0.527,
+     "dark": 0.6696
+    },
+    "BOTRIGHT": {
+     "edge": 0.3963,
+     "white": 0.4631,
+     "dark": 0.9324
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 15,
+   "png": "nba__den_phx_2025__f015.png",
+   "sha256": "bc7ca9b16c2ea834fc215c1bb69b28beb9928e23ddb727f0ad21c198b34bc9e5",
+   "t_sec": 227.759601,
+   "eye_label_present": true,
+   "white_bot": 0.4766,
+   "edge_bot": 0.2492,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1516,
+     "white": 0.0906,
+     "dark": 0.6689
+    },
+    "BOT": {
+     "edge": 0.2492,
+     "white": 0.4766,
+     "dark": 0.8309
+    },
+    "BOTLEFT": {
+     "edge": 0.1065,
+     "white": 0.3665,
+     "dark": 0.9076
+    },
+    "BOTRIGHT": {
+     "edge": 0.4261,
+     "white": 0.6676,
+     "dark": 0.793
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 16,
+   "png": "nba__den_phx_2025__f016.png",
+   "sha256": "5cb20cc072051b039add8afa00602e0dc0d93ec821607c72005c9921b08cf6d5",
+   "t_sec": 242.453769,
+   "eye_label_present": true,
+   "white_bot": 0.5188,
+   "edge_bot": 0.2141,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1656,
+     "white": 0.0938,
+     "dark": 0.6178
+    },
+    "BOT": {
+     "edge": 0.2141,
+     "white": 0.5188,
+     "dark": 0.5982
+    },
+    "BOTLEFT": {
+     "edge": 0.0852,
+     "white": 0.5653,
+     "dark": 0.4313
+    },
+    "BOTRIGHT": {
+     "edge": 0.3565,
+     "white": 0.7486,
+     "dark": 0.7972
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 17,
+   "png": "nba__den_phx_2025__f017.png",
+   "sha256": "c94a244528a6049eeba627a2b599e96fe9de655fef988365488c5fd22899e11a",
+   "t_sec": 257.147937,
+   "eye_label_present": true,
+   "white_bot": 0.6648,
+   "edge_bot": 0.2016,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1031,
+     "white": 0.0906,
+     "dark": 0.6731
+    },
+    "BOT": {
+     "edge": 0.2016,
+     "white": 0.6648,
+     "dark": 0.8711
+    },
+    "BOTLEFT": {
+     "edge": 0.1776,
+     "white": 0.6534,
+     "dark": 0.9551
+    },
+    "BOTRIGHT": {
+     "edge": 0.3665,
+     "white": 0.6591,
+     "dark": 0.8771
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 18,
+   "png": "nba__den_phx_2025__f018.png",
+   "sha256": "c7d9f31ec6b8840aa1ba5baa1924c6bc2dd3dba2d31e6436bf856419ffe16a4f",
+   "t_sec": 271.842104,
+   "eye_label_present": true,
+   "white_bot": 0.6023,
+   "edge_bot": 0.2039,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1742,
+     "white": 0.0961,
+     "dark": 0.6563
+    },
+    "BOT": {
+     "edge": 0.2039,
+     "white": 0.6023,
+     "dark": 0.6908
+    },
+    "BOTLEFT": {
+     "edge": 0.0938,
+     "white": 0.6918,
+     "dark": 0.5872
+    },
+    "BOTRIGHT": {
+     "edge": 0.3707,
+     "white": 0.6122,
+     "dark": 0.8435
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 19,
+   "png": "nba__den_phx_2025__f019.png",
+   "sha256": "22d0f74d6a949bec37b05d374f8b57b2025f591a862ee9aa685e11345eab2847",
+   "t_sec": 286.536272,
+   "eye_label_present": true,
+   "white_bot": 0.6156,
+   "edge_bot": 0.2148,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1492,
+     "white": 0.0898,
+     "dark": 0.5955
+    },
+    "BOT": {
+     "edge": 0.2148,
+     "white": 0.6156,
+     "dark": 0.716
+    },
+    "BOTLEFT": {
+     "edge": 0.0767,
+     "white": 0.6264,
+     "dark": 0.6093
+    },
+    "BOTRIGHT": {
+     "edge": 0.3906,
+     "white": 0.6321,
+     "dark": 0.8504
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 20,
+   "png": "nba__den_phx_2025__f020.png",
+   "sha256": "8933d4aca26c8947974e2532ed6f272a9b4599b2d3453840b0a8e4f9c5ff5a21",
+   "t_sec": 301.23044,
+   "eye_label_present": true,
+   "white_bot": 0.4562,
+   "edge_bot": 0.2133,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1586,
+     "white": 0.0898,
+     "dark": 0.6063
+    },
+    "BOT": {
+     "edge": 0.2133,
+     "white": 0.4562,
+     "dark": 0.4693
+    },
+    "BOTLEFT": {
+     "edge": 0.098,
+     "white": 0.4432,
+     "dark": 0.261
+    },
+    "BOTRIGHT": {
+     "edge": 0.3878,
+     "white": 0.5256,
+     "dark": 0.6358
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 21,
+   "png": "nba__den_phx_2025__f021.png",
+   "sha256": "5768af5640decdf8b9bbc9d356bf0921927f83cd5f212cd02b099dfb01c7f1bc",
+   "t_sec": 315.924608,
+   "eye_label_present": true,
+   "white_bot": 0.6836,
+   "edge_bot": 0.5219,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.157,
+     "white": 0.1195,
+     "dark": 0.7165
+    },
+    "BOT": {
+     "edge": 0.5219,
+     "white": 0.6836,
+     "dark": 0.4996
+    },
+    "BOTLEFT": {
+     "edge": 0.3778,
+     "white": 0.6364,
+     "dark": 0.4766
+    },
+    "BOTRIGHT": {
+     "edge": 0.7088,
+     "white": 0.8324,
+     "dark": 0.6024
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 22,
+   "png": "nba__den_phx_2025__f022.png",
+   "sha256": "615fb29137d647d5d25e2dd9b39ddb779dd3a9c616902595f21396084ebfe27f",
+   "t_sec": 330.618775,
+   "eye_label_present": true,
+   "white_bot": 0.4922,
+   "edge_bot": 0.1781,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1391,
+     "white": 0.0906,
+     "dark": 0.7505
+    },
+    "BOT": {
+     "edge": 0.1781,
+     "white": 0.4922,
+     "dark": 0.746
+    },
+    "BOTLEFT": {
+     "edge": 0.1193,
+     "white": 0.3622,
+     "dark": 0.8059
+    },
+    "BOTRIGHT": {
+     "edge": 0.2628,
+     "white": 0.7145,
+     "dark": 0.7578
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 23,
+   "png": "nba__den_phx_2025__f023.png",
+   "sha256": "8ec60a9f11063cead9175b102c81d12a37db241106c0a29a8baaef737a0c05a7",
+   "t_sec": 345.312943,
+   "eye_label_present": true,
+   "white_bot": 0.5687,
+   "edge_bot": 0.2289,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1383,
+     "white": 0.0906,
+     "dark": 0.6109
+    },
+    "BOT": {
+     "edge": 0.2289,
+     "white": 0.5687,
+     "dark": 0.6926
+    },
+    "BOTLEFT": {
+     "edge": 0.1207,
+     "white": 0.5384,
+     "dark": 0.6043
+    },
+    "BOTRIGHT": {
+     "edge": 0.4162,
+     "white": 0.7685,
+     "dark": 0.9098
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 24,
+   "png": "nba__den_phx_2025__f024.png",
+   "sha256": "cb43e1211abf1d922998d74bb210640c8319b38273fdb2bc373555d2d6e3c91b",
+   "t_sec": 360.007111,
+   "eye_label_present": true,
+   "white_bot": 0.4695,
+   "edge_bot": 0.2344,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1539,
+     "white": 0.0922,
+     "dark": 0.6191
+    },
+    "BOT": {
+     "edge": 0.2344,
+     "white": 0.4695,
+     "dark": 0.5404
+    },
+    "BOTLEFT": {
+     "edge": 0.1051,
+     "white": 0.6179,
+     "dark": 0.3717
+    },
+    "BOTRIGHT": {
+     "edge": 0.4261,
+     "white": 0.581,
+     "dark": 0.6957
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 25,
+   "png": "nba__den_phx_2025__f025.png",
+   "sha256": "e3ca1ba8778a57b10ec18f98ef9ef8689ccb647922cc54cee66df9fd7d033102",
+   "t_sec": 374.701279,
+   "eye_label_present": true,
+   "white_bot": 0.4148,
+   "edge_bot": 0.2305,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1508,
+     "white": 0.0875,
+     "dark": 0.7235
+    },
+    "BOT": {
+     "edge": 0.2305,
+     "white": 0.4148,
+     "dark": 0.8042
+    },
+    "BOTLEFT": {
+     "edge": 0.1548,
+     "white": 0.2472,
+     "dark": 0.8789
+    },
+    "BOTRIGHT": {
+     "edge": 0.4034,
+     "white": 0.5469,
+     "dark": 0.767
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 26,
+   "png": "nba__den_phx_2025__f026.png",
+   "sha256": "8672516a427910362d3770d0025b2f2044af09aa394f598b95dd1d0977874f10",
+   "t_sec": 389.395447,
+   "eye_label_present": true,
+   "white_bot": 0.2078,
+   "edge_bot": 0.3406,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1656,
+     "white": 0.0852,
+     "dark": 0.5924
+    },
+    "BOT": {
+     "edge": 0.3406,
+     "white": 0.2078,
+     "dark": 0.8935
+    },
+    "BOTLEFT": {
+     "edge": 0.304,
+     "white": 0.2656,
+     "dark": 0.9036
+    },
+    "BOTRIGHT": {
+     "edge": 0.5369,
+     "white": 0.1577,
+     "dark": 0.9672
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 27,
+   "png": "nba__den_phx_2025__f027.png",
+   "sha256": "3bbb141895965aa465e8c8c6e8e95cd22389ff6b9daab25f8b5ff1fbff0bc28d",
+   "t_sec": 404.089614,
+   "eye_label_present": true,
+   "white_bot": 0.3258,
+   "edge_bot": 0.2305,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1484,
+     "white": 0.0969,
+     "dark": 0.7591
+    },
+    "BOT": {
+     "edge": 0.2305,
+     "white": 0.3258,
+     "dark": 0.8123
+    },
+    "BOTLEFT": {
+     "edge": 0.1548,
+     "white": 0.2386,
+     "dark": 0.8736
+    },
+    "BOTRIGHT": {
+     "edge": 0.3849,
+     "white": 0.5568,
+     "dark": 0.8333
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 28,
+   "png": "nba__den_phx_2025__f028.png",
+   "sha256": "6a38f9fcdc2209e009a65452bc7e681ead46267a80c2dcc1644e8959cc45be61",
+   "t_sec": 418.783782,
+   "eye_label_present": true,
+   "white_bot": 0.3586,
+   "edge_bot": 0.2141,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1461,
+     "white": 0.0914,
+     "dark": 0.668
+    },
+    "BOT": {
+     "edge": 0.2141,
+     "white": 0.3586,
+     "dark": 0.8368
+    },
+    "BOTLEFT": {
+     "edge": 0.2543,
+     "white": 0.4531,
+     "dark": 0.7193
+    },
+    "BOTRIGHT": {
+     "edge": 0.2585,
+     "white": 0.3224,
+     "dark": 0.9753
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 29,
+   "png": "nba__den_phx_2025__f029.png",
+   "sha256": "d285be3d46e922a42fe08886b928898e0ae7b68a1557202c374232787296329c",
+   "t_sec": 433.47795,
+   "eye_label_present": true,
+   "white_bot": 0.6766,
+   "edge_bot": 0.2109,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1641,
+     "white": 0.0977,
+     "dark": 0.6256
+    },
+    "BOT": {
+     "edge": 0.2109,
+     "white": 0.6766,
+     "dark": 0.1236
+    },
+    "BOTLEFT": {
+     "edge": 0.0724,
+     "white": 0.7273,
+     "dark": 0.0558
+    },
+    "BOTRIGHT": {
+     "edge": 0.3693,
+     "white": 0.7599,
+     "dark": 0.2172
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 30,
+   "png": "nba__den_phx_2025__f030.png",
+   "sha256": "e23fba7994944388149deae775a9c333234ca23d156b0d0f77ca9f4c74acd965",
+   "t_sec": 448.172118,
+   "eye_label_present": true,
+   "white_bot": 0.5391,
+   "edge_bot": 0.3484,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1039,
+     "white": 0.0844,
+     "dark": 0.9257
+    },
+    "BOT": {
+     "edge": 0.3484,
+     "white": 0.5391,
+     "dark": 0.5152
+    },
+    "BOTLEFT": {
+     "edge": 0.4872,
+     "white": 0.9545,
+     "dark": 0.5972
+    },
+    "BOTRIGHT": {
+     "edge": 0.2486,
+     "white": 0.4858,
+     "dark": 0.6944
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 31,
+   "png": "nba__den_phx_2025__f031.png",
+   "sha256": "34750a0a6955ed4519ee74b48a99c557e52ea335e79921981f34d12d1988ace9",
+   "t_sec": 462.866286,
+   "eye_label_present": true,
+   "white_bot": 0.3984,
+   "edge_bot": 0.1734,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1719,
+     "white": 0.0914,
+     "dark": 0.6152
+    },
+    "BOT": {
+     "edge": 0.1734,
+     "white": 0.3984,
+     "dark": 0.8164
+    },
+    "BOTLEFT": {
+     "edge": 0.1122,
+     "white": 0.5469,
+     "dark": 0.815
+    },
+    "BOTRIGHT": {
+     "edge": 0.2784,
+     "white": 0.2884,
+     "dark": 0.8897
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 32,
+   "png": "nba__den_phx_2025__f032.png",
+   "sha256": "6feec050e8f2befd6278008655d670929769768d8e1e6fd847d8ca50e2a45909",
+   "t_sec": 477.560453,
+   "eye_label_present": true,
+   "white_bot": 0.7031,
+   "edge_bot": 0.2,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.157,
+     "white": 0.0961,
+     "dark": 0.6535
+    },
+    "BOT": {
+     "edge": 0.2,
+     "white": 0.7031,
+     "dark": 0.1277
+    },
+    "BOTLEFT": {
+     "edge": 0.2173,
+     "white": 0.7884,
+     "dark": 0.226
+    },
+    "BOTRIGHT": {
+     "edge": 0.358,
+     "white": 0.8409,
+     "dark": 0.2261
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 33,
+   "png": "nba__den_phx_2025__f033.png",
+   "sha256": "c4316ce6260d4cccebec39f5aef77d135beb48209e5309dbfc95e654e3025dc1",
+   "t_sec": 492.254621,
+   "eye_label_present": true,
+   "white_bot": 0.3148,
+   "edge_bot": 0.4609,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1492,
+     "white": 0.0961,
+     "dark": 0.7178
+    },
+    "BOT": {
+     "edge": 0.4609,
+     "white": 0.3148,
+     "dark": 0.8741
+    },
+    "BOTLEFT": {
+     "edge": 0.1435,
+     "white": 0.1875,
+     "dark": 0.9141
+    },
+    "BOTRIGHT": {
+     "edge": 0.7713,
+     "white": 0.5455,
+     "dark": 0.899
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 34,
+   "png": "nba__den_phx_2025__f034.png",
+   "sha256": "155875a394707fb467e6ee6ec06fd55e1cf501bc33d2e2102f96c9ed3209156c",
+   "t_sec": 506.948789,
+   "eye_label_present": true,
+   "white_bot": 0.4906,
+   "edge_bot": 0.2406,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1172,
+     "white": 0.0875,
+     "dark": 0.6568
+    },
+    "BOT": {
+     "edge": 0.2406,
+     "white": 0.4906,
+     "dark": 0.9296
+    },
+    "BOTLEFT": {
+     "edge": 0.1094,
+     "white": 0.517,
+     "dark": 0.9922
+    },
+    "BOTRIGHT": {
+     "edge": 0.4176,
+     "white": 0.5483,
+     "dark": 0.8886
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 35,
+   "png": "nba__den_phx_2025__f035.png",
+   "sha256": "bc1a369efe8b6adfb507f4ea26b7ee564e522c5a0acbf1391d058460d0d123ac",
+   "t_sec": 521.642957,
+   "eye_label_present": true,
+   "white_bot": 0.5211,
+   "edge_bot": 0.2211,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1445,
+     "white": 0.0867,
+     "dark": 0.6031
+    },
+    "BOT": {
+     "edge": 0.2211,
+     "white": 0.5211,
+     "dark": 0.7553
+    },
+    "BOTLEFT": {
+     "edge": 0.1065,
+     "white": 0.679,
+     "dark": 0.6049
+    },
+    "BOTRIGHT": {
+     "edge": 0.3991,
+     "white": 0.527,
+     "dark": 0.8397
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 36,
+   "png": "nba__den_phx_2025__f036.png",
+   "sha256": "3addd99b82fe647d1e04986b28dba0b8b435747f53f9cd9ac4415e7b6034512c",
+   "t_sec": 536.337125,
+   "eye_label_present": true,
+   "white_bot": 0.6094,
+   "edge_bot": 0.218,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1344,
+     "white": 0.0852,
+     "dark": 0.6742
+    },
+    "BOT": {
+     "edge": 0.218,
+     "white": 0.6094,
+     "dark": 0.1754
+    },
+    "BOTLEFT": {
+     "edge": 0.0653,
+     "white": 0.8026,
+     "dark": 0.0199
+    },
+    "BOTRIGHT": {
+     "edge": 0.3821,
+     "white": 0.5227,
+     "dark": 0.3007
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 37,
+   "png": "nba__den_phx_2025__f037.png",
+   "sha256": "1ded02df9778e47b3b8013258c7db2b5f8afdbc5485ca7fd8bec4d60d7139b51",
+   "t_sec": 551.031293,
+   "eye_label_present": true,
+   "white_bot": 0.5391,
+   "edge_bot": 0.2055,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1328,
+     "white": 0.0867,
+     "dark": 0.5725
+    },
+    "BOT": {
+     "edge": 0.2055,
+     "white": 0.5391,
+     "dark": 0.6698
+    },
+    "BOTLEFT": {
+     "edge": 0.1151,
+     "white": 0.6392,
+     "dark": 0.5881
+    },
+    "BOTRIGHT": {
+     "edge": 0.3736,
+     "white": 0.5824,
+     "dark": 0.7881
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 38,
+   "png": "nba__den_phx_2025__f038.png",
+   "sha256": "77f7cdf5be7fe215ed3813cca3c68b9aa5dc06142ecdcadd2e61dffb46f1bc16",
+   "t_sec": 565.72546,
+   "eye_label_present": true,
+   "white_bot": 0.3953,
+   "edge_bot": 0.1969,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1539,
+     "white": 0.0859,
+     "dark": 0.6827
+    },
+    "BOT": {
+     "edge": 0.1969,
+     "white": 0.3953,
+     "dark": 0.7591
+    },
+    "BOTLEFT": {
+     "edge": 0.1307,
+     "white": 0.4815,
+     "dark": 0.6032
+    },
+    "BOTRIGHT": {
+     "edge": 0.358,
+     "white": 0.3324,
+     "dark": 0.8617
+    }
+   }
+  },
+  {
+   "clip": "nba__den_phx_2025",
+   "j": 39,
+   "png": "nba__den_phx_2025__f039.png",
+   "sha256": "713130fff0d98272c8212aa378796391c5acad254feca8285535948165bf6db1",
+   "t_sec": 580.419628,
+   "eye_label_present": true,
+   "white_bot": 0.0766,
+   "edge_bot": 0.2203,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.2102,
+     "white": 0.0875,
+     "dark": 0.9754
+    },
+    "BOT": {
+     "edge": 0.2203,
+     "white": 0.0766,
+     "dark": 0.3799
+    },
+    "BOTLEFT": {
+     "edge": 0.2528,
+     "white": 0.0,
+     "dark": 0.3973
+    },
+    "BOTRIGHT": {
+     "edge": 0.3594,
+     "white": 0.1392,
+     "dark": 0.4915
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 0,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f000.png",
+   "sha256": "74f4a77ab20a5c42d855ca830ceed1ff8f5c808d097a3078ca0cb88fbc4e86d1",
+   "t_sec": 12.056556,
+   "eye_label_present": true,
+   "white_bot": 0.5281,
+   "edge_bot": 0.7214,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0911,
+     "white": 0.0406,
+     "dark": 0.8546
+    },
+    "BOT": {
+     "edge": 0.7214,
+     "white": 0.5281,
+     "dark": 0.776
+    },
+    "BOTLEFT": {
+     "edge": 0.7945,
+     "white": 0.821,
+     "dark": 0.8036
+    },
+    "BOTRIGHT": {
+     "edge": 0.8409,
+     "white": 0.3873,
+     "dark": 0.7622
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 1,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f001.png",
+   "sha256": "19bbcc94bf9385a03580fa5d8dad78fcd5db9a9f220e2d3a8167cd7520b8e609",
+   "t_sec": 36.169669,
+   "eye_label_present": true,
+   "white_bot": 0.4359,
+   "edge_bot": 0.5979,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0802,
+     "white": 0.0437,
+     "dark": 0.8369
+    },
+    "BOT": {
+     "edge": 0.5979,
+     "white": 0.4359,
+     "dark": 0.7526
+    },
+    "BOTLEFT": {
+     "edge": 0.839,
+     "white": 0.5578,
+     "dark": 0.6944
+    },
+    "BOTRIGHT": {
+     "edge": 0.8655,
+     "white": 0.393,
+     "dark": 0.8607
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 2,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f002.png",
+   "sha256": "826978c0807f5cae040087ff0d5939a7e178b134c873eae0d5791a2d38f31cd9",
+   "t_sec": 60.282781,
+   "eye_label_present": false,
+   "white_bot": 0.0198,
+   "edge_bot": 0.6781,
+   "rule_fired": false,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.026,
+     "white": 0.6042,
+     "dark": 0.9993
+    },
+    "BOT": {
+     "edge": 0.6781,
+     "white": 0.0198,
+     "dark": 1.0
+    },
+    "BOTLEFT": {
+     "edge": 0.8826,
+     "white": 0.0312,
+     "dark": 1.0
+    },
+    "BOTRIGHT": {
+     "edge": 0.5322,
+     "white": 0.0312,
+     "dark": 1.0
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 3,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f003.png",
+   "sha256": "f43e3c9ec4aafa1e13e001768d1582ce80b73f095def9395bb93fa5e7764ab21",
+   "t_sec": 84.395894,
+   "eye_label_present": true,
+   "white_bot": 0.8667,
+   "edge_bot": 0.8661,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.062,
+     "white": 0.2719,
+     "dark": 0.4602
+    },
+    "BOT": {
+     "edge": 0.8661,
+     "white": 0.8667,
+     "dark": 0.8875
+    },
+    "BOTLEFT": {
+     "edge": 0.8769,
+     "white": 0.8769,
+     "dark": 0.9878
+    },
+    "BOTRIGHT": {
+     "edge": 0.8797,
+     "white": 0.8807,
+     "dark": 0.8136
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 4,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f004.png",
+   "sha256": "0d9d4b6d24ebe0b123ac1254635fa9aca0ad680f6c486c31327e54d038c23c70",
+   "t_sec": 108.509006,
+   "eye_label_present": true,
+   "white_bot": 0.5016,
+   "edge_bot": 0.9995,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0651,
+     "white": 0.0385,
+     "dark": 0.8147
+    },
+    "BOT": {
+     "edge": 0.9995,
+     "white": 0.5016,
+     "dark": 1.0
+    },
+    "BOTLEFT": {
+     "edge": 0.9991,
+     "white": 0.8059,
+     "dark": 1.0
+    },
+    "BOTRIGHT": {
+     "edge": 1.0,
+     "white": 0.3996,
+     "dark": 1.0
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 5,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f005.png",
+   "sha256": "0ac15163d9832141d190c212bef96b333b48867d7d03a7dcad3a19aa2696ad06",
+   "t_sec": 132.622119,
+   "eye_label_present": true,
+   "white_bot": 0.4266,
+   "edge_bot": 1.0,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1495,
+     "white": 0.087,
+     "dark": 0.8813
+    },
+    "BOT": {
+     "edge": 1.0,
+     "white": 0.4266,
+     "dark": 1.0
+    },
+    "BOTLEFT": {
+     "edge": 1.0,
+     "white": 0.5473,
+     "dark": 1.0
+    },
+    "BOTRIGHT": {
+     "edge": 1.0,
+     "white": 0.3826,
+     "dark": 1.0
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 6,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f006.png",
+   "sha256": "1146c9fa0211729282306b4b4fce2dc6fe798e2626b87a93eb7dde16e388bb4d",
+   "t_sec": 156.735231,
+   "eye_label_present": true,
+   "white_bot": 0.4349,
+   "edge_bot": 0.3943,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0641,
+     "white": 0.0766,
+     "dark": 0.7216
+    },
+    "BOT": {
+     "edge": 0.3943,
+     "white": 0.4349,
+     "dark": 0.6635
+    },
+    "BOTLEFT": {
+     "edge": 0.4934,
+     "white": 0.5616,
+     "dark": 0.6086
+    },
+    "BOTRIGHT": {
+     "edge": 0.4583,
+     "white": 0.3873,
+     "dark": 0.661
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 7,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f007.png",
+   "sha256": "409e45e320efdf75bfda08ed1f1bb26006754078d997225dac9a6086cd7499eb",
+   "t_sec": 180.848344,
+   "eye_label_present": true,
+   "white_bot": 0.4432,
+   "edge_bot": 0.4958,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1365,
+     "white": 0.0813,
+     "dark": 0.7372
+    },
+    "BOT": {
+     "edge": 0.4958,
+     "white": 0.4432,
+     "dark": 0.6105
+    },
+    "BOTLEFT": {
+     "edge": 0.5,
+     "white": 0.553,
+     "dark": 0.4898
+    },
+    "BOTRIGHT": {
+     "edge": 0.4299,
+     "white": 0.4081,
+     "dark": 0.6799
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 8,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f008.png",
+   "sha256": "af935f9e89ba98b461eabed9815cc8743a55aa62366ece54db40cf462b85ab0d",
+   "t_sec": 204.961456,
+   "eye_label_present": true,
+   "white_bot": 0.4339,
+   "edge_bot": 0.6672,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0781,
+     "white": 0.0484,
+     "dark": 0.7886
+    },
+    "BOT": {
+     "edge": 0.6672,
+     "white": 0.4339,
+     "dark": 0.5592
+    },
+    "BOTLEFT": {
+     "edge": 0.6506,
+     "white": 0.571,
+     "dark": 0.4894
+    },
+    "BOTRIGHT": {
+     "edge": 0.6373,
+     "white": 0.3741,
+     "dark": 0.6136
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 9,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f009.png",
+   "sha256": "e3195487e2d59500d355621997675249e27041524ce6750c03cec80e17190ad3",
+   "t_sec": 229.074569,
+   "eye_label_present": true,
+   "white_bot": 0.4484,
+   "edge_bot": 0.512,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1104,
+     "white": 0.0526,
+     "dark": 0.7842
+    },
+    "BOT": {
+     "edge": 0.512,
+     "white": 0.4484,
+     "dark": 0.5909
+    },
+    "BOTLEFT": {
+     "edge": 0.5066,
+     "white": 0.536,
+     "dark": 0.5048
+    },
+    "BOTRIGHT": {
+     "edge": 0.5047,
+     "white": 0.4347,
+     "dark": 0.6483
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 10,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f010.png",
+   "sha256": "b5a622ac78dafb3cf4514e77cfb440893f3809a885472852d848d87dab940394",
+   "t_sec": 253.187681,
+   "eye_label_present": true,
+   "white_bot": 0.5464,
+   "edge_bot": 0.4385,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0615,
+     "white": 0.037,
+     "dark": 0.6668
+    },
+    "BOT": {
+     "edge": 0.4385,
+     "white": 0.5464,
+     "dark": 0.6847
+    },
+    "BOTLEFT": {
+     "edge": 0.66,
+     "white": 0.8532,
+     "dark": 0.6186
+    },
+    "BOTRIGHT": {
+     "edge": 0.3201,
+     "white": 0.3835,
+     "dark": 0.9112
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 11,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f011.png",
+   "sha256": "0f0e727f7ab8d182fd982f8164ec14eae3108792588e60c440f8b4c824bd1d0e",
+   "t_sec": 277.300794,
+   "eye_label_present": true,
+   "white_bot": 0.4219,
+   "edge_bot": 0.5609,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0875,
+     "white": 0.0448,
+     "dark": 0.8308
+    },
+    "BOT": {
+     "edge": 0.5609,
+     "white": 0.4219,
+     "dark": 0.6126
+    },
+    "BOTLEFT": {
+     "edge": 0.5066,
+     "white": 0.5417,
+     "dark": 0.5949
+    },
+    "BOTRIGHT": {
+     "edge": 0.5445,
+     "white": 0.3835,
+     "dark": 0.6082
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 12,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f012.png",
+   "sha256": "9cde27e8b12b3dfbc5fa4bc8998c1df6a8a7ce89545643cfd57a2b1b900b0946",
+   "t_sec": 301.413906,
+   "eye_label_present": true,
+   "white_bot": 0.4276,
+   "edge_bot": 0.4682,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1359,
+     "white": 0.0729,
+     "dark": 0.7317
+    },
+    "BOT": {
+     "edge": 0.4682,
+     "white": 0.4276,
+     "dark": 0.619
+    },
+    "BOTLEFT": {
+     "edge": 0.5597,
+     "white": 0.5473,
+     "dark": 0.4959
+    },
+    "BOTRIGHT": {
+     "edge": 0.357,
+     "white": 0.3854,
+     "dark": 0.677
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 13,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f013.png",
+   "sha256": "94a2b98e475396a20f62cdd04c2230ce1666fa2d22e742a9afa96c3ab7dd01fe",
+   "t_sec": 325.527019,
+   "eye_label_present": true,
+   "white_bot": 0.7188,
+   "edge_bot": 0.7443,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0604,
+     "white": 0.0557,
+     "dark": 0.4096
+    },
+    "BOT": {
+     "edge": 0.7443,
+     "white": 0.7188,
+     "dark": 0.757
+    },
+    "BOTLEFT": {
+     "edge": 0.6979,
+     "white": 0.6534,
+     "dark": 0.8187
+    },
+    "BOTRIGHT": {
+     "edge": 0.7093,
+     "white": 0.6534,
+     "dark": 0.7411
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 14,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f014.png",
+   "sha256": "b4eb3d5e8adad08d65e61e748e62fd854bcfcd664e57d7457df65acde835059e",
+   "t_sec": 349.640131,
+   "eye_label_present": true,
+   "white_bot": 0.4286,
+   "edge_bot": 0.6,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0786,
+     "white": 0.0411,
+     "dark": 0.8167
+    },
+    "BOT": {
+     "edge": 0.6,
+     "white": 0.4286,
+     "dark": 0.5692
+    },
+    "BOTLEFT": {
+     "edge": 0.5502,
+     "white": 0.5578,
+     "dark": 0.5062
+    },
+    "BOTRIGHT": {
+     "edge": 0.5587,
+     "white": 0.3797,
+     "dark": 0.6327
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 15,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f015.png",
+   "sha256": "231aa8c80a920f6d4cf55122e9dfdcaf31ad2b3a91dfc515b94c8d1cb99321b7",
+   "t_sec": 373.753244,
+   "eye_label_present": true,
+   "white_bot": 0.449,
+   "edge_bot": 0.3266,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0604,
+     "white": 0.0375,
+     "dark": 0.5738
+    },
+    "BOT": {
+     "edge": 0.3266,
+     "white": 0.449,
+     "dark": 0.6122
+    },
+    "BOTLEFT": {
+     "edge": 0.4953,
+     "white": 0.5455,
+     "dark": 0.5816
+    },
+    "BOTRIGHT": {
+     "edge": 0.3134,
+     "white": 0.4271,
+     "dark": 0.6058
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 16,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f016.png",
+   "sha256": "d67f4035a420f7dedc73b6cce6b247e532ce785381b909df81fdb93ef4d78e37",
+   "t_sec": 397.866356,
+   "eye_label_present": true,
+   "white_bot": 0.424,
+   "edge_bot": 0.4708,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1047,
+     "white": 0.0448,
+     "dark": 0.8233
+    },
+    "BOT": {
+     "edge": 0.4708,
+     "white": 0.424,
+     "dark": 0.6444
+    },
+    "BOTLEFT": {
+     "edge": 0.7282,
+     "white": 0.5502,
+     "dark": 0.5751
+    },
+    "BOTRIGHT": {
+     "edge": 0.3021,
+     "white": 0.3778,
+     "dark": 0.7727
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 17,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f017.png",
+   "sha256": "ec1bdb0c5979ea33e86ef478656c2cd05ba18b68cc2e4aed3473ae802e5e112a",
+   "t_sec": 421.979469,
+   "eye_label_present": true,
+   "white_bot": 0.4161,
+   "edge_bot": 0.5089,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1172,
+     "white": 0.0417,
+     "dark": 0.866
+    },
+    "BOT": {
+     "edge": 0.5089,
+     "white": 0.4161,
+     "dark": 0.6063
+    },
+    "BOTLEFT": {
+     "edge": 0.5019,
+     "white": 0.5473,
+     "dark": 0.581
+    },
+    "BOTRIGHT": {
+     "edge": 0.4896,
+     "white": 0.3646,
+     "dark": 0.6194
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 18,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f018.png",
+   "sha256": "76ca242722a5a7bf75bede1166e562d546efcf794fae8ca10fad0918a2ac479f",
+   "t_sec": 446.092581,
+   "eye_label_present": true,
+   "white_bot": 0.4245,
+   "edge_bot": 0.5583,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0682,
+     "white": 0.037,
+     "dark": 0.404
+    },
+    "BOT": {
+     "edge": 0.5583,
+     "white": 0.4245,
+     "dark": 0.5579
+    },
+    "BOTLEFT": {
+     "edge": 0.4867,
+     "white": 0.5578,
+     "dark": 0.4968
+    },
+    "BOTRIGHT": {
+     "edge": 0.696,
+     "white": 0.3722,
+     "dark": 0.619
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 19,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f019.png",
+   "sha256": "d4a0dccb9bb0fcf695e81bdf2a0532d70c61a3b6851942c491ebbfd117c69f69",
+   "t_sec": 470.205694,
+   "eye_label_present": true,
+   "white_bot": 0.4245,
+   "edge_bot": 0.6724,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0661,
+     "white": 0.0396,
+     "dark": 0.9861
+    },
+    "BOT": {
+     "edge": 0.6724,
+     "white": 0.4245,
+     "dark": 0.5594
+    },
+    "BOTLEFT": {
+     "edge": 0.6828,
+     "white": 0.5473,
+     "dark": 0.5912
+    },
+    "BOTRIGHT": {
+     "edge": 0.7292,
+     "white": 0.3807,
+     "dark": 0.6076
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 20,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f020.png",
+   "sha256": "5c8023bd725d5b7d3c12f44947460a32dcd425a51be76d19bdbcbe4f20ff013a",
+   "t_sec": 494.318806,
+   "eye_label_present": true,
+   "white_bot": 0.4167,
+   "edge_bot": 0.5135,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1068,
+     "white": 0.0839,
+     "dark": 0.7844
+    },
+    "BOT": {
+     "edge": 0.5135,
+     "white": 0.4167,
+     "dark": 0.6638
+    },
+    "BOTLEFT": {
+     "edge": 0.6496,
+     "white": 0.5473,
+     "dark": 0.4946
+    },
+    "BOTRIGHT": {
+     "edge": 0.464,
+     "white": 0.3665,
+     "dark": 0.8218
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 21,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f021.png",
+   "sha256": "d7e3fef77f9b141a37134ba541a51cc9ba360c12858a57428163a66563f977d1",
+   "t_sec": 518.431919,
+   "eye_label_present": true,
+   "white_bot": 0.4266,
+   "edge_bot": 0.4703,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.088,
+     "white": 0.0453,
+     "dark": 0.8737
+    },
+    "BOT": {
+     "edge": 0.4703,
+     "white": 0.4266,
+     "dark": 0.7671
+    },
+    "BOTLEFT": {
+     "edge": 0.4867,
+     "white": 0.5587,
+     "dark": 0.8393
+    },
+    "BOTRIGHT": {
+     "edge": 0.6676,
+     "white": 0.375,
+     "dark": 0.7408
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 22,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f022.png",
+   "sha256": "fa4087650137d6d63c2cff2e3ba629e89b5ba961ad1c741ed300d82745263d54",
+   "t_sec": 542.545031,
+   "eye_label_present": true,
+   "white_bot": 0.4255,
+   "edge_bot": 0.612,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0865,
+     "white": 0.0427,
+     "dark": 0.83
+    },
+    "BOT": {
+     "edge": 0.612,
+     "white": 0.4255,
+     "dark": 0.5506
+    },
+    "BOTLEFT": {
+     "edge": 0.4924,
+     "white": 0.5464,
+     "dark": 0.4948
+    },
+    "BOTRIGHT": {
+     "edge": 0.6269,
+     "white": 0.3826,
+     "dark": 0.6009
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 23,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f023.png",
+   "sha256": "ad4c9159ffa68603f12cc5aa32a9c7140552ffced9306c29d6d6827f606e3550",
+   "t_sec": 566.658144,
+   "eye_label_present": true,
+   "white_bot": 0.4427,
+   "edge_bot": 0.4167,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0604,
+     "white": 0.0453,
+     "dark": 0.6097
+    },
+    "BOT": {
+     "edge": 0.4167,
+     "white": 0.4427,
+     "dark": 0.5737
+    },
+    "BOTLEFT": {
+     "edge": 0.4934,
+     "white": 0.5767,
+     "dark": 0.5206
+    },
+    "BOTRIGHT": {
+     "edge": 0.6297,
+     "white": 0.3864,
+     "dark": 0.6114
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 24,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f024.png",
+   "sha256": "185bf743b877b855a4e0e12cf00345a7be9ae088d3c1a65812754cd133a64606",
+   "t_sec": 590.771256,
+   "eye_label_present": false,
+   "white_bot": 0.0,
+   "edge_bot": 0.0245,
+   "rule_fired": false,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0641,
+     "white": 0.0375,
+     "dark": 1.0
+    },
+    "BOT": {
+     "edge": 0.0245,
+     "white": 0.0,
+     "dark": 0.9859
+    },
+    "BOTLEFT": {
+     "edge": 0.0038,
+     "white": 0.0,
+     "dark": 1.0
+    },
+    "BOTRIGHT": {
+     "edge": 0.0445,
+     "white": 0.0,
+     "dark": 0.9743
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 25,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f025.png",
+   "sha256": "752f1c4ebe756c7c7934f17a86b979d0b65dcd83c97572204c4cf725fec2add9",
+   "t_sec": 614.884369,
+   "eye_label_present": true,
+   "white_bot": 0.4276,
+   "edge_bot": 0.4885,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1078,
+     "white": 0.0646,
+     "dark": 0.8019
+    },
+    "BOT": {
+     "edge": 0.4885,
+     "white": 0.4276,
+     "dark": 0.6243
+    },
+    "BOTLEFT": {
+     "edge": 0.5294,
+     "white": 0.5625,
+     "dark": 0.6023
+    },
+    "BOTRIGHT": {
+     "edge": 0.5625,
+     "white": 0.3712,
+     "dark": 0.6177
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 26,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f026.png",
+   "sha256": "34d188f9366b073fe1abd8e3829352dca0f6fbf167fb1f3dd0f62d94c2b203a8",
+   "t_sec": 638.997481,
+   "eye_label_present": true,
+   "white_bot": 0.4385,
+   "edge_bot": 0.5068,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1094,
+     "white": 0.0427,
+     "dark": 0.8071
+    },
+    "BOT": {
+     "edge": 0.5068,
+     "white": 0.4385,
+     "dark": 0.7414
+    },
+    "BOTLEFT": {
+     "edge": 0.4991,
+     "white": 0.5625,
+     "dark": 0.8096
+    },
+    "BOTRIGHT": {
+     "edge": 0.7519,
+     "white": 0.393,
+     "dark": 0.7771
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 27,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f027.png",
+   "sha256": "d8c086b0df1319637dfeb342b86bea5bfa74c4345a3221ff7aebbaf57fd9cb2f",
+   "t_sec": 663.110594,
+   "eye_label_present": true,
+   "white_bot": 0.425,
+   "edge_bot": 0.5057,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0995,
+     "white": 0.0422,
+     "dark": 0.8534
+    },
+    "BOT": {
+     "edge": 0.5057,
+     "white": 0.425,
+     "dark": 0.6995
+    },
+    "BOTLEFT": {
+     "edge": 0.4981,
+     "white": 0.5559,
+     "dark": 0.8144
+    },
+    "BOTRIGHT": {
+     "edge": 0.697,
+     "white": 0.375,
+     "dark": 0.6297
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 28,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f028.png",
+   "sha256": "0727774ae614fbbc184b76296579765a974b7ab4d87d283a8bddc580474bfd5b",
+   "t_sec": 687.223706,
+   "eye_label_present": true,
+   "white_bot": 0.4344,
+   "edge_bot": 0.5766,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0917,
+     "white": 0.0813,
+     "dark": 0.9816
+    },
+    "BOT": {
+     "edge": 0.5766,
+     "white": 0.4344,
+     "dark": 0.5523
+    },
+    "BOTLEFT": {
+     "edge": 0.4896,
+     "white": 0.5653,
+     "dark": 0.4904
+    },
+    "BOTRIGHT": {
+     "edge": 0.5634,
+     "white": 0.3826,
+     "dark": 0.6143
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 29,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f029.png",
+   "sha256": "377c8a4424aaf04309ee77da7e5d1883049702772f17915727c4c3181088e682",
+   "t_sec": 711.336819,
+   "eye_label_present": true,
+   "white_bot": 0.425,
+   "edge_bot": 0.7312,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.063,
+     "white": 0.038,
+     "dark": 1.0
+    },
+    "BOT": {
+     "edge": 0.7312,
+     "white": 0.425,
+     "dark": 0.5511
+    },
+    "BOTLEFT": {
+     "edge": 0.7055,
+     "white": 0.5521,
+     "dark": 0.4894
+    },
+    "BOTRIGHT": {
+     "edge": 0.696,
+     "white": 0.3769,
+     "dark": 0.6137
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 30,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f030.png",
+   "sha256": "0c56dae106b3379c86de7cb524394f7476bb406c0335c1830dcf7ac6171c6cab",
+   "t_sec": 735.449931,
+   "eye_label_present": true,
+   "white_bot": 0.424,
+   "edge_bot": 0.476,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0906,
+     "white": 0.0396,
+     "dark": 0.8537
+    },
+    "BOT": {
+     "edge": 0.476,
+     "white": 0.424,
+     "dark": 0.62
+    },
+    "BOTLEFT": {
+     "edge": 0.5028,
+     "white": 0.554,
+     "dark": 0.7658
+    },
+    "BOTRIGHT": {
+     "edge": 0.7623,
+     "white": 0.3731,
+     "dark": 0.6219
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 31,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f031.png",
+   "sha256": "7b9c12f9560ae7acc7b18fb780e65b7651b33efea33540513a3b7d62744a1fc7",
+   "t_sec": 759.563044,
+   "eye_label_present": false,
+   "white_bot": 0.0286,
+   "edge_bot": 0.2,
+   "rule_fired": false,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0729,
+     "white": 0.0651,
+     "dark": 0.7812
+    },
+    "BOT": {
+     "edge": 0.2,
+     "white": 0.0286,
+     "dark": 0.1262
+    },
+    "BOTLEFT": {
+     "edge": 0.34,
+     "white": 0.0502,
+     "dark": 0.1689
+    },
+    "BOTRIGHT": {
+     "edge": 0.1591,
+     "white": 0.0312,
+     "dark": 0.106
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 32,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f032.png",
+   "sha256": "7756e607e668ae6d8c017d15ceaf9594b76b1c4cb6d9ecea03fd828656cc618c",
+   "t_sec": 783.676156,
+   "eye_label_present": false,
+   "white_bot": 0.1094,
+   "edge_bot": 0.0151,
+   "rule_fired": false,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0625,
+     "white": 0.0531,
+     "dark": 0.9498
+    },
+    "BOT": {
+     "edge": 0.0151,
+     "white": 0.1094,
+     "dark": 0.5306
+    },
+    "BOTLEFT": {
+     "edge": 0.0275,
+     "white": 0.1383,
+     "dark": 0.5346
+    },
+    "BOTRIGHT": {
+     "edge": 0.0256,
+     "white": 0.1989,
+     "dark": 0.5285
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 33,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f033.png",
+   "sha256": "11f0ef8008b4b94c8ec6b1e9eda14f563cdabf9c6dfe2da8284fff9004c053d8",
+   "t_sec": 807.789269,
+   "eye_label_present": true,
+   "white_bot": 0.4313,
+   "edge_bot": 0.599,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.1203,
+     "white": 0.0589,
+     "dark": 0.9962
+    },
+    "BOT": {
+     "edge": 0.599,
+     "white": 0.4313,
+     "dark": 0.6158
+    },
+    "BOTLEFT": {
+     "edge": 0.6155,
+     "white": 0.5644,
+     "dark": 0.4912
+    },
+    "BOTRIGHT": {
+     "edge": 0.5644,
+     "white": 0.6231,
+     "dark": 0.712
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 34,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f034.png",
+   "sha256": "f937448f94d096262a7b24a3157344da1db72b7af8518a4128a93a9044e115d3",
+   "t_sec": 831.902381,
+   "eye_label_present": true,
+   "white_bot": 0.437,
+   "edge_bot": 0.3771,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0625,
+     "white": 0.0385,
+     "dark": 1.0
+    },
+    "BOT": {
+     "edge": 0.3771,
+     "white": 0.437,
+     "dark": 0.6306
+    },
+    "BOTLEFT": {
+     "edge": 0.4905,
+     "white": 0.5663,
+     "dark": 0.5204
+    },
+    "BOTRIGHT": {
+     "edge": 0.303,
+     "white": 0.4025,
+     "dark": 0.7261
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 35,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f035.png",
+   "sha256": "b65b9529f2a14542e593ec6778268599e7cee8e099a914d8ff584c01b630679a",
+   "t_sec": 856.015494,
+   "eye_label_present": true,
+   "white_bot": 0.4042,
+   "edge_bot": 0.999,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0719,
+     "white": 0.049,
+     "dark": 0.9019
+    },
+    "BOT": {
+     "edge": 0.999,
+     "white": 0.4042,
+     "dark": 1.0
+    },
+    "BOTLEFT": {
+     "edge": 0.9981,
+     "white": 0.5218,
+     "dark": 1.0
+    },
+    "BOTRIGHT": {
+     "edge": 1.0,
+     "white": 0.3684,
+     "dark": 1.0
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 36,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f036.png",
+   "sha256": "25cc8d4222985a6767932c5121210f9b70b0c445c596788b2701527e32884e01",
+   "t_sec": 880.128606,
+   "eye_label_present": false,
+   "white_bot": 0.0193,
+   "edge_bot": 0.1187,
+   "rule_fired": false,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0651,
+     "white": 0.0625,
+     "dark": 0.9983
+    },
+    "BOT": {
+     "edge": 0.1187,
+     "white": 0.0193,
+     "dark": 0.0155
+    },
+    "BOTLEFT": {
+     "edge": 0.1818,
+     "white": 0.0218,
+     "dark": 0.0281
+    },
+    "BOTRIGHT": {
+     "edge": 0.0407,
+     "white": 0.035,
+     "dark": 0.0196
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 37,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f037.png",
+   "sha256": "9aaa254ccaabd6cd61484c262453f96de81cccdf2efc7d7a0d379aee99b9f034",
+   "t_sec": 904.241719,
+   "eye_label_present": true,
+   "white_bot": 0.437,
+   "edge_bot": 0.5078,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0656,
+     "white": 0.037,
+     "dark": 0.95
+    },
+    "BOT": {
+     "edge": 0.5078,
+     "white": 0.437,
+     "dark": 0.5662
+    },
+    "BOTLEFT": {
+     "edge": 0.5388,
+     "white": 0.5568,
+     "dark": 0.4901
+    },
+    "BOTRIGHT": {
+     "edge": 0.3883,
+     "white": 0.3939,
+     "dark": 0.6383
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 38,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f038.png",
+   "sha256": "0024ecc705e1c3d58c19902db9f696c1c35028e455dacfcfff739c3a1c2a1613",
+   "t_sec": 928.354831,
+   "eye_label_present": true,
+   "white_bot": 0.4276,
+   "edge_bot": 0.5641,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0755,
+     "white": 0.0391,
+     "dark": 0.7701
+    },
+    "BOT": {
+     "edge": 0.5641,
+     "white": 0.4276,
+     "dark": 0.6122
+    },
+    "BOTLEFT": {
+     "edge": 0.4962,
+     "white": 0.554,
+     "dark": 0.5814
+    },
+    "BOTRIGHT": {
+     "edge": 0.6477,
+     "white": 0.3778,
+     "dark": 0.6128
+    }
+   }
+  },
+  {
+   "clip": "ncaa_basketball__ncaa_basketball_mRkuGgeECak",
+   "j": 39,
+   "png": "ncaa_basketball__ncaa_basketball_mRkuGgeECak__f039.png",
+   "sha256": "68c151a05e2b120d4b76ec91cc00c3ad0409bcf8cfd7632348bd6166da1c51ee",
+   "t_sec": 952.467944,
+   "eye_label_present": true,
+   "white_bot": 0.4349,
+   "edge_bot": 0.5312,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0932,
+     "white": 0.0547,
+     "dark": 0.6321
+    },
+    "BOT": {
+     "edge": 0.5312,
+     "white": 0.4349,
+     "dark": 0.5515
+    },
+    "BOTLEFT": {
+     "edge": 0.4934,
+     "white": 0.5606,
+     "dark": 0.4901
+    },
+    "BOTRIGHT": {
+     "edge": 0.4896,
+     "white": 0.3873,
+     "dark": 0.6093
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 0,
+   "png": "wnba__wnba_02__f000.png",
+   "sha256": "d1bb163ea79b3896aa225f302660182b7748bed996d5b1546bf85e0113b0e2c5",
+   "t_sec": 12.003821,
+   "eye_label_present": true,
+   "white_bot": 0.3945,
+   "edge_bot": 0.8266,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0133,
+     "white": 0.0148,
+     "dark": 0.7079
+    },
+    "BOT": {
+     "edge": 0.8266,
+     "white": 0.3945,
+     "dark": 0.3262
+    },
+    "BOTLEFT": {
+     "edge": 0.6847,
+     "white": 0.3878,
+     "dark": 0.4006
+    },
+    "BOTRIGHT": {
+     "edge": 0.9915,
+     "white": 0.483,
+     "dark": 0.3772
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 1,
+   "png": "wnba__wnba_02__f001.png",
+   "sha256": "ef6aa2525cf28eef26e58711d5e971a57299105222107d934cdda801acd40167",
+   "t_sec": 36.011463,
+   "eye_label_present": true,
+   "white_bot": 0.1125,
+   "edge_bot": 0.3414,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0227,
+     "white": 0.0086,
+     "dark": 0.7415
+    },
+    "BOT": {
+     "edge": 0.3414,
+     "white": 0.1125,
+     "dark": 0.4941
+    },
+    "BOTLEFT": {
+     "edge": 0.3636,
+     "white": 0.1932,
+     "dark": 0.7225
+    },
+    "BOTRIGHT": {
+     "edge": 0.4389,
+     "white": 0.1974,
+     "dark": 0.4171
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 2,
+   "png": "wnba__wnba_02__f002.png",
+   "sha256": "5462db58f8d50f4cb8d47a9851eb420ff27ae8990c6e9cece8cfc61fcf60764d",
+   "t_sec": 60.019104,
+   "eye_label_present": true,
+   "white_bot": 0.1,
+   "edge_bot": 0.2445,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0281,
+     "white": 0.0023,
+     "dark": 0.8076
+    },
+    "BOT": {
+     "edge": 0.2445,
+     "white": 0.1,
+     "dark": 0.6045
+    },
+    "BOTLEFT": {
+     "edge": 0.2585,
+     "white": 0.1818,
+     "dark": 0.4673
+    },
+    "BOTRIGHT": {
+     "edge": 0.2614,
+     "white": 0.0866,
+     "dark": 0.9276
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 3,
+   "png": "wnba__wnba_02__f003.png",
+   "sha256": "c7c31e7a65a7cd17da2ed17205ae73351c8ff15f7fb7d5f62c7a42b3f9bc9da6",
+   "t_sec": 84.026746,
+   "eye_label_present": true,
+   "white_bot": 0.0984,
+   "edge_bot": 0.4133,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0336,
+     "white": 0.0492,
+     "dark": 0.6754
+    },
+    "BOT": {
+     "edge": 0.4133,
+     "white": 0.0984,
+     "dark": 0.6502
+    },
+    "BOTLEFT": {
+     "edge": 0.1818,
+     "white": 0.1776,
+     "dark": 0.973
+    },
+    "BOTRIGHT": {
+     "edge": 0.7415,
+     "white": 0.0838,
+     "dark": 0.4384
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 4,
+   "png": "wnba__wnba_02__f004.png",
+   "sha256": "84de72f2bc22c292cb48a0bf48ac1575c84991885efe1c35ab6bac15f369a584",
+   "t_sec": 108.034388,
+   "eye_label_present": true,
+   "white_bot": 0.1141,
+   "edge_bot": 0.4047,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0125,
+     "white": 0.0039,
+     "dark": 0.8672
+    },
+    "BOT": {
+     "edge": 0.4047,
+     "white": 0.1141,
+     "dark": 0.6954
+    },
+    "BOTLEFT": {
+     "edge": 0.3381,
+     "white": 0.2074,
+     "dark": 0.9442
+    },
+    "BOTRIGHT": {
+     "edge": 0.6165,
+     "white": 0.0795,
+     "dark": 0.4925
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 5,
+   "png": "wnba__wnba_02__f005.png",
+   "sha256": "5f706eb7d4236903e632299195a3590e881876da45f9289fb898d494941f7ea4",
+   "t_sec": 132.042029,
+   "eye_label_present": true,
+   "white_bot": 0.0977,
+   "edge_bot": 0.3125,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0305,
+     "white": 0.0266,
+     "dark": 0.6411
+    },
+    "BOT": {
+     "edge": 0.3125,
+     "white": 0.0977,
+     "dark": 0.644
+    },
+    "BOTLEFT": {
+     "edge": 0.3707,
+     "white": 0.1776,
+     "dark": 0.4656
+    },
+    "BOTRIGHT": {
+     "edge": 0.3793,
+     "white": 0.081,
+     "dark": 0.9049
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 6,
+   "png": "wnba__wnba_02__f006.png",
+   "sha256": "956b3459f70ac83bb8ae76d81e3ee204806d5dd2f25c918368f6c551a1ecdef5",
+   "t_sec": 156.049671,
+   "eye_label_present": true,
+   "white_bot": 0.1117,
+   "edge_bot": 0.1891,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0234,
+     "white": 0.0398,
+     "dark": 0.9727
+    },
+    "BOT": {
+     "edge": 0.1891,
+     "white": 0.1117,
+     "dark": 0.7368
+    },
+    "BOTLEFT": {
+     "edge": 0.1818,
+     "white": 0.1832,
+     "dark": 0.8366
+    },
+    "BOTRIGHT": {
+     "edge": 0.25,
+     "white": 0.1094,
+     "dark": 0.747
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 7,
+   "png": "wnba__wnba_02__f007.png",
+   "sha256": "27361060fab1f9ce62e63027cb6aa3fcb9b2d481dae325375243054c1df0a4e9",
+   "t_sec": 180.057313,
+   "eye_label_present": true,
+   "white_bot": 0.2953,
+   "edge_bot": 0.193,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0016,
+     "white": 0.0,
+     "dark": 1.0
+    },
+    "BOT": {
+     "edge": 0.193,
+     "white": 0.2953,
+     "dark": 0.554
+    },
+    "BOTLEFT": {
+     "edge": 0.1761,
+     "white": 0.1832,
+     "dark": 0.9626
+    },
+    "BOTRIGHT": {
+     "edge": 0.2443,
+     "white": 0.4545,
+     "dark": 0.3684
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 8,
+   "png": "wnba__wnba_02__f008.png",
+   "sha256": "681ad3a22232d0466d50f3e7e4c04e603c311fed992da3734bded92b2e1f4116",
+   "t_sec": 204.064954,
+   "eye_label_present": true,
+   "white_bot": 0.1539,
+   "edge_bot": 0.7969,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0102,
+     "white": 0.0,
+     "dark": 0.9206
+    },
+    "BOT": {
+     "edge": 0.7969,
+     "white": 0.1539,
+     "dark": 0.477
+    },
+    "BOTLEFT": {
+     "edge": 0.6364,
+     "white": 0.1932,
+     "dark": 0.6829
+    },
+    "BOTRIGHT": {
+     "edge": 0.9134,
+     "white": 0.2273,
+     "dark": 0.3844
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 9,
+   "png": "wnba__wnba_02__f009.png",
+   "sha256": "e198f1eab76221a02a5d0e99483048df707043ecc55e0ab78e28553fb15384aa",
+   "t_sec": 228.072596,
+   "eye_label_present": true,
+   "white_bot": 0.0969,
+   "edge_bot": 0.357,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0273,
+     "white": 0.0,
+     "dark": 0.9106
+    },
+    "BOT": {
+     "edge": 0.357,
+     "white": 0.0969,
+     "dark": 0.7731
+    },
+    "BOTLEFT": {
+     "edge": 0.3636,
+     "white": 0.1761,
+     "dark": 0.7034
+    },
+    "BOTRIGHT": {
+     "edge": 0.4673,
+     "white": 0.0909,
+     "dark": 0.9188
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 10,
+   "png": "wnba__wnba_02__f010.png",
+   "sha256": "e427aaaaf38eb89908e8d021efcb762e2f1ed51bba41f169ba843a8dff05d78f",
+   "t_sec": 252.080238,
+   "eye_label_present": false,
+   "white_bot": 0.1641,
+   "edge_bot": 0.3492,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0234,
+     "white": 0.0023,
+     "dark": 0.6591
+    },
+    "BOT": {
+     "edge": 0.3492,
+     "white": 0.1641,
+     "dark": 0.4517
+    },
+    "BOTLEFT": {
+     "edge": 0.3494,
+     "white": 0.0838,
+     "dark": 0.2028
+    },
+    "BOTRIGHT": {
+     "edge": 0.4673,
+     "white": 0.2699,
+     "dark": 0.79
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 11,
+   "png": "wnba__wnba_02__f011.png",
+   "sha256": "c601bca4ca8c01894d4019a69cc398e8915b958e3945f3d02e5a64a268153edf",
+   "t_sec": 276.087879,
+   "eye_label_present": true,
+   "white_bot": 0.1023,
+   "edge_bot": 0.3047,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0312,
+     "white": 0.0086,
+     "dark": 0.7221
+    },
+    "BOT": {
+     "edge": 0.3047,
+     "white": 0.1023,
+     "dark": 0.5467
+    },
+    "BOTLEFT": {
+     "edge": 0.3068,
+     "white": 0.1861,
+     "dark": 0.8482
+    },
+    "BOTRIGHT": {
+     "edge": 0.3722,
+     "white": 0.0781,
+     "dark": 0.7004
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 12,
+   "png": "wnba__wnba_02__f012.png",
+   "sha256": "4c9862caae5b3bc398b5d774566295fc0ad082b447bc5023cefe11ea2af91d7d",
+   "t_sec": 300.095521,
+   "eye_label_present": true,
+   "white_bot": 0.1086,
+   "edge_bot": 0.2109,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0336,
+     "white": 0.0008,
+     "dark": 0.8008
+    },
+    "BOT": {
+     "edge": 0.2109,
+     "white": 0.1086,
+     "dark": 0.6703
+    },
+    "BOTLEFT": {
+     "edge": 0.1804,
+     "white": 0.1974,
+     "dark": 0.4369
+    },
+    "BOTRIGHT": {
+     "edge": 0.2812,
+     "white": 0.0838,
+     "dark": 0.9637
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 13,
+   "png": "wnba__wnba_02__f013.png",
+   "sha256": "e10c83fb53723665891960aa11687a98161520c8cf4fd87f2991998db74b2621",
+   "t_sec": 324.103163,
+   "eye_label_present": true,
+   "white_bot": 0.6906,
+   "edge_bot": 0.9828,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.068,
+     "white": 0.0086,
+     "dark": 0.5934
+    },
+    "BOT": {
+     "edge": 0.9828,
+     "white": 0.6906,
+     "dark": 0.3287
+    },
+    "BOTLEFT": {
+     "edge": 0.9688,
+     "white": 0.8026,
+     "dark": 0.3963
+    },
+    "BOTRIGHT": {
+     "edge": 0.9957,
+     "white": 0.5241,
+     "dark": 0.3795
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 14,
+   "png": "wnba__wnba_02__f014.png",
+   "sha256": "509117d03fbb2e3bc0ba6a2c0baee2e724b89c17a2dbf8a464aef858038e0cc9",
+   "t_sec": 348.110804,
+   "eye_label_present": true,
+   "white_bot": 0.1625,
+   "edge_bot": 0.3344,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0141,
+     "white": 0.0008,
+     "dark": 0.7653
+    },
+    "BOT": {
+     "edge": 0.3344,
+     "white": 0.1625,
+     "dark": 0.3729
+    },
+    "BOTLEFT": {
+     "edge": 0.3523,
+     "white": 0.1903,
+     "dark": 0.3492
+    },
+    "BOTRIGHT": {
+     "edge": 0.4375,
+     "white": 0.2727,
+     "dark": 0.5076
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 15,
+   "png": "wnba__wnba_02__f015.png",
+   "sha256": "fc76961a538b9bd442044f3b6e182bc13bad26366211cab2e6c49eee842a6ade",
+   "t_sec": 372.118446,
+   "eye_label_present": true,
+   "white_bot": 0.1023,
+   "edge_bot": 0.2609,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0281,
+     "white": 0.0,
+     "dark": 0.9202
+    },
+    "BOT": {
+     "edge": 0.2609,
+     "white": 0.1023,
+     "dark": 0.7096
+    },
+    "BOTLEFT": {
+     "edge": 0.2869,
+     "white": 0.1861,
+     "dark": 0.5697
+    },
+    "BOTRIGHT": {
+     "edge": 0.3281,
+     "white": 0.0866,
+     "dark": 0.9064
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 16,
+   "png": "wnba__wnba_02__f016.png",
+   "sha256": "f2066a4d2cd314af762870c9f8a6c5c55c2d8a05d4706bdce312157e1991430e",
+   "t_sec": 396.126088,
+   "eye_label_present": true,
+   "white_bot": 0.1047,
+   "edge_bot": 0.3047,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0109,
+     "white": 0.0,
+     "dark": 0.7916
+    },
+    "BOT": {
+     "edge": 0.3047,
+     "white": 0.1047,
+     "dark": 0.3723
+    },
+    "BOTLEFT": {
+     "edge": 0.321,
+     "white": 0.1861,
+     "dark": 0.4373
+    },
+    "BOTRIGHT": {
+     "edge": 0.4062,
+     "white": 0.0852,
+     "dark": 0.4189
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 17,
+   "png": "wnba__wnba_02__f017.png",
+   "sha256": "2f1cc13cf11f45d977565380b553c0c7cd1de2a00889117b7ca8327be4eebaef",
+   "t_sec": 420.133729,
+   "eye_label_present": true,
+   "white_bot": 0.107,
+   "edge_bot": 0.2914,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0117,
+     "white": 0.0031,
+     "dark": 0.7266
+    },
+    "BOT": {
+     "edge": 0.2914,
+     "white": 0.107,
+     "dark": 0.3719
+    },
+    "BOTLEFT": {
+     "edge": 0.2784,
+     "white": 0.1946,
+     "dark": 0.4568
+    },
+    "BOTRIGHT": {
+     "edge": 0.4332,
+     "white": 0.1321,
+     "dark": 0.3728
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 18,
+   "png": "wnba__wnba_02__f018.png",
+   "sha256": "d0b5013390625c4d7864a36bb510bf23242d85d922f2fdb394a193377758d3fc",
+   "t_sec": 444.141371,
+   "eye_label_present": true,
+   "white_bot": 0.1313,
+   "edge_bot": 0.3438,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0133,
+     "white": 0.0016,
+     "dark": 0.693
+    },
+    "BOT": {
+     "edge": 0.3438,
+     "white": 0.1313,
+     "dark": 0.3464
+    },
+    "BOTLEFT": {
+     "edge": 0.3693,
+     "white": 0.1861,
+     "dark": 0.3602
+    },
+    "BOTRIGHT": {
+     "edge": 0.4375,
+     "white": 0.2259,
+     "dark": 0.5426
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 19,
+   "png": "wnba__wnba_02__f019.png",
+   "sha256": "0db65b811753b160856f3d6b0d6e717946cf1855bd006d35e19e5267c0074c63",
+   "t_sec": 468.149013,
+   "eye_label_present": true,
+   "white_bot": 0.3883,
+   "edge_bot": 0.3609,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0102,
+     "white": 0.0,
+     "dark": 0.9212
+    },
+    "BOT": {
+     "edge": 0.3609,
+     "white": 0.3883,
+     "dark": 0.4067
+    },
+    "BOTLEFT": {
+     "edge": 0.4162,
+     "white": 0.4105,
+     "dark": 0.4712
+    },
+    "BOTRIGHT": {
+     "edge": 0.4361,
+     "white": 0.4773,
+     "dark": 0.4893
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 20,
+   "png": "wnba__wnba_02__f020.png",
+   "sha256": "e4e8f2f72013d315484983353005d13b3c577b73d82778685d4fa7636e376740",
+   "t_sec": 492.156654,
+   "eye_label_present": true,
+   "white_bot": 0.1445,
+   "edge_bot": 0.7125,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0125,
+     "white": 0.0023,
+     "dark": 0.7449
+    },
+    "BOT": {
+     "edge": 0.7125,
+     "white": 0.1445,
+     "dark": 0.5686
+    },
+    "BOTLEFT": {
+     "edge": 0.4872,
+     "white": 0.1847,
+     "dark": 0.7895
+    },
+    "BOTRIGHT": {
+     "edge": 0.9901,
+     "white": 0.2415,
+     "dark": 0.3854
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 21,
+   "png": "wnba__wnba_02__f021.png",
+   "sha256": "17210852ae990418df08a4f3466f2419f6b4092ab6528a53ae785819b33d7a38",
+   "t_sec": 516.164296,
+   "eye_label_present": true,
+   "white_bot": 0.1203,
+   "edge_bot": 0.3492,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0328,
+     "white": 0.0055,
+     "dark": 0.6252
+    },
+    "BOT": {
+     "edge": 0.3492,
+     "white": 0.1203,
+     "dark": 0.5279
+    },
+    "BOTLEFT": {
+     "edge": 0.3793,
+     "white": 0.2145,
+     "dark": 0.3757
+    },
+    "BOTRIGHT": {
+     "edge": 0.4375,
+     "white": 0.1847,
+     "dark": 0.8886
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 22,
+   "png": "wnba__wnba_02__f022.png",
+   "sha256": "2185a296bd390b52481cf0476a14a84062292b609cb0bf6b958f1fb131665463",
+   "t_sec": 540.171938,
+   "eye_label_present": true,
+   "white_bot": 0.2281,
+   "edge_bot": 0.8227,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0086,
+     "white": 0.0031,
+     "dark": 0.8033
+    },
+    "BOT": {
+     "edge": 0.8227,
+     "white": 0.2281,
+     "dark": 0.5051
+    },
+    "BOTLEFT": {
+     "edge": 0.6776,
+     "white": 0.2727,
+     "dark": 0.6641
+    },
+    "BOTRIGHT": {
+     "edge": 0.9901,
+     "white": 0.3551,
+     "dark": 0.4339
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 23,
+   "png": "wnba__wnba_02__f023.png",
+   "sha256": "88fbad2e668ac5ec2db5330acf30b9131f798a6494dd38178da3a25231cdceb2",
+   "t_sec": 564.179579,
+   "eye_label_present": true,
+   "white_bot": 0.3109,
+   "edge_bot": 0.3633,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0102,
+     "white": 0.0,
+     "dark": 0.8874
+    },
+    "BOT": {
+     "edge": 0.3633,
+     "white": 0.3109,
+     "dark": 0.3234
+    },
+    "BOTLEFT": {
+     "edge": 0.4105,
+     "white": 0.331,
+     "dark": 0.369
+    },
+    "BOTRIGHT": {
+     "edge": 0.4375,
+     "white": 0.3935,
+     "dark": 0.3858
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 24,
+   "png": "wnba__wnba_02__f024.png",
+   "sha256": "037f35c82f33812c214f59c573585aea7d865e8a7efbb578de53d9271fcdb50a",
+   "t_sec": 588.187221,
+   "eye_label_present": true,
+   "white_bot": 0.1437,
+   "edge_bot": 0.7953,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0133,
+     "white": 0.0078,
+     "dark": 0.8465
+    },
+    "BOT": {
+     "edge": 0.7953,
+     "white": 0.1437,
+     "dark": 0.4943
+    },
+    "BOTLEFT": {
+     "edge": 0.6392,
+     "white": 0.2614,
+     "dark": 0.6616
+    },
+    "BOTRIGHT": {
+     "edge": 0.9901,
+     "white": 0.1435,
+     "dark": 0.377
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 25,
+   "png": "wnba__wnba_02__f025.png",
+   "sha256": "4d91dc949c6715b3f92088c1cb67eca1c9640b8d479469dacd9ded8d71dc7972",
+   "t_sec": 612.194863,
+   "eye_label_present": true,
+   "white_bot": 0.1523,
+   "edge_bot": 0.1891,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0117,
+     "white": 0.0,
+     "dark": 0.6691
+    },
+    "BOT": {
+     "edge": 0.1891,
+     "white": 0.1523,
+     "dark": 0.4369
+    },
+    "BOTLEFT": {
+     "edge": 0.1989,
+     "white": 0.1946,
+     "dark": 0.5812
+    },
+    "BOTRIGHT": {
+     "edge": 0.2855,
+     "white": 0.277,
+     "dark": 0.3977
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 26,
+   "png": "wnba__wnba_02__f026.png",
+   "sha256": "d79d1da321d2e5d316fb2274da5a18f79181fd9585a6c666bcaab68faf249d96",
+   "t_sec": 636.202504,
+   "eye_label_present": true,
+   "white_bot": 0.1789,
+   "edge_bot": 0.7992,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0156,
+     "white": 0.0063,
+     "dark": 0.7846
+    },
+    "BOT": {
+     "edge": 0.7992,
+     "white": 0.1789,
+     "dark": 0.4741
+    },
+    "BOTLEFT": {
+     "edge": 0.6349,
+     "white": 0.2088,
+     "dark": 0.6583
+    },
+    "BOTRIGHT": {
+     "edge": 0.9716,
+     "white": 0.196,
+     "dark": 0.3667
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 27,
+   "png": "wnba__wnba_02__f027.png",
+   "sha256": "f0adb0050e8b34234178a74c8b5c630c236ab20ee912350e76df620cd185d7f2",
+   "t_sec": 660.210146,
+   "eye_label_present": true,
+   "white_bot": 0.1437,
+   "edge_bot": 0.4016,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0242,
+     "white": 0.0063,
+     "dark": 0.7328
+    },
+    "BOT": {
+     "edge": 0.4016,
+     "white": 0.1437,
+     "dark": 0.6559
+    },
+    "BOTLEFT": {
+     "edge": 0.2216,
+     "white": 0.2614,
+     "dark": 0.8683
+    },
+    "BOTRIGHT": {
+     "edge": 0.5852,
+     "white": 0.0966,
+     "dark": 0.581
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 28,
+   "png": "wnba__wnba_02__f028.png",
+   "sha256": "1206a8515970422f61868278b232663cbfc517673a24a939dff6ebb8f6e099a4",
+   "t_sec": 684.217788,
+   "eye_label_present": true,
+   "white_bot": 0.1203,
+   "edge_bot": 0.3031,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0125,
+     "white": 0.0031,
+     "dark": 0.7253
+    },
+    "BOT": {
+     "edge": 0.3031,
+     "white": 0.1203,
+     "dark": 0.4855
+    },
+    "BOTLEFT": {
+     "edge": 0.3011,
+     "white": 0.1932,
+     "dark": 0.375
+    },
+    "BOTRIGHT": {
+     "edge": 0.419,
+     "white": 0.2188,
+     "dark": 0.7124
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 29,
+   "png": "wnba__wnba_02__f029.png",
+   "sha256": "93af27490f77d0ff046845e22d79c26cf61e31d1066b6dac72e0dbb24e7ef12b",
+   "t_sec": 708.225429,
+   "eye_label_present": true,
+   "white_bot": 0.1172,
+   "edge_bot": 0.2812,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0148,
+     "white": 0.0,
+     "dark": 0.9195
+    },
+    "BOT": {
+     "edge": 0.2812,
+     "white": 0.1172,
+     "dark": 0.6635
+    },
+    "BOTLEFT": {
+     "edge": 0.2827,
+     "white": 0.1889,
+     "dark": 0.5804
+    },
+    "BOTRIGHT": {
+     "edge": 0.3551,
+     "white": 0.0966,
+     "dark": 0.8935
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 30,
+   "png": "wnba__wnba_02__f030.png",
+   "sha256": "b046deca0e69279cd37d77482ed5d3c506150127db5546636af5f71b797580a7",
+   "t_sec": 732.233071,
+   "eye_label_present": true,
+   "white_bot": 0.1023,
+   "edge_bot": 0.2352,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0266,
+     "white": 0.0016,
+     "dark": 0.8406
+    },
+    "BOT": {
+     "edge": 0.2352,
+     "white": 0.1023,
+     "dark": 0.6956
+    },
+    "BOTLEFT": {
+     "edge": 0.2756,
+     "white": 0.1861,
+     "dark": 0.5344
+    },
+    "BOTRIGHT": {
+     "edge": 0.3239,
+     "white": 0.1108,
+     "dark": 0.9148
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 31,
+   "png": "wnba__wnba_02__f031.png",
+   "sha256": "a362440255c8a50a215bc3555ce7920f4b51d2dbc2e75f13c8e8fc8e9239b3c1",
+   "t_sec": 756.240713,
+   "eye_label_present": true,
+   "white_bot": 0.1039,
+   "edge_bot": 0.2234,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0258,
+     "white": 0.0055,
+     "dark": 0.8371
+    },
+    "BOT": {
+     "edge": 0.2234,
+     "white": 0.1039,
+     "dark": 0.601
+    },
+    "BOTLEFT": {
+     "edge": 0.1989,
+     "white": 0.1861,
+     "dark": 0.5083
+    },
+    "BOTRIGHT": {
+     "edge": 0.2827,
+     "white": 0.0895,
+     "dark": 0.8016
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 32,
+   "png": "wnba__wnba_02__f032.png",
+   "sha256": "f45ef5cb2a33def90a6fd604a2504aeb179217cc9dd19babfc9a4a4e36dd4a26",
+   "t_sec": 780.248354,
+   "eye_label_present": true,
+   "white_bot": 0.1031,
+   "edge_bot": 0.6148,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0242,
+     "white": 0.0063,
+     "dark": 0.8355
+    },
+    "BOT": {
+     "edge": 0.6148,
+     "white": 0.1031,
+     "dark": 0.7974
+    },
+    "BOTLEFT": {
+     "edge": 0.5696,
+     "white": 0.1875,
+     "dark": 0.8983
+    },
+    "BOTRIGHT": {
+     "edge": 0.7301,
+     "white": 0.0724,
+     "dark": 0.7518
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 33,
+   "png": "wnba__wnba_02__f033.png",
+   "sha256": "e4b800b02a532d9f30db74157729c144a0d43eadccd1c860bcd4869e5c139b31",
+   "t_sec": 804.255996,
+   "eye_label_present": true,
+   "white_bot": 0.1219,
+   "edge_bot": 0.3039,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0453,
+     "white": 0.0,
+     "dark": 0.7249
+    },
+    "BOT": {
+     "edge": 0.3039,
+     "white": 0.1219,
+     "dark": 0.3101
+    },
+    "BOTLEFT": {
+     "edge": 0.3054,
+     "white": 0.2216,
+     "dark": 0.3339
+    },
+    "BOTRIGHT": {
+     "edge": 0.4091,
+     "white": 0.0824,
+     "dark": 0.3606
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 34,
+   "png": "wnba__wnba_02__f034.png",
+   "sha256": "47487c31100d3c7d73fd24a40e42024923c6b49cf112ec17e30c969f0260898a",
+   "t_sec": 828.263638,
+   "eye_label_present": true,
+   "white_bot": 0.2109,
+   "edge_bot": 0.9211,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0117,
+     "white": 0.0047,
+     "dark": 0.8587
+    },
+    "BOT": {
+     "edge": 0.9211,
+     "white": 0.2109,
+     "dark": 0.4046
+    },
+    "BOTLEFT": {
+     "edge": 0.9631,
+     "white": 0.2798,
+     "dark": 0.4279
+    },
+    "BOTRIGHT": {
+     "edge": 0.8935,
+     "white": 0.2457,
+     "dark": 0.5028
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 35,
+   "png": "wnba__wnba_02__f035.png",
+   "sha256": "eddb8fe881119eab96b9582f35e3ed1675cd8ceb7a0202d3a7fde72660b4141e",
+   "t_sec": 852.271279,
+   "eye_label_present": true,
+   "white_bot": 0.5195,
+   "edge_bot": 0.9938,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0117,
+     "white": 0.0008,
+     "dark": 0.8178
+    },
+    "BOT": {
+     "edge": 0.9938,
+     "white": 0.5195,
+     "dark": 0.5152
+    },
+    "BOTLEFT": {
+     "edge": 1.0,
+     "white": 0.6818,
+     "dark": 0.4554
+    },
+    "BOTRIGHT": {
+     "edge": 0.9886,
+     "white": 0.3807,
+     "dark": 0.661
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 36,
+   "png": "wnba__wnba_02__f036.png",
+   "sha256": "eeb98244b7ec8b25c3eafe5d4403897ef3f12a3e8d70fe7300584474925fb233",
+   "t_sec": 876.278921,
+   "eye_label_present": true,
+   "white_bot": 0.1133,
+   "edge_bot": 0.225,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0359,
+     "white": 0.0016,
+     "dark": 0.8774
+    },
+    "BOT": {
+     "edge": 0.225,
+     "white": 0.1133,
+     "dark": 0.8249
+    },
+    "BOTLEFT": {
+     "edge": 0.2514,
+     "white": 0.1903,
+     "dark": 0.7647
+    },
+    "BOTRIGHT": {
+     "edge": 0.2912,
+     "white": 0.0994,
+     "dark": 0.9265
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 37,
+   "png": "wnba__wnba_02__f037.png",
+   "sha256": "daa84b729f4892d4612e7d20ea72f9c34f9e6a68255352263013b0ce7917a81e",
+   "t_sec": 900.286563,
+   "eye_label_present": true,
+   "white_bot": 0.1164,
+   "edge_bot": 0.4391,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0187,
+     "white": 0.0023,
+     "dark": 0.9258
+    },
+    "BOT": {
+     "edge": 0.4391,
+     "white": 0.1164,
+     "dark": 0.6669
+    },
+    "BOTLEFT": {
+     "edge": 0.2969,
+     "white": 0.2116,
+     "dark": 0.837
+    },
+    "BOTRIGHT": {
+     "edge": 0.6676,
+     "white": 0.0724,
+     "dark": 0.6931
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 38,
+   "png": "wnba__wnba_02__f038.png",
+   "sha256": "da4352ba4a5dd5b631fbeb02257b35df15687fc51b0a206ba1eb4552761054e5",
+   "t_sec": 924.294204,
+   "eye_label_present": true,
+   "white_bot": 0.182,
+   "edge_bot": 0.3414,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0063,
+     "white": 0.0,
+     "dark": 0.9381
+    },
+    "BOT": {
+     "edge": 0.3414,
+     "white": 0.182,
+     "dark": 0.3158
+    },
+    "BOTLEFT": {
+     "edge": 0.3651,
+     "white": 0.1918,
+     "dark": 0.3571
+    },
+    "BOTRIGHT": {
+     "edge": 0.4375,
+     "white": 0.2386,
+     "dark": 0.4078
+    }
+   }
+  },
+  {
+   "clip": "wnba__wnba_02",
+   "j": 39,
+   "png": "wnba__wnba_02__f039.png",
+   "sha256": "2c48ef33a645afa251b5f2dbbc0b5a37e4644de9b350afe3c375c98c4c3fdc5f",
+   "t_sec": 948.301846,
+   "eye_label_present": true,
+   "white_bot": 0.1625,
+   "edge_bot": 0.8961,
+   "rule_fired": true,
+   "region_stats": {
+    "TOP": {
+     "edge": 0.0141,
+     "white": 0.0031,
+     "dark": 0.8272
+    },
+    "BOT": {
+     "edge": 0.8961,
+     "white": 0.1625,
+     "dark": 0.3874
+    },
+    "BOTLEFT": {
+     "edge": 0.983,
+     "white": 0.2159,
+     "dark": 0.3518
+    },
+    "BOTRIGHT": {
+     "edge": 0.8281,
+     "white": 0.1293,
+     "dark": 0.5381
+    }
+   }
+  }
+ ]
+}

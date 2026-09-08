@@ -1,0 +1,2846 @@
+[
+ {
+  "clip": "nba__0022400909_s900",
+  "path": "/workspace/nba-ai-system/data/footage_corpus/nba__0022400909_s900.mp4",
+  "bytes": 34795729,
+  "width": 1280,
+  "height": 720,
+  "duration_sec": 130.162,
+  "k": 100,
+  "frames": [
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 0,
+    "t_sec": 0.65081,
+    "png": "nba__0022400909_s900__f000.png",
+    "sha256": "5e93a53262ce34a20e16692705f0851ae7bab1ae66314341b8bb395d813d9666"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 1,
+    "t_sec": 1.95243,
+    "png": "nba__0022400909_s900__f001.png",
+    "sha256": "f37e02d2051dd7183993a8d70f858f11ff408d7138ac59a0eba1e4055e44ae16"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 2,
+    "t_sec": 3.25405,
+    "png": "nba__0022400909_s900__f002.png",
+    "sha256": "b9477ec5867c1d588067a4fbbdd61b336dcbe9b5050c2bf63f963e24e819117a"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 3,
+    "t_sec": 4.55567,
+    "png": "nba__0022400909_s900__f003.png",
+    "sha256": "17da87dbe06be5a355b4b18c08ed2bf1bde2afb95ba1e6babf6608308e691204"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 4,
+    "t_sec": 5.85729,
+    "png": "nba__0022400909_s900__f004.png",
+    "sha256": "b7397f87c00beb6c73dd5587f0036011fcc8ed74dff490bc4a20b70ed6ecc7ad"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 5,
+    "t_sec": 7.15891,
+    "png": "nba__0022400909_s900__f005.png",
+    "sha256": "8919d60e0f4a11afed40d859a4e96ac999f00b6023f329b1c31fc540e14d67ed"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 6,
+    "t_sec": 8.46053,
+    "png": "nba__0022400909_s900__f006.png",
+    "sha256": "61e46b5b803ea5bfdf4d72034b4b2e8ed5a2877cda79ebfb18a6c9f9514255f5"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 7,
+    "t_sec": 9.76215,
+    "png": "nba__0022400909_s900__f007.png",
+    "sha256": "3fc0d6e66240acc29f36f58f81957df0c32c036c43805f5bbcc16d15ae6c9d81"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 8,
+    "t_sec": 11.06377,
+    "png": "nba__0022400909_s900__f008.png",
+    "sha256": "fffdcc1ad2c74297fcb6368de3f9a6bf57372c8029012a870325493885ce10e8"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 9,
+    "t_sec": 12.36539,
+    "png": "nba__0022400909_s900__f009.png",
+    "sha256": "f09aaef9550b4e38dc147dc2ce3af7db5409284d49f8f7437b46440b09f481cd"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 10,
+    "t_sec": 13.66701,
+    "png": "nba__0022400909_s900__f010.png",
+    "sha256": "50d78d5192761f2203814a5e26f2b018a51e323dffd0fe623274ee5c9299f147"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 11,
+    "t_sec": 14.96863,
+    "png": "nba__0022400909_s900__f011.png",
+    "sha256": "c3a170f6f1c2593e8d3141962d60b04933d0b57086f407ee1265dc17fb578deb"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 12,
+    "t_sec": 16.27025,
+    "png": "nba__0022400909_s900__f012.png",
+    "sha256": "4722a5a4650d9ae61ffbad6b561d65b3d6f52af0e0da0f667b411e6f99af04ef"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 13,
+    "t_sec": 17.57187,
+    "png": "nba__0022400909_s900__f013.png",
+    "sha256": "858d6ff7bfa4f4af314496fa75127f7f1bf09cc019cbd3343dd5c9c8c83276d7"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 14,
+    "t_sec": 18.87349,
+    "png": "nba__0022400909_s900__f014.png",
+    "sha256": "a82572a90d8a3a228e23b7fe43abd81bca379e740eb5bf99c5d964b34a435310"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 15,
+    "t_sec": 20.17511,
+    "png": "nba__0022400909_s900__f015.png",
+    "sha256": "55845953fcfd5e28fb604173a03b6200095823129552fdad9749a54389485cdb"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 16,
+    "t_sec": 21.47673,
+    "png": "nba__0022400909_s900__f016.png",
+    "sha256": "196acd370942d960d3d262ad8bdb739b0888fe80e40b45507ef689471085486e"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 17,
+    "t_sec": 22.77835,
+    "png": "nba__0022400909_s900__f017.png",
+    "sha256": "184df73f7c53655f082008122174a25dcaa58f920b3aafe649dd272a0a7bf84d"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 18,
+    "t_sec": 24.07997,
+    "png": "nba__0022400909_s900__f018.png",
+    "sha256": "817f2489fe2c0cae7f0f3ede149e375622d80c7a2f4c66bca73e78586e7831c4"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 19,
+    "t_sec": 25.38159,
+    "png": "nba__0022400909_s900__f019.png",
+    "sha256": "ad02e643e90b4cfdcc281aff73ba5a037156b7219e657786eca613c9ca36d2fc"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 20,
+    "t_sec": 26.68321,
+    "png": "nba__0022400909_s900__f020.png",
+    "sha256": "a9f8514319353dddcfd59671e90b75d7c5775a99c418546a2f7bd1fa5215914d"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 21,
+    "t_sec": 27.98483,
+    "png": "nba__0022400909_s900__f021.png",
+    "sha256": "af2069deb4e60dfdd657fff84de50e17cf58a6e98a96efc27b6ce4769f19a02f"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 22,
+    "t_sec": 29.28645,
+    "png": "nba__0022400909_s900__f022.png",
+    "sha256": "df3e0a1b91f601cd3eccac9c81d41434670f5f17a263ac90da75eeac9f4fe3b3"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 23,
+    "t_sec": 30.58807,
+    "png": "nba__0022400909_s900__f023.png",
+    "sha256": "796ebbf9093e59f857a43c2f733018ac19895369baf1c44c85f8ad1d5161f0f1"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 24,
+    "t_sec": 31.88969,
+    "png": "nba__0022400909_s900__f024.png",
+    "sha256": "56542c3f56f5893ade9675a623617e74a2b462c95ccd97cb7031120eb3103603"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 25,
+    "t_sec": 33.19131,
+    "png": "nba__0022400909_s900__f025.png",
+    "sha256": "5c401b1864610fcc92b4f508b19592d2722863149e45044245b0769e23938a7e"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 26,
+    "t_sec": 34.49293,
+    "png": "nba__0022400909_s900__f026.png",
+    "sha256": "a83cad265d1ffe3425b2c3c1ebbf6f7a7dc9d31b7dcba774ba6249ad205230cd"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 27,
+    "t_sec": 35.79455,
+    "png": "nba__0022400909_s900__f027.png",
+    "sha256": "c42993f45233a4b727fb246bf2fcdf1b6f3025fb86c4b79911bf79d16b0b184d"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 28,
+    "t_sec": 37.09617,
+    "png": "nba__0022400909_s900__f028.png",
+    "sha256": "1b3f7ed38bbcd37685db053e79800e178826d1e45866843739ce9d87ff2c2c17"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 29,
+    "t_sec": 38.39779,
+    "png": "nba__0022400909_s900__f029.png",
+    "sha256": "41c1a3acbe8f5611a06e2d0c3afc64615aa97e32f90d7f76435cd1c7c4bce118"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 30,
+    "t_sec": 39.69941,
+    "png": "nba__0022400909_s900__f030.png",
+    "sha256": "686254177f6c1dd326e62dcd25e13bee513a90d9d54459b0050ec468a7236252"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 31,
+    "t_sec": 41.00103,
+    "png": "nba__0022400909_s900__f031.png",
+    "sha256": "77573ed349a823e0c6147a8ab7f19baa40ebcff3b5a51f944d42c571a4d0a30b"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 32,
+    "t_sec": 42.30265,
+    "png": "nba__0022400909_s900__f032.png",
+    "sha256": "2971547774699d98b022879bf044507dc2622541fec2946d9345d38cfab5f037"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 33,
+    "t_sec": 43.60427,
+    "png": "nba__0022400909_s900__f033.png",
+    "sha256": "a85538e46de414886dd0e55365f24a93e6e216d68ee0668560180f0c35b54990"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 34,
+    "t_sec": 44.90589,
+    "png": "nba__0022400909_s900__f034.png",
+    "sha256": "6386f2f1c8dd95c5bda351048af6d0c527f3a2a830c01acf3465b0cc01347758"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 35,
+    "t_sec": 46.20751,
+    "png": "nba__0022400909_s900__f035.png",
+    "sha256": "3cb2e15112f192a008cbbfc0e63140aa0922cf7aaba31380ffbbded2a0783b10"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 36,
+    "t_sec": 47.50913,
+    "png": "nba__0022400909_s900__f036.png",
+    "sha256": "b3a0297884e5e152f6f521e0ba77c5f1781afd406923a5ca4249255f3dc6018a"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 37,
+    "t_sec": 48.81075,
+    "png": "nba__0022400909_s900__f037.png",
+    "sha256": "88b102b2335fd2cc7ea7cacfce67f62ae56b31c38513cd59606face1c9e7ad63"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 38,
+    "t_sec": 50.11237,
+    "png": "nba__0022400909_s900__f038.png",
+    "sha256": "74623f2f3ec36fdebcaeaf8a0297e7af00a6c23022efe1702108672a28be3651"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 39,
+    "t_sec": 51.41399,
+    "png": "nba__0022400909_s900__f039.png",
+    "sha256": "9887c8e91d99132295fdc6a3a051b17ab7de4666f2d583707dc5b10c660e70a3"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 40,
+    "t_sec": 52.71561,
+    "png": "nba__0022400909_s900__f040.png",
+    "sha256": "32934c866211b7c4b09767eae09041295f9dfb8d28598771ea2cfec88bf9a897"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 41,
+    "t_sec": 54.01723,
+    "png": "nba__0022400909_s900__f041.png",
+    "sha256": "73307050de05aa10afc0687d5101980bf014f62071ef4046ae12b90bccaddc85"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 42,
+    "t_sec": 55.31885,
+    "png": "nba__0022400909_s900__f042.png",
+    "sha256": "096afca6b7f9e565949d1c8231802a4602bcb4264d1076f49854ac030f4db0ab"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 43,
+    "t_sec": 56.62047,
+    "png": "nba__0022400909_s900__f043.png",
+    "sha256": "c4023a26448aa5314dee5d593da5e2d72d03d148b3230cca282ce929b9377370"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 44,
+    "t_sec": 57.92209,
+    "png": "nba__0022400909_s900__f044.png",
+    "sha256": "a72a38702e689eab2bc958c3a08b1cf3f83e1ac5e1efc45080225e68822fd4f0"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 45,
+    "t_sec": 59.22371,
+    "png": "nba__0022400909_s900__f045.png",
+    "sha256": "1a13866e609c92e42744c1f644f8b622b3c8020e54b4b5fbb80ce01d6832f922"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 46,
+    "t_sec": 60.52533,
+    "png": "nba__0022400909_s900__f046.png",
+    "sha256": "12ddb5f78e1b1fba26facc2fd652a0f005d803647fce71068bb2877929872352"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 47,
+    "t_sec": 61.82695,
+    "png": "nba__0022400909_s900__f047.png",
+    "sha256": "3be55c61f06a95205bd08396e5a130df1754b4367b3cad87bda64e61581754b5"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 48,
+    "t_sec": 63.12857,
+    "png": "nba__0022400909_s900__f048.png",
+    "sha256": "37a8bad99af22075673a6452e2ba22dd4101175a0bdc4ba995722df62a043ad6"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 49,
+    "t_sec": 64.43019,
+    "png": "nba__0022400909_s900__f049.png",
+    "sha256": "c2357de64fcbdaf682baf2564592fcbe043cdc02ca8a6fdb26cd1e4b9ced04a5"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 50,
+    "t_sec": 65.73181,
+    "png": "nba__0022400909_s900__f050.png",
+    "sha256": "7c302550b881871a4d481094c5830dba77d53fd65599cb6aac83b1b3e69fc221"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 51,
+    "t_sec": 67.03343,
+    "png": "nba__0022400909_s900__f051.png",
+    "sha256": "070e20740f68c637d2b0a7a8664d873ffc11bad3dedda312b2d1f8e495ddba23"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 52,
+    "t_sec": 68.33505,
+    "png": "nba__0022400909_s900__f052.png",
+    "sha256": "b62477e265f1a864388d96b2dd422479134ec2df603d12ca16fbb3293523ed44"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 53,
+    "t_sec": 69.63667,
+    "png": "nba__0022400909_s900__f053.png",
+    "sha256": "da885334a2d4d712377c2aa06aa0fbda8e7776e6974b0c0a46be8a47d48719ef"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 54,
+    "t_sec": 70.93829,
+    "png": "nba__0022400909_s900__f054.png",
+    "sha256": "b9de6f6d7409c23c26b5f20860172c7663c17134cd5e9860e77c76fe1b1371d7"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 55,
+    "t_sec": 72.23991,
+    "png": "nba__0022400909_s900__f055.png",
+    "sha256": "5d8634c2d78c29d54c771499e3c92c6852030f8cf83ed27ad1a727cf25589b71"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 56,
+    "t_sec": 73.54153,
+    "png": "nba__0022400909_s900__f056.png",
+    "sha256": "e778d72502c43fef18a772333e83c38089ad9b369071ff236a07de39515076e0"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 57,
+    "t_sec": 74.84315,
+    "png": "nba__0022400909_s900__f057.png",
+    "sha256": "b95c43e4ade174c64ed41d3d4a17583b79753ac39340d7f97ca8e08998ba4af1"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 58,
+    "t_sec": 76.14477,
+    "png": "nba__0022400909_s900__f058.png",
+    "sha256": "1506c3bd5a3108fc1ff06ffee393fc6be1c5b283702e84a55ce36043253f68df"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 59,
+    "t_sec": 77.44639,
+    "png": "nba__0022400909_s900__f059.png",
+    "sha256": "d73cbe69a7cfb3e82e68d3da3c584a5c9e3b06117e844ec58fbcfbbe5077e510"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 60,
+    "t_sec": 78.74801,
+    "png": "nba__0022400909_s900__f060.png",
+    "sha256": "16f783a4bb276e6d34970f20d297aa481e5155d3e5d40d016aca7400dba44e51"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 61,
+    "t_sec": 80.04963,
+    "png": "nba__0022400909_s900__f061.png",
+    "sha256": "aa8539934a524619921dd98641223518c2cf582259a2f9949ae2662e4a9a6ccc"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 62,
+    "t_sec": 81.35125,
+    "png": "nba__0022400909_s900__f062.png",
+    "sha256": "722ae0c2061528edbaf6569609b3063cd7654b7e8b17107c5b94ca13f9434250"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 63,
+    "t_sec": 82.65287,
+    "png": "nba__0022400909_s900__f063.png",
+    "sha256": "131c640e1c46ee37e3de09ce2d0c366242d02356c5bfae6a7a54fe7065f82047"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 64,
+    "t_sec": 83.95449,
+    "png": "nba__0022400909_s900__f064.png",
+    "sha256": "83a6e1badec1b51967685e62c3d237d6e4a77103ac5e9545a51bfbccbe469575"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 65,
+    "t_sec": 85.25611,
+    "png": "nba__0022400909_s900__f065.png",
+    "sha256": "4ea630daf30d7629e5f92d38fbb22193d080ee97a60f749307830b3fcf2b0d0d"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 66,
+    "t_sec": 86.55773,
+    "png": "nba__0022400909_s900__f066.png",
+    "sha256": "468e4deb612a45f9cd3625e8de38b8f3c2b5f8cd763116556de33fbf151afadf"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 67,
+    "t_sec": 87.85935,
+    "png": "nba__0022400909_s900__f067.png",
+    "sha256": "36af9cb122715fb3022a21f4a2e9346e0e3d330159fcd011df6652609394a24f"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 68,
+    "t_sec": 89.16097,
+    "png": "nba__0022400909_s900__f068.png",
+    "sha256": "0ea321d05c237cf5355e104a388590f4ee9cc1a83de799242027591b18b3c0a1"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 69,
+    "t_sec": 90.46259,
+    "png": "nba__0022400909_s900__f069.png",
+    "sha256": "3a4b8e8d2ef6599910d6f3aa9f040e2bf6b5773c3de45cb056cd8656a768c8b1"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 70,
+    "t_sec": 91.76421,
+    "png": "nba__0022400909_s900__f070.png",
+    "sha256": "d9e9692249e54850c42e565d7bb085f0008c59cb9d5f2b1d3fce3dd8ac83b996"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 71,
+    "t_sec": 93.06583,
+    "png": "nba__0022400909_s900__f071.png",
+    "sha256": "8c36c79236e6dc4c6cee3b893b33242bf24885cf90d6c30525dbca2ca91d250f"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 72,
+    "t_sec": 94.36745,
+    "png": "nba__0022400909_s900__f072.png",
+    "sha256": "8dc9bd9ee60f9ae5adef86565a0a8c4ea369b66d3f57afbf9889a94e442058ec"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 73,
+    "t_sec": 95.66907,
+    "png": "nba__0022400909_s900__f073.png",
+    "sha256": "f09a2bac2c92e3e1d4d5064b6fea41489867babd99591edb6ba031f7d8a25bf3"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 74,
+    "t_sec": 96.97069,
+    "png": "nba__0022400909_s900__f074.png",
+    "sha256": "738767fca15bab17a10d5c5cc24a7e15f56ff14c864e9ab9a956ef5dcebfdbcc"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 75,
+    "t_sec": 98.27231,
+    "png": "nba__0022400909_s900__f075.png",
+    "sha256": "b8db6e483f7e3858cfb1e9553ee956e5a5ba55ec8185572193321c5c255c5772"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 76,
+    "t_sec": 99.57393,
+    "png": "nba__0022400909_s900__f076.png",
+    "sha256": "b28cd19c44799d99cc4201a5676dd102b638c4d425876c307896784a4a1ac72e"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 77,
+    "t_sec": 100.87555,
+    "png": "nba__0022400909_s900__f077.png",
+    "sha256": "a3df0424c8d8780f7a070bf8c29d50e32d1da3d2d00e17a7ff3c23030e5e7961"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 78,
+    "t_sec": 102.17717,
+    "png": "nba__0022400909_s900__f078.png",
+    "sha256": "9e9a2cc0f9b59f6f7577b775e85ee74299c34b3cb1511853c647952cceb0e771"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 79,
+    "t_sec": 103.47879,
+    "png": "nba__0022400909_s900__f079.png",
+    "sha256": "d34b162325330773221e7f1cd4b14c98b46f8d4bbf3276a8df84c90c733c9e87"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 80,
+    "t_sec": 104.78041,
+    "png": "nba__0022400909_s900__f080.png",
+    "sha256": "aee2ad70a22facd1dd245f4a94a2689115a3542b3b251f9cf535f3a0eb44cb96"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 81,
+    "t_sec": 106.08203,
+    "png": "nba__0022400909_s900__f081.png",
+    "sha256": "aeff3f6a9eea58674e4b6a24e18f0853c9ab7448ad0d57a14ac1d4ce9c510d1e"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 82,
+    "t_sec": 107.38365,
+    "png": "nba__0022400909_s900__f082.png",
+    "sha256": "974f9197e44a2e820eab447d5d714fb5a5f885fc6534e142932a6f3599e745be"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 83,
+    "t_sec": 108.68527,
+    "png": "nba__0022400909_s900__f083.png",
+    "sha256": "7f12e6e5727ae258e37a722aef4d4b2ef23828fc37cb72ee2d2ad3e9a81aa3a2"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 84,
+    "t_sec": 109.98689,
+    "png": "nba__0022400909_s900__f084.png",
+    "sha256": "bba491ac9a8cd9aa84a3d210ab261b91a4df704e016159ab66ab1ec6c398c238"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 85,
+    "t_sec": 111.28851,
+    "png": "nba__0022400909_s900__f085.png",
+    "sha256": "6bbbda101fc9b748492d21a7a2fb4a9fe7a3c53f693188906da77ff01738c4cf"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 86,
+    "t_sec": 112.59013,
+    "png": "nba__0022400909_s900__f086.png",
+    "sha256": "e5d842e4ae52ed8fc034959fab270b56399ebe675222f63795e3e8a58b77ee44"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 87,
+    "t_sec": 113.89175,
+    "png": "nba__0022400909_s900__f087.png",
+    "sha256": "9e2981ee2297c48f4a1dd6807f08afc9f77e3493250fbc59c794d07c6d166134"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 88,
+    "t_sec": 115.19337,
+    "png": "nba__0022400909_s900__f088.png",
+    "sha256": "43e4104cb37291adf82473eb75cb48de9d724ac7a4d9224d53e340f19462b18c"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 89,
+    "t_sec": 116.49499,
+    "png": "nba__0022400909_s900__f089.png",
+    "sha256": "9657eeccc42d16b3110761459849051811cefc1d6b3d3b9d24c9fc1e7c47241f"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 90,
+    "t_sec": 117.79661,
+    "png": "nba__0022400909_s900__f090.png",
+    "sha256": "3381b1e0b1e7203634d73b345a2213fdfbcc63a11e0623bc7d768d3623a680da"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 91,
+    "t_sec": 119.09823,
+    "png": "nba__0022400909_s900__f091.png",
+    "sha256": "7b1914b68dfa3f2968aa191e971bde495289746a2f9e5200e1aad1a9b7768c2c"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 92,
+    "t_sec": 120.39985,
+    "png": "nba__0022400909_s900__f092.png",
+    "sha256": "9ee32f890cbfdbe21ade33876e88996b58c1d4bf154db9c53e652aa2339dfde8"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 93,
+    "t_sec": 121.70147,
+    "png": "nba__0022400909_s900__f093.png",
+    "sha256": "39518d39d48b6471b28804281c9be022b72d8bc156aa70a9a8561338eabfe800"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 94,
+    "t_sec": 123.00309,
+    "png": "nba__0022400909_s900__f094.png",
+    "sha256": "414f36a2d89c2069c1fce687f9e5667172992ad0c44bfa7c0e9738019697a76c"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 95,
+    "t_sec": 124.30471,
+    "png": "nba__0022400909_s900__f095.png",
+    "sha256": "1710806ecd8d7e3463f490daba9fded1b3d5883445bb7778d836370689b3cf23"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 96,
+    "t_sec": 125.60633,
+    "png": "nba__0022400909_s900__f096.png",
+    "sha256": "50abc18ac7998515617b6ef1d66971f0e8c4ff7ae3e6e945de5ed49dde31d661"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 97,
+    "t_sec": 126.90795,
+    "png": "nba__0022400909_s900__f097.png",
+    "sha256": "12a736bb0bbd7c95ae5207357b531f697fc2442564ff18576e10b843d1f6aeae"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 98,
+    "t_sec": 128.20957,
+    "png": "nba__0022400909_s900__f098.png",
+    "sha256": "3f8f88d931683047c686258817ff3d162edd77731af3ee0eb830e38fc023bb06"
+   },
+   {
+    "clip": "nba__0022400909_s900",
+    "j": 99,
+    "t_sec": 129.51119,
+    "png": "nba__0022400909_s900__f099.png",
+    "sha256": "41ac7f65fe8c1e2dfed9cbbe3d179fe38febefc79c9aa8c35c122d9b90818108"
+   }
+  ]
+ },
+ {
+  "clip": "nba__mil_chi_2025",
+  "path": "/workspace/nba-ai-system/data/footage_corpus/nba__mil_chi_2025.mp4",
+  "bytes": 258015436,
+  "width": 1280,
+  "height": 720,
+  "duration_sec": 906.530249,
+  "k": 100,
+  "frames": [
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 0,
+    "t_sec": 4.532651,
+    "png": "nba__mil_chi_2025__f000.png",
+    "sha256": "be4d0b5f510ebbd7f4580f98e0134d9906674ac38f22b56016a5596093b793c0"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 1,
+    "t_sec": 13.597954,
+    "png": "nba__mil_chi_2025__f001.png",
+    "sha256": "c077d1d6a7fb7f784e6e15e2800dc59489dcb1b7452bb6c37569a14ca6f1d917"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 2,
+    "t_sec": 22.663256,
+    "png": "nba__mil_chi_2025__f002.png",
+    "sha256": "b7e105529c940db41ae0900c2ac77882cfd34e65574705a97f0746f9d72e2166"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 3,
+    "t_sec": 31.728559,
+    "png": "nba__mil_chi_2025__f003.png",
+    "sha256": "7f8ce32dd4b00512d8c29a1ecec56eb5db8cc9c7ba8e547919bfe0b14374f9f4"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 4,
+    "t_sec": 40.793861,
+    "png": "nba__mil_chi_2025__f004.png",
+    "sha256": "f43628b80283e91236e9789bd5d450850b5244fbbb7291daf895eef75203c3c9"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 5,
+    "t_sec": 49.859164,
+    "png": "nba__mil_chi_2025__f005.png",
+    "sha256": "cd857ffa932b52e1ba84ba42376d6f17d254411bd8d538def9132ee92832a77f"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 6,
+    "t_sec": 58.924466,
+    "png": "nba__mil_chi_2025__f006.png",
+    "sha256": "1d4a4f0d999d43013da77fa508d29c6d7b9006096419eeaa98ef54151f5a1ccd"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 7,
+    "t_sec": 67.989769,
+    "png": "nba__mil_chi_2025__f007.png",
+    "sha256": "0a2bd61fcbc28bd91ae8f140780cb165f0aee1679cacba91cd6b429841cc11dd"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 8,
+    "t_sec": 77.055071,
+    "png": "nba__mil_chi_2025__f008.png",
+    "sha256": "cb41ac634f56cf24179caa57167f0806227c32425c9cb873873fbdac726e5b1b"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 9,
+    "t_sec": 86.120374,
+    "png": "nba__mil_chi_2025__f009.png",
+    "sha256": "db4a4d140e095f526b1ada22c644d12e07773b8628ea561e91b6ef2fbb623efa"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 10,
+    "t_sec": 95.185676,
+    "png": "nba__mil_chi_2025__f010.png",
+    "sha256": "6690bbdb9d1ce07b8bcfd10d9ea49b9de6cb165400b1e01120962628b6a6decc"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 11,
+    "t_sec": 104.250979,
+    "png": "nba__mil_chi_2025__f011.png",
+    "sha256": "4dfb77a34da274a200ef7cf318417b1d2f73209ae0c53a716ce33296e5c5ab06"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 12,
+    "t_sec": 113.316281,
+    "png": "nba__mil_chi_2025__f012.png",
+    "sha256": "8a3fba627305abf291e6851e23a62a352e390a38562a504d2d0c7ad21efb227a"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 13,
+    "t_sec": 122.381584,
+    "png": "nba__mil_chi_2025__f013.png",
+    "sha256": "338e93cbc4ba6b4974d8c149d7bdd12fa302b3af3a607a761f3c8b9f5b9b354c"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 14,
+    "t_sec": 131.446886,
+    "png": "nba__mil_chi_2025__f014.png",
+    "sha256": "7a849bd8a792a1a58b9ae2ec1a487b104a0f474100d42544676cb8f5dc78be83"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 15,
+    "t_sec": 140.512189,
+    "png": "nba__mil_chi_2025__f015.png",
+    "sha256": "7d35e943fa982af3ab8881a02e21c5f9d37d6f1a43835511858b09ddb22b6dd7"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 16,
+    "t_sec": 149.577491,
+    "png": "nba__mil_chi_2025__f016.png",
+    "sha256": "d69ff30aca8dac567a77c5ff49c045c79ba1860f9e17506ec856248033a6fc0b"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 17,
+    "t_sec": 158.642794,
+    "png": "nba__mil_chi_2025__f017.png",
+    "sha256": "20560209aff4d35b11d87d01fe0c81aff5b5f89121501e4cf87532ac0451ad4b"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 18,
+    "t_sec": 167.708096,
+    "png": "nba__mil_chi_2025__f018.png",
+    "sha256": "ab1022eed88848b664fbd8289bac80ae6924bee4b52097deb5a1d4ddd8cf8f1a"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 19,
+    "t_sec": 176.773399,
+    "png": "nba__mil_chi_2025__f019.png",
+    "sha256": "92483001143adc1c83da41ef4ce073cc58029e39eea7ed0fb04acf2d5779cd0e"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 20,
+    "t_sec": 185.838701,
+    "png": "nba__mil_chi_2025__f020.png",
+    "sha256": "8e0302e25f9029f88a47c4028943c05caeb9adde9c7348a4a24dfaedb0afbc40"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 21,
+    "t_sec": 194.904004,
+    "png": "nba__mil_chi_2025__f021.png",
+    "sha256": "5a69d7779507c3a59656d7d32e11d224b70585bee03d87a58a9e6533b7444bba"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 22,
+    "t_sec": 203.969306,
+    "png": "nba__mil_chi_2025__f022.png",
+    "sha256": "33e4c6b1cc09f9f15c82f46256fea30f5a3c4ee8148c76683cd5fda75e0192af"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 23,
+    "t_sec": 213.034609,
+    "png": "nba__mil_chi_2025__f023.png",
+    "sha256": "84f2eb28e3036115fc0ccb23f66ad96579b5a0c0a5e6094ded2b4c7c2d44a79d"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 24,
+    "t_sec": 222.099911,
+    "png": "nba__mil_chi_2025__f024.png",
+    "sha256": "611b82d32d77e806a1d9736baeb1499051275ca32f05d4eac9f196fcdae8f49d"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 25,
+    "t_sec": 231.165213,
+    "png": "nba__mil_chi_2025__f025.png",
+    "sha256": "34bd07538e39e64bf94123883fdab56a5e2ad6938fe7d798e973e1efb398b6dd"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 26,
+    "t_sec": 240.230516,
+    "png": "nba__mil_chi_2025__f026.png",
+    "sha256": "4cc58c08e0b3560f46aa5a6283f834c4e22ac095979b614cbf04ba84dae7f528"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 27,
+    "t_sec": 249.295818,
+    "png": "nba__mil_chi_2025__f027.png",
+    "sha256": "8cbd768bf3295dab460360acb4f9f14c2fd915ecf413ab79ca3fe921f15198a0"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 28,
+    "t_sec": 258.361121,
+    "png": "nba__mil_chi_2025__f028.png",
+    "sha256": "7727e37249e533da547f875622048fa2186b1fe479710a6bed9a023f757c89c6"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 29,
+    "t_sec": 267.426423,
+    "png": "nba__mil_chi_2025__f029.png",
+    "sha256": "7e5ad63d972757249289b29d5b7d541d32af61253566d0436df62484bf29509a"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 30,
+    "t_sec": 276.491726,
+    "png": "nba__mil_chi_2025__f030.png",
+    "sha256": "3ffa1564ed0660ad92c220cdd6c1430b2532d2b0575a3aabbce791112e00fa87"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 31,
+    "t_sec": 285.557028,
+    "png": "nba__mil_chi_2025__f031.png",
+    "sha256": "a2e5f82064c917fb06de98b85c707ed807a612b20fa906b575a3bf8bfcec7710"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 32,
+    "t_sec": 294.622331,
+    "png": "nba__mil_chi_2025__f032.png",
+    "sha256": "6bbab2e9e0a54c69c4123b08bc09e3d26e835ac3a03328f18a4f84d0d1118002"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 33,
+    "t_sec": 303.687633,
+    "png": "nba__mil_chi_2025__f033.png",
+    "sha256": "985d36664cda6cba053a6f83c897282912a42c83e2dd69bda2a41eafd8cdcc8d"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 34,
+    "t_sec": 312.752936,
+    "png": "nba__mil_chi_2025__f034.png",
+    "sha256": "655463f2dc5287e98543215eab8c6816902d9d4d901bb4cb335c45cfb08083d5"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 35,
+    "t_sec": 321.818238,
+    "png": "nba__mil_chi_2025__f035.png",
+    "sha256": "b67956b34e57d5877d1ea057d3b6e8d62787413143c8a9ce86c8c6ef255ebff9"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 36,
+    "t_sec": 330.883541,
+    "png": "nba__mil_chi_2025__f036.png",
+    "sha256": "6f4dfe0b025b7d9efbf54839025fdf80326c24d84302d42e59ae2a3f3d709f2f"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 37,
+    "t_sec": 339.948843,
+    "png": "nba__mil_chi_2025__f037.png",
+    "sha256": "0a3a16d24e15de3c9984de39a8ad7f7cc26b44b8e05bc14c13db0f43be9509cd"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 38,
+    "t_sec": 349.014146,
+    "png": "nba__mil_chi_2025__f038.png",
+    "sha256": "d8ca8bc003bf028108e2eab920d1fd465dd16cc3a970cfac5b891f3e60da1c16"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 39,
+    "t_sec": 358.079448,
+    "png": "nba__mil_chi_2025__f039.png",
+    "sha256": "329a8982f271eee37b454f53031f4cb6e1a4623e2f056e0824aae0b10e68cc53"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 40,
+    "t_sec": 367.144751,
+    "png": "nba__mil_chi_2025__f040.png",
+    "sha256": "50bd07d4d2d8a99a4c87031ea00ed82cff6f72ae3de3cd7ca0ce42dff9de7107"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 41,
+    "t_sec": 376.210053,
+    "png": "nba__mil_chi_2025__f041.png",
+    "sha256": "f03d1362efcac71f0047b6a14d4dc09e130f8b98ca223411790804d3c3fd170c"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 42,
+    "t_sec": 385.275356,
+    "png": "nba__mil_chi_2025__f042.png",
+    "sha256": "c631e50084f80aed1058a13ecfa91ebae47280b229ebac2c1eccf6b86a426224"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 43,
+    "t_sec": 394.340658,
+    "png": "nba__mil_chi_2025__f043.png",
+    "sha256": "f9382b1445ba01837eccb470a4657d233dcabd9555409c3d504f4b906043c966"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 44,
+    "t_sec": 403.405961,
+    "png": "nba__mil_chi_2025__f044.png",
+    "sha256": "b07f99e6e58f2c857af12f5b0fd702f18115b2d02f16cd0a5c8fe0118523566a"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 45,
+    "t_sec": 412.471263,
+    "png": "nba__mil_chi_2025__f045.png",
+    "sha256": "d092316314030f34ce3a27a12c0dfed972c86a5a75fbe6cb77e35e4ec7f22a6d"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 46,
+    "t_sec": 421.536566,
+    "png": "nba__mil_chi_2025__f046.png",
+    "sha256": "907240e2319f5bc05d2f6d341c467e1b9b3b39b13daa42909a5211550473f6b7"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 47,
+    "t_sec": 430.601868,
+    "png": "nba__mil_chi_2025__f047.png",
+    "sha256": "1d4a6c0cd1f47d211b2f4893554c8ec1785e40b22b839ba6e614d2ab8e5da8b4"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 48,
+    "t_sec": 439.667171,
+    "png": "nba__mil_chi_2025__f048.png",
+    "sha256": "e5d6af17fb87621bd5d426c8523e48d297057b654b60cd0b3e1f4023584848d1"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 49,
+    "t_sec": 448.732473,
+    "png": "nba__mil_chi_2025__f049.png",
+    "sha256": "fa93536c109e30b4b9157b03402662b8edaff48de84c20b3216c5782c38025e1"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 50,
+    "t_sec": 457.797776,
+    "png": "nba__mil_chi_2025__f050.png",
+    "sha256": "4451daa41bec41737d779206d6f14ff3b098405803a95762f1c9dae8fbfa60a3"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 51,
+    "t_sec": 466.863078,
+    "png": "nba__mil_chi_2025__f051.png",
+    "sha256": "70c30f64982b0f71de385bfc977ad74199ea330e3a2081b49f033457e72eb145"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 52,
+    "t_sec": 475.928381,
+    "png": "nba__mil_chi_2025__f052.png",
+    "sha256": "b3f6de014da19dbd67fd23a4093eba8e5ae57f816215a86a7a7ac9098ed34add"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 53,
+    "t_sec": 484.993683,
+    "png": "nba__mil_chi_2025__f053.png",
+    "sha256": "5fb84e7424a81aa6654c7f8785900f8083a298f1587e751d0748713eb542996e"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 54,
+    "t_sec": 494.058986,
+    "png": "nba__mil_chi_2025__f054.png",
+    "sha256": "962c7bead229bf2997e0c7a39f9bfc6e14b276c196ecda5d937a33fd9387545e"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 55,
+    "t_sec": 503.124288,
+    "png": "nba__mil_chi_2025__f055.png",
+    "sha256": "08454886652596e06dc6b8c7079ab7208341e993e71b6c67262149cfd15dd7b1"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 56,
+    "t_sec": 512.189591,
+    "png": "nba__mil_chi_2025__f056.png",
+    "sha256": "6a7682ee1e64a3212606367fd0102043609d83e02504716013b36ff090d56e7c"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 57,
+    "t_sec": 521.254893,
+    "png": "nba__mil_chi_2025__f057.png",
+    "sha256": "cacd466afe18e340b7c6ff7a770a2c5561b94db8d41843c4f6e99923ed90eda1"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 58,
+    "t_sec": 530.320196,
+    "png": "nba__mil_chi_2025__f058.png",
+    "sha256": "518d6a53f78df968ddbf3841b3a4dc63b6c8bf315ff40841c6846d26b0f00d7f"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 59,
+    "t_sec": 539.385498,
+    "png": "nba__mil_chi_2025__f059.png",
+    "sha256": "5a332f438265e9c09bf2f618c788241cebd6f53e4fbd3f3d5b6c00c7f423360d"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 60,
+    "t_sec": 548.450801,
+    "png": "nba__mil_chi_2025__f060.png",
+    "sha256": "1ee6caadc91f6f6e7d93ca9baea23b7acbee51863d7856ab2fe8da320958ddeb"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 61,
+    "t_sec": 557.516103,
+    "png": "nba__mil_chi_2025__f061.png",
+    "sha256": "f37f8fe48d16a165e8761b34b65b55a87c79a73bc553bb06d1a61bc802444dc8"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 62,
+    "t_sec": 566.581406,
+    "png": "nba__mil_chi_2025__f062.png",
+    "sha256": "256a9dedf5ab94f9b2d686ac86bfe7f6c3a3bb2a6aabdb67bfddbfa8db3a78db"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 63,
+    "t_sec": 575.646708,
+    "png": "nba__mil_chi_2025__f063.png",
+    "sha256": "69d56957eb2b3470fb9900886b53c1e100e3826bc20ce410a80a9f74cdd79cce"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 64,
+    "t_sec": 584.712011,
+    "png": "nba__mil_chi_2025__f064.png",
+    "sha256": "eca3e09c2bc4c1b7756b97ca624dec317576c8d0fde196eb73825c34852de3a0"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 65,
+    "t_sec": 593.777313,
+    "png": "nba__mil_chi_2025__f065.png",
+    "sha256": "4a8c9d973ee3d30445e26ace5aaa7f65b8139ad8b6a865946fdc67e03df15e23"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 66,
+    "t_sec": 602.842616,
+    "png": "nba__mil_chi_2025__f066.png",
+    "sha256": "59ff2a82e24165e6e05524f187514f0d64e12d3b278f5dbeebc2fdd98b2409e3"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 67,
+    "t_sec": 611.907918,
+    "png": "nba__mil_chi_2025__f067.png",
+    "sha256": "a53967ac78ea753355186123184a20095ba604c78ad6965ac68f8acf4f537c2e"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 68,
+    "t_sec": 620.973221,
+    "png": "nba__mil_chi_2025__f068.png",
+    "sha256": "54d7a3c78dedebfc78009f6d2f851633910a80c0ce0709a13fdd0d0e77d08968"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 69,
+    "t_sec": 630.038523,
+    "png": "nba__mil_chi_2025__f069.png",
+    "sha256": "74aff06ec9995be4fb513214b28ff1a9d365455afdf4dd454bf5c2826a3fea75"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 70,
+    "t_sec": 639.103826,
+    "png": "nba__mil_chi_2025__f070.png",
+    "sha256": "8c6f5eae3c528e5ef6fbe143dd2bcfb7c78b6cf39862a370edeee79a96e2d8a8"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 71,
+    "t_sec": 648.169128,
+    "png": "nba__mil_chi_2025__f071.png",
+    "sha256": "5366db1809c731f04d5d639de42887e1d17992e28614f225ca0f8c1e35ffdf2d"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 72,
+    "t_sec": 657.234431,
+    "png": "nba__mil_chi_2025__f072.png",
+    "sha256": "424fce9bdc1ae9fd357bda1d702f895afe3551219edb047d5ecf61dafe92cd25"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 73,
+    "t_sec": 666.299733,
+    "png": "nba__mil_chi_2025__f073.png",
+    "sha256": "a523d3df9e24150b756983de86611f9e625d989ecf12d88f73da6c229762e9ae"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 74,
+    "t_sec": 675.365036,
+    "png": "nba__mil_chi_2025__f074.png",
+    "sha256": "b6d5731efe4efa6c01097a1a4987c2feb5d882c1c50daabf6bed52cbcd93f5fa"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 75,
+    "t_sec": 684.430338,
+    "png": "nba__mil_chi_2025__f075.png",
+    "sha256": "06af77f359ef1faa467af32a9e9361357dcab9d81f64bcd5351a27d6da935879"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 76,
+    "t_sec": 693.49564,
+    "png": "nba__mil_chi_2025__f076.png",
+    "sha256": "99e22655d4ae925400932f5eaf5c9f92a5f6f7e714a524e458d4663330bc1558"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 77,
+    "t_sec": 702.560943,
+    "png": "nba__mil_chi_2025__f077.png",
+    "sha256": "a0405797b5556e5c65f5c4d5a9adcd05467595334b7132d399c470945ef03eb1"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 78,
+    "t_sec": 711.626245,
+    "png": "nba__mil_chi_2025__f078.png",
+    "sha256": "dc2d38957f5baaed83d7cc5b28f304a2fe3aca9c4a356837f32e1d53243fda67"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 79,
+    "t_sec": 720.691548,
+    "png": "nba__mil_chi_2025__f079.png",
+    "sha256": "2cc4e3ae07813f23f74f71fb923e0c28bf6ced7dfa231a0d4c44b13650b0bcf1"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 80,
+    "t_sec": 729.75685,
+    "png": "nba__mil_chi_2025__f080.png",
+    "sha256": "8dab9fe123360c8facf2df46cc6abc7951449767ab3a370dd31a4e142b94ae8c"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 81,
+    "t_sec": 738.822153,
+    "png": "nba__mil_chi_2025__f081.png",
+    "sha256": "fce569e564c83c736076e0a0668b7529c70cc838e1ea012f57e3d3a28c2de45d"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 82,
+    "t_sec": 747.887455,
+    "png": "nba__mil_chi_2025__f082.png",
+    "sha256": "238459ffe0383fdb0f8b9c653e869a5cd9c794f2bade7fe0974b11def9cbf233"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 83,
+    "t_sec": 756.952758,
+    "png": "nba__mil_chi_2025__f083.png",
+    "sha256": "ab12b0506d2144ca8043f128bcbad5fd732f4d59098b42d43293242cb8d481e2"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 84,
+    "t_sec": 766.01806,
+    "png": "nba__mil_chi_2025__f084.png",
+    "sha256": "fc3aaff0ecc3fc80c7a6b25f6f5bc8a6813c8b356f3f37ad1043a5ee09311b57"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 85,
+    "t_sec": 775.083363,
+    "png": "nba__mil_chi_2025__f085.png",
+    "sha256": "1a32e75cd3dbc6058bc430c25f8f99ad4fc2e06a98995461998550828783b834"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 86,
+    "t_sec": 784.148665,
+    "png": "nba__mil_chi_2025__f086.png",
+    "sha256": "8625905ffc0006eff8864b2a90a356be4d01b42060df810e3a040f4a2684c1c1"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 87,
+    "t_sec": 793.213968,
+    "png": "nba__mil_chi_2025__f087.png",
+    "sha256": "f69685dcda3df372cbb4e5a5829becd9049c66ee2690c8eae5ad61c86d8a4529"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 88,
+    "t_sec": 802.27927,
+    "png": "nba__mil_chi_2025__f088.png",
+    "sha256": "2bed7c7d2233b150f5a0a99f93618af257e203c8f5a788881913ad4323a9affb"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 89,
+    "t_sec": 811.344573,
+    "png": "nba__mil_chi_2025__f089.png",
+    "sha256": "e9cd55818a91982ada5b3d3834dc5e88b8f4f0aaad4eb5bff2847262e66becca"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 90,
+    "t_sec": 820.409875,
+    "png": "nba__mil_chi_2025__f090.png",
+    "sha256": "84e3152c6c272ac47341a9bd9ddac37ef8218d973591ac68e2e06624efe717ee"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 91,
+    "t_sec": 829.475178,
+    "png": "nba__mil_chi_2025__f091.png",
+    "sha256": "055d8583f3d1e90db9ede7c1c326bde3f175a5a7ebbd8b08e54119f479c4165c"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 92,
+    "t_sec": 838.54048,
+    "png": "nba__mil_chi_2025__f092.png",
+    "sha256": "4143e893a7c2f53325b6067d682885f1212a727ba294490fa397f3afc11711b5"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 93,
+    "t_sec": 847.605783,
+    "png": "nba__mil_chi_2025__f093.png",
+    "sha256": "e012171f31c0d46b4473c989b842d95633604dab484cdc817da07d028c452049"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 94,
+    "t_sec": 856.671085,
+    "png": "nba__mil_chi_2025__f094.png",
+    "sha256": "d5aae2895f94f7e3f40cce1d58d208295910e3f7d35103d55ebd98af8b23a118"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 95,
+    "t_sec": 865.736388,
+    "png": "nba__mil_chi_2025__f095.png",
+    "sha256": "4230a55968ac20acca706faf02f4e176575975c57097b4795131539a28f50451"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 96,
+    "t_sec": 874.80169,
+    "png": "nba__mil_chi_2025__f096.png",
+    "sha256": "efe8edc77f606c74f0fa045aeb429c7f023fdb816bdf865a687901cd5aa49e6e"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 97,
+    "t_sec": 883.866993,
+    "png": "nba__mil_chi_2025__f097.png",
+    "sha256": "7dc0e96f064a2c798d617cd316910c7b3052a42e86058e7a1e06b0fb4c6893e6"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 98,
+    "t_sec": 892.932295,
+    "png": "nba__mil_chi_2025__f098.png",
+    "sha256": "76b677203575a0e9aa6f18473ab489f82584c10f0500bfb9cf58b55d4391b35b"
+   },
+   {
+    "clip": "nba__mil_chi_2025",
+    "j": 99,
+    "t_sec": 901.997598,
+    "png": "nba__mil_chi_2025__f099.png",
+    "sha256": "55759555cabec5b02ef71cfe74eb40e1cd2875faf9f473ff589b868989b8e879"
+   }
+  ]
+ },
+ {
+  "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+  "path": "/workspace/nba-ai-system/data/footage_corpus/ncaa_basketball__ncaa_basketball_zqBCKovJCQU.mp4",
+  "bytes": 467936551,
+  "width": 1920,
+  "height": 1080,
+  "duration_sec": 965.649967,
+  "k": 100,
+  "frames": [
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 0,
+    "t_sec": 4.82825,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f000.png",
+    "sha256": "6d3fca8318eedcce537eccc6efa111de42dac8de981d2cd317ec440cdd112718"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 1,
+    "t_sec": 14.48475,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f001.png",
+    "sha256": "17821a9f68c52a24a5bd1e8b38a6af2a80415be7a8f9e81d30901a95ccf14eae"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 2,
+    "t_sec": 24.141249,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f002.png",
+    "sha256": "c19b41210314159eac6072c78104a2c728e3b6a861389f04f7b83e4e8287009c"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 3,
+    "t_sec": 33.797749,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f003.png",
+    "sha256": "2e930aaceaebc76c26908db1a9d1e46a6bb2ddb2ab7e50126e4e19e14cac23de"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 4,
+    "t_sec": 43.454249,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f004.png",
+    "sha256": "fb60fa77caaad97b6e13a4fa7466f2c499585f07d2a3cbc4f2a88b94872acc81"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 5,
+    "t_sec": 53.110748,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f005.png",
+    "sha256": "9150ca8ebced092d934099ed913676f7691628c4f6a88eba42adf8485507d43e"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 6,
+    "t_sec": 62.767248,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f006.png",
+    "sha256": "7bd632c777e0a75862bb338415684bce8c374b28bf504b85a311552f14c2d1eb"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 7,
+    "t_sec": 72.423748,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f007.png",
+    "sha256": "f539aa6092571b7df40bd2e9813cb3d4d6c93f9f3d2a023dfd3bc1147d7a68ef"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 8,
+    "t_sec": 82.080247,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f008.png",
+    "sha256": "c3fb30513099ac72032f07dd5d0077889ff55364f2758d539dd5d9a760cad89f"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 9,
+    "t_sec": 91.736747,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f009.png",
+    "sha256": "7b021901b2837a06e14e819518cbdc4098074f71b1234254b430e6f42f5f6f5d"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 10,
+    "t_sec": 101.393247,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f010.png",
+    "sha256": "df80a0fb3f446a74f698cebb9dbea1f6f8b297c5e03566178fc910c4d02a5e76"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 11,
+    "t_sec": 111.049746,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f011.png",
+    "sha256": "e7063f927e7fcc845a2776cc7ac2654e52e98b548855b0c9e104357b1f9012f8"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 12,
+    "t_sec": 120.706246,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f012.png",
+    "sha256": "fc02c2a5366e81f4df114a5ab51bd4a2fb18d9a1d4e9152e9a2b881ca221a2fb"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 13,
+    "t_sec": 130.362746,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f013.png",
+    "sha256": "2a837abbdc60dfbd47ea85bbc2fd8288ae74654fc573031d86cdb04628a7ac01"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 14,
+    "t_sec": 140.019245,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f014.png",
+    "sha256": "2bdcaf063109d98b773584959f82deec356a245605bafe48ddd068f39214140c"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 15,
+    "t_sec": 149.675745,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f015.png",
+    "sha256": "97a6ce398eaef1c2f4bb158c81a3f99d3da64cab166545b31a0dc9e21a639967"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 16,
+    "t_sec": 159.332245,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f016.png",
+    "sha256": "72576fb476afd17ea1eacd3028ef4f7572a0b59a32da5803d27da57f54ea3f49"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 17,
+    "t_sec": 168.988744,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f017.png",
+    "sha256": "643fb5fb32c55dba882856a32e9c68d6d390a48f0bf4c3266157919c44db32a0"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 18,
+    "t_sec": 178.645244,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f018.png",
+    "sha256": "50fb1b83a8d9594472d9cc9448a971542c766a2272b79ae45f7a51c580a6bc35"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 19,
+    "t_sec": 188.301744,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f019.png",
+    "sha256": "03385f3ac71ac690cc964fbeceabe8b899331fb945df7cf76a786c48ad630ebf"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 20,
+    "t_sec": 197.958243,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f020.png",
+    "sha256": "eda4bbdc25c0748a33a54a38fbe859ed2084823d18990a2c99032ae08925a565"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 21,
+    "t_sec": 207.614743,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f021.png",
+    "sha256": "de77115160c5fd9c5048d946e03ae9d313944d30bd9cb83e8bdf25fa6902593f"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 22,
+    "t_sec": 217.271243,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f022.png",
+    "sha256": "9891c5ad00311c29b444ff935408febc1b2b653cf2945483c9164dc2abe80570"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 23,
+    "t_sec": 226.927742,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f023.png",
+    "sha256": "826db0c00abf877f54599d461c02ae1a18cf754b91189256618dd1003642fe69"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 24,
+    "t_sec": 236.584242,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f024.png",
+    "sha256": "0eb0e15bd4846149ab27e04a287bc3cb71e8e77836133b0ec71f2cf88e45afee"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 25,
+    "t_sec": 246.240742,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f025.png",
+    "sha256": "4580e48866dd5f9b600bcdb95f7d04c5b9589edd3ebcc6897da9e99933f2076f"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 26,
+    "t_sec": 255.897241,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f026.png",
+    "sha256": "14ad3a4f60b53b9b8f79145071edad144fb7ff376257bbeab28b2241d598a69e"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 27,
+    "t_sec": 265.553741,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f027.png",
+    "sha256": "7f8500ce6ba49ba8b90e61287ae8511005aa978445ed31fd7f18e21368c47ea3"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 28,
+    "t_sec": 275.210241,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f028.png",
+    "sha256": "3983744d3ca0dd0c4b5e32f5e512119e74e44c45ab0035528cb0ada71958bc86"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 29,
+    "t_sec": 284.86674,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f029.png",
+    "sha256": "7e137ae8b266736a7b6a01e34ce7b27b48178e520b878dbea00261567d3d57e2"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 30,
+    "t_sec": 294.52324,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f030.png",
+    "sha256": "26dd8ce6a4be16db25bd78ace00c13815a2f3e9b8584a3c91f5ed94cd24285c3"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 31,
+    "t_sec": 304.17974,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f031.png",
+    "sha256": "79f73846fd3487b88a0cd97e814045410816a6d380fc995f7360495b3643de70"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 32,
+    "t_sec": 313.836239,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f032.png",
+    "sha256": "be27fa546722cb59f6746a3dedb9b3e62994513390032ff21d97143fd3c0b59c"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 33,
+    "t_sec": 323.492739,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f033.png",
+    "sha256": "7fc8a8705798ddfb58b03460bcb2099e359d171345b86d3847268880ea27ef7d"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 34,
+    "t_sec": 333.149239,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f034.png",
+    "sha256": "f6bfab271024fb3ea9a586aeb68a3beaba60e1bbd74263548bbdd8f651be8af8"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 35,
+    "t_sec": 342.805738,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f035.png",
+    "sha256": "60b226abdffd0f5c57b0f6d541fda1a55e97d6a95f9007ba7029b71d8f43a4c5"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 36,
+    "t_sec": 352.462238,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f036.png",
+    "sha256": "36704e62f4238e82958e88ac564148373e3294fe3932b52544bd6893e79e746d"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 37,
+    "t_sec": 362.118738,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f037.png",
+    "sha256": "869a4aae766595be25dc161c1ed8ec461f07449883502716b9671f7d311c6d07"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 38,
+    "t_sec": 371.775237,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f038.png",
+    "sha256": "4c6f30620c7a926e0eac448e95f78820d81dc9ae811c3e25069dc87fca03d69c"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 39,
+    "t_sec": 381.431737,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f039.png",
+    "sha256": "9ff6efb3d6a72ab77458bf9ede105230cafa5564155305c7076acc439e057776"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 40,
+    "t_sec": 391.088237,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f040.png",
+    "sha256": "2947dc35a3494616032d296529a5b690c1cd8c849046ee26bb355f69041e5efd"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 41,
+    "t_sec": 400.744736,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f041.png",
+    "sha256": "6c7542f9cc1cb51dc432690514a37bb7c4a2d1b099865cac5a08882d71dbb51e"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 42,
+    "t_sec": 410.401236,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f042.png",
+    "sha256": "7e21f4f15277645d62b899b2339d7dbb547e4e89b1752e05c5459ea875af7bb8"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 43,
+    "t_sec": 420.057736,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f043.png",
+    "sha256": "e85831d38f728fead84d3c246e3c33afbfafbe59dfa1bb081420aab2aa99fcc0"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 44,
+    "t_sec": 429.714235,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f044.png",
+    "sha256": "4827719f0940c565e5614a876e6d9db653a63cf8864fc21b24c7134e63dac562"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 45,
+    "t_sec": 439.370735,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f045.png",
+    "sha256": "c2cf5bfc98c5bab649a48a4e1862924193e5e2c53d34207c1de86165a90dabad"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 46,
+    "t_sec": 449.027235,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f046.png",
+    "sha256": "6a6225efc1fdc1e02bcc6b79ea8d50c0ad88f6c680f846ebc4b593bffa965c28"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 47,
+    "t_sec": 458.683734,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f047.png",
+    "sha256": "d0a5d3e51c0796031d12d989cd64d416d1a3b6834e2654551e0a96ccc8af2fb3"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 48,
+    "t_sec": 468.340234,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f048.png",
+    "sha256": "462b621a2a1a3076aacaca11e25ebf84de547e6d8c33e7eced27d0693bd64abf"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 49,
+    "t_sec": 477.996734,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f049.png",
+    "sha256": "486206dcd48821ba7a6c7a8d9639001327fcf9af549ce2acffe892439e316aaf"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 50,
+    "t_sec": 487.653233,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f050.png",
+    "sha256": "b1577aa9f7caa3e1620238497f9fa59159d99116d3b8165cc1307e6062ca40de"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 51,
+    "t_sec": 497.309733,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f051.png",
+    "sha256": "fe0413811698e96fca0f2206959c1e01998fe01511e0682f024cb1b481af8905"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 52,
+    "t_sec": 506.966233,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f052.png",
+    "sha256": "acd1e4434bd53a37b3cfbc26a29c91fea1d37c981d275524fbd2457b06744a5a"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 53,
+    "t_sec": 516.622732,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f053.png",
+    "sha256": "8782406383fcad03e93ea1661f07efd01219c70c83b6d8354f2a7e567f7cf095"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 54,
+    "t_sec": 526.279232,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f054.png",
+    "sha256": "4170ec9b3a2b1529b7b8dfc1a2edb761b6b38fde0cc24bbfc815d3d49eb1e9b4"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 55,
+    "t_sec": 535.935732,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f055.png",
+    "sha256": "5856acbc90a4aa6b0d49443c6e06c7a810d78225418bc8414e65368c37c63361"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 56,
+    "t_sec": 545.592231,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f056.png",
+    "sha256": "1cf71cb6104c0c4fa9a848d397e14178b0b1c37641a2567814970e669e91df9f"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 57,
+    "t_sec": 555.248731,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f057.png",
+    "sha256": "36e00005a5bb53b307c4e7d6f7450505329ef2402dde3230943ae314d05bdcbe"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 58,
+    "t_sec": 564.905231,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f058.png",
+    "sha256": "d0691fdea4efd50a19eb4b9d31b55f6705b92922bb80b7700dd071a6492de789"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 59,
+    "t_sec": 574.56173,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f059.png",
+    "sha256": "33d67497f3356a54201850f3de12c110d3e629d2ad82805b4cff09a7c51d115d"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 60,
+    "t_sec": 584.21823,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f060.png",
+    "sha256": "fb44c20b04ae48f931d27a3a2596e82c7bb26816d9bffb489ac71eea1f72c878"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 61,
+    "t_sec": 593.87473,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f061.png",
+    "sha256": "3b9a59b97180a60bedbf5404f8edf2fa94372420cfa708ebab5f0ed620ea9187"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 62,
+    "t_sec": 603.531229,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f062.png",
+    "sha256": "a16c449d959381053afe5df5f468e83966ff49633689f3f45d5f6fdf99c2f2e2"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 63,
+    "t_sec": 613.187729,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f063.png",
+    "sha256": "fbddfb162fc5bac07c1715521cfc9018674c0041d27e486a553912cef2102198"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 64,
+    "t_sec": 622.844229,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f064.png",
+    "sha256": "bbe95a4717cc2ab83ced7c65a0e29392e9155dbb1c7a2e0669648914276f8d52"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 65,
+    "t_sec": 632.500728,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f065.png",
+    "sha256": "26b189b437ffc6381c9b3beb624313354b386d51c8a8273e8ef172ed9e469a29"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 66,
+    "t_sec": 642.157228,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f066.png",
+    "sha256": "d801162472b2381a8f253b01c853c78839ae1e6bde71dea543786536482c060d"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 67,
+    "t_sec": 651.813728,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f067.png",
+    "sha256": "bd8118d693ad721be1a25593615a6a69b04e91c642f79aa9021138d2a147b196"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 68,
+    "t_sec": 661.470227,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f068.png",
+    "sha256": "b3ec590a6eeb7e599df06c7a8e4cb202ff1632523e699f73f58adb6f31fd8b9f"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 69,
+    "t_sec": 671.126727,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f069.png",
+    "sha256": "24da48d6196a15fa7fc0dc928beb596a220941adc4bb3873bb46f582b458ccb3"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 70,
+    "t_sec": 680.783227,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f070.png",
+    "sha256": "44654cf48a2f23d718002520634d9be16aacdc41373dc26f329d9af17306fe87"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 71,
+    "t_sec": 690.439726,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f071.png",
+    "sha256": "571623c756aca10151275c545ccdaffc8dc67a739e1c42f710fa33549fe98aad"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 72,
+    "t_sec": 700.096226,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f072.png",
+    "sha256": "e3c8932bc5d1f9a5b98b0446c504034a67b4a39f109727a7c6e64ef7172d94fa"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 73,
+    "t_sec": 709.752726,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f073.png",
+    "sha256": "7b7e88ffa935c02d2ce0beff5c3cc9d93fc37cadf7d0abba1fac1a36cbc902c0"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 74,
+    "t_sec": 719.409225,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f074.png",
+    "sha256": "0a6d6f93306f2d0df6c9c839c38ad3a40c3f1ce814f57b67b9f2b33b5b845fba"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 75,
+    "t_sec": 729.065725,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f075.png",
+    "sha256": "cf4c1e4beab36441f2816f2d636b7bf0eb666fb4b9d6abcda3a22f5af3a02cf9"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 76,
+    "t_sec": 738.722225,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f076.png",
+    "sha256": "a78b02caddc71cb9c363fb548092c617202eca0b7c8336ee7dd759fd9885f2ae"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 77,
+    "t_sec": 748.378724,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f077.png",
+    "sha256": "4e17c9d1abb736ceb1cc3215c06d100d27381c73e122ee4e326a0d89582c4f3a"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 78,
+    "t_sec": 758.035224,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f078.png",
+    "sha256": "32fe248c3feaa90f183ea9192183b509d8f49935ca52e0231d3601934625311b"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 79,
+    "t_sec": 767.691724,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f079.png",
+    "sha256": "36baa1f02865bef876347eb4e6dc7790ec26afe676e114e713e80acd2d652d49"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 80,
+    "t_sec": 777.348223,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f080.png",
+    "sha256": "f78882bbcb51ee883c8ca7a6588b285e2ab3676f11eba54af74a8582c2a5bbac"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 81,
+    "t_sec": 787.004723,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f081.png",
+    "sha256": "f64b1fae737e8bd2b238da88062c14f9ca00e1932b68215c9be3b542bc61e5db"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 82,
+    "t_sec": 796.661223,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f082.png",
+    "sha256": "86a527a988eae8a81ba6a861c241a5a399519fd9b19911f29e5604a4ca9d88d4"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 83,
+    "t_sec": 806.317722,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f083.png",
+    "sha256": "6186ea22bf6f5c46f0557ae8f7f8f0fda37ce51403c23afbac625118ed5de283"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 84,
+    "t_sec": 815.974222,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f084.png",
+    "sha256": "9df2287dd6f9467081591dde145d7d01cce33cacd8c193e32ea4b976a842962d"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 85,
+    "t_sec": 825.630722,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f085.png",
+    "sha256": "81ad4d933bc3022fb1fd64c3c313106ec014e24c8be97aafeb068817a7926f64"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 86,
+    "t_sec": 835.287221,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f086.png",
+    "sha256": "b026aeef6e1bac24643095829e79a93e40f632468e9db8734e98e9903be74d1d"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 87,
+    "t_sec": 844.943721,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f087.png",
+    "sha256": "1b8f0b1e1c9d5a6d5066e6300dc512a62dde1cfb3d2c2ad83c99aab06cad4ec4"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 88,
+    "t_sec": 854.600221,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f088.png",
+    "sha256": "a8a1acd51bcdb9990755829c728670ad3b8b6b1e6db9bc8d6c313ffa0fbfdd6d"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 89,
+    "t_sec": 864.25672,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f089.png",
+    "sha256": "4c830c087c3744d02fdcca7936f221c2cbd3f2fd29298c846626f343658389ba"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 90,
+    "t_sec": 873.91322,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f090.png",
+    "sha256": "3e448cd6a19b4adfc3d861d3786ade82d6ced204806c197c5b4a89a7f610d509"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 91,
+    "t_sec": 883.56972,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f091.png",
+    "sha256": "d0551b72d38ef3291a74c86933b919de7b8ab34036a0513e22fe698b74fe57c9"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 92,
+    "t_sec": 893.226219,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f092.png",
+    "sha256": "fef066696bd36a642746c5d95ebadce81ad556ad3f6689ba239b5bb4374d3d11"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 93,
+    "t_sec": 902.882719,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f093.png",
+    "sha256": "7f651124cbbce2a1e9c0226aea42045f13fb2260ea6c7eb5bf07975550c23644"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 94,
+    "t_sec": 912.539219,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f094.png",
+    "sha256": "883698bfcb96e859304713bb39836e747298f8cb7b1614a08da98152ca8d0a8f"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 95,
+    "t_sec": 922.195718,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f095.png",
+    "sha256": "220f997afc2e06027a35752dfb3c34ad25a5807def97c48dbfa89db3ca063b15"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 96,
+    "t_sec": 931.852218,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f096.png",
+    "sha256": "3b297a470f6847a71bd56aec7dd67f86ab1e02604c5db820ad4a6eed261e071d"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 97,
+    "t_sec": 941.508718,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f097.png",
+    "sha256": "b5465bba4e905fdeb7490bd92a6bf6966ad4a3ca0d0c9583d7022fd374082db4"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 98,
+    "t_sec": 951.165217,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f098.png",
+    "sha256": "57b02b1bb0a8d2614a9be6ef0ec6e7f0e134e0bc037417d94e0358a58ccfe52f"
+   },
+   {
+    "clip": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU",
+    "j": 99,
+    "t_sec": 960.821717,
+    "png": "ncaa_basketball__ncaa_basketball_zqBCKovJCQU__f099.png",
+    "sha256": "323fd27b0eda021b39fa193014b8ca497105207dface068209ea581c1ae2eb89"
+   }
+  ]
+ },
+ {
+  "clip": "wnba__wnba_06",
+  "path": "/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_06.mp4",
+  "bytes": 430058965,
+  "width": 1920,
+  "height": 1080,
+  "duration_sec": 960.033008,
+  "k": 100,
+  "frames": [
+   {
+    "clip": "wnba__wnba_06",
+    "j": 0,
+    "t_sec": 4.800165,
+    "png": "wnba__wnba_06__f000.png",
+    "sha256": "a6c367d499d84a88a8a675ba4252bf2f4b6f6ab7512b342d8190856dff31609c"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 1,
+    "t_sec": 14.400495,
+    "png": "wnba__wnba_06__f001.png",
+    "sha256": "181f8b1ba65e6bacf2e52aacb001ca2018dcb135dfee6e3c9dab38fba1b76b03"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 2,
+    "t_sec": 24.000825,
+    "png": "wnba__wnba_06__f002.png",
+    "sha256": "582787aa23558dc62e8bc135f37abde06333d80c7fde7af66c0bdf74397ec1d5"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 3,
+    "t_sec": 33.601155,
+    "png": "wnba__wnba_06__f003.png",
+    "sha256": "2d203a748ec7e3fc73c3ee0bb60c45adb5f9203099ca16522e0b2fb714204fb9"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 4,
+    "t_sec": 43.201485,
+    "png": "wnba__wnba_06__f004.png",
+    "sha256": "9cdff6a17826e2fb0bb76d50f3ff2be473a667c8376e8c5b2b64eec08f636a2e"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 5,
+    "t_sec": 52.801815,
+    "png": "wnba__wnba_06__f005.png",
+    "sha256": "478921dbba855f297bdee2820fb91b58fe2ccac8d81d2e720190abb9f7cd7a8d"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 6,
+    "t_sec": 62.402146,
+    "png": "wnba__wnba_06__f006.png",
+    "sha256": "3fea27116cc42889c18fb48c275b87bd18383056911b751e97bb7e9c401d67dc"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 7,
+    "t_sec": 72.002476,
+    "png": "wnba__wnba_06__f007.png",
+    "sha256": "f29df374f1de57a3f54457096ce03b6ca65e2ee0c44fd90dd807a8b7933fa210"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 8,
+    "t_sec": 81.602806,
+    "png": "wnba__wnba_06__f008.png",
+    "sha256": "d2c3c6b3a66e156947f15f89669938adb27af5968daa3a49898475e7c3d58aca"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 9,
+    "t_sec": 91.203136,
+    "png": "wnba__wnba_06__f009.png",
+    "sha256": "5fabfa75bc81e6b1c70c3866717c914b9bc6c92fd7c52ccc7d242edb27f42a3f"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 10,
+    "t_sec": 100.803466,
+    "png": "wnba__wnba_06__f010.png",
+    "sha256": "6ac1acde429d3f86d24bd18ebef57ca64adcbbe420727d72f3de8a33e2d1edb3"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 11,
+    "t_sec": 110.403796,
+    "png": "wnba__wnba_06__f011.png",
+    "sha256": "39ae9cc00571fabfe3954a96518f108edd95b511d64c27f281c38f7dc8575138"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 12,
+    "t_sec": 120.004126,
+    "png": "wnba__wnba_06__f012.png",
+    "sha256": "b4807638f3d0ed36d499619bec85eec42cc43e5691430b94dab07b4d0acd1f13"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 13,
+    "t_sec": 129.604456,
+    "png": "wnba__wnba_06__f013.png",
+    "sha256": "377e60092cc3b80b94892ecf0be55ee8205636b666d94285584590b3ca093e49"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 14,
+    "t_sec": 139.204786,
+    "png": "wnba__wnba_06__f014.png",
+    "sha256": "e317dba488b5acefafb5bf4d702e93c47842f7b60b363335e6b94ad518791a63"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 15,
+    "t_sec": 148.805116,
+    "png": "wnba__wnba_06__f015.png",
+    "sha256": "25235f621699609cf06df7fa8a91dd409094226e317453e11080ac1b3ea4b41b"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 16,
+    "t_sec": 158.405446,
+    "png": "wnba__wnba_06__f016.png",
+    "sha256": "ac95f8532a34b262a703e1790630e4058953800312529503bd60db99a462e7c4"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 17,
+    "t_sec": 168.005776,
+    "png": "wnba__wnba_06__f017.png",
+    "sha256": "f4b19e83523feecc7fff462c0385451b396f37e51cf35c83bff039ba40cba3b4"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 18,
+    "t_sec": 177.606106,
+    "png": "wnba__wnba_06__f018.png",
+    "sha256": "3ec88a44a768c63eb3b61b7c6bd628e32052f767305a9d9fe6da6c9f33cd6170"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 19,
+    "t_sec": 187.206437,
+    "png": "wnba__wnba_06__f019.png",
+    "sha256": "3b8baccf30268bfd7b194bf20ec10d410b9b8198409906c51a3c9c5c8cf6523d"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 20,
+    "t_sec": 196.806767,
+    "png": "wnba__wnba_06__f020.png",
+    "sha256": "bee5b7069943960dd1a733c98a5fb1c3b0e56d384305bc98cce14c5a39a847ee"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 21,
+    "t_sec": 206.407097,
+    "png": "wnba__wnba_06__f021.png",
+    "sha256": "6a8b7b857d85e79e05e17a7be143f6eef9b5959fba7c4494af800ee98f518356"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 22,
+    "t_sec": 216.007427,
+    "png": "wnba__wnba_06__f022.png",
+    "sha256": "8a3b047753bb0ae42c276120aace198ecf54d7f9d227332dca9cb857465bb233"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 23,
+    "t_sec": 225.607757,
+    "png": "wnba__wnba_06__f023.png",
+    "sha256": "77b44885c5a97f5b5437403fee3d55d47561b26b712c1b6551cda9d1a197618a"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 24,
+    "t_sec": 235.208087,
+    "png": "wnba__wnba_06__f024.png",
+    "sha256": "b9d7e68bf2a1bb3ba6741acd2e804cdb8a0b7994652ec3430247b4b48d1fe9d6"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 25,
+    "t_sec": 244.808417,
+    "png": "wnba__wnba_06__f025.png",
+    "sha256": "c79a14190f9c9bbfb8e20778d5efe2e26123849c1f0213d42327e5900a2fdbce"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 26,
+    "t_sec": 254.408747,
+    "png": "wnba__wnba_06__f026.png",
+    "sha256": "c5ab1734c39dca625d150f63e358588f1cf8cd45825963dd7da537807ebf7120"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 27,
+    "t_sec": 264.009077,
+    "png": "wnba__wnba_06__f027.png",
+    "sha256": "5e9e0858096990cc5723ace207e096c2e0117a9045b0be85aec15f8226f7eef9"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 28,
+    "t_sec": 273.609407,
+    "png": "wnba__wnba_06__f028.png",
+    "sha256": "87d7f9cbe6d094df237ce839042307b9e272c01aadb4362d9531eb44a46a696d"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 29,
+    "t_sec": 283.209737,
+    "png": "wnba__wnba_06__f029.png",
+    "sha256": "74f1637a00ba0874b216ed398dccc9b77d21928a57b5b01718c2163087c4e172"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 30,
+    "t_sec": 292.810067,
+    "png": "wnba__wnba_06__f030.png",
+    "sha256": "8444b41d093e6d99493119e50ba4d11e8780ae061d7b8095d3f7959b8b586c80"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 31,
+    "t_sec": 302.410398,
+    "png": "wnba__wnba_06__f031.png",
+    "sha256": "1b827caf4b4d874d2fd0b5ec964b4fae63d3aa2467248213f273e5a1b0af005a"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 32,
+    "t_sec": 312.010728,
+    "png": "wnba__wnba_06__f032.png",
+    "sha256": "17a9d2f26cd8ed52e601e2ce28dc9dfb75ff4d7c50c3ddd2c6ecbcf000cda514"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 33,
+    "t_sec": 321.611058,
+    "png": "wnba__wnba_06__f033.png",
+    "sha256": "f3c3218eb29fa9f1cd6f7f8d614b4b2dfdf8581b797f00ec16fc01863e1836df"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 34,
+    "t_sec": 331.211388,
+    "png": "wnba__wnba_06__f034.png",
+    "sha256": "dd6bc9199dba3381880d5f90ce146dbdcd0e58abd2a456e6de55054be8ae30e1"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 35,
+    "t_sec": 340.811718,
+    "png": "wnba__wnba_06__f035.png",
+    "sha256": "294dad8c444414f962726150d33fbe1d92f5d68da2db921a57be60cc58348931"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 36,
+    "t_sec": 350.412048,
+    "png": "wnba__wnba_06__f036.png",
+    "sha256": "2b0f1b83349bc245088bcce43b682240f4b6a342e59abe31e994e95048b742b7"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 37,
+    "t_sec": 360.012378,
+    "png": "wnba__wnba_06__f037.png",
+    "sha256": "e1267c5555e099dbf44746421229cea8da6cbb5e18bf9612917461db182bbf49"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 38,
+    "t_sec": 369.612708,
+    "png": "wnba__wnba_06__f038.png",
+    "sha256": "81de6e7957fe9c9ad0b3c0c637597b61f0c504084c3a42c08de7aec2a8e51880"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 39,
+    "t_sec": 379.213038,
+    "png": "wnba__wnba_06__f039.png",
+    "sha256": "1e81f84acc7649ec7ccee3d2c524fc65cc0489ffee01248387775adb48bbb6fb"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 40,
+    "t_sec": 388.813368,
+    "png": "wnba__wnba_06__f040.png",
+    "sha256": "26bfb86bbb42edc935457e5aedc1025024e2de78f3c68b59624242541f3cfb1a"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 41,
+    "t_sec": 398.413698,
+    "png": "wnba__wnba_06__f041.png",
+    "sha256": "74ccd1b7c658c8c4f3a141cfcd6f556878f0cf7ec967259de3dcb66bfcad5663"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 42,
+    "t_sec": 408.014028,
+    "png": "wnba__wnba_06__f042.png",
+    "sha256": "e85f00ea43140eb638864c046d204057774acc84aa25662753df7a5b0be6d602"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 43,
+    "t_sec": 417.614358,
+    "png": "wnba__wnba_06__f043.png",
+    "sha256": "c21835052a8da4b31d6a6a9326f3a6d71839c6f64f74912ad2f2bf4928c6510b"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 44,
+    "t_sec": 427.214689,
+    "png": "wnba__wnba_06__f044.png",
+    "sha256": "83f0a2ef655f805932f71944a540d7b65f60436ab8bc79c8ea197ff2f705c802"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 45,
+    "t_sec": 436.815019,
+    "png": "wnba__wnba_06__f045.png",
+    "sha256": "fcba22783769543d1dddcb5712ef22a52a66162f50c9090247ff6f0112b97331"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 46,
+    "t_sec": 446.415349,
+    "png": "wnba__wnba_06__f046.png",
+    "sha256": "0112255f92a4040fcc8a661f8e12f9d2963feb94cdfb8674bd6b86b62cccec69"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 47,
+    "t_sec": 456.015679,
+    "png": "wnba__wnba_06__f047.png",
+    "sha256": "83f174865c589c3f7423f92c81734bd81a3ba28f67d9c481de34609a784d2336"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 48,
+    "t_sec": 465.616009,
+    "png": "wnba__wnba_06__f048.png",
+    "sha256": "2cef659103d1615029f8b26c37ac14c73d003b8db7f3c4099b5a78ce669a0e6c"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 49,
+    "t_sec": 475.216339,
+    "png": "wnba__wnba_06__f049.png",
+    "sha256": "53566b1a3d97a9b1649f388d62c5c1bfcb4117a90e77495534aceaa9dcca0386"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 50,
+    "t_sec": 484.816669,
+    "png": "wnba__wnba_06__f050.png",
+    "sha256": "cc370e396f35481cef42300a557a4e7f0f39be85b59c1100a09732ea4886b15e"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 51,
+    "t_sec": 494.416999,
+    "png": "wnba__wnba_06__f051.png",
+    "sha256": "cc05e27bba20495adde542ab5b4d2967101594c0473ebdfe1be2cf490ca16bef"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 52,
+    "t_sec": 504.017329,
+    "png": "wnba__wnba_06__f052.png",
+    "sha256": "f26b8ee427d74096a2951f7c2ec36fec680c58aea22135b4b4287967928ff4e4"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 53,
+    "t_sec": 513.617659,
+    "png": "wnba__wnba_06__f053.png",
+    "sha256": "12424ac6d911a30c64f06fe802e2cfc6702e4a913068d78e3309f8e5fd2d0506"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 54,
+    "t_sec": 523.217989,
+    "png": "wnba__wnba_06__f054.png",
+    "sha256": "9178c847a3f8e72c83f58329b7b0e13f92b20edc3fb42b6ba37abdc73cee2f11"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 55,
+    "t_sec": 532.818319,
+    "png": "wnba__wnba_06__f055.png",
+    "sha256": "87918ea9590eb144b7a27c19e8a93729327d96f990a80f61b897c3dd0f27e201"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 56,
+    "t_sec": 542.41865,
+    "png": "wnba__wnba_06__f056.png",
+    "sha256": "c376bd936eab3f581b521e88a06b6d3936ce2b129859ac47398430077729553f"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 57,
+    "t_sec": 552.01898,
+    "png": "wnba__wnba_06__f057.png",
+    "sha256": "6e2061d64544faaa0243c73f608bc02a492fcf4d7fa419f407d9c05db2a594a5"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 58,
+    "t_sec": 561.61931,
+    "png": "wnba__wnba_06__f058.png",
+    "sha256": "13cb9b31f85eac3b93e8c3bc5c02cadbe75ef14685ff20e903fcf244d32ac517"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 59,
+    "t_sec": 571.21964,
+    "png": "wnba__wnba_06__f059.png",
+    "sha256": "e329a2045f46f4081c0e114a7cb4565402323f97383f442121debc3daca89963"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 60,
+    "t_sec": 580.81997,
+    "png": "wnba__wnba_06__f060.png",
+    "sha256": "4afb2707333b24b37ca4b44a758bbacbad400c6527ccd255f31115e14e2c199e"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 61,
+    "t_sec": 590.4203,
+    "png": "wnba__wnba_06__f061.png",
+    "sha256": "2c53b622a9075350429fb8f94b84a2632d3834fcd3f32b120b7e97ffab6c2d83"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 62,
+    "t_sec": 600.02063,
+    "png": "wnba__wnba_06__f062.png",
+    "sha256": "33b4797aa67a87a94a61f15f245d739578eb3b85c90b9ceb54db178224835d9b"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 63,
+    "t_sec": 609.62096,
+    "png": "wnba__wnba_06__f063.png",
+    "sha256": "7042d8f103961c9d6969c20ac03019788088faa7ab4a950d5a5bf9e0df17862b"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 64,
+    "t_sec": 619.22129,
+    "png": "wnba__wnba_06__f064.png",
+    "sha256": "2bf8d201b5425dcdd3a6e1efa25378f73e97c4a23dfd0e4a06b19de9307bcdf9"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 65,
+    "t_sec": 628.82162,
+    "png": "wnba__wnba_06__f065.png",
+    "sha256": "053ee55f306e1b2f46cde1c8438d419826dcb4129b6ffaf68d60567c704a9b8f"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 66,
+    "t_sec": 638.42195,
+    "png": "wnba__wnba_06__f066.png",
+    "sha256": "7a3dd0bf1ef0304b0ace6232c99d9162b5040fa69296940d4b91cdba312183e1"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 67,
+    "t_sec": 648.02228,
+    "png": "wnba__wnba_06__f067.png",
+    "sha256": "c92e0a8b20d28dfa2d8e7967abbeecfca91c9e94c2d3d96384b4befe0e6c5bec"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 68,
+    "t_sec": 657.62261,
+    "png": "wnba__wnba_06__f068.png",
+    "sha256": "76ca33ba4d1ca983351e8dc1f7a2d3903502f0e6865880fd2974b1d4ae4a26e9"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 69,
+    "t_sec": 667.222941,
+    "png": "wnba__wnba_06__f069.png",
+    "sha256": "5db66f976c684a3f838b43cb7dc5619f02a48d3f2e01566973110e08740d8a2c"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 70,
+    "t_sec": 676.823271,
+    "png": "wnba__wnba_06__f070.png",
+    "sha256": "4a7fcfbe4e7962f01ddd03b932e2722c6b498e55c21b40dd3f664aa01c22d4f0"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 71,
+    "t_sec": 686.423601,
+    "png": "wnba__wnba_06__f071.png",
+    "sha256": "9b9ac628d089e86da5afefb6047db349e7e1352a32d4019fe28e6b38098e747e"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 72,
+    "t_sec": 696.023931,
+    "png": "wnba__wnba_06__f072.png",
+    "sha256": "a3654299a1f82140cd1d5087dbcf7858558fe42966ee68962450a0d20f14e491"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 73,
+    "t_sec": 705.624261,
+    "png": "wnba__wnba_06__f073.png",
+    "sha256": "8c9720580ad51f99055ff7ec0ee7d9a9567e64abcdef7c3efcfce3c561b62f6b"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 74,
+    "t_sec": 715.224591,
+    "png": "wnba__wnba_06__f074.png",
+    "sha256": "2d04e96c1fc9abd831708bcd3b6863a6ca50b4e3a54fb97e5b368ffd3873eac9"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 75,
+    "t_sec": 724.824921,
+    "png": "wnba__wnba_06__f075.png",
+    "sha256": "138941f04abe1f517dd261e1a3d387721a94595ec2c07d623e7fe95780c194c1"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 76,
+    "t_sec": 734.425251,
+    "png": "wnba__wnba_06__f076.png",
+    "sha256": "a0f770cf2c1ead977199f2b456b050376e081b91f421168221b50652b7f6f4d4"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 77,
+    "t_sec": 744.025581,
+    "png": "wnba__wnba_06__f077.png",
+    "sha256": "95fefa7b22bc2dc1e4de6e234b693ed69345a1a75a4af8f8946427f043cb806d"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 78,
+    "t_sec": 753.625911,
+    "png": "wnba__wnba_06__f078.png",
+    "sha256": "c9be39d03c28e359a1db7ccc56cae5b78c3257a319c47dc1783acf9c058c92a6"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 79,
+    "t_sec": 763.226241,
+    "png": "wnba__wnba_06__f079.png",
+    "sha256": "8f14525213a4feaa20154176b5215282d81adc539b3c5e67a313ba1133432f41"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 80,
+    "t_sec": 772.826571,
+    "png": "wnba__wnba_06__f080.png",
+    "sha256": "527237b5ff05826ac2258d53447aa4caeb3d23dcc81cfc5c1cff859f4654b92d"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 81,
+    "t_sec": 782.426902,
+    "png": "wnba__wnba_06__f081.png",
+    "sha256": "00a6ea49f7055348a595042c0e91b043cc655094378b25df83b37eb4264f61c8"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 82,
+    "t_sec": 792.027232,
+    "png": "wnba__wnba_06__f082.png",
+    "sha256": "c516f6c434a750b0cdccbf31ac16d0586990638751c21e7da2f41a4ea843868e"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 83,
+    "t_sec": 801.627562,
+    "png": "wnba__wnba_06__f083.png",
+    "sha256": "5dc3fb2f88c7881c8744bc7098f7073153b44ac9f74a0e08dbd92c4d43474870"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 84,
+    "t_sec": 811.227892,
+    "png": "wnba__wnba_06__f084.png",
+    "sha256": "8146b652619a1449ef301cc42185c054bcc4b359c53d589c3c1d07723328497e"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 85,
+    "t_sec": 820.828222,
+    "png": "wnba__wnba_06__f085.png",
+    "sha256": "822fe53475e4c52c5215ac72c44a29882d003ffde0de56e0a596185c7181cb20"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 86,
+    "t_sec": 830.428552,
+    "png": "wnba__wnba_06__f086.png",
+    "sha256": "2f3ff5205807369f2dccc33d1baee417eebe302013bc51b56a662a27f31db9f6"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 87,
+    "t_sec": 840.028882,
+    "png": "wnba__wnba_06__f087.png",
+    "sha256": "75ce33e3a0d766f4f879472502669962ee6180b22574e23fcd2c0317f02d4a1a"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 88,
+    "t_sec": 849.629212,
+    "png": "wnba__wnba_06__f088.png",
+    "sha256": "f1be31d8632eb1eb35aa7c506ff3413f8c29bb8723b9c69491ccda033ed7d1c5"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 89,
+    "t_sec": 859.229542,
+    "png": "wnba__wnba_06__f089.png",
+    "sha256": "dc25509de65392a945563b4077359b3331db57497b3884099f3b33d0682c164b"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 90,
+    "t_sec": 868.829872,
+    "png": "wnba__wnba_06__f090.png",
+    "sha256": "9824b04542dac9ab1389f7ed0d2a0013de73682e4ea05fc2cf83acf84d45fdb5"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 91,
+    "t_sec": 878.430202,
+    "png": "wnba__wnba_06__f091.png",
+    "sha256": "3670853c5ac4b943ac058b37e8b68789d3a104ef77064d0ddabaab4d71159498"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 92,
+    "t_sec": 888.030532,
+    "png": "wnba__wnba_06__f092.png",
+    "sha256": "0aaa224be1f44b662c6d6db606780899b6554fb95cd9179399e8cee142de621d"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 93,
+    "t_sec": 897.630862,
+    "png": "wnba__wnba_06__f093.png",
+    "sha256": "fefdbb53d4afd2a88856d999a65304968c9ef4eff24cd48881a41991c311b497"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 94,
+    "t_sec": 907.231193,
+    "png": "wnba__wnba_06__f094.png",
+    "sha256": "72b21b0ea9484c72bee76c65ed10f722ef6026504a07f439cf95b849e0dab7f0"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 95,
+    "t_sec": 916.831523,
+    "png": "wnba__wnba_06__f095.png",
+    "sha256": "11f7de35c6f57db6d458ecdedefec21055d2799d6c1bf0a638fc52f4bb4fefb1"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 96,
+    "t_sec": 926.431853,
+    "png": "wnba__wnba_06__f096.png",
+    "sha256": "4e493c5a181525bca27f8095112e628842dd4fecf88dd80c96a7b1b106b893f2"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 97,
+    "t_sec": 936.032183,
+    "png": "wnba__wnba_06__f097.png",
+    "sha256": "e392554dde6255720f1c46b05eba92226279d9b6f243dec60340e7a16ae8d060"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 98,
+    "t_sec": 945.632513,
+    "png": "wnba__wnba_06__f098.png",
+    "sha256": "51f3a3e5207506ae6357675a9d69507cd9e313850a3f7fd3e620f165f31b502e"
+   },
+   {
+    "clip": "wnba__wnba_06",
+    "j": 99,
+    "t_sec": 955.232843,
+    "png": "wnba__wnba_06__f099.png",
+    "sha256": "24fe2c5bcc987dbfbdff92d5965654bf1585edda7d54997a914214c1fbd19762"
+   }
+  ]
+ }
+]
