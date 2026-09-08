@@ -145,3 +145,12 @@ commit grows an allowlisted file, raise its entry in `tests/platformkit/test_loc
 SAME commit (contract A12).**
 COMMIT: explicit pathspec only, no push. **Make EVERY commit before you finish.** ASCII stdout.
 **NEVER PARK.**
+
+## VERSION 2026-09-07b (fix pass 1b)
+
+Fix pass 1b. Arms P/R/M run at the registered conf=0.3. One additional arm P22 runs the production
+route exactly as measured (conf 0.22) to record the spec-vs-route conflict; P22 is reported, never
+substituted for P. Primary basis = the 113 adjudicated G296 points; consensus-86 and pass-A/pass-B
+sets are secondaries with real matching. Tolerances = the registered 25/50/100 px; 40 px, if kept,
+is labelled ADDITIONAL. Eye check = 6 evenly spaced frames of the 24 with consensus feet and both
+arms' detections overlaid, committed with the memo. Memo filename per the EVIDENCE line.
