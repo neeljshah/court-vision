@@ -1,0 +1,1099 @@
+{
+  "step0": {
+    "route_infer_imgsz": 640,
+    "route_yolo_imgsz": 640,
+    "route_fill_conf_threshold": 0.22,
+    "registered_conf": 0.3,
+    "conf_conflict": true,
+    "topcut": 60,
+    "before_condition_lt_1920": true,
+    "loaded_tracker_config": {
+      "conf_threshold": 0.3,
+      "broadcast_mode": true,
+      "topcut": 320,
+      "appearance_w": 0.25,
+      "max_lost_frames": 90,
+      "min_gameplay_persons": 5,
+      "reid_threshold": 0.45,
+      "gallery_ttl": 300,
+      "kalman_fill_window": 5,
+      "osnet_weights_path": "/workspace/wt/a12/jobs/20260907193544_288118_6674/data/models/osnet_x0_25_imagenet.pth",
+      "yolo_model": "yolov8n",
+      "yolo_imgsz": 640
+    },
+    "pose_active": true,
+    "weights": {
+      "path": "yolov8n.pt",
+      "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+    },
+    "env": {
+      "python": "3.12.3",
+      "torch": "2.8.0+cu128",
+      "ultralytics": "8.4.143",
+      "cv2": "4.14.0",
+      "gpu": "NVIDIA GeForce RTX 3090",
+      "half": true
+    },
+    "arm_P_calls": [
+      {
+        "model": "det",
+        "array_shape": [
+          1020,
+          1920,
+          3
+        ],
+        "batch": 1,
+        "dtype": "uint8",
+        "kwargs": {
+          "classes": "[0]",
+          "conf": "0.3",
+          "verbose": "False",
+          "imgsz": "640",
+          "half": "True",
+          "device": "0"
+        }
+      },
+      {
+        "model": "det",
+        "array_shape": [
+          1020,
+          1920,
+          3
+        ],
+        "batch": 1,
+        "dtype": "uint8",
+        "kwargs": {
+          "classes": "[0]",
+          "conf": "0.3",
+          "verbose": "False",
+          "imgsz": "640",
+          "half": "True",
+          "device": "0"
+        }
+      },
+      {
+        "model": "det",
+        "array_shape": [
+          1020,
+          1920,
+          3
+        ],
+        "batch": 1,
+        "dtype": "uint8",
+        "kwargs": {
+          "classes": "[0]",
+          "conf": "0.3",
+          "verbose": "False",
+          "imgsz": "640",
+          "half": "True",
+          "device": "0"
+        }
+      }
+    ],
+    "arm_P_tensors": [
+      {
+        "tensor_shape": [
+          1,
+          3,
+          352,
+          640
+        ],
+        "dtype": "torch.float16"
+      },
+      {
+        "tensor_shape": [
+          1,
+          3,
+          352,
+          640
+        ],
+        "dtype": "torch.float16"
+      },
+      {
+        "tensor_shape": [
+          1,
+          3,
+          352,
+          640
+        ],
+        "dtype": "torch.float16"
+      }
+    ],
+    "arm_P22_calls": [
+      {
+        "model": "det",
+        "array_shape": [
+          1020,
+          1920,
+          3
+        ],
+        "batch": 1,
+        "dtype": "uint8",
+        "kwargs": {
+          "classes": "[0]",
+          "conf": "0.22",
+          "verbose": "False",
+          "imgsz": "640",
+          "half": "True",
+          "device": "0"
+        }
+      },
+      {
+        "model": "det",
+        "array_shape": [
+          1020,
+          1920,
+          3
+        ],
+        "batch": 1,
+        "dtype": "uint8",
+        "kwargs": {
+          "classes": "[0]",
+          "conf": "0.22",
+          "verbose": "False",
+          "imgsz": "640",
+          "half": "True",
+          "device": "0"
+        }
+      },
+      {
+        "model": "det",
+        "array_shape": [
+          1020,
+          1920,
+          3
+        ],
+        "batch": 1,
+        "dtype": "uint8",
+        "kwargs": {
+          "classes": "[0]",
+          "conf": "0.22",
+          "verbose": "False",
+          "imgsz": "640",
+          "half": "True",
+          "device": "0"
+        }
+      }
+    ],
+    "downstream_error_sample": {}
+  },
+  "frames": [
+    {
+      "source_frame": 0,
+      "jpeg": "frame_01.jpg",
+      "topcut": 60,
+      "sha256": "2e4e5f72eff2f5dafc6546f20f5aa8bb127fa09e5e0ebda20f84ba101adfcb36",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 7584,
+      "jpeg": "frame_02.jpg",
+      "topcut": 60,
+      "sha256": "250954536d03b3fb8439e97ed1ccc3fdf6fbdc1f1ac5c233702fad96deb1986d",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 15168,
+      "jpeg": "frame_03.jpg",
+      "topcut": 60,
+      "sha256": "524642f7108411c6f240e4b593f172713e8f67319c51e499b911702b90fa301f",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 22752,
+      "jpeg": "frame_04.jpg",
+      "topcut": 60,
+      "sha256": "8ea2cd1e7820e1844136fcf21751c45bf9f3edd8316b2066b0e39b72b6e38fa8",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 30335,
+      "jpeg": "frame_05.jpg",
+      "topcut": 60,
+      "sha256": "b3c3b2bd6729085e73374185981752b2af70bcbe084a90eb1d57782c4cc81788",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 37919,
+      "jpeg": "frame_06.jpg",
+      "topcut": 60,
+      "sha256": "ea578897629aeb1d935110c4e3a5300d72b04f98c3d2597c920777f1bb75dc94",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 45503,
+      "jpeg": "frame_07.jpg",
+      "topcut": 60,
+      "sha256": "61b0fd5117367bf1b8987c95bcc00ca8ecae77902ad177a451dd1e5a7d187991",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 53087,
+      "jpeg": "frame_08.jpg",
+      "topcut": 60,
+      "sha256": "9e77530e0abdb728b57e80a54c96e855e224d917fbbf81fe0ff86362bb646c34",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 60671,
+      "jpeg": "frame_09.jpg",
+      "topcut": 60,
+      "sha256": "09886463870eca8393f3cefe3a1ecd7cc7359d6d51056850bee83f08b2befb8d",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 68255,
+      "jpeg": "frame_10.jpg",
+      "topcut": 60,
+      "sha256": "d7664426980ae8f8a1a27dd2a0af2df0e6fde452d7ea937a53a094c42b5d7d00",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 75839,
+      "jpeg": "frame_11.jpg",
+      "topcut": 60,
+      "sha256": "bd4fd4e6ebe069dfc8d8737d89bf19fccd3781ce8130692e527f5fb19116f347",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 83423,
+      "jpeg": "frame_12.jpg",
+      "topcut": 60,
+      "sha256": "4dc1bc62f26a7878beb99199322a4adaed517e103ce02e489a3ffa48abfaf6ba",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 91006,
+      "jpeg": "frame_13.jpg",
+      "topcut": 60,
+      "sha256": "1a096e12a5de2791b4b7bbe2841cd0b321b4b4d38bf0e096d5300d8b2e425c31",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 98590,
+      "jpeg": "frame_14.jpg",
+      "topcut": 60,
+      "sha256": "d01c1a8c7defa0787f2f8455f1c92c15a27312b563f484e902c7555c62bce876",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 106174,
+      "jpeg": "frame_15.jpg",
+      "topcut": 60,
+      "sha256": "c67f20cc357772b504ad07eaed250dead6260b5c201962e3e1f58ea302f6560c",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 113758,
+      "jpeg": "frame_16.jpg",
+      "topcut": 60,
+      "sha256": "4ff8bf3c85d6b1171992286f51e100d537c1ba261c20b718b797246437d769f2",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 121342,
+      "jpeg": "frame_17.jpg",
+      "topcut": 60,
+      "sha256": "b5b943132e144802494267ab60368a4c58d59f430a3dfbbf0e09a006b8e8e6eb",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 128926,
+      "jpeg": "frame_18.jpg",
+      "topcut": 60,
+      "sha256": "85303a2f8c1d42a04d06e2565f4341950841bb3ff058b8c1326077f117c82f2b",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 136510,
+      "jpeg": "frame_19.jpg",
+      "topcut": 60,
+      "sha256": "11c619f8d94d4203342ff59957fa78ae4695be566851c689a9f495fb686ac616",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 144094,
+      "jpeg": "frame_20.jpg",
+      "topcut": 60,
+      "sha256": "15b7c41b889a45c541e6ba1f12b7c59356b7befce07b88f6283f00897eac9576",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 151677,
+      "jpeg": "frame_21.jpg",
+      "topcut": 60,
+      "sha256": "0fef32c8257e2435f3b48a082adaa11101c04ce5a4314fb1d88717cae45e3dee",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 159261,
+      "jpeg": "frame_22.jpg",
+      "topcut": 60,
+      "sha256": "66368b03887a6d886d96159ccdcf32c77691266dfc9a2ef3cd86929aefb4464b",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 166845,
+      "jpeg": "frame_23.jpg",
+      "topcut": 60,
+      "sha256": "3ed79eeff71222a0d23fb44875d3ed20c9afd00aeb717a623e1e7c692d4c9a39",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    },
+    {
+      "source_frame": 174429,
+      "jpeg": "frame_24.jpg",
+      "topcut": 60,
+      "sha256": "5a2630857e7f53f3def2b00dd21ae858f866c8b9f3acf745995731a1373b9128",
+      "fed_shape": [
+        1020,
+        1920,
+        3
+      ]
+    }
+  ],
+  "arms": {
+    "P": {
+      "imgsz": 640,
+      "conf": 0.3,
+      "conf_source": "registered",
+      "total_detections": 217,
+      "detections_per_frame": 9.041666666666666,
+      "ms_per_frame": 557.8987796325237,
+      "peak_vram_mib": 80.74267578125,
+      "served_by": {
+        "0": "pose",
+        "7584": "det",
+        "15168": "det",
+        "22752": "det",
+        "30335": "det",
+        "37919": "det",
+        "45503": "det",
+        "53087": "det",
+        "60671": "det",
+        "68255": "det",
+        "75839": "det",
+        "83423": "det",
+        "91006": "det",
+        "98590": "det",
+        "106174": "det",
+        "113758": "pose",
+        "121342": "det",
+        "128926": "det",
+        "136510": "det",
+        "144094": "det",
+        "151677": "det",
+        "159261": "det",
+        "166845": "det",
+        "174429": "det"
+      },
+      "calls": [
+        {
+          "model": "det",
+          "array_shape": [
+            1020,
+            1920,
+            3
+          ],
+          "batch": 1,
+          "dtype": "uint8",
+          "kwargs": {
+            "classes": "[0]",
+            "conf": "0.3",
+            "verbose": "False",
+            "imgsz": "640",
+            "half": "True",
+            "device": "0"
+          }
+        },
+        {
+          "model": "det",
+          "array_shape": [
+            1020,
+            1920,
+            3
+          ],
+          "batch": 1,
+          "dtype": "uint8",
+          "kwargs": {
+            "classes": "[0]",
+            "conf": "0.3",
+            "verbose": "False",
+            "imgsz": "640",
+            "half": "True",
+            "device": "0"
+          }
+        },
+        {
+          "model": "det",
+          "array_shape": [
+            1020,
+            1920,
+            3
+          ],
+          "batch": 1,
+          "dtype": "uint8",
+          "kwargs": {
+            "classes": "[0]",
+            "conf": "0.3",
+            "verbose": "False",
+            "imgsz": "640",
+            "half": "True",
+            "device": "0"
+          }
+        }
+      ],
+      "pose_served_frames": [
+        0,
+        113758
+      ],
+      "tensors": [
+        {
+          "tensor_shape": [
+            1,
+            3,
+            352,
+            640
+          ],
+          "dtype": "torch.float16"
+        },
+        {
+          "tensor_shape": [
+            1,
+            3,
+            352,
+            640
+          ],
+          "dtype": "torch.float16"
+        },
+        {
+          "tensor_shape": [
+            1,
+            3,
+            352,
+            640
+          ],
+          "dtype": "torch.float16"
+        }
+      ],
+      "errors": 0
+    },
+    "P_repeat": {
+      "imgsz": 640,
+      "conf": 0.3,
+      "conf_source": "registered",
+      "total_detections": 217,
+      "detections_per_frame": 9.041666666666666,
+      "ms_per_frame": 346.8558418098837,
+      "peak_vram_mib": 51.32958984375,
+      "served_by": {
+        "0": "pose",
+        "7584": "det",
+        "15168": "det",
+        "22752": "det",
+        "30335": "det",
+        "37919": "det",
+        "45503": "det",
+        "53087": "det",
+        "60671": "det",
+        "68255": "det",
+        "75839": "det",
+        "83423": "det",
+        "91006": "det",
+        "98590": "det",
+        "106174": "det",
+        "113758": "pose",
+        "121342": "det",
+        "128926": "det",
+        "136510": "det",
+        "144094": "det",
+        "151677": "det",
+        "159261": "det",
+        "166845": "det",
+        "174429": "det"
+      },
+      "calls": [
+        {
+          "model": "det",
+          "array_shape": [
+            1020,
+            1920,
+            3
+          ],
+          "batch": 1,
+          "dtype": "uint8",
+          "kwargs": {
+            "classes": "[0]",
+            "conf": "0.3",
+            "verbose": "False",
+            "imgsz": "640",
+            "half": "True",
+            "device": "0"
+          }
+        },
+        {
+          "model": "det",
+          "array_shape": [
+            1020,
+            1920,
+            3
+          ],
+          "batch": 1,
+          "dtype": "uint8",
+          "kwargs": {
+            "classes": "[0]",
+            "conf": "0.3",
+            "verbose": "False",
+            "imgsz": "640",
+            "half": "True",
+            "device": "0"
+          }
+        },
+        {
+          "model": "det",
+          "array_shape": [
+            1020,
+            1920,
+            3
+          ],
+          "batch": 1,
+          "dtype": "uint8",
+          "kwargs": {
+            "classes": "[0]",
+            "conf": "0.3",
+            "verbose": "False",
+            "imgsz": "640",
+            "half": "True",
+            "device": "0"
+          }
+        }
+      ],
+      "pose_served_frames": [
+        0,
+        113758
+      ],
+      "tensors": [
+        {
+          "tensor_shape": [
+            1,
+            3,
+            352,
+            640
+          ],
+          "dtype": "torch.float16"
+        },
+        {
+          "tensor_shape": [
+            1,
+            3,
+            352,
+            640
+          ],
+          "dtype": "torch.float16"
+        },
+        {
+          "tensor_shape": [
+            1,
+            3,
+            352,
+            640
+          ],
+          "dtype": "torch.float16"
+        }
+      ],
+      "errors": 0
+    },
+    "R": {
+      "imgsz": 1920,
+      "conf": 0.3,
+      "conf_source": "registered",
+      "total_detections": 868,
+      "detections_per_frame": 36.166666666666664,
+      "ms_per_frame": 787.6824479705343,
+      "peak_vram_mib": 370.4951171875,
+      "served_by": {
+        "0": "pose",
+        "7584": "det",
+        "15168": "det",
+        "22752": "det",
+        "30335": "det",
+        "37919": "det",
+        "45503": "det",
+        "53087": "det",
+        "60671": "det",
+        "68255": "det",
+        "75839": "det",
+        "83423": "det",
+        "91006": "det",
+        "98590": "det",
+        "106174": "det",
+        "113758": "pose",
+        "121342": "det",
+        "128926": "det",
+        "136510": "det",
+        "144094": "det",
+        "151677": "det",
+        "159261": "det",
+        "166845": "det",
+        "174429": "det"
+      },
+      "calls": [
+        {
+          "model": "det",
+          "array_shape": [
+            1020,
+            1920,
+            3
+          ],
+          "batch": 1,
+          "dtype": "uint8",
+          "kwargs": {
+            "classes": "[0]",
+            "conf": "0.3",
+            "verbose": "False",
+            "imgsz": "1920",
+            "half": "True",
+            "device": "0"
+          }
+        },
+        {
+          "model": "det",
+          "array_shape": [
+            1020,
+            1920,
+            3
+          ],
+          "batch": 1,
+          "dtype": "uint8",
+          "kwargs": {
+            "classes": "[0]",
+            "conf": "0.3",
+            "verbose": "False",
+            "imgsz": "1920",
+            "half": "True",
+            "device": "0"
+          }
+        },
+        {
+          "model": "det",
+          "array_shape": [
+            1020,
+            1920,
+            3
+          ],
+          "batch": 1,
+          "dtype": "uint8",
+          "kwargs": {
+            "classes": "[0]",
+            "conf": "0.3",
+            "verbose": "False",
+            "imgsz": "1920",
+            "half": "True",
+            "device": "0"
+          }
+        }
+      ],
+      "pose_served_frames": [
+        0,
+        113758
+      ],
+      "tensors": [
+        {
+          "tensor_shape": [
+            1,
+            3,
+            1024,
+            1920
+          ],
+          "dtype": "torch.float16"
+        },
+        {
+          "tensor_shape": [
+            1,
+            3,
+            1024,
+            1920
+          ],
+          "dtype": "torch.float16"
+        },
+        {
+          "tensor_shape": [
+            1,
+            3,
+            1024,
+            1920
+          ],
+          "dtype": "torch.float16"
+        }
+      ],
+      "errors": 0
+    },
+    "M": {
+      "imgsz": 1280,
+      "conf": 0.3,
+      "conf_source": "registered",
+      "total_detections": 564,
+      "detections_per_frame": 23.5,
+      "ms_per_frame": 700.0903875256578,
+      "peak_vram_mib": 212.525390625,
+      "served_by": {
+        "0": "pose",
+        "7584": "det",
+        "15168": "det",
+        "22752": "det",
+        "30335": "det",
+        "37919": "det",
+        "45503": "det",
+        "53087": "det",
+        "60671": "det",
+        "68255": "det",
+        "75839": "det",
+        "83423": "det",
+        "91006": "det",
+        "98590": "det",
+        "106174": "det",
+        "113758": "pose",
+        "121342": "det",
+        "128926": "det",
+        "136510": "det",
+        "144094": "det",
+        "151677": "det",
+        "159261": "det",
+        "166845": "det",
+        "174429": "det"
+      },
+      "calls": [
+        {
+          "model": "det",
+          "array_shape": [
+            1020,
+            1920,
+            3
+          ],
+          "batch": 1,
+          "dtype": "uint8",
+          "kwargs": {
+            "classes": "[0]",
+            "conf": "0.3",
+            "verbose": "False",
+            "imgsz": "1280",
+            "half": "True",
+            "device": "0"
+          }
+        },
+        {
+          "model": "det",
+          "array_shape": [
+            1020,
+            1920,
+            3
+          ],
+          "batch": 1,
+          "dtype": "uint8",
+          "kwargs": {
+            "classes": "[0]",
+            "conf": "0.3",
+            "verbose": "False",
+            "imgsz": "1280",
+            "half": "True",
+            "device": "0"
+          }
+        },
+        {
+          "model": "det",
+          "array_shape": [
+            1020,
+            1920,
+            3
+          ],
+          "batch": 1,
+          "dtype": "uint8",
+          "kwargs": {
+            "classes": "[0]",
+            "conf": "0.3",
+            "verbose": "False",
+            "imgsz": "1280",
+            "half": "True",
+            "device": "0"
+          }
+        }
+      ],
+      "pose_served_frames": [
+        0,
+        113758
+      ],
+      "tensors": [
+        {
+          "tensor_shape": [
+            1,
+            3,
+            704,
+            1280
+          ],
+          "dtype": "torch.float16"
+        },
+        {
+          "tensor_shape": [
+            1,
+            3,
+            704,
+            1280
+          ],
+          "dtype": "torch.float16"
+        },
+        {
+          "tensor_shape": [
+            1,
+            3,
+            704,
+            1280
+          ],
+          "dtype": "torch.float16"
+        }
+      ],
+      "errors": 0
+    },
+    "P22": {
+      "imgsz": 640,
+      "conf": 0.22,
+      "conf_source": "route",
+      "total_detections": 288,
+      "detections_per_frame": 12.0,
+      "ms_per_frame": 519.9042335152626,
+      "peak_vram_mib": 88.78564453125,
+      "served_by": {
+        "0": "pose",
+        "7584": "det",
+        "15168": "det",
+        "22752": "det",
+        "30335": "det",
+        "37919": "det",
+        "45503": "det",
+        "53087": "det",
+        "60671": "det",
+        "68255": "det",
+        "75839": "det",
+        "83423": "det",
+        "91006": "det",
+        "98590": "det",
+        "106174": "det",
+        "113758": "pose",
+        "121342": "det",
+        "128926": "det",
+        "136510": "det",
+        "144094": "det",
+        "151677": "det",
+        "159261": "det",
+        "166845": "det",
+        "174429": "det"
+      },
+      "calls": [
+        {
+          "model": "det",
+          "array_shape": [
+            1020,
+            1920,
+            3
+          ],
+          "batch": 1,
+          "dtype": "uint8",
+          "kwargs": {
+            "classes": "[0]",
+            "conf": "0.22",
+            "verbose": "False",
+            "imgsz": "640",
+            "half": "True",
+            "device": "0"
+          }
+        },
+        {
+          "model": "det",
+          "array_shape": [
+            1020,
+            1920,
+            3
+          ],
+          "batch": 1,
+          "dtype": "uint8",
+          "kwargs": {
+            "classes": "[0]",
+            "conf": "0.22",
+            "verbose": "False",
+            "imgsz": "640",
+            "half": "True",
+            "device": "0"
+          }
+        },
+        {
+          "model": "det",
+          "array_shape": [
+            1020,
+            1920,
+            3
+          ],
+          "batch": 1,
+          "dtype": "uint8",
+          "kwargs": {
+            "classes": "[0]",
+            "conf": "0.22",
+            "verbose": "False",
+            "imgsz": "640",
+            "half": "True",
+            "device": "0"
+          }
+        }
+      ],
+      "pose_served_frames": [
+        0,
+        113758
+      ],
+      "tensors": [
+        {
+          "tensor_shape": [
+            1,
+            3,
+            352,
+            640
+          ],
+          "dtype": "torch.float16"
+        },
+        {
+          "tensor_shape": [
+            1,
+            3,
+            352,
+            640
+          ],
+          "dtype": "torch.float16"
+        },
+        {
+          "tensor_shape": [
+            1,
+            3,
+            352,
+            640
+          ],
+          "dtype": "torch.float16"
+        }
+      ],
+      "errors": 0
+    }
+  },
+  "probes": [
+    {
+      "command": [
+        "nvidia-smi",
+        "--query-gpu=memory.used,memory.total",
+        "--format=csv,noheader"
+      ],
+      "rc": 0,
+      "stdout": "6344 MiB, 24576 MiB\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dd",
+        "if=/dev/zero",
+        "of=/workspace/wt/a12/jobs/20260907193544_288118_6674/docs/evidence/tracking/g303_artifact/fsync.bin",
+        "bs=1M",
+        "count=8",
+        "conv=fsync"
+      ],
+      "rc": 0,
+      "stdout": "",
+      "stderr": "8+0 records in\n8+0 records out\n8388608 bytes (8.4 MB, 8.0 MiB) copied, 0.277792 s, 30.2 MB/s\n"
+    }
+  ],
+  "arm_P_byte_identical_repeat": true
+}

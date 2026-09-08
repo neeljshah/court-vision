@@ -1,0 +1,2950 @@
+{
+  "primary_basis": "adjudicated_113",
+  "tolerances_px": [
+    25,
+    50,
+    100
+  ],
+  "registered_conf": 0.3,
+  "step0": {
+    "route_infer_imgsz": 640,
+    "route_yolo_imgsz": 640,
+    "route_fill_conf_threshold": 0.22,
+    "registered_conf": 0.3,
+    "conf_conflict": true,
+    "topcut": 60,
+    "before_condition_lt_1920": true,
+    "loaded_tracker_config": {
+      "conf_threshold": 0.3,
+      "broadcast_mode": true,
+      "topcut": 320,
+      "appearance_w": 0.25,
+      "max_lost_frames": 90,
+      "min_gameplay_persons": 5,
+      "reid_threshold": 0.45,
+      "gallery_ttl": 300,
+      "kalman_fill_window": 5,
+      "osnet_weights_path": "/workspace/wt/a12/jobs/20260907193544_288118_6674/data/models/osnet_x0_25_imagenet.pth",
+      "yolo_model": "yolov8n",
+      "yolo_imgsz": 640
+    },
+    "pose_active": true,
+    "weights": {
+      "path": "yolov8n.pt",
+      "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+    },
+    "env": {
+      "python": "3.12.3",
+      "torch": "2.8.0+cu128",
+      "ultralytics": "8.4.143",
+      "cv2": "4.14.0",
+      "gpu": "NVIDIA GeForce RTX 3090",
+      "half": true
+    },
+    "arm_P_calls": [
+      {
+        "model": "det",
+        "array_shape": [
+          1020,
+          1920,
+          3
+        ],
+        "batch": 1,
+        "dtype": "uint8",
+        "kwargs": {
+          "classes": "[0]",
+          "conf": "0.3",
+          "verbose": "False",
+          "imgsz": "640",
+          "half": "True",
+          "device": "0"
+        }
+      },
+      {
+        "model": "det",
+        "array_shape": [
+          1020,
+          1920,
+          3
+        ],
+        "batch": 1,
+        "dtype": "uint8",
+        "kwargs": {
+          "classes": "[0]",
+          "conf": "0.3",
+          "verbose": "False",
+          "imgsz": "640",
+          "half": "True",
+          "device": "0"
+        }
+      },
+      {
+        "model": "det",
+        "array_shape": [
+          1020,
+          1920,
+          3
+        ],
+        "batch": 1,
+        "dtype": "uint8",
+        "kwargs": {
+          "classes": "[0]",
+          "conf": "0.3",
+          "verbose": "False",
+          "imgsz": "640",
+          "half": "True",
+          "device": "0"
+        }
+      }
+    ],
+    "arm_P_tensors": [
+      {
+        "tensor_shape": [
+          1,
+          3,
+          352,
+          640
+        ],
+        "dtype": "torch.float16"
+      },
+      {
+        "tensor_shape": [
+          1,
+          3,
+          352,
+          640
+        ],
+        "dtype": "torch.float16"
+      },
+      {
+        "tensor_shape": [
+          1,
+          3,
+          352,
+          640
+        ],
+        "dtype": "torch.float16"
+      }
+    ],
+    "arm_P22_calls": [
+      {
+        "model": "det",
+        "array_shape": [
+          1020,
+          1920,
+          3
+        ],
+        "batch": 1,
+        "dtype": "uint8",
+        "kwargs": {
+          "classes": "[0]",
+          "conf": "0.22",
+          "verbose": "False",
+          "imgsz": "640",
+          "half": "True",
+          "device": "0"
+        }
+      },
+      {
+        "model": "det",
+        "array_shape": [
+          1020,
+          1920,
+          3
+        ],
+        "batch": 1,
+        "dtype": "uint8",
+        "kwargs": {
+          "classes": "[0]",
+          "conf": "0.22",
+          "verbose": "False",
+          "imgsz": "640",
+          "half": "True",
+          "device": "0"
+        }
+      },
+      {
+        "model": "det",
+        "array_shape": [
+          1020,
+          1920,
+          3
+        ],
+        "batch": 1,
+        "dtype": "uint8",
+        "kwargs": {
+          "classes": "[0]",
+          "conf": "0.22",
+          "verbose": "False",
+          "imgsz": "640",
+          "half": "True",
+          "device": "0"
+        }
+      }
+    ],
+    "downstream_error_sample": {}
+  },
+  "sign_convention": "delta = ARM R minus ARM P; positive means R finds more",
+  "arm_P_byte_identical_repeat": true,
+  "arm_cost": {
+    "P": {
+      "imgsz": 640,
+      "conf": 0.3,
+      "conf_source": "registered",
+      "total_detections": 217,
+      "detections_per_frame": 9.041666666666666,
+      "ms_per_frame": 557.8987796325237,
+      "peak_vram_mib": 80.74267578125,
+      "pose_served_frames": [
+        0,
+        113758
+      ],
+      "errors": 0
+    },
+    "P_repeat": {
+      "imgsz": 640,
+      "conf": 0.3,
+      "conf_source": "registered",
+      "total_detections": 217,
+      "detections_per_frame": 9.041666666666666,
+      "ms_per_frame": 346.8558418098837,
+      "peak_vram_mib": 51.32958984375,
+      "pose_served_frames": [
+        0,
+        113758
+      ],
+      "errors": 0
+    },
+    "R": {
+      "imgsz": 1920,
+      "conf": 0.3,
+      "conf_source": "registered",
+      "total_detections": 868,
+      "detections_per_frame": 36.166666666666664,
+      "ms_per_frame": 787.6824479705343,
+      "peak_vram_mib": 370.4951171875,
+      "pose_served_frames": [
+        0,
+        113758
+      ],
+      "errors": 0
+    },
+    "M": {
+      "imgsz": 1280,
+      "conf": 0.3,
+      "conf_source": "registered",
+      "total_detections": 564,
+      "detections_per_frame": 23.5,
+      "ms_per_frame": 700.0903875256578,
+      "peak_vram_mib": 212.525390625,
+      "pose_served_frames": [
+        0,
+        113758
+      ],
+      "errors": 0
+    },
+    "P22": {
+      "imgsz": 640,
+      "conf": 0.22,
+      "conf_source": "route",
+      "total_detections": 288,
+      "detections_per_frame": 12.0,
+      "ms_per_frame": 519.9042335152626,
+      "peak_vram_mib": 88.78564453125,
+      "pose_served_frames": [
+        0,
+        113758
+      ],
+      "errors": 0
+    }
+  },
+  "bases": {
+    "adjudicated_113": {
+      "denominator": 113,
+      "denominator_name": "113 adjudicated_113 points over 16 frames",
+      "frame_ids": [
+        0,
+        7584,
+        15168,
+        30335,
+        37919,
+        45503,
+        53087,
+        68255,
+        75839,
+        83423,
+        91006,
+        98590,
+        106174,
+        121342,
+        144094,
+        151677
+      ],
+      "arms": {
+        "P": {
+          "imgsz": 640,
+          "conf": 0.3,
+          "conf_source": "registered",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 41,
+              "denominator": 113,
+              "denominator_name": "113 adjudicated_113 points over 16 frames",
+              "recall": 0.36283185840707965,
+              "ci95": [
+                0.2773109243697479,
+                0.45796321701106035
+              ],
+              "nearest_rule_matched": 46,
+              "precision_lower_bound": 0.2469879518072289,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "matched_over_pass_A_only": [
+                32,
+                131
+              ],
+              "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+              "matched_over_pass_B_only": [
+                57,
+                130
+              ],
+              "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 58,
+              "denominator": 113,
+              "denominator_name": "113 adjudicated_113 points over 16 frames",
+              "recall": 0.5132743362831859,
+              "ci95": [
+                0.4,
+                0.6274509803921569
+              ],
+              "nearest_rule_matched": 68,
+              "precision_lower_bound": 0.3493975903614458,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "matched_over_pass_A_only": [
+                52,
+                131
+              ],
+              "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+              "matched_over_pass_B_only": [
+                69,
+                130
+              ],
+              "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 67,
+              "denominator": 113,
+              "denominator_name": "113 adjudicated_113 points over 16 frames",
+              "recall": 0.5929203539823009,
+              "ci95": [
+                0.4621687136393019,
+                0.7207207207207207
+              ],
+              "nearest_rule_matched": 82,
+              "precision_lower_bound": 0.4036144578313253,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "matched_over_pass_A_only": [
+                70,
+                131
+              ],
+              "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+              "matched_over_pass_B_only": [
+                76,
+                130
+              ],
+              "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+            }
+          },
+          "detections_on_scored_frames": 166,
+          "median_nearest_px": 29.546573405388315,
+          "total_detections_24_frames": 217,
+          "detections_per_frame_24": 9.041666666666666,
+          "ms_per_frame": 557.8987796325237,
+          "peak_vram_mib": 80.74267578125,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 41,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.2469879518072289
+            },
+            "50": {
+              "matched_detections": 58,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.3493975903614458
+            },
+            "100": {
+              "matched_detections": 67,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.4036144578313253
+            }
+          }
+        },
+        "P_repeat": {
+          "imgsz": 640,
+          "conf": 0.3,
+          "conf_source": "registered",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 41,
+              "denominator": 113,
+              "denominator_name": "113 adjudicated_113 points over 16 frames",
+              "recall": 0.36283185840707965,
+              "ci95": [
+                0.2773109243697479,
+                0.45796321701106035
+              ],
+              "nearest_rule_matched": 46,
+              "precision_lower_bound": 0.2469879518072289,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "matched_over_pass_A_only": [
+                32,
+                131
+              ],
+              "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+              "matched_over_pass_B_only": [
+                57,
+                130
+              ],
+              "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 58,
+              "denominator": 113,
+              "denominator_name": "113 adjudicated_113 points over 16 frames",
+              "recall": 0.5132743362831859,
+              "ci95": [
+                0.4,
+                0.6274509803921569
+              ],
+              "nearest_rule_matched": 68,
+              "precision_lower_bound": 0.3493975903614458,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "matched_over_pass_A_only": [
+                52,
+                131
+              ],
+              "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+              "matched_over_pass_B_only": [
+                69,
+                130
+              ],
+              "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 67,
+              "denominator": 113,
+              "denominator_name": "113 adjudicated_113 points over 16 frames",
+              "recall": 0.5929203539823009,
+              "ci95": [
+                0.4621687136393019,
+                0.7207207207207207
+              ],
+              "nearest_rule_matched": 82,
+              "precision_lower_bound": 0.4036144578313253,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "matched_over_pass_A_only": [
+                70,
+                131
+              ],
+              "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+              "matched_over_pass_B_only": [
+                76,
+                130
+              ],
+              "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+            }
+          },
+          "detections_on_scored_frames": 166,
+          "median_nearest_px": 29.546573405388315,
+          "total_detections_24_frames": 217,
+          "detections_per_frame_24": 9.041666666666666,
+          "ms_per_frame": 346.8558418098837,
+          "peak_vram_mib": 51.32958984375,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 41,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.2469879518072289
+            },
+            "50": {
+              "matched_detections": 58,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.3493975903614458
+            },
+            "100": {
+              "matched_detections": 67,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.4036144578313253
+            }
+          }
+        },
+        "R": {
+          "imgsz": 1920,
+          "conf": 0.3,
+          "conf_source": "registered",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 62,
+              "denominator": 113,
+              "denominator_name": "113 adjudicated_113 points over 16 frames",
+              "recall": 0.5486725663716814,
+              "ci95": [
+                0.4426229508196721,
+                0.647632275132275
+              ],
+              "nearest_rule_matched": 65,
+              "precision_lower_bound": 0.07721046077210461,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "matched_over_pass_A_only": [
+                45,
+                131
+              ],
+              "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+              "matched_over_pass_B_only": [
+                84,
+                130
+              ],
+              "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 82,
+              "denominator": 113,
+              "denominator_name": "113 adjudicated_113 points over 16 frames",
+              "recall": 0.7256637168141593,
+              "ci95": [
+                0.6153688524590164,
+                0.8148148148148148
+              ],
+              "nearest_rule_matched": 90,
+              "precision_lower_bound": 0.10211706102117062,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "matched_over_pass_A_only": [
+                77,
+                131
+              ],
+              "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+              "matched_over_pass_B_only": [
+                101,
+                130
+              ],
+              "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 93,
+              "denominator": 113,
+              "denominator_name": "113 adjudicated_113 points over 16 frames",
+              "recall": 0.8230088495575221,
+              "ci95": [
+                0.7019230769230769,
+                0.9196517857142855
+              ],
+              "nearest_rule_matched": 104,
+              "precision_lower_bound": 0.11581569115815692,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "matched_over_pass_A_only": [
+                98,
+                131
+              ],
+              "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+              "matched_over_pass_B_only": [
+                109,
+                130
+              ],
+              "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+            }
+          },
+          "detections_on_scored_frames": 803,
+          "median_nearest_px": 22.135943621178654,
+          "total_detections_24_frames": 868,
+          "detections_per_frame_24": 36.166666666666664,
+          "ms_per_frame": 787.6824479705343,
+          "peak_vram_mib": 370.4951171875,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 62,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 803,
+              "precision_lower_bound": 0.07721046077210461
+            },
+            "50": {
+              "matched_detections": 82,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 803,
+              "precision_lower_bound": 0.10211706102117062
+            },
+            "100": {
+              "matched_detections": 93,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 803,
+              "precision_lower_bound": 0.11581569115815692
+            }
+          }
+        },
+        "M": {
+          "imgsz": 1280,
+          "conf": 0.3,
+          "conf_source": "registered",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 62,
+              "denominator": 113,
+              "denominator_name": "113 adjudicated_113 points over 16 frames",
+              "recall": 0.5486725663716814,
+              "ci95": [
+                0.43859649122807015,
+                0.6545454545454545
+              ],
+              "nearest_rule_matched": 63,
+              "precision_lower_bound": 0.12156862745098039,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "matched_over_pass_A_only": [
+                45,
+                131
+              ],
+              "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+              "matched_over_pass_B_only": [
+                84,
+                130
+              ],
+              "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 86,
+              "denominator": 113,
+              "denominator_name": "113 adjudicated_113 points over 16 frames",
+              "recall": 0.7610619469026548,
+              "ci95": [
+                0.6428571428571429,
+                0.8532110091743119
+              ],
+              "nearest_rule_matched": 93,
+              "precision_lower_bound": 0.16862745098039217,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "matched_over_pass_A_only": [
+                79,
+                131
+              ],
+              "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+              "matched_over_pass_B_only": [
+                104,
+                130
+              ],
+              "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 95,
+              "denominator": 113,
+              "denominator_name": "113 adjudicated_113 points over 16 frames",
+              "recall": 0.8407079646017699,
+              "ci95": [
+                0.7105263157894737,
+                0.9381443298969072
+              ],
+              "nearest_rule_matched": 106,
+              "precision_lower_bound": 0.18627450980392157,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "matched_over_pass_A_only": [
+                102,
+                131
+              ],
+              "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+              "matched_over_pass_B_only": [
+                109,
+                130
+              ],
+              "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+            }
+          },
+          "detections_on_scored_frames": 510,
+          "median_nearest_px": 22.360679774997898,
+          "total_detections_24_frames": 564,
+          "detections_per_frame_24": 23.5,
+          "ms_per_frame": 700.0903875256578,
+          "peak_vram_mib": 212.525390625,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 62,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 510,
+              "precision_lower_bound": 0.12156862745098039
+            },
+            "50": {
+              "matched_detections": 86,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 510,
+              "precision_lower_bound": 0.16862745098039217
+            },
+            "100": {
+              "matched_detections": 95,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 510,
+              "precision_lower_bound": 0.18627450980392157
+            }
+          }
+        },
+        "P22": {
+          "imgsz": 640,
+          "conf": 0.22,
+          "conf_source": "route",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 48,
+              "denominator": 113,
+              "denominator_name": "113 adjudicated_113 points over 16 frames",
+              "recall": 0.4247787610619469,
+              "ci95": [
+                0.3333333333333333,
+                0.5175438596491229
+              ],
+              "nearest_rule_matched": 51,
+              "precision_lower_bound": 0.21238938053097345,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "matched_over_pass_A_only": [
+                38,
+                131
+              ],
+              "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+              "matched_over_pass_B_only": [
+                61,
+                130
+              ],
+              "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 67,
+              "denominator": 113,
+              "denominator_name": "113 adjudicated_113 points over 16 frames",
+              "recall": 0.5929203539823009,
+              "ci95": [
+                0.4793388429752066,
+                0.693069306930693
+              ],
+              "nearest_rule_matched": 75,
+              "precision_lower_bound": 0.29646017699115046,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "matched_over_pass_A_only": [
+                61,
+                131
+              ],
+              "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+              "matched_over_pass_B_only": [
+                74,
+                130
+              ],
+              "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 76,
+              "denominator": 113,
+              "denominator_name": "113 adjudicated_113 points over 16 frames",
+              "recall": 0.672566371681416,
+              "ci95": [
+                0.5478209109730848,
+                0.7857279171210467
+              ],
+              "nearest_rule_matched": 89,
+              "precision_lower_bound": 0.336283185840708,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "matched_over_pass_A_only": [
+                81,
+                131
+              ],
+              "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+              "matched_over_pass_B_only": [
+                83,
+                130
+              ],
+              "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+            }
+          },
+          "detections_on_scored_frames": 226,
+          "median_nearest_px": 27.65863337187866,
+          "total_detections_24_frames": 288,
+          "detections_per_frame_24": 12.0,
+          "ms_per_frame": 519.9042335152626,
+          "peak_vram_mib": 88.78564453125,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 48,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 226,
+              "precision_lower_bound": 0.21238938053097345
+            },
+            "50": {
+              "matched_detections": 67,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 226,
+              "precision_lower_bound": 0.29646017699115046
+            },
+            "100": {
+              "matched_detections": 76,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 226,
+              "precision_lower_bound": 0.336283185840708
+            }
+          }
+        }
+      },
+      "paired_R_vs_P": {
+        "25": {
+          "delta_recall": 0.18584070796460178,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "ci95": [
+            0.09708737864077671,
+            0.2777777777777778
+          ],
+          "mcnemar_exact": {
+            "lost": 6,
+            "gained": 27,
+            "discordant": 33,
+            "nominal_p": 0.0003240634687244892
+          },
+          "p_is_nominal": true,
+          "multiplicity_correction": "none"
+        },
+        "50": {
+          "delta_recall": 0.21238938053097345,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "ci95": [
+            0.11764705882352944,
+            0.3057851239669422
+          ],
+          "mcnemar_exact": {
+            "lost": 4,
+            "gained": 28,
+            "discordant": 32,
+            "nominal_p": 1.9301194697618484e-05
+          },
+          "p_is_nominal": true,
+          "multiplicity_correction": "none"
+        },
+        "100": {
+          "delta_recall": 0.23008849557522124,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "ci95": [
+            0.1320754716981133,
+            0.33027727719528177
+          ],
+          "mcnemar_exact": {
+            "lost": 2,
+            "gained": 28,
+            "discordant": 30,
+            "nominal_p": 8.67992639541626e-07
+          },
+          "p_is_nominal": true,
+          "multiplicity_correction": "none"
+        }
+      }
+    },
+    "consensus_86": {
+      "denominator": 86,
+      "denominator_name": "86 consensus_86 points over 15 frames",
+      "frame_ids": [
+        0,
+        7584,
+        15168,
+        30335,
+        37919,
+        45503,
+        53087,
+        68255,
+        75839,
+        91006,
+        98590,
+        106174,
+        121342,
+        144094,
+        151677
+      ],
+      "arms": {
+        "P": {
+          "imgsz": 640,
+          "conf": 0.3,
+          "conf_source": "registered",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 47,
+              "denominator": 86,
+              "denominator_name": "86 consensus_86 points over 15 frames",
+              "recall": 0.5465116279069767,
+              "ci95": [
+                0.4235180995475113,
+                0.6565656565656566
+              ],
+              "nearest_rule_matched": 47,
+              "precision_lower_bound": 0.30718954248366015,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 54,
+              "denominator": 86,
+              "denominator_name": "86 consensus_86 points over 15 frames",
+              "recall": 0.627906976744186,
+              "ci95": [
+                0.5176369168356999,
+                0.7373768939393939
+              ],
+              "nearest_rule_matched": 57,
+              "precision_lower_bound": 0.35294117647058826,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 57,
+              "denominator": 86,
+              "denominator_name": "86 consensus_86 points over 15 frames",
+              "recall": 0.6627906976744186,
+              "ci95": [
+                0.5443037974683544,
+                0.7777777777777778
+              ],
+              "nearest_rule_matched": 63,
+              "precision_lower_bound": 0.37254901960784315,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            }
+          },
+          "detections_on_scored_frames": 153,
+          "median_nearest_px": 20.657884836286378,
+          "total_detections_24_frames": 217,
+          "detections_per_frame_24": 9.041666666666666,
+          "ms_per_frame": 557.8987796325237,
+          "peak_vram_mib": 80.74267578125,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 47,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 153,
+              "precision_lower_bound": 0.30718954248366015
+            },
+            "50": {
+              "matched_detections": 54,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 153,
+              "precision_lower_bound": 0.35294117647058826
+            },
+            "100": {
+              "matched_detections": 57,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 153,
+              "precision_lower_bound": 0.37254901960784315
+            }
+          }
+        },
+        "P_repeat": {
+          "imgsz": 640,
+          "conf": 0.3,
+          "conf_source": "registered",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 47,
+              "denominator": 86,
+              "denominator_name": "86 consensus_86 points over 15 frames",
+              "recall": 0.5465116279069767,
+              "ci95": [
+                0.4235180995475113,
+                0.6565656565656566
+              ],
+              "nearest_rule_matched": 47,
+              "precision_lower_bound": 0.30718954248366015,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 54,
+              "denominator": 86,
+              "denominator_name": "86 consensus_86 points over 15 frames",
+              "recall": 0.627906976744186,
+              "ci95": [
+                0.5176369168356999,
+                0.7373768939393939
+              ],
+              "nearest_rule_matched": 57,
+              "precision_lower_bound": 0.35294117647058826,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 57,
+              "denominator": 86,
+              "denominator_name": "86 consensus_86 points over 15 frames",
+              "recall": 0.6627906976744186,
+              "ci95": [
+                0.5443037974683544,
+                0.7777777777777778
+              ],
+              "nearest_rule_matched": 63,
+              "precision_lower_bound": 0.37254901960784315,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            }
+          },
+          "detections_on_scored_frames": 153,
+          "median_nearest_px": 20.657884836286378,
+          "total_detections_24_frames": 217,
+          "detections_per_frame_24": 9.041666666666666,
+          "ms_per_frame": 346.8558418098837,
+          "peak_vram_mib": 51.32958984375,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 47,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 153,
+              "precision_lower_bound": 0.30718954248366015
+            },
+            "50": {
+              "matched_detections": 54,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 153,
+              "precision_lower_bound": 0.35294117647058826
+            },
+            "100": {
+              "matched_detections": 57,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 153,
+              "precision_lower_bound": 0.37254901960784315
+            }
+          }
+        },
+        "R": {
+          "imgsz": 1920,
+          "conf": 0.3,
+          "conf_source": "registered",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 65,
+              "denominator": 86,
+              "denominator_name": "86 consensus_86 points over 15 frames",
+              "recall": 0.7558139534883721,
+              "ci95": [
+                0.6190476190476191,
+                0.8617021276595744
+              ],
+              "nearest_rule_matched": 67,
+              "precision_lower_bound": 0.08485639686684072,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 71,
+              "denominator": 86,
+              "denominator_name": "86 consensus_86 points over 15 frames",
+              "recall": 0.8255813953488372,
+              "ci95": [
+                0.6933333333333334,
+                0.9204545454545454
+              ],
+              "nearest_rule_matched": 76,
+              "precision_lower_bound": 0.0926892950391645,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 74,
+              "denominator": 86,
+              "denominator_name": "86 consensus_86 points over 15 frames",
+              "recall": 0.8604651162790697,
+              "ci95": [
+                0.7291517857142857,
+                0.9512195121951219
+              ],
+              "nearest_rule_matched": 80,
+              "precision_lower_bound": 0.09660574412532637,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            }
+          },
+          "detections_on_scored_frames": 766,
+          "median_nearest_px": 16.143315594840914,
+          "total_detections_24_frames": 868,
+          "detections_per_frame_24": 36.166666666666664,
+          "ms_per_frame": 787.6824479705343,
+          "peak_vram_mib": 370.4951171875,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 65,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 766,
+              "precision_lower_bound": 0.08485639686684072
+            },
+            "50": {
+              "matched_detections": 71,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 766,
+              "precision_lower_bound": 0.0926892950391645
+            },
+            "100": {
+              "matched_detections": 74,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 766,
+              "precision_lower_bound": 0.09660574412532637
+            }
+          }
+        },
+        "M": {
+          "imgsz": 1280,
+          "conf": 0.3,
+          "conf_source": "registered",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 65,
+              "denominator": 86,
+              "denominator_name": "86 consensus_86 points over 15 frames",
+              "recall": 0.7558139534883721,
+              "ci95": [
+                0.6082311105311236,
+                0.8701298701298701
+              ],
+              "nearest_rule_matched": 66,
+              "precision_lower_bound": 0.13541666666666666,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 73,
+              "denominator": 86,
+              "denominator_name": "86 consensus_86 points over 15 frames",
+              "recall": 0.8488372093023255,
+              "ci95": [
+                0.7142857142857143,
+                0.9487179487179487
+              ],
+              "nearest_rule_matched": 78,
+              "precision_lower_bound": 0.15208333333333332,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 75,
+              "denominator": 86,
+              "denominator_name": "86 consensus_86 points over 15 frames",
+              "recall": 0.872093023255814,
+              "ci95": [
+                0.7411764705882353,
+                0.9634201773835919
+              ],
+              "nearest_rule_matched": 80,
+              "precision_lower_bound": 0.15625,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            }
+          },
+          "detections_on_scored_frames": 480,
+          "median_nearest_px": 15.743120982618493,
+          "total_detections_24_frames": 564,
+          "detections_per_frame_24": 23.5,
+          "ms_per_frame": 700.0903875256578,
+          "peak_vram_mib": 212.525390625,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 65,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 480,
+              "precision_lower_bound": 0.13541666666666666
+            },
+            "50": {
+              "matched_detections": 73,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 480,
+              "precision_lower_bound": 0.15208333333333332
+            },
+            "100": {
+              "matched_detections": 75,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 480,
+              "precision_lower_bound": 0.15625
+            }
+          }
+        },
+        "P22": {
+          "imgsz": 640,
+          "conf": 0.22,
+          "conf_source": "route",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 51,
+              "denominator": 86,
+              "denominator_name": "86 consensus_86 points over 15 frames",
+              "recall": 0.5930232558139535,
+              "ci95": [
+                0.4642857142857143,
+                0.7045454545454546
+              ],
+              "nearest_rule_matched": 51,
+              "precision_lower_bound": 0.24285714285714285,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 60,
+              "denominator": 86,
+              "denominator_name": "86 consensus_86 points over 15 frames",
+              "recall": 0.6976744186046512,
+              "ci95": [
+                0.5783132530120482,
+                0.803305416963649
+              ],
+              "nearest_rule_matched": 64,
+              "precision_lower_bound": 0.2857142857142857,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 63,
+              "denominator": 86,
+              "denominator_name": "86 consensus_86 points over 15 frames",
+              "recall": 0.7325581395348837,
+              "ci95": [
+                0.6049310938845823,
+                0.8452380952380952
+              ],
+              "nearest_rule_matched": 68,
+              "precision_lower_bound": 0.3,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            }
+          },
+          "detections_on_scored_frames": 210,
+          "median_nearest_px": 19.937386264708504,
+          "total_detections_24_frames": 288,
+          "detections_per_frame_24": 12.0,
+          "ms_per_frame": 519.9042335152626,
+          "peak_vram_mib": 88.78564453125,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 51,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 210,
+              "precision_lower_bound": 0.24285714285714285
+            },
+            "50": {
+              "matched_detections": 60,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 210,
+              "precision_lower_bound": 0.2857142857142857
+            },
+            "100": {
+              "matched_detections": 63,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 210,
+              "precision_lower_bound": 0.3
+            }
+          }
+        }
+      },
+      "paired_R_vs_P": {
+        "25": {
+          "delta_recall": 0.20930232558139536,
+          "denominator": 86,
+          "denominator_name": "86 consensus_86 points over 15 frames",
+          "ci95": [
+            0.11538461538461542,
+            0.3103448275862069
+          ],
+          "mcnemar_exact": {
+            "lost": 1,
+            "gained": 19,
+            "discordant": 20,
+            "nominal_p": 4.00543212890625e-05
+          },
+          "p_is_nominal": true,
+          "multiplicity_correction": "none"
+        },
+        "50": {
+          "delta_recall": 0.19767441860465115,
+          "denominator": 86,
+          "denominator_name": "86 consensus_86 points over 15 frames",
+          "ci95": [
+            0.09589041095890416,
+            0.2921348314606742
+          ],
+          "mcnemar_exact": {
+            "lost": 1,
+            "gained": 18,
+            "discordant": 19,
+            "nominal_p": 7.62939453125e-05
+          },
+          "p_is_nominal": true,
+          "multiplicity_correction": "none"
+        },
+        "100": {
+          "delta_recall": 0.19767441860465115,
+          "denominator": 86,
+          "denominator_name": "86 consensus_86 points over 15 frames",
+          "ci95": [
+            0.10388490819525296,
+            0.28915662650602414
+          ],
+          "mcnemar_exact": {
+            "lost": 0,
+            "gained": 17,
+            "discordant": 17,
+            "nominal_p": 1.52587890625e-05
+          },
+          "p_is_nominal": true,
+          "multiplicity_correction": "none"
+        }
+      }
+    },
+    "pass_A_131": {
+      "denominator": 131,
+      "denominator_name": "131 pass_A_131 points over 16 frames",
+      "frame_ids": [
+        0,
+        7584,
+        15168,
+        30335,
+        37919,
+        45503,
+        53087,
+        68255,
+        75839,
+        83423,
+        91006,
+        98590,
+        106174,
+        121342,
+        144094,
+        151677
+      ],
+      "arms": {
+        "P": {
+          "imgsz": 640,
+          "conf": 0.3,
+          "conf_source": "registered",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 32,
+              "denominator": 131,
+              "denominator_name": "131 pass_A_131 points over 16 frames",
+              "recall": 0.24427480916030533,
+              "ci95": [
+                0.16541353383458646,
+                0.3230769230769231
+              ],
+              "nearest_rule_matched": 35,
+              "precision_lower_bound": 0.1927710843373494,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 52,
+              "denominator": 131,
+              "denominator_name": "131 pass_A_131 points over 16 frames",
+              "recall": 0.3969465648854962,
+              "ci95": [
+                0.2900763358778626,
+                0.4962962962962963
+              ],
+              "nearest_rule_matched": 61,
+              "precision_lower_bound": 0.3132530120481928,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 70,
+              "denominator": 131,
+              "denominator_name": "131 pass_A_131 points over 16 frames",
+              "recall": 0.5343511450381679,
+              "ci95": [
+                0.4330708661417323,
+                0.625
+              ],
+              "nearest_rule_matched": 88,
+              "precision_lower_bound": 0.42168674698795183,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            }
+          },
+          "detections_on_scored_frames": 166,
+          "median_nearest_px": 60.959002616512684,
+          "total_detections_24_frames": 217,
+          "detections_per_frame_24": 9.041666666666666,
+          "ms_per_frame": 557.8987796325237,
+          "peak_vram_mib": 80.74267578125,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 32,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.1927710843373494
+            },
+            "50": {
+              "matched_detections": 52,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.3132530120481928
+            },
+            "100": {
+              "matched_detections": 70,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.42168674698795183
+            }
+          }
+        },
+        "P_repeat": {
+          "imgsz": 640,
+          "conf": 0.3,
+          "conf_source": "registered",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 32,
+              "denominator": 131,
+              "denominator_name": "131 pass_A_131 points over 16 frames",
+              "recall": 0.24427480916030533,
+              "ci95": [
+                0.16541353383458646,
+                0.3230769230769231
+              ],
+              "nearest_rule_matched": 35,
+              "precision_lower_bound": 0.1927710843373494,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 52,
+              "denominator": 131,
+              "denominator_name": "131 pass_A_131 points over 16 frames",
+              "recall": 0.3969465648854962,
+              "ci95": [
+                0.2900763358778626,
+                0.4962962962962963
+              ],
+              "nearest_rule_matched": 61,
+              "precision_lower_bound": 0.3132530120481928,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 70,
+              "denominator": 131,
+              "denominator_name": "131 pass_A_131 points over 16 frames",
+              "recall": 0.5343511450381679,
+              "ci95": [
+                0.4330708661417323,
+                0.625
+              ],
+              "nearest_rule_matched": 88,
+              "precision_lower_bound": 0.42168674698795183,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            }
+          },
+          "detections_on_scored_frames": 166,
+          "median_nearest_px": 60.959002616512684,
+          "total_detections_24_frames": 217,
+          "detections_per_frame_24": 9.041666666666666,
+          "ms_per_frame": 346.8558418098837,
+          "peak_vram_mib": 51.32958984375,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 32,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.1927710843373494
+            },
+            "50": {
+              "matched_detections": 52,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.3132530120481928
+            },
+            "100": {
+              "matched_detections": 70,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.42168674698795183
+            }
+          }
+        },
+        "R": {
+          "imgsz": 1920,
+          "conf": 0.3,
+          "conf_source": "registered",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 45,
+              "denominator": 131,
+              "denominator_name": "131 pass_A_131 points over 16 frames",
+              "recall": 0.3435114503816794,
+              "ci95": [
+                0.2100738682569802,
+                0.48
+              ],
+              "nearest_rule_matched": 47,
+              "precision_lower_bound": 0.05603985056039851,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 77,
+              "denominator": 131,
+              "denominator_name": "131 pass_A_131 points over 16 frames",
+              "recall": 0.5877862595419847,
+              "ci95": [
+                0.4251968503937008,
+                0.7299412434643059
+              ],
+              "nearest_rule_matched": 88,
+              "precision_lower_bound": 0.0958904109589041,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 98,
+              "denominator": 131,
+              "denominator_name": "131 pass_A_131 points over 16 frames",
+              "recall": 0.7480916030534351,
+              "ci95": [
+                0.6311475409836066,
+                0.8444444444444444
+              ],
+              "nearest_rule_matched": 112,
+              "precision_lower_bound": 0.12204234122042341,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            }
+          },
+          "detections_on_scored_frames": 803,
+          "median_nearest_px": 32.984845004941285,
+          "total_detections_24_frames": 868,
+          "detections_per_frame_24": 36.166666666666664,
+          "ms_per_frame": 787.6824479705343,
+          "peak_vram_mib": 370.4951171875,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 45,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 803,
+              "precision_lower_bound": 0.05603985056039851
+            },
+            "50": {
+              "matched_detections": 77,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 803,
+              "precision_lower_bound": 0.0958904109589041
+            },
+            "100": {
+              "matched_detections": 98,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 803,
+              "precision_lower_bound": 0.12204234122042341
+            }
+          }
+        },
+        "M": {
+          "imgsz": 1280,
+          "conf": 0.3,
+          "conf_source": "registered",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 45,
+              "denominator": 131,
+              "denominator_name": "131 pass_A_131 points over 16 frames",
+              "recall": 0.3435114503816794,
+              "ci95": [
+                0.21705426356589147,
+                0.4701492537313433
+              ],
+              "nearest_rule_matched": 46,
+              "precision_lower_bound": 0.08823529411764706,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 79,
+              "denominator": 131,
+              "denominator_name": "131 pass_A_131 points over 16 frames",
+              "recall": 0.6030534351145038,
+              "ci95": [
+                0.43304409448818904,
+                0.753731343283582
+              ],
+              "nearest_rule_matched": 88,
+              "precision_lower_bound": 0.15490196078431373,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 102,
+              "denominator": 131,
+              "denominator_name": "131 pass_A_131 points over 16 frames",
+              "recall": 0.7786259541984732,
+              "ci95": [
+                0.656,
+                0.8787878787878788
+              ],
+              "nearest_rule_matched": 115,
+              "precision_lower_bound": 0.2,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            }
+          },
+          "detections_on_scored_frames": 510,
+          "median_nearest_px": 31.144823004794873,
+          "total_detections_24_frames": 564,
+          "detections_per_frame_24": 23.5,
+          "ms_per_frame": 700.0903875256578,
+          "peak_vram_mib": 212.525390625,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 45,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 510,
+              "precision_lower_bound": 0.08823529411764706
+            },
+            "50": {
+              "matched_detections": 79,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 510,
+              "precision_lower_bound": 0.15490196078431373
+            },
+            "100": {
+              "matched_detections": 102,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 510,
+              "precision_lower_bound": 0.2
+            }
+          }
+        },
+        "P22": {
+          "imgsz": 640,
+          "conf": 0.22,
+          "conf_source": "route",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 38,
+              "denominator": 131,
+              "denominator_name": "131 pass_A_131 points over 16 frames",
+              "recall": 0.2900763358778626,
+              "ci95": [
+                0.2,
+                0.3769230769230769
+              ],
+              "nearest_rule_matched": 40,
+              "precision_lower_bound": 0.168141592920354,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 61,
+              "denominator": 131,
+              "denominator_name": "131 pass_A_131 points over 16 frames",
+              "recall": 0.46564885496183206,
+              "ci95": [
+                0.3435114503816794,
+                0.5757575757575758
+              ],
+              "nearest_rule_matched": 70,
+              "precision_lower_bound": 0.26991150442477874,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 81,
+              "denominator": 131,
+              "denominator_name": "131 pass_A_131 points over 16 frames",
+              "recall": 0.6183206106870229,
+              "ci95": [
+                0.5153846153846153,
+                0.7086614173228346
+              ],
+              "nearest_rule_matched": 96,
+              "precision_lower_bound": 0.3584070796460177,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            }
+          },
+          "detections_on_scored_frames": 226,
+          "median_nearest_px": 43.41658669218482,
+          "total_detections_24_frames": 288,
+          "detections_per_frame_24": 12.0,
+          "ms_per_frame": 519.9042335152626,
+          "peak_vram_mib": 88.78564453125,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 38,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 226,
+              "precision_lower_bound": 0.168141592920354
+            },
+            "50": {
+              "matched_detections": 61,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 226,
+              "precision_lower_bound": 0.26991150442477874
+            },
+            "100": {
+              "matched_detections": 81,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 226,
+              "precision_lower_bound": 0.3584070796460177
+            }
+          }
+        }
+      },
+      "paired_R_vs_P": {
+        "25": {
+          "delta_recall": 0.09923664122137404,
+          "denominator": 131,
+          "denominator_name": "131 pass_A_131 points over 16 frames",
+          "ci95": [
+            0.015503875968992248,
+            0.19379844961240306
+          ],
+          "mcnemar_exact": {
+            "lost": 6,
+            "gained": 19,
+            "discordant": 25,
+            "nominal_p": 0.01463329792022705
+          },
+          "p_is_nominal": true,
+          "multiplicity_correction": "none"
+        },
+        "50": {
+          "delta_recall": 0.19083969465648856,
+          "denominator": 131,
+          "denominator_name": "131 pass_A_131 points over 16 frames",
+          "ci95": [
+            0.10852713178294576,
+            0.2733827000899281
+          ],
+          "mcnemar_exact": {
+            "lost": 4,
+            "gained": 29,
+            "discordant": 33,
+            "nominal_p": 1.0928604751825333e-05
+          },
+          "p_is_nominal": true,
+          "multiplicity_correction": "none"
+        },
+        "100": {
+          "delta_recall": 0.21374045801526717,
+          "denominator": 131,
+          "denominator_name": "131 pass_A_131 points over 16 frames",
+          "ci95": [
+            0.12975947617794156,
+            0.29457364341085274
+          ],
+          "mcnemar_exact": {
+            "lost": 5,
+            "gained": 33,
+            "discordant": 38,
+            "nominal_p": 4.255962267052382e-06
+          },
+          "p_is_nominal": true,
+          "multiplicity_correction": "none"
+        }
+      }
+    },
+    "pass_B_130": {
+      "denominator": 130,
+      "denominator_name": "130 pass_B_130 points over 16 frames",
+      "frame_ids": [
+        0,
+        7584,
+        15168,
+        30335,
+        37919,
+        45503,
+        53087,
+        68255,
+        75839,
+        83423,
+        91006,
+        98590,
+        106174,
+        121342,
+        144094,
+        151677
+      ],
+      "arms": {
+        "P": {
+          "imgsz": 640,
+          "conf": 0.3,
+          "conf_source": "registered",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 57,
+              "denominator": 130,
+              "denominator_name": "130 pass_B_130 points over 16 frames",
+              "recall": 0.43846153846153846,
+              "ci95": [
+                0.368,
+                0.5038167938931297
+              ],
+              "nearest_rule_matched": 62,
+              "precision_lower_bound": 0.3433734939759036,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 69,
+              "denominator": 130,
+              "denominator_name": "130 pass_B_130 points over 16 frames",
+              "recall": 0.5307692307692308,
+              "ci95": [
+                0.4418604651162791,
+                0.6101726071784646
+              ],
+              "nearest_rule_matched": 77,
+              "precision_lower_bound": 0.41566265060240964,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 76,
+              "denominator": 130,
+              "denominator_name": "130 pass_B_130 points over 16 frames",
+              "recall": 0.5846153846153846,
+              "ci95": [
+                0.4887174998565115,
+                0.672
+              ],
+              "nearest_rule_matched": 92,
+              "precision_lower_bound": 0.4578313253012048,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            }
+          },
+          "detections_on_scored_frames": 166,
+          "median_nearest_px": 27.202941017470888,
+          "total_detections_24_frames": 217,
+          "detections_per_frame_24": 9.041666666666666,
+          "ms_per_frame": 557.8987796325237,
+          "peak_vram_mib": 80.74267578125,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 57,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.3433734939759036
+            },
+            "50": {
+              "matched_detections": 69,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.41566265060240964
+            },
+            "100": {
+              "matched_detections": 76,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.4578313253012048
+            }
+          }
+        },
+        "P_repeat": {
+          "imgsz": 640,
+          "conf": 0.3,
+          "conf_source": "registered",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 57,
+              "denominator": 130,
+              "denominator_name": "130 pass_B_130 points over 16 frames",
+              "recall": 0.43846153846153846,
+              "ci95": [
+                0.368,
+                0.5038167938931297
+              ],
+              "nearest_rule_matched": 62,
+              "precision_lower_bound": 0.3433734939759036,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 69,
+              "denominator": 130,
+              "denominator_name": "130 pass_B_130 points over 16 frames",
+              "recall": 0.5307692307692308,
+              "ci95": [
+                0.4418604651162791,
+                0.6101726071784646
+              ],
+              "nearest_rule_matched": 77,
+              "precision_lower_bound": 0.41566265060240964,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 76,
+              "denominator": 130,
+              "denominator_name": "130 pass_B_130 points over 16 frames",
+              "recall": 0.5846153846153846,
+              "ci95": [
+                0.4887174998565115,
+                0.672
+              ],
+              "nearest_rule_matched": 92,
+              "precision_lower_bound": 0.4578313253012048,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            }
+          },
+          "detections_on_scored_frames": 166,
+          "median_nearest_px": 27.202941017470888,
+          "total_detections_24_frames": 217,
+          "detections_per_frame_24": 9.041666666666666,
+          "ms_per_frame": 346.8558418098837,
+          "peak_vram_mib": 51.32958984375,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 57,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.3433734939759036
+            },
+            "50": {
+              "matched_detections": 69,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.41566265060240964
+            },
+            "100": {
+              "matched_detections": 76,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 166,
+              "precision_lower_bound": 0.4578313253012048
+            }
+          }
+        },
+        "R": {
+          "imgsz": 1920,
+          "conf": 0.3,
+          "conf_source": "registered",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 84,
+              "denominator": 130,
+              "denominator_name": "130 pass_B_130 points over 16 frames",
+              "recall": 0.6461538461538462,
+              "ci95": [
+                0.5416666666666666,
+                0.7372262773722628
+              ],
+              "nearest_rule_matched": 87,
+              "precision_lower_bound": 0.10460772104607721,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 101,
+              "denominator": 130,
+              "denominator_name": "130 pass_B_130 points over 16 frames",
+              "recall": 0.7769230769230769,
+              "ci95": [
+                0.6746031746031746,
+                0.8561151079136691
+              ],
+              "nearest_rule_matched": 108,
+              "precision_lower_bound": 0.12577833125778332,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 109,
+              "denominator": 130,
+              "denominator_name": "130 pass_B_130 points over 16 frames",
+              "recall": 0.8384615384615385,
+              "ci95": [
+                0.7286821705426356,
+                0.9224806201550387
+              ],
+              "nearest_rule_matched": 120,
+              "precision_lower_bound": 0.1357409713574097,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            }
+          },
+          "detections_on_scored_frames": 803,
+          "median_nearest_px": 12.883497784665941,
+          "total_detections_24_frames": 868,
+          "detections_per_frame_24": 36.166666666666664,
+          "ms_per_frame": 787.6824479705343,
+          "peak_vram_mib": 370.4951171875,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 84,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 803,
+              "precision_lower_bound": 0.10460772104607721
+            },
+            "50": {
+              "matched_detections": 101,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 803,
+              "precision_lower_bound": 0.12577833125778332
+            },
+            "100": {
+              "matched_detections": 109,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 803,
+              "precision_lower_bound": 0.1357409713574097
+            }
+          }
+        },
+        "M": {
+          "imgsz": 1280,
+          "conf": 0.3,
+          "conf_source": "registered",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 84,
+              "denominator": 130,
+              "denominator_name": "130 pass_B_130 points over 16 frames",
+              "recall": 0.6461538461538462,
+              "ci95": [
+                0.55,
+                0.7293233082706767
+              ],
+              "nearest_rule_matched": 85,
+              "precision_lower_bound": 0.16470588235294117,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 104,
+              "denominator": 130,
+              "denominator_name": "130 pass_B_130 points over 16 frames",
+              "recall": 0.8,
+              "ci95": [
+                0.6984092775041051,
+                0.8740157480314961
+              ],
+              "nearest_rule_matched": 110,
+              "precision_lower_bound": 0.20392156862745098,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 109,
+              "denominator": 130,
+              "denominator_name": "130 pass_B_130 points over 16 frames",
+              "recall": 0.8384615384615385,
+              "ci95": [
+                0.7265608306623932,
+                0.9230769230769231
+              ],
+              "nearest_rule_matched": 122,
+              "precision_lower_bound": 0.21372549019607842,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            }
+          },
+          "detections_on_scored_frames": 510,
+          "median_nearest_px": 15.433034373659254,
+          "total_detections_24_frames": 564,
+          "detections_per_frame_24": 23.5,
+          "ms_per_frame": 700.0903875256578,
+          "peak_vram_mib": 212.525390625,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 84,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 510,
+              "precision_lower_bound": 0.16470588235294117
+            },
+            "50": {
+              "matched_detections": 104,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 510,
+              "precision_lower_bound": 0.20392156862745098
+            },
+            "100": {
+              "matched_detections": 109,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 510,
+              "precision_lower_bound": 0.21372549019607842
+            }
+          }
+        },
+        "P22": {
+          "imgsz": 640,
+          "conf": 0.22,
+          "conf_source": "route",
+          "recall": {
+            "25": {
+              "rule": "one_to_one",
+              "matched": 61,
+              "denominator": 130,
+              "denominator_name": "130 pass_B_130 points over 16 frames",
+              "recall": 0.46923076923076923,
+              "ci95": [
+                0.39166666666666666,
+                0.5396825396825397
+              ],
+              "nearest_rule_matched": 67,
+              "precision_lower_bound": 0.26991150442477874,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "50": {
+              "rule": "one_to_one",
+              "matched": 74,
+              "denominator": 130,
+              "denominator_name": "130 pass_B_130 points over 16 frames",
+              "recall": 0.5692307692307692,
+              "ci95": [
+                0.472,
+                0.6587301587301587
+              ],
+              "nearest_rule_matched": 84,
+              "precision_lower_bound": 0.3274336283185841,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            },
+            "100": {
+              "rule": "one_to_one",
+              "matched": 83,
+              "denominator": 130,
+              "denominator_name": "130 pass_B_130 points over 16 frames",
+              "recall": 0.6384615384615384,
+              "ci95": [
+                0.5323711998143421,
+                0.7364341085271318
+              ],
+              "nearest_rule_matched": 99,
+              "precision_lower_bound": 0.3672566371681416,
+              "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here"
+            }
+          },
+          "detections_on_scored_frames": 226,
+          "median_nearest_px": 23.473302206659447,
+          "total_detections_24_frames": 288,
+          "detections_per_frame_24": 12.0,
+          "ms_per_frame": 519.9042335152626,
+          "peak_vram_mib": 88.78564453125,
+          "pose_served_frames": [
+            0,
+            113758
+          ],
+          "downstream_errors": 0,
+          "precision": {
+            "25": {
+              "matched_detections": 61,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 226,
+              "precision_lower_bound": 0.26991150442477874
+            },
+            "50": {
+              "matched_detections": 74,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 226,
+              "precision_lower_bound": 0.3274336283185841
+            },
+            "100": {
+              "matched_detections": 83,
+              "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+              "detections_on_scored_frames": 226,
+              "precision_lower_bound": 0.3672566371681416
+            }
+          }
+        }
+      },
+      "paired_R_vs_P": {
+        "25": {
+          "delta_recall": 0.2076923076923077,
+          "denominator": 130,
+          "denominator_name": "130 pass_B_130 points over 16 frames",
+          "ci95": [
+            0.12195121951219512,
+            0.29365218115218117
+          ],
+          "mcnemar_exact": {
+            "lost": 5,
+            "gained": 32,
+            "discordant": 37,
+            "nominal_p": 7.427530363202095e-06
+          },
+          "p_is_nominal": true,
+          "multiplicity_correction": "none"
+        },
+        "50": {
+          "delta_recall": 0.24615384615384617,
+          "denominator": 130,
+          "denominator_name": "130 pass_B_130 points over 16 frames",
+          "ci95": [
+            0.1578947368421053,
+            0.3309352517985612
+          ],
+          "mcnemar_exact": {
+            "lost": 3,
+            "gained": 35,
+            "discordant": 38,
+            "nominal_p": 6.677873898297548e-08
+          },
+          "p_is_nominal": true,
+          "multiplicity_correction": "none"
+        },
+        "100": {
+          "delta_recall": 0.25384615384615383,
+          "denominator": 130,
+          "denominator_name": "130 pass_B_130 points over 16 frames",
+          "ci95": [
+            0.17948717948717952,
+            0.32592592592592595
+          ],
+          "mcnemar_exact": {
+            "lost": 1,
+            "gained": 34,
+            "discordant": 35,
+            "nominal_p": 2.0954757928848267e-09
+          },
+          "p_is_nominal": true,
+          "multiplicity_correction": "none"
+        }
+      }
+    }
+  },
+  "primary_denominator": 113,
+  "primary_denominator_name": "113 adjudicated_113 points over 16 frames",
+  "primary_frame_ids": [
+    0,
+    7584,
+    15168,
+    30335,
+    37919,
+    45503,
+    53087,
+    68255,
+    75839,
+    83423,
+    91006,
+    98590,
+    106174,
+    121342,
+    144094,
+    151677
+  ],
+  "arms": {
+    "P": {
+      "imgsz": 640,
+      "conf": 0.3,
+      "conf_source": "registered",
+      "recall": {
+        "25": {
+          "rule": "one_to_one",
+          "matched": 41,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "recall": 0.36283185840707965,
+          "ci95": [
+            0.2773109243697479,
+            0.45796321701106035
+          ],
+          "nearest_rule_matched": 46,
+          "precision_lower_bound": 0.2469879518072289,
+          "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "matched_over_pass_A_only": [
+            32,
+            131
+          ],
+          "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+          "matched_over_pass_B_only": [
+            57,
+            130
+          ],
+          "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+        },
+        "50": {
+          "rule": "one_to_one",
+          "matched": 58,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "recall": 0.5132743362831859,
+          "ci95": [
+            0.4,
+            0.6274509803921569
+          ],
+          "nearest_rule_matched": 68,
+          "precision_lower_bound": 0.3493975903614458,
+          "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "matched_over_pass_A_only": [
+            52,
+            131
+          ],
+          "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+          "matched_over_pass_B_only": [
+            69,
+            130
+          ],
+          "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+        },
+        "100": {
+          "rule": "one_to_one",
+          "matched": 67,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "recall": 0.5929203539823009,
+          "ci95": [
+            0.4621687136393019,
+            0.7207207207207207
+          ],
+          "nearest_rule_matched": 82,
+          "precision_lower_bound": 0.4036144578313253,
+          "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "matched_over_pass_A_only": [
+            70,
+            131
+          ],
+          "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+          "matched_over_pass_B_only": [
+            76,
+            130
+          ],
+          "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+        }
+      },
+      "detections_on_scored_frames": 166,
+      "median_nearest_px": 29.546573405388315,
+      "total_detections_24_frames": 217,
+      "detections_per_frame_24": 9.041666666666666,
+      "ms_per_frame": 557.8987796325237,
+      "peak_vram_mib": 80.74267578125,
+      "pose_served_frames": [
+        0,
+        113758
+      ],
+      "downstream_errors": 0,
+      "precision": {
+        "25": {
+          "matched_detections": 41,
+          "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "detections_on_scored_frames": 166,
+          "precision_lower_bound": 0.2469879518072289
+        },
+        "50": {
+          "matched_detections": 58,
+          "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "detections_on_scored_frames": 166,
+          "precision_lower_bound": 0.3493975903614458
+        },
+        "100": {
+          "matched_detections": 67,
+          "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "detections_on_scored_frames": 166,
+          "precision_lower_bound": 0.4036144578313253
+        }
+      }
+    },
+    "P_repeat": {
+      "imgsz": 640,
+      "conf": 0.3,
+      "conf_source": "registered",
+      "recall": {
+        "25": {
+          "rule": "one_to_one",
+          "matched": 41,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "recall": 0.36283185840707965,
+          "ci95": [
+            0.2773109243697479,
+            0.45796321701106035
+          ],
+          "nearest_rule_matched": 46,
+          "precision_lower_bound": 0.2469879518072289,
+          "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "matched_over_pass_A_only": [
+            32,
+            131
+          ],
+          "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+          "matched_over_pass_B_only": [
+            57,
+            130
+          ],
+          "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+        },
+        "50": {
+          "rule": "one_to_one",
+          "matched": 58,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "recall": 0.5132743362831859,
+          "ci95": [
+            0.4,
+            0.6274509803921569
+          ],
+          "nearest_rule_matched": 68,
+          "precision_lower_bound": 0.3493975903614458,
+          "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "matched_over_pass_A_only": [
+            52,
+            131
+          ],
+          "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+          "matched_over_pass_B_only": [
+            69,
+            130
+          ],
+          "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+        },
+        "100": {
+          "rule": "one_to_one",
+          "matched": 67,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "recall": 0.5929203539823009,
+          "ci95": [
+            0.4621687136393019,
+            0.7207207207207207
+          ],
+          "nearest_rule_matched": 82,
+          "precision_lower_bound": 0.4036144578313253,
+          "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "matched_over_pass_A_only": [
+            70,
+            131
+          ],
+          "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+          "matched_over_pass_B_only": [
+            76,
+            130
+          ],
+          "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+        }
+      },
+      "detections_on_scored_frames": 166,
+      "median_nearest_px": 29.546573405388315,
+      "total_detections_24_frames": 217,
+      "detections_per_frame_24": 9.041666666666666,
+      "ms_per_frame": 346.8558418098837,
+      "peak_vram_mib": 51.32958984375,
+      "pose_served_frames": [
+        0,
+        113758
+      ],
+      "downstream_errors": 0,
+      "precision": {
+        "25": {
+          "matched_detections": 41,
+          "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "detections_on_scored_frames": 166,
+          "precision_lower_bound": 0.2469879518072289
+        },
+        "50": {
+          "matched_detections": 58,
+          "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "detections_on_scored_frames": 166,
+          "precision_lower_bound": 0.3493975903614458
+        },
+        "100": {
+          "matched_detections": 67,
+          "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "detections_on_scored_frames": 166,
+          "precision_lower_bound": 0.4036144578313253
+        }
+      }
+    },
+    "R": {
+      "imgsz": 1920,
+      "conf": 0.3,
+      "conf_source": "registered",
+      "recall": {
+        "25": {
+          "rule": "one_to_one",
+          "matched": 62,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "recall": 0.5486725663716814,
+          "ci95": [
+            0.4426229508196721,
+            0.647632275132275
+          ],
+          "nearest_rule_matched": 65,
+          "precision_lower_bound": 0.07721046077210461,
+          "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "matched_over_pass_A_only": [
+            45,
+            131
+          ],
+          "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+          "matched_over_pass_B_only": [
+            84,
+            130
+          ],
+          "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+        },
+        "50": {
+          "rule": "one_to_one",
+          "matched": 82,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "recall": 0.7256637168141593,
+          "ci95": [
+            0.6153688524590164,
+            0.8148148148148148
+          ],
+          "nearest_rule_matched": 90,
+          "precision_lower_bound": 0.10211706102117062,
+          "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "matched_over_pass_A_only": [
+            77,
+            131
+          ],
+          "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+          "matched_over_pass_B_only": [
+            101,
+            130
+          ],
+          "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+        },
+        "100": {
+          "rule": "one_to_one",
+          "matched": 93,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "recall": 0.8230088495575221,
+          "ci95": [
+            0.7019230769230769,
+            0.9196517857142855
+          ],
+          "nearest_rule_matched": 104,
+          "precision_lower_bound": 0.11581569115815692,
+          "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "matched_over_pass_A_only": [
+            98,
+            131
+          ],
+          "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+          "matched_over_pass_B_only": [
+            109,
+            130
+          ],
+          "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+        }
+      },
+      "detections_on_scored_frames": 803,
+      "median_nearest_px": 22.135943621178654,
+      "total_detections_24_frames": 868,
+      "detections_per_frame_24": 36.166666666666664,
+      "ms_per_frame": 787.6824479705343,
+      "peak_vram_mib": 370.4951171875,
+      "pose_served_frames": [
+        0,
+        113758
+      ],
+      "downstream_errors": 0,
+      "precision": {
+        "25": {
+          "matched_detections": 62,
+          "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "detections_on_scored_frames": 803,
+          "precision_lower_bound": 0.07721046077210461
+        },
+        "50": {
+          "matched_detections": 82,
+          "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "detections_on_scored_frames": 803,
+          "precision_lower_bound": 0.10211706102117062
+        },
+        "100": {
+          "matched_detections": 93,
+          "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "detections_on_scored_frames": 803,
+          "precision_lower_bound": 0.11581569115815692
+        }
+      }
+    },
+    "M": {
+      "imgsz": 1280,
+      "conf": 0.3,
+      "conf_source": "registered",
+      "recall": {
+        "25": {
+          "rule": "one_to_one",
+          "matched": 62,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "recall": 0.5486725663716814,
+          "ci95": [
+            0.43859649122807015,
+            0.6545454545454545
+          ],
+          "nearest_rule_matched": 63,
+          "precision_lower_bound": 0.12156862745098039,
+          "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "matched_over_pass_A_only": [
+            45,
+            131
+          ],
+          "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+          "matched_over_pass_B_only": [
+            84,
+            130
+          ],
+          "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+        },
+        "50": {
+          "rule": "one_to_one",
+          "matched": 86,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "recall": 0.7610619469026548,
+          "ci95": [
+            0.6428571428571429,
+            0.8532110091743119
+          ],
+          "nearest_rule_matched": 93,
+          "precision_lower_bound": 0.16862745098039217,
+          "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "matched_over_pass_A_only": [
+            79,
+            131
+          ],
+          "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+          "matched_over_pass_B_only": [
+            104,
+            130
+          ],
+          "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+        },
+        "100": {
+          "rule": "one_to_one",
+          "matched": 95,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "recall": 0.8407079646017699,
+          "ci95": [
+            0.7105263157894737,
+            0.9381443298969072
+          ],
+          "nearest_rule_matched": 106,
+          "precision_lower_bound": 0.18627450980392157,
+          "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "matched_over_pass_A_only": [
+            102,
+            131
+          ],
+          "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+          "matched_over_pass_B_only": [
+            109,
+            130
+          ],
+          "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+        }
+      },
+      "detections_on_scored_frames": 510,
+      "median_nearest_px": 22.360679774997898,
+      "total_detections_24_frames": 564,
+      "detections_per_frame_24": 23.5,
+      "ms_per_frame": 700.0903875256578,
+      "peak_vram_mib": 212.525390625,
+      "pose_served_frames": [
+        0,
+        113758
+      ],
+      "downstream_errors": 0,
+      "precision": {
+        "25": {
+          "matched_detections": 62,
+          "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "detections_on_scored_frames": 510,
+          "precision_lower_bound": 0.12156862745098039
+        },
+        "50": {
+          "matched_detections": 86,
+          "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "detections_on_scored_frames": 510,
+          "precision_lower_bound": 0.16862745098039217
+        },
+        "100": {
+          "matched_detections": 95,
+          "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "detections_on_scored_frames": 510,
+          "precision_lower_bound": 0.18627450980392157
+        }
+      }
+    },
+    "P22": {
+      "imgsz": 640,
+      "conf": 0.22,
+      "conf_source": "route",
+      "recall": {
+        "25": {
+          "rule": "one_to_one",
+          "matched": 48,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "recall": 0.4247787610619469,
+          "ci95": [
+            0.3333333333333333,
+            0.5175438596491229
+          ],
+          "nearest_rule_matched": 51,
+          "precision_lower_bound": 0.21238938053097345,
+          "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "matched_over_pass_A_only": [
+            38,
+            131
+          ],
+          "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+          "matched_over_pass_B_only": [
+            61,
+            130
+          ],
+          "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+        },
+        "50": {
+          "rule": "one_to_one",
+          "matched": 67,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "recall": 0.5929203539823009,
+          "ci95": [
+            0.4793388429752066,
+            0.693069306930693
+          ],
+          "nearest_rule_matched": 75,
+          "precision_lower_bound": 0.29646017699115046,
+          "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "matched_over_pass_A_only": [
+            61,
+            131
+          ],
+          "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+          "matched_over_pass_B_only": [
+            74,
+            130
+          ],
+          "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+        },
+        "100": {
+          "rule": "one_to_one",
+          "matched": 76,
+          "denominator": 113,
+          "denominator_name": "113 adjudicated_113 points over 16 frames",
+          "recall": 0.672566371681416,
+          "ci95": [
+            0.5478209109730848,
+            0.7857279171210467
+          ],
+          "nearest_rule_matched": 89,
+          "precision_lower_bound": 0.336283185840708,
+          "precision_note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "matched_over_pass_A_only": [
+            81,
+            131
+          ],
+          "matched_over_pass_A_only_note": "corrected: real pass-A matching against its own points, not the primary numerator recycled (G303_VERIFY B2)",
+          "matched_over_pass_B_only": [
+            83,
+            130
+          ],
+          "matched_over_pass_B_only_note": "corrected: real pass-B matching against its own points, not the primary numerator recycled (G303_VERIFY B2)"
+        }
+      },
+      "detections_on_scored_frames": 226,
+      "median_nearest_px": 27.65863337187866,
+      "total_detections_24_frames": 288,
+      "detections_per_frame_24": 12.0,
+      "ms_per_frame": 519.9042335152626,
+      "peak_vram_mib": 88.78564453125,
+      "pose_served_frames": [
+        0,
+        113758
+      ],
+      "downstream_errors": 0,
+      "precision": {
+        "25": {
+          "matched_detections": 48,
+          "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "detections_on_scored_frames": 226,
+          "precision_lower_bound": 0.21238938053097345
+        },
+        "50": {
+          "matched_detections": 67,
+          "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "detections_on_scored_frames": 226,
+          "precision_lower_bound": 0.29646017699115046
+        },
+        "100": {
+          "matched_detections": 76,
+          "note": "LOWER BOUND: a real person outside the scored basis is a false positive here",
+          "detections_on_scored_frames": 226,
+          "precision_lower_bound": 0.336283185840708
+        }
+      }
+    }
+  },
+  "paired_R_vs_P": {
+    "25": {
+      "delta_recall": 0.18584070796460178,
+      "denominator": 113,
+      "denominator_name": "113 adjudicated_113 points over 16 frames",
+      "ci95": [
+        0.09708737864077671,
+        0.2777777777777778
+      ],
+      "mcnemar_exact": {
+        "lost": 6,
+        "gained": 27,
+        "discordant": 33,
+        "nominal_p": 0.0003240634687244892
+      },
+      "p_is_nominal": true,
+      "multiplicity_correction": "none"
+    },
+    "50": {
+      "delta_recall": 0.21238938053097345,
+      "denominator": 113,
+      "denominator_name": "113 adjudicated_113 points over 16 frames",
+      "ci95": [
+        0.11764705882352944,
+        0.3057851239669422
+      ],
+      "mcnemar_exact": {
+        "lost": 4,
+        "gained": 28,
+        "discordant": 32,
+        "nominal_p": 1.9301194697618484e-05
+      },
+      "p_is_nominal": true,
+      "multiplicity_correction": "none"
+    },
+    "100": {
+      "delta_recall": 0.23008849557522124,
+      "denominator": 113,
+      "denominator_name": "113 adjudicated_113 points over 16 frames",
+      "ci95": [
+        0.1320754716981133,
+        0.33027727719528177
+      ],
+      "mcnemar_exact": {
+        "lost": 2,
+        "gained": 28,
+        "discordant": 30,
+        "nominal_p": 8.67992639541626e-07
+      },
+      "p_is_nominal": true,
+      "multiplicity_correction": "none"
+    }
+  },
+  "basis": "adjudicated_113",
+  "secondary_denominators": {
+    "pass_A_only": 131,
+    "pass_B_only": 130
+  }
+}
