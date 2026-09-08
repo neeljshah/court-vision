@@ -1,4 +1,4 @@
-GAP S327 | sport all | worktree aX | log cx_s327_prestart_m0_table
+GAP S327 | sport all | worktree a8 | log cx_s327_prestart_m0_table
 
 **DATA ROW (S register; the gate that three per-sport model rows stopped on).** `src/`, `kernel/`, `api/`
 and `intel/` are READ and IMPORT only. Build in `scripts/platformkit/ingame/` and `domains/cross_sport_market/`.
