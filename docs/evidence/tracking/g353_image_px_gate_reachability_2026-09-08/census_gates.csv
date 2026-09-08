@@ -1,0 +1,17 @@
+gate,gate_group,census_source_column,nba_reachable_n,wnba_reachable_n,total_reachable_n
+insufficient_data,core,core_image_gates_reachable_n,000639,000005,000644
+duplicate_frame_identity,core,core_image_gates_reachable_n,000639,000005,000644
+coverage_attempted_frames,core,core_image_gates_reachable_n,000639,000005,000644
+median_track_len,core,core_image_gates_reachable_n,000639,000005,000644
+jump_max,core,core_image_gates_reachable_n,000639,000005,000644
+attempted_frames,core,core_image_gates_reachable_n,000639,000005,000644
+liveness_frozen,core,core_image_gates_reachable_n,000639,000005,000644
+zero_step_share,core,core_image_gates_reachable_n,000639,000005,000644
+median_step_distance,core,core_image_gates_reachable_n,000639,000005,000644
+distinct_position_ratio,core,core_image_gates_reachable_n,000639,000005,000644
+stationary_track_share,core,core_image_gates_reachable_n,000639,000005,000644
+jump_p95,core,core_image_gates_reachable_n,000639,000005,000644
+any_gate,core,core_image_gates_reachable_n,000639,000005,000644
+ball_valid_attempted_frames,ball,ball_gates_reachable_n,000639,000005,000644
+ball_detected_share,ball,ball_gates_reachable_n,000639,000005,000644
+g325_wholly_off_frame,containment,frame_size_gate_reachable_n,000000,000000,000000

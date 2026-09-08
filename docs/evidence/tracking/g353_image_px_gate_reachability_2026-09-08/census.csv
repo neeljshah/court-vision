@@ -1,0 +1,4 @@
+league,tables_n,frame_width_present_n,frame_height_present_n,both_frame_dims_present_n,coordinate_space_column_present_n,image_px_declared_n,ball_columns_present_n,core_image_gates_reachable_n,ball_gates_reachable_n,frame_size_gate_reachable_n
+nba,000648,000000,000000,000000,000639,000639,000648,000639,000639,000000
+wnba,000005,000000,000000,000000,000005,000005,000005,000005,000005,000000
+TOTAL,000653,000000,000000,000000,000644,000644,000653,000644,000644,000000

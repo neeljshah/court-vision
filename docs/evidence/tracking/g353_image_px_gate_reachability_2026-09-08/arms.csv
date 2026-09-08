@@ -1,0 +1,5 @@
+arm,fixture_n,applicable_n,detected_n,detection_share,detection_permille,wilson_lo_permille,wilson_hi_permille,false_rejection_share,false_rejection_permille,excluded_ids,exclusion_reason
+A0,000030,000030,000030,1.000000,1000,0886,1000,1.000000,1000,,
+A1_FROZEN,000030,000030,000030,1.000000,1000,0886,1000,0.000000,0000,,
+A2_ID_MERGE,000030,000030,000030,1.000000,1000,0886,1000,0.000000,0000,,
+A5_BALL_SHIFT,000030,000027,000027,1.000000,1000,0875,1000,0.000000,0000,000008;000017;000024,no_embedded_ball_rows
