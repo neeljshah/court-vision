@@ -1,0 +1,26 @@
+{
+  "cap_source_frames": 540,
+  "host": "771c926940a2",
+  "offset": 90,
+  "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.39",
+  "prereg_amendment": "docs/evidence/tracking/g336_prereg_fix1b_2026-09-08.md",
+  "prereg_amendment_seal": "5ac2a2704c4a9ad1745c1452c5e185a0fb4309d44bd7b0e868cfa34765db0002",
+  "python": "3.12.3",
+  "route_files_lf_sha256": {
+    "scripts/platformkit/tracking/g336_capture.py": "2c01bbdea98067f90e2ff91a6b81f609187226985ce0a8fc1076a1f85a80fd06",
+    "scripts/platformkit/tracking/g336_run.py": "d026475918306c398284942eb8ff3a713a3c2a08eab445de172acb50a90ab08f",
+    "scripts/platformkit/tracking/g336_track_id_continuity.py": "0b3de549cf05ab9eb7b0a41d03bcee5bfc8dae6d3b61f1df9f6e7f3966b22c07",
+    "scripts/run_clip.py": "e6346f8ce46c99497fa43e8ac48242855623a0ba3e9afaff638091beb21d2a9d",
+    "src/pipeline/unified_pipeline.py": "047dd04e9b12b588c560f68dbab32aa1855f791c2e1a46f19f4e082f50c4f331",
+    "src/tracking/advanced_tracker.py": "df2ae698ae03e804f67639434d8303638aea9087c3169c016af5a3734dd474d7",
+    "src/tracking/osnet_reid.py": "64f7bd299c57d297ea724ea859cdce44c2f3217fee4a4b3b0f9d712e277b9ce2"
+  },
+  "versions": {
+    "cv2": "4.14.0",
+    "numpy": "2.1.2",
+    "scipy": "1.18.1",
+    "supervision": "unavailable: ModuleNotFoundError",
+    "torch": "2.8.0+cu128",
+    "ultralytics": "8.4.143"
+  }
+}

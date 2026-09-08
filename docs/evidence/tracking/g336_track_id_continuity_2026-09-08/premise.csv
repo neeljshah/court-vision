@@ -1,0 +1,5 @@
+section,route_gate,slot_ids,instances,median_instance_len,frames,n_rows
+nba_0081,pass,000010,000077,000003,000180,001206
+nba_0575,refused_exit_4,,,,,
+nba_0592,refused_exit_4,,,,,
+wnba_5l4,pass,000010,000151,000004,000180,001090
