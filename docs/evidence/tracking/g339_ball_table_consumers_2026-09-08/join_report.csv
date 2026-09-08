@@ -1,0 +1,3 @@
+scope,tracking_csv,ball_csv,status,frames,frames_with_detected_ball,frames_without_detected_ball,frames_with_detected_ball_share,nearest_player_distance_px_n,nearest_player_distance_px_min,nearest_player_distance_px_p50,nearest_player_distance_px_p95,nearest_player_distance_px_max
+wnba_05,wnba_05/tracking_data.csv,wnba_05/ball_tracking.csv,OK,001000,000907,000093,0.907,000904,7.615773105863909,188.06647760831805,545.5135195391587,1647.4455984948333
+wnba_02,wnba_02/tracking_data.csv,wnba_02/ball_tracking.csv,OK,001000,000803,000197,0.803,000803,117.83462988442744,1097.1973386770494,1419.050739050581,2832.6341097995696

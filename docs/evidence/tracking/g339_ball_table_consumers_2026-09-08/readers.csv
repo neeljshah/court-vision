@@ -1,0 +1,311 @@
+row_id,file,line,columns,inline_ball_rows,joins_on_frame,route,class,notes
+R1,src/data/nba_enricher.py,1075,frame+detected,no,no,enrichment,READS_BALL_TABLE,clip start calibration
+R2,src/data/nba_enricher.py,1106,frame+timestamp+detected,no,no,enrichment,READS_BALL_TABLE,frame rate inference
+R3,src/data/nba_enricher.py,1151,frame+timestamp+detected,no,no,enrichment,READS_BALL_TABLE,period inference
+R4,src/ingest/quality.py,26,detected,no,no,quality,READS_BALL_TABLE,ball table quality check
+R5,scripts/audit_completed.py,46,ball_x2d+ball_y2d,no,no,audit,READS_BALL_TABLE,coordinate audit
+R6,scripts/audit_phase_g.py,129,detected,no,no,audit,READS_BALL_TABLE,presence and detected share
+R7,scripts/backfill_pbp_context.py,332,frame+ball columns,no,yes,PBP context,READS_BALL_TABLE,frame context join
+R8,scripts/batch_season.py,120,table presence,no,no,batch,READS_BALL_TABLE,completion check
+R9,scripts/full_game_pipeline.py,492,table presence,no,no,pipeline,READS_BALL_TABLE,per-game output check
+R10,scripts/master_pipeline.py,116,table presence,no,no,pipeline,READS_BALL_TABLE,per-game output check
+R11,scripts/run_phase_g.py,343,detected+ball coords,no,no,phase runner,READS_BALL_TABLE,quality update
+R12,scripts/run_phase_g.py,557,detected,no,no,phase runner,READS_BALL_TABLE,detected share
+R13,scripts/run_season_queue.py,236,table presence,no,no,queue,READS_BALL_TABLE,completion check
+R14,scripts/validate_game.py,524,ball columns,no,yes,validation,READS_BALL_TABLE,game validation join
+R15,scripts/validate_games.py,85,detected,no,no,validation,READS_BALL_TABLE,aggregate validation
+R16,scripts/platformkit/attempted_frame_count_source.py,83,frame,no,yes,harness support,READS_BALL_TABLE,attempted-frame source
+R17,scripts/platformkit/tracking/g198_prefetch_frame_misalignment.py,36,frame,no,yes,analytic,READS_BALL_TABLE,frame alignment check
+R18,scripts/platformkit/tracking/g309_multigame_census.py,181,detected+inferred+ball coords,no,no,analytic,READS_BALL_TABLE,ball census
+R19,scripts/platformkit/tracking/g310_instance_key.py,197,frame,no,yes,analytic,READS_BALL_TABLE,instance-key input
+R20,scripts/platformkit/tracking/g310_native_input_arm.py,90,frame+ball coords,no,yes,analytic,READS_BALL_TABLE,native input arm
+R21,scripts/platformkit/tracking/g314_ball_inferred_coords.py,150,detected+inferred+ball coords,no,no,analytic,READS_BALL_TABLE,archived-table reader
+R22,scripts/platformkit/tracking/g331_evaluated_frames_sidecar.py,95,frame,no,yes,analytic,READS_BALL_TABLE,evaluated frame sidecar
+R23,scripts/platformkit/tracking/g195_cv2_rng_route_determinism.py,26-47,frame+ball_tracking_csv_sha256,no,yes,analytic,READS_BALL_TABLE,route-determinism frame denominator + digest
+R24,scripts/platformkit/tracking/g320_ball_table_census.py,60-93,ball_x2d+ball_y2d+ball_inferred,no,no,analytic,READS_BALL_TABLE,prior ball-table classifier (G320)
+R25,scripts/run_clip.py,752-773,table presence,no,no,pipeline,READS_BALL_TABLE,output summary row-count check
+R26,scripts/run_data_collection.py,215-221,table presence,no,no,pipeline,READS_BALL_TABLE,stale-file clear + move to output dir
+R27,scripts/process_game.py,311-314,table presence,no,no,pipeline,READS_BALL_TABLE,snapshot copy to game dir
+R28,scripts/consolidate_game_data.py,80-93,table presence,no,no,batch,READS_BALL_TABLE,canonical-location existence+copy
+R29,src/features/feature_engineering.py,69,ball_x2d+ball_y2d,yes,no,feature,EXPECTS_INLINE_BALL_ROWS,loads tracking_data.csv
+R30,scripts/platformkit/tracking_harness.py,314,cls==ball,yes,no,harness,EXPECTS_INLINE_BALL_ROWS,ball validity metric
+R31,scripts/platformkit/track_daemon_done.py,205,tracking_data.csv via harness,yes,no,daemon,EXPECTS_INLINE_BALL_ROWS,passes player table to harness
+R32,domains/basketball_nba/tracking/quality_probe.py,90,cls+ball_x2d+ball_y2d,yes,no,quality,EXPECTS_INLINE_BALL_ROWS,normalizes inline ball schema
+R33,scripts/validate/check_metrics.py,17,ball_x2d+ball_y2d,yes,no,validation,EXPECTS_INLINE_BALL_ROWS,inline coordinate summary
+R34,src/analytics/defensive_scheme.py,51,object_type==ball,yes,no,intelligence,EXPECTS_INLINE_BALL_ROWS,object-row ball consumer
+R35,src/analytics/micro_timing.py,49,object_type==ball,yes,no,intelligence,EXPECTS_INLINE_BALL_ROWS,object-row ball consumer
+R36,src/analytics/play_recognition.py,92,object_type==ball,yes,no,intelligence,EXPECTS_INLINE_BALL_ROWS,object-row ball consumer
+R37,src/analytics/rebound_positioning.py,49,object_type==ball,yes,no,intelligence,EXPECTS_INLINE_BALL_ROWS,object-row ball consumer
+R38,src/analytics/space_control.py,60,object_type==ball,yes,no,intelligence,EXPECTS_INLINE_BALL_ROWS,object-row ball consumer
+R39,scripts/cv_fix_anchor_intel.py,61-77,frame+ball_x2d+ball_y2d,yes,no,intel,EXPECTS_INLINE_BALL_ROWS,shot-anchor inline ball coords from tracking_data.csv
+R40,scripts/platformkit/tracking_depth_inventory.py,23-74,ball_x2d+ball_y2d,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,column-family + coordinate-range profiler
+R41,scripts/platformkit/tracking/g305_additive_registration_verdict.py,154-163,ball_valid_pct,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,registration verdict from harness ball_valid_pct
+R42,scripts/platformkit/overlay_render.py,70-80,cls==ball,yes,no,render,EXPECTS_INLINE_BALL_ROWS,ball-trail overlay draw
+R43,scripts/platformkit/metric_local_profile.py,35-53,cls==ball,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,ball_valid_pct metric profile
+R44,scripts/platformkit/demo_render.py,191,cls==ball,yes,no,render,EXPECTS_INLINE_BALL_ROWS,ball marker color in demo render
+R45,domains/basketball_nba/tracking/screens.py,39-86,ball_x+ball_y+cls==ball,yes,yes,analytic,EXPECTS_INLINE_BALL_ROWS,ball-screen candidate frame-merge
+R46,src/sim/basketball_sim.py,95,team-rate caches,no,no,simulation,BALL_BLIND,no ball table or joined input
+R47,intel/,0,no semantic ball reader,no,no,intelligence,BALL_BLIND,no grep hit under intel
+R48,src/tracking/event_detector.py,191-234,ball_pos,no,no,event,RUNTIME_BALL_POS,runtime position parameter not a persisted table
+R49,tests/platformkit/test_g314_ball_inferred_coords.py,16,synthetic ball table,no,no,test,TEST_ONLY,construct reader test
+R50,tests/platformkit/test_g320_ball_inferred_no_coord.py,21,synthetic ball table,no,no,test,TEST_ONLY,construct reader test
+R51,scripts/platformkit/test_attempted_frame_count_source.py,28,synthetic ball_tracking.csv fixture,no,no,test,TEST_ONLY,attempted-frame-source unit test
+R52,domains/basketball_nba/tracking/test_quality_probe.py,21,synthetic ball_x2d+ball_y2d fixture,no,no,test,TEST_ONLY,quality_probe unit test
+R53,scripts/platformkit/tracking/test_g231_out_of_bounds_structure.py,14,synthetic cls=ball row,no,no,test,TEST_ONLY,harness unit test
+R54,scripts/platformkit/tracking/test_g230_physical_plausibility.py,13,synthetic cls=ball row,no,no,test,TEST_ONLY,harness unit test
+R55,scripts/platformkit/test_evaluated_frame_count_direct_path.py,19,synthetic cls=ball row,no,no,test,TEST_ONLY,harness unit test
+R56,scripts/platformkit/test_tracking_harness_g197.py,13,synthetic cls=ball row,no,no,test,TEST_ONLY,harness unit test
+R57,scripts/platformkit/test_tracking_harness.py,23,synthetic cls=ball row,no,no,test,TEST_ONLY,harness unit test suite
+R58,scripts/platformkit/tracking/test_harness_additive_metrics.py,23,synthetic cls=ball row,no,no,test,TEST_ONLY,harness unit test
+R59,scripts/platformkit/test_tracking_harness_g80_insufficient_data.py,24,synthetic cls=ball row,no,no,test,TEST_ONLY,harness unit test
+R60,scripts/platformkit/test_tracking_harness_g88_jump_statistic.py,16,synthetic cls=ball row,no,no,test,TEST_ONLY,harness unit test
+R61,scripts/platformkit/test_tracking_harness_g50b.py,22,synthetic cls=ball row,no,no,test,TEST_ONLY,harness unit test
+R62,scripts/platformkit/test_tracking_harness_g72_metric_local.py,38,synthetic cls=ball row,no,no,test,TEST_ONLY,harness unit test
+R63,scripts/platformkit/tracking/test_depth_replay.py,21,synthetic cls=ball row,no,no,test,TEST_ONLY,depth-replay unit test
+R64,scripts/platformkit/test_tracking_contract.py,14,synthetic cls=ball row,no,no,test,TEST_ONLY,tracking-contract unit test
+R65,scripts/platformkit/test_demo_render.py,19,synthetic cls=ball row,no,no,test,TEST_ONLY,demo-render unit test
+R66,scripts/platformkit/test_corpus_rescore.py,17,synthetic cls=ball row,no,no,test,TEST_ONLY,corpus-rescore unit test
+R67,scripts/platformkit/coverage_recovery.py,23-152,cls==player filter + raw CSV read,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,"offline gap-recovery: reads tracking_data.csv, _player_rows filters cls==player (ball rows present, excluded here)"
+R68,scripts/platformkit/render_tracking_demo.py,41,cls!=player skip,yes,no,render,EXPECTS_INLINE_BALL_ROWS,demo renderer skips non-player rows (cls) when building per-frame player positions
+R69,scripts/platformkit/tracking_contract.py,"27,126",cls==player filter,yes,no,validation,EXPECTS_INLINE_BALL_ROWS,"contract validator normalizes columns then checks cls==player numeric bounds; ball rows present, filtered here"
+R70,scripts/platformkit/tracking/ball_join.py,"47,60,61",ball_x2d+ball_y2d+ball_inferred,no,yes,harness,READS_BALL_TABLE,G339 join harness itself: reads ball_tracking.csv by path and joins to tracking_data.csv by frame
+R71,scripts/platformkit/demo_select.py,57,cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,item.cls==player selection filter over rendered observations
+R72,scripts/platformkit/footage_cycle.py,"120,121",cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,normalizes missing cls to player on ingest (schema-aware of ball rows)
+R73,scripts/platformkit/g154_local_table_census.py,"15,124",cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,"cross-sport local tracking-table census (includes basketball/wnba), cls==player filter"
+R74,scripts/platformkit/g82_jump_statistic_measure.py,30,cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,players = raw.loc[raw[cls].eq(player)]
+R75,scripts/platformkit/jump_gap_probe.py,22,cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,players = df[df[cls]==player] gap probe
+R76,scripts/platformkit/liveness_metrics.py,90,cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,"players = df.loc[df[cls]==player, ...] liveness metric"
+R77,scripts/platformkit/basketball_relabel_image_px.py,25-188,cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,reads WNBA/NCAA tracking_data.csv wholesale (basketball_tracking_csvs) for image-space relabel
+R78,scripts/platformkit/tracking/g277_cross_sport_image_space_profile.py,24-269,cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,cross-sport (incl. basketball) inline schema profiler; reads cls/observation categorical values
+R79,scripts/platformkit/tracking/g280_amateur_blind_precision.py,"81,84",cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,detections = frame.loc[frame[cls].eq(player)]
+R80,scripts/platformkit/tracking/g280_amateur_footage_trackability.py,"19,152",cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,players = frame.loc[frame[cls].eq(player)]
+R81,scripts/platformkit/tracking/motion_bounds.py,"36,37",cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,rows = rows.loc[rows[cls]...eq(player)] motion-bounds filter
+R82,scripts/platformkit/tracking/framing_coverage.py,41,cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,checks cls column presence in a tracking frame
+R83,scripts/platformkit/tracking/bridge_infill.py,"60,67",cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,player-row filter identical in shape to coverage_recovery._player_rows
+R84,scripts/platformkit/tracking/tracklet_merge.py,"33,40",cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,player-row filter identical in shape to coverage_recovery._player_rows
+R85,scripts/platformkit/tracking_quality_scan.py,61,cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,players = [r for r in rows if (r.get(cls) or player)==player]
+R86,scripts/platformkit/tracking_schema.py,37-269,cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,"shared schema normalizer: NORMALIZED_COLUMNS includes cls, sets out[cls]=player on normalize"
+R87,scripts/platformkit/tracking/g230_physical_plausibility.py,"65,66",cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,players = [row for row in rows if row[cls]==player]
+R88,scripts/platformkit/tracking/g231_out_of_bounds_structure.py,"186,197,198",cls==player filter,yes,no,analytic,EXPECTS_INLINE_BALL_ROWS,players = [row for row in rows if row[cls]==player]
+R89,api/analytics_router.py,54,object_type filter,no,no,api,READS_BALL_TABLE,"/tracking endpoint: SQL WHERE object_type = %s over tracking_coordinates, object_type accepts ball"
+R90,domains/basketball/tracking/adapter.py,"21,111",-,no,no,-,EXCLUDED_WRITER_SIDE,SCHEMA constant + _image_row writer; only ever emits cls=player rows
+R91,scripts/platformkit/coordinate_provenance.py,8,-,no,no,-,EXCLUDED_WRITER_SIDE,IMAGE_SCHEMA column-name constant + write_tracking_csv/stamp_image_space_rows writer utility
+R92,scripts/platformkit/detection/shim.py,131,-,no,no,-,EXCLUDED_WRITER_SIDE,"cls_id = box.cls[0], raw YOLO detector output, upstream of any persisted table"
+R93,scripts/platformkit/tracking/g324_arms.py,115,-,no,no,-,EXCLUDED_WRITER_SIDE,"b.cls.cpu().numpy(), raw YOLO Boxes.cls detector output"
+R94,scripts/platformkit/tracking/g327_detector_batch_stability.py,220,-,no,no,-,EXCLUDED_WRITER_SIDE,"b.cls.cpu().numpy(), raw YOLO Boxes.cls detector output"
+R95,src/tracking/ball_detect_track.py,138-812,-,no,no,-,EXCLUDED_WRITER_SIDE,"ball detector internals: resources/ball template dir, self.ball_inferred attribute, boxes.cls; source of the writer's fields, not a table consumer"
+R96,src/pipeline/unified_pipeline.py,563-4031,-,no,no,-,EXCLUDED_WRITER_SIDE,"writer-side: stale ball_tracking.csv cleanup (1561), dead-ball row construction (1829-1841), inline ball_x2d/ball_y2d written onto per-player feature rows (2727-2728, schema list 3969), and the ball_tracking.csv writer itself (1985-1991, 4030-4031) -- underlies the memo Writer contract table, not a readers.csv consumer"
+R97,src/detection/tools/classes.py,1,-,no,no,-,EXCLUDED_DETECTOR_LABEL_LIST,"class_names = [ball, made, person, rim, shoot], literal detector label list"
+R98,scripts/label_ball_yolo.py,173,-,no,no,-,EXCLUDED_DETECTOR_LABEL_LIST,"writes YOLO dataset config names: [ball], literal detector label list"
+R99,src/pipeline/unified_pipeline.py,563-4031,-,no,no,-,EXCLUDED_DETECTOR_LABEL_LIST,"LABELS = {1: ball, ...} detector id-to-name map (563) + overlay color/label LUT keyed by name (3064, 3075)"
+R100,api/courtvision_router.py,8436-8507,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,embedded JS: const cls = CSS pill class token
+R101,api/static/cv_simple.js,"71,72",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,embedded JS: const cls = CSS class token
+R102,api/templates/odds.html,785,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,embedded JS: const cls = CSS class token
+R103,scripts/platformkit/adapter_interface_spec.py,90-239,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls = adapter class object (classmethod-style interface-parity checks)
+R104,scripts/platformkit/analytics_showcase/schedule_density.py,"140,148",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls = schedule-density class (b2b/3-in-4/4-in-6), not tracking row type"
+R105,scripts/platformkit/autoloop/propose_gate_job.py,"78,80",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls parsed from a candidate id string, signal-catalog class"
+R106,scripts/platformkit/calibration_conformance.py,"170,171,179",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls = _load_adapter_class(sport), adapter class object"
+R107,scripts/platformkit/catalog_common.py,95,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls = signal class parameter passed to a compute function (eval-gate)
+R108,scripts/platformkit/eval_gate/catalog_rescreen.py,"223,224,226",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls iterates CATALOG_SIGNALS, signal-catalog class"
+R109,scripts/platformkit/eval_gate/combo_search.py,"62,63",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls iterates CATALOG_SIGNALS, signal-catalog class"
+R110,scripts/platformkit/frontend/board.py,"101,106",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls = dynamically loaded adapter class object
+R111,scripts/platformkit/frontend/board_html.py,"177,179",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls = CSS class token (diff-pos/diff-neg)
+R112,scripts/platformkit/frontend/static/index.html,"63,64",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,embedded JS: var cls = CSS class token
+R113,scripts/platformkit/g326_hash_sink_census.py,"229,230,238",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls = memory-safety classification (MEM/etc.) in a static-analysis tool
+R114,scripts/platformkit/generic_rating.py,"142,143",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls = adapter class name from a per-sport registry
+R115,scripts/platformkit/kernel_api_map.py,143-155,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls = Python class name in a kernel/feature module API diff tool
+R116,scripts/platformkit/omni/reject_reaudit.py,210-224,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls = classify_finer(o), eval-gate signal classification dict"
+R117,scripts/platformkit/pm_trading/pm_providers.py,"82,88",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls = getattr(mod, cls_name), dynamically loaded provider class"
+R118,scripts/platformkit/pm_trading/test_pm_paper_tick_runner.py,1051-1074,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls iterates a list of test classes (meta-test harness)
+R119,scripts/platformkit/pm_trading/ui.py,"124,131",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls = UI label class token (ok/no/muted)
+R120,scripts/platformkit/tracking/g194_m1_pipeline_measure.py,81-175,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls = self.pipeline_module.UnifiedPipeline, a Python class object"
+R121,scripts/platformkit/tracking/g289_implausible_step_decomposition.py,"24,25",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"super().__new__(cls, value), Enum classmethod pattern"
+R122,src/data/beat_reporter_monitor.py,"247,248,251",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls = attrs_dict.get(class, ''), HTML tag class attribute (scraping)"
+R123,src/ingame/per_second_projector.py,172-656,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls = classmethod first-parameter (from_eval_curve/from_residual_dump/load)
+R124,src/loop/orchestrator.py,217-435,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls = discovered signal class object (signal-discovery registry)
+R125,src/prediction/live_models.py,"323,325,326",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls iterates Python model classes to instantiate/register
+R126,src/prediction/nlp_models.py,141-146,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls = NLP classifier output label (low/medium/high)
+R127,src/prediction/prop_pergame.py,"4972,4973,4975",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls = type(m).__name__.lower(), ensemble model-type introspection"
+R128,src/prediction/tier4_models.py,446-452,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls iterates Python model classes
+R129,src/prediction/tier5_models.py,292-298,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls iterates Python model classes
+R130,src/tracking/jersey_ocr.py,181,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"reader.ocr(img, cls=False), OCR library angle-classification parameter"
+R131,src/tracking/scoreboard_ocr.py,319,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"reader.ocr(region, cls=False), OCR library angle-classification parameter"
+R132,scripts/betting_backtest.py,"90,91,93",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls = type(m).__name__.lower(), ensemble model-type introspection"
+R133,scripts/bot_guards/watch.py,69,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"os.system(cls) Windows console-clear command, not the tracking column"
+R134,scripts/build_sequential_possession.py,158-521,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls = momentum-builder/reactive-cooler player classification (cls_map), not tracking row type"
+R135,scripts/compare_to_lines.py,360-384,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls = classify_starter(...), starter/bench classification"
+R136,scripts/execute_loop/L20_injury_feed.py,"400,401",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls = attrs_dict.get(class, ''), HTML tag class attribute (scraping)"
+R137,scripts/execute_loop/L21_lineup_watcher.py,"160,161,163",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls = dict(attrs).get(class, ''), HTML tag class attribute (scraping)"
+R138,scripts/execute_loop/L37_postmortem.py,199-203,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls = custom incident-classification registry lookup
+R139,scripts/generate_html_dashboard.py,"282,283",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls = CSS class token (pos/neg)
+R140,scripts/parse_rotowire_lineups.py,"106,109,113",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls = HTML tag class attribute (scraping)
+R141,scripts/predict_slate.py,74-89,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls = classify_starter(...), starter/bench classification"
+R142,scripts/system_status.py,510,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"os.system(cls) Windows console-clear command, not the tracking column"
+R143,scripts/team_system/board_render.py,127-329,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,cls = CSS class token (prob-hi/prob-lo/edge-notable)
+R144,scripts/test_intelligence_betting_v3.py,743-1032,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls = per-scheme betting-class summary bucket label, not a tracking row filter"
+R145,scripts/test_intelligence_betting_v4.py,986-1358,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"cls = per-scheme betting-class summary bucket label, not a tracking row filter"
+R146,domains/basketball_nba/concepts/concept_registry.py,273,-,no,no,-,EXCLUDED_COMMENT_ONLY,"prose rationale string ""wants the ball"", not a code read of the tracking table"
+R147,scripts/build_brain.py,217,-,no,no,-,EXCLUDED_COMMENT_ONLY,"vault note tag [""cv"",""ball""], documentation metadata not a code read"
+R148,scripts/build_clutch_cv.py,237,-,no,no,-,EXCLUDED_COMMENT_ONLY,"comment describing possible teacher-run source columns, no code read on this line"
+R149,scripts/build_cv_fatigue_trajectories.py,108,-,no,no,-,EXCLUDED_COMMENT_ONLY,"comment describing possible teacher-run source columns, no code read on this line"
+R150,scripts/build_possession_type_intel.py,120,-,no,no,-,EXCLUDED_COMMENT_ONLY,"comment describing possible teacher-run source columns, no code read on this line"
+R151,scripts/build_quarter_momentum.py,222,-,no,no,-,EXCLUDED_COMMENT_ONLY,"comment describing possible teacher-run source columns, no code read on this line"
+R152,scripts/build_shot_clock_buckets.py,188,-,no,no,-,EXCLUDED_COMMENT_ONLY,"comment describing possible teacher-run source columns, no code read on this line"
+R153,scripts/build_tipoff_predictability.py,159,-,no,no,-,EXCLUDED_COMMENT_ONLY,"comment describing possible teacher-run source columns, no code read on this line"
+R154,scripts/build_trade_intel.py,202,-,no,no,-,EXCLUDED_COMMENT_ONLY,"comment describing possible teacher-run source columns, no code read on this line"
+R155,scripts/eval_live_shot_quality.py,86,-,no,no,-,EXCLUDED_COMMENT_ONLY,"comment describing possible teacher-run source columns, no code read on this line"
+R156,scripts/reenrich_with_runlog.py,6,-,no,no,-,EXCLUDED_COMMENT_ONLY,"docstring listing file names re-run by this script, no code read on this line"
+R157,scripts/reprocess_failed_games.py,81,-,no,no,-,EXCLUDED_COMMENT_ONLY,"comment explaining why reprocessing is needed, no code read on this line"
+R158,scripts/platformkit/signals/playstyle_corr_gate.py,49,-,no,no,-,EXCLUDED_SIGNAL_TAG,"""ball"" inside a PNR-ballhandler playstyle signal-tag tuple, a catalog tag string not a table column/value"
+R159,scripts/platformkit/test_basketball_relabel_image_px.py,40,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R160,scripts/platformkit/test_coordinate_provenance.py,12-56,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R161,scripts/platformkit/test_court_transform.py,138,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R162,scripts/platformkit/test_coverage_recovery.py,15-54,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R163,scripts/platformkit/test_depth_dashboard.py,"44,47",synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R164,scripts/platformkit/test_evidence_pipeline.py,18,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R165,scripts/platformkit/test_footage_cycle.py,"76,137",synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R166,scripts/platformkit/test_footage_cycle_import.py,"18,21",synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R167,scripts/platformkit/test_g149_persist_decoded_denominator.py,20,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R168,scripts/platformkit/test_g153_local_decoded_frames_producer.py,28,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R169,scripts/platformkit/test_liveness_metrics.py,"11,43,56",synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R170,scripts/platformkit/test_overlay_render.py,23,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R171,scripts/platformkit/test_progress_watchdog.py,79,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R172,scripts/platformkit/test_track_daemon_done.py,"58,75,109",synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R173,scripts/platformkit/test_track_daemon_ledger_denominator.py,16,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R174,scripts/platformkit/test_tracking_schema_coordinate_space.py,17,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R175,scripts/platformkit/test_tracking_schema_image_px_containment.py,19,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R176,scripts/platformkit/tracking/test_bridge_infill.py,"10,37",synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R177,scripts/platformkit/tracking/test_framing_coverage.py,15,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R178,scripts/platformkit/tracking/test_g195_cv2_rng_route_determinism.py,16,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R179,scripts/platformkit/tracking/test_g198_prefetch_frame_misalignment.py,20,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R180,scripts/platformkit/tracking/test_g277_cross_sport_image_space_profile.py,18-48,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R181,scripts/platformkit/tracking/test_g280_amateur_footage_trackability.py,"11,17",synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R182,scripts/platformkit/tracking/test_g305_additive_registration_verdict.py,71,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R183,scripts/platformkit/tracking/test_g81_null_coverage_readers.py,12,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R184,scripts/platformkit/tracking/test_image_px_containment.py,12,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R185,scripts/platformkit/tracking/test_motion_bounds.py,11,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R186,scripts/platformkit/tracking/test_tracklet_merge.py,8,synthetic tracking-schema fixture,no,no,test,TEST_ONLY,synthetic construct/fixture test exercising a real reader classified above
+R187,scripts/platformkit/framing_distill.py,49,-,no,no,-,EXCLUDED_OTHER_SPORT,"TAKEN_DESCRIPTIONS includes called_strike/ball/blocked_ball, baseball pitch descriptions"
+R188,scripts/platformkit/ingame/kbo_naver_relay.py,138,-,no,no,-,EXCLUDED_OTHER_SPORT,KBO (Korean baseball) balls/strikes/outs relay
+R189,scripts/platformkit/ingame/kbo_relay_state_provider.py,121,-,no,no,-,EXCLUDED_OTHER_SPORT,KBO (Korean baseball) balls count
+R190,scripts/platformkit/ingame/npb_kbo_live_state.py,"206,208,212",-,no,no,-,EXCLUDED_OTHER_SPORT,NPB/KBO (baseball) live-state table cell class (day/play)
+R191,scripts/platformkit/ingame/test_kbo_capture_wire.py,36,-,no,no,-,EXCLUDED_OTHER_SPORT,KBO baseball test fixture (strike/ball/out)
+R192,scripts/platformkit/ingame/test_kbo_naver_relay.py,38,-,no,no,-,EXCLUDED_OTHER_SPORT,KBO baseball test fixture (strike/ball/out)
+R193,scripts/platformkit/ingame/test_kbo_relay_state_provider.py,"32,54",-,no,no,-,EXCLUDED_OTHER_SPORT,KBO baseball test fixture (strike/ball/out)
+R194,scripts/platformkit/interaction_factory/test_runner.py,"125,143,352",-,no,no,-,EXCLUDED_OTHER_SPORT,MLB Statcast pitch-description fixtures (walk/ball)
+R195,scripts/platformkit/interaction_factory/test_runner_knowledge_attrs.py,28-77,-,no,no,-,EXCLUDED_OTHER_SPORT,MLB Statcast pitch-description fixtures (ball/type B)
+R196,scripts/platformkit/predictive_validity/test_mlb_adapters.py,46,-,no,no,-,EXCLUDED_OTHER_SPORT,MLB Statcast pitch-description fixture (ball)
+R197,scripts/platformkit/soccer_xt.py,63-110,-,no,no,-,EXCLUDED_OTHER_SPORT,"soccer expected-threat proxy events: cls==ball rows are SOCCER's ball, a different tracking table"
+R198,scripts/platformkit/test_soccer_xt.py,27,-,no,no,-,EXCLUDED_OTHER_SPORT,"test fixture for soccer_xt.py (soccer's ball, not basketball)"
+R199,scripts/platformkit/specs/officiatingdynamics_tennis.py,16-56,-,no,no,-,EXCLUDED_OTHER_SPORT,"ball_tracking_margin_error, a tennis Hawk-Eye signal slug"
+R200,scripts/platformkit/tennis_coverage_probe.py,"68,134",-,no,no,-,EXCLUDED_OTHER_SPORT,tennis detector coverage probe (tennis's ball)
+R201,scripts/platformkit/tennis_detector_recall.py,72,-,no,no,-,EXCLUDED_OTHER_SPORT,tennis detector recall measurement (tennis's ball)
+R202,scripts/platformkit/tracking/football_fieldview.py,151,-,no,no,-,EXCLUDED_OTHER_SPORT,"American-football field-view schema (FIELD_CLS), not basketball"
+R203,scripts/platformkit/tracking/football_snap.py,31-200,-,no,no,-,EXCLUDED_OTHER_SPORT,"American-football snap-detection schema (MOTION_CLS/SNAP_CLS), not basketball"
+R204,scripts/platformkit/tracking/test_football_snap.py,"124,127",-,no,no,-,EXCLUDED_OTHER_SPORT,"test fixture for football_snap.py (American football, not basketball)"
+R205,scripts/platformkit/analytics_showcase/mlb_count_leverage.py,108-224,-,no,no,-,EXCLUDED_OTHER_SPORT,MLB pitch-count leverage classes (two_strike/three_ball)
+R206,scripts/platformkit/analytics_showcase/mlb_pitch_atlas.py,"44,45",-,no,no,-,EXCLUDED_OTHER_SPORT,MLB pitch outcome labels (ball/strike/in-play)
+R207,scripts/platformkit/analytics_showcase/out/atlas_mlb_pitch_manifest.json,36-2557,-,no,no,-,EXCLUDED_OTHER_SPORT,MLB pitch-atlas manifest data (ball % by zone)
+R208,scripts/platformkit/analytics_showcase/pitch_sequencing.py,88-179,-,no,no,-,EXCLUDED_OTHER_SPORT,MLB pitch-count leverage classes (two_strike/three_ball)
+R209,domains/baseball/tracking/adapter.py,"56,220,270",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (baseball), not the basketball ball_tracking table"
+R210,domains/baseball/tracking/test_adapter.py,"123,145,153",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (baseball), not the basketball ball_tracking table"
+R211,domains/baseball_kbo/ingest_kbo.py,"160,162,167",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (baseball_kbo), not the basketball ball_tracking table"
+R212,domains/football/tracking/adapter.py,"13,98,116",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (football), not the basketball ball_tracking table"
+R213,domains/football/tracking/presnap_features.py,"55,56",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (football), not the basketball ball_tracking table"
+R214,domains/football/tracking/quality_probe.py,65,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (football), not the basketball ball_tracking table"
+R215,domains/football/tracking/test_adapter.py,193,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (football), not the basketball ball_tracking table"
+R216,domains/football/tracking/test_presnap_features.py,"25,28",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (football), not the basketball ball_tracking table"
+R217,domains/football/tracking/test_quality_probe.py,20,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (football), not the basketball ball_tracking table"
+R218,domains/mlb/knowledge/test_validate_called_strike_dispersion.py,25,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R219,domains/mlb/knowledge/test_validate_research_wave1.py,25-68,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R220,domains/mlb/knowledge/test_validate_research_wave2.py,22-102,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R221,domains/mlb/knowledge/test_validate_research_wave5.py,19,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R222,domains/mlb/knowledge/validate_called_strike_dispersion.py,39,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R223,domains/mlb/knowledge/validate_count_zone.py,118,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R224,domains/mlb/knowledge/validate_research_wave1.py,43,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R225,domains/mlb/knowledge/validate_research_wave2.py,44,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R226,domains/mlb/mlb_prob_recal.py,212-243,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R227,domains/mlb/pitch_engine/bullpen.py,100-182,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R228,domains/mlb/pitch_engine/bullpen_v3.py,88-181,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R229,domains/mlb/pitch_engine/bullpen_v4.py,"62,78",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R230,domains/mlb/pitch_engine/corpus.py,"68,70,85",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R231,domains/mlb/pitch_engine/game_sim.py,"51,75",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R232,domains/mlb/pitch_engine/outcome.py,56-124,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R233,domains/mlb/pitch_engine/outcome_platoon.py,"42,62",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R234,domains/mlb/pitch_engine/pa_chain.py,"40,122,136",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R235,domains/mlb/pitch_engine/selection.py,61-89,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R236,domains/mlb/pitch_engine/test_corpus.py,"11,15,36",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R237,domains/mlb/pitch_engine/test_outcome.py,33,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R238,domains/mlb/pitch_engine/test_outcome_platoon.py,30,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R239,domains/mlb/pitch_engine/test_pa_chain.py,"23,45",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R240,domains/mlb/prereg_shift_framing.py,164,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R241,domains/mlb/profiles/attribute_registry.py,128-500,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R242,domains/mlb/profiles/ingredients_batter_grid.py,41-80,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R243,domains/mlb/profiles/ingredients_batter_zones.py,"86,89",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R244,domains/mlb/profiles/ingredients_pitcher_grid.py,36-199,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R245,domains/mlb/profiles/ingredients_pitcher_zones.py,132-188,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R246,domains/mlb/profiles/test_ingredients_batted_ball.py,"82,93",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R247,domains/mlb/profiles/test_ingredients_grid.py,"58,61",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R248,domains/mlb/profiles/test_ingredients_zones.py,68,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R249,domains/mlb/savant_backfill.py,181,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R250,domains/mlb/test_claims_shift_framing.py,16,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R251,domains/mlb/test_prereg_shift_framing.py,"23,25,97",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R252,domains/mlb/test_savant_backfill.py,"22,105,108",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R253,domains/mlb/test_weather_totals_gate.py,21-54,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (mlb), not the basketball ball_tracking table"
+R254,domains/soccer/chain_engine/match_sim.py,"36,42",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (soccer), not the basketball ball_tracking table"
+R255,domains/soccer/chain_engine/shot_model.py,"61,88",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (soccer), not the basketball ball_tracking table"
+R256,domains/soccer/tracking/adapter.py,"16,113,129",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (soccer), not the basketball ball_tracking table"
+R257,domains/soccer/tracking/coverage_ceiling.py,"36,40",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (soccer), not the basketball ball_tracking table"
+R258,domains/soccer/tracking/geometry.py,51-76,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (soccer), not the basketball ball_tracking table"
+R259,domains/soccer/tracking/pressing.py,4-126,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (soccer), not the basketball ball_tracking table"
+R260,domains/soccer/tracking/quality_probe.py,36,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (soccer), not the basketball ball_tracking table"
+R261,domains/soccer/tracking/test_adapter.py,171-278,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (soccer), not the basketball ball_tracking table"
+R262,domains/soccer/tracking/test_coverage_ceiling.py,11-25,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (soccer), not the basketball ball_tracking table"
+R263,domains/soccer/tracking/test_pressing.py,21-62,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (soccer), not the basketball ball_tracking table"
+R264,domains/soccer/tracking/test_quality_probe.py,"15,38",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (soccer), not the basketball ball_tracking table"
+R265,domains/tennis/mcp_2026.py,"83,84,86",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (tennis), not the basketball ball_tracking table"
+R266,domains/tennis/point_engine/point_model.py,"56,76",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (tennis), not the basketball ball_tracking table"
+R267,domains/tennis/tracking/adapter.py,"18,233",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (tennis), not the basketball ball_tracking table"
+R268,domains/tennis/tracking/ball.py,"16,246",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (tennis), not the basketball ball_tracking table"
+R269,domains/tennis/tracking/quality_probe.py,"60,65",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (tennis), not the basketball ball_tracking table"
+R270,domains/tennis/tracking/rally_features.py,4-126,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (tennis), not the basketball ball_tracking table"
+R271,domains/tennis/tracking/test_adapter.py,80-331,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (tennis), not the basketball ball_tracking table"
+R272,domains/tennis/tracking/test_quality_probe.py,"18,19,22",-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (tennis), not the basketball ball_tracking table"
+R273,domains/tennis/tracking/test_rally_features.py,28-122,-,no,no,-,EXCLUDED_OTHER_SPORT,"other-sport domain module (tennis), not the basketball ball_tracking table"
+R274,domains/basketball_nba/sim2/cond_clutch.py,"156,183",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R275,domains/basketball_nba/sim2/cond_composite.py,"156,178",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R276,domains/basketball_nba/sim2/pace_model.py,62-72,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R277,domains/basketball_nba/sim2/possession_model.py,216-247,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R278,scripts/execute_loop/L18_bankroll_manager.py,"103,104",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R279,scripts/platformkit/autonomy/work_queue.py,"82,83",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R280,scripts/platformkit/combo/combo_bandit.py,"64,66,68",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R281,scripts/platformkit/foundry/promotion.py,"38,47",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R282,scripts/platformkit/improve/checkpoint.py,"44,45",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R283,scripts/platformkit/odds_provider/prop_book_aggregate.py,70,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R284,scripts/platformkit/serving_calibration.py,"93,97",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R285,scripts/platformkit/venue_history/espn_tipoff_backfill.py,"114,136",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R286,scripts/platformkit/venue_history/nba_close_corpus.py,85-152,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R287,scripts/research_harness/belief_store.py,109-251,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R288,scripts/research_harness/research_ledger.py,"77,78",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R289,scripts/research_harness/self_forecast.py,"54,55",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R290,src/calibration/cohort_calibrator.py,"264,270",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R291,src/fusion/source_registry.py,93-110,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R292,src/fusion/spatial_prior.py,"179,181",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R293,src/ingame/continuous_projection.py,425-668,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R294,src/ingame/game_state.py,"256,345",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R295,src/ingest/sources.py,55-58,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R296,src/loop/store.py,"85,86",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R297,src/models/bridge_model.py,223,-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R298,src/prediction/blowout_residual.py,"360,370",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R299,src/prediction/center_blk_residual.py,"260,269",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R300,src/prediction/conformal_props.py,"99,102",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R301,src/prediction/heat_check_residual.py,"308,318",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R302,src/prediction/heat_check_shrinkage_residual.py,"288,297",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R303,src/prediction/minute_trajectory.py,"266,278",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R304,src/prediction/minute_trajectory_foul_residual.py,"335,347",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R305,src/prediction/multitask_mlp_live.py,"397,405",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R306,src/prediction/period_specific_heads.py,"238,248",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R307,src/prediction/quantile_props.py,"136,140",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R308,src/prediction/segment_calibrator.py,"121,127",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R309,src/prediction/shot_quality.py,"179,180",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
+R310,src/sim/possession_model.py,"623,627",-,no,no,-,EXCLUDED_GENERIC_CLS_PARAM,"@classmethod cls first-parameter (fit/load/from_*/as_prior constructor pattern), verified by sample inspection; not a tracking-table column"
