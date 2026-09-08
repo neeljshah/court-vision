@@ -1,4 +1,4 @@
-GAP G355 | sport basketball | worktree aX | log cx_g355_shot_router_robustness
+GAP G355 | sport basketball | worktree a12 | log cx_g355_shot_router_robustness
 
 **ROBUSTNESS ROW ON LANDED CODE (from the G350 finisher 2026-09-08; codex-friendly, local, synthetic + golden
 rerun).** `src/`, `kernel/`, `api/` and `intel/` are READ and IMPORT only. Edit ONLY
