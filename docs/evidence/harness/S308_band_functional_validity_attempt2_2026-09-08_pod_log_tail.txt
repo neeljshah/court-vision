@@ -1,0 +1,6 @@
+BASELINE_ALL_090={'n': 465249, 'n_groups': 50, 'group_size': 9304, 'coverage': 1.0, 'nominal': 0.9, 'deviation': 0.09999999999999998, 'within_tolerance': False, 'mean_interval_width': 0.06222959291031572, 'mean_miss': 0.0, 'mean_interval_half_width': 0.03111479645515786}
+BASELINE_ALL_080={'n': 465249, 'n_groups': 50, 'group_size': 9304, 'coverage': 1.0, 'nominal': 0.8, 'deviation': 0.19999999999999996, 'within_tolerance': False, 'mean_interval_width': 0.03990407594638145, 'mean_miss': 0.0, 'mean_interval_half_width': 0.019952037973190725}
+OUTER_LABEL_DEPENDENCIES=0
+S294_INTERVAL_SCORE_SUM_BEFORE=52.217066476
+S294_INTERVAL_SCORE_SUM_AFTER=61.766351358
+RSS_PEAK_BYTES=3293696000

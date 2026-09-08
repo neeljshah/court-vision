@@ -1,0 +1,6 @@
+START 2026-09-08T17:06:56Z
+ELAPSED_S 7853.2
+STATIC {"0.80": {"coverage": 1.0, "deviation": 0.19999999999999996, "group_size": 9304, "mean_interval_half_width": 0.01995203797318392, "mean_interval_width": 0.03990407594636784, "mean_miss": 0.0, "n": 465249, "n_groups": 50, "nominal": 0.8, "within_tolerance": false}, "0.90": {"coverage": 1.0, "deviation": 0.09999999999999998, "group_size": 9304, "mean_interval_half_width": 0.03111479645515688, "mean_interval_width": 0.06222959291031376, "mean_miss": 0.0, "n": 465249, "n_groups": 50, "nominal": 0.9, "within_tolerance": false}}
+CODE_IDENTITY {"aci_online": "17dbb28395158d0366cafddf9e309152722076960783fb8d30d53e14db12136c", "cpcv_engine": "5accfbe490031acb084a8e4375a082b00d842cf4011a76c6d27dfc2c7db614a5", "s101": "4dbadc319b76a0e9c6e4ea53e3c683f242176774290917bebee894344c2cf93f", "s123": "476ed9fdfb714b93c5b722f8e99fb1266cdb5987a729495f12e84d2b62ea08ed", "s265": "697d7ae649686ec580e9059e62744ce288bd27b6383e311c3c94d881fff817ff", "s276_attempt2": "c9641c39d8e4cb0706ed171b7fbb4fa4746176eb35f12359af0e00fb9715f525", "s86": "2e197d14cce6d86ed80db6482cf37b08201c61944b930197cbf6317a1140fa68", "s94": "c113c1c502e9a056b0e148f6be3ba91bb295aa0caf5237cd1c249354edc8e4fc"}
+PAIR_SHA cc22b1b4a3d473366938163bd87f9f1e0086732d6c36958cc562cc1d7633fd48
+DONE
