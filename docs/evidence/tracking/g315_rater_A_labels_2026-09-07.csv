@@ -1,0 +1,31 @@
+panel_id,label,reason
+ncaa_basketball_mRkuGgeECak_01,SWAP,box B on referee under basket; box A on ball-handler
+ncaa_basketball_mRkuGgeECak_02,UNREADABLE,box A huge and covers many players; no single subject
+ncaa_basketball_mRkuGgeECak_03,UNREADABLE,box A on heavily defocused crowd in close-up shot
+ncaa_basketball_mRkuGgeECak_04,UNREADABLE,both boxes on defocused background crowd; nobody identifiable
+ncaa_basketball_mRkuGgeECak_05,SWAP,box A navy player; box B referee in striped shirt
+ncaa_basketball_mRkuGgeECak_06,SWAP,box A player 5 on court; box B stands crowd
+ncaa_basketball_mRkuGgeECak_07,UNREADABLE,no box drawn in frame A; zoom crop blank
+ncaa_basketball_mRkuGgeECak_08,SWAP,box A white-jersey player; box B corner graphic and crowd
+ncaa_basketball_mRkuGgeECak_09,SWAP,box A upper-deck crowd; box B white jersey 7
+ncaa_basketball_mRkuGgeECak_10,NOT-SWAP,broadcast bumper dissolve visible in frame A
+ncaa_basketball_sRtHQbywiTE_01,SWAP,both boxes on unrelated crowd sections; different spectators
+ncaa_basketball_sRtHQbywiTE_02,SWAP,box A crowd; box B a different bench section
+ncaa_basketball_sRtHQbywiTE_03,SWAP,box A orange 0 player; box B crowd behind basket
+ncaa_basketball_sRtHQbywiTE_04,NOT-SWAP,camera cut from overhead shot to baseline shot
+ncaa_basketball_sRtHQbywiTE_05,SWAP,box A crowd; box B referee and bench players
+ncaa_basketball_sRtHQbywiTE_06,SWAP,crowd sections far apart even after allowing camera pan
+ncaa_basketball_sRtHQbywiTE_07,NOT-SWAP,camera cut to different angle; score and graphics changed
+ncaa_basketball_sRtHQbywiTE_08,NOT-SWAP,replay dissolve superimposed on frame A
+ncaa_basketball_sRtHQbywiTE_09,NOT-SWAP,camera cut from close-up to elevated wide shot
+ncaa_basketball_sRtHQbywiTE_10,SWAP,box A border crowd; box B different crowd section
+wnba_05_01,SWAP,box A shooter in navy; box B empty court area
+wnba_05_02,SWAP,box A navy Dallas player; box B person in white
+wnba_05_03,UNREADABLE,no boxes drawn in either frame; both crops blank
+wnba_05_04,UNREADABLE,box A not visible; crop is unresolvable blur
+wnba_05_05,NOT-SWAP,camera cut; frame A is an extreme close-up bumper
+wnba_05_06,SWAP,box A dark Dallas player at border; box B white
+wnba_05_07,SWAP,box A courtside bench person; box B white-jersey player
+wnba_05_08,SWAP,box A courtside person; box B Dallas player on court
+wnba_05_09,SWAP,far-basket player to foreground player in three frames
+wnba_05_10,UNREADABLE,no box drawn in frame A; zoom crop blank

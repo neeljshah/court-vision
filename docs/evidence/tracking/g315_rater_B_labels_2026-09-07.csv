@@ -1,0 +1,31 @@
+panel_id,label,reason
+ncaa_basketball_mRkuGgeECak_01,SWAP,box B is a referee not the ball-handler in A
+ncaa_basketball_mRkuGgeECak_02,NOT-SWAP,same player cluster minimal motion one-stride gap
+ncaa_basketball_mRkuGgeECak_03,UNREADABLE,box A too small and blurred crowd only
+ncaa_basketball_mRkuGgeECak_04,SWAP,box B is blurred crowd no person box A clear player
+ncaa_basketball_mRkuGgeECak_05,SWAP,box A a player box B a referee
+ncaa_basketball_mRkuGgeECak_06,SWAP,box B empty crowd stairs box A has shooter
+ncaa_basketball_mRkuGgeECak_07,UNREADABLE,box A zoom is blank off-frame
+ncaa_basketball_mRkuGgeECak_08,UNREADABLE,box B tiny blurred crowd jumble unidentifiable
+ncaa_basketball_mRkuGgeECak_09,UNREADABLE,box A tiny sliver blurred crowd top border
+ncaa_basketball_mRkuGgeECak_10,NOT-SWAP,ghosted graphic transition visible between frames
+ncaa_basketball_sRtHQbywiTE_01,SWAP,dark-suited staffer versus different fan in stands
+ncaa_basketball_sRtHQbywiTE_02,UNREADABLE,box lands on cluttered bench staff cluster
+ncaa_basketball_sRtHQbywiTE_03,UNREADABLE,table staffer versus indistinct fan crowd unclear
+ncaa_basketball_sRtHQbywiTE_04,NOT-SWAP,distinct overhead replay camera angle in frame A
+ncaa_basketball_sRtHQbywiTE_05,UNREADABLE,box region dominated by unrelated court action
+ncaa_basketball_sRtHQbywiTE_06,SWAP,different clothing colors on crouched crowd figures
+ncaa_basketball_sRtHQbywiTE_07,UNREADABLE,box A blurred crowd stairs no person visible
+ncaa_basketball_sRtHQbywiTE_08,UNREADABLE,box A shows blurred rim net not a person
+ncaa_basketball_sRtHQbywiTE_09,UNREADABLE,both boxes off-frame or too small blurred
+ncaa_basketball_sRtHQbywiTE_10,UNREADABLE,box A off-frame sliver blank blurred crowd
+wnba_05_01,NOT-SWAP,same shooter continuing follow-through motion
+wnba_05_02,NOT-SWAP,same standing player static free-throw pose
+wnba_05_03,UNREADABLE,no visible box both zoom crops blank
+wnba_05_04,UNREADABLE,box A indistinct overexposed blur no person
+wnba_05_05,UNREADABLE,foreground branded object obstructs box A content
+wnba_05_06,UNREADABLE,box A off-frame sliver blank zoom
+wnba_05_07,UNREADABLE,box A off-frame sliver blurred dark zoom
+wnba_05_08,SWAP,box A a sideline referee box B active player
+wnba_05_09,SWAP,players at clearly different court locations same gap
+wnba_05_10,UNREADABLE,box A invisible blank zoom no content
