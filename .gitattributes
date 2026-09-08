@@ -2,3 +2,5 @@
 docs/evidence/harness/S76_charge_path_followups_2026-09-04_archive.json text eol=lf
 docs/evidence/harness/S76_charge_path_followups_2026-09-04_ledger.json text eol=lf
 docs/evidence/harness/neff_requote_2026-09-04/** -text
+docs/evidence/harness/S287_nba_sim_third_arm_full_pod_2026-09-04/** -text
+docs/evidence/harness/S287_repeatability_2026-09-08/** -text
