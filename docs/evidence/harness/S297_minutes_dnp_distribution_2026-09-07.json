@@ -1,0 +1,212 @@
+{
+  "artifacts": {
+    "docs/evidence/harness/S297_minutes_dnp_distribution_2026-09-07_folds.json": 738,
+    "docs/evidence/harness/S297_minutes_dnp_distribution_2026-09-07_paired_losses.csv": 19735795,
+    "docs/evidence/harness/S297_minutes_dnp_distribution_2026-09-07_scores.csv": 16049537
+  },
+  "corrections_applied_at_landing": {
+    "applied": "2026-09-08",
+    "code_fix": "scripts/platformkit/s297_minutes_dnp_distribution.py _summary group aggregation changed from mean to sum/count; replaying the archived paired losses through the patched _summary reproduces every corrected interval exactly",
+    "estimand": "point estimate = row-weighted mean of baseline loss minus candidate loss; interval = 500-draw cluster bootstrap resampling whole games with replacement, each draw re-aggregated row-weighted",
+    "improvement_ci95_as_scored": {
+      "dnp_brier": [
+        2.7157856540580143e-05,
+        0.00013077434996993552
+      ],
+      "dnp_logloss": [
+        -0.0005290954970328239,
+        0.00115866849549137
+      ],
+      "inside80": [
+        -0.007647226105477522,
+        -0.0025827621828531395
+      ],
+      "minutes_crps": [
+        1.0668585731528915,
+        1.1489169478425545
+      ],
+      "pinball_q10": [
+        0.3235585465766145,
+        0.34456128131585056
+      ],
+      "pinball_q50": [
+        0.8366306966343512,
+        0.9013622241001721
+      ],
+      "pinball_q90": [
+        0.15249871338416082,
+        0.17027821226346448
+      ]
+    },
+    "route_sha256_note": "route_sha256 records the revision that produced these scores; the landing patch changes the harness file, so its current hash differs from the recorded one",
+    "source": "docs/evidence/harness/S297_VERIFY_2026-09-08.md (verifier codex-sol, VERDICT: ACCEPT WITH CORRECTIONS)",
+    "unchanged": "baseline, candidate, improvement, folds, denominators and verdict are unchanged by the correction",
+    "what": "the scored revision mixed a row-weighted point estimate with an equal-game cluster bootstrap (games hold 16-33 rows); improvement_ci95 now holds the row-weighted equal-game cluster bootstrap interval and improvement_ci95_as_scored keeps the candidate's original interval"
+  },
+  "folds": {
+    "0": {
+      "max_date": "2024-02-09",
+      "min_date": "2023-10-24",
+      "n_held_out_games": 775,
+      "n_rows": 16705,
+      "status": "SCORED"
+    },
+    "1": {
+      "max_date": "2024-12-08",
+      "min_date": "2024-02-10",
+      "n_held_out_games": 812,
+      "n_rows": 17522,
+      "status": "SCORED"
+    },
+    "2": {
+      "max_date": "2025-03-30",
+      "min_date": "2024-12-09",
+      "n_held_out_games": 755,
+      "n_rows": 16088,
+      "status": "SCORED"
+    },
+    "3": {
+      "max_date": "2026-01-21",
+      "min_date": "2025-03-31",
+      "n_held_out_games": 768,
+      "n_rows": 16624,
+      "status": "SCORED"
+    },
+    "4": {
+      "max_date": "2026-06-05",
+      "min_date": "2026-01-22",
+      "n_held_out_games": 535,
+      "n_rows": 11828,
+      "status": "SCORED"
+    }
+  },
+  "gap_id": "S297",
+  "inputs": [
+    {
+      "bytes": 1118538,
+      "path": "data/domains/basketball_nba/player_boxscores.parquet",
+      "resolution": "none",
+      "row_groups": 1,
+      "rows": 77744,
+      "sha256": "9590d276e075309a181b0c4cb46e9d157dc2ab9f340cfeb63c07a0cba7252152",
+      "zero_minute_rows": 326
+    },
+    {
+      "bytes": 34147,
+      "path": "data/cache/omni_box_refresh/nba_player_box_extension.parquet",
+      "resolution": "none",
+      "row_groups": 1,
+      "rows": 1023,
+      "sha256": "d18f69c03d6fd8b00bd3d4cf047a112ffc651b614cadb4e27c07badbf8393e94",
+      "zero_minute_rows": 221
+    }
+  ],
+  "metrics": {
+    "dnp_brier": {
+      "baseline": 0.21595183891628378,
+      "candidate": 0.2158749152798287,
+      "improvement": 7.692363645510465e-05,
+      "improvement_ci95": [
+        2.9760239670872473e-05,
+        0.00013148261892402066
+      ],
+      "improvement_ci95_as_scored": [
+        2.7157856540580143e-05,
+        0.00013077434996993552
+      ]
+    },
+    "dnp_logloss": {
+      "baseline": 5.8513259746063335,
+      "candidate": 5.851606954387818,
+      "improvement": -0.00028097978148513577,
+      "improvement_ci95": [
+        -0.001316827097603288,
+        0.0006675131639497534
+      ],
+      "improvement_ci95_as_scored": [
+        -0.0005290954970328239,
+        0.00115866849549137
+      ]
+    },
+    "inside80": {
+      "baseline": 0.6423121357929082,
+      "candidate": 0.6489646679446976,
+      "improvement": -0.006652532151789455,
+      "improvement_ci95": [
+        -0.00907497302897805,
+        -0.00386722002221512
+      ],
+      "improvement_ci95_as_scored": [
+        -0.007647226105477522,
+        -0.0025827621828531395
+      ]
+    },
+    "minutes_crps": {
+      "baseline": 9.682305090308548,
+      "candidate": 8.549927410357975,
+      "improvement": 1.1323776799505716,
+      "improvement_ci95": [
+        1.0906963816701085,
+        1.170901169851101
+      ],
+      "improvement_ci95_as_scored": [
+        1.0668585731528915,
+        1.1489169478425545
+      ]
+    },
+    "pinball_q10": {
+      "baseline": 2.0345227104413444,
+      "candidate": 1.6985240265593462,
+      "improvement": 0.335998683881998,
+      "improvement_ci95": [
+        0.32513939346717907,
+        0.3465712089218917
+      ],
+      "improvement_ci95_as_scored": [
+        0.3235585465766145,
+        0.34456128131585056
+      ]
+    },
+    "pinball_q50": {
+      "baseline": 5.960665697563701,
+      "candidate": 5.075985184150722,
+      "improvement": 0.8846805134129776,
+      "improvement_ci95": [
+        0.8543644368625293,
+        0.9181704667304216
+      ],
+      "improvement_ci95_as_scored": [
+        0.8366306966343512,
+        0.9013622241001721
+      ]
+    },
+    "pinball_q90": {
+      "baseline": 5.567781003889107,
+      "candidate": 5.402712045230448,
+      "improvement": 0.16506895865865984,
+      "improvement_ci95": [
+        0.1559282270599476,
+        0.17268823339421074
+      ],
+      "improvement_ci95_as_scored": [
+        0.15249871338416082,
+        0.17027821226346448
+      ]
+    }
+  },
+  "n_game_clusters": 3645,
+  "n_rows": 78767,
+  "preregistration": "docs/evidence/harness/S297_minutes_dnp_distribution_2026-09-07_prereg.md",
+  "preregistration_seal": "3dad9bc2d19a288b9938e74909f20b2b0d05059d8dc01743db775c5875b837ea",
+  "route_sha256": {
+    "scripts/platformkit/cpcv.py": "7af09eedd1a6ce3cccc5b84b18d4e64604cef81bfcef3c061f0136b168389081",
+    "scripts/platformkit/eval_gate/cpcv_engine.py": "5accfbe490031acb084a8e4375a082b00d842cf4011a76c6d27dfc2c7db614a5",
+    "scripts/platformkit/eval_gate/cpcv_vector_distribution.py": "5217dd0dab015efc2d0795b4b3e39830ce4209d59146d3d810b508026bb7aee0",
+    "scripts/platformkit/eval_gate/state_key_guard.py": "14274212a2770a6cd548c34de444cb42c9a6dca0722e2d8eee6158d814ef04dd",
+    "scripts/platformkit/eval_gate/walkforward.py": "c8a9b5b0f0f7c84dc5fdb0c7a4a27e0f7f2040f99326ef5376cde011df27bc2e",
+    "scripts/platformkit/s297_minutes_dnp_distribution.py": "ec56737e041bf349642e91a817469392e32ab14b0ba050e543d78f1360b0b60b"
+  },
+  "rss_mb_after": 866.7578125,
+  "rss_mb_before": 188.8046875,
+  "verdict": "ACCEPT"
+}
