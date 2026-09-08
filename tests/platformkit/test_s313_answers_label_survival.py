@@ -158,14 +158,21 @@ def test_missing_ledger_refuses_with_no_data(monkeypatch, registry, tmp_path, ro
 
 
 def test_a_stale_ledger_refuses_instead_of_answering(monkeypatch, registry, tmp_path, routes):
-    """Derived freshness may never outrun its oldest required input (S313 spec bar)."""
+    """Derived freshness may never outrun its oldest required input (S313 spec bar).
+
+    S319 re-expressed this SETUP only. The staleness used to be built by back-dating
+    the ledger FILE's mtime, and mtime is exactly what git does not preserve, so that
+    construct made every route refuse on a fresh checkout. The staleness is now built
+    where the guard reads it: the row's own recorded date. The test's name and every
+    assertion below are unchanged.
+    """
     stale = tmp_path / "stale.jsonl"
     rows = [json.loads(l) for l in LEDGER.read_text(encoding="utf-8").splitlines() if l.strip()]
     keep = [r for r in rows if r["hypothesis"] == "s310_ingame_tail_beta_offset"]
     assert keep, "the S310 receipt row must be on the ledger"
-    stale.write_text(json.dumps(keep[0]) + "\n", encoding="utf-8")
-    old = 1_500_000_000.0  # 2017-07-14, older than every receipt the row names
-    os.utime(stale, (old, old))
+    row = dict(keep[0])
+    row["run_ts"] = "2017-07-14T00:00:00Z"  # older than every receipt the row names
+    stale.write_text(json.dumps(row) + "\n", encoding="utf-8")
     _point_ledger(monkeypatch, registry, stale)
     env = registry.resolve(routes["R2"]["question"], "nba")
     assert env["status"] == "no_data", env["status"]

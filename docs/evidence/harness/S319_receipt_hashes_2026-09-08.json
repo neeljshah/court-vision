@@ -1,0 +1,21 @@
+{
+  "row": "S319",
+  "written": "2026-09-08",
+  "rule": "SHA-256 of the receipt with every CRLF replaced by LF (scripts/platformkit/hash_lf.py). Keys are the digests the ledger rows already record, which were sealed over CRLF bytes; values are the LF digest of the SAME content. No ledger row is rewritten.",
+  "recorded_to_lf": {
+    "ed618ec301b8edbf351714233c6cc69c15885f7fc013cd8fcd3c7ffefba2a495": "ca797942754f55a6640b9fc494357014ed8c314c36aaa4f0360f74f618449f4b",
+    "7713397fc16d2361343e90f9bcf2e4ae2994fd66098391b9bb1883f5078ae5fb": "b94218e81271b57b10668bef183b6a62098b629e95e548724636c1ca9034500b",
+    "816350ba70fde99f25beadb9ab65d1e73e2660545eaaad3ca3d0b606032ecb52": "8b46b4d3b2adb42b3c5a3aaa8f4d9acdac6f5fbea6f46752b41b48c4034522de",
+    "9117329d4361514bebf0966295b3bdb7375a8dcd938bcba7b8d314b6b724f5b7": "9c6132f221a0ddf5a40dc8358270e7436d2ca135d2c71922c1437b8f6c9be3f5",
+    "288635e41b242dad685156a5f814351bd025228e63801947cdf1a955c72b606d": "b171c8658441a62e1e175021ca2132ba457530ddc766dec216b4c9f6bc31313c",
+    "f8c40d3d46d9ff1d502c3c430d5c8e4f88d9ebdd060cfd88de40d3eb39abd6c1": "7714ea02d95e64828ea9617ad740c3cea393d87a989ffaec45724c39d3860da3"
+  },
+  "provenance": {
+    "ed618ec301b8edbf351714233c6cc69c15885f7fc013cd8fcd3c7ffefba2a495": "docs/evidence/harness/S296_full_boxscore_oof_2026-09-07.md",
+    "7713397fc16d2361343e90f9bcf2e4ae2994fd66098391b9bb1883f5078ae5fb": "docs/evidence/harness/S310_tail_beta_offset_2026-09-07.md",
+    "816350ba70fde99f25beadb9ab65d1e73e2660545eaaad3ca3d0b606032ecb52": "docs/evidence/tracking/specs/S312_spec.md",
+    "9117329d4361514bebf0966295b3bdb7375a8dcd938bcba7b8d314b6b724f5b7": "docs/evidence/harness/S314_teach_packet_qualification_2026-09-07.md",
+    "288635e41b242dad685156a5f814351bd025228e63801947cdf1a955c72b606d": "docs/evidence/harness/S293_tail_metric_rail_attempt2_2026-09-07.md",
+    "f8c40d3d46d9ff1d502c3c430d5c8e4f88d9ebdd060cfd88de40d3eb39abd6c1": "docs/evidence/harness/S293_tail_metric_rail_attempt2_2026-09-07_summary.json"
+  }
+}
