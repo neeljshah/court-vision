@@ -48,3 +48,12 @@ No metric excluded rows (B1); no schema, gate, state machine, deployment, module
 - No ball ground truth, candidate render, video resolution, or possession claim was evaluated.
 - The pod tree changed between read-only reruns (the final snapshot had 485 tables); this memo reports only the final snapshot and does not establish historical stability.
 - Per-file byte sizes were read during the census but are not archived in this bounded premise-stop memo; the full input manifest is not verified.
+- Independent verification could not recreate the exact pod snapshot; a current 408-clip local mirror confirmed the stop classification only.
+
+## Landing 2026-09-08 (verifier codex-sol: ACCEPT WITH CORRECTIONS)
+
+- NEW GAP: archive the per-clip census manifest, or a compact aggregate of it, so a changing or unavailable pod cannot make the exact headline irreproducible.
+- NEW GAP: the spec names a G335 test path that does not exist; that path is conditional on the flag being added, and this premise-stop row adds no flag.
+- NEW GAP: linked-worktree index.lock blocked the lane's own commit (direct pathspec commit and lane_commit.py both failed); the memo landed via an external committer.
+
+Vocabulary follows contract Q6; automated scan required.
