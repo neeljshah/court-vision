@@ -40,7 +40,7 @@ METHOD:
      with n per cell. **STATE WHICH `frame_h` YOU USED** -- the ledger's `source_height` or the
      table's own `source_height` column -- **print both and print any game where they disagree**
      (S4: name the field, not just the count). Report `max(bbox_y2)` per game against `frame_h`:
-     a bottom edge past the frame is evidence the boxes are not in the space you assumed.
+     a bottom border past the frame is evidence the boxes are not in the space you assumed.
      Record the SHA-256 and byte size of every table read (A9/A11). Any game whose table is empty,
      header-only or unreadable is listed by name as EXCLUDED with the reason -- never dropped
      silently (B1).
@@ -120,3 +120,4 @@ dispatch: the pod ledger snapshot read on 2026-09-07 carries 92 rows, 69 `tracke
 across three source resolutions (1920x1080, 1280x720, 640x360), so the census set is the whole
 ledger and not the 3 G315 games; `tracking_data.csv` carries `bbox_x1..bbox_y2` and its own
 `source_height` column, so the census needs no join. Attempt 1 of 2.
+## VERSION 2026-09-07b -- attempt 2 re-seal after a Q6 defect; rules unchanged (line 43's noun is now `border`).
