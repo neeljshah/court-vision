@@ -1,0 +1,122 @@
+[
+  {
+    "cell": "R0",
+    "contour_source": "canny",
+    "perimeter_floor": 120.0,
+    "approx_eps": 0.025,
+    "vertex_max": 4,
+    "quad_area_floor": 400.0,
+    "require_convex": true,
+    "area_frac": 0.006,
+    "side_frac": 0.15,
+    "min_edge_support": 0.16
+  },
+  {
+    "cell": "R1",
+    "contour_source": "canny",
+    "perimeter_floor": 120.0,
+    "approx_eps": 0.025,
+    "vertex_max": 4,
+    "quad_area_floor": 400.0,
+    "require_convex": true,
+    "area_frac": 0.006,
+    "side_frac": 0.15,
+    "min_edge_support": 0.08
+  },
+  {
+    "cell": "R2",
+    "contour_source": "canny",
+    "perimeter_floor": 120.0,
+    "approx_eps": 0.025,
+    "vertex_max": 4,
+    "quad_area_floor": 400.0,
+    "require_convex": true,
+    "area_frac": 0.006,
+    "side_frac": 0.15,
+    "min_edge_support": 0.02
+  },
+  {
+    "cell": "R3",
+    "contour_source": "canny",
+    "perimeter_floor": 120.0,
+    "approx_eps": 0.025,
+    "vertex_max": 4,
+    "quad_area_floor": 400.0,
+    "require_convex": true,
+    "area_frac": 0.002,
+    "side_frac": 0.15,
+    "min_edge_support": 0.16
+  },
+  {
+    "cell": "R4",
+    "contour_source": "canny",
+    "perimeter_floor": 120.0,
+    "approx_eps": 0.025,
+    "vertex_max": 4,
+    "quad_area_floor": 400.0,
+    "require_convex": true,
+    "area_frac": 0.006,
+    "side_frac": 0.05,
+    "min_edge_support": 0.16
+  },
+  {
+    "cell": "R5",
+    "contour_source": "canny",
+    "perimeter_floor": 120.0,
+    "approx_eps": 0.05,
+    "vertex_max": 4,
+    "quad_area_floor": 400.0,
+    "require_convex": true,
+    "area_frac": 0.006,
+    "side_frac": 0.15,
+    "min_edge_support": 0.16
+  },
+  {
+    "cell": "R6",
+    "contour_source": "canny",
+    "perimeter_floor": 120.0,
+    "approx_eps": 0.025,
+    "vertex_max": 6,
+    "quad_area_floor": 400.0,
+    "require_convex": true,
+    "area_frac": 0.006,
+    "side_frac": 0.15,
+    "min_edge_support": 0.16
+  },
+  {
+    "cell": "R7",
+    "contour_source": "canny",
+    "perimeter_floor": 60.0,
+    "approx_eps": 0.025,
+    "vertex_max": 4,
+    "quad_area_floor": 400.0,
+    "require_convex": true,
+    "area_frac": 0.006,
+    "side_frac": 0.15,
+    "min_edge_support": 0.16
+  },
+  {
+    "cell": "R8",
+    "contour_source": "canny",
+    "perimeter_floor": 120.0,
+    "approx_eps": 0.025,
+    "vertex_max": 4,
+    "quad_area_floor": 400.0,
+    "require_convex": false,
+    "area_frac": 0.006,
+    "side_frac": 0.15,
+    "min_edge_support": 0.16
+  },
+  {
+    "cell": "R9",
+    "contour_source": "mask",
+    "perimeter_floor": 120.0,
+    "approx_eps": 0.025,
+    "vertex_max": 4,
+    "quad_area_floor": 400.0,
+    "require_convex": true,
+    "area_frac": 0.006,
+    "side_frac": 0.15,
+    "min_edge_support": 0.16
+  }
+]
