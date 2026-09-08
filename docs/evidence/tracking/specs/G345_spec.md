@@ -1,4 +1,4 @@
-GAP G345 | sport basketball | worktree aX | log cx_g345_tracklet_continuity_fixed_dets
+GAP G345 | sport basketball | worktree a21 | log cx_g345_tracklet_continuity_fixed_dets
 
 **TRACKLET CONTINUITY ON FIXED DETECTIONS (label-free; local CPU; codex PREPARES, a finisher MEASURES).**
 `src/`, `kernel/`, `api/` and `intel/` are READ and IMPORT only. Build in `scripts/platformkit/tracking/`.
