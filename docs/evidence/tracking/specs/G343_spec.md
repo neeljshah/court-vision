@@ -1,4 +1,4 @@
-GAP G343 | sport basketball | worktree aX | log cx_g343_evidence_attack_test
+GAP G343 | sport basketball | worktree a15 | log cx_g343_evidence_attack_test
 
 **ATTACK TEST ON THE EVIDENCE PIPELINE (measurement row; local; codex PREPARES, a finisher MEASURES).**
 `src/`, `kernel/`, `api/` and `intel/` are READ and IMPORT only. Build in `scripts/platformkit/tracking/`.
