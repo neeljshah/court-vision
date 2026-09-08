@@ -1,0 +1,3 @@
+tour,matches,states,p0_states,p0_matches,date_min,date_max,seasons,server_columns,retirement_rule,joinable_price_matches,price_date_span
+atp,029572,040516,040516,029572,2015-01-04,2025-12-17,000011,000000,excluded_before_state_generation,000000,2026-05-24..2026-07-08
+wta,011016,014559,014559,011016,2015-01-19,2025-11-01,000011,000000,excluded_before_state_generation,000000,2026-05-24..2026-07-08
