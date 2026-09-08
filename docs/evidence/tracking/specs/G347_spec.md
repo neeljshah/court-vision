@@ -1,4 +1,4 @@
-GAP G347 | sport all | worktree aX | log cx_g347_env_shim_regression
+GAP G347 | sport all | worktree a22 | log cx_g347_env_shim_regression
 
 **ENVIRONMENT FIX ROW (local; codex PREPARES, a finisher EXECUTES the interpreter probes; no src edits).**
 `src/`, `kernel/`, `api/` and `intel/` are READ and IMPORT only. Build in `scripts/platformkit/`. NEVER write
