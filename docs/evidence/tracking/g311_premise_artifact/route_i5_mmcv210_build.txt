@@ -1,0 +1,65 @@
+STAGE0 2026-09-07T23:03:55Z
+Cuda compilation tools, release 12.8, V12.8.93
+Build cuda_12.8.r12.8/compiler.35583870_0
+torch 2.8.0+cu128 12.8
+ARCH_LIST=8.6 MAX_JOBS=96
+STAGE1_builddeps 2026-09-07T23:04:22Z
+Downloading packaging-26.3-py3-none-any.whl (129 kB)
+Installing collected packages: setuptools, packaging, wheel
+
+Successfully installed packaging-26.3 setuptools-84.0.0 wheel-0.48.0
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+STAGE2_wheel_mmcv_start 2026-09-07T23:05:39Z
+Collecting mmcv==2.1.0
+  Downloading mmcv-2.1.0.tar.gz (471 kB)
+  Preparing metadata (setup.py): started
+  Preparing metadata (setup.py): finished with status 'done'
+Building wheels for collected packages: mmcv
+  DEPRECATION: Building 'mmcv' using the legacy setup.py bdist_wheel mechanism, which will be removed in a future version. pip 25.3 will enforce this behaviour change. A possible replacement is to use the standardized build interface by setting the `--use-pep517` option, (possibly combined with `--no-build-isolation`), or adding a `pyproject.toml` file to the source tree of 'mmcv'. Discussion can be found at https://github.com/pypa/pip/issues/6334
+  Building wheel for mmcv (setup.py): started
+  Building wheel for mmcv (setup.py): still running...
+  Building wheel for mmcv (setup.py): still running...
+  Building wheel for mmcv (setup.py): still running...
+  Building wheel for mmcv (setup.py): still running...
+  Building wheel for mmcv (setup.py): still running...
+  Building wheel for mmcv (setup.py): still running...
+  Building wheel for mmcv (setup.py): still running...
+  Building wheel for mmcv (setup.py): still running...
+  Building wheel for mmcv (setup.py): still running...
+  Building wheel for mmcv (setup.py): still running...
+  Building wheel for mmcv (setup.py): still running...
+  Building wheel for mmcv (setup.py): finished with status 'done'
+  Created wheel for mmcv: filename=mmcv-2.1.0-cp312-cp312-linux_x86_64.whl size=35202838 sha256=608637e5600ec15708acf451aa2e067d3e7b1e8c6dc40856e6f42d2e8ffaa9a1
+  Stored in directory: /root/.cache/pip/wheels/e9/ed/f4/c494e3ff8fc7f14a8052d170fb3071cd96b7f825274b27df86
+Successfully built mmcv
+STAGE2_wheel_mmcv_done rc=0 2026-09-07T23:37:17Z
+total 34378
+-rw-rw-rw- 1 root root 35202838 Sep  7 23:37 mmcv-2.1.0-cp312-cp312-linux_x86_64.whl
+STAGE3_install 2026-09-07T23:37:17Z
+Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+Downloading pycocotools-2.0.11-cp312-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (411 kB)
+Using cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+Using cached rich-15.0.0-py3-none-any.whl (310 kB)
+Using cached pygments-2.21.0-py3-none-any.whl (1.3 MB)
+Using cached markdown_it_py-4.2.0-py3-none-any.whl (91 kB)
+Using cached mdurl-0.1.2-py3-none-any.whl (10.0 kB)
+Downloading scipy-1.18.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (35.3 MB)
+   ???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????? 35.3/35.3 MB 31.8 MB/s  0:00:01
+Downloading shapely-2.1.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (3.1 MB)
+   ???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????? 3.1/3.1 MB 9.7 MB/s  0:00:00
+Using cached termcolor-3.3.0-py3-none-any.whl (7.7 kB)
+Downloading terminaltables-3.1.10-py2.py3-none-any.whl (15 kB)
+Downloading tqdm-4.70.0-py3-none-any.whl (80 kB)
+Using cached yapf-0.43.0-py3-none-any.whl (256 kB)
+Using cached platformdirs-4.11.7-py3-none-any.whl (23 kB)
+Installing collected packages: addict, tqdm, terminaltables, termcolor, six, pyyaml, pyparsing, pygments, platformdirs, Pillow, packaging, numpy, mdurl, kiwisolver, fonttools, cycler, yapf, shapely, scipy, python-dateutil, pycocotools, opencv-python, markdown-it-py, contourpy, rich, matplotlib, mmengine, mmdet, mmcv
+
+Successfully installed Pillow-12.3.0 addict-2.4.0 contourpy-1.3.3 cycler-0.12.1 fonttools-4.64.0 kiwisolver-1.5.1 markdown-it-py-4.2.0 matplotlib-3.11.1 mdurl-0.1.2 mmcv-2.1.0 mmdet-3.3.0 mmengine-0.10.7 numpy-2.1.2 opencv-python-4.14.0.94 packaging-26.3 platformdirs-4.11.7 pycocotools-2.0.11 pygments-2.21.0 pyparsing-3.3.2 python-dateutil-2.9.0.post0 pyyaml-6.0.3 rich-15.0.0 scipy-1.18.1 shapely-2.1.2 six-1.17.0 termcolor-3.3.0 terminaltables-3.1.10 tqdm-4.70.0 yapf-0.43.0
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+STAGE3_install_done rc=0 2026-09-07T23:54:20Z
+STAGE4_verify 2026-09-07T23:54:20Z
+VERIFY_OK 2.1.0 3.3.0 0.10.7 2.8.0+cu128
+STAGE4_verify_done rc=0 2026-09-07T23:55:38Z
+runtime cv2 4.14.0 numpy 2.1.2
+MMLAB_BUILD_RESULT=OK
+MMLAB_BUILD_DONE 2026-09-07T23:55:44Z
