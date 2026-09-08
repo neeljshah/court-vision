@@ -1,0 +1,273 @@
+{
+  "absorbed_s290_capability_manifest": {
+    "landed": "ace9f953d",
+    "mlb": {
+      "answer_connection_status": "NOT_TESTABLE",
+      "capability_status": "NOT_TESTABLE_TODAY",
+      "p_close_nonnull": 910,
+      "rows": 39162,
+      "tail_gte_085": 1,
+      "tail_lte_015": 1,
+      "tail_n": 2
+    },
+    "nba": {
+      "answer_connection_status": "NOT_TESTABLE",
+      "capability_status": "CAPABILITY_ONLY",
+      "p_close_nonnull": 563,
+      "rows": 1814,
+      "tail_gte_085": 60,
+      "tail_lte_015": 25,
+      "tail_n": 85
+    },
+    "note": "carried forward UNCHANGED: this row builds no tail-capability answer route, so all four answer_connection_status values stay NOT_TESTABLE. Raising any of them here would be the coverage inflation the spec NON-TAUTOLOGY clause forbids.",
+    "recounted_by": "attempt 1, reproduced by docs/evidence/harness/S313_VERIFY_2026-09-07.md",
+    "sha256": "c0aa68b4f3ef7ebf1037b88a0947d0f6b81d287c4aa20eaf1cb6e86fd38323b5",
+    "soccer": {
+      "answer_connection_status": "NOT_TESTABLE",
+      "joined": 16322,
+      "p_close_present": false,
+      "rows": 25834,
+      "unjoined": 9512,
+      "valid_close_count": 16322
+    },
+    "source": "docs/evidence/harness/S313_answers_roundtrip_2026-09-07_capability_manifest.json",
+    "tennis": {
+      "answer_connection_status": "NOT_TESTABLE",
+      "joined": 33766,
+      "p_close_present": false,
+      "rows": 41886,
+      "unjoined": 8120,
+      "valid_close_count": 33685
+    }
+  },
+  "as_of": "2026-09-08T07:32Z",
+  "as_of_rule": {
+    "attempt2_behaviour": "emitted the ledger mtime, which outran the oldest input",
+    "ledger_is_newer_than_every_named_input": true,
+    "prereg_worked_example_correction": "the prereg predicted one shared value for R1, R2 and R4; the rule is per-answer, so each route is dated by its own oldest input and the predicted value holds for R4 only",
+    "rule": "min(ledger mtime, mtime of every artifact the answered rows name)"
+  },
+  "attempt": 3,
+  "connection_artifact": "domains/basketball_nba/knowledge/validation_ledger.jsonl -- 4 receipt rows appended by attempt 2; attempt 3 appends, edits and removes nothing",
+  "connection_receipts": {
+    "bar": 2,
+    "bar_met": false,
+    "carried": 1,
+    "carried_by": [
+      "CONNECTION 2"
+    ],
+    "missing": [
+      "CONNECTION 1"
+    ],
+    "n": 2
+  },
+  "consumable_today": [
+    {
+      "as_of": "2026-09-08T05:44:15.193717+00:00",
+      "as_of_present": true,
+      "category": "mechanism_effect",
+      "corpus": "player_boxscores_oof_78767_player_games_3645_clusters_5_folds",
+      "effect_local": 0.017225,
+      "label": "NULL",
+      "landed": "74bd5ad45",
+      "n": 78767,
+      "question": "what does the evidence say about s296 boxscore distribution plus minus",
+      "receipt": "docs/evidence/harness/S296_full_boxscore_oof_2026-09-07.md",
+      "receipt_sha256": "ed618ec301b8edbf351714233c6cc69c15885f7fc013cd8fcd3c7ffefba2a495",
+      "route": "R1",
+      "row": "S296",
+      "source_artifact": "domains/basketball_nba/knowledge/validation_ledger.jsonl",
+      "stage": "MODELS"
+    },
+    {
+      "as_of": "2026-09-08T05:44:16.454257+00:00",
+      "as_of_present": true,
+      "category": "mechanism_effect",
+      "corpus": "nba_ingame_tail_states_117964_at_30s_buckets_from_465249_rows",
+      "effect_local": -0.004157383,
+      "label": "CLOSED AT LIMIT",
+      "landed": "2a708672e",
+      "n": 1267,
+      "question": "what does the evidence say about s310 ingame tail beta offset",
+      "receipt": "docs/evidence/harness/S310_tail_beta_offset_2026-09-07.md",
+      "receipt_sha256": "7713397fc16d2361343e90f9bcf2e4ae2994fd66098391b9bb1883f5078ae5fb",
+      "route": "R2",
+      "row": "S310",
+      "source_artifact": "domains/basketball_nba/knowledge/validation_ledger.jsonl",
+      "stage": "ENGINES"
+    },
+    {
+      "as_of": "2026-09-08T05:44:15.144950+00:00",
+      "as_of_present": true,
+      "category": "mechanism_effect",
+      "corpus": "s272_ingame_replay_308756_ticks_1590_games",
+      "effect_local": -0.002071936078148454,
+      "label": "BEHIND",
+      "landed": "4a41c436e",
+      "n": 308756,
+      "question": "what does the evidence say about s293 tail log loss rail",
+      "receipt": "docs/evidence/harness/S293_tail_metric_rail_attempt2_2026-09-07.md",
+      "receipt_sha256": "288635e41b242dad685156a5f814351bd025228e63801947cdf1a955c72b606d",
+      "route": "R4",
+      "row": "S293",
+      "source_artifact": "domains/basketball_nba/knowledge/validation_ledger.jsonl",
+      "stage": "INTELLIGENCE"
+    }
+  ],
+  "gaps_carried": [
+    "S313-LOC-DEBT -- scripts/platformkit/answers/resolver_registry.py is 1320 lines under its 1323 allowlist, above the general 300-line convention; not grown by this candidate and not reduced here",
+    "S313-MASTER-A1-ABSENT -- master 0ed7bd4e3 has no tests/platformkit/test_s313_answers_label_survival.py, so contract A1 cannot produce a master baseline count for that file",
+    "S313-POD-LAUNCHER-BLOCKED -- carried on the codex side; route A ran to completion from this lane, so the block is not universal",
+    "S313-VERIFY-COMMIT-BLOCKED -- a path-only commit cannot create the shared-worktree index.lock, so the verifier memo stays uncommitted"
+  ],
+  "labels_survived": {
+    "BEHIND": {
+      "route": "R4",
+      "survived_composed_answer": true,
+      "survived_envelope": true,
+      "verdict_field": "BEHIND"
+    },
+    "CLOSED AT LIMIT": {
+      "route": "R2",
+      "survived_composed_answer": true,
+      "survived_envelope": true,
+      "verdict_field": "CLOSED AT LIMIT"
+    },
+    "NOT_TESTABLE": {
+      "route": "R3",
+      "survived_composed_answer": true,
+      "survived_envelope": true,
+      "verdict_field": "NOT_TESTABLE"
+    },
+    "NULL": {
+      "route": "R1",
+      "survived_composed_answer": true,
+      "survived_envelope": true,
+      "verdict_field": "NULL"
+    }
+  },
+  "liveness": "OFFLINE VERIFIED / LIVE NOT VERIFIED",
+  "liveness_detail": "pass 2 was produced by a SECOND, FRESH consumer process and equals pass 1 route-for-route; the resident MCP consumer answers from the main repo tree, which does not carry these ledger rows, and it was not restarted or re-probed in attempt 3",
+  "loc_rail": {
+    "after": 1320,
+    "allowance_on_master": 1323,
+    "before": 1330,
+    "how": "the receipt check, the as-of floor and the envelope build were extracted into scripts/platformkit/answers/receipt_guard.mechanism_envelope; the allowance was restored to the master value, never raised",
+    "module": "scripts/platformkit/answers/resolver_registry.py"
+  },
+  "not_testable": [
+    {
+      "as_of": "2026-09-08T05:44:16.565142+00:00",
+      "blocking_rows": [
+        "S314 teach packet qualification (ef4504489)",
+        "S315 teach ball control (spec only, no result)"
+      ],
+      "effect_emitted": null,
+      "label": "NOT_TESTABLE",
+      "n_emitted": null,
+      "named_in_the_answer": [
+        "S312",
+        "S314"
+      ],
+      "named_in_the_prereg_but_not_in_the_answer": [
+        "S315"
+      ],
+      "number_emitted": false,
+      "prerequisite": "S312 (no landed result)",
+      "reason": "the S314 before-condition fails: only 1 of the required 2 broadcasts qualifies and 0 of 60 intervals were staged, so no teacher packet exists to train from",
+      "route": "R3",
+      "row": "S312",
+      "stage": "PREDICTIONS"
+    }
+  ],
+  "not_verified": [
+    "live resident connectivity (the resident consumer was not restarted against a tree carrying these rows)",
+    "the DATA, SIGNALS and CONNECTION 1 receipts (absent since attempt 1)",
+    "the S312 teacher-to-student result itself (not landed, hence R3 emits no number)",
+    "mirroring these rows into the mlb, soccer and tennis ledgers (not attempted)",
+    "what the data-backed readers do on a tree that CARRIES the profile parquets and the claims store: the linked pod data tree does not have data/cache/profiles or data/cache/intel_claims, so 82 assertions stay gated and 4 stay red on both commits"
+  ],
+  "pass1_equals_pass2": true,
+  "pod_reader_tests": {
+    "artifact": "docs/evidence/harness/S313_attempt3_artifact/pod_reader_tests.md",
+    "candidate": "bc78a7ab6 -- 148 passed, 4 failed, 82 skipped",
+    "candidate_only_red": false,
+    "interpreter": "Python 3.12.3 (/workspace/wt/a22/s313_fix3b/venv), pytest 9.1.1",
+    "linked_data_tree": "data -> /workspace/nba-ai-system/data, present in both job roots (s313fix3c_cand2 09:31, s313fix3c_base 09:37)",
+    "master": "0ed7bd4e3 -- 148 passed, 4 failed, 82 skipped, file for file",
+    "route": "A -- /c/Users/neelj/bin/pod_run a22, one invocation per tree, remote command running the 14 files in sequence"
+  },
+  "prereg": "docs/evidence/harness/S313_answers_roundtrip_attempt3_prereg_2026-09-08.md",
+  "prereg_commit": "5b45a5133",
+  "prereg_seal_rule": "the last line of the prereg is SEAL sha256 <hex> over the LF-normalised bytes above it (contract Q1)",
+  "prereg_seal_sha256": "9eb403d5d6ea7c712856a2156592a19754dae9429381aaf7a274dd7eea602c28",
+  "refusal": {
+    "composed_answer_head": "NOT_SUPPORTED -- no mechanism matched 'what does the evidence say about quantum ",
+    "numeric_claim_withheld": true,
+    "question": "what does the evidence say about quantum chromodynamics in liquid helium",
+    "route": "R5",
+    "status": "not_supported"
+  },
+  "resolver_entrypoint": "scripts/platformkit/answers/resolver_registry.resolve + scripts/platformkit/answers/contract_client.answer",
+  "routes_asked": {
+    "labels_survived": 5,
+    "n": 5
+  },
+  "row": "S313",
+  "rows_consumable_by_the_answer_layer_today": [
+    "S296",
+    "S310",
+    "S293"
+  ],
+  "rows_not_consumable_and_why": {
+    "S312": "no landed result; BLOCKED-ON S314 and S315"
+  },
+  "scan": {
+    "digits_hits": 0,
+    "files_scanned": [
+      "docs/evidence/harness/S313_answers_roundtrip_attempt3_prereg_2026-09-08.md",
+      "docs/evidence/harness/S313_answers_roundtrip_attempt3_2026-09-08.md",
+      "docs/evidence/harness/S313_attempt3_artifact/route_status.md",
+      "docs/evidence/harness/S313_attempt3_artifact/completion_manifest.json",
+      "docs/evidence/harness/S313_attempt3_artifact/envelopes_pass1.json",
+      "docs/evidence/harness/S313_attempt3_artifact/envelopes_pass2_after_consumer_restart.json",
+      "docs/evidence/harness/S313_attempt3_artifact/sha256sums.txt",
+      "scripts/platformkit/answers/receipt_guard.py",
+      "scripts/platformkit/answers/resolver_registry.py",
+      "tests/platformkit/test_s313_answers_label_survival.py",
+      "tests/platformkit/test_loc_rail_scope.py"
+    ],
+    "note": "contract Q6 vocabulary and restricted-figure scan; both report zero hits.",
+    "restricted_figures_checked": 6,
+    "restricted_words_checked": 4,
+    "scope": "every added byte of both attempt-3 commits (added diff lines only) and every file this attempt writes",
+    "tool": "a scanner whose patterns are assembled from single characters, so it never spells a restricted token; words are word-bounded because the substring form flags ordinary vocabulary, the figures are literal digit strings and the bare integer is word-bounded",
+    "words_hits": 0
+  },
+  "stage_receipts": {
+    "bar": 6,
+    "bar_met": false,
+    "carried": 3,
+    "carried_by": [
+      "MODELS",
+      "ENGINES",
+      "INTELLIGENCE"
+    ],
+    "missing": [
+      "DATA",
+      "SIGNALS",
+      "PREDICTIONS"
+    ],
+    "n": 6
+  },
+  "tests": {
+    "scripts/platformkit/answers/test_effect_graph.py": "10 passed",
+    "scripts/platformkit/answers/test_mechanism_effect.py": "20 passed",
+    "scripts/platformkit/answers/test_resolver_registry_routing.py": "37 passed",
+    "scripts/platformkit/eval_gate/test_s275_key_explicit_consumers.py": "1 passed",
+    "tests/platformkit/mcp_server/test_envelope_contract.py": "46 passed, 5 failed (W01-W04, H01; the binding baseline, no new red)",
+    "tests/platformkit/test_loc_rail_scope.py": "1 passed at the master allowance",
+    "tests/platformkit/test_s313_answers_label_survival.py": "11 passed"
+  },
+  "verdict": "CLOSED AT LIMIT (prerequisites)"
+}

@@ -1,0 +1,127 @@
+{
+  "pass": "2",
+  "routes": [
+    {
+      "composed_answer": "s296_boxscore_distribution_plus_minus: NULL effect=0.017225 n=78767 p=None (player_boxscores_oof_78767_player_games_3645_clusters_5_folds): NULL: plus_minus CRPS improvement 0.017225, 95 pct CI [-0.024603, 0.016096] covers zero, so no improvement is established on this field; CRPS is lower than baseline on 16 of 17 fields and plus_minus is the exception. basis=CRPS baseline minus CRPS candidate, positive means candidate better; measured_as_of=2026-09-07; receipt=docs/evidence/harness/S296_full_boxscore_oof_2026-09-07.md; receipt_sha256=ed618ec301b8edbf351714233c6cc69c15885f7fc013cd8fcd3c7ffefba2a495; landed=74bd5ad45. Calibration only; SINGLE-WINDOW. | LOCAL single-corpus finding(s) -- not a market-beating or causal claim | source: domains/basketball_nba/knowledge/validation_ledger.jsonl | as-of: 2026-09-08T05:44:15.193717+00:00",
+      "envelope": {
+        "as_of": "2026-09-08T05:44:15.193717+00:00",
+        "category": "mechanism_effect",
+        "findings": [
+          {
+            "corpus": "player_boxscores_oof_78767_player_games_3645_clusters_5_folds",
+            "effect_local": 0.017225,
+            "n": 78767,
+            "note": "NULL: plus_minus CRPS improvement 0.017225, 95 pct CI [-0.024603, 0.016096] covers zero, so no improvement is established on this field; CRPS is lower than baseline on 16 of 17 fields and plus_minus is the exception. basis=CRPS baseline minus CRPS candidate, positive means candidate better; measured_as_of=2026-09-07; receipt=docs/evidence/harness/S296_full_boxscore_oof_2026-09-07.md; receipt_sha256=ed618ec301b8edbf351714233c6cc69c15885f7fc013cd8fcd3c7ffefba2a495; landed=74bd5ad45. Calibration only; SINGLE-WINDOW.",
+            "p": null,
+            "verdict": "NULL"
+          }
+        ],
+        "framing": "LOCAL single-corpus finding(s) -- not a market-beating or causal claim",
+        "hypothesis": "s296_boxscore_distribution_plus_minus",
+        "source_artifact": "domains/basketball_nba/knowledge/validation_ledger.jsonl",
+        "sport": "nba",
+        "status": "ok"
+      },
+      "expected_label": "NULL",
+      "id": "R1",
+      "question": "what does the evidence say about s296 boxscore distribution plus minus",
+      "row": "S296",
+      "stage": "MODELS"
+    },
+    {
+      "composed_answer": "s310_ingame_tail_beta_offset: CLOSED AT LIMIT effect=-0.004157383 n=1267 p=None (nba_ingame_tail_states_117964_at_30s_buckets_from_465249_rows): CLOSED AT LIMIT: the tail beta-offset gives no combined-tail log-loss improvement -- 0.113579822 to 0.117737205, improvement -0.004157383, 95 pct CI [-0.010714071, +0.001495545], lower bound not above 0, so the preregistered bar is not met; the global Brier guard passes at -0.000023269, CI [-0.000049503, +0.000003889]. basis=baseline loss minus candidate loss, positive means candidate better; n=1267 game clusters in the combined tail; measured_as_of=2026-09-07; receipt=docs/evidence/harness/S310_tail_beta_offset_2026-09-07.md; receipt_sha256=7713397fc16d2361343e90f9bcf2e4ae2994fd66098391b9bb1883f5078ae5fb; landed=2a708672e. Calibration only. | LOCAL single-corpus finding(s) -- not a market-beating or causal claim | source: domains/basketball_nba/knowledge/validation_ledger.jsonl | as-of: 2026-09-08T05:44:16.454257+00:00",
+      "envelope": {
+        "as_of": "2026-09-08T05:44:16.454257+00:00",
+        "category": "mechanism_effect",
+        "findings": [
+          {
+            "corpus": "nba_ingame_tail_states_117964_at_30s_buckets_from_465249_rows",
+            "effect_local": -0.004157383,
+            "n": 1267,
+            "note": "CLOSED AT LIMIT: the tail beta-offset gives no combined-tail log-loss improvement -- 0.113579822 to 0.117737205, improvement -0.004157383, 95 pct CI [-0.010714071, +0.001495545], lower bound not above 0, so the preregistered bar is not met; the global Brier guard passes at -0.000023269, CI [-0.000049503, +0.000003889]. basis=baseline loss minus candidate loss, positive means candidate better; n=1267 game clusters in the combined tail; measured_as_of=2026-09-07; receipt=docs/evidence/harness/S310_tail_beta_offset_2026-09-07.md; receipt_sha256=7713397fc16d2361343e90f9bcf2e4ae2994fd66098391b9bb1883f5078ae5fb; landed=2a708672e. Calibration only.",
+            "p": null,
+            "verdict": "CLOSED AT LIMIT"
+          }
+        ],
+        "framing": "LOCAL single-corpus finding(s) -- not a market-beating or causal claim",
+        "hypothesis": "s310_ingame_tail_beta_offset",
+        "source_artifact": "domains/basketball_nba/knowledge/validation_ledger.jsonl",
+        "sport": "nba",
+        "status": "ok"
+      },
+      "expected_label": "CLOSED AT LIMIT",
+      "id": "R2",
+      "question": "what does the evidence say about s310 ingame tail beta offset",
+      "row": "S310",
+      "stage": "ENGINES"
+    },
+    {
+      "composed_answer": "s312_tracking_teacher_student_connection: NOT_TESTABLE effect=None n=None p=None (none -- no scored corpus exists for this route): NOT_TESTABLE: no S312 result has landed, so no number is emitted for this route. The exact missing prerequisite is S312 (the harness-to-tracking teacher/student connection row), and S312 is BLOCKED-ON S314 teacher packet qualification, whose before-condition fails: only 1 of the required 2 broadcasts qualifies and 0 of 60 intervals were staged. prerequisite=S312, spec docs/evidence/tracking/specs/S312_spec.md sha256 816350ba70fde99f25beadb9ab65d1e73e2660545eaaad3ca3d0b606032ecb52; blocking_row=S314, docs/evidence/harness/S314_teach_packet_qualification_2026-09-07.md sha256 9117329d4361514bebf0966295b3bdb7375a8dcd938bcba7b8d314b6b724f5b7 landed ef4504489; measured_as_of=2026-09-07. Teacher-training-only: any teacher signal would be training-time, never a runtime tracking read. | LOCAL single-corpus finding(s) -- not a market-beating or causal claim | source: domains/basketball_nba/knowledge/validation_ledger.jsonl | as-of: 2026-09-08T05:44:16.565142+00:00",
+      "envelope": {
+        "as_of": "2026-09-08T05:44:16.565142+00:00",
+        "category": "mechanism_effect",
+        "findings": [
+          {
+            "corpus": "none -- no scored corpus exists for this route",
+            "effect_local": null,
+            "n": null,
+            "note": "NOT_TESTABLE: no S312 result has landed, so no number is emitted for this route. The exact missing prerequisite is S312 (the harness-to-tracking teacher/student connection row), and S312 is BLOCKED-ON S314 teacher packet qualification, whose before-condition fails: only 1 of the required 2 broadcasts qualifies and 0 of 60 intervals were staged. prerequisite=S312, spec docs/evidence/tracking/specs/S312_spec.md sha256 816350ba70fde99f25beadb9ab65d1e73e2660545eaaad3ca3d0b606032ecb52; blocking_row=S314, docs/evidence/harness/S314_teach_packet_qualification_2026-09-07.md sha256 9117329d4361514bebf0966295b3bdb7375a8dcd938bcba7b8d314b6b724f5b7 landed ef4504489; measured_as_of=2026-09-07. Teacher-training-only: any teacher signal would be training-time, never a runtime tracking read.",
+            "p": null,
+            "verdict": "NOT_TESTABLE"
+          }
+        ],
+        "framing": "LOCAL single-corpus finding(s) -- not a market-beating or causal claim",
+        "hypothesis": "s312_tracking_teacher_student_connection",
+        "source_artifact": "domains/basketball_nba/knowledge/validation_ledger.jsonl",
+        "sport": "nba",
+        "status": "ok"
+      },
+      "expected_label": "NOT_TESTABLE",
+      "id": "R3",
+      "question": "what does the evidence say about s312 tracking teacher student connection",
+      "row": "S312",
+      "stage": "PREDICTIONS"
+    },
+    {
+      "composed_answer": "s293_tail_log_loss_rail: BEHIND effect=-0.002071936078148454 n=308756 p=None (s272_ingame_replay_308756_ticks_1590_games): BEHIND recal_null: tail log loss 0.028761870222461097 to 0.030833806300609553, improvement -0.002071936078148454; the candidate is BEHIND recal_null on tail log loss and on Brier. basis=recal_null loss minus candidate loss, positive means candidate better; n=308756 ticks over 1590 games; measured_as_of=2026-09-07; receipt=docs/evidence/harness/S293_tail_metric_rail_attempt2_2026-09-07.md sha256 288635e41b242dad685156a5f814351bd025228e63801947cdf1a955c72b606d; summary=docs/evidence/harness/S293_tail_metric_rail_attempt2_2026-09-07_summary.json sha256 f8c40d3d46d9ff1d502c3c430d5c8e4f88d9ebdd060cfd88de40d3eb39abd6c1; landed=4a41c436e. Calibration only. | LOCAL single-corpus finding(s) -- not a market-beating or causal claim | source: domains/basketball_nba/knowledge/validation_ledger.jsonl | as-of: 2026-09-08T05:44:15.144950+00:00",
+      "envelope": {
+        "as_of": "2026-09-08T05:44:15.144950+00:00",
+        "category": "mechanism_effect",
+        "findings": [
+          {
+            "corpus": "s272_ingame_replay_308756_ticks_1590_games",
+            "effect_local": -0.002071936078148454,
+            "n": 308756,
+            "note": "BEHIND recal_null: tail log loss 0.028761870222461097 to 0.030833806300609553, improvement -0.002071936078148454; the candidate is BEHIND recal_null on tail log loss and on Brier. basis=recal_null loss minus candidate loss, positive means candidate better; n=308756 ticks over 1590 games; measured_as_of=2026-09-07; receipt=docs/evidence/harness/S293_tail_metric_rail_attempt2_2026-09-07.md sha256 288635e41b242dad685156a5f814351bd025228e63801947cdf1a955c72b606d; summary=docs/evidence/harness/S293_tail_metric_rail_attempt2_2026-09-07_summary.json sha256 f8c40d3d46d9ff1d502c3c430d5c8e4f88d9ebdd060cfd88de40d3eb39abd6c1; landed=4a41c436e. Calibration only.",
+            "p": null,
+            "verdict": "BEHIND"
+          }
+        ],
+        "framing": "LOCAL single-corpus finding(s) -- not a market-beating or causal claim",
+        "hypothesis": "s293_tail_log_loss_rail",
+        "source_artifact": "domains/basketball_nba/knowledge/validation_ledger.jsonl",
+        "sport": "nba",
+        "status": "ok"
+      },
+      "expected_label": "BEHIND",
+      "id": "R4",
+      "question": "what does the evidence say about s293 tail log loss rail",
+      "row": "S293",
+      "stage": "INTELLIGENCE"
+    },
+    {
+      "composed_answer": "NOT_SUPPORTED -- no mechanism matched 'what does the evidence say about quantum chromodynamics in liquid helium' in domains/basketball_nba/knowledge/validation_ledger.jsonl. Registered hypotheses: ['assist_hub_concentration_offrtg', 'b2b_rest_penalty', 'b2b_x_margin_starter_minutes__combined', 'b2b_x_margin_starter_minutes__h1', 'b2b_x_margin_starter_minutes__h2', 'bench_continuity_dreb', 'boxdetail_ast_persistence_and_margin', 'boxdetail_ast_persistence_replication_2024_25', 'boxdetail_fast_break_pts_persistence_and_margin', 'boxdetail_fast_break_pts_persistence_replication_2024_25', 'boxdetail_largest_lead_persistence_and_margin', 'boxdetail_largest_lead_persistence_q8_2023_24', 'boxdetail_largest_lead_persistence_q8_2024_25', 'boxdetail_largest_lead_persistence_q8_orig_2026_slice', 'boxdetail_largest_lead_persistence_q8_pooled3season', 'boxdetail_paint_pts_persistence_and_margin', 'boxdetail_paint_pts_persistence_replication_2024_25', 'boxdetail_tov_pts_persistence_and_margin', 'boxdetail_tov_pts_persistence_replication_2024_25', 'clutch_free_throw_pressure_dip', 'clutch_lineup_shortening', 'clutch_usage_compression', 'defender_matchup_skill_predictive_validity', 'fast_break_pts_persistence_replication', 'foul_rate_dispersion_exceeds_poisson_noise__combined', 'foul_rate_dispersion_exceeds_poisson_noise__h1', 'foul_rate_dispersion_exceeds_poisson_noise__h2', 'foul_trouble_efficiency_shift__combined', 'foul_trouble_efficiency_shift__h1', 'foul_trouble_efficiency_shift__h2', 'foul_trouble_minutes_reduction', 'foul_trouble_usage_shift__combined', 'foul_trouble_usage_shift__h1', 'foul_trouble_usage_shift__h2', 'ft_rate_environment_wins', 'garbage_time_bench_inflation', 'home_court_advantage_magnitude', 'home_q4_edge_exceeds_other_quarters', 'lineup_continuity_streak_vs_point_diff__2023-24', 'lineup_continuity_streak_vs_point_diff__2024-25', 'lineup_continuity_streak_vs_point_diff__combined', 'pace_mismatch_variance', 'paint_pts_persistence_replication', 'player_b2b_scoring_dip', 'q1_slow_start_persists_replication_2024_25', 'q1_slow_start_persists_split_half', 'q2_blowout_early_bench_deployment', 'q2_foul_pace_state_interaction', 'q2_lead_extension_beyond_ar', 'q3_margin_vs_halftime_deficit', 'q3_volatility_close_halftime', 'quarter_volatility_persists_and_relates_to_margin_variance', 'rest_differential_margin__combined', 'rest_differential_margin__h1', 'rest_differential_margin__h2', 'rim_pressure_def_dreb', 'rotation_size_persists_split_half', 'rotation_size_stability_vs_net_rating', 's293_tail_log_loss_rail', 's296_boxscore_distribution_plus_minus', 's310_ingame_tail_beta_offset', 's312_tracking_teacher_student_connection', 'star_injury_usage_vacuum_event_study', 'starter_minutes_vs_margin__combined', 'starter_minutes_vs_margin__h1', 'starter_minutes_vs_margin__h2', 'switch_rate_defensive_efficiency', 'three_in_four_fatigue', 'timeout_interrupts_opponent_run__combined', 'timeout_interrupts_opponent_run__h1', 'timeout_interrupts_opponent_run__h2', 'timeout_interrupts_opponent_run_replication_2022_23', 'transition_frequency_pace_mismatch', 'transition_frequency_pace_mismatch__combined', 'transition_rate_margin_relation', 'transition_rate_split_half_persistence', 'travel_timezone_fatigue', 'usage_redistribution_persistence']",
+      "envelope": {
+        "category": "mechanism_effect",
+        "note": "no mechanism matched 'what does the evidence say about quantum chromodynamics in liquid helium' in domains/basketball_nba/knowledge/validation_ledger.jsonl. Registered hypotheses: ['assist_hub_concentration_offrtg', 'b2b_rest_penalty', 'b2b_x_margin_starter_minutes__combined', 'b2b_x_margin_starter_minutes__h1', 'b2b_x_margin_starter_minutes__h2', 'bench_continuity_dreb', 'boxdetail_ast_persistence_and_margin', 'boxdetail_ast_persistence_replication_2024_25', 'boxdetail_fast_break_pts_persistence_and_margin', 'boxdetail_fast_break_pts_persistence_replication_2024_25', 'boxdetail_largest_lead_persistence_and_margin', 'boxdetail_largest_lead_persistence_q8_2023_24', 'boxdetail_largest_lead_persistence_q8_2024_25', 'boxdetail_largest_lead_persistence_q8_orig_2026_slice', 'boxdetail_largest_lead_persistence_q8_pooled3season', 'boxdetail_paint_pts_persistence_and_margin', 'boxdetail_paint_pts_persistence_replication_2024_25', 'boxdetail_tov_pts_persistence_and_margin', 'boxdetail_tov_pts_persistence_replication_2024_25', 'clutch_free_throw_pressure_dip', 'clutch_lineup_shortening', 'clutch_usage_compression', 'defender_matchup_skill_predictive_validity', 'fast_break_pts_persistence_replication', 'foul_rate_dispersion_exceeds_poisson_noise__combined', 'foul_rate_dispersion_exceeds_poisson_noise__h1', 'foul_rate_dispersion_exceeds_poisson_noise__h2', 'foul_trouble_efficiency_shift__combined', 'foul_trouble_efficiency_shift__h1', 'foul_trouble_efficiency_shift__h2', 'foul_trouble_minutes_reduction', 'foul_trouble_usage_shift__combined', 'foul_trouble_usage_shift__h1', 'foul_trouble_usage_shift__h2', 'ft_rate_environment_wins', 'garbage_time_bench_inflation', 'home_court_advantage_magnitude', 'home_q4_edge_exceeds_other_quarters', 'lineup_continuity_streak_vs_point_diff__2023-24', 'lineup_continuity_streak_vs_point_diff__2024-25', 'lineup_continuity_streak_vs_point_diff__combined', 'pace_mismatch_variance', 'paint_pts_persistence_replication', 'player_b2b_scoring_dip', 'q1_slow_start_persists_replication_2024_25', 'q1_slow_start_persists_split_half', 'q2_blowout_early_bench_deployment', 'q2_foul_pace_state_interaction', 'q2_lead_extension_beyond_ar', 'q3_margin_vs_halftime_deficit', 'q3_volatility_close_halftime', 'quarter_volatility_persists_and_relates_to_margin_variance', 'rest_differential_margin__combined', 'rest_differential_margin__h1', 'rest_differential_margin__h2', 'rim_pressure_def_dreb', 'rotation_size_persists_split_half', 'rotation_size_stability_vs_net_rating', 's293_tail_log_loss_rail', 's296_boxscore_distribution_plus_minus', 's310_ingame_tail_beta_offset', 's312_tracking_teacher_student_connection', 'star_injury_usage_vacuum_event_study', 'starter_minutes_vs_margin__combined', 'starter_minutes_vs_margin__h1', 'starter_minutes_vs_margin__h2', 'switch_rate_defensive_efficiency', 'three_in_four_fatigue', 'timeout_interrupts_opponent_run__combined', 'timeout_interrupts_opponent_run__h1', 'timeout_interrupts_opponent_run__h2', 'timeout_interrupts_opponent_run_replication_2022_23', 'transition_frequency_pace_mismatch', 'transition_frequency_pace_mismatch__combined', 'transition_rate_margin_relation', 'transition_rate_split_half_persistence', 'travel_timezone_fatigue', 'usage_redistribution_persistence']",
+        "sport": "nba",
+        "status": "not_supported"
+      },
+      "expected_label": "the numeric claim is withheld",
+      "id": "R5",
+      "question": "what does the evidence say about quantum chromodynamics in liquid helium",
+      "row": "none",
+      "stage": "out of domain"
+    }
+  ]
+}

@@ -831,19 +831,9 @@ def mechanism_effect(sport: str, mechanism: str) -> dict:
                 "source_artifact": path, "candidates": matches,
                 "note": f"{len(matches)} distinct registered hypotheses match "
                         f"'{mechanism}' in {path} -- name one of {matches}"}
-    name = matches[0]
-    # S313 fix 2b: a receipt-bearing row must verify against the artifacts it
-    # names before any number is composed from it.
-    refusal = _guard.check_rows(by_name[name], path)
-    if refusal is not None:
-        return {"status": refusal["status"], "category": "mechanism_effect", "sport": sport,
-                "source_artifact": path, "note": refusal["note"]}
-    as_of = datetime.fromtimestamp(os.path.getmtime(path), tz=timezone.utc).isoformat()
-    findings = [{"verdict": r["verdict"], "effect_local": r["effect"], "n": _guard.composed_n(r),
-                 "p": r.get("p"), "corpus": r["corpus"], "note": r["note"]} for r in by_name[name]]
-    return {"status": "ok", "category": "mechanism_effect", "sport": sport, "source_artifact": path,
-            "as_of": as_of, "hypothesis": name, "findings": findings,
-            "framing": "LOCAL single-corpus finding(s) -- not a market-beating or causal claim"}
+    # S313 attempt 3: receipt validation, the as-of floor and the envelope build
+    # all live in receipt_guard now (extracted to hold the shared LOC rail).
+    return _guard.mechanism_envelope(by_name[matches[0]], path, sport, matches[0])
 
 
 # ---------------------------------------------------------------------------

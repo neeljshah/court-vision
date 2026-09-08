@@ -1,9 +1,10 @@
-"""S313 attempt 2 -- replay the harness-receipt -> answer round trip.
+"""S313 attempt 3 -- replay the harness-receipt -> answer round trip.
 
 Replays the label-survival check from the COMMITTED envelopes, recomputes one
 landed loss from its archived per-tick rows, and proves the resolver withholds
-a number on a corrupted ledger, a missing ledger, a stale ledger, a flipped
-basis and a runtime-tracking request.
+a number on a corrupted receipt, a missing ledger, a stale ledger, a flipped
+basis and a runtime-tracking request, and dates every answer by its OLDEST
+named input rather than by the newer ledger quoting it.
 
 Run this file alone, with confcutdir pointed at the platformkit test package.
 """
@@ -20,7 +21,7 @@ import sys
 import pytest
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-ART = ROOT / "docs/evidence/harness/S313_attempt2_artifact"
+ART = ROOT / "docs/evidence/harness/S313_attempt3_artifact"
 LEDGER = ROOT / "domains/basketball_nba/knowledge/validation_ledger.jsonl"
 S293_ROWS = ROOT / ("docs/evidence/harness/"
                     "S293_tail_metric_rail_attempt2_2026-09-07_paired_losses.csv.gz")
@@ -88,6 +89,24 @@ def test_live_resolve_reproduces_every_committed_finding(routes, registry):
         assert got["as_of"], rid  # mtime moves with the checkout; presence is the contract
 
 
+def test_as_of_is_the_oldest_named_input_when_the_ledger_is_newer(routes, registry):
+    """Derived freshness may never outrun its oldest required input (S313 spec bar)."""
+    from datetime import datetime, timezone
+
+    from scripts.platformkit.answers import receipt_guard as G
+    rows = [json.loads(l) for l in LEDGER.read_text(encoding="utf-8").splitlines() if l.strip()]
+    ledger_mtime = os.path.getmtime(LEDGER)
+    for rid in EXPECTED:
+        env = registry.resolve(routes[rid]["question"], "nba")
+        named = [ROOT / m.group("path")
+                 for r in rows if r["hypothesis"] == env["hypothesis"]
+                 for m in G._REF_RE.finditer(r["note"])]
+        assert named, f"{rid} names no artifact, so it has no freshness floor"
+        oldest = min(os.path.getmtime(p) for p in named)
+        assert oldest < ledger_mtime, f"{rid}: premise -- the ledger must be the newer file"
+        assert env["as_of"] == datetime.fromtimestamp(oldest, tz=timezone.utc).isoformat(), rid
+
+
 def test_landed_s293_loss_recomputes_from_its_archived_rows(routes):
     """Recompute from the archived per-tick rows themselves, not from the summary."""
     candidate, recal_null = [], []
@@ -109,16 +128,26 @@ def _point_ledger(monkeypatch, registry, path) -> None:
     monkeypatch.setitem(registry._LEDGER_PATHS, "nba", str(path))
 
 
-def test_corrupted_ledger_never_yields_a_number(monkeypatch, registry, tmp_path, routes):
-    bad = tmp_path / "corrupt.jsonl"
-    bad.write_text('{"hypothesis": "s310_ingame_tail_beta_offset", "verdict": "CLOSED\n',
-                   encoding="utf-8")
-    _point_ledger(monkeypatch, registry, bad)
-    try:
-        env = registry.resolve(routes["R2"]["question"], "nba")
-    except (json.JSONDecodeError, KeyError):
-        return  # fails closed by refusing to parse -- no number reached a reader
+def test_a_corrupted_receipt_never_yields_a_number(monkeypatch, registry, tmp_path, routes):
+    """Corrupt the RECEIPT, not the ledger syntax: flip one hex digit of the
+    sha256 the row quotes. The ledger still parses and the row still carries its
+    number, so it is the receipt hash check -- not a parse error -- that refuses.
+    """
+    from scripts.platformkit.answers import receipt_guard as G
+    corrupt = tmp_path / "corrupt_receipt.jsonl"
+    rows = [json.loads(l) for l in LEDGER.read_text(encoding="utf-8").splitlines() if l.strip()]
+    row = next(r for r in rows if r["hypothesis"] == "s310_ingame_tail_beta_offset")
+    ref = G._REF_RE.search(row["note"])
+    assert ref, "premise -- the S310 row must quote a receipt hash to corrupt"
+    sha = ref.group("sha")
+    row["note"] = row["note"].replace(sha, sha[:-1] + ("0" if sha[-1] != "0" else "1"))
+    corrupt.write_text(json.dumps(row) + "\n", encoding="utf-8")
+    _point_ledger(monkeypatch, registry, corrupt)
+    env = registry.resolve(routes["R2"]["question"], "nba")
+    assert env["status"] == "no_data", env["status"]
     assert not _numeric(env)
+    assert "findings" not in env
+    assert "no longer hashes" in env["note"] and ref.group("path") in env["note"]
 
 
 def test_missing_ledger_refuses_with_no_data(monkeypatch, registry, tmp_path, routes):

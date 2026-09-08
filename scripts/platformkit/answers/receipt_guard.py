@@ -1,22 +1,29 @@
-"""S313 fix 2b -- receipt validation for `mechanism_effect` ledger rows.
+"""S313 -- receipt validation and envelope build for `mechanism_effect` rows.
 
-A ledger row that names its receipt (`receipt=<path>` plus that file's SHA-256
-inside the row note) may only reach `status="ok"` when every named artifact is
-present, byte-intact, no newer than the ledger quoting it, and still carries the
-row's own number. Anything else refuses with the contract's existing `no_data`
-status and a note saying which artifact failed and why -- a refused envelope
-never carries a number. Rows naming no receipt are legacy and pass through.
+A ledger row that names an artifact (a path plus that file's SHA-256 inside the
+row note) may only reach `status="ok"` when every named artifact is present,
+byte-intact, no newer than the ledger quoting it, and still carries the row's
+own number. Anything else refuses with the contract's existing `no_data` status
+and a note saying which artifact failed and why -- a refused envelope never
+carries a number. Rows naming no artifact are legacy and pass through.
+
+Attempt 3 also puts the answer's `as_of` floor here: derived freshness may never
+outrun the oldest input the answer is derived from (S313 spec bar), so the whole
+envelope is composed in one place, `mechanism_envelope`.
 """
 from __future__ import annotations
 
 import hashlib
 import os
 import re
+from datetime import datetime, timezone
 
-# The two shapes on the ledger today: `receipt=<path>; receipt_sha256=<hex>`
-# and `receipt=<path> sha256 <hex>` (`summary=` always uses the second).
+# Any `<path> sha256 <hex>` / `<path>; receipt_sha256=<hex>` pair in the note,
+# whatever labels it: `receipt=`, `summary=`, `spec `, `blocking_row=<row>, `.
+# The path is captured without a `<label>=` prefix because `=` is not in the
+# class, so the four shapes on the ledger today all yield the bare path.
 _REF_RE = re.compile(
-    r"\b(?:receipt|summary)=(?P<path>[^\s;,]+)"
+    r"(?P<path>[A-Za-z0-9_./-]+\.[A-Za-z0-9]{2,5})"
     r"(?:;?\s*receipt_sha256=|\s+sha256\s+)(?P<sha>[0-9a-f]{64})")
 _NUM_RE = re.compile(r"-?\d+\.\d+(?:[eE][-+]?\d+)?")
 _TOL = 1e-9
@@ -84,6 +91,37 @@ def check_rows(rows: list[dict], ledger_path: str) -> dict | None:
     return None
 
 
+def as_of(rows: list[dict], ledger_path: str) -> str:
+    """The oldest of the ledger and every artifact these rows name, ISO-8601 UTC.
+
+    Derived freshness may never outrun its oldest required input (S313 spec bar),
+    so the answer is dated by that input, not by the ledger that quotes it.
+    """
+    named = (m.group("path") for row in rows
+             for m in _REF_RE.finditer(row.get("note") or ""))
+    oldest = min([os.path.getmtime(ledger_path)]
+                 + [os.path.getmtime(p) for p in named if os.path.isfile(p)])
+    return datetime.fromtimestamp(oldest, tz=timezone.utc).isoformat()
+
+
+def mechanism_envelope(rows: list[dict], ledger_path: str, sport: str, name: str) -> dict:
+    """The `mechanism_effect` answer for one hypothesis -- or its refusal.
+
+    Every receipt-bearing row verifies before any number is composed from it.
+    """
+    refusal = check_rows(rows, ledger_path)
+    if refusal is not None:
+        return {"status": refusal["status"], "category": "mechanism_effect", "sport": sport,
+                "source_artifact": ledger_path, "note": refusal["note"]}
+    return {"status": "ok", "category": "mechanism_effect", "sport": sport,
+            "source_artifact": ledger_path, "as_of": as_of(rows, ledger_path),
+            "hypothesis": name,
+            "findings": [{"verdict": r["verdict"], "effect_local": r["effect"],
+                          "n": composed_n(r), "p": r.get("p"), "corpus": r["corpus"],
+                          "note": r["note"]} for r in rows],
+            "framing": "LOCAL single-corpus finding(s) -- not a market-beating or causal claim"}
+
+
 if __name__ == "__main__":  # pragma: no cover - runnable self-check
     import json
     import sys
@@ -95,4 +133,8 @@ if __name__ == "__main__":  # pragma: no cover - runnable self-check
     assert check_rows([bad], LEDGER) is not None, "a flipped row must refuse"
     assert composed_n({"effect": None, "n": 0}) is None
     assert composed_n({"effect": 0.5, "n": 12}) == 12
+    rows = [r for r in good if r["hypothesis"] == "s293_tail_log_loss_rail"]
+    env = mechanism_envelope(rows, LEDGER, "nba", "s293_tail_log_loss_rail")
+    ledger_at = datetime.fromtimestamp(os.path.getmtime(LEDGER), tz=timezone.utc).isoformat()
+    assert env["as_of"] < ledger_at, "the answer must be dated by its oldest input"
     print("receipt_guard self-check OK", file=sys.stderr)
