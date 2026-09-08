@@ -70,3 +70,12 @@ COMMIT: explicit pathspec only. ASCII stdout. Prereg sealed as its OWN commit fi
 line `SEAL sha256 <hex>` over the LF-normalised bytes above it). **NEVER PARK.**
 
 VERSION 2026-09-08
+
+---
+**VERSION 2026-09-08b (orchestrator amendment after codex attempt 1 stopped on a missing path).** The
+S308 attempt-2 memo is not landed yet (its pod scorer is still running). METHOD step 2 is amended: run
+the archive-path check over every memo PRESENT on master among `docs/evidence/harness/S287_*.md`,
+`S287_repeatability_*.md`, `S293_*.md`, `S296_*.md`, `S298_*.md`, `S309_*.md`, `S310_*.md`, `S313_*.md`
+(list them with `ls`); a memo named in the rule that is absent is reported as ABSENT in the table (n),
+never a stop. Everything else stands. A missing `data/registry` in the worktree is expected (local-only
+tree; never write it).
