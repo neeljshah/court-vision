@@ -1,4 +1,4 @@
-GAP G351 | sport basketball | worktree aX | log cx_g351_ball_coordinate_scale
+GAP G351 | sport basketball | worktree a7 | log cx_g351_ball_coordinate_scale
 
 **PRODUCER-DEFECT CENSUS ROW (from G349; codex-friendly, local, read-only code).** `src/`, `kernel/`, `api/`
 and `intel/` are READ and IMPORT only. Build in `scripts/platformkit/tracking/`. NEVER write `data/registry/`,
