@@ -71,3 +71,18 @@ COMMIT: explicit pathspec only. ASCII stdout. Prereg sealed as its OWN commit fi
 line `SEAL sha256 <hex>` over the LF-normalised bytes above it). **NEVER PARK.**
 
 VERSION 2026-09-08
+
+---
+**VERSION 2026-09-08b (orchestrator amendment after codex attempt 1 stopped at the premise).** Attempt 1
+(a75647f6c, dropped, memo kept in the orchestrator scratchpad) found that the pod's 466 tracking tables
+carry NO `cls` column, so `cls == "ball"` is undefined: G29's premise was measured on a different table
+shape. The ball lives in the per-clip `data/tracking/<game_id>/ball_tracking.csv` (G314/G320: columns
+incl. `detected`, `ball_inferred`, `ball_x2d`, `ball_y2d`). PREMISE REPLACED: census the pod ledger's
+clips read-only for `ball_tracking.csv` presence, rows, `detected == 1` rows, and rows with a coordinate;
+PRINT with n (clips total / with a ball table / with >= 1 detected row / median detected rows per clip).
+**If fewer than 60 pct of clips with a ball table have zero detected-ball rows AND the median detected
+share per frame exceeds 0.20, the premise is FALSE: STOP, write the memo, commit, report PREMISE FALSE.**
+Everything else in the rule above stands (stage counts, three arms, plausibility score, bar, flag
+default off). The census is read-only over ssh `cat`/`wc` and needs no pod writes; the sections for the
+arms must be pre-staged under `<worktree>/data/footage_corpus/` by the orchestrator (the sandboxed lane
+cannot fetch from the pod) -- list the files present and use them.
