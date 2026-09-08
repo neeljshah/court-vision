@@ -1,0 +1,2 @@
+arm,section,n_frames,ball_rows_per_frame,one_candidate_share,median_size_px,smoothness_share,near_player_share,detector_seconds,status
+NONE,PREMISE_UNMEASURABLE,000000,,,,,,,,MISSING_CLS_HEADER
