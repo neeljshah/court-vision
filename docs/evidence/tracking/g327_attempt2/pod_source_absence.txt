@@ -1,0 +1,28 @@
+=== probed 2026-09-08T08:43:47+00:00 on the pod, for G327 attempt 2 ===
+=== [1] ls: the three G324 sealed sources ===
+ls: cannot access '/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01_1080p.mp4': No such file or directory
+ls: cannot access '/workspace/nba-ai-system/data/footage_corpus/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4': No such file or directory
+ls: cannot access '/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_06.mp4': No such file or directory
+=== [2] ls: the three G327 attempt-1 realised sources ===
+ls: cannot access '/workspace/nba-ai-system/data/footage_corpus/nba__XzIzQZBrPBY_s398.mp4': No such file or directory
+ls: cannot access '/workspace/nba-ai-system/data/footage_corpus/nba__6cNq5d_NOXs_s772.mp4': No such file or directory
+ls: cannot access '/workspace/nba-ai-system/data/footage_corpus/nba__eaKqXq9dfig_s60.mp4': No such file or directory
+=== [3] find: any .mp4 ANYWHERE under /workspace named for those six sources ===
+--- end of [3]; no path listed above means no such .mp4 exists on this pod ---
+=== [4] find: any persisted frame snapshot from G327 attempt 1 under /workspace/wt/a21 ===
+--- end of [4]; no path listed above means attempt 1 persisted NO frame bytes ---
+=== [5] everything attempt-1 scored job 20260908025412_745458_5112 left behind ===
+total 3493
+drwxrwxrwx 2 root root 1050321 Sep  8 08:02 .
+drwxrwxrwx 8 root root 2009534 Sep  8 08:01 ..
+-rw-rw-rw- 1 root root  149154 Sep  8 08:02 g327_boxes_g1.csv
+-rw-rw-rw- 1 root root  172444 Sep  8 08:02 g327_boxes_g2.csv
+-rw-rw-rw- 1 root root  169661 Sep  8 08:02 g327_boxes_g3.csv
+-rw-rw-rw- 1 root root   24035 Sep  8 08:02 g327_summary.json
+=== [6] corpus file count now ===
+93
+=== [7] resolution census of the whole corpus (width,height -> count) ===
+     14 1280,720
+     10 1920,1080
+     69 640,360
+=== [8] end ===
