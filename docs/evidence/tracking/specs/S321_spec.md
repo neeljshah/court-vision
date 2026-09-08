@@ -74,3 +74,25 @@ COMMIT: explicit pathspec only. ASCII stdout. Prereg sealed as its OWN commit fi
 line `SEAL sha256 <hex>` over the LF-normalised bytes above it). **NEVER PARK.**
 
 VERSION 2026-09-08
+
+---
+**VERSION 2026-09-08b (orchestrator amendment after attempt 1 stopped INSUFFICIENT, 3d24ecdf5 in a5).** Attempt 1
+measured that `nba_checkpoints_full.parquet` carries NO pre-start M0 column (`market_prob` exists only on in-game
+rows; ESPN game ids; `market_ticker` = `nba-<away>-<home>-<date>`, venue polymarket for all 1,593 games). The only
+close store is `data/cache/combo/gate_corpus_nba_close.parquet` (1,814 rows; `event_id` = NBA official ids such as
+0022400061; `p_close`, `close_ts`, `close_kind` = first_inplay_tick, `close_sec_after_tip` ~ 0, `close_within_30s`),
+whose `p_close` is the FIRST IN-PLAY QUOTE AT TIP, not a pre-start close. ATTEMPT 2 (a LIMIT measurement under
+rule 2) therefore defines M0 as follows and labels it everywhere as "first in-play quote at tip (close_kind)":
+  (a) build the NBA-id -> (event_date, home, away) map from any local store that carries the NBA official game id
+      with team abbreviations and dates (print which store and its coverage; candidates: the box-score parquets
+      named in `docs/evidence/harness/S296_full_boxscore_oof_2026-09-04.md`, `data/cache/omni_box_refresh/
+      nba_player_box_extension.parquet`, an NBA stats schedule cache); join the close corpus to the checkpoints on
+      (event_date, home, away) parsed from `market_ticker`; report join coverage per season (n games) and the
+      distribution of `close_sec_after_tip`; games without a join get M0 = null and are EXCLUDED with n stated.
+  (b) if the joined coverage is >= 400 games per season in >= 2 seasons, score bar C exactly as sealed with this
+      M0; if not, the fallback M0' is the EARLIEST in-game quote of each game with game_clock_s within 60 s of the
+      period-1 start (label it M0-proxy), coverage reported, and the verdict vocabulary gains the suffix
+      "(M0-proxy)". Never substitute `p_elo` or `p_base` for M0 (astra rule).
+  (c) S320 must be CLEAN on master before the finisher scores; if S320 landed VIOLATION, the finisher commits the
+      prepared harness and reports BLOCKED-ON S320.
+Everything else in VERSION 2026-09-08 stands (landmarks, folds, embargo, bar C, tests, division of labour).
