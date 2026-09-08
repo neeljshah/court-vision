@@ -1,4 +1,4 @@
-GAP G353 | sport all (basketball fixtures first) | worktree aX | log cx_g353_image_px_gate_reachability
+GAP G353 | sport all (basketball fixtures first) | worktree a10 | log cx_g353_image_px_gate_reachability
 
 **HARNESS-REACHABILITY ROW (from G348 PARTIAL 2026-09-08; astra suspicion "shared early refusal"). Codex
 PREPARES, a finisher MEASURES.** `src/`, `kernel/`, `api/` and `intel/` are READ and IMPORT only. Build in
