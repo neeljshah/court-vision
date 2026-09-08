@@ -318,7 +318,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G325  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G327  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
@@ -803,7 +803,7 @@ The id came from `NEXT_GAP_ID`, which this commit moves G321 -> G322.
 
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
-| G321 | wnba | OPEN -- allocated 2026-09-07. The semantic-line proposal family (the only provider that emits NAMED court structures) ABSTAINED on 63/63 eligible 1080p frames in G304 attempt 2 (scripts/platformkit/tracking/g304_proposals.py). Row = cause: trace the provider's gate (why it returns nothing on clean broadcast frames: threshold, colour model, crop, resolution), measure its per-frame line recall on the 24 G296 formula frames against the 113 adjudicated points (proposal within 8 px of a named landmark), and state whether a repaired provider could feed a proposal-verify attempt 3 (needs >= 6 named landmarks over >= 3 structures per frame on >= 20 frames per arena). No src/ edits; PROPOSED diff under docs/research if the fix lives there. |
+| G321 | wnba | OPEN -- allocated 2026-09-07. The semantic-line proposal family (the only provider that emits NAMED court structures) ABSTAINED on 63/63 eligible 1080p frames in G304 attempt 2 (scripts/platformkit/tracking/g304_proposals.py). Row = cause: trace the provider's gate (why it returns nothing on clean broadcast frames: threshold, colour model, crop, resolution), measure its per-frame line recall on the 24 G296 formula frames against the 113 adjudicated points (proposal within 8 px of a named landmark), and state whether a repaired provider could feed a proposal-verify attempt 3 (needs >= 6 named landmarks over >= 3 structures per frame on >= 20 frames per arena). No src/ edits; PROPOSED diff under docs/research if the fix lives there. | `specs/G321_spec.md`; `g321_prereg_2026-09-07.md` (sealed 08d68e053); `g321_semantic_provider_abstention_2026-09-07.md`; `G321_VERIFY_2026-09-07.md`; `g321_artifact/` | **DONE 2026-09-07 bd9d62329 -- CAUSE NOT UNIQUE by the per-frame first-zero rule: 3/24 `_ordered_quad` (keypoints.py:36,:41), 10/24 area floor (:82,:87), 11/24 minimum-side floor (:87); no single relaxation reaches the bar; SEMANTIC_MAP holds 5 names over 2 structures so the >= 6/3 bar is unreachable; the 113 G296 points are PLAYER FEET, not court landmarks -- no landmark ground truth exists; E1 routes left = human annotation or a new provider with a richer map; ACCEPT WITH CORRECTIONS verified codex-sol.** |
 
 ## G322-G323 allocation register (2026-09-07) -- the two rows the G315 screen opened
 
@@ -828,3 +828,14 @@ than reopening G311. Orchestrator allocation; the id came from `NEXT_GAP_ID`, wh
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G324 | all | OPEN -- allocated 2026-09-07. APACHE DETECTOR ARM UNDER A RE-REGISTERED INSTALL PREMISE: G311 closed at its sealed 1,800 s limit while the measured build+install is 2,921 s (TORCH_CUDA_ARCH_LIST=8.6, sm_86 only). Row = the same screening arms with the install premise re-registered at 3,600 s wall (a NEW bar, sealed before any build; the wheel already built at /workspace/mmlab_env may be REUSED only if its SHA-256 is recorded in the prereg and the rebuild-from-source time is reported separately), raw sampled box rows committed for coordinate matching (G311-RAW-BOX-DURABILITY), the memo at the spec-named EVIDENCE path, source byte sizes + pod harness route hashes recorded (G311-PROVENANCE), batched inference cost measured beside the single-image 2.1-2.5 s/frame figure, and the per-frame sign rule stated in the verdict line. Screening only: no adoption, no src/ change. |
+
+## G325-G326 allocation register (2026-09-07) -- the two rows the G321 landing and the G303 verify opened
+
+From the G323 off-frame observation the G315/G323 line surfaced, and from the G303 verifier's CRLF finding on
+`g298_audit.py`: neither belongs to a closed row, so both take fresh ids. Orchestrator allocation; the ids came
+from `NEXT_GAP_ID`, which this commit moves G325 -> G327.
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G325 | all | OPEN -- allocated 2026-09-07. OFF-FRAME BOXES: G323 found 2 of 60 sampled player observations whose bounding box lies WHOLLY OUTSIDE the decoded frame (2 of 3 games), and the production colour gate passes them. Row = corpus-wide census over every completed pod game (share of observations with x2 <= 0 or x1 >= frame_w or y2 <= 0 or y1 >= frame_h, per game/resolution, n per cell), the producing site (Kalman coasting off-frame vs detector output vs PAD; cite src/tracking/advanced_tracker.py lines), and whether track_daemon_done.py's writer should drop them (PROPOSED diff under docs/research if src/ must change). |
+| G326 | all | OPEN -- allocated 2026-09-07. CRLF-SAFE AUDIT HASHES: `python -m scripts.platformkit.tracking.g298_audit` fails its raw-byte hash assertion on a CRLF checkout before any arithmetic (g298_audit.py:29; found by the G303 verifier), so a landed audit cannot be re-executed from a Windows clone. Row = sweep every landed audit/seal script under scripts/platformkit for raw-byte hashing of text artifacts, convert each to LF-normalized hashing with a per-file test that passes on both CRLF and LF checkouts, and list which committed hashes change (none should, if the originals were computed on LF bytes). |
