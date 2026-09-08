@@ -1,0 +1,5 @@
+scope,table,rows,detected,inferred,inferred_no_coord,status
+committed,docs/evidence/tracking/g82_jump_statistic/eye_check_selection.csv,000006,,,,STOP_MISSING_BALL_INFERRED_HEADER
+committed,docs/evidence/tracking/g82_jump_statistic/oversized_steps_above_p95.csv,000016,,,,STOP_MISSING_BALL_INFERRED_HEADER
+pod_read_only,wnba_05_ball_tracking.csv,001000,000907,000311,000001,OK
+pod_read_only,wnba_02_ball_tracking.csv,001000,000803,000273,000006,OK

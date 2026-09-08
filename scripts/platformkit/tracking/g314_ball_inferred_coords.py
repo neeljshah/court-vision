@@ -12,6 +12,11 @@ position counted here has ever been checked against an image.
 The truth and finiteness predicates are IMPORTED from the G309 census reader so
 they cannot drift from the numbers this row is checking.
 
+G320 hardening (additive): `count_ball_table` STOPS on a table with no
+`ball_inferred` header rather than reporting its flag counts as zero, and counts
+`inferred_no_coord` -- flagged rows with no finite coordinate pair -- as its own
+class, recording their frame ids.
+
     python -m scripts.platformkit.tracking.g314_ball_inferred_coords <scratch_dir>
 """
 from __future__ import annotations
@@ -35,6 +40,14 @@ INPUTS = (
 )
 
 
+class MissingBallInferredHeader(RuntimeError):
+    """G320: the table carries no `ball_inferred` header, so it cannot be classified.
+
+    G314's verifier flagged that reporting 0 flagged rows for such a table is a
+    silent miscount: absent evidence read as evidence of absence.  Stop instead.
+    """
+
+
 def _truth(cell) -> bool:
     return (cell or "").strip() in TRUE_TOKENS
 
@@ -46,10 +59,19 @@ def count_ball_table(path: str) -> dict:
         "ball_valid": 0, "inferred_with_coords": 0, "inferred_without_coords": 0,
         "det_and_inf": 0, "det_not_inf": 0, "inf_not_det": 0, "neither": 0,
         "has_inferred_column": False,
+        # G320 (additive, B2): the flagged-but-uncoordinated class, kept as its own
+        # class instead of being folded into ball_detected or ball_inferred.  Equal
+        # by construction to `inferred_without_coords`, which keeps its own name and
+        # meaning unchanged; the G320 test asserts the two cannot drift apart.
+        "inferred_no_coord": 0, "inferred_no_coord_frames": [],
     }
     with open(path, "r", encoding="utf-8", errors="replace", newline="") as fh:
         reader = csv.DictReader(fh)
-        out["has_inferred_column"] = "ball_inferred" in (reader.fieldnames or [])
+        if "ball_inferred" not in (reader.fieldnames or []):
+            raise MissingBallInferredHeader(
+                "%s has no ball_inferred header; columns = %s"
+                % (path, list(reader.fieldnames or [])))
+        out["has_inferred_column"] = True
         for r in reader:
             out["ball_rows"] += 1
             det = _truth(r.get("detected"))
@@ -63,6 +85,10 @@ def count_ball_table(path: str) -> dict:
             if inf:
                 out["inferred_with_coords"] += int(finite)
                 out["inferred_without_coords"] += int(not finite)
+                if not finite:
+                    out["inferred_no_coord"] += 1
+                    out["inferred_no_coord_frames"].append(
+                        (r.get("frame") or "").strip())
             out["det_and_inf"] += int(det and inf)
             out["det_not_inf"] += int(det and not inf)
             out["inf_not_det"] += int(inf and not det)
