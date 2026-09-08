@@ -1,0 +1,15 @@
+=== the three G324/G327-attempt-1 sealed sources, probed 2026-09-08T06:17:19+00:00 ===
+ls: cannot access '/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_01_1080p.mp4': No such file or directory
+ls: cannot access '/workspace/nba-ai-system/data/footage_corpus/ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.mp4': No such file or directory
+ls: cannot access '/workspace/nba-ai-system/data/footage_corpus/wnba__wnba_06.mp4': No such file or directory
+=== every .mp4 under /workspace outside footage_corpus/footage_bridge ===
+/workspace/g302_attempt2/g302_broadcast_1080.mp4
+/workspace/g302_attempt2/g302_amateur_720p.mp4
+/workspace/wt/a1/resources/Short4Mosaicing.mp4
+/workspace/wt/a5/inputs/g302_amateur_720p.mp4
+/workspace/nba-ai-system/resources/Short4Mosaicing.mp4
+=== resolution census of the whole corpus (width,height -> count) ===
+     56 1280,720
+     63 640,360
+=== corpus file count ===
+119

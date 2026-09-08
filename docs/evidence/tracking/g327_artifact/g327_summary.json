@@ -1,0 +1,945 @@
+{
+ "screening_only": true,
+ "ground_truth": null,
+ "topcut": 60,
+ "route_kwargs": {
+  "classes": "[0]",
+  "conf": "0.22",
+  "verbose": "False",
+  "imgsz": "640",
+  "half": "True",
+  "device": "0"
+ },
+ "registered_conf": 0.3,
+ "conf_source": "route _fill_conf_threshold",
+ "arms": {
+  "single": {
+   "batch": 1,
+   "overrides": {}
+  },
+  "single_repeat": {
+   "batch": 1,
+   "overrides": {}
+  },
+  "batch2": {
+   "batch": 2,
+   "overrides": {}
+  },
+  "batch8": {
+   "batch": 8,
+   "overrides": {}
+  },
+  "pad": {
+   "batch": 8,
+   "overrides": {
+    "imgsz": "None"
+   }
+  },
+  "fp32": {
+   "batch": 8,
+   "overrides": {
+    "half": "False"
+   }
+  }
+ },
+ "env": {
+  "python": "3.12.3",
+  "torch": "2.8.0+cu128",
+  "ultralytics": "8.4.143",
+  "cv2": "4.14.0",
+  "gpu": "NVIDIA GeForce RTX 3090"
+ },
+ "gated_before": {
+  "src/tracking/player_detection.py": "c3bc2f7d4c4fda366f83523dd0aac86e47a40fecaf26e36b490d5a8c73ca5cc7",
+  "src/tracking/advanced_tracker.py": "df2ae698ae03e804f67639434d8303638aea9087c3169c016af5a3734dd474d7",
+  "yolov8n.pt": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+ },
+ "probes": {
+  "gpu": {
+   "command": [
+    "nvidia-smi",
+    "--query-gpu=memory.used,memory.total",
+    "--format=csv,noheader"
+   ],
+   "rc": 0,
+   "stdout": "3394 MiB, 24576 MiB\n",
+   "stderr": ""
+  },
+  "apps": {
+   "command": [
+    "nvidia-smi",
+    "--query-compute-apps=pid,used_memory",
+    "--format=csv,noheader"
+   ],
+   "rc": 0,
+   "stdout": "2370879, 530 MiB\n2569378, 532 MiB\n2575765, 482 MiB\n2588724, 530 MiB\n2592193, 426 MiB\n2592176, 426 MiB\n2602615, 426 MiB\n",
+   "stderr": ""
+  },
+  "du": {
+   "command": [
+    "bash",
+    "-lc",
+    "v=$(timeout 60 du -sm /workspace | cut -f1); [ -z \"$v\" ] && v=UNKNOWN; echo $v"
+   ],
+   "rc": 0,
+   "stdout": "UNKNOWN\n",
+   "stderr": ""
+  },
+  "dd": {
+   "command": [
+    "dd",
+    "if=/dev/zero",
+    "of=/workspace/wt/a21/jobs/20260908025412_745458_5112/g327_out/fsync.bin",
+    "bs=1M",
+    "count=8",
+    "conv=fsync"
+   ],
+   "rc": 0,
+   "stdout": "",
+   "stderr": "8+0 records in\n8+0 records out\n8388608 bytes (8.4 MB, 8.0 MiB) copied, 0.0280124 s, 299 MB/s\n"
+  }
+ },
+ "provenance": {
+  "g327_arms.py": "dc9efb4bd347f7b8d524daa07c1268f886f89feb5f14f132a3398e33fcb483ee",
+  "g327_sources.py": "b02053243c0e6996a1d643cb5c1e47738d605aed5725a35960964c4bdd72b770",
+  "g327_detector_batch_stability.py": "ca4f9d93ad5b27692b5ce3ff04556e7f09835586b3c47bc1317c5c65b89f589e"
+ },
+ "games": [
+  {
+   "game": "nba__XzIzQZBrPBY_s398",
+   "slot": 1,
+   "source": {
+    "path": "/workspace/nba-ai-system/data/footage_corpus/nba__XzIzQZBrPBY_s398.mp4",
+    "bytes": 96353880,
+    "width": 1920,
+    "height": 1080,
+    "fps": "60000/1001",
+    "nb_frames": "7816",
+    "duration_s": 130.431933,
+    "game": "nba__XzIzQZBrPBY_s398",
+    "game_id": "nba__XzIzQZBrPBY",
+    "mtime": 1788853976.0,
+    "anchor": 7815,
+    "frame_list_sha256": "81d8a2c59116dafbeadd44ca18e7682df85d134ad756c6b640e2785b7778ecc8"
+   },
+   "frame_indices": [
+    0,
+    200,
+    401,
+    601,
+    802,
+    1002,
+    1202,
+    1403,
+    1603,
+    1803,
+    2004,
+    2204,
+    2405,
+    2605,
+    2805,
+    3006,
+    3206,
+    3407,
+    3607,
+    3807,
+    4008,
+    4208,
+    4408,
+    4609,
+    4809,
+    5010,
+    5210,
+    5410,
+    5611,
+    5811,
+    6012,
+    6212,
+    6412,
+    6613,
+    6813,
+    7013,
+    7214,
+    7414,
+    7615,
+    7815
+   ],
+   "decoded": 40,
+   "decoded_stack_sha256": "a8f05cb40dc9f52fd5487ab0c15716595609cf8f158caa282187456cfbe0b936",
+   "decoded_frame_sha256": [
+    "eaf6818fa2ba0434232a7bc019708296fcd66ba337fa4e8f1c3f6dda80851fe3",
+    "3bac90cab270377fd48c5450c11c3fa5a8c3d7f03af3ef1c1b07a0e6353897f1",
+    "4fce552bef9bc8f2534b5fc95dbc811fd20e2eead86b49ddffa891b84fdfde90",
+    "0c6db176b073afaecc8ed7b79f4e4b0c8982802318392539cb8cd3e9a0d3f39d",
+    "8e2ab19ed4427f5bed07ccf911e06e3c2ac8f2ad3e8ed81ef0c6556b42529506",
+    "a190175bd837abae73d83646a0899965b0096d264ea050169df4b47f11afd4c6",
+    "79fac0cd63b2eeea4dced1ceb9810e0c3991784b892a43f9bcb6bdb0a4fc4a9b",
+    "e735ef1495b4ec922392723d142e3c935f832e2119d699cb490ffd2649a81168",
+    "1a73ec15c3408af3d0b20e779d37fd66b04910440d86af17249141a4d310bbeb",
+    "eee7ceabb0fde0ca9c4df0cf6b66aae633d6d5102ab599034a0e8ec7c1c6bb42",
+    "566bc6b5bf78da1ff88ad3ca65019a9693de901bc73c9aba7085eaf49f760970",
+    "63f0b3baf6101658540f58ba7c2d2395c65559a9bf2588427b6d430909420dc8",
+    "0ae28df00961fe39b0b89d0c464c49b3fb59bffd4628cfc09b818df5671477f6",
+    "1670f1efd182b5344d56cc530ac409adc66a21fafc1aef5970fcc257326ce554",
+    "ed17d4363e19bb590fd601ed387de4b3b777fda5cbdc359c3d47687e3dc08aa1",
+    "8d38d3f9a0321af55d9f287afb392c4c8225fab2063072393a9efe6af9d1b22d",
+    "16fe2bbc4004791a1fe93a5b0ae45afcb204d8b74ab9c6d6555cc739d481d4c5",
+    "2530edecc488d072db387724dffabf7500b445e5ee267fe064a1d53d96828cc6",
+    "20769fcb5f94d97a4cfaa842efeb90a0dfe6c62173520a33f557fcd9f6bdd192",
+    "1d4bb451847462ddcffad92e0cdcafcfa2c127b0bcf13ec37a678f68febce30e",
+    "074a362bf0b236a2c1532e1c6f4c6c0a9280eab8f0e2b89f2683fd769d1838eb",
+    "7e09f053459c185d0151ec540dbda742524038cd86c1ce4a2a861841c7837314",
+    "b576128b0f9da6bf9978d12f6506f86129885a394b5e81dde2c3d9963d5d96ad",
+    "d00de85145892b017089d6b39fe94a17fa9543fb19aac3afaf219d16f2ff8ab7",
+    "5d900ce30cd8f47be6bc30f3d8fede9f7b1311d3726c37323f645b720a1fcf45",
+    "4c06adbdd1a9dc19fd66117b12c7aaa99867e85833ba43824567e0fa56526331",
+    "da194d239c887c7dc01a5c1c36ce6f3990d6f48de267f1841b2fdd51242d6fa9",
+    "e882a9068575e72c0fc4c0eff6e4d1fadfcf735b1cd15157e99d1f3b6a62c283",
+    "5d50d52dc8edb6e2dfc1e5d7c1b9458680e7e07e2e15404c906483724915628b",
+    "a7283aeea6c6006bd210bb6261ef667856c1d274e7e4a33ed9c0e1e0d3f03943",
+    "7294ba2d4b2a633de8dc8fcaebf511e1237be23e4c673263de5eeed59475fb68",
+    "5d3e35213bda74481ad42ca300579035f055a8327fa37263c074eae72ed1800a",
+    "8b7d330188975c8d0a642d792ed575fc1d9194f40e9fb2293c45371d66dca8f3",
+    "72a126a7237ec3c1fa383abcbd4dd48d0eb45c6498443d4dd925331e8aa8c629",
+    "d3336fcb00156a44de1a2498e5024c2a1f29c66d225ef7ebe1efa15fd2a05214",
+    "8f019eb7b6c6b89830af12422fddd0439ceacad210121c4f1dce94e021782d52",
+    "8de954f3819ce9428154cd5afd9b338db283770e40353eb67a2eae4d6fe02696",
+    "78cc522efc46168efe25d639180640fed38c59c39c1d1ee63d449cac33bd982c",
+    "d980c69dd7df7f0196f6fc80d315d0c07cf7b82556dc93b4a550aefb81757719",
+    "4ec5c906e56a73234503d3e7d8e7456b521454b487a5d2ad856016351f535bde"
+   ],
+   "fed_shape": [
+    1020,
+    1920,
+    3
+   ],
+   "csv_rows": 2268,
+   "csv": "g327_boxes_g1.csv",
+   "arms": {
+    "single": {
+     "batch": 1,
+     "ms_per_frame": 9.914736822247505,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       1,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 378,
+     "zero_box_frames": 1
+    },
+    "single_repeat": {
+     "batch": 1,
+     "ms_per_frame": 11.736560938879848,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       1,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 378,
+     "zero_box_frames": 1
+    },
+    "batch2": {
+     "batch": 2,
+     "ms_per_frame": 12.085782643407583,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       2,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 378,
+     "zero_box_frames": 1
+    },
+    "batch8": {
+     "batch": 8,
+     "ms_per_frame": 8.845393266528845,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 378,
+     "zero_box_frames": 1
+    },
+    "pad": {
+     "batch": 8,
+     "ms_per_frame": 4.487995710223913,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "[352, 640]",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 378,
+     "zero_box_frames": 1
+    },
+    "fp32": {
+     "batch": 8,
+     "ms_per_frame": 13.712092721834779,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "False",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float32"
+     ],
+     "boxes_total": 378,
+     "zero_box_frames": 1
+    }
+   }
+  },
+  {
+   "game": "nba__6cNq5d_NOXs_s772",
+   "slot": 2,
+   "source": {
+    "path": "/workspace/nba-ai-system/data/footage_corpus/nba__6cNq5d_NOXs_s772.mp4",
+    "bytes": 100854836,
+    "width": 1920,
+    "height": 1080,
+    "fps": "60000/1001",
+    "nb_frames": "8097",
+    "duration_s": 135.10895,
+    "game": "nba__6cNq5d_NOXs_s772",
+    "game_id": "nba__6cNq5d_NOXs",
+    "mtime": 1788853827.0,
+    "anchor": 8096,
+    "frame_list_sha256": "d0ed8f756bf33c1873e403dae3c8a7f7cb1d9064ec716f9394dce657956e9173"
+   },
+   "frame_indices": [
+    0,
+    208,
+    415,
+    623,
+    830,
+    1038,
+    1246,
+    1453,
+    1661,
+    1868,
+    2076,
+    2283,
+    2491,
+    2699,
+    2906,
+    3114,
+    3321,
+    3529,
+    3737,
+    3944,
+    4152,
+    4359,
+    4567,
+    4775,
+    4982,
+    5190,
+    5397,
+    5605,
+    5813,
+    6020,
+    6228,
+    6435,
+    6643,
+    6850,
+    7058,
+    7266,
+    7473,
+    7681,
+    7888,
+    8096
+   ],
+   "decoded": 40,
+   "decoded_stack_sha256": "2160b82abe76179bb55a5b17775ae3f96d1272231453401d81a637e917ed3187",
+   "decoded_frame_sha256": [
+    "bcecafa2d2689f61831ee2ae645dbcab47d603ceaf45149cac3844d30e7e16c4",
+    "2c21bf0988ebc7f6f954e10fc989702ded74c4605c5d15b3f78e77472e788d92",
+    "6d85e50b198dc2390fdced3ab76d89cb69208aac706c4327cfd7b39f51d343bf",
+    "ebf599e74f11972831f1c058842ed1f5c9e91c49ecb0191fad9eeeec3f68bbf8",
+    "81884984703a7942c3dc4dfd25fd7410801a989387276353ce7495d2638955af",
+    "03434b7da6943fafd499b00b510b63ced888f9bebf5b31c53558aa17adfeb607",
+    "e46b9fec1f5ecc9bc769f92e14cec402afebc82331a9900390871270fe0c84a9",
+    "cf939685e0f5b905d28f623db1996f421b0e3711fd1aaf7b203e2ef5904b9bff",
+    "35c63c18f23617c84f8e0ec43521b50732a8e9852564c8fc6b02e835583599f6",
+    "3e0518c0d73c4a0218edda0e5dc2bcf9746dc1e5d0b10fb089f4b26a8b51335c",
+    "5d8996d2ca3da43f87c1b534062c8b6dfdf35f339c37b529fa57d55f0d2b7120",
+    "30977047d03f00713d4c6ab445fdca4141682730fe69d150decfe4e1e211bfbf",
+    "2530ca62adf816d3a8e56c8f992dfb3f93b25b0fc6696dc572d796b33ce52bdc",
+    "82dd1458ca0eea25d86426f6c07611c07f8a1269ab311405740f87eb78b25e7e",
+    "ac41d8b1f824c6328309e16319035b237c2498e2e9120552de1fd52f2a6ab649",
+    "94e0d93d8a1b93330a0fbcc6d019666f1a45111b2d9484fe4e66574c2e641099",
+    "5e4983852777bca47c918062ac24f5c5ac5074865dfadb74314cc1e07cf270b9",
+    "f58a1d6bd666a2807e4c8d8c001ae68b339732392ba96035bb6b1d868080efd8",
+    "80b0b195ee16fc01e3c42dca576671aeb78199e5ac1102e9856a55ab2ecdb4c0",
+    "dfe942f515445ccf018d00c4c7d10239205182d0f131e155093ec181c33882a8",
+    "beedb6fb27c6addff30d6cbbe0b958a34f7eb074c7c634b498ef3a2dcf50e0db",
+    "d8188e1537871775d058714bba6d8332d19486a4c9b08dc7b471d5ebbc4aed3e",
+    "e47326b18ad92bf86890d746aa500892550c170a3bbb95a5bb155fb852fa7810",
+    "c43f847d713a797a58b48e49cfa38cffd3dace200a77656b1e1c84953f9a3156",
+    "d5781a0df85b5dc5cdc675dbef1dc4b0368ee0cc506fcb19ee720829b9b8d82e",
+    "b513541249ac2273be2fd4bb5d15dae966a5df69b6e808b47ed2a12fb2ee1307",
+    "68b5b1cfd7698240db47c36c2c9f6960c312e2f327a6e78d35522d0146c3dd7f",
+    "14c3bc0cb9a3d2b0ef66d64584e0a95a8526d824a0f819f46d4081d808a298d1",
+    "76e27dfd89dc20ded1f60f4e0e97ae43ffdc1629cac747341f079e426381acb8",
+    "dca3c8105b6431baabe0fc9e2517da72b598e39f40ff0ee86a84cf51bb19f413",
+    "e4e22d3bf59317eea521e9f4ae18943eee4e5a39ffa65a6c30a00b340881caee",
+    "60723e28beaba747a675ae64d1745751b320fc13cd83391ee318b83be056d04a",
+    "5bb4f4dff2d3839bdcd41645202f165615b656ac7c8b0026567a3218152b5d0f",
+    "8dc9164bf127dc965b6fde194b055993f1a6ceb8af5743e9b82c3a0c8048bd0f",
+    "97fcbdae53718a596c9f2997c91e2424c533a6d51ee9e3fd629e7c58d965ee15",
+    "7988b9d55b3f8499e84bab1330bd298b9e4b66320d538b0ab5561f28513edb16",
+    "c99fbb3c35b3d27f46b4d09d823ebe2be3742782b06cfeeef1ca02d72c77ae4b",
+    "f1e7acc28e11407da3c2d5f832a576679c7a21996ff52eb440c275ce8381bfa4",
+    "dc4fa2e37b1345399ea8b7d52ec5bbb576219815e7620ff99c83b3d796e95374",
+    "171dd2c87c2d07777002408ee48bfbf03d98ebef8b2c6506501b3d704e2e2930"
+   ],
+   "fed_shape": [
+    1020,
+    1920,
+    3
+   ],
+   "csv_rows": 2622,
+   "csv": "g327_boxes_g2.csv",
+   "arms": {
+    "single": {
+     "batch": 1,
+     "ms_per_frame": 8.736135391518474,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       1,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 437,
+     "zero_box_frames": 0
+    },
+    "single_repeat": {
+     "batch": 1,
+     "ms_per_frame": 10.135240806266665,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       1,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 437,
+     "zero_box_frames": 0
+    },
+    "batch2": {
+     "batch": 2,
+     "ms_per_frame": 8.34251674823463,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       2,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 437,
+     "zero_box_frames": 0
+    },
+    "batch8": {
+     "batch": 8,
+     "ms_per_frame": 2.9681670013815165,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 437,
+     "zero_box_frames": 0
+    },
+    "pad": {
+     "batch": 8,
+     "ms_per_frame": 3.25719746761024,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "[352, 640]",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 437,
+     "zero_box_frames": 0
+    },
+    "fp32": {
+     "batch": 8,
+     "ms_per_frame": 3.0441429931670427,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "False",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float32"
+     ],
+     "boxes_total": 437,
+     "zero_box_frames": 0
+    }
+   }
+  },
+  {
+   "game": "nba__eaKqXq9dfig_s60",
+   "slot": 3,
+   "source": {
+    "path": "/workspace/nba-ai-system/data/footage_corpus/nba__eaKqXq9dfig_s60.mp4",
+    "bytes": 60652830,
+    "width": 1920,
+    "height": 1080,
+    "fps": "60/1",
+    "nb_frames": "7891",
+    "duration_s": 131.548698,
+    "game": "nba__eaKqXq9dfig_s60",
+    "game_id": "nba__eaKqXq9dfig",
+    "mtime": 1788853613.0,
+    "anchor": 7890,
+    "frame_list_sha256": "38e7421b16a90b293975897567c3f2d01b366cfd62688ba191a3b36741ac19a1"
+   },
+   "frame_indices": [
+    0,
+    202,
+    405,
+    607,
+    809,
+    1012,
+    1214,
+    1416,
+    1618,
+    1821,
+    2023,
+    2225,
+    2428,
+    2630,
+    2832,
+    3035,
+    3237,
+    3439,
+    3642,
+    3844,
+    4046,
+    4248,
+    4451,
+    4653,
+    4855,
+    5058,
+    5260,
+    5462,
+    5665,
+    5867,
+    6069,
+    6272,
+    6474,
+    6676,
+    6878,
+    7081,
+    7283,
+    7485,
+    7688,
+    7890
+   ],
+   "decoded": 40,
+   "decoded_stack_sha256": "a712b2e5c5a9283e4437c802178346c36d02bbcfee6082cd93bd5bdbea71d2d3",
+   "decoded_frame_sha256": [
+    "4e5bcdf741c2d3eb4667ead329a844d5576ab43ef655923c1ad0bbde0bb550d2",
+    "614070d795c7bdd5036a412692835cad0886bafbc4e48164e0701d3bdee6fc44",
+    "a9c9900b7a2417101f5be4ff814d336a82e3b50b86540e021e17e21c60245925",
+    "adb0a9713206a2a334a8a0d91dd1c311b3e6c194066624a8c723ab726aeb9c2f",
+    "bee304d446ce553e04946dbd97be968b5d54ee48da4770140c1f9722730ac913",
+    "a938bae5229a897a4803be62e0766c1844fce63a2b0b6633fb8789ec1e0adc8e",
+    "0bc0e0b6929fd6dbac52e5144d14a13999b415a5c37afe9fc3cadcab76182139",
+    "f6ab02895340566e2e25c18dfba6a4d62bf736080c319979d3e502caf00d2512",
+    "3719456cdd80e7cd443864aee96278b3a9f605098f1fe9a2b7ac52e11b1b5f4c",
+    "b4090f53d49731d5171b5fc2cdf48818968fae84ad389fbe61a3410baa198a5d",
+    "9ebd7bff8805d7a11b9bfa6c837c34ae5c224b489ca82f8fe9d06b8eaf576824",
+    "45bf82467aa4bb98da8424443074b36a9819e42aa230eef000acf5900b90b796",
+    "ad720935469b44cdccea80b6da3a28f7a02c2ba7c6fb4c0d1d6f3e46a1280f9f",
+    "cdc78d7c44849c205d8e914a4ff7cacf724f31c75277fcde351edd943afe5b52",
+    "33fa244635631148e551aa07b47dfa6a5081ab02201146d21d6302d7597fdd05",
+    "ef47a73f5b285555706211a235a14082828e7a1a79ee28257f5f549995496ee6",
+    "8255dc547bc6af53b4491f8dfedc4f0a39201ba1e5deab3f8c7124e550159cf4",
+    "8acc25447a1120441d99d237a215fa8f4cc36ca82a8358f082818130b63724f1",
+    "06066dfbd367762937ed4b5aa95b9e417f4ae7b43f02f4cd4738e922fe032f8b",
+    "7c08431ef0d658c572a33e49b24c38ec26b992f92d88a35b29fd45399262fccd",
+    "cf7487063f76a916d6507a9fb9211c015ab73f1c7cd93bf50d0084efd4b36ab8",
+    "f53fe25f276f07a52e0fa43f8bdfa93ae10b94ef318ef1afb95af11a9f895715",
+    "737c47d9b6e7ecfefc83a14ed8a9c5b1de5a2ede850b462ee086428ac706c153",
+    "215f99e5776957fe57116943d644bfb2023a20c18b3101638acae2224eb57b9c",
+    "7a7ac4921b51f9493ac8667670ff82d3110bb89d44545e9dd4d26975a21b248d",
+    "c81813704fb603641ad3175ee6d7cf93e814307663d7cddd6fa0790c831a8e77",
+    "7b19840add68288215b6ae0b63c1ce36f896e88d37e2f3fb1708daa2ce089cc2",
+    "94ed92a067d6b394c965f6b65647640698c5d526357119cb597e9fa7e6c34053",
+    "86218521a39925ccf45b9f3ed0a97e345d7da166689cb0a295bbca11835e3485",
+    "50154ac04b41a8701bf653eb5fdfe0829aa8a46025f68fccfc12c4ae3d3f0bc4",
+    "72cad8537c4e610803d81d531656d9f454e8e84d74499017b5775471b0af29c1",
+    "0b1270e6f6ba423789bfb728289956cb7cbc5b0c2771a4fca0f7587e6b8fc3bd",
+    "421cc0624ef20d07bb881b17e1f36461d9b251840c71f4614012988f88c5d91f",
+    "3a0e35f3e16f47e97d118f78435d54b388acc76c9b719dd094a0be3abcb7ae4d",
+    "5c525df9ae02f8685ab1c91f5d5cb6974817387b01b45ee81a5a584d109b7dec",
+    "62caed9c3079a1c72a9a7a05c50ed2a249db4ecac8ee871572785d70ac5ae548",
+    "54325da15807dddad06c9e73ecb516e01720e0c6c64f673240c7263b5a824cd0",
+    "99fbf1e68e1bc36f2d800bbe7c5dcb954f439495c570ce40c1ed22ad0836a717",
+    "fef295a4cf467d85b21114988dc327e7afb53c3e1870eba2a90d40321a3c168e",
+    "6f1d160b8ef898c97c603ac1930fd66a4f375b2bd162b32329c5f945d426011a"
+   ],
+   "fed_shape": [
+    1020,
+    1920,
+    3
+   ],
+   "csv_rows": 2580,
+   "csv": "g327_boxes_g3.csv",
+   "arms": {
+    "single": {
+     "batch": 1,
+     "ms_per_frame": 11.848389031365514,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       1,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 430,
+     "zero_box_frames": 0
+    },
+    "single_repeat": {
+     "batch": 1,
+     "ms_per_frame": 9.940117364749312,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       1,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 430,
+     "zero_box_frames": 0
+    },
+    "batch2": {
+     "batch": 2,
+     "ms_per_frame": 6.740676471963525,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       2,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 431,
+     "zero_box_frames": 0
+    },
+    "batch8": {
+     "batch": 8,
+     "ms_per_frame": 4.753839923068881,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 430,
+     "zero_box_frames": 0
+    },
+    "pad": {
+     "batch": 8,
+     "ms_per_frame": 3.702865680679679,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "[352, 640]",
+      "half": "True",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float16"
+     ],
+     "boxes_total": 430,
+     "zero_box_frames": 0
+    },
+    "fp32": {
+     "batch": 8,
+     "ms_per_frame": 6.329862494021654,
+     "pad_imgsz_applied": true,
+     "kwargs": {
+      "classes": "[0]",
+      "conf": "0.22",
+      "verbose": "False",
+      "imgsz": "640",
+      "half": "False",
+      "device": "0"
+     },
+     "tensor_shapes": [
+      [
+       8,
+       3,
+       352,
+       640
+      ]
+     ],
+     "tensor_dtypes": [
+      "torch.float32"
+     ],
+     "boxes_total": 429,
+     "zero_box_frames": 0
+    }
+   }
+  }
+ ],
+ "selection_rule": {
+  "min_width": 1280,
+  "n_games": 3,
+  "order": "mtime descending, first clip per game id",
+  "corpus": "/workspace/nba-ai-system/data/footage_corpus",
+  "selected": [
+   "nba__XzIzQZBrPBY_s398",
+   "nba__6cNq5d_NOXs_s772",
+   "nba__eaKqXq9dfig_s60"
+  ]
+ },
+ "gated_after": {
+  "src/tracking/player_detection.py": "c3bc2f7d4c4fda366f83523dd0aac86e47a40fecaf26e36b490d5a8c73ca5cc7",
+  "src/tracking/advanced_tracker.py": "df2ae698ae03e804f67639434d8303638aea9087c3169c016af5a3734dd474d7",
+  "yolov8n.pt": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+ },
+ "gated_unchanged": true,
+ "probes_after": {
+  "gpu": {
+   "command": [
+    "nvidia-smi",
+    "--query-gpu=memory.used,memory.total",
+    "--format=csv,noheader"
+   ],
+   "rc": 0,
+   "stdout": "4558 MiB, 24576 MiB\n",
+   "stderr": ""
+  }
+ }
+}
