@@ -1,4 +1,4 @@
-GAP S321 | sport nba | worktree aX | log cx_s321_nba_prior_score_clock
+GAP S321 | sport nba | worktree a5 | log cx_s321_nba_prior_score_clock
 
 **MODEL ROW (S register; astra 2026-09-08 per-sport row 1, the highest-ranked).** `src/`, `kernel/`, `api/`
 and `intel/` are READ and IMPORT only. Build in `scripts/platformkit/ingame/`. NEVER write `data/registry/`,
