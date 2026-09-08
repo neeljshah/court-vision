@@ -1,8 +1,8 @@
 # S313 attempt 3 -- SHA-256 over LF-NORMALISED bytes (CRLF -> LF before hashing),
 # so a checkout with either line ending reproduces these values.
 d839d7f6606993ff9d4d9f0889f70e0ddc113ee9fafe6f65ed40bee547616cee  docs/evidence/harness/S313_answers_roundtrip_attempt3_prereg_2026-09-08.md
-10ee27912a081bedd46d96d03574e7e369c09e9a78f5ef8c0f75692f08ea8301  docs/evidence/harness/S313_answers_roundtrip_attempt3_2026-09-08.md
-4298971babd586023e211e0606ddfadb2153ac0fb5ea99212b298e7d412c1525  docs/evidence/harness/S313_attempt3_artifact/route_status.md
+1ad66a4d5b874cd731922b77570cf98a4b2a8220181035fd6e8ba8d1df5b4db2  docs/evidence/harness/S313_answers_roundtrip_attempt3_2026-09-08.md
+35b707f923dfdd47047512dac0b124040642d3651f0baa591ac9377cd7551da0  docs/evidence/harness/S313_attempt3_artifact/route_status.md
 63a242c25a2bcab3fe25b80297722b3c3ad8bf2dcb992c8c61ee67fb29df550c  docs/evidence/harness/S313_attempt3_artifact/pod_reader_tests.md
 3fadc11cf763d31a833ec4819fc1421b56dfeba350872546825161ee2f5e44df  docs/evidence/harness/S313_attempt3_artifact/completion_manifest.json
 a263ac583288d7bdd3fb1ac164d55eecba171aa8cf4b1aac1c774feebaa0b1b5  docs/evidence/harness/S313_attempt3_artifact/envelopes_pass1.json
