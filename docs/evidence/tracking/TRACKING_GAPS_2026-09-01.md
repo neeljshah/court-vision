@@ -318,7 +318,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G351  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G352  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
@@ -971,3 +971,9 @@ sidecar that reports no evaluated-frame count. Neither belongs to a closed row, 
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G350 | basketball | OPEN -- allocated 2026-09-08 (astra midday review item E; codex build + orchestrator-run blind raters + finisher; dispatch after G341 lands). WIDE-CUE VALIDATION: G341's router reports 96.6-100 pct WIDE while contact sheets show close-ups; row = 60 sealed held-out shots from >= 6 games balanced by predicted class, two blind model raters (terra, sol) + a third adjudicator, Cohen kappa as the label-quality proxy (no human labels available), confusion vs the router, precision(WIDE) >= 0.95 and recall(USABLE_WIDE) >= 0.80 with Wilson intervals, 0 propagation across annotated cuts; else the WIDE cue is marked NOT VALIDATED and G341 / G334 must gate on UNKNOWN-safe rules. Spec: docs/evidence/tracking/specs/G350_spec.md -> worktree TBD. | (pending) | OPEN |
+
+## G351 allocation register (2026-09-08)
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G351 | basketball | OPEN -- allocated 2026-09-08 (from G349; codex build + finisher; local, read-only code). BALL / PLAYER COORDINATE SCALE: G349 located where the ball evidence dies (player_within_radius 8 of 1,560 frames) and found 3 of 26 windows whose ball_x2d values lie 2-30x outside the player x range -- a per-window scale anomaly between ball_tracking.csv and tracking_data.csv; row = per-clip range-ratio census over every local clip (n anomalous), a writer trace of every coordinate transform between detection and the two writers (detector input size, TOPCUT crop, resize / panorama mapping; file:line), the inferred ball coordinate frame per clip, a PROPOSED writer correction plus the reader-side rescale for landed tables, and a re-join check on the 3 anomalous windows (frames within radius before / after). If the ball tracker emits a different frame for some clips, every image-space ball-player join (G344 / G349) is wrong by construction. Spec: docs/evidence/tracking/specs/G351_spec.md -> worktree TBD. | (pending) | OPEN |
