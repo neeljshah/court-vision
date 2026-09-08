@@ -318,7 +318,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G341  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G343  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
@@ -911,3 +911,15 @@ sidecar that reports no evaluated-frame count. Neither belongs to a closed row, 
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G340 | all | OPEN -- allocated 2026-09-08 (codex prepares, finisher executes; local only). LOCAL ROUTE ENVIRONMENT: G333 found neither local interpreter starts the production route unaided (conda: onnx/ml_dtypes AttributeError escapes ultralytics; system py3.10.0: torchreid -> tensorboard -> np.bool8 gone in numpy 2); every local smoke has used an ad-hoc onnx stub. Row = tracebacks per interpreter, diagnosis chain, env_shim.prepare_route_imports() (no-op on a clean env, recorded in the G62 sidecar) + test, 2x2 before/after table, PROPOSED pin change (not applied), ENVIRONMENT_NOTES.md naming the interpreter every local measurement must use. Spec: docs/evidence/tracking/specs/G340_spec.md -> worktree a22. | (pending) | OPEN |
+
+## G341 allocation register (2026-09-08)
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G341 | basketball | OPEN -- allocated 2026-09-08 (codex build + finisher; astra self-training plan section 2). SHOT ROUTER + FLOOR-MOTION PROPAGATION: G330 measured one shared mapping per clip while broadcast footage is a sequence of shots; row = cut detector with 0.3 s hysteresis and shot_id (HSV Bhattacharyya > 0.5 AND static-feature inliers < 0.2), a view class WIDE/CLOSEUP/CROWD/UNKNOWN from proposal cues, a replay flag from dHash repeats (LIVE never claimed from cheap cues), and floor-only motion propagation inside a shot (inliers >= 30, share >= 0.6, hull >= 10 pct, p90 <= 3 px) with states DIRECT/PROPAGATED/UNOBSERVABLE and a hard stop at every cut; measured on the six staged sections (2 NBA, 4 FIBA-rule) with n; synthetic tests for the cut, the recovered A, the replay and the state machine. No src hook. Spec: docs/evidence/tracking/specs/G341_spec.md -> worktree a14. | (pending) | OPEN |
+
+## G342 allocation register (2026-09-08)
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G342 | basketball | OPEN -- allocated 2026-09-08 (codex build + finisher; astra plan section 5 and failure mode C). COURT TEMPLATE VARIANTS + SELECTION: G334 fits one NBA template while 4 of the 6 staged sections are FIBA-rule courts (28 x 15 m, 4.9 m lane, 6.75 m arc) and WNBA/NCAA differ in arc, lane and corner values; row = versioned NBA/WNBA/FIBA/NCAA templates in native rule units with cited sources, a renderer and semantic strokes, a selector (winner cost <= 0.8 x runner-up on >= 5 frames from >= 2 shots, >= 2 distinctive feature groups, 100-bootstrap same winner >= 90 pct, else UNKNOWN), synthetic validation on 4 x 200 renders x 2 arms with confusion matrices and the NBA-vs-WNBA/FIBA/NCAA separations; bar = true template wins outright >= 0.95 and wrong winner <= 0.02 per template on the true-H arm. PROPOSED hook for G334 only. Spec: docs/evidence/tracking/specs/G342_spec.md -> worktree a4. | (pending) | OPEN |

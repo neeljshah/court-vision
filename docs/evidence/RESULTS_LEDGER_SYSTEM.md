@@ -583,3 +583,4 @@ Same rules as docs/evidence/tracking/RESULTS_LEDGER.md: only measured numbers wi
 2026-09-08 | hook | S317 | S317: verifier memo (codex-sol) -- ACCEPT, no corrections, five NEW GAPs (from b94ef1e3a) | LANDED (auto; verifier line pending) | 3f9eff10e
 2026-09-08 | in-game calibration | S317 | additive v2 series reproduces 3-arm Brier/ECE from 2,130 S287 ticks at max difference 0.0; archive census n=50 reports 49 UNSTATED and 1 ABSENT | DONE
 2026-09-08 | in-game calibration | S317 | 2,130 unique ticks reproduce all six Brier/ECE values at maximum absolute difference 0; archive census 49 UNSTATED and 1 ABSENT | DONE (verified: codex-sol, contract A/B/Q)
+2026-09-08 | hook | S317 | S317: ledger rows (memo's proposed line + verifier ACCEPT row) and register row DONE 2026-09-08 c348200f1; NEXT_GAP_ID stays S320 | LANDED (auto; verifier line pending) | b0ca258d0
