@@ -52,3 +52,86 @@ SHARED MODULE: if you touch tracking_harness.py you must take the token in
 docs/evidence/SHARED_MODULE_TOKEN.md and PUSH the release when done. Prefer not to touch it --
 another lane (G50B) is working there right now, so coordinate or stay out.
 NEVER PARK: do not poll your own jobs in a blocking loop; never end waiting.
+
+---
+**VERSION 2026-09-08b (orchestrator amendment; the 2026-09-04 text above is frozen and stays binding where it does not conflict; worktree now a6; log cx_g62_environment_sidecar). Since the original allocation, S287 (2026-09-08) proved the possession simulator byte-repeatable inside one environment but different across the pod and the local box on 171/180 ticks, and G327 found the detector deterministic 120/120 only within one environment. The row below adds a uniform sidecar and the two captures; it supersedes the original METHOD where the two differ, keeps its premise artifact (tennis_player_select_limit_2026-09-04/report.json) as the first census entry, and keeps every bar additive.**
+
+GAP G62 | sport all | worktree a6 | log cx_g62_environment_sidecar
+
+**TOOLING ROW. `src/`, `domains/`, `api/`, `kernel/` and `intel/` are READ and IMPORT only. Build in
+`scripts/platformkit/`. NEVER edit a committed evidence hash, a committed evidence artifact, a landed memo,
+`docs/evidence/tracking/TRACKING_GAPS_2026-09-01.md`, or any threshold.**
+
+**WHERE THIS ROW RUNS:** LOCAL for code and tests; the pod is READ-ONLY for one environment capture
+(`ssh -F ~/.ssh/config.pod pod 'python3 -c ...'` printing versions; never a write, never a daemon or guard
+interaction; pids 1168432 / 1039858 / 1201700 untouched). No GPU, no video.
+
+**WHY THIS ROW EXISTS.** Tracking-evidence artifacts record NO environment (register row G62, allocated
+2026-09-04: `tennis_player_select_limit_2026-09-04/report...` carries none). Since then S287 (2026-09-08)
+proved that the possession simulator is byte-repeatable inside one environment yet differs between the
+pod (py 3.12.3, torch 2.8.0+cu128, numpy 2.1.2, 128 threads) and the local box (py 3.10.20, torch
+2.1.2+cu121, numpy 1.26.4, 6 threads) on 171/180 ticks, and G327 found the production detector
+deterministic 120/120 only within one environment. Without an environment record, no landed number can
+be replayed with confidence and no cross-environment difference can be attributed. A uniform, additive
+environment sidecar is the missing artifact.
+
+**PREMISE (step 0, BINDING before-condition):** census every committed artifact directory under
+`docs/evidence/tracking/` and `docs/evidence/harness/` (exhaustive; list dirs) for any file or JSON key
+recording python/torch/numpy/cv2/ultralytics versions, thread counts, or host identity. PRINT the table:
+directories total, directories with any environment record, keys found. **If more than half of the
+directories already carry an environment record with at least python + numpy versions, the premise is
+FALSE: STOP, write the memo, commit, report PREMISE FALSE.**
+
+METHOD:
+  1. **THE SIDECAR.** `scripts/platformkit/env_sidecar.py` (<= 150 lines): `capture() -> dict` and
+     `write(path)` producing `environment.json` with: python version, platform, hostname (or a stable
+     role tag `pod` / `local` derived from a path check, say which), CPU count and the cgroup quota
+     if readable, `OMP_NUM_THREADS`/`MKL_NUM_THREADS`/torch threads, versions of numpy, pandas, torch
+     (+ CUDA/cuDNN), cv2, ultralytics, scipy, sklearn where importable (absent -> null, never an import
+     error), git head sha and dirty flag, and a capture timestamp (UTC). Deterministic key order; ASCII.
+     Never include secrets, tokens, or environment variables beyond the named thread settings.
+  2. **HOOK POINTS (additive).** Call it from the harness entry points that write evidence: the pod job
+     launcher (`~/bin/pod_run` is outside the repo -- document the one-line call the orchestrator should
+     add, do not edit it), `scripts/platformkit/tracking/` runners that write a memo artifact dir (list
+     the ones you found; add the call to at most three high-traffic ones with a `--no-env-sidecar` opt-out
+     so behaviour stays identical when opted out; default ON is acceptable here because the sidecar is a
+     new file and changes no existing output -- say so explicitly under B2), and `lane_commit.py` if it
+     lives in the repo (it does not; say so).
+  3. **CAPTURES.** Write `environment.json` for the local box and for the pod (read-only capture, output
+     captured over ssh into the worktree) into `docs/evidence/tracking/g62_environment_sidecar_2026-09-08/`
+     and diff them: table of every key that differs. Cross-reference S287's cross-environment finding:
+     list which differing keys are candidates for the p_simulator divergence (numpy/torch/thread count),
+     labelled as candidates only.
+  4. **TEST.** One per-file test: capture() returns every key with the right type on this box; write()
+     round-trips; an unimportable library yields null not an exception (monkeypatch the import).
+  5. **CHANGE NOTHING ELSE.** No landed artifact gains a sidecar retroactively (say so); no threshold; no
+     register edit; no `src/` edit.
+
+**HONEST LIMITATIONS to state, not discover:** a sidecar records the environment, it does not make results
+environment-invariant; retroactive attribution for landed rows is impossible; cgroup and GPU details are
+best-effort where readable.
+
+ACCEPTANCE RULE:
+  metric        = the premise census table with n; the sidecar module + test; the hook list with the
+                  opt-out; the two captures and their diff table; the S287 candidate-key list
+  before        = no committed artifact records its environment; S287's cross-environment difference
+                  has no recorded environment on either side beyond the memo's prose
+  bar           = capture() never raises on a missing library; every hook is additive with an opt-out;
+                  both captures committed; every census cell carries n
+  n             = every committed artifact directory (exhaustive; Q7); every key of the sidecar
+  eye check     = NONE. Say that.
+  must not move = every committed artifact and hash; every landed memo; `src/`, `domains/`, `api/`,
+                  `kernel/`, `intel/`; `data/`; the pod (read-only capture); the daemon and guards;
+                  `docs/evidence/tracking/TRACKING_GAPS_2026-09-01.md`
+  verdict       = **DONE** if the bar holds; **PARTIAL** with the explicit list otherwise.
+EVIDENCE: `docs/evidence/tracking/g62_environment_sidecar_2026-09-08.md` (<= 60 lines) with VERDICT on
+line 1, the census table, the hook list, the diff table, the candidate keys, a **NOT VERIFIED** list, wall
+time and the SHA-256s; plus the two `environment*.json` captures and `census.csv` (integer cells
+zero-padded to 6 digits). **ADD ONE RESULTS_LEDGER.md ROW IN THE SAME COMMIT** (one `>>` append, LF).
+**Do NOT edit `docs/evidence/tracking/TRACKING_GAPS_2026-09-01.md`.**
+TEST: `tests/platformkit/test_g62_environment_sidecar.py`. Run that ONE file and the existing test file of
+every runner you hooked, each individually. **NEVER a full pytest.** Every touched file <= 300 lines.
+COMMIT: explicit pathspec only. ASCII stdout. Prereg sealed as its OWN commit first (embed the seal: last
+line `SEAL sha256 <hex>` over the LF-normalised bytes above it). **NEVER PARK.**
+
+VERSION 2026-09-08
