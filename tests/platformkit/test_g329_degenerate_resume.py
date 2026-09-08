@@ -85,8 +85,13 @@ def test_a_partial_data_dir_can_no_longer_yield_a_completed_row(tmp_path, monkey
     assert entry["rows"] == 2, "rows stay as measured, never zeroed or inflated"
 
 
-def test_a_completed_row_needs_the_tracker_to_have_actually_run(tmp_path, monkeypatch):
-    """A full run on a clean data dir keeps every meaning it had before."""
+def test_a_clean_data_dir_with_a_full_row_count_stays_tracked(tmp_path, monkeypatch):
+    """A clean data dir plus a full row count keeps every meaning it had.
+
+    This case does NOT prove the tracker ran: the child is a stub that has
+    already exited and the output was placed by the harness. What it proves
+    is that the new marking downgrades nothing when neither condition holds.
+    """
     started = time.time() - 300
     entry = _run(tmp_path, monkeypatch, "g_clean", 900, started)
 
