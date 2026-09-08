@@ -24,7 +24,11 @@ current ball-table header from one local clip. **If the producer already writes 
 PREMISE FALSE.**
 
 METHOD:
-  1. **THE DIFF (additive, <= 20 lines of src).** New ball-table columns `ball_x2d_px`, `ball_y2d_px` = the
+  1. **THE DIFF (additive, <= 20 lines of src).** BOTH ball writers are covered: the dedicated route
+     (`ball_detect_track.py` `last_2d_pos` at ~:908-911 / :956, consumed at `unified_pipeline.py` ~:1945-1950 and
+     written at ~:1988-1989) AND the second writer at `unified_pipeline.py` ~:3081-3093 (a YOLO ball bbox
+     projected through the same `M1 @ (M @ ...)`; the G351 lander found the candidate memo omitted it).
+     New ball-table columns `ball_x2d_px`, `ball_y2d_px` = the
      detector's pixel centre in the SAME frame as the player `bbox_*` (the TOPCUT-cropped image the boxes
      are built in; if the detector input is resized, apply the inverse resize and say so with file:line);
      the existing columns are untouched (names, order, semantics). The two G351 verifier NEW GAPS are
