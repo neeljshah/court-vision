@@ -54,3 +54,9 @@ FROM S299 -- explicit design comparison, run AFTER S293 lands (strict-past gener
   membership, fitted parameters and tick losses; retain the HISTORICAL replay SEPARATELY from the strict-past fits.
 ORDER: S293 precedes the absorbed S299 part. Retained throughout: the frozen +0.004 bar, the source stores, the
 incumbent implementation, the S272/S280 artifacts and all prior dated evidence.
+
+## VERSION 2026-09-07b (landing note; orchestrator-authorized)
+Landing note: evidence stems are 2026-09-07 / 2026-09-07b / 2026-09-07c (mapping table in the c memo,
+docs/evidence/harness/S309_canonical_loss_audit_2026-09-07c.md); the EVIDENCE line's 2026-09-04 stem was never
+written by this row. The shared evaluators are driven at game-cluster grain (1,593 states) emitting one prediction
+per tick (465,249), as declared in the sealed prereg and supplement. The +0.004 bar is untouched.
