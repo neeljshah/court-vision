@@ -1,0 +1,417 @@
+{
+  "archive_games": 1593,
+  "archive_rows": 310349,
+  "bar": 0.004,
+  "comeback": {
+    "arms": {
+      "market": {
+        "clipped_rows": 0,
+        "excluded_rows": 0,
+        "log_loss": 0.016139711921026808,
+        "n": 133184,
+        "one_probability_rows": 0,
+        "reliability": [
+          {
+            "bin": "[0.00,0.10)",
+            "empirical_rate": 1.0,
+            "log_loss": 5.114530518189707,
+            "mean_probability": 0.006763157894736798,
+            "n": 19,
+            "reliability_gap": 0.9932368421052632
+          },
+          {
+            "bin": "[0.10,0.20)",
+            "empirical_rate": null,
+            "log_loss": null,
+            "mean_probability": null,
+            "n": 0,
+            "reliability_gap": null
+          },
+          {
+            "bin": "[0.20,0.30)",
+            "empirical_rate": 1.0,
+            "log_loss": 1.5371172508544746,
+            "mean_probability": 0.21499999999999994,
+            "n": 20,
+            "reliability_gap": 0.785
+          },
+          {
+            "bin": "[0.30,0.40)",
+            "empirical_rate": 1.0,
+            "log_loss": 1.1086626245216114,
+            "mean_probability": 0.33,
+            "n": 6,
+            "reliability_gap": 0.6699999999999999
+          },
+          {
+            "bin": "[0.40,0.50)",
+            "empirical_rate": 1.0,
+            "log_loss": 0.7489948949656967,
+            "mean_probability": 0.473,
+            "n": 25,
+            "reliability_gap": 0.527
+          },
+          {
+            "bin": "[0.50,0.60)",
+            "empirical_rate": 1.0,
+            "log_loss": 0.6292548275707698,
+            "mean_probability": 0.5334492063492063,
+            "n": 315,
+            "reliability_gap": 0.46655079365079366
+          },
+          {
+            "bin": "[0.60,0.70)",
+            "empirical_rate": 0.9857142857142858,
+            "log_loss": 0.46975109658628367,
+            "mean_probability": 0.632392857142857,
+            "n": 70,
+            "reliability_gap": 0.3533214285714288
+          },
+          {
+            "bin": "[0.70,0.80)",
+            "empirical_rate": 0.9090909090909091,
+            "log_loss": 0.3849269677624159,
+            "mean_probability": 0.7623099173553718,
+            "n": 121,
+            "reliability_gap": 0.14678099173553727
+          },
+          {
+            "bin": "[0.80,0.90)",
+            "empirical_rate": 0.8628808864265928,
+            "log_loss": 0.40511388268273296,
+            "mean_probability": 0.8591475069252077,
+            "n": 722,
+            "reliability_gap": 0.0037333795013850812
+          },
+          {
+            "bin": "[0.90,1.00]",
+            "empirical_rate": 0.9975509151843258,
+            "log_loss": 0.010813049798038083,
+            "mean_probability": 0.9971028236507286,
+            "n": 131886,
+            "reliability_gap": 0.0004480915335972613
+          }
+        ],
+        "zero_probability_rows": 0
+      },
+      "recal_null": {
+        "clipped_rows": 0,
+        "excluded_rows": 0,
+        "log_loss": 0.016235344240117185,
+        "n": 133184,
+        "one_probability_rows": 0,
+        "reliability": [
+          {
+            "bin": "[0.00,0.10)",
+            "empirical_rate": 1.0,
+            "log_loss": 4.913706874941343,
+            "mean_probability": 0.008189961840898246,
+            "n": 19,
+            "reliability_gap": 0.9918100381591017
+          },
+          {
+            "bin": "[0.10,0.20)",
+            "empirical_rate": null,
+            "log_loss": null,
+            "mean_probability": null,
+            "n": 0,
+            "reliability_gap": null
+          },
+          {
+            "bin": "[0.20,0.30)",
+            "empirical_rate": 1.0,
+            "log_loss": 1.4864732672175522,
+            "mean_probability": 0.22616888789609,
+            "n": 20,
+            "reliability_gap": 0.77383111210391
+          },
+          {
+            "bin": "[0.30,0.40)",
+            "empirical_rate": 1.0,
+            "log_loss": 1.0795020201090084,
+            "mean_probability": 0.339764679501895,
+            "n": 6,
+            "reliability_gap": 0.6602353204981051
+          },
+          {
+            "bin": "[0.40,0.50)",
+            "empirical_rate": 1.0,
+            "log_loss": 0.7361124518593272,
+            "mean_probability": 0.4791123995055603,
+            "n": 27,
+            "reliability_gap": 0.5208876004944397
+          },
+          {
+            "bin": "[0.50,0.60)",
+            "empirical_rate": 1.0,
+            "log_loss": 0.6351933229747728,
+            "mean_probability": 0.5302317172786609,
+            "n": 312,
+            "reliability_gap": 0.4697682827213391
+          },
+          {
+            "bin": "[0.60,0.70)",
+            "empirical_rate": 0.9859154929577465,
+            "log_loss": 0.4701725758281826,
+            "mean_probability": 0.6316042319454982,
+            "n": 71,
+            "reliability_gap": 0.3543112610122483
+          },
+          {
+            "bin": "[0.70,0.80)",
+            "empirical_rate": 0.8676470588235294,
+            "log_loss": 0.4441876186588823,
+            "mean_probability": 0.7588412808633304,
+            "n": 136,
+            "reliability_gap": 0.10880577796019908
+          },
+          {
+            "bin": "[0.80,0.90)",
+            "empirical_rate": 0.9012833168805529,
+            "log_loss": 0.32539078982904546,
+            "mean_probability": 0.8674570332411286,
+            "n": 1013,
+            "reliability_gap": 0.033826283639424304
+          },
+          {
+            "bin": "[0.90,1.00]",
+            "empirical_rate": 0.9976060191518468,
+            "log_loss": 0.010573439634445311,
+            "mean_probability": 0.997090616766965,
+            "n": 131580,
+            "reliability_gap": 0.0005154023848817912
+          }
+        ],
+        "zero_probability_rows": 0
+      }
+    },
+    "home_trailing_ticks": 55871,
+    "mask": "period <= 4 and abs(margin) >= 12 and remaining_s <= 720",
+    "n_games": 1111,
+    "n_ticks": 133184,
+    "remaining_s_max": 720.0,
+    "remaining_s_min": 0.0,
+    "trailing_losses": 434,
+    "trailing_wins": 132750
+  },
+  "endpoint_accounting": {
+    "candidate": {
+      "clipped_rows": 142316,
+      "excluded_rows": 0,
+      "n": 465249,
+      "one_probability_rows": 80162,
+      "zero_probability_rows": 62154
+    },
+    "recal_null": {
+      "clipped_rows": 0,
+      "excluded_rows": 0,
+      "n": 465249,
+      "one_probability_rows": 0,
+      "zero_probability_rows": 0
+    }
+  },
+  "epsilon": 1e-15,
+  "favorite_longshot_bins": [
+    {
+      "bin": "[0.01,0.05)",
+      "market": {
+        "bin": "[0.00,1.00]",
+        "empirical_rate": 0.023520485584218515,
+        "log_loss": 0.10906423160474514,
+        "mean_probability": 0.027602427921092566,
+        "n": 9226,
+        "reliability_gap": 0.004081942336874051
+      },
+      "n_games": 649,
+      "n_ticks": 9226,
+      "recal_null": {
+        "bin": "[0.00,1.00]",
+        "empirical_rate": 0.023520485584218515,
+        "log_loss": 0.1089353504608336,
+        "mean_probability": 0.029990627536935502,
+        "n": 9226,
+        "reliability_gap": 0.006470141952716987
+      }
+    },
+    {
+      "bin": "[0.05,0.10)",
+      "market": {
+        "bin": "[0.00,1.00]",
+        "empirical_rate": 0.07414829659318638,
+        "log_loss": 0.2619233129339737,
+        "mean_probability": 0.07390915163660654,
+        "n": 8982,
+        "reliability_gap": 0.0002391449565798398
+      },
+      "n_games": 691,
+      "n_ticks": 8982,
+      "recal_null": {
+        "bin": "[0.00,1.00]",
+        "empirical_rate": 0.07414829659318638,
+        "log_loss": 0.26116762112267744,
+        "mean_probability": 0.07849667413734078,
+        "n": 8982,
+        "reliability_gap": 0.004348377544154403
+      }
+    },
+    {
+      "bin": "[0.10,0.20)",
+      "market": {
+        "bin": "[0.00,1.00]",
+        "empirical_rate": 0.17765242743059956,
+        "log_loss": 0.4694618649911616,
+        "mean_probability": 0.15179062618836356,
+        "n": 15778,
+        "reliability_gap": 0.025861801242236
+      },
+      "n_games": 826,
+      "n_ticks": 15778,
+      "recal_null": {
+        "bin": "[0.00,1.00]",
+        "empirical_rate": 0.17765242743059956,
+        "log_loss": 0.4680332948049944,
+        "mean_probability": 0.15783397878002334,
+        "n": 15778,
+        "reliability_gap": 0.01981844865057622
+      }
+    },
+    {
+      "bin": "[0.80,0.90)",
+      "market": {
+        "bin": "[0.00,1.00]",
+        "empirical_rate": 0.8303362328537972,
+        "log_loss": 0.452417312322612,
+        "mean_probability": 0.8488714034794247,
+        "n": 23912,
+        "reliability_gap": 0.018535170625627484
+      },
+      "n_games": 1005,
+      "n_ticks": 23912,
+      "recal_null": {
+        "bin": "[0.00,1.00]",
+        "empirical_rate": 0.8303362328537972,
+        "log_loss": 0.45210045517397884,
+        "mean_probability": 0.8455064628662994,
+        "n": 23912,
+        "reliability_gap": 0.015170230012502173
+      }
+    },
+    {
+      "bin": "[0.90,0.95)",
+      "market": {
+        "bin": "[0.00,1.00]",
+        "empirical_rate": 0.9298178770098301,
+        "log_loss": 0.251267723457134,
+        "mean_probability": 0.924106797226244,
+        "n": 13123,
+        "reliability_gap": 0.005711079783586093
+      },
+      "n_games": 871,
+      "n_ticks": 13123,
+      "recal_null": {
+        "bin": "[0.00,1.00]",
+        "empirical_rate": 0.9298178770098301,
+        "log_loss": 0.2519140781107293,
+        "mean_probability": 0.9212973995897484,
+        "n": 13123,
+        "reliability_gap": 0.008520477420081662
+      }
+    },
+    {
+      "bin": "[0.95,0.99)",
+      "market": {
+        "bin": "[0.00,1.00]",
+        "empirical_rate": 0.9717205323193916,
+        "log_loss": 0.12664212670555294,
+        "mean_probability": 0.9714883555133079,
+        "n": 12624,
+        "reliability_gap": 0.00023217680608367264
+      },
+      "n_games": 827,
+      "n_ticks": 12624,
+      "recal_null": {
+        "bin": "[0.00,1.00]",
+        "empirical_rate": 0.9717205323193916,
+        "log_loss": 0.12749360136298676,
+        "mean_probability": 0.9697728512850977,
+        "n": 12624,
+        "reliability_gap": 0.00194768103429388
+      }
+    }
+  ],
+  "input": {
+    "bytes": 2829826,
+    "path": "data/cache/inplay_odds/nba_checkpoints_full.parquet",
+    "resolution": "not applicable",
+    "rows": 465249
+  },
+  "metrics": {
+    "all": {
+      "brier_improvement": -3.666833803263752e-05,
+      "brier_improvement_ci95": [
+        -7.042297493210607e-05,
+        -8.368211469821433e-06
+      ],
+      "candidate_brier": 0.07335361389463317,
+      "candidate_ece": null,
+      "candidate_log_loss": 0.2210127554994198,
+      "log_loss_improvement": -0.00137501143633797,
+      "n_games": 1593,
+      "n_ticks": 465249,
+      "recal_null_brier": 0.07331694555660052,
+      "recal_null_ece": null,
+      "recal_null_log_loss": 0.21963774406308179
+    },
+    "tail": {
+      "brier_improvement": -5.525368770597679e-05,
+      "candidate_brier": 0.006840435259547864,
+      "candidate_ece": 0.0012445847823605697,
+      "candidate_log_loss": 0.030833806300609553,
+      "log_loss_improvement": -0.002071936078148454,
+      "n_games": 1590,
+      "n_ticks": 308756,
+      "recal_null_brier": 0.006785181571841887,
+      "recal_null_ece": 0.0014934098749201795,
+      "recal_null_log_loss": 0.028761870222461097
+    }
+  },
+  "mode": "ADDITIVE_METRIC_REPLAY",
+  "ot_periods_5_6_ticks": 14765,
+  "paired_losses": "docs/evidence/harness/S293_tail_metric_rail_2026-09-04_paired_losses.csv.gz",
+  "preregistration_path": "docs/evidence/harness/S293_tail_metric_rail_prereg_2026-09-07.md",
+  "preregistration_seal": "8af6d5591a3b70f983d94dd5ab9b2a34dc659f0d65b18126b7482175e18618e8",
+  "rss_after_bytes": 847044608,
+  "rss_before_bytes": 195260416,
+  "s272_route_folds": [
+    {
+      "fallback_market": true,
+      "games": 656,
+      "season": "2024-25",
+      "shared_train_games": 937,
+      "ticks": 198344,
+      "train_games": 0
+    },
+    {
+      "fallback_market": false,
+      "games": 937,
+      "season": "2025-26",
+      "shared_train_games": 656,
+      "ticks": 266905,
+      "train_games": 656
+    }
+  ],
+  "source_identities_after": {
+    "scripts/platformkit/eval_gate/cpcv_engine.py": "5accfbe490031acb084a8e4375a082b00d842cf4011a76c6d27dfc2c7db614a5",
+    "scripts/platformkit/eval_gate/walkforward.py": "c8a9b5b0f0f7c84dc5fdb0c7a4a27e0f7f2040f99326ef5376cde011df27bc2e",
+    "scripts/platformkit/foundry/ingame_incumbent_nba.py": "476ed9fdfb714b93c5b722f8e99fb1266cdb5987a729495f12e84d2b62ea08ed",
+    "scripts/platformkit/ingame/s272_ingame_tail_recal.py": "83f86f6a653a364c3e8047b58f5976128d69daeecc2a882dc82deffb78ca7c30"
+  },
+  "source_identities_before": {
+    "scripts/platformkit/eval_gate/cpcv_engine.py": "5accfbe490031acb084a8e4375a082b00d842cf4011a76c6d27dfc2c7db614a5",
+    "scripts/platformkit/eval_gate/walkforward.py": "c8a9b5b0f0f7c84dc5fdb0c7a4a27e0f7f2040f99326ef5376cde011df27bc2e",
+    "scripts/platformkit/foundry/ingame_incumbent_nba.py": "476ed9fdfb714b93c5b722f8e99fb1266cdb5987a729495f12e84d2b62ea08ed",
+    "scripts/platformkit/ingame/s272_ingame_tail_recal.py": "83f86f6a653a364c3e8047b58f5976128d69daeecc2a882dc82deffb78ca7c30"
+  },
+  "verdict": "NOT_VALIDATED",
+  "zero_clock_ticks": 271154
+}
