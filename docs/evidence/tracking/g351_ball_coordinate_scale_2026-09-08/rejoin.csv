@@ -1,0 +1,4 @@
+game_id,clip_id,status,tracking_path,tracking_bytes,ball_path,ball_bytes,frames_with_finite_detected_ball,before_within_radius,after_within_radius,rescale_x,rescale_y
+0022500630,0022500630,OK,data\tracking\0022500630\tracking_data.csv,10351983,data\tracking\0022500630\ball_tracking.csv,167503,005305,000777,002625,0.418574,0.230432
+0022500799,0022500799,OK,data\tracking\0022500799\tracking_data.csv,22448525,data\tracking\0022500799\ball_tracking.csv,998652,006026,002051,001330,0.619744,1.171613
+0022500906,0022500906,OK,data\tracking\0022500906\tracking_data.csv,8726592,data\tracking\0022500906\ball_tracking.csv,170239,005317,000239,000923,0.196014,0.182062
