@@ -1,4 +1,4 @@
-GAP G354 | sport basketball | worktree aX | log cx_g354_ball_px_producer_fields
+GAP G354 | sport basketball | worktree a15 | log cx_g354_ball_px_producer_fields
 
 **PRODUCER-FIX ROW (from G351 DONE 2026-09-08; the user's 2026-09-08 authorization to apply PROPOSED src diffs
 and deploy the producer applies). Codex PREPARES (never touches `src/`); an Opus finisher APPLIES the diff in
