@@ -318,7 +318,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G340  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G341  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
@@ -905,3 +905,9 @@ sidecar that reports no evaluated-frame count. Neither belongs to a closed row, 
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G339 | basketball | OPEN -- allocated 2026-09-08 (codex build, local). BALL TABLE CONSUMERS: G335 attempt 2 showed the ball IS detected (per-clip ball_tracking.csv, median detected share 0.8667; 10/485 clips zero) and that tracking tables carry no cls column, so the open question is consumption: which downstream readers (possession sim, features, EventDetector, daemon adjudication, harness, intel) read ball_tracking.csv, which expect inline ball rows, which are ball-blind. Row = exhaustive reader census with file:line and class, the writer contract, a ball_join harness with a per-frame joined view + report on the two committed WNBA tables, and a PROPOSED <= 10-line consumer change for the first ball-blind sim-path reader. Spec: docs/evidence/tracking/specs/G339_spec.md -> worktree a13. | (pending) | OPEN |
+
+## G340 allocation register (2026-09-08)
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G340 | all | OPEN -- allocated 2026-09-08 (codex prepares, finisher executes; local only). LOCAL ROUTE ENVIRONMENT: G333 found neither local interpreter starts the production route unaided (conda: onnx/ml_dtypes AttributeError escapes ultralytics; system py3.10.0: torchreid -> tensorboard -> np.bool8 gone in numpy 2); every local smoke has used an ad-hoc onnx stub. Row = tracebacks per interpreter, diagnosis chain, env_shim.prepare_route_imports() (no-op on a clean env, recorded in the G62 sidecar) + test, 2x2 before/after table, PROPOSED pin change (not applied), ENVIRONMENT_NOTES.md naming the interpreter every local measurement must use. Spec: docs/evidence/tracking/specs/G340_spec.md -> worktree a22. | (pending) | OPEN |
