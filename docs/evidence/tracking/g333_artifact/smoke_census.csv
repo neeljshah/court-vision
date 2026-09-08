@@ -1,0 +1,3 @@
+arm,total_player_rows,wholly_off_frame_rows,rows_with_no_box,distinct_player_ids,distinct_frames,ball_rows,ball_rows_with_coord,ball_flag_set,ball_flag_set_without_coord,per_video_pano_files_after_arm,pano_files_identical_to_general_fallback,route_evaluated_frames,route_reason,wall_seconds_rounded,peak_rss_mib
+before,000034,000000,000000,000002,000026,000050,000032,000000,000000,000004,000004,null,max_frames_is_detector_dependent_in_this_route,000045,002689
+after,000035,000000,000000,000003,000026,000050,000032,000000,000000,000003,000003,000050,null,000035,002678

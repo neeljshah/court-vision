@@ -223,6 +223,25 @@ def _write_evaluated_count_sidecar(video_path: str, data_dir: str,
     return path
 
 
+def _publish_evaluated_frames(sidecar_path: str, results: dict) -> None:
+    """G331: rewrite the sidecar with the route's true post-run evaluated-frame count.
+
+    The count cannot be known before the run, because the frame cap is decided by the
+    detector gate; the pipeline holds the exact figure when it returns.  The reason
+    string is cleared only when a count is actually available, and any failure here is
+    reported rather than raised so it can never lose a finished run.
+    """
+    try:
+        side = json.loads(open(sidecar_path, encoding="utf-8").read())
+        count = results.get("evaluated_frames")
+        side.update(evaluated_frames=count,
+                    reason=(None if count is not None else side.get("reason")))
+        open(sidecar_path, "w", encoding="utf-8").write(
+            json.dumps(side, indent=2, sort_keys=True))
+    except Exception as exc:
+        print(f" [G331] evaluated-frame sidecar not updated: {exc}")
+
+
 def _ensure_decodable_video(video_path: str) -> str:
     """Transcode AV1 videos to H.264 so opencv-python's bundled ffmpeg can read them.
 
@@ -506,6 +525,7 @@ def main():
             game_id=args.game_id,
         )
         results = pipeline.run()
+        _publish_evaluated_frames(sidecar_path, results)
 
         fps = getattr(getattr(pipeline, "stats_tracker", None), "fps", None) or 30.0
 

@@ -1,0 +1,15 @@
+{
+  "decoded_frames": null,
+  "evaluated_frames": 50,
+  "formula": "ceil(decoded_frames / stride) when max_frames is null and start_frame is 0",
+  "frame_count_validation": null,
+  "max_frames": 150,
+  "reason": null,
+  "schema_version": "g206-v1",
+  "source_fps": null,
+  "source_frame_count": null,
+  "source_path": "C:\\Users\\neelj\\AppData\\Local\\Temp\\claude\\C--Users-neelj-nba-ai-system\\f808eae7-b7b9-4a11-a052-739f1c3940e7\\scratchpad\\g333_smoke\\nba__0022500081_s2436.mp4",
+  "source_size_bytes": 33120099,
+  "start_frame": 1200,
+  "stride": null
+}

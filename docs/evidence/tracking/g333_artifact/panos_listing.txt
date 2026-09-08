@@ -1,0 +1,30 @@
+G333 -- resources/panos/ listing around the two smoke arms (local a1 worktree).
+Clip stem: nba__0022500081_s2436.  The general fallback resources/pano_enhanced.png
+has sha256 69024f8ef08d1e6093ddaf2bda0dd5df8630eab5f1b6b202daa08df8e47e5fff.
+
+BEFORE ARM, before the run (003 files, all 003 byte-identical to the general fallback):
+    pano_ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.png
+    pano_ncaa_basketball__ncaa_basketball_mRkuGgeECak.png
+    pano_wnba__wnba_01_1080p.png
+
+BEFORE ARM, after the run (004 files, all 004 byte-identical to the general fallback):
+    pano_nba__0022500081_s2436.png    <- NEW, sha256 69024f8e...e47e5fff, the fallback
+    pano_ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.png
+    pano_ncaa_basketball__ncaa_basketball_mRkuGgeECak.png
+    pano_wnba__wnba_01_1080p.png
+Route log, BEFORE arm:
+      Stitched pano invalid (1280x660, ratio=1.9) -- falling back to general pano
+      Using general pano fallback: pano_enhanced.png
+     Pano saved -> pano_nba__0022500081_s2436.png (3698x500)
+
+The new file was archived and removed before the AFTER arm, so the AFTER arm could
+not take a cache hit.  Its removal is the only mutation this row made under resources/.
+
+AFTER ARM, before the run (003 files) and after the run (003 files) -- unchanged:
+    pano_ncaa_basketball__ncaa_basketball_IB-_u4gW3ds_1080p.png
+    pano_ncaa_basketball__ncaa_basketball_mRkuGgeECak.png
+    pano_wnba__wnba_01_1080p.png
+Route log, AFTER arm:
+      Stitched pano invalid (1280x660, ratio=1.9) -- falling back to general pano
+      Using general pano fallback: pano_enhanced.png (G330: NOT cached per-video)
+    (no "Pano saved" line: the write is now under the not-used_fallback guard)

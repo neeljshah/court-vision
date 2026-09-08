@@ -966,6 +966,7 @@ class UnifiedPipeline:
                 x0 = (w_p - target_w) // 2
                 pano = pano[:, x0: x0 + target_w]
                 print(f"  Wide pano cropped {w_p}→{target_w}px (ratio {ratio_p:.1f}→6.0)")
+        used_fallback = False
         if not UnifiedPipeline._pano_valid(pano):
             h_p, w_p = pano.shape[:2]
             # Single gameplay frame (640×300, ratio=2.1) is too narrow for SIFT →
@@ -978,15 +979,17 @@ class UnifiedPipeline:
                     _fb_img = cv2.imread(_fb_path)
                     if UnifiedPipeline._pano_valid(_fb_img):
                         pano = _fb_img
-                        print(f"  Using general pano fallback: {_fb}")
+                        used_fallback = True
+                        print(f"  Using general pano fallback: {_fb} (G330: NOT cached per-video)")
                         break
             else:
                 # Absolute last resort — single frame (homography will be unreliable)
                 pano = stitch_frames[0]
 
         out = UnifiedPipeline._auto_pano_path(video_path)
-        cv2.imwrite(out, pano)
-        print(f" Pano saved → {os.path.basename(out)} ({pano.shape[1]}×{pano.shape[0]})")
+        if not used_fallback:   # G330: caching the fallback per-video makes it permanent
+            cv2.imwrite(out, pano)
+            print(f" Pano saved → {os.path.basename(out)} ({pano.shape[1]}×{pano.shape[0]})")
         return pano
 
     def _is_gameplay(self, frame: np.ndarray, frame_idx: int) -> bool:
@@ -1988,7 +1991,7 @@ class UnifiedPipeline:
                 # R12: live=1 here because suspended frames hit the early-exit branch above
                 # which writes its own live=0 row. This branch only runs on live-play frames.
                 "live":        1,
-                "ball_inferred": int(getattr(self.ball_det, "ball_inferred", False)),
+                "ball_inferred": int(ball_pos is not None and bool(getattr(self.ball_det, "ball_inferred", False))),  # G320
             })
             if ball_pos is None:
                 _ball_miss_streak += 1
@@ -2689,6 +2692,8 @@ class UnifiedPipeline:
                 os_ = spatial.get(opp_teams[0], {}) if opp_teams else {}
 
                 bbox = track["bbox"]  # stored as (y1, x1, y2, x2)
+                if UnifiedPipeline._bbox_off_frame(bbox, frame.shape[1], frame.shape[0]):
+                    continue    # G325: no overlap with the decoded frame -> no pixels
                 tracking_rows.append({
                     "frame":              frame_idx,
                     "timestamp":          timestamp_sec,
@@ -3047,6 +3052,7 @@ class UnifiedPipeline:
             "id_switches":    metrics.get("id_switches_estimated", 0),
             "stability":      metrics.get("track_stability", 0),
             "total_frames":   frame_idx,
+            "evaluated_frames": gameplay_frames,  # G331: past the detector gate
             "jump_resets":      self.ball_det._jump_resets,
             "suspended_frames": suspended_frame_count,
         }
@@ -3311,6 +3317,11 @@ class UnifiedPipeline:
 
         # Inside 3pt arc but not paint / restricted → mid-range
         return "mid_range"
+
+    @staticmethod
+    def _bbox_off_frame(bbox, frame_w: float, frame_h: float) -> bool:
+        # G325: an unclamped coasting Kalman box (advanced_tracker.py:132-137) has no pixels.
+        return bool(bbox) and (bbox[3] <= 0 or bbox[1] >= frame_w or bbox[2] <= 0 or bbox[0] >= frame_h)
 
     @staticmethod
     def _dist_to_basket(x2d: int, y2d: int, map_w: int, map_h: int) -> float:
