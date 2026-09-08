@@ -1,0 +1,29 @@
+{
+  "sample_size_per_arm": 72,
+  "pooled_blind_crops": 216,
+  "arms": [
+    "arm1_broadcast_1080_native",
+    "arm2_broadcast_720_downscaled",
+    "arm3_amateur_720_native"
+  ],
+  "sample_seed": 30220260907,
+  "blind_seed": 30220907,
+  "unblind_map_sha256": "37cb6f521bb821ccf1d33a5fea85e019272a89239414a7427ae15db2961c1dc5",
+  "crop_size_px_all_arms": [
+    512,
+    640
+  ],
+  "frame_indices": {
+    "stride": 3,
+    "processed_frames": 1152,
+    "bin_frames": 16,
+    "identical_grid_shape_across_arms": true,
+    "span_start_per_arm": {
+      "arm1_broadcast_1080_native": 19599,
+      "arm2_broadcast_720_downscaled": 19599,
+      "arm3_amateur_720_native": 0
+    },
+    "arm1_arm2_share_one_decode": true
+  },
+  "sampling": "one uniformly random class-0 conf>=0.3 detector box from each equal-width processed-frame bin; no verdict, geometry, position or identity condition"
+}

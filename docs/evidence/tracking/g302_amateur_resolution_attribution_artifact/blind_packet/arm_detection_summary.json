@@ -1,0 +1,117 @@
+{
+  "arms": {
+    "arm1_broadcast_1080_native": {
+      "detections": 9303,
+      "processed_frames": 1152,
+      "detections_per_frame": 8.075520833333334,
+      "sample_size": 72,
+      "span_start": 19599,
+      "span_end": 23052,
+      "distinct_sample_frames": 72,
+      "empty_frames": 3
+    },
+    "arm2_broadcast_720_downscaled": {
+      "detections": 9357,
+      "processed_frames": 1152,
+      "detections_per_frame": 8.122395833333334,
+      "sample_size": 72,
+      "span_start": 19599,
+      "span_end": 23052,
+      "distinct_sample_frames": 72,
+      "empty_frames": 4
+    },
+    "arm3_amateur_720_native": {
+      "detections": 20083,
+      "processed_frames": 1152,
+      "detections_per_frame": 17.43315972222222,
+      "sample_size": 72,
+      "span_start": 0,
+      "span_end": 3453,
+      "distinct_sample_frames": 72,
+      "empty_frames": 0
+    }
+  },
+  "inputs": {
+    "broadcast": {
+      "absolute_path": "/workspace/g302_attempt2/g302_broadcast_1080.mp4",
+      "bytes": 2841750689,
+      "resolution_px": [
+        1920,
+        1080
+      ],
+      "fps": 30.0,
+      "sha256": "f2421bc24e5cbb28f41fa79f9ea755b2eeff4daebd48dc5496cc97e5617cf9d3"
+    },
+    "amateur": {
+      "absolute_path": "/workspace/g302_attempt2/g302_amateur_720p.mp4",
+      "bytes": 24523745,
+      "resolution_px": [
+        1280,
+        720
+      ],
+      "fps": 30.0,
+      "sha256": "773e77669a8876c0c8807baa8f733530ed00413f989cdec49ca078229b9e1bea"
+    }
+  },
+  "downscale": {
+    "arm2_target_px": [
+      1280,
+      720
+    ],
+    "interpolation": "cv2.INTER_AREA"
+  },
+  "detector": {
+    "class": 0,
+    "confidence": 0.3,
+    "imgsz": 640,
+    "half": true,
+    "device": "0",
+    "call": "imported src.tracking.player_detection.FeetDetector.model, unedited"
+  },
+  "arm1_determinism": {
+    "arm1_first_sha256": "bc4e2ac2c0527ee6acb2ac7c2a3dcbc383ef8a5cb33578d5359891059de4c94c",
+    "arm1_repeat_sha256": "bc4e2ac2c0527ee6acb2ac7c2a3dcbc383ef8a5cb33578d5359891059de4c94c",
+    "arm1_first_detections": 9303,
+    "arm1_repeat_detections": 9303,
+    "byte_identical": true
+  },
+  "opencv": "4.14.0",
+  "weights": {
+    "path": "/workspace/nba-ai-system/yolov8n.pt",
+    "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36",
+    "linked_from": "/workspace/nba-ai-system/yolov8n.pt"
+  },
+  "route_sha256": {
+    "scripts/platformkit/tracking/g302_amateur_resolution_attribution.py": "2180ee77b8a2137be477272b94107e2f1910315d0fdc03406198b02e427267fe",
+    "src/tracking/player_detection.py": "532389342b93e259e01f2d177ea34ccb1f52dc1c4b9b7f62aed2bf07c7df785a"
+  },
+  "blind_packet": {
+    "sample_size_per_arm": 72,
+    "pooled_blind_crops": 216,
+    "arms": [
+      "arm1_broadcast_1080_native",
+      "arm2_broadcast_720_downscaled",
+      "arm3_amateur_720_native"
+    ],
+    "sample_seed": 30220260907,
+    "blind_seed": 30220907,
+    "unblind_map_sha256": "37cb6f521bb821ccf1d33a5fea85e019272a89239414a7427ae15db2961c1dc5",
+    "crop_size_px_all_arms": [
+      512,
+      640
+    ],
+    "frame_indices": {
+      "stride": 3,
+      "processed_frames": 1152,
+      "bin_frames": 16,
+      "identical_grid_shape_across_arms": true,
+      "span_start_per_arm": {
+        "arm1_broadcast_1080_native": 19599,
+        "arm2_broadcast_720_downscaled": 19599,
+        "arm3_amateur_720_native": 0
+      },
+      "arm1_arm2_share_one_decode": true
+    },
+    "sampling": "one uniformly random class-0 conf>=0.3 detector box from each equal-width processed-frame bin; no verdict, geometry, position or identity condition"
+  }
+}
