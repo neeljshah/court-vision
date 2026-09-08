@@ -1,4 +1,4 @@
-GAP S325 | sport soccer | worktree aX | log cx_s325_soccer_remaining_goal
+GAP S325 | sport soccer | worktree a3 | log cx_s325_soccer_remaining_goal
 
 **MODEL ROW (S register; astra 2026-09-08 per-sport row 6, soccer).** `src/`, `kernel/`, `api/` and `intel/`
 are READ and IMPORT only. Build in `scripts/platformkit/ingame/` and `domains/soccer/`. NEVER write
