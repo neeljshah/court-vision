@@ -318,7 +318,7 @@ only. Rung ladder: IMAGE_PX_DECLARED -> METRIC_LOCAL -> COURT_FEET.
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G149 | all | The remote producer source is byte-identical to the local additive `decoded_frames` writer, but all 12 latest ledger rows predate a new-import cycle and omit the key. The final read found a zero-byte daemon PID file, no daemon process, one staged WNBA clip, and no ledger growth (427 rows); starting/restarting it is forbidden. The focused successful-row test passes, but no real after row, game ID, or value was observed. | `g149_persist_decoded_denominator_2026-09-02.md` | NOT VALIDATED - awaiting a natural daemon start and one completed game; no harness, bar, verdict, coordinate contract, or existing field changed. |
-NEXT_GAP_ID: G346  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
+NEXT_GAP_ID: G347  (allocated by the orchestrator ONLY; lanes never invent ids -- two lanes collided on G25/G23 on 2026-09-02)
 G150-G155 allocated by the tracking orchestrator on 2026-09-03 for the post-pod-loss rebuild:
 G150 local decoded-frame denominator reach (a2) | G151 quota fails loud (a4) |
 G152 court_feet declaration trace (a6) | G153 decoded_frames producer, re-opens G149 (a7) |
@@ -941,3 +941,9 @@ sidecar that reports no evaluated-frame count. Neither belongs to a closed row, 
 | Gap | Sport | Finding | Evidence | Status |
 |---|---|---|---|---|
 | G345 | basketball | OPEN -- allocated 2026-09-08 (codex build + finisher; astra ranked row 4; dispatch after G336 lands). TRACKLET CONTINUITY ON FIXED DETECTIONS: G336 scored arms on different observation sets; this row scores the route association, G336's variant and an own two-stage IoU matcher with gated reconnects on byte-identical cached detections (G336 captures, 4 sections x 240 frames), generation-scoped ids, metrics = starts per 1,000 detection-supported pairs, coverage, simultaneous merges; 200 injected gaps and crossings (reconnect correctness >= 0.95, 0 merges); a reserved crop-correlation channel the associators never see; preregistered decision rule for a PROPOSED src change (starts -50 pct on >= 3/4 sections at <= 2 pp coverage loss). Anonymous tracklets, never player identities. Spec: docs/evidence/tracking/specs/G345_spec.md -> worktree TBD. | (pending) | OPEN |
+
+## G346 allocation register (2026-09-08)
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G346 | all | OPEN -- allocated 2026-09-08 (codex build + finisher; from G338). FROZEN / STATIC VIDEO SECTIONS: G338 measured 2 of its 6 sealed sections as frozen video (inter-frame delta 0.18 and 2.65; ~1,200 bytes per frame vs 8,000-18,000 live) producing zero person rows at every detector input size, and found the 4 sections at 1280x720 all come from one game (resolution confounded with game). Row = an additive temporal liveness check in the ingest gate (60 sampled frames at 320x180: near-identical-pair share and bytes per frame; FROZEN reported, --reject-frozen default OFF), a sealed pod corpus census crossed with the ledger (how many frozen sections produced rows), a resolution x game table, and a PROPOSED feeder hook. Spec: docs/evidence/tracking/specs/G346_spec.md -> worktree TBD. | (pending) | OPEN |
