@@ -1,0 +1,41 @@
+{
+  "captured_utc": "2026-09-08T13:05:32Z",
+  "cgroup_cpu_quota": "/sys/fs/cgroup/cpu/cpu.cfs_quota_us=2720000",
+  "cpu_count": 256,
+  "git": {
+    "dirty": null,
+    "head_sha": null,
+    "unavailable_reason": "git rev-parse exit 128: fatal: not a git repository (or any of the parent directories): .git"
+  },
+  "host": {
+    "hostname": "771c926940a2",
+    "role": "pod",
+    "role_rule": "role is 'pod' when /workspace/nba-ai-system exists, else 'local'"
+  },
+  "libraries": {
+    "cv2": "4.14.0",
+    "numpy": "2.1.2",
+    "pandas": "2.3.3",
+    "scipy": "1.18.1",
+    "sklearn": "1.9.0",
+    "torch": "2.8.0+cu128",
+    "ultralytics": "8.4.143"
+  },
+  "modules": [],
+  "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.39",
+  "python_version": "3.12.3",
+  "schema": "g62_environment_sidecar_v1",
+  "seed": null,
+  "seed_reason": "no seeded randomness on this route",
+  "threads": {
+    "MKL_NUM_THREADS": null,
+    "OMP_NUM_THREADS": null,
+    "torch_num_threads": 128
+  },
+  "torch_build": {
+    "cuda_available": true,
+    "cuda_version": "12.8",
+    "cudnn_version": 91002,
+    "unavailable_reason": null
+  }
+}

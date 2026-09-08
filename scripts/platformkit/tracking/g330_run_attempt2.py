@@ -39,6 +39,7 @@ def _shim_onnx():
 
 _shim_onnx()
 
+from scripts.platformkit.env_sidecar import write as write_env_sidecar  # noqa: E402
 from scripts.platformkit.tracking.g330_attempt2 import (  # noqa: E402
     ArmTally, MatchRecorder, eval_indices, make_arm, step_arm,
 )
@@ -46,6 +47,11 @@ from scripts.platformkit.tracking.g330_panorama_identity import (  # noqa: E402
     build_arm_v, collisions, feet_from_boxes, frac, group_by_sha, inside_court, local_census,
     pad6, parse_census_line, premise_holds, route, sha256_of,
 )
+
+# G62: the modules whose content determines this run; the repo is never hashed whole.
+ENV_MODULES = ("scripts/platformkit/tracking/g330_run_attempt2.py",
+               "scripts/platformkit/tracking/g330_attempt2.py",
+               "scripts/platformkit/tracking/g330_panorama_identity.py")
 
 # Sealed in the prereg, section 1: stem -> (sha256 of the scored copy, container frame count).
 SEALED = {
@@ -202,8 +208,12 @@ def run_section(workdir: Path, stem: str, model, pano_f, pano_f_sha, proxies, he
 
 def main(argv):
     started = time.time()
+    sidecar = "--no-env-sidecar" not in argv
+    argv = [item for item in argv if item != "--no-env-sidecar"]
     workdir, evidence = Path(argv[1]), Path(argv[2])
     evidence.mkdir(parents=True, exist_ok=True)
+    if sidecar:
+        write_env_sidecar(evidence, modules=ENV_MODULES)
     repo = Path(".").resolve()
     stage = argv[3] if len(argv) > 3 else "all"
     if stage in ("all", "census"):

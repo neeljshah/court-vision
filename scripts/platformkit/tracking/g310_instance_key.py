@@ -19,9 +19,14 @@ import re
 import statistics
 from pathlib import Path
 
+from scripts.platformkit.env_sidecar import write as write_env_sidecar
 from scripts.platformkit.tracking.g310_native_input_arm import (
     footpoint, p95, proxies_for_dir, read_csv,
 )
+
+# G62: the modules whose content determines these proxies; the repo is never hashed whole.
+ENV_MODULES = ("scripts/platformkit/tracking/g310_instance_key.py",
+               "scripts/platformkit/tracking/g310_native_input_arm.py")
 
 GAP_G = 270      # MAX_LOST 90 lost updates x the route's observed stride of 3 frame ids
 JUMP_J = 0.20    # one detected player body height of bottom-centre motion per emission step
@@ -180,6 +185,8 @@ def main() -> None:
     ap.add_argument("--dest", default="docs/evidence/tracking/g310_attempt2")
     ap.add_argument("--out-json", default="docs/evidence/tracking/g310_attempt2/"
                                           "g310_attempt2_proxies.json")
+    ap.add_argument("--no-env-sidecar", action="store_true",
+                    help="skip the G62 environment.json sidecar (output then matches master)")
     args = ap.parse_args()
     results, loaded = [], []
     for spec in args.run:
@@ -189,6 +196,8 @@ def main() -> None:
                        "rows": read_csv(Path(data_dir) / "tracking_data.csv"),
                        "ball_rows": read_csv(Path(data_dir) / "ball_tracking.csv")})
     files = archive(loaded, Path(args.dest))
+    if not args.no_env_sidecar:
+        write_env_sidecar(Path(args.dest), modules=ENV_MODULES)
     report = {"spec": "G310", "attempt": 2, "gap_g": GAP_G, "jump_j": JUMP_J,
               "sensitivity_gap_g": SENSITIVITY[0], "sensitivity_jump_j": SENSITIVITY[1],
               "archive_coordinate_unit": "integer thousandths of a pixel; divide by 1000",

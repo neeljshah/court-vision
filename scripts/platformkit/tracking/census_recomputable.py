@@ -16,7 +16,15 @@ import gzip
 import json
 import re
 import subprocess
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+
+from scripts.platformkit.env_sidecar import write as write_env_sidecar  # noqa: E402
+
+# G62: the modules whose content determines this census; the repo is never hashed whole.
+ENV_MODULES = ("scripts/platformkit/tracking/census_recomputable.py",)
 
 RECOMPUTABLE = "RECOMPUTABLE"
 NOT_RECOMPUTABLE = "NOT RECOMPUTABLE"
@@ -177,6 +185,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", default=".")
     parser.add_argument("--csv", default="")
     parser.add_argument("--label", action="append", default=[])
+    parser.add_argument("--no-env-sidecar", action="store_true",
+                        help="skip the G62 environment.json sidecar (output then matches master)")
     args = parser.parse_args(argv)
     root = Path(args.root).resolve()
     labels = dict(item.split("=", 1) for item in args.label)
@@ -186,6 +196,8 @@ def main(argv: list[str] | None = None) -> int:
               f'n={report["n"]} | {report["totals"]} {report["note"]}')
     if args.csv:
         write_csv(reports, Path(args.csv), labels)
+        if not args.no_env_sidecar:
+            write_env_sidecar(Path(args.csv).parent, modules=ENV_MODULES)
     return 0
 
 
