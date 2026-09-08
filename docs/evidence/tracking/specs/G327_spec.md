@@ -229,3 +229,31 @@ the repeat rule, and the exact inherited call path), then harness + tests, then 
 PROPOSED + ledger row. No forced git operation of any kind. **Commit BEFORE reporting (A7).**
 ASCII stdout. Vocabulary follows contract Q6; automated scan required.
 **NEVER PARK:** poll your own pod job in a blocking loop; never end waiting.
+
+---
+**ATTEMPT 2 -- VERSION 2026-09-08b (orchestrator amendment after the attempt-1 REJECT, verify memo
+`G327_VERIFY_2026-09-08.md`, candidate 668b9929b).** The rule above names immutable G324 games/lists/anchors
+(:192-197). Those sources no longer exist on the pod: the corpus is a rotating queue (the volume guard prunes
+ledgered sources; 119 -> 85 files in 40 min on 2026-09-08) and two freshly sealed clips were deleted before
+their own run. A prereg therefore cannot seal filenames. Binding for attempt 2, on top of the rule above:
+  1. **SOURCE RULE + SNAPSHOT.** The prereg seals (a) the measured absence of every G324 source on the pod
+     (`ls`/`find` output committed as a raw artifact, not a summary), (b) the selection rule, (c) the
+     realised clips, and (d) the per-frame SHA-256 of the 120 decoded frames (3 games x 40) BEFORE the
+     scored run. The scored run reads ONLY those snapshotted frames (never the corpus), so the realised
+     sample is fixed for the rest of the row. This is a declared widening of :192-197 authorised by the
+     orchestrator; attempt 1's rule-based pick was itself pre-registered, so it is not outcome-contaminated.
+  2. **RAW CSV FOR EVERY ARM, CSV-ONLY RECONSTRUCTION.** Each of the 7 arms writes its own raw CSV at run
+     time, including `nmsord` as its own emitted rows (not derived post hoc from `batch8`), and EVERY
+     evaluated frame appears in every arm's CSV -- a frame with zero boxes is written as an explicit row
+     (`n_boxes=000000`, empty box fields). Bit-identity and agreement are recomputed from the CSVs alone;
+     no value may come from `g327_summary.json`.
+  3. **PER-GAME / PER-ARM TABLE** of agreement and bit-identity (:206-211) in the memo, plus the verbatim
+     process and disk probe output the rule requires (an artifact file if it does not fit the 60 lines,
+     named in the memo with its sha256).
+  4. **CORRECTIONS carried:** "bit-exact" -> "coordinate-exact" wherever full bit-identity (incl. score and
+     class) is not what was measured; the 181 / 139 / 282 count; the memo must not cite a path absent from
+     the candidate tree (cite G324's verify memo by commit and path on the branch that holds it).
+  5. All 7 arms, 120 frames, the >= 110/120 bar, and the DETERMINISTIC 120/120 single-repeat check stay
+     byte-identical. New prereg `g327_prereg_2026-09-08d.md` sealed alone (embedded `SEAL sha256 <hex>` last
+     line). Memo `g327_detector_batch_stability_attempt2_2026-09-08.md` (<= 60 lines), one ledger `>>` row.
+     Attempt-1 memo, preregs and verify memo are frozen.
