@@ -120,3 +120,23 @@ anything, no git on the pod, and NO scp of any module until the verifier accepts
 Report the files you would deploy; do not deploy them.
 COMMIT: explicit pathspec, in the worktree, no push. Report the sha.
 NEVER PARK: poll your own jobs in a blocking loop; never end waiting.
+
+## VERSION 2026-09-07b
+
+Attempt 2. Sources = the >= 720p native sections now on the pod (list the clip ids, heights and
+skins in the prereg); the presence rule is DESIGNED on a separate DESIGN SET (>= 3 broadcast skins,
+>= 30 frames per skin, drawn from clips NOT used for scoring) and SEALED before any scoring frame is
+viewed; the reader scans a preregistered region set (top strip AND bottom-right bug AND bottom-left,
+stated as fractions) instead of `_TOP_FRAC` alone; the 20-frame eye-check artifact carries
+`hand_read_clock` (model-read, declared) and `abs_error_sec`; the OCR engine and its version are
+pinned; the 0.90 readability bar and the 400-frame denominator stand.
+
+## VERSION 2026-09-07
+
+First version, run in worktree a12: prereg `67827cf54`, candidate `9287112e5`, verified REJECT
+`b3338efbc`. It established the premise (0 of 42,133 and 0 of 37,391 `scoreboard_game_clock` cells on
+the two named pod games), explained the period contradiction as the frame-percentile back-fill at
+`src/pipeline/unified_pipeline.py:4282-4350`, and found no OCR engine importable in the pod producer
+env. It was rejected because its presence rule was designed on ONE broadcast skin and rejected all 8
+legible clock tiles on the scored skins (rates 0/20 and 2/8 against the 0.90 bar), and because its
+sources were 640x360 where this spec asserted 1080p.
