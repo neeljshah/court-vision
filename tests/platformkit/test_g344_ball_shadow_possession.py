@@ -25,3 +25,9 @@ def test_prefix_invariance_cut_stop_and_stale_age() -> None:
     _, players, balls, _, _, _ = case(0)
     stale = shadow_states(players, balls[:1], 0, 31, 720)
     assert all(row["state"] != "OBSERVED_VALID" for row in stale[1:])
+
+
+def test_history_prerequisite_is_additive_provenance() -> None:
+    _, players, balls, _, _, _ = case(0)
+    rows = shadow_states(players, balls, 0, 3, 720)
+    assert [row["prerequisite_available"] for row in rows] == [0, 0, 0, 1]

@@ -1,0 +1,11 @@
+window_id,record_type,stage,n,share_per_mille,detail,ball_x_min,ball_x_max,ball_y_min,ball_y_max,player_x_min,player_x_max,player_y_min,player_y_max,source_height
+0022500939,stage,frames,000060,1000,full_frame_denominator,,,,,,,,,720
+0022500939,stage,any_ball_row,000020,0333,full_frame_denominator,,,,,,,,,720
+0022500939,stage,detected_ball,000015,0250,full_frame_denominator,,,,,,,,,720
+0022500939,stage,player_rows,000015,0250,full_frame_denominator,,,,,,,,,720
+0022500939,stage,player_within_radius,000000,0000,full_frame_denominator,,,,,,,,,720
+0022500939,stage,prerequisite_available,000000,0000,full_frame_denominator,,,,,,,,,720
+0022500939,stage,motion_agreement,000000,0000,full_frame_denominator,,,,,,,,,720
+0022500939,stage,accepted_ownership,000000,0000,full_frame_denominator,,,,,,,,,720
+0022500939,coordinate,detected_ball_vs_player_px,000016,,image_px_ranges,1249.000,1339.000,0.000,132.000,17.825,1694.279,108.000,526.147,720
+0022500939,age,detected_ball_age_frames,000015,0250,age=0,,,,,,,,,720

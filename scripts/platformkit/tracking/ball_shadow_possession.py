@@ -9,7 +9,8 @@ from pathlib import Path
 from typing import Any, Iterable
 
 FIELDS = ("window_id", "frame", "state", "source", "age_frames", "confidence", "owner_id",
-          "abstention_reason", "nearest_distance_px", "motion_cosine", "motion_ratio")
+          "abstention_reason", "nearest_distance_px", "motion_cosine", "motion_ratio",
+          "prerequisite_available")
 RADIUS_AT_720 = 60.0
 MAX_AGE = 30
 
@@ -93,7 +94,7 @@ def shadow_states(player_rows: Iterable[dict[str, str]], ball_rows: Iterable[dic
             last_detected = frame
         age = "" if last_detected is None else frame - last_detected
         state, source, reason, confidence = "ABSENT", "none", "no_ball", ""
-        owner, distance, cosine, ratio = "", "", "", ""
+        owner, distance, cosine, ratio, prerequisite = "", "", "", "", 0
         if len(points) > 1:
             state, source, reason = "AMBIGUOUS", "detected" if direct else "inferred", "duplicate_ball"
         elif points:
@@ -120,6 +121,7 @@ def shadow_states(player_rows: Iterable[dict[str, str]], ball_rows: Iterable[dic
                             ((row, _ball_point(row)) for row in balls.get(previous, [])) if point is not None]
                 old_player = next((_point(row) for row in players.get(previous, [])
                                    if (row.get("track_id") or row.get("player_id") or "") == owner_id), None)
+                prerequisite = int(len(old_ball) == 1 and old_player is not None)
                 if any(previous < cut <= frame for cut in cuts):
                     reason = "cut"
                 elif len(old_ball) != 1 or old_player is None:
@@ -136,7 +138,8 @@ def shadow_states(player_rows: Iterable[dict[str, str]], ball_rows: Iterable[dic
                             reason = "motion_disagreement"
         output.append({"frame": frame, "state": state, "source": source, "age_frames": age,
                        "confidence": confidence, "owner_id": owner, "abstention_reason": reason,
-                       "nearest_distance_px": distance, "motion_cosine": cosine, "motion_ratio": ratio})
+                       "nearest_distance_px": distance, "motion_cosine": cosine, "motion_ratio": ratio,
+                       "prerequisite_available": prerequisite})
     return output
 
 
