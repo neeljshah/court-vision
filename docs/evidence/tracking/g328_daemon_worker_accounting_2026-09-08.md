@@ -15,14 +15,13 @@ TOTAL            327     7
 The daemon does not record `--workers` in its log and the pod keeps no shell history for the ssh launches, so only the LIVE instance has a verifiable value. On it the premise is TRUE: 7 prints of 21 report 9 or 10 active at `--workers 8`.
 
 ## TRACE (master; byte-identical on the pod)
-`track_daemon.py:353-354` tracking exits: `proc.poll()` is not None -> `_begin_adjudication(job)`.
-`track_daemon.py:250` `_prepare_adjudication` runs SYNCHRONOUSLY in the poll loop (rows, timebase stamp, ball-telemetry declaration).
-`track_daemon.py:262-264` the verdict then runs in a `threading.Thread` INSIDE the daemon process.
+`track_daemon.py:350-351` tracking exits: `proc.poll()` is not None -> `_begin_adjudication(job)`.
+`track_daemon.py:247` `_prepare_adjudication` runs SYNCHRONOUSLY in the poll loop (rows, timebase stamp, ball-telemetry declaration).
+`track_daemon.py:250-261` the verdict then runs in a `threading.Thread` INSIDE the daemon process.
 `track_daemon_done.py:180-248` that thread does: fsync, `pd.read_csv`, decode manifest, `_with_frame_denominator` `pd.concat` (`:95`), frozen-harness `evaluate`.
-`track_daemon.py:363` THE DEFECT: `sum(... if "adjudication" not in job)` -- an adjudicating job is not counted against `--workers`, so its slot is handed to the next clip.
-`track_daemon.py:391` the print reports `len(active)`, which DOES include adjudicating jobs, so the cap and the printed number disagree by exactly the adjudication count.
-`track_daemon.py:341-352` adjudication ends (or times out at 1800 s) and the job is reaped.
-`track_daemon.py:326` the ledger row is written by `_record_loudly(mark_degenerate(...))`.
+`track_daemon_slots.py:31` THE DEFECT: `sum(... if "adjudication" not in job)` -- an adjudicating job is not counted against `--workers`, so its slot is handed to the next clip.
+`track_daemon.py:388` the print reports `len(active)`, which DOES include adjudicating jobs, so the cap and the printed number disagree by exactly the adjudication count.
+`track_daemon.py:338-349` adjudication ends (or times out at 1800 s) and the job is reaped; `track_daemon.py:323` then writes the ledger row via `_record_loudly(mark_degenerate(...))`.
 
 ## TIMING (every cell with its n and its method)
 method A (ledger rows, exhaustive over 2026-09-08): per-clip adjudication wall is NOT directly recoverable -- rows carry `evaluated_at` (adjudication END) but no adjudication START field. method B (log timestamps): NOT AVAILABLE -- the daemon log lines carry no timestamp at all.
@@ -45,16 +44,17 @@ T = 1874.0 s median job wall, D = 0.0 s median implied adjudication wall, W = 8,
 
 ## NOT VERIFIED
 - `--workers` for 6 of the 7 instances (not in the log, no shell history). The spec's "'17 active' / '18 active' at `--workers 16`" for 2026-09-07 is consistent with the observed distribution (median 17, max 20) but could not be confirmed from any artifact readable on the pod.
-- Per-clip adjudication wall is DERIVED from reap latency, not directly timed; method C timed none.
-- The 1.076 CPU-s figure is per COMPLETION: it includes `_prepare_adjudication`, `tracking_rows`, `_fresh_solve_summary` and the whole-ledger read in `_previous_sport_entry`, not adjudication alone.
-- The idle baseline is one 601 s window on a cgroup shared with other lanes; CPU is attributed to the daemon only where `/proc` says so.
-- The cap is UNDEPLOYED and unmeasured in production. No clips-per-hour result is claimed.
+- Per-clip adjudication wall is DERIVED from reap latency, not directly timed (method C timed none); and the 1.076 CPU-s figure is per COMPLETION -- it includes `_prepare_adjudication`, `tracking_rows`, `_fresh_solve_summary` and the whole-ledger read in `_previous_sport_entry`, not adjudication alone.
+- The idle baseline is one 601 s window on a cgroup shared with other lanes, CPU attributed to the daemon only where `/proc` says so; and the cap is UNDEPLOYED and unmeasured in production, with no clips-per-hour result claimed.
 - DEVIATION from the prereg: its section 3 named the semaphore variant and the flag `--adjudication-slots`. The shipped cap is the spec's other option, for the reason given above; the prereg is left exactly as sealed.
 
 Wall time: about 75 minutes, of which 601 s was the read-only pod sample. SHA-256 (LF-normalised) -- prereg whole file 61757a5e95d6c0ecde7993a8eff3c4e770f276f00f8e5ba8b7feb0fc57418186 (its embedded SEAL covers the body only: cd96127d5ba8da858ff9c2ab0214e51cc85e40270a589434210e39ab48ee90e5)
-timing.csv e62530d6c2fe0c9d391b287c50a0d9dd8f490eac56597c32f25c0ac548ab208b
-tick_table.csv cb7196b2e58c22ae6b157ee9a128f42801d6cc78d99d04cd4b55beca2c85c434
-adjudication_threads.csv f27ae6f939764d7806a1d5f422514a6612d1e5526dd2c5947d896a3ee06d4a33
-track_daemon_slots.py af6437ddff84d9ff015f7f5478d931593fac1d483b24e284ee06a1b9dee58a7c
-track_daemon.py c17ae81dd9de120845a16aa0b0b2240456a2a09e5bf4b7c3d2ac07cec3a2d4fe
-test_g328_daemon_worker_accounting.py 06903fbb743e0298bf5e4a728b50d33224798737f09d2e34446ddc4664762729
+timing.csv e62530d6c2fe0c9d391b287c50a0d9dd8f490eac56597c32f25c0ac548ab208b ; tick_table.csv cb7196b2e58c22ae6b157ee9a128f42801d6cc78d99d04cd4b55beca2c85c434 ; adjudication_threads.csv f27ae6f939764d7806a1d5f422514a6612d1e5526dd2c5947d896a3ee06d4a33
+track_daemon_slots.py af6437ddff84d9ff015f7f5478d931593fac1d483b24e284ee06a1b9dee58a7c ; track_daemon.py c17ae81dd9de120845a16aa0b0b2240456a2a09e5bf4b7c3d2ac07cec3a2d4fe ; test_g328_daemon_worker_accounting.py e3ac3130542e0c1b4ded58155e953c92b094549af34e6a4a8030fc8f388ebc2c
+
+## Corrections applied at landing 2026-09-08 (verifier codex-sol)
+TRACE refs above were stale against the landed file and now read 350-351/247/250-261/track_daemon_slots.py:31/388/323 (was 353-354/250/262-264/363/391/326); each was re-verified against the landed master file at landing and the verifier's numbers held exactly. The lander additionally moved 341-352 -> 338-349, the same -3 import-reflow shift, which the verifier's list did not name. The RESULTS_LEDGER row's 363/391 refs became track_daemon_slots.py:31/388.
+DIGEST: the test-file sha256 above was refreshed to the landed file after fix 1b fef013ff9 (was 06903fbb743e0298bf5e4a728b50d33224798737f09d2e34446ddc4664762729); the other five digests reproduce unchanged.
+NEW GAP: pre-existing importer failure -- the stale test double at test_g149_persist_decoded_denominator.py:32 lacks the `publish` keyword used by track_daemon.py:275; both lines predate G328.
+NEW GAP: digest freshness is not pinned -- fef013ff9 changed the spec test without updating the digest recorded in this memo, and nothing fails when they diverge.
+Vocabulary follows contract Q6; automated scan required.
