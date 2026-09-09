@@ -12,7 +12,7 @@ root) with READ-ONLY pod fetches of full tracking tables (ledger `game_id` match
 write on the pod; never touch the daemon pid 1596016 or the guards).
 
 **WHY THIS ROW EXISTS.** G358 (713413a96) measured on 6 sealed full sections that `zero_step_share` (median
-0.889 vs sealed threshold 0.884), `distinct_position_ratio` (median 0.119 vs 0.109) and
+0.889 vs sealed threshold 884 per mille), `distinct_position_ratio` (median 0.119 vs 0.109) and
 `stationary_track_share` reject the UNCHANGED arm and classified them THRESHOLD_MISCALIBRATED. A competing
 explanation is measured elsewhere: the broadcast-CV CSVs carry a HELD-POSITION defect (2026-09-01: 0.8658 of
 rows repeat the previous position because the row builder writes every frame but positions update only on
