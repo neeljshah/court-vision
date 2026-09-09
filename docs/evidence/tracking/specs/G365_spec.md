@@ -1,4 +1,4 @@
-GAP G365 | sport basketball | worktree a4 | log cx_g365_fitter_refinement
+GAP G365 | sport basketball | worktree a15 | log cx_g365_fitter_refinement
 
 **FITTER-PRECISION ROW, PREREQUISITE FOR ANY BROADCAST REGISTRATION (successor to G362 PARTIAL 2026-09-09
 decb187d: the sealed known-H recovery gate reads 1.6516 px against the 1.0 px bar, reproduced deterministically;
