@@ -692,3 +692,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 2026-09-09 | tracking | G358 | premise 68 sections/19 games; sealed 34/17; FULL A0 13/34, A1 34/34, A2 34/34, A5 13/34 below 0.80; 4 diagnosed gates; 17 tests passed | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q)
 
 2026-09-09 | tracking | G362 | known-H 1.6516405 px vs 1.0 px bar; premise artifacts 84/84 and positive sections 0/6 per arm; broadcast stages not run | ACCEPT (verified: codex-sol, contract A/B/Q)
+
+2026-09-09 | tracking | G359 | premise 34/34 at or above 0.20, min/median/max 0.332797/0.750378/0.985276; 4,896 unique cells; A1/A2 detection 34/34 in both modes; two schema-artifact classes, one threshold-miscalibrated class, one undecided; defaults 792/792 | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q)

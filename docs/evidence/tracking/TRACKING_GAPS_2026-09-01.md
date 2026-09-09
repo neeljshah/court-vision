@@ -4,6 +4,13 @@
 
 
 
+
+## G359 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G359 | all (basketball fixtures first) | 34/34 sealed sections hold positions (held share 0.333/0.750/0.985); zero_step_share + distinct_position_ratio PRODUCTION_SCHEMA_ARTIFACT (A0 rejection M0 0.294/0.265 -> M1 0/0, thresholds unchanged); median_step_distance THRESHOLD_MISCALIBRATED (M0 0.059 -> M1 0.912; v2 76.995468 prereg, unscored); stationary_track_share invariant (UNDECIDED); M0 reproduces G358 gates.csv 792/792; frozen + id-merge plants 34/34 both arms; ball-shift identical to A0 (LIMIT); 4,896 cells; 9+1 tests; corrections applied; NEW GAPs: spec names a nonexistent test file, adapter flag/stamp harness-local, index.lock | g359_held_position_vs_threshold_2026-09-09.md, g359_held_position_vs_threshold_2026-09-09/g359_prereg_2026-09-09.md, g359_held_position_vs_threshold_2026-09-09/held_share.csv, arms.csv, decision.csv, G359_VERIFY_2026-09-09.md, scripts/platformkit/tracking/g359_held_position.py, tests/platformkit/test_g359_held_position.py | **ACCEPT WITH CORRECTIONS -- DONE: teacher admission gates must score EVALUATED TICKS (M1), never held rows; licenses the two artifact classifications and the v2 candidate for scoring on FRESH games only (G366); moves no threshold** |
+
 ## G362 result register
 
 | Gap | Sport | Finding | Evidence | Status |
