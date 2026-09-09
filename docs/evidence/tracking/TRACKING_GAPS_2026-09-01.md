@@ -5,6 +5,12 @@
 
 
 
+## G366 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G366 | all (basketball fixtures first) | 59 fresh sections / 14 games (all eligible; disjoint from the sealed 34 and their games); zero_step_share + distinct_position_ratio CONFIRMED artifacts (A0 M0 0.407/0.373 -> M1 0/0); stationary_track_share NOT confirmed (0.203 = 12/59 both arms; plants 10/10); evaluated-tick ratio median 0.153 (p10 0.023, p90 0.554) OUTSIDE 0.90-1.10 -> positions held across evaluated ticks too; v2 76.995468: A0 M1 3/59, frozen 0/59, id-merge 32/59 -> not cleared; reach: frame_size_source estimated, never decoded/sidecar; 6 + 1 tests; correction: test digest; lineage 26cfd894 REJECT (Q6 wording, CRLF seal) | g366_gate_confirmation_2026-09-09.md, g366_gate_confirmation_2026-09-09/g366_prereg_2026-09-09.md, fresh_sections.csv, gates_fresh.csv, plants.csv, ticks.csv, reach.csv, v2.csv, summary.json, strips/ (10 svg), G366_VERIFY_2026-09-09.md, G366_VERIFY_att1_REJECT_2026-09-09.md, scripts/platformkit/tracking/g366_fresh.py, g366_confirm.py, tests/platformkit/test_g366_gate_confirmation.py | **ACCEPT WITH CORRECTIONS -- PARTIAL: licenses the two artifact-gate confirmations on fresh games and M1 scoring for teacher admission; licenses NO threshold move and no stationary or ball-shift claim; successor: what fraction of evaluated ticks actually move a track per producer path** |
+
 ## G365 result register
 
 | Gap | Sport | Finding | Evidence | Status |
