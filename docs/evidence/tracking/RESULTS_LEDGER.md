@@ -687,3 +687,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-09 | tracking | G354 | fix 1c: corrected postdeploy checker excludes MISSING_TABLE (absent store) rows from judgment instead of failing on them; re-verified read-only against the frozen fix-1b ledger window (finished_at <= 1788911113): 30 fresh post-epoch starts, 8 pre-epoch excluded, 2 absent-store excluded, 28 readable/judged and ALL 28 pass ratio <= 1.5 (ratio_x 0.005376-1.223706, ratio_y 0.019753-1.389447); rejoin pooled 6231/22545 px frames vs 3950/18209 old frames; POSTDEPLOY_PASS now 1 (was 0 under fix 1b) | CLOSED AT LIMIT (adjudicated; verified: codex-sol REJECT quoted; fix 1c finisher: claude-sonnet)
 
+2026-09-09 | tracking | G360 | sealed premise unavailable: 12/22 recovered; descriptive AUCs 0.090909091/1.000000000 at n=12; probe counts 34/5/345 over 384; ranking display corrected | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q)
+

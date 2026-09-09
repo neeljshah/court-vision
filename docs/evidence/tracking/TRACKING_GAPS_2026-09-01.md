@@ -1,6 +1,13 @@
 # Tracking gap register -- 2026-09-01 (living; one gap = one lane)
 
 
+
+## G360 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G360 | basketball | Sealed 22-unit premise (labels 12/7/2/1) NOT EVALUABLE: 10 units irrecoverable (6 NBA sources, game id only); 9 sources / 12 units re-fetched byte-size-exact, eye-matched to G350 tiles. On the 12: line AUC 0.090909 (anti-correlated); surface AUC 1.0 on ONE positive (self-fit, B8). Sealed-rule probe 384 frames / 32 sections: 034 court / 005 non-court / 345 abstain (pm 089/013/898); >=60 non-court quota unreachable, held-out NOT sealed, no rater ran. Tests 3 + LOC 1; memo:16 ranking corrected. 5 NEW GAPs (vanishing-direction, zero-padding, ledger row, master lacked test+module, index.lock). | g360_court_presence_cue_2026-09-08.md; g360_prereg_2026-09-08.md; g360_court_presence_cue_2026-09-08/ (premise.csv, source_identity.csv, balance_probe.csv, eyecheck_recovered_01.jpg, eyecheck_recovered_02.jpg); G360_VERIFY_2026-09-09.md | **ACCEPT WITH CORRECTIONS -- PARTIAL: closes the RULE-CUE path (successor G364 learned presence, allocated 19f29084); licenses nothing about court presence; binding lesson: pin sources by YouTube id + offset (G361)** |
+
 ## G354 result register
 
 | Gap | Sport | Finding | Evidence | Status |
