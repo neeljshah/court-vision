@@ -1,4 +1,4 @@
-GAP G366 | sport all (basketball fixtures first) | worktree a10 | log cx_g366_gate_confirmation
+GAP G366 | sport all (basketball fixtures first) | worktree a12 | log cx_g366_gate_confirmation
 
 **GATE-CONFIRMATION ROW, SUCCESSOR TO G359 (DONE 2026-09-09 54d88e4c: on the 34 sealed sections
 `zero_step_share` and `distinct_position_ratio` are PRODUCTION_SCHEMA_ARTIFACTs -- clear 0.706 / 0.735 under M0
