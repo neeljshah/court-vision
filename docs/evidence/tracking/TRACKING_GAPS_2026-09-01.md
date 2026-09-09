@@ -5,6 +5,12 @@
 
 
 
+## G352 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G352 | basketball | whole-template objective on the sealed rule's 4 sections (of 6 required): 0 of 6 pass under both objectives; the fitter accepted 84/84 scored ARM CELLS (60 A + 24 B) on non-court content; every rule-selected section was non-court (press conferences / title cards) -> motivated G360/G364; fix 1b re-fetched S3/S4 and rendered ranks ~20/40/60 (S1/S2 "Video unavailable"), S3/S4 show court content at later ranks, the "no court" claim withdrawn; fix 1c memo 59 lines + ledger correction; per-section n 15 / 6 (sealed design); 4 + 1 tests; two REJECTs verbatim in the adjudication memo | G352_ADJUDICATION_2026-09-09.md, G352_VERIFY_fix1b_REJECT_2026-09-09.md, g352_calibration_whole_template_2026-09-08.md, g352_prereg_2026-09-08.md, g352_calibration_whole_template_2026-09-08/sections_sealed.csv, metrics.csv, perframe.csv, residuals.csv, route_correspondences.csv, buckets.csv, premise.csv, renders/ (12 jpg), contact_sheets/ (6 jpg), renders_fix1b/ (20 jpg + README.md, index.csv, sources.csv), scripts/platformkit/tracking/g352_whole_template_objective.py, g352_run.py, g352_cells.py, g352_merge.py, g352_premise.py, tests/platformkit/test_g352_whole_template_objective.py | **CLOSED AT LIMIT (adjudicated) -- PARTIAL: licenses the whole-template objective harness and the non-court-selection finding; licenses NO registration claim; carry-over lives in G361 (pin sources), G362 (FIT/VALIDATION + refusal), G367 (symmetry)** |
+
 ## G361 result register
 
 | Gap | Sport | Finding | Evidence | Status |
