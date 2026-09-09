@@ -765,6 +765,7 @@ class UnifiedPipeline:
             self.kp1, self.des1 = sift.compute(pano, sift.detect(pano))
         self._M_ema:              Optional[np.ndarray] = None
         self._last_ball_2d:       Optional[tuple]      = None  # (x2d, y2d) this frame
+        self._last_ball_px:       Optional[tuple]      = None  # (x, y) TOPCUT pixels this frame
         self._frames_since_anchor: int                 = 0
         self._sift_frame_counter:  int                 = 0
         self._sift_last_hist:      Optional[np.ndarray] = None  # Task 1: last SIFT-frame histogram
@@ -1839,6 +1840,8 @@ class UnifiedPipeline:
                     "timestamp":     round(frame_idx / fps, 3),
                     "ball_x2d":      "",
                     "ball_y2d":      "",
+                    "ball_x2d_px":   "",
+                    "ball_y2d_px":   "",
                     "detected":      0,
                     "live":          0,
                     "ball_inferred": 0,
@@ -1894,6 +1897,7 @@ class UnifiedPipeline:
             np.copyto(self._map_snap_buf, self.map_2d)
             map_snap = self._map_snap_buf
             self._last_ball_2d = None
+            self._last_ball_px = None
 
             # ── YOLO prefetch: peek ahead N frames for batch GPU inference ──
             # The prefetcher queue has buffered frames ahead; peek up to 7 more
@@ -1948,6 +1952,7 @@ class UnifiedPipeline:
                     stride=_stride,
                 )
                 self._last_ball_2d = self.ball_det.last_2d_pos
+                self._last_ball_px = self.ball_det.last_2d_pos_px
             _t4 = _time.perf_counter()
 
             if yolo_results and self.yolo.available:
@@ -1970,6 +1975,7 @@ class UnifiedPipeline:
                 if _sp_str:
                     print(f"[SUBPROFILE] {_sp_str}")
             ball_pos      = self._last_ball_2d
+            ball_px_pos   = self._last_ball_px
 
             # Ball position fallback: when Hough/CSRT loses the ball, use the
             # possessor's 2D court position so EventDetector can still fire
@@ -1987,6 +1993,8 @@ class UnifiedPipeline:
                 "timestamp": timestamp_sec,
                 "ball_x2d":  ball_pos[0] if ball_pos else "",
                 "ball_y2d":    ball_pos[1] if ball_pos else "",
+                "ball_x2d_px": ball_px_pos[0] if ball_px_pos is not None else "",
+                "ball_y2d_px": ball_px_pos[1] if ball_px_pos is not None else "",
                 "detected":    int(ball_pos is not None),
                 # R12: live=1 here because suspended frames hit the early-exit branch above
                 # which writes its own live=0 row. This branch only runs on live-play frames.
@@ -3090,6 +3098,7 @@ class UnifiedPipeline:
             homo = self.M1 @ (M @ ball_center.reshape(3, 1))
             homo = np.int32(homo / homo[-1]).ravel()
             self._last_ball_2d = (int(homo[0]), int(homo[1]))
+            self._last_ball_px = (cx, cy)
             cv2.circle(map_2d, (homo[0], homo[1]), 10, (0, 0, 255), 5)
 
             bbox_iou = (cy - 30, cx - 30, cy + 30, cx + 30)
@@ -4039,7 +4048,8 @@ class UnifiedPipeline:
     def _export_ball_csv(self, rows: List[dict], append: bool = False):
         os.makedirs(self._data_dir, exist_ok=True)
         path   = os.path.join(self._data_dir, "ball_tracking.csv")
-        fields = ["frame", "timestamp", "ball_x2d", "ball_y2d", "detected", "live", "ball_inferred"]
+        fields = ["frame", "timestamp", "ball_x2d", "ball_y2d", "detected", "live", "ball_inferred",
+                  "ball_x2d_px", "ball_y2d_px"]
         if not rows:
             # Write header-only CSV so downstream readers don't KeyError on missing file
             if not (append and os.path.exists(path)):

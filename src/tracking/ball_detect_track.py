@@ -154,6 +154,7 @@ class BallDetectTrack:
 
         # Last known 2D court position of ball (updated each frame)
         self.last_2d_pos   = None          # (x2d, y2d) or None
+        self.last_2d_pos_px = None         # current TOPCUT pixel (x, y) or None
 
         # Pixel-space ball velocity (px/frame) — more reliable than 2D court vel
         self.pixel_vel     = 0.0
@@ -585,6 +586,7 @@ class BallDetectTrack:
     def ball_tracker(self, M, M1, frame, map_2d, map_2d_text, timestamp, stride: int = 1):
         if frame is None or frame.size == 0:
             return frame, None
+        self.last_2d_pos_px = None
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         bbox = None
         _bbox_from_hough = False  # True when Hough/template detection set bbox
@@ -864,6 +866,7 @@ class BallDetectTrack:
             p1 = (int(bbox[0]), int(bbox[1]))
             p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
             ball_center = np.array([cx, cy, 1])
+            self.last_2d_pos_px = (cx, cy)
 
             # ── Possession detection ──────────────────────────────────────
             bbox_iou = (cy - IOU_BALL_PAD, cx - IOU_BALL_PAD,
