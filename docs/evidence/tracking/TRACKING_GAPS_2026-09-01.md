@@ -5,6 +5,12 @@
 
 
 
+## G365 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G365 | basketball | premise reproduced G362's 1.6516 px (G1); A (trf + Huber 2.0) G1 1.1000 / G3 2.1991 (worsens) / G4 0.5992 / G2_WIDE 469.33; B (+ template-guided re-association, Huber 1.0) G1 1.1287 / G3 1.1165 / G4 0.7636 / G2_WIDE 469.3808 (worsens 0.1725); sweep medians improve at every sigma (0.5: 0.5411 -> 0.4230 / 0.4338); exact 0.000; G2_WIDE = court MIRROR-SYMMETRY basin (1.92 px vs mirrored truth); G3 pulled by foreign supports (8.26 pct); both REJECTED under the sealed all-four bars; carve-out sealed not applied (B10/Q3); G362 extra geometries never archived (Q8); 16 + 11 tests; two REJECTs verbatim | G365_ADJUDICATION_2026-09-09.md, G365_VERIFY_att2_REJECT_2026-09-09.md, G365_VERIFY_fix1c_REJECT_2026-09-09.md, g365_fitter_refinement_2026-09-09.md, g365_fitter_refinement_2026-09-09/g365_prereg_2026-09-09.md, g365_prereg_att2_2026-09-09.md, premise.json, premise_b.json, recovery.csv, recovery_b.csv, refined_h.json, refined_h_b.json, summary.json, summary_b.json, sweep.csv, sweep_b.csv, renders/ (8 jpg), renders_b/ (8 jpg), scripts/platformkit/tracking/g365_refine.py, g365_refine_b.py, g365_sweep.py, g365_sweep_b.py, tests/platformkit/test_g365_fitter_refinement.py, test_g365_candidate_b.py | **CLOSED AT LIMIT (adjudicated) -- PARTIAL: licenses the refinement modules as additive tooling and the two diagnostics (mirror basin; foreign-support pull) as findings; licenses NO registration precision claim; carry-over: G367 seals its own quads + a modulo-symmetry metric; every future fixture is archived with its quad** |
+
 ## G352 result register
 
 | Gap | Sport | Finding | Evidence | Status |
