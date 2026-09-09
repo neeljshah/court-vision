@@ -86,8 +86,8 @@ def evaluate_image_space(df: pd.DataFrame, sport: str, frame_width: float | None
     """
     if sport not in SPORTS:
         raise ValueError("unknown sport {}".format(sport))
-    has_decoded_frame_size = frame_size_source == "decoded"
-    if has_decoded_frame_size:
+    has_sidecar_frame_size = frame_size_source in {"decoded", "sidecar"}
+    if has_sidecar_frame_size:
         if frame_width is None or frame_height is None:
             raise ValueError("decoded frame size requires width and height")
         width, height = float(frame_width), float(frame_height)
@@ -164,7 +164,7 @@ def evaluate_image_space(df: pd.DataFrame, sport: str, frame_width: float | None
             rows.append(_row(gate, _check(value, threshold, directions[gate]),
                              "landed liveness threshold", value, threshold, "image_px"))
 
-    if has_decoded_frame_size:
+    if has_sidecar_frame_size:
         containment = _containment(frame, width, height)
         rows.append(_row("g325_wholly_off_frame", _check(containment, CONTAINMENT_MIN, "min"),
                          "landed image point containment minimum", containment, CONTAINMENT_MIN,
