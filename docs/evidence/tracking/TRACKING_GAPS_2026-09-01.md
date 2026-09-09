@@ -2,6 +2,13 @@
 
 
 
+
+## G358 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G358 | all (basketball fixtures first) | premise 71 present / 68 eligible / 19 games (min 392, p10 470, median 946.5, p90 1000, max 1000); even k=2 sample 34 sections / 17 games matches the seal; FULL any_gate A0 13/34 = 0.382 (Wilson 0.239-0.550), A1 34/34, A2 34/34, A5 13/34 = 0.382 < 0.80; A5 equals A0 in every FULL/30 s cell (plant undetected at FULL); corrected median/p90 FULL A0: zero_step 0.750/0.968 vs 0.884, distinct_position 0.225/0.533 vs 0.109, stationary 0.000/0.100 vs 0.149, median_step 0.000/2.24 vs 8.41 -> THRESHOLD_MISCALIBRATED, 0 moved; 17 tests; lineage: 713413a96 REJECT (head slice, n=6, nonstandard medians) | g358_full_section_gate_execution_v2_2026-09-08.md; frames_distribution.csv; sealed_sections_fix1c.csv; gates.csv; duration.csv; diagnosis.csv; g358_prereg_2026-09-08.md; g358_prereg_fix1c_2026-09-08.md; g358_gate_execution.py; test_g358_gate_execution.py; G358_VERIFY_2026-09-08.md; G358_VERIFY_2026-09-09.md | **ACCEPT WITH CORRECTIONS -- PARTIAL: licenses the image-space gate execution harness and the diagnosis table; does not license any threshold move (G359 decides artifact vs threshold) nor any court-geometry claim** |
+
 ## G360 result register
 
 | Gap | Sport | Finding | Evidence | Status |

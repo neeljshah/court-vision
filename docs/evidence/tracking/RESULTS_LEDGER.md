@@ -689,3 +689,4 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-09 | tracking | G360 | sealed premise unavailable: 12/22 recovered; descriptive AUCs 0.090909091/1.000000000 at n=12; probe counts 34/5/345 over 384; ranking display corrected | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q)
 
+2026-09-09 | tracking | G358 | premise 68 sections/19 games; sealed 34/17; FULL A0 13/34, A1 34/34, A2 34/34, A5 13/34 below 0.80; 4 diagnosed gates; 17 tests passed | ACCEPT WITH CORRECTIONS (verified: codex-sol, contract A/B/Q)
