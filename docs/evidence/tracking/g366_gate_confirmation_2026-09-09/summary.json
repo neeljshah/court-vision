@@ -1,0 +1,206 @@
+{
+  "a0_rejection": {
+    "distinct_position_ratio": {
+      "M0": {
+        "n": 59,
+        "rejected_n": 22,
+        "share": 0.372881
+      },
+      "M1": {
+        "n": 59,
+        "rejected_n": 0,
+        "share": 0.0
+      }
+    },
+    "median_step_distance": {
+      "M0": {
+        "n": 59,
+        "rejected_n": 0,
+        "share": 0.0
+      },
+      "M1": {
+        "n": 59,
+        "rejected_n": 56,
+        "share": 0.949153
+      }
+    },
+    "stationary_track_share": {
+      "M0": {
+        "n": 59,
+        "rejected_n": 12,
+        "share": 0.20339
+      },
+      "M1": {
+        "n": 59,
+        "rejected_n": 12,
+        "share": 0.20339
+      }
+    },
+    "zero_step_share": {
+      "M0": {
+        "n": 59,
+        "rejected_n": 24,
+        "share": 0.40678
+      },
+      "M1": {
+        "n": 59,
+        "rejected_n": 0,
+        "share": 0.0
+      }
+    }
+  },
+  "bars": {
+    "a0_rejection_max": 0.05,
+    "detection_min": 0.8,
+    "games_min": 10,
+    "sections_min": 30,
+    "strip_max_bytes": 204800,
+    "tick_ratio_band": [
+      0.9,
+      1.1
+    ]
+  },
+  "detection_any_gate": {
+    "A1_FROZEN": {
+      "M0": {
+        "n": 59,
+        "rejected_n": 59,
+        "share": 1.0
+      },
+      "M1": {
+        "n": 59,
+        "rejected_n": 59,
+        "share": 1.0
+      }
+    },
+    "A2_ID_MERGE": {
+      "M0": {
+        "n": 59,
+        "rejected_n": 59,
+        "share": 1.0
+      },
+      "M1": {
+        "n": 59,
+        "rejected_n": 59,
+        "share": 1.0
+      }
+    },
+    "A5_BALL_SHIFT": {
+      "M0": {
+        "n": 59,
+        "rejected_n": 27,
+        "share": 0.457627
+      },
+      "M1": {
+        "n": 59,
+        "rejected_n": 58,
+        "share": 0.983051
+      }
+    }
+  },
+  "fresh_set": {
+    "census_n": 923,
+    "eligible_n": 59,
+    "games_n": 14,
+    "meets_bar": true,
+    "selected_n": 59
+  },
+  "plants": {
+    "M0": {
+      "detected_n": 10,
+      "n": 10,
+      "share": 1.0
+    },
+    "M1": {
+      "detected_n": 10,
+      "n": 10,
+      "share": 1.0
+    }
+  },
+  "reach": {
+    "any_gate/M0": "1.000000",
+    "any_gate/M1": "1.000000",
+    "attempted_frames/M0": "0.000000",
+    "attempted_frames/M1": "0.000000",
+    "ball_detected_share/M0": "1.000000",
+    "ball_detected_share/M1": "1.000000",
+    "ball_valid_attempted_frames/M0": "1.000000",
+    "ball_valid_attempted_frames/M1": "1.000000",
+    "coordinate_contract/M0": "0.000000",
+    "coordinate_contract/M1": "0.000000",
+    "coverage_attempted_frames/M0": "0.000000",
+    "coverage_attempted_frames/M1": "0.000000",
+    "distinct_position_ratio/M0": "1.000000",
+    "distinct_position_ratio/M1": "1.000000",
+    "duplicate_frame_identity/M0": "1.000000",
+    "duplicate_frame_identity/M1": "1.000000",
+    "g325_wholly_off_frame/M0": "0.000000",
+    "g325_wholly_off_frame/M1": "0.000000",
+    "insufficient_data/M0": "1.000000",
+    "insufficient_data/M1": "1.000000",
+    "jump_max/M0": "0.000000",
+    "jump_max/M1": "0.000000",
+    "jump_p95/M0": "0.000000",
+    "jump_p95/M1": "0.000000",
+    "liveness_frozen/M0": "1.000000",
+    "liveness_frozen/M1": "1.000000",
+    "median_step_distance/M0": "1.000000",
+    "median_step_distance/M1": "1.000000",
+    "median_track_len/M0": "1.000000",
+    "median_track_len/M1": "1.000000",
+    "oob/M0": "0.000000",
+    "oob/M1": "0.000000",
+    "stationary_track_share/M0": "1.000000",
+    "stationary_track_share/M1": "1.000000",
+    "zero_step_share/M0": "1.000000",
+    "zero_step_share/M1": "1.000000"
+  },
+  "sha256": {
+    "fresh_sections.csv": "c3bc22c67bd39700640d510cd2a1b11d5f8331d7816a5b0a925aa757d618c0d2",
+    "gates_fresh.csv": "ef263a1f2437948befcd9151670d1a2fda1ee0d22cd3d8cb208325c5567d98fe",
+    "plants.csv": "f9fde9e38b339e5751d83c31bba8ce64a35b709632c934efd90c8fe49e431707",
+    "reach.csv": "efe8fcab3972708d57aee720759efb9311506a58769de73c753cd7485558cf64",
+    "ticks.csv": "cea4c897158f668179111d142a771b1b8c8685fd5b5d252f9e8cbf6337bd5327",
+    "v2.csv": "e3b664521478a66efa5c2c47a2c0a20f23dff50d770c00ea08713c8befc41418"
+  },
+  "strips_n": 10,
+  "ticks": {
+    "in_band": false,
+    "median_ratio": 0.153195,
+    "n": 59,
+    "with_ratio_n": 59
+  },
+  "v2": {
+    "a0_M1_v1": {
+      "n": 59,
+      "rejected_n": 56,
+      "share": 0.949153
+    },
+    "a0_M1_v2": {
+      "n": 59,
+      "rejected_n": 3,
+      "share": 0.050847
+    },
+    "detection_v2": {
+      "A1_FROZEN": {
+        "n": 59,
+        "rejected_n": 0,
+        "share": 0.0
+      },
+      "A2_ID_MERGE": {
+        "n": 59,
+        "rejected_n": 32,
+        "share": 0.542373
+      },
+      "A5_BALL_SHIFT": {
+        "n": 59,
+        "rejected_n": 3,
+        "share": 0.050847
+      }
+    },
+    "direction": "max",
+    "gate": "median_step_distance",
+    "threshold_v1": "8.408436",
+    "threshold_v2": 76.995468
+  }
+}
