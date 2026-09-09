@@ -1,0 +1,40 @@
+{
+ "aligned_section_count": 21,
+ "aligned_sections": [
+  "0KIBu1jQBL8_s1205",
+  "3eeaJz1PJTM_s2572",
+  "5PNHcMafoX8_s6820",
+  "7WBKNCu3NLU_s308",
+  "9sq-YMlIo9Q_s5730",
+  "N-eE7ZwTuno_s4965",
+  "UHJ90jJmCYw_s90",
+  "WeheQidCPXI_s3987",
+  "acb-6NGcNkDDK9o_s1336",
+  "acb-_a72WK36Its_s2662",
+  "cba-8R8t7v2N-zQ_s5538",
+  "eurocup-DyCvYr221F8_s5062",
+  "euroleague-HkwnT6jwtNs_s1276",
+  "fiba-A2W5ZjAgr7M_s6725",
+  "fiba-UG_eQNRDHiI_s3975",
+  "fiba-tFnl0NVn6FA_s90",
+  "jKoEJNdiRyI_s90",
+  "lnb-ouDVA0vM20g_s2668",
+  "ncaaw-PKm-w1NE8J0_s4670",
+  "ncaaw-yFLPyfhtpR4_s1303",
+  "wd08fix8q3Q_s5830"
+ ],
+ "aligned_video_ids": 21,
+ "bar_native_frames": 1.0,
+ "classified_share_of_ledger": 1.0,
+ "collision_count": 0,
+ "collisions": {},
+ "join_class_counts": {
+  "ALIGNED": 21,
+  "EXACT": 19,
+  "UNKNOWN": 844
+ },
+ "ledger_game_ids": 884,
+ "ledger_links": 884,
+ "unparseable_ids": 194,
+ "unreadable_tables": 79
+}

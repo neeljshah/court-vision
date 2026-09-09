@@ -1,0 +1,16 @@
+HUSo3PzP7lo_s231|HUSo3PzP7lo|*231-361|rc=1
+ERROR: [youtube] HUSo3PzP7lo: Requested format is not available. Use --list-formats for a list of available formats
+euroleague-krbfJW7sYUk_s4218|krbfJW7sYUk|*4218-4348|rc=1
+ERROR: [youtube] krbfJW7sYUk: Requested format is not available. Use --list-formats for a list of available formats
+fiba-fyp4VsE-8Fc_s5434|fyp4VsE-8Fc|*5434-5564|rc=1
+ERROR: [youtube] fyp4VsE-8Fc: Requested format is not available. Use --list-formats for a list of available formats
+gleague--PH9jt8lss0_s2304|-PH9jt8lss0|*2304-2434|rc=1
+ERROR: [youtube] -PH9jt8lss0: Requested format is not available. Use --list-formats for a list of available formats
+h6j_iLYRx8U_s6760|h6j_iLYRx8U|*6760-6890|rc=1
+ERROR: [youtube] h6j_iLYRx8U: Requested format is not available. Use --list-formats for a list of available formats
+nbl-Gem9Fip5SZQ_s642|Gem9Fip5SZQ|*642-772|rc=1
+ERROR: [youtube] Gem9Fip5SZQ: Requested format is not available. Use --list-formats for a list of available formats
+nbl-eawn8RbLFEM_s90|eawn8RbLFEM|*90-220|rc=1
+ERROR: [youtube] eawn8RbLFEM: Video unavailable
+tDpmV777-IQ_s5262|tDpmV777-IQ|*5262-5392|rc=1
+ERROR: [youtube] tDpmV777-IQ: Requested format is not available. Use --list-formats for a list of available formats
