@@ -1,0 +1,13 @@
+{
+ "state": "VALID",
+ "reason": "valid",
+ "reprojection_median_px": 1.6516,
+ "bar_px": 1.0,
+ "n_strokes": 48,
+ "n_val_strokes": 13,
+ "n_val_points": 508,
+ "n_hypotheses": 115976,
+ "forward_median_px": 5.874,
+ "inverse_median_px": 4.6486,
+ "verdict": "PARTIAL"
+}
