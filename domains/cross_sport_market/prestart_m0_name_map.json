@@ -1,0 +1,20 @@
+{
+  "mlb": {"aliases": {
+    "ana": "laa",
+    "ath": "oak",
+    "az": "ari",
+    "brs": "bos",
+    "chc": "cub",
+    "kc": "kan",
+    "los": "lad",
+    "sd": "sdg",
+    "sfg": "sfo",
+    "sf": "sfo",
+    "tb": "tam",
+    "wsh": "was"
+  }},
+  "nba": {"aliases": {}},
+  "soccer": {"aliases": {}},
+  "tennis": {"aliases": {}},
+  "wnba": {"aliases": {}}
+}
