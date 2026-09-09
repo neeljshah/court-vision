@@ -1,5 +1,12 @@
 # Tracking gap register -- 2026-09-01 (living; one gap = one lane)
 
+
+## G354 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G354 | basketball | Additive ball_x2d_px / ball_y2d_px at the producer (15 additive src lines; existing 7 columns unchanged). 28 of 30 fresh post-epoch clips readable and ALL 28 pass ratio <= 1.5 both axes (x 0.005376-1.223706, y 0.019753-1.389447); 2 absent stores and 8 pre-epoch starts excluded. 60 px re-join 22 higher / 5 lower / 1 undefined; pooled 6231/22545 px frames vs 3950/18209 old. Sealed 130 s smoke ran on pod CPU (7788 frames, 45 px detections). Tests 4 / 5 / 18+1 skip / 2. Fix 1c closes B3 (MISSING_TABLE filtered from judgment, bars unchanged), Q6 and B2; B5 deploy-before-verify stands as a fact. | docs/evidence/tracking/g354_ball_px_producer_fields_2026-09-08.md; g354_prereg_2026-09-08.md; g354_ball_px_producer_fields_2026-09-08/ (ball_px.patch, deploy.csv, smoke.csv, postdeploy.csv, rejoin.csv); G354_VERIFY_2026-09-08.md; G354_ADJUDICATION_2026-09-09.md | **CLOSED AT LIMIT (adjudicated) -- PARTIAL: licenses the px fields + checker; does not license ownership/coverage claims; carry-over: verify before deploy** |
+
 ## G357 result register
 
 | Gap | Sport | Finding | Evidence | Status |
