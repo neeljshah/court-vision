@@ -1,4 +1,4 @@
-GAP G360 | sport basketball | worktree aX | log cx_g360_court_presence_cue
+GAP G360 | sport basketball | worktree a3 | log cx_g360_court_presence_cue
 
 **VIEW-CLASS ROW, SUCCESSOR TO G350 (WIDE cue NOT VALIDATED) AND G352 (all rule-selected sections were
 press conferences / title cards). Codex PREPARES, a finisher MEASURES; the orchestrator runs blind model
