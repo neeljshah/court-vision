@@ -1,0 +1,6 @@
+{
+  "league": "FIBA", "native_unit": "m", "source_url": "https://assets.fiba.basketball/image/upload/documents-corporate-fiba-official-rules-2024-v10a.pdf", "accessed_date": "2026-09-08",
+  "source_title": "FIBA Official Basketball Rules 2024, Rule 2.5.7", "source_url_status": "VERIFIED: official FIBA PDF resolved 2026-09-08",
+  "length": 28.0, "width": 15.0, "center_circle_radius": 1.8, "lane_width": 4.9, "lane_depth": 5.8, "free_throw_circle_radius": 1.8,
+  "three_arc_radius": 6.75, "corner_sideline_offset": 0.9, "restricted_radius": 1.30, "basket_offset": 1.2, "basket_offset_meaning": "backboard face from baseline, m", "basket_center_ft": 5.167322835, "line_thickness": 0.05
+}

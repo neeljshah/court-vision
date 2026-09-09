@@ -1,0 +1,6 @@
+{
+  "league": "WNBA", "native_unit": "ft", "source_url": "https://www.wnba.com/wnba-rule-book", "accessed_date": "2026-09-08",
+  "length": 94.0, "width": 50.0, "center_circle_radius": 6.0, "lane_width": 16.0, "lane_depth": 19.0, "free_throw_circle_radius": 6.0,
+  "three_arc_radius": 22.1458333333, "corner_sideline_offset": 3.0, "restricted_radius": 4.0, "basket_offset": 4.0, "basket_offset_meaning": "backboard face from baseline, ft", "basket_center_ft": 5.25, "line_thickness": 0.1666666667,
+  "corner_sideline_offset_note": "fix 1b: 4.0 -> 3.0 (36 in per cited WNBA Rule 1, matching NBA's corner offset)"
+}

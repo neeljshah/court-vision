@@ -1,0 +1,7 @@
+arm,pair,nba_outright_wins,n,share
+a,nba_vs_wnba,000003,000200,0.015000
+a,nba_vs_fiba,000002,000200,0.010000
+a,nba_vs_ncaa,000000,000200,0.000000
+b,nba_vs_wnba,000003,000200,0.015000
+b,nba_vs_fiba,000000,000200,0.000000
+b,nba_vs_ncaa,000000,000200,0.000000
