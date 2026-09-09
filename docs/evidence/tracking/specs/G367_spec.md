@@ -1,4 +1,4 @@
-GAP G367 | sport basketball | worktree a15 | log cx_g367_init_symmetry
+GAP G367 | sport basketball | worktree a10 | log cx_g367_init_symmetry
 
 **INITIALISATION ROW, SUCCESSOR TO G365 (CLOSED AT LIMIT 2026-09-09 31ac311b: joint refinement with template-guided
 re-association brings three synthetic geometries from 1.65 / 2.02 / 1.80 px to 1.13 / 1.12 / 0.76 px, still above
