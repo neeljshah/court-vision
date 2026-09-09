@@ -1,0 +1,5 @@
+geometry,state,baseline_gap_px,refined_gap_px,improvement_px,bar_px,n_strokes,n_fit_strokes,n_val_strokes,n_val_points,n_supports,n_assigned,n_fev,status,base_val_forward_px,base_val_inverse_px,ref_val_forward_px,ref_val_inverse_px
+G1_SYNTH_QUAD,VALID,1.6516,1.1000,0.5517,1.0,48,35,13,508,1242,868,8,ok,5.8740,4.6486,5.9372,4.6486
+G2_WIDE,REFUSED,469.2083,469.3300,-0.1217,1.0,54,38,16,426,1449,1082,6,ok,12.4957,4.2343,13.6579,4.1079
+G3_TIGHT,REFUSED,2.0160,2.1991,-0.1832,1.0,41,28,13,390,891,678,6,ok,19.5143,5.0629,19.8654,4.6486
+G4_OFF_AXIS,REFUSED,1.8003,0.5992,1.2011,1.0,48,32,16,417,1280,1042,6,ok,20.4693,4.6486,19.8830,4.6486
