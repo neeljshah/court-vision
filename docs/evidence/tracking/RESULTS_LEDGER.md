@@ -683,3 +683,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 2026-09-08 | tracking | G342 | arm A true-win 0.000000 and wrong-winner 0.000000 for all four templates at n=200 each; B8/Q3/Q6 fail | REJECT (verified: codex-sol, contract A/B/Q)
 2026-09-08 | tracking | G342 | arm A true-win 0.000000 and wrong-winner 0.000000 for all four templates at n=200 each; B2/Q1/Q6 fail | REJECT (verified: codex-sol, contract A/B/Q)
 2026-09-08 | tracking | G342 | orchestrator adjudication (Fable): landed CLOSED AT LIMIT over the fix-1d REJECT (additivity and wording; measurement unchanged across three reruns: true share 0.000000 on 4/4 templates, abstention 320/320, ratios 0.88-0.95 vs the sealed 0.8 gate); constants corrected (FIBA 1.30 m, basket centre 5.25 ft, NCAA sideline 3.3854 ft); templates ASSUMED in G352 | CLOSED AT LIMIT (adjudicated; MEASURED -- BAR NOT MET)
+2026-09-09 | tracking | G357 | 31 windows / 14 base-video ids / 10 competitions; px/old in-radius 39/1860 vs 7/1860; eligible 29 vs 6; accepted 3 vs 1; shuffle delta 103.4pm, sealed bars not met | ACCEPT (verified: codex-sol, contract A/B/Q)
+

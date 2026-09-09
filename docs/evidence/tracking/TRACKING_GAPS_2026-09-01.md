@@ -1,5 +1,11 @@
 # Tracking gap register -- 2026-09-01 (living; one gap = one lane)
 
+## G357 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G357 | basketball | Premise remeasured 61/61 eligible (16 base-video ids, 11 competitions). Even-resampled seal covers 31 of 61 windows / 14 base-video ids / 10 competitions. Over 1,860 unique frame keys, px vs old: in-radius 39/1860 vs 7/1860, eligible pairs 29 vs 6, accepted ownership 3/1860 vs 1/1860; shuffle delta 103.4 per-mille. Both sealed bars unmet (29 < 100 pairs; 103.4 < 200 per-mille), so PARTIAL. Tests pass: px_join 3, fix1b_census 4, g349_survival 2, g344_shadow 3; no corrections. Lineage: fix 1a bca82687c REJECTed for a head slice; fix 1b resamples evenly (indices 0,2,...,60). | g357_ball_ownership_px_attempt2_2026-09-08.md; g357_ball_ownership_px_attempt2_2026-09-08/ (census.csv, sealed_windows_fix1b.csv, states_fix1b.csv, survival_fix1b.csv); g357_prereg_fix1b_2026-09-08.md; G357_VERIFY_2026-09-09.md; G357_VERIFY_2026-09-08.md | **ACCEPT -- PARTIAL result: licenses the px-field join as the measured ownership path on this 31-window sample and the recorded per-mille comparison; does not license any production wiring, any ownership-rate estimate beyond the observed 3/1860, or any separation claim, because 29 pairs is below the sealed 100-pair bar and 103.4 per-mille is below the sealed 200 per-mille bar.** |
+
 ## G236 result register
 
 | Gap | Sport | Finding | Evidence | Status |
