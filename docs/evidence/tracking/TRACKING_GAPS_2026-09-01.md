@@ -5,6 +5,12 @@
 
 
 
+## G361 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G361 | basketball | snapshot 892 rows / 884 ids; premise holds: 809 readable headers, 0 source bindings; EXACT 19 / ALIGNED 21 / UNKNOWN 844 (79 unreadable, 765 no bytes/alignment); 0 collisions / 690 parsed pairs, 194 unparseable ids apart; even sample 31/632 (k=21), 23 re-fetched, 21 proved <= 0.015 native frames, 8 unreachable (7 rung-270 gone, 1 unavailable); fix 1b: ALIGNED needs >= 30 landmarks (the 9-tick section -> UNKNOWN); 23/30 strips; 12 tests; lineage a4a17902 REJECT (floor + sentinel); NEW GAPs: pod headers unarchived, no 2-unparseable-id test, index.lock; deploy_manifest_sha256 UNKNOWN on all 884 | g361_source_identity_2026-09-09.md, g361_source_identity_2026-09-09/g361_prereg_2026-09-09.md, census.csv, sources.csv, refetch_sources.csv, refetch_failures.txt, ledger_links.csv, ledger_snapshot.jsonl, sections.csv, sample_census.csv, alignment.csv, summary.json, SHA256SUMS.txt, strips/ (23 jpg), G361_VERIFY_2026-09-09.md, G361_VERIFY_att1_REJECT_2026-09-09.md, scripts/platformkit/tracking/g361_source_identity.py, g361_strips.py, tests/platformkit/test_g361_source_identity.py, test_g361_strips.py | **ACCEPT WITH CORRECTIONS -- PARTIAL: licenses the identity classes and the re-fetch alignment method (id + offset + sha256 pinning; <= 1 native frame) for every successor join; does NOT license any archived table as EXACT beyond the 19; the >= 30 proved-sections bar stands unmet** |
+
 ## G359 result register
 
 | Gap | Sport | Finding | Evidence | Status |
