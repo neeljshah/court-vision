@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/wt/a14/jobs/20260908160304_1873641_22969/scripts/platformkit/tracking/g350_wide_cue_sheets.py", line 178, in <module>
+    main()
+  File "/workspace/wt/a14/jobs/20260908160304_1873641_22969/scripts/platformkit/tracking/g350_wide_cue_sheets.py", line 166, in main
+    candidates.extend(candidate_units(video))
+                      ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/wt/a14/jobs/20260908160304_1873641_22969/scripts/platformkit/tracking/g350_wide_cue_sheets.py", line 41, in candidate_units
+    records, cuts = route_frames(frames, indices)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/wt/a14/jobs/20260908160304_1873641_22969/scripts/platformkit/tracking/shot_router.py", line 130, in route_frames
+    fractions.append(_static_inlier_fraction(prior, current))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/wt/a14/jobs/20260908160304_1873641_22969/scripts/platformkit/tracking/shot_router.py", line 68, in _static_inlier_fraction
+    good = [a for a, b in pairs if a.distance < 0.75 * b.distance]
+                  ^^^^
+ValueError: not enough values to unpack (expected 2, got 1)
+sealed_rc=1

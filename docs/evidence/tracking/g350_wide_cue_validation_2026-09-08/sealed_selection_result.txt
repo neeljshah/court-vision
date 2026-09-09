@@ -1,0 +1,8 @@
+SEALED SELECTION UNAVAILABLE
+Traceback (most recent call last):
+  File "/workspace/wt/a14/jobs/20260908161106_1891846_16023/scripts/platformkit/tracking/_g350_finisher_tmp.py", line 46, in main
+    chosen = choose_units(candidates)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/wt/a14/jobs/20260908161106_1891846_16023/scripts/platformkit/tracking/g350_wide_cue_sheets.py", line 69, in choose_units
+    raise ValueError("sealed selection unavailable: %s" % missing)
+ValueError: sealed selection unavailable: {'CLOSEUP': 0, 'CROWD_UNKNOWN': 2}

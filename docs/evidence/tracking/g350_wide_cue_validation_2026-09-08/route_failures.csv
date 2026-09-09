@@ -1,0 +1,9 @@
+source,error_type,error
+basketball__acb-DCA1PAsKVJs_s90.mp4,ValueError,"not enough values to unpack (expected 2, got 1)"
+basketball__euroleague-krbfJW7sYUk_s6970.mp4,ValueError,"not enough values to unpack (expected 2, got 1)"
+basketball__fiba-CdynrenF-Kg_s5290.mp4,FileNotFoundError,[Errno 2] No such file or directory: 'data/footage_corpus/basketball__fiba-CdynrenF-Kg_s5290.mp4'
+basketball__fiba-fyp4VsE-8Fc_s90.mp4,ValueError,"not enough values to unpack (expected 2, got 1)"
+basketball__lnb-3_eNM4ikjzY_s1434.mp4,ValueError,"not enough values to unpack (expected 2, got 1)"
+nba__0022500594_s4500.mp4,ValueError,"not enough values to unpack (expected 2, got 1)"
+ncaa_basketball__UHJ90jJmCYw_s1199.mp4,FileNotFoundError,[Errno 2] No such file or directory: 'data/footage_corpus/ncaa_basketball__UHJ90jJmCYw_s1199.mp4'
+ncaa_basketball__UHJ90jJmCYw_s90.mp4,FileNotFoundError,[Errno 2] No such file or directory: 'data/footage_corpus/ncaa_basketball__UHJ90jJmCYw_s90.mp4'

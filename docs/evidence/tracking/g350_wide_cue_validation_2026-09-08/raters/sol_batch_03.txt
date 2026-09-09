@@ -1,0 +1,9 @@
+DISPATCHED run=1788907251846078300 tag=g350_rater_sol_03 wt=a14 at 2026-09-08T17:40:51-05:00
+STARTED pid=29028 birth=1788907251.851
+agent: ```text
+c95e72a3d3830b84ee425d74c38914734b02d81b610ef47e7fa93a7bec6d2a2c:000000,CROWD_GRAPHICS,interview shot rather than play
+d6fd6cb813ff7b7710d56a2aaf956b5305c0d69e6cf8d2c1ef45c31a6b3a3092:000001,CROWD_GRAPHICS,on-court performance rather than play
+```
+TURN_END turn.completed at 2026-09-08T17:40:59-05:00
+EXIT:0 gap=g350_rater_sol_03 at 2026-09-08T17:41:00-05:00
+DRAINED

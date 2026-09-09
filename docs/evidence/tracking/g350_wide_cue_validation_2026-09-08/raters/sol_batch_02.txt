@@ -1,0 +1,17 @@
+DISPATCHED run=1788907221263259800 tag=g350_rater_sol_02 wt=a14 at 2026-09-08T17:40:21-05:00
+STARTED pid=21668 birth=1788907221.268
+agent: ```text
+4c4a02a8c937bb335284477bc4c5bed0175236091d51106511cb72e4ab3798ea:000003,CLOSEUP,Player fills frame with no usable court structure
+648e9547ccaec03a174a68f2f7748e239b75100decce2caadf60f12c423dee2d:000004,CROWD_GRAPHICS,Vanderbilt logo interstitial
+7a781892a9e8c4739112dd218c79a2f2e500d6fce085e53e783d40d44175d82c:000006,USABLE_WIDE,Wide court view with visible playing surface
+9e89aa81d1317c21e0210f2369d5316232e9028caef5379f85669d425a832adc:000005,USABLE_WIDE,Wide view of play with clear court markings
+a32cefcd269c30ddf3a6dd9d6e6dc8d585bf2214d9e8c7715f591c9f8886d250:000000,CLOSEUP,Tight player view with no usable court structure
+a32cefcd269c30ddf3a6dd9d6e6dc8d585bf2214d9e8c7715f591c9f8886d250:000003,CROWD_GRAPHICS,Dark arena interstitial with no view of play
+a97146286489f263e66da6183eb8044183bc86eb020dede38630ef0809dba738:000003,CROWD_GRAPHICS,Crowd reaction shot
+a97146286489f263e66da6183eb8044183bc86eb020dede38630ef0809dba738:000008,CROWD_GRAPHICS,Black interstitial frames
+b5cac62e947864dad1786fd27f86be46c8accd5058b3ca94a29dc26dddaea417:000001,CLOSEUP,Tight player lineup view without usable court structure
+b5cac62e947864dad1786fd27f86be46c8accd5058b3ca94a29dc26dddaea417:000003,CROWD_GRAPHICS,Player introduction graphics
+```
+TURN_END turn.completed at 2026-09-08T17:40:43-05:00
+EXIT:0 gap=g350_rater_sol_02 at 2026-09-08T17:40:43-05:00
+DRAINED

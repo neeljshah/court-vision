@@ -1,0 +1,3 @@
+unit_id,label,reason,adjudicator
+a97146286489f263e66da6183eb8044183bc86eb020dede38630ef0809dba738:000008,UNKNOWN,all four sampled frames are black so the view class is not determinable,claude-opus
+b5cac62e947864dad1786fd27f86be46c8accd5058b3ca94a29dc26dddaea417:000001,CROWD_GRAPHICS,pre-game ceremony lineup on court; arena presentation rather than a view of play,claude-opus

@@ -1,0 +1,17 @@
+DISPATCHED run=1788907190798834900 tag=g350_rater_sol_01 wt=a14 at 2026-09-08T17:39:50-05:00
+STARTED pid=30852 birth=1788907190.804
+agent: ```text
+025dba74b2b4a83a56808a3f6f69c97bf498d61c619ed264e304b20360dae500:000006,CLOSEUP,players fill the frame
+03e66b6b172a494f0df5857a9394bbeec15c65868a6db15bcaae03cf9322b997:000010,CLOSEUP,bench players fill the frame
+03e66b6b172a494f0df5857a9394bbeec15c65868a6db15bcaae03cf9322b997:000017,CROWD_GRAPHICS,commercial interstitial content
+03e66b6b172a494f0df5857a9394bbeec15c65868a6db15bcaae03cf9322b997:000027,CROWD_GRAPHICS,broadcast promotion graphic
+03e66b6b172a494f0df5857a9394bbeec15c65868a6db15bcaae03cf9322b997:000028,CROWD_GRAPHICS,black interstitial frames
+079aa75b62764c3a1ecb7951b36a53f8c82e5e9b3c5e450ce488c4529a1d8852:000012,CLOSEUP,players fill the frame
+0aa32b84ea1ee865697b955576590076e687fd67bf8690ba1b2c19a7440aad88:000000,CROWD_GRAPHICS,arena presentation content
+0ec016b7608ad7606e1dbf6d1695692efd455df5079bcdf8c94d97f6bacd1608:000002,CLOSEUP,player fills the frame
+2ac4360d250a9a4cae7ffec3726b691acf56f32c8df36e9fbf4f8a73de1ba534:000010,CROWD_GRAPHICS,broadcast transition graphic
+2ac4360d250a9a4cae7ffec3726b691acf56f32c8df36e9fbf4f8a73de1ba534:000024,CLOSEUP,ball and player fill the frame
+```
+TURN_END turn.completed at 2026-09-08T17:40:12-05:00
+EXIT:0 gap=g350_rater_sol_01 at 2026-09-08T17:40:12-05:00
+DRAINED
