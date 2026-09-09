@@ -3,6 +3,13 @@
 
 
 
+
+## G362 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G362 | basketball | sealed known-H gate exit 1, gap 1.6516 px vs 1.0 (fwd median 5.874 px, inv 4.6486 px, 48 strokes, 13 held-out, 508 supports, 115,976 hypotheses); premise reproduced: G352 84/84 ARM CELLS accepted (60 A + 24 B; not frames) and 0/6 positive sections; diagnostic: exact lines through the identical 4-corner solve give 0.000 px, so the floor is LSD grouping + fitLine noise amplified by extrapolation with no joint refinement; broadcast stages not run; 14 + 1 tests; NEW GAPs: three builder geometry values uncommitted, 398-point template has 382 unique coords, master lacked the test, index.lock note | g362_registration_refusal_2026-09-09.md, g362_registration_refusal_2026-09-09/g362_prereg_2026-09-09.md, g362_registration_refusal_2026-09-09/known_h.json, G362_VERIFY_2026-09-09.md, scripts/platformkit/tracking/g362_strokes.py, g362_fit_validate.py, g362_controls.py, g362_synth.py, tests/platformkit/test_g362_registration_refusal.py | **ACCEPT -- PARTIAL: licenses the FIT/VALIDATION partition design, the four explicit states and the known-H harness; licenses NO broadcast registration claim; successor G365 (joint refinement, allocated 3bf60e60) is the prerequisite** |
+
 ## G358 result register
 
 | Gap | Sport | Finding | Evidence | Status |
