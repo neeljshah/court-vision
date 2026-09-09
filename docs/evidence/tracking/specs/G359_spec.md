@@ -1,4 +1,4 @@
-GAP G359 | sport all (basketball fixtures first) | worktree aX | log cx_g359_held_position_vs_threshold
+GAP G359 | sport all (basketball fixtures first) | worktree a10 | log cx_g359_held_position_vs_threshold
 
 **HARNESS ROW, SUCCESSOR TO G358 (PARTIAL 2026-09-08: 8 of 11 gates clear at full length; three sit inside the
 live distribution). Codex PREPARES, a finisher MEASURES.** `src/`, `kernel/`, `api/` and `intel/` are READ and
