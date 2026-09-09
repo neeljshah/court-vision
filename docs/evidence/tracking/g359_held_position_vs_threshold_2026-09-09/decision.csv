@@ -1,0 +1,5 @@
+gate,duration,n_paired,clear_share_M0,clear_share_M1,reject_share_M1,clear_permille_M0,clear_permille_M1,sealed_threshold,statistic_median_M0,statistic_median_M1,candidate_v2_gate_name,candidate_v2_quantile,candidate_v2_threshold,classification
+zero_step_share,FULL,000034,0.705882,1.000000,0.000000,0706,1000,0.883869,0.750378,0.000000,,,,PRODUCTION_SCHEMA_ARTIFACT
+median_step_distance,FULL,000034,0.941176,0.088235,0.911765,0941,0088,8.408436,0.000000,16.567870,median_step_distance_v2,0.95,76.995468,THRESHOLD_MISCALIBRATED
+distinct_position_ratio,FULL,000034,0.735294,1.000000,0.000000,0735,1000,0.108915,0.224620,0.975900,,,,PRODUCTION_SCHEMA_ARTIFACT
+stationary_track_share,FULL,000034,0.911765,0.911765,0.088235,0912,0912,0.149,0.000000,0.000000,,,,UNDECIDED
