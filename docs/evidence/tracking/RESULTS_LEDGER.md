@@ -718,3 +718,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-10 | tracking | G377 | landed CLOSED AT LIMIT (adjudicated): 1,391 named / 1,378 restored / 1,377 verified / 13 missing; recomputations G363 9/9, G364 12/12, G370 7/7, G367 8/10; eye 6 raster + 2 svg (G370 svg-only); two REJECT cycles recorded, fix-1b additivity break reverted | CLOSED AT LIMIT (adjudicated; codex-sol REJECT x2 verbatim)
 
+2026-09-10 | tracking | G372 | landed PARTIAL (adjudicated): phase A ACCEPT attribution 122/122 (vol_guard.py); phase B overlay 61-min window: 43/43 joined agreement, 43/81 coverage per claim attempt (xb re-claim), replay 27/39 NOT VALIDATED; repeat-row wave share 1.000 post-restart -> overlay REVERTED 22:15Z, post-revert 26 rows / 0 repeats; three verify memos verbatim | PARTIAL (adjudicated; codex-sol att1 REJECT, phase A ACCEPT, phase B REJECT verbatim)
+

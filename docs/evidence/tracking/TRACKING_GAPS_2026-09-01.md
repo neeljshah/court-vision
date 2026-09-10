@@ -13,6 +13,13 @@
 
 
 
+
+## G372 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G372 | all (basketball fixtures first) | phase A ACCEPT (codex-sol at c25ee30aa): attribution 122/122 -- vol_guard.py (probe2000_failed + size rule) deleted the fresh sources; scratch controls PASS; PROPOSED claim-time identity sidecar (immutable xb write, streamed SHA-256, 11 fields). Phase B (authorized deploy-tree overlay e05ea5b6, one restart 19:34Z, 61-min window): 43 unique sections / 13 videos bound; join agreement 43/43 = 1.000 over joined and 43/81 = 0.530864 over claim attempts (the xb write cannot bind a re-claim: structural, not sampling); paired replay 27/39 pairs NOT VALIDATED (12 pruned by the quota guard; ratio 1.0194 below bar); weight digest empty; test_g328 regressed 1/2; repeat-or-duplicate ledger share 1.000 in the 30-120 min post-restart windows vs 0.181 before -> overlay REVERTED 22:15Z (daemon restored to 9747d9a0); post-revert 26 rows / 0 repeats in 25 min (revert-and-observe, uncontrolled); verify: att1 REJECT (B7 head slice), phase A ACCEPT, phase B REJECT (denominator, replay n) | g372_inline_source_pinning_2026-09-10.md; g372_inline_source_pinning_2026-09-10_phase_a.md; g372_inline_source_pinning_2026-09-10/{prereg + A1-A3, attribution.csv, deleters.csv, sidecars*.csv, pins*.csv, join*.csv, before/after_window.csv, replay_pairs.csv, summary*.json, deploy_log.txt, PROPOSED_g372_track_daemon_sidecar.diff}; G372_ADJUDICATION_2026-09-10.md; G372_VERIFY_att1_REJECT_2026-09-10.md; G372_VERIFY_phaseA_ACCEPT_2026-09-10.md; G372_VERIFY_phaseB_REJECT_2026-09-10.md | **PARTIAL (adjudicated) -- source deleter attributed; the claim-time identity hook works for unique sections; the overlay is withdrawn; successor G380 owes an idempotent bind, weight-digest fix, full exception scope, _PENDING fix, test_g328 repair and a controlled attribution of the re-claim wave before any re-deploy** |
+
 ## G377 result register
 
 | Gap | Sport | Finding | Evidence | Status |
