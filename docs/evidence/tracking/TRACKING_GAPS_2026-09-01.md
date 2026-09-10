@@ -10,6 +10,13 @@
 
 
 
+
+## G374 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G374 | basketball | premise TRUE (head a2a08eaa..., threshold 0.30, pool 360 = 224 COURT / 122 NON_COURT / 14 ABSTAIN, dev/val games disjoint); all 30 pinned validation sources were gone from the pod and were re-fetched byte-identical under amendment 1 (sealed alone), 0 excluded; sealed draw 300 = 185 COURT / 101 NON_COURT / 14 ABSTAIN over 30 sections / 15 games / 8 competitions (60 excluded keys listed); blind raters terra+sol 300/300, agreement 0.976667, kappa 0.954314, 7 adjudicated; precision 0.962162 Wilson [0.923969, 0.981553] vs 0.90 and recall 0.967391 [0.930695, 0.984971] vs 0.80 both met on the lower bound; abstention 47 per mille; per-stratum >= 60 bar false at ABSTAIN 14 (not lowered); tests 6 + 1; fix 1b: bar scope (Q3) + display ranges | g374_court_presence_validation_2026-09-10.md; g374_court_presence_validation_2026-09-10/{prereg, amendment, validation.csv, excluded.csv, ratings.csv, reference.csv, predictions.csv, confusion.csv, summary.json, sheets/, eye_check/}; G374_VERIFY_2026-09-10.md; G374_VERIFY_att1_REJECT_2026-09-10.md | **PARTIAL -- the frozen court-presence head VALIDATES on both metric bars (first validated model of the program); the abstention stratum cannot reach 60 at threshold 0.30; licenses the head as a presence cascade input for broadcast geometry, not as a registration result** |
+
 ## G364 result register
 
 | Gap | Sport | Finding | Evidence | Status |

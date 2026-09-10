@@ -712,3 +712,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-10 | tracking | G364 | landed PARTIAL (phase 1): dev reference 240 sheets kappa 0.916186 (125/74/40/1); head frozen 0.30; dev NON_COURT reach 479 per mille; validation quota unsatisfiable at 14/360 abstentions -> nothing scored; GPU 2.32 min | PARTIAL (verified: codex-sol ACCEPT, contract A/B/Q)
 
+2026-09-10 | tracking | G374 | landed PARTIAL: frozen G364 head validated -- precision 0.962162 (Wilson lower 0.923969 vs 0.90), recall 0.967391 (lower 0.930695 vs 0.80), kappa 0.954314 on 300 blind held-out frames (185/101/14); ABSTAIN stratum 14/60 unmet; 30 sources restored byte-identical | PARTIAL (verified: codex-sol ACCEPT, contract A/B/Q)
+
