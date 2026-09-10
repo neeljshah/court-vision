@@ -8,6 +8,13 @@
 
 
 
+
+## G370 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G370 | all (basketball fixtures first) | premise TRUE (A0/M1 artifact-gate rejection 0/93; stationary 12/59 = 0.203390; tick-ratio median 0.153195; explicit provenance 0/34 sealed; producer observation column constant); sealed 34 (17 games) 45,842/45,842 declared ticks; fresh 69 sections/16 games (G366's set lost with the 09-09 pod; resealed from an immutable snapshot; 25/118 pinned tables mutated live) 89,655/89,655; 0 labelled observed; terra+sol ratings 69/69 agree, 51 usable, rejection 0/51 (bar <= 0.05 met); plants FROZEN 0/30, COAST 0/21, ID_MERGE 3/30 (bar 0.80 unmet); exports byte-identical; 30 strips; tests 15+1 | g370_admission_v0_2026-09-09.md; g370_admission_v0_2026-09-09/{prereg, admission_rows.parquet, decisions.csv, denominator_census.csv, controls.csv, plants.csv, sealed_plants.csv, ratings*.csv, fresh_sections.csv, export_hashes.json, strips/}; G370_VERIFY_2026-09-10.md | **PARTIAL -- v0 schema + scorer + controls stand; POSITION and GEOMETRY masks stay DISABLED (plant bar unreachable under M1-only scoring; every section image-only); licenses no admission decision on positions** |
+
 ## G368 result register
 
 | Gap | Sport | Finding | Evidence | Status |

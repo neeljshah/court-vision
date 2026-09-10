@@ -704,3 +704,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-10 | tracking | G368 | landed CLOSED AT LIMIT (adjudicated): motion share median 0.279919 (44 replacement fresh sections) / 0.507295 (G358 34); held steps attributed 1.000000 (CLAMP_OR_SUBPIXEL 0.584961 branch-unresolved, COAST_LOST 0.412200); controls exact; M1 removes held tails; PROPOSED position_source; strip TOTAL 364333 > 204800 | CLOSED AT LIMIT (verified: codex-sol x2, contract A/B/Q)
 
+2026-09-10 | tracking teacher admission | G370 | landed PARTIAL: 135497/135497 declared frames represented; 0 observed labels; controls 0/51; fresh plants 0/30, 0/21, 3/30; both masks disabled; wall-time line corrected | PARTIAL (verified: codex-sol, contract A/B/Q)
+
