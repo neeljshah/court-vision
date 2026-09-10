@@ -1,0 +1,1 @@
+selected=300 court=185 non_court=101 abstain=14 excluded=60

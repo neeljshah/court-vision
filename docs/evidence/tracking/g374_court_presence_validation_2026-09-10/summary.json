@@ -1,0 +1,23 @@
+{
+  "abstention_share": 0.04666666666666667,
+  "bar_predicted_strata": false,
+  "bar_sample": false,
+  "kappa": 0.954314058216943,
+  "n": 300,
+  "precision": 0.9621621621621622,
+  "precision_wilson": [
+    0.9239689243939772,
+    0.9815525700272524
+  ],
+  "predicted_counts": {
+    "ABSTAIN": 14,
+    "COURT": 185,
+    "NON_COURT": 101
+  },
+  "recall": 0.967391304347826,
+  "recall_wilson": [
+    0.9306946838489565,
+    0.9849711179386256
+  ],
+  "unknown_share": 0.0
+}
