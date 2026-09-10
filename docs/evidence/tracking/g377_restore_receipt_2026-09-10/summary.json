@@ -1,0 +1,129 @@
+{
+ "closures": {
+  "G363": {
+   "bytes_restored": 161814683,
+   "decision_fields_agree": [
+    9,
+    9
+   ],
+   "files_named": 1039,
+   "manifest_tokens": 1057,
+   "memo_digests_agree": [
+    9,
+    9
+   ],
+   "mismatch": 0,
+   "missing": 2,
+   "present_on_pod": 1036,
+   "restored_off_pod": 1037,
+   "verdict": "DONE",
+   "verified": 1037
+  },
+  "G364": {
+   "bytes_restored": 13597319,
+   "decision_fields_agree": [
+    12,
+    12
+   ],
+   "files_named": 278,
+   "manifest_tokens": 289,
+   "memo_digests_agree": [
+    17,
+    17
+   ],
+   "mismatch": 1,
+   "missing": 5,
+   "present_on_pod": 273,
+   "restored_off_pod": 273,
+   "verdict": "PARTIAL",
+   "verified": 272
+  },
+  "G367": {
+   "bytes_restored": 148690,
+   "decision_fields_agree": [
+    8,
+    10
+   ],
+   "files_named": 23,
+   "manifest_tokens": 38,
+   "memo_digests_agree": [
+    2,
+    5
+   ],
+   "mismatch": 0,
+   "missing": 2,
+   "present_on_pod": 20,
+   "restored_off_pod": 21,
+   "verdict": "PARTIAL",
+   "verified": 21
+  },
+  "G370": {
+   "bytes_restored": 1446467,
+   "decision_fields_agree": [
+    7,
+    7
+   ],
+   "files_named": 51,
+   "manifest_tokens": 81,
+   "memo_digests_agree": [
+    0,
+    0
+   ],
+   "mismatch": 0,
+   "missing": 4,
+   "present_on_pod": 47,
+   "restored_off_pod": 47,
+   "verdict": "DONE",
+   "verified": 47
+  }
+ },
+ "date": "2026-09-10",
+ "environment": {
+  "cv2": "4.11.0",
+  "machine": "PC receiver, CPU only",
+  "numpy": "2.2.6",
+  "pod": "213.192.2.120:40117 read only",
+  "python": "3.10.0"
+ },
+ "eye": {
+  "disclosed_supplement": 2,
+  "files": 8,
+  "raster_files": 6,
+  "sealed_manifest_draw": 6,
+  "svg_files": 2
+ },
+ "prereg_seal": "627133fcc95cfa9fcfc851ec95df9d4e8c19af46684613155ee16e1cebb5b696",
+ "rails": {
+  "bars_moved": 0,
+  "deletions": 0,
+  "flags_flipped": 0,
+  "network_refetches": 0,
+  "pod_writes": 0,
+  "registry_writes": 0,
+  "replenished_held_out_executions": 0
+ },
+ "row": "G377",
+ "totals": {
+  "bytes_restored": 177007159,
+  "decision_rows_agree": [
+   64,
+   69
+  ],
+  "files_named": 1391,
+  "mismatch": 1,
+  "missing": 13,
+  "non_file_tokens": {
+   "DIRECTORY_REF": 21,
+   "NOT_A_PATH": 39,
+   "TEMPLATE_FRAGMENT": 14
+  },
+  "restored": 1378,
+  "sources": {
+   "S1": 1375,
+   "S4": 1,
+   "S6": 2
+  },
+  "verified": 1377
+ },
+ "verdict": "PARTIAL"
+}

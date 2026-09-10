@@ -1,0 +1,14 @@
+closure,path,role,status,required_by,searched,disables
+G363,/workspace/wt/a7,artifact,POD_ABSOLUTE,docs/evidence/tracking/g363_ball_coverage_2026-09-09.md:4,S1-S6,"G363 (memo-only reference, no reader opens it)"
+G363,frames_scored.csv,prediction,UNRESOLVED_PATHLIKE,docs/evidence/tracking/g363_ball_coverage_2026-09-09.md:9,S1-S6,"G363 (memo-only reference, no reader opens it)"
+G364,/workspace/deploy,artifact,POD_ABSOLUTE,docs/evidence/tracking/g364_learned_court_presence_2026-09-09.md:5,S1-S6,"G364 (memo-only reference, no reader opens it)"
+G364,/workspace/g364_scratch/ledger_snapshot.jsonl,ledger,POD_ABSOLUTE,docs/evidence/tracking/g364_learned_court_presence_2026-09-09.md:14,S1-S6,"G364 (memo-only reference, no reader opens it)"
+G364,/workspace/g364_scratch/weights/resnet18-f37072fd.pth,weights,POD_ABSOLUTE,docs/evidence/tracking/g364_learned_court_presence_2026-09-09.md:18,S1-S6,"G364 (memo-only reference, no reader opens it)"
+G364,/workspace/nba-ai-system,artifact,POD_ABSOLUTE,docs/evidence/tracking/g364_learned_court_presence_2026-09-09.md:5,S1-S6,"G364 (memo-only reference, no reader opens it)"
+G364,/workspace/wt/a13,artifact,POD_ABSOLUTE,docs/evidence/tracking/g364_learned_court_presence_2026-09-09.md:5,S1-S6,"G364 (memo-only reference, no reader opens it)"
+G367,/workspace/wt/a10,artifact,POD_ABSOLUTE,docs/evidence/tracking/g367_init_symmetry_2026-09-09.md:7,S1-S6,"G367 (memo-only reference, no reader opens it)"
+G367,sweep.csv,artifact,UNRESOLVED_PATHLIKE,scripts/platformkit/tracking/g367_sweep.py:81,S1-S6,G367 (g367_sweep.py)
+G370,/workspace/g370_snapshot,artifact,POD_ABSOLUTE,docs/evidence/tracking/g370_admission_v0_2026-09-09.md:31,S1-S6,"G370 (memo-only reference, no reader opens it)"
+G370,/workspace/wt/a18,artifact,POD_ABSOLUTE,docs/evidence/tracking/g370_admission_v0_2026-09-09.md:6,S1-S6,"G370 (memo-only reference, no reader opens it)"
+G370,ball_tracking.csv,artifact,UNRESOLVED_PATHLIKE,scripts/platformkit/tracking/g370_manifest.py:43|scripts/platformkit/tracking/g370_scorer.py:138,S1-S6,"G370 (g370_manifest.py, g370_scorer.py)"
+G370,tracking_data.csv,artifact,UNRESOLVED_PATHLIKE,scripts/platformkit/tracking/g370_manifest.py:42|scripts/platformkit/tracking/g370_premise.py:26|scripts/platformkit/tracking/g370_scorer.py:138,S1-S6,"G370 (g370_manifest.py, g370_premise.py, g370_scorer.py)"
