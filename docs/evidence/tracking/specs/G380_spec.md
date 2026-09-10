@@ -1,4 +1,4 @@
-GAP G380 | sport basketball first | worktree aXX | log cx_g379_producer_provenance
+GAP G380 | sport basketball first | worktree aXX | log cx_g380_producer_provenance
 
 **PRODUCER-PROVENANCE ROW (astra next-rows review 2026-09-10 rank 1: "the highest-leverage justified immediate DEPLOYED change"),
 SUCCESSOR TO G368 (CLOSED AT LIMIT: motion share median 0.279919 over 44 sections, coast_row_share 0.382881, 0.584961 of held steps
@@ -54,11 +54,11 @@ ACCEPTANCE RULE:
   eye check     = REQUIRED: 30 evenly spaced overlays with labels coloured by source, incl. HELD and CLAMP runs
   must not move = weights, coordinates, clamps, cadence, thresholds, flags, every existing column; G370's masks stay as landed
   verdict       = **DONE** / **PARTIAL** (name the clause) / **PREMISE FALSE**; the landing is ADJUDICATED (deploy under authorization)
-EVIDENCE: `docs/evidence/tracking/g379_producer_provenance_2026-09-10.md` (<= 60 lines; VERDICT line 1; NOT VERIFIED; wall time;
-SHA-256s incl. the PROPOSED diff and the deployed-file hashes) + `.../g379_producer_provenance_2026-09-10/{prereg,trace.csv,
+EVIDENCE: `docs/evidence/tracking/g380_producer_provenance_2026-09-10.md` (<= 60 lines; VERDICT line 1; NOT VERIFIED; wall time;
+SHA-256s incl. the PROPOSED diff and the deployed-file hashes) + `.../g380_producer_provenance_2026-09-10/{prereg,trace.csv,
 per_tick.csv,reader_survey.csv,paired_runtime.csv,live_receipts.csv,hash_receipt.json,summary.json,overlays/,PROPOSED_*.diff}`.
 **ADD ONE RESULTS_LEDGER.md ROW IN THE SAME COMMIT.**
-TEST: `tests/platformkit/test_g379_producer_provenance.py` alone (each branch control stamps its label; a missing event is UNKNOWN;
+TEST: `tests/platformkit/test_g380_producer_provenance.py` alone (each branch control stamps its label; a missing event is UNKNOWN;
 receipt equals trace on a fixture; the seal). **NEVER a full pytest.** Every new file <= 300 lines. Vocabulary follows contract Q6;
 automated scan required. Prereg sealed as its OWN commit first. ASCII stdout. **NEVER PARK.**
 
