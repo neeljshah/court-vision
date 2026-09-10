@@ -1,0 +1,3 @@
+section_id,video_id,offset_s,competition,game_id,sport,status,source_resolution,duration_s,eligible,ineligible_reason,absent_reason
+nbl-eawn8RbLFEM_s90,eawn8RbLFEM,90,basketball/nbl,basketball:eawn8RbLFEM,basketball,tracked,1920x1080,131.900,1,,fetch_failed
+nbl-eawn8RbLFEM_s368,eawn8RbLFEM,368,basketball/nbl,basketball:eawn8RbLFEM,basketball,tracked,1920x1080,135.380,1,,fetch_failed

@@ -1,0 +1,5 @@
+section_id,video_id,offset_s,competition,game_id,sport,status,source_resolution,duration_s,eligible,ineligible_reason,absent_reason
+gleague-i5xCE9szE9E_s90,i5xCE9szE9E,90,basketball/gleague,basketball:i5xCE9szE9E,basketball,tracked,1920x1080,133.934,1,,fetch_failed
+5TiTjV1JPW8_s60,5TiTjV1JPW8,60,nba,nba:5TiTjV1JPW8,nba,tracked,1920x1080,130.063,1,,fetch_failed
+gleague-i5xCE9szE9E_s244,i5xCE9szE9E,244,basketball/gleague,basketball:i5xCE9szE9E,basketball,tracked,1920x1080,131.348,1,,fetch_failed
+5TiTjV1JPW8_s401,5TiTjV1JPW8,401,nba,nba:5TiTjV1JPW8,nba,tracked,1920x1080,130.731,1,,fetch_failed
