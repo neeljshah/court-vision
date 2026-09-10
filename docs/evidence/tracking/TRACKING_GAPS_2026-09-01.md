@@ -14,6 +14,13 @@
 
 
 
+
+## G375 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G375 | all (basketball ledger first) | census 1,031 unique ids / 1,243 snapshot lines / 14 source prefixes (basketball 436, nba 308, ncaa_basketball 217, wnba 70); sealed even sample 300 ids, 281 rated (19 unavailable upstream, named in absent.csv); blind terra + sol ratings at the sealed midpoint tick, kappa 0.849806 (agreement 0.921708), adjudicated; NON-PLAY impurity 127/281 = 452 per mille [395, 510]; SPORT impurity (OTHER_SPORT + NON_SPORT) 7/281 = 25 per mille [12, 51] -- all 6 OTHER_SPORT are LaLiga soccer from ONE video (oW8psSa2hf4) that is the entire bleague stratum (6/6), 1 NON_SPORT interview, the remaining strata 4 per mille [1, 20]; 127/127 impure sections attributed (36 named feeder rows, 91 UNKNOWN); 0 sections deleted, 0 thresholds moved; PROPOSED sport-purity gate (evidence dir only); verify: att1 REJECT (B2 reader dropped .txt archives), fix 1b ACCEPT | g375_corpus_sport_purity_2026-09-10.md; g375_corpus_sport_purity_2026-09-10/{prereg, census.csv, sample.csv, impurity_table.csv, ratings.csv, labels.csv, attribution.csv, absent.csv, PROPOSED_sport_purity_gate.md, summary.json, raters/, eyecheck_impure.jpg, eyecheck_play_20.jpg}; G375_VERIFY_att1_REJECT_2026-09-10.md; G375_VERIFY_fix1b_ACCEPT_2026-09-10.md | **PARTIAL (measured) -- the corpus is 975 per mille basketball at section midpoints but 452 per mille non-play; one soccer video sits in the ledger under a basketball label (deny-listed for the feeder; quarantine or relabel is a user decision); the 19 unavailable sealed sections keep the 300-rated clause unmet** |
+
 ## G372 result register
 
 | Gap | Sport | Finding | Evidence | Status |

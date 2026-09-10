@@ -720,3 +720,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-10 | tracking | G372 | landed PARTIAL (adjudicated): phase A ACCEPT attribution 122/122 (vol_guard.py); phase B overlay 61-min window: 43/43 joined agreement, 43/81 coverage per claim attempt (xb re-claim), replay 27/39 NOT VALIDATED; repeat-row wave share 1.000 post-restart -> overlay REVERTED 22:15Z, post-revert 26 rows / 0 repeats; three verify memos verbatim | PARTIAL (adjudicated; codex-sol att1 REJECT, phase A ACCEPT, phase B REJECT verbatim)
 
+2026-09-10 | tracking | G375 | landed PARTIAL (measured): 281/300 sealed sections rated (19 unavailable upstream, named); non-play impurity 452 per mille [395,510]; sport impurity 7/281 = 25 per mille [12,51] (6 soccer frames from one bleague video oW8psSa2hf4 + 1 interview); kappa 0.849806; 127/127 attributed or UNKNOWN; 0 deletions, 0 thresholds moved; PROPOSED purity gate | PARTIAL (codex-sol att1 REJECT, fix 1b ACCEPT verbatim)
+
