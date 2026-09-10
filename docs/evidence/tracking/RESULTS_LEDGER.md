@@ -708,3 +708,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-10 | tracking | G367 | landed PARTIAL: reconstruction reproduces the lost run to <= 1.2e-4 px (1.128714 / 1.065403 / 0.715832 / 0.763620 modulo); premise TRUE; 4/4 AMBIGUOUS; orientation kappa 0.824485, left 12 / right 16 / unknown 26; sweep/overlays/cues NOT VERIFIED; verdict word + 3 digests corrected | PARTIAL (verified: codex-sol, contract A/B/Q)
 
+2026-09-10 | tracking | G371 | landed DONE: truth-free modulo 1.128714 / 1.065403 / 0.715846 / 0.763620 px; 357 / 2 / 1 refusal statuses and 0 accepts over 360 cells; planted refusal 30/30; invariance exact; sensitivity n=62730 median budget met 4/4, p95 unmet 4/4; four corrections applied | DONE (verified: codex-sol, contract A/B/Q)
+

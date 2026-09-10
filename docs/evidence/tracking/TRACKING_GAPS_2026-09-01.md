@@ -9,6 +9,12 @@
 
 
 
+## G371 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G371 | basketball | premise TRUE (g367_search ranks by the truth-modulo gap; all candidates one symmetry class); truth-free modulo 1.128714 / 1.065403 (mirror_x) / 0.715846 / 0.763620 px; geometry NO_DISTINCT_RUNNER_UP 4/4, orientation UNKNOWN 4/4; sweep 360 cells: 357 NO_DISTINCT_RUNNER_UP / 2 REFUSED_VALIDATION / 1 REFUSED_MARGIN / 0 ACCEPT; planted refused 30/30; exact-line 0.000000 px 4/4; truth-swap/permutation/clone invariance exact 4/4; sensitivity noise-only n=62730: median 0.04-0.08 m budget 0.25 met 4/4, p95 9.1-15.2 m budget 0.50 unmet 4/4 (modulo-aligned 0.15-0.36 m); tests 9+1; 4 corrections applied | g371_symmetry_margin_2026-09-09.md; g371_symmetry_margin_2026-09-09/{prereg, selected.csv, sweep.csv, candidates.csv, sensitivity.csv, probe_errors.csv, ambiguity_controls.csv, summary.json, renders/}; G371_VERIFY_2026-09-10.md | **DONE -- the sealed K=7/M=8 enumeration yields one symmetry class, so a truth-free margin selector can never accept: lines alone do not disambiguate court mirror symmetry; orientation needs an independent cue (successor); no broadcast claim** |
+
 ## G367 result register
 
 | Gap | Sport | Finding | Evidence | Status |
