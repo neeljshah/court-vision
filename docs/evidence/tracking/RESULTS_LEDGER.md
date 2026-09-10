@@ -710,3 +710,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-10 | tracking | G371 | landed DONE: truth-free modulo 1.128714 / 1.065403 / 0.715846 / 0.763620 px; 357 / 2 / 1 refusal statuses and 0 accepts over 360 cells; planted refusal 30/30; invariance exact; sensitivity n=62730 median budget met 4/4, p95 unmet 4/4; four corrections applied | DONE (verified: codex-sol, contract A/B/Q)
 
+2026-09-10 | tracking | G364 | landed PARTIAL (phase 1): dev reference 240 sheets kappa 0.916186 (125/74/40/1); head frozen 0.30; dev NON_COURT reach 479 per mille; validation quota unsatisfiable at 14/360 abstentions -> nothing scored; GPU 2.32 min | PARTIAL (verified: codex-sol ACCEPT, contract A/B/Q)
+

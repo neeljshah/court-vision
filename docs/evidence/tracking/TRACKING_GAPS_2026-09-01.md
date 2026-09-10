@@ -9,6 +9,13 @@
 
 
 
+
+## G364 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G364 | basketball | premise HOLDS (line-family AUC 0.0909, surface 1.0 on 1 positive, rule NON_COURT reach 13.02 per mille); ledger snapshot 893 rows / 634 eligible; seeded game-disjoint split dev 20 sections / 10 games (4 ABSENT) and validation 30 / 15 games (2 ABSENT), all pinned; ResNet-18 frozen embeddings 240 dev + 360 pool; blind raters terra+sol 240/240, kappa 0.916186, 12 adjudicated; reference USABLE_COURT 125 / CLOSEUP 74 / CROWD_GRAPHICS 40 / UNKNOWN 1; head FROZEN at 0.30 before any validation fetch; dev NON_COURT reach 479.17 per mille (in-sample, NOT evidence); validation pool 224 COURT / 122 NON_COURT / 14 ABSTAIN -> sealed quota 60/60/180-from-ABSTAIN unsatisfiable; GPU 2.32 min; tests 6 + 1; one Q6 prose fix | g364_learned_court_presence_2026-09-09.md; g364_learned_court_presence_2026-09-09/{prereg, census.csv, sources.csv, ratings.csv, dev_labels.csv, model.json, model_identity.json, validation_pool.csv, validation_predictions.csv, sheets/dev/}; G364_VERIFY_2026-09-10.md; G364_VERIFY_att1_REJECT_2026-09-10.md | **PARTIAL -- development reference and frozen head stand; NO validation metric exists; the quota rule is adjudicated in G374 (allocated); licenses nothing about held-out presence yet** |
+
 ## G371 result register
 
 | Gap | Sport | Finding | Evidence | Status |
