@@ -1,0 +1,65 @@
+DISPATCHED run=1789077408643425400 tag=g375_rater_terra_08 wt=a3 at 2026-09-10T16:56:48-05:00
+STARTED pid=28596 birth=1789077408.647
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/raters/batches/batch_08.txt'
+out: /sheets/sheet_0279.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0280.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0281.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0282.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0283.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0284.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0285.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0286.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0287.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0288.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0290.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0291.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0293.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0294.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0295.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0296.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0297.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0298.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0299.jpg
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$sheetPaths = Get-Content docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/raters/batches/batch_08.txt; magick montage $sheetPaths -tile 5x -geometry 320x180+8+28 -label '"'%f' "'$env:TEMP'"\\batch_08_montage.jpg"
+out: magick : The term 'magick' is not recognized as the name of a cmdlet, function, script file, or operable program. 
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:2 char:115
++ ... s_sport_purity_2026-09-10/raters/batches/batch_08.txt; magick montage ...
++                                                            ~~~~~~
+    + CategoryInfo          : ObjectNotFound: (magick:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+
+agent: sheet_0269.jpg,BASKETBALL_NONPLAY,,998
+sheet_0270.jpg,BASKETBALL_NONPLAY,,990
+sheet_0271.jpg,BASKETBALL_NONPLAY,,995
+sheet_0272.jpg,BASKETBALL_PLAY,,998
+sheet_0273.jpg,BASKETBALL_PLAY,,998
+sheet_0274.jpg,BASKETBALL_PLAY,,998
+sheet_0275.jpg,BASKETBALL_PLAY,,998
+sheet_0276.jpg,BASKETBALL_PLAY,,998
+sheet_0277.jpg,BASKETBALL_NONPLAY,,998
+sheet_0278.jpg,BASKETBALL_PLAY,,998
+sheet_0279.jpg,BASKETBALL_NONPLAY,,940
+sheet_0280.jpg,BASKETBALL_NONPLAY,,960
+sheet_0281.jpg,BASKETBALL_PLAY,,998
+sheet_0282.jpg,BASKETBALL_NONPLAY,,998
+sheet_0283.jpg,BASKETBALL_PLAY,,998
+sheet_0284.jpg,BASKETBALL_PLAY,,998
+sheet_0285.jpg,BASKETBALL_NONPLAY,,975
+sheet_0286.jpg,BASKETBALL_NONPLAY,,995
+sheet_0287.jpg,BASKETBALL_NONPLAY,,975
+sheet_0288.jpg,BASKETBALL_PLAY,,970
+sheet_0290.jpg,OTHER_SPORT,soccer,1000
+sheet_0291.jpg,BASKETBALL_NONPLAY,,995
+sheet_0293.jpg,BASKETBALL_PLAY,,998
+sheet_0294.jpg,BASKETBALL_NONPLAY,,998
+sheet_0295.jpg,BASKETBALL_NONPLAY,,965
+sheet_0296.jpg,BASKETBALL_NONPLAY,,998
+sheet_0297.jpg,BASKETBALL_NONPLAY,,990
+sheet_0298.jpg,BASKETBALL_NONPLAY,,995
+sheet_0299.jpg,BASKETBALL_NONPLAY,,995
+TURN_END turn.completed at 2026-09-10T16:57:47-05:00
+EXIT:0 gap=g375_rater_terra_08 at 2026-09-10T16:57:47-05:00
+DRAINED

@@ -1,0 +1,30 @@
+{
+ "diagnostic_only": true,
+ "fits_nothing": true,
+ "reference_classes_are_court_presence_not_sport": true,
+ "reference_frames": 240,
+ "reference_npz_sha256": "f5d526d6cdcb6d3177e2b0240ae01e412be3dd82d165cd08c382168d10b5c22d",
+ "separation_by_final_label": {
+  "BASKETBALL_NONPLAY": {
+   "n": 119,
+   "nearest_usable_court_permille": 176
+  },
+  "BASKETBALL_PLAY": {
+   "n": 154,
+   "nearest_usable_court_permille": 916
+  },
+  "NON_SPORT": {
+   "n": 1,
+   "nearest_usable_court_permille": 0
+  },
+  "OTHER_SPORT": {
+   "n": 6,
+   "nearest_usable_court_permille": 167
+  },
+  "UNKNOWN": {
+   "n": 1,
+   "nearest_usable_court_permille": 0
+  }
+ },
+ "weights_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec"
+}

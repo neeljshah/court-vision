@@ -1,0 +1,15 @@
+prefix,rated,impure,impurity_permille,wilson_low_permille,wilson_high_permille,basketball_nonplay,other_sport,non_sport,unknown,reporting
+ALL,281,127,452,395,510,119,6,1,1,BOUNDED
+acb,15,9,600,357,802,9,0,0,0,DESCRIPTIVE
+bleague,6,6,1000,610,1000,0,6,0,0,DESCRIPTIVE
+cba,12,4,333,138,609,4,0,0,0,DESCRIPTIVE
+eurocup,15,6,400,198,643,6,0,0,0,DESCRIPTIVE
+euroleague,25,11,440,267,629,10,0,0,1,DESCRIPTIVE
+fiba,45,22,489,350,630,22,0,0,0,BOUNDED
+gleague,12,6,500,254,746,6,0,0,0,DESCRIPTIVE
+lnb,14,7,500,268,732,7,0,0,0,DESCRIPTIVE
+nba,31,14,452,292,622,13,0,1,0,BOUNDED
+nbl,6,3,500,188,812,3,0,0,0,DESCRIPTIVE
+ncaa_basketball,59,26,441,322,567,26,0,0,0,BOUNDED
+ncaaw,18,6,333,163,563,6,0,0,0,DESCRIPTIVE
+wnba,23,7,304,156,509,7,0,0,0,DESCRIPTIVE

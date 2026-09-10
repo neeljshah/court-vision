@@ -1,0 +1,23 @@
+{
+ "absent_sections": 19,
+ "attributed_named": 36,
+ "attributed_unknown": 91,
+ "attribution_complete": true,
+ "basketball_nonplay": 119,
+ "gate_thresholds_moved": 0,
+ "impure_sections": 127,
+ "impurity_permille": 452,
+ "impurity_wilson_high_permille": 510,
+ "impurity_wilson_low_permille": 395,
+ "kappa": 0.849806,
+ "non_sport": 1,
+ "other_sport": 6,
+ "other_sport_names": {
+  "soccer": 6
+ },
+ "prefixes_covered": 13,
+ "rated_sheets": 281,
+ "raw_agreement": 0.921708,
+ "sections_deleted": 0,
+ "unknown": 1
+}

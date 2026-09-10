@@ -1,0 +1,62 @@
+DISPATCHED run=1789076773059102900 tag=g375_rater_sol_04 wt=a3 at 2026-09-10T16:46:13-05:00
+STARTED pid=28180 birth=1789076773.064
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -LiteralPath 'docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/raters/batches/batch_04.txt'"
+out: /sheets/sheet_0131.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0132.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0133.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0134.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0135.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0136.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0137.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0138.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0140.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0141.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0142.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0143.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0144.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0145.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0146.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0147.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0148.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0149.jpg
+docs/evidence/tracking/g375_corpus_sport_purity_2026-09-10/sheets/sheet_0150.jpg
+
+agent: sheet_0114.jpg,BASKETBALL_PLAY,,998
+sheet_0115.jpg,BASKETBALL_PLAY,,999
+sheet_0116.jpg,BASKETBALL_NONPLAY,,925
+sheet_0117.jpg,BASKETBALL_NONPLAY,,997
+sheet_0118.jpg,BASKETBALL_NONPLAY,,994
+sheet_0119.jpg,BASKETBALL_PLAY,,999
+sheet_0120.jpg,BASKETBALL_PLAY,,999
+sheet_0121.jpg,BASKETBALL_NONPLAY,,960
+sheet_0122.jpg,BASKETBALL_NONPLAY,,998
+sheet_0123.jpg,BASKETBALL_NONPLAY,,999
+sheet_0124.jpg,BASKETBALL_PLAY,,970
+sheet_0125.jpg,BASKETBALL_NONPLAY,,955
+sheet_0126.jpg,BASKETBALL_NONPLAY,,950
+sheet_0127.jpg,BASKETBALL_PLAY,,999
+sheet_0128.jpg,BASKETBALL_PLAY,,999
+sheet_0129.jpg,BASKETBALL_PLAY,,999
+sheet_0130.jpg,BASKETBALL_NONPLAY,,880
+sheet_0131.jpg,BASKETBALL_PLAY,,999
+sheet_0132.jpg,BASKETBALL_PLAY,,999
+sheet_0133.jpg,BASKETBALL_PLAY,,999
+sheet_0134.jpg,BASKETBALL_PLAY,,999
+sheet_0135.jpg,BASKETBALL_PLAY,,999
+sheet_0136.jpg,BASKETBALL_NONPLAY,,999
+sheet_0137.jpg,OTHER_SPORT,soccer,999
+sheet_0138.jpg,BASKETBALL_NONPLAY,,999
+sheet_0140.jpg,BASKETBALL_PLAY,,999
+sheet_0141.jpg,BASKETBALL_NONPLAY,,990
+sheet_0142.jpg,BASKETBALL_PLAY,,999
+sheet_0143.jpg,BASKETBALL_NONPLAY,,835
+sheet_0144.jpg,BASKETBALL_NONPLAY,,910
+sheet_0145.jpg,BASKETBALL_PLAY,,999
+sheet_0146.jpg,BASKETBALL_PLAY,,999
+sheet_0147.jpg,BASKETBALL_PLAY,,999
+sheet_0148.jpg,BASKETBALL_PLAY,,999
+sheet_0149.jpg,BASKETBALL_NONPLAY,,940
+sheet_0150.jpg,BASKETBALL_NONPLAY,,980
+TURN_END turn.completed at 2026-09-10T16:47:30-05:00
+EXIT:0 gap=g375_rater_sol_04 at 2026-09-10T16:47:31-05:00
+DRAINED
