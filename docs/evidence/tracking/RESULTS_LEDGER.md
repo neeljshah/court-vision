@@ -716,3 +716,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-10 | tracking | G376 | landed DONE: declared ticks over-count (NOT_SCHEDULED 0.428 / 0.406); producer-evaluated 28,276 / 53,250 vs declared 45,842 / 89,655; M1-corrected zero-observation 0.483449 / 0.603362; over-count explains 0.610 / 0.531 of the G370 gap; controls exact; re-run 1.000 | DONE (verified: codex-sol ACCEPT, contract A/B/Q)
 
+2026-09-10 | tracking | G377 | landed CLOSED AT LIMIT (adjudicated): 1,391 named / 1,378 restored / 1,377 verified / 13 missing; recomputations G363 9/9, G364 12/12, G370 7/7, G367 8/10; eye 6 raster + 2 svg (G370 svg-only); two REJECT cycles recorded, fix-1b additivity break reverted | CLOSED AT LIMIT (adjudicated; codex-sol REJECT x2 verbatim)
+

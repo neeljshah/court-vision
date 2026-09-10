@@ -12,6 +12,13 @@
 
 
 
+
+## G377 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G377 | all | premise: 1,391 files named by memo+reader manifests (G363 1039 / G364 278 / G367 23 / G370 51); restored off-pod 1,378, VERIFIED byte-exact 1,377 (git identity + readback + live pod copy); 13 MISSING named (pod-absolute scratch roots, G364 resnet18 weights + ledger snapshot, G370 snapshot, 4 unresolved basenames); recomputed vs archived: G363 9/9 + 9/9 digests, G364 12/12 + 17/17, G370 7/7, G367 8/10 + 2/5 (corner4 1.651641 vs 1.651646 = environment; three memo digests do not identify committed bytes); the live ledger has no stable identity (3 sha256 in one session); eye: 6 raster + 2 SVG (G370 has no raster dependency); PROPOSED retention contract (identity-before-prune, receiver acknowledgement, reader leases, versioned identities, byte budget); two REJECT cycles: att1 eye SVG count, fix 1b broke additivity (reverted in fix 1c) | g377_restore_receipt_2026-09-10.md; g377_restore_receipt_2026-09-10/{prereg, dependency_manifest.csv, restore_hashes.csv, decision_diff.csv, missing.csv, PROPOSED_retention_contract.md, summary.json, eye/}; G377_ADJUDICATION_2026-09-10.md; G377_VERIFY_att1_REJECT_2026-09-10.md; G377_VERIFY_fix1b_REJECT_2026-09-10.md | **CLOSED AT LIMIT (adjudicated) -- the off-pod bundles restore and recompute for all four closures; the sealed eye bar cannot be met for an SVG-only closure; licenses the retention contract as a proposal only; memo-digest census is a NEW GAP** |
+
 ## G376 result register
 
 | Gap | Sport | Finding | Evidence | Status |
