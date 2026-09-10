@@ -6,6 +6,13 @@
 
 
 
+
+## G363 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G363 | basketball | C0 on the blind reference = 0 TP/549 held-out, 8 FP; phase-1 share 0.014572 superseded; G357 beside. sha256 identity rebuilt 881/881 + 1,762/1,762 neighbours post-pod-loss, 0 UNKNOWN-ALIGNMENT. A1-A7 sequential; winner A7 (960px, conf .05, causal NMS) = 2/549, Wilson lo 0.00305 vs bar 0.90, FP/N_absent 0.73251 vs 0.01; 285 VISIBLE / 243 ABSENT; A8 LIMIT, 0 audited boxes; nearest pred median 487.50 px vs 12.33 px tolerance = wrong object; rater centres differ 36.39 px. Tests 11+1. Two REJECTs: B2 cured; Q1 amendment by commit order, no seal; Q2/Q4 unadopted; 196 Q6 hits in sealed artifacts. | g363_ball_coverage_2026-09-09.md; g363_ball_coverage_2026-09-09/{prereg, amendment, frames.csv, ratings.csv, identity.csv, predictions.csv, frame_scores.csv, arms.csv, summary.json, centre_diagnostic.json, eye_check/}; G363_ADJUDICATION_2026-09-10.md; G363_VERIFY_REJECT_2026-09-10.md; G363_VERIFY_fix1b_REJECT_2026-09-10.md | **CLOSED AT LIMIT (adjudicated) -- ball detection with the deployed route is absent on blind broadcast frames; licenses NO ball-derived feature until a detector-replacement row passes; the x3 line is closed** |
+
 ## G369 result register
 
 | Gap | Sport | Finding | Evidence | Status |

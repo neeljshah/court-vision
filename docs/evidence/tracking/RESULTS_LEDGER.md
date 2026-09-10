@@ -700,3 +700,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 2026-09-09 | tracking | G366 | 59 fresh sections/14 games; two artifact gates confirmed; stationary, tick-ratio, and v2 bars not cleared | PARTIAL (verified: codex-sol, contract A/B/Q)
 2026-09-10 | tracking | G369 | landed PARTIAL: 32/35 fresh sections pinned with all 17 bindings; 8 source ids (bar 10 unmet); 4 competitions; 996/996 exact landmarks at 0.0000 frames; 0 collisions; exports byte-identical; fix 1b rule+crop_rule alias, memo scan line, LOC 248 | PARTIAL (verified: codex-sol, contract A/B/Q)
 
+2026-09-10 | tracking | G363 | landed CLOSED AT LIMIT (adjudicated): held-out C0 = 0 TP / 549 for the deployed route; winner arm 2/549, Wilson lower 0.00305, FP/N_absent 0.73251; identity rebuilt 881/881 by sha256; A8 LIMIT (0 audited boxes); two REJECT cycles recorded (B2 cured; Q1 amendment by commit order; Q2/Q4 not adopted; Q6 hits confined to sealed rater artifacts) | CLOSED AT LIMIT (adjudicated; codex-sol REJECT x2 verbatim)
+
