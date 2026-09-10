@@ -1,0 +1,21 @@
+{
+  "AFTER": {
+    "deleted": 5,
+    "median_age_min_at_snapshot": 9.9,
+    "median_survival_min_finish_to_delete": 3.083,
+    "sections": 24
+  },
+  "BEFORE": {
+    "deleted": 120,
+    "median_age_min_at_snapshot": 60.667,
+    "median_survival_min_finish_to_delete": 10.567,
+    "sections": 125
+  },
+  "age_matched_at_least_30_min_old": {
+    "after": 0,
+    "before": 107,
+    "retained": 4,
+    "sections": 107
+  },
+  "note": "AFTER sections are younger than BEFORE sections at the snapshot, so the survival share difference is age-confounded; the deletion-age medians and the age-matched stratum are printed so the confound is visible."
+}

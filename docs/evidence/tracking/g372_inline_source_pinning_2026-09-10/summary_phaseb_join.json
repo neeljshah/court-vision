@@ -1,0 +1,32 @@
+{
+ "T0": 1789068853,
+ "T1": 1789072453,
+ "agree": 43,
+ "agreement_over_attempts": 0.530864,
+ "agreement_over_joined": 1.000000,
+ "bound_attempts": 43,
+ "claim_attempts": 81,
+ "coverage": 1.0,
+ "coverage_per_claim_attempt": 0.530864,
+ "disagree": 0,
+ "distinct_videos_claims": 13,
+ "distinct_videos_joined": 13,
+ "pin_lag_max_s": 2.0,
+ "pins_attempted": 81,
+ "pins_joinable": 43,
+ "repeat_claim_attempts": 38,
+ "reservations": 81,
+ "sidecars_present": 43,
+ "sidecars_valid": 43,
+ "terminal_error_ids": [
+  "RIrGQJ_jsGQ_s6690",
+  "fiba-7HQqWMaKxpA_s6980",
+  "fiba-Y1cgaIWW8gk_s6825",
+  "fiba-Y1cgaIWW8gk_s90",
+  "fiba-fyp4VsE-8Fc_s90",
+  "fiba-tZeqmc_-_sA_s6365",
+  "fiba-tZeqmc_-_sA_s90"
+ ],
+ "terminal_error_rows": 38,
+ "unique_claims": 43
+}

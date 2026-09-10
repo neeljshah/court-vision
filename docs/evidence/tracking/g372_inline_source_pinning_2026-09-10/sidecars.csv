@@ -1,0 +1,51 @@
+game_id,source_identity_path,state,source_path,source_sha256,source_bytes,ffprobe,crop_rule,route_digest,weight_digest,deploy_manifest_sha256,claim_utc,daemon_pid,terminal_diagnostic
+N-eE7ZwTuno_s1308,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+N-eE7ZwTuno_s4962,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+XzIzQZBrPBY_s398,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+6FlZaoWSfFw_s90,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+euroleague-8ue528gaVyY_s2366,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+euroleague-8ue528gaVyY_s5780,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+fXLNra4sjjU_s2386,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+fXLNra4sjjU_s5830,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+gleague-_fl2i6vToTM_s1293,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+gleague-_fl2i6vToTM_s4902,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+gleague-_fl2i6vToTM_s90,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+h6j_iLYRx8U_s2758,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+h6j_iLYRx8U_s6760,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+fiba--x4DRmtYn4Q_s2842,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+fiba--x4DRmtYn4Q_s6970,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+XCaGht2GmPg_s2742,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+XCaGht2GmPg_s90,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+fiba-7HQqWMaKxpA_s4185,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+fiba-7HQqWMaKxpA_s90,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+0KIBu1jQBL8_s3435,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+0KIBu1jQBL8_s90,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+fiba-Y1cgaIWW8gk_s4131,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+fiba-Y1cgaIWW8gk_s90,scratch_g372/out/sidecars/fiba-Y1cgaIWW8gk_s90.source_identity.json,COMMITTED,scratch_g372/sources/basketball__fiba-Y1cgaIWW8gk_s90.mp4,2a8931de71495dd5ec186b9f204b3d3fbe90a82f240995aa7d3a3fb016e7db37,58883653,"{""codec"": ""h264"", ""first_pts"": 0.0, ""fps"": ""30/1"", ""height"": 1080, ""nb_frames"": ""4051"", ""start_time_kind"": ""DECODED_PTS"", ""status"": ""OK"", ""width"": 1920}",TOPCUT = 60,"{""scripts/run_clip.py"": ""ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2"", ""src/pipeline/unified_pipeline.py"": ""c4eae385bfeebd4e44c8161c791ef7ed4589697020f424d3dde7aec6816d9226"", ""src/tracking/ball_detect_track.py"": ""cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea""}",{},6aad1e7aa687d00533c37be38c2b33fa8f2636c3b23ce3e99a14e421a75280c1,2026-09-10T18:56:20Z,0,
+RIrGQJ_jsGQ_s4050,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+RIrGQJ_jsGQ_s90,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+fiba-Byk8aH-n_U4_s1426,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+fiba-Byk8aH-n_U4_s5434,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+wJSOHbeQcg4_s3360,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+fiba-fyp4VsE-8Fc_s4098,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+fiba-fyp4VsE-8Fc_s90,scratch_g372/out/sidecars/fiba-fyp4VsE-8Fc_s90.source_identity.json,COMMITTED,scratch_g372/sources/basketball__fiba-fyp4VsE-8Fc_s90.mp4,4bf0387f7cc4641c38fe031fe544ee5f5f2b6822b55e93ad8319c23ed28f04cb,85266665,"{""codec"": ""h264"", ""first_pts"": 0.0, ""fps"": ""60/1"", ""height"": 1080, ""nb_frames"": ""8033"", ""start_time_kind"": ""DECODED_PTS"", ""status"": ""OK"", ""width"": 1920}",TOPCUT = 60,"{""scripts/run_clip.py"": ""ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2"", ""src/pipeline/unified_pipeline.py"": ""c4eae385bfeebd4e44c8161c791ef7ed4589697020f424d3dde7aec6816d9226"", ""src/tracking/ball_detect_track.py"": ""cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea""}",{},6aad1e7aa687d00533c37be38c2b33fa8f2636c3b23ce3e99a14e421a75280c1,2026-09-10T18:56:23Z,0,
+GNjSxoeDT-E_s1167,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+GNjSxoeDT-E_s4398,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+EqseleqhpTk_s2700,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+EqseleqhpTk_s4005,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+EqseleqhpTk_s90,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+fiba-tZeqmc_-_sA_s3816,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+fiba-tZeqmc_-_sA_s90,scratch_g372/out/sidecars/fiba-tZeqmc_-_sA_s90.source_identity.json,COMMITTED,scratch_g372/sources/basketball__fiba-tZeqmc_-_sA_s90.mp4,9747eab9c97bb3d6367ee269cd242b6ff7c92b870d27ff91e6ec612cb30ecb50,58196753,"{""codec"": ""h264"", ""first_pts"": 0.0, ""fps"": ""30/1"", ""height"": 1080, ""nb_frames"": ""4051"", ""start_time_kind"": ""DECODED_PTS"", ""status"": ""OK"", ""width"": 1920}",TOPCUT = 60,"{""scripts/run_clip.py"": ""ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2"", ""src/pipeline/unified_pipeline.py"": ""c4eae385bfeebd4e44c8161c791ef7ed4589697020f424d3dde7aec6816d9226"", ""src/tracking/ball_detect_track.py"": ""cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea""}",{},6aad1e7aa687d00533c37be38c2b33fa8f2636c3b23ce3e99a14e421a75280c1,2026-09-10T18:56:26Z,0,
+9F5q5jCbrMI_s2450,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+1E5Rw89keTg_s312,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+1E5Rw89keTg_s534,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+HUSo3PzP7lo_s402,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+eaKqXq9dfig_s428,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+euroleague-zud-2wkhjJY_s296,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+fiba-tZeqmc_-_sA_s2639,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+fiba-tZeqmc_-_sA_s6365,scratch_g372/out/sidecars/fiba-tZeqmc_-_sA_s6365.source_identity.json,COMMITTED,scratch_g372/sources/basketball__fiba-tZeqmc_-_sA_s6365.mp4,5e9e47c913e7457df4c1770d276aa233d5e0b26c19fc5fdb064dc29c04acb572,56088519,"{""codec"": ""h264"", ""first_pts"": 0.0, ""fps"": ""30/1"", ""height"": 1080, ""nb_frames"": ""3900"", ""start_time_kind"": ""DECODED_PTS"", ""status"": ""OK"", ""width"": 1920}",TOPCUT = 60,"{""scripts/run_clip.py"": ""ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2"", ""src/pipeline/unified_pipeline.py"": ""c4eae385bfeebd4e44c8161c791ef7ed4589697020f424d3dde7aec6816d9226"", ""src/tracking/ball_detect_track.py"": ""cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea""}",{},6aad1e7aa687d00533c37be38c2b33fa8f2636c3b23ce3e99a14e421a75280c1,2026-09-10T18:56:29Z,0,
+9F5q5jCbrMI_s2515,scratch_g372/out/sidecars/9F5q5jCbrMI_s2515.source_identity.json,COMMITTED,scratch_g372/sources/ncaa_basketball__9F5q5jCbrMI_s2515.mp4,5110912d391ea0c977c3b53dda86659a53d6d6601d5a78e59ad60f993117cb19,90742947,"{""codec"": ""h264"", ""first_pts"": 0.0, ""fps"": ""141066000/2353451"", ""height"": 1080, ""nb_frames"": ""7837"", ""start_time_kind"": ""DECODED_PTS"", ""status"": ""OK"", ""width"": 1920}",TOPCUT = 60,"{""scripts/run_clip.py"": ""ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2"", ""src/pipeline/unified_pipeline.py"": ""c4eae385bfeebd4e44c8161c791ef7ed4589697020f424d3dde7aec6816d9226"", ""src/tracking/ball_detect_track.py"": ""cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea""}",{},6aad1e7aa687d00533c37be38c2b33fa8f2636c3b23ce3e99a14e421a75280c1,2026-09-10T18:56:32Z,0,
+fiba-XKDW0xL3yKc_s155,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+fiba-XKDW0xL3yKc_s3878,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+HUSo3PzP7lo_s155,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine
+eaKqXq9dfig_s155,,BYTES_GONE,,,,,,,,,,,no file under footage_bridge|footage_corpus|footage_quarantine

@@ -1,0 +1,28 @@
+{
+  "after": {
+    "gone": 5,
+    "gone_and_retracked": 0,
+    "retained": 19,
+    "retained_share": 0.791667,
+    "retracked": 0,
+    "sections": 24
+  },
+  "before": {
+    "gone": 117,
+    "gone_and_retracked": 77,
+    "retained": 8,
+    "retained_share": 0.064,
+    "retracked": 85,
+    "sections": 125
+  },
+  "fresh_ledger_rows": 234,
+  "fresh_sections": 149,
+  "gone_attributed_to_vol_guard": 122,
+  "gone_unattributed": 0,
+  "location_BRIDGE": 0,
+  "location_CORPUS": 27,
+  "location_GONE": 122,
+  "location_QUARANTINE": 0,
+  "total_ledger_rows": 1089,
+  "vol_guard_del_events_total": 125
+}

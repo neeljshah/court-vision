@@ -1,0 +1,47 @@
+{
+ "after": {
+  "arrivals_distinct_game_id": 43,
+  "clips_per_hour": 78.0,
+  "decoded_frames_median": 3901.0,
+  "hi": 1789072453,
+  "lo": 1789068853,
+  "mean_active_load": 4.639,
+  "median_seconds_non_straddle": 40.0,
+  "median_seconds_per_clip": 40.0,
+  "n_rows": 78,
+  "n_rows_non_straddle": 78,
+  "n_unique_game_id": 43,
+  "straddle_n": 0,
+  "window": "AFTER"
+ },
+ "before": {
+  "arrivals_distinct_game_id": 73,
+  "clips_per_hour": 78.0,
+  "decoded_frames_median": 3901.0,
+  "hi": 1789068790,
+  "lo": 1789065190,
+  "mean_active_load": 7.617,
+  "median_seconds_per_clip": 406.0,
+  "n_rows": 78,
+  "n_unique_game_id": 75,
+  "window": "BEFORE"
+ },
+ "replay_all_completed_pairs": {
+  "control_median_s": 368.64,
+  "median_bind_s": 1.52,
+  "n_pairs": 27,
+  "ratio": 1.0194,
+  "treatment_median_s": 375.79
+ },
+ "replay_rc0_pairs": {
+  "control_median_s": 368.64,
+  "median_bind_s": 1.52,
+  "n_pairs": 27,
+  "ratio": 1.0194,
+  "treatment_median_s": 375.79
+ },
+ "replay_verdict": "NOT VALIDATED (27 completed pairs against the sealed >= 30 bar; A3.10 budget 100 min)",
+ "window_clause_note": "DESCRIPTIVE ONLY -- unchanged clips per hour is never a pass on its own (spec ACCEPTANCE RULE throughput clause)",
+ "window_ratio_all": 0.0985,
+ "window_ratio_non_straddle": 0.0985
+}

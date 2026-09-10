@@ -1,0 +1,35 @@
+G372 phase A -- producer schema statement and reader survey.
+
+Phase A deployed nothing. The deploy tree, the daemon, the feeder and /workspace/data were
+opened read-only; the only writes were the lane worktree, the lane scratch directory and this
+evidence directory. The completion-ledger key set is therefore unchanged by construction:
+
+  before  = key set of /workspace/data/tracking/track_daemon_ledger.jsonl row 1 (snapshot
+            scratch_g372/ledger_snapshot_20260910T181546Z.jsonl)
+  after   = the same file, same key set
+  diff    = EMPTY
+
+This empty diff is a statement that this lane changed nothing. It is NOT evidence that the
+PROPOSED overlay preserves the schema; that is a phase-B measurement and is NOT VALIDATED here.
+
+Reader survey for the one field the PROPOSED overlay adds (contract A5 / B2). Readers of
+data/tracking/track_daemon_ledger.jsonl in the lane checkout:
+
+  scripts/platformkit/night_report.py
+  scripts/platformkit/tracking/g309_multigame_census.py
+  scripts/platformkit/tracking/g322_oversized_boxes.py
+  scripts/platformkit/tracking/g325_offframe_boxes.py
+  scripts/platformkit/tracking/g329_degenerate_census.py
+  scripts/platformkit/track_daemon.py
+  scripts/platformkit/test_g149_persist_decoded_denominator.py
+  scripts/platformkit/test_g153_local_decoded_frames_producer.py
+  scripts/platformkit/test_night_report.py
+  scripts/platformkit/test_track_daemon_job_budget.py
+  scripts/platformkit/test_track_daemon_ledger_denominator.py
+  scripts/platformkit/test_track_daemon_timeout_verdict.py
+
+Every non-test reader projects the ledger row into its own fixed csv.DictWriter fieldnames
+(g309:241, g322:222 and 257-262, g325:200, g329:238) or reads named keys directly; none
+asserts an exact key set on the row. The overlay renames and removes nothing and adds exactly
+one key, source_identity_path, so no reader in this list changes behaviour. That is a static
+reader survey, not a runtime observation: the runtime claim is phase B.

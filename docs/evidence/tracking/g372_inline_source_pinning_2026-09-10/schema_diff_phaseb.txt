@@ -1,0 +1,16 @@
+PRODUCER TABLE (tracking_data.csv) COLUMN DIFF
+before_game 0KIBu1jQBL8_s155 cols 73
+after_game G8bPOW37Sp0_s615 cols 73
+only_before []
+only_after []
+order_identical True
+PRODUCER_SCHEMA_DIFF EMPTY
+
+COMPLETION LEDGER KEY SET DIFF
+before_rows 200 keys 31
+after_rows 81 keys 32
+removed_or_renamed []
+added ["source_identity_path"]
+additive_only True
+after_rows_with_source_identity_path 81 of 81
+after_rows_with_NON_NULL_source_identity_path 43

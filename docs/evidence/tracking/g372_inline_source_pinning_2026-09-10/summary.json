@@ -1,0 +1,76 @@
+{
+  "amendment_seal": "21c12872970c84598b39d41aab24bce95e06925f21d96665e54bb51358d15513",
+  "amendment_a2_seal": "4dd969f54ba526f71348da37ffeb7cb462f3dd977984c07ed36543b114bc5131",
+  "attribution": {
+    "deleter": "/workspace/vol_guard.py",
+    "fresh_ledger_rows": 234,
+    "fresh_sections": 149,
+    "gone": 122,
+    "gone_attributed_to_vol_guard": 122,
+    "gone_unattributed": 0,
+    "median_finish_to_delete_min_after": 3.083,
+    "median_finish_to_delete_min_before": 10.567,
+    "retracked_after_gate": 0,
+    "retracked_before_gate": 85,
+    "survival_before_after_comparison": "NOT VALIDATED (no age-matched AFTER stratum)"
+  },
+  "claim_journal_rows": 0,
+  "code_identity": {
+    "deployed_track_daemon_done_sha256": "75cbff79cd115952ad14f76c94ab5fdb62239f30841b06e73b967473a2d69f70",
+    "deployed_track_daemon_sha256": "9747d9a085405c492f04c4e3b162ed8b1d897309da6f0f9c014cb7092056f5ac",
+    "drift": false,
+    "hook_line_deployed": 373,
+    "matches_spec_citation": true
+  },
+  "controls": {
+    "byte_flip": "PASS",
+    "deterministic_write": "PASS",
+    "identical_read": "PASS"
+  },
+  "coverage": {
+    "bar": "1.000 on >= 30 sections / >= 10 distinct videos",
+    "clause": "FAILING CLAUSE of the PARTIAL verdict (post-hoc window; see failure_classes)",
+    "distinct_videos_committed": 4,
+    "distinct_videos_sampled": 25,
+    "sampled_attempts": 50,
+    "sidecars_committed": 5,
+    "value": 0.1
+  },
+  "deployed_anything": false,
+  "failure_classes": {
+    "BYTES_GONE": 45
+  },
+  "independent_agreement": {
+    "agree": 5,
+    "bar": "100 pct on a preregistered even sample >= 30",
+    "clause": "NOT VALIDATED (5 joinable rows < 30); the conditional figure is not the scored one",
+    "joined_rows": 5,
+    "n": 50,
+    "omitted": 0,
+    "value": 0.1,
+    "value_over_joined_rows": 1.0
+  },
+  "live_claim_coverage": "NOT VALIDATED (phase B)",
+  "live_column_identity": "NOT VALIDATED (phase B)",
+  "phase": "A",
+  "prereg_seal": "6e6469a0dac4829a65e0c05ab2e705b08411452bdcd726ea835355a80901a75e",
+  "producer_schema_diff": "EMPTY (phase A deployed nothing; not evidence for the overlay)",
+  "proposed_diff_dry_run_rc": 0,
+  "proposed_diff_hunks": 7,
+  "proposed_diff_sha256": "e0d8e9247d288df0f3a1c033a725b27331d7c3f0818d963bdb1603062d543b6f",
+  "sample": {
+    "k": 3,
+    "ledger_snapshot_sha256": "1547d32d82d5909bb43a8f5f6d82d5f4b76c5e6d145121cc5563e0a3a8945efe",
+    "max_index": 147,
+    "sampled_n": 50,
+    "start": 0,
+    "window_n": 149
+  },
+  "tests": {
+    "tests/platformkit/test_g372_phase_a.py": "4 passed",
+    "tests/platformkit/test_g372_source_sidecar.py": "6 passed",
+    "tests/platformkit/test_loc_rail_scope.py": "1 passed"
+  },
+  "throughput": "NOT VALIDATED (phase B)",
+  "verdict": "PARTIAL -- phase A (code + attribution + scratch controls); deploy-only measurement (phase B) pending authorization"
+}

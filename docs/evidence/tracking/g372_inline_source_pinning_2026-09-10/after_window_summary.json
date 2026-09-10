@@ -1,0 +1,79 @@
+{
+ "all": {
+  "clips_per_hour": 78.0,
+  "max_s": 605.0,
+  "median_s": 40.0,
+  "min_s": 40.0,
+  "n_rows": 78,
+  "n_unique": 43,
+  "q1_s": 40.0,
+  "q3_s": 426.0
+ },
+ "hi": 1789072453,
+ "keyset": [
+  "adjudicated",
+  "adjudication_timed_out",
+  "coordinate_space",
+  "coverage_pct",
+  "decoded_frames",
+  "degenerate",
+  "evaluated_at",
+  "evaluated_frames",
+  "failure_heads",
+  "failures",
+  "finished_at",
+  "fresh_solves",
+  "game_id",
+  "harness_coverage_pct",
+  "passed",
+  "probe_status",
+  "resumed_partial",
+  "rows",
+  "rows_per_decoded_frame_step_change",
+  "rung",
+  "seconds",
+  "source_duration",
+  "source_fps",
+  "source_height",
+  "source_identity_path",
+  "source_resolution",
+  "source_variants",
+  "sport",
+  "status",
+  "stride",
+  "tail",
+  "verdict"
+ ],
+ "label": "AFTER",
+ "lo": 1789068853,
+ "non_straddle": {
+  "clips_per_hour": 78.0,
+  "max_s": 605.0,
+  "median_s": 40.0,
+  "min_s": 40.0,
+  "n_rows": 78,
+  "n_unique": 43,
+  "q1_s": 40.0,
+  "q3_s": 426.0
+ },
+ "per_sport": {
+  "basketball": {
+   "median_s": 40.0,
+   "n": 42
+  },
+  "nba": {
+   "median_s": 40.0,
+   "n": 11
+  },
+  "ncaa_basketball": {
+   "median_s": 426.0,
+   "n": 21
+  },
+  "wnba": {
+   "median_s": 466.0,
+   "n": 4
+  }
+ },
+ "straddle_ids": [],
+ "straddle_n": 0
+}

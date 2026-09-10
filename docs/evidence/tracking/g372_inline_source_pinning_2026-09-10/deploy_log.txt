@@ -1,0 +1,219 @@
+=== A3.1 PRE-OVERLAY IDENTITY 2026-09-10T19:27:40Z ===
+9747d9a085405c492f04c4e3b162ed8b1d897309da6f0f9c014cb7092056f5ac  scripts/platformkit/track_daemon.py
+75cbff79cd115952ad14f76c94ab5fdb62239f30841b06e73b967473a2d69f70  scripts/platformkit/track_daemon_done.py
+e0d8e9247d288df0f3a1c033a725b27331d7c3f0818d963bdb1603062d543b6f  /workspace/wt/a9/docs/evidence/tracking/g372_inline_source_pinning_2026-09-10/PROPOSED_g372_track_daemon_sidecar.diff
+9c59f8b2f287eea617a82abab66f5c992506660f5d79cef62bbba8db2ab0412d  /workspace/wt/a9/scripts/platformkit/tracking/g372_source_sidecar.py
+--- deployed line 373 ---
+   373	        log_path = path.with_suffix(".log")
+--- daemon pid/proc ---
+475000    PID                  STARTED COMMAND
+ 475000 Thu Sep 10 18:40:06 2026 python3 -u scripts/platformkit/track_daemon.py --workers 8 --forever
+=== BACKUP ===
+9747d9a085405c492f04c4e3b162ed8b1d897309da6f0f9c014cb7092056f5ac  scripts/platformkit/track_daemon.py.bak_g372_2026-09-10
+=== DRY RUN ===
+checking file scripts/platformkit/track_daemon.py
+dry_run_rc=0
+=== PRE-OVERLAY PRODUCER SCHEMA 2026-09-10T19:28:22Z ===
+ledger_rows_total 1176
+ledger_keyset_last200 ["adjudicated", "adjudication_timed_out", "coordinate_space", "coverage_pct", "decoded_frames", "degenerate", "evaluated_at", "evaluated_frames", "failure_heads", "failures", "finished_at", "fresh_solves", "game_id", "harness_coverage_pct", "passed", "probe_status", "resumed_partial", "rows", "rows_per_decoded_frame_step_change", "rung", "seconds", "source_duration", "source_fps", "source_height", "source_resolution", "source_variants", "sport", "status", "stride", "tail", "verdict"]
+producer_table_game 0KIBu1jQBL8_s155
+frame,timestamp,player_id,team,x_position,y_position,x_norm,y_norm,velocity,acceleration,direction_deg,court_zone,ball_possession,distance_to_ball,nearest_opponent,nearest_teammate,event,team_spacing,spacing_hull_area,team_centroid_x,team_centroid_y,paint_count_own,paint_count_opp,possession_side,handler_isolation,bbox_x1,bbox_y1,bbox_x2,bbox_y2,ball_x2d,ball_y2d,ball_velocity,distance_to_basket,vel_toward_basket,drive_flag,ft_x,ft_y,dist_to_basket_ft,fast_break_flag,possession_id,possession_duration,confidence,play_type,paint_touches,off_ball_distance,shot_clock_est,scoreboard_shot_clock,scoreboard_game_clock,scoreboard_period,scoreboard_score_diff,scoreboard_confidence,possession_duration_sec,possession_type,ankle_x,ankle_y,contest_arm_angle,jump_detected,dribble_hand,ball_shot_arc_angle,ball_peak_height_px,ball_pass_speed_pxpf,player_name,jersey_number,team_abbrev,dribble_count,lineup_id,homography_valid
+=== APPLY 2026-09-10T19:28:22Z ===
+patching file scripts/platformkit/track_daemon.py
+apply_rc=0
+e05ea5b6a3618c67144c04208838497d777838570051bfcf3135c086591c7611  scripts/platformkit/track_daemon.py
+9c59f8b2f287eea617a82abab66f5c992506660f5d79cef62bbba8db2ab0412d  scripts/platformkit/tracking/g372_source_sidecar.py
+compile_rc=0
+PID_FILE /workspace/track_daemon.pid
+IDENTITY data/tracking/source_identity
+ROUTE {'scripts/run_clip.py': 'ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2', 'src/pipeline/unified_pipeline.py': 'c4eae385bfeebd4e44c8161c791ef7ed4589697020f424d3dde7aec6816d9226', 'src/tracking/ball_detect_track.py': 'cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea'}
+WEIGHT {}
+MANIFEST 2bbd585a6450514d7c8b3e69a695df4e2e2d583589ee5c1d45e855da2582b33f
+--- deploy tree must not import from /workspace/wt ---
+NO_WT_REFERENCE
+=== DEPLOY-TREE PER-FILE DAEMON TEST 2026-09-10T19:28:46Z ===
+data/models
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/platformkit/test_g328_daemon_worker_accounting.py::test_uncapped_active_count_exceeds_workers_and_the_flag_stops_it
+1 failed, 1 passed, 1 warning in 3.14s
+=== BASELINE TEST ON THE UNPATCHED BACKUP 2026-09-10T19:29:44Z ===
+..                                                                       [100%]
+2 passed in 2.60s
+e05ea5b6a3618c67144c04208838497d777838570051bfcf3135c086591c7611  scripts/platformkit/track_daemon.py
+=== SMOKE 2026-09-10T19:30:45Z ===
+picked /workspace/data/footage_bridge/nba__RIrGQJ_jsGQ_s6690.mp4
+smoke_source /workspace/data/footage_bridge/nba__RIrGQJ_jsGQ_s6690.mp4 19960440
+bind_seconds 1.090
+source_identity_path /workspace/wt/a9/scratch_g372/smoke/source_identity/SMOKE_1789068646.source_identity.json
+sidecar_fields 11 missing []
+sidecar {"claim_utc": "2026-09-10T19:30:46Z", "crop_rule": "TOPCUT = 60", "daemon_pid": 4092345, "deploy_manifest_sha256": "2bbd585a6450514d7c8b3e69a695df4e2e2d583589ee5c1d45e855da2582b33f", "ffprobe": {"codec": "h264", "first_pts": 0.0, "fps": "30/1", "height": 1080, "nb_frames": "3961", "start_time_kind": "DECODED_PTS", "status": "OK", "width": 1920}, "route_digest": {"scripts/run_clip.py": "ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2", "src/pipeline/unified_pipeline.py": "c4eae385bfeebd4e44c8161c791ef7ed4589697020f424d3dde7aec6816d9226", "src/tracking/ball_detect_track.py": "cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea"}, "source_bytes": 19960440, "source_path": "/workspace/wt/a9/scratch_g372/smoke/nba__RIrGQJ_jsGQ_s6690.mp4", "source_sha256": "0bb70000aaabbfd72a3508c399577d4281737022d9dcc42809f6ef178a9b2b46", "terminal_diagnostic": "", "weight_digest"
+journal_rows [{"claim_utc": "2026-09-10T19:30:46Z", "diagnostic": "", "game_id": "SMOKE_1789068646", "source_identity_path": "/workspace/wt/a9/scratch_g372/smoke/source_identity/SMOKE_1789068646.source_identity.json", "state": "RESERVED"}]
+SMOKE_PASS
+smoke_rc=0
+=== SMOKE run_clip SCHEMA 2026-09-10T19:31:05Z ===
+=== RESTART SEQUENCE 2026-09-10T19:33:08Z ===
+old_pid 475000
+--- in-flight children at SIGTERM ---
+    PID     ELAPSED COMMAND
+3923282       05:29 /usr/bin/python3 scripts/run_clip.py --video data/footage_bridge/basketball__fiba-Y1cgaIWW8gk_s5543.mp4 --game-id fiba-Y1cgaIWW8gk_s5543 --no-show --frames 3000 --data-dir data/tracking/fiba-Y1cgaIWW8gk_s5543
+3988996       04:28 /usr/bin/python3 scripts/run_clip.py --video data/footage_bridge/nba__RIrGQJ_jsGQ_s1475.mp4 --game-id RIrGQJ_jsGQ_s1475 --no-show --frames 3000 --data-dir data/tracking/RIrGQJ_jsGQ_s1475
+3989022       04:28 /usr/bin/python3 scripts/run_clip.py --video data/footage_bridge/nba__RIrGQJ_jsGQ_s155.mp4 --game-id RIrGQJ_jsGQ_s155 --no-show --frames 3000 --data-dir data/tracking/RIrGQJ_jsGQ_s155
+4001038       04:07 /usr/bin/python3 scripts/run_clip.py --video data/footage_bridge/nba__RIrGQJ_jsGQ_s2795.mp4 --game-id RIrGQJ_jsGQ_s2795 --no-show --frames 3000 --data-dir data/tracking/RIrGQJ_jsGQ_s2795
+4001090       04:07 /usr/bin/python3 scripts/run_clip.py --video data/footage_bridge/nba__RIrGQJ_jsGQ_s4115.mp4 --game-id RIrGQJ_jsGQ_s4115 --no-show --frames 3000 --data-dir data/tracking/RIrGQJ_jsGQ_s4115
+4044779       03:06 /usr/bin/python3 scripts/run_clip.py --video data/footage_bridge/nba__RIrGQJ_jsGQ_s5435.mp4 --game-id RIrGQJ_jsGQ_s5435 --no-show --frames 3000 --data-dir data/tracking/RIrGQJ_jsGQ_s5435
+4155831       01:24 /usr/bin/python3 scripts/run_clip.py --video data/footage_bridge/ncaa_basketball__0KIBu1jQBL8_s5730.mp4 --game-id 0KIBu1jQBL8_s5730 --no-show --frames 3000 --data-dir data/tracking/0KIBu1jQBL8_s5730
+4179432       01:04 /usr/bin/python3 scripts/run_clip.py --video data/footage_bridge/wnba__1E5Rw89keTg_s599.mp4 --game-id 1E5Rw89keTg_s599 --no-show --frames 3000 --data-dir data/tracking/1E5Rw89keTg_s599
+--- ledger snapshot at T_RESTART ---
+43e949405d5c892dc45d8edb1600362497fa135300aafd7cee1039de154fb9ae  /workspace/wt/a9/docs/evidence/tracking/g372_inline_source_pinning_2026-09-10/ledger_snapshot_before.jsonl
+1189 /workspace/wt/a9/docs/evidence/tracking/g372_inline_source_pinning_2026-09-10/ledger_snapshot_before.jsonl
+--- start watcher ---
+watcher_pid 66122
+T_RESTART 2026-09-10T19:33:10Z epoch 1789068790
+66122 bash -c set -e E=/workspace/wt/a9/docs/evidence/tracking/g372_inline_source_pinning_2026-09-10 L=$E/deploy_log.txt { echo "=== RESTART SEQUENCE $(date -u +%FT%TZ) ===" OLD=$(cat /workspace/track_daemon.pid) echo "old_pid $OLD" echo "--- in-flight children at SIGTERM ---" ps -o pid,etime,args --ppid $OLD 2>/dev/null | sed -n "1,40p" echo "--- ledger snapshot at T_RESTART ---" cp /workspace/data/tracking/track_daemon_ledger.jsonl $E/ledger_snapshot_before.jsonl sha256sum $E/ledger_snapshot_before.jsonl wc -l $E/ledger_snapshot_before.jsonl echo "--- start watcher ---" cd /workspace/deploy/nba-ai-system setsid nohup python3 -u /workspace/wt/a9/scratch_g372/pin_watcher.py </dev/null > /workspace/wt/a9/scratch_g372/pin_watcher.log 2>&1 & sleep 2 echo "watcher_pid $(pgrep -f pin_watcher.py | head -1)" T_RESTART=$(date -u +%FT%TZ); T_EPOCH=$(date +%s) echo "T_RESTART $T_RESTART epoch $T_EPOCH" echo "$T_RESTART $T_EPOCH $OLD" > /workspace/wt/a9/scratch_g372/T_RESTART.txt kill $OLD for i in $(seq 1 60); do   if ! pgrep -f "track_daemon.py --workers" >/dev/null; then echo "daemon_gone_after ${i}s"; break; fi   sleep 1 done pgrep -af "track_daemon.py --workers" || echo "no track_daemon.py process remains" echo "--- relaunch ---" bash /workspace/start_daemon.sh 8 sleep 5 NEW=$(cat /workspace/track_daemon.pid) echo "new_pid $NEW" ps -o pid,lstart,args -p $NEW ls -t /workspace/track_daemon_*.log | head -1 } 2>&1 | tee -a $L
+66124 bash -c set -e E=/workspace/wt/a9/docs/evidence/tracking/g372_inline_source_pinning_2026-09-10 L=$E/deploy_log.txt { echo "=== RESTART SEQUENCE $(date -u +%FT%TZ) ===" OLD=$(cat /workspace/track_daemon.pid) echo "old_pid $OLD" echo "--- in-flight children at SIGTERM ---" ps -o pid,etime,args --ppid $OLD 2>/dev/null | sed -n "1,40p" echo "--- ledger snapshot at T_RESTART ---" cp /workspace/data/tracking/track_daemon_ledger.jsonl $E/ledger_snapshot_before.jsonl sha256sum $E/ledger_snapshot_before.jsonl wc -l $E/ledger_snapshot_before.jsonl echo "--- start watcher ---" cd /workspace/deploy/nba-ai-system setsid nohup python3 -u /workspace/wt/a9/scratch_g372/pin_watcher.py </dev/null > /workspace/wt/a9/scratch_g372/pin_watcher.log 2>&1 & sleep 2 echo "watcher_pid $(pgrep -f pin_watcher.py | head -1)" T_RESTART=$(date -u +%FT%TZ); T_EPOCH=$(date +%s) echo "T_RESTART $T_RESTART epoch $T_EPOCH" echo "$T_RESTART $T_EPOCH $OLD" > /workspace/wt/a9/scratch_g372/T_RESTART.txt kill $OLD for i in $(seq 1 60); do   if ! pgrep -f "track_daemon.py --workers" >/dev/null; then echo "daemon_gone_after ${i}s"; break; fi   sleep 1 done pgrep -af "track_daemon.py --workers" || echo "no track_daemon.py process remains" echo "--- relaunch ---" bash /workspace/start_daemon.sh 8 sleep 5 NEW=$(cat /workspace/track_daemon.pid) echo "new_pid $NEW" ps -o pid,lstart,args -p $NEW ls -t /workspace/track_daemon_*.log | head -1 } 2>&1 | tee -a $L
+--- relaunch ---
+127417
+new_pid 127417
+    PID                  STARTED COMMAND
+ 127417 Thu Sep 10 19:34:11 2026 python3 -u scripts/platformkit/track_daemon.py --workers 8 --forever
+/workspace/track_daemon_2026-09-101934.log
+=== BEFORE window [1789065190,1789068790) ===
+BEFORE_all {"clips_per_hour": 78.0, "max_s": 673.0, "median_s": 406.0, "min_s": 40.0, "n_rows": 78, "n_unique": 75, "q1_s": 299.0, "q3_s": 447.0}
+per_sport {"basketball": {"median_s": 378.0, "n": 40}, "nba": {"median_s": 284.0, "n": 6}, "ncaa_basketball": {"median_s": 426.5, "n": 30}, "wnba": {"median_s": 406.0, "n": 2}}
+keyset_n 31
+has_source_identity_path False
+{"control": "identical_read", "input": "/workspace/data/tracking/source_identity/0KIBu1jQBL8_s5730.source_identity.json", "kind": "LIVE_SIDECAR", "value_a": "f1b93db06b18661ec903337fc9cf10937aa53f1b1bd3d7304e3cb050260714f7", "value_b": "f1b93db06b18661ec903337fc9cf10937aa53f1b1bd3d7304e3cb050260714f7", "verdict": "PASS"}
+{"control": "deterministic_write", "input": "/workspace/data/tracking/source_identity/0KIBu1jQBL8_s5730.source_identity.json", "kind": "FIXED_PAYLOAD_FROM_LIVE_SIDECAR", "value_a": "f1b93db06b18661ec903337fc9cf10937aa53f1b1bd3d7304e3cb050260714f7", "value_b": "f1b93db06b18661ec903337fc9cf10937aa53f1b1bd3d7304e3cb050260714f7", "verdict": "PASS"}
+{"control": "immutable_no_rewrite", "input": "/workspace/wt/a9/scratch_g372/controls/det_a.json", "kind": "FIXED_PAYLOAD_FROM_LIVE_SIDECAR", "value_a": "FileExistsError", "value_b": "", "verdict": "PASS"}
+=== FINDING EVIDENCE 2026-09-10T19:40:16Z ===
+F1 deploy-tree per-file daemon test: UNPATCHED 2 passed / PATCHED 1 failed 1 passed (baseline re-run archived above)
+F2 the patched claim thread catches only (OSError, ValueError); the pytest double raised TypeError, so NO terminal row was journaled for the two game_id=queued reservations
+F3 weight digest is EMPTY: data/models holds only osnet_x0_25_imagenet.pth; the real detector weights are:
+/workspace/deploy/nba-ai-system/models/weights/yolov8n_ball.pt
+/workspace/deploy/nba-ai-system/resources/yolov8n.pt
+/workspace/deploy/nba-ai-system/yolov8n-pose.pt
+/workspace/deploy/nba-ai-system/yolov8n.pt
+F4 _PENDING entries are popped only on dispatch; a reserved video that stops being claimable leaves a stale entry
+=== AFTER SNAPSHOT AND ANALYSIS 2026-09-10T20:35:18Z ===
+c494d1e2be79b7b1627e5e49f2979c5c813a6fb3d585e3b259bf9292fb9d0b3e  docs/evidence/tracking/g372_inline_source_pinning_2026-09-10/ledger_snapshot_after.jsonl
+1270
+--- AFTER window ---
+=== AFTER window [1789068853,1789072453) ===
+AFTER_all {"clips_per_hour": 78.0, "max_s": 605.0, "median_s": 40.0, "min_s": 40.0, "n_rows": 78, "n_unique": 43, "q1_s": 40.0, "q3_s": 426.0}
+AFTER_non_straddle {"clips_per_hour": 78.0, "max_s": 605.0, "median_s": 40.0, "min_s": 40.0, "n_rows": 78, "n_unique": 43, "q1_s": 40.0, "q3_s": 426.0}
+straddle_n 0
+per_sport {"basketball": {"median_s": 40.0, "n": 42}, "nba": {"median_s": 40.0, "n": 11}, "ncaa_basketball": {"median_s": 426.0, "n": 21}, "wnba": {"median_s": 466.0, "n": 4}}
+keyset_n 32
+has_source_identity_path True
+--- coverage / join ---
+{
+ "T0": 1789068853,
+ "T1": 1789072453,
+ "agree": 43,
+ "agreement_over_attempts": 1.0,
+ "agreement_over_joinable": 1.0,
+ "bound_attempts": 43,
+ "claim_attempts": 81,
+ "coverage": 1.0,
+ "coverage_per_claim_attempt": 0.530864,
+ "disagree": 0,
+ "distinct_videos_claims": 13,
+ "distinct_videos_joined": 13,
+ "pin_lag_max_s": 2.0,
+ "pins_attempted": 43,
+ "pins_joinable": 43,
+ "repeat_claim_attempts": 38,
+ "reservations": 81,
+ "sidecars_present": 43,
+ "sidecars_valid": 43,
+ "terminal_error_ids": [
+  "RIrGQJ_jsGQ_s6690",
+  "fiba-7HQqWMaKxpA_s6980",
+  "fiba-Y1cgaIWW8gk_s6825",
+  "fiba-Y1cgaIWW8gk_s90",
+  "fiba-fyp4VsE-8Fc_s90",
+  "fiba-tZeqmc_-_sA_s6365",
+  "fiba-tZeqmc_-_sA_s90"
+ ],
+ "terminal_error_rows": 38,
+ "unique_claims": 43
+}
+--- schema diff ---
+PRODUCER TABLE (tracking_data.csv) COLUMN DIFF
+before_game 0KIBu1jQBL8_s155 cols 73
+after_game G8bPOW37Sp0_s615 cols 73
+only_before []
+only_after []
+order_identical True
+PRODUCER_SCHEMA_DIFF EMPTY
+
+COMPLETION LEDGER KEY SET DIFF
+before_rows 200 keys 31
+after_rows 81 keys 32
+removed_or_renamed []
+added ["source_identity_path"]
+additive_only True
+after_rows_with_source_identity_path 81 of 81
+after_rows_with_NON_NULL_source_identity_path 43
+
+=== RE-CLAIM ASSOCIATION CHECK 2026-09-10T20:36:09Z ===
+terminal_ids 7
+terminal_ids_with_a_guard_DEL 0 []
+guard_DEL_total 29
+corpus_now 97
+terminal_ids_still_in_corpus 7
+=== THROUGHPUT 2026-09-10T22:02:29Z ===
+{
+ "after": {
+  "arrivals_distinct_game_id": 43,
+  "clips_per_hour": 78.0,
+  "decoded_frames_median": 3901.0,
+  "hi": 1789072453,
+  "lo": 1789068853,
+  "mean_active_load": 4.639,
+  "median_seconds_non_straddle": 40.0,
+  "median_seconds_per_clip": 40.0,
+  "n_rows": 78,
+  "n_rows_non_straddle": 78,
+  "n_unique_game_id": 43,
+  "straddle_n": 0,
+  "window": "AFTER"
+ },
+ "before": {
+  "arrivals_distinct_game_id": 73,
+  "clips_per_hour": 78.0,
+  "decoded_frames_median": 3901.0,
+  "hi": 1789068790,
+  "lo": 1789065190,
+  "mean_active_load": 7.617,
+  "median_seconds_per_clip": 406.0,
+  "n_rows": 78,
+  "n_unique_game_id": 75,
+  "window": "BEFORE"
+ },
+ "replay_all_completed_pairs": {
+  "control_median_s": 368.64,
+  "median_bind_s": 1.52,
+  "n_pairs": 27,
+  "ratio": 1.0194,
+  "treatment_median_s": 375.79
+ },
+ "replay_rc0_pairs": {
+  "control_median_s": 368.64,
+  "median_bind_s": 1.52,
+  "n_pairs": 27,
+  "ratio": 1.0194,
+  "treatment_median_s": 375.79
+ },
+ "replay_verdict": "NOT VALIDATED (27 completed pairs against the sealed >= 30 bar; A3.10 budget 100 min)",
+ "window_clause_note": "DESCRIPTIVE ONLY -- unchanged clips per hour is never a pass on its own (spec ACCEPTANCE RULE throughput clause)",
+ "window_ratio_all": 0.0985,
+ "window_ratio_non_straddle": 0.0985
+}
+--- like-for-like status stratum (DESCRIPTIVE, conditions on outcome) ---
+BEFORE {'tracked': 68, 'thin': 10} tracked_n 68 tracked_median 426.0 thin_n 10 repeat_rows 3
+AFTER {'tracked': 36, 'thin': 42} tracked_n 36 tracked_median 426.5 thin_n 42 repeat_rows 35
+--- run1 (discarded procedure) summary ---
+run1 completed 17 both_rc0 3

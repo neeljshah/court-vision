@@ -1,0 +1,4 @@
+control,input_kind,input_bytes,resolution,result,classification
+identical_read,CONSTRUCT,58883653,N/A,PASS,CONSTRUCT
+byte_flip,CONSTRUCT,58883653,N/A,PASS,CONSTRUCT
+deterministic_write,CONSTRUCT,765,N/A,PASS,CONSTRUCT

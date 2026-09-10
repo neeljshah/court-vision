@@ -1,0 +1,93 @@
+G372 phase-A before-conditions, pod d69708b8b854, run 2026-09-10T18:17:46Z
+
+COMMAND 1 (code identity), verbatim from G372_spec.md:
+cd /workspace/deploy/nba-ai-system && sha256sum scripts/platformkit/track_daemon.py scripts/platformkit/track_daemon_done.py && nl -ba scripts/platformkit/track_daemon.py | sed -n 323,389p && nl -ba scripts/platformkit/track_daemon_done.py | sed -n 262,275p
+--- stdout ---
+9747d9a085405c492f04c4e3b162ed8b1d897309da6f0f9c014cb7092056f5ac  scripts/platformkit/track_daemon.py
+75cbff79cd115952ad14f76c94ab5fdb62239f30841b06e73b967473a2d69f70  scripts/platformkit/track_daemon_done.py
+   323	    _record_loudly(mark_degenerate(entry, TRACKING / job["game_id"], job["started"]))
+   324	    print("%s %s %s rows=%d passed=%s %s"
+   325	          % (job["game_id"], job["sport"], entry["status"], rows, entry["passed"],
+   326	             ";".join(entry["failure_heads"])[:90]), flush=True)
+   327	    for video in job.get("retained_videos", [job["video"]]):
+   328	        retain(video, CORPUS, lambda message: print(message, flush=True))
+   329	    try:
+   330	        job["log"].unlink(missing_ok=True)
+   331	    except OSError as exc:
+   332	        print("cleanup failed %s: %s" % (job["log"], exc), flush=True)
+   333	def tick(active: dict, workers: int, adjudication_holds_slot: bool = False) -> None:
+   334	    """Reap finished jobs, then fill free slots. One pass, never blocking."""
+   335	    for name, job in list(active.items()):
+   336	        adjudication = job.get("adjudication")
+   337	        if adjudication is not None:
+   338	            if adjudication.is_alive():
+   339	                if time.monotonic() - job["adjudication_started"] <= ADJUDICATION_TIMEOUT_SECONDS:
+   340	                    continue
+   341	                job["adjudication_timed_out"] = True
+   342	                print("%s adjudication exceeded %ds -- recording timeout"
+   343	                      % (job["game_id"], ADJUDICATION_TIMEOUT_SECONDS), flush=True)
+   344	                _finish(name, active.pop(name), adjudication_timed_out=True, prepared=True)
+   345	                continue
+   346	            error = job.get("adjudication_error")
+   347	            if error is not None:
+   348	                print("adjudication failed %s: %s" % (job["game_id"], error), flush=True)
+   349	            _finish(name, active.pop(name), graded=job.get("graded"), prepared=True)
+   350	        elif job["proc"].poll() is not None:
+   351	            _begin_adjudication(job)
+   352	        elif time.time() - job["started"] > job_timeout(job["sport"]):
+   353	            print("%s exceeded %ds -- killing to free the slot"
+   354	                  % (job["game_id"], job_timeout(job["sport"])), flush=True)
+   355	            try:
+   356	                job["proc"].kill()
+   357	            except OSError as exc:
+   358	                print("kill failed %s: %s" % (job["game_id"], exc), flush=True)
+   359	            _finish(name, active.pop(name), timed_out=True)
+   360	    tracking_active = slots_in_use(active, adjudication_holds_slot)
+   361	    for path, sport, game_id in claimable(active):
+   362	        if tracking_active >= workers:
+   363	            break
+   364	        # PASS and FAIL are both done once the frozen harness sidecar has been
+   365	        # atomically written after fsyncing a nonempty CSV.  A missing verdict
+   366	        # is never inferred from rows, so it is re-tracked rather than erased.
+   367	        if read_adjudicated(TRACKING, game_id) and (CORPUS / path.name).exists():
+   368	            print("%s already adjudicated, dropping staged duplicate"
+   369	                  % game_id, flush=True)
+   370	            for video in sibling_paths(STAGE, sport, game_id):
+   371	                retain(video, CORPUS, lambda message: print(message, flush=True))
+   372	            continue
+   373	        log_path = path.with_suffix(".log")
+   374	        try:
+   375	            handle = log_path.open("w", encoding="utf-8")
+   376	            proc = subprocess.Popen(build_command(sport, path, game_id),
+   377	                                    stdout=handle, stderr=subprocess.STDOUT)
+   378	        except OSError as exc:
+   379	            print("launch failed %s: %s" % (game_id, exc), flush=True)
+   380	            continue
+   381	        siblings = sibling_paths(STAGE, sport, game_id)
+   382	        active[path.name] = {"proc": proc, "video": path, "log": log_path,
+   383	                             "sport": sport, "game_id": game_id,
+   384	                             "started": time.time(), "source": probe_source(path),
+   385	                             "source_variants": [item.name for item in siblings if item != path],
+   386	                             "retained_videos": siblings}
+   387	        tracking_active += 1
+   388	        print("tracking %s (%s), %d active" % (game_id, sport, len(active)),
+   389	              flush=True)
+   262	def retain(video: Path, corpus: Path, printer: Callable[[str], None]) -> bool:
+   263	    """Move footage; a failed move is renamed out of the claimable glob."""
+   264	    try:
+   265	        corpus.mkdir(parents=True, exist_ok=True)
+   266	        video.replace(corpus / video.name)
+   267	        return True
+   268	    except OSError as exc:
+   269	        failed = video.with_name(video.name + ".failed")
+   270	        try:
+   271	            video.replace(failed)
+   272	            printer("retain failed %s: %s -- renamed %s" % (video, exc, failed))
+   273	        except OSError as rename_exc:
+   274	            printer("retain failed %s: %s; rename failed: %s" %
+   275	                    (video, exc, rename_exc))
+
+COMMAND 2 (survival distribution over the last 120 min of ledger rows), verbatim from G372_spec.md:
+--- stdout ---
+fresh_n 133 available 23 aged_n 58 aged_available 0 aged_share 0.0 median_deletion_age UNKNOWN
+--- run at 2026-09-10T18:17:59Z; deploy data resolves to /workspace/deploy/nba-ai-system/data
