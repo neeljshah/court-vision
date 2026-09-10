@@ -1,0 +1,45 @@
+{
+  "row": "G367",
+  "set": "orientation",
+  "n_sheets": 54,
+  "labels": [
+    "left",
+    "right",
+    "unknown"
+  ],
+  "rater_label_counts": {
+    "terra": {
+      "left": 13,
+      "right": 15,
+      "unknown": 26
+    },
+    "sol": {
+      "left": 13,
+      "right": 15,
+      "unknown": 26
+    }
+  },
+  "n_agree": 48,
+  "raw_agreement": 0.888889,
+  "expected_agreement_pe": 0.366941,
+  "cohen_kappa": 0.824485,
+  "kappa_formula": "kappa = (po - pe) / (1 - pe); po = agreements / n over the two primary raters; pe = sum over the three labels c in {left,right,unknown} of p_terra(c) * p_sol(c), each marginal taken over the same n sheets",
+  "n_adjudicated": 6,
+  "adjudicated_label_counts": {
+    "left": 1,
+    "right": 3,
+    "unknown": 2
+  },
+  "reference_label_counts": {
+    "left": 12,
+    "right": 16,
+    "unknown": 26
+  },
+  "n_labelled_left_right": 28,
+  "unadjudicated_frames": [],
+  "per_class_rail_n_ge_30": {
+    "n_left": 12,
+    "n_right": 16,
+    "meets_rail": false
+  }
+}

@@ -1,0 +1,24 @@
+DISPATCHED run=1788991609754729900 tag=g367_rater_terra_01 wt=a10 at 2026-09-09T17:06:49-05:00
+STARTED pid=25104 birth=1788991609.760
+agent: I\u2019ll inspect each sheet\u2019s main frame and three-frame strip, then return only the requested CSV lines.
+agent: 02dddb34b9b8,RIGHT,ball at right basket
+06f27f5134ec,UNKNOWN,close-up
+07265745508f,RIGHT,shot at right basket
+0b8e8327fa09,UNKNOWN,close-up graphic
+0d853150976d,UNKNOWN,midcourt view
+143228f627bf,UNKNOWN,basket not visible
+15401bcf5ba9,LEFT,drive toward left paint
+17291a8cec9b,UNKNOWN,celebration close-up
+1bc84eef0172,UNKNOWN,graphic
+242bb07ea212,LEFT,offence set at left basket
+2f7155b1fa05,UNKNOWN,timeout bench
+3122fc9a9ad8,LEFT,inbound moving left
+375db5b3677c,UNKNOWN,bench close-up
+376e8cd89f67,RIGHT,play at right basket
+3fcafd69932d,RIGHT,offence at right basket
+54fd99746827,RIGHT,ballhandler attacks right basket
+5558ffd9de43,LEFT,offence set toward left basket
+620729444f54,UNKNOWN,pre-game introduction
+TURN_END turn.completed at 2026-09-09T17:07:32-05:00
+EXIT:0 gap=g367_rater_terra_01 at 2026-09-09T17:07:32-05:00
+DRAINED

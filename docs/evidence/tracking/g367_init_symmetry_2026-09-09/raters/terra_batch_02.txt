@@ -1,0 +1,24 @@
+DISPATCHED run=1788991678589789000 tag=g367_rater_terra_02 wt=a10 at 2026-09-09T17:07:58-05:00
+STARTED pid=22852 birth=1788991678.594
+agent: I\u2019ll inspect each sheet directly and classify only what the frames visibly support.
+agent: 62883553c6b7,UNKNOWN,close-up
+62d42af3b7de,UNKNOWN,dead ball near sideline
+637217c2143b,UNKNOWN,aerial arena view
+66790fc43dfb,LEFT,ballhandler attacks left basket
+692bf76ed482,RIGHT,shot at right basket
+772a984d9c44,UNKNOWN,players lined up
+78ffd0ac4569,LEFT,ballhandler advances left
+7de4cb670552,UNKNOWN,close-up
+81187356c30b,RIGHT,ballhandler attacks right basket
+86075dea486d,UNKNOWN,close-up
+879870a27bd5,LEFT,shot at left-side basket
+8bf65dace3da,RIGHT,offence set toward right basket
+9490160d883c,UNKNOWN,graphic overlay
+96d70941bb6f,LEFT,offence set toward left basket
+9d43dd8c41cd,RIGHT,shot at right basket
+a6f1af31cd51,LEFT,ballhandler attacks left basket
+a96a6444cb96,UNKNOWN,courtside interview
+aa91021cefdd,UNKNOWN,ball close-up
+TURN_END turn.completed at 2026-09-09T17:08:29-05:00
+EXIT:0 gap=g367_rater_terra_02 at 2026-09-09T17:08:30-05:00
+DRAINED

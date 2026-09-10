@@ -1,0 +1,23 @@
+DISPATCHED run=1788991926417536100 tag=g367_rater_sol_02 wt=a10 at 2026-09-09T17:12:06-05:00
+STARTED pid=27340 birth=1788991926.422
+agent: 62883553c6b7,UNKNOWN,player close-up
+62d42af3b7de,UNKNOWN,dead-ball sideline view
+637217c2143b,UNKNOWN,arena-wide graphic
+66790fc43dfb,LEFT,offence finishing at left basket
+692bf76ed482,UNKNOWN,tight basket close-up
+772a984d9c44,UNKNOWN,pregame introductions
+78ffd0ac4569,LEFT,ballhandler advancing toward left basket
+7de4cb670552,UNKNOWN,player close-up
+81187356c30b,RIGHT,offence set at right basket
+86075dea486d,UNKNOWN,bench close-up
+879870a27bd5,UNKNOWN,tight basket close-up
+8bf65dace3da,RIGHT,offence set at right basket
+9490160d883c,UNKNOWN,player graphic close-up
+96d70941bb6f,LEFT,offence set at left basket
+9d43dd8c41cd,RIGHT,offence shooting at right basket
+a6f1af31cd51,LEFT,offence set at left basket
+a96a6444cb96,UNKNOWN,courtside interview
+aa91021cefdd,UNKNOWN,ball close-up without court
+TURN_END turn.completed at 2026-09-09T17:13:14-05:00
+EXIT:0 gap=g367_rater_sol_02 at 2026-09-09T17:13:14-05:00
+DRAINED

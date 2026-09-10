@@ -1,0 +1,24 @@
+DISPATCHED run=1788992010403020400 tag=g367_rater_sol_03 wt=a10 at 2026-09-09T17:13:30-05:00
+STARTED pid=6204 birth=1788992010.407
+agent: I\u2019ll open and inspect each sheet, then return only the requested CSV lines.
+agent: aacddd6cd90e,UNKNOWN,bench graphic
+af67077cefd2,RIGHT,ballhandler advancing right
+b082cf8e4bce,UNKNOWN,bench close-up
+b5af795b24f0,UNKNOWN,replay dissolve
+b685ece1187f,LEFT,offense set at left basket
+ba519d9d2c6c,RIGHT,offense set at right basket
+bf4d06695caf,UNKNOWN,player close-up
+bf8ec16d7fd8,LEFT,offense set at left basket
+c54a334623a1,RIGHT,free throw at right basket
+cd43f357d0f4,LEFT,inbound starts toward left
+d9ae8fcaf955,UNKNOWN,bench close-up
+da9f320e8c54,RIGHT,offense set at right basket
+e24c7bccdd36,LEFT,offense set at left basket
+e693a2246744,UNKNOWN,coach close-up
+ec6d39d3cc72,UNKNOWN,broadcast graphic
+f2316aba3940,RIGHT,ballhandler advancing right
+f297b0aac678,RIGHT,offense at right basket
+f2e679257cd0,UNKNOWN,end-quarter close-up
+TURN_END turn.completed at 2026-09-09T17:15:13-05:00
+EXIT:0 gap=g367_rater_sol_03 at 2026-09-09T17:15:13-05:00
+DRAINED

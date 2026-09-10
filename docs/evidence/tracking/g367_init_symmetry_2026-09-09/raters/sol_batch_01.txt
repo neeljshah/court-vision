@@ -1,0 +1,24 @@
+DISPATCHED run=1788991787777240600 tag=g367_rater_sol_01 wt=a10 at 2026-09-09T17:09:47-05:00
+STARTED pid=23780 birth=1788991787.786
+agent: I\u2019m opening each sheet and rating only visible directional evidence.
+agent: 02dddb34b9b8,RIGHT,offence is set around the right basket
+06f27f5134ec,UNKNOWN,player close-up with no court direction
+07265745508f,RIGHT,shot is directed at the right basket
+0b8e8327fa09,UNKNOWN,bench close-up with no live court
+0d853150976d,LEFT,ballhandler is advancing toward the left half
+143228f627bf,RIGHT,post player is attacking toward the right baseline
+15401bcf5ba9,LEFT,ballhandler is driving toward the left paint
+17291a8cec9b,UNKNOWN,postgame celebration with no active offence
+1bc84eef0172,UNKNOWN,full-screen player graphic
+242bb07ea212,LEFT,offence is advancing toward the left basket
+2f7155b1fa05,UNKNOWN,timeout bench shot with no active offence
+3122fc9a9ad8,LEFT,right-baseline inbound will attack the opposite basket
+375db5b3677c,UNKNOWN,bench close-up with no active court
+376e8cd89f67,RIGHT,offence is positioned at the right basket
+3fcafd69932d,RIGHT,offence is set against the right basket
+54fd99746827,RIGHT,offence is attacking the visible right basket
+5558ffd9de43,LEFT,offence is set around the left basket
+620729444f54,UNKNOWN,pregame introduction with no active offence
+TURN_END turn.completed at 2026-09-09T17:11:38-05:00
+EXIT:0 gap=g367_rater_sol_01 at 2026-09-09T17:11:38-05:00
+DRAINED
