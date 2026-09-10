@@ -1,4 +1,4 @@
-GAP G374 | sport basketball | worktree a10 | log cx_g374_court_presence_validation
+GAP G374 | sport basketball | worktree a14 | log cx_g374_court_presence_validation
 
 **VALIDATION ROW FOR THE FROZEN G364 HEAD, SUCCESSOR TO G364 PHASE 1 (PARTIAL 2026-09-10 c6dd183f4: development reference complete --
 240 blind sheets, terra+sol kappa 0.916186, 125 USABLE_COURT / 74 CLOSEUP / 40 CROWD_GRAPHICS / 1 UNKNOWN; ResNet-18 frozen features
