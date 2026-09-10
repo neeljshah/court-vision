@@ -1,0 +1,44 @@
+{
+ "crop": {
+  "crop_rule": "TOPCUT = 60",
+  "pixel_transform": "(x, y) -> (x, y-60) after frame[TOPCUT:]",
+  "producer_config": "src/tracking/video_handler.py:11,61",
+  "rule": "TOPCUT = 60"
+ },
+ "manifest_sha256": "2444276558d030b5191e1160000829b299fb82cc5306b1c24c0c2f5a477bb3b0",
+ "routes": {
+  "scripts/run_clip.py": {
+   "bytes": 36229,
+   "path": "scripts/run_clip.py",
+   "sha256": "ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2"
+  },
+  "src/pipeline/unified_pipeline.py": {
+   "bytes": 249303,
+   "path": "src/pipeline/unified_pipeline.py",
+   "sha256": "c4eae385bfeebd4e44c8161c791ef7ed4589697020f424d3dde7aec6816d9226"
+  },
+  "src/tracking/ball_detect_track.py": {
+   "bytes": 53458,
+   "path": "src/tracking/ball_detect_track.py",
+   "sha256": "cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea"
+  }
+ },
+ "strip_cap_bytes": 204800,
+ "weights": {
+  "osnet_x0_25_imagenet.pth": {
+   "bytes": 2973731,
+   "path": "/workspace/deploy/nba-ai-system/data/models/osnet_x0_25_imagenet.pth",
+   "sha256": "f54941a66bad4ddd07f2907f498c810ce639ce7a1abeaf2a151f8da118d84693"
+  },
+  "yolov8n.pt": {
+   "bytes": 6549796,
+   "path": "/workspace/deploy/nba-ai-system/yolov8n.pt",
+   "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+  },
+  "yolov8n_ball.pt": {
+   "bytes": 6224995,
+   "path": "/workspace/deploy/nba-ai-system/models/weights/yolov8n_ball.pt",
+   "sha256": "bc979654e281c5de6e0e992e1f9587b3a9faa2eec996ea41b1b03954ba0b6e52"
+  }
+ }
+}

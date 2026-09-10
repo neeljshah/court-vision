@@ -1,0 +1,16 @@
+{
+ "alignment_landmarks": 996,
+ "attempted": 35,
+ "binding_status": "DONE",
+ "collision_count": 0,
+ "collisions": {},
+ "competitions": [
+  "N",
+  "euroleague",
+  "fiba",
+  "untagged"
+ ],
+ "manifest_sha256": "fe7e7dd9b949c1f701bcab3bfd1279c64e58f9d0090e540088c712dd7374e0c2",
+ "pinned": 32,
+ "unparseable_ids": []
+}
