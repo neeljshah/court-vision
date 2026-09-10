@@ -51,4 +51,9 @@ TEST: `tests/platformkit/test_g381_memo_digest_census.py` alone (resolution orde
 CRLF_ONLY is distinct from IDENTIFIES; the seal). **NEVER a full pytest.** Every new file <= 300 lines. Vocabulary follows contract Q6;
 automated scan required. Prereg sealed as its OWN commit first (`SEAL sha256 <hex>`). ASCII stdout. **NEVER PARK.**
 
-VERSION 2026-09-10
+AMENDMENT A1 2026-09-10 (sealed alone on lane a7, 33f540c91): every `git hash-object --no-filters` comparison above is REPLACED by the
+SHA-256 of the raw blob BYTES (`git cat-file -p`), because landed memos print `sha256sum` digests, not git object ids; artifact names
+resolve relative to the repo root, the memo's evidence dir, the memo's dir, then by unique basename; a 40-hex token equal to a
+reachable git object id is class OBJECT_ID (never UNRESOLVED). Run 1 under the original wording is archived, not landed.
+
+VERSION 2026-09-10 + A1
