@@ -702,3 +702,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-10 | tracking | G363 | landed CLOSED AT LIMIT (adjudicated): held-out C0 = 0 TP / 549 for the deployed route; winner arm 2/549, Wilson lower 0.00305, FP/N_absent 0.73251; identity rebuilt 881/881 by sha256; A8 LIMIT (0 audited boxes); two REJECT cycles recorded (B2 cured; Q1 amendment by commit order; Q2/Q4 not adopted; Q6 hits confined to sealed rater artifacts) | CLOSED AT LIMIT (adjudicated; codex-sol REJECT x2 verbatim)
 
+2026-09-10 | tracking | G368 | landed CLOSED AT LIMIT (adjudicated): motion share median 0.279919 (44 replacement fresh sections) / 0.507295 (G358 34); held steps attributed 1.000000 (CLAMP_OR_SUBPIXEL 0.584961 branch-unresolved, COAST_LOST 0.412200); controls exact; M1 removes held tails; PROPOSED position_source; strip TOTAL 364333 > 204800 | CLOSED AT LIMIT (verified: codex-sol x2, contract A/B/Q)
+

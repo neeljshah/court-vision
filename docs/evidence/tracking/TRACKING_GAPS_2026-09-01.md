@@ -7,6 +7,13 @@
 
 
 
+
+## G368 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G368 | all (basketball fixtures first) | premise HOLDS (motion share median 0.279919, p10 0.032064, p90 0.832640; 44 fresh-repl sections/10 videos -- G366's 59 lost with the pod, 6 survivors DIFFER; G358 sealed 34: 0.507295); held runs 8/146/361 p50/p90/max, 0.903985 rows in runs >= 2; attribution 1.000000 of 114,064 held steps (file:line), 12 branches (CLAMP_OR_SUBPIXEL 0.584961 branch-unresolved, COAST_LOST 0.412200, BBOX_FROZEN 0.002900); controls 10/10 exact; M1 removes held tails; no-coast 0.164718; coast_row_share 0.382881/0.462025/0.284535 > 0.20 -> PROPOSED position_source; strip TOTAL 364,333 > 204,800 sealed; tests 17+1 | g368_evaluated_tick_motion_2026-09-09.md; g368_evaluated_tick_motion_2026-09-09/{prereg, motion.csv, held_runs.csv, attribution.csv, consequence.csv, controls.csv, summary.json, fresh_sections_replacement.csv, strips/, PROPOSED_position_source.md}; G368_VERIFY_att1_CLOSED_AT_LIMIT_2026-09-10.md; G368_VERIFY_2026-09-10.md | **CLOSED AT LIMIT (adjudicated) -- licenses the M1 held-tail removal and the position_source proposal as a research note only; per-branch attribution needs producer fields the tables lack** |
+
 ## G363 result register
 
 | Gap | Sport | Finding | Evidence | Status |
