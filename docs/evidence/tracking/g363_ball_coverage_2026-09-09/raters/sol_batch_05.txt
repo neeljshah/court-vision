@@ -1,0 +1,20 @@
+17b7e5165d18,VISIBLE,86.0,153.0,32.0,30.0,blurred ball by left player
+17d6fcd7fb73,ABSENT,,,,,bench closeup with no ball
+1857d246757a,ABSENT,,,,,sideline closeup with no ball
+18655fec2b19,ABSENT,,,,,players obscure no visible ball
+189ad3ac6748,VISIBLE,361.0,366.0,21.0,20.0,ball held by red player
+18d717b95aad,VISIBLE,234.0,208.0,20.0,20.0,ball partly behind white player
+18f0cbe4d4c6,ABSENT,,,,,wide court view with no ball
+18f3d180b485,VISIBLE,550.0,242.0,14.0,15.0,ball held near player waist
+1964f056bc85,VISIBLE,360.0,245.0,24.0,22.0,ball beside raised arm
+196f3c56062a,ABSENT,,,,,coach closeup with no ball
+19aa39df5c12,ABSENT,,,,,wide court view with no ball
+1a1a5c6d446a,ABSENT,,,,,players visible with no ball
+1ac73a2dcdf1,ABSENT,,,,,team huddle with no ball
+1b52ab7e5d34,ABSENT,,,,,basket area with no ball
+1b7184dbaa29,ABSENT,,,,,pregame scene with no ball
+1b86f4d0f72a,VISIBLE,726.0,319.0,14.0,15.0,ball bouncing beside player
+1bde52a9fa30,VISIBLE,424.0,38.0,35.0,34.0,airborne ball above players
+1bf643c2eec3,ABSENT,,,,,half-court action with no ball
+1d1cb6529078,VISIBLE,393.0,217.0,21.0,19.0,ball held near baseline
+1dbb98c89d42,VISIBLE,543.0,139.0,28.0,26.0,airborne ball above lane

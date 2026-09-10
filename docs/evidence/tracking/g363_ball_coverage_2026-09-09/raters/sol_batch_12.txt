@@ -1,0 +1,20 @@
+42118b6a72a0,VISIBLE,600.0,206.0,17.0,13.0,motion blurred airborne ball
+422239c9c6fb,ABSENT,,,,,no basketball visible
+429d0d1fbda6,ABSENT,,,,,bench scene without ball
+438ec97a3648,VISIBLE,359.0,218.0,28.0,25.0,ball left of rim
+4391d4db24bc,ABSENT,,,,,interview scene without ball
+43abca024ee0,VISIBLE,384.0,274.0,17.0,16.0,partially occluded ball
+442d0172d04a,VISIBLE,232.0,292.0,20.0,19.0,dribbling ball on logo
+44d2f30b6681,ABSENT,,,,,player closeup without ball
+45111e3bd05a,ABSENT,,,,,player closeup without ball
+45926cdb573c,ABSENT,,,,,player closeup without ball
+45cfedb36b91,VISIBLE,450.0,222.0,61.0,62.0,ball contacting rim
+4650fce328c9,VISIBLE,813.0,193.0,22.0,19.0,ball held at waist
+4680eba1cd06,VISIBLE,623.0,256.0,20.0,20.0,ball beside defender
+46b6196afc9b,VISIBLE,680.0,214.0,25.0,25.0,ball held on baseline
+470cd9afd8c5,VISIBLE,752.0,425.0,94.0,84.0,closeup ball being dribbled
+473ef42aba19,VISIBLE,347.0,243.0,29.0,21.0,motion blurred dribble
+47826bc60f3c,VISIBLE,266.0,241.0,34.0,37.0,inbounder holding ball
+482d0437ff70,VISIBLE,102.0,245.0,22.0,18.0,low dribble beside player
+485667db795c,VISIBLE,365.0,159.0,32.0,34.0,ball inside net
+4889322a19c9,VISIBLE,809.0,293.0,29.0,26.0,ball at right hip

@@ -1,0 +1,20 @@
+00256fbe30cd,ABSENT,,,,,interview closeup with no ball
+002c2ca7a3c0,ABSENT,,,,,player closeup with no ball
+004dfb194535,VISIBLE,589.0,114.0,20.0,19.0,airborne ball near basket
+0089acbec576,ABSENT,,,,,sideline closeup with no ball
+0161bc9aad42,ABSENT,,,,,player closeup with no ball
+01624a78bbc4,ABSENT,,,,,wide court with no ball visible
+01ce08140eff,VISIBLE,322.0,116.0,24.0,26.0,ball above rim through glass
+025a8aaacfd8,ABSENT,,,,,player closeup with no ball
+02a8ebb07627,VISIBLE,379.0,323.0,17.0,17.0,ball near dribblers feet
+0382ec91fd1d,ABSENT,,,,,player closeup with no ball
+04256d900e04,VISIBLE,247.0,24.0,33.0,32.0,ball held near top edge
+043421998afd,VISIBLE,733.0,265.0,27.0,24.0,referee holding ball
+04c33a2ba3c8,VISIBLE,490.0,218.0,23.0,22.0,ball cradled above head
+054db0ba29fc,UNKNOWN,,,,,possible ball obscured at hip
+0560ba4573e3,VISIBLE,388.0,214.0,18.0,17.0,ball held at runners waist
+059f61cfb0f7,ABSENT,,,,,player closeup with no ball
+05cbce45bbb8,ABSENT,,,,,ceremony wide shot with no ball
+060e54341df9,ABSENT,,,,,bench closeup with no ball
+060ffbe2c29d,VISIBLE,593.0,175.0,68.0,74.0,ball gripped by player
+0678b8bdbcee,ABSENT,,,,,transition frame with no ball visible

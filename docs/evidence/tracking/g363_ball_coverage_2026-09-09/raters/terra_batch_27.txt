@@ -1,0 +1,20 @@
+93765f85386b,VISIBLE,522.0,329.0,16.0,16.0,held near defender
+93d0e95c3c22,ABSENT,,,,,no ball visible
+93d561d0abd7,ABSENT,,,,,no ball visible
+94565bfe6ace,VISIBLE,353.0,285.0,15.0,15.0,held by shooter
+947b87f4c0e6,VISIBLE,252.0,342.0,14.0,14.0,dribbling
+9534d65f18d2,VISIBLE,204.0,258.0,14.0,14.0,held at left
+9553ae33713a,VISIBLE,714.0,263.0,19.0,19.0,held by ballhandler
+95a0ce7b9587,VISIBLE,193.0,210.0,15.0,15.0,at the rim
+95cd346765f1,ABSENT,,,,,no ball visible
+9654729789be,VISIBLE,609.0,319.0,18.0,18.0,held in traffic
+96bef25962ec,ABSENT,,,,,no ball visible
+9746fd6fd103,VISIBLE,505.0,307.0,15.0,15.0,loose near player
+97b0f9504773,ABSENT,,,,,no ball visible
+97d09f6e9182,VISIBLE,468.0,110.0,15.0,15.0,in flight
+97d7b429f1c7,VISIBLE,639.0,278.0,15.0,15.0,held by guard
+97ddf468f289,VISIBLE,431.0,315.0,18.0,18.0,dribbling
+98429c1bb9ae,VISIBLE,188.0,321.0,17.0,17.0,held under basket
+98bae19d49ab,VISIBLE,578.0,224.0,16.0,16.0,held near lane
+98c7fd78a17a,VISIBLE,404.0,187.0,15.0,15.0,near backboard
+98d4313d277b,VISIBLE,438.0,205.0,35.0,35.0,held at rim

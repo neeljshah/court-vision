@@ -1,0 +1,20 @@
+2f016c06f208,ABSENT,,,,,no ball visible on court
+2f04941c7a03,ABSENT,,,,,timeout bench closeup
+2f06e36c1ed1,ABSENT,,,,,player closeup only
+2f243ae981ad,VISIBLE,455.0,314.0,22.0,24.0,ball held at waist
+2fa4df83ec62,VISIBLE,130.0,294.0,25.0,28.0,ball in low dribble
+2faa7ff03a5c,VISIBLE,324.0,195.0,28.0,24.0,ball controlled in left hand
+2fc1c0c397b9,VISIBLE,608.0,337.0,27.0,23.0,blurred ball over paint
+2fe64d28cb18,VISIBLE,408.0,128.0,29.0,27.0,ball above rim
+30154a7e3110,VISIBLE,588.0,104.0,24.0,31.0,ball above rim
+30356bf13742,ABSENT,,,,,no ball visible near basket
+303ac8d28eeb,ABSENT,,,,,shirt graphic is not a ball
+311dcabd8fc0,VISIBLE,385.0,410.0,20.0,20.0,ball in low dribble
+3130cfa098e5,VISIBLE,255.0,309.0,29.0,29.0,ball held at right hip
+313bff52e593,ABSENT,,,,,player closeup only
+320fdea13594,ABSENT,,,,,player closeup only
+32a9b704493f,VISIBLE,845.0,356.0,25.0,30.0,ball partly occluded at hip
+32d80de87a3b,ABSENT,,,,,no ball visible during stoppage
+33525f98eccf,ABSENT,,,,,no ball visible among players
+33b657bad2c0,ABSENT,,,,,sideline closeup only
+3427c8976d82,VISIBLE,753.0,199.0,27.0,24.0,ball held at waist

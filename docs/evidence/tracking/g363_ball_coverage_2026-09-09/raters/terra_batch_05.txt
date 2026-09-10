@@ -1,0 +1,20 @@
+17b7e5165d18,VISIBLE,89.0,151.0,18.0,18.0,held near sideline
+17d6fcd7fb73,ABSENT,,,,,bench closeup
+1857d246757a,ABSENT,,,,,sideline shot
+18655fec2b19,ABSENT,,,,,player closeup
+189ad3ac6748,VISIBLE,363.0,366.0,16.0,16.0,dribbled in lane
+18d717b95aad,VISIBLE,234.0,238.0,16.0,16.0,held by player
+18f0cbe4d4c6,ABSENT,,,,,wide pregame view
+18f3d180b485,UNKNOWN,,,,,occluded near basket
+1964f056bc85,VISIBLE,406.0,232.0,16.0,16.0,near the rim
+196f3c56062a,ABSENT,,,,,coach interview
+19aa39df5c12,VISIBLE,251.0,229.0,14.0,14.0,near ballhandler
+1a1a5c6d446a,UNKNOWN,,,,,not discernible
+1ac73a2dcdf1,ABSENT,,,,,timeout huddle
+1b52ab7e5d34,VISIBLE,464.0,160.0,14.0,14.0,at the rim
+1b7184dbaa29,ABSENT,,,,,player introduction
+1b86f4d0f72a,VISIBLE,726.0,321.0,16.0,16.0,dribbled right wing
+1bde52a9fa30,VISIBLE,423.0,40.0,30.0,30.0,airborne above lane
+1bf643c2eec3,VISIBLE,386.0,275.0,16.0,16.0,held near baseline
+1d1cb6529078,VISIBLE,387.0,273.0,16.0,16.0,held under basket
+1dbb98c89d42,VISIBLE,538.0,172.0,18.0,18.0,airborne near rim

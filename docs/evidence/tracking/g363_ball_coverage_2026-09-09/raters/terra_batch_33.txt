@@ -1,0 +1,20 @@
+b6bb6ae761d1,VISIBLE,714.0,180.0,27.0,27.0,held by referee
+b70a17fb2007,VISIBLE,304.0,398.0,16.0,18.0,low dribble
+b716e12e42a7,VISIBLE,614.0,364.0,24.0,26.0,held at waist
+b8556e868f73,VISIBLE,690.0,258.0,18.0,22.0,held near baseline
+b86e4c31ee79,VISIBLE,800.0,207.0,22.0,22.0,held by shooter
+b8a141378049,ABSENT,,,,,closeup without ball
+b91495e19405,VISIBLE,559.0,270.0,18.0,19.0,midcourt pass
+ba0cc82a3fe4,VISIBLE,405.0,238.0,20.0,20.0,under basket
+ba855df11c50,ABSENT,,,,,bench celebration
+ba9c0b904e81,VISIBLE,655.0,172.0,17.0,18.0,held near sideline
+bb224239090a,VISIBLE,354.0,210.0,18.0,19.0,held in paint
+bbcf6a50aeef,ABSENT,,,,,player closeup
+bc46741fe103,VISIBLE,532.0,378.0,18.0,18.0,held by referee
+bc51adfffdaa,VISIBLE,164.0,345.0,18.0,19.0,low dribble
+bc77f4a2b217,VISIBLE,207.0,204.0,18.0,18.0,held near wing
+bcb481fbcc70,VISIBLE,505.0,247.0,16.0,18.0,held in traffic
+bcd6bde84d4f,VISIBLE,569.0,255.0,18.0,19.0,near rim
+bd090799c4f8,VISIBLE,221.0,108.0,17.0,18.0,dribbled upcourt
+bd0d6bb3e74b,ABSENT,,,,,crowd celebration
+bdd7a34c674c,VISIBLE,623.0,283.0,18.0,19.0,held in paint

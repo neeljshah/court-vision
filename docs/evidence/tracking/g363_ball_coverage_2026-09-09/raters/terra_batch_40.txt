@@ -1,0 +1,20 @@
+e2d26eda8a6a,ABSENT,,,,,bench shot
+e324bc5f0d6c,UNKNOWN,,,,,occluded by shooter
+e36ad0f41058,ABSENT,,,,,band shot
+e37e781e4500,UNKNOWN,,,,,not discernible
+e3ae0f5c4408,VISIBLE,289.0,299.0,10.0,11.0,in inset game feed
+e3f8f96a0d79,ABSENT,,,,,dead ball scene
+e40728622afc,UNKNOWN,,,,,occluded in traffic
+e414c921e933,VISIBLE,300.0,325.0,15.0,15.0,held by ballhandler
+e463c48202f2,VISIBLE,488.0,255.0,17.0,17.0,held by runner
+e4d79aadcddc,VISIBLE,850.0,350.0,22.0,22.0,dribbling
+e54779db1e96,VISIBLE,449.0,250.0,16.0,17.0,free throw ball
+e5883851f448,ABSENT,,,,,coach shot
+e5bd3c488188,VISIBLE,354.0,335.0,17.0,18.0,held by player
+e5c7cb72f83f,ABSENT,,,,,transition graphic
+e5f28e676ccb,VISIBLE,679.0,391.0,16.0,16.0,near ballhandler
+e68262a433ba,VISIBLE,789.0,254.0,15.0,16.0,held on wing
+e74a40a01841,VISIBLE,341.0,242.0,31.0,32.0,midair pass
+e7911da1b253,ABSENT,,,,,transition graphic
+e79d1d6072d3,VISIBLE,398.0,180.0,11.0,12.0,at rim
+e848892b2b17,VISIBLE,584.0,359.0,18.0,19.0,dribbling

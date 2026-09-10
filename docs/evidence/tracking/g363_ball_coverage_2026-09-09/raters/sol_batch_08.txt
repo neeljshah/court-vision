@@ -1,0 +1,20 @@
+27dc4e42485e,VISIBLE,518.0,433.0,38.0,48.0,ball visible through net
+283468ecf8c5,VISIBLE,679.0,287.0,29.0,34.0,ball held at right hip
+28ac36198862,VISIBLE,331.0,355.0,73.0,67.0,ball shown in player graphic
+28c45077ccf4,VISIBLE,344.0,139.0,22.0,22.0,ball resting near rim
+28f423d90721,ABSENT,,,,,player closeup without ball
+28f92237d044,VISIBLE,203.0,326.0,21.0,22.0,ball held by left player
+2910362aaca2,VISIBLE,809.0,233.0,16.0,16.0,ball beneath dribbling hand
+29396a12ecc8,ABSENT,,,,,no discernible ball
+296bcac99208,VISIBLE,378.0,279.0,18.0,24.0,ball partly occluded by defender
+299468af20c5,VISIBLE,757.0,233.0,22.0,22.0,ball beside raised hand
+29a5e8320a70,ABSENT,,,,,free throw setup without ball
+2a9a710a92da,ABSENT,,,,,bench closeup without ball
+2bb500a83daf,VISIBLE,488.0,275.0,45.0,53.0,blurred ball in flight
+2bbe984f4a74,VISIBLE,684.0,199.0,24.0,24.0,ball airborne near sideline
+2c91e135e426,ABSENT,,,,,players waiting without visible ball
+2ce019929197,VISIBLE,766.0,256.0,20.0,19.0,ball held by right player
+2d4b0c99d15d,ABSENT,,,,,player closeup without ball
+2d61858c5420,VISIBLE,242.0,159.0,32.0,30.0,ball contacting rim
+2eb34d6a761b,ABSENT,,,,,player closeup without ball
+2efda3987864,ABSENT,,,,,bench closeup without ball

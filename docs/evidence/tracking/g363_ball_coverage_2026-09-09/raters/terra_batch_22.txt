@@ -1,0 +1,20 @@
+7723df499d48,VISIBLE,469.0,82.0,19.0,17.0,ball above lane
+77718a5881e9,VISIBLE,364.0,299.0,18.0,19.0,dribbling ball
+777d15e76433,VISIBLE,655.0,202.0,17.0,17.0,ball at rim
+779d823c6747,VISIBLE,747.0,339.0,20.0,20.0,ball in hands
+77f595ac7e96,VISIBLE,845.0,326.0,18.0,18.0,ball in hands
+7801f246e907,VISIBLE,588.0,284.0,18.0,20.0,free throw ball
+7886f160304b,VISIBLE,192.0,238.0,20.0,22.0,dribbling ball
+78c1ebe2dc5f,ABSENT,,,,,no ball visible
+78f2f0e4d8b4,ABSENT,,,,,bench closeup
+790bc25fd8ae,VISIBLE,590.0,139.0,24.0,25.0,ball above rim
+793ae9295581,VISIBLE,707.0,205.0,17.0,17.0,ball near basket
+79c835795943,VISIBLE,735.0,200.0,17.0,18.0,ball in air
+79d61366b098,ABSENT,,,,,bench closeup
+79e19c5ef2c3,ABSENT,,,,,player closeup
+79e5e79d2bdb,ABSENT,,,,,player closeup
+7a02e9fed24a,VISIBLE,490.0,203.0,20.0,20.0,ball by basket
+7a5abbce1a33,ABSENT,,,,,team introduction
+7a77ec659be0,ABSENT,,,,,bench celebration
+7affbbd72599,ABSENT,,,,,player closeup
+7b1fefc43357,ABSENT,,,,,player closeup

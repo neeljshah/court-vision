@@ -1,0 +1,20 @@
+3460c10d21ee,ABSENT,,,,,coach close-up
+34766854d990,ABSENT,,,,,no ball visible
+34a68e7844f3,VISIBLE,541.0,411.0,35.0,38.0,ball bouncing beside player
+350458ba9fee,ABSENT,,,,,crowd close-up
+3522f413dafd,ABSENT,,,,,team huddle
+35d8cfec5e3d,ABSENT,,,,,postgame scene
+369640d8f3c1,ABSENT,,,,,interview scene
+36b7d96fbb5b,ABSENT,,,,,ball not visible in traffic
+3706b27ac296,ABSENT,,,,,aerial city view
+37bec05d324a,VISIBLE,607.0,102.0,36.0,38.0,ball above raised hands
+395923ab30bd,VISIBLE,258.0,312.0,25.0,25.0,ball at dribblers hip
+39adef9c8324,VISIBLE,154.0,343.0,23.0,22.0,ball beside dribblers foot
+3a0a3add537a,VISIBLE,772.0,287.0,24.0,24.0,ball held by handler
+3a1086cbf894,VISIBLE,192.0,169.0,21.0,23.0,ball airborne near sideline
+3a1eac61e1a9,VISIBLE,469.0,361.0,28.0,35.0,ball bouncing in foreground
+3a43247ea755,VISIBLE,507.0,282.0,29.0,30.0,ball secured between hands
+3b2627eeaeb9,ABSENT,,,,,interview close-up
+3be793e57b63,VISIBLE,471.0,136.0,28.0,28.0,ball airborne toward hoop
+3cd9af01508e,ABSENT,,,,,bench close-up
+3d11e940c721,VISIBLE,334.0,123.0,25.0,24.0,ball airborne above court

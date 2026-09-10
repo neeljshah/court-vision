@@ -1,0 +1,20 @@
+e8521bf0d237,VISIBLE,500.0,202.0,17.0,17.0,held by player
+e86b1958b0e9,ABSENT,,,,,crowd closeup
+e89b2b5cefc1,VISIBLE,390.0,277.0,25.0,19.0,midair motion blur
+e979919ec474,ABSENT,,,,,broadcast interview
+e9a686856100,UNKNOWN,,,,,occluded in play
+e9fe387a041c,VISIBLE,511.0,79.0,18.0,18.0,above the rim
+ea06480bfc22,ABSENT,,,,,transition graphic
+ea21e74200df,ABSENT,,,,,bench closeup
+ea2300654a31,ABSENT,,,,,player closeup
+ea840f4d4a33,UNKNOWN,,,,,too small to confirm
+eaa882f182d8,VISIBLE,289.0,202.0,16.0,16.0,held by player
+eab3e7c6acef,VISIBLE,475.0,202.0,29.0,25.0,held near basket
+eadfc76d8ce4,ABSENT,,,,,ball out of frame
+eb1b380880aa,ABSENT,,,,,sideline ceremony
+eb8de85a969d,ABSENT,,,,,crowd shot
+eba8c3908739,VISIBLE,570.0,323.0,17.0,17.0,dribbled by player
+ebc26084e402,ABSENT,,,,,team huddle
+ebc32a31ced1,ABSENT,,,,,bench lineup
+ec8cbc20f4b7,VISIBLE,655.0,326.0,14.0,14.0,held by player
+ec8f5ca63a7b,VISIBLE,660.0,457.0,31.0,30.0,held at sideline

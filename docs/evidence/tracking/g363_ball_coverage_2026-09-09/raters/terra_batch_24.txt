@@ -1,0 +1,20 @@
+82fbbc268e44,VISIBLE,421.0,81.0,16.0,15.0,at rim
+83048a796e33,UNKNOWN,,,,,occluded in play
+831ec00d02df,VISIBLE,748.0,275.0,16.0,17.0,held by shooter
+835deb004d08,ABSENT,,,,,crowd cutaway
+836422850d55,VISIBLE,69.0,263.0,13.0,13.0,dribbling left
+83f1c26a9270,VISIBLE,556.0,296.0,25.0,25.0,held by player
+8502ab18f680,ABSENT,,,,,player closeup
+852d06bee969,UNKNOWN,,,,,occluded in play
+852f5100c7bf,ABSENT,,,,,player closeup
+853663d3fa88,ABSENT,,,,,interview shot
+85597a5e8bf8,VISIBLE,460.0,66.0,18.0,16.0,in flight
+858022bbc89b,VISIBLE,257.0,239.0,18.0,18.0,held by player
+85ad63a5999b,ABSENT,,,,,court cutaway
+85cb6b627d5b,ABSENT,,,,,postgame interview
+85f8416413ff,VISIBLE,765.0,249.0,14.0,14.0,held by referee
+867f70f40b5a,ABSENT,,,,,postgame interview
+869565cc29e6,UNKNOWN,,,,,occluded at sideline
+86fe4e94afa2,ABSENT,,,,,player closeup
+877154041e4d,VISIBLE,822.0,184.0,14.0,14.0,held by shooter
+87a426f02ac1,ABSENT,,,,,crowd cutaway

@@ -1,0 +1,20 @@
+8db551391476,ABSENT,,,,,cutaway crowd shot
+8df8b92593df,VISIBLE,801.0,158.0,34.0,39.0,ball atop trophy
+8e018c1de817,ABSENT,,,,,no visible ball
+8eaa76587cb1,VISIBLE,727.0,173.0,14.0,14.0,held by shooter
+8eddb6561311,VISIBLE,621.0,292.0,15.0,15.0,dribbled ball
+8f745c2bbdd6,VISIBLE,716.0,160.0,12.0,13.0,held for shot
+8fc5f69f7542,ABSENT,,,,,dead ball scene
+9061d91c2aad,ABSENT,,,,,player closeup
+90b32b232312,ABSENT,,,,,bench celebration
+90c2505a735a,ABSENT,,,,,player closeup
+90ec31471472,VISIBLE,465.0,264.0,30.0,29.0,held in transition
+91237c714d31,ABSENT,,,,,no visible ball
+914518aa85f5,ABSENT,,,,,no visible ball
+91472eb3a624,VISIBLE,319.0,193.0,14.0,14.0,held by ballhandler
+918f12e96516,VISIBLE,22.0,261.0,14.0,17.0,partly at left edge
+91a032cf73e1,ABSENT,,,,,player closeup
+9205d986172e,VISIBLE,786.0,247.0,15.0,15.0,held on baseline
+921ecafd36e4,ABSENT,,,,,arena crowd shot
+9220eea33e68,ABSENT,,,,,player huddle shot
+934374068bfc,ABSENT,,,,,player closeup

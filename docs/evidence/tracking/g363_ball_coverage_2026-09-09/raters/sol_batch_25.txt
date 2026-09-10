@@ -1,0 +1,20 @@
+87e899b0a031,VISIBLE,256.0,220.0,20.0,18.0,ball near advancing player
+88a603090bfc,VISIBLE,737.0,237.0,34.0,26.0,ball held at waist
+88b95d236e19,ABSENT,,,,,no ball visible
+88dc262ed748,VISIBLE,852.0,304.0,18.0,17.0,ball beside dribbling hand
+89521b5d0d6a,ABSENT,,,,,no ball visible
+8986d22a3ee6,VISIBLE,270.0,269.0,31.0,30.0,ball held in player cluster
+89b4f8ed448c,ABSENT,,,,,no ball visible
+89dd8715dd8a,ABSENT,,,,,no ball visible
+8a6623a9c489,VISIBLE,110.0,97.0,23.0,22.0,ball held near hip
+8b2d24c1bd75,ABSENT,,,,,no ball visible
+8b7a7979b56c,VISIBLE,620.0,163.0,20.0,20.0,ball above raised hands
+8bfa5dc8d8c9,ABSENT,,,,,no ball visible
+8c2b4ca650af,VISIBLE,216.0,233.0,24.0,20.0,ball held by inbounder
+8c364576216e,ABSENT,,,,,no ball visible
+8c596a426560,VISIBLE,156.0,335.0,29.0,16.0,ball beside dribbling player
+8d4631207aa6,VISIBLE,844.0,239.0,36.0,34.0,ball airborne near sideline
+8d80190d0e2b,ABSENT,,,,,no ball visible
+8d8066eb6700,VISIBLE,263.0,345.0,15.0,13.0,ball loose near sideline
+8d8ac1354238,ABSENT,,,,,no ball visible
+8da2fd2e41cd,ABSENT,,,,,no ball visible

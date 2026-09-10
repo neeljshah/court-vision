@@ -1,0 +1,20 @@
+6ccc80b59e5e,VISIBLE,432.0,317.0,17.0,17.0,dribbling ball
+6d18d309bab8,VISIBLE,355.0,198.0,22.0,22.0,airborne ball
+6d639eeba205,VISIBLE,342.0,257.0,20.0,20.0,held ball
+6d872d267086,ABSENT,,,,,no ball visible
+6df12376c876,ABSENT,,,,,crowd closeup
+6df3a9076a29,VISIBLE,368.0,280.0,17.0,17.0,held ball
+6e9a9606a372,VISIBLE,194.0,195.0,16.0,16.0,dribbling ball
+6ea733bc6255,VISIBLE,850.0,51.0,17.0,17.0,ball near rim
+6f644edd363c,VISIBLE,327.0,298.0,20.0,20.0,ball near shooter
+6f6d7c2df9ae,ABSENT,,,,,player closeup
+6f9dd93328d7,VISIBLE,486.0,319.0,19.0,19.0,held ball
+6faaf410ce8b,VISIBLE,572.0,235.0,18.0,18.0,ball near rim
+6fb1ee4d77f1,VISIBLE,750.0,331.0,15.0,15.0,ball near baseline
+6fcf278b1603,VISIBLE,525.0,416.0,28.0,28.0,held ball
+6fed7dc9b40b,VISIBLE,454.0,355.0,46.0,46.0,held ball
+700e6aa694bb,VISIBLE,336.0,126.0,20.0,20.0,ball near rim
+70e494b21995,VISIBLE,508.0,158.0,19.0,19.0,airborne ball
+7103bd5e7dc7,VISIBLE,125.0,150.0,15.0,15.0,ball at rim
+712b543a733e,ABSENT,,,,,no ball visible
+714d3bae0764,VISIBLE,650.0,331.0,27.0,27.0,held ball

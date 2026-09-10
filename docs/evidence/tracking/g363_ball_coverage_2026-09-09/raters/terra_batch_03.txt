@@ -1,0 +1,20 @@
+0b3f308131cb,ABSENT,,,,,no ball in main frame
+0bd4386adf80,VISIBLE,431.0,314.0,96.0,94.0,ball at basket
+0c5bbe8d978a,VISIBLE,559.0,247.0,27.0,28.0,ball held overhead
+0cd289ec6c7a,VISIBLE,625.0,326.0,18.0,19.0,ball being dribbled
+0cd4a064a09a,VISIBLE,727.0,207.0,30.0,30.0,ball in player hands
+0d48df02e4d5,ABSENT,,,,,player closeup
+0db71514d7ad,ABSENT,,,,,ball outside main frame
+0dc77fa0f893,VISIBLE,320.0,132.0,30.0,31.0,ball held overhead
+0e28ec60437d,VISIBLE,605.0,200.0,16.0,17.0,ball near defender
+0e33060e2a2d,ABSENT,,,,,crowd shot
+0e3b7e866168,VISIBLE,426.0,177.0,22.0,19.0,ball in flight
+0ec893dabad8,ABSENT,,,,,player closeup
+0f10333a93b6,VISIBLE,335.0,332.0,20.0,19.0,ball in player hands
+0f1af2b34fe7,ABSENT,,,,,crowd shot
+0f5be93bb348,VISIBLE,553.0,226.0,16.0,18.0,loose ball in flight
+0fcb84765462,VISIBLE,184.0,387.0,19.0,20.0,ball at baseline
+0fe4c8ddae33,VISIBLE,711.0,398.0,19.0,19.0,ball being dribbled
+1026ad786353,VISIBLE,673.0,89.0,211.0,185.0,large ball near camera
+106212c1ea74,VISIBLE,729.0,193.0,27.0,27.0,ball in player hands
+10ad02178e7d,VISIBLE,560.0,69.0,28.0,29.0,ball above rim

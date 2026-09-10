@@ -1,0 +1,20 @@
+3d209e63af68,VISIBLE,737.0,253.0,19.0,19.0,held for pass
+3d5bfeaf1491,VISIBLE,31.0,344.0,14.0,14.0,held at left edge
+3da016070261,VISIBLE,733.0,270.0,23.0,23.0,raised above shooter
+3e0b4956d16c,ABSENT,,,,,sideline closeup
+3e1def3d25f9,VISIBLE,665.0,308.0,14.0,14.0,held on right wing
+3e8a35d3ccae,VISIBLE,424.0,298.0,30.0,30.0,dribbling in transition
+3ed0ff187412,ABSENT,,,,,postgame closeup
+3ee198390449,VISIBLE,367.0,269.0,17.0,17.0,under basket scramble
+3f1856193120,ABSENT,,,,,bench closeup
+3f21f1ddaf0b,VISIBLE,706.0,277.0,18.0,18.0,held by Clemson guard
+3f35e95e476d,ABSENT,,,,,crowd closeup
+3f41b5db4997,VISIBLE,144.0,356.0,74.0,94.0,promotional graphic ball
+3f583d2f8380,ABSENT,,,,,player closeup
+3fac7667dfa4,VISIBLE,493.0,328.0,16.0,16.0,held near lane
+3ff88c8cbc62,VISIBLE,513.0,292.0,20.0,20.0,held by official
+4120fe16d5c5,VISIBLE,556.0,180.0,19.0,19.0,raised for shot
+412413c05f7b,UNKNOWN,,,,,occluded at left edge
+4124266da547,VISIBLE,420.0,250.0,17.0,17.0,held under basket
+41d019c3b574,VISIBLE,425.0,310.0,18.0,18.0,held by official
+4209e0afa635,VISIBLE,587.0,344.0,18.0,18.0,held on right wing

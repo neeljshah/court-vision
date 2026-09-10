@@ -1,0 +1,20 @@
+7c87fcdb9ebf,ABSENT,,,,,no ball in main panel
+7ca0d220a93b,VISIBLE,477.0,362.0,16.0,16.0,ball by dribbler
+7cb042e3cc02,VISIBLE,391.0,252.0,16.0,16.0,ball in players hands
+7cf949ee5ae2,VISIBLE,224.0,290.0,18.0,18.0,ball by dribbler
+7d2ca3793b10,ABSENT,,,,,no ball in main panel
+7d768bd0334d,VISIBLE,211.0,137.0,15.0,15.0,ball at rim
+7d91f76d5af8,VISIBLE,390.0,143.0,16.0,16.0,ball near basket
+7d9d521aeec6,VISIBLE,255.0,349.0,17.0,17.0,ball in pass
+7dac93726975,VISIBLE,275.0,246.0,16.0,16.0,ball by ballhandler
+7e5fb041828c,ABSENT,,,,,no ball in main panel
+7f5565ff893c,VISIBLE,516.0,533.0,39.0,14.0,ball cropped at bottom
+7f7214b5c09a,ABSENT,,,,,no ball in main panel
+80333f68bec0,ABSENT,,,,,no ball in main panel
+805123a819fe,VISIBLE,272.0,274.0,16.0,16.0,ball by dribbler
+806edbdc1576,ABSENT,,,,,no ball in main panel
+8130c788f800,VISIBLE,820.0,300.0,15.0,15.0,ball by dribbler
+8168d1d83bea,VISIBLE,183.0,281.0,16.0,16.0,ball by ballhandler
+819977e602ed,VISIBLE,353.0,380.0,25.0,29.0,ball in players hands
+825f402b5578,ABSENT,,,,,no ball in main panel
+82f00fdd476d,ABSENT,,,,,no ball in main panel

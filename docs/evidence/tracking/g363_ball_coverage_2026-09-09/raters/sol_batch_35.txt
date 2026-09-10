@@ -1,0 +1,20 @@
+c33c8426f848,ABSENT,,,,,no basketball visible
+c370975d7d0f,ABSENT,,,,,no basketball visible
+c504b83daeba,VISIBLE,400.0,142.0,30.0,29.0,airborne ball near basket
+c53712c3ac6c,ABSENT,,,,,no basketball visible
+c576ee9e3a29,ABSENT,,,,,no basketball visible
+c5a93ad76402,ABSENT,,,,,no basketball visible
+c5c35b92fd2d,VISIBLE,507.0,166.0,31.0,29.0,ball held for pass
+c5f71722e4b6,ABSENT,,,,,no basketball visible
+c63ea555a8e4,ABSENT,,,,,no basketball visible
+c651943b59dd,ABSENT,,,,,no basketball visible
+c65239bf86fb,VISIBLE,292.0,241.0,18.0,17.0,ball between players
+c65af6218d9d,ABSENT,,,,,no basketball visible
+c68e36cf6e17,ABSENT,,,,,no basketball visible
+c699076e0fb5,VISIBLE,574.0,316.0,46.0,45.0,ball secured at waist
+c6b1b8c35c70,VISIBLE,680.0,339.0,48.0,46.0,ball under dribbling hand
+c6f3e658d15d,ABSENT,,,,,no basketball visible
+c70d5872450e,VISIBLE,200.0,211.0,22.0,23.0,ball beside handlers hand
+c822ee49f2fb,VISIBLE,512.0,297.0,42.0,34.0,ball above blue player
+c8584a3adc7a,VISIBLE,188.0,345.0,19.0,20.0,ball beside handlers hand
+c8585e20f673,ABSENT,,,,,no basketball visible

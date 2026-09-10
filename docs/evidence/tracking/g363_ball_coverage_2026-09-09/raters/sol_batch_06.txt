@@ -1,0 +1,20 @@
+1de680a0b818,ABSENT,,,,,no ball visible
+1e020a4bdc89,VISIBLE,871.0,258.0,29.0,25.0,airborne near sideline
+1ed950faa353,ABSENT,,,,,no ball visible
+1eeefb37ee64,VISIBLE,864.0,294.0,31.0,30.0,held by referee
+1ef290866cde,VISIBLE,453.0,65.0,31.0,29.0,airborne above bench
+1f22a2a52847,ABSENT,,,,,closeup with no ball
+1f6c55e79eb3,ABSENT,,,,,closeup with no ball
+2034fa57099c,ABSENT,,,,,player down with no ball
+2064dd5b1714,VISIBLE,509.0,267.0,26.0,22.0,held by white player
+20acbc1fcca1,ABSENT,,,,,closeup with no ball
+20cbcbd30962,ABSENT,,,,,no ball visible
+20e3d59773aa,VISIBLE,224.0,331.0,27.0,23.0,shielded by ballhandler
+20ea1070cef4,ABSENT,,,,,runner has no ball
+2136a528a2d8,ABSENT,,,,,closeup with no ball
+21397c7b3c55,VISIBLE,524.0,196.0,29.0,29.0,airborne beside backboard
+21ad836779ea,ABSENT,,,,,no ball visible
+21af71171642,ABSENT,,,,,stoppage with no ball
+21d9b9c5350f,ABSENT,,,,,no ball visible
+22548044b18e,VISIBLE,673.0,60.0,27.0,28.0,airborne above backboard
+22965c4756ca,VISIBLE,550.0,265.0,29.0,25.0,held by Kansas player

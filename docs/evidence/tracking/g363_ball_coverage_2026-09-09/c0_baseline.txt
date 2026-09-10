@@ -1,0 +1,28 @@
+G363 BASELINE C0 -- deployed detector at its deployed settings, HELD-OUT sealed reference
+Measured 2026-09-09 on pod 213.181.122.2, worktree /workspace/wt/a7, single RTX 3090.
+Prereg: g363_prereg_2026-09-09.md, SEAL sha256 f9ca3a38757cf150d45ad1706a4cd96884b96f3650cc2bf50c97dd5b8e4f678f (sealed alone at 6cc172fc, before this measurement).
+
+Arm A0 (the deployed call, not a development arm): imgsz=384 conf=0.05 half=True device=0, class-0 filter, radius guard 50 px.
+Route identity (contract A11), re-verified at arm time:
+  src/tracking/ball_detect_track.py   cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea
+  models/weights/yolov8n_ball.pt      bc979654e281c5de6e0e992e1f9587b3a9faa2eec996ea41b1b03954ba0b6e52
+Runtime line, verbatim:
+  VRAM free_mib=14592 coco_fallback=False arm=A0 imgsz=384 conf=0.05 tile=0
+  ARM A0 split=heldout frames=549 gpu_minutes=0.52 fps=17.57 a0_fidelity_mismatches=4
+
+DENOMINATOR (contract H1: all sealed held-out reference frames, never the frames that carry a detection):
+  N_heldout sealed reference frames                       = 549
+  frames carrying at least one rank-0 OBSERVED detection  = 8
+  rank-0 OBSERVED detections in total                     = 8
+  C0 = 8 / 549 = 0.014572
+
+PREMISE GATE (prereg section 11, unchanged):
+  C0 >= 0.50 -> PREMISE FALSE.  Measured C0 = 0.014572, so the premise HOLDS and the row proceeds.
+  C0 == 0    -> LIMIT.          Measured C0 > 0, so the LIMIT does not apply.
+  The sealed DONE bar is therefore C1 >= 3 x C0 = 0.043716 on the held-out reference, alongside the
+  Wilson lower precision bound >= 0.90 and FP / N_absent <= 0.01.  No bar is moved.
+
+G357 CONTEXT, printed beside C0 and explicitly NOT the before-value of this row
+(different corpus, different denominator, pooled frames rather than this sealed reference):
+  docs/evidence/tracking/g357_ball_ownership_px_attempt2_2026-09-08.md
+  any_ball_row  505 / 272 per mille ; detected_ball  358 / 192 per mille of 1,860 pooled frames.

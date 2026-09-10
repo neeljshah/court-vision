@@ -1,0 +1,20 @@
+1de680a0b818,VISIBLE,602.0,317.0,15.0,14.0,clear orange ball
+1e020a4bdc89,VISIBLE,875.0,258.0,15.0,15.0,clear orange ball
+1ed950faa353,VISIBLE,136.0,161.0,16.0,16.0,clear orange ball
+1eeefb37ee64,VISIBLE,792.0,315.0,18.0,18.0,referee holds ball
+1ef290866cde,VISIBLE,322.0,208.0,18.0,18.0,shooter holds ball
+1f22a2a52847,ABSENT,,,,,no ball visible
+1f6c55e79eb3,ABSENT,,,,,no ball visible
+2034fa57099c,ABSENT,,,,,no ball visible
+2064dd5b1714,VISIBLE,509.0,306.0,15.0,15.0,ballhandler dribbling
+20acbc1fcca1,ABSENT,,,,,no ball visible
+20cbcbd30962,ABSENT,,,,,no ball visible
+20e3d59773aa,VISIBLE,218.0,353.0,15.0,15.0,ballhandler dribbling
+20ea1070cef4,VISIBLE,600.0,205.0,18.0,18.0,ballhandler dribbling
+2136a528a2d8,ABSENT,,,,,no ball visible
+21397c7b3c55,VISIBLE,525.0,228.0,19.0,19.0,airborne ball
+21ad836779ea,UNKNOWN,,,,,occluded by player
+21af71171642,ABSENT,,,,,no ball visible
+21d9b9c5350f,UNKNOWN,,,,,occluded by player
+22548044b18e,VISIBLE,184.0,218.0,16.0,16.0,ballhandler holds ball
+22965c4756ca,VISIBLE,528.0,258.0,17.0,17.0,ballhandler holds ball

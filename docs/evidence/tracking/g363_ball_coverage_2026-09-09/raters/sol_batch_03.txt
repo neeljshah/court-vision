@@ -1,0 +1,20 @@
+0b3f308131cb,UNKNOWN,,,,,ball occluded by players
+0bd4386adf80,VISIBLE,424.0,312.0,103.0,78.0,clear ball above rim
+0c5bbe8d978a,VISIBLE,604.0,235.0,45.0,31.0,ball held overhead
+0cd289ec6c7a,VISIBLE,646.0,355.0,30.0,27.0,ball held at chest
+0cd4a064a09a,VISIBLE,766.0,207.0,31.0,29.0,ball held at waist
+0d48df02e4d5,ABSENT,,,,,player closeup without ball
+0db71514d7ad,VISIBLE,659.0,488.0,35.0,39.0,ball above score graphic
+0dc77fa0f893,VISIBLE,340.0,101.0,46.0,49.0,ball held for shot
+0e28ec60437d,UNKNOWN,,,,,ball occluded during drive
+0e33060e2a2d,ABSENT,,,,,crowd shot without ball
+0e3b7e866168,VISIBLE,432.0,174.0,34.0,25.0,ball airborne near baseline
+0ec893dabad8,ABSENT,,,,,player closeup without ball
+0f10333a93b6,UNKNOWN,,,,,ball occluded by handler
+0f1af2b34fe7,ABSENT,,,,,crowd shot without ball
+0f5be93bb348,VISIBLE,555.0,230.0,29.0,27.0,ball bouncing in transition
+0fcb84765462,VISIBLE,179.0,358.0,24.0,17.0,ball held at waist
+0fe4c8ddae33,VISIBLE,719.0,396.0,28.0,39.0,motion blurred dribble
+1026ad786353,VISIBLE,675.0,78.0,205.0,205.0,large ball above rim
+106212c1ea74,VISIBLE,711.0,184.0,47.0,35.0,ball held between hands
+10ad02178e7d,VISIBLE,558.0,68.0,27.0,27.0,ball above rim

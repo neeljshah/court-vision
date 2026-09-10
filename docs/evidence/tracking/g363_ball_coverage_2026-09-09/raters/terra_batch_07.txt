@@ -1,0 +1,20 @@
+22bbc4ff9c7e,ABSENT,,,,,crowd shot
+22fb1eb7d39c,ABSENT,,,,,player closeup
+237d19193aee,VISIBLE,354.0,194.0,13.0,13.0,held by player
+237f9ae58891,ABSENT,,,,,bracket graphic
+23cbad5a1c2d,ABSENT,,,,,sideline closeup
+23cbbd9e412d,ABSENT,,,,,player closeup
+23cca1abd53a,ABSENT,,,,,celebration shot
+24188290937e,ABSENT,,,,,player celebration
+2429eda8f896,ABSENT,,,,,player closeup
+243411904abf,VISIBLE,666.0,217.0,13.0,13.0,above shooter's hands
+24896f416885,VISIBLE,477.0,198.0,13.0,13.0,near rim
+24fd0a97b8dd,VISIBLE,280.0,391.0,14.0,22.0,dribbling ball
+24ff204830b9,ABSENT,,,,,postgame interview
+25de3240f18a,VISIBLE,541.0,267.0,15.0,15.0,midcourt dribble
+263140f3bad0,ABSENT,,,,,player closeup
+2643efedef7d,ABSENT,,,,,player closeup
+26d7d47a599a,VISIBLE,482.0,165.0,22.0,22.0,held overhead
+26eb9cee0a07,VISIBLE,280.0,156.0,16.0,16.0,held by player
+27316d5c1509,ABSENT,,,,,bracket graphic
+2798587f7b5c,ABSENT,,,,,player closeup

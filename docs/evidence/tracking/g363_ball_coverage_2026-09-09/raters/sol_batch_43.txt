@@ -1,0 +1,20 @@
+f1f13c7f22ed,VISIBLE,625.0,116.0,25.0,24.0,orange ball in flight
+f22176d4659e,ABSENT,,,,,no ball in main frame
+f2d1b5c0bd14,ABSENT,,,,,no ball in main frame
+f339d0f0f44d,ABSENT,,,,,no ball in main frame
+f3b924adc1a6,VISIBLE,372.0,224.0,31.0,31.0,ball beside dribbler
+f43576229b16,ABSENT,,,,,no ball in main frame
+f442c7b355e0,ABSENT,,,,,no ball in main frame
+f46373fc2ad2,ABSENT,,,,,no ball in main frame
+f4745b065625,VISIBLE,797.0,190.0,54.0,52.0,white ball held
+f6c38194abd9,ABSENT,,,,,no ball in main frame
+f77c3f33f4d7,ABSENT,,,,,no ball in main frame
+f7a84e2f89d6,VISIBLE,530.0,310.0,25.0,23.0,ball held overhead
+f7d5f65f5257,VISIBLE,505.0,190.0,220.0,240.0,large blurred ball foreground
+f7f4a82ba9cb,ABSENT,,,,,no ball in main frame
+f848c4f039c2,VISIBLE,584.0,73.0,78.0,76.0,ball held at waist
+f8603da6a2db,ABSENT,,,,,no ball in main frame
+f88f6bc56152,VISIBLE,311.0,296.0,31.0,34.0,white ball cradled
+f8df04ea06fa,ABSENT,,,,,no ball in main frame
+f93e941cb10f,VISIBLE,604.0,242.0,68.0,62.0,ball held in both hands
+f9932656ee59,ABSENT,,,,,no ball in main frame

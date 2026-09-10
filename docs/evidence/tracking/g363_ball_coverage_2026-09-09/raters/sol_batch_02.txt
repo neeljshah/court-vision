@@ -1,0 +1,20 @@
+068d095b39c7,ABSENT,,,,,no basketball visible
+06b15ae77e14,ABSENT,,,,,no basketball visible
+06b61a76a7ed,ABSENT,,,,,no basketball visible
+06b7146c14f1,ABSENT,,,,,no basketball visible
+0714d445d447,ABSENT,,,,,no basketball visible
+0716d136adb4,ABSENT,,,,,no basketball visible
+07663802c029,ABSENT,,,,,empty shooting hands
+077503ec977d,ABSENT,,,,,no basketball visible
+078b67d10e8d,ABSENT,,,,,no basketball visible
+08037ac3f452,VISIBLE,113.0,251.0,29.0,26.0,ball held at left wing
+080b4ae24d37,VISIBLE,466.0,75.0,28.0,25.0,ball airborne above players
+088c36167069,ABSENT,,,,,no basketball visible
+099600951097,ABSENT,,,,,no basketball visible
+09a4d0d36e48,ABSENT,,,,,no basketball visible
+0a6565dfbcdd,ABSENT,,,,,empty rim and net
+0a8431fe20e0,ABSENT,,,,,crowd shot without ball
+0af26b423876,VISIBLE,96.0,316.0,62.0,60.0,ball beside the rim
+0b0efe5807b1,VISIBLE,598.0,200.0,30.0,29.0,panelled ball behind players
+0b241fe2e28c,VISIBLE,779.0,174.0,34.0,32.0,ball held by inbounder
+0b2a0da950da,ABSENT,,,,,no basketball visible

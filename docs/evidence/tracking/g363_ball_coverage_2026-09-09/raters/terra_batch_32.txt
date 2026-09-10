@@ -1,0 +1,20 @@
+b14aee495a83,VISIBLE,427.0,302.0,16.0,16.0,on court
+b1501c3de99d,VISIBLE,484.0,91.0,25.0,24.0,in flight
+b1826846fffe,ABSENT,,,,,no ball in main
+b255be247dea,VISIBLE,442.0,239.0,18.0,18.0,held near basket
+b264cffd139a,VISIBLE,699.0,286.0,22.0,22.0,held by official
+b269053e49ec,ABSENT,,,,,no ball in main
+b2ac3849b75b,ABSENT,,,,,no ball in main
+b3395d884755,VISIBLE,345.0,261.0,19.0,19.0,in flight
+b341fdd28569,VISIBLE,97.0,296.0,18.0,19.0,held at sideline
+b3549eb2457d,VISIBLE,287.0,262.0,20.0,20.0,on court
+b38257564a4f,ABSENT,,,,,no ball in main
+b3851928e652,UNKNOWN,,,,,action area unclear
+b3a34cbc4105,ABSENT,,,,,graphic covers court
+b3b02cc6ab15,ABSENT,,,,,no ball in main
+b41047866cf6,ABSENT,,,,,no ball in main
+b46d16a16c71,UNKNOWN,,,,,action area unclear
+b494d694673a,VISIBLE,402.0,330.0,18.0,18.0,held by player
+b57d818efdfd,ABSENT,,,,,no ball in main
+b643cb7a398b,ABSENT,,,,,no ball in main
+b6478b24d222,VISIBLE,335.0,233.0,20.0,20.0,held by player

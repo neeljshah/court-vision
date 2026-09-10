@@ -1,0 +1,20 @@
+523405dbdd66,VISIBLE,405.0,204.0,16.0,16.0,held near lane
+525736693e80,VISIBLE,532.0,349.0,16.0,16.0,held in paint
+5274a65d7dae,VISIBLE,569.0,225.0,18.0,18.0,held at wing
+52b0f15257e9,ABSENT,,,,,closeup without ball
+52bed970ae07,VISIBLE,658.0,255.0,16.0,16.0,held near key
+5366926a5926,VISIBLE,449.0,369.0,18.0,20.0,dribbling near sideline
+538d2e85209e,VISIBLE,313.0,390.0,18.0,18.0,on free throw lane
+540e83f6d87c,VISIBLE,342.0,278.0,16.0,16.0,held near midcourt
+545d25ff8432,VISIBLE,640.0,273.0,16.0,16.0,contested near basket
+547a4769bd1d,ABSENT,,,,,player introduction shot
+54c516efc7f6,VISIBLE,659.0,282.0,16.0,16.0,held near baseline
+5524c7fb0cc3,VISIBLE,203.0,176.0,58.0,62.0,clear closeup ball
+554d4042c100,UNKNOWN,,,,,occluded beneath basket
+55e1a59bf974,VISIBLE,525.0,377.0,24.0,26.0,dribbling in transition
+560a17ccd5de,VISIBLE,311.0,102.0,20.0,20.0,in flight above rim
+56424db05fc4,VISIBLE,532.0,329.0,18.0,18.0,on court near player
+56997ebd0894,ABSENT,,,,,coach closeup
+56a85ef3b57c,VISIBLE,486.0,238.0,30.0,30.0,held for layup
+56ec309abe0f,VISIBLE,433.0,273.0,16.0,16.0,held at top key
+57197ad5dbbe,ABSENT,,,,,wide stoppage shot

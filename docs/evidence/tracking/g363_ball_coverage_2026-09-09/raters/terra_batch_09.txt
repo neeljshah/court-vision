@@ -1,0 +1,20 @@
+2f016c06f208,VISIBLE,863.0,244.0,16.0,16.0,held at right wing
+2f04941c7a03,ABSENT,,,,,timeout closeup
+2f06e36c1ed1,ABSENT,,,,,player closeup
+2f243ae981ad,VISIBLE,466.0,342.0,16.0,16.0,dribbling at top
+2fa4df83ec62,VISIBLE,228.0,300.0,16.0,16.0,held by left player
+2faa7ff03a5c,VISIBLE,398.0,249.0,16.0,16.0,held in traffic
+2fc1c0c397b9,VISIBLE,608.0,333.0,16.0,16.0,midair near lane
+2fe64d28cb18,VISIBLE,403.0,178.0,16.0,16.0,at rim
+30154a7e3110,UNKNOWN,,,,,occluded at rim
+30356bf13742,VISIBLE,519.0,265.0,16.0,16.0,in paint
+303ac8d28eeb,ABSENT,,,,,bench closeup
+311dcabd8fc0,VISIBLE,344.0,360.0,16.0,16.0,held by ballhandler
+3130cfa098e5,VISIBLE,258.0,301.0,16.0,16.0,held on left wing
+313bff52e593,ABSENT,,,,,player closeup
+320fdea13594,ABSENT,,,,,player closeup
+32a9b704493f,VISIBLE,337.0,272.0,16.0,16.0,held near baseline
+32d80de87a3b,VISIBLE,822.0,274.0,16.0,16.0,held at right side
+33525f98eccf,VISIBLE,139.0,181.0,16.0,16.0,held on left wing
+33b657bad2c0,ABSENT,,,,,coach closeup
+3427c8976d82,VISIBLE,160.0,309.0,12.0,12.0,dribbling in backcourt

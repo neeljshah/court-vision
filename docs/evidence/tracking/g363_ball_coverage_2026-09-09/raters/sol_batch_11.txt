@@ -1,0 +1,20 @@
+3d209e63af68,VISIBLE,731.0,248.0,20.0,20.0,held by right wing player
+3d5bfeaf1491,VISIBLE,478.0,226.0,17.0,17.0,raised near the basket
+3da016070261,VISIBLE,684.0,296.0,21.0,20.0,held by white player
+3e0b4956d16c,ABSENT,,,,,no ball in close-up
+3e1def3d25f9,VISIBLE,688.0,285.0,15.0,15.0,held by right wing player
+3e8a35d3ccae,VISIBLE,422.0,295.0,42.0,38.0,bouncing during transition
+3ed0ff187412,ABSENT,,,,,no ball in close-up
+3ee198390449,VISIBLE,456.0,255.0,15.0,15.0,airborne near the paint
+3f1856193120,ABSENT,,,,,no ball in close-up
+3f21f1ddaf0b,VISIBLE,740.0,237.0,17.0,17.0,controlled by orange player
+3f35e95e476d,ABSENT,,,,,no ball in crowd close-up
+3f41b5db4997,VISIBLE,153.0,353.0,86.0,100.0,held in player graphic
+3f583d2f8380,ABSENT,,,,,no ball in player close-up
+3fac7667dfa4,UNKNOWN,,,,,ball obscured during stoppage
+3ff88c8cbc62,VISIBLE,488.0,344.0,20.0,20.0,held by referee
+4120fe16d5c5,VISIBLE,576.0,140.0,18.0,18.0,raised above attacking player
+412413c05f7b,UNKNOWN,,,,,ball obscured between players
+4124266da547,VISIBLE,424.0,219.0,20.0,19.0,partly visible between players
+41d019c3b574,VISIBLE,423.0,315.0,17.0,19.0,held by referee
+4209e0afa635,VISIBLE,577.0,326.0,16.0,16.0,held by perimeter player

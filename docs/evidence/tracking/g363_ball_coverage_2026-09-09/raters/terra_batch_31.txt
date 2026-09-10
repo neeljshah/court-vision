@@ -1,0 +1,20 @@
+ab9d66958bec,VISIBLE,256.0,346.0,15.0,15.0,dribbling ball
+ac19abac83a3,VISIBLE,153.0,246.0,13.0,13.0,ball by ballhandler
+ac32eaa830f2,UNKNOWN,,,,,occluded near sideline
+ac9f7eb7f2bf,UNKNOWN,,,,,occluded in cluster
+aca604948190,VISIBLE,710.0,141.0,19.0,19.0,ball in flight
+ad95b6516712,ABSENT,,,,,no ball visible
+adfe897bd5b6,VISIBLE,394.0,384.0,16.0,16.0,ball by ballhandler
+ae193f07928e,ABSENT,,,,,no ball visible
+aeb0302bb27c,VISIBLE,505.0,166.0,14.0,14.0,ball by ballhandler
+af03b9f50401,VISIBLE,393.0,267.0,15.0,15.0,ball by ballhandler
+af3d55f58e9e,VISIBLE,528.0,359.0,16.0,16.0,dribbling ball
+af9749790c50,VISIBLE,665.0,242.0,17.0,17.0,free throw ball
+afc6f3608db5,ABSENT,,,,,no ball visible
+afe10082487b,VISIBLE,233.0,310.0,19.0,18.0,loose ball
+b03e2fa047ac,UNKNOWN,,,,,partially obscured
+b03e51a438c7,VISIBLE,220.0,303.0,17.0,17.0,ball by ballhandler
+b0448ca4b3a7,ABSENT,,,,,no ball visible
+b0807ec8ff4d,VISIBLE,220.0,305.0,18.0,18.0,ball by ballhandler
+b0dfa7dc180e,ABSENT,,,,,no ball visible
+b101723974b6,ABSENT,,,,,no ball visible

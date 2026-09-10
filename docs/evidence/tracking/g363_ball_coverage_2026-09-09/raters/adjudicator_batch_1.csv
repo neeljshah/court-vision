@@ -1,0 +1,75 @@
+frame_key,rater,label,cx,cy,box_w,box_h,reason
+8c2b4ca650afc183c4b868bc71420f45ecc7369c494cd776edcf624da6efc99a,ADJUDICATOR,VISIBLE,213,224,18,18,ball held by guard near baseline
+20ea1070cef466b895f7eef7c87325e152af9358bd76ef5c722eb2e08133a5af,ADJUDICATOR,VISIBLE,600,207,18,16,motion blurred dribble on the floor
+4b5b66ab7b3050228a0cd033f4234af41a9e91813b3f571cf5b71e4eadf64e10,ADJUDICATOR,VISIBLE,110,312,11,12,ball partly occluded behind dribbler leg
+01624a78bbc487d9602526cfe4540a4fe96c753bc7e126774fc5c604335e2917,ADJUDICATOR,ABSENT,,,,,dead ball walk up no ball anywhere in frame
+748ad8b5bcfb830d91434d7be35cd0141c7e6112fbd645cb24b9d8145325d2c8,ADJUDICATOR,ABSENT,,,,,swept whole court panel no ball visible
+054db0ba29fc8e4ded1791cd9cf25f22812f33c60f74080c78cf35f4f69e10f8,ADJUDICATOR,VISIBLE,335,362,16,15,ball gathered by driving ballhandler
+4a8130a3bbf855cc6a7adf626c78baea0c41cbc852651b7e99ee2de097f98955,ADJUDICATOR,ABSENT,,,,,rim and court swept no ball in frame
+1d1cb65290784050f05e114de2d924c2417cf05d48ff636dde6c4822121b8a05,ADJUDICATOR,VISIBLE,392,211,17,17,ball held by player on baseline inbound
+b86e4c31ee79587ba1f889c136aa7751114a62259dd00b7433d6575181afeb3b,ADJUDICATOR,VISIBLE,735,196,26,26,wnba ball held at hip by ballhandler
+90ec31471472043e2f5d66f91dacfb4dffe01e30a60459856a55fc1bd8642b2e,ADJUDICATOR,VISIBLE,597,180,90,70,blurred ball carried in tight camera shot
+5f71a3cb9898d5d5fa7464e11472149c9a260eea5134f9d43ca76fe62ad28609,ADJUDICATOR,ABSENT,,,,,drive at rim but no ball anywhere in panel
+2fa4df83ec62b00aad3b497c6e1d7656afcaa13a19aedb0f7daf3bcacfc533ae,ADJUDICATOR,VISIBLE,129,291,13,12,ball on dribble beside ballhandler hip
+50a956f66e3d77ba40d4096aa41030205549046c85b899501108a63e46887815,ADJUDICATOR,VISIBLE,597,107,16,16,ball in air just above and left of rim
+7a02e9fed24aae484aa274fef51b683306a7a1a619f78a3aad42fdce3e52edf0,ADJUDICATOR,VISIBLE,568,151,10,10,small ball sitting on the far side of rim
+91472eb3a6244434131930847469dbc873a1f11412a2a137fc5c8e262485240b,ADJUDICATOR,UNKNOWN,,,,,only a faint colourless blob near ballhandler hand
+4bfbd15059d0c58f0997241208c12f7623edd999b41b8cfcdff9d5fcdaae37b1,ADJUDICATOR,ABSENT,,,,,wide transition sweep found no ball
+1756edee9fdcc4ad55a729a74e1698fb43c6c0e485a08e783a3e714fa80279ef,ADJUDICATOR,VISIBLE,617,191,17,17,ball held high by post player near basket
+b0807ec8ff4d30a5d48de01e82ccf39c8bbf16c21169ce393f31b01e15ac5c33,ADJUDICATOR,VISIBLE,188,125,13,13,ball in dribbler hand in backcourt
+e8521bf0d237ae2d37a23d606d4fd8ee568034f8d4ddedaffb50ac6e12af6533,ADJUDICATOR,ABSENT,,,,,dead ball players standing no ball in frame
+ac9f7eb7f2bfaf11de9c7a133474ff2c53b2f888be207da3ff8da413517bd516,ADJUDICATOR,ABSENT,,,,,only ball like object is in the stands
+e1ffcf35aa4328f0ddb050f9cc7d11d65e047f5adf73a404311ca539246c75be,ADJUDICATOR,VISIBLE,644,123,13,13,ball at the far edge of the rim
+18f3d180b4854a548ba4cd699bd2cd3452fb4d7882658dced319d09ae2037998,ADJUDICATOR,ABSENT,,,,,lane lineup with no ball anywhere in panel
+0a6565dfbcddaef56b56582099b31117fea20682cefe1c2c949467e518004210,ADJUDICATOR,ABSENT,,,,,rim closeup only ball shown is a scorebug graphic
+554d4042c10083a140c7068ca38045bd46a198e42b1e25ac8609ab44881eedf3,ADJUDICATOR,ABSENT,,,,,court swept no game ball visible
+a7a44c71744c91a886460f3901f06f6c13a383869cf154a0c40fa5536bba5c1a,ADJUDICATOR,VISIBLE,402,319,15,15,ball held by referee during dead ball
+58f51910570677304c194d54924cccc78e939f618dccebd801e003b81516e109,ADJUDICATOR,VISIBLE,724,219,12,12,ball at the hands of the ballhandler in backcourt
+d803f84a1bf2829d52c6f2f180783289ad27e9a97dc38450e15007f5b909c1f5,ADJUDICATOR,ABSENT,,,,,swept both halves no ball visible
+438ec97a364869617e96721e963604375ae841664b055410bf29900a6197c760,ADJUDICATOR,ABSENT,,,,,no ball resolvable anywhere in the panel
+22548044b18e3773b228619f0d0827eeaf1ed2d4ce77987181f32d2a689cc70a,ADJUDICATOR,VISIBLE,673,60,17,17,ball in flight high above the backboard
+09a4d0d36e4889f9edcb88f707e82e15af5d84f8e1af5769f4346d2b5fc4fd8e,ADJUDICATOR,VISIBLE,599,109,13,13,ball held at chest by player in the paint
+bc77f4a2b217155434b683cc98bb534490a213d5e4bf7100586f7c778b41f540,ADJUDICATOR,ABSENT,,,,,all star transition no ball found in panel
+004dfb194535143b158e2d9be51ecd2b418db9e245983615f657b3c29116dbe5,ADJUDICATOR,ABSENT,,,,,rim and lane swept no ball visible
+83048a796e3367c151899264bb8d4a03851209931e0e34da7ce21dba41349b90,ADJUDICATOR,ABSENT,,,,,no ball found in any quadrant
+a2e2075549febda5567a7e5d7c454afe9897d3a72f0541825899b63de48664f8,ADJUDICATOR,VISIBLE,218,257,17,17,ball held by official on the sideline
+3ee198390449ff6335e9abc422a6e098edd46eba95a79ac97c017834bc85235d,ADJUDICATOR,ABSENT,,,,,buzzer celebration no ball in frame
+30356bf13742170128ef8fcec769eca428171917548ad839851350ae93776098,ADJUDICATOR,ABSENT,,,,,rebound crowd looking up but ball not in panel
+54c516efc7f61db837114abde1ba1f2359c70ea882e56125d8b491485f1e14a9,ADJUDICATOR,VISIBLE,600,374,16,16,ball on the floor mid dribble beside defender
+33525f98eccfbcfe08bd471bb58e98acfa141df0fbaecbf1f08e08d1e88dcd18,ADJUDICATOR,VISIBLE,362,163,12,12,ball in dribbler hand near the wing
+078b67d10e8d352cb836eb095e4d3b7e8962cafb312eebb9fa57b34a0d97cdb6,ADJUDICATOR,ABSENT,,,,,no ball visible among the players or at rim
+ee311d78fabf4f142cba98e2de9aaaa13cebafcfa70c4a5a6138c67cb9f83a46,ADJUDICATOR,VISIBLE,264,358,13,13,ball on dribble at ballhandler knee
+26eb9cee0a07399b0c7a82b50d4af683e63d03f766083601ace7c0007bcf3699,ADJUDICATOR,VISIBLE,281,228,20,20,blurred ball carried by runner in transition
+d2453fab516e3777fca483d504b6b436961366583b0106cde5c7f2ded394a3f6,ADJUDICATOR,ABSENT,,,,,transition swept no ball visible
+64b97f92e69247b7a4ce4314e114784943bb9d5ac46fa740e681f1d624124191,ADJUDICATOR,ABSENT,,,,,dead ball lineup no ball in the panel
+5274a65d7dae569dce3e35ed40b898e77a539d7704ee802a4c0ba8e30e1c57e6,ADJUDICATOR,VISIBLE,613,199,12,12,ball in ballhandler hands at the arc
+4b9307a32abd3afa640af868637260ef879f046917f24c748bc55e80e9a1daf1,ADJUDICATOR,ABSENT,,,,,fast break but no ball resolvable in frame
+bb224239090a463daae4968be47f515dc521c1ade3ea432131f5ee6cbee87d5c,ADJUDICATOR,VISIBLE,322,291,26,28,blurred ball held in front of driving player
+d945df5188e96ac7c4b857c6710a4c7ea298d394d82afdd8992f3c3e44a0e98f,ADJUDICATOR,ABSENT,,,,,ball occluded between two bodies not visible
+1a1a5c6d446a2ef6bf07093214156f1023d53314952932e1938a1868210b9c26,ADJUDICATOR,ABSENT,,,,,players jogging back no ball in panel
+face585feda88f8ae674ca1aef5685b9f6dd1956629900fc7f694337b0f0267b,ADJUDICATOR,VISIBLE,270,345,15,15,ball in hands of ballhandler near sideline
+5ef705e78f2b76707123257b180720ee731df1c7e84659a1d47ecefa35fc27f0,ADJUDICATOR,VISIBLE,574,177,12,12,ball held by player near the baseline
+6fcf278b16033b938a8444e26794ffff2e5231dd22080a7deda9a97c2ebda398,ADJUDICATOR,ABSENT,,,,,postgame closeup of players no ball
+d0daa78771d38fbb6789e50395d2168800483be92f525246ca5845be27d8fc43,ADJUDICATOR,ABSENT,,,,,rim bracket only no game ball in panel
+58794fe201bb50a0f931bcbd47e033cb612421d00b348c2ce8f6b237a6ea7e04,ADJUDICATOR,VISIBLE,736,263,13,13,ball being dribbled low by the ballhandler
+ea840f4d4a332461fa458bc0d6059c70521fdcf9b3987bbdb46e0ec78bdbf976,ADJUDICATOR,ABSENT,,,,,players running back no ball found
+55e1a59bf974c9b4f1da41425346100aebb5b3da7d9296a5bf6847686aadd7cb,ADJUDICATOR,VISIBLE,612,343,28,28,wnba ball on dribble beside player ten
+283468ecf8c555331c501fd825e5c21f435e3b8d2262528670e1d2d759b2e5fe,ADJUDICATOR,VISIBLE,676,282,19,19,ball at the hip of the ballhandler
+7d91f76d5af8a7051375460ef2c8114d5a8b8785916c3cd052faf475fe599afc,ADJUDICATOR,UNKNOWN,,,,,tie up cluster ball region too dark to resolve
+a568b80a706eb8d853b03bfdf38f7470e7948224823bf4c951d417f48127922b,ADJUDICATOR,VISIBLE,442,58,30,30,ball in flight in front of the bench
+79c83579594353a96af5ac22ce9dcbae396f715ea6a0546ff0fc1afeb92d500d,ADJUDICATOR,ABSENT,,,,,no ball resolvable among the players
+6b4ce5ad7263ecbc75b1dfdd91cf8139feb690749b8a8b67f393f172c680223c,ADJUDICATOR,ABSENT,,,,,shot attempt but ball not visible in panel
+64e7d380e3592965a38f9fa656a1f41062057c2e551f21b416e1843ac54d3ebb,ADJUDICATOR,VISIBLE,502,221,14,14,ball resting on the floor behind the baseline
+73021c4609c1a9b18bf1041cccc73753996a5dd1f4acd3bf868bbd7534d9aabc,ADJUDICATOR,VISIBLE,276,208,13,13,loose ball on the floor near the sideline
+237d19193aeede4824f524531944087848308ef4fe92f97b28b4e45c9bdf166d,ADJUDICATOR,ABSENT,,,,,swept the panel no game ball visible
+5d166f69fa8d84fc031becc44371761c7add798113397e15e0bd518c64507a9a,ADJUDICATOR,ABSENT,,,,,only ball shown is the logo on the backdrop
+fb1b5db3afd29b4429d1c5f2e93da793e200c5c617464d3c5b86b9e2536f263f,ADJUDICATOR,ABSENT,,,,,free throw setup with no ball visible
+95a0ce7b95876ad2a4d58556798b5b5af68f384a74d886cde957ac64939a8cc0,ADJUDICATOR,VISIBLE,254,212,13,13,ball dropping through the rim and net
+c651943b59ddbb91da9eccdfe04c602c1096f832e6057a3054d4808e12d136ce,ADJUDICATOR,ABSENT,,,,,transition sweep found no ball
+139b5e762e0905a971a75a59bf0811b9a551726d69b23d7215ea4ae1bcf67ef3,ADJUDICATOR,ABSENT,,,,,no ball resolvable anywhere in the panel
+98bae19d49ab1b1daf5363ed409f57e0b3d6dbbe82906b7d570a5f6fc062ecb1,ADJUDICATOR,VISIBLE,659,229,16,16,ball held at the waist of an official
+9b3c40ebe88fbd250a71ae6b77a54d408dc3497d025f0a6a78c4dc297ec05ce2,ADJUDICATOR,VISIBLE,289,222,19,19,ball on dribble beside the ballhandler
+a421f16c9230b5a3286c6cbf01505585edc0af534638b0a46516b346d978d2c9,ADJUDICATOR,VISIBLE,741,308,16,16,ball tucked at the driver right hip partly occluded
+5232ad114239443128b1eba7fdd23bed50c4c791b62186315fc0c23184387e97,ADJUDICATOR,VISIBLE,820,188,20,20,ball in both hands of the wing ballhandler
+3fac7667dfa4f79f231fac3b79b5ce60f2865aa75300e45a10eba7b34c747741,ADJUDICATOR,ABSENT,,,,,dead ball scene with no ball anywhere in panel
+bc51adfffdaa6ebfdd34da17dca7c8f26fcb974b7288ee6f08402bbdd4721c0a,ADJUDICATOR,VISIBLE,176,297,30,30,ball held low at the side of player fourteen

@@ -1,0 +1,20 @@
+10b7527d0321,ABSENT,,,,,timeout huddle
+10d786b6a025,VISIBLE,479.0,252.0,14.0,14.0,ball in transition
+110f054be70c,VISIBLE,638.0,380.0,14.0,14.0,ball being dribbled
+11ffdedbd9f0,ABSENT,,,,,player closeup
+12fae7c64341,ABSENT,,,,,postgame interview
+132df7d19402,VISIBLE,109.0,281.0,14.0,14.0,ball at ballhandler
+139b5e762e09,VISIBLE,353.0,168.0,14.0,14.0,ball near shooter
+13dfa04669bf,VISIBLE,628.0,198.0,14.0,14.0,ball at passer
+13fe9b95f2ba,VISIBLE,605.0,184.0,14.0,14.0,ball near basket
+1574171a0438,VISIBLE,833.0,280.0,16.0,16.0,ball at ballhandler
+15811f965b33,ABSENT,,,,,dead ball scene
+162155c0f060,ABSENT,,,,,postgame celebration
+1623782c2aeb,VISIBLE,275.0,210.0,14.0,14.0,ball in halfcourt
+1641577caabb,ABSENT,,,,,bracket graphic
+167958b50c68,ABSENT,,,,,official review
+16c583e45b39,VISIBLE,494.0,187.0,14.0,14.0,ball in paint
+1715c179cde0,ABSENT,,,,,postgame interview
+171ccd76427d,VISIBLE,527.0,260.0,25.0,25.0,ball at ballhandler
+172177e657ab,VISIBLE,179.0,366.0,16.0,16.0,ball being dribbled
+1756edee9fdc,VISIBLE,607.0,255.0,16.0,16.0,ball near rim

@@ -1,0 +1,20 @@
+a4602404e1fa,VISIBLE,595.0,105.0,15.0,15.0,airborne above shooter
+a4866b0f1cb2,VISIBLE,814.0,268.0,16.0,16.0,in ballhandler hands
+a568b80a706e,UNKNOWN,,,,,occluded by players
+a5959793412f,VISIBLE,600.0,234.0,16.0,16.0,in ballhandler hands
+a5e3d23f6e54,VISIBLE,399.0,259.0,17.0,17.0,dribbling near defender
+a62bb168d5c0,UNKNOWN,,,,,occluded at baseline
+a682f2f0e1f4,UNKNOWN,,,,,occluded by players
+a68589ed3bb3,VISIBLE,418.0,302.0,17.0,17.0,held for free throw
+a6877f66c4b6,ABSENT,,,,,no ball in main frame
+a6b88ce1c584,UNKNOWN,,,,,occluded in halfcourt action
+a7025315194d,VISIBLE,704.0,303.0,16.0,16.0,dribbling on wing
+a77de0779aba,VISIBLE,339.0,145.0,17.0,17.0,airborne jump shot
+a7a44c71744c,UNKNOWN,,,,,occluded by official
+a7e94a21efb9,ABSENT,,,,,no ball in main frame
+a886ebe8dcfb,VISIBLE,105.0,370.0,18.0,18.0,held at left edge
+a8e70f46eeb3,ABSENT,,,,,no ball on court
+a9b8c4b4cd72,VISIBLE,484.0,339.0,17.0,17.0,held in traffic
+a9e2b0ad8512,ABSENT,,,,,empty hoop closeup
+aa7a1eaec87d,ABSENT,,,,,no ball in huddle
+aac1ae558308,ABSENT,,,,,no ball in main frame

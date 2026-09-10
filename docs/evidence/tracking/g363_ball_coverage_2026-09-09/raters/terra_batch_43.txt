@@ -1,0 +1,20 @@
+f1f13c7f22ed,VISIBLE,625.0,116.0,18.0,18.0,clear orange ball
+f22176d4659e,ABSENT,,,,,no ball in main frame
+f2d1b5c0bd14,ABSENT,,,,,no ball in main frame
+f339d0f0f44d,ABSENT,,,,,no ball in main frame
+f3b924adc1a6,VISIBLE,372.0,228.0,15.0,16.0,held ball
+f43576229b16,VISIBLE,455.0,282.0,15.0,15.0,held ball
+f442c7b355e0,VISIBLE,322.0,303.0,16.0,16.0,held ball
+f46373fc2ad2,ABSENT,,,,,no ball in main frame
+f4745b065625,VISIBLE,786.0,190.0,28.0,30.0,held ball
+f6c38194abd9,VISIBLE,557.0,258.0,15.0,15.0,held ball
+f77c3f33f4d7,ABSENT,,,,,no ball in main frame
+f7a84e2f89d6,VISIBLE,530.0,310.0,17.0,18.0,held ball
+f7d5f65f5257,VISIBLE,527.0,192.0,150.0,170.0,close-up ball
+f7f4a82ba9cb,ABSENT,,,,,no ball in main frame
+f848c4f039c2,VISIBLE,572.0,80.0,44.0,48.0,held ball
+f8603da6a2db,ABSENT,,,,,no ball in main frame
+f88f6bc56152,VISIBLE,313.0,302.0,21.0,20.0,held ball
+f8df04ea06fa,ABSENT,,,,,no ball in main frame
+f93e941cb10f,VISIBLE,607.0,243.0,25.0,24.0,held ball
+f9932656ee59,ABSENT,,,,,no ball in main frame

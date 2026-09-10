@@ -1,0 +1,20 @@
+f9d71135e624,VISIBLE,193.0,412.0,16.0,16.0,dribbling near sideline
+fa1b699643c0,ABSENT,,,,,not visible
+face585feda8,ABSENT,,,,,not visible
+fb1b5db3afd2,ABSENT,,,,,not visible
+fb255f6b5089,VISIBLE,318.0,268.0,24.0,24.0,held by ballhandler
+fb4f91766c8e,ABSENT,,,,,not visible
+fbae0d0d4b51,VISIBLE,591.0,122.0,16.0,16.0,above shooter's hands
+fbda48df8ff7,VISIBLE,365.0,205.0,17.0,17.0,held near baseline
+fc7d49e94fc2,ABSENT,,,,,bench shot
+fd56bbf0af4a,ABSENT,,,,,closeup without ball
+fd74ef3ff877,VISIBLE,708.0,178.0,16.0,16.0,held by perimeter player
+fd9b7a4304f7,VISIBLE,555.0,275.0,18.0,18.0,near driving player
+fdb7c19c0bae,ABSENT,,,,,not visible
+fdc404d87dff,VISIBLE,521.0,273.0,18.0,18.0,within player cluster
+fe43ac29fa44,ABSENT,,,,,closeup without ball
+fe52609d79e5,ABSENT,,,,,closeup without ball
+fe542224de89,VISIBLE,420.0,319.0,19.0,19.0,between defenders
+fe5fa5337cc3,VISIBLE,670.0,267.0,17.0,17.0,held by ballhandler
+ff3827e714e6,ABSENT,,,,,bench shot
+ff3ba7406d07,ABSENT,,,,,interview shot

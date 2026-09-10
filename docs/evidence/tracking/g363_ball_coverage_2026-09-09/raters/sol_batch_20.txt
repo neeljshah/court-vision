@@ -1,0 +1,20 @@
+6ccc80b59e5e,VISIBLE,434.0,316.0,22.0,23.0,orange ball beside dribbler
+6d18d309bab8,VISIBLE,356.0,198.0,24.0,24.0,clear airborne basketball
+6d639eeba205,VISIBLE,345.0,258.0,23.0,23.0,ball held above hand
+6d872d267086,ABSENT,,,,,no basketball visible
+6df12376c876,ABSENT,,,,,crowd closeup without ball
+6df3a9076a29,VISIBLE,368.0,194.0,17.0,17.0,ball above shooters hands
+6e9a9606a372,VISIBLE,199.0,196.0,19.0,18.0,ball beside ballhandlers hand
+6ea733bc6255,VISIBLE,766.0,43.0,34.0,32.0,motion-blurred airborne ball
+6f644edd363c,VISIBLE,294.0,62.0,27.0,25.0,ball contacting the rim
+6f6d7c2df9ae,ABSENT,,,,,player closeup without ball
+6f9dd93328d7,ABSENT,,,,,ball obscured from view
+6faaf410ce8b,VISIBLE,613.0,187.0,24.0,23.0,ball cradled near face
+6fb1ee4d77f1,VISIBLE,721.0,333.0,19.0,19.0,airborne ball near baseline
+6fcf278b1603,ABSENT,,,,,postgame closeup without ball
+6fed7dc9b40b,VISIBLE,464.0,305.0,70.0,63.0,large ball held at waist
+700e6aa694bb,VISIBLE,325.0,72.0,31.0,29.0,orange ball on rim
+70e494b21995,VISIBLE,520.0,147.0,14.0,14.0,airborne ball above players
+7103bd5e7dc7,VISIBLE,281.0,386.0,18.0,18.0,partly visible ball by defender
+712b543a733e,ABSENT,,,,,dead-ball scene without visible ball
+714d3bae0764,VISIBLE,657.0,338.0,28.0,23.0,two-tone ball in players hand

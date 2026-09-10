@@ -1,0 +1,20 @@
+7c87fcdb9ebf,ABSENT,,,,,no ball visible
+7ca0d220a93b,ABSENT,,,,,no ball visible
+7cb042e3cc02,ABSENT,,,,,no ball visible
+7cf949ee5ae2,VISIBLE,224.0,294.0,17.0,17.0,clear dribble near left foot
+7d2ca3793b10,UNKNOWN,,,,,partial object too ambiguous
+7d768bd0334d,VISIBLE,448.0,296.0,7.0,6.0,small airborne ball
+7d91f76d5af8,ABSENT,,,,,no ball visible
+7d9d521aeec6,VISIBLE,255.0,334.0,18.0,18.0,airborne pass at left
+7dac93726975,ABSENT,,,,,no ball visible
+7e5fb041828c,ABSENT,,,,,no ball visible
+7f5565ff893c,VISIBLE,522.0,531.0,92.0,18.0,partial ball at bottom edge
+7f7214b5c09a,ABSENT,,,,,no ball visible
+80333f68bec0,ABSENT,,,,,no ball visible
+805123a819fe,VISIBLE,272.0,274.0,19.0,19.0,clear dribble by ballhandler
+806edbdc1576,ABSENT,,,,,no ball visible
+8130c788f800,VISIBLE,819.0,299.0,16.0,16.0,clear dribble at right
+8168d1d83bea,VISIBLE,136.0,280.0,20.0,21.0,ball held at waist
+819977e602ed,VISIBLE,560.0,375.0,50.0,52.0,ball held between arms
+825f402b5578,ABSENT,,,,,no ball visible
+82f00fdd476d,ABSENT,,,,,no ball visible

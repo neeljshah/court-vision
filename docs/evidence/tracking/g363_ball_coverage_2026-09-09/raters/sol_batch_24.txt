@@ -1,0 +1,20 @@
+82fbbc268e44,VISIBLE,430.0,81.0,27.0,25.0,ball beside rim
+83048a796e33,VISIBLE,696.0,171.0,22.0,20.0,ball above rim
+831ec00d02df,VISIBLE,209.0,90.0,20.0,21.0,ball at rim
+835deb004d08,ABSENT,,,,,mascot crowd shot
+836422850d55,VISIBLE,38.0,265.0,14.0,14.0,ball under dribbling hand
+83f1c26a9270,VISIBLE,556.0,304.0,36.0,34.0,ball held at waist
+8502ab18f680,ABSENT,,,,,player closeup
+852d06bee969,VISIBLE,442.0,251.0,11.0,12.0,ball low beside hand
+852f5100c7bf,ABSENT,,,,,players awaiting restart
+853663d3fa88,ABSENT,,,,,sideline interview
+85597a5e8bf8,VISIBLE,461.0,66.0,24.0,19.0,airborne ball
+858022bbc89b,VISIBLE,180.0,259.0,26.0,20.0,ball held near hip
+85ad63a5999b,ABSENT,,,,,blurred court closeup
+85cb6b627d5b,ABSENT,,,,,postgame interview
+85f8416413ff,ABSENT,,,,,dead ball court view
+867f70f40b5a,ABSENT,,,,,postgame interview
+869565cc29e6,ABSENT,,,,,players awaiting inbound
+86fe4e94afa2,ABSENT,,,,,player closeup
+877154041e4d,VISIBLE,731.0,269.0,24.0,26.0,ball controlled at hip
+87a426f02ac1,ABSENT,,,,,crowd timeout shot

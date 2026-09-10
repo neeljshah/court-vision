@@ -1,0 +1,20 @@
+523405dbdd66,VISIBLE,627.0,141.0,23.0,21.0,ball on rim
+525736693e80,VISIBLE,665.0,188.0,27.0,21.0,ball beside rim
+5274a65d7dae,VISIBLE,616.0,203.0,18.0,17.0,held in both hands
+52b0f15257e9,ABSENT,,,,,closeup with no ball
+52bed970ae07,VISIBLE,404.0,131.0,16.0,15.0,ball at rim
+5366926a5926,VISIBLE,448.0,375.0,22.0,20.0,bouncing by dribbler
+538d2e85209e,VISIBLE,314.0,391.0,18.0,17.0,bouncing near lane
+540e83f6d87c,ABSENT,,,,,no visible ball
+545d25ff8432,VISIBLE,613.0,138.0,19.0,18.0,ball beside rim
+547a4769bd1d,ABSENT,,,,,player introduction cutaway
+54c516efc7f6,ABSENT,,,,,no visible ball among players
+5524c7fb0cc3,VISIBLE,207.0,183.0,66.0,64.0,held above shooter
+554d4042c100,VISIBLE,413.0,169.0,24.0,23.0,ball at rim
+55e1a59bf974,VISIBLE,612.0,346.0,28.0,27.0,ball beside dribbler
+560a17ccd5de,VISIBLE,314.0,74.0,28.0,25.0,airborne near backboard
+56424db05fc4,VISIBLE,531.0,331.0,18.0,16.0,bouncing near free throw line
+56997ebd0894,ABSENT,,,,,coach closeup with no ball
+56a85ef3b57c,VISIBLE,545.0,141.0,43.0,47.0,held near shooter
+56ec309abe0f,VISIBLE,466.0,264.0,14.0,20.0,partly visible at left hip
+57197ad5dbbe,ABSENT,,,,,no discernible ball in wide shot

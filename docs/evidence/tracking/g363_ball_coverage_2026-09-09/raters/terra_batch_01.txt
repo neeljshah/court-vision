@@ -1,0 +1,20 @@
+00256fbe30cd,ABSENT,,,,,interview shot
+002c2ca7a3c0,ABSENT,,,,,closeup shot
+004dfb194535,VISIBLE,511.0,287.0,16.0,15.0,held near paint
+0089acbec576,ABSENT,,,,,sideline closeup
+0161bc9aad42,ABSENT,,,,,player closeup
+01624a78bbc4,UNKNOWN,,,,,ball unclear
+01ce08140eff,ABSENT,,,,,ball offscreen
+025a8aaacfd8,ABSENT,,,,,player closeup
+02a8ebb07627,VISIBLE,347.0,280.0,16.0,15.0,held under basket
+0382ec91fd1d,ABSENT,,,,,player graphic
+04256d900e04,VISIBLE,107.0,60.0,19.0,18.0,held at top edge
+043421998afd,VISIBLE,292.0,463.0,14.0,13.0,on court
+04c33a2ba3c8,VISIBLE,508.0,254.0,17.0,16.0,held in lane
+054db0ba29fc,VISIBLE,338.0,361.0,19.0,18.0,held at wing
+0560ba4573e3,VISIBLE,394.0,204.0,15.0,14.0,held in transition
+059f61cfb0f7,ABSENT,,,,,player closeup
+05cbce45bbb8,ABSENT,,,,,wide ceremony shot
+060e54341df9,ABSENT,,,,,bench closeup
+060ffbe2c29d,VISIBLE,577.0,188.0,48.0,45.0,held in foreground
+0678b8bdbcee,UNKNOWN,,,,,ball unclear

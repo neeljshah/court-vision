@@ -1,0 +1,20 @@
+8db551391476,ABSENT,,,,,bench closeup without ball
+8df8b92593df,ABSENT,,,,,only trophy sculpture
+8e018c1de817,ABSENT,,,,,ball outside top edge
+8eaa76587cb1,VISIBLE,721.0,175.0,28.0,30.0,ball held at chest
+8eddb6561311,VISIBLE,623.0,291.0,20.0,16.0,ball beside dribbling hand
+8f745c2bbdd6,VISIBLE,621.0,46.0,22.0,22.0,blurred airborne ball
+8fc5f69f7542,ABSENT,,,,,no ball among players
+9061d91c2aad,ABSENT,,,,,player closeup without ball
+90b32b232312,ABSENT,,,,,sideline celebration without ball
+90c2505a735a,ABSENT,,,,,player closeup without ball
+90ec31471472,VISIBLE,595.0,166.0,124.0,108.0,large motion blurred ball
+91237c714d31,ABSENT,,,,,no ball near rim
+914518aa85f5,ABSENT,,,,,bald head not ball
+91472eb3a624,ABSENT,,,,,no ball among players
+918f12e96516,VISIBLE,200.0,111.0,44.0,51.0,airborne ball near player
+91a032cf73e1,ABSENT,,,,,player closeup without ball
+9205d986172e,VISIBLE,792.0,221.0,24.0,20.0,ball held at baseline
+921ecafd36e4,ABSENT,,,,,ceremony scene without ball
+9220eea33e68,ABSENT,,,,,interview scene without ball
+934374068bfc,ABSENT,,,,,foreground shoulder not ball

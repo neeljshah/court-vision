@@ -1,0 +1,20 @@
+93765f85386b,VISIBLE,523.0,327.0,23.0,24.0,ball held near lane
+93d0e95c3c22,ABSENT,,,,,no ball visible
+93d561d0abd7,ABSENT,,,,,no ball visible
+94565bfe6ace,VISIBLE,356.0,275.0,24.0,20.0,ball left of raised hand
+947b87f4c0e6,VISIBLE,319.0,353.0,21.0,24.0,ball on low dribble
+9534d65f18d2,VISIBLE,201.0,228.0,21.0,25.0,ball held at hip
+9553ae33713a,VISIBLE,733.0,207.0,28.0,29.0,ball between players hands
+95a0ce7b9587,ABSENT,,,,,no ball visible
+95cd346765f1,ABSENT,,,,,no ball visible
+9654729789be,VISIBLE,556.0,300.0,17.0,24.0,ball at players waist
+96bef25962ec,VISIBLE,669.0,163.0,18.0,20.0,ball held near sideline
+9746fd6fd103,ABSENT,,,,,no ball visible
+97b0f9504773,ABSENT,,,,,no ball visible
+97d09f6e9182,VISIBLE,503.0,110.0,18.0,17.0,airborne ball above paint
+97d7b429f1c7,VISIBLE,637.0,219.0,16.0,17.0,ball beside ballhandlers hands
+97ddf468f289,VISIBLE,463.0,296.0,18.0,18.0,ball at dribblers hand
+98429c1bb9ae,VISIBLE,396.0,89.0,23.0,19.0,airborne ball above basket
+98bae19d49ab,VISIBLE,659.0,232.0,18.0,18.0,ball held by referee
+98c7fd78a17a,ABSENT,,,,,no ball visible
+98d4313d277b,VISIBLE,435.0,162.0,45.0,39.0,ball held at rim

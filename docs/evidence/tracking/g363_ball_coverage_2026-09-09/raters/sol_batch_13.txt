@@ -1,0 +1,20 @@
+488ece7f5ce8,ABSENT,,,,,exterior venue shot
+48a31ddd32d3,VISIBLE,792.0,389.0,17.0,27.0,motion blurred dribble
+493100e98464,VISIBLE,444.0,283.0,20.0,23.0,ball at runners hip
+49759debf1d1,VISIBLE,221.0,224.0,24.0,22.0,ball held by player
+4a4d42a5cf72,ABSENT,,,,,courtside interview
+4a66870b97d6,ABSENT,,,,,postgame interview
+4a8130a3bbf8,ABSENT,,,,,only rim hardware visible
+4aa64724a263,VISIBLE,253.0,272.0,41.0,41.0,ball held at waist
+4aacb40e95d7,ABSENT,,,,,players awaiting restart
+4b05e098a705,VISIBLE,427.0,305.0,29.0,28.0,ball in shooters hand
+4b3e14a9ae73,ABSENT,,,,,player closeup
+4b5b66ab7b30,ABSENT,,,,,no ball visible
+4b90d2fd363e,VISIBLE,783.0,294.0,30.0,28.0,official holding ball
+4b9307a32abd,VISIBLE,642.0,252.0,20.0,18.0,ball between players
+4bd2281bab76,ABSENT,,,,,coach interview
+4bfbd15059d0,VISIBLE,658.0,223.0,25.0,18.0,motion blurred near hand
+4c04ef3b2fb8,ABSENT,,,,,no ball visible
+4c40b3169cde,ABSENT,,,,,exterior stairway shot
+4c56920ee793,VISIBLE,180.0,177.0,120.0,122.0,large foreground ball
+4c78585af542,ABSENT,,,,,no ball visible

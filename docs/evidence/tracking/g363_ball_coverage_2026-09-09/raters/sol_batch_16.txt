@@ -1,0 +1,20 @@
+57f8aa9e4681,ABSENT,,,,,no ball visible
+57fb0bcc7c24,ABSENT,,,,,ball fully occluded
+581fbc7865a2,VISIBLE,762.0,205.0,34.0,27.0,motion blurred ball
+5875f38e37f9,VISIBLE,573.0,488.0,118.0,104.0,ball held at waist
+58794fe201bb,VISIBLE,741.0,264.0,24.0,19.0,ball in left hand
+588c42315e4e,VISIBLE,429.0,134.0,28.0,27.0,ball held at hip
+58f519105706,ABSENT,,,,,ball fully occluded
+592c0c85869a,ABSENT,,,,,no ball visible
+5a00d5af219a,ABSENT,,,,,no ball visible
+5addcadf30ef,ABSENT,,,,,no ball visible
+5adff6aa4e48,ABSENT,,,,,no ball visible
+5ae17f912acd,ABSENT,,,,,no ball visible
+5b0c99e32968,VISIBLE,510.0,180.0,31.0,29.0,ball above players
+5b4aa6539fcc,ABSENT,,,,,no ball visible
+5c506515db87,VISIBLE,344.0,171.0,40.0,33.0,ball held near chest
+5c55340d7f29,ABSENT,,,,,no ball visible
+5c7d27dff273,ABSENT,,,,,no ball visible
+5d166f69fa8d,VISIBLE,866.0,146.0,38.0,27.0,motion blurred ball
+5d2d3a04affe,ABSENT,,,,,no ball visible
+5d3fb328a392,ABSENT,,,,,no ball visible

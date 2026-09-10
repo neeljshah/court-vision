@@ -1,0 +1,67 @@
+{
+ "adjudicated": 295,
+ "adjudicator": "claude-opus (four blind agents, shuffled batches, no rater labels shown)",
+ "adjudicator_labels": {
+  "ABSENT": 93,
+  "UNKNOWN": 34,
+  "VISIBLE": 168
+ },
+ "centre_disputes_adjudicator_within_48px_of": {
+  "both": 6,
+  "neither": 43,
+  "sol_only": 69,
+  "terra_only": 7
+ },
+ "frames_sent": 295,
+ "label_disputes_sided_with": {
+  "neither": 37,
+  "sol": 72,
+  "terra": 61
+ },
+ "note": "UNKNOWN references are excluded from precision/recall denominators by the sealed scorer; batch 4 adjudicator used UNKNOWN 27/73 vs 1-4 in the other batches (adjudicator variance, reported not re-rated)",
+ "per_batch_labels": {
+  "raters\\adjudicator_batch_1.csv": {
+   "ABSENT": 34,
+   "UNKNOWN": 2,
+   "VISIBLE": 38
+  },
+  "raters\\adjudicator_batch_2.csv": {
+   "ABSENT": 18,
+   "UNKNOWN": 4,
+   "VISIBLE": 52
+  },
+  "raters\\adjudicator_batch_3.csv": {
+   "ABSENT": 36,
+   "UNKNOWN": 1,
+   "VISIBLE": 37
+  },
+  "raters\\adjudicator_batch_4.csv": {
+   "ABSENT": 5,
+   "UNKNOWN": 27,
+   "VISIBLE": 41
+  }
+ },
+ "primary_cohen_kappa": 0.640120432422561,
+ "reference_by_split": {
+  "development": {
+   "ABSENT": 159,
+   "UNKNOWN": 17,
+   "VISIBLE": 156
+  },
+  "heldout": {
+   "ABSENT": 243,
+   "UNKNOWN": 21,
+   "VISIBLE": 285
+  }
+ },
+ "reference_labels": {
+  "ABSENT": 402,
+  "UNKNOWN": 38,
+  "VISIBLE": 441
+ },
+ "row": "G363",
+ "stage": "blind adjudication (amendment 1)",
+ "trigger_centre_gt_48px": 125,
+ "trigger_label_disagreement": 170,
+ "unadjudicated_frames": 0
+}

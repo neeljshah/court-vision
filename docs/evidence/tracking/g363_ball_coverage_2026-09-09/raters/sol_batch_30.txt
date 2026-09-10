@@ -1,0 +1,20 @@
+a4602404e1fa,VISIBLE,595.0,105.0,19.0,20.0,airborne ball
+a4866b0f1cb2,VISIBLE,821.0,289.0,21.0,20.0,ball held at waist
+a568b80a706e,ABSENT,,,,,no ball visible in traffic
+a5959793412f,VISIBLE,629.0,222.0,21.0,22.0,ball beside dribbler
+a5e3d23f6e54,VISIBLE,398.0,227.0,20.0,18.0,ball held by player
+a62bb168d5c0,ABSENT,,,,,no ball visible in traffic
+a682f2f0e1f4,VISIBLE,428.0,237.0,15.0,15.0,partially visible dribble
+a68589ed3bb3,ABSENT,,,,,no ball in deadball scene
+a6877f66c4b6,ABSENT,,,,,no ball in stopped play
+a6b88ce1c584,VISIBLE,139.0,289.0,24.0,23.0,ball held at hip
+a7025315194d,VISIBLE,715.0,230.0,15.0,17.0,ball below dribbling hand
+a77de0779aba,VISIBLE,309.0,121.0,21.0,20.0,airborne shot
+a7a44c71744c,VISIBLE,410.0,324.0,27.0,22.0,referee holding ball
+a7e94a21efb9,ABSENT,,,,,celebration cutaway
+a886ebe8dcfb,VISIBLE,100.0,357.0,36.0,28.0,motion blurred dribble
+a8e70f46eeb3,ABSENT,,,,,empty court ceremony
+a9b8c4b4cd72,VISIBLE,482.0,336.0,24.0,20.0,ball low in traffic
+a9e2b0ad8512,ABSENT,,,,,no ball near basket
+aa7a1eaec87d,ABSENT,,,,,timeout huddle
+aac1ae558308,ABSENT,,,,,no ball visible in frame

@@ -1,0 +1,20 @@
+be34c82fab19,ABSENT,,,,,no ball in main frame
+be78f22c1c03,ABSENT,,,,,no ball in main frame
+bea639731fa9,VISIBLE,666.0,170.0,13.0,16.0,ball beside crouching player
+bed46a2ee91c,ABSENT,,,,,no ball in main frame
+bee7aed2a269,ABSENT,,,,,no ball in main frame
+befc9d17fba7,ABSENT,,,,,no ball in main frame
+bf2251ab8fae,VISIBLE,758.0,175.0,18.0,20.0,ball held by guard
+bf661bdb9582,VISIBLE,343.0,191.0,21.0,22.0,ball above shooter hands
+bf710d95bb51,ABSENT,,,,,no ball in main frame
+bf77cbc60af0,VISIBLE,301.0,229.0,21.0,21.0,ball carried by guard
+bf815b638380,VISIBLE,658.0,244.0,104.0,112.0,ball beside rim
+bfadf48da1eb,ABSENT,,,,,no ball in main frame
+bfb8daf6db57,VISIBLE,124.0,250.0,13.0,15.0,ball held by left guard
+c07853b2493f,ABSENT,,,,,no ball in main frame
+c09e17b5ace9,ABSENT,,,,,no ball in main frame
+c130340efee4,VISIBLE,414.0,304.0,106.0,102.0,ball held by referee
+c132da3e321d,VISIBLE,859.0,358.0,34.0,38.0,ball held by inbounder
+c1bbbb7f318c,VISIBLE,105.0,280.0,16.0,17.0,ball held by left guard
+c23aaae11919,VISIBLE,170.0,197.0,19.0,14.0,ball held by baseline inbounder
+c2579c7c4aba,ABSENT,,,,,no ball in main frame

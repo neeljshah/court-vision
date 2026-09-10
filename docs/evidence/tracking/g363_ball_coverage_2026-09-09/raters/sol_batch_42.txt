@@ -1,0 +1,20 @@
+ecc0d3be31ce,ABSENT,,,,,interview frame with no ball
+ed005cbfedb0,ABSENT,,,,,close-up with no ball
+ed5e6a35bf81,VISIBLE,474.0,89.0,17.0,18.0,airborne ball above basket
+eda38fd4a991,ABSENT,,,,,bracket graphic with no ball
+edce8ae845c0,VISIBLE,50.0,133.0,100.0,132.0,large ball clipped at left edge
+ede870077542,ABSENT,,,,,celebration with no ball
+ee27ca49da66,ABSENT,,,,,no ball visible near hoop
+ee311d78fabf,VISIBLE,265.0,361.0,19.0,22.0,dribbled ball beside player
+ee74084b8982,ABSENT,,,,,flag display with no ball
+ee76f9191cdb,VISIBLE,163.0,187.0,23.0,20.0,ball in shooters hands
+ee7f587678cc,VISIBLE,684.0,273.0,21.0,19.0,ball held by official
+ee801423da41,ABSENT,,,,,close-up with no ball
+ef38a29a9b12,VISIBLE,645.0,382.0,19.0,17.0,bouncing ball by dribbler
+ef983fcccd3a,ABSENT,,,,,close-up with no ball
+f0679fbea70c,ABSENT,,,,,close-up with no ball
+f15fccffca03,VISIBLE,566.0,209.0,30.0,30.0,airborne ball over players
+f183ac9e41aa,ABSENT,,,,,arena exterior with no ball
+f19823b78128,ABSENT,,,,,close-up with no ball
+f19899cc7b14,VISIBLE,233.0,154.0,66.0,66.0,airborne ball near clock
+f1bbb0bdf833,VISIBLE,539.0,330.0,82.0,76.0,ball held at players face

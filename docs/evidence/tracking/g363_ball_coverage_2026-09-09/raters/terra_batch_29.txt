@@ -1,0 +1,20 @@
+9c8891f0f6e4,VISIBLE,367.0,398.0,15.0,15.0,held by ballhandler
+9c919fa1a141,ABSENT,,,,,no ball visible
+9cdc084bdcf0,ABSENT,,,,,no ball visible
+9d27b2b4a8d7,ABSENT,,,,,no ball visible
+9d795f66257b,VISIBLE,530.0,255.0,14.0,13.0,in transition
+9de0a425b114,ABSENT,,,,,no ball visible
+9df5e693833b,VISIBLE,548.0,510.0,38.0,42.0,held at frame edge
+9ec4658ae5da,UNKNOWN,,,,,occluded in players
+9f2f9691c5a9,ABSENT,,,,,no ball visible
+a04e1a03423e,VISIBLE,361.0,238.0,17.0,17.0,near basket
+a0545d1e9dbb,VISIBLE,520.0,238.0,18.0,18.0,in air
+a0afa08b4d63,ABSENT,,,,,no ball visible
+a12b95f43c96,ABSENT,,,,,no ball visible
+a1d483474a18,VISIBLE,324.0,205.0,18.0,18.0,held by ballhandler
+a21fcdda9769,VISIBLE,338.0,371.0,29.0,29.0,held by ballhandler
+a2e2075549fe,VISIBLE,181.0,370.0,25.0,27.0,held for inbound
+a308bded2489,VISIBLE,458.0,347.0,18.0,18.0,dribbling
+a380236945e1,VISIBLE,200.0,388.0,30.0,30.0,held by player
+a421f16c9230,UNKNOWN,,,,,occluded in players
+a45b83a13ce2,ABSENT,,,,,no ball visible

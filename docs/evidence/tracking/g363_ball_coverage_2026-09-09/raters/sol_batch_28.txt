@@ -1,0 +1,20 @@
+98d9b066d866,ABSENT,,,,,no ball visible in main frame
+98fd5ff88f79,ABSENT,,,,,closeup contains no ball
+9965a6928457,ABSENT,,,,,broadcast graphic contains no ball
+996c9c8a64da,ABSENT,,,,,sideline closeup contains no ball
+9a153a7bf4f0,VISIBLE,729.0,376.0,30.0,34.0,ball held by passer
+9a228ea59ee6,UNKNOWN,,,,,ball obscured in crowded action
+9a36cd5a2114,VISIBLE,359.0,266.0,28.0,25.0,ball held by referee
+9a43195cc9df,ABSENT,,,,,exposed court shows no ball
+9a52f5e42e75,VISIBLE,565.0,106.0,22.0,19.0,airborne ball above lane
+9a6c98434331,ABSENT,,,,,player closeup contains no ball
+9a7fd86aca89,VISIBLE,190.0,273.0,22.0,20.0,ball cradled by white player
+9a98b3eb9ad1,UNKNOWN,,,,,possible ball lost in motion blur
+9aabc8a8d721,ABSENT,,,,,player closeup contains no ball
+9ab9acf3cf2b,ABSENT,,,,,postgame closeup contains no ball
+9afdaea39bee,VISIBLE,400.0,128.0,20.0,19.0,ball above contesting hands
+9b3c40ebe88f,VISIBLE,287.0,228.0,35.0,25.0,ball carried by white player
+9b505d1a3645,ABSENT,,,,,crowd shot contains no ball
+9c2f3a5abf47,ABSENT,,,,,team huddle contains no ball
+9c4c692c9a8f,ABSENT,,,,,no ball visible in half court play
+9c55d00df5a8,ABSENT,,,,,no ball visible in half court play

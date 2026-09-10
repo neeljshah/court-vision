@@ -1,0 +1,20 @@
+42118b6a72a0,VISIBLE,606.0,212.0,15.0,15.0,midair pass
+422239c9c6fb,VISIBLE,468.0,269.0,17.0,17.0,held near paint
+429d0d1fbda6,ABSENT,,,,,bench shot
+438ec97a3648,UNKNOWN,,,,,occluded in contact
+4391d4db24bc,ABSENT,,,,,sideline interview
+43abca024ee0,VISIBLE,393.0,266.0,20.0,20.0,held in traffic
+442d0172d04a,VISIBLE,231.0,292.0,13.0,13.0,dribbling at center
+44d2f30b6681,ABSENT,,,,,player closeup
+45111e3bd05a,ABSENT,,,,,bench closeup
+45926cdb573c,ABSENT,,,,,player closeup
+45cfedb36b91,VISIBLE,457.0,227.0,48.0,52.0,at the rim
+4650fce328c9,VISIBLE,824.0,213.0,18.0,19.0,held on wing
+4680eba1cd06,VISIBLE,662.0,237.0,20.0,20.0,dribbling right side
+46b6196afc9b,VISIBLE,676.0,236.0,16.0,18.0,held on baseline
+470cd9afd8c5,VISIBLE,736.0,448.0,31.0,38.0,dribbling foreground
+473ef42aba19,VISIBLE,347.0,240.0,21.0,21.0,dribbling in transition
+47826bc60f3c,VISIBLE,240.0,232.0,23.0,23.0,held for inbound
+482d0437ff70,VISIBLE,174.0,246.0,16.0,16.0,held on left wing
+485667db795c,VISIBLE,702.0,251.0,15.0,15.0,free throw ball
+4889322a19c9,VISIBLE,805.0,293.0,18.0,18.0,dribbling near logo

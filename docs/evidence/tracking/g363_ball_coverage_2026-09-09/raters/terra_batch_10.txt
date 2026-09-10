@@ -1,0 +1,20 @@
+3460c10d21ee,ABSENT,,,,,interview closeup
+34766854d990,VISIBLE,704.0,239.0,18.0,20.0,held at sideline
+34a68e7844f3,VISIBLE,544.0,410.0,28.0,30.0,dribbling ball
+350458ba9fee,ABSENT,,,,,crowd shot
+3522f413dafd,ABSENT,,,,,timeout huddle
+35d8cfec5e3d,ABSENT,,,,,postgame scene
+369640d8f3c1,ABSENT,,,,,postgame camera shot
+36b7d96fbb5b,UNKNOWN,,,,,obscured in paint
+3706b27ac296,ABSENT,,,,,aerial city shot
+37bec05d324a,VISIBLE,606.0,126.0,16.0,16.0,ball above players
+395923ab30bd,VISIBLE,296.0,330.0,18.0,20.0,dribbling ball
+39adef9c8324,VISIBLE,154.0,338.0,16.0,16.0,dribbling ball
+3a0a3add537a,VISIBLE,814.0,346.0,16.0,16.0,ball at sideline
+3a1086cbf894,VISIBLE,225.0,166.0,16.0,16.0,ball in flight
+3a1eac61e1a9,VISIBLE,468.0,385.0,20.0,22.0,loose ball
+3a43247ea755,VISIBLE,508.0,286.0,18.0,18.0,held near lane
+3b2627eeaeb9,ABSENT,,,,,interview closeup
+3be793e57b63,VISIBLE,473.0,166.0,18.0,18.0,ball in flight
+3cd9af01508e,ABSENT,,,,,bench closeup
+3d11e940c721,VISIBLE,331.0,125.0,20.0,20.0,ball in flight

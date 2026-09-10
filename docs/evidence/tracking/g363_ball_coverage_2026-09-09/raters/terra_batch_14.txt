@@ -1,0 +1,20 @@
+4c7e2db6b666,VISIBLE,215.0,235.0,14.0,14.0,orange ball in hand
+4ce9feada8d7,UNKNOWN,,,,,occluded by players
+4d0b01c58d65,VISIBLE,415.0,220.0,18.0,20.0,orange ball clearly visible
+4d3b973423aa,VISIBLE,853.0,299.0,13.0,16.0,orange ball at sideline
+4d4cfea838a0,UNKNOWN,,,,,occluded by players
+4d5ff17b43bd,VISIBLE,179.0,226.0,15.0,15.0,orange ball dribbling
+4df68823644f,ABSENT,,,,,no ball in frame
+4f1ca53421db,VISIBLE,227.0,267.0,16.0,16.0,orange ball dribbling
+4f64a50ac3c1,VISIBLE,789.0,299.0,15.0,16.0,orange ball at baseline
+4fecde40157e,VISIBLE,28.0,527.0,17.0,17.0,orange ball at edge
+5034f7238719,ABSENT,,,,,no ball in frame
+5042276960ab,UNKNOWN,,,,,ball not discernible
+50a956f66e3d,VISIBLE,595.0,202.0,17.0,18.0,orange ball near rim
+50fc0905e9b8,VISIBLE,407.0,267.0,16.0,17.0,orange ball in hands
+51036ebc10cf,VISIBLE,427.0,287.0,18.0,18.0,orange ball in hands
+512975438cfd,VISIBLE,739.0,342.0,19.0,18.0,orange ball dribbling
+513d233d9a07,VISIBLE,684.0,351.0,17.0,17.0,orange ball dribbling
+51e1d3096ee3,UNKNOWN,,,,,occluded by players
+5204240b18dd,ABSENT,,,,,no ball in frame
+5232ad114239,VISIBLE,824.0,286.0,18.0,18.0,orange ball in hands

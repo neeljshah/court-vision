@@ -1,0 +1,20 @@
+cf13f4ac0e10,VISIBLE,646.0,144.0,34.0,38.0,partly occluded beside raised hand
+cf363db185f5,ABSENT,,,,,no basketball in main frame
+cf839e7ef9ae,ABSENT,,,,,no basketball in main frame
+cf9bb3e7d2cd,VISIBLE,841.0,380.0,20.0,21.0,held at players right hip
+d071617e6ff7,ABSENT,,,,,empty hoop and net
+d0a6fb8d652f,VISIBLE,480.0,237.0,16.0,18.0,held against players side
+d0daa78771d3,ABSENT,,,,,no basketball in main frame
+d107d2fe7598,ABSENT,,,,,no basketball in main frame
+d13c6dc3777b,VISIBLE,583.0,315.0,24.0,27.0,ball bouncing beside players foot
+d188f300bf34,VISIBLE,201.0,160.0,18.0,18.0,held at players chest
+d1d602cc6a04,ABSENT,,,,,no basketball in main frame
+d1ebf594679a,VISIBLE,410.0,305.0,72.0,76.0,referee holding ball
+d1faf8156156,ABSENT,,,,,no basketball in main frame
+d20dae939d7d,VISIBLE,413.0,377.0,18.0,20.0,held at ballhandlers right hip
+d2453fab516e,ABSENT,,,,,no basketball in main frame
+d2a668fbeec0,VISIBLE,789.0,267.0,20.0,17.0,controlled by crouching player
+d2ea5a73a689,VISIBLE,407.0,317.0,18.0,18.0,tucked beneath runners arm
+d31f9a0c0ce2,VISIBLE,96.0,379.0,30.0,32.0,blurred ball near sideline
+d3747f70cbcc,VISIBLE,522.0,264.0,12.0,14.0,small blurred ball between players legs
+d3a3b719e817,VISIBLE,227.0,292.0,23.0,25.0,dribbled beside players leg

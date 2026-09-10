@@ -1,0 +1,20 @@
+dda11891cd04,ABSENT,,,,,no ball visible
+ddf0fb13aca0,VISIBLE,447.0,173.0,15.0,21.0,ball beside dribblers hip
+de6c72f8a758,VISIBLE,713.0,222.0,19.0,18.0,ball held overhead
+de8f6c3ca68a,ABSENT,,,,,timeout huddle
+dec72afbbafe,ABSENT,,,,,player closeup
+dee93ac0d3ca,VISIBLE,515.0,315.0,30.0,29.0,ball secured between hands
+def4b74088e9,ABSENT,,,,,no ball visible
+defe3c0d1e5b,VISIBLE,640.0,354.0,19.0,18.0,ball held before free throw
+dfe5c5f3a10a,ABSENT,,,,,player closeup
+e039ae267e70,ABSENT,,,,,no ball visible
+e0b7002a2d9e,ABSENT,,,,,no ball visible
+e102e7fbb883,ABSENT,,,,,postgame interview
+e11e7a1ddfe7,ABSENT,,,,,broadcast graphic
+e144d0710098,ABSENT,,,,,postgame interview
+e156d800c440,ABSENT,,,,,ball obscured by players
+e1f1ab7f928f,VISIBLE,512.0,47.0,16.0,13.0,airborne ball above court
+e1ffcf35aa43,ABSENT,,,,,no ball visible
+e216c414f1c4,VISIBLE,632.0,166.0,22.0,21.0,blurred ball beside runner
+e225e1049d6a,VISIBLE,413.0,130.0,15.0,15.0,ball at rim
+e2758462fda6,VISIBLE,798.0,256.0,18.0,18.0,ball held near baseline

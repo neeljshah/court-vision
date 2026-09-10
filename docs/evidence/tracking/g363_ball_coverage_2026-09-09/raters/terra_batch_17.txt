@@ -1,0 +1,20 @@
+5d88e82139c3,VISIBLE,203.0,266.0,18.0,18.0,ball in left hands
+5d8aeeeb55a5,VISIBLE,595.0,175.0,15.0,15.0,ball in dribbler hand
+5da3241e77e6,ABSENT,,,,,no ball visible
+5dae5c030d69,ABSENT,,,,,no ball visible
+5dcbda1d60b1,VISIBLE,155.0,222.0,18.0,18.0,ball held inbound
+5ddd9b25dd62,VISIBLE,153.0,339.0,23.0,23.0,ball in player hands
+5dfbffaacae6,VISIBLE,689.0,131.0,14.0,14.0,ball near rim
+5e1d059c77e4,VISIBLE,448.0,278.0,28.0,27.0,ball held overhead
+5e54740ed4e7,VISIBLE,391.0,429.0,20.0,20.0,ball bouncing
+5e728c70cfac,VISIBLE,651.0,300.0,19.0,19.0,ball in flight
+5ef705e78f2b,VISIBLE,724.0,230.0,15.0,15.0,ball near right player
+5f71a3cb9898,VISIBLE,212.0,105.0,20.0,20.0,ball at rim
+5f81b9f9e38b,VISIBLE,277.0,265.0,22.0,22.0,ball in shooter hands
+5faf12f4f07d,ABSENT,,,,,no ball visible
+5fda84db502f,ABSENT,,,,,no ball visible
+5fdab714fc92,VISIBLE,96.0,390.0,44.0,44.0,ball held at left
+5fe37d0cc403,ABSENT,,,,,no ball visible
+6037df5845d3,VISIBLE,559.0,287.0,18.0,18.0,ball in post hands
+60d18369e4ce,ABSENT,,,,,no ball visible
+61439814103c,ABSENT,,,,,no ball visible

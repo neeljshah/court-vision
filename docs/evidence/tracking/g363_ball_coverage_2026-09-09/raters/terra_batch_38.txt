@@ -1,0 +1,20 @@
+d3d53b3575ef,VISIBLE,319.0,322.0,32.0,34.0,held at waist
+d3e2aa486b5b,ABSENT,,,,,no ball visible
+d58d189f7fd0,VISIBLE,373.0,209.0,20.0,22.0,held near basket
+d6342ac414c7,VISIBLE,662.0,364.0,19.0,20.0,held by ballhandler
+d644011a1cff,ABSENT,,,,,timeout closeup
+d705a36eefc0,ABSENT,,,,,interview shot
+d727d5b07bf5,VISIBLE,295.0,286.0,19.0,21.0,dribbling at wing
+d803f84a1bf2,VISIBLE,708.0,318.0,18.0,20.0,held by ballhandler
+d81fad7aafb0,VISIBLE,452.0,51.0,44.0,42.0,in flight
+d89130c2299a,ABSENT,,,,,crowd shot
+d945df5188e9,VISIBLE,338.0,218.0,17.0,19.0,held for shot
+dad6f3f8d4d5,VISIBLE,104.0,359.0,19.0,21.0,dribbling left
+db49e3dc015d,VISIBLE,466.0,145.0,21.0,23.0,in flight
+dbe27a83f38d,ABSENT,,,,,player closeup
+dbfe4e1eba57,ABSENT,,,,,postgame shot
+dc30f641fd41,UNKNOWN,,,,,obscured at rim
+dc81dfadb27b,VISIBLE,475.0,115.0,18.0,19.0,above backboard
+dd56edfca863,ABSENT,,,,,bench huddle
+dd5deee8e3b4,UNKNOWN,,,,,occluded by player
+dd6672ddb657,UNKNOWN,,,,,occluded under basket

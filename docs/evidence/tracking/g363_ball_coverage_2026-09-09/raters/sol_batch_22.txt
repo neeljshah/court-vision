@@ -1,0 +1,20 @@
+7723df499d48,VISIBLE,466.0,85.0,28.0,22.0,airborne ball above lane
+77718a5881e9,VISIBLE,361.0,298.0,25.0,26.0,ball beside dribbling hand
+777d15e76433,VISIBLE,662.0,180.0,24.0,25.0,ball near raised hand
+779d823c6747,VISIBLE,745.0,300.0,25.0,28.0,ball held at chest
+77f595ac7e96,ABSENT,,,,,no ball visible
+7801f246e907,VISIBLE,576.0,302.0,35.0,31.0,ball held at waist
+7886f160304b,VISIBLE,193.0,238.0,24.0,27.0,ball beside dribbling hand
+78c1ebe2dc5f,ABSENT,,,,,no ball visible
+78f2f0e4d8b4,ABSENT,,,,,sideline closeup without ball
+790bc25fd8ae,VISIBLE,590.0,122.0,29.0,36.0,ball behind backboard
+793ae9295581,VISIBLE,706.0,229.0,20.0,22.0,ball held near baseline
+79c835795943,VISIBLE,275.0,183.0,23.0,26.0,airborne ball above rim
+79d61366b098,ABSENT,,,,,bench closeup without ball
+79e19c5ef2c3,ABSENT,,,,,ball outside main frame
+79e5e79d2bdb,ABSENT,,,,,player closeup without ball
+7a02e9fed24a,VISIBLE,575.0,251.0,22.0,27.0,ball held above shoulder
+7a5abbce1a33,ABSENT,,,,,arena introduction without ball
+7a77ec659be0,ABSENT,,,,,sideline celebration without ball
+7affbbd72599,ABSENT,,,,,player closeup without ball
+7b1fefc43357,ABSENT,,,,,postgame closeup without ball

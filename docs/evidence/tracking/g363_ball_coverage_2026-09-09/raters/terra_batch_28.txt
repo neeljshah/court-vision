@@ -1,0 +1,20 @@
+98d9b066d866,VISIBLE,733.0,290.0,20.0,20.0,held by referee
+98fd5ff88f79,ABSENT,,,,,no ball visible
+9965a6928457,ABSENT,,,,,broadcast graphic
+996c9c8a64da,ABSENT,,,,,no ball visible
+9a153a7bf4f0,VISIBLE,736.0,372.0,24.0,24.0,held by player
+9a228ea59ee6,VISIBLE,401.0,202.0,22.0,22.0,near the rim
+9a36cd5a2114,VISIBLE,360.0,265.0,20.0,20.0,held by referee
+9a43195cc9df,ABSENT,,,,,broadcast graphic
+9a52f5e42e75,VISIBLE,566.0,106.0,20.0,20.0,airborne ball
+9a6c98434331,ABSENT,,,,,no ball visible
+9a7fd86aca89,VISIBLE,185.0,279.0,20.0,20.0,held by player
+9a98b3eb9ad1,VISIBLE,672.0,272.0,16.0,16.0,held by player
+9aabc8a8d721,ABSENT,,,,,no ball visible
+9ab9acf3cf2b,ABSENT,,,,,no ball visible
+9afdaea39bee,VISIBLE,377.0,176.0,20.0,20.0,near the rim
+9b3c40ebe88f,VISIBLE,284.0,288.0,22.0,22.0,dribbling
+9b505d1a3645,ABSENT,,,,,no ball visible
+9c2f3a5abf47,VISIBLE,184.0,372.0,18.0,18.0,held by player
+9c4c692c9a8f,VISIBLE,318.0,223.0,18.0,18.0,held by player
+9c55d00df5a8,VISIBLE,310.0,218.0,18.0,18.0,held by player

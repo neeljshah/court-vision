@@ -1,0 +1,20 @@
+87e899b0a031,VISIBLE,238.0,213.0,14.0,14.0,clear ball
+88a603090bfc,VISIBLE,756.0,270.0,14.0,14.0,clear ball
+88b95d236e19,ABSENT,,,,,no ball visible
+88dc262ed748,VISIBLE,817.0,334.0,16.0,16.0,clear ball
+89521b5d0d6a,ABSENT,,,,,no ball visible
+8986d22a3ee6,VISIBLE,377.0,340.0,14.0,14.0,clear ball
+89b4f8ed448c,VISIBLE,694.0,273.0,14.0,14.0,held by referee
+89dd8715dd8a,ABSENT,,,,,no ball visible
+8a6623a9c489,VISIBLE,40.0,105.0,16.0,16.0,clear ball
+8b2d24c1bd75,VISIBLE,429.0,276.0,14.0,14.0,clear ball
+8b7a7979b56c,VISIBLE,627.0,234.0,16.0,16.0,clear ball
+8bfa5dc8d8c9,ABSENT,,,,,no ball visible
+8c2b4ca650af,VISIBLE,132.0,258.0,14.0,14.0,held at baseline
+8c364576216e,ABSENT,,,,,no ball visible
+8c596a426560,VISIBLE,175.0,313.0,14.0,14.0,clear ball
+8d4631207aa6,VISIBLE,846.0,256.0,18.0,18.0,clear ball
+8d80190d0e2b,ABSENT,,,,,no ball visible
+8d8066eb6700,VISIBLE,264.0,344.0,14.0,14.0,clear ball
+8d8ac1354238,ABSENT,,,,,no ball visible
+8da2fd2e41cd,VISIBLE,186.0,343.0,14.0,14.0,clear ball

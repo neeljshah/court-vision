@@ -1,0 +1,74 @@
+frame_key,rater,label,cx,cy,box_w,box_h,reason
+422239c9c6fb0e2e7582a06e2c51ff7a3c25dba2e8858d44bfaa84d8f10cd4a3,ADJUDICATOR,VISIBLE,473,272,16,16,ball at driving ball handler between defender arms
+0f10333a93b690a10420bb8b30fb96f6699978f52fb28c1a25563c440a034495,ADJUDICATOR,VISIBLE,756,316,12,12,ball held at hip by navy jersey player
+9a98b3eb9ad17c060e332c6faf9f0496a06ca012588a532ace89143a8deccc6b,ADJUDICATOR,VISIBLE,402,345,13,13,ball held at left hip by navy dribbler
+3427c8976d82fa8ad83e5576b91d3e5733d1fbf89c6b8c1e199dac4877e6d29c,ADJUDICATOR,VISIBLE,342,391,10,10,ball carried in both hands by jogging referee
+5c55340d7f2914b1b8589bd326b689518040199b492e89f37794f183ef81ad22,ADJUDICATOR,UNKNOWN,,,,,live possession but ball not locatable at this resolution
+f6c38194abd9fb6f1b8100df9cee13e4012d5208a103640ec4a9fc4ac9f9eec9,ADJUDICATOR,VISIBLE,652,216,14,14,ball in hands of driving player near baseline
+cf13f4ac0e105eec8fafedf9a55015fed09a73cb0e602efeb5291d32d6838f84,ADJUDICATOR,UNKNOWN,,,,,cluttered basket area ball not separable
+0db71514d7adcb20ac39ded1d0da68e41a75d4c0a51e9981f8dcc9e0345de487,ADJUDICATOR,VISIBLE,213,405,15,15,ball at right hand of blue jersey dribbler
+66f95c9da73da975684ff915d7af4343ad76e0fc2e1b568221aa79a84e3e9f43,ADJUDICATOR,UNKNOWN,,,,,round object over crowd could be souvenir or shot in flight
+e463c48202f2d155e4545d2e726b1e8dfcd6e3206b331bfed34cba705f79a0e8,ADJUDICATOR,UNKNOWN,,,,,only a faint colourless blur no ball confirmable
+19aa39df5c12435f075506b642b27877c073bd5cf9ddd7265743a7d7c73b8c61,ADJUDICATOR,VISIBLE,93,246,13,13,ball held at chest by white jersey player
+9c2f3a5abf4713d2b1f6291c87a172bab64c6f3ca09b0f157ba658ae2a4f69ed,ADJUDICATOR,ABSENT,,,,,tight crowd and bench shot no court in view
+9afdaea39bee674fa289caec464eca747d12754079e07b055656d1096bb197cb,ADJUDICATOR,VISIBLE,401,128,12,12,ball raised above rim on baseline attack
+af03b9f50401bf2cc0c5fabb1f84085a98f69c8a54dea67845003c63edba344c,ADJUDICATOR,VISIBLE,427,207,16,16,ball held at chest by running gold jersey player
+d3747f70cbcce00c72da265771bed172cc9c3c914bd146bd27e14854d48b91cb,ADJUDICATOR,VISIBLE,151,18,20,20,ball at the rim beside the backboard
+64d9361b521300c8d4b001f35a25d98dcc2913678bc3f3640ebf2cc737e9c7d2,ADJUDICATOR,VISIBLE,255,177,18,16,motion blurred ball in flight above defenders
+dc30f641fd411f5eae982edb6032c3c5d34a421e8174341e4f16b62bb2b7dfb6,ADJUDICATOR,ABSENT,,,,,rim cam during stoppage no game ball on court
+fd74ef3ff8775523a9726de1fd609b2296f73d66b81bce6d432f5ee1c349752b,ADJUDICATOR,UNKNOWN,,,,,ball not locatable in the half court cluster
+d3a3b719e817f3a05276f22716d3f0ec546346f0145b1336ed3e0a5b9d9eb759,ADJUDICATOR,VISIBLE,240,292,20,20,orange ball at the dribblers hand near midcourt logo
+c822ee49f2fbedcc32f47b19daf12acbc82f9bd97d770dc3b33cd202c797de07,ADJUDICATOR,UNKNOWN,,,,,candidate objects resolve to hair and sideline item
+32a9b704493fbb795fb761f37bef3fdce018f9bee88a4ec8ec651ab518983bac,ADJUDICATOR,VISIBLE,371,256,20,20,orange ball at ball handler between two defenders
+8df8b92593dfdd3fc2c8a0005ed714d8a537f63aa277d43656023059c772730f,ADJUDICATOR,ABSENT,,,,,exterior arena establishing shot with graphics only
+dd5deee8e3b4502cbda9ea36e30509e77697479a0d94e0ccff6d602019aa5f3c,ADJUDICATOR,UNKNOWN,,,,,high rim angle with graphic overlay ball not visible
+e156d800c4405fb89da685a79ff9ad540add767bbdfc5bf0176885997875a3a9,ADJUDICATOR,UNKNOWN,,,,,loose ball scramble but no round ball separable
+8f745c2bbdd6d80498297e647eb691a8b9e87a80b9b97632edb0fdce66ac06e0,ADJUDICATOR,VISIBLE,627,47,20,18,ball in flight above the shooter after a jumper
+d107d2fe7598603f864ec3b8965cb6caddd8f0bfe61ded127546e96f6bd33d54,ADJUDICATOR,ABSENT,,,,,dead ball moment players standing no ball in frame
+077503ec977dee0bade6e66673ed011259f3257ca46d469441c7f03b37c42c6f,ADJUDICATOR,VISIBLE,375,332,20,20,orange ball held by the ball handler on the wing
+592c0c85869af2165da4e905ec3ed3fe25e6421aa22e2928926c148960cfecb5,ADJUDICATOR,UNKNOWN,,,,,yellow object at player hip not separable from uniform
+a68589ed3bb328dc8dfc0d65d8a03d9721b7a4041a184d3f2ecdca7ea6d2f365,ADJUDICATOR,VISIBLE,211,319,14,14,orange ball held at the hip of the black jersey player
+9654729789be2f7d2df4f8409e9824e820ce337d4ab537a59e3c1f97f5991012,ADJUDICATOR,UNKNOWN,,,,,contact scramble ball hidden by bodies
+ac32eaa830f248038ffda02fc212f9e2985b9aba0b057a595dc5a337a9ecf586,ADJUDICATOR,UNKNOWN,,,,,out of bounds dive with no ball separable in frame
+def4b74088e9c27f98617d6a2ef784f1e5ed6e00196e0e3117a1c21675f4d624,ADJUDICATOR,UNKNOWN,,,,,gold coloured candidates resolve to hair and uniform
+ef38a29a9b129e17b92d451bd58c4f2a471e4007f60dce883f1c0a59bfd05374,ADJUDICATOR,VISIBLE,641,377,20,20,orange ball at the dribblers hand in the frontcourt
+8da2fd2e41cd7b92a1b676c0ef626991ffd1fa9f0de022d6a20650fa43c44ca9,ADJUDICATOR,VISIBLE,216,331,22,22,orange ball at the dribblers hand over the logo
+b46d16a16c713c1a93c3009b7aa8cd69aefe9eb465030d9e30f27fe2576da6c7,ADJUDICATOR,VISIBLE,779,242,18,18,ball in the hands of the driving player near the baseline
+523405dbdd66ee53b37a0210e167a3e19b672e95eff4f6dbd855aaa2bb847971,ADJUDICATOR,VISIBLE,401,197,18,18,ball above the hands of two contesting players
+6ea733bc62553892f9f58bb305267994d1d64625eb6f8409d324cfe5617e0596,ADJUDICATOR,VISIBLE,763,40,22,22,ball above the raised hands at the rim
+49759debf1d117119d61a2cf7a79034cc51e177d741377a0fd4b679f7c43cb27,ADJUDICATOR,VISIBLE,206,222,16,16,orange ball at the dribblers hands in front of the LED board
+cf9bb3e7d2cd6d698c82cbeb785874dba9a55a617140a0d3e7b3b98dc5ba1f90,ADJUDICATOR,VISIBLE,840,377,20,20,orange ball at the dribblers right hand
+3da016070261f317f62e1023453b415bfc76365c7aca1bbb75ed144cf77b5be2,ADJUDICATOR,VISIBLE,737,212,22,26,motion blurred ball just released above the drivers hand
+a7025315194d1fbbe984cf84095df51739fabb70710850e1f4972b6a77eed975,ADJUDICATOR,VISIBLE,711,225,18,18,ball at the hands of the blue jersey driver
+64b0424b6bdbe9f91340e587ed47c04879a5bb09cf7871d54c078ac284b7ad0a,ADJUDICATOR,VISIBLE,666,184,16,16,ball carried at the chest of the walking player
+9553ae33713a507c8435a5f3fd836f986abb1d7d06575ddb2d63def9b5d80937,ADJUDICATOR,VISIBLE,707,215,32,32,blurred ball between the two players in the close up
+e5f28e676ccb89514ecc45a40bad564b1a37814919426c9fff0f2d5e5aa121c8,ADJUDICATOR,UNKNOWN,,,,,ball not separable in the paint cluster
+c6f3e658d15d209b2d9b0d1568cf27c1b43a8516c255dbc89b5b43778ad60a04,ADJUDICATOR,VISIBLE,628,242,14,14,dark orange ball at the dribblers hand in transition
+dd6672ddb657e5e47c0108623eb80670d8a25d687fcafefe5d3e783aa7536f82,ADJUDICATOR,VISIBLE,590,192,16,16,ball at the hands of the player rising under the rim
+13dfa04669bf44d17e34d560311fdbbebbc2a41d148dbf05ebbb6bb5349f1163,ADJUDICATOR,UNKNOWN,,,,,transition frame with no ball separable
+b03e2fa047ac83a3467519744358ca18eae784ee110835141c1b0f767b1a07fd,ADJUDICATOR,UNKNOWN,,,,,extreme close up with a large out of focus orange blur
+2d61858c542071d4f2f868987ebbb8806cd8a10168b82dd63928c38d90b9f03d,ADJUDICATOR,VISIBLE,270,217,16,16,ball at the contested hands on the shot at the rim
+485667db795cdc3a7da389229dedf385a70d4af26a18c5d3c301f39cb5041707,ADJUDICATOR,UNKNOWN,,,,,free throw frame with no ball visible in either half
+06b7146c14f12cbd722f89b4164cc1c10ab99530456e6615fa38a5107f7643a3,ADJUDICATOR,UNKNOWN,,,,,post finish at the rim ball not visible
+ab9d66958bec3ed71ba0b770e8cbe6b58051abb353fd18994f46675d1f2795ff,ADJUDICATOR,VISIBLE,201,331,20,20,orange ball at the dribblers hand over the logo
+06b61a76a7ed92f4e227015c169b53e2bd2699dd8c7c5fe8fb0f38d92c9527a6,ADJUDICATOR,VISIBLE,651,197,18,18,ball at the hands of the driving player near the basket
+07663802c0296b89e792475d24663fd02261514fbe6ea86cb7df11563a9de53f,ADJUDICATOR,VISIBLE,823,214,18,18,ball just above the raised hands of the receiving player
+3d5bfeaf149137570da522c6d992297469c1a205b1708c0484ce376bf6f02812,ADJUDICATOR,UNKNOWN,,,,,finish at the rim with the ball not separable
+1623782c2aebfa8ca01815dc8824efd1bc748dec80580a27181bb14350d87767,ADJUDICATOR,VISIBLE,702,67,16,16,orange ball dropping into the net at the rim
+243411904abf14d2d21314daaa3be7f75fec2ee82a7d219f02be618e13aac30c,ADJUDICATOR,VISIBLE,582,137,18,18,free throw in flight arcing above the courtside crowd
+0e28ec60437d97badf30bfeebc4bfefd2af91be56c178e38903ba8e81356707e,ADJUDICATOR,VISIBLE,781,260,20,20,ball at the dribblers hand in transition
+fdc404d87dff0f2aa2cb8335c3b61419a04f6255496e1997c5ec3ad6a9de68b4,ADJUDICATOR,VISIBLE,277,135,16,16,ball held at the chest of the player near the sideline
+a380236945e16d75ad171d4fa0b979e4640c39c4350de0f7be61c02918f700d2,ADJUDICATOR,VISIBLE,293,372,44,42,blurred ball at the hands of the player diving out of bounds
+f15fccffca03276c1d8633ea654df2261496ddb605f7b304fe28a00fd21910fd,ADJUDICATOR,VISIBLE,566,204,32,32,orange ball in flight above the contesting players
+7dac93726975443987de11b4c692c44fa4957042a2d33622e628e8c0ce69b771,ADJUDICATOR,UNKNOWN,,,,,free throw setup with no orange ball visible
+6f9dd93328d7fb3f12bf41e1b26a21f369462e3aaa1789c41284ed3e6c6e1b44,ADJUDICATOR,UNKNOWN,,,,,ball hidden behind the bent over ball handler
+01ce08140eff3b64b4971ca44c434016601f1fa298dc7d5b2836ac2e50bed778,ADJUDICATOR,UNKNOWN,,,,,shooter in follow through but ball not found in frame
+540e83f6d87c34f919e61e464047771e8a31061fa2320f570eb4ec107a727333,ADJUDICATOR,UNKNOWN,,,,,only an elongated yellow object no round ball
+bcb481fbcc7056de5b0978ce9fad4d09701c55ec274e42be0ac0790ed52c8cc7,ADJUDICATOR,UNKNOWN,,,,,contact drive with the ball not separable
+0b3f308131cbbd453856325831312cba0ee41b607e376f5a6bb7fa3845eec80b,ADJUDICATOR,ABSENT,,,,,dead ball with referee signalling and clear court
+fe542224de892f6b3360d9b40409e1acf7270c185087f4bd7872f14dd7f3eb90,ADJUDICATOR,VISIBLE,268,396,20,20,blurred ball at the dribblers low hand in the close up
+6f644edd363caa0bc7fc3c1e8be185f59c8dfd93840a36e772bff2a11f7d5c7e,ADJUDICATOR,UNKNOWN,,,,,transition frame with no orange ball located
+1bf643c2eec3b066c6c9ef5bf4972ec773b2be2c1c1bb4dc728159a46d1efac5,ADJUDICATOR,UNKNOWN,,,,,only an arm shaped object at the players side
+6b7dce507b0eca22820a99da08b661159a6eb53c84e523d2842a066eb4dff82f,ADJUDICATOR,VISIBLE,375,185,18,18,orange ball on the rim on the finish at the basket
+b716e12e42a764637e3398a5d33153cd8133d4532da6039e2fa5adf783802d04,ADJUDICATOR,UNKNOWN,,,,,heavily blurred contact no ball separable
+7ca0d220a93be3dc20606d84aa657d63984eccb96741f12370a0ceadf748b787,ADJUDICATOR,UNKNOWN,,,,,open court transition with no ball located

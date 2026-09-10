@@ -1,0 +1,20 @@
+716a47c0e6fa,VISIBLE,521.0,208.0,21.0,18.0,ball in front of handler
+727b74f3b8cc,ABSENT,,,,,no ball visible
+727f2ccde3f0,VISIBLE,269.0,207.0,35.0,35.0,ball below left hand
+72fdd09e64a8,UNKNOWN,,,,,ball obscured in player cluster
+73021c4609c1,VISIBLE,227.0,210.0,16.0,18.0,ball airborne on pass
+736f1ffc3672,ABSENT,,,,,no ball visible
+73787809c7c4,ABSENT,,,,,no ball visible on court
+73be1766fb12,ABSENT,,,,,no ball visible
+73fb8330d1a0,VISIBLE,817.0,238.0,20.0,20.0,ball at right hand
+743b7be3d8ee,VISIBLE,383.0,359.0,25.0,28.0,referee holds ball
+746676d0fa6a,ABSENT,,,,,no ball visible
+74855cdd4b06,VISIBLE,691.0,253.0,21.0,19.0,ball beside driving hand
+748ad8b5bcfb,ABSENT,,,,,no ball visible on court
+7499f207fded,UNKNOWN,,,,,motion blur obscures handler hands
+74dfea90b16a,ABSENT,,,,,no ball visible
+753192a7f127,VISIBLE,309.0,225.0,25.0,28.0,ball at handlers left side
+754feaf6ed4e,VISIBLE,682.0,329.0,23.0,25.0,ball during low dribble
+75772aaa460e,VISIBLE,509.0,282.0,42.0,42.0,ball secured at torso
+75ca38a47fa9,ABSENT,,,,,no ball visible
+75fb3b83f334,ABSENT,,,,,no ball visible

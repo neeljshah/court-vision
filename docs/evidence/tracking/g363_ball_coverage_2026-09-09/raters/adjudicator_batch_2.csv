@@ -1,0 +1,75 @@
+frame_key,rater,label,cx,cy,box_w,box_h,reason
+fbae0d0d4b51d9aac91da33f5d839c5a7a72a8473e625847933a53b1d554ea50,ADJUDICATOR,VISIBLE,590,37,30,30,ball held above head by shooter
+c65239bf86fb55718d25e9abd4af4ad377ee0c1f783287b742141bf7beaed6bb,ADJUDICATOR,VISIBLE,199,260,22,22,motion blurred ball in flight on left wing
+e9fe387a041cc4240edb0ff0d05494312c538d6d83bbe50c90d275dd0f070bc0,ADJUDICATOR,VISIBLE,512,17,18,18,orange ball high in the air above the paint
+ff4169c59f81bb3188d80864ba7eb8993ca011c8beb08d32de06952776be41f3,ADJUDICATOR,UNKNOWN,,,,,possible ball occluded at players hands too blurry
+9df5e693833bdfac95d917b4ed440d5999ecaf8091a3819ad3b741737a6390d9,ADJUDICATOR,VISIBLE,651,513,163,163,close up of player holding ball at waist
+fbda48df8ff799d24b5917944fc848319dd73d13fc0370366a95338347039437,ADJUDICATOR,VISIBLE,336,165,15,15,ball at driving players hands near baseline
+852d06bee969ba6c5e5a15a39b087825591a97ee1dac2de00f0fbf8d63337ab3,ADJUDICATOR,VISIBLE,432,249,11,11,small ball at dribblers hands in wide shot
+d188f300bf34656e8894ac210d9523c7cf0289fc4a3349a056ebdc5fe7d8b48f,ADJUDICATOR,VISIBLE,214,152,17,17,ball held at chest by player in yellow
+8986d22a3ee6c11dcdbdd69c64ff86f1fcc3a307fcea0bff087ef28c8d7646ac,ADJUDICATOR,VISIBLE,268,268,22,22,orange ball in the rebound scrum
+89b4f8ed448c865dcda2a730ea3cf22c9221a1175a09cf6c4de184b988a2bd89,ADJUDICATOR,ABSENT,,,,,dead ball scene with players down and no ball in frame
+9ec4658ae5da7ea22987575bc9ec1aa4b4eeb28c3cfcf5cac77a9625cece245a,ADJUDICATOR,VISIBLE,503,65,21,21,orange ball in flight above the baseline crowd
+97d7b429f1c7ceb18f39c85c68978d69aa38efe60ba28ddc1d6c22705a578b69,ADJUDICATOR,ABSENT,,,,,scanned whole open court frame and found no ball
+cd44868f53a2b5d0bcb3f5df980fe58f4e0a7dd414da4f639ff24443912e88fe,ADJUDICATOR,VISIBLE,391,208,18,18,ball at driving players hip inside the paint
+a62bb168d5c0dfbe23b2afcfdfd348e112352be82e3f9367bc74742d3764f29a,ADJUDICATOR,UNKNOWN,,,,,motion blurred fast break with no resolvable ball
+32d80de87a3b4734d676565e434a26c5367c5dc832319936f1ab373124f096c0,ADJUDICATOR,ABSENT,,,,,dead ball setup with no ball anywhere on court
+36b7d96fbb5b5ae81d39193fef2a27b129ec5af36ac9b5e11350a135efeb6279,ADJUDICATOR,VISIBLE,638,98,11,11,orange ball at the rim on a contested shot
+6df3a9076a298c3efb2f8d1743dcea54dbeb3b81bcc939addd9ea373a4950d64,ADJUDICATOR,VISIBLE,368,189,14,14,ball at release point on the jump shot
+ac19abac83a32f840d6658fba73c7b945f82d6c31e20ff0f3b661c429b01edf9,ADJUDICATOR,ABSENT,,,,,transition run with no ball in the frame
+f43576229b16a9afa1ea528acb9a901aaea8efe61896e7b32469216a829f09e4,ADJUDICATOR,VISIBLE,494,303,14,14,ball being dribbled beside the drivers leg
+c5a93ad76402254df4b91b451682785176e98d712e6bc8bb75bbeb47dd5f7b6a,ADJUDICATOR,UNKNOWN,,,,,follow through with ball not resolvable in frame
+e324bc5f0d6c4f20b4340159d30e4d28bd5a6c767595ef5a4cad8918dc57f91c,ADJUDICATOR,ABSENT,,,,,free throw lineup with the ball out of frame
+858022bbc89bf337c9c3813d63887fb11c81fb0086fdb1a6cc23f8c747702d15,ADJUDICATOR,VISIBLE,174,257,12,12,orange ball in the ball handlers hands on the wing
+5ae17f912acd7dc3981204f19e712d276b2592ffd53a3a407c9b8dbe18260192,ADJUDICATOR,VISIBLE,909,294,18,18,ball being dribbled between the legs at right
+2fe64d28cb18ab19038a3f89507381f11d2d211ce72b6fb10aad289f67bd8ead,ADJUDICATOR,VISIBLE,401,118,20,14,blurred orange ball just above the rim
+6fed7dc9b40b039c561610c7427be477b3bc1311793462e80035b11386c30eb1,ADJUDICATOR,VISIBLE,465,303,62,62,large close up ball held at the hip
+08037ac3f45254131d1151faa079a5588d3837fca39b1ef18eba470f3ae48096,ADJUDICATOR,VISIBLE,109,249,13,13,ball held at chest by the wing player
+56a85ef3b57cbbe6798364ffb760772847c709e62dfcdfd856b89064da6b358e,ADJUDICATOR,VISIBLE,537,143,57,57,close up ball at the shooters release
+700e6aa694bba2dc7aeb4529c463dcb4f4e9a56ac4e1205821e2b52c82a05096,ADJUDICATOR,VISIBLE,335,114,16,16,ball dropping through the net under the rim
+482d0437ff70368ac28435e0bb71c577b3d0864232c4b2dd25d523e2d8c11749,ADJUDICATOR,VISIBLE,537,287,15,15,ball low at the crouching ball handlers hands
+e0b7002a2d9ee61cd244142399973845526bf0e2969cea1fc6d74c2ccaf2fad0,ADJUDICATOR,VISIBLE,442,346,17,17,orange ball at the dribblers hands near the arc
+25de3240f18a9fb6621995cf4d2c21f200dd5ec715754fd865cedc217627c2d0,ADJUDICATOR,VISIBLE,540,203,17,17,orange ball loose on the floor in transition
+21d9b9c5350fc1377eae8266d72c429f2f116ffbc1462e9c987f1e7d530a8396,ADJUDICATOR,ABSENT,,,,,scanned full frame and no ball is visible
+10d786b6a025c8eeceff884b41b28a9acc1b459b8d71fdb613f2daf951d1d850,ADJUDICATOR,VISIBLE,445,234,11,11,ball with motion trail ahead of the ball handler
+e79d1d6072d37b3c0407b26e0ff50b2eace06cb7f4c7d02f425c6552eb037337,ADJUDICATOR,ABSENT,,,,,washed out wide shot with no ball anywhere
+581fbc7865a25dd0941dd6de967de9dfc6b1d5f7f64792134122e0ea24a43467,ADJUDICATOR,VISIBLE,760,205,26,22,two tone ball blurred at the dribblers hand
+c68e36cf6e1742074cc63f8a5717cca89aa15e59bb7557aa74885870e5e9fda3,ADJUDICATOR,VISIBLE,440,93,20,18,ball just outside the net on the shot
+57fb0bcc7c24b36e23611118b9a107fad87ed58002f32d1b3f5c719e90dc8ec9,ADJUDICATOR,VISIBLE,323,53,14,14,orange ball in the air above the bench area
+3a0a3add537a99d8a33af4c485aaebe4c0c8711637fa6b301af109f67ab70b0d,ADJUDICATOR,VISIBLE,827,386,14,15,ball at the ball handlers hip on the wing
+69c25565cb86617fd3fc5bbee55c509bfebc1aefa2d7e8da8e4d6e4092ab074c,ADJUDICATOR,VISIBLE,628,244,12,18,blurred ball bouncing on the floor in the paint
+b255be247dea55232bc0606c2012271c1c1cb886b43bb5beb14089f90abd37bf,ADJUDICATOR,UNKNOWN,,,,,contact at the rim with an unresolvable pale blob
+0678b8bdbcee81549712edcab7773594ab55b8211d3a77232bf66af50547918f,ADJUDICATOR,VISIBLE,688,303,22,20,ball held by the inbounding player at right
+3ff88c8cbc62e29a9bb402c16b78ba628c458b0cdc4d9e1e29bdab0f46eee40a,ADJUDICATOR,VISIBLE,489,313,17,17,game ball held by the referee during the stoppage
+24fd0a97b8dd48fb65390c75b3bc5f69734e729687e17adde219149614006ef4,ADJUDICATOR,ABSENT,,,,,full frame scan shows no ball in play
+b1826846fffe8b200cc10fc36a63f3d4ce3424ef747297205f2fe20d96f3a8b9,ADJUDICATOR,VISIBLE,566,172,12,12,ball held by the player under the basket
+02a8ebb076270a5e8156d01dd9351034a2358f6c799902ea671c86bf3bf6d635,ADJUDICATOR,VISIBLE,331,308,10,10,small orange ball on the floor behind the huddle
+2798587f7b5c02fe536e630ee40987bd0f34b43bcaf7955ba3ad6428db39ffef,ADJUDICATOR,ABSENT,,,,,tight close up of players with no ball
+ee76f9191cdbd8d5027d46596a903214dfcbc5bc2ff5f55c377abe4dc4fe6fea,ADJUDICATOR,VISIBLE,163,188,22,21,pale ball at the passers hands on the left wing
+51e1d3096ee34fdf477995990c068ab1e7e07067550366b014f19be4b53cb28d,ADJUDICATOR,VISIBLE,548,332,29,29,ball gripped in the drivers hand at the arc
+a04e1a03423e3a1d8f1caaeada2bd2c11642d6da70da5187646b8c6da0c6defe,ADJUDICATOR,VISIBLE,361,144,17,17,orange ball above the defenders on the shot
+1ed950faa3530acdd3cdcf78c3c19732be7432bf4a4dc1ec7b61c9eaf1e72153,ADJUDICATOR,VISIBLE,154,106,28,26,pale ball in the air above the left corner
+743b7be3d8ee0e65ca800a1dcb7c4466e221e38d935a11a05782bdb9ab7e30bf,ADJUDICATOR,VISIBLE,377,301,13,15,game ball in the referee hands at the free throw line
+0b241fe2e28c13757d751c8df6bf0dc9808ec56f08b1725c5c354396b7f826a2,ADJUDICATOR,ABSENT,,,,,tie up scrum with the ball not visible anywhere
+57f8aa9e46814f1e9b221b97b4ac21a6fb30da72427c990bd31fd4cf22b134e9,ADJUDICATOR,ABSENT,,,,,dead ball with players walking and no ball in frame
+525736693e801aaaf8a8386e7cffe8bb29f8b84fbb6546bc07d09e1bd5a14a8c,ADJUDICATOR,VISIBLE,666,185,20,19,orange ball in the air near the backboard
+5b0c99e32968cf5fdefa4294a7e01a93745f27f5723d91a1440c7c86c53f840c,ADJUDICATOR,VISIBLE,509,182,21,21,orange ball in flight above the paint
+ec8cbc20f4b79aac2bb0d4c3cf2bdd7091533677fae271bb5e46648e7ec1b55c,ADJUDICATOR,VISIBLE,594,307,15,12,dark ball at the drivers hip in traffic
+aeb0302bb27c7eb68690ef454af8a38884aeea694405975f2ed576f79957be09,ADJUDICATOR,ABSENT,,,,,transition frame with no ball anywhere on court
+9746fd6fd1039a88834733853858a22098eb0c921e125b0a33c552d364618373,ADJUDICATOR,ABSENT,,,,,ball hidden behind the driver and not visible
+5042276960abad3600bc36257c2fde450a2e98b8f28e7843e15266ae9da3411f,ADJUDICATOR,ABSENT,,,,,foreground player close up with no ball in frame
+8b2d24c1bd75b4ec6813145e25619a689d560780c87b6a793a869559e027073a,ADJUDICATOR,VISIBLE,274,204,24,24,pale ball at the runners hands on the break
+34766854d990d4a26907caad5d2686f9434d7c284421a529b278b7fa31cbd08f,ADJUDICATOR,VISIBLE,669,234,17,17,orange ball held by the player near the sideline
+eba8c3908739e03f2422929886b112ed53abc3e46b8783426aa773799cabe333,ADJUDICATOR,VISIBLE,752,317,16,16,ball being dribbled up the right side
+98c7fd78a17a81f7c63ce09f22d3daaa888a6bd1fe84fee11323ef268fe8d1c2,ADJUDICATOR,VISIBLE,411,108,15,13,orange ball at the rim on a missed shot
+d1faf8156156685b9d8b42b595f0986afc7ca0af8841399b7daae6755d341f1f,ADJUDICATOR,ABSENT,,,,,post basket celebration with no ball in frame
+50fc0905e9b86426b0a3b203e59639cc3a07a57faf306181eb59db5829f10a36,ADJUDICATOR,ABSENT,,,,,dead ball walk up with no ball visible
+2bbe984f4a74b18664c665c3420d3ce26fbf10d4597350334bca69f149859531,ADJUDICATOR,VISIBLE,498,90,13,14,ball at the shooters hands on the last second shot
+98d9b066d86637bc09bddc955f3499f1438d6fd7e91f4ff728544007922fc9b3,ADJUDICATOR,ABSENT,,,,,stoppage with players lined up and no ball in frame
+7499f207fded6dc07b570a2c3c5e61d65c0d81d19f4d730674ed975dcfbaeefb,ADJUDICATOR,VISIBLE,370,299,12,12,ball in the hands of the player in the paint
+68b18aeb1053c2195aed847546087e4caa9529eb22c7532a97bc0bdf9af0540a,ADJUDICATOR,VISIBLE,606,265,18,18,game ball held by the referee at the dead ball
+a6b88ce1c584f9efd117a86525f0d3cb2e3071495362d6fd7f040ff31e41dcce,ADJUDICATOR,VISIBLE,138,288,17,15,ball at the point guards hands bringing it up
+24896f416885b7cc499029d081e869ebc69559396cb60cdfa62d03bc7007657c,ADJUDICATOR,VISIBLE,446,119,11,13,orange ball at the left edge of the rim
+30154a7e31103db64f8bbe2024a6f240d6327313267156aba1a723009f6a356d,ADJUDICATOR,VISIBLE,590,108,14,14,ball at the rim on the contested layup
+29396a12ecc8abc4e34ee6c08b698ea1b464d1df679a2019eaab5d52e5a453ad,ADJUDICATOR,ABSENT,,,,,collision at the top of the key with no ball visible
+13fe9b95f2baa8247ef5b480db021592c1f1b12bbfbfce4ae710f4b67a61ac29,ADJUDICATOR,VISIBLE,440,298,18,18,pale ball at the drivers waist in the paint

@@ -1,0 +1,20 @@
+716a47c0e6fa,VISIBLE,520.0,209.0,16.0,15.0,midair dribble
+727b74f3b8cc,ABSENT,,,,,not in main frame
+727f2ccde3f0,VISIBLE,302.0,233.0,29.0,26.0,held while dribbling
+72fdd09e64a8,UNKNOWN,,,,,obscured by players
+73021c4609c1,VISIBLE,276.0,207.0,14.0,14.0,midair pass
+736f1ffc3672,ABSENT,,,,,not in main frame
+73787809c7c4,UNKNOWN,,,,,obscured in paint
+73be1766fb12,ABSENT,,,,,not in main frame
+73fb8330d1a0,VISIBLE,817.0,202.0,20.0,24.0,held at sideline
+743b7be3d8ee,ABSENT,,,,,not in main frame
+746676d0fa6a,ABSENT,,,,,not in main frame
+74855cdd4b06,VISIBLE,647.0,258.0,17.0,17.0,held by ballhandler
+748ad8b5bcfb,VISIBLE,610.0,245.0,15.0,15.0,dribbled in transition
+7499f207fded,VISIBLE,807.0,196.0,18.0,20.0,held on wing
+74dfea90b16a,ABSENT,,,,,not in main frame
+753192a7f127,VISIBLE,330.0,244.0,25.0,25.0,held near baseline
+754feaf6ed4e,VISIBLE,714.0,330.0,20.0,21.0,dribbled on wing
+75772aaa460e,VISIBLE,513.0,283.0,40.0,39.0,held in drive
+75ca38a47fa9,ABSENT,,,,,bench closeup
+75fb3b83f334,ABSENT,,,,,not in main frame

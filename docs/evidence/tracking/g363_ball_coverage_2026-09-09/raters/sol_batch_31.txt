@@ -1,0 +1,20 @@
+ab9d66958bec,VISIBLE,202.0,329.0,20.0,18.0,ball by dribbler's left hand
+ac19abac83a3,ABSENT,,,,,no ball visible in main frame
+ac32eaa830f2,VISIBLE,291.0,242.0,28.0,27.0,ball held by blue player
+ac9f7eb7f2bf,ABSENT,,,,,no ball visible in main frame
+aca604948190,VISIBLE,680.0,111.0,20.0,22.0,airborne ball near basket
+ad95b6516712,ABSENT,,,,,no ball visible in main frame
+adfe897bd5b6,VISIBLE,394.0,382.0,24.0,20.0,bouncing ball near midcourt
+ae193f07928e,ABSENT,,,,,no ball visible in main frame
+aeb0302bb27c,ABSENT,,,,,no ball visible in main frame
+af03b9f50401,ABSENT,,,,,no ball visible in main frame
+af3d55f58e9e,VISIBLE,532.0,362.0,18.0,18.0,bouncing ball beside dribbler
+af9749790c50,ABSENT,,,,,no ball visible in main frame
+afc6f3608db5,ABSENT,,,,,no ball visible in main frame
+afe10082487b,VISIBLE,234.0,312.0,20.0,20.0,ball rolling by baseline
+b03e2fa047ac,ABSENT,,,,,no ball visible in main frame
+b03e51a438c7,VISIBLE,222.0,298.0,13.0,15.0,ball held at handler's hip
+b0448ca4b3a7,ABSENT,,,,,no ball visible in main frame
+b0807ec8ff4d,VISIBLE,190.0,126.0,16.0,15.0,ball under dribbler's hand
+b0dfa7dc180e,ABSENT,,,,,no ball visible in main frame
+b101723974b6,ABSENT,,,,,no ball visible in main frame

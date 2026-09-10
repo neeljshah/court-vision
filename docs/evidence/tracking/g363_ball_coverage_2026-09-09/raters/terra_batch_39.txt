@@ -1,0 +1,20 @@
+dda11891cd04,ABSENT,,,,,no ball visible
+ddf0fb13aca0,VISIBLE,460.0,155.0,14.0,15.0,ball in player hands
+de6c72f8a758,VISIBLE,740.0,259.0,19.0,18.0,ball in player hands
+de8f6c3ca68a,ABSENT,,,,,timeout huddle
+dec72afbbafe,ABSENT,,,,,closeup without ball
+dee93ac0d3ca,VISIBLE,536.0,313.0,27.0,25.0,ball in player hands
+def4b74088e9,VISIBLE,217.0,272.0,14.0,15.0,ball in player hands
+defe3c0d1e5b,VISIBLE,604.0,351.0,19.0,20.0,ball at free throw
+dfe5c5f3a10a,ABSENT,,,,,closeup without ball
+e039ae267e70,ABSENT,,,,,no ball visible
+e0b7002a2d9e,VISIBLE,414.0,351.0,17.0,18.0,ball in player hands
+e102e7fbb883,ABSENT,,,,,postgame interview
+e11e7a1ddfe7,ABSENT,,,,,transition graphic
+e144d0710098,ABSENT,,,,,postgame interview
+e156d800c440,VISIBLE,595.0,241.0,17.0,18.0,ball in player hands
+e1f1ab7f928f,VISIBLE,510.0,85.0,16.0,15.0,ball in flight
+e1ffcf35aa43,VISIBLE,635.0,246.0,17.0,18.0,ball near basket
+e216c414f1c4,VISIBLE,367.0,240.0,16.0,17.0,ball in player hands
+e225e1049d6a,VISIBLE,377.0,193.0,17.0,17.0,ball near basket
+e2758462fda6,VISIBLE,813.0,276.0,18.0,18.0,ball in player hands

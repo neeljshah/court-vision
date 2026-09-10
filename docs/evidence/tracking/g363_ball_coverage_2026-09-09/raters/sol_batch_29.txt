@@ -1,0 +1,20 @@
+9c8891f0f6e4,VISIBLE,344.0,381.0,20.0,19.0,ball beside dribbler
+9c919fa1a141,ABSENT,,,,,no ball in closeup
+9cdc084bdcf0,ABSENT,,,,,no ball at sideline
+9d27b2b4a8d7,ABSENT,,,,,no ball near coach
+9d795f66257b,ABSENT,,,,,no ball visible
+9de0a425b114,ABSENT,,,,,no ball near commentators
+9df5e693833b,VISIBLE,652.0,507.0,148.0,66.0,partial ball at lower edge
+9ec4658ae5da,ABSENT,,,,,no ball near basket
+9f2f9691c5a9,ABSENT,,,,,no ball in player intro
+a04e1a03423e,VISIBLE,361.0,147.0,20.0,24.0,airborne ball beside rim
+a0545d1e9dbb,VISIBLE,522.0,209.0,20.0,18.0,airborne pass near lane
+a0afa08b4d63,ABSENT,,,,,no ball on bench
+a12b95f43c96,ABSENT,,,,,no ball in crowd
+a1d483474a18,VISIBLE,290.0,172.0,18.0,16.0,ball at dribblers hip
+a21fcdda9769,VISIBLE,343.0,388.0,28.0,28.0,ball held at waist
+a2e2075549fe,VISIBLE,222.0,257.0,24.0,22.0,ball held for inbound
+a308bded2489,VISIBLE,451.0,319.0,22.0,24.0,blurred dribble by handler
+a380236945e1,VISIBLE,309.0,386.0,38.0,36.0,blurred ball at players hip
+a421f16c9230,ABSENT,,,,,ball hidden from view
+a45b83a13ce2,ABSENT,,,,,no ball on court

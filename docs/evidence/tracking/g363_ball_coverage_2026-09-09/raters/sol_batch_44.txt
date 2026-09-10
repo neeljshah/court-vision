@@ -1,0 +1,20 @@
+f9d71135e624,VISIBLE,190.0,413.0,20.0,24.0,motion-blurred dribble
+fa1b699643c0,ABSENT,,,,,no ball visible
+face585feda8,VISIBLE,268.0,345.0,21.0,19.0,ball held at sideline
+fb1b5db3afd2,VISIBLE,360.0,85.0,15.0,18.0,ball above rim
+fb255f6b5089,VISIBLE,321.0,268.0,38.0,28.0,motion-blurred ball in hand
+fb4f91766c8e,ABSENT,,,,,no ball visible
+fbae0d0d4b51,ABSENT,,,,,no ball visible
+fbda48df8ff7,ABSENT,,,,,no ball visible
+fc7d49e94fc2,ABSENT,,,,,no ball visible
+fd56bbf0af4a,ABSENT,,,,,no ball visible
+fd74ef3ff877,ABSENT,,,,,no ball visible
+fd9b7a4304f7,VISIBLE,559.0,243.0,20.0,20.0,airborne ball in lane
+fdb7c19c0bae,ABSENT,,,,,no ball visible
+fdc404d87dff,ABSENT,,,,,no ball visible
+fe43ac29fa44,ABSENT,,,,,no ball visible
+fe52609d79e5,ABSENT,,,,,no ball visible
+fe542224de89,ABSENT,,,,,no ball visible
+fe5fa5337cc3,VISIBLE,668.0,233.0,27.0,23.0,ball carried at midcourt
+ff3827e714e6,ABSENT,,,,,no ball visible
+ff3ba7406d07,ABSENT,,,,,no ball visible

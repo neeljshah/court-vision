@@ -1,0 +1,20 @@
+618600d99e29,ABSENT,,,,,interview frame with no ball
+61efdf2a867a,VISIBLE,339.0,299.0,43.0,42.0,ball held before free throw
+6210a2f091bd,ABSENT,,,,,no ball visible on court
+622ac07d4c36,ABSENT,,,,,interview frame with no ball
+625771c20847,VISIBLE,53.0,344.0,30.0,24.0,ball bouncing near left sideline
+62e105916483,VISIBLE,568.0,218.0,26.0,21.0,ball held at left hip
+63b3b82354a0,ABSENT,,,,,no ball visible near players
+640da5e14096,ABSENT,,,,,interview frame with no ball
+64352477bd14,VISIBLE,479.0,149.0,23.0,22.0,ball beside left side of rim
+64b0424b6bdb,VISIBLE,656.0,175.0,22.0,20.0,ball carried at left hip
+64b97f92e692,UNKNOWN,,,,,center graphic obscures likely ball area
+64d9361b5213,ABSENT,,,,,only motion blurred arm visible
+64da58b4ff7c,ABSENT,,,,,player closeup with no ball
+64e7d380e359,ABSENT,,,,,no ball visible on court
+65082cf67f56,VISIBLE,281.0,384.0,19.0,18.0,ball low beside dribbler
+65c1594f57bc,ABSENT,,,,,interview frame with no ball
+65d33cab1581,VISIBLE,684.0,170.0,32.0,23.0,ball bouncing behind players
+65e04a6703eb,ABSENT,,,,,crowd shot with no ball
+65efed56fbe2,VISIBLE,413.0,407.0,20.0,23.0,ball on low right hand dribble
+661810290336,VISIBLE,344.0,160.0,20.0,18.0,ball beside left side of rim

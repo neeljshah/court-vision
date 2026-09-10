@@ -1,0 +1,20 @@
+b6bb6ae761d1,VISIBLE,714.0,180.0,34.0,33.0,ball held above referee
+b70a17fb2007,VISIBLE,270.0,417.0,26.0,28.0,blurred ball near hand
+b716e12e42a7,VISIBLE,663.0,357.0,35.0,42.0,ball cradled at waist
+b8556e868f73,VISIBLE,686.0,249.0,23.0,21.0,ball beside player hip
+b86e4c31ee79,VISIBLE,741.0,203.0,35.0,32.0,ball held by player
+b8a141378049,ABSENT,,,,,no ball visible
+b91495e19405,VISIBLE,558.0,272.0,22.0,22.0,ball airborne above player
+ba0cc82a3fe4,VISIBLE,355.0,260.0,22.0,27.0,ball partially visible between players
+ba855df11c50,ABSENT,,,,,no ball visible
+ba9c0b904e81,VISIBLE,665.0,186.0,19.0,30.0,blurred ball near defender
+bb224239090a,VISIBLE,322.0,300.0,24.0,27.0,ball visible beside hand
+bbcf6a50aeef,ABSENT,,,,,no ball visible
+bc46741fe103,ABSENT,,,,,no ball discernible
+bc51adfffdaa,VISIBLE,184.0,284.0,20.0,25.0,ball beside defender
+bc77f4a2b217,ABSENT,,,,,no ball discernible
+bcb481fbcc70,VISIBLE,455.0,275.0,24.0,23.0,ball held between players
+bcd6bde84d4f,VISIBLE,553.0,245.0,23.0,26.0,ball partially visible in traffic
+bd090799c4f8,VISIBLE,224.0,126.0,24.0,24.0,ball bouncing near player
+bd0d6bb3e74b,ABSENT,,,,,no ball visible
+bdd7a34c674c,VISIBLE,661.0,244.0,25.0,23.0,ball between opposing players

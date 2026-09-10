@@ -1,0 +1,20 @@
+d3d53b3575ef,VISIBLE,316.0,329.0,44.0,50.0,blurred ball by handler
+d3e2aa486b5b,VISIBLE,852.0,389.0,38.0,45.0,motion blurred ball at right
+d58d189f7fd0,VISIBLE,314.0,159.0,22.0,22.0,airborne ball near shooter
+d6342ac414c7,ABSENT,,,,,no ball visible
+d644011a1cff,ABSENT,,,,,no ball visible
+d705a36eefc0,ABSENT,,,,,no ball visible
+d727d5b07bf5,VISIBLE,296.0,291.0,27.0,27.0,ball beside dribbler
+d803f84a1bf2,VISIBLE,679.0,250.0,20.0,22.0,partially occluded ball at hip
+d81fad7aafb0,VISIBLE,452.0,54.0,61.0,66.0,clear airborne ball
+d89130c2299a,ABSENT,,,,,no ball visible
+d945df5188e9,VISIBLE,539.0,366.0,34.0,38.0,ball cradled at waist
+dad6f3f8d4d5,VISIBLE,100.0,401.0,36.0,37.0,ball below dribbling hand
+db49e3dc015d,VISIBLE,470.0,159.0,27.0,31.0,airborne ball above shooter
+dbe27a83f38d,ABSENT,,,,,no ball visible
+dbfe4e1eba57,ABSENT,,,,,no ball visible
+dc30f641fd41,ABSENT,,,,,no ball visible
+dc81dfadb27b,VISIBLE,474.0,120.0,19.0,19.0,ball above rim
+dd56edfca863,ABSENT,,,,,no ball visible
+dd5deee8e3b4,ABSENT,,,,,no ball visible
+dd6672ddb657,VISIBLE,572.0,205.0,18.0,14.0,ball between players

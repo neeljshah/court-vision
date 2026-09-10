@@ -1,0 +1,20 @@
+c899ecc1d38c,ABSENT,,,,,no ball visible
+c8b7a671965c,ABSENT,,,,,no ball visible
+c9eb4df95680,ABSENT,,,,,no ball visible
+ca783f13da91,ABSENT,,,,,no ball visible
+caaf10a7dd5b,ABSENT,,,,,no ball visible
+cac19bad1c9d,VISIBLE,310.0,296.0,18.0,18.0,clear ball
+cac895e73ca5,VISIBLE,633.0,387.0,20.0,18.0,clear ball
+cb10f94b2e67,VISIBLE,539.0,421.0,19.0,19.0,partially occluded ball
+cb9e43cfe826,ABSENT,,,,,no ball visible
+cba96941045f,VISIBLE,421.0,232.0,16.0,16.0,clear ball
+cbcac3d74a86,VISIBLE,552.0,248.0,17.0,17.0,partially occluded ball
+cc20458c6f06,VISIBLE,603.0,273.0,20.0,20.0,clear ball
+cd44868f53a2,VISIBLE,355.0,203.0,18.0,18.0,partially occluded ball
+cd8fe23cddfb,ABSENT,,,,,no ball visible
+cde14e856cbf,VISIBLE,418.0,196.0,17.0,17.0,clear ball
+ceadd38ef025,VISIBLE,681.0,133.0,24.0,24.0,clear ball
+ceb578923915,VISIBLE,435.0,269.0,28.0,26.0,clear ball
+cee1530bf919,VISIBLE,627.0,278.0,16.0,16.0,clear ball
+cee4d81605ae,VISIBLE,446.0,353.0,18.0,18.0,clear ball
+cefcfd5d8442,ABSENT,,,,,no ball visible

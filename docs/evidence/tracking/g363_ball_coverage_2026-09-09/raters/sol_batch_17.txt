@@ -1,0 +1,20 @@
+5d88e82139c3,VISIBLE,440.0,387.0,25.0,24.0,blurred ball by dribbler
+5d8aeeeb55a5,VISIBLE,601.0,168.0,24.0,24.0,ball held while advancing
+5da3241e77e6,ABSENT,,,,,empty hoop view
+5dae5c030d69,ABSENT,,,,,interview scene
+5dcbda1d60b1,ABSENT,,,,,no ball visible
+5ddd9b25dd62,VISIBLE,169.0,338.0,28.0,32.0,ball held at shoulder
+5dfbffaacae6,ABSENT,,,,,ball obscured from view
+5e1d059c77e4,VISIBLE,451.0,275.0,39.0,35.0,ball cradled by driver
+5e54740ed4e7,VISIBLE,394.0,430.0,26.0,27.0,ball bouncing on court
+5e728c70cfac,VISIBLE,649.0,299.0,29.0,17.0,ball above shooter
+5ef705e78f2b,ABSENT,,,,,ball obscured from view
+5f71a3cb9898,VISIBLE,330.0,385.0,32.0,37.0,ball held against torso
+5f81b9f9e38b,VISIBLE,276.0,259.0,28.0,25.0,ball raised for free throw
+5faf12f4f07d,ABSENT,,,,,no ball visible
+5fda84db502f,ABSENT,,,,,timeout closeup
+5fdab714fc92,VISIBLE,84.0,415.0,72.0,72.0,ball held at hip
+5fe37d0cc403,ABSENT,,,,,ball outside frame
+6037df5845d3,VISIBLE,545.0,331.0,25.0,19.0,partly occluded ball at hip
+60d18369e4ce,ABSENT,,,,,interview scene
+61439814103c,ABSENT,,,,,interview scene

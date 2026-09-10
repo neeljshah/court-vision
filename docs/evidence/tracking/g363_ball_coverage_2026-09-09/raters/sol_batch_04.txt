@@ -1,0 +1,20 @@
+10b7527d0321,ABSENT,,,,,timeout huddle
+10d786b6a025,VISIBLE,390.0,346.0,17.0,10.0,ball bouncing near midcourt
+110f054be70c,VISIBLE,641.0,411.0,18.0,21.0,controlled right hand dribble
+11ffdedbd9f0,ABSENT,,,,,player closeup
+12fae7c64341,ABSENT,,,,,postgame interview
+132df7d19402,VISIBLE,116.0,298.0,16.0,21.0,ball held at hip
+139b5e762e09,VISIBLE,390.0,229.0,17.0,18.0,low dribble between legs
+13dfa04669bf,ABSENT,,,,,ball off right edge
+13fe9b95f2ba,ABSENT,,,,,ball occluded by players
+1574171a0438,VISIBLE,866.0,280.0,18.0,19.0,ball held on right wing
+15811f965b33,ABSENT,,,,,celebration closeup
+162155c0f060,ABSENT,,,,,postgame celebration
+1623782c2aeb,VISIBLE,183.0,204.0,17.0,16.0,low dribble at left
+1641577caabb,ABSENT,,,,,bracket graphic
+167958b50c68,ABSENT,,,,,official review closeup
+16c583e45b39,ABSENT,,,,,ball occluded in paint
+1715c179cde0,ABSENT,,,,,postgame interview
+171ccd76427d,VISIBLE,529.0,222.0,41.0,42.0,ball carried in transition
+172177e657ab,VISIBLE,175.0,369.0,21.0,23.0,left hand dribble
+1756edee9fdc,VISIBLE,619.0,192.0,23.0,22.0,ball held near rim

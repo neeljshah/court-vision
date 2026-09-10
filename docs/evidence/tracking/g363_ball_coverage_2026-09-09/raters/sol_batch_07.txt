@@ -1,0 +1,20 @@
+22bbc4ff9c7e,ABSENT,,,,,only a shirt graphic
+22fb1eb7d39c,ABSENT,,,,,no basketball in main frame
+237d19193aee,ABSENT,,,,,no basketball in main frame
+237f9ae58891,ABSENT,,,,,full-screen tournament graphic
+23cbad5a1c2d,ABSENT,,,,,no basketball in main frame
+23cbbd9e412d,ABSENT,,,,,no basketball in main frame
+23cca1abd53a,ABSENT,,,,,no basketball in main frame
+24188290937e,ABSENT,,,,,no basketball in main frame
+2429eda8f896,ABSENT,,,,,no basketball in main frame
+243411904abf,VISIBLE,319.0,147.0,27.0,28.0,ball contacting the rim
+24896f416885,VISIBLE,452.0,123.0,28.0,25.0,ball beside the rim
+24fd0a97b8dd,ABSENT,,,,,no basketball in main frame
+24ff204830b9,ABSENT,,,,,no basketball in main frame
+25de3240f18a,VISIBLE,541.0,206.0,23.0,25.0,ball airborne near the dribbler
+263140f3bad0,ABSENT,,,,,no basketball in main frame
+2643efedef7d,ABSENT,,,,,no basketball in main frame
+26d7d47a599a,VISIBLE,482.0,160.0,52.0,55.0,ball held above the players
+26eb9cee0a07,VISIBLE,294.0,222.0,43.0,35.0,motion-blurred ball near the runners hip
+27316d5c1509,ABSENT,,,,,full-screen tournament graphic
+2798587f7b5c,VISIBLE,696.0,509.0,96.0,62.0,ball partly hidden below scorebug

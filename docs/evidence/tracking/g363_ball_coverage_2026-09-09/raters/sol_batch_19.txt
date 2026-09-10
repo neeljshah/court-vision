@@ -1,0 +1,20 @@
+66294faf6cb6,VISIBLE,574.0,203.0,22.0,20.0,ball beside raised hand
+6694d39d61a1,VISIBLE,625.0,256.0,20.0,20.0,ball in midair
+66cea5293a7f,ABSENT,,,,,no ball visible
+66f95c9da73d,ABSENT,,,,,no ball visible
+67847dd707fc,VISIBLE,321.0,219.0,43.0,55.0,motion blurred ball in hands
+67cf74d777b1,VISIBLE,292.0,333.0,14.0,14.0,low dribble visible
+67f48fec58a7,ABSENT,,,,,no ball visible
+68157217b961,ABSENT,,,,,no ball visible
+68b18aeb1053,VISIBLE,607.0,264.0,27.0,27.0,referee holding ball
+69134b3fc18b,VISIBLE,669.0,331.0,40.0,42.0,ball right of hoop
+69521c9dd4e0,ABSENT,,,,,no ball visible
+6979ca1d49e8,VISIBLE,260.0,234.0,17.0,18.0,ball in midair
+69c25565cb86,VISIBLE,544.0,15.0,25.0,30.0,ball partly clipped at top
+6a9cfc1e58d6,VISIBLE,656.0,213.0,19.0,18.0,ball in midair
+6af1d5d127b0,VISIBLE,383.0,231.0,32.0,29.0,player carrying ball
+6af73144cd5b,ABSENT,,,,,no ball visible
+6afc105dd755,VISIBLE,589.0,337.0,25.0,22.0,ball held at waist
+6b34dba8d44a,VISIBLE,426.0,267.0,26.0,28.0,free throw ball in hands
+6b4ce5ad7263,VISIBLE,557.0,244.0,20.0,17.0,ball partly behind defender
+6b7dce507b0e,UNKNOWN,,,,,possible ball obscured by rim

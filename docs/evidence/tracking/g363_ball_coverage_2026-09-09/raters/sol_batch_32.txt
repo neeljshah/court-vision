@@ -1,0 +1,20 @@
+b14aee495a83,VISIBLE,428.0,303.0,22.0,25.0,orange ball on blue paint
+b1501c3de99d,VISIBLE,486.0,56.0,33.0,35.0,airborne ball above shooter
+b1826846fffe,VISIBLE,567.0,170.0,18.0,16.0,ball held near players waist
+b255be247dea,ABSENT,,,,,no basketball visible
+b264cffd139a,VISIBLE,665.0,263.0,30.0,27.0,ball held by referee
+b269053e49ec,ABSENT,,,,,no basketball visible
+b2ac3849b75b,ABSENT,,,,,bench shot with no ball
+b3395d884755,VISIBLE,344.0,263.0,18.0,17.0,ball bouncing near baseline
+b341fdd28569,VISIBLE,100.0,300.0,22.0,24.0,ball held at left sideline
+b3549eb2457d,VISIBLE,285.0,262.0,27.0,29.0,ball beside dribblers foot
+b38257564a4f,ABSENT,,,,,bench closeup with no ball
+b3851928e652,ABSENT,,,,,no basketball visible
+b3a34cbc4105,ABSENT,,,,,rules graphic with no ball
+b3b02cc6ab15,ABSENT,,,,,bench closeup with no ball
+b41047866cf6,ABSENT,,,,,interview shot with no ball
+b46d16a16c71,VISIBLE,236.0,325.0,23.0,35.0,motion blurred ball beside runner
+b494d694673a,ABSENT,,,,,no basketball visible
+b57d818efdfd,ABSENT,,,,,sideline reaction with no ball
+b643cb7a398b,ABSENT,,,,,player closeup with no ball
+b6478b24d222,VISIBLE,313.0,191.0,27.0,27.0,ball cradled between both hands

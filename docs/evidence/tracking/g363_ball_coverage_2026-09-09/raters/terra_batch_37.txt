@@ -1,0 +1,20 @@
+cf13f4ac0e10,ABSENT,,,,,not in main frame
+cf363db185f5,ABSENT,,,,,warmup closeup
+cf839e7ef9ae,ABSENT,,,,,official closeup
+cf9bb3e7d2cd,ABSENT,,,,,not in main frame
+d071617e6ff7,ABSENT,,,,,empty net view
+d0a6fb8d652f,VISIBLE,470.0,222.0,14.0,16.0,held at waist
+d0daa78771d3,UNKNOWN,,,,,occluded in traffic
+d107d2fe7598,VISIBLE,108.0,356.0,28.0,28.0,held by official
+d13c6dc3777b,VISIBLE,560.0,292.0,14.0,16.0,near dribbler
+d188f300bf34,VISIBLE,244.0,198.0,16.0,17.0,held by player
+d1d602cc6a04,ABSENT,,,,,bench scene
+d1ebf594679a,VISIBLE,407.0,309.0,44.0,53.0,held by official
+d1faf8156156,VISIBLE,285.0,291.0,15.0,16.0,near ballhandler
+d20dae939d7d,VISIBLE,393.0,366.0,17.0,17.0,held by player
+d2453fab516e,VISIBLE,579.0,217.0,16.0,16.0,near basket
+d2a668fbeec0,VISIBLE,798.0,279.0,16.0,16.0,held by player
+d2ea5a73a689,VISIBLE,372.0,320.0,17.0,17.0,near dribbler
+d31f9a0c0ce2,VISIBLE,100.0,383.0,15.0,16.0,near ballhandler
+d3747f70cbcc,VISIBLE,622.0,186.0,17.0,18.0,near player hands
+d3a3b719e817,VISIBLE,274.0,278.0,14.0,15.0,near ballhandler

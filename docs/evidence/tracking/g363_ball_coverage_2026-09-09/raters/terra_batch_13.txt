@@ -1,0 +1,20 @@
+488ece7f5ce8,ABSENT,,,,,venue shot
+48a31ddd32d3,VISIBLE,793.0,391.0,17.0,22.0,ball by dribbler
+493100e98464,VISIBLE,391.0,283.0,17.0,18.0,ball in hand
+49759debf1d1,VISIBLE,187.0,181.0,15.0,16.0,ball in hand
+4a4d42a5cf72,ABSENT,,,,,commentator shot
+4a66870b97d6,ABSENT,,,,,interview shot
+4a8130a3bbf8,VISIBLE,145.0,143.0,22.0,22.0,ball at rim
+4aa64724a263,VISIBLE,278.0,286.0,25.0,25.0,ball in hand
+4aacb40e95d7,ABSENT,,,,,players only
+4b05e098a705,VISIBLE,424.0,299.0,19.0,19.0,free throw ball
+4b3e14a9ae73,ABSENT,,,,,closeup shot
+4b5b66ab7b30,VISIBLE,597.0,276.0,15.0,15.0,ball in hand
+4b90d2fd363e,VISIBLE,540.0,222.0,16.0,16.0,ball in hand
+4b9307a32abd,VISIBLE,574.0,227.0,15.0,15.0,ball in paint
+4bd2281bab76,ABSENT,,,,,interview shot
+4bfbd15059d0,VISIBLE,775.0,208.0,15.0,15.0,ball in hand
+4c04ef3b2fb8,ABSENT,,,,,ball off frame
+4c40b3169cde,ABSENT,,,,,street shot
+4c56920ee793,VISIBLE,151.0,160.0,72.0,75.0,ball foreground
+4c78585af542,VISIBLE,145.0,213.0,13.0,13.0,ball in hand

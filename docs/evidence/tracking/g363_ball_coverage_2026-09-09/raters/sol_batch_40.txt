@@ -1,0 +1,20 @@
+e2d26eda8a6a,ABSENT,,,,,sideline close-up
+e324bc5f0d6c,VISIBLE,422.0,389.0,18.0,18.0,held low between legs
+e36ad0f41058,ABSENT,,,,,crowd band shot
+e37e781e4500,VISIBLE,200.0,241.0,18.0,18.0,held by left-side player
+e3ae0f5c4408,VISIBLE,266.0,304.0,21.0,19.0,held in inset game view
+e3f8f96a0d79,ABSENT,,,,,no ball near basket
+e40728622afc,VISIBLE,302.0,354.0,14.0,18.0,low dribble near foot
+e414c921e933,VISIBLE,320.0,328.0,20.0,22.0,ball in passing motion
+e463c48202f2,ABSENT,,,,,yellow sleeve only
+e4d79aadcddc,VISIBLE,839.0,337.0,23.0,24.0,dribble beside right leg
+e54779db1e96,VISIBLE,461.0,253.0,18.0,18.0,held by free throw shooter
+e5883851f448,ABSENT,,,,,coach close-up
+e5bd3c488188,VISIBLE,339.0,334.0,23.0,22.0,controlled at hip
+e5c7cb72f83f,ABSENT,,,,,broadcast graphic
+e5f28e676ccb,ABSENT,,,,,ball obscured or out of frame
+e68262a433ba,VISIBLE,784.0,221.0,27.0,28.0,held at right hip
+e74a40a01841,VISIBLE,340.0,239.0,44.0,45.0,motion-blurred pass
+e7911da1b253,ABSENT,,,,,broadcast graphic
+e79d1d6072d3,ABSENT,,,,,no ball visible near hoop
+e848892b2b17,VISIBLE,584.0,362.0,15.0,16.0,right-hand dribble

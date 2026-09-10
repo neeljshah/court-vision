@@ -1,0 +1,20 @@
+57f8aa9e4681,VISIBLE,805.0,248.0,18.0,18.0,ball in hand
+57fb0bcc7c24,VISIBLE,320.0,84.0,18.0,18.0,airborne ball
+581fbc7865a2,VISIBLE,737.0,247.0,22.0,18.0,ball in hand
+5875f38e37f9,VISIBLE,545.0,480.0,114.0,82.0,ball in hand
+58794fe201bb,VISIBLE,661.0,269.0,17.0,17.0,ball in hand
+588c42315e4e,VISIBLE,425.0,126.0,22.0,22.0,ball in hand
+58f519105706,UNKNOWN,,,,,ball obscured
+592c0c85869a,UNKNOWN,,,,,ball obscured
+5a00d5af219a,ABSENT,,,,,no ball
+5addcadf30ef,ABSENT,,,,,no ball
+5adff6aa4e48,VISIBLE,437.0,154.0,20.0,20.0,ball in hand
+5ae17f912acd,VISIBLE,929.0,328.0,22.0,22.0,ball at edge
+5b0c99e32968,VISIBLE,510.0,246.0,24.0,23.0,airborne ball
+5b4aa6539fcc,ABSENT,,,,,no ball
+5c506515db87,VISIBLE,343.0,195.0,22.0,22.0,ball in hand
+5c55340d7f29,VISIBLE,787.0,257.0,18.0,18.0,ball in hand
+5c7d27dff273,ABSENT,,,,,no ball
+5d166f69fa8d,VISIBLE,744.0,142.0,23.0,21.0,ball in hand
+5d2d3a04affe,ABSENT,,,,,no ball
+5d3fb328a392,VISIBLE,494.0,292.0,19.0,19.0,ball in hand

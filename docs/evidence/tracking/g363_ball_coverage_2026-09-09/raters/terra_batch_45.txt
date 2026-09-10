@@ -1,0 +1,1 @@
+ff4169c59f81,VISIBLE,162.0,202.0,14.0,14.0,ball by handler

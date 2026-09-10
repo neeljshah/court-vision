@@ -1,0 +1,20 @@
+618600d99e29,ABSENT,,,,,interview shot
+61efdf2a867a,VISIBLE,338.0,284.0,34.0,27.0,held at free throw
+6210a2f091bd,ABSENT,,,,,no ball visible
+622ac07d4c36,ABSENT,,,,,interview shot
+625771c20847,VISIBLE,51.0,355.0,22.0,21.0,low dribble
+62e105916483,VISIBLE,151.0,189.0,16.0,15.0,held by player
+63b3b82354a0,ABSENT,,,,,no ball visible
+640da5e14096,ABSENT,,,,,interview shot
+64352477bd14,VISIBLE,478.0,172.0,16.0,17.0,ball near basket
+64b0424b6bdb,VISIBLE,25.0,154.0,15.0,15.0,ball at left edge
+64b97f92e692,ABSENT,,,,,no ball visible
+64d9361b5213,VISIBLE,265.0,190.0,18.0,17.0,ball in play
+64da58b4ff7c,ABSENT,,,,,closeup without ball
+64e7d380e359,VISIBLE,516.0,204.0,17.0,17.0,ball by rim
+65082cf67f56,VISIBLE,262.0,408.0,18.0,18.0,low dribble
+65c1594f57bc,ABSENT,,,,,interview shot
+65d33cab1581,VISIBLE,873.0,350.0,22.0,22.0,held by player
+65e04a6703eb,ABSENT,,,,,crowd shot
+65efed56fbe2,VISIBLE,418.0,400.0,17.0,17.0,low dribble
+661810290336,VISIBLE,320.0,173.0,16.0,16.0,ball near rim

@@ -1,0 +1,20 @@
+c33c8426f848,ABSENT,,,,,crowd cutaway
+c370975d7d0f,ABSENT,,,,,player closeup
+c504b83daeba,VISIBLE,390.0,141.0,16.0,15.0,above players
+c53712c3ac6c,ABSENT,,,,,interview shot
+c576ee9e3a29,ABSENT,,,,,crowd cutaway
+c5a93ad76402,VISIBLE,783.0,221.0,16.0,15.0,at shooters hands
+c5c35b92fd2d,VISIBLE,511.0,167.0,20.0,18.0,midair pass
+c5f71722e4b6,ABSENT,,,,,postgame interview
+c63ea555a8e4,ABSENT,,,,,warmup closeup
+c651943b59dd,VISIBLE,674.0,332.0,14.0,14.0,near ballhandler
+c65239bf86fb,VISIBLE,260.0,280.0,17.0,16.0,held by player
+c65af6218d9d,ABSENT,,,,,timeout huddle
+c68e36cf6e17,UNKNOWN,,,,,occluded in contest
+c699076e0fb5,VISIBLE,574.0,313.0,25.0,24.0,held at waist
+c6b1b8c35c70,VISIBLE,676.0,341.0,32.0,34.0,dribbling
+c6f3e658d15d,UNKNOWN,,,,,obscured at basket
+c70d5872450e,VISIBLE,210.0,215.0,15.0,15.0,held by player
+c822ee49f2fb,UNKNOWN,,,,,occluded under basket
+c8584a3adc7a,VISIBLE,224.0,278.0,16.0,16.0,midair pass
+c8585e20f673,ABSENT,,,,,player closeup

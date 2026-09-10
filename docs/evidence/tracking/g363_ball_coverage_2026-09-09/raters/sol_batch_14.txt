@@ -1,0 +1,20 @@
+4c7e2db6b666,VISIBLE,218.0,237.0,13.0,12.0,ball in handlers left hand
+4ce9feada8d7,UNKNOWN,,,,,ball obscured among players
+4d0b01c58d65,VISIBLE,416.0,227.0,27.0,27.0,ball held at baseline
+4d3b973423aa,VISIBLE,825.0,299.0,14.0,17.0,ball beside dribblers leg
+4d4cfea838a0,UNKNOWN,,,,,ball occluded by ballhandler
+4d5ff17b43bd,VISIBLE,179.0,229.0,13.0,12.0,ball bouncing near sideline
+4df68823644f,ABSENT,,,,,timeout huddle with no ball
+4f1ca53421db,VISIBLE,236.0,236.0,23.0,23.0,ball under handlers hand
+4f64a50ac3c1,VISIBLE,759.0,268.0,20.0,21.0,ball beside inbound official
+4fecde40157e,VISIBLE,305.0,350.0,30.0,30.0,ball partly visible at hip
+5034f7238719,ABSENT,,,,,postgame interview with no ball
+5042276960ab,ABSENT,,,,,ball outside the frame
+50a956f66e3d,VISIBLE,596.0,107.0,19.0,18.0,ball airborne beside rim
+50fc0905e9b8,ABSENT,,,,,no ball visible in frame
+51036ebc10cf,VISIBLE,437.0,274.0,23.0,21.0,ball cradled against torso
+512975438cfd,VISIBLE,739.0,312.0,21.0,22.0,ball between players
+513d233d9a07,VISIBLE,682.0,353.0,17.0,17.0,ball beside dribblers hand
+51e1d3096ee3,VISIBLE,549.0,334.0,29.0,29.0,ball held against chest
+5204240b18dd,ABSENT,,,,,coach closeup with no ball
+5232ad114239,VISIBLE,816.0,190.0,17.0,17.0,ball held at right wing
