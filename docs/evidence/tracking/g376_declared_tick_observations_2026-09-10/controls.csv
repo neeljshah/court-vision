@@ -1,0 +1,12 @@
+control,quantity,expected,observed,passed
+b_fully_observed,observed_share,1.000000,1.000000,1
+b_fully_observed,scheduled_no_detection,0,0,1
+b_fully_observed,not_scheduled,0,0,1
+b_fully_observed,unknown,0,0,1
+b_fully_observed,zero_observation_ticks,0,0,1
+c_doubled_declaration,not_scheduled_share,0.500000,0.500000,1
+c_doubled_declaration,observed_share,0.500000,0.500000,1
+c_doubled_declaration,scheduled_no_detection,0,0,1
+c_doubled_declaration,unknown,0,0,1
+a_rerun_reproduction,reproduction,1.000000,1.000000,1
+a_rerun_reproduction,symmetric_difference,0,0,1

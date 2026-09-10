@@ -1,0 +1,24 @@
+{
+  "FRESH69": {
+    "declared_ticks": 89655,
+    "g370_published_m1_zero_observation_share": "0.7644",
+    "m1_zero_observation_share": "0.764419",
+    "m1_zero_observation_ticks": 68534,
+    "premise_holds_at_0_10": true,
+    "raw_zero_observation_share": "0.428074",
+    "raw_zero_observation_ticks": 38379,
+    "sections": 69,
+    "sections_non_integral_decoded_over_evaluated": 37
+  },
+  "SEALED34": {
+    "declared_ticks": 45842,
+    "g370_published_m1_zero_observation_share": "0.7014",
+    "m1_zero_observation_share": "0.701496",
+    "m1_zero_observation_ticks": 32158,
+    "premise_holds_at_0_10": true,
+    "raw_zero_observation_share": "0.459513",
+    "raw_zero_observation_ticks": 21065,
+    "sections": 34,
+    "sections_non_integral_decoded_over_evaluated": 30
+  }
+}

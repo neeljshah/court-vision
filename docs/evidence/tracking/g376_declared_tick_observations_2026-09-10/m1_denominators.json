@@ -1,0 +1,22 @@
+{
+  "FRESH69": {
+    "g370_declared_ticks": 89655,
+    "g370_m1_zero_share_over_declared": "0.764419",
+    "g370_m1_zero_ticks_over_declared": 68534,
+    "m1_producer_evaluated_ticks": 53250,
+    "m1_zero_share_over_producer_evaluated": "0.603362",
+    "m1_zero_ticks_over_producer_evaluated": 32129,
+    "sections_scored": 69,
+    "sections_without_schedule": 0
+  },
+  "SEALED34": {
+    "g370_declared_ticks": 45842,
+    "g370_m1_zero_share_over_declared": "0.701496",
+    "g370_m1_zero_ticks_over_declared": 32158,
+    "m1_producer_evaluated_ticks": 28276,
+    "m1_zero_share_over_producer_evaluated": "0.483449",
+    "m1_zero_ticks_over_producer_evaluated": 13670,
+    "sections_scored": 34,
+    "sections_without_schedule": 0
+  }
+}

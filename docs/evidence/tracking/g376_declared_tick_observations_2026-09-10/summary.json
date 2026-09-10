@@ -1,0 +1,277 @@
+{
+  "bars": {
+    "FRESH69": {
+      "bar_classified_at_least": "0.95",
+      "classified_share": "1.000000",
+      "met": true
+    },
+    "SEALED34": {
+      "bar_classified_at_least": "0.95",
+      "classified_share": "1.000000",
+      "met": true
+    }
+  },
+  "controls": [
+    {
+      "control": "b_fully_observed",
+      "expected": "1.000000",
+      "observed": "1.000000",
+      "passed": "1",
+      "quantity": "observed_share"
+    },
+    {
+      "control": "b_fully_observed",
+      "expected": "0",
+      "observed": "0",
+      "passed": "1",
+      "quantity": "scheduled_no_detection"
+    },
+    {
+      "control": "b_fully_observed",
+      "expected": "0",
+      "observed": "0",
+      "passed": "1",
+      "quantity": "not_scheduled"
+    },
+    {
+      "control": "b_fully_observed",
+      "expected": "0",
+      "observed": "0",
+      "passed": "1",
+      "quantity": "unknown"
+    },
+    {
+      "control": "b_fully_observed",
+      "expected": "0",
+      "observed": "0",
+      "passed": "1",
+      "quantity": "zero_observation_ticks"
+    },
+    {
+      "control": "c_doubled_declaration",
+      "expected": "0.500000",
+      "observed": "0.500000",
+      "passed": "1",
+      "quantity": "not_scheduled_share"
+    },
+    {
+      "control": "c_doubled_declaration",
+      "expected": "0.500000",
+      "observed": "0.500000",
+      "passed": "1",
+      "quantity": "observed_share"
+    },
+    {
+      "control": "c_doubled_declaration",
+      "expected": "0",
+      "observed": "0",
+      "passed": "1",
+      "quantity": "scheduled_no_detection"
+    },
+    {
+      "control": "c_doubled_declaration",
+      "expected": "0",
+      "observed": "0",
+      "passed": "1",
+      "quantity": "unknown"
+    },
+    {
+      "control": "a_rerun_reproduction",
+      "expected": "1.000000",
+      "observed": "1.000000",
+      "passed": "1",
+      "quantity": "reproduction"
+    },
+    {
+      "control": "a_rerun_reproduction",
+      "expected": "0",
+      "observed": "0",
+      "passed": "1",
+      "quantity": "symmetric_difference"
+    }
+  ],
+  "controls_passed": true,
+  "per_set": {
+    "FRESH69": {
+      "corrected_denominators": {
+        "declared_ticks": 89655,
+        "g368_observed_pairs": 51207,
+        "g368_pair_denominator_ratio": "0.962881",
+        "g368_producer_pairs": 53181,
+        "g370_declared_ticks": 89655,
+        "g370_m1_zero_share_over_declared": "0.764419",
+        "g370_m1_zero_ticks_over_declared": 68534,
+        "m1_producer_evaluated_ticks": 53250,
+        "m1_sections_scored": 69,
+        "m1_zero_share_over_producer_evaluated": "0.603362",
+        "m1_zero_ticks_over_producer_evaluated": 32129,
+        "observed_ticks": 51276,
+        "observed_ticks_in_declared": 51276,
+        "producer_evaluated_ticks": 53250,
+        "route_capped_ticks": 20500,
+        "sections_to_restate": 69,
+        "zero_share_over_declared": "0.428074",
+        "zero_share_over_producer_evaluated": "0.037070"
+      },
+      "counts": {
+        "not_scheduled": 36405,
+        "observed": 51276,
+        "scheduled_no_detection": 1974,
+        "unknown": 0
+      },
+      "declared_ticks": 89655,
+      "not_scheduled_sub_reasons": {
+        "beyond_route_cap": 13740,
+        "gated_or_unreached": 17149,
+        "off_producer_lattice": 0,
+        "suspended": 5516
+      },
+      "observed_ticks": 51276,
+      "producer_evaluated_ticks": 53250,
+      "sections": 69,
+      "sections_evaluated_frames_to_restate": 69,
+      "sections_non_integral_decoded_over_evaluated": 37,
+      "sections_without_schedule": 0,
+      "shares": {
+        "not_scheduled": "0.406057",
+        "observed": "0.571926",
+        "scheduled_no_detection": "0.022018",
+        "unknown": "0.000000"
+      },
+      "zero_observation_share": "0.428074",
+      "zero_observation_ticks": 38379
+    },
+    "SEALED34": {
+      "corrected_denominators": {
+        "declared_ticks": 45842,
+        "g368_observed_pairs": 26649,
+        "g368_pair_denominator_ratio": "0.943595",
+        "g368_producer_pairs": 28242,
+        "g370_declared_ticks": 45842,
+        "g370_m1_zero_share_over_declared": "0.701496",
+        "g370_m1_zero_ticks_over_declared": 32158,
+        "m1_producer_evaluated_ticks": 28276,
+        "m1_sections_scored": 34,
+        "m1_zero_share_over_producer_evaluated": "0.483449",
+        "m1_zero_ticks_over_producer_evaluated": 13670,
+        "observed_ticks": 26683,
+        "observed_ticks_in_declared": 24777,
+        "producer_evaluated_ticks": 28276,
+        "route_capped_ticks": 32200,
+        "sections_to_restate": 34,
+        "zero_share_over_declared": "0.459513",
+        "zero_share_over_producer_evaluated": "0.056338"
+      },
+      "counts": {
+        "not_scheduled": 19628,
+        "observed": 24777,
+        "scheduled_no_detection": 1437,
+        "unknown": 0
+      },
+      "declared_ticks": 45842,
+      "not_scheduled_sub_reasons": {
+        "beyond_route_cap": 11763,
+        "gated_or_unreached": 2865,
+        "off_producer_lattice": 5000,
+        "suspended": 0
+      },
+      "observed_ticks": 26683,
+      "producer_evaluated_ticks": 28276,
+      "sections": 34,
+      "sections_evaluated_frames_to_restate": 34,
+      "sections_non_integral_decoded_over_evaluated": 30,
+      "sections_without_schedule": 0,
+      "shares": {
+        "not_scheduled": "0.428166",
+        "observed": "0.540487",
+        "scheduled_no_detection": "0.031347",
+        "unknown": "0.000000"
+      },
+      "zero_observation_share": "0.459513",
+      "zero_observation_ticks": 21065
+    }
+  },
+  "pins_moved_during_run": [],
+  "raw_column_semantics": "observed_ticks, zero_share_over_declared and zero_share_over_producer_evaluated are RAW distinct tracking_data.csv frame counts, not G370 M1 quantities (AMENDMENT A1.2); the m1_* columns are the A1.1 corrected ones.",
+  "rerun": {
+    "ball_live_ticks": 1000,
+    "evaluated_frames_returned": 1000,
+    "intersection": 1000,
+    "logged_evaluated_ticks": 1000,
+    "observed_stride": 3,
+    "predictions_entries": 1000,
+    "reproduction": "1.000000",
+    "route_identity_sha256": {
+      "scripts/run_clip.py": "ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2",
+      "src/pipeline/unified_pipeline.py": "c4eae385bfeebd4e44c8161c791ef7ed4589697020f424d3dde7aec6816d9226"
+    },
+    "schedule_reason": "",
+    "suspended_ticks": 0,
+    "symmetric_difference": 0,
+    "symmetric_difference_head": []
+  },
+  "snapshot": "/workspace/wt/a12/data/g376_snapshot",
+  "strip_bytes_max": 5861,
+  "strips": [
+    {
+      "bytes": 4411,
+      "first_row": 0,
+      "strip": "strip_00.txt",
+      "ticks": 80
+    },
+    {
+      "bytes": 5698,
+      "first_row": 13549,
+      "strip": "strip_01.txt",
+      "ticks": 80
+    },
+    {
+      "bytes": 4418,
+      "first_row": 27098,
+      "strip": "strip_02.txt",
+      "ticks": 80
+    },
+    {
+      "bytes": 4418,
+      "first_row": 40647,
+      "strip": "strip_03.txt",
+      "ticks": 80
+    },
+    {
+      "bytes": 4418,
+      "first_row": 54196,
+      "strip": "strip_04.txt",
+      "ticks": 80
+    },
+    {
+      "bytes": 5698,
+      "first_row": 67745,
+      "strip": "strip_05.txt",
+      "ticks": 80
+    },
+    {
+      "bytes": 4418,
+      "first_row": 81294,
+      "strip": "strip_06.txt",
+      "ticks": 80
+    },
+    {
+      "bytes": 4418,
+      "first_row": 94843,
+      "strip": "strip_07.txt",
+      "ticks": 80
+    },
+    {
+      "bytes": 5230,
+      "first_row": 108392,
+      "strip": "strip_08.txt",
+      "ticks": 80
+    },
+    {
+      "bytes": 5861,
+      "first_row": 121941,
+      "strip": "strip_09.txt",
+      "ticks": 80
+    }
+  ]
+}

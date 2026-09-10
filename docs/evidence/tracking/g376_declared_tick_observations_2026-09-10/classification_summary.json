@@ -1,0 +1,64 @@
+{
+  "per_set": {
+    "FRESH69": {
+      "counts": {
+        "not_scheduled": 36405,
+        "observed": 51276,
+        "scheduled_no_detection": 1974,
+        "unknown": 0
+      },
+      "declared_ticks": 89655,
+      "not_scheduled_sub_reasons": {
+        "beyond_route_cap": 13740,
+        "gated_or_unreached": 17149,
+        "off_producer_lattice": 0,
+        "suspended": 5516
+      },
+      "observed_ticks": 51276,
+      "producer_evaluated_ticks": 53250,
+      "sections": 69,
+      "sections_evaluated_frames_to_restate": 69,
+      "sections_non_integral_decoded_over_evaluated": 37,
+      "sections_without_schedule": 0,
+      "shares": {
+        "not_scheduled": "0.406057",
+        "observed": "0.571926",
+        "scheduled_no_detection": "0.022018",
+        "unknown": "0.000000"
+      },
+      "zero_observation_share": "0.428074",
+      "zero_observation_ticks": 38379
+    },
+    "SEALED34": {
+      "counts": {
+        "not_scheduled": 19628,
+        "observed": 24777,
+        "scheduled_no_detection": 1437,
+        "unknown": 0
+      },
+      "declared_ticks": 45842,
+      "not_scheduled_sub_reasons": {
+        "beyond_route_cap": 11763,
+        "gated_or_unreached": 2865,
+        "off_producer_lattice": 5000,
+        "suspended": 0
+      },
+      "observed_ticks": 26683,
+      "producer_evaluated_ticks": 28276,
+      "sections": 34,
+      "sections_evaluated_frames_to_restate": 34,
+      "sections_non_integral_decoded_over_evaluated": 30,
+      "sections_without_schedule": 0,
+      "shares": {
+        "not_scheduled": "0.428166",
+        "observed": "0.540487",
+        "scheduled_no_detection": "0.031347",
+        "unknown": "0.000000"
+      },
+      "zero_observation_share": "0.459513",
+      "zero_observation_ticks": 21065
+    }
+  },
+  "pins_moved_during_run": [],
+  "snapshot": "/workspace/wt/a12/data/g376_snapshot"
+}
