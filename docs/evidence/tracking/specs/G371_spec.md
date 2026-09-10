@@ -1,4 +1,4 @@
-GAP G371 | sport basketball | worktree a13 | log cx_g371_symmetry_margin
+GAP G371 | sport basketball | worktree a10 | log cx_g371_symmetry_margin
 
 **SELECTOR-REPAIR ROW, SUCCESSOR TO G367 PHASE 1 (2026-09-09 193b3633 / 960d2ca5: the initialisation search reaches
 0.72 / 0.76 / 1.13 / 1.07 px MODULO the court symmetry group on the four sealed geometries, but the sealed winner rule
