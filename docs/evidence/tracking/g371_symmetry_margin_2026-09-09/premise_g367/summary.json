@@ -1,0 +1,45 @@
+{
+ "geometry": {
+  "bar_px": 1.0,
+  "k": 7,
+  "m": 8,
+  "sym_eq_px": 2.0,
+  "ambiguity_band": 0.005,
+  "report": {
+   "G1_SYNTH_QUAD": {
+    "candidates": 115976,
+    "gate_valid": 10463,
+    "refined": 8,
+    "reachability": "NOT_REACHED",
+    "selectability": "AMBIGUOUS",
+    "margin": null
+   },
+   "G2_WIDE": {
+    "candidates": 107832,
+    "gate_valid": 14644,
+    "refined": 8,
+    "reachability": "NOT_REACHED",
+    "selectability": "AMBIGUOUS",
+    "margin": null
+   },
+   "G3_TIGHT": {
+    "candidates": 104748,
+    "gate_valid": 8120,
+    "refined": 8,
+    "reachability": "REACHED",
+    "selectability": "AMBIGUOUS",
+    "margin": null
+   },
+   "G4_OFF_AXIS": {
+    "candidates": 106736,
+    "gate_valid": 15538,
+    "refined": 8,
+    "reachability": "REACHED",
+    "selectability": "AMBIGUOUS",
+    "margin": null
+   }
+  },
+  "bar_all_within": false,
+  "no_worsening_vs_candidate_b": true
+ }
+}

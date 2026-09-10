@@ -1,0 +1,60 @@
+VERDICT: DONE -- every sealed bar is met and the honest result is a REFUSAL: the truth-free selector emits NO_DISTINCT_RUNNER_UP on 357 of 360 sweep cells and ACCEPTS none, because the enumeration collapses to ONE symmetry class. NOT VERIFIED at the end.
+# G371 truth-free symmetry-margin selector, 2026-09-10
+Spec `docs/evidence/tracking/specs/G371_spec.md` (VERSION 2026-09-09). Contract `docs/evidence/tracking/VERIFIER_CONTRACT.md`: A2, A3, A4, A9, A11, A12, B8, B10, B11, H1; Q1, Q3, Q6, Q7, Q8, Q9.
+Machine (S1): ON THE POD, `/workspace/wt/a10`, branch track-a10, base 940f8e737. CPU only; `CUDA_VISIBLE_DEVICES=-1`; OMP_NUM_THREADS=2 and MKL / OPENBLAS / OPENCV threads = 1; three `nice -n 19` sweep shards, six cores at most. No GPU, no broadcast frame, no section fetch; `data/` was neither read nor written. Builder codex terra 2026-09-10; finisher claude-opus.
+Prereg `g371_symmetry_margin_2026-09-09/g371_prereg_2026-09-09.md` was sealed ALONE in commit 206eb89b5 before any number here; `g334_seal verify` over the committed bytes returns SEAL HOLDS (Q1). No bar, band, tolerance, epsilon, seed or threshold was moved (Q3, B10); the G362 validator and its bars, G365 candidate B, G367's sealed search and `line_calibration.py` are unchanged and import-only.
+Tests, per file only, never a full pytest: `tests/platformkit/test_g371_symmetry_margin.py` 9 passed; `tests/platformkit/test_g367_init_symmetry.py` 6 passed; `tests/platformkit/test_loc_rail_scope.py` 1 passed (A12: no allowlisted file grew; the two new modules sit under the 300-line rail at 271 and 298 lines).
+## Premise (spec step 0, Q8) -- `premise.json` and `premise_g367/`
+G367's own `search` still ranks by the LABELLED truth: `g367_search.py:158` computes `sym.recovery_modulo_symmetry(truth, value, TEMPLATE_POINTS)` for every refined candidate, `:160` sorts by `modulo_gap_px` and `:161` takes that ordering's first element as `winner`, and `:167` rates reachability on it. Selection is NOT truth-free.
+Re-run on the four sealed geometries: every one of the 8 refined candidates carries `sym_class` 0 on every geometry, the emitted `margin` is EMPTY on all four, and `selectability` is AMBIGUOUS on all four. Distinct-class geometries: 0 of 4, so the premise is TRUE and the row proceeds.
+That arm also reproduces the landed G365 candidate-B modulo figures at 6 dp -- 1.128714 / 1.068990 / 1.116470 / 0.763620 px on G1_SYNTH_QUAD / G2_WIDE / G3_TIGHT / G4_OFF_AXIS.
+## Truth-free selection on the four clean geometries -- `selected.csv`
+Before, quoted from the spec: G367 oracle winners 0.72 / 0.76 / 1.13 / 1.07 px labelled, all AMBIGUOUS, margin none. Beside them the G367 reconstruction's own refined MODULO winners, `modulo_form=form_two` throughout: 1.128714 (G1) / 1.065403 (G2_WIDE) / 0.715832 (G3) / 0.763620 (G4) px.
+After, ranked by the FIT-only objective J with the truth nowhere in the decision (B8):
+    geometry        J          classes  geometry_status         heldout_status      labelled px   modulo px (element)
+    G1_SYNTH_QUAD   0.827332   1        NO_DISTINCT_RUNNER_UP   VALID                 1.128714     1.128714 (identity)
+    G2_WIDE         0.833217   1        NO_DISTINCT_RUNNER_UP   REFUSED_VALIDATION  469.382904     1.065403 (mirror_x)
+    G3_TIGHT        0.734200   1        NO_DISTINCT_RUNNER_UP   REFUSED_VALIDATION    0.715846     0.715846 (identity)
+    G4_OFF_AXIS     0.771239   1        NO_DISTINCT_RUNNER_UP   REFUSED_VALIDATION    0.763620     0.763620 (identity)
+`margin` is EMPTY on all four because no distinct class exists, and that is a REFUSAL, never a pass. `modulo_form=form_two` and `orientation_status=UNKNOWN` on every row. No px bar is claimed; the 1.0 px geometry bar stays failed exactly where G365 and G367 left it.
+The FIT-only argmax lands on the same court the truth-consulting rule picked: three of the four modulo gaps are identical to the reconstruction's oracle winner and G3_TIGHT differs by 0.000014 px. That is a REPORT of agreement on four synthetic fixtures, not evidence that this objective can separate symmetry classes -- it cannot here, because only one class exists.
+## Sweep and controls -- `sweep.csv` 360 rows, `ambiguity_controls.csv` 47 rows
+4 geometries x sigma {0.25, 0.50, 1.00} x 30 sealed draws = 360 cells over 360 DISTINCT `geometry|sigma|draw` keys (A4, recomputed from the artifact). Statuses: NO_DISTINCT_RUNNER_UP 357, REFUSED_VALIDATION 2, REFUSED_MARGIN 1, ACCEPT ZERO. Only 3 of 360 cells produced more than one symmetry class at the sealed 2.0 px tolerance, and all three still refused.
+Controls, every one PASS: exact-line input recovers 0.000000 px on all four geometries; the sealed group arithmetic is exact at 0.000000 px; the truth-swap leaves the selection signature identical on all four (the bar's own assertion, and a test); candidate-order permutation identical 4 of 4; cloned candidates leave winner, runner-up and margin identical 4 of 4.
+Planted ambiguity: 30 seeded cases, seeds 3710909 to 3710938, each a genuinely distinct class at the sealed tolerance with its J inside the 0.10 band. REFUSED 30 of 30, share 1.000 against the 0.95 bar.
+## Sensitivity (uncertainty, not accuracy) -- `sensitivity.csv`, budgets median <= 0.25 m, p95 <= 0.50 m
+Pooled per-probe mapped-foot error over the sealed 17x11 court grid; ALL excludes the four sigma 0.00 exact-line control cells, so n = 62730. The denominator is named in every row as `n_probe_rows` and per cell as `n_probes_in_frame` (in-frame probes only, H1). Rows shown are the per-geometry ALL-sigma rows.
+    geometry        median m   p95 m      modulo median m   modulo p95 m   median budget   p95 budget
+    G1_SYNTH_QUAD   0.053745   12.176956  0.045668          0.160963       MET             UNMET
+    G2_WIDE         0.064127   15.208573  0.039905          0.168567       MET             UNMET
+    G3_TIGHT        0.077228   12.224361  0.055858          0.361622       MET             UNMET
+    G4_OFF_AXIS     0.041179    9.149327  0.036600          0.154857       MET             UNMET
+The median budget is MET on all four; the p95 budget is UNMET on all four. The p95 tail is the mirror basin, not fitter noise: composing the winner with its attaining group element puts every p95 at 0.15 to 0.36 m, inside the 0.50 m budget. Labels above budget stay uncertainty-masked. Per-sigma rows are in the artifact.
+## Eye check and disclosed deviations
+30 overlays sampled EVENLY over the sorted 360-cell decision set (A3, never a head slice), winner in yellow over truth in green and the runner-up class in red: `renders/`, 30 files, largest 40,420 bytes, each inside the 200 KB cap `g334_metrics.render_overlay` enforces; the directory totals 1,124,204 bytes, which exceeds 200 KB if that cap was meant for the set rather than the file. Reported, not resolved.
+DISCLOSED fixture choice, not a tuning change: the noisy fixture paints `render_court`'s FULL template and applies G365's sealed endpoint jitter to the nine straight markings only, so the arcs are painted from the truth unjittered -- that is exactly the quantity G365's sealed noise path puts a known sigma on. A nine-lines-only variant was measured first, put the selector in a 134 px basin, and is NOT used and NOT reported as a result.
+DISCLOSED prereg deviation: the prereg sentence about passing the scored synthetic rows through `walk_forward` with purge and symmetric embargo was NOT executed. This row scores no out-of-sample predictive series -- there is no outcome label, no probability and no time index to purge or embargo -- so Q9 is met instead by the archived per-cell differential, `sweep.csv` plus `probe_errors.csv` (63,427 rows, one record per probe per stable `geometry|sigma|draw` key), from which every number above recomputes. No bar moved; filed as a new gap rather than quietly satisfied.
+DISCLOSED naming defect in the sealed builder module: `deduplicated_symmetry_images_count` carries `g367_search._candidates`' THIRD return value, which is the GATE-VALID count -- 10463 / 14644 / 8120 / 15538, identical cell for cell to G367's `gate_valid` -- and NOT a count of deduplicated symmetry images. `candidate_hypotheses_count` is the hypothesis total, 115976 / 107832 / 104748 / 106736. The field name is unchanged because the prereg declares it; the UNIT is stated here and an additive rename is filed as a new gap.
+Synthetic fixtures only; no broadcast claim; orientation stays UNKNOWN from lines alone.
+## Vocabulary scan (Q6) -- full 22-text-file census; patterns assembled from single characters at runtime
+Inventory: prereg; memo; `g371_symmetry_margin.py`, `g371_run.py`, `g371_report.py`; test; top-level `ambiguity_controls.csv`, `candidates.csv`, `fixtures.json`, `matrices_clean.json`, `premise.json`, `probe_errors.csv`, `probe_errors_clean.csv`, `selected.csv`, `sensitivity.csv`, `summary.json`, `sweep.csv`; `premise_g367/g367_premise.json`, `g367_search.json`, `recovery.csv`, `search.csv`, `summary.json`.
+SCAN text terms=0 across all 22 files. The bare-integer rail finds 369 exempt opaque identifiers: 364 `probe_index` instances in `probe_errors.csv`, 4 in `probe_errors_clean.csv`, and one SHA-256 digest identifier in this memo for `g362_synth.py`; none is renamed or masked.
+SCAN_TOTAL_HITS 369 over 22 files, all exempt identifiers under the Q6 NOTE of 2026-09-04; no prohibited word and no retracted figure appears anywhere in this row.
+## SHA-256 (first 16 hex) of every module exercised (A11) and every artifact written
+    g371_symmetry_margin.py 7fe11ae9da79c008  g371_run.py bad32bb857466613     g371_report.py 7e4b32b049ff0424
+    g367_search.py 1f06bd9fbd036fec           g367_symmetry.py 1cd388b792364822  g365_refine_b.py 2814738aab5687a7
+    g365_sweep.py 5f746b923835cdad            g362_fit_validate.py bb02d8fa693304ca g362_strokes.py 37e066086fb288d9
+    g362_synth.py baf54c5ab32d4d33            fixtures.json e38e87ff7740614a     selected.csv 868b024d2122173d
+    candidates.csv eaace5633d775524           sweep.csv 7fdac2f6fe1c0d8f         probe_errors.csv aa72cde0e00e1160
+    ambiguity_controls.csv 129eea4f26ac8327   sensitivity.csv 1fe261f18a650742   summary.json ba24d81b56125360
+    premise.json 6ca934c87084e16f             matrices_clean.json 7e9f09f8c88fce70 g371_prereg_2026-09-09.md e2a594fbac517b6f
+Python/JSON/Markdown blobs are LF; the six listed CSV digests cover committed CRLF bytes.
+Wall time on the pod, CPU only, from printed UTC stamps: 2026-09-10T16:16:44Z to 17:35:38Z, 4,734 s -- tests 45 s, premise 2 min 39 s, clean selection 2 min 20 s, the 360-cell sweep 73 min 6 s across three shards, report 4 s.
+## NOT VERIFIED
+Anything outside these four synthetic fixtures. No broadcast frame, no real section, no game was touched, and nothing here says a truth-free selector works on real footage.
+Whether ANY truth-free objective can separate the court's symmetry classes: this row measures that the sealed FIT-only objective does not get the chance, because the sealed K=7 / M=8 enumeration returns a single class in 357 of 360 cells. Three multi-class cells are not a sample.
+The orientation question: no frame was rated, no cue was called, `orientation_status` is UNKNOWN by construction and no precision, interval or abstention rate exists.
+The p95 sensitivity budget on the labelled frame, unmet on all four geometries; the modulo-aligned p95 that meets it is a DIAGNOSTIC of where the error lives, not a claim that the selected court is right.
+The prereg's `walk_forward` clause, not run (disclosed above); the 200 KB render cap under the set reading; and the `deduplicated_symmetry_images_count` field name, wrong by the unit it carries.
+Margin denominator discrepancy: spec line 25 names the runner-up denominator, while prereg line 13 and `g371_symmetry_margin.py:101` use the winner denominator; no measured cell clears the bar either way.
+Nothing is wired: no `src/`, `kernel/`, `api/`, `intel/` or `line_calibration.py` change, no flag flipped, no `data/registry/` write, no register edit, and no landing -- this memo and its ledger line are the whole footprint.

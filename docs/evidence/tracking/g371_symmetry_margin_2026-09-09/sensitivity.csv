@@ -1,0 +1,17 @@
+geometry,sigma_px,n_cells,n_probe_rows,probe_err_m_median,probe_err_m_p95,probe_err_modulo_m_median,probe_err_modulo_m_p95,budget_median_m,budget_p95_m,median_within_budget,p95_within_budget,aggregation
+G1_SYNTH_QUAD,0.25,30,4620,0.051854,12.191978,0.042590,0.112485,0.25,0.5,True,False,pooled_probe_rows
+G1_SYNTH_QUAD,0.50,30,4620,0.050652,9.181169,0.042430,0.150467,0.25,0.5,True,False,pooled_probe_rows
+G1_SYNTH_QUAD,1.00,30,4620,0.059496,12.169504,0.054640,0.236282,0.25,0.5,True,False,pooled_probe_rows
+G1_SYNTH_QUAD,ALL,90,13860,0.053745,12.176956,0.045668,0.160963,0.25,0.5,True,False,pooled_probe_rows
+G2_WIDE,0.25,30,5280,0.042386,12.226776,0.031526,0.116733,0.25,0.5,True,False,pooled_probe_rows
+G2_WIDE,0.50,30,5280,0.082053,15.228368,0.042090,0.204500,0.25,0.5,True,False,pooled_probe_rows
+G2_WIDE,1.00,30,5280,0.082819,15.216395,0.048939,0.209202,0.25,0.5,True,False,pooled_probe_rows
+G2_WIDE,ALL,90,15840,0.064127,15.208573,0.039905,0.168567,0.25,0.5,True,False,pooled_probe_rows
+G3_TIGHT,0.25,30,5610,0.100913,15.184703,0.055970,0.359368,0.25,0.5,True,False,pooled_probe_rows
+G3_TIGHT,0.50,30,5610,0.058361,9.236310,0.050079,0.289948,0.25,0.5,True,False,pooled_probe_rows
+G3_TIGHT,1.00,30,5610,0.090746,12.212024,0.065231,0.410571,0.25,0.5,True,False,pooled_probe_rows
+G3_TIGHT,ALL,90,16830,0.077228,12.224361,0.055858,0.361622,0.25,0.5,True,False,pooled_probe_rows
+G4_OFF_AXIS,0.25,30,5400,0.034572,3.082349,0.032736,0.125844,0.25,0.5,True,False,pooled_probe_rows
+G4_OFF_AXIS,0.50,30,5400,0.041325,9.134595,0.037231,0.161561,0.25,0.5,True,False,pooled_probe_rows
+G4_OFF_AXIS,1.00,30,5400,0.049782,12.184541,0.040568,0.187454,0.25,0.5,True,False,pooled_probe_rows
+G4_OFF_AXIS,ALL,90,16200,0.041179,9.149327,0.036600,0.154857,0.25,0.5,True,False,pooled_probe_rows
