@@ -1,0 +1,1 @@
+section_name,game_id,offset_s,pool,sport,status,finished_at,rows,decoded_frames,evaluated_frames,stride,source_fps,source_resolution,unique_frames,frame_size_source,tracking_path,tracking_sha256,tracking_bytes,ball_path,ball_sha256,ball_bytes,eligible,ineligible_reason,selected,select_index

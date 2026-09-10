@@ -1,0 +1,722 @@
+[
+ {
+  "ball_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s1205/ball_tracking.csv",
+  "game_id": "0KIBu1jQBL8",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "0KIBu1jQBL8_s1205",
+  "tracking_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s1205/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s3435/ball_tracking.csv",
+  "game_id": "0KIBu1jQBL8",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "0KIBu1jQBL8_s3435",
+  "tracking_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s3435/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s5665/ball_tracking.csv",
+  "game_id": "0KIBu1jQBL8",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "0KIBu1jQBL8_s5665",
+  "tracking_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s5665/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/1E5Rw89keTg_s312/ball_tracking.csv",
+  "game_id": "1E5Rw89keTg",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "1E5Rw89keTg_s312",
+  "tracking_path": "/workspace/g370_snapshot/1E5Rw89keTg_s312/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/1E5Rw89keTg_s90/ball_tracking.csv",
+  "game_id": "1E5Rw89keTg",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "1E5Rw89keTg_s90",
+  "tracking_path": "/workspace/g370_snapshot/1E5Rw89keTg_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/6FlZaoWSfFw_s584/ball_tracking.csv",
+  "game_id": "6FlZaoWSfFw",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "6FlZaoWSfFw_s584",
+  "tracking_path": "/workspace/g370_snapshot/6FlZaoWSfFw_s584/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s1270/ball_tracking.csv",
+  "game_id": "9F5q5jCbrMI",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "9F5q5jCbrMI_s1270",
+  "tracking_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s1270/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s3630/ball_tracking.csv",
+  "game_id": "9F5q5jCbrMI",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "9F5q5jCbrMI_s3630",
+  "tracking_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s3630/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s90/ball_tracking.csv",
+  "game_id": "9F5q5jCbrMI",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "9F5q5jCbrMI_s90",
+  "tracking_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/EqseleqhpTk_s2700/ball_tracking.csv",
+  "game_id": "EqseleqhpTk",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "EqseleqhpTk_s2700",
+  "tracking_path": "/workspace/g370_snapshot/EqseleqhpTk_s2700/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/EqseleqhpTk_s5310/ball_tracking.csv",
+  "game_id": "EqseleqhpTk",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "EqseleqhpTk_s5310",
+  "tracking_path": "/workspace/g370_snapshot/EqseleqhpTk_s5310/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/G8bPOW37Sp0_s320/ball_tracking.csv",
+  "game_id": "G8bPOW37Sp0",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "G8bPOW37Sp0_s320",
+  "tracking_path": "/workspace/g370_snapshot/G8bPOW37Sp0_s320/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/G8bPOW37Sp0_s90/ball_tracking.csv",
+  "game_id": "G8bPOW37Sp0",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "G8bPOW37Sp0_s90",
+  "tracking_path": "/workspace/g370_snapshot/G8bPOW37Sp0_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s2244/ball_tracking.csv",
+  "game_id": "GNjSxoeDT-E",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "GNjSxoeDT-E_s2244",
+  "tracking_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s2244/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s4398/ball_tracking.csv",
+  "game_id": "GNjSxoeDT-E",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "GNjSxoeDT-E_s4398",
+  "tracking_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s4398/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s90/ball_tracking.csv",
+  "game_id": "GNjSxoeDT-E",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "GNjSxoeDT-E_s90",
+  "tracking_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/HUSo3PzP7lo_s402/ball_tracking.csv",
+  "game_id": "HUSo3PzP7lo",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "HUSo3PzP7lo_s402",
+  "tracking_path": "/workspace/g370_snapshot/HUSo3PzP7lo_s402/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s1308/ball_tracking.csv",
+  "game_id": "N-eE7ZwTuno",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "N-eE7ZwTuno_s1308",
+  "tracking_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s1308/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s3744/ball_tracking.csv",
+  "game_id": "N-eE7ZwTuno",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "N-eE7ZwTuno_s3744",
+  "tracking_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s3744/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s90/ball_tracking.csv",
+  "game_id": "N-eE7ZwTuno",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "N-eE7ZwTuno_s90",
+  "tracking_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/RIrGQJ_jsGQ_s2730/ball_tracking.csv",
+  "game_id": "RIrGQJ_jsGQ",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "RIrGQJ_jsGQ_s2730",
+  "tracking_path": "/workspace/g370_snapshot/RIrGQJ_jsGQ_s2730/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/RIrGQJ_jsGQ_s5370/ball_tracking.csv",
+  "game_id": "RIrGQJ_jsGQ",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "RIrGQJ_jsGQ_s5370",
+  "tracking_path": "/workspace/g370_snapshot/RIrGQJ_jsGQ_s5370/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/XCaGht2GmPg_s1416/ball_tracking.csv",
+  "game_id": "XCaGht2GmPg",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "XCaGht2GmPg_s1416",
+  "tracking_path": "/workspace/g370_snapshot/XCaGht2GmPg_s1416/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/XCaGht2GmPg_s4068/ball_tracking.csv",
+  "game_id": "XCaGht2GmPg",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "XCaGht2GmPg_s4068",
+  "tracking_path": "/workspace/g370_snapshot/XCaGht2GmPg_s4068/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/XCaGht2GmPg_s90/ball_tracking.csv",
+  "game_id": "XCaGht2GmPg",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "XCaGht2GmPg_s90",
+  "tracking_path": "/workspace/g370_snapshot/XCaGht2GmPg_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/XzIzQZBrPBY_s398/ball_tracking.csv",
+  "game_id": "XzIzQZBrPBY",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "XzIzQZBrPBY_s398",
+  "tracking_path": "/workspace/g370_snapshot/XzIzQZBrPBY_s398/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/eaKqXq9dfig_s259/ball_tracking.csv",
+  "game_id": "eaKqXq9dfig",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "eaKqXq9dfig_s259",
+  "tracking_path": "/workspace/g370_snapshot/eaKqXq9dfig_s259/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/eaKqXq9dfig_s90/ball_tracking.csv",
+  "game_id": "eaKqXq9dfig",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "eaKqXq9dfig_s90",
+  "tracking_path": "/workspace/g370_snapshot/eaKqXq9dfig_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/fXLNra4sjjU_s90/ball_tracking.csv",
+  "game_id": "fXLNra4sjjU",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "fXLNra4sjjU_s90",
+  "tracking_path": "/workspace/g370_snapshot/fXLNra4sjjU_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/h6j_iLYRx8U_s2758/ball_tracking.csv",
+  "game_id": "h6j_iLYRx8U",
+  "kind": "FROZEN",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "h6j_iLYRx8U_s2758",
+  "tracking_path": "/workspace/g370_snapshot/h6j_iLYRx8U_s2758/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s1205/ball_tracking.csv",
+  "game_id": "0KIBu1jQBL8",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "0KIBu1jQBL8_s1205",
+  "tracking_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s1205/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s3435/ball_tracking.csv",
+  "game_id": "0KIBu1jQBL8",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "0KIBu1jQBL8_s3435",
+  "tracking_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s3435/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s5665/ball_tracking.csv",
+  "game_id": "0KIBu1jQBL8",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "0KIBu1jQBL8_s5665",
+  "tracking_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s5665/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/1E5Rw89keTg_s312/ball_tracking.csv",
+  "game_id": "1E5Rw89keTg",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "1E5Rw89keTg_s312",
+  "tracking_path": "/workspace/g370_snapshot/1E5Rw89keTg_s312/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/1E5Rw89keTg_s90/ball_tracking.csv",
+  "game_id": "1E5Rw89keTg",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "1E5Rw89keTg_s90",
+  "tracking_path": "/workspace/g370_snapshot/1E5Rw89keTg_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/6FlZaoWSfFw_s584/ball_tracking.csv",
+  "game_id": "6FlZaoWSfFw",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "6FlZaoWSfFw_s584",
+  "tracking_path": "/workspace/g370_snapshot/6FlZaoWSfFw_s584/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s1270/ball_tracking.csv",
+  "game_id": "9F5q5jCbrMI",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "9F5q5jCbrMI_s1270",
+  "tracking_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s1270/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s3630/ball_tracking.csv",
+  "game_id": "9F5q5jCbrMI",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "9F5q5jCbrMI_s3630",
+  "tracking_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s3630/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s90/ball_tracking.csv",
+  "game_id": "9F5q5jCbrMI",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "9F5q5jCbrMI_s90",
+  "tracking_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/EqseleqhpTk_s2700/ball_tracking.csv",
+  "game_id": "EqseleqhpTk",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "EqseleqhpTk_s2700",
+  "tracking_path": "/workspace/g370_snapshot/EqseleqhpTk_s2700/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/EqseleqhpTk_s5310/ball_tracking.csv",
+  "game_id": "EqseleqhpTk",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "EqseleqhpTk_s5310",
+  "tracking_path": "/workspace/g370_snapshot/EqseleqhpTk_s5310/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/G8bPOW37Sp0_s320/ball_tracking.csv",
+  "game_id": "G8bPOW37Sp0",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "G8bPOW37Sp0_s320",
+  "tracking_path": "/workspace/g370_snapshot/G8bPOW37Sp0_s320/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/G8bPOW37Sp0_s90/ball_tracking.csv",
+  "game_id": "G8bPOW37Sp0",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "G8bPOW37Sp0_s90",
+  "tracking_path": "/workspace/g370_snapshot/G8bPOW37Sp0_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s2244/ball_tracking.csv",
+  "game_id": "GNjSxoeDT-E",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "GNjSxoeDT-E_s2244",
+  "tracking_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s2244/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s4398/ball_tracking.csv",
+  "game_id": "GNjSxoeDT-E",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "GNjSxoeDT-E_s4398",
+  "tracking_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s4398/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s90/ball_tracking.csv",
+  "game_id": "GNjSxoeDT-E",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "GNjSxoeDT-E_s90",
+  "tracking_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/HUSo3PzP7lo_s402/ball_tracking.csv",
+  "game_id": "HUSo3PzP7lo",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "HUSo3PzP7lo_s402",
+  "tracking_path": "/workspace/g370_snapshot/HUSo3PzP7lo_s402/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s1308/ball_tracking.csv",
+  "game_id": "N-eE7ZwTuno",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "N-eE7ZwTuno_s1308",
+  "tracking_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s1308/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s3744/ball_tracking.csv",
+  "game_id": "N-eE7ZwTuno",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "N-eE7ZwTuno_s3744",
+  "tracking_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s3744/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s90/ball_tracking.csv",
+  "game_id": "N-eE7ZwTuno",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "N-eE7ZwTuno_s90",
+  "tracking_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/RIrGQJ_jsGQ_s2730/ball_tracking.csv",
+  "game_id": "RIrGQJ_jsGQ",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "RIrGQJ_jsGQ_s2730",
+  "tracking_path": "/workspace/g370_snapshot/RIrGQJ_jsGQ_s2730/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/RIrGQJ_jsGQ_s5370/ball_tracking.csv",
+  "game_id": "RIrGQJ_jsGQ",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "RIrGQJ_jsGQ_s5370",
+  "tracking_path": "/workspace/g370_snapshot/RIrGQJ_jsGQ_s5370/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/XCaGht2GmPg_s1416/ball_tracking.csv",
+  "game_id": "XCaGht2GmPg",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "XCaGht2GmPg_s1416",
+  "tracking_path": "/workspace/g370_snapshot/XCaGht2GmPg_s1416/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/XCaGht2GmPg_s4068/ball_tracking.csv",
+  "game_id": "XCaGht2GmPg",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "XCaGht2GmPg_s4068",
+  "tracking_path": "/workspace/g370_snapshot/XCaGht2GmPg_s4068/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/XCaGht2GmPg_s90/ball_tracking.csv",
+  "game_id": "XCaGht2GmPg",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "XCaGht2GmPg_s90",
+  "tracking_path": "/workspace/g370_snapshot/XCaGht2GmPg_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/XzIzQZBrPBY_s398/ball_tracking.csv",
+  "game_id": "XzIzQZBrPBY",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "XzIzQZBrPBY_s398",
+  "tracking_path": "/workspace/g370_snapshot/XzIzQZBrPBY_s398/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/eaKqXq9dfig_s259/ball_tracking.csv",
+  "game_id": "eaKqXq9dfig",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "eaKqXq9dfig_s259",
+  "tracking_path": "/workspace/g370_snapshot/eaKqXq9dfig_s259/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/eaKqXq9dfig_s90/ball_tracking.csv",
+  "game_id": "eaKqXq9dfig",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "eaKqXq9dfig_s90",
+  "tracking_path": "/workspace/g370_snapshot/eaKqXq9dfig_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/fXLNra4sjjU_s90/ball_tracking.csv",
+  "game_id": "fXLNra4sjjU",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "fXLNra4sjjU_s90",
+  "tracking_path": "/workspace/g370_snapshot/fXLNra4sjjU_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/h6j_iLYRx8U_s2758/ball_tracking.csv",
+  "game_id": "h6j_iLYRx8U",
+  "kind": "COAST",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "h6j_iLYRx8U_s2758",
+  "tracking_path": "/workspace/g370_snapshot/h6j_iLYRx8U_s2758/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s1205/ball_tracking.csv",
+  "game_id": "0KIBu1jQBL8",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "0KIBu1jQBL8_s1205",
+  "tracking_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s1205/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s3435/ball_tracking.csv",
+  "game_id": "0KIBu1jQBL8",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "0KIBu1jQBL8_s3435",
+  "tracking_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s3435/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s5665/ball_tracking.csv",
+  "game_id": "0KIBu1jQBL8",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "0KIBu1jQBL8_s5665",
+  "tracking_path": "/workspace/g370_snapshot/0KIBu1jQBL8_s5665/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/1E5Rw89keTg_s312/ball_tracking.csv",
+  "game_id": "1E5Rw89keTg",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "1E5Rw89keTg_s312",
+  "tracking_path": "/workspace/g370_snapshot/1E5Rw89keTg_s312/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/1E5Rw89keTg_s90/ball_tracking.csv",
+  "game_id": "1E5Rw89keTg",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "1E5Rw89keTg_s90",
+  "tracking_path": "/workspace/g370_snapshot/1E5Rw89keTg_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/6FlZaoWSfFw_s584/ball_tracking.csv",
+  "game_id": "6FlZaoWSfFw",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "6FlZaoWSfFw_s584",
+  "tracking_path": "/workspace/g370_snapshot/6FlZaoWSfFw_s584/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s1270/ball_tracking.csv",
+  "game_id": "9F5q5jCbrMI",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "9F5q5jCbrMI_s1270",
+  "tracking_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s1270/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s3630/ball_tracking.csv",
+  "game_id": "9F5q5jCbrMI",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "9F5q5jCbrMI_s3630",
+  "tracking_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s3630/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s90/ball_tracking.csv",
+  "game_id": "9F5q5jCbrMI",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "9F5q5jCbrMI_s90",
+  "tracking_path": "/workspace/g370_snapshot/9F5q5jCbrMI_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/EqseleqhpTk_s2700/ball_tracking.csv",
+  "game_id": "EqseleqhpTk",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "EqseleqhpTk_s2700",
+  "tracking_path": "/workspace/g370_snapshot/EqseleqhpTk_s2700/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/EqseleqhpTk_s5310/ball_tracking.csv",
+  "game_id": "EqseleqhpTk",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "EqseleqhpTk_s5310",
+  "tracking_path": "/workspace/g370_snapshot/EqseleqhpTk_s5310/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/G8bPOW37Sp0_s320/ball_tracking.csv",
+  "game_id": "G8bPOW37Sp0",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "G8bPOW37Sp0_s320",
+  "tracking_path": "/workspace/g370_snapshot/G8bPOW37Sp0_s320/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/G8bPOW37Sp0_s90/ball_tracking.csv",
+  "game_id": "G8bPOW37Sp0",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "G8bPOW37Sp0_s90",
+  "tracking_path": "/workspace/g370_snapshot/G8bPOW37Sp0_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s2244/ball_tracking.csv",
+  "game_id": "GNjSxoeDT-E",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "GNjSxoeDT-E_s2244",
+  "tracking_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s2244/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s4398/ball_tracking.csv",
+  "game_id": "GNjSxoeDT-E",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "GNjSxoeDT-E_s4398",
+  "tracking_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s4398/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s90/ball_tracking.csv",
+  "game_id": "GNjSxoeDT-E",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "GNjSxoeDT-E_s90",
+  "tracking_path": "/workspace/g370_snapshot/GNjSxoeDT-E_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/HUSo3PzP7lo_s402/ball_tracking.csv",
+  "game_id": "HUSo3PzP7lo",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "HUSo3PzP7lo_s402",
+  "tracking_path": "/workspace/g370_snapshot/HUSo3PzP7lo_s402/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s1308/ball_tracking.csv",
+  "game_id": "N-eE7ZwTuno",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "N-eE7ZwTuno_s1308",
+  "tracking_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s1308/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s3744/ball_tracking.csv",
+  "game_id": "N-eE7ZwTuno",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "N-eE7ZwTuno_s3744",
+  "tracking_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s3744/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s90/ball_tracking.csv",
+  "game_id": "N-eE7ZwTuno",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "N-eE7ZwTuno_s90",
+  "tracking_path": "/workspace/g370_snapshot/N-eE7ZwTuno_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/RIrGQJ_jsGQ_s2730/ball_tracking.csv",
+  "game_id": "RIrGQJ_jsGQ",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "RIrGQJ_jsGQ_s2730",
+  "tracking_path": "/workspace/g370_snapshot/RIrGQJ_jsGQ_s2730/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/RIrGQJ_jsGQ_s5370/ball_tracking.csv",
+  "game_id": "RIrGQJ_jsGQ",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "RIrGQJ_jsGQ_s5370",
+  "tracking_path": "/workspace/g370_snapshot/RIrGQJ_jsGQ_s5370/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/XCaGht2GmPg_s1416/ball_tracking.csv",
+  "game_id": "XCaGht2GmPg",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "XCaGht2GmPg_s1416",
+  "tracking_path": "/workspace/g370_snapshot/XCaGht2GmPg_s1416/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/XCaGht2GmPg_s4068/ball_tracking.csv",
+  "game_id": "XCaGht2GmPg",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "XCaGht2GmPg_s4068",
+  "tracking_path": "/workspace/g370_snapshot/XCaGht2GmPg_s4068/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/XCaGht2GmPg_s90/ball_tracking.csv",
+  "game_id": "XCaGht2GmPg",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "XCaGht2GmPg_s90",
+  "tracking_path": "/workspace/g370_snapshot/XCaGht2GmPg_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/XzIzQZBrPBY_s398/ball_tracking.csv",
+  "game_id": "XzIzQZBrPBY",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "XzIzQZBrPBY_s398",
+  "tracking_path": "/workspace/g370_snapshot/XzIzQZBrPBY_s398/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/eaKqXq9dfig_s259/ball_tracking.csv",
+  "game_id": "eaKqXq9dfig",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "eaKqXq9dfig_s259",
+  "tracking_path": "/workspace/g370_snapshot/eaKqXq9dfig_s259/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/eaKqXq9dfig_s90/ball_tracking.csv",
+  "game_id": "eaKqXq9dfig",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "eaKqXq9dfig_s90",
+  "tracking_path": "/workspace/g370_snapshot/eaKqXq9dfig_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/fXLNra4sjjU_s90/ball_tracking.csv",
+  "game_id": "fXLNra4sjjU",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "fXLNra4sjjU_s90",
+  "tracking_path": "/workspace/g370_snapshot/fXLNra4sjjU_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/g370_snapshot/h6j_iLYRx8U_s2758/ball_tracking.csv",
+  "game_id": "h6j_iLYRx8U",
+  "kind": "ID_MERGE",
+  "pool": "G370_FRESH_POD_2026-09-10",
+  "section_id": "h6j_iLYRx8U_s2758",
+  "tracking_path": "/workspace/g370_snapshot/h6j_iLYRx8U_s2758/tracking_data.csv"
+ }
+]

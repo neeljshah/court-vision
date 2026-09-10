@@ -1,0 +1,722 @@
+[
+ {
+  "ball_path": "/workspace/data/tracking/1zPhldjbJnU_s1196/ball_tracking.csv",
+  "game_id": "1zPhldjbJnU",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "1zPhldjbJnU_s1196",
+  "tracking_path": "/workspace/data/tracking/1zPhldjbJnU_s1196/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/1zPhldjbJnU_s3408/ball_tracking.csv",
+  "game_id": "1zPhldjbJnU",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "1zPhldjbJnU_s3408",
+  "tracking_path": "/workspace/data/tracking/1zPhldjbJnU_s3408/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/1zPhldjbJnU_s5620/ball_tracking.csv",
+  "game_id": "1zPhldjbJnU",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "1zPhldjbJnU_s5620",
+  "tracking_path": "/workspace/data/tracking/1zPhldjbJnU_s5620/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/3fT6aYz2N9w_s1339/ball_tracking.csv",
+  "game_id": "3fT6aYz2N9w",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "3fT6aYz2N9w_s1339",
+  "tracking_path": "/workspace/data/tracking/3fT6aYz2N9w_s1339/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/3fT6aYz2N9w_s5086/ball_tracking.csv",
+  "game_id": "3fT6aYz2N9w",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "3fT6aYz2N9w_s5086",
+  "tracking_path": "/workspace/data/tracking/3fT6aYz2N9w_s5086/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/50pp-OqYVok_s2750/ball_tracking.csv",
+  "game_id": "50pp-OqYVok",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "50pp-OqYVok_s2750",
+  "tracking_path": "/workspace/data/tracking/50pp-OqYVok_s2750/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/50pp-OqYVok_s5410/ball_tracking.csv",
+  "game_id": "50pp-OqYVok",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "50pp-OqYVok_s5410",
+  "tracking_path": "/workspace/data/tracking/50pp-OqYVok_s5410/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/7Ci3zQ5Vm4M_s2312/ball_tracking.csv",
+  "game_id": "7Ci3zQ5Vm4M",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "7Ci3zQ5Vm4M_s2312",
+  "tracking_path": "/workspace/data/tracking/7Ci3zQ5Vm4M_s2312/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/UPco-jzOoEg_s2796/ball_tracking.csv",
+  "game_id": "UPco-jzOoEg",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "UPco-jzOoEg_s2796",
+  "tracking_path": "/workspace/data/tracking/UPco-jzOoEg_s2796/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/acb-8Oh7-GrvKvE_s2630/ball_tracking.csv",
+  "game_id": "acb-8Oh7-GrvKvE",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "acb-8Oh7-GrvKvE_s2630",
+  "tracking_path": "/workspace/data/tracking/acb-8Oh7-GrvKvE_s2630/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/acb-8Oh7-GrvKvE_s6440/ball_tracking.csv",
+  "game_id": "acb-8Oh7-GrvKvE",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "acb-8Oh7-GrvKvE_s6440",
+  "tracking_path": "/workspace/data/tracking/acb-8Oh7-GrvKvE_s6440/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s1221/ball_tracking.csv",
+  "game_id": "eurocup-Y6POC6V1Y5E",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "eurocup-Y6POC6V1Y5E_s1221",
+  "tracking_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s1221/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s3483/ball_tracking.csv",
+  "game_id": "eurocup-Y6POC6V1Y5E",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "eurocup-Y6POC6V1Y5E_s3483",
+  "tracking_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s3483/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s5745/ball_tracking.csv",
+  "game_id": "eurocup-Y6POC6V1Y5E",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "eurocup-Y6POC6V1Y5E_s5745",
+  "tracking_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s5745/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s1153/ball_tracking.csv",
+  "game_id": "euroleague-AIPW_g_VZN0",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "euroleague-AIPW_g_VZN0_s1153",
+  "tracking_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s1153/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s3279/ball_tracking.csv",
+  "game_id": "euroleague-AIPW_g_VZN0",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "euroleague-AIPW_g_VZN0_s3279",
+  "tracking_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s3279/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s5405/ball_tracking.csv",
+  "game_id": "euroleague-AIPW_g_VZN0",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "euroleague-AIPW_g_VZN0_s5405",
+  "tracking_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s5405/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-1DKl1QOo_b8_s1289/ball_tracking.csv",
+  "game_id": "fiba-1DKl1QOo_b8",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-1DKl1QOo_b8_s1289",
+  "tracking_path": "/workspace/data/tracking/fiba-1DKl1QOo_b8_s1289/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-1DKl1QOo_b8_s4886/ball_tracking.csv",
+  "game_id": "fiba-1DKl1QOo_b8",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-1DKl1QOo_b8_s4886",
+  "tracking_path": "/workspace/data/tracking/fiba-1DKl1QOo_b8_s4886/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s1385/ball_tracking.csv",
+  "game_id": "fiba-UG_eQNRDHiI",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-UG_eQNRDHiI_s1385",
+  "tracking_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s1385/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s3975/ball_tracking.csv",
+  "game_id": "fiba-UG_eQNRDHiI",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-UG_eQNRDHiI_s3975",
+  "tracking_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s3975/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s90/ball_tracking.csv",
+  "game_id": "fiba-UG_eQNRDHiI",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-UG_eQNRDHiI_s90",
+  "tracking_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-jFUMvm_epUE_s6740/ball_tracking.csv",
+  "game_id": "fiba-jFUMvm_epUE",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-jFUMvm_epUE_s6740",
+  "tracking_path": "/workspace/data/tracking/fiba-jFUMvm_epUE_s6740/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/lnb-1CBY-LXG8VA_s6525/ball_tracking.csv",
+  "game_id": "lnb-1CBY-LXG8VA",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "lnb-1CBY-LXG8VA_s6525",
+  "tracking_path": "/workspace/data/tracking/lnb-1CBY-LXG8VA_s6525/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/lnb-ouDVA0vM20g_s1379/ball_tracking.csv",
+  "game_id": "lnb-ouDVA0vM20g",
+  "kind": "FROZEN",
+  "pool": "G346_LIVE",
+  "section_id": "lnb-ouDVA0vM20g_s1379",
+  "tracking_path": "/workspace/data/tracking/lnb-ouDVA0vM20g_s1379/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/nbl-kRQtUZmPm0E_s363/ball_tracking.csv",
+  "game_id": "nbl-kRQtUZmPm0E",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "nbl-kRQtUZmPm0E_s363",
+  "tracking_path": "/workspace/data/tracking/nbl-kRQtUZmPm0E_s363/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/nbl-kRQtUZmPm0E_s90/ball_tracking.csv",
+  "game_id": "nbl-kRQtUZmPm0E",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "nbl-kRQtUZmPm0E_s90",
+  "tracking_path": "/workspace/data/tracking/nbl-kRQtUZmPm0E_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s2232/ball_tracking.csv",
+  "game_id": "ncaaw-lFZWLVzvCEs",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "ncaaw-lFZWLVzvCEs_s2232",
+  "tracking_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s2232/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s4374/ball_tracking.csv",
+  "game_id": "ncaaw-lFZWLVzvCEs",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "ncaaw-lFZWLVzvCEs_s4374",
+  "tracking_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s4374/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s90/ball_tracking.csv",
+  "game_id": "ncaaw-lFZWLVzvCEs",
+  "kind": "FROZEN",
+  "pool": "POST_EPOCH",
+  "section_id": "ncaaw-lFZWLVzvCEs_s90",
+  "tracking_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/1zPhldjbJnU_s1196/ball_tracking.csv",
+  "game_id": "1zPhldjbJnU",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "1zPhldjbJnU_s1196",
+  "tracking_path": "/workspace/data/tracking/1zPhldjbJnU_s1196/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/1zPhldjbJnU_s3408/ball_tracking.csv",
+  "game_id": "1zPhldjbJnU",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "1zPhldjbJnU_s3408",
+  "tracking_path": "/workspace/data/tracking/1zPhldjbJnU_s3408/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/1zPhldjbJnU_s5620/ball_tracking.csv",
+  "game_id": "1zPhldjbJnU",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "1zPhldjbJnU_s5620",
+  "tracking_path": "/workspace/data/tracking/1zPhldjbJnU_s5620/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/3fT6aYz2N9w_s1339/ball_tracking.csv",
+  "game_id": "3fT6aYz2N9w",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "3fT6aYz2N9w_s1339",
+  "tracking_path": "/workspace/data/tracking/3fT6aYz2N9w_s1339/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/3fT6aYz2N9w_s5086/ball_tracking.csv",
+  "game_id": "3fT6aYz2N9w",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "3fT6aYz2N9w_s5086",
+  "tracking_path": "/workspace/data/tracking/3fT6aYz2N9w_s5086/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/50pp-OqYVok_s2750/ball_tracking.csv",
+  "game_id": "50pp-OqYVok",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "50pp-OqYVok_s2750",
+  "tracking_path": "/workspace/data/tracking/50pp-OqYVok_s2750/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/50pp-OqYVok_s5410/ball_tracking.csv",
+  "game_id": "50pp-OqYVok",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "50pp-OqYVok_s5410",
+  "tracking_path": "/workspace/data/tracking/50pp-OqYVok_s5410/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/7Ci3zQ5Vm4M_s2312/ball_tracking.csv",
+  "game_id": "7Ci3zQ5Vm4M",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "7Ci3zQ5Vm4M_s2312",
+  "tracking_path": "/workspace/data/tracking/7Ci3zQ5Vm4M_s2312/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/UPco-jzOoEg_s2796/ball_tracking.csv",
+  "game_id": "UPco-jzOoEg",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "UPco-jzOoEg_s2796",
+  "tracking_path": "/workspace/data/tracking/UPco-jzOoEg_s2796/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/acb-8Oh7-GrvKvE_s2630/ball_tracking.csv",
+  "game_id": "acb-8Oh7-GrvKvE",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "acb-8Oh7-GrvKvE_s2630",
+  "tracking_path": "/workspace/data/tracking/acb-8Oh7-GrvKvE_s2630/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/acb-8Oh7-GrvKvE_s6440/ball_tracking.csv",
+  "game_id": "acb-8Oh7-GrvKvE",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "acb-8Oh7-GrvKvE_s6440",
+  "tracking_path": "/workspace/data/tracking/acb-8Oh7-GrvKvE_s6440/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s1221/ball_tracking.csv",
+  "game_id": "eurocup-Y6POC6V1Y5E",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "eurocup-Y6POC6V1Y5E_s1221",
+  "tracking_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s1221/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s3483/ball_tracking.csv",
+  "game_id": "eurocup-Y6POC6V1Y5E",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "eurocup-Y6POC6V1Y5E_s3483",
+  "tracking_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s3483/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s5745/ball_tracking.csv",
+  "game_id": "eurocup-Y6POC6V1Y5E",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "eurocup-Y6POC6V1Y5E_s5745",
+  "tracking_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s5745/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s1153/ball_tracking.csv",
+  "game_id": "euroleague-AIPW_g_VZN0",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "euroleague-AIPW_g_VZN0_s1153",
+  "tracking_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s1153/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s3279/ball_tracking.csv",
+  "game_id": "euroleague-AIPW_g_VZN0",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "euroleague-AIPW_g_VZN0_s3279",
+  "tracking_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s3279/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s5405/ball_tracking.csv",
+  "game_id": "euroleague-AIPW_g_VZN0",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "euroleague-AIPW_g_VZN0_s5405",
+  "tracking_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s5405/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-1DKl1QOo_b8_s1289/ball_tracking.csv",
+  "game_id": "fiba-1DKl1QOo_b8",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-1DKl1QOo_b8_s1289",
+  "tracking_path": "/workspace/data/tracking/fiba-1DKl1QOo_b8_s1289/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-1DKl1QOo_b8_s4886/ball_tracking.csv",
+  "game_id": "fiba-1DKl1QOo_b8",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-1DKl1QOo_b8_s4886",
+  "tracking_path": "/workspace/data/tracking/fiba-1DKl1QOo_b8_s4886/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s1385/ball_tracking.csv",
+  "game_id": "fiba-UG_eQNRDHiI",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-UG_eQNRDHiI_s1385",
+  "tracking_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s1385/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s3975/ball_tracking.csv",
+  "game_id": "fiba-UG_eQNRDHiI",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-UG_eQNRDHiI_s3975",
+  "tracking_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s3975/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s90/ball_tracking.csv",
+  "game_id": "fiba-UG_eQNRDHiI",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-UG_eQNRDHiI_s90",
+  "tracking_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-jFUMvm_epUE_s6740/ball_tracking.csv",
+  "game_id": "fiba-jFUMvm_epUE",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-jFUMvm_epUE_s6740",
+  "tracking_path": "/workspace/data/tracking/fiba-jFUMvm_epUE_s6740/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/lnb-1CBY-LXG8VA_s6525/ball_tracking.csv",
+  "game_id": "lnb-1CBY-LXG8VA",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "lnb-1CBY-LXG8VA_s6525",
+  "tracking_path": "/workspace/data/tracking/lnb-1CBY-LXG8VA_s6525/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/lnb-ouDVA0vM20g_s1379/ball_tracking.csv",
+  "game_id": "lnb-ouDVA0vM20g",
+  "kind": "COAST",
+  "pool": "G346_LIVE",
+  "section_id": "lnb-ouDVA0vM20g_s1379",
+  "tracking_path": "/workspace/data/tracking/lnb-ouDVA0vM20g_s1379/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/nbl-kRQtUZmPm0E_s363/ball_tracking.csv",
+  "game_id": "nbl-kRQtUZmPm0E",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "nbl-kRQtUZmPm0E_s363",
+  "tracking_path": "/workspace/data/tracking/nbl-kRQtUZmPm0E_s363/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/nbl-kRQtUZmPm0E_s90/ball_tracking.csv",
+  "game_id": "nbl-kRQtUZmPm0E",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "nbl-kRQtUZmPm0E_s90",
+  "tracking_path": "/workspace/data/tracking/nbl-kRQtUZmPm0E_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s2232/ball_tracking.csv",
+  "game_id": "ncaaw-lFZWLVzvCEs",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "ncaaw-lFZWLVzvCEs_s2232",
+  "tracking_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s2232/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s4374/ball_tracking.csv",
+  "game_id": "ncaaw-lFZWLVzvCEs",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "ncaaw-lFZWLVzvCEs_s4374",
+  "tracking_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s4374/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s90/ball_tracking.csv",
+  "game_id": "ncaaw-lFZWLVzvCEs",
+  "kind": "COAST",
+  "pool": "POST_EPOCH",
+  "section_id": "ncaaw-lFZWLVzvCEs_s90",
+  "tracking_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/1zPhldjbJnU_s1196/ball_tracking.csv",
+  "game_id": "1zPhldjbJnU",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "1zPhldjbJnU_s1196",
+  "tracking_path": "/workspace/data/tracking/1zPhldjbJnU_s1196/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/1zPhldjbJnU_s3408/ball_tracking.csv",
+  "game_id": "1zPhldjbJnU",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "1zPhldjbJnU_s3408",
+  "tracking_path": "/workspace/data/tracking/1zPhldjbJnU_s3408/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/1zPhldjbJnU_s5620/ball_tracking.csv",
+  "game_id": "1zPhldjbJnU",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "1zPhldjbJnU_s5620",
+  "tracking_path": "/workspace/data/tracking/1zPhldjbJnU_s5620/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/3fT6aYz2N9w_s1339/ball_tracking.csv",
+  "game_id": "3fT6aYz2N9w",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "3fT6aYz2N9w_s1339",
+  "tracking_path": "/workspace/data/tracking/3fT6aYz2N9w_s1339/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/3fT6aYz2N9w_s5086/ball_tracking.csv",
+  "game_id": "3fT6aYz2N9w",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "3fT6aYz2N9w_s5086",
+  "tracking_path": "/workspace/data/tracking/3fT6aYz2N9w_s5086/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/50pp-OqYVok_s2750/ball_tracking.csv",
+  "game_id": "50pp-OqYVok",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "50pp-OqYVok_s2750",
+  "tracking_path": "/workspace/data/tracking/50pp-OqYVok_s2750/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/50pp-OqYVok_s5410/ball_tracking.csv",
+  "game_id": "50pp-OqYVok",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "50pp-OqYVok_s5410",
+  "tracking_path": "/workspace/data/tracking/50pp-OqYVok_s5410/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/7Ci3zQ5Vm4M_s2312/ball_tracking.csv",
+  "game_id": "7Ci3zQ5Vm4M",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "7Ci3zQ5Vm4M_s2312",
+  "tracking_path": "/workspace/data/tracking/7Ci3zQ5Vm4M_s2312/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/UPco-jzOoEg_s2796/ball_tracking.csv",
+  "game_id": "UPco-jzOoEg",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "UPco-jzOoEg_s2796",
+  "tracking_path": "/workspace/data/tracking/UPco-jzOoEg_s2796/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/acb-8Oh7-GrvKvE_s2630/ball_tracking.csv",
+  "game_id": "acb-8Oh7-GrvKvE",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "acb-8Oh7-GrvKvE_s2630",
+  "tracking_path": "/workspace/data/tracking/acb-8Oh7-GrvKvE_s2630/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/acb-8Oh7-GrvKvE_s6440/ball_tracking.csv",
+  "game_id": "acb-8Oh7-GrvKvE",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "acb-8Oh7-GrvKvE_s6440",
+  "tracking_path": "/workspace/data/tracking/acb-8Oh7-GrvKvE_s6440/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s1221/ball_tracking.csv",
+  "game_id": "eurocup-Y6POC6V1Y5E",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "eurocup-Y6POC6V1Y5E_s1221",
+  "tracking_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s1221/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s3483/ball_tracking.csv",
+  "game_id": "eurocup-Y6POC6V1Y5E",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "eurocup-Y6POC6V1Y5E_s3483",
+  "tracking_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s3483/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s5745/ball_tracking.csv",
+  "game_id": "eurocup-Y6POC6V1Y5E",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "eurocup-Y6POC6V1Y5E_s5745",
+  "tracking_path": "/workspace/data/tracking/eurocup-Y6POC6V1Y5E_s5745/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s1153/ball_tracking.csv",
+  "game_id": "euroleague-AIPW_g_VZN0",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "euroleague-AIPW_g_VZN0_s1153",
+  "tracking_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s1153/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s3279/ball_tracking.csv",
+  "game_id": "euroleague-AIPW_g_VZN0",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "euroleague-AIPW_g_VZN0_s3279",
+  "tracking_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s3279/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s5405/ball_tracking.csv",
+  "game_id": "euroleague-AIPW_g_VZN0",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "euroleague-AIPW_g_VZN0_s5405",
+  "tracking_path": "/workspace/data/tracking/euroleague-AIPW_g_VZN0_s5405/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-1DKl1QOo_b8_s1289/ball_tracking.csv",
+  "game_id": "fiba-1DKl1QOo_b8",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-1DKl1QOo_b8_s1289",
+  "tracking_path": "/workspace/data/tracking/fiba-1DKl1QOo_b8_s1289/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-1DKl1QOo_b8_s4886/ball_tracking.csv",
+  "game_id": "fiba-1DKl1QOo_b8",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-1DKl1QOo_b8_s4886",
+  "tracking_path": "/workspace/data/tracking/fiba-1DKl1QOo_b8_s4886/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s1385/ball_tracking.csv",
+  "game_id": "fiba-UG_eQNRDHiI",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-UG_eQNRDHiI_s1385",
+  "tracking_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s1385/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s3975/ball_tracking.csv",
+  "game_id": "fiba-UG_eQNRDHiI",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-UG_eQNRDHiI_s3975",
+  "tracking_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s3975/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s90/ball_tracking.csv",
+  "game_id": "fiba-UG_eQNRDHiI",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-UG_eQNRDHiI_s90",
+  "tracking_path": "/workspace/data/tracking/fiba-UG_eQNRDHiI_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/fiba-jFUMvm_epUE_s6740/ball_tracking.csv",
+  "game_id": "fiba-jFUMvm_epUE",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "fiba-jFUMvm_epUE_s6740",
+  "tracking_path": "/workspace/data/tracking/fiba-jFUMvm_epUE_s6740/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/lnb-1CBY-LXG8VA_s6525/ball_tracking.csv",
+  "game_id": "lnb-1CBY-LXG8VA",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "lnb-1CBY-LXG8VA_s6525",
+  "tracking_path": "/workspace/data/tracking/lnb-1CBY-LXG8VA_s6525/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/lnb-ouDVA0vM20g_s1379/ball_tracking.csv",
+  "game_id": "lnb-ouDVA0vM20g",
+  "kind": "ID_MERGE",
+  "pool": "G346_LIVE",
+  "section_id": "lnb-ouDVA0vM20g_s1379",
+  "tracking_path": "/workspace/data/tracking/lnb-ouDVA0vM20g_s1379/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/nbl-kRQtUZmPm0E_s363/ball_tracking.csv",
+  "game_id": "nbl-kRQtUZmPm0E",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "nbl-kRQtUZmPm0E_s363",
+  "tracking_path": "/workspace/data/tracking/nbl-kRQtUZmPm0E_s363/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/nbl-kRQtUZmPm0E_s90/ball_tracking.csv",
+  "game_id": "nbl-kRQtUZmPm0E",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "nbl-kRQtUZmPm0E_s90",
+  "tracking_path": "/workspace/data/tracking/nbl-kRQtUZmPm0E_s90/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s2232/ball_tracking.csv",
+  "game_id": "ncaaw-lFZWLVzvCEs",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "ncaaw-lFZWLVzvCEs_s2232",
+  "tracking_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s2232/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s4374/ball_tracking.csv",
+  "game_id": "ncaaw-lFZWLVzvCEs",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "ncaaw-lFZWLVzvCEs_s4374",
+  "tracking_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s4374/tracking_data.csv"
+ },
+ {
+  "ball_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s90/ball_tracking.csv",
+  "game_id": "ncaaw-lFZWLVzvCEs",
+  "kind": "ID_MERGE",
+  "pool": "POST_EPOCH",
+  "section_id": "ncaaw-lFZWLVzvCEs_s90",
+  "tracking_path": "/workspace/data/tracking/ncaaw-lFZWLVzvCEs_s90/tracking_data.csv"
+ }
+]

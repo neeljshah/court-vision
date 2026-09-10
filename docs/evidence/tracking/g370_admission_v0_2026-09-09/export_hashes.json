@@ -1,0 +1,7 @@
+{
+  "byte_identical": true,
+  "sha256": {
+    "admission_rows.parquet": "b35fa87982db5a4c9d7c3b02131b6eb06f11a423eb1e270d6641582a47cd6729",
+    "admission_rows_repeat.parquet": "b35fa87982db5a4c9d7c3b02131b6eb06f11a423eb1e270d6641582a47cd6729"
+  }
+}

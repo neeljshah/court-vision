@@ -1,0 +1,7 @@
+{
+  "byte_identical": true,
+  "sha256": {
+    "sealed_admission_rows.parquet": "747c93f26c007373fe7b459b39d97c9fdfbc69de527fadc6b625fda87db44db2",
+    "sealed_admission_rows_repeat.parquet": "747c93f26c007373fe7b459b39d97c9fdfbc69de527fadc6b625fda87db44db2"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "artifact_gate_a0_m1_rejection": {
+    "distinct_position_ratio": {
+      "n": 93,
+      "rejected_n": 0,
+      "share": 0.0
+    },
+    "zero_step_share": {
+      "n": 93,
+      "rejected_n": 0,
+      "share": 0.0
+    }
+  },
+  "provenance": {
+    "explicit_provenance_sections_n": 0,
+    "sections_n": 34,
+    "share": 0.0
+  },
+  "stationary_a0_m1_rejection_fresh": {
+    "n": 59,
+    "rejected_n": 12,
+    "share": 0.20339
+  },
+  "tick_ratio_median_fresh": 0.153195,
+  "tick_ratio_n": 59
+}
