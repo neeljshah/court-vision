@@ -706,3 +706,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-10 | tracking teacher admission | G370 | landed PARTIAL: 135497/135497 declared frames represented; 0 observed labels; controls 0/51; fresh plants 0/30, 0/21, 3/30; both masks disabled; wall-time line corrected | PARTIAL (verified: codex-sol, contract A/B/Q)
 
+2026-09-10 | tracking | G367 | landed PARTIAL: reconstruction reproduces the lost run to <= 1.2e-4 px (1.128714 / 1.065403 / 0.715832 / 0.763620 modulo); premise TRUE; 4/4 AMBIGUOUS; orientation kappa 0.824485, left 12 / right 16 / unknown 26; sweep/overlays/cues NOT VERIFIED; verdict word + 3 digests corrected | PARTIAL (verified: codex-sol, contract A/B/Q)
+

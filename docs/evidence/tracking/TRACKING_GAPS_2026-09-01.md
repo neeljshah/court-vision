@@ -9,6 +9,12 @@
 
 
 
+## G367 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G367 | basketball | phase-1 code lost with the 09-09 pod; re-prepared modules reproduce memo figures to <= 1.2e-4 px (G1 1.128714 / G2 1.065403 mirror_x / G3 0.715832 / G4 0.763620; gate-valid 10463/14644/8120/15538); premise TRUE at 4 dp (cand B 1.1287 / 1.1165 / 0.7636 / 469.3808); all refined candidates one symmetry class, margin empty, 4/4 AMBIGUOUS; orientation 54 sheets terra+sol kappa 0.824485, adjudicated left 12 / right 16 / unknown 26 (n >= 30/class unmet); sweep, overlays, cue scoring NOT VERIFIED; one disclosed crash fix (format-string arg); tests 6 + 1; corrections: verdict word PARTIAL, 3 digests | g367_init_symmetry_2026-09-09.md; g367_init_symmetry_2026-09-09/{prereg, recovery.csv, search.csv, summary.json, g367_premise.json, g367_search.json, ratings_wide.csv, agreement.json, adjudication_note.md}; G367_VERIFY_2026-09-10.md | **PARTIAL -- reconstructed implementation, not an independent-data replication (astra pod-loss review); the initialisation search still consults the truth by construction; licenses the G371 dependency only** |
+
 ## G370 result register
 
 | Gap | Sport | Finding | Evidence | Status |
