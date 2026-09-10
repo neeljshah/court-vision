@@ -5,6 +5,13 @@
 
 
 
+
+## G369 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G369 | basketball | Premise: G361 classes EXACT 19 / ALIGNED 21 / UNKNOWN 844; 0 of 884 archived rows carried a known deploy_manifest_sha256; 35 of 55 fresh sections still had source bytes at pin time. PINNED 32/35 attempts with 17/17 bindings populated; 8 distinct source ids vs the sealed bar of 10; 4 competitions; 996/996 landmarks EXACT at 0.0000 frames; 0 collisions; manifest exported twice byte-identical. Tests 5 + 1 passed. Corrections applied: legacy `rule` kept beside `crop_rule`; memo Q6 scan line; module LOC 247 -> 248. | g369_prospective_identity_2026-09-09.md; g369_prospective_identity_2026-09-09/{sources.csv,attempts.csv,manifests.json,alignment.csv,export_hashes.json,summary.json,SHA256SUMS.txt,strips/}; G369_VERIFY_2026-09-10.md; G369_VERIFY_REJECT_2026-09-10.md | **PARTIAL -- prospective pinning at claim time is the successor's job (36.4 pct of fresh sources gone within 42 min); licenses no identity claim for the 20 unpinned sections** |
+
 ## G366 result register
 
 | Gap | Sport | Finding | Evidence | Status |
