@@ -714,3 +714,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-10 | tracking | G374 | landed PARTIAL: frozen G364 head validated -- precision 0.962162 (Wilson lower 0.923969 vs 0.90), recall 0.967391 (lower 0.930695 vs 0.80), kappa 0.954314 on 300 blind held-out frames (185/101/14); ABSTAIN stratum 14/60 unmet; 30 sources restored byte-identical | PARTIAL (verified: codex-sol ACCEPT, contract A/B/Q)
 
+2026-09-10 | tracking | G376 | landed DONE: declared ticks over-count (NOT_SCHEDULED 0.428 / 0.406); producer-evaluated 28,276 / 53,250 vs declared 45,842 / 89,655; M1-corrected zero-observation 0.483449 / 0.603362; over-count explains 0.610 / 0.531 of the G370 gap; controls exact; re-run 1.000 | DONE (verified: codex-sol ACCEPT, contract A/B/Q)
+

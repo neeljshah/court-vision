@@ -11,6 +11,13 @@
 
 
 
+
+## G376 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G376 | all (basketball fixtures first) | premise reproduced (0.701496 / 0.764419; 30 of 34 non-integral); reconstructed rule: producer evaluates frame % stride == 0 AND gameplay-gated AND not suspended AND under an evaluated-frame cap (unified_pipeline.py:1700, 996-1036, 1836-1853, 1536-1537, 1680) while the adjudicator declares ceil(decoded/stride) ticks (track_daemon_done.py:141-149, 203-209); classes SEALED34 OBSERVED 0.540 / SCHED_NO_DET 0.031 / NOT_SCHEDULED 0.428 / UNKNOWN 0.000, FRESH69 0.572 / 0.022 / 0.406 / 0.000; producer-evaluated 28,276 / 53,250; M1-corrected zero-observation 0.483449 / 0.603362 (RAW 0.056 / 0.037); over-count explains 0.610 / 0.531 of G370's gap, held-collapse most of the rest; controls exact; controlled re-run 1.000; 3 PROPOSED additive diffs; tests 13 + 1 | g376_declared_tick_observations_2026-09-10.md; g376_declared_tick_observations_2026-09-10/{prereg, amendment, schedule_rule.md, ticks.csv, classification.csv, consequence.csv, controls.csv, rerun_log.txt, strips/, summary.json, PROPOSED_evaluated_tick_ids.md}; G376_VERIFY_2026-09-10.md; G376_VERIFY_att1_REJECT_2026-09-10.md | **DONE -- the ledger's declared ticks are not the producer's evaluated set (restate evaluated_frames on 103/103 sections; stride 2 vs 3 at 25 fps); about half of genuinely evaluated ticks carry only held positions under M1; licenses the producer-evaluated denominator for every successor and the G379 provenance row** |
+
 ## G374 result register
 
 | Gap | Sport | Finding | Evidence | Status |
