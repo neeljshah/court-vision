@@ -756,3 +756,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G394 | landed NOT VALIDATED: A10 (A8 + 49 audited person hard negatives, one run) TP 84 / FP 156 / FN 218, C0 0.153 vs 0.25, precision lower 0.292 vs 0.90, ALL-FP 0.830 vs 0.01; A8 reproduced 90/169/212; nothing adopted; verify memo verbatim | NOT VALIDATED (codex-sol ACCEPT WITH CORRECTIONS applied)
 
+2026-09-11 | tracking | G396 | landed DONE: astra tier qualified 30/30 + sol 27/30 on fresh controls (joint 27/30 at the bar); real paint recovery 3/30 states (3/22 visible) after the independent 9-point pixel audit; renders 108/108 reproducible; two verify cycles verbatim | DONE (codex-sol fix 1b ACCEPT WITH CORRECTIONS applied)
+
