@@ -768,3 +768,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G400 | landed PARTIAL + NOT VALIDATED + CLOSED AT LIMIT: 30 new video ids x 10 frames, 300/300 decoded, terra + sol 20/20 rounds, pooled kappa 0.75 (n = 299 INCOMPLETE), round 8 0.36 FAIL, median centre gap 24.0 px vs 13.75 FAIL, yield 116/300 = 0.387 <= 0.40 -> uniform growth closed; 61 pct non-play frames; 116 candidate boxes not accepted; three verify memos verbatim | PARTIAL + NOT VALIDATED + CLOSED AT LIMIT (codex-sol fix 1c CLOSED AT LIMIT)
 
+2026-09-11 | tracking | G402 | landed PARTIAL: 59/60 sealed mixed windows (720p60 30/30, 1080p30 29/30) under the G380 instrumentation in scratch; sealed-window mask admits 3,075 of 19,087 rows with 0 forbidden admissions (CLAMP 10,925 / PREDICTION 5,600 / SUBPIXEL 1,517 / HELD 0); receipt vs transport 59/59; 60 exact-even audit cards, 206 boxes; sources retained off-pod before the stage (16 pruned mid-stage); three verify memos verbatim | PARTIAL (codex-sol fix 1c ACCEPT WITH CORRECTIONS applied)
+
