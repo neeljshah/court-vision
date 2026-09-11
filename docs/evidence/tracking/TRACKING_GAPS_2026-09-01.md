@@ -44,6 +44,13 @@
 
 
 
+
+## G404 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G404 | basketball | PARTIAL (codex-sol ACCEPT, verify 4 after three receipt-shape REJECTs): the sealed supply premise is FALSE -- the whole retained pod pool (census 20:39Z 09-11: 79 sections / 14 video ids / 2 competitions) held 14 resolved exact-ID-disjoint candidates vs 30 required (older alternate-upload relation UNRESOLVED), so no draw, no controls and no ball rating were made; only 6/14 median sections survived to retention; the frozen G375/G364 play gate ran on the 6 retained sources (386 candidates -> 187 admitted / 199 excluded); the sealed 60-card audit was labelled by ONE reviewer -> the two-rater bar is NOT EVALUABLE (neither passed nor failed); rater transport never exercised (fresh terra home = USER-ONLY; g404_rate.py committed unused); amendment A1 sealed; two fresh-process reproductions identical; 13 tests. Verifier NEW GAPs (non-blocking): spec names disjointness.csv vs delivered game_disjointness.csv; repeats.json fields untested; stale delivered digests for premise/q6_scan/summary in repeats.json. Continuation gated on G414 (24-h pool census, T1 = 2026-09-12T21:25:17Z) + user-created terra home + echo smoke + joint gate audit. | g404_play_gated_ball_growth_stage2_2026-09-11.md + dir (census.csv, game_disjointness.csv, gate_audit.csv, gate_audit_draw.csv, premise.json, repeats.json, q6_scan.json, SHA256SUMS, amendment_A1.md); G404_VERIFY_2026-09-11.md (+ att1/fix1b/fix1c REJECT memos) | **PARTIAL -- supply wall measured; licenses the G414 pool census as the GO gate; does not license any ball-growth claim, rating or gate verdict** |
+
 ## G407 result register
 
 | Gap | Sport | Finding | Evidence | Status |
