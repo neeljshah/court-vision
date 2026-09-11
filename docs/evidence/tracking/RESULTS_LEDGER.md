@@ -736,3 +736,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G384 | landed PARTIAL: merged reference 1,114/1,620 settled (506 unsettled); held-out 157/161/26 MET; dev boxes 312/500; A1 even-sample yield 0.483 -> projection 457 [414, 502], arm A8 NOT closed on supply evidence; no arm run, 0 GPU min; four verify cycles verbatim | PARTIAL (codex-sol fix1d ACCEPT WITH CORRECTIONS applied)
 
+2026-09-11 | tracking | G387 | landed PARTIAL (protocol not qualified): synthetic controls 13/30 admissible within 3 px (19/30 post-redispatch diagnostic) vs 27/30; real paint localised 1/30; raters agree on the painted band within 6 px but disagree on extent by 47-244 px; G383 reference supply CLOSED AT LIMIT | PARTIAL (codex-sol ACCEPT WITH CORRECTIONS applied)
+

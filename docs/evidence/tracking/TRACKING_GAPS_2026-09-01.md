@@ -22,6 +22,13 @@
 
 
 
+
+## G387 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G387 | basketball | premise TRUE: G382's 60 planned / 49 RETAINED / 11 DECODE_FAILED reproduced; 57 paired painted ids with 34 zero-overlap; 49 native 1920x1080 PNGs hash-matched (135,177,764 bytes); marking_only.json 49 frames / 0 strokes -> G383 reference supply CLOSED AT LIMIT. Sealed native-tile endpoint/midpoint protocol with known-position synthetic controls, two isolated blind raters (terra + sol), pixel adjudication. Controls: 13/30 admissible within 3 px (one terra batch wrote nothing under a sandbox refusal and was re-dispatched once -- the re-dispatch violates the no-retry clause, so 19/30 is reported only as a post-redispatch diagnostic) vs the 27/30 bar; endpoint error over 60 rater observations p50 2.3 px, p90 3.2, max 33.1 (49/60 endpoints, 59/60 midpoints within 3 px): a tolerance miss with one gross miss, not a coordinate-delivery collapse -> PROTOCOL NOT QUALIFIED. Real paint: localised 1/30 all-frame, 1/22 adjudicator-visible (6 ABSENT, 2 UNKNOWN contexts); on 4 of 12 shared-id frames both raters sit on the SAME painted band (collinear within 6 px at native) but disagree on segment EXTENT by 47-244 px -- extent disagreement, not wrong-line identification, is the demonstrated protocol defect. Two-process rendering and scoring identical; Q6 0 hits over 164 text artifacts incl. 17 rater logs; disclosed: prereg canonical selection digests not reproducible although rule and code are byte-identical; g387_receipts.vocabulary_hits regex defective (scan run with correctly built patterns) | g387_paint_localization_controls_2026-09-11.md; g387_paint_localization_controls_2026-09-11/{prereg/, tiles, controls, ratings, adjudication, scores, receipts, renders/, rater logs, q6_scan.json}; G387_VERIFY_ACCEPT_WITH_CORRECTIONS_2026-09-11.md | **PARTIAL -- the paint reference problem is a PROTOCOL problem (segment extent, not line identity); segment-endpoint protocols cannot qualify at 3 px; successor G388 measures band membership + line family with re-sealed controls; NEW GAP: no-retry clause vs sandbox-refused batches needs a sealed rule** |
+
 ## G384 result register
 
 | Gap | Sport | Finding | Evidence | Status |
