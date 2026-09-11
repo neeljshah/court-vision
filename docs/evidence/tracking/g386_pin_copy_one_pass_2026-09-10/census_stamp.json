@@ -1,0 +1,13 @@
+{
+  "available_sections": 51,
+  "available_videos": 22,
+  "census_epoch": 1789100984,
+  "census_sections": 1261,
+  "census_utc": "2026-09-11T04:29:44Z",
+  "census_videos": 196,
+  "draw_sections": 30,
+  "draw_videos": 21,
+  "ledger_rows": 1646,
+  "ledger_sha256": "a285edb02b785892a03f2c270491a4de2ad0fa89940aa3370b76500f57f05c22",
+  "live_corpus_sections": 18
+}

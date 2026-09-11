@@ -1,0 +1,135 @@
+{
+  "amendment_a1_seal": "3c092fc62c2af32a6665e53c8348357c3aad3e989646740049d74b4e4d7504a7",
+  "attempt_status": {
+    "CAPTURED": 30
+  },
+  "available_sections": 51,
+  "available_videos": 22,
+  "bytes_captured": 2323546523,
+  "capture_coverage": 1.0,
+  "captured": 30,
+  "census_sections": 1261,
+  "census_utc": "2026-09-11T04:29:44Z",
+  "census_videos": 196,
+  "controls_exact": 6,
+  "controls_failed": [
+    "c3_concurrent_mutation"
+  ],
+  "controls_total": 7,
+  "draw_pools": {
+    "live_corpus": 11,
+    "retained_g364_val": 17,
+    "retained_g380_sources": 2
+  },
+  "draw_sections": 30,
+  "draw_videos": 21,
+  "drawn_originals_present_by_tick": {
+    "0": 30,
+    "15": 29,
+    "30": 27,
+    "45": 17,
+    "60": 17
+  },
+  "drawn_sources_lost_at_last_tick": 13,
+  "drawn_sources_rechecked": 30,
+  "emitted_fields": 18,
+  "emitted_fields_with_readers": 7,
+  "emitted_fields_without_readers": [
+    "hold_path",
+    "ledger_snapshot_line",
+    "pc_decode_ok",
+    "pc_frame_png_sha256",
+    "receiver_sha256",
+    "retained_path",
+    "retained_raw_yuv_sha256",
+    "retained_sha256",
+    "source_device",
+    "source_inode",
+    "version_id"
+  ],
+  "export_sha256": "0a89e652ba3e2250c61dda001426529c71973d14395067156ca952ec1698ace6",
+  "exports_identical": true,
+  "false_captured_receipts": 0,
+  "gap": "G386",
+  "incidental_live_paths_seen": 109,
+  "ledger_rows": 1646,
+  "ledger_sha256": "a285edb02b785892a03f2c270491a4de2ad0fa89940aa3370b76500f57f05c22",
+  "live_cohort_captured": null,
+  "live_cohort_note": "the superseded run's separate live-pool arm does not exist in this re-measurement; 11 live rotating sections are inside the sealed n of 30 instead, so every live_cohort_* key is null by design and none was silently dropped",
+  "live_cohort_originals_lost": null,
+  "live_cohort_pixel_match": null,
+  "live_cohort_present_by_tick": null,
+  "live_cohort_receipts": null,
+  "live_cohort_seal_utc": null,
+  "live_cohort_sections": null,
+  "live_cohort_ticks_min": null,
+  "live_cohort_videos": null,
+  "live_cohort_window_min": null,
+  "live_corpus_sections_at_census": 18,
+  "live_drawn_originals": 11,
+  "live_drawn_present_by_tick": {
+    "0": 11,
+    "15": 11,
+    "30": 9,
+    "45": 0,
+    "60": 0
+  },
+  "live_pool_files_by_tick": {
+    "0": 18,
+    "15": 31,
+    "30": 42,
+    "45": 61,
+    "60": 73
+  },
+  "n_attempts": 30,
+  "off_pod_decode_ok": 30,
+  "off_pod_readback_match": 30,
+  "pc_receiver_byte_agreement": 30,
+  "pc_receiver_objects": 30,
+  "pc_receiver_pixel_opened": 30,
+  "pixel_match": 30,
+  "pod_copy_vs_original_pixel": {
+    "MATCH": 30
+  },
+  "prereg_seal": "517122d019f0174592ff76e2a4d9eb5d948bacf58a995cf50964e14a4c3ac227",
+  "receiver_acknowledged": 30,
+  "receiver_byte_agreement": 30,
+  "receiver_pixel_opened": 30,
+  "recheck_ticks_min": [
+    0,
+    15,
+    30,
+    45,
+    60
+  ],
+  "recheck_window_min": 60,
+  "render_dimensions": {
+    "1920x1080": 30
+  },
+  "renders": 30,
+  "required_reader_objects_retained_off_pod": 30,
+  "retained_bytes_off_pod": 2323546523,
+  "retained_sections": 51,
+  "retained_share_per_mille": 40.4,
+  "retained_videos": 22,
+  "retained_vs_original_raw_pixel": {
+    "MATCH": 29,
+    "ORIGINAL_ABSENT": 1
+  },
+  "rotation_ticks_min": [
+    0,
+    15,
+    30,
+    45,
+    60
+  ],
+  "status": "PARTIAL",
+  "supersedes": "a7af42262 (rejected cb2542c40); this is the amendment A1 re-measurement",
+  "unique_renders": 30,
+  "unique_retained_frame_digests": 30,
+  "unique_source_digests": 30,
+  "unique_version_ids": 30,
+  "unmet_clause": "every scratch control exact (6 of 7; c3_concurrent_mutation)",
+  "verdict": "PARTIAL",
+  "wall_time": "2026-09-11T04:24Z to 2026-09-11T05:45Z, 81 min"
+}

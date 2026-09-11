@@ -1,0 +1,15 @@
+{
+  "export_1_sha256": "0a89e652ba3e2250c61dda001426529c71973d14395067156ca952ec1698ace6",
+  "export_2_sha256": "0a89e652ba3e2250c61dda001426529c71973d14395067156ca952ec1698ace6",
+  "export_fields": [
+    "attempt_id",
+    "source_sha256",
+    "source_bytes",
+    "source_device",
+    "source_inode",
+    "ffprobe_stream_sha256",
+    "ledger_snapshot_line"
+  ],
+  "identical": true,
+  "source": "docs/evidence/tracking/g386_pin_copy_one_pass_2026-09-10/source_identity.csv"
+}

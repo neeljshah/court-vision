@@ -1,0 +1,8 @@
+control,expected_status,observed_status,exact,staging_released,receipt_present,version_id
+c1_clean_capture,CAPTURED,CAPTURED,1,1,1,a78566d7cf9704b6-8b17a2391ac1
+c2_unlink_and_replace_after_pin,CHANGED,CHANGED,1,0,0,
+c3_concurrent_mutation,CHANGED,CAPTURED,0,1,1,3428e9c009a30ea9-0c58cb2f3c97
+c4_short_read,SHORT_READ,SHORT_READ,1,0,0,
+c5_receiver_corruption,RECEIVER_MISMATCH,RECEIVER_MISMATCH,1,0,1,2607fbc8dc8df1f7-bfed5c0aec15
+c6_versioned_retry_first,CAPTURED,CAPTURED,1,1,1,a78566d7cf9704b6-8096d8411358
+c6_versioned_retry_second,CAPTURED,CAPTURED,1,1,1,a78566d7cf9704b6-f3bb5484d166
