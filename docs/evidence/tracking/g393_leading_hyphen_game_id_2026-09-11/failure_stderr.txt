@@ -1,0 +1,240 @@
+CASE 1
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 3
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 5
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 7
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 9
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 11
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 13
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 15
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 17
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 19
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 21
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 23
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 25
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 27
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 29
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 31
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 33
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 35
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 37
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 39
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 41
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 43
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 45
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 47
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 49
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 51
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 53
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 55
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 57
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument
+CASE 59
+usage: g393_prepare.py [-h] --video VIDEO [--yolo YOLO] [--frames FRAMES]
+                       [--start-frame START_FRAME] [--no-show]
+                       [--game-id GAME_ID] [--period PERIOD]
+                       [--periods PERIODS] [--start START]
+                       [--data-dir DATA_DIR] [--skip-tracking]
+                       [--skip-features]
+g393_prepare.py: error: argument --game-id: expected one argument

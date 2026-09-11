@@ -1,0 +1,86 @@
+{
+  "affected_caller_lines": [
+    "scripts/ingest_one_game.py:116",
+    "scripts/ingest_one_game.py:155",
+    "scripts/master_pipeline.py:266",
+    "scripts/platformkit/footage_bridge.py:500",
+    "scripts/platformkit/footage_cycle.py:154",
+    "scripts/platformkit/track_daemon.py:96",
+    "scripts/platformkit/tracking/g310_native_input_arm.py:128",
+    "scripts/platformkit/tracking/g310_native_input_arm.py:214",
+    "scripts/reprocess_20_games.py:79",
+    "scripts/reprocess_tracking_only.py:75",
+    "scripts/run_backfill.py:172",
+    "scripts/run_data_collection.py:199",
+    "scripts/run_phase_g.py:441",
+    "scripts/validate_tracker_e2e.py:81"
+  ],
+  "eye_card_ordinals": [
+    1,
+    13,
+    25,
+    37,
+    49,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68
+  ],
+  "forms": {
+    "dashdash_separator": {
+      "control_extra_preserved": 0,
+      "leading_recovered": 0,
+      "ordinary_recovered": 0,
+      "sealed_eligible": 0,
+      "supplemental_preserved": 0,
+      "unrelated_drift": 0
+    },
+    "equals_single_token": {
+      "control_extra_preserved": 2,
+      "leading_recovered": 30,
+      "ordinary_recovered": 30,
+      "sealed_eligible": 0,
+      "supplemental_preserved": 5,
+      "unrelated_drift": 0
+    },
+    "split_baseline": {
+      "control_extra_preserved": 0,
+      "leading_recovered": 0,
+      "ordinary_recovered": 30,
+      "sealed_eligible": 0,
+      "supplemental_preserved": 2,
+      "unrelated_drift": 0
+    }
+  },
+  "q6_files_scanned": 166,
+  "q6_hits": [],
+  "scratch_proof": {
+    "dashdash_separator": {
+      "leading_recovered": false,
+      "path": "C:/Users/neelj/AppData/Local/Temp/g393_scratch/track_daemon_dashdash_separator.py",
+      "sha256": "9f96753c86cb38a538e9b9097e518b2319fab182cc86e8c7d8b5bb236006163a"
+    },
+    "equals_single_token": {
+      "leading_recovered": true,
+      "path": "C:/Users/neelj/AppData/Local/Temp/g393_scratch/track_daemon_equals_single_token.py",
+      "sha256": "faee2095f9e6ee78390fcb2d1777e8ee27b1c5fa36caf306e558b5fc4337ee08"
+    },
+    "split_baseline": {
+      "leading_recovered": false,
+      "path": "C:/Users/neelj/AppData/Local/Temp/g393_scratch/track_daemon_split_baseline.py",
+      "sha256": "9747d9a085405c492f04c4e3b162ed8b1d897309da6f0f9c014cb7092056f5ac"
+    }
+  },
+  "sealed_eligible_forms": [],
+  "source_hashes": {
+    "form:dashdash_separator": "9f96753c86cb38a538e9b9097e518b2319fab182cc86e8c7d8b5bb236006163a",
+    "form:equals_single_token": "faee2095f9e6ee78390fcb2d1777e8ee27b1c5fa36caf306e558b5fc4337ee08",
+    "form:split_baseline": "9747d9a085405c492f04c4e3b162ed8b1d897309da6f0f9c014cb7092056f5ac",
+    "scripts/platformkit/track_daemon.py": "9747d9a085405c492f04c4e3b162ed8b1d897309da6f0f9c014cb7092056f5ac",
+    "scripts/run_clip.py": "ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2"
+  }
+}

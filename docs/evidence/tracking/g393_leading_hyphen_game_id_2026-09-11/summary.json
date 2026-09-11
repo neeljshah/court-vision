@@ -1,0 +1,11 @@
+{
+  "argument_declarations": 12,
+  "candidate_eligible": false,
+  "candidate_value_mismatches": 1,
+  "leading_before_failures": 30,
+  "leading_candidate_recovered": 30,
+  "ordinary_unchanged": 30,
+  "prepare_only": true,
+  "supplemental_preserved": 5,
+  "verdict": "PREPARE-ONLY PLACEHOLDER"
+}

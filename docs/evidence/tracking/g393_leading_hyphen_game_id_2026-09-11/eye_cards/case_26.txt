@@ -1,0 +1,66 @@
+{
+  "after": {
+    "argv": [
+      "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
+      "scripts/run_clip.py",
+      "--video",
+      "input path\\clip 26.mp4",
+      "--game-id=Oa_BpdVT64_s1012",
+      "--no-show",
+      "--frames",
+      "3000",
+      "--data-dir",
+      "data\\tracking\\Oa_BpdVT64_s1012"
+    ],
+    "namespace": {
+      "data_dir": "data\\tracking\\Oa_BpdVT64_s1012",
+      "frames": 3000,
+      "game_id": "Oa_BpdVT64_s1012",
+      "no_show": true,
+      "period": null,
+      "periods": null,
+      "skip_features": false,
+      "skip_tracking": false,
+      "start": 0.0,
+      "start_frame": 0,
+      "video": "input path\\clip 26.mp4",
+      "yolo": null
+    },
+    "return_status": 0,
+    "stderr": ""
+  },
+  "before": {
+    "argv": [
+      "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
+      "scripts/run_clip.py",
+      "--video",
+      "input path\\clip 26.mp4",
+      "--game-id",
+      "Oa_BpdVT64_s1012",
+      "--no-show",
+      "--frames",
+      "3000",
+      "--data-dir",
+      "data\\tracking\\Oa_BpdVT64_s1012"
+    ],
+    "namespace": {
+      "data_dir": "data\\tracking\\Oa_BpdVT64_s1012",
+      "frames": 3000,
+      "game_id": "Oa_BpdVT64_s1012",
+      "no_show": true,
+      "period": null,
+      "periods": null,
+      "skip_features": false,
+      "skip_tracking": false,
+      "start": 0.0,
+      "start_frame": 0,
+      "video": "input path\\clip 26.mp4",
+      "yolo": null
+    },
+    "return_status": 0,
+    "stderr": ""
+  },
+  "game_id": "Oa_BpdVT64_s1012",
+  "kind": "ordinary",
+  "ordinal": 26
+}

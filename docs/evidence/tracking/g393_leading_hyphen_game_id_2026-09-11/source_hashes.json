@@ -1,0 +1,14 @@
+{
+  "proposed_track_daemon": {
+    "bytes": 21429,
+    "sha256": "faee2095f9e6ee78390fcb2d1777e8ee27b1c5fa36caf306e558b5fc4337ee08"
+  },
+  "scripts/platformkit/track_daemon.py": {
+    "bytes": 21427,
+    "sha256": "9747d9a085405c492f04c4e3b162ed8b1d897309da6f0f9c014cb7092056f5ac"
+  },
+  "scripts/run_clip.py": {
+    "bytes": 36229,
+    "sha256": "ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2"
+  }
+}

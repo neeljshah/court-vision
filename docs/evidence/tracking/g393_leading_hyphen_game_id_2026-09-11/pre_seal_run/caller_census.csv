@@ -1,0 +1,19 @@
+path,mentions_run_clip,mentions_build_command,split_value_caller,status
+scripts/bootstrap_pod.sh,True,False,False,no split token detected
+scripts/runpod_bootstrap.sh,True,False,False,no split token detected
+scripts/platformkit/footage_bridge.py,True,False,True,NEW GAP
+scripts/platformkit/footage_cycle.py,True,False,True,NEW GAP
+scripts/platformkit/test_track_daemon.py,True,True,False,no split token detected
+scripts/platformkit/track_daemon.py,True,True,True,NEW GAP
+scripts/platformkit/tracking/g194_m1_pipeline_measure.py,True,False,False,no split token detected
+scripts/platformkit/tracking/g198_prefetch_frame_misalignment.py,True,False,False,no split token detected
+scripts/platformkit/tracking/g200_pod_concurrency.py,True,False,False,no split token detected
+scripts/platformkit/tracking/g203_decode_determinism_bisect.py,True,False,False,no split token detected
+scripts/platformkit/tracking/g211_per_frame_cost.py,True,False,False,no split token detected
+scripts/platformkit/tracking/g235_build_court_crash_confirmation.py,True,False,True,NEW GAP
+scripts/platformkit/tracking/g238_homography_inlier_census.py,True,False,True,NEW GAP
+scripts/platformkit/tracking/g331_evaluated_frames_sidecar.py,True,False,False,no split token detected
+scripts/platformkit/tracking/g336_capture.py,True,False,False,no split token detected
+scripts/platformkit/tracking/g369_prospective_identity.py,True,False,False,no split token detected
+scripts/platformkit/tracking/g376_rerun.py,True,False,False,no split token detected
+scripts/platformkit/tracking/silent_handler_census.py,True,False,False,no split token detected

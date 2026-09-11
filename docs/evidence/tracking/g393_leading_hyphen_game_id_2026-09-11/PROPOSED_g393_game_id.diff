@@ -1,0 +1,11 @@
+--- scripts/platformkit/track_daemon.py
++++ scripts/platformkit/track_daemon.py
+@@ -93,7 +93,7 @@
+         # success summary, and all four wrote the SAME repo-root file at once.
+         # footage_cycle.py:142 has always passed it; this caller just omitted it.
+         return [sys.executable, "scripts/run_clip.py", "--video", str(video),
+-                "--game-id", game_id, "--no-show", "--frames", "3000",
++                "--game-id=" + game_id, "--no-show", "--frames", "3000",
+                 "--data-dir", str(TRACKING / game_id)]
+     adapter = SPORT_ADAPTER.get(sport, sport)
+     return [sys.executable, "-m", "scripts.platformkit.adapter_run",
