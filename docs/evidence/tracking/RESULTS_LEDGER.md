@@ -758,3 +758,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G396 | landed DONE: astra tier qualified 30/30 + sol 27/30 on fresh controls (joint 27/30 at the bar); real paint recovery 3/30 states (3/22 visible) after the independent 9-point pixel audit; renders 108/108 reproducible; two verify cycles verbatim | DONE (codex-sol fix 1b ACCEPT WITH CORRECTIONS applied)
 
+2026-09-11 | tracking | G398 | landed CLOSED AT LIMIT (this option): A8 at imgsz 1920 vs 960 on the full 1,071-key DEV reference, one paired shadow launch (42.9 GPU s): TP 121 vs 251, FP 310 vs 198, C0 0.113 vs 0.234; all continuation components fail; resolution is not the lever; verify memo verbatim | CLOSED AT LIMIT (codex-sol, no corrections)
+
