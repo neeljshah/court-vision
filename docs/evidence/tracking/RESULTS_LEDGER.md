@@ -762,3 +762,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G397 | landed PARTIAL: mixed-source census 1,973 attempts (1080p30 1072, 720p60 41, OTHER 860); the fixed 3000-frame cap halves the evaluated window at 60 fps (ticks 500 vs 1000, rows per tick +0.19); provenance fields complete 1973/1973; sources rotate before probing (130/1973) and schedules 29/30 + 26/30 -> comparison NOT VALIDATED; feeder now prefers 30 fps; verify memo verbatim | PARTIAL (codex-sol ACCEPT WITH CORRECTIONS applied)
 
+2026-09-11 | tracking | G401 | landed PARTIAL: 16/34 post-preference sections (all 59.94 fps) lose > 5 s to the fixed 3000-frame cap -> 30 fps preference not sufficient; paired mechanics 0/30 vs 29/30 (one PTS-gap source) NOT VALIDATED; PROPOSED_g401_fps_cap.diff ready for the user deploy path, applied nowhere; verify memo verbatim | PARTIAL (codex-sol ACCEPT WITH CORRECTIONS applied)
+
