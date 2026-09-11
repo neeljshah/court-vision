@@ -31,6 +31,13 @@
 
 
 
+
+## G394 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G394 | basketball first | premise HOLDS: G389 dev 530 boxes / 27 games, 425 DEV ABSENT (386 in the same games), held-out 302 VISIBLE / 188 ABSENT / 59 UNKNOWN = 549 (spec digests match the LF bytes). Negative audit: 386 eligible ABSENT dev keys, 88 with an A8 rank-0 call, 55 person-contained across 16 games (n >= 30, no early close); even selection took all 55; terra + sol rated 55/55 (0 faults, raw agreement 0.927); 49 ACCEPTED hard negatives (49 unique parent frames, 15 games), 6 excluded with no replacement; split isolation 0 game / 0 section overlap with held-out. ONE A10 training run (A8 recipe + the 49 negatives; initialisation, epochs, positives and scoring fixed; prospective allowance/config/context seals; final weights sealed off-repo by digest) and ONE charged held-out inference at conf 0.05: TP 84 / FP 156 / FN 218, C0 0.153 (bar 0.25), Wilson95 precision lower 0.292 (bar 0.90), ALL FP/188 0.830 (bar 0.01) -- ALL THREE BARS MISSED. A8 archived beside it reproduces G390 exactly (90/169/212, C0 0.164, 0.292, 0.899); A0 0/8/302. A10 vs A8 is a single-run observation (13 fewer false calls, 6 fewer true calls); one run cannot separate the added negatives from training stochasticity and no replicate is permitted. GPU 10.5 min this row (cumulative training 19.0 of 120). Two fresh processes reproduce every count; per-file test 10 pass; Q6 0 non-opaque hits (one raw rater-log token replaced, digests disclosed). Nothing adopted, deployed or flagged. Astra round 6: the whole-frame A8 recipe is AT LIMIT at this reference size; next = G398 (imgsz 1920 DEV shadow) then reference growth to >= 1,500 boxes | g394_ball_person_negatives_2026-09-11.md; g394_ball_person_negatives_2026-09-11/{preregistration.md, negatives audit tables, rater_raw/, split_assertions.json, launch_accounting.json, weights manifest (digests only), scores, renders/, cards/, q6_scan.json, summary.json}; G394_VERIFY_att1_ACCEPT_WITH_CORRECTIONS_2026-09-11.md | **NOT VALIDATED -- audited person hard negatives did not move the ball arm on the held-out benchmark (C0 0.153 vs 0.164, precision lower 0.292 both); NEW GAPS: raw-file SHA-256 receipts for the 42 JPEG manifest entries (LF-transformed streams); a seed replicate is not permitted by the one-run discipline; reference growth before any further arm** |
+
 ## G380 result register
 
 | Gap | Sport | Finding | Evidence | Status |

@@ -754,3 +754,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G380 | landed PARTIAL (adjudicated): provenance labels trace-exact 2,453/2,453, controls 10/10, replay 30 pairs ratio 1.017, attempt-level receipt equality 30/30 (21,177 ticks), held share 96.9 pct CLAMP; identity 0/30 and live HELD CLOSED AT LIMIT; live coverage deferred to G395; three verify cycles verbatim | PARTIAL (adjudicated; codex-sol fix 1c ACCEPT WITH CORRECTIONS applied)
 
+2026-09-11 | tracking | G394 | landed NOT VALIDATED: A10 (A8 + 49 audited person hard negatives, one run) TP 84 / FP 156 / FN 218, C0 0.153 vs 0.25, precision lower 0.292 vs 0.90, ALL-FP 0.830 vs 0.01; A8 reproduced 90/169/212; nothing adopted; verify memo verbatim | NOT VALIDATED (codex-sol ACCEPT WITH CORRECTIONS applied)
+
