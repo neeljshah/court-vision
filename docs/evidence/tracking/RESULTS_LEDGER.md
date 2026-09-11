@@ -722,3 +722,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-10 | tracking | G375 | landed PARTIAL (measured): 281/300 sealed sections rated (19 unavailable upstream, named); non-play impurity 452 per mille [395,510]; sport impurity 7/281 = 25 per mille [12,51] (6 soccer frames from one bleague video oW8psSa2hf4 + 1 interview); kappa 0.849806; 127/127 attributed or UNKNOWN; 0 deletions, 0 thresholds moved; PROPOSED purity gate | PARTIAL (codex-sol att1 REJECT, fix 1b ACCEPT verbatim)
 
+2026-09-10 | tracking | G379 | landed PARTIAL: 6 sections / 5 games, 352/360 frames, 3,310 feet; per-section bar 0/6 (VALID 0, feet_inside 94-234 per mille, forward median 15.6-21.8 px vs 8); cascade 0 ACCEPT of 352; negatives 0/264 accepted (kappa 0.954); stroke extraction not court-specific (supports on stands/LED/score bug); corpus rotation lost 16/29 pins in 30 min | PARTIAL (codex-sol ACCEPT WITH CORRECTIONS verbatim, applied)
+

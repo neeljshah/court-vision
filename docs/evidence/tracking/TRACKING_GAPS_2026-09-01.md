@@ -15,6 +15,13 @@
 
 
 
+
+## G379 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G379 | basketball | screen: 29 sections / 11 games pinned at CENSUS_UTC 2026-09-10T21:59:34Z (sha256 + ffprobe + ledger snapshot); frozen G374 head marks 14/29 eligible; sealed seeded draw 6 sections / 5 games x 60 frames (352 decoded, 8 DECODE_FAILED kept in N). Per section VALID share 0/0/0/0/0/0; feet_inside 94-234 per mille (bar 600); forward median 15.57-21.84 px (bar 8); feet 489-640 per section (3,310; >= 100 each MET); best frame 24.83 px. Cascade 0 ACCEPT of 352: REFUSED_MARGIN 269, REFUSED_VALIDATION 39, NO_DISTINCT_RUNNER_UP 35, NO_CANDIDATES 9; raw G362 route REFUSED 352/352; orientation UNKNOWN. Negatives MET: 264 blind adjudicated non-court frames / 30 sections / 11 games (terra + sol agreement 584/600, kappa 0.953911), cascade accepted 0/264. Eye check (30 renders): the selected template collapses to an off-court sliver and held-out supports sit on stands, LED boards and the score bug -- the stroke extractor is not court-specific. Side: G364 legacy margin column 0/1300 reproduces, top_two_margin added beside it. Corpus rotation removed 16/29 pinned sections within 30 min (100 pool frames SOURCE_LOST, never substituted). 0 bars moved, 0 refits | g379_broadcast_geometry_2026-09-10.md; g379_broadcast_geometry_2026-09-10/{prereg, screen.csv, source_identity.csv, stroke_split.csv, selected_H.json, residuals.csv, feet.csv, negatives.csv, refusals.csv, presence_margin_audit.csv, summary.json, renders/, sheets/}; G379_VERIFY_ACCEPT_WITH_CORRECTIONS_2026-09-10.md | **PARTIAL -- the frozen registration pieces refuse real broadcast geometry (0/6); the presence cascade is honest on negatives (0/264); NEW GAPS: court-specific stroke extraction (share of strokes on painted markings), bisect the degenerate whole-template winner, pin-and-copy-in-one-pass tool** |
+
 ## G375 result register
 
 | Gap | Sport | Finding | Evidence | Status |
