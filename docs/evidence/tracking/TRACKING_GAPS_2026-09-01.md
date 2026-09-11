@@ -25,6 +25,13 @@
 
 
 
+
+## G389 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G389 | basketball | premise TRUE: 1,620 manifest / 1,114 settled / 506 pending (301 dev + 205 held-out), 312 dev boxes, held-out 157/161/26, 0 candidate executions; all 506 pending native sheets re-hashed and decoded (506/506 digests, 1920x1080, 96,460,210 bytes, 0 missing, none re-rendered). Sealed 30-bin round-robin permutation archived before dispatch; disjoint blind judgments terra 253 / sol 253 + a sealed even 30-key audit repeat: 14 batches, 536 judgments, 14/14 receipts, 0 faults, 0 keys re-judged; 29 conflicts resolved from the pixels (10 VISIBLE, 19 UNKNOWN retained). Merge through the sealed g373 census path reproduces 1,114/1,114 prior decisions -> 1,620/1,620 settled, 0 unsettled. DEV BOXES 530 / 500 over 27 games (530 unique keys, 1 causal neighbour skipped, 0 held-out rows); HELD-OUT VISIBLE 302 / ABSENT 188 / UNKNOWN 59 (grew only by settled keys; both quotas >= 150). Bars unmoved: usability median 17.33 px vs the unchanged 18.50 threshold (n 715, nearest-rank p90 287.09); planted transform controls 30/30 TP 0 FP on both splits; sheet_scale 1.0 on all 1,620 rows. G390's condition (>= 500 boxes, >= 5 games) MET; no arm trained or scored, 0 GPU min. Q6 0 non-opaque hits over 97 artifacts incl. every rater log. Disclosed: preregistration re-sealed alone (the first seal did not hash the committed bytes); sol_01 operator-stopped before output and its ids reassigned; an 80-row byte-identical duplicate append removed and guarded; an eye-check index collision fixed | g389_ball_reference_completion_2026-09-11.md; g389_ball_reference_completion_2026-09-11/{preregistration.md, permutation, batches, ratings, audit repeat, adjudications, merged reference, dev_boxes_v3.csv, controls.json, eye_check_index.csv, renders/, rater logs}; G389_VERIFY_ACCEPT_WITH_CORRECTIONS_2026-09-11.md | **DONE -- the 1,620-key native ball reference is complete for the first time (dev 530 boxes, held-out 302/188/59): the ONE sealed fine-tune scoring pass (G390) is now admissible; NEW GAPS: prefix-refusal test not enforced by name; evidence text names dev_boxes.csv while the export is dev_boxes_v3.csv** |
+
 ## G388 result register
 
 | Gap | Sport | Finding | Evidence | Status |

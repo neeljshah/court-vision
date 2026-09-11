@@ -742,3 +742,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G388 | landed PARTIAL (protocol not qualified): band-membership controls 10/30 admissible (13/30 LIMIT) vs 27/30 -- terra absolute position bimodal, sol 28/30; real-paint band membership 0/30; perpendicular metric vindicated (0.06 px perpendicular vs 13.89 px along); no-retry honoured | PARTIAL (codex-sol ACCEPT WITH CORRECTIONS applied)
 
+2026-09-11 | tracking | G389 | landed DONE: 506/506 backlog keys settled (0 faults), merge reproduces 1,114/1,114 prior decisions -> 1,620/1,620; dev boxes 530/500 over 27 games; held-out 302/188/59; usability 17.33 vs 18.50 px; no arm run; G390 condition MET | DONE (codex-sol ACCEPT WITH CORRECTIONS applied)
+
