@@ -785,3 +785,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G412 | landed DONE (PROPOSED ONLY): 60/60 cards; 32/32 controls; 206/206 legacy parity; dy -58.203 to +1.797 on 51 pairs/28 frames; proposed only (verified: codex-sol ACCEPT WITH CORRECTIONS applied, contract A/B/Q)
 
+2026-09-11 | tracking geometry | G410 | landed PARTIAL + NOT VALIDATED: premise 19087 rows; 279 checks classify 2/107/36/124/10; pre-launch identity 31/39; stored boxes in the TOPCUT-cropped frame with PAD 15, court points from the unpadded clipped box (verified: codex-sol ACCEPT WITH CORRECTIONS applied, contract A/B/Q)
+

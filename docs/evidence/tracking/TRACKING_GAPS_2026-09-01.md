@@ -46,6 +46,13 @@
 
 
 
+
+## G410 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G410 | basketball | PARTIAL + NOT VALIDATED (codex-sol ACCEPT WITH CORRECTIONS after one REJECT; corrections applied): premise reproduced (19,087 bounded rows: CLAMP 9,354 / SUBPIXEL 1,399 / DETECTION 3,075 / PREDICTION 5,259; exact-even 30/class draw; 241 selected rows; 60 native-frame checks). FRAME CONSISTENCY: court positions and stored boxes share the same frame index AND the same TOPCUT-cropped image frame (TOPCUT = 60, video_handler.py:11; unified_pipeline.py:1693), but the stored box is (y1-PAD, x1-PAD, y2+PAD, x2+PAD) with PAD = 15 (advanced_tracker.py:1336) while the court point projects from the clipped UNPADDED detector box ((x1c+x2c)//2, y2c) (line 1410): the stored bottom sits exactly PAD above the projected point (n = 235 unclipped: min/median/max 15.0/15.0/15.99 px; 6/241 clipped) and a stored box drawn on the NATIVE frame sits 60 px too high -- this accounts for G406's -58.2 px offset without moving any court coordinate. STALENESS: CLAMP retains the predecessor's exact court point 118/118 (97/118 with a box that moved; foot motion median 18.0 / p90 492.9 px; hold median 11, max 54 ticks); SUBPIXEL 37/38 retain but only 12/38 boxes moved (rounding hold); DETECTION 0/24; PREDICTION 0/58; 245/469 emitted rows at the drawn ticks differ from the point the detector wrote in the same call. Independent classification of the 279 same-invocation checks (fix 1b): 2 consistent / 107 frame mismatch / 36 stale / 124 branch mismatch / 10 UNKNOWN. NOT VALIDATED because 8/39 launch receipts lack a pre-launch route digest (31/39 matched) and 2/60 ticks have no same-invocation binding. Verifier NEW GAPs recorded (draw order lexical vs executed: 3/30 CLAMP, 2/30 SUBPIXEL overlap; the executed draw follows the spec order). G380 labels and the G402 mask unchanged; corroborated by G409 and G412 on the same four citations. | g410_position_box_frame_consistency_2026-09-12.md + dir (contract_checks.csv, consistency_by_class.csv, consistency_by_branch.csv, launch_receipts.json, unknowns.csv, renders/, repeats.json, q6_scan.json, SHA256SUMS); G410_VERIFY_att1_REJECT + G410_VERIFY_fix1b_ACCEPT_WITH_CORRECTIONS memos | **PARTIAL + NOT VALIDATED -- explains the -58 px offset as a frame/padding convention; licenses the G412 contract and G413 re-audit; does not license any position-accuracy or box-accuracy claim** |
+
 ## G412 result register
 
 | Gap | Sport | Finding | Evidence | Status |
