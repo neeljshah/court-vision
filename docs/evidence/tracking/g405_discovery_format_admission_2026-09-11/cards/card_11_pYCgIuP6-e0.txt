@@ -1,0 +1,39 @@
+G405 card j=11 source_id=pYCgIuP6-e0 competition=basketball tag=bcl
+query=Basketball Champions League full game discovered_at=2026-09-11T18:10:50Z probe_at=2026-09-11T18:16:21Z
+compatible_30fps=YES probe_status=OK error=none
+buckets 720p30=True 1080p30=True 720p60=False 1080p60=False
+qualifying_format_ids=232|270
+raw_inventory_digest=f8b52f22701a3451316d130b253d235a33cbc13fe77e4fe9c58a8b843aec36c0
+-- listing inventory (13 video rows) --
+  sb2      48x27        fps=0.0    proto=mhtml        vcodec=images
+  sb1      80x45        fps=0.0    proto=mhtml        vcodec=images
+  sb0      160x90       fps=0.0    proto=mhtml        vcodec=images
+  269      256x144      fps=30.0   proto=m3u8         vcodec=avc1.4D400C
+  160      256x144      fps=30.0   proto=https        vcodec=avc1.4d400c
+  230      640x360      fps=30.0   proto=m3u8         vcodec=avc1.4D401E
+  134      640x360      fps=30.0   proto=https        vcodec=avc1.4d401e
+  605      640x360      fps=30.0   proto=m3u8         vcodec=vp09.00.21.08
+  243      640x360      fps=30.0   proto=https        vcodec=vp9
+  232      1280x720     fps=30.0   proto=m3u8         vcodec=avc1.64001F
+  136      1280x720     fps=30.0   proto=https        vcodec=avc1.64001f
+  270      1920x1080    fps=30.0   proto=m3u8         vcodec=avc1.640028
+  137      1920x1080    fps=30.0   proto=https        vcodec=avc1.640028
+  --       -- metadata inventory (18 video rows) -- fps=None   proto=             vcodec=
+  sb2      48x27        fps=0.011026574043444702 proto=mhtml        vcodec=none
+  sb1      80x45        fps=0.10012129231447789 proto=mhtml        vcodec=none
+  sb0      160x90       fps=0.10012129231447789 proto=mhtml        vcodec=none
+  233      audio only   fps=None   proto=m3u8_native  vcodec=none
+  234      audio only   fps=None   proto=m3u8_native  vcodec=none
+  139      audio only   fps=None   proto=https        vcodec=none
+  140      audio only   fps=None   proto=https        vcodec=none
+  251      audio only   fps=None   proto=https        vcodec=none
+  269      256x144      fps=30.0   proto=m3u8_native  vcodec=avc1.4D400C
+  160      256x144      fps=30     proto=https        vcodec=avc1.4d400c
+  230      640x360      fps=30.0   proto=m3u8_native  vcodec=avc1.4D401E
+  134      640x360      fps=30     proto=https        vcodec=avc1.4d401e
+  605      640x360      fps=30.0   proto=m3u8_native  vcodec=vp09.00.21.08
+  243      640x360      fps=30     proto=https        vcodec=vp9
+  232      1280x720     fps=30.0   proto=m3u8_native  vcodec=avc1.64001F
+  136      1280x720     fps=30     proto=https        vcodec=avc1.64001f
+  270      1920x1080    fps=30.0   proto=m3u8_native  vcodec=avc1.640028
+  137      1920x1080    fps=30     proto=https        vcodec=avc1.640028

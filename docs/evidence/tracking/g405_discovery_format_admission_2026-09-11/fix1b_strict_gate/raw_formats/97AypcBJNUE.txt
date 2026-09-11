@@ -1,0 +1,30 @@
+[youtube] Extracting URL: https://www.youtube.com/watch?v=97AypcBJNUE
+[youtube] 97AypcBJNUE: Downloading webpage
+[youtube] 97AypcBJNUE: Downloading visionos player API JSON
+[youtube] 97AypcBJNUE: Downloading m3u8 information
+[info] Available formats for 97AypcBJNUE:
+ID    EXT   RESOLUTION FPS CH |   FILESIZE   TBR PROTO | VCODEC          VBR ACODEC      ABR ASR MORE INFO
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+sb2   mhtml 48x27        0    |                  mhtml | images                                  storyboard
+sb1   mhtml 80x45        0    |                  mhtml | images                                  storyboard
+sb0   mhtml 160x90       0    |                  mhtml | images                                  storyboard
+233-0 mp4   audio only        |                  m3u8  | audio only          unknown             [en-US] American English - dubbed-auto
+234-0 mp4   audio only        |                  m3u8  | audio only          unknown             [en-US] American English - dubbed-auto
+233-1 mp4   audio only        |                  m3u8  | audio only          unknown             [fr-FR] Français (France) - original (original)
+234-1 mp4   audio only        |                  m3u8  | audio only          unknown             [fr-FR] Français (France) - original (original)
+139-0 m4a   audio only      2 |   36.47MiB   49k https | audio only          mp4a.40.5   49k 22k [en-US] English (US), low, m4a_dash
+139-1 m4a   audio only      2 |   36.47MiB   49k https | audio only          mp4a.40.5   49k 22k [fr-FR] French (FR) original (default), low, m4a_dash
+249   webm  audio only      2 |   36.61MiB   49k https | audio only          opus        49k 48k [en-US] English (US), low, webm_dash
+250   webm  audio only      2 |   43.05MiB   58k https | audio only          opus        58k 48k [en-US] English (US), low, webm_dash
+140-0 m4a   audio only      2 |   96.79MiB  129k https | audio only          mp4a.40.2  129k 44k [en-US] English (US), medium, m4a_dash
+140-1 m4a   audio only      2 |   96.78MiB  129k https | audio only          mp4a.40.2  129k 44k [fr-FR] French (FR) original (default), medium, m4a_dash
+251-0 webm  audio only      2 |   78.27MiB  105k https | audio only          opus       105k 48k [en-US] English (US), medium, webm_dash
+251-1 webm  audio only      2 |   77.18MiB  103k https | audio only          opus       103k 48k [fr-FR] French (FR) original (default), medium, webm_dash
+269   mp4   256x144     25    | ~155.48MiB  208k m3u8  | avc1.4D400C    208k video only
+160   mp4   256x144     25    |   87.79MiB  117k https | avc1.4d400c    117k video only          144p, mp4_dash
+230   mp4   640x360     25    | ~646.56MiB  865k m3u8  | avc1.4D401E    865k video only
+134   mp4   640x360     25    |  410.37MiB  549k https | avc1.4d401e    549k video only          360p, mp4_dash
+605   mp4   640x360     25    | ~543.20MiB  727k m3u8  | vp09.00.21.08  727k video only
+243   webm  640x360     25    |  260.38MiB  348k https | vp9            348k video only          360p, webm_dash
+232   mp4   1280x720    25    | ~  1.97GiB 2700k m3u8  | avc1.64001F   2700k video only
+136   mp4   1280x720    25    |    1.47GiB 2015k https | avc1.64001f   2015k video only          720p, mp4_dash

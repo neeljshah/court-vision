@@ -1,0 +1,141 @@
+{
+ "NOT_VERIFIED": [
+  "actual downloadability of any listed rendition",
+  "any future discovery population",
+  "tracking quality of any source"
+ ],
+ "answer": "NO. Discovery records no rendition evidence at all.",
+ "attempt": "fix 1b (after codex-sol REJECT of attempt 1)",
+ "bounded_discovery_pass": {
+  "all_returned_file": "discovery_population_all_returned.jsonl (every returned row with its gate_reason)",
+  "all_returned_sha256": "69d5908a49dd7d96e988adf02a7cd118158de2bde0e24c7b479f7b54b07af6ba",
+  "downloaded": 0,
+  "eligible_rows": 163,
+  "enqueued_to_live_feeder": 0,
+  "population_file": "discovery_population.jsonl",
+  "population_sha256": "814553908400c9cca23f70b93a1fca9a4b03b2f96fd7b003ca4b1cd774500e38",
+  "queries": 27,
+  "returned_rows": 405,
+  "search_n": 15,
+  "unique_eligible_source_ids": 161,
+  "utc_last_query_start": "2026-09-11T17:24:09Z",
+  "utc_start": "2026-09-11T17:22:11Z"
+ },
+ "discarded_probe_attempt": {
+  "classification_change": "none -- 7/7 identical (common_receipts/attempt_a_vs_b.txt)",
+  "retained_unmodified": "discarded_probe_attempt_a/",
+  "what": "a first fix-1b probe pass crashed on a null -J payload after 7 listings; no receipts had been flushed, so the whole partial output was discarded unused and the pass was restarted with the helper fixed and receipts written after every probe"
+ },
+ "discovery_population_census": {
+  "deny_ids": 1,
+  "discover_log_NEW_lines": 400,
+  "discover_log_NEW_unique_ids": 179,
+  "ledger_rows": 2268,
+  "ledger_unique_video_ids": 292
+ },
+ "draw": {
+  "N": 161,
+  "draw_csv_sha256": "664143a38fe35242cae1e45242fa4509db35a762cfb32838ac811cb2b64245b7",
+  "duplicate_source_ids_in_draw": 0,
+  "frozen_before_any_probe": true,
+  "min_duration_s_in_draw": 2771,
+  "overlap_with_the_ungated_attempt_1_draw": 3,
+  "replacements_allowed": 0,
+  "rule": "floor(j*(N-1)/29+0.5), j=0..29 over unique GATED rows sorted by competition/query/source_id",
+  "size": 30
+ },
+ "eligibility_gate_applied_before_the_draw": {
+  "counts": {
+   "deny_ids": 1,
+   "discover_log_ids": 179,
+   "discover_log_only_additional": 18,
+   "ledger_ids": 292,
+   "live_exact_seen_ledger_plus_sources": 292,
+   "max_per_query": 30,
+   "min_duration_s": 2400,
+   "seen_union": 310,
+   "sources_txt_ids": 6
+  },
+  "criteria": "seen ids (ledger game_id + sources.txt + discover.log), deny.txt, duration >= 2400 s, MAX per query",
+  "discover_log_only_additional_ids_excluded": 18,
+  "inputs": {
+   "deny.txt": {
+    "bytes": 87,
+    "exists": true,
+    "path": "/workspace/feeder/deny.txt",
+    "sha256": "0f12fb97b2ace759e52b0febb89a7329cdc92695ac2bc7f4496fa9bdc76f7a2a"
+   },
+   "discover.log": {
+    "bytes": 37589,
+    "exists": true,
+    "path": "/workspace/feeder/discover.log",
+    "sha256": "554306e42a09c569a6264f22102f4f36aaf00eb9451467fa2e7b70213c98963b"
+   },
+   "sources.txt": {
+    "bytes": 233,
+    "exists": true,
+    "path": "/workspace/feeder/sources.txt",
+    "sha256": "030c0f570e58fdb705ef5044132192a34c7d46f7e05bf2e27fbe7273c2d6f833"
+   },
+   "track_daemon_ledger.jsonl": {
+    "bytes": 2685386,
+    "exists": true,
+    "path": "/workspace/data/tracking/track_daemon_ledger.jsonl",
+    "sha256": "cd3495559802c9e373755a68473e9a05f1097ce2b3e528fe36d1009a0fd85aef"
+   }
+  },
+  "live_seen_is_ledger_plus_sources_txt": true,
+  "max_note": "the live MAX is a run-wide throughput cap (discover_loop.sh passes 30), not an eligibility criterion; it is applied here as a per-query cap of 30 and never binds because each search returns at most 15 rows",
+  "reason_tally": {
+   "duration_lt_2400": 78,
+   "eligible": 163,
+   "seen_in_ledger_or_queue": 164
+  },
+  "this_row_also_treated_discover_log_ids_as_seen": true,
+  "why_stricter": "discover.log records ids a previous live run already emitted; excluding them can only shrink the population, never manufacture a qualifying rendition"
+ },
+ "live_queue_note": "sources.txt is the feeder's LIVE queue; this row read it and never wrote it. It holds 13 rows now against 34 at attempt 1 -- the feeder consumes and the quota guard prunes it; every remaining row is still fmt 270.",
+ "live_queue_snapshots_read_only": [
+  {
+   "bytes": 486,
+   "fmt_values": {
+    "270": 13
+   },
+   "rows": 13,
+   "sha256": "0a9bd9619617a0c163ed253625f242db1d9d16a17c05dbb9505b5a80ddcdc4e6",
+   "utc": "2026-09-11T17:21:49Z"
+  }
+ ],
+ "ordering_of_this_attempt_utc": {
+  "1_premise_before_condition_rerun": "2026-09-11T17:21:49Z",
+  "2_gated_discovery_pass_first_query": "2026-09-11T17:22:11Z",
+  "3_gated_discovery_pass_last_query": "2026-09-11T17:24:09Z",
+  "4_draw_frozen_from_gated_population": "after 3, before 5 (draw.csv sha256 664143a38fe35242cae1e45242fa4509db35a762cfb32838ac811cb2b64245b7)",
+  "5_first_format_probe": "2026-09-11T17:28:27Z",
+  "6_last_format_probe": "2026-09-11T17:37:11Z",
+  "note": "attempt 1 re-ran the premise at 16:41:40Z AFTER its 16:35Z discovery and 16:38Z probing; in this attempt the premise precedes both, as the ordering above shows"
+ },
+ "premise": "NOT FALSIFIED",
+ "question": "Does compatible-30fps evidence already exist at discovery for >= 30 current unique sources?",
+ "queue_paths_and_fields": {
+  "deny_list": "/workspace/feeder/deny.txt",
+  "discovery_log": "/workspace/feeder/discover.log (lines 'NEW <sport> <tag> <ytid> <dur> <title>')",
+  "inherited_field_names_kept_as_aliases": [
+   "ytid",
+   "dur"
+  ],
+  "ledger": "/workspace/data/tracking/track_daemon_ledger.jsonl (field game_id = <tag->?<ytid>_s<offset>)",
+  "line_schema": "sport tag ytid fmt dur (whitespace separated, 5 fields)",
+  "live_queue": "/workspace/feeder/sources.txt",
+  "shadow_sidecar_owned_by_G405": "discovery_queue.jsonl (unused export; no consumer)"
+ },
+ "quoted_before_condition_output": [
+  "discovery fmt write line -> 54:        rows.append(f\"{sport} {tag} {vid} 270 {int(dur)}\"); S.add(vid); added+=1",
+  "discovery eligibility gate line -> 53:        if not vid or vid in S or vid in DENY or dur<2400: continue",
+  "discover_sources_probe_calls 0",
+  "queue_fmt_values_other_than_270 0",
+  "ls: cannot access '/workspace/feeder/*format*': No such file or directory",
+  "ls: cannot access '/workspace/feeder/*rendition*': No such file or directory"
+ ],
+ "sufficiency": "161 distinct eligible basketball-family source ids >= 30 required; queries, access settings and the eligibility gate reproduced from the live recipe. PARTIAL not triggered."
+}

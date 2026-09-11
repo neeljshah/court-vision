@@ -1,0 +1,18 @@
+itag  resolution   fps    sources
+ 232   1280x720     24.0   1
+ 232   1280x720     25.0   8
+ 232   1280x720     30.0   11
+ 270   1920x1080    25.0   7
+ 270   1920x1080    30.0   8
+ 311   1280x720     50.0   2
+ 311   1280x720     60.0   7
+ 312   1920x1080    50.0   2
+ 312   1920x1080    60.0   5
+
+Numeric format ids do NOT determine fps in this population:
+  itag 270 was 25 fps on 7 of the 15 sources that listed it.
+  itag 312 was 1080p50/60 on all 7 sources that listed it -- never 720p30.
+  itag 232 (1280x720 at the source fps) is the only 720p30 HLS rendition here
+  and appears in neither the feeder fmt gate (line 127) nor the selector chain
+  (line 156).
+Each source carries ONE source fps; every rendition of that source shares it.

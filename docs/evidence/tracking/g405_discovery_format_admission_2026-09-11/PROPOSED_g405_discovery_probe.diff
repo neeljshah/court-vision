@@ -1,0 +1,67 @@
+PROPOSED ONLY -- APPLIED NOWHERE. Reviewable sketch, not a validated fix.
+
+Target files are pod feeder ops files (not human-gated src/), measured at:
+  /workspace/feeder/discover_sources.py  sha256 00504c02ae66c207ba9f7e7e7b9d7631b7005efee812f1df25c374a272b6f52f
+  /workspace/feeder/feeder_pod.sh        sha256 6286d218742e632cd7d8e18a7941bb36f0835b7500a4aee453accdc3cfb769c3
+G405 did NOT apply, test, or validate this diff. It changes admission behaviour
+and would need its own row. Cost: one extra read-only metadata request per NEW
+source at discovery (<= 30 per run), plus the fps field becoming load-bearing.
+
+Why: measured over 30 evenly drawn discovered sources (availability.csv),
+discovery writes the literal fmt 270 for every source while the actual HLS
+h264 720-1080 renditions carry the SOURCE fps -- 24 fps x1, 25 fps x8,
+30 fps x11, 50 fps x2, 60 fps x7, none x1. itag 270 was 25 fps on 7 of the
+15 sources that offered it, and itag 312 was 1080p50/60 on all 7 sources that
+offered it -- never 720p30. The genuine 720p30 rendition is itag 232, which
+appears in neither the fmt gate (line 127) nor the selector chain (line 156).
+
+--- a/workspace/feeder/discover_sources.py
++++ b/workspace/feeder/discover_sources.py
+@@ -42,6 +42,20 @@
+ def search(q,n=15):
+     out=subprocess.run(["yt-dlp","--flat-playlist","-j","--no-warnings",f"ytsearch{n}:{q}"],capture_output=True,text=True,timeout=120).stdout
+     for l in out.splitlines():
+         try: d=json.loads(l)
+         except Exception: continue
+         yield d.get("id"), d.get("duration") or 0, (d.get("title") or "")[:60]
++def probe_fmt(vid):
++    # ponytail: one read-only metadata request per NEW source; return (fmt, fps) actually listed.
++    # Never infer from the numeric id: itag 270 is 1080p at the SOURCE fps, itag 312 is 1080p50/60.
++    try:
++        out=subprocess.run(["yt-dlp","-J","--no-playlist","--no-warnings","--skip-download","--",
++                            f"https://www.youtube.com/watch?v={vid}"],capture_output=True,text=True,timeout=60).stdout
++        fs=[f for f in (json.loads(out).get("formats") or [])
++            if "m3u8" in str(f.get("protocol","")) and str(f.get("vcodec","")).lower().startswith(("avc1","avc3","h264"))
++            and 720<=int(f.get("height") or 0)<=1080 and f.get("fps")]
++    except Exception:
++        return "270", 0          # unprobed -> today's literal, so a probe outage cannot starve the queue
++    if not fs: return "270", 0
++    best=sorted(fs,key=lambda f:(abs(float(f["fps"])-30)>1, -int(f["height"])))[0]
++    return str(best["format_id"]), round(float(best["fps"]),3)
+ DENY=set(l.split()[0] for l in open("/workspace/feeder/deny.txt") if l.strip() and not l.startswith("#")) if __import__("os").path.exists("/workspace/feeder/deny.txt") else set()
+ S=seen(); added=0; rows=[]
+ for sport,tag,q in QUERIES:
+     if added>=MAX: break
+     for vid,dur,title in search(q):
+         if not vid or vid in S or vid in DENY or dur<2400: continue
+-        rows.append(f"{sport} {tag} {vid} 270 {int(dur)}"); S.add(vid); added+=1
+-        with open(LOG,"a") as f: f.write(f"NEW {sport} {tag} {vid} {int(dur)} {title}\n")
++        fmt,fps=probe_fmt(vid)
++        rows.append(f"{sport} {tag} {vid} {fmt} {int(dur)}"); S.add(vid); added+=1
++        with open(LOG,"a") as f: f.write(f"NEW {sport} {tag} {vid} {int(dur)} fmt={fmt} fps={fps} {title}\n")
+         if added>=MAX: break
+
+--- b/workspace/feeder/feeder_pod.sh
++++ b/workspace/feeder/feeder_pod.sh
+@@ -127,1 +127,1 @@
+-  case "$fmt" in 270|312) ;; *) log "SKIP $ytid reason=fmt-not-hls fmt=$fmt"; return 1;; esac
++  case "$fmt" in 232|270|300|301|311|312) ;; *) log "SKIP $ytid reason=fmt-not-hls fmt=$fmt"; return 1;; esac
+@@ -156,1 +156,1 @@
+-    if timeout 900 yt-dlp -f "$fmt/312/301/311/300/bv*[protocol*=m3u8][height>=720][height<=1080]" --no-playlist --no-warnings $args \
++    if timeout 900 yt-dlp -f "$fmt/270/232/312/301/311/300/bv*[protocol*=m3u8][height>=720][height<=1080]" --no-playlist --no-warnings $args \
+
+NOT VERIFIED by G405: that any listed rendition downloads; that the probed fmt
+survives to fetch time; any effect on the G401 cap loss (16/34) or on the
+G401 29/30 mechanics failure, which this census does not validate; and any
+future discovery population. The 30-only admission branch is NOT proposed --
+19 of 30 drawn sources would be lost.

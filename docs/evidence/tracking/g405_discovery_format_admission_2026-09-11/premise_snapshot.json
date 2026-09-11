@@ -1,0 +1,158 @@
+{
+ "NOT_VERIFIED": [
+  "actual downloadability of any listed rendition",
+  "any future discovery population",
+  "tracking quality of any source",
+  "any source the run-wide cap stopped the live recipe from reaching"
+ ],
+ "answer": "NO. Discovery records no rendition evidence at all.",
+ "attempt": "fix 1c (after codex-sol REJECT x2: attempt 1 ungated, fix 1b stricter-than-live)",
+ "bounded_discovery_pass": {
+  "admitted_rows_under_the_live_gate_and_cap": 30,
+  "all_returned_file": "discovery_population_all_returned.jsonl (every returned row with its gate_reason)",
+  "all_returned_sha256": "6e2c33143f40bf298e50fe4427236ffe1463791c11cd4a438fa3fceec77e8e5d",
+  "downloaded": 0,
+  "enqueued_to_live_feeder": 0,
+  "population_file": "discovery_population.jsonl",
+  "population_sha256": "93071d6c9e3d634753b8733d5caa1986ba5186a78d31a3ebd479144a15e5f0cc",
+  "queries": 27,
+  "returned_rows": 405,
+  "search_n": 15,
+  "unique_admitted_source_ids": 30,
+  "utc_last_query_start": "2026-09-11T18:11:46Z",
+  "utc_start": "2026-09-11T18:09:53Z"
+ },
+ "discovery_population_census": {
+  "deny_ids": 1,
+  "discover_log_NEW_lines": 420,
+  "discover_log_NEW_unique_ids": 191,
+  "ledger_rows": 2321,
+  "ledger_unique_video_ids": 304
+ },
+ "draw": {
+  "N": 30,
+  "degenerate_by_construction": "the live run-wide cap admits exactly MAX=30 ids, so N=30 and the sealed even formula maps j -> j: the draw IS the whole admitted population and every admitted source is probed",
+  "draw_csv_sha256": "1014b2e225b8fd850a8f25b5e559c3bf2cd3c5989a8a7c26831175edf461f2ae",
+  "duplicate_source_ids_in_draw": 0,
+  "frozen_before_any_probe": true,
+  "min_duration_s_in_draw": 4079,
+  "replacements_allowed": 0,
+  "rule": "floor(j*(N-1)/29+0.5), j=0..29 over unique live-gate-admitted rows sorted by competition/query/source_id",
+  "size": 30
+ },
+ "eligibility_gate_applied_before_the_draw": {
+  "counts": {
+   "deny_ids": 1,
+   "discover_log_ids_observed_but_NOT_gated": 191,
+   "discover_log_only_ids_left_eligible": 11,
+   "ledger_ids": 304,
+   "live_seen_union_ledger_plus_sources_txt": 311,
+   "max_run_wide": 30,
+   "min_duration_s": 2400,
+   "sources_txt_ids": 32
+  },
+  "criteria_in_live_order": "discover_sources.py:53 order -- empty id, seen (ledger game_id | sources.txt), deny.txt, duration >= 2400 s; then line 54 S.add(vid) and the RUN-WIDE cap MAX=30",
+  "discover_log_ids_are_recorded_only_never_gated": true,
+  "eligible_rows": 30,
+  "inputs": {
+   "deny.txt": {
+    "bytes": 87,
+    "exists": true,
+    "path": "/workspace/feeder/deny.txt",
+    "sha256": "0f12fb97b2ace759e52b0febb89a7329cdc92695ac2bc7f4496fa9bdc76f7a2a"
+   },
+   "discover.log": {
+    "bytes": 39522,
+    "exists": true,
+    "path": "/workspace/feeder/discover.log",
+    "sha256": "a92652962de154b70be87a5c49811c7fcf3347c3a206c9f83b823cc43741dd2f"
+   },
+   "sources.txt": {
+    "bytes": 1112,
+    "exists": true,
+    "path": "/workspace/feeder/sources.txt",
+    "sha256": "bdb80016e99343e329970ae7551cff5366686f1f4cbfa8f8c714539d1ee263ea"
+   },
+   "track_daemon_ledger.jsonl": {
+    "bytes": 2749237,
+    "exists": true,
+    "path": "/workspace/data/tracking/track_daemon_ledger.jsonl",
+    "sha256": "5161a0a832d9917b32f4eb794ee39c4bcd49fab39d7c635c07627b56f94be11d"
+   }
+  },
+  "live_seen_definition": "discover_sources.py:29-41 seen() = ledger game_id ids | sources.txt ids",
+  "matches_the_archived_live_recipe": true,
+  "queries_after_the_cap_searched_for_archive_only": true,
+  "reason_tally": {
+   "after_run_wide_cap_not_reached_by_live_run": 196,
+   "duration_lt_2400": 31,
+   "eligible": 30,
+   "seen_in_ledger_or_queue": 148
+  },
+  "returned_rows": 405,
+  "run_wide_cap": 30,
+  "run_wide_cap_reached_at": {
+   "admitted": 30,
+   "competition": "basketball",
+   "query": "Basketball Champions League full game",
+   "returned_row_order": 208
+  },
+  "seen_set_archived": {
+   "by_member_of": {
+    "deny_list": 1,
+    "discover_log_only_NOT_in_live_seen": 11,
+    "ledger": 304,
+    "sources_txt_queue": 32
+   },
+   "file": "seen_set.jsonl",
+   "note": "exact pre-run gate membership; the live seen() set is the union of member_of ledger and sources_txt_queue; the discover_log_only_NOT_in_live_seen rows are recorded and were left ELIGIBLE, which is the fix-1b defect this attempt corrects",
+   "rows": 348,
+   "sha256": "64d1f582eac86aae4313d9094a146382744a6f95df9e7b2eacc704a917e75abf"
+  }
+ },
+ "live_queue_note": "sources.txt is the feeder's LIVE queue; this row read it and never wrote it. It is mutating under the measurement -- 33 rows at the 18:09:45Z premise read, 1112 bytes at the 18:09:53Z gate read as the feeder consumed a row; every row is still fmt 270. The gate's own input digests above are the binding record.",
+ "live_queue_snapshots_read_only": [
+  {
+   "bytes": 1152,
+   "fmt_values": {
+    "270": 33
+   },
+   "rows": 33,
+   "sha256": "552d939084a503e9c8737d4f7795e43944025f50a12cb2c6aa961a46be593896",
+   "utc": "2026-09-11T18:09:45Z"
+  }
+ ],
+ "ordering_of_this_attempt_utc": {
+  "1_premise_before_condition_rerun": "2026-09-11T18:09:45Z",
+  "2_discovery_pass_first_query": "2026-09-11T18:09:53Z",
+  "3_discovery_pass_last_query_end": "2026-09-11T18:11:47Z",
+  "4_draw_frozen_from_the_admitted_population": "after 3, before 5 (draw.csv sha256 1014b2e225b8fd850a8f25b5e559c3bf2cd3c5989a8a7c26831175edf461f2ae)",
+  "5_first_format_probe": "2026-09-11T18:13:07Z",
+  "6_last_format_probe": "2026-09-11T18:21:52Z"
+ },
+ "premise": "NOT FALSIFIED",
+ "question": "Does compatible-30fps evidence already exist at discovery for >= 30 current unique sources?",
+ "queue_paths_and_fields": {
+  "deny_list": "/workspace/feeder/deny.txt",
+  "discovery_log": "/workspace/feeder/discover.log (lines 'NEW <sport> <tag> <ytid> <dur> <title>')",
+  "inherited_field_names_kept_as_aliases": [
+   "ytid",
+   "dur"
+  ],
+  "ledger": "/workspace/data/tracking/track_daemon_ledger.jsonl (field game_id = <tag->?<ytid>_s<offset>)",
+  "line_schema": "sport tag ytid fmt dur (whitespace separated, 5 fields)",
+  "live_queue": "/workspace/feeder/sources.txt",
+  "shadow_sidecar_owned_by_G405": "discovery_queue.jsonl (unused export; no consumer)"
+ },
+ "quoted_before_condition_output": [
+  "discovery fmt write line -> 54:        rows.append(f\"{sport} {tag} {vid} 270 {int(dur)}\"); S.add(vid); added+=1",
+  "discovery eligibility gate line -> 53:        if not vid or vid in S or vid in DENY or dur<2400: continue",
+  "discovery run-wide cap lines -> 51:    if added>=MAX: break ; 56:        if added>=MAX: break",
+  "live MAX argument -> discover_loop.sh:3 'timeout 600 python3 discover_sources.py 30'",
+  "discover_sources_probe_calls 0",
+  "queue_fmt_values_other_than_270 0",
+  "ls: cannot access '/workspace/feeder/*format*': No such file or directory",
+  "ls: cannot access '/workspace/feeder/*rendition*': No such file or directory"
+ ],
+ "sufficiency": "30 distinct basketball-family source ids admitted by the live recipe's own gate and run-wide cap >= 30 required. PARTIAL not triggered. The cap binds inside one bounded pass, so this is the admission cohort of one live discovery run, not the whole searchable supply."
+}

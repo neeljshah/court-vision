@@ -1,0 +1,23 @@
+[youtube] Extracting URL: https://www.youtube.com/watch?v=N-AM_AtzV1s
+[youtube] N-AM_AtzV1s: Downloading webpage
+[youtube] N-AM_AtzV1s: Downloading visionos player API JSON
+[youtube] N-AM_AtzV1s: Downloading m3u8 information
+[info] Available formats for N-AM_AtzV1s:
+ID  EXT   RESOLUTION FPS CH |    FILESIZE   TBR PROTO | VCODEC          VBR ACODEC      ABR ASR MORE INFO
+-----------------------------------------------------------------------------------------------------------------
+sb2 mhtml 48x27        0    |                   mhtml | images                                  storyboard
+sb1 mhtml 60x45        0    |                   mhtml | images                                  storyboard
+sb0 mhtml 120x90       0    |                   mhtml | images                                  storyboard
+233 mp4   audio only        |                   m3u8  | audio only          unknown             Default, low
+234 mp4   audio only        |                   m3u8  | audio only          unknown             Default, high
+139 m4a   audio only      2 |    42.39MiB   49k https | audio only          mp4a.40.5   49k 22k low, m4a_dash
+140 m4a   audio only      2 |   112.50MiB  129k https | audio only          mp4a.40.2  129k 44k medium, m4a_dash
+251 webm  audio only      2 |    83.03MiB   96k https | audio only          opus        96k 48k medium, webm_dash
+269 mp4   192x144     30    | ~ 156.99MiB  181k m3u8  | avc1.4D400C    181k video only
+160 mp4   192x144     30    |    70.57MiB   81k https | avc1.4d400c     81k video only          144p, mp4_dash
+230 mp4   480x360     30    | ~ 587.03MiB  676k m3u8  | avc1.4D401E    676k video only
+134 mp4   480x360     30    |   343.22MiB  395k https | avc1.4d401e    395k video only          360p, mp4_dash
+605 mp4   480x360     30    | ~ 488.67MiB  562k m3u8  | vp09.00.21.08  562k video only
+243 webm  480x360     30    |   236.17MiB  272k https | vp9            272k video only          360p, webm_dash
+231 mp4   640x480     30    | ~1017.36MiB 1171k m3u8  | avc1.4D401E   1171k video only
+135 mp4   640x480     30    |   643.20MiB  740k https | avc1.4d401e    740k video only          480p, mp4_dash

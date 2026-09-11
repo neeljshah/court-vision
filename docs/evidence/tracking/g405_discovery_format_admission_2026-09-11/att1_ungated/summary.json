@@ -1,0 +1,184 @@
+{
+ "NO": 19,
+ "UNKNOWN": 0,
+ "YES": 11,
+ "bucket_counts": {
+  "1080p30": 8,
+  "1080p60": 5,
+  "720p30": 11,
+  "720p60": 7
+ },
+ "coverage_yes_over_planned": 0.3667,
+ "hls_h264_720_1080_fps_set_counts": {
+  "24": 1,
+  "25": 8,
+  "30": 11,
+  "50": 2,
+  "60": 7,
+  "none": 1
+ },
+ "known_denominator": 30,
+ "per_query": {
+  "basketball/B.League full game": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 2
+  },
+  "basketball/Basketball Champions League full game": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 1
+  },
+  "basketball/Betclic Elite match complet basket": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 1
+  },
+  "basketball/CBA basketball full game": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 1
+  },
+  "basketball/EuroCup full game replay": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 1
+  },
+  "basketball/EuroLeague full game 2025": {
+   "NO": 2,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 2
+  },
+  "basketball/FIBA World Cup 2023 full game": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 1
+  },
+  "basketball/FIBA full game 2025": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 1
+  },
+  "basketball/G League full game 2025": {
+   "NO": 2,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 2
+  },
+  "basketball/KBL full game replay": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 1
+  },
+  "basketball/Lega Basket Serie A partita completa": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 1
+  },
+  "basketball/Liga ACB partido completo": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 1
+  },
+  "basketball/NBA G League full game": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 1
+  },
+  "basketball/NBL Australia full game replay": {
+   "NO": 2,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 2
+  },
+  "nba/NBA Summer League full game 2025": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 1
+  },
+  "nba/NBA full game 2024": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 1
+  },
+  "nba/NBA full game replay 2025": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 1
+  },
+  "nba/NBA preseason full game 2025": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 1
+  },
+  "ncaa_basketball/Big East basketball full game replay": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 1
+  },
+  "ncaa_basketball/NCAA basketball full game 2025": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 1
+  },
+  "ncaa_basketball/NCAA tournament full game replay 2024": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 1
+  },
+  "ncaa_basketball/NCAA women basketball full game replay": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 1
+  },
+  "ncaa_basketball/Pac-12 basketball full game replay": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 1
+  },
+  "ncaa_basketball/college basketball full game replay": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 1
+  },
+  "wnba/WNBA full game 2025": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 1
+  },
+  "wnba/WNBA full game replay 2025": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 1
+  }
+ },
+ "planned_denominator": 30,
+ "probed_denominator": 30,
+ "projected_loss_proven": 19,
+ "projected_loss_under_30_only_max": 19,
+ "supports_30_only_admission": false
+}

@@ -1,0 +1,76 @@
+{
+ "counts_only": true,
+ "field_aware_note": "Hits inside inherited source description fields (error, extractor, format_note, query, query_memberships, resolution, stderr, stdout, title) are data, not claims; claim_field hits are the gate.",
+ "files_with_hits": {
+  "docs/evidence/tracking/RESULTS_LEDGER.md": {
+   "pattern_0": {
+    "claim_field": 0,
+    "data_field": 0
+   },
+   "pattern_1": {
+    "claim_field": 0,
+    "data_field": 0
+   },
+   "pattern_2": {
+    "claim_field": 26,
+    "data_field": 0
+   },
+   "pattern_3": {
+    "claim_field": 0,
+    "data_field": 0
+   },
+   "pattern_4": {
+    "claim_field": 0,
+    "data_field": 0
+   }
+  }
+ },
+ "ledger_scope_note": "docs/evidence/tracking/RESULTS_LEDGER.md is shared: its counts cover rows owned by other G rows, so the gate below is scoped to this row's added line only.",
+ "pattern_index_domain": "pattern_<i> is index i of FORBIDDEN in scripts/platformkit/tracking/g405_prereg.py, built from character codes; this receipt emits indices and counts only and never spells a pattern",
+ "patterns_from_character_codes": 5,
+ "scanned_text_artifacts": 355,
+ "this_row_ledger_line": {
+  "pattern_0": {
+   "claim_field": 0,
+   "data_field": 0
+  },
+  "pattern_1": {
+   "claim_field": 0,
+   "data_field": 0
+  },
+  "pattern_2": {
+   "claim_field": 0,
+   "data_field": 0
+  },
+  "pattern_3": {
+   "claim_field": 0,
+   "data_field": 0
+  },
+  "pattern_4": {
+   "claim_field": 0,
+   "data_field": 0
+  }
+ },
+ "totals": {
+  "pattern_0": {
+   "claim_field": 0,
+   "data_field": 0
+  },
+  "pattern_1": {
+   "claim_field": 0,
+   "data_field": 0
+  },
+  "pattern_2": {
+   "claim_field": 26,
+   "data_field": 0
+  },
+  "pattern_3": {
+   "claim_field": 0,
+   "data_field": 0
+  },
+  "pattern_4": {
+   "claim_field": 0,
+   "data_field": 0
+  }
+ }
+}

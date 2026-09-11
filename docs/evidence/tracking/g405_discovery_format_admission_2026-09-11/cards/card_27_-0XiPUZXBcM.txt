@@ -1,0 +1,37 @@
+G405 card j=27 source_id=-0XiPUZXBcM competition=nba tag=.
+query=NBA full game 2024 discovered_at=2026-09-11T18:09:57Z probe_at=2026-09-11T18:21:01Z
+compatible_30fps=NO probe_status=OK error=none
+buckets 720p30=False 1080p30=False 720p60=True 1080p60=False
+qualifying_format_ids=none
+raw_inventory_digest=6b8ae7bf189665759b45aa0f7a6376f698869815c7a8cfa9a4dc6d5b6ee2dc91
+-- listing inventory (12 video rows) --
+  sb3      48x27        fps=0.0    proto=mhtml        vcodec=images
+  sb2      80x45        fps=0.0    proto=mhtml        vcodec=images
+  sb1      160x90       fps=0.0    proto=mhtml        vcodec=images
+  sb0      320x180      fps=0.0    proto=mhtml        vcodec=images
+  269      256x144      fps=30.0   proto=m3u8         vcodec=avc1.4D400C
+  160      256x144      fps=30.0   proto=https        vcodec=avc1.4d400c
+  230      640x360      fps=30.0   proto=m3u8         vcodec=avc1.4D401E
+  134      640x360      fps=30.0   proto=https        vcodec=avc1.4d401e
+  605      640x360      fps=30.0   proto=m3u8         vcodec=vp09.00.21.08
+  243      640x360      fps=30.0   proto=https        vcodec=vp9
+  311      1280x720     fps=60.0   proto=m3u8         vcodec=avc1.640020
+  298      1280x720     fps=60.0   proto=https        vcodec=avc1.640020
+  --       -- metadata inventory (17 video rows) -- fps=None   proto=             vcodec=
+  sb3      48x27        fps=0.012350253180190195 proto=mhtml        vcodec=none
+  sb2      80x45        fps=0.10016055329134248 proto=mhtml        vcodec=none
+  sb1      160x90       fps=0.10016055329134248 proto=mhtml        vcodec=none
+  sb0      320x180      fps=0.10016055329134248 proto=mhtml        vcodec=none
+  233      audio only   fps=None   proto=m3u8_native  vcodec=none
+  234      audio only   fps=None   proto=m3u8_native  vcodec=none
+  139      audio only   fps=None   proto=https        vcodec=none
+  140      audio only   fps=None   proto=https        vcodec=none
+  251      audio only   fps=None   proto=https        vcodec=none
+  269      256x144      fps=30.0   proto=m3u8_native  vcodec=avc1.4D400C
+  160      256x144      fps=30     proto=https        vcodec=avc1.4d400c
+  230      640x360      fps=30.0   proto=m3u8_native  vcodec=avc1.4D401E
+  134      640x360      fps=30     proto=https        vcodec=avc1.4d401e
+  605      640x360      fps=30.0   proto=m3u8_native  vcodec=vp09.00.21.08
+  243      640x360      fps=30     proto=https        vcodec=vp9
+  311      1280x720     fps=60.0   proto=m3u8_native  vcodec=avc1.640020
+  298      1280x720     fps=60     proto=https        vcodec=avc1.640020

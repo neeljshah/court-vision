@@ -1,0 +1,8 @@
+[youtube] Extracting URL: https://www.youtube.com/watch?v=mAl_gEPhp3s
+[youtube] mAl_gEPhp3s: Downloading webpage
+[youtube] mAl_gEPhp3s: Downloading visionos player API JSON
+[youtube] mAl_gEPhp3s: Downloading tv downgraded player API JSON
+[youtube] mAl_gEPhp3s: Downloading web embedded client config
+[youtube] mAl_gEPhp3s: Downloading player 8c3fda2d-main
+[youtube] mAl_gEPhp3s: Downloading web embedded player API JSON
+[youtube] [jsc:deno] Solving JS challenges using deno

@@ -1,0 +1,37 @@
+G405 card j=12 source_id=qTISjk2vR1U competition=basketball tag=bcl
+query=Basketball Champions League full game discovered_at=2026-09-11T18:10:50Z probe_at=2026-09-11T18:16:39Z
+compatible_30fps=NO probe_status=OK error=none
+buckets 720p30=False 1080p30=False 720p60=False 1080p60=False
+qualifying_format_ids=none
+raw_inventory_digest=903a022014c40d319d9e7629e49b00b805025dedd98dd757d7a5d7936bb18a02
+-- listing inventory (12 video rows) --
+  sb3      48x27        fps=0.0    proto=mhtml        vcodec=images
+  sb2      80x45        fps=0.0    proto=mhtml        vcodec=images
+  sb1      160x90       fps=0.0    proto=mhtml        vcodec=images
+  sb0      320x180      fps=0.0    proto=mhtml        vcodec=images
+  269      256x144      fps=25.0   proto=m3u8         vcodec=avc1.4D400C
+  160      256x144      fps=25.0   proto=https        vcodec=avc1.4d400c
+  230      640x360      fps=25.0   proto=m3u8         vcodec=avc1.4D401E
+  134      640x360      fps=25.0   proto=https        vcodec=avc1.4d401e
+  605      640x360      fps=25.0   proto=m3u8         vcodec=vp09.00.21.08
+  243      640x360      fps=25.0   proto=https        vcodec=vp9
+  232      1280x720     fps=25.0   proto=m3u8         vcodec=avc1.4D401F
+  136      1280x720     fps=25.0   proto=https        vcodec=avc1.4d401f
+  --       -- metadata inventory (17 video rows) -- fps=None   proto=             vcodec=
+  sb3      48x27        fps=0.012468827930174564 proto=mhtml        vcodec=none
+  sb2      80x45        fps=0.10012468827930175 proto=mhtml        vcodec=none
+  sb1      160x90       fps=0.10012468827930175 proto=mhtml        vcodec=none
+  sb0      320x180      fps=0.10012468827930175 proto=mhtml        vcodec=none
+  233      audio only   fps=None   proto=m3u8_native  vcodec=none
+  234      audio only   fps=None   proto=m3u8_native  vcodec=none
+  139      audio only   fps=None   proto=https        vcodec=none
+  140      audio only   fps=None   proto=https        vcodec=none
+  251      audio only   fps=None   proto=https        vcodec=none
+  269      256x144      fps=25.0   proto=m3u8_native  vcodec=avc1.4D400C
+  160      256x144      fps=25     proto=https        vcodec=avc1.4d400c
+  230      640x360      fps=25.0   proto=m3u8_native  vcodec=avc1.4D401E
+  134      640x360      fps=25     proto=https        vcodec=avc1.4d401e
+  605      640x360      fps=25.0   proto=m3u8_native  vcodec=vp09.00.21.08
+  243      640x360      fps=25     proto=https        vcodec=vp9
+  232      1280x720     fps=25.0   proto=m3u8_native  vcodec=avc1.4D401F
+  136      1280x720     fps=25     proto=https        vcodec=avc1.4d401f

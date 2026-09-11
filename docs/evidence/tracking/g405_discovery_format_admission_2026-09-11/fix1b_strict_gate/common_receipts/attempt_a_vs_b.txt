@@ -1,0 +1,13 @@
+G405 fix 1b: discarded probe attempt A vs landed attempt B
+Attempt A crashed on a null metadata payload (no receipts were flushed) and its
+whole output was discarded unused; every landed number comes from attempt B.
+This table exists only to show that the restart erased no error.
+j  source_id      attemptA_state  landed_state  same
+0  0pKftc-Z0_k    YES             YES           True
+1  UPlzuJyGLX0    YES             YES           True
+2  tPLwS9QjGHw    YES             YES           True
+3  StaR8HvV_jM    NO              NO            True
+4  g0lXjTWhxQo    YES             YES           True
+5  97AypcBJNUE    NO              NO            True
+6  mAl_gEPhp3s    UNKNOWN         UNKNOWN       True
+identical_classification 7/7 sources probed in both attempts

@@ -1,0 +1,20 @@
+probed 0pKftc-Z0_k j=0 list_rc=0 meta_rc=0 formats=19
+probed UPlzuJyGLX0 j=1 list_rc=0 meta_rc=0 formats=47
+probed tPLwS9QjGHw j=2 list_rc=0 meta_rc=0 formats=48
+probed StaR8HvV_jM j=3 list_rc=0 meta_rc=0 formats=40
+probed g0lXjTWhxQo j=4 list_rc=0 meta_rc=0 formats=41
+probed 97AypcBJNUE j=5 list_rc=0 meta_rc=0 formats=23
+Traceback (most recent call last):
+  File "/workspace/g405_scratch/fix1b/g405_pod_probe.py", line 237, in <module>
+    raise SystemExit(main(sys.argv))
+                     ^^^^^^^^^^^^^^
+  File "/workspace/g405_scratch/fix1b/g405_pod_probe.py", line 231, in main
+    return probe(Path(argv[2]), Path(argv[3]))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/g405_scratch/fix1b/g405_pod_probe.py", line 207, in probe
+    payload = _redact(json.loads(blob)) if blob.strip() else {"formats": [], "error": "empty"}
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/g405_scratch/fix1b/g405_pod_probe.py", line 175, in _redact
+    for fmt in meta.get("formats") or []:
+               ^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'

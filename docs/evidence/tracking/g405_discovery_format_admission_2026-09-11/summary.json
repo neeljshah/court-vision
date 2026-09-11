@@ -1,0 +1,62 @@
+{
+ "NO": 19,
+ "UNKNOWN": 0,
+ "YES": 11,
+ "bucket_counts": {
+  "1080p30": 11,
+  "1080p60": 0,
+  "720p30": 11,
+  "720p60": 1
+ },
+ "coverage_yes_over_planned": 0.3667,
+ "hls_h264_720_1080_fps_set_counts": {
+  "25": 17,
+  "30": 11,
+  "60": 1,
+  "none": 1
+ },
+ "known_denominator": 30,
+ "per_query": {
+  "basketball/Basketball Champions League full game": {
+   "NO": 5,
+   "UNKNOWN": 0,
+   "YES": 9,
+   "n": 14
+  },
+  "basketball/EuroCup full game replay": {
+   "NO": 11,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 12
+  },
+  "basketball/G League full game 2025": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 1
+  },
+  "nba/NBA full game 2024": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 1
+  },
+  "wnba/WNBA full game 2025": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 1
+  },
+  "wnba/WNBA full game replay 2025": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 1
+  }
+ },
+ "planned_denominator": 30,
+ "probed_denominator": 30,
+ "projected_loss_proven": 19,
+ "projected_loss_under_30_only_max": 19,
+ "supports_30_only_admission": false
+}

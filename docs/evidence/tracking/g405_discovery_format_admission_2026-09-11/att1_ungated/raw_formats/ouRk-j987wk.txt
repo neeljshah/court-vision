@@ -1,0 +1,98 @@
+[youtube] Extracting URL: https://www.youtube.com/watch?v=ouRk-j987wk
+[youtube] ouRk-j987wk: Downloading webpage
+[youtube] ouRk-j987wk: Downloading visionos player API JSON
+[youtube] ouRk-j987wk: Downloading m3u8 information
+[info] Available formats for ouRk-j987wk:
+ID    EXT   RESOLUTION FPS CH |   FILESIZE   TBR PROTO | VCODEC          VBR ACODEC      ABR ASR MORE INFO
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+sb3   mhtml 48x27        0    |                  mhtml | images                                  storyboard
+sb2   mhtml 80x45        0    |                  mhtml | images                                  storyboard
+sb1   mhtml 160x90       0    |                  mhtml | images                                  storyboard
+sb0   mhtml 320x180      0    |                  mhtml | images                                  storyboard
+233-0 mp4   audio only        |                  m3u8  | audio only          unknown             [de-DE] Deutsch (Deutschland) - dubbed-auto
+233-1 mp4   audio only        |                  m3u8  | audio only          unknown             [es-US] es-US - dubbed-auto
+233-2 mp4   audio only        |                  m3u8  | audio only          unknown             [fr-FR] Français (France) - dubbed-auto
+233-3 mp4   audio only        |                  m3u8  | audio only          unknown             [hi] हिन्दी - dubbed-auto
+233-4 mp4   audio only        |                  m3u8  | audio only          unknown             [id] Indonesia - dubbed-auto
+233-5 mp4   audio only        |                  m3u8  | audio only          unknown             [it] Italiano - dubbed-auto
+233-6 mp4   audio only        |                  m3u8  | audio only          unknown             [pt-BR] Português (Brasil) - dubbed-auto
+234-0 mp4   audio only        |                  m3u8  | audio only          unknown             [de-DE] Deutsch (Deutschland) - dubbed-auto
+234-1 mp4   audio only        |                  m3u8  | audio only          unknown             [es-US] es-US - dubbed-auto
+234-2 mp4   audio only        |                  m3u8  | audio only          unknown             [fr-FR] Français (France) - dubbed-auto
+234-3 mp4   audio only        |                  m3u8  | audio only          unknown             [hi] हिन्दी - dubbed-auto
+234-4 mp4   audio only        |                  m3u8  | audio only          unknown             [id] Indonesia - dubbed-auto
+234-5 mp4   audio only        |                  m3u8  | audio only          unknown             [it] Italiano - dubbed-auto
+234-6 mp4   audio only        |                  m3u8  | audio only          unknown             [pt-BR] Português (Brasil) - dubbed-auto
+233-7 mp4   audio only        |                  m3u8  | audio only          unknown             [en-US] American English - original (original)
+234-7 mp4   audio only        |                  m3u8  | audio only          unknown             [en-US] American English - original (original)
+139-0 m4a   audio only      2 |   29.21MiB   49k https | audio only          mp4a.40.5   49k 22k [de-DE] German (DE), low, m4a_dash
+139-1 m4a   audio only      2 |   29.21MiB   49k https | audio only          mp4a.40.5   49k 22k [es-US] Spanish (US), low, m4a_dash
+139-2 m4a   audio only      2 |   29.21MiB   49k https | audio only          mp4a.40.5   49k 22k [fr-FR] French (FR), low, m4a_dash
+139-3 m4a   audio only      2 |   29.21MiB   49k https | audio only          mp4a.40.5   49k 22k [hi] Hindi, low, m4a_dash
+139-4 m4a   audio only      2 |   29.21MiB   49k https | audio only          mp4a.40.5   49k 22k [id] Indonesian, low, m4a_dash
+139-5 m4a   audio only      2 |   29.21MiB   49k https | audio only          mp4a.40.5   49k 22k [it] Italian, low, m4a_dash
+139-6 m4a   audio only      2 |   29.21MiB   49k https | audio only          mp4a.40.5   49k 22k [pt-BR] Portuguese (BR), low, m4a_dash
+139-7 m4a   audio only      2 |   29.21MiB   49k https | audio only          mp4a.40.5   49k 22k [en-US] English (US) original (default), low, m4a_dash
+249-0 webm  audio only      2 |   29.32MiB   49k https | audio only          opus        49k 48k [it] Italian, low, webm_dash
+249-1 webm  audio only      2 |   29.34MiB   49k https | audio only          opus        49k 48k [de-DE] German (DE), low, webm_dash
+249-2 webm  audio only      2 |   29.40MiB   49k https | audio only          opus        49k 48k [pt-BR] Portuguese (BR), low, webm_dash
+249-3 webm  audio only      2 |   29.40MiB   49k https | audio only          opus        49k 48k [fr-FR] French (FR), low, webm_dash
+249-4 webm  audio only      2 |   29.47MiB   49k https | audio only          opus        49k 48k [id] Indonesian, low, webm_dash
+249-5 webm  audio only      2 |   29.51MiB   49k https | audio only          opus        49k 48k [hi] Hindi, low, webm_dash
+249-6 webm  audio only      2 |   29.52MiB   49k https | audio only          opus        49k 48k [es-US] Spanish (US), low, webm_dash
+250-0 webm  audio only      2 |   33.26MiB   56k https | audio only          opus        56k 48k [pt-BR] Portuguese (BR), low, webm_dash
+250-1 webm  audio only      2 |   33.41MiB   56k https | audio only          opus        56k 48k [de-DE] German (DE), low, webm_dash
+250-2 webm  audio only      2 |   33.44MiB   56k https | audio only          opus        56k 48k [it] Italian, low, webm_dash
+250-3 webm  audio only      2 |   33.53MiB   56k https | audio only          opus        56k 48k [id] Indonesian, low, webm_dash
+250-4 webm  audio only      2 |   33.58MiB   56k https | audio only          opus        56k 48k [fr-FR] French (FR), low, webm_dash
+250-5 webm  audio only      2 |   33.60MiB   56k https | audio only          opus        56k 48k [es-US] Spanish (US), low, webm_dash
+250-6 webm  audio only      2 |   33.85MiB   57k https | audio only          opus        57k 48k [hi] Hindi, low, webm_dash
+249-7 webm  audio only      2 |   29.25MiB   49k https | audio only          opus        49k 48k [en-US] English (US) original (default), low, webm_dash
+250-7 webm  audio only      2 |   32.26MiB   54k https | audio only          opus        54k 48k [en-US] English (US) original (default), low, webm_dash
+140-0 m4a   audio only      2 |   77.52MiB  129k https | audio only          mp4a.40.2  129k 44k [de-DE] German (DE), medium, m4a_dash
+140-1 m4a   audio only      2 |   77.52MiB  129k https | audio only          mp4a.40.2  129k 44k [es-US] Spanish (US), medium, m4a_dash
+140-2 m4a   audio only      2 |   77.52MiB  129k https | audio only          mp4a.40.2  129k 44k [fr-FR] French (FR), medium, m4a_dash
+140-3 m4a   audio only      2 |   77.52MiB  129k https | audio only          mp4a.40.2  129k 44k [hi] Hindi, medium, m4a_dash
+140-4 m4a   audio only      2 |   77.52MiB  129k https | audio only          mp4a.40.2  129k 44k [id] Indonesian, medium, m4a_dash
+140-5 m4a   audio only      2 |   77.52MiB  129k https | audio only          mp4a.40.2  129k 44k [it] Italian, medium, m4a_dash
+140-6 m4a   audio only      2 |   77.52MiB  129k https | audio only          mp4a.40.2  129k 44k [pt-BR] Portuguese (BR), medium, m4a_dash
+140-7 m4a   audio only      2 |   77.51MiB  129k https | audio only          mp4a.40.2  129k 44k [en-US] English (US) original (default), medium, m4a_dash
+251-0 webm  audio only      2 |   60.47MiB  101k https | audio only          opus       101k 48k [pt-BR] Portuguese (BR), medium, webm_dash
+251-1 webm  audio only      2 |   60.81MiB  102k https | audio only          opus       102k 48k [de-DE] German (DE), medium, webm_dash
+251-2 webm  audio only      2 |   60.91MiB  102k https | audio only          opus       102k 48k [it] Italian, medium, webm_dash
+251-3 webm  audio only      2 |   60.97MiB  102k https | audio only          opus       102k 48k [es-US] Spanish (US), medium, webm_dash
+251-4 webm  audio only      2 |   60.97MiB  102k https | audio only          opus       102k 48k [id] Indonesian, medium, webm_dash
+251-5 webm  audio only      2 |   60.97MiB  102k https | audio only          opus       102k 48k [fr-FR] French (FR), medium, webm_dash
+251-6 webm  audio only      2 |   61.53MiB  103k https | audio only          opus       103k 48k [hi] Hindi, medium, webm_dash
+251-7 webm  audio only      2 |   58.47MiB   98k https | audio only          opus        98k 48k [en-US] English (US) original (default), medium, webm_dash
+602   mp4   256x144     15    | ~ 73.16MiB  122k m3u8  | vp09.00.10.08  122k video only
+269   mp4   256x144     30    | ~119.53MiB  200k m3u8  | avc1.4D400C    200k video only
+160   mp4   256x144     30    |   63.57MiB  106k https | avc1.4d400c    106k video only          144p, mp4_dash
+603   mp4   256x144     30    | ~116.24MiB  194k m3u8  | vp09.00.11.08  194k video only
+278   webm  256x144     30    |   48.34MiB   81k https | vp9             81k video only          144p, webm_dash
+394   mp4   256x144     30    |   53.28MiB   89k https | av01.0.00M.08   89k video only          144p, mp4_dash
+229   mp4   426x240     30    | ~203.68MiB  340k m3u8  | avc1.4D4015    340k video only
+133   mp4   426x240     30    |  139.84MiB  234k https | avc1.4d4015    234k video only          240p, mp4_dash
+604   mp4   426x240     30    | ~190.02MiB  317k m3u8  | vp09.00.20.08  317k video only
+242   webm  426x240     30    |  101.10MiB  169k https | vp9            169k video only          240p, webm_dash
+395   mp4   426x240     30    |  118.48MiB  198k https | av01.0.00M.08  198k video only          240p, mp4_dash
+230   mp4   640x360     30    | ~498.17MiB  832k m3u8  | avc1.4D401E    832k video only
+134   mp4   640x360     30    |  306.95MiB  513k https | avc1.4d401e    513k video only          360p, mp4_dash
+605   mp4   640x360     30    | ~478.34MiB  799k m3u8  | vp09.00.21.08  799k video only
+243   webm  640x360     30    |  228.39MiB  381k https | vp9            381k video only          360p, webm_dash
+396   mp4   640x360     30    |  252.74MiB  422k https | av01.0.01M.08  422k video only          360p, mp4_dash
+231   mp4   854x480     30    | ~814.36MiB 1360k m3u8  | avc1.4D401F   1360k video only
+135   mp4   854x480     30    |  468.44MiB  782k https | avc1.4d401f    782k video only          480p, mp4_dash
+606   mp4   854x480     30    | ~722.13MiB 1206k m3u8  | vp09.00.30.08 1206k video only
+244   webm  854x480     30    |  368.39MiB  615k https | vp9            615k video only          480p, webm_dash
+397   mp4   854x480     30    |  490.10MiB  819k https | av01.0.04M.08  819k video only          480p, mp4_dash
+311   mp4   1280x720    60    | ~  2.23GiB 3809k m3u8  | avc1.4D4020   3809k video only
+298   mp4   1280x720    60    |    1.91GiB 3272k https | avc1.4d4020   3272k video only          720p60, mp4_dash
+612   mp4   1280x720    60    | ~  1.89GiB 3235k m3u8  | vp09.00.40.08 3235k video only
+302   webm  1280x720    60    |    1.22GiB 2081k https | vp9           2081k video only          720p60, webm_dash
+398   mp4   1280x720    60    |    1.27GiB 2168k https | av01.0.08M.08 2168k video only          720p60, mp4_dash
+312   mp4   1920x1080   60    | ~  3.66GiB 6264k m3u8  | avc1.64002A   6264k video only
+299   mp4   1920x1080   60    |    3.17GiB 5428k https | avc1.64002a   5428k video only          1080p60, mp4_dash
+617   mp4   1920x1080   60    | ~  3.50GiB 5988k m3u8  | vp09.00.41.08 5988k video only
+303   webm  1920x1080   60    |    2.28GiB 3892k https | vp9           3892k video only          1080p60, webm_dash
+399   mp4   1920x1080   60    |    2.59GiB 4435k https | av01.0.09M.08 4435k video only          1080p60, mp4_dash

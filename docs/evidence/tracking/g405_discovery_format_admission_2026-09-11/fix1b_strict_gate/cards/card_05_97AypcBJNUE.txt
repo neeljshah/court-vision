@@ -1,0 +1,42 @@
+G405 card j=5 source_id=97AypcBJNUE competition=basketball tag=betclic
+query=Betclic Elite match complet basket discovered_at=2026-09-11T17:23:25Z probe_at=2026-09-11T17:29:56Z
+compatible_30fps=NO probe_status=OK error=none
+buckets 720p30=False 1080p30=False 720p60=False 1080p60=False
+qualifying_format_ids=none
+raw_inventory_digest=22a408b6da674f8f950321d358b15f8e7afa602ebd20bfbe1ed906c36209ae60
+-- listing inventory (11 video rows) --
+  sb2      48x27        fps=0.0    proto=mhtml        vcodec=images
+  sb1      80x45        fps=0.0    proto=mhtml        vcodec=images
+  sb0      160x90       fps=0.0    proto=mhtml        vcodec=images
+  269      256x144      fps=25.0   proto=m3u8         vcodec=avc1.4D400C
+  160      256x144      fps=25.0   proto=https        vcodec=avc1.4d400c
+  230      640x360      fps=25.0   proto=m3u8         vcodec=avc1.4D401E
+  134      640x360      fps=25.0   proto=https        vcodec=avc1.4d401e
+  605      640x360      fps=25.0   proto=m3u8         vcodec=vp09.00.21.08
+  243      640x360      fps=25.0   proto=https        vcodec=vp9
+  232      1280x720     fps=25.0   proto=m3u8         vcodec=avc1.64001F
+  136      1280x720     fps=25.0   proto=https        vcodec=avc1.64001f
+  --       -- metadata inventory (23 video rows) -- fps=None   proto=             vcodec=
+  sb2      48x27        fps=0.015946420028703556 proto=mhtml        vcodec=none
+  sb1      80x45        fps=0.10030298198054537 proto=mhtml        vcodec=none
+  sb0      160x90       fps=0.10030298198054537 proto=mhtml        vcodec=none
+  233-0    audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-0    audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-1    audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-1    audio only   fps=None   proto=m3u8_native  vcodec=none
+  139-0    audio only   fps=None   proto=https        vcodec=none
+  139-1    audio only   fps=None   proto=https        vcodec=none
+  249      audio only   fps=None   proto=https        vcodec=none
+  250      audio only   fps=None   proto=https        vcodec=none
+  140-0    audio only   fps=None   proto=https        vcodec=none
+  140-1    audio only   fps=None   proto=https        vcodec=none
+  251-0    audio only   fps=None   proto=https        vcodec=none
+  251-1    audio only   fps=None   proto=https        vcodec=none
+  269      256x144      fps=25.0   proto=m3u8_native  vcodec=avc1.4D400C
+  160      256x144      fps=25     proto=https        vcodec=avc1.4d400c
+  230      640x360      fps=25.0   proto=m3u8_native  vcodec=avc1.4D401E
+  134      640x360      fps=25     proto=https        vcodec=avc1.4d401e
+  605      640x360      fps=25.0   proto=m3u8_native  vcodec=vp09.00.21.08
+  243      640x360      fps=25     proto=https        vcodec=vp9
+  232      1280x720     fps=25.0   proto=m3u8_native  vcodec=avc1.64001F
+  136      1280x720     fps=25     proto=https        vcodec=avc1.64001f

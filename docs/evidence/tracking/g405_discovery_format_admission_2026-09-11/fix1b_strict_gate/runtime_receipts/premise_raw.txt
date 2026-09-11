@@ -1,0 +1,55 @@
+# G405 premise raw receipts -- fix 1b (re-run BEFORE discovery and probing)
+collected_utc 2026-09-11T17:21:49Z
+host d69708b8b854
+
+## file identities (sha256 size mtime)
+00504c02ae66c207ba9f7e7e7b9d7631b7005efee812f1df25c374a272b6f52f  /workspace/feeder/discover_sources.py 3477 2026-09-11 10:23:04.000000000 +0000
+09864e9f1eb3b5e518d6fe8dbf4fec493da768ae98ca9c9eec7435ee90b08ef7  /workspace/feeder/discover_loop.sh 345 2026-09-11 11:53:31.000000000 +0000
+96f897fed3fe0455300f4977267ff3b6cd801f000ba9988c41f6e3997747291a  /workspace/feeder/feeder_pod.sh 11355 2026-09-11 17:01:37.000000000 +0000
+0a9bd9619617a0c163ed253625f242db1d9d16a17c05dbb9505b5a80ddcdc4e6  /workspace/feeder/sources.txt 486 2026-09-11 17:21:49.000000000 +0000
+554306e42a09c569a6264f22102f4f36aaf00eb9451467fa2e7b70213c98963b  /workspace/feeder/discover.log 37589 2026-09-11 16:07:42.000000000 +0000
+0f12fb97b2ace759e52b0febb89a7329cdc92695ac2bc7f4496fa9bdc76f7a2a  /workspace/feeder/deny.txt 87 2026-09-10 22:13:55.000000000 +0000
+07c1aa7f88213b28e518b72c7dd0cf101d1eafbc0c7284aea0d23ba6cd80cf89  /workspace/feeder/relaunch.log 302 2026-09-11 17:01:52.000000000 +0000
+
+## selector line
+156:    if timeout 900 yt-dlp -f "$fmt/232/312/301/311/300/bv*[protocol*=m3u8][height>=720][height<=1080]" --no-playlist --no-warnings $args \
+## probe eligibility line
+127:  case "$fmt" in 270|312) ;; *) log "SKIP $ytid reason=fmt-not-hls fmt=$fmt"; return 1;; esac
+## probe bar line
+179:      log "DROP $name reason=probe-reject codec=$c height=$h"; DROPPED=$((DROPPED+1)); rm -f "$f"; continue
+## discovery fmt write line
+54:        rows.append(f"{sport} {tag} {vid} 270 {int(dur)}"); S.add(vid); added+=1
+## discovery eligibility gate line
+53:        if not vid or vid in S or vid in DENY or dur<2400: continue
+
+## live queue snapshot (read-only)
+     13 270
+queue_rows 13
+queue_unique_ids 13
+
+## discover.log NEW census
+new_lines 400
+new_unique_ids 179
+## deny list
+deny_ids 1
+
+## ledger
+ledger_rows 2268
+ledger_unique_video_ids 292
+
+## existing discovery-time 30fps evidence search (before-condition)
+queue_fmt_values_other_than_270 0
+discover_sources_probe_calls 0
+ls: cannot access '/workspace/feeder/*format*': No such file or directory
+ls: cannot access '/workspace/feeder/*rendition*': No such file or directory
+
+## tool identity
+/usr/local/bin/yt-dlp
+2026.08.19
+9f52a4db6862cf898cc0f14687fb09c968384a3f23010fc61d803ec0ed84912a  /usr/local/bin/yt-dlp
+Python 3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]
+
+## live processes untouched
+    PID     ELAPSED CMD
+3780738       20:00 bash /workspace/feeder/feeder_pod.sh
+collected_end_utc 2026-09-11T17:21:49Z

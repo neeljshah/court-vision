@@ -1,0 +1,34 @@
+G405 fix 1b independent recomputation -- regex over the raw -F bytes only
+rule: HLS(m3u8) + avc1/avc3/h264 + height 720..1080 + fps 29..31
+j  source_id      indep_listing_yes  shipped_listing_yes  agree
+0  0pKftc-Z0_k    True               True                 True
+1  UPlzuJyGLX0    True               True                 True
+2  tPLwS9QjGHw    True               True                 True
+3  StaR8HvV_jM    False              False                True
+4  g0lXjTWhxQo    True               True                 True
+5  97AypcBJNUE    False              False                True
+6  mAl_gEPhp3s    False              False                True
+7  EIcNJX8JyA0    False              False                True
+8  prxLSgEkawg    False              False                True
+9  _PA1xPaXG4E    True               True                 True
+10 IOPrVtbhAzw    True               True                 True
+11 OUgH-3iZnYs    True               True                 True
+12 fXoZZhGQcsg    True               True                 True
+13 1fR4CEEbVvU    True               True                 True
+14 uksR2pjXUCc    True               True                 True
+15 X_dBf9OZzFw    False              False                True
+16 xfeLrkVamaU    False              False                True
+17 dd_QSkmUWyU    True               True                 True
+18 5IfsjfYqSnA    False              False                True
+19 UgmcyE8wkRM    False              False                True
+20 qJ8-NFqWhqU    True               True                 True
+21 pY5qP_RvHjg    True               True                 True
+22 WutCtBQsSe0    False              False                True
+23 pl9cPZehbQw    False              False                True
+24 RoeIroj6SXw    True               True                 True
+25 zGTacmyiwiA    True               True                 True
+26 ZUF61y_9P3U    True               True                 True
+27 wYEldEDV3dQ    False              False                True
+28 tpIYpVdWscY    False              False                True
+29 z2byjGVKZWQ    True               True                 True
+agreement 30/30

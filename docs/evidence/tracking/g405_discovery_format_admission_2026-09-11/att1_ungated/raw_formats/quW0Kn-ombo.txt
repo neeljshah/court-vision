@@ -1,0 +1,24 @@
+[youtube] Extracting URL: https://www.youtube.com/watch?v=quW0Kn-ombo
+[youtube] quW0Kn-ombo: Downloading webpage
+[youtube] quW0Kn-ombo: Downloading visionos player API JSON
+[youtube] quW0Kn-ombo: Downloading m3u8 information
+[info] Available formats for quW0Kn-ombo:
+ID  EXT   RESOLUTION FPS CH |   FILESIZE   TBR PROTO | VCODEC          VBR ACODEC      ABR ASR MORE INFO
+---------------------------------------------------------------------------------------------------------------------
+sb3 mhtml 48x27        0    |                  mhtml | images                                  storyboard
+sb2 mhtml 80x45        0    |                  mhtml | images                                  storyboard
+sb1 mhtml 160x90       0    |                  mhtml | images                                  storyboard
+sb0 mhtml 320x180      0    |                  mhtml | images                                  storyboard
+233 mp4   audio only        |                  m3u8  | audio only          unknown             [en] Default, low
+234 mp4   audio only        |                  m3u8  | audio only          unknown             [en] Default, high
+139 m4a   audio only      2 |   26.47MiB   49k https | audio only          mp4a.40.5   49k 22k [en] low, m4a_dash
+140 m4a   audio only      2 |   70.26MiB  129k https | audio only          mp4a.40.2  129k 44k [en] medium, m4a_dash
+251 webm  audio only      2 |   68.81MiB  127k https | audio only          opus       127k 48k [en] medium, webm_dash
+269 mp4   256x144     30    | ~101.73MiB  187k m3u8  | avc1.4D400C    187k video only
+160 mp4   256x144     30    |   58.16MiB  107k https | avc1.4d400c    107k video only          144p, mp4_dash
+230 mp4   640x360     30    | ~438.81MiB  809k m3u8  | avc1.4D401E    809k video only
+134 mp4   640x360     30    |  303.69MiB  560k https | avc1.4d401e    560k video only          360p, mp4_dash
+605 mp4   640x360     30    | ~388.23MiB  715k m3u8  | vp09.00.21.08  715k video only
+243 webm  640x360     30    |  219.20MiB  404k https | vp9            404k video only          360p, webm_dash
+232 mp4   1280x720    30    | ~  1.37GiB 2584k m3u8  | avc1.4D401F   2584k video only
+136 mp4   1280x720    30    |    1.15GiB 2174k https | avc1.4d401f   2174k video only          720p, mp4_dash

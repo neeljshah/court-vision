@@ -1,0 +1,26 @@
+[youtube] Extracting URL: https://www.youtube.com/watch?v=tpIYpVdWscY
+[youtube] tpIYpVdWscY: Downloading webpage
+[youtube] tpIYpVdWscY: Downloading visionos player API JSON
+[youtube] tpIYpVdWscY: Downloading m3u8 information
+[youtube] tpIYpVdWscY: Downloading player 8c3fda2d-main
+[youtube] [jsc:deno] Solving JS challenges using deno
+[info] Available formats for tpIYpVdWscY:
+ID  EXT   RESOLUTION FPS CH |   FILESIZE   TBR PROTO | VCODEC          VBR ACODEC      ABR ASR MORE INFO
+----------------------------------------------------------------------------------------------------------------
+sb3 mhtml 48x27        0    |                  mhtml | images                                  storyboard
+sb2 mhtml 80x45        0    |                  mhtml | images                                  storyboard
+sb1 mhtml 160x90       0    |                  mhtml | images                                  storyboard
+sb0 mhtml 320x180      0    |                  mhtml | images                                  storyboard
+233 mp4   audio only        |                  m3u8  | audio only          unknown             Default, low
+234 mp4   audio only        |                  m3u8  | audio only          unknown             Default, high
+139 m4a   audio only      2 |   58.29MiB   49k https | audio only          mp4a.40.5   49k 22k low, m4a_dash
+140 m4a   audio only      2 |  154.71MiB  129k https | audio only          mp4a.40.2  129k 44k medium, m4a_dash
+251 webm  audio only      2 |  140.40MiB  117k https | audio only          opus       117k 48k medium, webm_dash
+269 mp4   256x144     30    | ~296.66MiB  248k m3u8  | avc1.4D400C    248k video only
+160 mp4   256x144     30    |  126.96MiB  106k https | avc1.4d400c    106k video only          144p, mp4_dash
+230 mp4   640x360     30    | ~  1.32GiB 1128k m3u8  | avc1.4D401E   1128k video only
+134 mp4   640x360     30    |  599.51MiB  502k https | avc1.4d401e    502k video only          360p, mp4_dash
+605 mp4   640x360     30    | ~  2.60GiB 2232k m3u8  | vp09.00.21.08 2232k video only
+243 webm  640x360     30    |  514.59MiB  431k https | vp9            431k video only          360p, webm_dash
+311 mp4   1280x720    60    | ~  5.59GiB 4790k m3u8  | avc1.640020   4790k video only
+298 mp4   1280x720    60    |    3.08GiB 2639k https | avc1.640020   2639k video only          720p60, mp4_dash

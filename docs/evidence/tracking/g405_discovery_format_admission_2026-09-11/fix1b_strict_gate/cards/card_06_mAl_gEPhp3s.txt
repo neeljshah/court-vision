@@ -1,0 +1,8 @@
+G405 card j=6 source_id=mAl_gEPhp3s competition=basketball tag=betclic
+query=Betclic Elite match complet basket discovered_at=2026-09-11T17:23:25Z probe_at=2026-09-11T17:30:14Z
+compatible_30fps=UNKNOWN probe_status=INCOMPLETE error=listing_rc=1 formats=0 metadata_rc=1 formats=0 empty
+buckets 720p30=False 1080p30=False 720p60=False 1080p60=False
+qualifying_format_ids=none
+raw_inventory_digest=3864795974de3230325a01e76d95593fcfe1d3b2768ebbc4dd13509a42a7ab0b
+-- listing inventory (0 video rows) --
+  --       -- metadata inventory (0 video rows) -- fps=None   proto=             vcodec=

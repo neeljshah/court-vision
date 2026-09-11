@@ -1,0 +1,56 @@
+{
+ "attempt": "fix 1b",
+ "collected_utc": "2026-09-11T17:21:49Z",
+ "deny_list": {
+  "bytes": 87,
+  "ids": 1,
+  "path": "/workspace/feeder/deny.txt",
+  "sha256": "0f12fb97b2ace759e52b0febb89a7329cdc92695ac2bc7f4496fa9bdc76f7a2a"
+ },
+ "discovery_loop": {
+  "path": "/workspace/feeder/discover_loop.sh",
+  "period": "timeout 600 python3 discover_sources.py 30; sleep 3600",
+  "sha256": "09864e9f1eb3b5e518d6fe8dbf4fec493da768ae98ca9c9eec7435ee90b08ef7"
+ },
+ "discovery_recipe": {
+  "bytes": 3477,
+  "eligibility_gate_applied_by_this_row": true,
+  "eligibility_gate_line": "53:        if not vid or vid in S or vid in DENY or dur<2400: continue",
+  "fmt_write_line": "54:        rows.append(f\"{sport} {tag} {vid} 270 {int(dur)}\"); S.add(vid); added+=1",
+  "format_probe_calls_in_recipe": 0,
+  "max_new_per_run": 30,
+  "min_duration_s": 2400,
+  "mtime_utc": "2026-09-11T10:23:04Z",
+  "path": "/workspace/feeder/discover_sources.py",
+  "queries": 27,
+  "search_n": 15,
+  "sha256": "00504c02ae66c207ba9f7e7e7b9d7631b7005efee812f1df25c374a272b6f52f",
+  "written_fmt_literal": "270"
+ },
+ "feeder": {
+  "access_settings": "no cookies, no auth, --no-playlist --no-warnings",
+  "bytes": 11355,
+  "change_since_attempt_1": "itag 232 was inserted into the selector chain at 17:01:37Z by another row; the fmt gate at line 127 and the decoded probe bar at line 179 are unchanged",
+  "decoded_probe_bar_line_179": "codec must be h264 and height >= 720, else DROP reason=probe-reject",
+  "mtime_utc": "2026-09-11T17:01:37Z",
+  "path": "/workspace/feeder/feeder_pod.sh",
+  "prefer_30fps_relaunch_utc": "2026-09-11T13:08:37Z (relaunch.log 'prefer-30fps selector (G397)')",
+  "probe_eligibility_line_127": "case \"$fmt\" in 270|312) ;; *) log \"SKIP $ytid reason=fmt-not-hls fmt=$fmt\"; return 1;; esac",
+  "selector_line_156": "yt-dlp -f \"$fmt/232/312/301/311/300/bv*[protocol*=m3u8][height>=720][height<=1080]\" --no-playlist --no-warnings",
+  "sha256": "96f897fed3fe0455300f4977267ff3b6cd801f000ba9988c41f6e3997747291a"
+ },
+ "pod": "213.192.2.120:40117 host d69708b8b854",
+ "raw_receipt": "runtime_receipts/premise_raw.txt",
+ "raw_receipt_sha256": "c279e958896b699ff0e142fea62857bce3c572eb1c09956a60f9d03dba4ff216",
+ "tool_identity": {
+  "discovery_argv": "yt-dlp --flat-playlist -j --no-warnings ytsearch15:<query>",
+  "listing_argv": "yt-dlp -F --no-playlist --no-warnings -- <url>  (timeout 120 s, one attempt)",
+  "metadata_argv": "yt-dlp -J --no-playlist --no-warnings --skip-download -- <url>  (timeout 60 s, one attempt)",
+  "pod_helper": "scripts/platformkit/tracking/g405_pod_probe.py sha256 7e6df92db6ff81387798f9fd0722f9170d825975bcdaf7bc22183c6a004b5c7b",
+  "probe_spacing_s": 7,
+  "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+  "yt_dlp_path": "/usr/local/bin/yt-dlp",
+  "yt_dlp_sha256": "9f52a4db6862cf898cc0f14687fb09c968384a3f23010fc61d803ec0ed84912a",
+  "yt_dlp_version": "2026.08.19"
+ }
+}

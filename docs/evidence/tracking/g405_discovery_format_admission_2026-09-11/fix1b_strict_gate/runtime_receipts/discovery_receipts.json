@@ -1,0 +1,760 @@
+{
+ "eligibility_gate": {
+  "applied_before_the_draw": true,
+  "counts": {
+   "deny_ids": 1,
+   "discover_log_ids": 179,
+   "discover_log_only_additional": 18,
+   "ledger_ids": 292,
+   "live_exact_seen_ledger_plus_sources": 292,
+   "max_per_query": 30,
+   "min_duration_s": 2400,
+   "seen_union": 310,
+   "sources_txt_ids": 6
+  },
+  "criteria": "seen ids (ledger game_id + sources.txt + discover.log), deny.txt, duration >= 2400 s, MAX per query",
+  "eligible_rows": 163,
+  "inputs": {
+   "deny.txt": {
+    "bytes": 87,
+    "exists": true,
+    "path": "/workspace/feeder/deny.txt",
+    "sha256": "0f12fb97b2ace759e52b0febb89a7329cdc92695ac2bc7f4496fa9bdc76f7a2a"
+   },
+   "discover.log": {
+    "bytes": 37589,
+    "exists": true,
+    "path": "/workspace/feeder/discover.log",
+    "sha256": "554306e42a09c569a6264f22102f4f36aaf00eb9451467fa2e7b70213c98963b"
+   },
+   "sources.txt": {
+    "bytes": 233,
+    "exists": true,
+    "path": "/workspace/feeder/sources.txt",
+    "sha256": "030c0f570e58fdb705ef5044132192a34c7d46f7e05bf2e27fbe7273c2d6f833"
+   },
+   "track_daemon_ledger.jsonl": {
+    "bytes": 2685386,
+    "exists": true,
+    "path": "/workspace/data/tracking/track_daemon_ledger.jsonl",
+    "sha256": "cd3495559802c9e373755a68473e9a05f1097ce2b3e528fe36d1009a0fd85aef"
+   }
+  },
+  "live_max_is_run_wide_recorded_not_applied_as_eligibility": true,
+  "reason_tally": {
+   "duration_lt_2400": 78,
+   "eligible": 163,
+   "seen_in_ledger_or_queue": 164
+  },
+  "returned_rows": 405
+ },
+ "queries": [
+  [
+   "nba",
+   ".",
+   "NBA full game replay 2025"
+  ],
+  [
+   "nba",
+   ".",
+   "NBA full game 2024"
+  ],
+  [
+   "wnba",
+   ".",
+   "WNBA full game 2025"
+  ],
+  [
+   "ncaa_basketball",
+   ".",
+   "NCAA basketball full game 2025"
+  ],
+  [
+   "ncaa_basketball",
+   ".",
+   "college basketball full game replay"
+  ],
+  [
+   "basketball",
+   "euroleague",
+   "EuroLeague full game 2025"
+  ],
+  [
+   "basketball",
+   "fiba",
+   "FIBA full game 2025"
+  ],
+  [
+   "basketball",
+   "acb",
+   "Liga ACB partido completo"
+  ],
+  [
+   "basketball",
+   "gleague",
+   "G League full game 2025"
+  ],
+  [
+   "basketball",
+   "cba",
+   "CBA basketball full game"
+  ],
+  [
+   "basketball",
+   "gleague",
+   "NBA G League full game"
+  ],
+  [
+   "wnba",
+   ".",
+   "WNBA full game replay 2025"
+  ],
+  [
+   "basketball",
+   "eurocup",
+   "EuroCup full game replay"
+  ],
+  [
+   "basketball",
+   "bcl",
+   "Basketball Champions League full game"
+  ],
+  [
+   "basketball",
+   "nbl",
+   "NBL Australia full game replay"
+  ],
+  [
+   "basketball",
+   "lba",
+   "Lega Basket Serie A partita completa"
+  ],
+  [
+   "basketball",
+   "betclic",
+   "Betclic Elite match complet basket"
+  ],
+  [
+   "ncaa_basketball",
+   "ncaaw",
+   "NCAA women basketball full game replay"
+  ],
+  [
+   "nba",
+   "summerleague",
+   "NBA Summer League full game 2025"
+  ],
+  [
+   "basketball",
+   "eurobasket",
+   "FIBA EuroBasket 2025 full game"
+  ],
+  [
+   "basketball",
+   "fibawc",
+   "FIBA World Cup 2023 full game"
+  ],
+  [
+   "ncaa_basketball",
+   ".",
+   "Big East basketball full game replay"
+  ],
+  [
+   "ncaa_basketball",
+   ".",
+   "Pac-12 basketball full game replay"
+  ],
+  [
+   "basketball",
+   "bleague",
+   "B.League full game"
+  ],
+  [
+   "basketball",
+   "kbl",
+   "KBL full game replay"
+  ],
+  [
+   "nba",
+   ".",
+   "NBA preseason full game 2025"
+  ],
+  [
+   "ncaa_basketball",
+   ".",
+   "NCAA tournament full game replay 2024"
+  ]
+ ],
+ "recipe": "/workspace/feeder/discover_sources.py",
+ "recipe_sha256": "00504c02ae66c207ba9f7e7e7b9d7631b7005efee812f1df25c374a272b6f52f",
+ "runs": [
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:NBA full game replay 2025"
+   ],
+   "elapsed_s": 1.489,
+   "eligible_rows": 0,
+   "end_utc": "2026-09-11T17:22:12Z",
+   "query": "NBA full game replay 2025",
+   "returncode": 0,
+   "sport": "nba",
+   "start_utc": "2026-09-11T17:22:11Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "a1a06c0ebdafe129badbe0fe0a6e2dae148d8fd8d513d61e29dc32ba9d4b7c71",
+   "tag": ".",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:NBA full game 2024"
+   ],
+   "elapsed_s": 1.409,
+   "eligible_rows": 0,
+   "end_utc": "2026-09-11T17:22:17Z",
+   "query": "NBA full game 2024",
+   "returncode": 0,
+   "sport": "nba",
+   "start_utc": "2026-09-11T17:22:15Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "61ac56e7dccf730b30c3c756997097025428d55146d8e595f2034b5ab6b295f7",
+   "tag": ".",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:WNBA full game 2025"
+   ],
+   "elapsed_s": 1.618,
+   "eligible_rows": 0,
+   "end_utc": "2026-09-11T17:22:21Z",
+   "query": "WNBA full game 2025",
+   "returncode": 0,
+   "sport": "wnba",
+   "start_utc": "2026-09-11T17:22:20Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "2cd19975baaa237456dacded201e21c14c3d18862f2b16e27f210370b3f50328",
+   "tag": ".",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:NCAA basketball full game 2025"
+   ],
+   "elapsed_s": 1.989,
+   "eligible_rows": 0,
+   "end_utc": "2026-09-11T17:22:26Z",
+   "query": "NCAA basketball full game 2025",
+   "returncode": 0,
+   "sport": "ncaa_basketball",
+   "start_utc": "2026-09-11T17:22:24Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "06a23c254f62a18d8d575eaac2e31f55ba07d3634ae85e56ab724c123f090175",
+   "tag": ".",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:college basketball full game replay"
+   ],
+   "elapsed_s": 1.469,
+   "eligible_rows": 0,
+   "end_utc": "2026-09-11T17:22:31Z",
+   "query": "college basketball full game replay",
+   "returncode": 0,
+   "sport": "ncaa_basketball",
+   "start_utc": "2026-09-11T17:22:29Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "9536186b91c109211807750ba645c8231f8db248858ed3f11e4342790beea3c7",
+   "tag": ".",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:EuroLeague full game 2025"
+   ],
+   "elapsed_s": 5.161,
+   "eligible_rows": 1,
+   "end_utc": "2026-09-11T17:22:39Z",
+   "query": "EuroLeague full game 2025",
+   "returncode": 0,
+   "sport": "basketball",
+   "start_utc": "2026-09-11T17:22:34Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "d2734ea610775fd378d52e51ca4c7de15f3ec94fb3e6b3b28ea9a19af93b3f40",
+   "tag": "euroleague",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:FIBA full game 2025"
+   ],
+   "elapsed_s": 1.312,
+   "eligible_rows": 1,
+   "end_utc": "2026-09-11T17:22:43Z",
+   "query": "FIBA full game 2025",
+   "returncode": 0,
+   "sport": "basketball",
+   "start_utc": "2026-09-11T17:22:42Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "a58279e367a9bdc1455bfd2a473accc8f7b6c15264ffbcae34a5db370f59254a",
+   "tag": "fiba",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:Liga ACB partido completo"
+   ],
+   "elapsed_s": 1.11,
+   "eligible_rows": 1,
+   "end_utc": "2026-09-11T17:22:47Z",
+   "query": "Liga ACB partido completo",
+   "returncode": 0,
+   "sport": "basketball",
+   "start_utc": "2026-09-11T17:22:46Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "d5f20e04b16e9184d426834544b3e886195055f612eec43409b98ae8d7e30e83",
+   "tag": "acb",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:G League full game 2025"
+   ],
+   "elapsed_s": 1.318,
+   "eligible_rows": 0,
+   "end_utc": "2026-09-11T17:22:52Z",
+   "query": "G League full game 2025",
+   "returncode": 0,
+   "sport": "basketball",
+   "start_utc": "2026-09-11T17:22:50Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "66f9b5c872a02026296f62e4d2cab2b8b0bf7defcb3c44ab37c082d5b1b624c7",
+   "tag": "gleague",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:CBA basketball full game"
+   ],
+   "elapsed_s": 1.402,
+   "eligible_rows": 1,
+   "end_utc": "2026-09-11T17:22:56Z",
+   "query": "CBA basketball full game",
+   "returncode": 0,
+   "sport": "basketball",
+   "start_utc": "2026-09-11T17:22:55Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "043aaae9d995366defeb712ad0347b4564737855bc9a5fba208dace4dc709022",
+   "tag": "cba",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:NBA G League full game"
+   ],
+   "elapsed_s": 1.441,
+   "eligible_rows": 8,
+   "end_utc": "2026-09-11T17:23:01Z",
+   "query": "NBA G League full game",
+   "returncode": 0,
+   "sport": "basketball",
+   "start_utc": "2026-09-11T17:22:59Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "f1ad96586141d966932e5315cfe5707287e98633255d5ad7e92d9a265fe81048",
+   "tag": "gleague",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:WNBA full game replay 2025"
+   ],
+   "elapsed_s": 1.33,
+   "eligible_rows": 6,
+   "end_utc": "2026-09-11T17:23:05Z",
+   "query": "WNBA full game replay 2025",
+   "returncode": 0,
+   "sport": "wnba",
+   "start_utc": "2026-09-11T17:23:04Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "834309011b5f29afaa454d5f1a722216aecfa1473a87936528e4bcb3c56bcf5b",
+   "tag": ".",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:EuroCup full game replay"
+   ],
+   "elapsed_s": 1.413,
+   "eligible_rows": 12,
+   "end_utc": "2026-09-11T17:23:09Z",
+   "query": "EuroCup full game replay",
+   "returncode": 0,
+   "sport": "basketball",
+   "start_utc": "2026-09-11T17:23:08Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "830a0747f730c3aa5d9e5098cd28ca9b701080341fc3441b702452ea64129409",
+   "tag": "eurocup",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:Basketball Champions League full game"
+   ],
+   "elapsed_s": 1.374,
+   "eligible_rows": 14,
+   "end_utc": "2026-09-11T17:23:14Z",
+   "query": "Basketball Champions League full game",
+   "returncode": 0,
+   "sport": "basketball",
+   "start_utc": "2026-09-11T17:23:12Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "4bb1915144b7bc9cd85b4bf95df47f6bf500263647a3a5e0ef6f9eaf81cfc81d",
+   "tag": "bcl",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:NBL Australia full game replay"
+   ],
+   "elapsed_s": 1.286,
+   "eligible_rows": 10,
+   "end_utc": "2026-09-11T17:23:18Z",
+   "query": "NBL Australia full game replay",
+   "returncode": 0,
+   "sport": "basketball",
+   "start_utc": "2026-09-11T17:23:17Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "dbd1dfd6eb406fda5569eeebb1ac28e18e241bf3b670d1f7b0463fa076b56f88",
+   "tag": "nbl",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:Lega Basket Serie A partita completa"
+   ],
+   "elapsed_s": 1.223,
+   "eligible_rows": 11,
+   "end_utc": "2026-09-11T17:23:22Z",
+   "query": "Lega Basket Serie A partita completa",
+   "returncode": 0,
+   "sport": "basketball",
+   "start_utc": "2026-09-11T17:23:21Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "07d0ad6756ec9fdc0838d693fd9b189bdc5e557660839f3606af4cbd35ec9354",
+   "tag": "lba",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:Betclic Elite match complet basket"
+   ],
+   "elapsed_s": 1.235,
+   "eligible_rows": 8,
+   "end_utc": "2026-09-11T17:23:26Z",
+   "query": "Betclic Elite match complet basket",
+   "returncode": 0,
+   "sport": "basketball",
+   "start_utc": "2026-09-11T17:23:25Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "19c69c0677796f58ea67cf4643e756c3ac4ec8905f6604967649fc121128dc69",
+   "tag": "betclic",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:NCAA women basketball full game replay"
+   ],
+   "elapsed_s": 1.275,
+   "eligible_rows": 11,
+   "end_utc": "2026-09-11T17:23:31Z",
+   "query": "NCAA women basketball full game replay",
+   "returncode": 0,
+   "sport": "ncaa_basketball",
+   "start_utc": "2026-09-11T17:23:29Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "ebfbbdfedad1a7a801c910f177b01d5dd0de291c8ba62df4edf0d71444edc314",
+   "tag": "ncaaw",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:NBA Summer League full game 2025"
+   ],
+   "elapsed_s": 1.439,
+   "eligible_rows": 5,
+   "end_utc": "2026-09-11T17:23:35Z",
+   "query": "NBA Summer League full game 2025",
+   "returncode": 0,
+   "sport": "nba",
+   "start_utc": "2026-09-11T17:23:34Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "507db23eaa1be6f1e50f6b2f3d5d3bbb8d16385366057e8d1ea26ef365f7975c",
+   "tag": "summerleague",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:FIBA EuroBasket 2025 full game"
+   ],
+   "elapsed_s": 1.369,
+   "eligible_rows": 6,
+   "end_utc": "2026-09-11T17:23:40Z",
+   "query": "FIBA EuroBasket 2025 full game",
+   "returncode": 0,
+   "sport": "basketball",
+   "start_utc": "2026-09-11T17:23:38Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "2e403b6e43d1893090110a81794cdffa7bd51949d2019e784f99a2fdcd0b752f",
+   "tag": "eurobasket",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:FIBA World Cup 2023 full game"
+   ],
+   "elapsed_s": 1.286,
+   "eligible_rows": 15,
+   "end_utc": "2026-09-11T17:23:44Z",
+   "query": "FIBA World Cup 2023 full game",
+   "returncode": 0,
+   "sport": "basketball",
+   "start_utc": "2026-09-11T17:23:43Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "34f7ee6b3d44c0e80457542e7e06523f72f59ab6a3dc8fa425b62e9eab0c996f",
+   "tag": "fibawc",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:Big East basketball full game replay"
+   ],
+   "elapsed_s": 1.149,
+   "eligible_rows": 12,
+   "end_utc": "2026-09-11T17:23:48Z",
+   "query": "Big East basketball full game replay",
+   "returncode": 0,
+   "sport": "ncaa_basketball",
+   "start_utc": "2026-09-11T17:23:47Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "00a528e46055aa1fcaa3be1986f5782b858865272a0c417c8c75e7f862a8aa38",
+   "tag": ".",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:Pac-12 basketball full game replay"
+   ],
+   "elapsed_s": 1.348,
+   "eligible_rows": 5,
+   "end_utc": "2026-09-11T17:23:52Z",
+   "query": "Pac-12 basketball full game replay",
+   "returncode": 0,
+   "sport": "ncaa_basketball",
+   "start_utc": "2026-09-11T17:23:51Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "0db7d00b60a13574db3ad570fcb63dc1133d7f7cadb5ace5b43b970a7b4ef086",
+   "tag": ".",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:B.League full game"
+   ],
+   "elapsed_s": 1.404,
+   "eligible_rows": 13,
+   "end_utc": "2026-09-11T17:23:57Z",
+   "query": "B.League full game",
+   "returncode": 0,
+   "sport": "basketball",
+   "start_utc": "2026-09-11T17:23:55Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "105b20ce21ff5897aca8bb804c4b1e63d472270600494539c65224b6b65a965f",
+   "tag": "bleague",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:KBL full game replay"
+   ],
+   "elapsed_s": 1.348,
+   "eligible_rows": 8,
+   "end_utc": "2026-09-11T17:24:01Z",
+   "query": "KBL full game replay",
+   "returncode": 0,
+   "sport": "basketball",
+   "start_utc": "2026-09-11T17:24:00Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "f9c25168941537f45d08c1f4d72d7fab62a594a37a757d996c2c24160656ab41",
+   "tag": "kbl",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:NBA preseason full game 2025"
+   ],
+   "elapsed_s": 1.913,
+   "eligible_rows": 6,
+   "end_utc": "2026-09-11T17:24:06Z",
+   "query": "NBA preseason full game 2025",
+   "returncode": 0,
+   "sport": "nba",
+   "start_utc": "2026-09-11T17:24:04Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "9257d3348b8ec8395eb035f407612116f46e920750422176d53a876890f4bd17",
+   "tag": ".",
+   "timed_out": false
+  },
+  {
+   "argv": [
+    "yt-dlp",
+    "--flat-playlist",
+    "-j",
+    "--no-warnings",
+    "ytsearch15:NCAA tournament full game replay 2024"
+   ],
+   "elapsed_s": 1.334,
+   "eligible_rows": 9,
+   "end_utc": "2026-09-11T17:24:10Z",
+   "query": "NCAA tournament full game replay 2024",
+   "returncode": 0,
+   "sport": "ncaa_basketball",
+   "start_utc": "2026-09-11T17:24:09Z",
+   "stderr": "",
+   "stdout_lines": 15,
+   "stdout_sha256": "48647134dca9d3f799d693e46f64a8f63645339a7cbc4921877f094211bc0ac2",
+   "tag": ".",
+   "timed_out": false
+  }
+ ],
+ "search_n": 15
+}

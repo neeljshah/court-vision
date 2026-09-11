@@ -1,0 +1,129 @@
+{
+ "NO": 12,
+ "UNKNOWN": 1,
+ "YES": 17,
+ "bucket_counts": {
+  "1080p30": 15,
+  "1080p60": 3,
+  "720p30": 17,
+  "720p60": 4
+ },
+ "coverage_yes_over_planned": 0.5667,
+ "hls_h264_720_1080_fps_set_counts": {
+  "24": 1,
+  "25": 5,
+  "30": 17,
+  "60": 4,
+  "none": 3
+ },
+ "known_denominator": 29,
+ "per_query": {
+  "basketball/B.League full game": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 3,
+   "n": 3
+  },
+  "basketball/Basketball Champions League full game": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 2
+  },
+  "basketball/Betclic Elite match complet basket": {
+   "NO": 1,
+   "UNKNOWN": 1,
+   "YES": 0,
+   "n": 2
+  },
+  "basketball/EuroCup full game replay": {
+   "NO": 2,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 2
+  },
+  "basketball/FIBA EuroBasket 2025 full game": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 1
+  },
+  "basketball/FIBA World Cup 2023 full game": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 3,
+   "n": 3
+  },
+  "basketball/KBL full game replay": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 2,
+   "n": 2
+  },
+  "basketball/Lega Basket Serie A partita completa": {
+   "NO": 2,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 2
+  },
+  "basketball/NBA G League full game": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 1
+  },
+  "basketball/NBL Australia full game replay": {
+   "NO": 2,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 2
+  },
+  "nba/NBA Summer League full game 2025": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 1
+  },
+  "nba/NBA preseason full game 2025": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 1
+  },
+  "ncaa_basketball/Big East basketball full game replay": {
+   "NO": 2,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 2
+  },
+  "ncaa_basketball/NCAA tournament full game replay 2024": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 2,
+   "n": 2
+  },
+  "ncaa_basketball/NCAA women basketball full game replay": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 2
+  },
+  "ncaa_basketball/Pac-12 basketball full game replay": {
+   "NO": 1,
+   "UNKNOWN": 0,
+   "YES": 0,
+   "n": 1
+  },
+  "wnba/WNBA full game replay 2025": {
+   "NO": 0,
+   "UNKNOWN": 0,
+   "YES": 1,
+   "n": 1
+  }
+ },
+ "planned_denominator": 30,
+ "probed_denominator": 30,
+ "projected_loss_proven": 12,
+ "projected_loss_under_30_only_max": 13,
+ "supports_30_only_admission": false
+}

@@ -1,0 +1,55 @@
+[youtube] Extracting URL: https://www.youtube.com/watch?v=xRuH1qSD2dE
+[youtube] xRuH1qSD2dE: Downloading webpage
+[youtube] xRuH1qSD2dE: Downloading visionos player API JSON
+[youtube] xRuH1qSD2dE: Downloading m3u8 information
+[info] Available formats for xRuH1qSD2dE:
+ID      EXT   RESOLUTION FPS CH |   FILESIZE   TBR PROTO | VCODEC          VBR ACODEC      ABR ASR MORE INFO
+------------------------------------------------------------------------------------------------------------------------------
+sb3     mhtml 48x27        0    |                  mhtml | images                                  storyboard
+sb2     mhtml 80x45        0    |                  mhtml | images                                  storyboard
+sb1     mhtml 160x90       0    |                  mhtml | images                                  storyboard
+sb0     mhtml 320x180      0    |                  mhtml | images                                  storyboard
+233     mp4   audio only        |                  m3u8  | audio only          unknown             [en] Default, low
+234     mp4   audio only        |                  m3u8  | audio only          unknown             [en] Default, high
+139-drc m4a   audio only      2 |   63.82MiB   49k https | audio only          mp4a.40.5   49k 22k [en] low, DRC, m4a_dash
+249-drc webm  audio only      2 |   62.74MiB   48k https | audio only          opus        48k 48k [en] low, DRC, webm_dash
+250-drc webm  audio only      2 |   79.11MiB   60k https | audio only          opus        60k 48k [en] low, DRC, webm_dash
+139     m4a   audio only      2 |   63.82MiB   49k https | audio only          mp4a.40.5   49k 22k [en] low, m4a_dash
+249     webm  audio only      2 |   62.34MiB   48k https | audio only          opus        48k 48k [en] low, webm_dash
+250     webm  audio only      2 |   78.65MiB   60k https | audio only          opus        60k 48k [en] low, webm_dash
+140-drc m4a   audio only      2 |  169.39MiB  129k https | audio only          mp4a.40.2  129k 44k [en] medium, DRC, m4a_dash
+251-drc webm  audio only      2 |  152.57MiB  117k https | audio only          opus       117k 48k [en] medium, DRC, webm_dash
+140     m4a   audio only      2 |  169.39MiB  129k https | audio only          mp4a.40.2  129k 44k [en] medium, m4a_dash
+251     webm  audio only      2 |  152.00MiB  116k https | audio only          opus       116k 48k [en] medium, webm_dash
+602     mp4   256x144     13    | ~200.94MiB  154k m3u8  | vp09.00.10.08  154k video only
+269     mp4   256x144     25    | ~479.82MiB  367k m3u8  | avc1.4D400C    367k video only
+160     mp4   256x144     25    |  112.71MiB   86k https | avc1.4d400c     86k video only          144p, mp4_dash
+603     mp4   256x144     25    | ~252.84MiB  193k m3u8  | vp09.00.11.08  193k video only
+278     webm  256x144     25    |   97.22MiB   74k https | vp9             74k video only          144p, webm_dash
+394     mp4   256x144     25    |   83.07MiB   63k https | av01.0.00M.08   63k video only          144p, mp4_dash
+229     mp4   426x240     25    | ~964.01MiB  737k m3u8  | avc1.4D4015    737k video only
+133     mp4   426x240     25    |  223.89MiB  171k https | avc1.4d4015    171k video only          240p, mp4_dash
+604     mp4   426x240     25    | ~604.79MiB  462k m3u8  | vp09.00.20.08  462k video only
+242     webm  426x240     25    |  185.24MiB  142k https | vp9            142k video only          240p, webm_dash
+395     mp4   426x240     25    |  190.78MiB  146k https | av01.0.00M.08  146k video only          240p, mp4_dash
+230     mp4   640x360     25    | ~  1.79GiB 1398k m3u8  | avc1.4D401E   1398k video only
+134     mp4   640x360     25    |  449.39MiB  343k https | avc1.4d401e    343k video only          360p, mp4_dash
+605     mp4   640x360     25    | ~  1.29GiB 1008k m3u8  | vp09.00.21.08 1008k video only
+243     webm  640x360     25    |  454.41MiB  347k https | vp9            347k video only          360p, webm_dash
+396     mp4   640x360     25    |  358.88MiB  274k https | av01.0.01M.08  274k video only          360p, mp4_dash
+231     mp4   854x480     25    | ~  2.62GiB 2047k m3u8  | avc1.4D401E   2047k video only
+135     mp4   854x480     25    |  682.55MiB  522k https | avc1.4d401e    522k video only          480p, mp4_dash
+606     mp4   854x480     25    | ~  1.87GiB 1467k m3u8  | vp09.00.30.08 1467k video only
+244     webm  854x480     25    |  635.20MiB  486k https | vp9            486k video only          480p, webm_dash
+397     mp4   854x480     25    |  620.90MiB  475k https | av01.0.04M.08  475k video only          480p, mp4_dash
+232     mp4   1280x720    25    | ~  4.85GiB 3796k m3u8  | avc1.4D401F   3796k video only
+136     mp4   1280x720    25    |    1.19GiB  935k https | avc1.4d401f    935k video only          720p, mp4_dash
+609     mp4   1280x720    25    | ~  4.03GiB 3151k m3u8  | vp09.00.31.08 3151k video only
+247     webm  1280x720    25    |    1.22GiB  955k https | vp9            955k video only          720p, webm_dash
+398     mp4   1280x720    25    |    1.09GiB  852k https | av01.0.05M.08  852k video only          720p, mp4_dash
+270     mp4   1920x1080   25    | ~  9.61GiB 7521k m3u8  | avc1.640028   7521k video only
+137     mp4   1920x1080   25    |    4.45GiB 3482k https | avc1.640028   3482k video only          1080p, mp4_dash
+614     mp4   1920x1080   25    | ~  7.32GiB 5729k m3u8  | vp09.00.40.08 5729k video only
+248     webm  1920x1080   25    |    2.08GiB 1627k https | vp9           1627k video only          1080p, webm_dash
+399     mp4   1920x1080   25    |    2.11GiB 1652k https | av01.0.08M.08 1652k video only          1080p, mp4_dash
+616     mp4   1920x1080   25    | ~  9.89GiB 7741k m3u8  | vp09.00.40.08 7741k video only          Premium

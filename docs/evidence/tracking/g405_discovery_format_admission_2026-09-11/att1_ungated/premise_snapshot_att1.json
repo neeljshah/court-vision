@@ -1,0 +1,50 @@
+{
+ "premise": "NOT FALSIFIED",
+ "before_condition_rerun_utc": "2026-09-11T16:41:40Z",
+ "question": "Does compatible-30fps evidence already exist at discovery for >= 30 current unique sources?",
+ "answer": "NO. Discovery records no rendition evidence at all.",
+ "quoted_before_condition_output": [
+  "discovery fmt write line -> 54:        rows.append(f\"{sport} {tag} {vid} 270 {int(dur)}\"); S.add(vid); added+=1",
+  "discover_sources_probe_calls 0",
+  "queue_fmt_values_other_than_270 0",
+  "ls: cannot access '/workspace/feeder/*format*': No such file or directory",
+  "ls: cannot access '/workspace/feeder/*rendition*': No such file or directory"
+ ],
+ "queue_paths_and_fields": {
+  "live_queue": "/workspace/feeder/sources.txt",
+  "line_schema": "sport tag ytid fmt dur (whitespace separated, 5 fields)",
+  "ledger": "/workspace/data/tracking/track_daemon_ledger.jsonl (field game_id = <tag->?<ytid>_s<offset>)",
+  "discovery_log": "/workspace/feeder/discover.log (lines 'NEW <sport> <tag> <ytid> <dur> <title>')",
+  "shadow_sidecar_owned_by_G405": "docs/evidence/tracking/g405_discovery_format_admission_2026-09-11/discovery_queue.jsonl (unused export; no consumer)"
+ },
+ "live_queue_snapshots_read_only": [
+  {"utc": "2026-09-11T16:32:39Z", "rows": 34, "bytes": 1196,
+   "sha256": "5ece5fe85bcd2500777a3141a9929657cea216a80e02bd5a29be20c7ffb1fcc7", "fmt_values": {"270": 34}},
+  {"utc": "2026-09-11T16:41:25Z", "rows": 32, "bytes": 1124,
+   "sha256": "fac992e7a7d7d371f37bdeca478332a2efb30dad88e1daba2680bc9e9704737f", "fmt_values": {"270": 32}}
+ ],
+ "live_queue_note": "sources.txt is the feeder's LIVE queue; it was read twice and never written. It shrank by 2 rows between reads (the feeder consumes it).",
+ "discovery_population_census": {
+  "discover_log_NEW_lines": 400, "discover_log_NEW_unique_ids": 179,
+  "discover_log_NEW_by_sport": {"basketball": 73, "nba": 151, "ncaa_basketball": 92, "wnba": 84},
+  "repeat_note": "400 NEW lines cover only 179 unique ids; ids re-enter after ledger prune/refill (see feeder_thin_refetch_loop). Repetition never increases n in this row.",
+  "ledger_rows": 2216, "ledger_unique_video_ids": 283
+ },
+ "feeder_activity": {"log_window_start_utc": "2026-09-10T15:11:25Z",
+  "fetch_start_total": 1155, "shipped_total": 1394, "failed_total": 727,
+  "fetch_start_2026_09_11": 808, "shipped_2026_09_11": 692, "failed_2026_09_11": 633,
+  "note": "counts are grep tallies over feeder.log (binary-matched lines counted with grep -a)"},
+ "bounded_discovery_pass": {
+  "utc_start": "2026-09-11T16:35:08Z", "utc_end": "2026-09-11T16:37:xxZ (see discovery_receipts.json runs)",
+  "queries": 27, "search_n": 15, "returned_rows": 405, "unique_source_ids": 365,
+  "downloaded": 0, "enqueued_to_live_feeder": 0,
+  "population_file": "discovery_population.jsonl",
+  "population_sha256": "4d5819cb4d5a11e963f07c5ed7fffce27e585bf91f55541b17cf05b64a8f62bc"},
+ "draw": {"size": 30, "rule": "floor(j*(N-1)/29+0.5), j=0..29 over unique rows sorted by competition/query/source_id",
+  "N": 365, "frozen_before_any_probe": true,
+  "draw_csv_sha256": "8f6b6db72b4b8b3c20a65f649853ee7b4e08b7d2b99b55cf113fc6b7859a11b4",
+  "duplicate_source_ids_in_draw": 0, "replacements_allowed": 0},
+ "sufficiency": "365 distinct basketball-family source ids >= 30 required; queries and access settings reproduced from the live recipe. PARTIAL not triggered.",
+ "NOT_VERIFIED": ["actual downloadability of any listed rendition",
+  "any future discovery population", "tracking quality of any source"]
+}

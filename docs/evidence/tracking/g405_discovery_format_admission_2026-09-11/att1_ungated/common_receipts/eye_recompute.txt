@@ -1,0 +1,45 @@
+# G405 independent eye recomputation -- awk over the raw yt-dlp -F tables
+# method: split each line on '|'; field1 -> id/ext/resolution/fps; field2 -> last token = protocol;
+#         field3 -> first token = vcodec. Qualify when height in [720,1080], fps in [29,31],
+#         protocol contains m3u8, vcodec starts avc1/h264. Independent of g405_formats.py.
+# collected_utc 2026-09-11T16:50:42Z
+draw_j source_id awk_qualifying_ids awk_verdict table_verdict agree
+0 0pKftc-Z0_k 232|270 YES YES yes
+1 y5rz-f3spww - NO NO yes
+2 mxV9XV3uwVs 232|270 YES YES yes
+3 SCuv58Dsehg - NO NO yes
+4 N-AM_AtzV1s - NO NO yes
+5 J6YFyipGQTQ - NO NO yes
+6 2sbib3tt90c - NO NO yes
+7 xRuH1qSD2dE - NO NO yes
+8 L2uZqxKTgVU 232|270 YES YES yes
+9 Q9JyBMHHm2Q 232|270 YES YES yes
+10 Bw-kLQF82_g - NO NO yes
+11 vgb11ZoSpE4 - NO NO yes
+12 bTLh4z-3ZmE - NO NO yes
+13 jXbV5rbuK9I - NO NO yes
+14 OHJgVogFtNE 232|270 YES YES yes
+15 Z9LZwPvEMTU - NO NO yes
+16 CdviIms2akE - NO NO yes
+17 vWF_p2syAoY - NO NO yes
+18 u1OWyy1C_i8 232 YES YES yes
+19 uJs693eNfuQ - NO NO yes
+20 h5pTl8fOM2U 232|270 YES YES yes
+21 pY5qP_RvHjg 232|270 YES YES yes
+22 r47nstLp4Eo - NO NO yes
+23 hLv8cwl0asQ 232|270 YES YES yes
+24 quW0Kn-ombo 232 YES YES yes
+25 wYEldEDV3dQ - NO NO yes
+26 lWJ8W_jjZ5s - NO NO yes
+27 s-0Y7aLxXgM - NO NO yes
+28 ouRk-j987wk - NO NO yes
+29 e3MKg537C3w 232 YES YES yes
+
+# reviewer statement
+# All 30 paired listing/metadata/sidecar cards were opened in even draw order
+# (cards/card_00_*.txt .. cards/card_29_*.txt), including every source with an
+# empty qualifying set. 30/30 agree with this independent awk derivation.
+# Scope: the awk pass re-derives existence from the raw -F listing bytes only.
+# The metadata side is bound separately by availability.csv
+# (listing_qualifying_ids vs metadata_qualifying_ids, 0 disagreements, 0 UNKNOWN).
+# 0 probes failed, 0 sources were replaced, 0 retries were issued.

@@ -1,0 +1,225 @@
+G405 card j=12 source_id=bTLh4z-3ZmE competition=basketball tag=kbl
+query=KBL full game replay discovered_at=2026-09-11T16:36:53Z probe_at=2026-09-11T16:42:31Z
+compatible_30fps=NO probe_status=OK error=none
+buckets 720p30=False 1080p30=False 720p60=False 1080p60=False
+qualifying_format_ids=none
+raw_inventory_digest=72c66db2a6cfd7fbd62137e194060681aa1e8aabd3c3801c104d2fdfb28551c3
+-- listing inventory (35 video rows) --
+  sb3      48x27        fps=0.0    proto=mhtml        vcodec=images
+  sb2      80x45        fps=1.0    proto=mhtml        vcodec=images
+  sb1      160x90       fps=1.0    proto=mhtml        vcodec=images
+  sb0      320x180      fps=1.0    proto=mhtml        vcodec=images
+  602      256x144      fps=13.0   proto=m3u8         vcodec=vp09.00.10.08
+  269      256x144      fps=25.0   proto=m3u8         vcodec=avc1.4D400C
+  160      256x144      fps=25.0   proto=https        vcodec=avc1.4d400c
+  603      256x144      fps=25.0   proto=m3u8         vcodec=vp09.00.11.08
+  278      256x144      fps=25.0   proto=https        vcodec=vp9
+  394      256x144      fps=25.0   proto=https        vcodec=av01.0.00M.08
+  229      426x240      fps=25.0   proto=m3u8         vcodec=avc1.4D4015
+  133      426x240      fps=25.0   proto=https        vcodec=avc1.4d4015
+  604      426x240      fps=25.0   proto=m3u8         vcodec=vp09.00.20.08
+  242      426x240      fps=25.0   proto=https        vcodec=vp9
+  395      426x240      fps=25.0   proto=https        vcodec=av01.0.00M.08
+  230      640x360      fps=25.0   proto=m3u8         vcodec=avc1.4D401E
+  134      640x360      fps=25.0   proto=https        vcodec=avc1.4d401e
+  605      640x360      fps=25.0   proto=m3u8         vcodec=vp09.00.21.08
+  243      640x360      fps=25.0   proto=https        vcodec=vp9
+  396      640x360      fps=25.0   proto=https        vcodec=av01.0.01M.08
+  231      854x480      fps=25.0   proto=m3u8         vcodec=avc1.4D401E
+  135      854x480      fps=25.0   proto=https        vcodec=avc1.4d401e
+  606      854x480      fps=25.0   proto=m3u8         vcodec=vp09.00.30.08
+  244      854x480      fps=25.0   proto=https        vcodec=vp9
+  397      854x480      fps=25.0   proto=https        vcodec=av01.0.04M.08
+  232      1280x720     fps=25.0   proto=m3u8         vcodec=avc1.64001F
+  136      1280x720     fps=25.0   proto=https        vcodec=avc1.64001f
+  609      1280x720     fps=25.0   proto=m3u8         vcodec=vp09.00.31.08
+  247      1280x720     fps=25.0   proto=https        vcodec=vp9
+  398      1280x720     fps=25.0   proto=https        vcodec=av01.0.05M.08
+  270      1920x1080    fps=25.0   proto=m3u8         vcodec=avc1.640028
+  137      1920x1080    fps=25.0   proto=https        vcodec=avc1.640028
+  614      1920x1080    fps=25.0   proto=m3u8         vcodec=vp09.00.40.08
+  248      1920x1080    fps=25.0   proto=https        vcodec=vp9
+  399      1920x1080    fps=25.0   proto=https        vcodec=av01.0.08M.08
+  --       -- metadata inventory (182 video rows) -- fps=None   proto=             vcodec=
+  sb3      48x27        fps=0.41841004184100417 proto=mhtml        vcodec=none
+  sb2      80x45        fps=0.5062761506276151 proto=mhtml        vcodec=none
+  sb1      160x90       fps=0.5062761506276151 proto=mhtml        vcodec=none
+  sb0      320x180      fps=0.5062761506276151 proto=mhtml        vcodec=none
+  233-0    audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-1    audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-2    audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-3    audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-4    audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-5    audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-6    audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-7    audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-8    audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-9    audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-10   audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-11   audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-12   audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-13   audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-14   audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-15   audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-16   audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-17   audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-18   audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-19   audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-0    audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-1    audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-2    audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-3    audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-4    audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-5    audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-6    audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-7    audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-8    audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-9    audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-10   audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-11   audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-12   audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-13   audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-14   audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-15   audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-16   audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-17   audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-18   audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-19   audio only   fps=None   proto=m3u8_native  vcodec=none
+  233-20   audio only   fps=None   proto=m3u8_native  vcodec=none
+  234-20   audio only   fps=None   proto=m3u8_native  vcodec=none
+  139-0    audio only   fps=None   proto=https        vcodec=none
+  139-1    audio only   fps=None   proto=https        vcodec=none
+  139-2    audio only   fps=None   proto=https        vcodec=none
+  139-3    audio only   fps=None   proto=https        vcodec=none
+  139-4    audio only   fps=None   proto=https        vcodec=none
+  139-5    audio only   fps=None   proto=https        vcodec=none
+  139-6    audio only   fps=None   proto=https        vcodec=none
+  139-7    audio only   fps=None   proto=https        vcodec=none
+  139-8    audio only   fps=None   proto=https        vcodec=none
+  139-9    audio only   fps=None   proto=https        vcodec=none
+  139-10   audio only   fps=None   proto=https        vcodec=none
+  139-11   audio only   fps=None   proto=https        vcodec=none
+  139-12   audio only   fps=None   proto=https        vcodec=none
+  139-13   audio only   fps=None   proto=https        vcodec=none
+  139-14   audio only   fps=None   proto=https        vcodec=none
+  139-15   audio only   fps=None   proto=https        vcodec=none
+  139-16   audio only   fps=None   proto=https        vcodec=none
+  139-17   audio only   fps=None   proto=https        vcodec=none
+  139-18   audio only   fps=None   proto=https        vcodec=none
+  139-19   audio only   fps=None   proto=https        vcodec=none
+  139-20   audio only   fps=None   proto=https        vcodec=none
+  249-0    audio only   fps=None   proto=https        vcodec=none
+  249-1    audio only   fps=None   proto=https        vcodec=none
+  249-2    audio only   fps=None   proto=https        vcodec=none
+  249-3    audio only   fps=None   proto=https        vcodec=none
+  249-4    audio only   fps=None   proto=https        vcodec=none
+  249-5    audio only   fps=None   proto=https        vcodec=none
+  249-6    audio only   fps=None   proto=https        vcodec=none
+  249-7    audio only   fps=None   proto=https        vcodec=none
+  249-8    audio only   fps=None   proto=https        vcodec=none
+  249-9    audio only   fps=None   proto=https        vcodec=none
+  249-10   audio only   fps=None   proto=https        vcodec=none
+  249-11   audio only   fps=None   proto=https        vcodec=none
+  249-12   audio only   fps=None   proto=https        vcodec=none
+  249-13   audio only   fps=None   proto=https        vcodec=none
+  249-14   audio only   fps=None   proto=https        vcodec=none
+  249-15   audio only   fps=None   proto=https        vcodec=none
+  249-16   audio only   fps=None   proto=https        vcodec=none
+  249-17   audio only   fps=None   proto=https        vcodec=none
+  249-18   audio only   fps=None   proto=https        vcodec=none
+  249-19   audio only   fps=None   proto=https        vcodec=none
+  250-0    audio only   fps=None   proto=https        vcodec=none
+  250-1    audio only   fps=None   proto=https        vcodec=none
+  250-2    audio only   fps=None   proto=https        vcodec=none
+  250-3    audio only   fps=None   proto=https        vcodec=none
+  250-4    audio only   fps=None   proto=https        vcodec=none
+  250-5    audio only   fps=None   proto=https        vcodec=none
+  250-6    audio only   fps=None   proto=https        vcodec=none
+  250-7    audio only   fps=None   proto=https        vcodec=none
+  250-8    audio only   fps=None   proto=https        vcodec=none
+  250-9    audio only   fps=None   proto=https        vcodec=none
+  250-10   audio only   fps=None   proto=https        vcodec=none
+  250-11   audio only   fps=None   proto=https        vcodec=none
+  250-12   audio only   fps=None   proto=https        vcodec=none
+  250-13   audio only   fps=None   proto=https        vcodec=none
+  250-14   audio only   fps=None   proto=https        vcodec=none
+  250-15   audio only   fps=None   proto=https        vcodec=none
+  250-16   audio only   fps=None   proto=https        vcodec=none
+  250-17   audio only   fps=None   proto=https        vcodec=none
+  250-18   audio only   fps=None   proto=https        vcodec=none
+  250-19   audio only   fps=None   proto=https        vcodec=none
+  249-20   audio only   fps=None   proto=https        vcodec=none
+  250-20   audio only   fps=None   proto=https        vcodec=none
+  140-0    audio only   fps=None   proto=https        vcodec=none
+  140-1    audio only   fps=None   proto=https        vcodec=none
+  140-2    audio only   fps=None   proto=https        vcodec=none
+  140-3    audio only   fps=None   proto=https        vcodec=none
+  140-4    audio only   fps=None   proto=https        vcodec=none
+  140-5    audio only   fps=None   proto=https        vcodec=none
+  140-6    audio only   fps=None   proto=https        vcodec=none
+  140-7    audio only   fps=None   proto=https        vcodec=none
+  140-8    audio only   fps=None   proto=https        vcodec=none
+  140-9    audio only   fps=None   proto=https        vcodec=none
+  140-10   audio only   fps=None   proto=https        vcodec=none
+  140-11   audio only   fps=None   proto=https        vcodec=none
+  140-12   audio only   fps=None   proto=https        vcodec=none
+  140-13   audio only   fps=None   proto=https        vcodec=none
+  140-14   audio only   fps=None   proto=https        vcodec=none
+  140-15   audio only   fps=None   proto=https        vcodec=none
+  140-16   audio only   fps=None   proto=https        vcodec=none
+  140-17   audio only   fps=None   proto=https        vcodec=none
+  140-18   audio only   fps=None   proto=https        vcodec=none
+  140-19   audio only   fps=None   proto=https        vcodec=none
+  140-20   audio only   fps=None   proto=https        vcodec=none
+  251-0    audio only   fps=None   proto=https        vcodec=none
+  251-1    audio only   fps=None   proto=https        vcodec=none
+  251-2    audio only   fps=None   proto=https        vcodec=none
+  251-3    audio only   fps=None   proto=https        vcodec=none
+  251-4    audio only   fps=None   proto=https        vcodec=none
+  251-5    audio only   fps=None   proto=https        vcodec=none
+  251-6    audio only   fps=None   proto=https        vcodec=none
+  251-7    audio only   fps=None   proto=https        vcodec=none
+  251-8    audio only   fps=None   proto=https        vcodec=none
+  251-9    audio only   fps=None   proto=https        vcodec=none
+  251-10   audio only   fps=None   proto=https        vcodec=none
+  251-11   audio only   fps=None   proto=https        vcodec=none
+  251-12   audio only   fps=None   proto=https        vcodec=none
+  251-13   audio only   fps=None   proto=https        vcodec=none
+  251-14   audio only   fps=None   proto=https        vcodec=none
+  251-15   audio only   fps=None   proto=https        vcodec=none
+  251-16   audio only   fps=None   proto=https        vcodec=none
+  251-17   audio only   fps=None   proto=https        vcodec=none
+  251-18   audio only   fps=None   proto=https        vcodec=none
+  251-19   audio only   fps=None   proto=https        vcodec=none
+  251-20   audio only   fps=None   proto=https        vcodec=none
+  602      256x144      fps=13.0   proto=m3u8_native  vcodec=vp09.00.10.08
+  269      256x144      fps=25.0   proto=m3u8_native  vcodec=avc1.4D400C
+  160      256x144      fps=25     proto=https        vcodec=avc1.4d400c
+  603      256x144      fps=25.0   proto=m3u8_native  vcodec=vp09.00.11.08
+  278      256x144      fps=25     proto=https        vcodec=vp9
+  394      256x144      fps=25     proto=https        vcodec=av01.0.00M.08
+  229      426x240      fps=25.0   proto=m3u8_native  vcodec=avc1.4D4015
+  133      426x240      fps=25     proto=https        vcodec=avc1.4d4015
+  604      426x240      fps=25.0   proto=m3u8_native  vcodec=vp09.00.20.08
+  242      426x240      fps=25     proto=https        vcodec=vp9
+  395      426x240      fps=25     proto=https        vcodec=av01.0.00M.08
+  230      640x360      fps=25.0   proto=m3u8_native  vcodec=avc1.4D401E
+  134      640x360      fps=25     proto=https        vcodec=avc1.4d401e
+  605      640x360      fps=25.0   proto=m3u8_native  vcodec=vp09.00.21.08
+  243      640x360      fps=25     proto=https        vcodec=vp9
+  396      640x360      fps=25     proto=https        vcodec=av01.0.01M.08
+  231      854x480      fps=25.0   proto=m3u8_native  vcodec=avc1.4D401E
+  135      854x480      fps=25     proto=https        vcodec=avc1.4d401e
+  606      854x480      fps=25.0   proto=m3u8_native  vcodec=vp09.00.30.08
+  244      854x480      fps=25     proto=https        vcodec=vp9
+  397      854x480      fps=25     proto=https        vcodec=av01.0.04M.08
+  232      1280x720     fps=25.0   proto=m3u8_native  vcodec=avc1.64001F
+  136      1280x720     fps=25     proto=https        vcodec=avc1.64001f
+  609      1280x720     fps=25.0   proto=m3u8_native  vcodec=vp09.00.31.08
+  247      1280x720     fps=25     proto=https        vcodec=vp9
+  398      1280x720     fps=25     proto=https        vcodec=av01.0.05M.08
+  270      1920x1080    fps=25.0   proto=m3u8_native  vcodec=avc1.640028
+  137      1920x1080    fps=25     proto=https        vcodec=avc1.640028
+  614      1920x1080    fps=25.0   proto=m3u8_native  vcodec=vp09.00.40.08
+  248      1920x1080    fps=25     proto=https        vcodec=vp9
+  399      1920x1080    fps=25     proto=https        vcodec=av01.0.08M.08

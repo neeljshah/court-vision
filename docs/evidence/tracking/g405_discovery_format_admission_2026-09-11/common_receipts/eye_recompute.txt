@@ -1,0 +1,35 @@
+G405 fix 1c independent recomputation -- regex over the raw -F bytes only
+generator: re '(\d+)x(\d+)\s+(fps)' + 'm3u8' in line + avc1|avc3|h264, height 720..1080, fps 29..31
+rule: HLS(m3u8) + avc1/avc3/h264 + height 720..1080 + fps 29..31
+j  source_id      indep_listing_yes  shipped_listing_yes  agree
+0  5_sp7Q8AHcU    True               True                 True
+1  BV7nede6C6k    False              False                True
+2  PDVNoSynU7Y    True               True                 True
+3  UjX5lMFlwhA    False              False                True
+4  WE47jDv_JLs    False              False                True
+5  Y8Twp7LgPb8    True               True                 True
+6  fixywKCSSpw    False              False                True
+7  g0lXjTWhxQo    True               True                 True
+8  iiBVytTmfKw    True               True                 True
+9  iwnByd_Iowk    True               True                 True
+10 mxV9XV3uwVs    True               True                 True
+11 pYCgIuP6-e0    True               True                 True
+12 qTISjk2vR1U    False              False                True
+13 y8UQxPOVdbE    True               True                 True
+14 -sZHSUp1WV4    False              False                True
+15 1MQ38PsSviw    False              False                True
+16 2UNJe2grSzo    False              False                True
+17 EIcNJX8JyA0    False              False                True
+18 OFbyNU6UQQs    True               True                 True
+19 T1LZvhP3AeM    False              False                True
+20 adN6aEmgK5Y    False              False                True
+21 df0jesjE3yk    False              False                True
+22 prxLSgEkawg    False              False                True
+23 rOdFBZJRwEo    False              False                True
+24 vq17CRazqJo    False              False                True
+25 zyV1NxdXo2c    False              False                True
+26 Lp3An-07otU    False              False                True
+27 -0XiPUZXBcM    False              False                True
+28 veDVH4y_6_c    False              False                True
+29 e3E_WApsLV4    True               True                 True
+agreement 30/30  shipped_state_counts {'YES': 11, 'NO': 19}
