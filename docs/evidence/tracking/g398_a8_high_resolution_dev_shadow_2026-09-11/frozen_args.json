@@ -1,0 +1,49 @@
+{
+  "arms": {
+    "A8_IMG1920": {
+      "agnostic_nms": false,
+      "augment": false,
+      "conf": 0.05,
+      "device": 0,
+      "half": true,
+      "imgsz": 1920,
+      "iou": 0.7,
+      "max_det": 300,
+      "verbose": false,
+      "visualize": false
+    },
+    "A8_IMG960": {
+      "agnostic_nms": false,
+      "augment": false,
+      "conf": 0.05,
+      "device": 0,
+      "half": true,
+      "imgsz": 960,
+      "iou": 0.7,
+      "max_det": 300,
+      "verbose": false,
+      "visualize": false
+    }
+  },
+  "bins": 30,
+  "centre_rule": "max(3 px, diameter_720p/2)",
+  "environment": {
+    "code": {
+      "scripts/platformkit/tracking/g363_score.py": "0788392d5136c897090a0e0ed2c4a95b53d2baf22a218cd9af95acd75cbc1e1b",
+      "scripts/platformkit/tracking/g390_sealed_input.py": "0aa3d9c79e724b77e76723b15525f483e9b32010224823bf65520d0d96e16924",
+      "scripts/platformkit/tracking/g398_prepare.py": "b0eeb8f79b7f183a1ed89e44c276a3795f4fa937c198051d454023ce2238a01c",
+      "scripts/platformkit/tracking/g398_run.py": "2d2b0046df81675a3b5332caa04d5ad26691b43042cd9a21e6f839ee6acf8b6e",
+      "scripts/platformkit/tracking/g398_score.py": "fe6ddc9a76724f246877145bf075b93a459863fd892773d6d0eba5ef439627fc"
+    },
+    "cuda": "12.8",
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "gpu_shared_with_tracking_daemon": true,
+    "python": "3.12.3",
+    "torch": "2.8.0+cu128",
+    "ultralytics": "8.4.146"
+  },
+  "order": "game,section,frame_index,frame_key",
+  "rank_rule": "rank-0 OBSERVED",
+  "transform": "native height to 720p",
+  "weights_sha256": "0f05a61618687bda2005ce4ac8343c5987f60ba0076245597de59f7380398762"
+}

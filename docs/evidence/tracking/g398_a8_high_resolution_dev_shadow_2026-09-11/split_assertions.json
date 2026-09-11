@@ -1,0 +1,49 @@
+{
+  "dev_box_games": 27,
+  "dev_boxes": 530,
+  "dev_games": 28,
+  "dev_keys": 1071,
+  "dev_labels": {
+    "ABSENT": 425,
+    "UNKNOWN": 115,
+    "VISIBLE": 531
+  },
+  "dev_sections": 28,
+  "dev_visible_without_training_box": 1,
+  "g394_reproduced_counts": {
+    "A0": [
+      0,
+      8,
+      302,
+      549
+    ],
+    "A10": [
+      84,
+      156,
+      218,
+      549
+    ],
+    "A8": [
+      90,
+      169,
+      212,
+      549
+    ]
+  },
+  "g394_source": "85a91a9f3:docs/evidence/tracking/g394_ball_person_negatives_2026-09-11/paired_frame_scores.csv",
+  "game_overlap": 0,
+  "heldout_games": 32,
+  "heldout_keys": 549,
+  "heldout_keys_absent_from_dev_tensors": 549,
+  "heldout_sections": 35,
+  "key_overlap": 0,
+  "preregistration_seal": "47d81b921baa4941e4db36601486bc88ddf6a6bf89dea77900364129bdaed700",
+  "sealed_input_hashes": {
+    "dev_boxes_v3.csv": "e151f932c3b4bffe84c89aa8fde18f08c346a1e3a6e65d27ed4b36f095b7b4fa",
+    "frames_v3.csv": "11797e162dd303441a7bde18e66fae4b404341fa2bd611678226182258d58945",
+    "reference_v3.csv": "ad00670c3601706d5d817de734fc85d82e8fdc379ea03b21bbe1a46e272ad09e"
+  },
+  "section_overlap": 0,
+  "sheet_manifest_rows": 1620,
+  "sheets_verified": 1071
+}

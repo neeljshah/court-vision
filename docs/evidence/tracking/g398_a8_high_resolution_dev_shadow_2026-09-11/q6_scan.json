@@ -1,0 +1,7 @@
+{
+  "findings": {},
+  "ledger_line_hits": 0,
+  "non_opaque_hits": 0,
+  "note": "patterns built from character codes; boundary rule matches the landed G394 scanner so digit runs inside measured floats stay opaque; no matched text is printed",
+  "scanned": 20
+}

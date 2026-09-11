@@ -1,0 +1,72 @@
+{
+  "arms": {
+    "A8_IMG1920": {
+      "agnostic_nms": false,
+      "augment": false,
+      "conf": 0.05,
+      "device": 0,
+      "half": true,
+      "imgsz": 1920,
+      "iou": 0.7,
+      "max_det": 300,
+      "verbose": false,
+      "visualize": false
+    },
+    "A8_IMG960": {
+      "agnostic_nms": false,
+      "augment": false,
+      "conf": 0.05,
+      "device": 0,
+      "half": true,
+      "imgsz": 960,
+      "iou": 0.7,
+      "max_det": 300,
+      "verbose": false,
+      "visualize": false
+    }
+  },
+  "bins": 30,
+  "charged_at": "2026-09-11T12:45:02Z",
+  "dev_keys": 1071,
+  "environment": {
+    "code": {
+      "scripts/platformkit/tracking/g363_score.py": "0788392d5136c897090a0e0ed2c4a95b53d2baf22a218cd9af95acd75cbc1e1b",
+      "scripts/platformkit/tracking/g390_sealed_input.py": "0aa3d9c79e724b77e76723b15525f483e9b32010224823bf65520d0d96e16924",
+      "scripts/platformkit/tracking/g398_prepare.py": "b0eeb8f79b7f183a1ed89e44c276a3795f4fa937c198051d454023ce2238a01c",
+      "scripts/platformkit/tracking/g398_run.py": "2d2b0046df81675a3b5332caa04d5ad26691b43042cd9a21e6f839ee6acf8b6e",
+      "scripts/platformkit/tracking/g398_score.py": "fe6ddc9a76724f246877145bf075b93a459863fd892773d6d0eba5ef439627fc"
+    },
+    "cuda": "12.8",
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "gpu_shared_with_tracking_daemon": true,
+    "python": "3.12.3",
+    "torch": "2.8.0+cu128",
+    "ultralytics": "8.4.146"
+  },
+  "gpu_stage_deadline_seconds": 3600.0,
+  "paired_launches": 1,
+  "policy": "one paired launch; failure or partial execution spends it",
+  "result": {
+    "bins": 30,
+    "detections": {
+      "A8_IMG1920": 431,
+      "A8_IMG960": 449
+    },
+    "gpu_stage_seconds": 42.854,
+    "keys_per_arm": {
+      "A8_IMG1920": 1071,
+      "A8_IMG960": 1071
+    },
+    "peak_reserved_bytes": {
+      "A8_IMG1920": 117440512,
+      "A8_IMG960": 117440512
+    }
+  },
+  "source_hashes": {
+    "a8_weights": "0f05a61618687bda2005ce4ac8343c5987f60ba0076245597de59f7380398762",
+    "dev_boxes_v3.csv": "e151f932c3b4bffe84c89aa8fde18f08c346a1e3a6e65d27ed4b36f095b7b4fa",
+    "frames_v3.csv": "11797e162dd303441a7bde18e66fae4b404341fa2bd611678226182258d58945",
+    "reference_v3.csv": "ad00670c3601706d5d817de734fc85d82e8fdc379ea03b21bbe1a46e272ad09e"
+  },
+  "state": "SPENT_COMPLETE"
+}
