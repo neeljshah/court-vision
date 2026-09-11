@@ -779,3 +779,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-12 | tracking | G408 | landed DONE PROPOSED ONLY: elapsed-PTS stop meets the inherited first-excluded extent bar 30/30 with zero overshoot on the exact G401 PTS stream (frame-count cap 29/30); PROPOSED diff validates PTS before the stride, applied nowhere, attaches to the user G401 decision; runtime past the 3000-frame flush NOT VERIFIED; four verify memos verbatim | DONE PROPOSED ONLY (codex-sol fix 1d ACCEPT)
 
+2026-09-12 | tracking | G407 | landed PARTIAL: 121 live sections under the original producer; no measured rendition class reaches 30 (720p30 26 / 1080p60 24 / 1080p30 22 / 720p25 11 / 720p60 5; 33 pruned UNKNOWN); requested itag is not a delivered rendition (30/109 requested-270 sections measured 720p); reads reconcile 111/111 + 10 UNKNOWN; held share 0.837 / 0.866; 60 fps sections lose 50 s to the cap; runtime replay NOT VALIDATED; three verify memos verbatim | PARTIAL (codex-sol fix 1c ACCEPT WITH CORRECTIONS applied)
+
