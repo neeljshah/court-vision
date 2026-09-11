@@ -1,0 +1,7 @@
+DISPATCHED run=1789139736923528300 tag=g400_rater_terra_09 wt=a7 at 2026-09-11T10:15:36-05:00
+STARTED pid=7644 birth=1789139736.928
+agent: I\u2019ll inspect each supplied frame in sequence and record only the requested per-frame game-ball judgment.
+agent: Completed the 30-frame ratings in the requested file.
+TURN_END turn.completed at 2026-09-11T10:17:27-05:00
+EXIT:0 gap=g400_rater_terra_09 at 2026-09-11T10:17:27-05:00
+DRAINED

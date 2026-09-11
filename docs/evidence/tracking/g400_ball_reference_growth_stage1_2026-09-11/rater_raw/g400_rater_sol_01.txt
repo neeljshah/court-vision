@@ -1,0 +1,30 @@
+3d5a0bd19341,ABSENT,,,,,player closeup no ball
+138e033d63aa,ABSENT,,,,,player closeup no ball
+0abe8cfee64d,ABSENT,,,,,portrait no game ball
+0b011222e482,ABSENT,,,,,crowd shot no ball
+07809652362f,ABSENT,,,,,player closeup no ball
+182e5023504d,ABSENT,,,,,players standing no ball
+1042d52e1cbc,ABSENT,,,,,graphic ball only
+03b180932589,ABSENT,,,,,wide shot no ball
+23b1ef6e2b1e,ABSENT,,,,,timeout huddle no ball
+12a12dda6f5a,VISIBLE,831,284,29,29,referee holding ball
+1a65f88cf152,VISIBLE,973,324,24,23,ball above shooter hands
+2b17699de394,ABSENT,,,,,broadcast graphic no ball
+05f397d61bd0,ABSENT,,,,,ball not visible in play
+0189696726ff,ABSENT,,,,,player closeup no ball
+0746f934c503,VISIBLE,1027,356,22,22,ball beside dribbler
+0e57a267d711,VISIBLE,1265,135,31,31,ball above backboard
+29d0046be8b9,ABSENT,,,,,challenge graphic no ball
+06c833af5a9f,VISIBLE,897,401,27,27,ball near lane player
+1c5bf1ecfc05,VISIBLE,1674,535,27,28,ball beside dribbler
+17c2b594ca85,VISIBLE,457,269,17,18,ball held in traffic
+0e1c3340aa20,VISIBLE,642,34,25,25,ball airborne above court
+3c7538e1555b,VISIBLE,1040,315,23,23,ball at dribblers hand
+25bbe8b42d58,ABSENT,,,,,player closeup no ball
+082ca7619ae6,VISIBLE,495,566,37,36,ball bouncing near baseline
+12261437a3cf,UNKNOWN,,,,,ball obscured in player cluster
+033833a16476,VISIBLE,307,426,19,19,ball held by handler
+057f93682285,ABSENT,,,,,crowd celebration no ball
+0e65af112bdf,VISIBLE,737,203,16,16,ball above advancing player
+07c32f0c1352,VISIBLE,844,311,23,23,ball bouncing at midcourt
+0b80a9c5446c,ABSENT,,,,,players watching offscreen ball

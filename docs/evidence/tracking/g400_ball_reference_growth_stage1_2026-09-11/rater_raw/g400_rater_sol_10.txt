@@ -1,0 +1,30 @@
+df0cc7a481e6,VISIBLE,188,365,20,20,ball by dribblers hand
+fa451cd89365,VISIBLE,807,768,44,52,ball bouncing by player
+a8cd18ebac6e,ABSENT,,,,,no game ball visible
+dadf3658d941,VISIBLE,1100,246,84,82,ball in flight
+f0391adc8c91,ABSENT,,,,,player closeup no ball
+ff21b7948ffa,VISIBLE,1147,812,30,42,ball on dribble
+db52cdc05e95,ABSENT,,,,,crowd shot no ball
+e03efbe6e55c,VISIBLE,1238,569,34,31,ball held at waist
+fcebeede233d,ABSENT,,,,,timeout bench no ball
+ef9873e1cee2,ABSENT,,,,,player closeup no ball
+edfc3a27039a,ABSENT,,,,,broadcast graphic only
+e3896f3c0e15,VISIBLE,857,226,20,19,ball above shooters hands
+d600a381c231,VISIBLE,1114,419,30,25,ball held by guard
+f682333a8174,UNKNOWN,,,,,ball obscured in live play
+de7e7b528ee8,ABSENT,,,,,player closeup no ball
+e6c889f52690,ABSENT,,,,,player closeup no ball
+fab772b26227,VISIBLE,1841,665,73,68,ball in replay frame
+eff19a93ae5a,VISIBLE,1408,331,53,48,ball held while advancing
+e24995035008,ABSENT,,,,,bench closeup no ball
+f9fa8d526a3f,ABSENT,,,,,player closeup no ball
+f57e29ea9b74,UNKNOWN,,,,,crossfade obscures ball
+e795691d00a2,VISIBLE,482,405,19,19,ball held near hip
+d74e44843a1e,UNKNOWN,,,,,distant inbound ball unclear
+ececbab9ec29,UNKNOWN,,,,,ball obscured near player
+d6c09fdfc10f,VISIBLE,467,321,28,25,referee holding ball
+e91eb80e92a5,VISIBLE,663,225,25,23,ball above players hands
+dfa1d06ff171,ABSENT,,,,,player closeup no ball
+f700a392832b,ABSENT,,,,,broadcast transition no ball
+e6384984a6cb,VISIBLE,466,308,59,55,ball secured by driver
+e2f13458a4da,ABSENT,,,,,player closeup no ball

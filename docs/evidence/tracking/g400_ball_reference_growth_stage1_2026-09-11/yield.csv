@@ -1,0 +1,7 @@
+metric,value,denominator,note
+accepted_audited_new_boxes,116,300,whole-stage denominator
+stage_yield,0.3867,300,never per-VISIBLE
+games_contributing,30,30,distinct new games with >=1 box
+old_boxes_preserved,530,530,unchanged
+reference_total_boxes,646,1500,milestone NOT met by this stage
+route_verdict,CLOSED AT LIMIT,120,<=120 accepted boxes closes the uniform route

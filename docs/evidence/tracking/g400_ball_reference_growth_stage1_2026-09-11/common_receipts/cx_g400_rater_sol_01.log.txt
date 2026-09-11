@@ -1,0 +1,11 @@
+DISPATCHED run=1789135622500099300 tag=g400_rater_sol_01 wt=a7 at 2026-09-11T09:07:02-05:00
+STARTED pid=29472 birth=1789135622.511
+agent: I\u2019ll inspect only the 30 specified frames in order, then append exactly 30 headerless CSV lines to the requested file.
+agent: All 30 frames have been visually reviewed. I\u2019m now recording the ratings in the supplied order with native-pixel boxes only where the ball is identifiable.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "(Get-Content -LiteralPath 'C:\\Users\\neelj\\nba-track-a7\\docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\rater_raw\\g400_rater_sol_01.txt' | Measure-Object -Line).Lines"
+out: 30
+
+agent: Completed and appended 30 ordered CSV ratings to [g400_rater_sol_01.txt](C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g400_ball_reference_growth_stage1_2026-09-11/rater_raw/g400_rater_sol_01.txt).
+TURN_END turn.completed at 2026-09-11T09:08:38-05:00
+EXIT:0 gap=g400_rater_sol_01 at 2026-09-11T09:08:39-05:00
+DRAINED

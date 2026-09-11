@@ -1,0 +1,15 @@
+field,value
+pc_python,Python 3.10.0
+pc_ffmpeg,ffmpeg version 8.1-full_build-www.gyan.dev
+pc_ffprobe,ffprobe version 8.1-full_build-www.gyan.dev
+pod_endpoint,213.192.2.120:40117
+pod_python,Python 3.12.3
+pod_ffprobe,ffprobe version 6.1.1-3ubuntu5
+codex_binary,C:/Users/neelj/AppData/Local/OpenAI/Codex/bin/7ac07f4ce733f89a/codex.exe
+codex_home_terra,C:/Users/neelj/.codex-a7
+codex_home_sol,C:/Users/neelj/.codex-sol
+model_reasoning_effort,medium
+receiver_dir,C:/Users/neelj/g400_receiver
+pod_scratch,/workspace/g400_scratch
+base_commit,3f063d997
+prereg_commit,6256cb133

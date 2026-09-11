@@ -1,0 +1,30 @@
+41a51cd4fdf6,VISIBLE,927,202,24,22,ball above rim
+51eea5c7d1ae,VISIBLE,1247,536,30,32,ball held at hip
+2b2846330888,ABSENT,,,,,portrait frame no ball
+19515e710e7e,ABSENT,,,,,dunk scene no ball visible
+2716dc44218a,ABSENT,,,,,player closeup no ball
+2b4f6c368a81,ABSENT,,,,,player closeup no ball
+1304b23cb1fa,ABSENT,,,,,broadcast graphic no game ball
+2a4d9f8c8208,ABSENT,,,,,player closeup no ball
+39c240e19a62,ABSENT,,,,,timeout bench no ball
+2a9a56d523ae,VISIBLE,815,66,23,21,ball in flight
+2537bfcdafca,VISIBLE,769,978,239,102,ball held at frame border
+3bc321be3c61,ABSENT,,,,,player closeup no ball
+1d2bf98d9be1,ABSENT,,,,,wide play no ball visible
+194783bc010e,VISIBLE,949,350,25,27,ball held near chest
+0ef480c1dc0b,VISIBLE,229,551,24,25,ball on dribble
+12bed787d4c9,VISIBLE,725,621,30,29,ball on dribble
+4707c6921618,ABSENT,,,,,split closeup no ball
+191c03d25116,VISIBLE,953,588,91,101,ball held for inbound
+21e7d20982ca,VISIBLE,1104,389,32,31,ball on dribble
+3caa6b932fb3,ABSENT,,,,,team graphic no game ball
+5cd4d5db412b,ABSENT,,,,,player closeup no ball
+40cd78f1e635,VISIBLE,477,297,23,24,ball held by passer
+472bac9e64a4,ABSENT,,,,,player closeup no ball
+0ccf703fa4e2,UNKNOWN,,,,,ball obscured in scramble
+2dec3133bd28,VISIBLE,263,306,21,21,ball on dribble
+1ce8531c56b5,UNKNOWN,,,,,ball unclear near handler
+3b83fd3eaec9,ABSENT,,,,,player closeup no ball
+1b70bb1d3efc,ABSENT,,,,,stoppage with no player ball
+14e9395b630c,VISIBLE,765,439,24,25,ball held before free throw
+23948de4dd82,UNKNOWN,,,,,ball obscured at frame border

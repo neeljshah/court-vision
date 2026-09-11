@@ -1,0 +1,30 @@
+af9ba0d4904b,VISIBLE,919,263,19,21,held by blue player
+c6c10b483948,VISIBLE,1273,504,22,25,held near right baseline
+769051cb48c0,VISIBLE,1073,315,31,37,above raised hand
+5bd1478b5915,VISIBLE,1331,385,42,53,in the net
+92352b7937f6,VISIBLE,1367,403,24,26,held near baseline
+956546676b2a,ABSENT,,,,,close player shot
+a8228b951ae2,UNKNOWN,,,,,crowded under basket
+d105e58017ea,ABSENT,,,,,bench huddle
+cdd78a2279ba,VISIBLE,943,729,122,109,through basket net
+a9c0c368cc98,VISIBLE,701,389,24,25,held in paint
+89e29c813a22,ABSENT,,,,,player closeup
+bf44d7e5ee03,ABSENT,,,,,players at stoppage
+8d90a261a9d5,VISIBLE,547,578,40,41,held for free throw
+6e9308a8b9b6,UNKNOWN,,,,,ball obscured in traffic
+9115fdc7cf71,VISIBLE,553,291,28,28,airborne above shooter
+c0e8d20f9b06,VISIBLE,642,364,36,40,carried by ballhandler
+c72b462fd2ce,ABSENT,,,,,coach challenge graphic
+db75f17d879d,ABSENT,,,,,bench closeup
+88d4cdde4d85,VISIBLE,768,400,32,30,dribbled in transition
+e5bac25c6b67,VISIBLE,510,209,27,25,near rim
+96e5562dc382,VISIBLE,857,133,32,30,above basket
+987578fec437,VISIBLE,646,343,25,23,midair pass
+b2d2fa54ef1b,VISIBLE,397,245,26,24,carried in transition
+b4a0830926da,VISIBLE,540,168,34,33,held near sideline
+91103f3898ef,UNKNOWN,,,,,ball hidden by graphic
+89e698b5946b,VISIBLE,391,302,22,21,dribbled on break
+9736ef960c39,VISIBLE,991,346,21,20,held on right wing
+70536d53a807,VISIBLE,744,260,47,45,held during drive
+7b2b0b4c5f58,VISIBLE,405,319,22,21,held in backcourt
+b888ced10748,ABSENT,,,,,players running without ball

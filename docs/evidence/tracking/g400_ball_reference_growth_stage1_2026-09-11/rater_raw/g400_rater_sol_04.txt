@@ -1,0 +1,30 @@
+8ac59600ce06,VISIBLE,981,289,20,20,ball beside ballhandler
+7a2124f313bd,VISIBLE,353,512,25,26,blurred ball near baseline player
+50c31e5043ac,ABSENT,,,,,promo scene without game ball
+43ff8f942569,ABSENT,,,,,interview closeup without ball
+30828d37a3c5,ABSENT,,,,,timeout bench without ball
+683c859b8826,VISIBLE,696,744,29,29,ball at dribblers hand
+2e2085e5f4df,UNKNOWN,,,,,live ball obscured in traffic
+7124a92f8172,ABSENT,,,,,player closeup without ball
+90c223eb0b81,ABSENT,,,,,timeout huddle without ball
+735620bdefa4,ABSENT,,,,,player closeup without ball
+34947548a215,ABSENT,,,,,bench closeup without ball
+69ee42e73ab3,ABSENT,,,,,sideline closeup without ball
+6122a3e8ee36,VISIBLE,1438,730,34,29,ball under dribblers hand
+4645b74c25df,VISIBLE,1477,475,30,30,ball held by perimeter player
+694f990b560c,VISIBLE,563,419,19,19,ball between shooters hands
+2342fa2f794f,VISIBLE,945,319,29,31,ball held near chest
+54c6fdfc3a63,ABSENT,,,,,challenge replay without visible ball
+479b06b30e23,VISIBLE,377,476,28,28,ball in left hand dribble
+450de77d7691,UNKNOWN,,,,,ball obscured by driving player
+7bdf4b8d7224,ABSENT,,,,,timeout scene without ball
+75b7df0dc19e,VISIBLE,729,218,20,21,ball above rim
+54fc3dab005c,VISIBLE,1007,198,19,20,ball held on right wing
+688b16a0eed8,UNKNOWN,,,,,shot ball not clearly discernible
+42c97f45fc31,ABSENT,,,,,crowd interaction without ball
+4a1750769a6d,VISIBLE,1009,268,20,21,ball airborne before catch
+589cee146546,ABSENT,,,,,period break without ball
+821552787edc,VISIBLE,667,235,21,21,ball held under basket
+2f817c74f846,VISIBLE,1094,21,127,146,ball beside rim camera
+23126846d301,ABSENT,,,,,coach closeup without ball
+5111d6d51460,VISIBLE,1097,711,57,65,motion blurred ball in traffic

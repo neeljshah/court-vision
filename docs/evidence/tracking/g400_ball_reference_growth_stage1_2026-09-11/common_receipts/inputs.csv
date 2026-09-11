@@ -1,0 +1,5 @@
+input,sha256,role
+g389/dev_boxes_v3.csv,e151f932c3b4bffe84c89aa8fde18f08c346a1e3a6e65d27ed4b36f095b7b4fa,old 530-box reference (sealed in spec)
+pod/census_raw.jsonl,8006adf622512b455d78fc38c32ddf1029d5149f7390aeb830fda4dafa9385e8,whole-pool census probe
+pod/median_digests.txt,b9aabc05f667e624d8861bd5aea40be02a3a8edadd38f76b8348be106ece1780,pre-draw source digests
+pod/discover_titles.tsv,35b9fee2b2ff5058d4e30c94e7a0281aaa624f8c314abca14e1d04cc70e1d19a,canonical identity resolution

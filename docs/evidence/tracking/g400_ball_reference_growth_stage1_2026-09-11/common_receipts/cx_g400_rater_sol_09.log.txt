@@ -1,0 +1,14 @@
+DISPATCHED run=1789140477683993800 tag=g400_rater_sol_09 wt=a7 at 2026-09-11T10:27:57-05:00
+STARTED pid=29092 birth=1789140477.692
+agent: I\u2019ll inspect all 30 frames in the listed order, then append exactly 30 headerless CSV rows to the specified file.
+agent: All frames have been viewed. I\u2019m doing a focused visual pass on the few partially occluded or distant-ball frames before writing the rows.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -NoProfile -Command "Test-Path -LiteralPath 'C:\\Users\\neelj\\nba-track-a7\\docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\rater_raw\\g400_rater_sol_09.txt'"
+out: False
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -NoProfile -Command '$p = '"'C:\\Users\\neelj\\nba-track-a7\\docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\rater_raw\\g400_rater_sol_09.txt'; "'$rows = Get-Content -LiteralPath $p; $bad = @($rows | Where-Objec
+out: rows=30 bad_fields=0
+
+agent: Completed and validated: 30 CSV rows written in the specified order with no header.
+TURN_END turn.completed at 2026-09-11T10:30:21-05:00
+EXIT:0 gap=g400_rater_sol_09 at 2026-09-11T10:30:22-05:00
+DRAINED

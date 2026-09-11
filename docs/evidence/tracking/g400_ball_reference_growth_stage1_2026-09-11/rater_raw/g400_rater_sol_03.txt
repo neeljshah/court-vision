@@ -1,0 +1,30 @@
+86603ad2b512,ABSENT,,,,,player closeup no ball
+62808c4cc852,UNKNOWN,,,,,ball not identifiable in wide play
+385c1c14da5d,ABSENT,,,,,broadcast logo only
+343ff64c2608,ABSENT,,,,,stats graphic no game ball
+3081d8b7e649,ABSENT,,,,,crowd shot no ball
+607e46e91f19,ABSENT,,,,,crowd shot no ball
+260a999e7ee8,ABSENT,,,,,player closeup no ball
+70706d001da9,ABSENT,,,,,player closeup no ball
+77ea01c32fe2,VISIBLE,564,780,35,37,ball bouncing near ballhandler
+58d62331f397,ABSENT,,,,,bench closeup no ball
+3015eb3f52fb,ABSENT,,,,,tunnel shot no ball
+42775e938c82,ABSENT,,,,,stoppage view no ball
+2ce95936d913,VISIBLE,988,503,78,84,ball controlled by driving player
+4213905ecff3,VISIBLE,1323,255,38,35,ball airborne near sideline
+11a327e470e7,VISIBLE,180,425,131,129,ball held by referee
+1d4b5ea61159,UNKNOWN,,,,,ball not identifiable in wide play
+4b5522c10efb,ABSENT,,,,,review graphic no ball
+2cabffbec7b9,ABSENT,,,,,players walking no ball
+245a32355389,ABSENT,,,,,player closeup no ball
+5398d378368e,VISIBLE,861,276,24,23,ball above players near rim
+60a890f483f3,VISIBLE,655,448,181,178,ball tucked under players arm
+477084f79153,ABSENT,,,,,stoppage view no ball
+51255806ea97,VISIBLE,184,271,21,20,ball held on left wing
+30505822b4f9,VISIBLE,1098,280,25,23,ball held by perimeter player
+342db439be50,VISIBLE,763,184,23,21,ball raised near basket
+364673586ff6,VISIBLE,849,264,14,13,ball bouncing beside ballhandler
+696374ca92ec,ABSENT,,,,,player closeup no ball
+251228393c78,VISIBLE,796,410,24,23,ball passing between players
+20e1896d8372,VISIBLE,743,7,27,22,ball airborne above basket
+27a074d54a0a,UNKNOWN,,,,,ball obscured or out of frame

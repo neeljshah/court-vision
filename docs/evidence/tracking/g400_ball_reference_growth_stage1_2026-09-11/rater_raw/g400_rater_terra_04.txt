@@ -1,0 +1,30 @@
+8ac59600ce06,VISIBLE,982,293,19,19,dribbled by right wing player
+7a2124f313bd,UNKNOWN,,,,,ball not discernible in motion
+50c31e5043ac,ABSENT,,,,,interview graphic
+43ff8f942569,ABSENT,,,,,player closeup
+30828d37a3c5,ABSENT,,,,,bench scene
+683c859b8826,VISIBLE,1070,747,27,27,held low by ballhandler
+2e2085e5f4df,UNKNOWN,,,,,ball obscured among players
+7124a92f8172,ABSENT,,,,,player closeup
+90c223eb0b81,ABSENT,,,,,team huddle
+735620bdefa4,ABSENT,,,,,player closeup
+34947548a215,ABSENT,,,,,sideline closeup
+69ee42e73ab3,ABSENT,,,,,bench shot
+6122a3e8ee36,VISIBLE,1435,726,34,34,dribbled by black jersey player
+4645b74c25df,VISIBLE,1475,474,39,39,held by blue jersey player
+694f990b560c,VISIBLE,572,442,22,22,held by shooter
+2342fa2f794f,VISIBLE,966,270,35,35,held overhead by white jersey player
+54c6fdfc3a63,ABSENT,,,,,challenge replay graphic
+479b06b30e23,VISIBLE,368,471,36,36,held by white jersey player
+450de77d7691,VISIBLE,1194,503,36,36,held by driving black jersey player
+7bdf4b8d7224,ABSENT,,,,,timeout scene
+75b7df0dc19e,VISIBLE,758,215,20,20,near basket
+54fc3dab005c,VISIBLE,1004,203,21,21,dribbled by right wing player
+688b16a0eed8,VISIBLE,680,360,20,20,held by white jersey player
+42c97f45fc31,ABSENT,,,,,courtside stoppage
+4a1750769a6d,VISIBLE,1010,272,20,20,airborne pass
+589cee146546,ABSENT,,,,,player closeup
+821552787edc,VISIBLE,700,251,21,21,held near basket
+2f817c74f846,VISIBLE,1126,0,154,180,ball clipped at upper right
+23126846d301,ABSENT,,,,,coach closeup
+5111d6d51460,VISIBLE,1009,695,70,76,held in paint

@@ -1,0 +1,8 @@
+DISPATCHED run=1789137542532673600 tag=g400_rater_sol_02 wt=a7 at 2026-09-11T09:39:02-05:00
+STARTED pid=5372 birth=1789137542.545
+agent: I\u2019ll inspect only the 30 specified images, preserve their order, and append exactly 30 headerless CSV ratings to the requested file.
+agent: I\u2019ve completed the first visual pass. I\u2019m rechecking a few partially occluded frames before writing so that uncertain balls are not assigned invented boxes.
+agent: Completed and appended 30 ordered CSV ratings to [g400_rater_sol_02.txt](C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g400_ball_reference_growth_stage1_2026-09-11/rater_raw/g400_rater_sol_02.txt).
+TURN_END turn.completed at 2026-09-11T09:40:53-05:00
+EXIT:0 gap=g400_rater_sol_02 at 2026-09-11T09:40:54-05:00
+DRAINED

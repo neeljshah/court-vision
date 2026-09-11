@@ -1,0 +1,49 @@
+VERDICT: PARTIAL + NOT VALIDATED + CLOSED AT LIMIT. PARTIAL because round 1 is n = 29 and pooled n = 299, NOT VALIDATED because round 8 kappa is 0.3605 and median gap is 24.021 px vs 13.75 px, and CLOSED AT LIMIT because 116/300 = 0.387 <= 0.40. No arm, training, score or next stage is allocated by this row.
+
+# G400 Ball reference growth stage 1 -- 30 new video ids, 300 uniform native states
+
+PREREG `g400_ball_reference_growth_stage1_2026-09-11/prereg.md`, sealed ALONE at 6256cb133, SEAL `eda637cb7eba86bce3b2a9b4b5850c47e140cf5f5bd08e6778bd8bf856c1bfca`; verified here by hashing every LF byte above the SEAL line (`g400_prepare.verify_preregistration`) -> byte-identical. Not edited; no amendment was needed. No bar below differs from `specs/G400_spec.md`.
+
+PREMISE (step 0). Recount of the landed old reference: `g389/dev_boxes_v3.csv` holds exactly 530 unique boxes over 27 games. The full old identity set is 28 DEV + 32 held-out games (`g389/frames_v3.csv`, 1,620 states) plus the 12 G387 context video ids = 67 distinct old identities. Whole-pool census at CENSUS_UTC 2026-09-11T13:52:14Z over `/workspace/data/footage_corpus` and the deploy bridge: 184 retained basketball-family sections over 35 video ids, every one ffprobed for actual width/height/fps/duration. Exactly one id overlaps the old DEV set (wnba `3eeaJz1PJTM`) and is the single named exclusion in `census.csv` / `game_disjointness.csv`; 30 new video ids with the alternate-upload relation UNRESOLVED for 62/67 old identities lacking title resolution were drawn across 6 competitions (nba, ncaa_basketball, fiba, acb, euroleague, wnba), each a 130 s span that admits ten interior targets at >= 1 s spacing. This is PARTIAL and NOT VALIDATED, with no replacement, top-up or live-feed wait.
+
+DRAW (sealed before any pixel was opened). Population ordered by competition / canonical game / source digest; 30 indices at floor(j*(N-1)/29+0.5), j=0..29 over N=34 -> population indices 0,1,2,3,5,...,32,33; both ends are in the draw, so it is not a head slice. One section per game by the sealed median-PTS rule (offset-ordered, index (n-1)//2). Composition: nba 12, ncaa 8, fiba 5, acb 2, euroleague 2, wnba 1; 16 sources at 1920x1080 and 14 at 1280x720; fps 60/59.94 x19, 30/29.97 x7, 25 x2, 50 x1, 23.98 x1; 1.841 GB of source bytes.
+
+RETENTION. Pinned on the pod, staged to `/workspace/g400_scratch/hold` (1,759 MB, inside the 2 GB clause), pulled to the off-repo receiver `C:/Users/neelj/g400_receiver/`, independently re-hashed on the PC and natively decoded there BEFORE the pod copy was released: 30/30 byte agreement against the pre-draw pod digests, 30/30 RETAINED, 0 mismatch. Only then was the hold deleted; pod lane scratch is text only.
+
+NATIVE STATES. Full packet-derived PTS schedules probed per section (3,214 to 8,106 packets, schedule digest per section in `pts.csv`). Ten targets per section nearest k/11, k=1..10, earlier tie: 300/300 planned states decoded, 300 distinct raw pixel digests, minimum spacing 11.8 s, `sheet_scale` 1.0 on every new key -- the inherited G373 0.5 sheet metadata is used nowhere here. No frame was chosen by a detector or a visibility cue; nothing was resampled, upscaled, substituted or cropped from an old centre.
+
+RATINGS. Ten round orders sealed in `batch_plan.csv` (SHA-256 `a89c8777dc84d20bdc3374127e8cb10203e5aadbd5b91d0f45289897c9c38a7e`) before dispatch; each round carries one target per drawn game, 30 NEW unique frames per rater batch. terra and sol rated all ten rounds blind from full native sheets, 20/20 batches OK, 0 faults, 599 of 600 judgments parsed. Runtime and image-open receipts are in `batch_receipts.csv` and `common_receipts/cx_g400_rater_*.log.txt`.
+
+MEASURED against the spec bar table.
+
+| bar | measured |
+|---|---|
+| 300/300 planned states accounted; 30 new games; zero old game/context overlap; receiver identities exact | 300/300 states, 30/30 video ids, 0 overlap on video id, 30/30 receiver byte agreement; alternate-upload relation NOT VALIDATED |
+| every complete n=30 batch raw kappa >= 0.60 | 8 of 9 complete rounds PASS (0.7207 to 0.9315); round 1 INCOMPLETE at n = 29 (0.7568, descriptive); round 8 FAILS at 0.3605 (observed agreement 0.6333) NOT MET |
+| pooled n=300 raw kappa >= 0.60 | 0.7505 over 299 paired judgments (observed 0.8562) INCOMPLETE -- n = 299 < 300, descriptive, not a met bar |
+| >= 30 both-VISIBLE pairs | 125 MET |
+| median primary centre gap <= 0.5 x median native diameter | 24.02 px against a 13.75 px bar (median native diameter 27.5 px); p90 292.14 px, max 1,415.28 px NOT MET |
+| 30 even planted-centre/transform controls, exact roundtrip, 30/30 centre rule, 0 FP | 30/30 roundtrip exact, 30/30 centre-rule match, 0 false positives MET |
+| > 120 audited new boxes / 300 to permit a next-stage proposal | 116 / 300 = 0.3867 NOT MET -> CLOSED AT LIMIT |
+| old reference preserved unchanged | first 530 rows of `reference.csv` row-identical to `dev_boxes_v3.csv`; 0 key overlap with the 116 new rows MET |
+| two fresh-process reproductions | every delivered table and render digest identical across two fresh runs (`repeats.json`) MET |
+
+ADJUDICATION. 115 states needed pixel adjudication (label disagreement, discrepant centre, or the one dropped judgment). Claude resolved all 115 from native pixels at 3x zoom over 20 committed strips (`renders/conflict_zoom_*.jpg`, index in `conflict_index.csv`), retaining both originals: 62 resolved VISIBLE with a settled centre, 8 ABSENT, 45 UNKNOWN after actual review. Adjudication changed no raw judgment, and the failed raw agreement in round 8 is not erased by it. Of the 300 settled states: 116 VISIBLE with an audited centre, 126 ABSENT, 58 UNKNOWN. Every retained box was audited at native zoom; the 30 even all-state cards are `renders/all_state_cards.jpg` with `eye_index.csv`.
+
+YIELD AND LOCK. 116 accepted unique audited boxes over the immutable 300-state denominator (never per-VISIBLE, never per-judgment) = 0.3867. All 30 drawn games contribute, 1 to 8 boxes each (`yield.csv`). The additive export `reference.csv` holds 646 boxes over 57 games; the full milestone remains >= 970 added boxes from >= 30 new games and >= 1,500 boxes over more than 57 games, and **this stage does not meet it**. Because 116 <= 120 the uniform-sampling growth route is CLOSED AT LIMIT: no next collection stage is proposed, no arm is allocated, nothing was trained or scored, 0 GPU minutes, 0 flag changes, 0 `data/registry/` writes.
+
+WHY THE ROUTE CLOSES (measured, not inferred). Uniform k/11 sampling of broadcast sections lands 61 pct of states on material that carries no usable game ball: bench and huddle close-ups, full-screen graphics and challenge cards, replay wipes and crowd shots. That is what produces 126 ABSENT and 58 UNKNOWN. The centre-gap failure has the same root: on frames both raters call VISIBLE the disagreement is bimodal -- most pairs agree within a few pixels, while a tail of frames has the two raters on entirely different objects (rim hardware, a bench ball, a jersey), so the median is dragged past the bar by that tail rather than by ordinary annotation noise.
+
+NOT VERIFIED.
+- Round 8's kappa failure has no established cause. Both raters answered in the sealed id order with the correct ids (checked directly), so it is not a misalignment; it is unexplained.
+- Adjudicated centres are one reviewer's judgment from the pixels at roughly +-10 px, not ground truth. The 58 UNKNOWN states are NOT evidence that a ball is absent.
+- Alternate-upload disjointness against the old set is only partly checkable: the retained feeder discovery log resolves titles for 5 of the 67 old identities, so an alternate upload of one of the other 62 could not be excluded by title. Video-id and source-digest disjointness are exact.
+- Rating and auditor repeatability are unmeasured; the two fresh-process reproductions establish arithmetic and rendering only.
+- The pooled kappa passes while one batch fails; the pooled figure must not be quoted as if every batch passed.
+- Source mp4 bytes live off-repo in the named receiver and are not listed in `SHA256SUMS`, whose line 1 declares that byte domain.
+- One rater answer was dropped as an invalid box (a 1920-frame coordinate given for a 1280-wide source); it is retained verbatim in `rater_raw/` and counted as missingness, never as a label.
+- A shared PC gate (fewer than three live codex exec runs, free RAM >= 2.8 GB) queued the rounds; 20 batches took 91 minutes of wall time against about 33 minutes of rater work.
+
+WALL TIME 13:30Z to 15:45Z, 135 min: premise recount and pod census 22; draw, retention and native decode 18; ten paired rounds under the shared gate 91 (adjudication overlapped); export, controls, reproduction and landing 24. Q6: 84 text artifacts scanned with character-code-built patterns, 0 non-opaque hits; 6 files flagged and classified (5 OPAQUE-SUBSTRING-IN-PROPER-NOUN, the reserved three-letter token appearing only inside a franchise city name in a canonical game title), 8 verbatim rater/runtime files redacted with before/after digests in `q6_redaction_manifest.csv`.
+
+Fix 1b (2026-09-11): conflict-index `position`/crop-centre aliases and Q6 list findings were restored additively; all measured numbers are unchanged. SHA-256 d5f433226b090692bb74a08e5b6138017e6655dd1f155d7fc693be5c2886f395 `g400_ball_reference_growth_stage1_2026-09-11/conflict_index.csv`; SHA-256 bf872dc64f899b7d23d5c0fa0d35fec349c154940a745692c6b43b876e4bc942 `g400_ball_reference_growth_stage1_2026-09-11/q6_scan.json`. Fix 1c (2026-09-11): conflict-index `reason` now maps from `adjudication_reason` (115/115 nonempty); round 1 (n = 29) and POOLED (n = 299) kappa verdicts are INCOMPLETE, descriptive only; every text artifact and the results log re-normalised to LF; repeats re-run for the regenerated tables; SHA256SUMS refreshed.

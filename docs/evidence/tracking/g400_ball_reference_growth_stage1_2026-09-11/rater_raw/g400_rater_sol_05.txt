@@ -1,0 +1,30 @@
+8c05207f2909,VISIBLE,687,0,121,102,ball held overhead
+977231941d6d,ABSENT,,,,,no ball in closeup
+64181b41b0d9,ABSENT,,,,,map graphic only
+567b6e021ad8,ABSENT,,,,,stats graphic only
+43a146721b4e,VISIBLE,1601,507,31,30,ball held at sideline
+72bfedfa44db,UNKNOWN,,,,,ball obscured in traffic
+31a449b8825f,UNKNOWN,,,,,ball not identifiable
+72c0e7372c52,ABSENT,,,,,timeout bench scene
+9208fa951c5b,ABSENT,,,,,player closeup no ball
+7a8c0340cba1,ABSENT,,,,,halftime closeup no ball
+393aa74f807e,ABSENT,,,,,stoppage court no ball
+8ec0d6a27642,UNKNOWN,,,,,ball obscured by handler
+7cec3dfa2e54,ABSENT,,,,,players closeup no ball
+4972a9bd15d5,VISIBLE,286,506,30,29,ball in handlers hand
+73b55b32aaa4,VISIBLE,916,437,28,29,ball held at chest
+49f8dfaac040,VISIBLE,1756,454,32,33,ball held on wing
+903236982fa1,VISIBLE,700,618,49,49,ball bouncing in replay
+5837a6fd032f,VISIBLE,1566,806,35,45,ball on low dribble
+54f647e2516e,VISIBLE,382,368,29,28,ball held near sideline
+bf043c06df4d,ABSENT,,,,,bench closeup no ball
+8855654569c8,ABSENT,,,,,official holds no active ball
+874d02c37446,ABSENT,,,,,player closeup no ball
+6b5723b2d2b7,VISIBLE,495,405,17,17,ball on court
+64388f71e3cc,VISIBLE,404,278,29,29,ball airborne on pass
+76a161ada378,VISIBLE,735,61,50,57,ball held overhead
+5a2f330d8469,VISIBLE,502,230,20,20,ball in handlers hand
+82cec948f472,VISIBLE,232,376,20,19,ball on low dribble
+3734d91b275a,UNKNOWN,,,,,ball hidden in lane traffic
+2da3cf593232,VISIBLE,673,297,29,30,ball held for free throw
+559d7f1ca444,UNKNOWN,,,,,blurred crop hides ball

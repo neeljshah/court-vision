@@ -1,0 +1,8 @@
+{
+ "decoded": 300,
+ "distinct_frame_keys": 300,
+ "distinct_raw_pixel_digests": 300,
+ "planned_states": 300,
+ "retained": 30,
+ "sections": 30
+}

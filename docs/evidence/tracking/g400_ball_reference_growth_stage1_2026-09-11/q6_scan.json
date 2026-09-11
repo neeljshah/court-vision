@@ -1,0 +1,33 @@
+{
+ "findings": {
+  "docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\batch_plan.csv": [
+   "114-111-105"
+  ],
+  "docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\census.csv": [
+   "114-111-105"
+  ],
+  "docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\draw.csv": [
+   "114-111-105"
+  ],
+  "docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\game_disjointness.csv": [
+   "114-111-105"
+  ],
+  "docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\native_manifest.csv": [
+   "114-111-105"
+  ],
+  "docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\ratings.csv": [
+   "114-111-105"
+  ]
+ },
+ "findings_classified": {
+  "docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\batch_plan.csv": "OPAQUE-SUBSTRING-IN-PROPER-NOUN",
+  "docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\census.csv": "OPAQUE-SUBSTRING-IN-PROPER-NOUN",
+  "docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\draw.csv": "OPAQUE-SUBSTRING-IN-PROPER-NOUN",
+  "docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\game_disjointness.csv": "OPAQUE-SUBSTRING-IN-PROPER-NOUN",
+  "docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\native_manifest.csv": "OPAQUE-SUBSTRING-IN-PROPER-NOUN",
+  "docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\ratings.csv": "OPAQUE-SUBSTRING-IN-PROPER-NOUN"
+ },
+ "flagged_files": 6,
+ "non_opaque_hits": 0,
+ "scanned": 84
+}

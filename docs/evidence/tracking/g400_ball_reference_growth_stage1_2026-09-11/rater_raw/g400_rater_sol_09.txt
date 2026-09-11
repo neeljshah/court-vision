@@ -1,0 +1,30 @@
+dd37c9f83d78,ABSENT,,,,,no game ball in closeup
+e6f95762c19e,VISIBLE,918,409,84,83,ball held by driving player
+a3dccc0354dd,ABSENT,,,,,portrait with no game ball
+c60c40eb3843,ABSENT,,,,,ball outside cropped action
+d5885b0b8e28,ABSENT,,,,,ball held only by referee
+fc2124bb50bc,VISIBLE,418,254,96,80,ball above shooters hands
+b97481a69bac,VISIBLE,1258,521,44,43,ball held on right block
+dead011436c8,ABSENT,,,,,no game ball in stoppage
+f0df9d6bbe85,UNKNOWN,,,,,ball obscured in contact
+db24023be221,ABSENT,,,,,sideline scene with no ball
+e1f5559e9ee2,ABSENT,,,,,interview with no game ball
+c6ff0e4ce91a,ABSENT,,,,,players shown without ball
+c405748c24a2,VISIBLE,1271,259,39,39,ball beside the rim
+ea76ef78abc9,VISIBLE,928,1017,72,63,ball partly below frame border
+d3d99d58b6a2,UNKNOWN,,,,,ball not discernible near basket
+d8849a787681,VISIBLE,1288,226,44,44,ball held by baseline player
+f7f4de9d69af,ABSENT,,,,,referee closeup with no ball
+e769140d0484,ABSENT,,,,,bench closeup with no ball
+c527a7184059,ABSENT,,,,,players shown between action
+ed4ec7cdb8a1,VISIBLE,151,378,30,29,ball controlled by left handler
+edaa9b592deb,VISIBLE,44,334,24,23,ball in handlers left hand
+d6885538f731,VISIBLE,238,512,24,25,loose ball in player scrum
+cc5e55c6dfe6,UNKNOWN,,,,,ball indiscernible in distant view
+dcec02ac5372,UNKNOWN,,,,,court obscured by broadcast graphic
+a5f4c120dcd3,VISIBLE,350,174,24,27,free throw ball near hoop
+c1ee5aad7436,VISIBLE,402,275,28,33,ball held by perimeter player
+d1ac37761905,ABSENT,,,,,stoppage with no game ball
+b5a9dcc2e063,ABSENT,,,,,bench closeup with no ball
+d11b27ae5429,VISIBLE,538,539,175,164,ball held by free throw shooter
+d8103b8dab15,ABSENT,,,,,closeup with no game ball

@@ -1,0 +1,30 @@
+dd37c9f83d78,ABSENT,,,,,no ball visible
+e6f95762c19e,VISIBLE,949,420,47,47,held in transition
+a3dccc0354dd,ABSENT,,,,,closeup has no ball
+c60c40eb3843,ABSENT,,,,,ball out of frame
+d5885b0b8e28,VISIBLE,808,368,113,139,referee holds ball
+fc2124bb50bc,VISIBLE,385,252,91,82,shooter holds ball
+b97481a69bac,VISIBLE,1263,528,31,29,blue player holds ball
+dead011436c8,ABSENT,,,,,court clear of ball
+f0df9d6bbe85,UNKNOWN,,,,,ball obscured by players
+db24023be221,ABSENT,,,,,bench shot no ball
+e1f5559e9ee2,ABSENT,,,,,interview has no ball
+c6ff0e4ce91a,UNKNOWN,,,,,ball not discernible
+c405748c24a2,VISIBLE,1267,253,43,44,ball near rim
+ea76ef78abc9,VISIBLE,997,987,90,93,ball partly below frame
+d3d99d58b6a2,VISIBLE,341,113,28,32,ball by rim
+d8849a787681,VISIBLE,1273,221,32,31,player holds ball
+f7f4de9d69af,ABSENT,,,,,official closeup no ball
+e769140d0484,ABSENT,,,,,bench closeup no ball
+c527a7184059,ABSENT,,,,,players no ball visible
+ed4ec7cdb8a1,VISIBLE,123,383,26,25,player dribbles
+edaa9b592deb,VISIBLE,47,331,22,23,player dribbles
+d6885538f731,VISIBLE,235,507,29,26,loose ball by players
+cc5e55c6dfe6,ABSENT,,,,,wide court no ball
+dcec02ac5372,UNKNOWN,,,,,graphic obscures court
+a5f4c120dcd3,VISIBLE,380,210,30,32,referee holds ball
+c1ee5aad7436,VISIBLE,413,177,20,20,ball held on wing
+d1ac37761905,ABSENT,,,,,player closeup no ball
+b5a9dcc2e063,ABSENT,,,,,bench closeup no ball
+d11b27ae5429,VISIBLE,531,531,120,120,shooter holds ball
+d8103b8dab15,ABSENT,,,,,bench closeup no ball

@@ -1,0 +1,30 @@
+3d5a0bd19341,ABSENT,,,,,player closeup no ball
+138e033d63aa,ABSENT,,,,,player closeup no ball
+0abe8cfee64d,ABSENT,,,,,portrait no game ball
+0b011222e482,ABSENT,,,,,crowd shot no game ball
+07809652362f,ABSENT,,,,,free throw closeup no ball
+182e5023504d,ABSENT,,,,,player huddle no ball
+1042d52e1cbc,ABSENT,,,,,transition graphic only
+03b180932589,ABSENT,,,,,court view no ball
+23b1ef6e2b1e,ABSENT,,,,,bench timeout no ball
+12a12dda6f5a,VISIBLE,828,337,26,25,referee holds ball
+1a65f88cf152,UNKNOWN,,,,,ball not clearly resolved
+2b17699de394,ABSENT,,,,,broadcast graphic only
+05f397d61bd0,VISIBLE,1455,245,26,29,referee holds ball
+0189696726ff,ABSENT,,,,,player closeup no ball
+0746f934c503,VISIBLE,1648,354,28,27,player dribbles ball
+0e57a267d711,VISIBLE,1265,139,29,29,ball above basket
+29d0046be8b9,ABSENT,,,,,challenge graphic no ball
+06c833af5a9f,VISIBLE,673,240,27,27,ball at rim
+1c5bf1ecfc05,VISIBLE,1633,351,27,29,player dribbles ball
+17c2b594ca85,UNKNOWN,,,,,ball not clearly resolved
+0e1c3340aa20,VISIBLE,642,34,25,25,ball in flight
+3c7538e1555b,VISIBLE,1071,273,22,22,player dribbles ball
+25bbe8b42d58,ABSENT,,,,,player closeup no ball
+082ca7619ae6,VISIBLE,494,573,28,29,loose ball on court
+12261437a3cf,UNKNOWN,,,,,ball obscured in player cluster
+033833a16476,VISIBLE,306,422,22,23,player holds ball
+057f93682285,ABSENT,,,,,crowd shot no game ball
+0e65af112bdf,UNKNOWN,,,,,ball not clearly resolved
+07c32f0c1352,VISIBLE,843,310,25,25,player dribbles ball
+0b80a9c5446c,ABSENT,,,,,players closeup no ball

@@ -1,0 +1,7 @@
+{
+ "batch_plan_sha256": "a89c8777dc84d20bdc3374127e8cb10203e5aadbd5b91d0f45289897c9c38a7e",
+ "per_round": 30,
+ "planned_states": 300,
+ "rounds": 10,
+ "sealed_utc": "2026-09-11T14:00:39Z"
+}

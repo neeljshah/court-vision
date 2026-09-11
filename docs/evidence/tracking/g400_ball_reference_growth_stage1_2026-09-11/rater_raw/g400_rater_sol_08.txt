@@ -1,0 +1,30 @@
+b4fb0c7a85d1,VISIBLE,886,383,15,17,ball beside right hand
+d8629056e963,ABSENT,,,,,players and crowd only
+8f5b799826b1,ABSENT,,,,,interview closeup only
+834cd6e0c957,ABSENT,,,,,players under basket only
+bb955ba7fdb7,ABSENT,,,,,free throw setup no ball visible
+a0cc8eb15237,VISIBLE,704,785,29,30,ball beside dribbler
+ab35de10b6e4,UNKNOWN,,,,,ball area obscured at rim
+d91cb0203845,ABSENT,,,,,player closeup only
+dd17d4d9a296,VISIBLE,716,701,28,29,ball beside ballhandler
+c7a6bb2ed8d1,VISIBLE,357,161,19,19,ball above raised hand
+e07bced368e9,ABSENT,,,,,ball outside visible action
+c2f9d417e06e,VISIBLE,532,161,19,18,ball above raised hands
+bfa1f974e688,ABSENT,,,,,player closeup only
+798a52755cc8,VISIBLE,1296,537,27,29,ball below dribbling hand
+b87836a7c968,VISIBLE,707,274,16,17,ball ahead of advancing player
+c94f62399af9,VISIBLE,866,683,29,30,ball bouncing on court
+f482ae1581a0,ABSENT,,,,,broadcast graphic only
+e5d4e960192d,VISIBLE,1070,634,30,31,ball held by free throw shooter
+94323b993bde,VISIBLE,816,383,25,26,ball held in traffic
+ead9fcb9d393,VISIBLE,1244,448,24,23,ball airborne near right border
+b0133ec07846,VISIBLE,748,251,19,19,ball beside post player
+c503a875eb67,ABSENT,,,,,player closeup only
+b81cbcfb53a9,ABSENT,,,,,timeout bench only
+b4c21db951a7,VISIBLE,319,275,20,20,ball held overhead
+9c42154fa44c,VISIBLE,955,337,19,19,ball beside defenders hip
+9c7cc8531a93,UNKNOWN,,,,,ball area obscured under rim
+b5281f2aae8f,VISIBLE,959,321,20,20,ball held on right wing
+afc32e4ed664,ABSENT,,,,,broadcast graphic only
+92ea689eb22d,VISIBLE,650,413,25,26,ball beside driving player
+ba4aa208e59b,ABSENT,,,,,ball outside cropped frame

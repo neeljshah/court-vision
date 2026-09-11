@@ -1,0 +1,10 @@
+DISPATCHED run=1789136081377879800 tag=g400_rater_terra_02 wt=a7 at 2026-09-11T09:14:41-05:00
+STARTED pid=13728 birth=1789136081.390
+agent: I\u2019ll inspect the 30 specified frames in order and record only the requested per-frame judgments and native-pixel boxes.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Test-Path 'C:\\Users\\neelj\\nba-track-a7\\docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\rater_raw\\g400_rater_terra_02.txt'"
+out: False
+
+agent: Completed the 30 requested ratings in `g400_rater_terra_02.txt`.
+TURN_END turn.completed at 2026-09-11T09:16:21-05:00
+EXIT:0 gap=g400_rater_terra_02 at 2026-09-11T09:16:21-05:00
+DRAINED

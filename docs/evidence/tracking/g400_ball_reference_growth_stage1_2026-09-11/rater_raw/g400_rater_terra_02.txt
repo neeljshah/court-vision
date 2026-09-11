@@ -1,0 +1,30 @@
+41a51cd4fdf6,VISIBLE,940,198,18,18,ball at rim
+51eea5c7d1ae,VISIBLE,1274,548,28,28,ball held on right
+2b2846330888,ABSENT,,,,portrait frame
+19515e710e7e,ABSENT,,,,ball not visible
+2716dc44218a,ABSENT,,,,closeup without ball
+2b4f6c368a81,ABSENT,,,,stoppage closeup
+1304b23cb1fa,ABSENT,,,,broadcast graphic
+2a4d9f8c8208,ABSENT,,,,closeup without ball
+39c240e19a62,ABSENT,,,,timeout bench
+2a9a56d523ae,VISIBLE,816,68,24,23,ball in flight
+2537bfcdafca,VISIBLE,860,969,153,111,ball partly at bottom
+3bc321be3c61,ABSENT,,,,closeup without ball
+1d2bf98d9be1,ABSENT,,,,ball not visible
+194783bc010e,VISIBLE,990,338,30,31,ball held in lane
+0ef480c1dc0b,VISIBLE,257,540,27,27,ball dribbled left
+12bed787d4c9,VISIBLE,727,616,31,31,ball dribbled at midcourt
+4707c6921618,ABSENT,,,,split closeup
+191c03d25116,VISIBLE,956,571,110,116,ball held for free throw
+21e7d20982ca,VISIBLE,1106,411,31,31,ball dribbled right
+3caa6b932fb3,ABSENT,,,,team graphic
+5cd4d5db412b,ABSENT,,,,closeup without ball
+40cd78f1e635,VISIBLE,511,310,29,28,ball held on left
+472bac9e64a4,ABSENT,,,,bench closeup
+0ccf703fa4e2,VISIBLE,777,283,24,25,ball near handler
+2dec3133bd28,VISIBLE,263,302,22,23,ball dribbled left
+1ce8531c56b5,VISIBLE,599,185,22,23,ball near ballhandler
+3b83fd3eaec9,ABSENT,,,,closeup without ball
+1b70bb1d3efc,VISIBLE,104,332,25,26,ball held for inbound
+14e9395b630c,VISIBLE,799,406,33,33,ball held for free throw
+23948de4dd82,UNKNOWN,,,,border action obscured

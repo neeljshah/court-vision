@@ -1,0 +1,30 @@
+8d2facc35149,ABSENT,,,,,player closeup no ball
+ab164dd59b9e,VISIBLE,1035,384,25,28,ball in lane
+66c8e8fad5e6,ABSENT,,,,,team huddle no ball
+5b36027c4952,ABSENT,,,,,player closeup no ball
+685062790084,ABSENT,,,,,player closeup no ball
+89306c655150,ABSENT,,,,,player closeup no ball
+4a32fd8786d2,ABSENT,,,,,player closeup no ball
+7321b0c30573,VISIBLE,1629,520,36,39,official holds ball
+ad4808ec193e,ABSENT,,,,,players closeup no ball
+8078eb1d155a,ABSENT,,,,,players closeup no ball
+4b226efc4553,VISIBLE,634,664,30,31,ball near shooter
+8fd1fd1fc29d,ABSENT,,,,,bench closeup no ball
+8a9ebab28a5c,ABSENT,,,,,player closeup no ball
+6b0cea4ffea1,VISIBLE,1126,752,53,51,dribbled ball visible
+79ea5f1bf761,VISIBLE,1172,218,29,30,ball held at right
+98d222836e3e,VISIBLE,1336,448,38,40,ball near baseline
+ab2582564942,ABSENT,,,,,graphic only
+7855bda02771,ABSENT,,,,,player closeup no ball
+7ebff0bd660d,VISIBLE,1290,373,33,36,ball at baseline
+d2307a2e3737,VISIBLE,1020,238,25,28,dribbled ball visible
+8af055f12a37,ABSENT,,,,,player closeup no ball
+9218c9539299,ABSENT,,,,,player closeup no ball
+9b6493d5f61b,VISIBLE,622,251,17,18,ball near basket
+8b89257a9d09,VISIBLE,640,277,32,33,ball held by player
+822a5d65c1d9,ABSENT,,,,,player closeup no ball
+64494c7ed658,VISIBLE,833,116,18,20,ball in dribble
+887f21c26908,ABSENT,,,,,bench closeup no ball
+402452c0bd44,ABSENT,,,,,coach closeup no ball
+5c1f941b461a,ABSENT,,,,,bench closeup no ball
+770cf3fbcf91,VISIBLE,1720,235,36,43,ball held at sideline

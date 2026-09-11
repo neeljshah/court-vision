@@ -1,0 +1,8 @@
+DISPATCHED run=1789140628709132300 tag=g400_rater_sol_10 wt=a7 at 2026-09-11T10:30:28-05:00
+STARTED pid=15556 birth=1789140628.716
+agent: I\u2019ll inspect only the 30 named frames, then append exactly 30 headerless CSV lines to the specified file.
+agent: All 30 frames have been inspected. I\u2019m doing a final coordinate sanity check on the few small or partially obscured balls before writing the lines.
+agent: Appended 30 ratings to the specified file.
+TURN_END turn.completed at 2026-09-11T10:32:18-05:00
+EXIT:0 gap=g400_rater_sol_10 at 2026-09-11T10:32:19-05:00
+DRAINED

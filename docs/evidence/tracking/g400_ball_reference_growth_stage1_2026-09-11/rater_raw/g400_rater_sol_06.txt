@@ -1,0 +1,30 @@
+8d2facc35149,ABSENT,,,,,close player shot without ball
+ab164dd59b9e,VISIBLE,1033,382,27,29,ball airborne near players
+66c8e8fad5e6,ABSENT,,,,,player huddle without ball
+5b36027c4952,VISIBLE,322,299,29,29,ball airborne behind player
+685062790084,ABSENT,,,,,player closeup without ball
+89306c655150,ABSENT,,,,,player closeup without ball
+4a32fd8786d2,ABSENT,,,,,player closeup without ball
+7321b0c30573,VISIBLE,1626,521,32,35,official holding ball
+ad4808ec193e,ABSENT,,,,,players waiting without ball
+8078eb1d155a,ABSENT,,,,,players walking without ball
+4b226efc4553,VISIBLE,629,664,34,31,ball bouncing by shooter
+8fd1fd1fc29d,ABSENT,,,,,bench closeup without ball
+8a9ebab28a5c,ABSENT,,,,,player closeup without ball
+6b0cea4ffea1,VISIBLE,1126,765,63,60,player dribbling ball
+79ea5f1bf761,VISIBLE,1162,393,22,30,player controlling ball
+98d222836e3e,VISIBLE,1340,451,36,40,ball airborne near baseline
+ab2582564942,ABSENT,,,,,advertisement without game ball
+7855bda02771,ABSENT,,,,,player closeup without ball
+7ebff0bd660d,VISIBLE,1205,475,33,34,ball beside baseline player
+d2307a2e3737,VISIBLE,1023,345,18,20,ball under dribblers hand
+8af055f12a37,ABSENT,,,,,player closeup without ball
+9218c9539299,ABSENT,,,,,player closeup without ball
+9b6493d5f61b,VISIBLE,610,270,20,20,ball airborne near rim
+8b89257a9d09,VISIBLE,639,281,45,37,player holding ball
+822a5d65c1d9,ABSENT,,,,,player closeup without ball
+64494c7ed658,VISIBLE,833,177,24,25,player carrying ball
+887f21c26908,ABSENT,,,,,players closeup without ball
+402452c0bd44,ABSENT,,,,,sideline closeup without ball
+5c1f941b461a,ABSENT,,,,,bench closeup without ball
+770cf3fbcf91,VISIBLE,1731,236,39,45,player holding ball

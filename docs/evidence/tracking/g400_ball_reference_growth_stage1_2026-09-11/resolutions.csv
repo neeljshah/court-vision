@@ -1,0 +1,116 @@
+frame_key,label,cx,cy,diameter,basis
+12a12dda6f5a4f62765428be8935f836151f729cba9f61c501fa76bfd1143a77,VISIBLE,872.5,344.5,27.0,"native zoom: ball held at chest height; both rater centres off (terra -32 px, sol -52 px)"
+1a65f88cf1520a93f057127cc27bfa43042273dae462952cfd136b533c556ec9,VISIBLE,995.0,331.0,23.5,native zoom: motion-blurred drive but ball identifiable; sol centre ~10 px off
+05f397d61bd02ea0eea485196a89649b1eda5cd20110eff32184f1c93fc4df75,UNKNOWN,,,,native zoom at terra centre shows a referee and an ad board with no ball; whole-frame presence unresolved
+0746f934c5033313912857a75def3cbcbdb788df30511f21c60d34c00423ac8b,VISIBLE,1040.0,371.0,22.0,native zoom: clear dribble; terra answer was an out-of-frame box for a 1280-wide source and was dropped
+06c833af5a9f2193620e7940ec49b1ee714775ec9802b44615f7e4852c9c348e,VISIBLE,688.0,258.0,27.0,native zoom: ball at the rim at the terra centre; sol centre shows two players and no ball
+1c5bf1ecfc05baefc75b2badb39851755973658158679cae6140d6acf509b519,VISIBLE,1703.0,581.0,27.5,native zoom: ball at the dribble in the sol crop; terra centre shows empty court
+17c2b594ca858921bde630c4f79b07396ac95f3dfc0c410e3217f03ab59b0799,UNKNOWN,,,,native zoom: heavily motion-blurred object consistent with a ball but not identifiable
+3c7538e1555b95c92a5c1e632e336974262ab6b15fe5794f062371c63ac00575,VISIBLE,1051.5,326.5,22.5,native zoom: both crops show the same ball; sol centre lands on it and terra is 52 px off
+0e65af112bdfe9412638ae3f999de34495aef752ac5d84c1e28163428a6d777a,UNKNOWN,,,,"native zoom: reddish smear in a crowd-side shot, not identifiable as the game ball"
+51eea5c7d1aeddf072ee10e051bb5489a2c01631f50bba80c126f16e05d9ef51,VISIBLE,1292.0,559.0,28.0,"native zoom: ball held at the hip; terra centre ~5 px off, sol ~30 px"
+2537bfcdafca775c6aa63fc446b32a15036587b0bdb6e50feda3fc530cc37f0d,VISIBLE,912.5,1027.0,150.0,native zoom: oversized foreground ball clipped by the frame border; both centres inside it; midpoint taken
+0ef480c1dc0b450f69540f7d403dd41809a4e363f3afe1aa6f8399f886f012a4,VISIBLE,240.0,564.0,24.5,native zoom: dribbled ball at the sol centre; terra ~31 px off
+191c03d25116d7ad48ae6d9c4289f7435a39e3081a495d51edc5f76d31654038,VISIBLE,1010.0,634.0,105.0,native zoom: close-up held ball; terra centre on it
+21e7d20982ca27d24be926b992c39d706262ad7ce8443959e954f2a8b918b34c,VISIBLE,1120.75,415.5,31.25,native zoom: both centres on the same dribbled ball; 22 px gap just over the pooled bar; midpoint taken
+40cd78f1e635413922331a25f673520a40979096dfe940167a66547a5ae860a4,VISIBLE,540.0,288.0,28.5,native zoom: same ball in both crops near the hip; my centre +-15 px
+0ccf703fa4e22eaa003182451999539dacc875bc8c4c29fbfc1eeef30a93dfb2,UNKNOWN,,,,native zoom at the terra centre shows motion blur with no identifiable ball
+1ce8531c56b5acceacfe9fcb730f18b92b79b5f4fe2c7b7a65e51cc3a84caa54,VISIBLE,582.0,183.0,22.5,"native zoom: dribbled ball clearly present; terra centre ~31 px off, sol returned UNKNOWN"
+1b70bb1d3efc9bd6175193869b6efe7b9116524ec3a5d285365a2e894608fe7e,UNKNOWN,,,,native zoom at the terra centre shows a sideline bench area with no ball
+14e9395b630c30d73d0fb8cef241204ce2d0b195cfe45d957e5d2f9794d57625,VISIBLE,778.0,458.0,24.5,native zoom: both crops show the same dribbled ball; sol centre closer
+194783bc010e4781d0e0bb88dba61c304708c47b3a27ecfff7ac23b7028817fe,UNKNOWN,,,,native zoom: neither proposed centre lands on an identifiable ball; a candidate object about 100 px lower could not be confirmed
+86603ad2b512037c2b277101a5b8d9fde6ff25f901b3383ff68b0e92890121b5,ABSENT,,,,native zoom: tight two-player close-up with no ball anywhere in frame; neither rater proposed a box
+77ea01c32fe24bf55d40bae2ee73300e2a25c6223024c6f6192a553c06a68177,VISIBLE,581.5,798.5,36.0,native zoom: motion-blurred loose ball on the painted floor at the sol centre
+58d62331f3974095f7c795241e4187447c0c0313092a6fcbedb472bce515bbd3,ABSENT,,,,native zoom: terra centre is an out-of-focus shoulder; the frame is a bench close-up with no ball
+42775e938c8216198d44e8346422c78c44c8cf8d24d341e33f71fccca8241d9a,UNKNOWN,,,,wide court view with no proposed box from either rater; ball not resolvable at this scale
+11a327e470e7fd336f43309d7c9f974a1042949071864d9a6e6bedc680835028,VISIBLE,245.5,489.5,130.0,native zoom: large held ball at the sol centre; terra centre shows a face in the stands
+1d4b5ea6115933a74d7575367c15944151f63c5f57dd08bc076e96e851e415b8,UNKNOWN,,,,native zoom: terra centre falls in a dark crowd region with no identifiable ball
+5398d378368ea8a73c7a7a8371f8eb1bb167c399d7a940c180ee25b837518d58,VISIBLE,883.0,282.0,23.5,native zoom: rebound scrum ball at the sol centre; terra centre is a bench area
+60a890f483f3e81ae4881a61ae49d75453f18d4110d195574f13128a87148484,VISIBLE,745.5,537.0,179.5,native zoom: close-up held ball filling the sol crop; terra centre is a jersey shoulder
+51255806ea975ae87838f777d2e92c97ec6be44363e37133fb083be55e53ec1e,VISIBLE,197.0,277.0,20.5,native zoom: dribbled ball at the sol centre; terra centre is the bench
+30505822b4f9a678aa87f3debddc33873a7d85fc1e9c2057bc61bf0f3d4f8f7e,VISIBLE,1110.5,291.5,24.0,native zoom: ball on the floor at the sol centre; terra centre is an advertising board
+342db439be5087e0f97bb937297479d15d1b4bc8d3ebfa052bb7204b9d319d60,VISIBLE,831.0,227.0,22.0,"native zoom: ball at the rim on a layup; both rater centres off (terra ~270 px, sol ~65 px)"
+364673586ff647b95288b7b50e0b3677551dc4ad2743631d762152b7ea2ac610,VISIBLE,851.0,276.0,13.5,native zoom: dribbled ball at the sol centre; terra centre is the sideline
+251228393c783d5ba6bd79674edcee42ebce3bd46c56031aa2414be2fbdf9aca,VISIBLE,803.0,421.0,23.5,native zoom: dribbled ball at the sol centre; terra centre shows a running player only
+20e1896d8372257eff2b0707c8dfed42c6d566c8279638ab276d261d469d3840,VISIBLE,756.5,18.0,24.5,native zoom: ball in flight above the baseline crowd at the sol centre; clipped by the frame top
+7a2124f313bd153d67baab648d57cd825edda95862d1d998a89370d5b2def1d4,UNKNOWN,,,,native zoom: object at the sol centre is a heavy blur that cannot be identified as the game ball
+683c859b88265acfc46931370397027c6b8b45bad9515a66cece7f96f284679a,VISIBLE,703.5,760.0,29.0,native zoom: dribbled ball at the sol centre; terra centre is the court logo
+694f990b560c3ea542f2fb86fba9a0ca856072c53bf2be0db9b1f3afa54110fe,UNKNOWN,,,,native zoom: drive with occluded hands; no centre can be confirmed although both raters answered VISIBLE
+2342fa2f794fffb239128ba4e3f610975c24f28f6109ee10f22ddd445137b730,UNKNOWN,,,,native zoom: motion-blurred play; no identifiable ball at either proposed centre
+450de77d7691584de62e6cbadd9e133901526e45e7ec33d4e565a23fde6d565a,UNKNOWN,,,,native zoom: terra centre falls on a defender arm; no identifiable ball
+75b7df0dc19e6591ae5565817878c5e6d6f77dc51f28f1afe8d98c1161d6756b,UNKNOWN,,,,native zoom: both centres sit on hoop/board hardware in a warm-up frame; ball not separable from the rim
+688b16a0eed8b43353b4719136bbe877bdf5e0402bae2e6d212fbc28c8efe7f4,UNKNOWN,,,,native zoom: terra centre is a court logo beside orange jerseys; no ball
+821552787edc89400e99ded12330281db58db96a6cfd82ea0fed7b33bcc4a7c1,VISIBLE,695.5,232.5,21.0,"native zoom: both crops show the same ball at the drive; centres 37 px apart, resolved centre from pixels"
+2f817c74f8463b628ed68f6f047b9035b6c61aa90f14c2342718530c31c25e3d,UNKNOWN,,,,native zoom: large orange foreground object under an overhead camera is more consistent with the rim than the game ball
+5111d6d51460f7a73541ddc95d3c38af4db0c4ae692cb48ae2e84f27451916a3,UNKNOWN,,,,native zoom: both centres fall in heavy motion blur with no identifiable ball
+8ec0d6a276426c16dbb99bd2340501094adaac892d7de12e9622c1fc7876682f,VISIBLE,786.0,286.0,18.5,native zoom: dribbled ball near the terra centre (~23 px off); sol returned UNKNOWN
+73b55b32aaa40695a8e629c18214512f5c22341c337623c999d5af28246ea59f,VISIBLE,930.0,427.5,28.5,native zoom: held ball at the sol centre; terra centre is the sideline
+49f8dfaac04095659c2667b199f7aa0448ee5ff91c9a3daeea7a30ffd86a3346,VISIBLE,1493.0,497.0,32.0,native zoom: ball at the terra centre; the sol centre 280 px away shows hands only
+903236982fa10d60795643107e74347f5a32f7a2e12cfd28920a68513a387830,UNKNOWN,,,,native zoom: frame is a challenge graphic; terra centre is bare floor and sol centre a coach jacket
+5837a6fd032f299831f49b4d9259167c563e566f0e431339095667516049a4aa,VISIBLE,1583.5,828.5,40.0,native zoom: dribbled ball at the sol centre; terra centre 1415 px away is a dark bench
+54f647e2516eddaf6c1a2954e6eade11816f582a864570f0706a22a3c7d88e83,UNKNOWN,,,,native zoom: rounded object near the bench at the sol centre cannot be confirmed as the game ball in play
+bf043c06df4d46a2c5fde16f0bb2694a16e8786373cc272a0a6eccaedc4f2099,ABSENT,,,,native zoom: bench close-up at the terra centre; no ball anywhere in frame
+8855654569c88f781daa6c949000f41c49776c1722943cc41701c4b1ca61a345,VISIBLE,749.0,414.0,36.0,"native zoom: ball held by the official at a dead-ball; terra centre ~20 px off, sol answered ABSENT"
+6b5723b2d2b7ece4017682dc43fce8d8ec7c0fd8418e74cc37aa3119b8653bc8,VISIBLE,502.0,412.5,17.0,native zoom: loose ball on the floor; both crops agree and the sol centre lands on it
+2da3cf59323281dc36c8ac8298cbbc9be63134693707d56a9ff598eda4b2fc99,UNKNOWN,,,,"native zoom: free-throw line-up; the orange object near the terra centre is a jersey, not the ball"
+559d7f1ca444d5a732caec2fd5cc5fa02c76e56f9485be738988670d47269888,UNKNOWN,,,,native zoom: terra centre is blurred floor with no identifiable ball
+5b36027c4952db3c5c18f03a758d3aa543ea45c694abecc79e5d6a22f5477de4,VISIBLE,336.5,313.5,29.0,native zoom: ball in flight against a dark banner at the sol centre; terra answered ABSENT
+6b0cea4ffea185382f5fd9c40ba4283cb4c3f4b2e2641108a2785b3be18325e0,VISIBLE,1157.0,780.0,56.0,"native zoom: palmed ball close-up; terra centre essentially on it, sol 18 px low"
+79ea5f1bf761d1ab152bd9f3b3a916c4b21efab0f2f7012ab8f1aec058f0e735,UNKNOWN,,,,native zoom: terra centre is a clock graphic and the sol crop shows no identifiable ball
+7ebff0bd660d0165b1de252141fa54985634ac516e6fc3f83847c87ea2afee7c,UNKNOWN,,,,native zoom: neither centre lands on an identifiable ball in this blurred drive
+d2307a2e373737524c4e2bc14aa5cae4a851674fe04b3d7a79d29b13b837e676,VISIBLE,1034.0,364.0,19.0,native zoom: dribbled ball at the sol centre; terra centre is bare floor
+9b6493d5f61b10bb3a7bd0260b543ac3a64d900469be30a1b879d2ffd31de804,VISIBLE,621.0,296.0,19.0,native zoom: ball on the floor in front of the bench; both centres about 20 px high
+64494c7ed65840920de3dc1407bf3087b8d8f4d4e2d8c9b11dcc7a54b879ec93,VISIBLE,845.0,189.5,24.5,native zoom: dribbled ball exactly at the sol centre; terra centre is the stands
+af9ba0d4904bcc1dd1148649df08ee9e41ad23d764d92c043c53e418defe58fb,VISIBLE,928.5,273.5,20.0,native zoom: dribbled ball exactly at the terra centre; sol returned UNKNOWN
+c6c10b4839482d79e27f5cf4837ed5f4eb45cff501681d936dcd7589e4206740,VISIBLE,1250.5,513.0,30.0,native zoom: motion-blurred ball at the sol centre in an overexposed feed
+5bd1478b59152518c935cce2314e27ba02759fcd64d3d3691d0217a9f3480a9f,UNKNOWN,,,,native zoom: ball occluded by the net in a rim close-up; centre and scale not resolvable (rater diameters 47.5 vs 109)
+92352b7937f60fc803b3af393a8772bae6bcc37f5a22a84fda8454dec3feb718,VISIBLE,1373.0,414.0,26.0,native zoom: ball on the floor in front of the LED board; terra centre closer
+a8228b951ae2a615065fe4350b80bd2f82e2ce588feab46b0ff23e46d318e54b,VISIBLE,1646.0,632.5,27.5,native zoom: ball on the floor beside the official at the sol centre
+cdd78a2279bae7055bfe4c19cb86bbd1756df77fbdc9136cd838166f6063b9fd,UNKNOWN,,,,native zoom: overhead rim and net hardware; no identifiable ball at either centre
+a9c0c368cc98a109a25650e95572b3a085ed6f94613cd1619e7d0f74b5cb69b6,UNKNOWN,,,,native zoom: terra centre is a player back on court and the sol crop shows no separable ball
+9115fdc7cf7155d6e13c1d306c6c0df3d44ee31975c9e54a44a6f648f00ff599,UNKNOWN,,,,native zoom: dark round object in the crowd cannot be separated from a spectator head
+c0e8d20f9b06370ba36d6b7fb71612d3c2971137fed7cd105a03ce5b0829749a,UNKNOWN,,,,native zoom: terra centre is a jersey number; any ball is occluded against the body
+e5bac25c6b674f3439ab2fcc54adb83cf197e167807eaa9696f6afb20f0effbe,UNKNOWN,,,,native zoom: orange object near the rim is hoop hardware; neither centre is confirmable
+b4a0830926da6c21ef6e5682ae9eecfb67fff6b9237354247f23313d0e9d83c3,UNKNOWN,,,,native zoom: a basketball is visible at the bench but is not established as the game ball in play (same rule applied throughout)
+91103f3898ef49ebf2a0a9e173880a6d6c831c9255a8d493e82016abab1254df,ABSENT,,,,native zoom: free-throw close-up of a single player with no ball anywhere in frame
+70536d53a8070ebc6e8b53f6f8437b8bef0845236dd94f69e87deb8e0e4407f1,VISIBLE,777.0,308.0,57.0,native zoom: large foreground dribbled ball; sol centre closer
+7b2b0b4c5f589c1020f27d387b68274f936b53d5e3ae97a745eb0e3c4b4bad2b,VISIBLE,435.0,327.5,18.5,native zoom: dribbled ball; both crops agree and the sol centre is within 5 px
+c2f9d417e06e508c42ffac0fd95c71ff38c8503c3a9b9a9515972e86d5d90a71,UNKNOWN,,,,"native zoom: terra centre is a shot-clock graphic; the sol crop shows bench heads, no ball"
+bfa1f974e6884a2272879d9f916b1e5821e0833121e840452255ea4e9b47e9d0,ABSENT,,,,native zoom: terra box falls in a black background region of a player close-up; no ball in frame
+798a52755cc8303c1b19c9ee506a3ac52e9f8ad42170fd48c0d008548df2e009,UNKNOWN,,,,native zoom: sol centre is a players legs in traffic; no identifiable ball
+b87836a7c968c40018d4b263afe1c31534feee41cfa58541dca9da290a57fc48,UNKNOWN,,,,native zoom: terra centre is a score graphic; the small object near the sol centre is too small to be the ball at this scale
+c94f62399af9cbb77764c057531584ae88261a0fb2461c4c0827aa71793b86c2,VISIBLE,880.5,698.0,29.5,native zoom: loose ball on the green floor exactly at the sol centre; terra answered ABSENT
+f482ae1581a0bd45308fd53f832988a3f2b8c10fde40b101d30f31f42e4811ab,UNKNOWN,,,,native zoom: terra centre is heavy blur in a challenge-graphic frame; no identifiable ball
+e5d4e960192d4d220d3201eb07ef72f6c2b88aec432bc47a3923739132190b78,VISIBLE,1085.0,649.5,30.5,native zoom: held ball at the sol centre; terra centre is an ad board
+94323b993bded6cf19708d96caabb2802960831e86b19bb6be14c655aa8448a1,VISIBLE,828.5,396.0,25.5,native zoom: contested ball at the sol centre; terra centre is bare court 430 px away
+ead9fcb9d393d99c39b0b526d8802f4aa4043baf0e01da2650e171625ae12b64,VISIBLE,1251.0,459.5,23.5,native zoom: ball on the floor within 10 px of the sol centre; terra centre is bare court
+b0133ec0784645c717de53a6bf22de51b25ab934118fd5dfce5a71710ad35153,UNKNOWN,,,,native zoom: sol centre is a players shorts; a dark object nearby cannot be confirmed as the ball
+b81cbcfb53a9856d9f49ae1a8f17073b5699f322669d492ab3e2b27464023a10,ABSENT,,,,native zoom: timeout huddle close-up at the terra centre; no ball in frame
+b4c21db951a7c24f82d2cdfbc70fe66256b2d4c003b9c132629d16a06c94873f,VISIBLE,348.0,280.0,20.0,native zoom: ball above the shooters head near the sol centre; terra centre is bare court
+9c42154fa44c94192549601fd980f71726081adfebcf787b031f73e779baa85b,VISIBLE,950.0,343.0,19.0,native zoom: dribbled ball near the sol centre; terra centre 394 px away shows no ball
+9c7cc8531a93c05e5ca7c5e969dbcedc53c1c4a8417b5763225d2716f382c078,UNKNOWN,,,,native zoom: terra centre is open floor beside a running player; no identifiable ball
+b5281f2aae8f83eee50a0fe9905c1dedd3a479a1d2937e1a6c937611ff042ac5,VISIBLE,969.0,345.0,20.0,native zoom: held ball near the sol centre; terra answered ABSENT
+afc32e4ed66499a00d4591dab2719a8a279a1ffd16638ce9a9f151b33a1bb3d6,ABSENT,,,,native zoom: frame is a full-screen broadcast graphic; terra box falls on graphic artwork
+92ea689eb22dc1bf3641ffce8b8035748ccfe8acaf00a7c0c69d5e88f105bd87,VISIBLE,662.5,426.0,25.5,"native zoom: ball with visible seams at the drive; sol centre adopted, my independent read agrees within about 40 px"
+ba4aa208e59bd1509d8df869245e45774e0707c40b4c93f6e3417a11584bb231,UNKNOWN,,,,wide court view with no proposed box from either rater; ball not resolvable at this scale
+e6f95762c19e188b05f671d87406655ccc1f9131ab74abf8d72fd1c2ccf83d12,VISIBLE,970.0,435.0,50.0,"native zoom: ball held at the chin; both centres within 15 px, resolved centre from pixels"
+d5885b0b8e280348330bd3d09023256c9b830cca4d3bd36352830051ec3869a2,VISIBLE,864.5,437.5,126.0,native zoom: large ball held by the official at the terra centre; sol answered ABSENT
+fc2124bb50bcaffb234a62378eac7620582eaa06696f2074a05fd18f2d701b04,VISIBLE,447.0,277.0,87.0,native zoom: ball above the shooters head; both centres within 36 px
+c6ff0e4ce91a97bf5bf9a232be5c82296319eaafc03e395b23bf2dc0529fa0f6,ABSENT,,,,native zoom: sideline close-up with no ball; neither rater proposed a box
+ea76ef78abc9f1d1e826594b21fd9e499049aae104042dc8e2f5ae4252fb0aba,VISIBLE,1003.0,1041.0,80.0,native zoom: oversized foreground ball clipped by the frame bottom; midpoint of the two centres
+d3d99d58b6a23b5fc7e5bdbb77a07d950b6455ee9177a78a7566e6e44a5fcb98,UNKNOWN,,,,native zoom: terra centre is the backboard and crowd; the orange object below is the rim
+d8849a787681c0e30704e3c86d65e7048e3748ec252bc37819c6ef4b13aacb3d,UNKNOWN,,,,native zoom: a basketball is visible at the bench but is not established as the game ball in play (same rule applied throughout)
+ed4ec7cdb8a15d08596ca60d59afc97c03af91a91b4bacc86d91b50694e2d3d6,VISIBLE,138.0,400.0,27.0,native zoom: ball at the ball-handlers hip; terra centre within 5 px
+cc5e55c6dfe6d62f5386428c542164084244a1a3643ce900fba400279658ce08,UNKNOWN,,,,wide arena view with no proposed box from either rater; ball not resolvable at this scale
+a5f4c120dcd3648ea271df9bd7579d60eb45ce3d7106d935d10a7d33c24ca81d,VISIBLE,360.0,219.0,28.0,native zoom: both crops agree on the same ball; sol centre closer
+c1ee5aad7436feee21a0718c0c3754f6107d5b4b310840a8f6451a5e25854816,VISIBLE,411.0,301.0,30.5,native zoom: held ball at the sol centre; terra centre 105 px away shows open court
+d11b27ae54298c06cb64941c92e5ae8a7f384e4a7bad3d21626b9998db2d01be,VISIBLE,608.0,606.0,145.0,native zoom: oversized foreground ball partly behind the score graphic; midpoint of the two centres
+a8cd18ebac6ee0ead05bb37f311e4aa3a59651afdb7d50be0e2037341e030846,UNKNOWN,,,,native zoom: terra box sits at the extreme right frame border in blur; no identifiable ball
+e03efbe6e55ce176e99e24aedf239b3c9392d2f232b498ede434ecaa9ba0b248,VISIBLE,1257.0,586.0,33.0,native zoom: ball held at a dead ball; sol centre within 4 px
+e3896f3c0e1563967bcde6c23cd26a5473a6e32950613265cb7ed6eb21874618,UNKNOWN,,,,native zoom: terra centre is crowd and the sol crop shows no separable ball
+fab772b26227589016ef5d6090e3c743bc65440a35c9a2ed7fb08154c59e12c5,VISIBLE,1878.0,699.0,63.0,native zoom: ball in flight against a light background; both centres within 16 px
+f57e29ea9b74e099a96e93f0767d9f1033c0b6be920ec06a87f964fa560273f9,UNKNOWN,,,,native zoom: terra centre is heavy jersey blur with no identifiable ball
+e795691d00a2f8fd92f297822571e467879970a80a72a822015ce8f4b8d21fae,UNKNOWN,,,,native zoom: neither centre lands on an identifiable ball among same-colour jerseys
+d74e44843a1e829e95d6b0bc8b15f1fb8802be6347a8ed966d4852bba4c4223a,UNKNOWN,,,,native zoom: terra centre is a player near the baseline in a distant view; no ball
+ececbab9ec299bb4a4d1db4a6083584ae068b9e93198812442062db514a1dbc0,UNKNOWN,,,,native zoom: terra centre is the official and an LED board; no ball
+e91eb80e92a5fc61ad92193ccc959e7b7e0bbfd022b84b4b46d9820e39ed8e8b,VISIBLE,675.0,236.0,24.0,native zoom: contested ball above the hands; sol centre within 2 px

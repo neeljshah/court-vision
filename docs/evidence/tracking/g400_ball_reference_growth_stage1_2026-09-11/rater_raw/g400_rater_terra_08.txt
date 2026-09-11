@@ -1,0 +1,30 @@
+b4fb0c7a85d1,VISIBLE,878,391,12,12,ball at blue player hand
+d8629056e963,ABSENT,,,,,bench shot no ball
+8f5b799826b1,ABSENT,,,,,closeup no ball
+834cd6e0c957,ABSENT,,,,,players under hoop no ball
+bb955ba7fdb7,ABSENT,,,,,dead ball setup
+a0cc8eb15237,VISIBLE,705,783,29,27,ball being dribbled
+ab35de10b6e4,UNKNOWN,,,,,ball obscured in paint
+d91cb0203845,ABSENT,,,,,player closeup no ball
+dd17d4d9a296,VISIBLE,711,703,27,26,ball held by guard
+c7a6bb2ed8d1,VISIBLE,360,157,20,19,ball near shooter
+e07bced368e9,ABSENT,,,,,rim view no ball
+c2f9d417e06e,VISIBLE,1018,85,18,18,ball in flight
+bfa1f974e688,VISIBLE,1353,562,27,27,ball being dribbled
+798a52755cc8,UNKNOWN,,,,,ball not distinguishable
+b87836a7c968,VISIBLE,866,684,27,25,ball on court
+c94f62399af9,ABSENT,,,,,review graphic no ball
+f482ae1581a0,VISIBLE,950,633,28,30,ball held for free throw
+e5d4e960192d,VISIBLE,792,412,24,24,ball at rim action
+94323b993bde,VISIBLE,1242,449,24,23,ball in transition
+ead9fcb9d393,VISIBLE,1126,251,28,28,ball held on wing
+b0133ec07846,ABSENT,,,,,player closeup no ball
+c503a875eb67,ABSENT,,,,,timeout bench no ball
+b81cbcfb53a9,VISIBLE,325,277,20,20,ball held by guard
+b4c21db951a7,VISIBLE,797,315,22,22,ball held by guard
+9c42154fa44c,VISIBLE,565,267,22,22,ball in paint
+9c7cc8531a93,VISIBLE,993,315,23,23,ball held on wing
+b5281f2aae8f,ABSENT,,,,,broadcast graphic no ball
+afc32e4ed664,VISIBLE,648,488,22,22,ball being dribbled
+92ea689eb22d,UNKNOWN,,,,,ball not distinguishable
+ba4aa208e59b,UNKNOWN,,,,,ball outside visible play area

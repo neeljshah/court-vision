@@ -1,0 +1,30 @@
+86603ad2b512,UNKNOWN,,,,,ball obscured by cropped players
+62808c4cc852,UNKNOWN,,,,,ball cannot be identified
+385c1c14da5d,ABSENT,,,,,team graphic only
+343ff64c2608,ABSENT,,,,,statistics graphic only
+3081d8b7e649,ABSENT,,,,,crowd closeup
+607e46e91f19,ABSENT,,,,,crowd closeup
+260a999e7ee8,ABSENT,,,,,bench closeup
+70706d001da9,ABSENT,,,,,player closeup
+77ea01c32fe2,ABSENT,,,,,bench closeup
+58d62331f397,VISIBLE,372,524,21,21,dribbling near ballhandler
+3015eb3f52fb,ABSENT,,,,,tunnel shot
+42775e938c82,UNKNOWN,,,,,ball not distinguishable in wide shot
+2ce95936d913,VISIBLE,1003,509,63,71,held by ballhandler
+4213905ecff3,VISIBLE,1335,262,29,28,airborne near sideline
+11a327e470e7,VISIBLE,347,468,66,64,held by referee
+1d4b5ea61159,VISIBLE,933,268,19,19,airborne above court
+4b5522c10efb,ABSENT,,,,,coach challenge graphic
+2cabffbec7b9,ABSENT,,,,,player closeup
+245a32355389,ABSENT,,,,,player closeup
+5398d378368e,VISIBLE,587,171,26,25,held in rebound scrum
+60a890f483f3,VISIBLE,499,283,65,70,held by player
+477084f79153,ABSENT,,,,,dead ball wide shot
+51255806ea97,VISIBLE,191,179,18,18,dribbling at wing
+30505822b4f9,VISIBLE,1067,194,22,20,dribbling at perimeter
+342db439be50,VISIBLE,552,156,20,20,held near basket
+364673586ff6,VISIBLE,854,182,17,17,dribbling in backcourt
+696374ca92ec,ABSENT,,,,,players during stoppage
+251228393c78,VISIBLE,806,269,26,26,held by ballhandler
+20e1896d8372,VISIBLE,520,55,17,17,airborne above players
+27a074d54a0a,UNKNOWN,,,,,ball obscured by players

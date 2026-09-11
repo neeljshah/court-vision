@@ -1,0 +1,14 @@
+DISPATCHED run=1789139387923884800 tag=g400_rater_sol_08 wt=a7 at 2026-09-11T10:09:47-05:00
+STARTED pid=28320 birth=1789139387.936
+agent: I\u2019ll inspect only the 30 specified frames, in order, then append exactly 30 headerless CSV lines to the requested file.
+agent: All 30 frames have been reviewed once. I\u2019m doing a close visual pass on the few small or partially obscured ball candidates before writing the annotations.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -NoProfile -Command "if (Test-Path -LiteralPath 'C:\\Users\\neelj\\nba-track-a7\\docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\rater_raw\\g400_rater_sol_08.txt') { 'exists' } else { 'missing' }"
+out: missing
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -NoProfile -Command '$p='"'C:\\Users\\neelj\\nba-track-a7\\docs\\evidence\\tracking\\g400_ball_reference_growth_stage1_2026-09-11\\rater_raw\\g400_rater_sol_08.txt'; "'$lines=Get-Content -LiteralPath $p; $bad=@($lines | Where-Object { 
+out: lines=30 bad=0
+
+agent: Completed. Appended 30 CSV ratings in the specified order to [g400_rater_sol_08.txt](C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g400_ball_reference_growth_stage1_2026-09-11/rater_raw/g400_rater_sol_08.txt).
+TURN_END turn.completed at 2026-09-11T10:12:38-05:00
+EXIT:0 gap=g400_rater_sol_08 at 2026-09-11T10:12:39-05:00
+DRAINED

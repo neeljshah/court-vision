@@ -1,0 +1,20 @@
+{
+ "census_utc": "2026-09-11T13:52:14Z",
+ "competitions": [
+  "acb",
+  "euroleague",
+  "fiba",
+  "nba",
+  "ncaa_basketball",
+  "wnba"
+ ],
+ "eligible_games": 34,
+ "old_identities": 67,
+ "old_overlap_excluded": [
+  "3eeaJz1PJTM"
+ ],
+ "premise": "TRUE",
+ "required_games": 30,
+ "retained_games": 35,
+ "retained_sections": 184
+}

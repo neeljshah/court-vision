@@ -1,0 +1,30 @@
+af9ba0d4904b,UNKNOWN,,,,,ball not identifiable
+c6c10b483948,VISIBLE,1236,503,29,31,ball held near basket
+769051cb48c0,VISIBLE,1056,316,41,41,ball above rim
+5bd1478b5915,VISIBLE,1225,333,111,107,ball inside net
+92352b7937f6,VISIBLE,1335,393,27,27,ball in flight
+956546676b2a,ABSENT,,,,,no ball visible
+a8228b951ae2,VISIBLE,1632,619,28,27,ball near baseline
+d105e58017ea,ABSENT,,,,,no ball visible
+cdd78a2279ba,VISIBLE,1014,747,128,130,ball beneath rim
+a9c0c368cc98,VISIBLE,644,205,20,22,ball held in traffic
+89e29c813a22,ABSENT,,,,,no ball visible
+bf44d7e5ee03,ABSENT,,,,,no ball visible
+8d90a261a9d5,VISIBLE,549,578,44,45,ball held by shooter
+6e9308a8b9b6,UNKNOWN,,,,,ball obscured in action
+9115fdc7cf71,VISIBLE,542,250,21,23,ball in flight
+c0e8d20f9b06,UNKNOWN,,,,,ball obscured by player
+c72b462fd2ce,ABSENT,,,,,no ball visible
+db75f17d879d,ABSENT,,,,,no ball visible
+88d4cdde4d85,VISIBLE,762,401,33,28,ball beside dribbler
+e5bac25c6b67,VISIBLE,445,282,22,29,ball under basket
+96e5562dc382,VISIBLE,856,129,20,24,ball above rim
+987578fec437,VISIBLE,647,349,20,20,ball in flight
+b2d2fa54ef1b,VISIBLE,395,241,21,23,ball with dribbler
+b4a0830926da,VISIBLE,539,140,26,28,ball held near sideline
+91103f3898ef,ABSENT,,,,,ball below frame
+89e698b5946b,VISIBLE,391,302,17,18,ball with dribbler
+9736ef960c39,VISIBLE,991,348,19,20,ball with dribbler
+70536d53a807,VISIBLE,742,268,70,69,ball held in drive
+7b2b0b4c5f58,VISIBLE,431,321,18,19,ball with dribbler
+b888ced10748,ABSENT,,,,,no ball visible
