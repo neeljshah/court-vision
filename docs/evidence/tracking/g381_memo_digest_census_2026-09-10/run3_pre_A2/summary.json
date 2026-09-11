@@ -1,0 +1,14 @@
+{
+  "class_counts": {
+    "ARTIFACT_UNNAMED": 219,
+    "IDENTIFIES_AT_LANDING": 108,
+    "OBJECT_ID": 2,
+    "UNRESOLVED": 1671
+  },
+  "classified": 2000,
+  "digest_memos": 380,
+  "distinct_tokens": 1375,
+  "memos": 627,
+  "tokens": 2000,
+  "unresolved": 1671
+}
