@@ -1,0 +1,32 @@
+{
+ "carried_columns": 5,
+ "entries": 5,
+ "expression": "{\"box_frame\": (\"topcut60_pad15\" if _g412_route(p) == \"fresh_box\" else \"UNKNOWN\") if p.previous_bb is not None else \"\", \"box_crop_origin_y_px\": (60 if _g412_route(p) == \"fresh_box\" else \"UNKNOWN\") if p.previous_bb is not None else \"\", \"box_padding_px\": (15 if _g412_route(p) == \"fresh_box\" else \"UNKNOWN\") if p.previous_bb is not None else \"\", \"box_receipt_status\": (\"BOUND\" if _g412_route(p) == \"fresh_box\" else \"UNKNOWN\") if p.previous_bb is not None else \"EMPTY\", \"box_receipt_reason\": (\"\" if _g412_route(p) == \"fresh_box\" else \"unbound-\" + _g412_route(p)) if p.previous_bb is not None else \"absent-box\"}",
+ "helper_lines": [
+  "def _g412_route(holder) -> str:",
+  "    return str(getattr(holder, \"box_route\", \"UNKNOWN\"))"
+ ],
+ "results": {
+  "absent": {
+   "box_crop_origin_y_px": "",
+   "box_frame": "",
+   "box_padding_px": "",
+   "box_receipt_reason": "absent-box",
+   "box_receipt_status": "EMPTY"
+  },
+  "fresh_box": {
+   "box_crop_origin_y_px": 60,
+   "box_frame": "topcut60_pad15",
+   "box_padding_px": 15,
+   "box_receipt_reason": "",
+   "box_receipt_status": "BOUND"
+  },
+  "prediction": {
+   "box_crop_origin_y_px": "UNKNOWN",
+   "box_frame": "UNKNOWN",
+   "box_padding_px": "UNKNOWN",
+   "box_receipt_reason": "unbound-prediction",
+   "box_receipt_status": "UNKNOWN"
+  }
+ }
+}

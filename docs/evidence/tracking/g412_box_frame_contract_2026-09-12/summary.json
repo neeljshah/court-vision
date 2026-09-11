@@ -1,0 +1,153 @@
+{
+ "diff": {
+  "applied": false,
+  "evidence_copy_sha256": "592e257097395ea7890e2c1577a5f75ab9839a3bbbcca058741ff02f6d33b304",
+  "fixture_results": {
+   "absent": {
+    "box_crop_origin_y_px": "",
+    "box_frame": "",
+    "box_padding_px": "",
+    "box_receipt_reason": "absent-box",
+    "box_receipt_status": "EMPTY"
+   },
+   "fresh_box": {
+    "box_crop_origin_y_px": 60,
+    "box_frame": "topcut60_pad15",
+    "box_padding_px": 15,
+    "box_receipt_reason": "",
+    "box_receipt_status": "BOUND"
+   },
+   "prediction": {
+    "box_crop_origin_y_px": "UNKNOWN",
+    "box_frame": "UNKNOWN",
+    "box_padding_px": "UNKNOWN",
+    "box_receipt_reason": "unbound-prediction",
+    "box_receipt_status": "UNKNOWN"
+   }
+  },
+  "path": "C:/Users/neelj/nba-track-a3/docs/research/organization-sprint/PROPOSED_g412_box_frame_contract.diff",
+  "sha256": "592e257097395ea7890e2c1577a5f75ab9839a3bbbcca058741ff02f6d33b304"
+ },
+ "gap": "G412",
+ "model_set": [],
+ "model_set_reason": "no inference in this row",
+ "not_verified": [
+  "live integration of the proposed receipt",
+  "physical court registration",
+  "branch freshness and whether a stored box was observed",
+  "geometry quality of any producer box",
+  "training suitability"
+ ],
+ "peer_agreement": {
+  "G409": {
+   "conflicts": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12.md",
+   "sha256": "587014737e29679b725773a4b85fc9ff509e781179f119142ea2542f42c1ddd7",
+   "shared_citations": [
+    "video_handler.py:11",
+    "unified_pipeline.py:1693"
+   ],
+   "status": "PRESENT",
+   "verdict_line": "VERDICT: DONE -- cause established. Producer boxes are stored in the TOPCUT-cropped frame and the CSV export never inverts the crop."
+  },
+  "G410": {
+   "conflicts": [],
+   "path": "C:/Users/neelj/nba-track-a13/docs/evidence/tracking/g410_position_box_frame_consistency_2026-09-12.md",
+   "sha256": "7dedc399259652ad4139eeaa08aa29401ee1cad2d1ff2f84569eb5b5be2f17e5",
+   "shared_citations": [
+    "video_handler.py:11",
+    "unified_pipeline.py:1693",
+    "advanced_tracker.py:1336",
+    "player_detection.py:20"
+   ],
+   "status": "PRESENT",
+   "verdict_line": "VERDICT: PARTIAL + NOT VALIDATED -- court positions and stored boxes carry the SAME frame index and the SAME TOPCUT-cropped image frame, but the stored box is not the box that was projected (the proje"
+  },
+  "independence_note": "every citation in route_chain.json was read from this worktree's archived src bytes before any peer memo was opened"
+ },
+ "premise": {
+  "absent_inputs": [],
+  "distinct_ticks": 60,
+  "draw_cards": 60,
+  "expected_digest_mismatches": [],
+  "nonsilent_ticks": 55,
+  "per_tick_cards": 60,
+  "reproduced": true,
+  "silent_card_ids": [
+   "1080p30_09",
+   "720p60_00",
+   "720p60_15",
+   "720p60_19",
+   "720p60_27"
+  ],
+  "silent_ticks": 5,
+  "source_rehash": {
+   "distinct_receiver_files": 53,
+   "failures": 0,
+   "receipts": 60
+  },
+  "stored_rows": 206,
+  "writer_receipt_absence": {
+   "absence_reproduced": true,
+   "distinct_headers": 1,
+   "neighbour_equivalent_receipt": false,
+   "neighbour_fields_present": [
+    "coordinate_space"
+   ],
+   "raw_tables_scanned": 59,
+   "route_files_scanned": 4,
+   "route_receipt_hits": [],
+   "table_receipt_hits": []
+  }
+ },
+ "prereg": "docs/evidence/tracking/g412_box_frame_contract_2026-09-12/prereg.md",
+ "prereg_seal_valid": true,
+ "renders": {
+  "boxes_drawn": 206,
+  "cards": 60,
+  "decode_absent": 0,
+  "distinct_crop_shapes": [
+   "1280x660",
+   "1920x1020"
+  ],
+  "ok": 55,
+  "unknown_silent": 5
+ },
+ "repeat_shape_valid": true,
+ "repeats_identical": true,
+ "route": {
+  "reader_files": 53,
+  "reader_rows": 178,
+  "reader_writes": 16,
+  "readers_with_receipt_field": 0,
+  "stage_lines_absent": [],
+  "stages": 12
+ },
+ "sport": "basketball",
+ "tables": {
+  "bound_rows": 34,
+  "boxes_outside_padded_crop_bound": 2,
+  "construct_cases": 32,
+  "construct_oracle_agreements": 32,
+  "diff_fixture_entries": 5,
+  "diff_fixture_matches_helper": true,
+  "frames": 60,
+  "frames_with_boxes": 55,
+  "legacy_identical_rows": 206,
+  "paired": {
+   "clipping_delta_nonzero_pairs": 18,
+   "dy_after_clipping_median": 3.26,
+   "dy_old_median": -58.203,
+   "dy_plus_origin_median": 1.797,
+   "exact_shift_is_sixty": true,
+   "fitted_constants": [],
+   "frames": 28,
+   "independence_note": "51 pairs occupy 28 frames; this is descriptive arithmetic",
+   "pairs": 51
+  },
+  "real_rows": 206,
+  "silent_frames": 5,
+  "unknown_rows": 172
+ },
+ "worktree": "a3"
+}

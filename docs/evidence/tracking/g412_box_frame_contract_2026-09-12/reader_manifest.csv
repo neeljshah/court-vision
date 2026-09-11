@@ -1,0 +1,179 @@
+path,line,tokens,text,kind,receipt_field_present
+src/pipeline/unified_pipeline.py,2041,previous_bb,"""bbox"":             p.previous_bb,",read,0
+src/pipeline/unified_pipeline.py,2736,bbox_x1,"""bbox_x1"":            bbox[1] if bbox else """",",emit,0
+src/pipeline/unified_pipeline.py,2737,bbox_y1,"""bbox_y1"":            bbox[0] if bbox else """",",emit,0
+src/pipeline/unified_pipeline.py,2738,bbox_x2,"""bbox_x2"":            bbox[3] if bbox else """",",emit,0
+src/pipeline/unified_pipeline.py,2739,bbox_y2,"""bbox_y2"":            bbox[2] if bbox else """",",emit,0
+src/pipeline/unified_pipeline.py,3107,previous_bb,"if p.team != ""referee"" and p.previous_bb is not None and frame_idx in p.positions:",read,0
+src/pipeline/unified_pipeline.py,3109,previous_bb,"iou = FeetDetector.bb_intersection_over_union(bbox_iou, p.previous_bb)",read,0
+src/pipeline/unified_pipeline.py,3124,previous_bb,"if p.team != ""referee"" and p.previous_bb is not None and frame_idx in p.positions:",read,0
+src/pipeline/unified_pipeline.py,3125,previous_bb,"pb = p.previous_bb  # (y1, x1, y2, x2)",read,0
+src/pipeline/unified_pipeline.py,3988,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2"",",read,0
+src/tracking/advanced_tracker.py,621,previous_bb,and self.players[slot].previous_bb is not None,read,0
+src/tracking/advanced_tracker.py,626,previous_bb,"p.previous_bb = det[""bbox""]",write,0
+src/tracking/advanced_tracker.py,1163,previous_bb,# Update previous_bb with predicted position so ball tracker stays accurate,read,0
+src/tracking/advanced_tracker.py,1164,previous_bb,if self.players[slot].previous_bb is not None:,read,0
+src/tracking/advanced_tracker.py,1165,previous_bb,self.players[slot].previous_bb = self._kf_pred[slot],write,0
+src/tracking/advanced_tracker.py,1282,previous_bb,and p.previous_bb is not None,read,0
+src/tracking/advanced_tracker.py,1546,previous_bb,p.previous_bb = None,write,0
+src/tracking/advanced_tracker.py,1574,previous_bb,p.previous_bb = None,write,0
+src/tracking/advanced_tracker.py,1607,previous_bb,"if p.team == det[""team""] and p.previous_bb is None:",read,0
+src/tracking/advanced_tracker.py,1618,previous_bb,and p.previous_bb is not None,read,0
+src/tracking/advanced_tracker.py,1623,previous_bb,p.previous_bb = None,write,0
+src/tracking/advanced_tracker.py,1640,previous_bb,and p.previous_bb is not None,read,0
+src/tracking/advanced_tracker.py,1668,previous_bb,and p.previous_bb is not None,read,0
+src/tracking/advanced_tracker.py,1782,previous_bb,if p.previous_bb is not None:,read,0
+src/tracking/advanced_tracker.py,1794,previous_bb,p.previous_bb = None,write,0
+src/tracking/ball_detect_track.py,573,previous_bb,"bb = getattr(holder, ""previous_bb"", None)",read,0
+src/tracking/ball_detect_track.py,859,previous_bb,p.previous_bb[2] - p.previous_bb[0],read,0
+src/tracking/ball_detect_track.py,861,previous_bb,"if p.previous_bb is not None and p.team != ""referee""",read,0
+src/tracking/ball_detect_track.py,876,previous_bb,"if p.team != ""referee"" and p.previous_bb is not None and timestamp in p.positions:",read,0
+src/tracking/ball_detect_track.py,877,previous_bb,"iou = FeetDetector.bb_intersection_over_union(bbox_iou, p.previous_bb)",read,0
+src/tracking/ball_detect_track.py,889,previous_bb,bb = p.previous_bb,read,0
+src/tracking/player.py,6,previous_bb,"self.previous_bb = None   # (y1, x1, y2, x2) bounding box for IoU matching",write,0
+src/tracking/player_detection.py,164,previous_bb,if player.team == color_key and player.previous_bb is not None:,read,0
+src/tracking/player_detection.py,165,previous_bb,"iou_val = self.bb_intersection_over_union(bbox, player.previous_bb)",read,0
+src/tracking/player_detection.py,171,previous_bb,best[1].previous_bb = bbox,write,0
+src/tracking/player_detection.py,175,previous_bb,if player.team == color_key and player.previous_bb is None:,read,0
+src/tracking/player_detection.py,176,previous_bb,player.previous_bb = bbox,write,0
+src/tracking/player_detection.py,183,previous_bb,player.previous_bb = None,write,0
+src/tracking/video_handler.py,106,previous_bb,"""bbox"":       player.previous_bb,",read,0
+scripts/cv_fix_ocr_replay.py,40,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"bb = (r.get(""bbox_x1""), r.get(""bbox_y1""), r.get(""bbox_x2""), r.get(""bbox_y2""))",read,0
+scripts/platformkit/basketball_relabel_image_px.py,27,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"_BBOX_COLUMNS = (""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2"")",read,0
+scripts/platformkit/basketball_relabel_image_px.py,66,bbox_x1 bbox_y2,"that survive to CSV are ``bbox_x1..bbox_y2``, so ``x``/``y`` are the bbox",read,0
+scripts/platformkit/basketball_relabel_image_px.py,82,bbox_x1 bbox_x2,"""x"": (bbox[""bbox_x1""] + bbox[""bbox_x2""]) / 2.0,",read,0
+scripts/platformkit/basketball_relabel_image_px.py,83,bbox_y2,"""y"": bbox[""bbox_y2""],",read,0
+scripts/platformkit/overlay_render.py,110,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"has_boxes = {""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2""}.issubset(rows.columns)",read,0
+scripts/platformkit/overlay_render.py,112,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"for row in rows.dropna(subset=[""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2""]).itertuples():",read,0
+scripts/platformkit/overlay_render.py,114,bbox_x1 bbox_y1,"p1 = (round(row.bbox_x1), round(row.bbox_y1))",read,0
+scripts/platformkit/overlay_render.py,115,bbox_x2 bbox_y2,"p2 = (round(row.bbox_x2), round(row.bbox_y2))",read,0
+scripts/platformkit/test_basketball_relabel_image_px.py,16,bbox_x1 bbox_y1,"""bbox_x1"": [10.0, 20.0, 12.0, 22.0], ""bbox_y1"": [5.0, 6.0, 7.0, 8.0],",emit,0
+scripts/platformkit/test_basketball_relabel_image_px.py,17,bbox_x2 bbox_y2,"""bbox_x2"": [30.0, 40.0, 32.0, 42.0], ""bbox_y2"": [50.0, 60.0, 52.0, 62.0],",emit,0
+scripts/platformkit/test_overlay_render.py,25,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"row.update({""bbox_x1"": 20, ""bbox_y1"": 20, ""bbox_x2"": 60, ""bbox_y2"": 75})",emit,0
+scripts/platformkit/tracking/ball_shadow_possession.py,31,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"x1, y1, x2, y2 = (_num(row.get(key)) for key in (""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2""))",read,0
+scripts/platformkit/tracking/framing_coverage.py,60,bbox_x1,"if ""bbox_x1"" in frame:",read,0
+scripts/platformkit/tracking/framing_coverage.py,61,bbox_x1,"flags |= pd.to_numeric(frame[""bbox_x1""], errors=""coerce"").le(2)",read,0
+scripts/platformkit/tracking/framing_coverage.py,68,bbox_x2,"if ""bbox_x2"" in frame and width is not None:",read,0
+scripts/platformkit/tracking/framing_coverage.py,69,bbox_x2,"flags |= pd.to_numeric(frame[""bbox_x2""], errors=""coerce"").ge(width - 2)",read,0
+scripts/platformkit/tracking/g195_cv2_rng_route_determinism.py,12,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"_SURVIVOR_COLUMNS = (""player_id"", ""team"", ""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2"")",read,0
+scripts/platformkit/tracking/g198_prefetch_frame_misalignment.py,14,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"_SURVIVOR_COLUMNS = (""player_id"", ""team"", ""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2"")",read,0
+scripts/platformkit/tracking/g309_multigame_census.py,96,bbox_x1 bbox_x2 bbox_y2,"x1, x2, y2 = _f(r.get(""bbox_x1"")), _f(r.get(""bbox_x2"")), _f(r.get(""bbox_y2""))",read,0
+scripts/platformkit/tracking/g310_native_input_arm.py,32,bbox_x1 bbox_x2 bbox_y2,"return (float(row[""bbox_x1""]) + float(row[""bbox_x2""])) / 2.0, float(row[""bbox_y2""])",read,0
+scripts/platformkit/tracking/g315_same_id_step_screen.py,81,bbox_x1 bbox_y1,"x1, y1 = _f(r.get(""bbox_x1"")), _f(r.get(""bbox_y1""))",read,0
+scripts/platformkit/tracking/g315_same_id_step_screen.py,82,bbox_x2 bbox_y2,"x2, y2 = _f(r.get(""bbox_x2"")), _f(r.get(""bbox_y2""))",read,0
+scripts/platformkit/tracking/g322_oversized_boxes.py,36,bbox_y2,"""max_bbox_y2"", ""max_box_h"", ""table_bytes"", ""table_sha256"",",read,0
+scripts/platformkit/tracking/g322_oversized_boxes.py,64,bbox_y2,"""height_disagrees"": 0, ""max_bbox_y2"": None, ""max_box_h"": None,",read,0
+scripts/platformkit/tracking/g322_oversized_boxes.py,73,bbox_y1 bbox_y2,"y1, y2, fh_px = _f(row.get(""bbox_y1"")), _f(row.get(""bbox_y2"")), _f(row.get(""source_height""))",read,0
+scripts/platformkit/tracking/g322_oversized_boxes.py,79,bbox_y2,"if acc[""max_bbox_y2""] is None or y2 > acc[""max_bbox_y2""]:",read,0
+scripts/platformkit/tracking/g322_oversized_boxes.py,80,bbox_y2,"acc[""max_bbox_y2""] = y2",read,0
+scripts/platformkit/tracking/g322_oversized_boxes.py,95,previous_bb,# previous_bb with the Kalman prediction otherwise). Moves no threshold.,read,0
+scripts/platformkit/tracking/g322_oversized_boxes.py,143,bbox_y2,"""max_bbox_y2"": acc[""max_bbox_y2""], ""max_box_h"": acc[""max_box_h""],",read,0
+scripts/platformkit/tracking/g322_oversized_boxes.py,182,bbox_y1 bbox_y2,"y1, y2, fh_px = _f(row.get(""bbox_y1"")), _f(row.get(""bbox_y2"")), _f(row.get(""source_height""))",read,0
+scripts/platformkit/tracking/g322_oversized_boxes.py,190,bbox_x1 bbox_y1,"""bbox_x1"": _f(row.get(""bbox_x1"")), ""bbox_y1"": y1,",emit,0
+scripts/platformkit/tracking/g322_oversized_boxes.py,191,bbox_x2 bbox_y2,"""bbox_x2"": _f(row.get(""bbox_x2"")), ""bbox_y2"": y2,",emit,0
+scripts/platformkit/tracking/g322_oversized_boxes.py,259,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"""player_id"", ""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2"", ""box_h"", ""frame_h"", ""ratio""])",read,0
+scripts/platformkit/tracking/g322_render_panels.py,50,bbox_x1 bbox_y1,"x1, y1 = float(row[""bbox_x1""]), float(row[""bbox_y1""])",read,0
+scripts/platformkit/tracking/g322_render_panels.py,51,bbox_x2 bbox_y2,"x2, y2 = float(row[""bbox_x2""]), float(row[""bbox_y2""])",read,0
+scripts/platformkit/tracking/g323_analyze.py,50,bbox_x1,"x1 = int(float(row[""bbox_x1""])) + PAD",read,0
+scripts/platformkit/tracking/g323_analyze.py,51,bbox_y1,"y1 = int(float(row[""bbox_y1""])) + PAD",read,0
+scripts/platformkit/tracking/g323_analyze.py,52,bbox_x2,"x2 = int(float(row[""bbox_x2""])) - PAD",read,0
+scripts/platformkit/tracking/g323_analyze.py,53,bbox_y2,"y2 = int(float(row[""bbox_y2""])) - PAD",read,0
+scripts/platformkit/tracking/g323_render_panels.py,67,bbox_x1 bbox_y1,"x1, y1 = float(row[""bbox_x1""]), float(row[""bbox_y1""])",read,0
+scripts/platformkit/tracking/g323_render_panels.py,68,bbox_x2 bbox_y2,"x2, y2 = float(row[""bbox_x2""]), float(row[""bbox_y2""])",read,0
+scripts/platformkit/tracking/g323_sample_boxes.py,30,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"""frame"", ""player_id"", ""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2"",",read,0
+scripts/platformkit/tracking/g323_sample_boxes.py,57,bbox_y1 bbox_y2,"y1, y2 = float(row[""bbox_y1""]), float(row[""bbox_y2""])",read,0
+scripts/platformkit/tracking/g323_sample_boxes.py,58,bbox_x1 bbox_x2,"x1, x2 = float(row[""bbox_x1""]), float(row[""bbox_x2""])",read,0
+scripts/platformkit/tracking/g323_sample_boxes.py,68,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"""bbox_x1"": x1, ""bbox_y1"": y1, ""bbox_x2"": x2, ""bbox_y2"": y2,",emit,0
+scripts/platformkit/tracking/g325_offframe_boxes.py,40,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"""min_bbox_x2"", ""max_bbox_x1"", ""min_bbox_y2"", ""max_bbox_y1"",",read,0
+scripts/platformkit/tracking/g325_offframe_boxes.py,84,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"acc.update(min_bbox_x2=None, max_bbox_x1=None, min_bbox_y2=None, max_bbox_y1=None)",read,0
+scripts/platformkit/tracking/g325_offframe_boxes.py,89,bbox_x1 bbox_y1,"x1, y1 = _f(row.get(""bbox_x1"")), _f(row.get(""bbox_y1""))",read,0
+scripts/platformkit/tracking/g325_offframe_boxes.py,90,bbox_x2 bbox_y2,"x2, y2 = _f(row.get(""bbox_x2"")), _f(row.get(""bbox_y2""))",read,0
+scripts/platformkit/tracking/g325_offframe_boxes.py,119,bbox_x1 bbox_x2,"for name, val, better in ((""min_bbox_x2"", x2, min), (""max_bbox_x1"", x1, max),",read,0
+scripts/platformkit/tracking/g325_offframe_boxes.py,120,bbox_y1 bbox_y2,"(""min_bbox_y2"", y2, min), (""max_bbox_y1"", y1, max)):",read,0
+scripts/platformkit/tracking/g325_offframe_boxes.py,148,bbox_x1 bbox_x2,"""n_wholly_matched"", ""n_wholly_coasting"", ""min_bbox_x2"", ""max_bbox_x1"",",read,0
+scripts/platformkit/tracking/g325_offframe_boxes.py,149,bbox_y1 bbox_y2,"""min_bbox_y2"", ""max_bbox_y1""):",read,0
+scripts/platformkit/tracking/g336_capture.py,140,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"""bbox_x1"": x1, ""bbox_y1"": y1, ""bbox_x2"": x2, ""bbox_y2"": y2}",emit,0
+scripts/platformkit/tracking/g336_capture.py,147,bbox_x1,"and item[""team""] == row[""team""] and item[""bbox_x1""] == row[""bbox""][0]))",read,0
+scripts/platformkit/tracking/g336_run.py,52,bbox_x1 bbox_y1,"""bbox_x1_milli_px"": _milli(r[""bbox_x1""]), ""bbox_y1_milli_px"": _milli(r[""bbox_y1""]),",emit,0
+scripts/platformkit/tracking/g336_run.py,53,bbox_x2 bbox_y2,"""bbox_x2_milli_px"": _milli(r[""bbox_x2""]), ""bbox_y2_milli_px"": _milli(r[""bbox_y2""])}",emit,0
+scripts/platformkit/tracking/g336_track_id_continuity.py,94,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"""bbox"": [float(row[key]) for key in (""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2"")],",read,0
+scripts/platformkit/tracking/g344_synthetic.py,17,bbox_x1,"return {""frame"": str(frame), ""player_id"": ""p1"", ""bbox_x1"": str(x - 8),",emit,0
+scripts/platformkit/tracking/g344_synthetic.py,18,bbox_y1 bbox_x2 bbox_y2,"""bbox_y1"": str(y - 16), ""bbox_x2"": str(x + 8), ""bbox_y2"": str(y)}",emit,0
+scripts/platformkit/tracking/g345_associate.py,158,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"required = {""section"", ""frame"", ""score"", ""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2""}",read,0
+scripts/platformkit/tracking/g345_associate.py,162,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"""bbox"": [float(row[key]) for key in (""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2"")]}",read,0
+scripts/platformkit/tracking/g345_associate.py,201,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"""bbox_x1"": box[0], ""bbox_y1"": box[1], ""bbox_x2"": box[2], ""bbox_y2"": box[3]})",emit,0
+scripts/platformkit/tracking/g345_associate.py,204,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"writer = csv.DictWriter(handle, fieldnames=list(rows[0]) if rows else [""section"", ""frame"", ""score"", ""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2""],",read,0
+scripts/platformkit/tracking/g351_ball_scale_census.py,57,bbox_x1 bbox_x2,"x_keys = (""bbox_x1"", ""bbox_x2"") if player else (""ball_x2d"",)",read,0
+scripts/platformkit/tracking/g351_ball_scale_census.py,58,bbox_y1 bbox_y2,"y_keys = (""bbox_y1"", ""bbox_y2"") if player else (""ball_y2d"",)",read,0
+scripts/platformkit/tracking/g351_ball_scale_census.py,111,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"values = tuple(_num(row.get(key)) for key in (""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2""))",read,0
+scripts/platformkit/tracking/g354_postdeploy_check.py,56,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"values = [_number(row.get(name)) for name in (""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2"")]",read,0
+scripts/platformkit/tracking/g361_strips.py,16,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"BOX = (""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2"")",read,0
+scripts/platformkit/tracking/g368_controls_strips.py,29,bbox_x1 bbox_y1,"""confidence"": confidence, ""bbox_x1"": x - 20, ""bbox_y1"": y - 40,",emit,0
+scripts/platformkit/tracking/g368_controls_strips.py,30,bbox_x2 bbox_y2,"""bbox_x2"": x + 20, ""bbox_y2"": y + 40}",emit,0
+scripts/platformkit/tracking/g368_tick_motion.py,18,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2""]",read,0
+scripts/platformkit/tracking/g368_tick_motion.py,19,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"BBOX = [""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2""]",read,0
+scripts/platformkit/tracking/g370_scorer.py,45,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"keys = (""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2"")",read,0
+scripts/platformkit/tracking/g380_controls.py,40,previous_bb,"self.ID, self.positions, self.previous_bb = pid, {}, None",write,0
+scripts/platformkit/tracking/g380_controls.py,107,previous_bb,det.players[0].previous_bb = COAST_BOXES[0],write,0
+scripts/platformkit/tracking/g380_controls.py,236,bbox_x1 bbox_y1 bbox_x2,"rows.append({""bbox_x1"": box[0], ""bbox_y1"": box[1], ""bbox_x2"": box[2],",emit,0
+scripts/platformkit/tracking/g380_controls.py,237,bbox_y2,"""bbox_y2"": box[3], ""position_source"": label})",emit,0
+scripts/platformkit/tracking/g380_overlays.py,49,bbox_x1 bbox_y1,"box = [int(float(row[""bbox_x1""])), int(float(row[""bbox_y1""])),",read,0
+scripts/platformkit/tracking/g380_overlays.py,50,bbox_x2 bbox_y2,"int(float(row[""bbox_x2""])), int(float(row[""bbox_y2""]))]",read,0
+scripts/platformkit/tracking/g397_cards.py,47,bbox_x1 bbox_y1,"for x_name, y_name in ((""bbox_x1"", ""bbox_y1""), (""x_position"", ""y_position"")):",read,0
+scripts/platformkit/tracking/g402_audit.py,18,bbox_x1,"""sealed_end_frame_exclusive"", ""frame"", ""player_id"", ""bbox_x1"",",read,0
+scripts/platformkit/tracking/g402_audit.py,19,bbox_y1 bbox_x2 bbox_y2,"""bbox_y1"", ""bbox_x2"", ""bbox_y2"", ""native_width"", ""native_height"",",read,0
+scripts/platformkit/tracking/g402_audit.py,64,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"value = [int(float(row[key])) for key in (""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2"")]",read,0
+scripts/platformkit/tracking/g402_audit.py,163,bbox_x1 bbox_y1 bbox_x2,"""bbox_x1"": value[0], ""bbox_y1"": value[1], ""bbox_x2"": value[2],",emit,0
+scripts/platformkit/tracking/g402_audit.py,164,bbox_y2,"""bbox_y2"": value[3], ""native_width"": width, ""native_height"": height,",emit,0
+scripts/platformkit/tracking/g402_audit.py,175,bbox_x1 bbox_x2,"""degenerate_boxes"": sum(int(item[""bbox_x1""]) >= int(item[""bbox_x2""]) or",read,0
+scripts/platformkit/tracking/g402_audit.py,176,bbox_y1 bbox_y2,"int(item[""bbox_y1""]) >= int(item[""bbox_y2""]) for item in audit),",read,0
+scripts/platformkit/tracking/g402_tables.py,38,bbox_x1 bbox_y1,"""repeated_coordinate"", ""x_position"", ""y_position"", ""bbox_x1"", ""bbox_y1"",",read,0
+scripts/platformkit/tracking/g402_tables.py,39,bbox_x2 bbox_y2,"""bbox_x2"", ""bbox_y2"", ""target_weight"", ""mask_reason"")",read,0
+scripts/platformkit/tracking/g402_tables.py,68,bbox_x1 bbox_y1,"want = [int(row[""frame""]), int(float(row[""bbox_y1""])), int(float(row[""bbox_x1""])),",read,0
+scripts/platformkit/tracking/g402_tables.py,69,bbox_x2 bbox_y2,"int(float(row[""bbox_y2""])), int(float(row[""bbox_x2""]))]",read,0
+scripts/platformkit/tracking/g402_tables.py,77,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"(""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2""))",read,0
+scripts/platformkit/tracking/g402_tables.py,139,bbox_x1 bbox_y1,"""bbox_x1"": item.get(""bbox_x1""), ""bbox_y1"": item.get(""bbox_y1""),",emit,0
+scripts/platformkit/tracking/g402_tables.py,140,bbox_x2 bbox_y2,"""bbox_x2"": item.get(""bbox_x2""), ""bbox_y2"": item.get(""bbox_y2""),",emit,0
+scripts/platformkit/tracking/g406_aggregate.py,34,bbox_x1 bbox_x2,"return ((float(row[""bbox_x1""]) + float(row[""bbox_x2""])) / 2.0,",read,0
+scripts/platformkit/tracking/g406_aggregate.py,35,bbox_y1 bbox_y2,"(float(row[""bbox_y1""]) + float(row[""bbox_y2""])) / 2.0)",read,0
+scripts/platformkit/tracking/g406_audit.py,16,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"return tuple(float(row[field]) for field in (""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2""))",read,0
+scripts/platformkit/tracking/g406_comparator.py,26,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2"", ""image_width"", ""image_height"", ""status""]",read,0
+scripts/platformkit/tracking/g406_comparator.py,88,bbox_x1 bbox_y1,"""bbox_x1"": ""%.3f"" % box[0], ""bbox_y1"": ""%.3f"" % box[1],",emit,0
+scripts/platformkit/tracking/g406_comparator.py,89,bbox_x2 bbox_y2,"""bbox_x2"": ""%.3f"" % box[2], ""bbox_y2"": ""%.3f"" % box[3],",emit,0
+scripts/platformkit/tracking/g406_comparator.py,95,bbox_x1,"""det_index"": """", ""cls"": """", ""confidence"": """", ""bbox_x1"": """",",emit,0
+scripts/platformkit/tracking/g406_comparator.py,96,bbox_y1 bbox_x2 bbox_y2,"""bbox_y1"": """", ""bbox_x2"": """", ""bbox_y2"": """",",emit,0
+scripts/platformkit/tracking/g406_measure.py,146,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2"", ""target_weight"", ""mask_reason"",",read,0
+scripts/platformkit/tracking/g406_render.py,45,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"(""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2""))",read,0
+scripts/platformkit/tracking/g406_review.py,16,bbox_x1 bbox_y1 bbox_x2,"""subject_id"", ""position_source"", ""target_weight"", ""bbox_x1"", ""bbox_y1"", ""bbox_x2"",",read,0
+scripts/platformkit/tracking/g406_review.py,17,bbox_y2,"""bbox_y2"", ""verdict"", ""certainty"", ""verdict_source"", ""note"", ""overlay_opened_utc"",",read,0
+scripts/platformkit/tracking/g406_review.py,94,bbox_x1 bbox_y1,"""bbox_x1"": source.get(""bbox_x1"", """"), ""bbox_y1"": source.get(""bbox_y1"", """"),",emit,0
+scripts/platformkit/tracking/g406_review.py,95,bbox_x2 bbox_y2,"""bbox_x2"": source.get(""bbox_x2"", """"), ""bbox_y2"": source.get(""bbox_y2"", """"),",emit,0
+scripts/platformkit/tracking/g406_review.py,127,bbox_x1 bbox_y1,"""bbox_x1"": source[""bbox_x1""], ""bbox_y1"": source[""bbox_y1""],",emit,0
+scripts/platformkit/tracking/g406_review.py,128,bbox_x2 bbox_y2,"""bbox_x2"": source[""bbox_x2""], ""bbox_y2"": source[""bbox_y2""],",emit,0
+scripts/platformkit/tracking/g412_diff.py,68,previous_bb,"if stripped == ""p.previous_bb = det["" + Q + ""bbox"" + Q + ""]"":",write,0
+scripts/platformkit/tracking/g412_diff.py,71,previous_bb,"elif stripped == ""self.players[slot].previous_bb = self._kf_pred[slot]"":",write,0
+scripts/platformkit/tracking/g412_diff.py,83,previous_bb,"if stripped == Q + ""bbox"" + Q + "":             p.previous_bb,"":",read,0
+scripts/platformkit/tracking/g412_diff.py,85,previous_bb,"out.extend(_receipt_block(indent, ""p"", ""p.previous_bb""))",read,0
+scripts/platformkit/tracking/g412_diff.py,87,bbox_y2,"if stripped == Q + ""bbox_y2"" + Q + "":            bbox[2] if bbox else "" + Q * 2 + "","":",read,0
+scripts/platformkit/tracking/g412_route.py,16,bbox_x1 bbox_y1 bbox_x2 bbox_y2 previous_bb,"BBOX_TOKENS = (""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2"", ""previous_bb"")",read,0
+scripts/platformkit/tracking/g412_route.py,34,previous_bb,"""fresh store"", ""p.previous_bb = det['bbox']""),",write,0
+scripts/platformkit/tracking/g412_route.py,36,previous_bb,"""prediction overwrite"", ""previous_bb = self._kf_pred[slot]""),",read,0
+scripts/platformkit/tracking/g412_route.py,45,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"""bbox_x1 = bbox[1], bbox_y1 = bbox[0], bbox_x2 = bbox[3], bbox_y2 = bbox[2]""),",write,0
+scripts/platformkit/tracking/g412_route.py,72,previous_bb,"""stored_tuple_order"": ""previous_bb = (y1 - PAD, x1 - PAD, y2 + PAD, x2 + PAD)"",",read,0
+scripts/platformkit/tracking/g412_route.py,73,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"""serialized_order"": ""bbox_x1, bbox_y1, bbox_x2, bbox_y2 in cropped xyxy"",",read,0
+scripts/platformkit/tracking/g412_route.py,115,previous_bb,"if re.search(r""(^|[\s.\[])(bbox_\w+|previous_bb)\s*=[^=]"", stripped):",read,0
+scripts/platformkit/tracking/g412_route.py,117,previous_bb,"if re.search(r""[\""']((bbox_\w+)|previous_bb)[\""']\s*:"", stripped):",read,0
+scripts/platformkit/tracking/g412_route.py,128,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"""stored"": ""B = (bbox_x1, bbox_y1, bbox_x2, bbox_y2), cropped xyxy, padded, unclipped"",",read,0
+scripts/platformkit/tracking/g412_tables.py,56,previous_bb,"holder = type(""P"", (), {""previous_bb"": previous, ""box_route"": route})()",emit,0
+scripts/platformkit/tracking/g412_tables.py,150,bbox_y2,"bound = [b for b in boxes if float(b[""bbox_y2""]) <= crop_h + PADDING_PX]",read,0
+scripts/platformkit/tracking/g412_tables.py,163,bbox_y2,"""max_stored_y2"": max((float(b[""bbox_y2""]) for b in boxes), default=""""),",read,0
+scripts/platformkit/tracking/g412_tables.py,185,bbox_y1 bbox_y2,"comp_cy = (float(comp[""bbox_y1""]) + float(comp[""bbox_y2""])) / 2",read,0
+scripts/platformkit/tracking/g412_tables.py,199,bbox_x1 bbox_x2,"- (float(comp[""bbox_x1""]) + float(comp[""bbox_x2""])) / 2,",read,0
+scripts/platformkit/tracking/g74_offframe_evidence.py,104,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"values = [raw.get(name, """") for name in (""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2"")]",read,0
+scripts/platformkit/tracking/g74_offframe_evidence.py,122,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"""bbox_x1"": x1, ""bbox_y1"": y1, ""bbox_x2"": x2, ""bbox_y2"": y2,",emit,0
+scripts/platformkit/tracking/g74_offframe_evidence.py,148,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"x1, y1, x2, y2 = (round(float(row[name])) for name in (""bbox_x1"", ""bbox_y1"", ""bbox_x2"", ""bbox_y2""))",read,0
+scripts/platformkit/tracking/test_framing_coverage.py,16,bbox_x1,"""x_position"": player * span / (player_count - 1), ""bbox_x1"": 3,",emit,0
+scripts/platformkit/tracking/test_framing_coverage.py,17,bbox_x2,"""bbox_x2"": 100})",emit,0
+scripts/platformkit/tracking/test_g310_native_input_arm.py,10,bbox_x1,"return {""frame"": str(frame), ""player_id"": pid, ""bbox_x1"": str(x1),",emit,0
+scripts/platformkit/tracking/test_g310_native_input_arm.py,11,bbox_y1 bbox_x2 bbox_y2,"""bbox_y1"": ""0"", ""bbox_x2"": str(x2), ""bbox_y2"": str(y2)}",emit,0
+scripts/platformkit/tracking_depth_inventory.py,20,bbox_x1 bbox_y1 bbox_x2 bbox_y2,"""POSITION"": {""x"", ""y"", ""x_position"", ""y_position"", ""court_x"", ""court_y"", ""x_court"", ""y_court"", ""bbox_x"", ""bbox_y"", ""bbox_w"", ""bbox_h"", ""bbox_x1"", ""bbox_y1"", ""bb",read,0

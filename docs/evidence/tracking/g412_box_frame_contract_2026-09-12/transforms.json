@@ -1,0 +1,17 @@
+{
+ "box_crop_origin_y_px": 60,
+ "box_frame": "topcut60_pad15",
+ "box_padding_px": 15,
+ "centre_translation": "a stored centre gains exactly +60 in y before clipping",
+ "clip_order": [
+  "1 clip the cropped-space box to (0, 0, crop_width, crop_height)",
+  "2 only then add the native origin offset of 60 to both y coordinates"
+ ],
+ "court_point_rule": "a court map point is never translated by 60; the fresh box-based write projects ((x1c + x2c) // 2, y2c, 1) through M then M1",
+ "cropped_dimensions": "crop_width = native_width, crop_height = native_height - 60",
+ "derivation": "every constant is read from archived source: TOPCUT at src/tracking/video_handler.py:11 and PAD at src/tracking/player_detection.py:20",
+ "fitted_constants": [],
+ "native_padded": "(Bx1, By1 + 60, Bx2, By2 + 60)",
+ "native_unpadded_detector_form": "(Bx1 + 15, By1 + 75, Bx2 - 15, By2 + 45)",
+ "stored": "B = (bbox_x1, bbox_y1, bbox_x2, bbox_y2), cropped xyxy, padded, unclipped"
+}

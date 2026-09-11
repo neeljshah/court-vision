@@ -1,0 +1,25 @@
+{
+ "bound_rows": 34,
+ "boxes_outside_padded_crop_bound": 2,
+ "construct_cases": 32,
+ "construct_oracle_agreements": 32,
+ "diff_fixture_entries": 5,
+ "diff_fixture_matches_helper": true,
+ "frames": 60,
+ "frames_with_boxes": 55,
+ "legacy_identical_rows": 206,
+ "paired": {
+  "clipping_delta_nonzero_pairs": 18,
+  "dy_after_clipping_median": 3.26,
+  "dy_old_median": -58.203,
+  "dy_plus_origin_median": 1.797,
+  "exact_shift_is_sixty": true,
+  "fitted_constants": [],
+  "frames": 28,
+  "independence_note": "51 pairs occupy 28 frames; this is descriptive arithmetic",
+  "pairs": 51
+ },
+ "real_rows": 206,
+ "silent_frames": 5,
+ "unknown_rows": 172
+}

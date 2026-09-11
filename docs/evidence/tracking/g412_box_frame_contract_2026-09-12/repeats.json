@@ -1,0 +1,87 @@
+{
+ "identical": true,
+ "nonzero_returncodes": [],
+ "per_table_digests": {
+  "run1": {
+   "construct_cases.csv": "374b10209817fccdba693d832eead94ceeb383120af849be46f41949db8f2bc7",
+   "diff_fixture.json": "4b8cb95ff9de015827df4aed861b1b6c2cfef3fe65139030ff94e355158dc622",
+   "eye_index.csv": "2e8b84ade6de5398a178a66a5b5323851c3b1beccccd6e6ba80dceab8815e0da",
+   "input_hashes.csv": "b2903b37eacacf64e2e6e14b58d174ce5bd2e5ff29f63e011140454842e73c9c",
+   "paired_residuals.csv": "f78bc0c8a23aebdd0cb128425651ae70488eb55191ebae69d09089c42c03e01e",
+   "per_frame.csv": "c6654c0ce01d20f57fb5751ab0d4d4041640e0b62d6823a46f38f974857072f8",
+   "reader_manifest.csv": "94db19eb18ecc7e02f4079af12ce3aebb45c673803946e6825fb4fc5c994d097",
+   "renders": "2e8b84ade6de5398a178a66a5b5323851c3b1beccccd6e6ba80dceab8815e0da",
+   "route_chain.json": "589fd3f7b475ff60d977bc57dbf4c53978b7522e0231835d9100e1d5d5b00997",
+   "source_receipts.csv": "ca050d90a20f3fe1e21636498ebe826dd7f257bd02522571b500b646485b8def",
+   "transforms.json": "957ab0da4d1b14ae055a0e94157ef5cb60d470207e54b1809c65f4d805e86864",
+   "writer_compatibility.csv": "b8b2d2fa8b79e79562ecf666917c3a84c425b4f59612db563f0ffb78b77e0e94"
+  },
+  "run2": {
+   "construct_cases.csv": "374b10209817fccdba693d832eead94ceeb383120af849be46f41949db8f2bc7",
+   "diff_fixture.json": "4b8cb95ff9de015827df4aed861b1b6c2cfef3fe65139030ff94e355158dc622",
+   "eye_index.csv": "2e8b84ade6de5398a178a66a5b5323851c3b1beccccd6e6ba80dceab8815e0da",
+   "input_hashes.csv": "b2903b37eacacf64e2e6e14b58d174ce5bd2e5ff29f63e011140454842e73c9c",
+   "paired_residuals.csv": "f78bc0c8a23aebdd0cb128425651ae70488eb55191ebae69d09089c42c03e01e",
+   "per_frame.csv": "c6654c0ce01d20f57fb5751ab0d4d4041640e0b62d6823a46f38f974857072f8",
+   "reader_manifest.csv": "94db19eb18ecc7e02f4079af12ce3aebb45c673803946e6825fb4fc5c994d097",
+   "renders": "2e8b84ade6de5398a178a66a5b5323851c3b1beccccd6e6ba80dceab8815e0da",
+   "route_chain.json": "589fd3f7b475ff60d977bc57dbf4c53978b7522e0231835d9100e1d5d5b00997",
+   "source_receipts.csv": "ca050d90a20f3fe1e21636498ebe826dd7f257bd02522571b500b646485b8def",
+   "transforms.json": "957ab0da4d1b14ae055a0e94157ef5cb60d470207e54b1809c65f4d805e86864",
+   "writer_compatibility.csv": "b8b2d2fa8b79e79562ecf666917c3a84c425b4f59612db563f0ffb78b77e0e94"
+  }
+ },
+ "reproduction_basis": "saved bytes only; this does not establish inference repeatability because no inference is run",
+ "runs": [
+  {
+   "command": "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe -m scripts.platformkit.tracking.g412_premise",
+   "returncode": 0,
+   "stdout": "{\n \"absent_inputs\": [],\n \"distinct_ticks\": 60,\n \"draw_cards\": 60,\n \"expected_digest_mismatches\": [],\n \"nonsilent_ticks\": 55,\n \"per_tick_cards\": 60,\n \"reproduced\": true,\n \"silent_card_ids\": [\n  \"1080p30_09\",\n  \"720p60_00\",\n  \"720p60_15\",\n  \"720p60_19\",\n  \"720p60_27\"\n ],\n \"silent_ticks\": 5,\n \"source_rehash\": {\n  \"distinct_receiver_files\": 53,\n  \"failures\": 0,\n  \"receipts\": 60\n },\n \"stored_rows\": 206,\n \"writer_receipt_absence\": {\n  \"absence_reproduced\": true,\n  \"distinct_headers\": 1,\n  \"neighbour_equivalent_receipt\": false,\n  \"neighbour_fields_present\": [\n   \"coordinate_space\"\n  ],\n  \"raw_tables_scanned\": 59,\n  \"route_files_scanned\": 4,\n  \"route_receipt_hits\": [],\n  \"table_receipt_hits\": []\n }\n}"
+  },
+  {
+   "command": "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe -m scripts.platformkit.tracking.g412_route",
+   "returncode": 0,
+   "stdout": "{\n \"reader_files\": 53,\n \"reader_rows\": 178,\n \"reader_writes\": 16,\n \"readers_with_receipt_field\": 0,\n \"stage_lines_absent\": [],\n \"stages\": 12\n}"
+  },
+  {
+   "command": "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe -m scripts.platformkit.tracking.g412_diff",
+   "returncode": 0,
+   "stdout": "{\n \"added_lines\": 21,\n \"copy_sha256\": \"592e257097395ea7890e2c1577a5f75ab9839a3bbbcca058741ff02f6d33b304\",\n \"diff_path\": \"C:/Users/neelj/nba-track-a3/docs/research/organization-sprint/PROPOSED_g412_box_frame_contract.diff\",\n \"evidence_copy\": \"C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/PROPOSED_g412_box_frame_contract.diff\",\n \"identical_copy\": true,\n \"removed_lines\": 0,\n \"sha256\": \"592e257097395ea7890e2c1577a5f75ab9839a3bbbcca058741ff02f6d33b304\",\n \"src_digests_after_render\": {\n  \"src/pipeline/unified_pipeline.py\": \"9b732523d93af98ee49ca10c009aff50ee4b8b933ae12453e523576cde4771e1\",\n  \"src/tracking/advanced_tracker.py\": \"fa3b6db7dd180f1da5d12f962e95a9f052f3abdee3373c7c2dcade10cc7a1477\"\n },\n \"src_files_touched\": 0\n}"
+  },
+  {
+   "command": "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe -m scripts.platformkit.tracking.g412_tables",
+   "returncode": 0,
+   "stdout": "{\n \"bound_rows\": 34,\n \"boxes_outside_padded_crop_bound\": 2,\n \"construct_cases\": 32,\n \"construct_oracle_agreements\": 32,\n \"diff_fixture_entries\": 5,\n \"diff_fixture_matches_helper\": true,\n \"frames\": 60,\n \"frames_with_boxes\": 55,\n \"legacy_identical_rows\": 206,\n \"paired\": {\n  \"clipping_delta_nonzero_pairs\": 18,\n  \"dy_after_clipping_median\": 3.26,\n  \"dy_old_median\": -58.203,\n  \"dy_plus_origin_median\": 1.797,\n  \"exact_shift_is_sixty\": true,\n  \"fitted_constants\": [],\n  \"frames\": 28,\n  \"independence_note\": \"51 pairs occupy 28 frames; this is descriptive arithmetic\",\n  \"pairs\": 51\n },\n \"real_rows\": 206,\n \"silent_frames\": 5,\n \"unknown_rows\": 172\n}"
+  },
+  {
+   "command": "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe -m scripts.platformkit.tracking.g412_render",
+   "returncode": 0,
+   "stdout": "{\n \"boxes_drawn\": 206,\n \"cards\": 60,\n \"decode_absent\": 0,\n \"distinct_crop_shapes\": [\n  \"1280x660\",\n  \"1920x1020\"\n ],\n \"ok\": 55,\n \"unknown_silent\": 5\n}"
+  },
+  {
+   "command": "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe -m scripts.platformkit.tracking.g412_premise",
+   "returncode": 0,
+   "stdout": "{\n \"absent_inputs\": [],\n \"distinct_ticks\": 60,\n \"draw_cards\": 60,\n \"expected_digest_mismatches\": [],\n \"nonsilent_ticks\": 55,\n \"per_tick_cards\": 60,\n \"reproduced\": true,\n \"silent_card_ids\": [\n  \"1080p30_09\",\n  \"720p60_00\",\n  \"720p60_15\",\n  \"720p60_19\",\n  \"720p60_27\"\n ],\n \"silent_ticks\": 5,\n \"source_rehash\": {\n  \"distinct_receiver_files\": 53,\n  \"failures\": 0,\n  \"receipts\": 60\n },\n \"stored_rows\": 206,\n \"writer_receipt_absence\": {\n  \"absence_reproduced\": true,\n  \"distinct_headers\": 1,\n  \"neighbour_equivalent_receipt\": false,\n  \"neighbour_fields_present\": [\n   \"coordinate_space\"\n  ],\n  \"raw_tables_scanned\": 59,\n  \"route_files_scanned\": 4,\n  \"route_receipt_hits\": [],\n  \"table_receipt_hits\": []\n }\n}"
+  },
+  {
+   "command": "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe -m scripts.platformkit.tracking.g412_route",
+   "returncode": 0,
+   "stdout": "{\n \"reader_files\": 53,\n \"reader_rows\": 178,\n \"reader_writes\": 16,\n \"readers_with_receipt_field\": 0,\n \"stage_lines_absent\": [],\n \"stages\": 12\n}"
+  },
+  {
+   "command": "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe -m scripts.platformkit.tracking.g412_diff",
+   "returncode": 0,
+   "stdout": "{\n \"added_lines\": 21,\n \"copy_sha256\": \"592e257097395ea7890e2c1577a5f75ab9839a3bbbcca058741ff02f6d33b304\",\n \"diff_path\": \"C:/Users/neelj/nba-track-a3/docs/research/organization-sprint/PROPOSED_g412_box_frame_contract.diff\",\n \"evidence_copy\": \"C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/PROPOSED_g412_box_frame_contract.diff\",\n \"identical_copy\": true,\n \"removed_lines\": 0,\n \"sha256\": \"592e257097395ea7890e2c1577a5f75ab9839a3bbbcca058741ff02f6d33b304\",\n \"src_digests_after_render\": {\n  \"src/pipeline/unified_pipeline.py\": \"9b732523d93af98ee49ca10c009aff50ee4b8b933ae12453e523576cde4771e1\",\n  \"src/tracking/advanced_tracker.py\": \"fa3b6db7dd180f1da5d12f962e95a9f052f3abdee3373c7c2dcade10cc7a1477\"\n },\n \"src_files_touched\": 0\n}"
+  },
+  {
+   "command": "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe -m scripts.platformkit.tracking.g412_tables",
+   "returncode": 0,
+   "stdout": "{\n \"bound_rows\": 34,\n \"boxes_outside_padded_crop_bound\": 2,\n \"construct_cases\": 32,\n \"construct_oracle_agreements\": 32,\n \"diff_fixture_entries\": 5,\n \"diff_fixture_matches_helper\": true,\n \"frames\": 60,\n \"frames_with_boxes\": 55,\n \"legacy_identical_rows\": 206,\n \"paired\": {\n  \"clipping_delta_nonzero_pairs\": 18,\n  \"dy_after_clipping_median\": 3.26,\n  \"dy_old_median\": -58.203,\n  \"dy_plus_origin_median\": 1.797,\n  \"exact_shift_is_sixty\": true,\n  \"fitted_constants\": [],\n  \"frames\": 28,\n  \"independence_note\": \"51 pairs occupy 28 frames; this is descriptive arithmetic\",\n  \"pairs\": 51\n },\n \"real_rows\": 206,\n \"silent_frames\": 5,\n \"unknown_rows\": 172\n}"
+  },
+  {
+   "command": "C:\\Users\\neelj\\AppData\\Local\\Programs\\Python\\Python310\\python.exe -m scripts.platformkit.tracking.g412_render",
+   "returncode": 0,
+   "stdout": "{\n \"boxes_drawn\": 206,\n \"cards\": 60,\n \"decode_absent\": 0,\n \"distinct_crop_shapes\": [\n  \"1280x660\",\n  \"1920x1020\"\n ],\n \"ok\": 55,\n \"unknown_silent\": 5\n}"
+  }
+ ]
+}

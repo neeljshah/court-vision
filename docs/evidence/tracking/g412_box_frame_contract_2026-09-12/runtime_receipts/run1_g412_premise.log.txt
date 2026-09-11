@@ -1,0 +1,35 @@
+{
+ "absent_inputs": [],
+ "distinct_ticks": 60,
+ "draw_cards": 60,
+ "expected_digest_mismatches": [],
+ "nonsilent_ticks": 55,
+ "per_tick_cards": 60,
+ "reproduced": true,
+ "silent_card_ids": [
+  "1080p30_09",
+  "720p60_00",
+  "720p60_15",
+  "720p60_19",
+  "720p60_27"
+ ],
+ "silent_ticks": 5,
+ "source_rehash": {
+  "distinct_receiver_files": 53,
+  "failures": 0,
+  "receipts": 60
+ },
+ "stored_rows": 206,
+ "writer_receipt_absence": {
+  "absence_reproduced": true,
+  "distinct_headers": 1,
+  "neighbour_equivalent_receipt": false,
+  "neighbour_fields_present": [
+   "coordinate_space"
+  ],
+  "raw_tables_scanned": 59,
+  "route_files_scanned": 4,
+  "route_receipt_hits": [],
+  "table_receipt_hits": []
+ }
+}

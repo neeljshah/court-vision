@@ -1,0 +1,33 @@
+case_id,crop_width,crop_height,location,box_state,status,stored_xyxy,helper_native_padded,helper_native_detector,oracle_native_padded,oracle_native_detector,oracle_agrees,receipt_status,receipt_reason,box_frame
+C01,1920,1020,interior,fresh_integer,nonempty,100.0 120.0 300.0 500.0,100.0 180.0 300.0 560.0,115.0 195.0 285.0 545.0,100.0 180.0 300.0 560.0,115.0 195.0 285.0 545.0,1,BOUND,,topcut60_pad15
+C02,1920,1020,interior,fresh_integer,empty,,,,,,1,EMPTY,absent-box,
+C03,1920,1020,interior,fractional_prediction,nonempty,100.5 120.5 300.5 500.5,100.5 180.5 300.5 560.5,115.5 195.5 285.5 545.5,100.5 180.5 300.5 560.5,115.5 195.5 285.5 545.5,1,BOUND,,topcut60_pad15
+C04,1920,1020,interior,fractional_prediction,empty,,,,,,1,EMPTY,absent-box,
+C05,1920,1020,top_crop_boundary,fresh_integer,nonempty,40.0 -12.0 220.0 130.0,40.0 60 220.0 190.0,55.0 63.0 205.0 175.0,40.0 60 220.0 190.0,55.0 63.0 205.0 175.0,1,BOUND,,topcut60_pad15
+C06,1920,1020,top_crop_boundary,fresh_integer,empty,,,,,,1,EMPTY,absent-box,
+C07,1920,1020,top_crop_boundary,fractional_prediction,nonempty,40.5 -11.5 220.5 130.5,40.5 60 220.5 190.5,55.5 63.5 205.5 175.5,40.5 60 220.5 190.5,55.5 63.5 205.5 175.5,1,BOUND,,topcut60_pad15
+C08,1920,1020,top_crop_boundary,fractional_prediction,empty,,,,,,1,EMPTY,absent-box,
+C09,1920,1020,right_boundary,fresh_integer,nonempty,1830.0 80.0 1945.0 420.0,1830.0 140.0 1920 480.0,1845.0 155.0 1920 465.0,1830.0 140.0 1920 480.0,1845.0 155.0 1920 465.0,1,BOUND,,topcut60_pad15
+C10,1920,1020,right_boundary,fresh_integer,empty,,,,,,1,EMPTY,absent-box,
+C11,1920,1020,right_boundary,fractional_prediction,nonempty,1830.5 80.5 1945.5 420.5,1830.5 140.5 1920 480.5,1845.5 155.5 1920 465.5,1830.5 140.5 1920 480.5,1845.5 155.5 1920 465.5,1,BOUND,,topcut60_pad15
+C12,1920,1020,right_boundary,fractional_prediction,empty,,,,,,1,EMPTY,absent-box,
+C13,1920,1020,bottom_boundary,fresh_integer,nonempty,80.0 920.0 260.0 1050.0,80.0 980.0 260.0 1080,95.0 995.0 245.0 1080,80.0 980.0 260.0 1080,95.0 995.0 245.0 1080,1,BOUND,,topcut60_pad15
+C14,1920,1020,bottom_boundary,fresh_integer,empty,,,,,,1,EMPTY,absent-box,
+C15,1920,1020,bottom_boundary,fractional_prediction,nonempty,80.5 920.5 260.5 1050.5,80.5 980.5 260.5 1080,95.5 995.5 245.5 1080,80.5 980.5 260.5 1080,95.5 995.5 245.5 1080,1,BOUND,,topcut60_pad15
+C16,1920,1020,bottom_boundary,fractional_prediction,empty,,,,,,1,EMPTY,absent-box,
+C17,1280,660,interior,fresh_integer,nonempty,100.0 120.0 300.0 500.0,100.0 180.0 300.0 560.0,115.0 195.0 285.0 545.0,100.0 180.0 300.0 560.0,115.0 195.0 285.0 545.0,1,BOUND,,topcut60_pad15
+C18,1280,660,interior,fresh_integer,empty,,,,,,1,EMPTY,absent-box,
+C19,1280,660,interior,fractional_prediction,nonempty,100.5 120.5 300.5 500.5,100.5 180.5 300.5 560.5,115.5 195.5 285.5 545.5,100.5 180.5 300.5 560.5,115.5 195.5 285.5 545.5,1,BOUND,,topcut60_pad15
+C20,1280,660,interior,fractional_prediction,empty,,,,,,1,EMPTY,absent-box,
+C21,1280,660,top_crop_boundary,fresh_integer,nonempty,40.0 -12.0 220.0 130.0,40.0 60 220.0 190.0,55.0 63.0 205.0 175.0,40.0 60 220.0 190.0,55.0 63.0 205.0 175.0,1,BOUND,,topcut60_pad15
+C22,1280,660,top_crop_boundary,fresh_integer,empty,,,,,,1,EMPTY,absent-box,
+C23,1280,660,top_crop_boundary,fractional_prediction,nonempty,40.5 -11.5 220.5 130.5,40.5 60 220.5 190.5,55.5 63.5 205.5 175.5,40.5 60 220.5 190.5,55.5 63.5 205.5 175.5,1,BOUND,,topcut60_pad15
+C24,1280,660,top_crop_boundary,fractional_prediction,empty,,,,,,1,EMPTY,absent-box,
+C25,1280,660,right_boundary,fresh_integer,nonempty,1190.0 80.0 1305.0 420.0,1190.0 140.0 1280 480.0,1205.0 155.0 1280 465.0,1190.0 140.0 1280 480.0,1205.0 155.0 1280 465.0,1,BOUND,,topcut60_pad15
+C26,1280,660,right_boundary,fresh_integer,empty,,,,,,1,EMPTY,absent-box,
+C27,1280,660,right_boundary,fractional_prediction,nonempty,1190.5 80.5 1305.5 420.5,1190.5 140.5 1280 480.5,1205.5 155.5 1280 465.5,1190.5 140.5 1280 480.5,1205.5 155.5 1280 465.5,1,BOUND,,topcut60_pad15
+C28,1280,660,right_boundary,fractional_prediction,empty,,,,,,1,EMPTY,absent-box,
+C29,1280,660,bottom_boundary,fresh_integer,nonempty,80.0 560.0 260.0 690.0,80.0 620.0 260.0 720,95.0 635.0 245.0 720,80.0 620.0 260.0 720,95.0 635.0 245.0 720,1,BOUND,,topcut60_pad15
+C30,1280,660,bottom_boundary,fresh_integer,empty,,,,,,1,EMPTY,absent-box,
+C31,1280,660,bottom_boundary,fractional_prediction,nonempty,80.5 560.5 260.5 690.5,80.5 620.5 260.5 720,95.5 635.5 245.5 720,80.5 620.5 260.5 720,95.5 635.5 245.5 720,1,BOUND,,topcut60_pad15
+C32,1280,660,bottom_boundary,fractional_prediction,empty,,,,,,1,EMPTY,absent-box,

@@ -1,0 +1,11 @@
+{
+ "boxes_drawn": 206,
+ "cards": 60,
+ "decode_absent": 0,
+ "distinct_crop_shapes": [
+  "1280x660",
+  "1920x1020"
+ ],
+ "ok": 55,
+ "unknown_silent": 5
+}

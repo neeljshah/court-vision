@@ -1,0 +1,8 @@
+{
+ "reader_files": 53,
+ "reader_rows": 178,
+ "reader_writes": 16,
+ "readers_with_receipt_field": 0,
+ "stage_lines_absent": [],
+ "stages": 12
+}

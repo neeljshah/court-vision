@@ -1,0 +1,63 @@
+# G412 PROPOSED additive box-frame receipt. APPLIED NOWHERE.
+# Existing bbox and position values, ordering and interpretation are unchanged.
+
+--- a/src/tracking/advanced_tracker.py
++++ b/src/tracking/advanced_tracker.py
+@@ -624,6 +624,7 @@
+ 
+         p = self.players[slot]
+         p.previous_bb = det["bbox"]
++        p.box_route = "fresh_box"  # G412 additive label
+         new_pos = (det["homo"][0], det["homo"][1])
+         # Velocity clamp: if projected position jumps > MAX_2D_JUMP from the last
+         # known position, the SIFT homography is noisy — keep the last known position.
+@@ -1163,6 +1164,7 @@
+             # Update previous_bb with predicted position so ball tracker stays accurate
+             if self.players[slot].previous_bb is not None:
+                 self.players[slot].previous_bb = self._kf_pred[slot]
++                self.players[slot].box_route = "prediction"  # G412 additive label
+ 
+         # ── Step 2: YOLOv8 inference (pose every N frames, else detection) ─
+         # Task 3: use a longer pose interval when the game is suspended (replay /
+--- a/src/pipeline/unified_pipeline.py
++++ b/src/pipeline/unified_pipeline.py
+@@ -612,6 +612,12 @@
+ 
+ # ── Main pipeline ─────────────────────────────────────────────────────────────
+ 
++
++def _g412_route(holder) -> str:
++    """Return the additive box-route label, defaulting to UNKNOWN."""
++    return str(getattr(holder, "box_route", "UNKNOWN"))
++
++
+ class UnifiedPipeline:
+     """
+     Full basketball tracking pipeline.
+@@ -2039,6 +2045,13 @@
+                     "player_id":        p.ID,
+                     "team":             p.team,
+                     "bbox":             p.previous_bb,
++                    # G412 additive receipt: representation and nominal padding only.
++                    # It states neither branch freshness nor that a box was observed.
++                    "box_frame": ("topcut60_pad15" if _g412_route(p) == "fresh_box" else "UNKNOWN") if p.previous_bb is not None else "",
++                    "box_crop_origin_y_px": (60 if _g412_route(p) == "fresh_box" else "UNKNOWN") if p.previous_bb is not None else "",
++                    "box_padding_px": (15 if _g412_route(p) == "fresh_box" else "UNKNOWN") if p.previous_bb is not None else "",
++                    "box_receipt_status": ("BOUND" if _g412_route(p) == "fresh_box" else "UNKNOWN") if p.previous_bb is not None else "EMPTY",
++                    "box_receipt_reason": ("" if _g412_route(p) == "fresh_box" else "unbound-" + _g412_route(p)) if p.previous_bb is not None else "absent-box",
+                     "x2d":              int(x2d),
+                     "y2d":              int(y2d),
+                     "confidence":       round(conf, 3),
+@@ -2737,6 +2750,12 @@
+                     "bbox_y1":            bbox[0] if bbox else "",
+                     "bbox_x2":            bbox[3] if bbox else "",
+                     "bbox_y2":            bbox[2] if bbox else "",
++                    # G412 additive receipt columns, carried through from the track.
++                    "box_frame": track.get("box_frame", ""),
++                    "box_crop_origin_y_px": track.get("box_crop_origin_y_px", ""),
++                    "box_padding_px": track.get("box_padding_px", ""),
++                    "box_receipt_status": track.get("box_receipt_status", ""),
++                    "box_receipt_reason": track.get("box_receipt_reason", ""),
+                     "ball_x2d":           ball_pos[0] if ball_pos else "",
+                     "ball_y2d":           ball_pos[1] if ball_pos else "",
+                     "ball_velocity":      ball_vel_2d,

@@ -1,0 +1,356 @@
+{
+ "counts": [
+  0,
+  0,
+  1
+ ],
+ "ledger_row_pattern_indices": [],
+ "ledger_rows_added_by_this_row": 1,
+ "log_files_included": 10,
+ "path_manifest": [
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/input_hashes.csv",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/source_receipts.csv",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/route_chain.json",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/reader_manifest.csv",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/transforms.json",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/construct_cases.csv",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/writer_compatibility.csv",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/per_frame.csv",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/paired_residuals.csv",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/eye_index.csv",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/diff_fixture.json",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/prereg.md",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/summary.json",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/repeats.json",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/PROPOSED_g412_box_frame_contract.diff",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/research/organization-sprint/PROPOSED_g412_box_frame_contract.diff",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12.md",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/tests/platformkit/test_g412_box_frame_contract.py",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    1
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/RESULTS_LEDGER.md",
+   "pattern_indices": [
+    2
+   ]
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/scripts/platformkit/tracking/g412_contract.py",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/scripts/platformkit/tracking/g412_q6_scan.py",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/scripts/platformkit/tracking/g412_premise.py",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/scripts/platformkit/tracking/g412_route.py",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/scripts/platformkit/tracking/g412_diff.py",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/scripts/platformkit/tracking/g412_tables.py",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/scripts/platformkit/tracking/g412_render.py",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/scripts/platformkit/tracking/g412_seal.py",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/runtime_receipts/run1_g412_diff.log.txt",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/runtime_receipts/run1_g412_premise.log.txt",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/runtime_receipts/run1_g412_render.log.txt",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/runtime_receipts/run1_g412_route.log.txt",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/runtime_receipts/run1_g412_tables.log.txt",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/runtime_receipts/run2_g412_diff.log.txt",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/runtime_receipts/run2_g412_premise.log.txt",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/runtime_receipts/run2_g412_render.log.txt",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/runtime_receipts/run2_g412_route.log.txt",
+   "pattern_indices": []
+  },
+  {
+   "counts": [
+    0,
+    0,
+    0
+   ],
+   "path": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/runtime_receipts/run2_g412_tables.log.txt",
+   "pattern_indices": []
+  }
+ ],
+ "paths_scanned": 37,
+ "pattern_indices": [
+  2
+ ],
+ "preexisting_hit_note": "the only pattern hit is in RESULTS_LEDGER.md history written by earlier rows, in an image-gradient sense; this row appends one line and it scans clean",
+ "preexisting_hit_paths": [
+  "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/RESULTS_LEDGER.md"
+ ],
+ "scanner_source_included": true
+}

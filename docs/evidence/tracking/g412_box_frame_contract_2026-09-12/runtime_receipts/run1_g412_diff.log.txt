@@ -1,0 +1,14 @@
+{
+ "added_lines": 21,
+ "copy_sha256": "592e257097395ea7890e2c1577a5f75ab9839a3bbbcca058741ff02f6d33b304",
+ "diff_path": "C:/Users/neelj/nba-track-a3/docs/research/organization-sprint/PROPOSED_g412_box_frame_contract.diff",
+ "evidence_copy": "C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g412_box_frame_contract_2026-09-12/PROPOSED_g412_box_frame_contract.diff",
+ "identical_copy": true,
+ "removed_lines": 0,
+ "sha256": "592e257097395ea7890e2c1577a5f75ab9839a3bbbcca058741ff02f6d33b304",
+ "src_digests_after_render": {
+  "src/pipeline/unified_pipeline.py": "9b732523d93af98ee49ca10c009aff50ee4b8b933ae12453e523576cde4771e1",
+  "src/tracking/advanced_tracker.py": "fa3b6db7dd180f1da5d12f962e95a9f052f3abdee3373c7c2dcade10cc7a1477"
+ },
+ "src_files_touched": 0
+}
