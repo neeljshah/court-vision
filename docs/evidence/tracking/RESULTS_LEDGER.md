@@ -775,3 +775,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G406 | landed PARTIAL: 60 exact-even ticks, same-weights YOLOv8n comparator, 803 blind adjudications; candidates on people 34/34, masked rows mostly on people; stored boxes ~58 px too HIGH (dy median -58.2 px, n = 51; 1/206 extent-correct), producer silence 5/60 vs 0/60; same-detector consistency only; verify memo verbatim | PARTIAL (codex-sol ACCEPT)
 
+2026-09-12 | tracking | G403 | landed DONE: G400 round-8 kappa collapse = a one-card answer-to-card binding slip in the terra batch (position 13), not object disagreement; 115/115 conflicts categorised; 61 pct non-play was a state-label share (0.40 by eye audit); instructions v2 + 30 CONSTRUCT controls sealed for G404; three verify memos verbatim | DONE (codex-sol fix 1c ACCEPT)
+
