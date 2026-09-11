@@ -730,3 +730,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-10 | tracking | G381 | landed DONE: 2,000 memo digest tokens / 380 memos classified -- 309 identify at landing + 222 unnamed + 2 object ids = 533 (267 per mille) identify committed bytes; 1,467 UNRESOLVED (1,149 never committed, 193 commit refs, 111 pod paths, 14 ambiguous); byte-identical rerun; PROPOSED digest convention + linter | DONE (codex-sol att1 REJECT, fix 1b ACCEPT verbatim)
 
+2026-09-10 | tracking | G385 | landed DONE: shadow non-play mask on 360 ticks / 30 sections / 29 videos -- false masks on PLAY 5/234 = 0.021 (upper 0.049 vs 0.05), capture 94/125 = 0.752, precision 94/99 = 0.949, UNKNOWN 1/360; reference kappa 0.805; head frozen before scoring; zero callers, nothing deployed | DONE (codex-sol ACCEPT WITH CORRECTIONS applied)
+

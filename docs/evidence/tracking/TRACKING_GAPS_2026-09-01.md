@@ -19,6 +19,13 @@
 
 
 
+
+## G385 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G385 | basketball | premise TRUE (G375 rated 281 / non-play 127 / other-sport 6; 1,031 candidate rows, 837 excluded; no validated mask existed). Population: fresh ledger census (1,579 lines) -> 174 development-disjoint sections / 34 videos; sealed even draw 30 sections / 29 videos / 3 competitions x 12 strict-interior ticks = 360 keys, 360 READABLE, 0 absent. SHADOW mask = frozen G374 presence features + close-up cues, head frozen (sha256 d5ed7a31...) and committed before any validation frame was scored; reproduced bit for bit. Reference: terra + sol 720 blind ratings, agreement 0.908, kappa 0.805, 33 disagreements adjudicated blind. Results with both denominators: false masks on reference PLAY 5/234 = 0.021368 (Wilson95 [0.009, 0.049] vs <= 0.05 -- passes by 0.001, flagged); capture of definite non-play 94/125 = 0.752 ([0.670, 0.819] vs >= 0.50); precision over all masked 94/99 = 0.949; UNKNOWN 1/360 retained. Eye check: 30 even renders + all 5 harmful PLAY masks are tight crops with little court context. Nothing operational moved: no feeder/daemon/gate/table/threshold/flag/registry write, no deploy; the mask has zero callers. GPU 0 min; wall 58 min | g385_nonplay_shadow_mask_2026-09-10.md; g385_nonplay_shadow_mask_2026-09-10/{prereg, premise, sample, sheets/, ratings, adjudication, reference, mask outputs, head digest, summary.json, renders/, rater logs}; G385_VERIFY_ACCEPT_WITH_CORRECTIONS_2026-09-10.md | **DONE -- a measured, never-deployed admission mask: precision 0.949 with a 0.021 false-mask rate on play (upper 0.049); adoption as a feeder-side or daemon-side gate is a separate authorized row; NEW GAP: memo names deleted pod-only source paths (sheets reproduce, containers do not)** |
+
 ## G381 result register
 
 | Gap | Sport | Finding | Evidence | Status |
