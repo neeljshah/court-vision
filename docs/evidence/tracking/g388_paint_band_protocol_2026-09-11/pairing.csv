@@ -1,0 +1,9 @@
+pair_id,context_id,tile,family,symmetric_line_px,max_point_to_other_line_px,passes_sealed_6px_rule,claude_audit_same_painted_band,audit_note,card
+G388_001_pair1,G388_001,6,CENTRE_LINE,16.30,25.60,NO,NO,"two parallel vertical features about 16 px apart; terra's upper points are on signage, not floor paint",renders/audit_cards/G388_001_pair1.png
+G388_005_pair1,G388_005,1,CENTRE_LINE,4.46,6.05,NO,NO,both series follow one vertical feature but terra's upper points leave the floor into signage and crowd; fewer than 8 of 9 on visible paint,renders/audit_cards/G388_005_pair1.png
+G388_007_pair1,G388_007,5,LANE_LINE,166.21,195.08,NO,NO,both series on bare wood well away from the lane line; 166 px apart,renders/audit_cards/G388_007_pair1.png
+G388_009_pair1,G388_009,4,CENTRE_LINE,40.13,88.96,NO,NO,"terra on bare wood and signage, sol on a dark floor line; different features",renders/audit_cards/G388_009_pair1.png
+G388_017_pair1,G388_017,5,LANE_LINE,62.61,92.93,NO,NO,both series lie on bare purple floor; neither is on the visible white marking,renders/audit_cards/G388_017_pair1.png
+G388_021_pair1,G388_021,5,LANE_LINE,50.52,136.28,NO,NO,"both series follow a faint dark curve, not the painted lane line",renders/audit_cards/G388_021_pair1.png
+G388_023_pair1,G388_023,1,CENTRE_LINE,8.37,10.28,NO,NO,"sol on the dark floor line, terra on a parallel feature that continues off the floor into the crowd; not one painted band",renders/audit_cards/G388_023_pair1.png
+G388_024_pair1,G388_024,6,LANE_LINE,17.99,37.71,NO,NO,both series lie on bare blue floor between markings; neither reaches the visible white lane line,renders/audit_cards/G388_024_pair1.png

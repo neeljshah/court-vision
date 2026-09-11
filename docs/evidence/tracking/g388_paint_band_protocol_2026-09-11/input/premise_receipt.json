@@ -1,0 +1,19 @@
+{
+  "controls_denominator": 30,
+  "controls_passed": 19,
+  "holds": true,
+  "marking_only_strokes": 0,
+  "native_identity_rows": 49,
+  "native_ready": 49,
+  "real_denominator": 30,
+  "real_localized": 1,
+  "retained": 49,
+  "selected": 30,
+  "selection_sha256": "43734e9f3a0c1233317e28d9884c2e1441b08e76ced19c50c7d08f71be5a7372",
+  "states": 60,
+  "visibility": {
+    "NO": 6,
+    "UNKNOWN": 2,
+    "YES": 22
+  }
+}

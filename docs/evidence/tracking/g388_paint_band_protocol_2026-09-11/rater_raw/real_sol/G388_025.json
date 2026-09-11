@@ -1,0 +1,10 @@
+{
+  "context_id": "G388_025",
+  "state": "VISIBLE",
+  "reason": "wide shot with straight lane boundary paint visible across two tiles",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 1, "family": "LANE_LINE", "points": {"p1": [224, 509], "p2": [422, 348], "p3": [327, 425]}},
+    {"tile": 4, "family": "LANE_LINE", "points": {"p1": [20, 101], "p2": [154, 15], "p3": [88, 57]}}
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "context_id": "G388_003",
+  "state": "VISIBLE",
+  "reason": "a straight white painted floor band is visible at the tile calibration-only",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 1,
+      "family": "UNKNOWN",
+      "points": {"p1": [634, 389], "p2": [637, 520], "p3": [635, 451]}
+    }
+  ]
+}

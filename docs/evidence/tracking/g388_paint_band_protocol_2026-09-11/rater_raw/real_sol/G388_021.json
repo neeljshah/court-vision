@@ -1,0 +1,10 @@
+{
+  "context_id": "G388_021",
+  "state": "VISIBLE",
+  "reason": "two straight painted lane boundaries are visible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 5, "family": "LANE_LINE", "points": {"p1": [25, 238], "p2": [490, 286], "p3": [248, 261]}},
+    {"tile": 5, "family": "LANE_LINE", "points": {"p1": [15, 11], "p2": [600, 61], "p3": [300, 35]}}
+  ]
+}

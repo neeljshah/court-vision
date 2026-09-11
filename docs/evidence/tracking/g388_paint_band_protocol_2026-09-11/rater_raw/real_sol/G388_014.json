@@ -1,0 +1,9 @@
+{
+  "context_id": "G388_014",
+  "state": "VISIBLE",
+  "reason": "a long painted baseline is visible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 4, "family": "BASELINE", "points": {"p1": [30, 188], "p2": [390, 14], "p3": [205, 100]}}
+  ]
+}

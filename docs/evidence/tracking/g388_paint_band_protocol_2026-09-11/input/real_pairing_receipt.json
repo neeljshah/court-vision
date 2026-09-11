@@ -1,0 +1,11 @@
+{
+  "candidate_pairs": 0,
+  "claude_visible_yes": 23,
+  "contexts": 30,
+  "contexts_with_at_least_one_candidate_pair": 0,
+  "family_disagreement_contexts": 19,
+  "sol_absent_or_unknown": 5,
+  "sol_missing_or_malformed": 0,
+  "terra_absent_or_unknown": 7,
+  "terra_missing_or_malformed": 0
+}

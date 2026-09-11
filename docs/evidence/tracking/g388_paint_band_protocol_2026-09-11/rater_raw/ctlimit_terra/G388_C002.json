@@ -1,0 +1,8 @@
+{
+  "control_id": "G388_C002",
+  "state": "VISIBLE",
+  "reason": "white band visible",
+  "tile": 2,
+  "coords": "tile",
+  "points": {"p1": [218, 210], "p2": [424, 330], "p3": [320, 270]}
+}

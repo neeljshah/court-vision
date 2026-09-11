@@ -1,0 +1,10 @@
+{
+  "context_id": "G388_019",
+  "state": "VISIBLE",
+  "reason": "painted lane boundaries are clearly visible on the floor",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 2, "family": "LANE_LINE", "points": {"p1": [45, 454], "p2": [340, 380], "p3": [190, 417]}},
+    {"tile": 5, "family": "LANE_LINE", "points": {"p1": [100, 75], "p2": [600, 20], "p3": [350, 51]}}
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "context_id": "G388_023",
+  "state": "VISIBLE",
+  "reason": "wide shot with centre line paint visible in two tiles",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 1, "family": "CENTRE_LINE", "points": {"p1": [502, 263], "p2": [500, 480], "p3": [501, 368]}},
+    {"tile": 4, "family": "CENTRE_LINE", "points": {"p1": [500, 20], "p2": [500, 358], "p3": [500, 181]}}
+  ]
+}

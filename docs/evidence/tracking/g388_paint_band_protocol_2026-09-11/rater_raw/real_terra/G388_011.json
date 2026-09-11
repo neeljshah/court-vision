@@ -1,0 +1,9 @@
+{
+  "context_id": "G388_011",
+  "state": "VISIBLE",
+  "reason": "court sideline paint is legible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 6, "family": "SIDELINE", "points": {"p1": [72, 273], "p2": [595, 286], "p3": [339, 280]}}
+  ]
+}

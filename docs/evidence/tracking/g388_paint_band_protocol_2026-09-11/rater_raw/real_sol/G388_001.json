@@ -1,0 +1,10 @@
+{
+  "context_id": "G388_001",
+  "state": "VISIBLE",
+  "reason": "wide shot with baseline and centre line paint legible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 4, "family": "BASELINE", "points": {"p1": [20, 470], "p2": [196, 292], "p3": [102, 388]}},
+    {"tile": 6, "family": "CENTRE_LINE", "points": {"p1": [633, 203], "p2": [633, 507], "p3": [634, 359]}}
+  ]
+}

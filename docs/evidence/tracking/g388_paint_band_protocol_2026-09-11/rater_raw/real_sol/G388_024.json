@@ -1,0 +1,10 @@
+{
+  "context_id": "G388_024",
+  "state": "VISIBLE",
+  "reason": "wide shot with both straight lane boundary bands legible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 5, "family": "LANE_LINE", "points": {"p1": [123, 99], "p2": [267, 245], "p3": [190, 168]}},
+    {"tile": 6, "family": "LANE_LINE", "points": {"p1": [62, 93], "p2": [229, 190], "p3": [145, 141]}}
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "G382_same_band": 1,
+  "G382_shared_units": 57,
+  "G387_same_band": 4,
+  "G387_shared_units": 12,
+  "G387_under_its_own_endpoint_rule": 1,
+  "label": "RETROSPECTIVE DIAGNOSIS ONLY -- not independent confirmation",
+  "rule": "symmetric infinite-line distance <= 6 px"
+}

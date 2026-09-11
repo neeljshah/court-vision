@@ -1,0 +1,9 @@
+{
+  "context_id": "G388_019",
+  "state": "VISIBLE",
+  "reason": "baseline paint is legible near the basket",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 2, "family": "BASELINE", "points": {"p1": [401, 373], "p2": [598, 255], "p3": [495, 315]}}
+  ]
+}

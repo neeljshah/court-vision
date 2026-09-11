@@ -1,0 +1,8 @@
+{
+  "control_id": "G388_C002",
+  "state": "VISIBLE",
+  "reason": "bright white diagonal band with black outline",
+  "tile": 2,
+  "coords": "tile",
+  "points": {"p1": [240, 224], "p2": [400, 316], "p3": [330, 275]}
+}

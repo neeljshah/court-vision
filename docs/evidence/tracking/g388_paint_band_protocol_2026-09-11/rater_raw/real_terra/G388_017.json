@@ -1,0 +1,10 @@
+{
+  "context_id": "G388_017",
+  "state": "VISIBLE",
+  "reason": "lane boundary paint is legible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 4, "family": "LANE_LINE", "points": {"p1": [527, 225], "p2": [604, 455], "p3": [564, 336]}},
+    {"tile": 5, "family": "LANE_LINE", "points": {"p1": [84, 200], "p2": [599, 243], "p3": [353, 221]}}
+  ]
+}

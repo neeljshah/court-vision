@@ -1,0 +1,18 @@
+{
+  "context_id": "G388_028",
+  "state": "VISIBLE",
+  "reason": "wide shot with baseline and sideline paint legible",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 4,
+      "family": "BASELINE",
+      "points": {"p1": [31, 302], "p2": [282, 42], "p3": [156, 171]}
+    },
+    {
+      "tile": 3,
+      "family": "SIDELINE",
+      "points": {"p1": [10, 344], "p2": [620, 367], "p3": [300, 355]}
+    }
+  ]
+}

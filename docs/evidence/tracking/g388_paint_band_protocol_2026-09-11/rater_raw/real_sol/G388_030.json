@@ -1,0 +1,18 @@
+{
+  "context_id": "G388_030",
+  "state": "VISIBLE",
+  "reason": "wide shot with sideline and centre line paint legible",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 2,
+      "family": "SIDELINE",
+      "points": {"p1": [40, 341], "p2": [560, 353], "p3": [290, 348]}
+    },
+    {
+      "tile": 6,
+      "family": "CENTRE_LINE",
+      "points": {"p1": [161, 160], "p2": [161, 420], "p3": [161, 292]}
+    }
+  ]
+}

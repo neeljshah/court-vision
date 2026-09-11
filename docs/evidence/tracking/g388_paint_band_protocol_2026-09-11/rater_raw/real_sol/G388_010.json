@@ -1,0 +1,9 @@
+{
+  "context_id": "G388_010",
+  "state": "VISIBLE",
+  "reason": "close baseline view with a straight painted boundary visible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 4, "family": "BASELINE", "points": {"p1": [24, 388], "p2": [578, 387], "p3": [309, 387]}}
+  ]
+}

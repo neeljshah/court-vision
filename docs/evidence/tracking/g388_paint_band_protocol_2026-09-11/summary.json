@@ -1,0 +1,22 @@
+{
+  "audited_same_painted_band": 0,
+  "band_membership_rate_all_contexts": "0/30",
+  "band_membership_rate_visible_contexts": "0/23",
+  "candidate_pairs_total": 8,
+  "closest_candidate_pair_px": 4.46,
+  "contexts_with_at_least_one_candidate_pair": 8,
+  "controls_bar": 27,
+  "controls_limit_both_rater_admissible": 13,
+  "controls_sealed_both_rater_admissible": 10,
+  "denominators": {
+    "all_contexts": 30,
+    "claude_visible_contexts": 23
+  },
+  "family_disagreement_contexts": 19,
+  "label": "DIAGNOSTIC ONLY -- the control bar was not met, so no qualified real-paint claim is made",
+  "missing_or_malformed_responses": 0,
+  "pairs_passing_sealed_6px_rule": 0,
+  "protocol_qualified": false,
+  "sol_absent_or_unknown": 5,
+  "terra_absent_or_unknown": 7
+}

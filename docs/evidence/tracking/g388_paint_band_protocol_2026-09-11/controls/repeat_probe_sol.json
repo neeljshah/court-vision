@@ -1,0 +1,16 @@
+{
+  "along_band_shift_px": {
+    "max": 34.48,
+    "p50": 13.89,
+    "p90": 25.0
+  },
+  "contexts": 10,
+  "note": "sol re-rated 10 already-answered controls during the LIMIT dispatch; used only as a repeatability probe, never as a LIMIT score",
+  "perpendicular_shift_px": {
+    "max": 14.0,
+    "p50": 0.06,
+    "p90": 1.8
+  },
+  "points": 30,
+  "verdict_agreement": "9/10"
+}

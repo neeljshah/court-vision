@@ -1,0 +1,18 @@
+{
+  "context_id": "G388_006",
+  "state": "VISIBLE",
+  "reason": "wide shot with baseline and lane paint legible",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 2,
+      "family": "BASELINE",
+      "points": {"p1": [282, 323], "p2": [607, 516], "p3": [442, 418]}
+    },
+    {
+      "tile": 5,
+      "family": "LANE_LINE",
+      "points": {"p1": [10, 137], "p2": [310, 137], "p3": [147, 137]}
+    }
+  ]
+}

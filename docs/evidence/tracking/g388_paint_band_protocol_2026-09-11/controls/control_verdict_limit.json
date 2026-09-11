@@ -1,0 +1,20 @@
+{
+  "bar": 27,
+  "both_rater_admissible": 13,
+  "denominator": 30,
+  "measurement": "LIMIT (named; sealed attempt stands separately)",
+  "qualified": false,
+  "sol_admissible": 28,
+  "terra_admissible": 14,
+  "terra_angle_err_deg": {
+    "max": 9.19,
+    "p50": 0.11,
+    "p90": 6.11
+  },
+  "terra_max_perp_px": {
+    "max": 31.0,
+    "p50": 1.0,
+    "p90": 30.0
+  },
+  "terra_redispatched_contexts": 10
+}

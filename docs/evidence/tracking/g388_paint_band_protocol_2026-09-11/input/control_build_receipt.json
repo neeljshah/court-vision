@@ -1,0 +1,32 @@
+{
+  "control_batches": {
+    "sol": [
+      "C:/Users/neelj/AppData/Local/Temp/g388_work/batch_control_sol/batch_01.tsv",
+      "C:/Users/neelj/AppData/Local/Temp/g388_work/batch_control_sol/batch_02.tsv",
+      "C:/Users/neelj/AppData/Local/Temp/g388_work/batch_control_sol/batch_03.tsv"
+    ],
+    "terra": [
+      "C:/Users/neelj/AppData/Local/Temp/g388_work/batch_control_terra/batch_01.tsv",
+      "C:/Users/neelj/AppData/Local/Temp/g388_work/batch_control_terra/batch_02.tsv",
+      "C:/Users/neelj/AppData/Local/Temp/g388_work/batch_control_terra/batch_03.tsv"
+    ]
+  },
+  "controls": 30,
+  "known_points_sha256": "734afffb555cc4df334587fa000516667478c41c9113ec4595302a23873456ce",
+  "matched": 180,
+  "mismatched": [],
+  "missing": [],
+  "real_batches": {
+    "sol": [
+      "C:/Users/neelj/AppData/Local/Temp/g388_work/batch_real_sol/batch_01.tsv",
+      "C:/Users/neelj/AppData/Local/Temp/g388_work/batch_real_sol/batch_02.tsv",
+      "C:/Users/neelj/AppData/Local/Temp/g388_work/batch_real_sol/batch_03.tsv"
+    ],
+    "terra": [
+      "C:/Users/neelj/AppData/Local/Temp/g388_work/batch_real_terra/batch_01.tsv",
+      "C:/Users/neelj/AppData/Local/Temp/g388_work/batch_real_terra/batch_02.tsv",
+      "C:/Users/neelj/AppData/Local/Temp/g388_work/batch_real_terra/batch_03.tsv"
+    ]
+  },
+  "tiles": 180
+}

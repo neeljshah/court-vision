@@ -1,0 +1,10 @@
+{
+  "context_id": "G388_007",
+  "state": "VISIBLE",
+  "reason": "painted baseline and lane bands are clearly visible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 4, "family": "BASELINE", "points": {"p1": [25, 350], "p2": [450, 25], "p3": [240, 188]}},
+    {"tile": 5, "family": "LANE_LINE", "points": {"p1": [238, 52], "p2": [599, 74], "p3": [420, 62]}}
+  ]
+}
