@@ -732,3 +732,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-10 | tracking | G385 | landed DONE: shadow non-play mask on 360 ticks / 30 sections / 29 videos -- false masks on PLAY 5/234 = 0.021 (upper 0.049 vs 0.05), capture 94/125 = 0.752, precision 94/99 = 0.949, UNKNOWN 1/360; reference kappa 0.805; head frozen before scoring; zero callers, nothing deployed | DONE (codex-sol ACCEPT WITH CORRECTIONS applied)
 
+2026-09-10 | tracking | G382 | landed PARTIAL (ambiguous reference): 49/60 native frames, 6,860 strokes / 460,484 supports; on-marking strokes 0 to 20 of 6,860; painted supports 0.0004 to 0.0106; 27.9 pct of supports on both-rater non-court regions; painted-marking reference untraceable (IoU p50 0.000); two extraction runs byte-identical; no fitting | PARTIAL (codex-sol ACCEPT WITH CORRECTIONS applied)
+

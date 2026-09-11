@@ -20,6 +20,13 @@
 
 
 
+
+## G382 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G382 | basketball | premise HOLDS (G379 0/6 sections, 352 REFUSED reproduced; no prior specificity receipt). Draw: 12 sections / 12 video ids / 60 planned native frames evenly over the sealed census; 49 RETAINED, 11 DECODE_FAILED (container nb_frames overcounts; recorded, never replaced). Frozen g362 stroke extractor at its 720p working scale, two separate processes byte-identical (receipt 94086dde...): 6,860 strokes / 460,484 supports. Blind painted-marking traces + non-court masks by terra + sol, 4 evenly drawn disputes adjudicated from pixels. Specificity as a bracket (reference-dependent): on-marking strokes 0/6,860 (both-rater) to 20/6,860 = 0.0029 (union); painted supports 163/460,484 = 0.0004 to 4,861/460,484 = 0.0106. Reference-robust: 128,552/460,484 = 27.9 pct of supports lie in regions BOTH raters independently masked as non-court broadcast content (score bug, stands, advertising boards, other). The painted-marking reference itself is untraceable at native: 57 same-identifier pairs, 34 with zero overlap, IoU p50 0.000 / max 0.472, agreed painted area 0.0098 pct of the image; adjudication found neither trace on the paint in 4/4 disputes. Eye check (30 even cards, 5 decode-failure cards): a full-frame thicket of strokes across crowd, stanchions, boards, the score graphic and a court logo. Deviations disclosed: zero-marking annotations scored (close-ups kept in N); sources pinned in place (sha256 before/after) because the live corpus was empty; two reference modes reported. 0 bars/constants moved, no fitting | g382_court_stroke_specificity_2026-09-10.md; g382_court_stroke_specificity_2026-09-10/{prereg, frames.csv, masks/, ratings.csv, adjudication.csv, strokes/supports tables, marking_only.json, repeats.json, summary.json, renders/}; G382_VERIFY_ACCEPT_WITH_CORRECTIONS_2026-09-10.md | **PARTIAL -- the extractor's output is dominated by non-court broadcast content, but a marking-only oracle could NOT be supplied because blind raters cannot trace paint consistently at 1080p; G383's bisect is replaced by G387 (paint localization with synthetic coordinate controls) before any court-region filter is designed; NEW GAP: dilated continuous-support aggregate absent from the memo** |
+
 ## G385 result register
 
 | Gap | Sport | Finding | Evidence | Status |
