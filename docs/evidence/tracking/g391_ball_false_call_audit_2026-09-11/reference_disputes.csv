@@ -1,0 +1,7 @@
+packet_id,frame_key,reference_label,reference_cx,reference_cy,reconciled_object,reconciled_ball_state,resolution,rater_to_reference_720p,note
+G391-050-e95510d68bcd84c9,20ea1070cef466b895f7eef7c87325e152af9358bd76ef5c722eb2e08133a5af,UNKNOWN,,,BALL,BALL_AT_MARKER,AGREED,,raters place the game ball at the candidate on a non-VISIBLE reference frame
+G391-053-69a3aa12f69b836d,412413c05f7beb7a5953de30667025544b440f6ee801edc89d1b9b177c43df2a,UNKNOWN,,,BALL,BALL_AT_MARKER,AGREED,,raters place the game ball at the candidate on a non-VISIBLE reference frame
+G391-095-9d9ea74a9af38485,3130cfa098e54f28258c10bf925e8b4e8c0c0f33b36a0afd2aeb3c4ff383c93a,UNKNOWN,,,BALL,BALL_AT_MARKER,AGREED,,raters place the game ball at the candidate on a non-VISIBLE reference frame
+G391-144-e632e09ed27dea14,299468af20c51dbf3e2090310433847fecdb8dbc1138dae74f3314da344bebf7,UNKNOWN,,,BALL,BALL_AT_MARKER,AGREED,,raters place the game ball at the candidate on a non-VISIBLE reference frame
+G391-151-af7f53d139c7ef3e,e144d07100989d3a36482458cfdf3a7fbf7dd00eb3de9599b58fc06cb31fd96b,ABSENT,,,BALL,BALL_AT_MARKER,AGREED,,raters place the game ball at the candidate on a non-VISIBLE reference frame
+G391-200-2be411f7baf20ab6,4650fce328c9f95e72e2eea82a69b831d283c708530ab1edac9a640bec77279a,UNKNOWN,,,BALL,BALL_AT_MARKER,AGREED,,raters place the game ball at the candidate on a non-VISIBLE reference frame

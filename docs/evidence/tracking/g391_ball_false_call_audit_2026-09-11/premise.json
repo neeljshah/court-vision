@@ -1,0 +1,47 @@
+{
+  "lf_sha256": {
+    "dev_boxes_v3": "e151f932c3b4bffe84c89aa8fde18f08c346a1e3a6e65d27ed4b36f095b7b4fa",
+    "reference_v3": "ad00670c3601706d5d817de734fc85d82e8fdc379ea03b21bbe1a46e272ad09e",
+    "frames_v3": "11797e162dd303441a7bde18e66fae4b404341fa2bd611678226182258d58945",
+    "predictions_A8": "58a315bdb63020dce401517fe048a072e6a142e08d18eb54832f3068c1bee1b6",
+    "paired_frame_scores": "afc203e7346e94af875fb101049b94b98e5905e922f52b31af9b15cffbbede0b"
+  },
+  "raw_crlf_sha256": {
+    "dev_boxes_v3": "6c8a2f406b0814ab1b094d0c89021fd39dee0ee9e00a49937cf9a57a335d5b0b",
+    "reference_v3": "9add9ec9443b970e29299dc849a93ae952f9f7e795b7167b1cd97a017ca35cb9",
+    "frames_v3": "dfad1d382b085d222dcfe45c8a96de92b5976f4d3e8d0fc35edf01ad57225229",
+    "predictions_A8": "ed8b50596f8dc28c093da8bdacd1d861a9585245212e29cf4bfab17319b9cd22",
+    "paired_frame_scores": "2a1fe533efa296ee9130b8dd263fb7ad90df3eaa669b5acb44afda8e96c1ca7f"
+  },
+  "spec_hash_mismatch_after_lf_normalisation": [],
+  "crlf_checkout_explains_prepare_mismatch": true,
+  "n_states": 549,
+  "n_unique_states": 549,
+  "n_calls_rank0_observed": 259,
+  "n_unique_call_keys": 259,
+  "tp": 90,
+  "fp": 169,
+  "fn_visible_without_tp": 212,
+  "fp_partition": {
+    "ABSENT": 50,
+    "VISIBLE": 100,
+    "UNKNOWN": 19
+  },
+  "label_partition": {
+    "ABSENT": 188,
+    "VISIBLE": 302,
+    "UNKNOWN": 59
+  },
+  "n_dev_boxes": 530,
+  "a11_handoff_evidenced": false,
+  "premise_true": true,
+  "preregistration_seal": "94878be3b837b2231f8ed4931cdaa6a21f8eb8d5f3543a1320ff248dd4fa48a3",
+  "context_census": {
+    "dev_pairs_within_0p2s": 25,
+    "n_targets": 549,
+    "n_targets_with_two_causal_neighbours": 0,
+    "min_nearest_prior_gap_frames": 244,
+    "fps_assumed": 30.0,
+    "causal_window_s": 0.2
+  }
+}

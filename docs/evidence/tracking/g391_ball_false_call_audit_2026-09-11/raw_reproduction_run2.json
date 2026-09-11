@@ -1,0 +1,23 @@
+{
+  "n_states": 549,
+  "n_calls": 259,
+  "tp": 90,
+  "fp": 169,
+  "abstained": 290,
+  "fn_visible_without_tp": 212,
+  "coverage_c0": 0.16393442622950818,
+  "precision": 0.3474903474903475,
+  "precision_wilson_lo": 0.29211016505655896,
+  "all_fp_per_absent": 0.898936170212766,
+  "fp_on_absent_per_absent": 0.26595744680851063,
+  "n_absent": 188,
+  "bars": {
+    "coverage_c0_ge_0.25": false,
+    "precision_wilson_lo_ge_0.90": false,
+    "all_fp_per_absent_le_0.01": false
+  },
+  "archived_row_mismatches": 0,
+  "archived_mismatch_keys": [],
+  "run": "2",
+  "rows_sha256": "5e19ff7119736f0042792bb958d164ce5ed8e38eccb15f1202dd642d83eacdfa"
+}

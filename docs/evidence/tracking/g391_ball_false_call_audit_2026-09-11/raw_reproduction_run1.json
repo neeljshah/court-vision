@@ -1,0 +1,105 @@
+{
+  "n_states": 549,
+  "n_calls": 259,
+  "tp": 90,
+  "fp": 169,
+  "abstained": 290,
+  "fn_visible_without_tp": 212,
+  "coverage_c0": 0.16393442622950818,
+  "precision": 0.3474903474903475,
+  "precision_wilson_lo": 0.29211016505655896,
+  "all_fp_per_absent": 0.898936170212766,
+  "fp_on_absent_per_absent": 0.26595744680851063,
+  "n_absent": 188,
+  "bars": {
+    "coverage_c0_ge_0.25": false,
+    "precision_wilson_lo_ge_0.90": false,
+    "all_fp_per_absent_le_0.01": false
+  },
+  "archived_row_mismatches": 0,
+  "archived_mismatch_keys": [],
+  "run": "1",
+  "rows_sha256": "5e19ff7119736f0042792bb958d164ce5ed8e38eccb15f1202dd642d83eacdfa",
+  "ceiling": {
+    "baseline_tp": 90,
+    "baseline_fp": 169,
+    "ceiling_tp": 90,
+    "ceiling_fp_floor": 0,
+    "suppression_cannot_add_tp": true,
+    "all_549_states_survive": true,
+    "probes": [
+      {
+        "probe": "suppress_all_calls",
+        "n_suppressed": 259,
+        "tp": 0,
+        "fp": 0,
+        "coverage_c0": 0.0,
+        "bars": {
+          "coverage_c0_ge_0.25": false,
+          "precision_wilson_lo_ge_0.90": false,
+          "all_fp_per_absent_le_0.01": true
+        },
+        "n_states": 549,
+        "states_preserved": true,
+        "tp_not_increased": true,
+        "fp_not_increased": true,
+        "fp_non_negative": true,
+        "calls_are_subset": true
+      },
+      {
+        "probe": "suppress_all_true_calls",
+        "n_suppressed": 90,
+        "tp": 0,
+        "fp": 169,
+        "coverage_c0": 0.0,
+        "bars": {
+          "coverage_c0_ge_0.25": false,
+          "precision_wilson_lo_ge_0.90": false,
+          "all_fp_per_absent_le_0.01": false
+        },
+        "n_states": 549,
+        "states_preserved": true,
+        "tp_not_increased": true,
+        "fp_not_increased": true,
+        "fp_non_negative": true,
+        "calls_are_subset": true
+      },
+      {
+        "probe": "oracle_suppress_every_false_call",
+        "n_suppressed": 169,
+        "tp": 90,
+        "fp": 0,
+        "coverage_c0": 0.163934,
+        "bars": {
+          "coverage_c0_ge_0.25": false,
+          "precision_wilson_lo_ge_0.90": true,
+          "all_fp_per_absent_le_0.01": true
+        },
+        "n_states": 549,
+        "states_preserved": true,
+        "tp_not_increased": true,
+        "fp_not_increased": true,
+        "fp_non_negative": true,
+        "calls_are_subset": true
+      },
+      {
+        "probe": "suppress_none",
+        "n_suppressed": 0,
+        "tp": 90,
+        "fp": 169,
+        "coverage_c0": 0.163934,
+        "bars": {
+          "coverage_c0_ge_0.25": false,
+          "precision_wilson_lo_ge_0.90": false,
+          "all_fp_per_absent_le_0.01": false
+        },
+        "n_states": 549,
+        "states_preserved": true,
+        "tp_not_increased": true,
+        "fp_not_increased": true,
+        "fp_non_negative": true,
+        "calls_are_subset": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "n_packets": 259,
+  "n_rated_by_both": 259,
+  "n_rated_by_one_or_none": 0,
+  "kappa_object": 0.7086614173228346,
+  "kappa_ball_state": 0.783337980738294,
+  "raw_agreement_object": 0.7992277992277992,
+  "raw_agreement_ball_state": 0.8494208494208494,
+  "n_disagreements": 68,
+  "terra_object_counts": {
+    "SIGNAGE_OR_GRAPHIC": 12,
+    "CROWD": 57,
+    "BALL": 105,
+    "PERSON_OR_APPAREL": 74,
+    "COURT_OR_LOGO": 2,
+    "EQUIPMENT": 9
+  },
+  "sol_object_counts": {
+    "SIGNAGE_OR_GRAPHIC": 9,
+    "PERSON_OR_APPAREL": 109,
+    "BALL": 107,
+    "EQUIPMENT": 8,
+    "CROWD": 24,
+    "COURT_OR_LOGO": 2
+  }
+}

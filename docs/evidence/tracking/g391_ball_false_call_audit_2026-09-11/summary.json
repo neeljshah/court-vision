@@ -1,0 +1,124 @@
+{
+  "n_calls": 259,
+  "n_false_calls": 169,
+  "n_true_calls": 90,
+  "resolution": {
+    "AGREED": 191,
+    "ADJUDICATED": 68
+  },
+  "suspected_reference_errors": 6,
+  "denominators": {
+    "false_calls": 169,
+    "true_calls": 90,
+    "all_calls": 259,
+    "held_out_states": 549
+  },
+  "agreement": {
+    "n_packets": 259,
+    "n_rated_by_both": 259,
+    "n_rated_by_one_or_none": 0,
+    "kappa_object": 0.7086614173228346,
+    "kappa_ball_state": 0.783337980738294,
+    "raw_agreement_object": 0.7992277992277992,
+    "raw_agreement_ball_state": 0.8494208494208494,
+    "n_disagreements": 68,
+    "terra_object_counts": {
+      "SIGNAGE_OR_GRAPHIC": 12,
+      "CROWD": 57,
+      "BALL": 105,
+      "PERSON_OR_APPAREL": 74,
+      "COURT_OR_LOGO": 2,
+      "EQUIPMENT": 9
+    },
+    "sol_object_counts": {
+      "SIGNAGE_OR_GRAPHIC": 9,
+      "PERSON_OR_APPAREL": 109,
+      "BALL": 107,
+      "EQUIPMENT": 8,
+      "CROWD": 24,
+      "COURT_OR_LOGO": 2
+    }
+  },
+  "classes": [
+    {
+      "audit_class": "BACKGROUND_CONFUSION_COURT_OR_LOGO",
+      "object": "COURT_OR_LOGO",
+      "false_calls": 2,
+      "share_of_169_false": 0.0118,
+      "true_calls": 0,
+      "share_of_90_true": 0.0,
+      "all_calls": 2,
+      "share_of_259_calls": 0.0077
+    },
+    {
+      "audit_class": "BACKGROUND_CONFUSION_CROWD",
+      "object": "CROWD",
+      "false_calls": 40,
+      "share_of_169_false": 0.2367,
+      "true_calls": 0,
+      "share_of_90_true": 0.0,
+      "all_calls": 40,
+      "share_of_259_calls": 0.1544
+    },
+    {
+      "audit_class": "BACKGROUND_CONFUSION_EQUIPMENT",
+      "object": "EQUIPMENT",
+      "false_calls": 10,
+      "share_of_169_false": 0.0592,
+      "true_calls": 0,
+      "share_of_90_true": 0.0,
+      "all_calls": 10,
+      "share_of_259_calls": 0.0386
+    },
+    {
+      "audit_class": "BACKGROUND_CONFUSION_PERSON_OR_APPAREL",
+      "object": "PERSON_OR_APPAREL",
+      "false_calls": 93,
+      "share_of_169_false": 0.5503,
+      "true_calls": 1,
+      "share_of_90_true": 0.0111,
+      "all_calls": 94,
+      "share_of_259_calls": 0.3629
+    },
+    {
+      "audit_class": "BACKGROUND_CONFUSION_SIGNAGE_OR_GRAPHIC",
+      "object": "SIGNAGE_OR_GRAPHIC",
+      "false_calls": 9,
+      "share_of_169_false": 0.0533,
+      "true_calls": 0,
+      "share_of_90_true": 0.0,
+      "all_calls": 9,
+      "share_of_259_calls": 0.0347
+    },
+    {
+      "audit_class": "DUPLICATE_OR_SECOND_BALL",
+      "object": "BALL",
+      "false_calls": 0,
+      "share_of_169_false": 0.0,
+      "true_calls": 1,
+      "share_of_90_true": 0.0111,
+      "all_calls": 1,
+      "share_of_259_calls": 0.0039
+    },
+    {
+      "audit_class": "NEAR_MISS_LOCALISATION",
+      "object": "BALL",
+      "false_calls": 9,
+      "share_of_169_false": 0.0533,
+      "true_calls": 88,
+      "share_of_90_true": 0.9778,
+      "all_calls": 97,
+      "share_of_259_calls": 0.3745
+    },
+    {
+      "audit_class": "SUSPECTED_REFERENCE_ERROR",
+      "object": "BALL",
+      "false_calls": 6,
+      "share_of_169_false": 0.0355,
+      "true_calls": 0,
+      "share_of_90_true": 0.0,
+      "all_calls": 6,
+      "share_of_259_calls": 0.0232
+    }
+  ]
+}

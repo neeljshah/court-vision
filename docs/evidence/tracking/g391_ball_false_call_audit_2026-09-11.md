@@ -1,0 +1,44 @@
+VERDICT: DONE -- blind audit complete; suppression CLOSED AT LIMIT; causal SHADOW NOT MEASURED. G389 and G390 untouched.
+Fix 1b 2026-09-11: 30 sealed even timeline cards now show both unavailable causal prior slots as MISSING; reproduced numbers are unchanged.
+PREMISE: 549 states, 259 calls, TP/FP/FN 90/169/212, C0 0.163934; FP split 100/50/19; 530 DEV boxes.
+CAUSAL CENSUS: 0/549 targets have a same-section prior decoded key within 0.2 s; minimum gap 244 frames; DEV pairs 25 < 30; raw calls pass through.
+TIMELINE EYE CHECK: ordinals k*549//30 for k=0..29 are indexed in timeline_index.csv; cards are in renders/timeline/; each identifies its target and both required prior slots as MISSING.
+TEST: python -m pytest tests/platformkit/test_g391_ball_false_call_audit.py -q -p no:cacheprovider --basetemp=C:/Users/neelj/nba-track-a10/.pytest_tmp_g391.
+Q6: character-code scan covers the 64 evidence/test text artifacts plus the appended ledger line; 0 non-opaque hits in newly added or changed content.
+## NOT VERIFIED
+- A11 handoff/disposition; six suspected reference errors; 18 BALL_UNCERTAIN reviews; behavior on unseen data.
+## Fix 1b receipts (SHA-256)
+b3b9768e6bac4011787d6987ea13c04979e7d0678400a89ecda0a643df100f47  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/timeline_index.csv
+4b3b14b2fc10e59f58a11d6615562ec4b176f96f27e64c4391982343007bcca9  tests/platformkit/test_g391_ball_false_call_audit.py
+77b3afebe501ce2d884528b863a2f3c31a7da8a10c23094af931982314c42dab  docs/evidence/tracking/RESULTS_LEDGER.md
+95aae39a33ad7d1f265adaa6cf91d88ba5edcaa8281dc5ad213741a9bd82c5bd  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/q6_scan.json
+e753fe9545933efd35caa94ecdd6074cfa3dee8891c3213230786f8cae822cb2  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_00_ordinal_000.jpg
+bd6af7281ec3732f8ed5e2eb86f8543554b3c8665d34358325eac08033fd2970  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_01_ordinal_018.jpg
+3b9610c292dd9c26dd5da2fb0c82a63ab5657754cf0ee2791fbeb14e5696cd42  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_02_ordinal_036.jpg
+5017fb413ec5e39bd345cbbe6e3610f8a7ac3b9a0f50f67fff2de2aeb44d5f07  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_03_ordinal_054.jpg
+53c44cc9ffa21bcdb0e2aae4e15f99926a4c4e6afe5a4a08ad57366a6c53a557  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_04_ordinal_073.jpg
+b909af5cee308def0a91715b9f4ec08456c9d0ac5bfb45c44901db2b1def0165  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_05_ordinal_091.jpg
+41d726d1ec88bc2360c602bd245a4bba6d658cf363ce199a26d78880f1f34b15  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_06_ordinal_109.jpg
+742716f594b67084b00a9cd8cb079ffe14646b11a7da76365fc2513319d39d39  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_07_ordinal_128.jpg
+3cd75aceed5e6a089b9a65c8350cccb9a0e1421be75978ed94bd698b19050b7f  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_08_ordinal_146.jpg
+10116f076ace8cf6aa9630e651dac7a636e433da4fac38b3cc1bc987ebc9f08b  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_09_ordinal_164.jpg
+169900075632e9e19f19e14950ccb50a41441b5b630ca85f8e61974024c11a27  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_10_ordinal_183.jpg
+433816c33331bb1762d8717fff5c6e6180001d90fd12c32360201738fbd51648  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_11_ordinal_201.jpg
+5a17453ae95d7b7c244d0588bc58b6d00f0dcb1b877eb6b3b0895723caefda1a  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_12_ordinal_219.jpg
+e48678943b82bd064a0b3290df24a69e827e5b6a00a708d20f41eea3c9ffce23  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_13_ordinal_237.jpg
+c53a4b905cfd0e19ee8c5835cc9e86c5c3d0f19bfc2e6118a93a53fea63b8885  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_14_ordinal_256.jpg
+34a3df3cf5e5d1d1c90173cca157e25eddad8db5661085b0b6c366eb3987abd9  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_15_ordinal_274.jpg
+b1c1166822ddfd6ea669aa4ae8d1999d510dd6ab80dfa1a5aad84acacb431128  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_16_ordinal_292.jpg
+c74040c22572cc147b0ef450b38dd72c9470d9d3762b7d7ac88791989b4f6388  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_17_ordinal_311.jpg
+93023f8ae711dba947af58c6a700be950d303f8e8af69d76f648c08e7787acac  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_18_ordinal_329.jpg
+5382eb9c89c20358e59a6d8225fb891f411076321a4c65d3d99181bc70e485cb  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_19_ordinal_347.jpg
+5bc6c260de5e0b2c66928109e3a10f9037ec0f823b3348a4c83d9de39283217c  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_20_ordinal_366.jpg
+6af0e09b53bdcda702946e6d46aff2c7810165377daac08414ca74d911b77fe3  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_21_ordinal_384.jpg
+729d1bd01d34bf6032cc51f442d60464826733c52b50f8ba50a3b186984abee0  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_22_ordinal_402.jpg
+d87194d091b6154c499df233324039bc1041ff7c6ee09abc5bdd51804cbd0f2e  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_23_ordinal_420.jpg
+b47454efbef5cd978276928ddd931bf833c98f1dc5ca9b42a3e39a7a99a491e5  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_24_ordinal_439.jpg
+4a09ea0fecc0a720fe73b28fe3e825931539d06cf05ab0acf42526f5035f7246  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_25_ordinal_457.jpg
+4fdbf30c9ccb1f96f9d83a45a6fb86ddf37f1ccb469162bf9960f619ed5f077e  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_26_ordinal_475.jpg
+a760979eb0f8cca8d1747ae196d11f4f874c51cdcb5f5f0fe4976208c2ae230e  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_27_ordinal_494.jpg
+09e7a85b185abff5a75fa39758708f98e4c00d6fd834ac029b12ac0efb77dd0e  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_28_ordinal_512.jpg
+bc7983dfd556a9b7e16fde9e917d0dcaf3534c7e7dc6ab578e9605187f632721  docs/evidence/tracking/g391_ball_false_call_audit_2026-09-11/renders/timeline/timeline_29_ordinal_530.jpg

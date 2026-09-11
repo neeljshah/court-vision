@@ -1,0 +1,69 @@
+packet_id,adjudicator,field,object,ball_state,terra_object,sol_object,terra_ball_state,sol_ball_state,note
+G391-002-b502642f589e14fb,claude-blind-pixels,object,PERSON_OR_APPAREL,BALL_ELSEWHERE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL_ELSEWHERE,spectator head and cap at the marker
+G391-004-8a8aac6ec223539c,claude-blind-pixels,object,EQUIPMENT,BALL_ELSEWHERE,SIGNAGE_OR_GRAPHIC,EQUIPMENT,BALL_ELSEWHERE,BALL_ELSEWHERE,press-row monitor at the marker
+G391-005-31a9a81e0d91527e,claude-blind-pixels,object,PERSON_OR_APPAREL,NO_BALL_VISIBLE,CROWD,PERSON_OR_APPAREL,NO_BALL_VISIBLE,NO_BALL_VISIBLE,foreground spectator face and hand
+G391-008-083f13856ff2cfde,claude-blind-pixels,object,PERSON_OR_APPAREL,BALL_ELSEWHERE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL_ELSEWHERE,seated bench players in orange
+G391-011-de5a42e337ac4782,claude-blind-pixels,ball_state,PERSON_OR_APPAREL,BALL_UNCERTAIN,PERSON_OR_APPAREL,PERSON_OR_APPAREL,BALL_UNCERTAIN,NO_BALL_VISIBLE,player head and headband; ball not resolvable
+G391-013-7f66205901accdd8,claude-blind-pixels,object,PERSON_OR_APPAREL,NO_BALL_VISIBLE,CROWD,PERSON_OR_APPAREL,NO_BALL_VISIBLE,NO_BALL_VISIBLE,single blurred courtside face
+G391-032-6e10c14f63b49908,claude-blind-pixels,object,CROWD,BALL_ELSEWHERE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL_ELSEWHERE,row of spectator heads
+G391-048-9402389115e3afde,claude-blind-pixels,object+ball_state,CROWD,BALL_UNCERTAIN,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,NO_BALL_VISIBLE,several spectator heads; ball not resolvable
+G391-052-7ebef5d7a838f981,claude-blind-pixels,object+ball_state,CROWD,BALL_ELSEWHERE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL_UNCERTAIN,seated fans in the stands
+G391-055-980ff2dba7d18d20,claude-blind-pixels,object,EQUIPMENT,NO_BALL_VISIBLE,PERSON_OR_APPAREL,EQUIPMENT,NO_BALL_VISIBLE,NO_BALL_VISIBLE,towel over a shoulder in the huddle
+G391-058-130ae495aef549f9,claude-blind-pixels,object+ball_state,PERSON_OR_APPAREL,NO_BALL_VISIBLE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,NO_BALL_VISIBLE,bench player head and shoulder
+G391-062-d4a8da289ddb8d3a,claude-blind-pixels,object,CROWD,BALL_UNCERTAIN,CROWD,PERSON_OR_APPAREL,BALL_UNCERTAIN,BALL_UNCERTAIN,two seated spectators; ball not resolvable
+G391-064-93e8e2e1a8d0f3d0,claude-blind-pixels,object+ball_state,CROWD,NO_BALL_VISIBLE,CROWD,PERSON_OR_APPAREL,NO_BALL_VISIBLE,BALL_UNCERTAIN,front-row heads from behind
+G391-065-fc8c2f51b3e09060,claude-blind-pixels,object,PERSON_OR_APPAREL,BALL_ELSEWHERE,CROWD,SIGNAGE_OR_GRAPHIC,BALL_ELSEWHERE,BALL_ELSEWHERE,orange jacket on one spectator
+G391-067-c2ab8867b5c6c3e5,claude-blind-pixels,object+ball_state,EQUIPMENT,BALL_ELSEWHERE,BALL,EQUIPMENT,BALL_AT_MARKER,BALL_ELSEWHERE,the rim and net at the marker
+G391-069-191c53d6006069f3,claude-blind-pixels,object,CROWD,BALL_UNCERTAIN,CROWD,PERSON_OR_APPAREL,BALL_UNCERTAIN,BALL_UNCERTAIN,two seated fans in the stands
+G391-074-bfce8b8a680c2972,claude-blind-pixels,ball_state,PERSON_OR_APPAREL,NO_BALL_VISIBLE,PERSON_OR_APPAREL,PERSON_OR_APPAREL,BALL_ELSEWHERE,NO_BALL_VISIBLE,standing person behind the camera rigs
+G391-075-d9534eed2d98f73d,claude-blind-pixels,ball_state,PERSON_OR_APPAREL,BALL_ELSEWHERE,PERSON_OR_APPAREL,PERSON_OR_APPAREL,NO_BALL_VISIBLE,BALL_ELSEWHERE,bench staff; spare ball held at the sideline
+G391-084-e028dd1f5253710d,claude-blind-pixels,object,PERSON_OR_APPAREL,NO_BALL_VISIBLE,CROWD,PERSON_OR_APPAREL,NO_BALL_VISIBLE,NO_BALL_VISIBLE,one blurred spectator head
+G391-086-d5c6682e2d4cea6e,claude-blind-pixels,object,CROWD,BALL_ELSEWHERE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL_ELSEWHERE,two seated spectators courtside
+G391-092-7c87203b79f48d87,claude-blind-pixels,ball_state,PERSON_OR_APPAREL,BALL_UNCERTAIN,PERSON_OR_APPAREL,PERSON_OR_APPAREL,BALL_UNCERTAIN,NO_BALL_VISIBLE,player body at the rim; ball occluded
+G391-096-0b3da9202f23dbb9,claude-blind-pixels,object,PERSON_OR_APPAREL,NO_BALL_VISIBLE,CROWD,PERSON_OR_APPAREL,NO_BALL_VISIBLE,NO_BALL_VISIBLE,one bench-row head
+G391-101-c6d8c8cd63f738f7,claude-blind-pixels,object+ball_state,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL,PERSON_OR_APPAREL,BALL_AT_MARKER,BALL_ELSEWHERE,official head; ball in the dribbler hand
+G391-115-8fee30c79ba7b96f,claude-blind-pixels,ball_state,PERSON_OR_APPAREL,NO_BALL_VISIBLE,PERSON_OR_APPAREL,PERSON_OR_APPAREL,BALL_ELSEWHERE,NO_BALL_VISIBLE,shoulder and towel in the huddle
+G391-116-508e697775f112b6,claude-blind-pixels,ball_state,CROWD,NO_BALL_VISIBLE,CROWD,CROWD,BALL_UNCERTAIN,NO_BALL_VISIBLE,front-row heads
+G391-117-9fdaabcece58a7a5,claude-blind-pixels,ball_state,EQUIPMENT,BALL_UNCERTAIN,EQUIPMENT,EQUIPMENT,BALL_UNCERTAIN,NO_BALL_VISIBLE,orange cooler behind the bench
+G391-120-311c769023038d85,claude-blind-pixels,object,PERSON_OR_APPAREL,BALL_ELSEWHERE,EQUIPMENT,CROWD,BALL_ELSEWHERE,BALL_ELSEWHERE,legs and jeans of standing spectators
+G391-121-ccee12873a7329d5,claude-blind-pixels,object,SIGNAGE_OR_GRAPHIC,NO_BALL_VISIBLE,SIGNAGE_OR_GRAPHIC,PERSON_OR_APPAREL,NO_BALL_VISIBLE,NO_BALL_VISIBLE,printed tournament logo on a shirt
+G391-125-bc6372734a6ea017,claude-blind-pixels,object,PERSON_OR_APPAREL,BALL_ELSEWHERE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL_ELSEWHERE,orange jacket on one spectator
+G391-128-82d6d766b13fe623,claude-blind-pixels,object,PERSON_OR_APPAREL,NO_BALL_VISIBLE,SIGNAGE_OR_GRAPHIC,PERSON_OR_APPAREL,NO_BALL_VISIBLE,NO_BALL_VISIBLE,team shooting shirt on a bench player
+G391-129-d833e105996c6a4f,claude-blind-pixels,object+ball_state,PERSON_OR_APPAREL,BALL_ELSEWHERE,PERSON_OR_APPAREL,BALL,BALL_UNCERTAIN,BALL_AT_MARKER,player torso; ball in flight at the rim
+G391-135-82a361e2cc72ba8e,claude-blind-pixels,object+ball_state,PERSON_OR_APPAREL,BALL_UNCERTAIN,PERSON_OR_APPAREL,BALL,BALL_UNCERTAIN,BALL_AT_MARKER,player torso; ball not resolvable
+G391-139-811f012f75ee899f,claude-blind-pixels,ball_state,CROWD,BALL_ELSEWHERE,CROWD,CROWD,BALL_UNCERTAIN,BALL_ELSEWHERE,spectator heads below the scorebug
+G391-141-40d0f399a24c5410,claude-blind-pixels,object+ball_state,PERSON_OR_APPAREL,BALL_ELSEWHERE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,NO_BALL_VISIBLE,one standing spectator in gold
+G391-142-1fca6b031bfcbd53,claude-blind-pixels,object,PERSON_OR_APPAREL,BALL_ELSEWHERE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL_ELSEWHERE,person in an orange polo behind the baseline
+G391-143-edc3c2cbb27a1e10,claude-blind-pixels,object,PERSON_OR_APPAREL,NO_BALL_VISIBLE,CROWD,PERSON_OR_APPAREL,NO_BALL_VISIBLE,NO_BALL_VISIBLE,one spectator head
+G391-148-c942d3c106784e2f,claude-blind-pixels,object+ball_state,PERSON_OR_APPAREL,BALL_ELSEWHERE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,NO_BALL_VISIBLE,one seated person; ball held by a player
+G391-152-a9f19b0f221fc1f7,claude-blind-pixels,object,PERSON_OR_APPAREL,BALL_ELSEWHERE,SIGNAGE_OR_GRAPHIC,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL_ELSEWHERE,one spectator head with a cap
+G391-155-b1a6155291d5a026,claude-blind-pixels,object+ball_state,CROWD,NO_BALL_VISIBLE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,NO_BALL_VISIBLE,two spectator heads
+G391-159-2bf0a65052b62dce,claude-blind-pixels,object+ball_state,CROWD,BALL_ELSEWHERE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL_UNCERTAIN,spectator heads with caps
+G391-160-69c468bfc910e78b,claude-blind-pixels,object+ball_state,PERSON_OR_APPAREL,BALL_ELSEWHERE,PERSON_OR_APPAREL,BALL,BALL_ELSEWHERE,BALL_AT_MARKER,player head; ball in flight downcourt
+G391-168-a7ac087e9911147f,claude-blind-pixels,object+ball_state,CROWD,BALL_ELSEWHERE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL_UNCERTAIN,two front-row heads
+G391-169-cc27f7ca2afc4747,claude-blind-pixels,object,CROWD,BALL_ELSEWHERE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL_ELSEWHERE,row of spectator heads
+G391-171-05110a3a3509a6bd,claude-blind-pixels,object,CROWD,BALL_ELSEWHERE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL_ELSEWHERE,several fans in the stands
+G391-174-c0b5a0502dd474a0,claude-blind-pixels,object,CROWD,NO_BALL_VISIBLE,CROWD,PERSON_OR_APPAREL,NO_BALL_VISIBLE,NO_BALL_VISIBLE,defocused crowd behind the subject
+G391-175-68d23803535d7f29,claude-blind-pixels,object,CROWD,NO_BALL_VISIBLE,CROWD,PERSON_OR_APPAREL,NO_BALL_VISIBLE,NO_BALL_VISIBLE,defocused crowd behind the subject
+G391-181-ced5d1db84a025e4,claude-blind-pixels,object+ball_state,PERSON_OR_APPAREL,BALL_ELSEWHERE,CROWD,PERSON_OR_APPAREL,BALL_UNCERTAIN,BALL_ELSEWHERE,one spectator head with a cap
+G391-186-6877463bc453a135,claude-blind-pixels,ball_state,PERSON_OR_APPAREL,BALL_UNCERTAIN,PERSON_OR_APPAREL,PERSON_OR_APPAREL,BALL_UNCERTAIN,BALL_ELSEWHERE,player shoulder; ball not resolvable
+G391-189-90fafe828227284e,claude-blind-pixels,ball_state,PERSON_OR_APPAREL,BALL_UNCERTAIN,PERSON_OR_APPAREL,PERSON_OR_APPAREL,BALL_UNCERTAIN,BALL_ELSEWHERE,player leg and shoe; ball not resolvable
+G391-202-a4c5c3a83d1b31ad,claude-blind-pixels,object+ball_state,PERSON_OR_APPAREL,BALL_UNCERTAIN,EQUIPMENT,PERSON_OR_APPAREL,BALL_UNCERTAIN,BALL_ELSEWHERE,seated spectators beside the stanchion
+G391-204-2beabcc33a7176bf,claude-blind-pixels,object+ball_state,PERSON_OR_APPAREL,NO_BALL_VISIBLE,EQUIPMENT,PERSON_OR_APPAREL,BALL_UNCERTAIN,NO_BALL_VISIBLE,blurred head in the background
+G391-205-fb3e75cf42cd303a,claude-blind-pixels,object,CROWD,BALL_ELSEWHERE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL_ELSEWHERE,two front-row heads
+G391-208-835fc7054045fb77,claude-blind-pixels,object,EQUIPMENT,BALL_ELSEWHERE,EQUIPMENT,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL_ELSEWHERE,padded table calibration-only below the rim
+G391-209-6be8cb0639fd2b0d,claude-blind-pixels,object+ball_state,BALL,BALL_ELSEWHERE,CROWD,BALL,BALL_ELSEWHERE,BALL_AT_MARKER,a spare ball at the bench; the live ball is on court
+G391-213-2ef75619097d9fed,claude-blind-pixels,ball_state,CROWD,BALL_UNCERTAIN,CROWD,CROWD,BALL_UNCERTAIN,BALL_ELSEWHERE,spectator heads; ball not resolvable
+G391-216-837c37c260c60522,claude-blind-pixels,ball_state,CROWD,BALL_UNCERTAIN,CROWD,CROWD,BALL_UNCERTAIN,BALL_ELSEWHERE,dark crowd under the backboard
+G391-217-aa3674c2d0965e44,claude-blind-pixels,ball_state,CROWD,BALL_ELSEWHERE,CROWD,CROWD,BALL_UNCERTAIN,BALL_ELSEWHERE,seated fans; a ball visible courtside
+G391-224-30f26630e1e723f7,claude-blind-pixels,object+ball_state,PERSON_OR_APPAREL,NO_BALL_VISIBLE,CROWD,PERSON_OR_APPAREL,BALL_UNCERTAIN,NO_BALL_VISIBLE,one spectator in a hooded shirt
+G391-225-22d6da7ea3a87e68,claude-blind-pixels,ball_state,CROWD,BALL_ELSEWHERE,CROWD,CROWD,BALL_UNCERTAIN,BALL_ELSEWHERE,blurred crowd behind the baseline
+G391-228-dea5991fc6620f0e,claude-blind-pixels,object+ball_state,PERSON_OR_APPAREL,BALL_UNCERTAIN,BALL,PERSON_OR_APPAREL,BALL_AT_MARKER,BALL_UNCERTAIN,player back and head; ball not resolvable
+G391-229-f616feaa15e54302,claude-blind-pixels,object+ball_state,BALL,BALL_AT_MARKER,PERSON_OR_APPAREL,BALL,BALL_UNCERTAIN,BALL_AT_MARKER,the game ball loose on the floor inside the marker
+G391-232-bc686c747f26a5c6,claude-blind-pixels,object,CROWD,BALL_ELSEWHERE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL_ELSEWHERE,fans at the crop border
+G391-233-758a6eb3067b8bc4,claude-blind-pixels,ball_state,CROWD,BALL_ELSEWHERE,CROWD,CROWD,BALL_UNCERTAIN,BALL_ELSEWHERE,press row people and laptops
+G391-240-7dde087ce5de25ca,claude-blind-pixels,ball_state,CROWD,BALL_ELSEWHERE,CROWD,CROWD,BALL_UNCERTAIN,NO_BALL_VISIBLE,one spectator; ball in a player hand
+G391-253-16ac6465191b0e3f,claude-blind-pixels,object,CROWD,NO_BALL_VISIBLE,CROWD,PERSON_OR_APPAREL,NO_BALL_VISIBLE,NO_BALL_VISIBLE,defocused background figures
+G391-254-5dc5f7cefb67980e,claude-blind-pixels,object+ball_state,EQUIPMENT,NO_BALL_VISIBLE,PERSON_OR_APPAREL,EQUIPMENT,BALL_ELSEWHERE,NO_BALL_VISIBLE,orange coolers behind the bench
+G391-255-8295a24db1b6ac39,claude-blind-pixels,object,EQUIPMENT,BALL_ELSEWHERE,EQUIPMENT,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL_ELSEWHERE,orange towels along the baseline
+G391-259-d3c1fea9cbc6c972,claude-blind-pixels,object+ball_state,PERSON_OR_APPAREL,BALL_ELSEWHERE,CROWD,PERSON_OR_APPAREL,BALL_ELSEWHERE,BALL_UNCERTAIN,one courtside spectator
