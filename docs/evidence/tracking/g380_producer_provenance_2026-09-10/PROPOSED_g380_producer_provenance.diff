@@ -1,0 +1,249 @@
+--- a/src/tracking/advanced_tracker.py
++++ b/src/tracking/advanced_tracker.py
+@@ -21,6 +21,7 @@
+ import numpy as np
+ 
+ from .player_detection import FeetDetector, COLORS, hsv2bgr, PAD, _adaptive_colors
++from scripts.platformkit.tracking import g380_provenance as _g380
+ 
+ try:
+     from scipy.optimize import linear_sum_assignment
+@@ -294,6 +295,7 @@
+         self._kalmans:      Dict[int, cv2.KalmanFilter] = {}
+         self._appearances:  Dict[int, np.ndarray]       = {}
+         self._lost_ages:    Dict[int, int]              = {i: 0 for i in range(n)}
++        self._pos_source:   Dict[Tuple, Tuple]          = {}   # G380 (slot, tick) -> (label, branch)
+         self._gallery:        Dict[int, np.ndarray]       = {}  # slot → appearance snapshot
+         self._gallery_ages:   Dict[int, int]              = {}  # slot → frames since archived
+         self._gallery_last_pos: Dict[int, Tuple]          = {}  # slot → (x2d, y2d) at eviction
+@@ -462,6 +464,7 @@
+         self._kalmans.clear()
+         self._appearances.clear()
+         self._lost_ages = {i: 0 for i in range(n)}
++        self._pos_source = {}
+         self._gallery.clear()
+         self._gallery_ages.clear()
+         self._gallery_last_pos.clear()
+@@ -625,6 +628,7 @@
+         p = self.players[slot]
+         p.previous_bb = det["bbox"]
+         new_pos = (det["homo"][0], det["homo"][1])
++        _g380_label = "DETECTION"
+         # Velocity clamp: if projected position jumps > MAX_2D_JUMP from the last
+         # known position, the SIFT homography is noisy — keep the last known position.
+         # After eviction p.positions is cleared to {}, so the clamp never fires for
+@@ -635,9 +639,13 @@
+             if dist > MAX_2D_JUMP * max(1, stride):
+                 new_pos = last_pos
+                 self._freeze_age[slot] = self._freeze_age.get(slot, 0) + 1
++                _g380_label = "CLAMP"
+             else:
+                 self._freeze_age[slot] = 0
+         p.positions[timestamp] = new_pos
++        _g380.stamp(self._pos_source, slot, timestamp, _g380_label,
++                    "src/tracking/advanced_tracker.py:_activate_slot",
++                    _g380.event_id(timestamp, det["bbox"]))
+         # Prune old positions — prevent unbounded growth during full-game runs.
+         # Keep last 300 frames (~10s at 30fps). All downstream consumers
+         # (velocity calc, duplicate suppression, Kalman fill) need at most 10s.
+@@ -1310,6 +1318,9 @@
+                                         and 0 <= _homo[1] < map_2d.shape[0]):
+                                     _p.positions[timestamp] = (_homo[0], _homo[1])
+                                     self._flow_pts[_slot] = _new_pt
++                                    _g380.stamp(self._pos_source, _slot, timestamp,
++                                                "PREDICTION",
++                                                "src/tracking/advanced_tracker.py:flow_gapfill_render")
+                     except Exception:
+                         pass
+             self._prev_gray = gray_now
+@@ -1652,6 +1663,9 @@
+                             if (0 <= homo[0] < map_2d.shape[1]
+                                     and 0 <= homo[1] < map_2d.shape[0]):
+                                 p.positions[timestamp] = (homo[0], homo[1])
++                                _g380.stamp(self._pos_source, self._slot(p), timestamp,
++                                            "PREDICTION",
++                                            "src/tracking/advanced_tracker.py:kalman_homography")
+                     except Exception:
+                         pass
+ 
+@@ -1697,6 +1711,8 @@
+                                     and 0 <= homo[1] < map_2d.shape[0]):
+                                 p.positions[timestamp] = (homo[0], homo[1])
+                                 self._flow_pts[slot] = new_pt  # advance anchor
++                                _g380.stamp(self._pos_source, slot, timestamp, "PREDICTION",
++                                            "src/tracking/advanced_tracker.py:flow_gapfill_batched")
+                 except Exception:
+                     pass
+         self._prev_gray = gray_now
+@@ -1729,9 +1745,15 @@
+                         age_j = self._lost_ages.get(slot_j, 0)
+                         if age_i >= age_j:
+                             del pi.positions[timestamp]
++                            _g380.drop(self._pos_source, slot_i, timestamp)
++                            _g380.stamp(self._pos_source, slot_j, timestamp, "PREDICTION",
++                                        "src/tracking/advanced_tracker.py:id_merge")
+                             break  # pi removed; stop checking pi vs others
+                         else:
+                             del pj.positions[timestamp]
++                            _g380.drop(self._pos_source, slot_j, timestamp)
++                            _g380.stamp(self._pos_source, slot_i, timestamp, "PREDICTION",
++                                        "src/tracking/advanced_tracker.py:id_merge")
+ 
+         # Periodic re-calibration using a rolling window of the most recent
+         # _rolling_hsv_buf detections rather than the ever-growing warmup buffer.
+--- a/src/pipeline/unified_pipeline.py
++++ b/src/pipeline/unified_pipeline.py
+@@ -327,6 +327,7 @@
+     evaluate_tracking,
+ )
+ from src.tracking.event_detector import EventDetector
++from scripts.platformkit.tracking import g380_provenance as _g380
+ from src.tracking.court_detector import detect_court_homography
+ from src.tracking.scoreboard_ocr import ScoreboardOCR
+ from src.tracking.possession_classifier import PossessionClassifier
+@@ -1586,6 +1587,9 @@
+         _ball_miss_streak:     int   = 0  # consecutive frames ball not detected
+         frame_idx    = self.start_frame  # absolute video frame (comes from prefetcher on each read)
+         gameplay_frames = 0             # gameplay frames actually processed (for max_frames check)
++        attempted_frames_capped = 0     # G380: decoded frames entering the loop, capped
++        _g380_ticks: set = set()        # G380: evaluated ticks, before row filtering
++        _g380_prev_int: Dict[int, tuple] = {}
+         prev_pos:    Dict[int, tuple] = {}   # player_id → (x2d, y2d)
+         prev_vel:    Dict[int, float] = {}   # player_id → velocity prev frame
+         _player_dist_run: Dict[int, float] = {}  # player_id → cumulative px distance
+@@ -1679,6 +1683,7 @@
+                 frame_idx = _fi  # only update on valid frames; never let sentinel (-1) overwrite
+             if not ok or frame is None or (self.max_frames and gameplay_frames >= self.max_frames):
+                 break
++            attempted_frames_capped += 1
+ 
+             # Stride skip is handled inside _FramePrefetcher (NVDEC-level) — no
+             # in-loop check needed.  frame_idx is the absolute video frame index
+@@ -2025,14 +2030,21 @@
+ 
+                 # Position jump suppression: if this position jumped >350px from
+                 # last known position (bad homography frame), use previous position.
++                slot     = self.players.index(p)
++                _g380_label, _g380_branch, _g380_event = _g380.label_for(
++                    getattr(self.feet_det, "_pos_source", None), slot, frame_idx)
+                 last_pos = prev_pos.get(p.ID)
+                 if last_pos is not None:
+                     dx = x2d - last_pos[0]
+                     dy = y2d - last_pos[1]
+                     if (dx * dx + dy * dy) > 350 * 350:
+                         x2d, y2d = last_pos[0], last_pos[1]
+-
+-                slot     = self.players.index(p)
++                        _g380_label = "CLAMP"
++                        _g380_branch = "src/pipeline/unified_pipeline.py:jump_clamp"
++
++                _g380_label, _g380_branch = _g380.resolve_emitted(
++                    _g380_label, _g380_branch, _g380_prev_int.get(p.ID), (int(x2d), int(y2d)))
++                _g380_prev_int[p.ID] = (int(x2d), int(y2d))
+                 conf     = max(0.0, 1.0 - self.feet_det._lost_ages.get(slot, 0) / 15)
+                 team_pos[p.ID] = (p.team, int(x2d), int(y2d))
+                 frame_tracks.append({
+@@ -2048,9 +2060,13 @@
+                     "contest_arm_angle": getattr(p, "contest_arm_angle", 0.0),
+                     "jump_detected":    getattr(p, "jump_detected", False),
+                     "dribble_hand":     getattr(p, "dribble_hand", "unknown"),
++                    "position_source":  _g380_label,
++                    "source_branch":    _g380_branch,
++                    "matched_event_id": (_g380_event if _g380_label == "DETECTION" else ""),
+                 })
+ 
+             # ── Post-clamp duplicate suppression ──────────────────────────
++            _g380.note_attempt(_g380_ticks, frame_idx)
+             # Position jump clamping can re-introduce duplicates; strip them here.
+             _seen: Dict[str, set] = {}
+             _dedup: List[dict] = []
+@@ -2818,6 +2834,9 @@
+                     "lineup_id":      _lineup_id,  # FIX 1
+                     # Replay/cut validity — False during homography suspension
+                     "homography_valid": int(not self._homography_suspended),
++                    "position_source": track.get("position_source", "UNKNOWN"),
++                    "source_branch": track.get("source_branch", ""),
++                    "matched_event_id": track.get("matched_event_id", ""),
+                 })
+ 
+             # ── Visualise ─────────────────────────────────────────────────
+@@ -3061,6 +3080,8 @@
+             "stability":      metrics.get("track_stability", 0),
+             "total_frames":   frame_idx,
+             "evaluated_frames": gameplay_frames,  # G331: past the detector gate
++            "attempted_frames_capped": attempted_frames_capped,
++            "evaluated_tick_ids": sorted(_g380_ticks),
+             "jump_resets":      self.ball_det._jump_resets,
+             "suspended_frames": suspended_frame_count,
+         }
+@@ -4005,6 +4026,8 @@
+             "dribble_count",  # FIX 2
+             "lineup_id",  # FIX 1
+             "homography_valid",  # FIX 1 replay/cut detector
++            # G380 additive tail: every legacy field keeps its position and value.
++            "position_source", "source_branch", "matched_event_id",
+         ]
+ 
+     def _run_enrichment(self, fps: float) -> None:
+--- a/scripts/run_clip.py
++++ b/scripts/run_clip.py
+@@ -234,10 +234,18 @@
+     try:
+         side = json.loads(open(sidecar_path, encoding="utf-8").read())
+         count = results.get("evaluated_frames")
++        receipt = {"evaluated_tick_ids": list(results.get("evaluated_tick_ids") or []),
++                   "attempted_frames_capped": results.get("attempted_frames_capped"),
++                   "evaluated_tick_ids_schema": "sorted_source_frame_indices"}
+         side.update(evaluated_frames=count,
++                    attempted_frames_capped=receipt["attempted_frames_capped"],
++                    evaluated_tick_ids=receipt["evaluated_tick_ids"],
++                    evaluated_tick_ids_schema=receipt["evaluated_tick_ids_schema"],
+                     reason=(None if count is not None else side.get("reason")))
+         open(sidecar_path, "w", encoding="utf-8").write(
+             json.dumps(side, indent=2, sort_keys=True))
++        open(os.path.join(os.path.dirname(sidecar_path), "evaluated_tick_receipt.json"),
++             "w", encoding="utf-8").write(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
+     except Exception as exc:
+         print(f" [G331] evaluated-frame sidecar not updated: {exc}")
+ 
+--- a/scripts/platformkit/track_daemon.py
++++ b/scripts/platformkit/track_daemon.py
+@@ -27,6 +27,7 @@
+     sibling_paths,
+ )
+ from scripts.platformkit.tracking.source_timebase import probe_source, probe_status, stamp_tracking_csv
++from scripts.platformkit.tracking.g380_provenance import bind_attempt as _g380_bind
+ 
+ STAGE = Path("data/footage_bridge")
+ # Where a tracked video goes instead of being deleted. Re-staging one game is
+@@ -315,6 +316,9 @@
+     manifest_frames, fresh_solves = _fresh_solve_summary(job["game_id"])
+     entry.update(decoded_frames=(graded or {}).get("decoded_frames", manifest_frames),
+                  evaluated_frames=(graded or {}).get("evaluated_frames"),
++                 attempted_frames_capped=(graded or {}).get("attempted_frames_capped"),
++                 route_max_frames=(graded or {}).get("route_max_frames"),
++                 evaluated_tick_receipt_path=job.get("evaluated_tick_receipt_path"),
+                  stride=(graded or {}).get("stride"), probe_status=probe_status(source),
+                  source_resolution=(source or {}).get("source_resolution"),
+                  fresh_solves=fresh_solves)
+@@ -371,6 +375,10 @@
+                 retain(video, CORPUS, lambda message: print(message, flush=True))
+             continue
+         log_path = path.with_suffix(".log")
++        # G380: stateless per-attempt bind, derived from the source inode. It
++        # retains no claim and no pending state, so a repeat attempt recomputes
++        # the same value -- the G372 re-claim wave came from retained state.
++        attempt = _g380_bind(game_id, path, TRACKING)
+         try:
+             handle = log_path.open("w", encoding="utf-8")
+             proc = subprocess.Popen(build_command(sport, path, game_id),
+@@ -382,6 +390,9 @@
+         active[path.name] = {"proc": proc, "video": path, "log": log_path,
+                              "sport": sport, "game_id": game_id,
+                              "started": time.time(), "source": probe_source(path),
++                             "attempt_id": attempt["attempt_id"],
++                             "evaluated_tick_receipt_path": attempt["receipt_path"],
++                             "weight_digest": attempt["weight_digest"],
+                              "source_variants": [item.name for item in siblings if item != path],
+                              "retained_videos": siblings}
+         tracking_active += 1

@@ -1,0 +1,21 @@
+{
+  "agree": 2453,
+  "agreement": 1.0,
+  "emitted_rows": 2453,
+  "frames": 998,
+  "frames_with_more_stamped_than_traced": 0,
+  "stamped_label_counts": {
+    "CLAMP": 810,
+    "DETECTION": 91,
+    "PREDICTION": 952,
+    "SUBPIXEL": 600
+  },
+  "trace_final_label_counts": {
+    "CLAMP": 917,
+    "DETECTION": 91,
+    "PREDICTION": 994,
+    "SUBPIXEL": 621
+  },
+  "traced_rows": 2623,
+  "unmatched": 0
+}

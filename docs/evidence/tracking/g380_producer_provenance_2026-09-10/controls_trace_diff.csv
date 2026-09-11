@@ -1,0 +1,7 @@
+slot,tick,traced_label,expected_from_stamps,agree
+3,11,HELD,HELD,True
+4,12,UNKNOWN,UNKNOWN,True
+1,5,PREDICTION,PREDICTION,True
+0,5,HELD,HELD,True
+0,101,PREDICTION,PREDICTION,True
+1,101,HELD,HELD,True

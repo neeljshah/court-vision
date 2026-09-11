@@ -1,0 +1,11 @@
+control,kind,branch_forced,expected_label,observed_label,observed_branch,result
+fresh_detection,CONSTRUCT,advanced_tracker.py:_activate_slot fresh,DETECTION,DETECTION,src/tracking/advanced_tracker.py:_activate_slot,PASS
+fresh_detection_names_its_event,CONSTRUCT,advanced_tracker.py:_activate_slot matched detection,1_10_20_40_90,1_10_20_40_90,src/tracking/advanced_tracker.py:_activate_slot,PASS
+clamp,CONSTRUCT,advanced_tracker.py:_activate_slot velocity clamp,CLAMP,CLAMP,src/tracking/advanced_tracker.py:_activate_slot,PASS
+subpixel_hold,CONSTRUCT,unified_pipeline.py:subpixel_hold,SUBPIXEL,SUBPIXEL,src/pipeline/unified_pipeline.py:subpixel_hold,PASS
+carried_position,CONSTRUCT,no branch wrote this tick,HELD,HELD,src/tracking/advanced_tracker.py:carried,PASS
+missing_event,CONSTRUCT,no provenance for the slot,UNKNOWN,UNKNOWN,,PASS
+id_merge_stamp,CONSTRUCT,advanced_tracker.py:id_merge survivor,PREDICTION,PREDICTION,src/tracking/advanced_tracker.py:id_merge,PASS
+id_merge_loser_dropped,CONSTRUCT,advanced_tracker.py:id_merge removed row,HELD,HELD,,PASS
+coast,CONSTRUCT,advanced_tracker.py:flow_gapfill_render in-run blackout frame,PREDICTION,PREDICTION,src/tracking/advanced_tracker.py:flow_gapfill_render,PASS
+coast_scene_unwritten_slot,CONSTRUCT,in-run tick no branch wrote,HELD,HELD,src/tracking/advanced_tracker.py:carried,PASS

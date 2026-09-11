@@ -1,0 +1,4 @@
+game_id,source_name,source_bytes,seconds,rc,receipt_present,receipt_ticks,trace_ticks,receipt_equals_trace,trace_subset_of_receipt,receipt_only_ticks,trace_only_ticks,attempted_frames_capped
+euroleague-1JN2w7nPn9k_s2506,basketball__euroleague-1JN2w7nPn9k_s2506.mp4,64435150,348.31,0,True,799,784,False,True,15,0,1084
+euroleague-xRuH1qSD2dE_s6507,basketball__euroleague-xRuH1qSD2dE_s6507.mp4,60036299,403.75,0,True,934,924,False,True,10,0,1084
+fiba-qyOniCySRVs_s90,basketball__fiba-qyOniCySRVs_s90.mp4,68450700,386.62,0,True,930,874,False,True,56,0,1301

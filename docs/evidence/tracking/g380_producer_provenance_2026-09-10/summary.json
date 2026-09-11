@@ -1,0 +1,73 @@
+{
+  "controls": {
+    "construct": 10,
+    "fail": 0,
+    "n": 10,
+    "observed": 0,
+    "pass": 10
+  },
+  "excluded_from_identity_and_receipts": {
+    "FZAUuuuREg0_s1835": "ARM_FAILED",
+    "euroleague-31BodlgQOvg_s10474": "ARM_FAILED",
+    "euroleague-6sJXOThOUEY_s10205": "ARM_FAILED",
+    "euroleague-ldo5c1SYPPY_s90": "ARM_FAILED",
+    "euroleague-tCpBCdX4AJ0_s90": "ARM_FAILED"
+  },
+  "eye_check": {
+    "construct_overlays": 2,
+    "even_live_overlays": 30,
+    "live_HELD_rows": 0
+  },
+  "g368_clamp_or_subpixel_resolved": {
+    "CLAMP": 85333,
+    "HELD": 0,
+    "SUBPIXEL": 2749,
+    "clamp_share_of_the_pooled_class": 0.96879,
+    "note": "G368 pooled these as one unresolved class on 0.584961 of held steps"
+  },
+  "label_distribution": {
+    "CLAMP": 85333,
+    "DETECTION": 8635,
+    "PREDICTION": 12343,
+    "SUBPIXEL": 2749
+  },
+  "paired_replay": {
+    "arm_failed": 5,
+    "completed_pairs": 30,
+    "distinct_videos": 20,
+    "median_ratio": 1.017054,
+    "planned": 35,
+    "ratio_bar": 1.1,
+    "source_gone": 0,
+    "throughput_verdict": "PASS"
+  },
+  "provenance_carrying_share": 1.0,
+  "receipt_trace_attempt_level_a3": {
+    "bar": "1.000000 equality on n >= 30 sections / >= 10 videos, sealed and unmoved",
+    "distinct_videos": 21,
+    "n": 30,
+    "ran": 30,
+    "receipt_equals_trace": 30,
+    "receipt_only_ticks_total": 0,
+    "trace_only_ticks_total": 0,
+    "trace_subset_of_receipt": 30
+  },
+  "receipt_trace_sections": {
+    "bar": "1.000000 equality, sealed and unmoved",
+    "n": 3,
+    "receipt_equals_trace": 0,
+    "trace_subset_of_receipt": 3
+  },
+  "receipts": {
+    "n": 30,
+    "present": 30,
+    "receipt_equals_trace": 0,
+    "trace_subset_of_receipt": 1
+  },
+  "unchanged_column_identity": {
+    "ball_identical": 0,
+    "differences": 30,
+    "identical": 0,
+    "n": 30
+  }
+}

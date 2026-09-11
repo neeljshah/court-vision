@@ -1,0 +1,49 @@
+G380 -- contract Q6 vocabulary scan, run 2026-09-11 (fix 1c) on the PC lane worktree.
+script scripts/platformkit/tracking/g380_q6_scan.py (word-boundary for the five vocabulary words, literal for the six retracted figures and the currency sign; every pattern assembled from single characters at runtime so this file contains none of them).
+
+docs/evidence/tracking/g380_producer_provenance_2026-09-10.md                                    0
+docs/evidence/tracking/G380_ADJUDICATION_2026-09-11.md                                           0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/g380_prereg_amendment_A1_2026-09-10.md 0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/g380_prereg_amendment_A2_2026-09-11.md 0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/g380_prereg_amendment_A3_2026-09-11.md 0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/prereg.md                             0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/aa_control.csv                        0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/controls.csv                          0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/controls_trace_diff.csv               0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/copy_manifest.csv                     0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/identity.csv                          0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/plan.csv                              0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/pool_plan.csv                         0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/reader_survey.csv                     0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/receipts.csv                          0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/receipts_trace.csv                    0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/receipts_trace_a3.csv                 0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/a3_sources.csv                        0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/replay_pairs.csv                      0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/replay_pairs_plan_sealed.csv          0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/trace.csv                             0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/hash_receipt.json                     0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/summary.json                          0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/trace_summary.json                    0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/PROPOSED_g380_producer_provenance.diff 0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/g380_trace_hook_sitecustomize.py      0
+docs/evidence/tracking/g380_producer_provenance_2026-09-10/renders/overlays_index.csv            0
+scripts/platformkit/tracking/g380_controls.py                                                    0
+scripts/platformkit/tracking/g380_trace_sections.py                                              0
+scripts/platformkit/tracking/g380_report.py                                                      0
+scripts/platformkit/tracking/g380_provenance.py                                                  0
+scripts/platformkit/tracking/g380_patch.py                                                       0
+scripts/platformkit/tracking/g380_a3_one.sh                                                      19
+scripts/platformkit/tracking/g380_a3_drive.sh                                                    34
+tests/platformkit/test_g380_producer_provenance.py                                               0
+tests/platformkit/fixtures/g380_attempts.trace                                                   0
+tail1:docs/evidence/tracking/RESULTS_LEDGER.md                                                   0
+FILES 37  HITS 53
+
+CLASSIFICATION of the 53 hits, both in the two new shell drivers:
+  g380_a3_one.sh    vocabulary words 0, retracted figures 0, currency-sign pattern 19
+  g380_a3_drive.sh  vocabulary words 0, retracted figures 0, currency-sign pattern 34
+Every one of the 53 is the POSIX shell parameter-expansion sigil in a variable reference
+(for example the SRC, NAME and PORT variables), which the literal pattern cannot tell from
+the currency sign. No claim, no amount, and no unit is expressed anywhere in either file.
+Across all 37 artifacts: vocabulary words 0, retracted figures 0. Non-opaque hits: 0.
