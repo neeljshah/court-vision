@@ -1,0 +1,396 @@
+{
+  "digest_domain": "sha256 of the LF sha256sum listing of unified_pipeline.py, advanced_tracker.py, player_detection.py and run_clip.py in the read-only deploy tree",
+  "launches": [
+    {
+      "draw_kind": "1080p30",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "72",
+      "section_id": "9sq-YMlIo9Q_s2346",
+      "status": "RC0",
+      "trace_bytes": "472704",
+      "vram_free_mib_before": "14247"
+    },
+    {
+      "draw_kind": "",
+      "route_digest_after": "",
+      "route_digest_before": "",
+      "seconds": "72",
+      "section_id": "UCVSlzgun0o_s2298",
+      "status": "RC0",
+      "trace_bytes": "382504",
+      "vram_free_mib_before": "UNRECORDED_RECEIPT_TRUNCATED"
+    },
+    {
+      "draw_kind": "",
+      "route_digest_after": "",
+      "route_digest_before": "",
+      "seconds": "78",
+      "section_id": "UCVSlzgun0o_s90",
+      "status": "RC0",
+      "trace_bytes": "413212",
+      "vram_free_mib_before": "UNRECORDED_RECEIPT_TRUNCATED"
+    },
+    {
+      "draw_kind": "",
+      "route_digest_after": "",
+      "route_digest_before": "",
+      "seconds": "74",
+      "section_id": "Vm0FqeGo-8g_s1317",
+      "status": "RC0",
+      "trace_bytes": "426668",
+      "vram_free_mib_before": "UNRECORDED_RECEIPT_TRUNCATED"
+    },
+    {
+      "draw_kind": "",
+      "route_digest_after": "",
+      "route_digest_before": "",
+      "seconds": "89",
+      "section_id": "X5w3V6rh26s_s90",
+      "status": "RC0",
+      "trace_bytes": "434724",
+      "vram_free_mib_before": "UNRECORDED_RECEIPT_TRUNCATED"
+    },
+    {
+      "draw_kind": "",
+      "route_digest_after": "",
+      "route_digest_before": "",
+      "seconds": "76",
+      "section_id": "Y1cgaIWW8gk_s2784",
+      "status": "RC0",
+      "trace_bytes": "445216",
+      "vram_free_mib_before": "UNRECORDED_RECEIPT_TRUNCATED"
+    },
+    {
+      "draw_kind": "",
+      "route_digest_after": "",
+      "route_digest_before": "",
+      "seconds": "82",
+      "section_id": "tFnl0NVn6FA_s2774",
+      "status": "RC0",
+      "trace_bytes": "461772",
+      "vram_free_mib_before": "UNRECORDED_RECEIPT_TRUNCATED"
+    },
+    {
+      "draw_kind": "",
+      "route_digest_after": "",
+      "route_digest_before": "",
+      "seconds": "81",
+      "section_id": "tFnl0NVn6FA_s90",
+      "status": "RC0",
+      "trace_bytes": "489896",
+      "vram_free_mib_before": "UNRECORDED_RECEIPT_TRUNCATED"
+    },
+    {
+      "draw_kind": "",
+      "route_digest_after": "",
+      "route_digest_before": "",
+      "seconds": "94",
+      "section_id": "tZeqmc_-_sA_s2574",
+      "status": "RC0",
+      "trace_bytes": "487408",
+      "vram_free_mib_before": "UNRECORDED_RECEIPT_TRUNCATED"
+    },
+    {
+      "draw_kind": "1080p30",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "75",
+      "section_id": "yZ5u2sOpiNU_s5214",
+      "status": "RC0",
+      "trace_bytes": "457932",
+      "vram_free_mib_before": "12371"
+    },
+    {
+      "draw_kind": "1080p30",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "103",
+      "section_id": "yZ5u2sOpiNU_s90",
+      "status": "RC0",
+      "trace_bytes": "482720",
+      "vram_free_mib_before": "17463"
+    },
+    {
+      "draw_kind": "1080p30",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "89",
+      "section_id": "4JS090XPhmM_s3537",
+      "status": "RC0",
+      "trace_bytes": "462684",
+      "vram_free_mib_before": "20629"
+    },
+    {
+      "draw_kind": "1080p30",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "111",
+      "section_id": "4JS090XPhmM_s4686",
+      "status": "RC0",
+      "trace_bytes": "451960",
+      "vram_free_mib_before": "14151"
+    },
+    {
+      "draw_kind": "1080p30",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "97",
+      "section_id": "3eeaJz1PJTM_s2572",
+      "status": "RC0",
+      "trace_bytes": "490384",
+      "vram_free_mib_before": "14276"
+    },
+    {
+      "draw_kind": "1080p30",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "82",
+      "section_id": "3eeaJz1PJTM_s3813",
+      "status": "RC0",
+      "trace_bytes": "482860",
+      "vram_free_mib_before": "4501"
+    },
+    {
+      "draw_kind": "1080p30",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "89",
+      "section_id": "3eeaJz1PJTM_s90",
+      "status": "RC0",
+      "trace_bytes": "451600",
+      "vram_free_mib_before": "8463"
+    },
+    {
+      "draw_kind": "1080p30",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "90",
+      "section_id": "J8pMOFvFlsU_s1384",
+      "status": "RC0",
+      "trace_bytes": "448440",
+      "vram_free_mib_before": "8923"
+    },
+    {
+      "draw_kind": "1080p30",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "110",
+      "section_id": "J8pMOFvFlsU_s3972",
+      "status": "RC0",
+      "trace_bytes": "433320",
+      "vram_free_mib_before": "12733"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "57",
+      "section_id": "acb-jHcR5UxPGuE_s1393",
+      "status": "RC0",
+      "trace_bytes": "421100",
+      "vram_free_mib_before": "9505"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "53",
+      "section_id": "acb-jHcR5UxPGuE_s90",
+      "status": "RC0",
+      "trace_bytes": "420504",
+      "vram_free_mib_before": "12021"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "73",
+      "section_id": "3gBeJyl7Szg_s2302",
+      "status": "RC0",
+      "trace_bytes": "444696",
+      "vram_free_mib_before": "15203"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "55",
+      "section_id": "3gBeJyl7Szg_s90",
+      "status": "RC0",
+      "trace_bytes": "455780",
+      "vram_free_mib_before": "19462"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "57",
+      "section_id": "Kh7Fj4ogPN4_s3606",
+      "status": "RC0",
+      "trace_bytes": "496696",
+      "vram_free_mib_before": "9912"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "56",
+      "section_id": "Kh7Fj4ogPN4_s5950",
+      "status": "RC0",
+      "trace_bytes": "381864",
+      "vram_free_mib_before": "14746"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "55",
+      "section_id": "Ktu6yFS9iMo_s6195",
+      "status": "RC0",
+      "trace_bytes": "474412",
+      "vram_free_mib_before": "13014"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "51",
+      "section_id": "L7o4UCIIqS4_s5222",
+      "status": "RC0",
+      "trace_bytes": "365464",
+      "vram_free_mib_before": "18347"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "62",
+      "section_id": "oL9Uaie2v2A_s2438",
+      "status": "RC0",
+      "trace_bytes": "476252",
+      "vram_free_mib_before": "15741"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "64",
+      "section_id": "6rQ2sV4upfc_s1509",
+      "status": "RC0",
+      "trace_bytes": "433372",
+      "vram_free_mib_before": "21595"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "85",
+      "section_id": "6rQ2sV4upfc_s90",
+      "status": "RC0",
+      "trace_bytes": "488076",
+      "vram_free_mib_before": "15100"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "63",
+      "section_id": "7blRl4zVfrY_s90",
+      "status": "RC0",
+      "trace_bytes": "406352",
+      "vram_free_mib_before": "5505"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "68",
+      "section_id": "Ge4uewCFUFQ_s2382",
+      "status": "RC0",
+      "trace_bytes": "388868",
+      "vram_free_mib_before": "11541"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "92",
+      "section_id": "Ge4uewCFUFQ_s4674",
+      "status": "RC0",
+      "trace_bytes": "446612",
+      "vram_free_mib_before": "7403"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "77",
+      "section_id": "KZK9rv9TnGE_s1474",
+      "status": "RC0",
+      "trace_bytes": "506824",
+      "vram_free_mib_before": "9109"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "82",
+      "section_id": "KZK9rv9TnGE_s4242",
+      "status": "RC0",
+      "trace_bytes": "474600",
+      "vram_free_mib_before": "4471"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "71",
+      "section_id": "KZK9rv9TnGE_s90",
+      "status": "RC0",
+      "trace_bytes": "493376",
+      "vram_free_mib_before": "6964"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "78",
+      "section_id": "dAy3tnlu3EQ_s4326",
+      "status": "RC0",
+      "trace_bytes": "462348",
+      "vram_free_mib_before": "13311"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "90",
+      "section_id": "s-0Y7aLxXgM_s1275",
+      "status": "RC0",
+      "trace_bytes": "468512",
+      "vram_free_mib_before": "12427"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "88",
+      "section_id": "s-0Y7aLxXgM_s4830",
+      "status": "RC0",
+      "trace_bytes": "491556",
+      "vram_free_mib_before": "19503"
+    },
+    {
+      "draw_kind": "720p60",
+      "route_digest_after": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "route_digest_before": "3fa03114c74d85bf72c5a63114e9c9441a1ada5899fe035bbaaba2b22f99bee0",
+      "seconds": "88",
+      "section_id": "xv0WyG7_99c_s4530",
+      "status": "RC0",
+      "trace_bytes": "465708",
+      "vram_free_mib_before": "17367"
+    }
+  ],
+  "route_digest_unchanged": false
+}

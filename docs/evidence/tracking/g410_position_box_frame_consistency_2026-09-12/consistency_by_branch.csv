@@ -1,0 +1,6 @@
+derived_branch,n,position_equals_current_box_projection,classification_consistent,classification_stale_box,classification_frame_mismatch,backprojection_inside_stored_box,backprojected_minus_foot_y_median_px,distinct_ticks
+CLAMP_GUARD_REPRODUCED,7,0,0,1,4,1,72.738,5
+DETECTION_FRESH_BOX,133,133,0,0,1,123,-0.482,47
+NON_BOX_WRITE,89,0,0,0,89,58,14.272,42
+RETAINED_WITHOUT_GUARD,37,0,0,35,2,28,14.139,24
+SUBPIXEL_UNMOVED_FRESH_WRITE,13,13,2,0,11,8,-0.69,10

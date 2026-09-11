@@ -1,0 +1,3 @@
+NVIDIA GeForce RTX 3090, 580.159.03, 24576 MiB, 16921 MiB
+256
+mfs#eu-cz-1.runpod.net:9421  943T  564T  380T  60% /workspace

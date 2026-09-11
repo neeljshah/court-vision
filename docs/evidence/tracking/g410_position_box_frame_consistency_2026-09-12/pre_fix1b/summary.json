@@ -1,0 +1,278 @@
+{
+  "archived_constants": {
+    "MAX_2D_JUMP": 250,
+    "PAD": 15,
+    "TOPCUT": 60,
+    "pipeline_jump_clamp_px": 350
+  },
+  "code_citations": [
+    {
+      "fact": "PAD = 15 inflates the stored box on all four sides",
+      "line": 20,
+      "path": "src/tracking/player_detection.py"
+    },
+    {
+      "fact": "TOPCUT = 60 crops the decoded frame before detection",
+      "line": 1825,
+      "path": "src/tracking/advanced_tracker.py"
+    },
+    {
+      "fact": "TOPCUT = 60 is defined here and re-exported",
+      "line": 11,
+      "path": "src/tracking/video_handler.py"
+    },
+    {
+      "fact": "frame = frame[TOPCUT:] is the frame handed to the detector",
+      "line": 1693,
+      "path": "src/pipeline/unified_pipeline.py"
+    },
+    {
+      "fact": "stored bbox = (y1-PAD, x1-PAD, y2+PAD, x2+PAD) in cropped pixels",
+      "line": 1336,
+      "path": "src/tracking/advanced_tracker.py"
+    },
+    {
+      "fact": "head_x = (x1c+x2c)//2 and foot_y = y2c from the clipped unpadded box",
+      "line": 1410,
+      "path": "src/tracking/advanced_tracker.py"
+    },
+    {
+      "fact": "confident ankle keypoints replace the box foot entirely",
+      "line": 1421,
+      "path": "src/tracking/advanced_tracker.py"
+    },
+    {
+      "fact": "homo = M1 @ (M @ kpt) then numpy int32 truncation",
+      "line": 1427,
+      "path": "src/tracking/advanced_tracker.py"
+    },
+    {
+      "fact": "previous_bb is overwritten by the Kalman prediction each tick",
+      "line": 1165,
+      "path": "src/tracking/advanced_tracker.py"
+    },
+    {
+      "fact": "detector clamp keeps the previous court point above MAX_2D_JUMP",
+      "line": 636,
+      "path": "src/tracking/advanced_tracker.py"
+    },
+    {
+      "fact": "pipeline jump_clamp keeps the previous emitted point above 350 px",
+      "line": 2032,
+      "path": "src/pipeline/unified_pipeline.py"
+    },
+    {
+      "fact": "the emitted row pairs that retained point with p.previous_bb",
+      "line": 2041,
+      "path": "src/pipeline/unified_pipeline.py"
+    }
+  ],
+  "consistency_by_branch": [
+    {
+      "backprojected_minus_foot_y_median_px": 72.738,
+      "backprojection_inside_stored_box": 1,
+      "classification_consistent": 0,
+      "classification_frame_mismatch": 0,
+      "classification_stale_box": 7,
+      "derived_branch": "CLAMP_GUARD_REPRODUCED",
+      "distinct_ticks": 5,
+      "n": 7,
+      "position_equals_current_box_projection": 0
+    },
+    {
+      "backprojected_minus_foot_y_median_px": -0.482,
+      "backprojection_inside_stored_box": 123,
+      "classification_consistent": 133,
+      "classification_frame_mismatch": 0,
+      "classification_stale_box": 0,
+      "derived_branch": "DETECTION_FRESH_BOX",
+      "distinct_ticks": 47,
+      "n": 133,
+      "position_equals_current_box_projection": 133
+    },
+    {
+      "backprojected_minus_foot_y_median_px": 14.272,
+      "backprojection_inside_stored_box": 58,
+      "classification_consistent": 0,
+      "classification_frame_mismatch": 89,
+      "classification_stale_box": 0,
+      "derived_branch": "NON_BOX_WRITE",
+      "distinct_ticks": 42,
+      "n": 89,
+      "position_equals_current_box_projection": 0
+    },
+    {
+      "backprojected_minus_foot_y_median_px": 14.139,
+      "backprojection_inside_stored_box": 28,
+      "classification_consistent": 0,
+      "classification_frame_mismatch": 0,
+      "classification_stale_box": 37,
+      "derived_branch": "RETAINED_WITHOUT_GUARD",
+      "distinct_ticks": 24,
+      "n": 37,
+      "position_equals_current_box_projection": 0
+    },
+    {
+      "backprojected_minus_foot_y_median_px": -0.69,
+      "backprojection_inside_stored_box": 8,
+      "classification_consistent": 13,
+      "classification_frame_mismatch": 0,
+      "classification_stale_box": 0,
+      "derived_branch": "SUBPIXEL_UNMOVED_FRESH_WRITE",
+      "distinct_ticks": 10,
+      "n": 13,
+      "position_equals_current_box_projection": 13
+    }
+  ],
+  "consistency_by_class": [
+    {
+      "class": "CLAMP",
+      "drawn_ticks": 30,
+      "rows_consistent_by_contract": 65,
+      "rows_frame_mismatch": 48,
+      "rows_position_equals_current_box_projection": 65,
+      "rows_stale_box": 13,
+      "same_invocation_rows": 126,
+      "ticks_unknown": 2,
+      "ticks_with_same_invocation_check": 28,
+      "unknown_reasons": "NO_STORED_POSITION;TICK_NOT_EVALUATED_IN_REPLAY"
+    },
+    {
+      "class": "SUBPIXEL",
+      "drawn_ticks": 30,
+      "rows_consistent_by_contract": 81,
+      "rows_frame_mismatch": 41,
+      "rows_position_equals_current_box_projection": 81,
+      "rows_stale_box": 31,
+      "same_invocation_rows": 153,
+      "ticks_unknown": 1,
+      "ticks_with_same_invocation_check": 29,
+      "unknown_reasons": "TICK_NOT_EVALUATED_IN_REPLAY"
+    }
+  ],
+  "coordinate_frame": {
+    "court_map_units": "pixels of the rectified court-map image",
+    "crop_origin_x": 0,
+    "crop_origin_y": 60,
+    "declared_input_frame": "TOPCUT-cropped decoded pixels",
+    "stored_box_frame": "same cropped pixels as the projected foot"
+  },
+  "draw": {
+    "drawn_rows": 60,
+    "formula": "floor(j*(N-1)/29+0.5)",
+    "ticks_per_class": 30
+  },
+  "emitted_vs_tracker_position": {
+    "emitted_differs_from_tracker_position": 245,
+    "emitted_rows_compared": 469,
+    "meaning": "a difference is the pipeline jump_clamp replacing the tick's own court point inside ONE observed run",
+    "sections": 39
+  },
+  "landed_rows_at_selected_ticks": 241,
+  "population": {
+    "CLAMP": 3504,
+    "SUBPIXEL": 1138
+  },
+  "predecessor_rows_retained": 238,
+  "premise": {
+    "blank_route_labels": 0,
+    "class_row_counts": {
+      "CLAMP": 9354,
+      "DETECTION": 3075,
+      "PREDICTION": 5259,
+      "SUBPIXEL": 1399
+    },
+    "launches_complete": 59,
+    "mask_rows": 19087,
+    "predecessor_rows": 238,
+    "retained_source_receipts": 60,
+    "sections_with_rows": 58,
+    "selected_rows": 241,
+    "selected_ticks": 60
+  },
+  "row": "G410",
+  "same_invocation_checks": 279,
+  "staleness_by_class": [
+    {
+      "box_foot_l2_max_px": 1836.046,
+      "box_foot_l2_median_px": 18.034,
+      "box_foot_l2_p90_px": 492.863,
+      "box_moved": 97,
+      "class": "CLAMP",
+      "distinct_ticks": 46,
+      "foot_offset_unclipped_max_px": 15.987,
+      "foot_offset_unclipped_median_px": 15.0,
+      "foot_offset_unclipped_min_px": 15.0,
+      "position_retained": 118,
+      "position_retained_and_box_moved": 97,
+      "retained_position_age_max": 54,
+      "retained_position_age_median": 11.0,
+      "rows_foot_clipped": 4,
+      "rows_missing_initial_history": 0,
+      "rows_with_predecessor": 118,
+      "selected_rows": 118
+    },
+    {
+      "box_foot_l2_max_px": 32.311,
+      "box_foot_l2_median_px": 0.0,
+      "box_foot_l2_p90_px": 6.727,
+      "box_moved": 12,
+      "class": "SUBPIXEL",
+      "distinct_ticks": 32,
+      "foot_offset_unclipped_max_px": 15.632,
+      "foot_offset_unclipped_median_px": 15.0,
+      "foot_offset_unclipped_min_px": 15.0,
+      "position_retained": 37,
+      "position_retained_and_box_moved": 11,
+      "retained_position_age_max": 7,
+      "retained_position_age_median": 2.0,
+      "rows_foot_clipped": 0,
+      "rows_missing_initial_history": 0,
+      "rows_with_predecessor": 38,
+      "selected_rows": 38
+    },
+    {
+      "box_foot_l2_max_px": 59.506,
+      "box_foot_l2_median_px": 10.05,
+      "box_foot_l2_p90_px": 32.062,
+      "box_moved": 24,
+      "class": "DETECTION",
+      "distinct_ticks": 18,
+      "foot_offset_unclipped_max_px": 15.0,
+      "foot_offset_unclipped_median_px": 15.0,
+      "foot_offset_unclipped_min_px": 15.0,
+      "position_retained": 0,
+      "position_retained_and_box_moved": 0,
+      "retained_position_age_max": 0,
+      "retained_position_age_median": 0.0,
+      "rows_foot_clipped": 0,
+      "rows_missing_initial_history": 3,
+      "rows_with_predecessor": 24,
+      "selected_rows": 27
+    },
+    {
+      "box_foot_l2_max_px": 681.459,
+      "box_foot_l2_median_px": 13.038,
+      "box_foot_l2_p90_px": 191.214,
+      "box_moved": 52,
+      "class": "PREDICTION",
+      "distinct_ticks": 34,
+      "foot_offset_unclipped_max_px": 15.987,
+      "foot_offset_unclipped_median_px": 15.026,
+      "foot_offset_unclipped_min_px": 15.0,
+      "position_retained": 0,
+      "position_retained_and_box_moved": 0,
+      "retained_position_age_max": 0,
+      "retained_position_age_median": 0.0,
+      "rows_foot_clipped": 2,
+      "rows_missing_initial_history": 0,
+      "rows_with_predecessor": 58,
+      "selected_rows": 58
+    }
+  ],
+  "unknown_reasons": {
+    "NO_STORED_POSITION": 212,
+    "TICK_NOT_EVALUATED_IN_REPLAY": 2
+  },
+  "unknown_rows": 214
+}

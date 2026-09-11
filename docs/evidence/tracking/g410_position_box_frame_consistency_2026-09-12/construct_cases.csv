@@ -1,0 +1,10 @@
+matrix,box,topcut_origin_y,native_frame_foot_y,projected_from_native_foot_x,projected_from_native_foot_y,native_to_cropped_round_trip_ok,stored_y1,stored_x1,stored_y2,stored_x2,archived_head_x,archived_foot_y,archived_foot_clipped,archived_projected_x,archived_projected_y,stored_box_foot_projected_x,stored_box_foot_projected_y,stored_bottom_minus_archived_foot_px,crop_origin_x,crop_origin_y,declared_input_frame
+identity,bottom_clipped,60,1140,350,1140,1,900,285,1100,415,350,1080,1,350,1080,350,1100,20,0,0,native_decoded_pixels
+identity,interior,60,502,350,502,1,185,285,457,415,350,442,0,350,442,350,457,15,0,0,native_decoded_pixels
+identity,left_clipped,60,502,52,502,1,185,-20,457,120,52,442,1,52,442,50,457,15,0,0,native_decoded_pixels
+projective,bottom_clipped,60,1140,631,1809,1,900,285,1100,415,350,1080,1,624,1722,627,1751,20,0,0,native_decoded_pixels
+projective,interior,60,502,553,830,1,185,285,457,415,350,442,0,546,733,547,757,15,0,0,native_decoded_pixels
+projective,left_clipped,60,502,191,905,1,185,-20,457,120,52,442,1,181,802,181,829,15,0,0,native_decoded_pixels
+scale_translate,bottom_clipped,60,1140,800,3370,1,900,285,1100,415,350,1080,1,800,3190,800,3250,20,0,0,native_decoded_pixels
+scale_translate,interior,60,502,800,1456,1,185,285,457,415,350,442,0,800,1276,800,1321,15,0,0,native_decoded_pixels
+scale_translate,left_clipped,60,502,204,1456,1,185,-20,457,120,52,442,1,204,1276,200,1321,15,0,0,native_decoded_pixels

@@ -1,0 +1,5 @@
+3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]
+Linux-6.8.0-111-generic-x86_64-with-glibc2.39
+numpy 2.1.2
+cv2 4.14.0
+torch 2.8.0+cu128

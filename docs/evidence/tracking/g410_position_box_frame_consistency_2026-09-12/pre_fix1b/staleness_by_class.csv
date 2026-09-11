@@ -1,0 +1,5 @@
+class,selected_rows,rows_with_predecessor,rows_missing_initial_history,position_retained,box_moved,position_retained_and_box_moved,box_foot_l2_median_px,box_foot_l2_p90_px,box_foot_l2_max_px,retained_position_age_median,retained_position_age_max,distinct_ticks,rows_foot_clipped,foot_offset_unclipped_min_px,foot_offset_unclipped_median_px,foot_offset_unclipped_max_px
+CLAMP,118,118,0,118,97,97,18.034,492.863,1836.046,11.0,54,46,4,15.0,15.0,15.987
+SUBPIXEL,38,38,0,37,12,11,0.0,6.727,32.311,2.0,7,32,0,15.0,15.0,15.632
+DETECTION,27,24,3,0,24,0,10.05,32.062,59.506,0.0,0,18,0,15.0,15.0,15.0
+PREDICTION,58,58,0,0,52,0,13.038,191.214,681.459,0.0,0,34,2,15.0,15.026,15.987

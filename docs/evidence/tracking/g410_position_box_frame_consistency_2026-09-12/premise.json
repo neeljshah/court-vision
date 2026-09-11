@@ -1,0 +1,16 @@
+{
+  "blank_route_labels": 0,
+  "class_row_counts": {
+    "CLAMP": 9354,
+    "DETECTION": 3075,
+    "PREDICTION": 5259,
+    "SUBPIXEL": 1399
+  },
+  "launches_complete": 59,
+  "mask_rows": 19087,
+  "predecessor_rows": 238,
+  "retained_source_receipts": 60,
+  "sections_with_rows": 58,
+  "selected_rows": 241,
+  "selected_ticks": 60
+}
