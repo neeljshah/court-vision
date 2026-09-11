@@ -726,3 +726,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-10 | tracking | G373 | landed PHASE 1 MEASURED (PARTIAL): fresh A0 0 TP / 8 FP over 549 (repeatable); reference v2 USABLE 17.33 px vs 18.50 (n 715, p90 287, kappa 0.664); dev boxes 283/500 across 27 games -> no arm scored; Q6 note-field normalisation with manifest; three verify cycles verbatim | PARTIAL (codex-sol att1 REJECT, fix1b REJECT, fix1c ACCEPT WITH CORRECTIONS applied)
 
+2026-09-10 | tracking | G378 | landed PARTIAL: ANCHOR_SIDE_OCR cue resolved 158/240; LEFT 29/49 (Wilson lower 0.452) and RIGHT 33/51 (0.510) vs 0.90; masked 30/30 PASS, mirror 12/30 FAIL (glyph recognition not mirror-invariant); reference kappa 0.715; orbit diagnostic never picks where G371 refused; 8/20 pins pruned in 40 min | PARTIAL (codex-sol att1 REJECT, fix 1b ACCEPT WITH CORRECTIONS applied)
+

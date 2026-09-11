@@ -17,6 +17,13 @@
 
 
 
+
+## G378 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G378 | basketball | premise TRUE (G371 357/2/1/0, orientation UNKNOWN 360/360; G367 reference 12/16/26, kappa 0.824). Cue ANCHOR_SIDE_OCR (deployed EasyOCR route, imported thresholds) on 240 unique native frames / 20 sections / 16 games (12 interior even ticks per section; 3 dev games held out): LEFT 81 / RIGHT 77 / UNKNOWN 82 (resolved 0.658; UNKNOWN = no_detection 48, mass_below_floor 21, ratio_below_margin 13). Blind reference terra + sol 240/240 each, agreement 0.817, kappa 0.715, 44/44 adjudicated; reference left 62 / right 65 / unknown 113. Per class: LEFT 29/49 = 0.592 (Wilson lower 0.452), RIGHT 33/51 = 0.647 (0.510) -- both >= 30 quotas MET, both 0.90 bars FAILED. Controls: masked 30/30 PASS; MIRROR 12/30 FAIL (12 flipped, 12 stopped resolving, 6 kept the side): glyph recognition is not mirror-invariant, so a text-mass cue cannot resolve the mirror it exists to resolve. Orbit diagnostic: a LEFT/RIGHT call retains exactly 2 of 4 sealed group elements on all four G371 geometries (unique_after_cue 0/32, would_pick_where_g371_refused 0/32); G371 semantics untouched. Eye check 120 renders (every UNKNOWN and every wrong frame): the cue abstains where court-painted lettering is the only venue text and fires on wall/perimeter signage. Disclosed: quantity sealed as anchor side, not attack direction; 8/20 pinned containers pruned within 40 min; a codex build without its image host rated 40/40 UNKNOWN in 21 s (quarantined, re-run). GPU 0 min; wall 17,913 s | g378_orientation_cue_2026-09-10.md; g378_orientation_cue_2026-09-10/{prereg, premise.json, frames.csv, anchors.csv, ratings.csv, reference.csv, cue_predictions.csv, orbit_choices.csv, controls.csv, summary.json, sheets/, renders/, raters/}; G378_VERIFY_att1_REJECT_2026-09-10.md; G378_VERIFY_fix1b_ACCEPT_WITH_CORRECTIONS_2026-09-10.md | **PARTIAL -- a score-bug / anchor-text OCR cue is NOT an independent orientation signal; any mirror-resolving cue must pass a mirror-equivariance control BEFORE scoring; NEW GAPS: temporal attack-direction cue with a multi-frame rater protocol; court-paint recall of the deployed character route; corpus retention window datum for G377's contract; G371 alias/denominator reconciliation** |
+
 ## G373 result register
 
 | Gap | Sport | Finding | Evidence | Status |
