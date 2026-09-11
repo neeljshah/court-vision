@@ -1,0 +1,10 @@
+section_identity=I33o9UnUe1A_s7165
+measured_class=UNKNOWN
+retention_status=PRUNED_BEFORE_CENSUS
+status=tracked
+requested_format_id=270
+itag_consistency=UNKNOWN_MEASUREMENT
+source_height=720
+source_fps=30.0
+decoded_frames=3901
+evaluated_frames=1301

@@ -1,0 +1,13 @@
+asset_path,role,sha256,bytes,mtime_utc
+/workspace/deploy/nba-ai-system/yolov8n.pt,model,f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36,6549796,2026-09-10T15:08:51Z
+/workspace/deploy/nba-ai-system/yolov8n-pose.pt,model,c6fa93dd1ee4a2c18c900a45c1d864a1c6f7aba75d84f91648a30b7fb641d212,6832633,2026-09-10T15:14:25Z
+/workspace/deploy/nba-ai-system/models/weights/yolov8n_ball.pt,model,bc979654e281c5de6e0e992e1f9587b3a9faa2eec996ea41b1b03954ba0b6e52,6224995,2026-09-10T15:08:51Z
+/workspace/deploy/nba-ai-system/data/models/osnet_x0_25_imagenet.pth,model,f54941a66bad4ddd07f2907f498c810ce639ce7a1abeaf2a151f8da118d84693,2973731,2026-09-10T15:08:57Z
+/workspace/deploy/nba-ai-system/resources/osnet_x025.onnx,model,0a76902f8a4e16cec187cd13d3da8a6888b2fb9310d293578e7f4b09fd1247f0,415058,2026-09-10T15:08:51Z
+/workspace/deploy/nba-ai-system/resources/yolov8n.pt,model,f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36,6549796,2026-09-10T15:08:57Z
+/workspace/deploy/nba-ai-system/scripts/platformkit/track_daemon.py,route,9747d9a085405c492f04c4e3b162ed8b1d897309da6f0f9c014cb7092056f5ac,21427,2026-09-10T15:08:51Z
+/workspace/deploy/nba-ai-system/scripts/run_clip.py,route,ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2,36229,2026-09-10T15:08:50Z
+/workspace/deploy/nba-ai-system/src/pipeline/unified_pipeline.py,route,c4eae385bfeebd4e44c8161c791ef7ed4589697020f424d3dde7aec6816d9226,249303,2026-09-10T15:08:50Z
+/workspace/deploy/nba-ai-system/src/tracking/advanced_tracker.py,route,df2ae698ae03e804f67639434d8303638aea9087c3169c016af5a3734dd474d7,92255,2026-09-10T15:01:55Z
+/workspace/deploy/nba-ai-system/src/tracking/osnet_reid.py,route,64f7bd299c57d297ea724ea859cdce44c2f3217fee4a4b3b0f9d712e277b9ce2,23277,2026-09-10T15:01:55Z
+/workspace/deploy/nba-ai-system/src/tracking/color_reid.py,route,ca8e23e66ebc3ab5629870448c4cfb261039c3bec51920e54833614cbb44950f,9709,2026-09-10T15:01:55Z

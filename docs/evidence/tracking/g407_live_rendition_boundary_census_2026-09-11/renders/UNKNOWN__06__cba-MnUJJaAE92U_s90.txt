@@ -1,0 +1,10 @@
+section_identity=cba-MnUJJaAE92U_s90
+measured_class=UNKNOWN
+retention_status=PRUNED_BEFORE_CENSUS
+status=tracked
+requested_format_id=270
+itag_consistency=UNKNOWN_MEASUREMENT
+source_height=720
+source_fps=29.97002997002997
+decoded_frames=3897
+evaluated_frames=1299

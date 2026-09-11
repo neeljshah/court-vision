@@ -1,0 +1,8 @@
+stratum_system,stratum,sections,sections_retained,quota,quota_met,ledger_decoded_frames,producer_read_frames,evaluated_ticks,suspended_ticks,schedule_known_sections,cap_sections_measured,cap_sections_loss_over_5s,cap_loss_s_min,cap_loss_s_max,held_pairs_FULL_ADMITTED,shared_pairs_FULL_ADMITTED,held_share_FULL_ADMITTED,zero_output_ticks_FULL_ADMITTED,held_pairs_SEALED_2S,shared_pairs_SEALED_2S,held_share_SEALED_2S,zero_output_ticks_SEALED_2S
+measured_class,1080p30,22,22,30,0,78020,19993,18781,1212,20,22,0,0.000,0.000,60192,75282,0.799554,257,1205,1466,0.821965,0
+measured_class,1080p60,24,24,30,0,132617,9912,8430,1482,17,24,24,50.000,50.000,23581,28013,0.841788,575,152,192,0.791667,1
+measured_class,720p25,11,11,30,0,32510,9072,9072,0,10,11,0,0.000,0.000,23514,27756,0.847168,573,256,272,0.941176,16
+measured_class,720p30,26,26,30,0,101360,26000,26000,0,26,26,0,0.000,0.000,78676,92905,0.846844,402,1663,1851,0.898433,3
+measured_class,720p60,5,5,30,0,38967,2500,2500,0,5,5,5,49.950,49.950,7659,9706,0.789100,134,41,51,0.803922,0
+measured_class,UNKNOWN,33,0,30,0,128011,33014,32282,732,33,0,0,UNKNOWN,UNKNOWN,102450,120180,0.852471,1695,0,0,UNKNOWN,0
+actual_rendition,UNRESOLVED,121,88,30,1,511485,100491,97065,3426,111,88,29,0.000,50.000,296072,353842,0.836735,3636,3317,3832,0.865605,20

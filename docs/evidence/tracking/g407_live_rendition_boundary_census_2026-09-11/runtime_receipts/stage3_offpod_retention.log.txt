@@ -1,0 +1,6 @@
+stage: off-pod retention, independent rehash and native decode
+receiver: C:/Users/neelj/g407_receiver (88 sources, 4.36 GB, scp from the pod corpus)
+command: PYTHONPATH=<worktree> python -m scripts.platformkit.tracking.g407_receipts --population <dir>/population.json --probes <dir>/probes.json --receiver C:/Users/neelj/g407_receiver --out <dir>/source_receipts.csv
+returncode: 0
+stdout: RECEIPTS 121 RETAINED 88 DIGEST_MATCH 88 AGREE 88
+note: every retained copy rehashed to the pod digest and reprobed to the same height and native rate; no silent truncation and no measurement disagreement

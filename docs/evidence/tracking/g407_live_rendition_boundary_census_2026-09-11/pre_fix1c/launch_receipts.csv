@@ -1,0 +1,2 @@
+launch_id,launches,scope,reason,verdict
+NONE,0,OBSERVATIONAL_CENSUS_ONLY,no scratch producer launch in this landing; the live GPU is held by the ORIGINAL daemon and no competing launch or restart was permitted,NOT VALIDATED

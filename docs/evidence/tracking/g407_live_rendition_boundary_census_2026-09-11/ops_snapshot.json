@@ -1,0 +1,51 @@
+{
+ "bridge_dir": "/workspace/deploy/nba-ai-system/data/footage_bridge",
+ "census_utc": "2026-09-11T19:13:42Z",
+ "corpus_dir": "/workspace/data/footage_corpus",
+ "daemon_alive": true,
+ "daemon_cmdline": "python3 -u scripts/platformkit/track_daemon.py --workers 8 --forever ",
+ "daemon_pid": 3177187,
+ "daemon_start_utc": "2026-09-10T22:09:44Z",
+ "digests": {
+  "/workspace/data/tracking/track_daemon_ledger.jsonl": {
+   "bytes": 2813470,
+   "sha256": "fc4203ee1d9be2fb4f787850db548163940b48833e1e0f02ed8ce0e4913f3662"
+  },
+  "/workspace/feeder/discover_sources.py": {
+   "bytes": 5968,
+   "sha256": "83166f063f81db0beb6310102a92291adaeccbfc1231a61e6ee8d48549cff61f"
+  },
+  "/workspace/feeder/discovery_formats.jsonl": {
+   "bytes": 10990,
+   "sha256": "8aec56930fe63cb4c4daf5cf9926a465457a8c463cd28b79afa0a87c6f402ef7"
+  },
+  "/workspace/feeder/feeder.log": {
+   "bytes": 3260254,
+   "sha256": "08cbc61a649e17ef20443bf79baf019e6ad7b75606837f6c76cd9b96bf41a89f"
+  },
+  "/workspace/feeder/feeder_pod.sh": {
+   "bytes": 11642,
+   "sha256": "dc20ec04be5cd3257ea74aec4c09731b877a9cc5d29f633f048686bc659a9b8e"
+  },
+  "/workspace/feeder/relaunch.log": {
+   "bytes": 368,
+   "sha256": "e612b87689505e870cd0ea629f0c69058e7fe7b2914047831333f173f1b01d26"
+  },
+  "/workspace/feeder/sources.txt": {
+   "bytes": 2258,
+   "sha256": "3707e099119d9b19dbd618fa1a955aead2f698990c23cc2ee1e4de531512ccfa"
+  },
+  "_end": 0
+ },
+ "ledger_path": "/workspace/data/tracking/track_daemon_ledger.jsonl",
+ "relaunch_boundaries": [
+  "2026-09-11T11:50:51Z fmt720 patch",
+  "2026-09-11T13:08:37Z prefer-30fps selector (G397)",
+  "2026-09-11T17:01:52Z selector 270 -> 232 (720p30) -> 60fps (G405)",
+  "2026-09-11T18:56:17Z probe-aware discovery fmt gate (G405 change 1)"
+ ],
+ "start_epoch_probe_aware": 1789152977,
+ "start_epoch_selector_232": 1789146112,
+ "stop_epoch": 1789154034,
+ "tracking_root": "/workspace/data/tracking"
+}

@@ -1,0 +1,4 @@
+stage: instrumented scratch replay -- NOT RUN
+launches: 0
+reason: the single pod GPU is held by the ORIGINAL daemon pid 3177187 at eight workers; a competing scratch producer would contend for that device, and the row is observational with no restart permitted. No observer wrapper was exercised and no model was loaded.
+verdict: NOT VALIDATED for the runtime-replay metric; the ORIGINAL producer asset identity is still sealed in model_hashes.csv and route_hashes.json

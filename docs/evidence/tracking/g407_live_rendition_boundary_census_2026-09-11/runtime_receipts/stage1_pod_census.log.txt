@@ -1,0 +1,6 @@
+stage: pod read-only census of the ORIGINAL live producer
+host: pod 213.192.2.120 port 40117, worktree /workspace/wt/a10
+command: PYTHONPATH=/workspace/wt/a10 OMP_NUM_THREADS=1 python3 -m scripts.platformkit.tracking.g407_census --ledger /workspace/data/tracking/track_daemon_ledger.jsonl --feeder-log /workspace/feeder/feeder.log --corpus /workspace/data/footage_corpus --tracking-root /workspace/data/tracking --start-epoch 1789146112 --stop-epoch 1789154034 --out /workspace/g407_scratch/out
+returncode: 0
+stdout: SECTIONS 121 RETAINED 88 BOUND_FETCH 121
+writes: /workspace/g407_scratch/out only; no store outside the scratch directory changed

@@ -1,0 +1,99 @@
+{
+ "assets_mtime_before_daemon_start": 12,
+ "assets_mtime_before_window_start": 12,
+ "assets_sealed": 12,
+ "census_utc": "2026-09-11T19:13:42Z",
+ "daemon_cmdline": "python3 -u scripts/platformkit/track_daemon.py --workers 8 --forever ",
+ "daemon_start_utc": "2026-09-10T22:09:44Z",
+ "launches_in_this_landing": 0,
+ "models": [
+  {
+   "asset_path": "/workspace/deploy/nba-ai-system/yolov8n.pt",
+   "bytes": "6549796",
+   "mtime_utc": "2026-09-10T15:08:51Z",
+   "role": "model",
+   "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+  },
+  {
+   "asset_path": "/workspace/deploy/nba-ai-system/yolov8n-pose.pt",
+   "bytes": "6832633",
+   "mtime_utc": "2026-09-10T15:14:25Z",
+   "role": "model",
+   "sha256": "c6fa93dd1ee4a2c18c900a45c1d864a1c6f7aba75d84f91648a30b7fb641d212"
+  },
+  {
+   "asset_path": "/workspace/deploy/nba-ai-system/models/weights/yolov8n_ball.pt",
+   "bytes": "6224995",
+   "mtime_utc": "2026-09-10T15:08:51Z",
+   "role": "model",
+   "sha256": "bc979654e281c5de6e0e992e1f9587b3a9faa2eec996ea41b1b03954ba0b6e52"
+  },
+  {
+   "asset_path": "/workspace/deploy/nba-ai-system/data/models/osnet_x0_25_imagenet.pth",
+   "bytes": "2973731",
+   "mtime_utc": "2026-09-10T15:08:57Z",
+   "role": "model",
+   "sha256": "f54941a66bad4ddd07f2907f498c810ce639ce7a1abeaf2a151f8da118d84693"
+  },
+  {
+   "asset_path": "/workspace/deploy/nba-ai-system/resources/osnet_x025.onnx",
+   "bytes": "415058",
+   "mtime_utc": "2026-09-10T15:08:51Z",
+   "role": "model",
+   "sha256": "0a76902f8a4e16cec187cd13d3da8a6888b2fb9310d293578e7f4b09fd1247f0"
+  },
+  {
+   "asset_path": "/workspace/deploy/nba-ai-system/resources/yolov8n.pt",
+   "bytes": "6549796",
+   "mtime_utc": "2026-09-10T15:08:57Z",
+   "role": "model",
+   "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+  }
+ ],
+ "routes": [
+  {
+   "asset_path": "/workspace/deploy/nba-ai-system/scripts/platformkit/track_daemon.py",
+   "bytes": "21427",
+   "mtime_utc": "2026-09-10T15:08:51Z",
+   "role": "route",
+   "sha256": "9747d9a085405c492f04c4e3b162ed8b1d897309da6f0f9c014cb7092056f5ac"
+  },
+  {
+   "asset_path": "/workspace/deploy/nba-ai-system/scripts/run_clip.py",
+   "bytes": "36229",
+   "mtime_utc": "2026-09-10T15:08:50Z",
+   "role": "route",
+   "sha256": "ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2"
+  },
+  {
+   "asset_path": "/workspace/deploy/nba-ai-system/src/pipeline/unified_pipeline.py",
+   "bytes": "249303",
+   "mtime_utc": "2026-09-10T15:08:50Z",
+   "role": "route",
+   "sha256": "c4eae385bfeebd4e44c8161c791ef7ed4589697020f424d3dde7aec6816d9226"
+  },
+  {
+   "asset_path": "/workspace/deploy/nba-ai-system/src/tracking/advanced_tracker.py",
+   "bytes": "92255",
+   "mtime_utc": "2026-09-10T15:01:55Z",
+   "role": "route",
+   "sha256": "df2ae698ae03e804f67639434d8303638aea9087c3169c016af5a3734dd474d7"
+  },
+  {
+   "asset_path": "/workspace/deploy/nba-ai-system/src/tracking/osnet_reid.py",
+   "bytes": "23277",
+   "mtime_utc": "2026-09-10T15:01:55Z",
+   "role": "route",
+   "sha256": "64f7bd299c57d297ea724ea859cdce44c2f3217fee4a4b3b0f9d712e277b9ce2"
+  },
+  {
+   "asset_path": "/workspace/deploy/nba-ai-system/src/tracking/color_reid.py",
+   "bytes": "9709",
+   "mtime_utc": "2026-09-10T15:01:55Z",
+   "role": "route",
+   "sha256": "ca8e23e66ebc3ab5629870448c4cfb261039c3bec51920e54833614cbb44950f"
+  }
+ ],
+ "scope": "ORIGINAL live producer identity sealed at census UTC",
+ "window_start_utc": "2026-09-11T17:01:52Z"
+}

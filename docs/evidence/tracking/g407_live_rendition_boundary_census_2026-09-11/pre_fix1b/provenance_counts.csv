@@ -1,0 +1,14 @@
+stratum_system,stratum,sections_in_window,sections_retained,unique_retained_sections,sections_receipt_bound,quota,quota_met,status
+measured_class,1080p30,22,22,22,22,30,0,PARTIAL
+measured_class,1080p60,24,24,24,24,30,0,PARTIAL
+measured_class,720p25,11,11,11,0,30,0,PARTIAL
+measured_class,720p30,26,26,26,12,30,0,PARTIAL
+measured_class,720p60,5,5,5,0,30,0,PARTIAL
+measured_class,UNKNOWN,33,0,0,0,30,0,PARTIAL
+actual_rendition,232,12,12,12,12,30,0,PARTIAL
+actual_rendition,270,46,46,46,46,30,1,COMPLETE
+actual_rendition,300,0,0,0,0,30,0,PARTIAL
+actual_rendition,301,0,0,0,0,30,0,PARTIAL
+actual_rendition,311,0,0,0,0,30,0,PARTIAL
+actual_rendition,312,0,0,0,0,30,0,PARTIAL
+actual_rendition,UNRESOLVED,63,30,30,0,30,1,COMPLETE

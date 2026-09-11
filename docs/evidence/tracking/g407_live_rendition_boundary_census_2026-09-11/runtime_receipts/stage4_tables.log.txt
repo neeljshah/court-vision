@@ -1,0 +1,4 @@
+stage: delivered tables, class summaries, cards and scans
+command: PYTHONPATH=<worktree> python -m scripts.platformkit.tracking.g407_report --out <dir>
+returncode: 0
+stdout: SECTIONS 121 RETAINED 88 BOUND 58 ADMITTED_COMPLETE 1 ADMITTED_PARTIAL 11

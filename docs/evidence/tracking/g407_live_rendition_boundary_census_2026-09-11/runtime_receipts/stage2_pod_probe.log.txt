@@ -1,0 +1,5 @@
+stage: pod native probe, sealed two-second interval, window-bounded re-extraction
+command: PYTHONPATH=/workspace/wt/a10 OMP_NUM_THREADS=1 python3 -m scripts.platformkit.tracking.g407_probe --population /workspace/g407_scratch/out/population.json --traces /workspace/g407_scratch/out/raw_traces --tracking-root /workspace/data/tracking --out /workspace/g407_scratch/out2
+helper sha256: d4414a8d04c74eb8ac2018d37b35475c1497af31377b6e039e53f657be796503
+returncode: 0
+stdout: PROBED 121 OK 88 SEALED 88

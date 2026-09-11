@@ -1,0 +1,19 @@
+{
+ "excluded_reason": "written after this scan; digests, counts and pattern indices only",
+ "excluded_self_referential": [
+  "q6_scan.json",
+  "repeats.json",
+  "SHA256SUMS"
+ ],
+ "file_scan": {
+  "counts": {},
+  "fields_scanned": 203,
+  "pattern_indices": []
+ },
+ "non_opaque_hits": 0,
+ "record_scan": {
+  "counts": {},
+  "fields_scanned": 2251,
+  "pattern_indices": []
+ }
+}

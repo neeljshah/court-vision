@@ -1,0 +1,212 @@
+{
+ "admitted_strata_meeting_quota": [],
+ "admitted_strata_partial": [
+  "1080p30",
+  "1080p60",
+  "232",
+  "270",
+  "300",
+  "301",
+  "311",
+  "312",
+  "720p25",
+  "720p30",
+  "720p60"
+ ],
+ "cap_sections_loss_over_5s": 22,
+ "cap_sections_measured": 78,
+ "census_utc": "2026-09-11T19:14:20Z",
+ "derived_out_of_window_rows": 0,
+ "fetch_boundary_counts": {
+  "fetched_after_232_first_selector": 94,
+  "fetched_after_probe_aware_discovery": 12,
+  "fetched_before_both_boundaries": 15
+ },
+ "held_pairs_full_admitted": 296072,
+ "held_pairs_sealed_2s": 3317,
+ "held_share_full_admitted": "0.836735",
+ "held_share_sealed_2s": "0.865605",
+ "probe_aware_boundary_utc": "2026-09-11T18:56:17Z",
+ "residual_strata": [
+  {
+   "quota": 30,
+   "quota_met": 0,
+   "sections_in_window": 33,
+   "sections_receipt_bound": 0,
+   "sections_retained": 0,
+   "status": "PARTIAL",
+   "stratum": "UNKNOWN",
+   "stratum_system": "measured_class",
+   "unique_retained_sections": 0
+  },
+  {
+   "quota": 30,
+   "quota_met": 0,
+   "sections_in_window": 121,
+   "sections_receipt_bound": 0,
+   "sections_retained": 88,
+   "status": "PARTIAL",
+   "stratum": "UNRESOLVED",
+   "stratum_system": "actual_rendition",
+   "unique_retained_sections": 88
+  }
+ ],
+ "scratch_replay_launches": 0,
+ "sections_digest_match": 88,
+ "sections_in_window": 121,
+ "sections_probe_agree": 88,
+ "sections_reads_reconcile": 111,
+ "sections_reads_reconcile_unknown": 10,
+ "sections_receipt_bound": 0,
+ "sections_retained_off_pod": 88,
+ "sections_schedule_known": 111,
+ "sections_schedule_unknown": 10,
+ "shared_pairs_full_admitted": 353842,
+ "shared_pairs_sealed_2s": 3832,
+ "strata": [
+  {
+   "quota": 30,
+   "quota_met": 0,
+   "sections_in_window": 22,
+   "sections_receipt_bound": 0,
+   "sections_retained": 22,
+   "status": "PARTIAL",
+   "stratum": "1080p30",
+   "stratum_system": "measured_class",
+   "unique_retained_sections": 22
+  },
+  {
+   "quota": 30,
+   "quota_met": 0,
+   "sections_in_window": 24,
+   "sections_receipt_bound": 0,
+   "sections_retained": 24,
+   "status": "PARTIAL",
+   "stratum": "1080p60",
+   "stratum_system": "measured_class",
+   "unique_retained_sections": 24
+  },
+  {
+   "quota": 30,
+   "quota_met": 0,
+   "sections_in_window": 11,
+   "sections_receipt_bound": 0,
+   "sections_retained": 11,
+   "status": "PARTIAL",
+   "stratum": "720p25",
+   "stratum_system": "measured_class",
+   "unique_retained_sections": 11
+  },
+  {
+   "quota": 30,
+   "quota_met": 0,
+   "sections_in_window": 26,
+   "sections_receipt_bound": 0,
+   "sections_retained": 26,
+   "status": "PARTIAL",
+   "stratum": "720p30",
+   "stratum_system": "measured_class",
+   "unique_retained_sections": 26
+  },
+  {
+   "quota": 30,
+   "quota_met": 0,
+   "sections_in_window": 5,
+   "sections_receipt_bound": 0,
+   "sections_retained": 5,
+   "status": "PARTIAL",
+   "stratum": "720p60",
+   "stratum_system": "measured_class",
+   "unique_retained_sections": 5
+  },
+  {
+   "quota": 30,
+   "quota_met": 0,
+   "sections_in_window": 33,
+   "sections_receipt_bound": 0,
+   "sections_retained": 0,
+   "status": "PARTIAL",
+   "stratum": "UNKNOWN",
+   "stratum_system": "measured_class",
+   "unique_retained_sections": 0
+  },
+  {
+   "quota": 30,
+   "quota_met": 0,
+   "sections_in_window": 0,
+   "sections_receipt_bound": 0,
+   "sections_retained": 0,
+   "status": "PARTIAL",
+   "stratum": "232",
+   "stratum_system": "actual_rendition",
+   "unique_retained_sections": 0
+  },
+  {
+   "quota": 30,
+   "quota_met": 0,
+   "sections_in_window": 0,
+   "sections_receipt_bound": 0,
+   "sections_retained": 0,
+   "status": "PARTIAL",
+   "stratum": "270",
+   "stratum_system": "actual_rendition",
+   "unique_retained_sections": 0
+  },
+  {
+   "quota": 30,
+   "quota_met": 0,
+   "sections_in_window": 0,
+   "sections_receipt_bound": 0,
+   "sections_retained": 0,
+   "status": "PARTIAL",
+   "stratum": "300",
+   "stratum_system": "actual_rendition",
+   "unique_retained_sections": 0
+  },
+  {
+   "quota": 30,
+   "quota_met": 0,
+   "sections_in_window": 0,
+   "sections_receipt_bound": 0,
+   "sections_retained": 0,
+   "status": "PARTIAL",
+   "stratum": "301",
+   "stratum_system": "actual_rendition",
+   "unique_retained_sections": 0
+  },
+  {
+   "quota": 30,
+   "quota_met": 0,
+   "sections_in_window": 0,
+   "sections_receipt_bound": 0,
+   "sections_retained": 0,
+   "status": "PARTIAL",
+   "stratum": "311",
+   "stratum_system": "actual_rendition",
+   "unique_retained_sections": 0
+  },
+  {
+   "quota": 30,
+   "quota_met": 0,
+   "sections_in_window": 0,
+   "sections_receipt_bound": 0,
+   "sections_retained": 0,
+   "status": "PARTIAL",
+   "stratum": "312",
+   "stratum_system": "actual_rendition",
+   "unique_retained_sections": 0
+  },
+  {
+   "quota": 30,
+   "quota_met": 0,
+   "sections_in_window": 121,
+   "sections_receipt_bound": 0,
+   "sections_retained": 88,
+   "status": "PARTIAL",
+   "stratum": "UNRESOLVED",
+   "stratum_system": "actual_rendition",
+   "unique_retained_sections": 88
+  }
+ ],
+ "window_start_utc": "2026-09-11T17:01:52Z"
+}
