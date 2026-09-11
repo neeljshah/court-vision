@@ -23,6 +23,13 @@
 
 
 
+
+## G386 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G386 | basketball first | premise TRUE: no existing tool proves the capture contract (g361 / g372 / tracking_corpus_ab carry 0 copy/receiver/readback references); at CENSUS_UTC 2026-09-11T04:29:44Z the ledger census held 1,261 sections / 196 videos but only 51 sections / 22 videos still had retained bytes (40 per mille). Sealed even draw 30 sections / 21 videos (indices 0..50 incl. first and last; 11 from the live rotating pool). One-pass capture (pin sha256 + ffprobe + ledger snapshot -> copy -> receiver readback digest -> receiver DECODE -> receipt; CAPTURED only when all succeed): 30/30 captured, 30/30 retained off-pod under data/pod_backup_2026-09-10/g386_objects/ (2,323,546,523 bytes; 30/30 readback digests, 30/30 re-decoded at 1920x1080), pixel check receiver-vs-original 29 MATCH + 1 ORIGINAL_ABSENT, 0 MISMATCH, 0 false receipts, repeat exports identical. Loss of ORIGINALS over 60 min: 30/29/27/17/17 present at +0/+15/+30/+45/+60; live pool 11/11 gone by +45 min (rotation, not an empty feeder: the pool grew 18 -> 73 files) while all 30 retained objects survived. Controls 6/7 exact: c3 same-size in-place mutation returns CAPTURED because the volume reports 1 s mtime granularity and never refreshes an open handle's attribute cache (bar unmet, not lowered). Reader contract: 11 of 18 emitted fields have zero readers (additive, unwired). First measurement (a7af42262: 0/30 objects retained, CAPTURED before decode) superseded, kept on disk and disclosed; its receipt file preserved as the historical alias. Three verify cycles | g386_pin_copy_one_pass_2026-09-10.md; g386_pin_copy_one_pass_2026-09-10/{prereg, A1, attempts.csv, census.csv, draw.csv, faults.csv, pixel_checks.csv, reader_contract.csv, receiver_receipts.csv, source_identity.csv, export_hashes.json, summary.json, common_receipts/, renders/}; G386_VERIFY_att1_REJECT_2026-09-10.md; G386_VERIFY_remeasure_REJECT_2026-09-11.md; G386_VERIFY_fix1c_ACCEPT_2026-09-11.md | **PARTIAL -- the one-pass capture with an off-pod retaining receiver works (30/30) and is the tool every future pixel-rating row must use at selection time (originals vanish within 45 min); mutation detection through handle metadata is unavailable on this volume; NEW GAPS: master lacks the lane test until landing; reader_contract does not archive the full scanned-path census** |
+
 ## G387 result register
 
 | Gap | Sport | Finding | Evidence | Status |

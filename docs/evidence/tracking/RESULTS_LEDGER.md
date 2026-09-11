@@ -738,3 +738,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G387 | landed PARTIAL (protocol not qualified): synthetic controls 13/30 admissible within 3 px (19/30 post-redispatch diagnostic) vs 27/30; real paint localised 1/30; raters agree on the painted band within 6 px but disagree on extent by 47-244 px; G383 reference supply CLOSED AT LIMIT | PARTIAL (codex-sol ACCEPT WITH CORRECTIONS applied)
 
+2026-09-11 | tracking | G386 | landed PARTIAL: one-pass pin+copy+receipt under A1 -- captured 30/30, retained off-pod 30/30 (2.32 GB, readback + re-decode 30/30), pixel 29 MATCH + 1 ORIGINAL_ABSENT; originals in the live pool 11/11 gone by +45 min; controls 6/7 (same-size mutation undetectable on this volume); first measurement superseded | PARTIAL (codex-sol att1 REJECT, re-measurement REJECT, fix 1c ACCEPT verbatim)
+
