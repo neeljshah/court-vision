@@ -746,3 +746,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G393 | landed CLOSED AT LIMIT: leading-hyphen game_ids (G375 census 3/1,031) fail run_clip argument parsing on all 30 replayed ids; no caller-side form survives the sealed option-shaped controls (equals 5/6, separator 0/68); caller diff PROPOSED-CONDITIONAL applied nowhere, parser-side change is the remedy; 14 caller sites censused | CLOSED AT LIMIT (codex-sol verdict x2, corrections applied)
 
+2026-09-11 | tracking | G390 | landed NOT VALIDATED (adjudicated): one sealed A8 pass TP 90 / FP 169 / FN 212 over 549 (recall 0.298, C0 0.164, precision lower 0.292, ALL FP/N_absent 0.899, ABSENT-only 0.266) vs deployed 0/8; all three sealed bars missed; readiness digest and scratch route uncorrectable after the single allowance; four verify cycles verbatim | NOT VALIDATED (adjudicated)
+

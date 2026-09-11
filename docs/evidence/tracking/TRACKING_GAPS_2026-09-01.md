@@ -27,6 +27,13 @@
 
 
 
+
+## G390 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G390 | basketball | premise TRUE: frames_v3 1,620 rows at sheet_scale 1.0 (dev 1,071 / held-out 549), reference 1,620/1,620 settled, held-out VISIBLE 302 / ABSENT 188 / UNKNOWN 59, dev boxes 530 over 27 games with 0 held-out keys, 0 prior candidate executions; route cbc7cd9d... and checkpoint bc979654... re-hashed on the pod; 1,620/1,620 native sheets match the G373 manifest. THE ONE SEALED PASS (A8 fine-tune, 10 epochs on the 530 dev boxes + 425 ABSENT negatives, no augmentation; GPU 9.493 min of the 90/120 caps): TP 90 / FP 169 / FN 212 over 549 -> VISIBLE recall 90/302 = 0.298, C0 90/549 = 0.164 (bar 0.25), precision 90/259 = 0.347 with Wilson95 lower 0.292 (bar 0.90), ALL FP / N_absent 169/188 = 0.899 (bar 0.01; FP partition VISIBLE 100 / ABSENT 50 / UNKNOWN 19, ABSENT-only 0.266); the arm abstains on 290/549 frames; deployed route A0 on the same reference 0 TP / 8 FP / 302 FN reproduced. All three sealed quality bars missed; no threshold sweep, no re-selection, second pass refused; fine-tuned weights kept off-repo. Adjudicated after four verify cycles that reproduced every number: the sealed readiness digest (fe8bcbe...) predates G389's landed correction (d11a1c8c...) and compute ran under /workspace/g390_scratch instead of the lane path -- both UNCORRECTABLE once the single allowance was spent; renders regenerated from archived A0 + A8 predictions with the parent index fields retained. Eye check 30 even renders: TP 8, FP 2, FP-with-FN 8, no-detection 8, no-detection-with-FN 4 | g390_ball_a8_sealed_pass_2026-09-11.md; G390_ADJUDICATION_2026-09-11.md; g390_ball_a8_sealed_pass_2026-09-11/{preregistration.md, predictions, paired_frame_scores.csv, weights_manifest.json, sha256_manifest.txt, renders/, summary.json}; G390_VERIFY_att1_REJECT_2026-09-11.md; G390_VERIFY_fix1b_REJECT_2026-09-11.md; G390_VERIFY_fix1c_REJECT_2026-09-11.md; G390_VERIFY_fix1d_REJECT_2026-09-11.md | **NOT VALIDATED (adjudicated) -- the first non-zero ball result on a complete blind native reference: a fine-tuned detector finds 30 pct of visible balls but fires on most frames it does not abstain on; the next step is G391's blind false-call audit, not another arm; NEW GAPS: a seeded-readiness prereg convention, lane-path compute discipline** |
+
 ## G393 result register
 
 | Gap | Sport | Finding | Evidence | Status |
