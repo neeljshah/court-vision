@@ -1,0 +1,8 @@
+G408 timeline card j04  nba__3gBeJyl7Szg_s4514.mp4
+sha256 35c3dae336a86d5c9db868838ea6b9dce7ddc2653143ccf8d813d8c426fefaa5  bytes 47733494
+duplicate_pts_steps 41  dropped_frames 45  backwards_steps 0  missing_count 0
+
+arm                        cap   admitted  last_pts     first_excl_pts  inherited_extent  last_gap     reason
+A_legacy_frame_cap_3000    3000  3000      49.983333    50.000000        49.983333000000002 50.016667    FRAME_CAP
+B_g401_fps_frame_cap       6000  6000      99.983333    100.000000       99.983333000000002 0.016667     FRAME_CAP
+C_proposed_pts_stop        -     6000      99.983333    100.000000       99.983333000000002 0.016667     DEADLINE

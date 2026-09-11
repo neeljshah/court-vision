@@ -1,0 +1,8 @@
+G408 timeline card j02  nba__1rZZ_7buX_Y_s5474.mp4
+sha256 2c78195e4d492a006647de3caf29acf441d3787aa93cfde16c82a4ea965d0de0  bytes 95163842
+duplicate_pts_steps 26  dropped_frames 26  backwards_steps 0  missing_count 0
+
+arm                        cap   admitted  last_pts     first_excl_pts  inherited_extent  last_gap     reason
+A_legacy_frame_cap_3000    3000  3000      50.069289    50.085978        50.085977999999997 49.930711    FRAME_CAP
+B_g401_fps_frame_cap       5995  5995      100.071789   100.088489       100.088489        -0.071789    FRAME_CAP
+C_proposed_pts_stop        -     5990      99.988311    100.005011       100.005011        0.011689     DEADLINE

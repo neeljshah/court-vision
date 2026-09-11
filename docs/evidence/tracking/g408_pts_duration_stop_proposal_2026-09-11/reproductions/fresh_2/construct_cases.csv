@@ -1,0 +1,31 @@
+case,kind,endpoint,endpoint_offset_s,pts,declared_reason,declared_admitted_indices,declared_unknown_reason,expected_reason,expected_admitted_indices,expected_unknown_reason,first_boundary_index,matches_declared
+regular__before_start,regular,before_start,-1.0,"[0.0, 0.5, -1.0]",UNKNOWN,"[0, 1]",backwards_pts,UNKNOWN,"[0, 1]",backwards_pts,,True
+regular__at_start,regular,at_start,0.0,"[0.0, 0.5, 0.0]",UNKNOWN,"[0, 1]",backwards_pts,UNKNOWN,"[0, 1]",backwards_pts,,True
+regular__inside,regular,inside,50.0,"[0.0, 0.5, 50.0]",EOF_SHORT,"[0, 1, 2]",,EOF_SHORT,"[0, 1, 2]",,,True
+regular__just_below_deadline,regular,just_below_deadline,99.999,"[0.0, 0.5, 99.999]",EOF_SHORT,"[0, 1, 2]",,EOF_SHORT,"[0, 1, 2]",,,True
+regular__exact_deadline,regular,exact_deadline,100.0,"[0.0, 0.5, 100.0]",DEADLINE,"[0, 1]",,DEADLINE,"[0, 1]",,2,True
+regular__above_deadline,regular,above_deadline,100.5,"[0.0, 0.5, 100.5]",DEADLINE,"[0, 1]",,DEADLINE,"[0, 1]",,2,True
+duplicate__before_start,duplicate,before_start,-1.0,"[0.0, 0.5, 0.5, -1.0]",UNKNOWN,"[0, 1, 2]",backwards_pts,UNKNOWN,"[0, 1, 2]",backwards_pts,,True
+duplicate__at_start,duplicate,at_start,0.0,"[0.0, 0.5, 0.5, 0.0]",UNKNOWN,"[0, 1, 2]",backwards_pts,UNKNOWN,"[0, 1, 2]",backwards_pts,,True
+duplicate__inside,duplicate,inside,50.0,"[0.0, 0.5, 0.5, 50.0]",EOF_SHORT,"[0, 1, 2, 3]",,EOF_SHORT,"[0, 1, 2, 3]",,,True
+duplicate__just_below_deadline,duplicate,just_below_deadline,99.999,"[0.0, 0.5, 0.5, 99.999]",EOF_SHORT,"[0, 1, 2, 3]",,EOF_SHORT,"[0, 1, 2, 3]",,,True
+duplicate__exact_deadline,duplicate,exact_deadline,100.0,"[0.0, 0.5, 0.5, 100.0]",DEADLINE,"[0, 1, 2]",,DEADLINE,"[0, 1, 2]",,3,True
+duplicate__above_deadline,duplicate,above_deadline,100.5,"[0.0, 0.5, 0.5, 100.5]",DEADLINE,"[0, 1, 2]",,DEADLINE,"[0, 1, 2]",,3,True
+missing__before_start,missing,before_start,-1.0,"[0.0, 0.5, null, -1.0]",UNKNOWN,"[0, 1]",missing_or_nonfinite_pts,UNKNOWN,"[0, 1]",missing_or_nonfinite_pts,,True
+missing__at_start,missing,at_start,0.0,"[0.0, 0.5, null, 0.0]",UNKNOWN,"[0, 1]",missing_or_nonfinite_pts,UNKNOWN,"[0, 1]",missing_or_nonfinite_pts,,True
+missing__inside,missing,inside,50.0,"[0.0, 0.5, null, 50.0]",UNKNOWN,"[0, 1]",missing_or_nonfinite_pts,UNKNOWN,"[0, 1]",missing_or_nonfinite_pts,,True
+missing__just_below_deadline,missing,just_below_deadline,99.999,"[0.0, 0.5, null, 99.999]",UNKNOWN,"[0, 1]",missing_or_nonfinite_pts,UNKNOWN,"[0, 1]",missing_or_nonfinite_pts,,True
+missing__exact_deadline,missing,exact_deadline,100.0,"[0.0, 0.5, null, 100.0]",UNKNOWN,"[0, 1]",missing_or_nonfinite_pts,UNKNOWN,"[0, 1]",missing_or_nonfinite_pts,,True
+missing__above_deadline,missing,above_deadline,100.5,"[0.0, 0.5, null, 100.5]",UNKNOWN,"[0, 1]",missing_or_nonfinite_pts,UNKNOWN,"[0, 1]",missing_or_nonfinite_pts,,True
+backward__before_start,backward,before_start,-1.0,"[0.0, 0.5, 0.25, -1.0]",UNKNOWN,"[0, 1]",backwards_pts,UNKNOWN,"[0, 1]",backwards_pts,,True
+backward__at_start,backward,at_start,0.0,"[0.0, 0.5, 0.25, 0.0]",UNKNOWN,"[0, 1]",backwards_pts,UNKNOWN,"[0, 1]",backwards_pts,,True
+backward__inside,backward,inside,50.0,"[0.0, 0.5, 0.25, 50.0]",UNKNOWN,"[0, 1]",backwards_pts,UNKNOWN,"[0, 1]",backwards_pts,,True
+backward__just_below_deadline,backward,just_below_deadline,99.999,"[0.0, 0.5, 0.25, 99.999]",UNKNOWN,"[0, 1]",backwards_pts,UNKNOWN,"[0, 1]",backwards_pts,,True
+backward__exact_deadline,backward,exact_deadline,100.0,"[0.0, 0.5, 0.25, 100.0]",UNKNOWN,"[0, 1]",backwards_pts,UNKNOWN,"[0, 1]",backwards_pts,,True
+backward__above_deadline,backward,above_deadline,100.5,"[0.0, 0.5, 0.25, 100.5]",UNKNOWN,"[0, 1]",backwards_pts,UNKNOWN,"[0, 1]",backwards_pts,,True
+boundary_gap__before_start,boundary_gap,before_start,-1.0,"[0.0, 99.5, -1.0]",UNKNOWN,"[0, 1]",backwards_pts,UNKNOWN,"[0, 1]",backwards_pts,,True
+boundary_gap__at_start,boundary_gap,at_start,0.0,"[0.0, 99.5, 0.0]",UNKNOWN,"[0, 1]",backwards_pts,UNKNOWN,"[0, 1]",backwards_pts,,True
+boundary_gap__inside,boundary_gap,inside,50.0,"[0.0, 99.5, 50.0]",UNKNOWN,"[0, 1]",backwards_pts,UNKNOWN,"[0, 1]",backwards_pts,,True
+boundary_gap__just_below_deadline,boundary_gap,just_below_deadline,99.999,"[0.0, 99.5, 99.999]",EOF_SHORT,"[0, 1, 2]",,EOF_SHORT,"[0, 1, 2]",,,True
+boundary_gap__exact_deadline,boundary_gap,exact_deadline,100.0,"[0.0, 99.5, 100.0]",DEADLINE,"[0, 1]",,DEADLINE,"[0, 1]",,2,True
+boundary_gap__above_deadline,boundary_gap,above_deadline,100.5,"[0.0, 99.5, 100.5]",DEADLINE,"[0, 1]",,DEADLINE,"[0, 1]",,2,True

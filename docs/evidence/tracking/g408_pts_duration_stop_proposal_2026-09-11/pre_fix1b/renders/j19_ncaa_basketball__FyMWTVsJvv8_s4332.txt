@@ -1,0 +1,10 @@
+G408 timeline card j19  ncaa_basketball__FyMWTVsJvv8_s4332.mp4
+sha256 378f11f7d00dc6c7f75b4c1ca6f7331b5950a3d6491d14fb254ef62f1bf9cf80  bytes 57043679
+validated_fps 59.94005994005994  interval 0.016683 s  decoded frames 7793
+duplicate_pts_steps 0  dropped_frames 0  monotonic True
+reader agreement exact True  max abs delta 0.000000000 s
+
+arm                        cap   admitted  last_pts     first_excl_pts  span_s      gap_s      reason
+A_legacy_frame_cap_3000    3000  3000      50.033311    50.050000       50.033311   49.966689  FRAME_CAP
+B_g401_fps_frame_cap       5995  5995      99.999900    100.016578      99.999900   0.000100   FRAME_CAP
+C_proposed_pts_stop        -     5995      99.999900    100.016578      99.999900   0.000100   DEADLINE

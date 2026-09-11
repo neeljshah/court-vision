@@ -1,0 +1,10 @@
+G408 timeline card j22  ncaa_basketball__IpR4pT8iN0Y_s3603.mp4
+sha256 b759425f9be982b2a38e48b165364e1c159031e2aec312f7ce9640424241b882  bytes 53781321
+validated_fps 59.94005994005994  interval 0.016683 s  decoded frames 7793
+duplicate_pts_steps 0  dropped_frames 0  monotonic True
+reader agreement exact False  max abs delta 0.016689000 s
+
+arm                        cap   admitted  last_pts     first_excl_pts  span_s      gap_s      reason
+A_legacy_frame_cap_3000    3000  3000      50.033311    50.050000       50.033311   49.966689  FRAME_CAP
+B_g401_fps_frame_cap       5995  5995      99.999900    100.016578      99.999900   0.000100   FRAME_CAP
+C_proposed_pts_stop        -     5995      99.999900    100.016578      99.999900   0.000100   DEADLINE

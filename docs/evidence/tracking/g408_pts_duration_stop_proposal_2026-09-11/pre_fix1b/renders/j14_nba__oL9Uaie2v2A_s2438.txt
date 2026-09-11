@@ -1,0 +1,10 @@
+G408 timeline card j14  nba__oL9Uaie2v2A_s2438.mp4
+sha256 083be07558717cdfc7f4aa2375b99132e90b1130a2a3fe9452e66eafb5693744  bytes 50026054
+validated_fps 59.94005994005994  interval 0.016683 s  decoded frames 7794
+duplicate_pts_steps 0  dropped_frames 1  monotonic True
+reader agreement exact True  max abs delta 0.000000000 s
+
+arm                        cap   admitted  last_pts     first_excl_pts  span_s      gap_s      reason
+A_legacy_frame_cap_3000    3000  3000      50.033322    50.050000       50.033322   49.966678  FRAME_CAP
+B_g401_fps_frame_cap       5995  5995      99.999900    100.016589      99.999900   0.000100   FRAME_CAP
+C_proposed_pts_stop        -     5995      99.999900    100.016589      99.999900   0.000100   DEADLINE

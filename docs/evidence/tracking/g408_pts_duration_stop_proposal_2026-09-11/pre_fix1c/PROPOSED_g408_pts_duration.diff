@@ -1,0 +1,407 @@
+diff --git a/scripts/platformkit/track_daemon.py b/scripts/platformkit/track_daemon.py
+index 5fd27221d1d1be609a4c95fe86337a166066b1c3..998d299ca23a777c9d97b0522523fe6e23b7b44b 100644
+--- a/scripts/platformkit/track_daemon.py
++++ b/scripts/platformkit/track_daemon.py
+@@ -77,8 +77,16 @@ ADJUDICATION_TIMEOUT_SECONDS = 1800
+ _UNSET = object()
+ 
+ 
+-def build_command(sport: str, video: Path, game_id: str) -> list:
+-    """The tracking command for a sport. Mirrors footage_bridge's routing."""
++def build_command(sport: str, video: Path, game_id: str,
++                  duration_seconds: float | None = None,
++                  frames: int | None = None) -> list:
++    """The tracking command for a sport. Mirrors footage_bridge's routing.
++
++    duration_seconds is opt-in.  When it is None the argv is byte-identical to
++    the legacy command, including the implicit "--frames 3000".  When it is set
++    the implicit frame cap is omitted so the presentation-time stop decides the
++    extent; an explicitly supplied frames stays an independent EARLIER cap.
++    """
+     if sport in CLIP_SPORTS:
+         # 3000, not 18000. run_clip.py is the full production pipeline, not a
+         # light adapter, and at this concurrency an 18000-frame job was measured
+@@ -92,9 +100,16 @@ def build_command(sport: str, video: Path, game_id: str) -> list:
+         # were graded "thin rows=0" while their own logs printed run_clip's
+         # success summary, and all four wrote the SAME repo-root file at once.
+         # footage_cycle.py:142 has always passed it; this caller just omitted it.
+-        return [sys.executable, "scripts/run_clip.py", "--video", str(video),
+-                "--game-id", game_id, "--no-show", "--frames", "3000",
+-                "--data-dir", str(TRACKING / game_id)]
++        argv = [sys.executable, "scripts/run_clip.py", "--video", str(video),
++                "--game-id", game_id, "--no-show"]
++        if duration_seconds is not None:
++            argv += ["--duration-seconds", str(duration_seconds)]
++        if frames is not None:
++            argv += ["--frames", str(frames)]
++        elif duration_seconds is None:
++            argv += ["--frames", "3000"]
++        argv += ["--data-dir", str(TRACKING / game_id)]
++        return argv
+     adapter = SPORT_ADAPTER.get(sport, sport)
+     return [sys.executable, "-m", "scripts.platformkit.adapter_run",
+             adapter, str(video), game_id]
+diff --git a/scripts/run_clip.py b/scripts/run_clip.py
+index 9c2b2bca42161fe54280dd824d4bb3fc3747023d..e9eff69e5e0d655e2d674c2d9ba591c3a0765afe 100644
+--- a/scripts/run_clip.py
++++ b/scripts/run_clip.py
+@@ -164,7 +164,8 @@ def _route_stride(source_frames: int, source_fps: float) -> int:
+ 
+ 
+ def _evaluated_count_sidecar(video_path: str, max_frames: int | None,
+-                             start_frame: int) -> dict:
++                             start_frame: int,
++                             duration_seconds: float | None = None) -> dict:
+     """Build auditable pre-tracking scheduling facts without inspecting detections."""
+     try:
+         source_size_bytes = os.path.getsize(video_path)
+@@ -179,6 +180,8 @@ def _evaluated_count_sidecar(video_path: str, max_frames: int | None,
+         "source_fps": None,
+         "stride": None,
+         "max_frames": max_frames,
++        "duration_seconds": duration_seconds,
++        "stop_basis": "frame_count" if duration_seconds is None else "presentation_pts",
+         "start_frame": start_frame,
+         "evaluated_frames": None,
+         "formula": "ceil(decoded_frames / stride) when max_frames is null and start_frame is 0",
+@@ -213,11 +216,13 @@ def _evaluated_count_sidecar(video_path: str, max_frames: int | None,
+ 
+ 
+ def _write_evaluated_count_sidecar(video_path: str, data_dir: str,
+-                                   max_frames: int | None, start_frame: int) -> str:
++                                   max_frames: int | None, start_frame: int,
++                                   duration_seconds: float | None = None) -> str:
+     """Persist the route's pre-tracking count beside its existing output CSVs."""
+     path = os.path.join(data_dir, _EVALUATED_COUNT_SIDECAR)
+     with open(path, "w", encoding="utf-8") as handle:
+-        json.dump(_evaluated_count_sidecar(video_path, max_frames, start_frame), handle,
++        json.dump(_evaluated_count_sidecar(video_path, max_frames, start_frame,
++                                           duration_seconds), handle,
+                   indent=2, sort_keys=True)
+         handle.write("\n")
+     return path
+@@ -416,6 +421,10 @@ def main():
+                     help="Path to YOLO-NAS weights (.pth). Optional.")
+     ap.add_argument("--frames",      type=int, default=None,
+                     help="Max frames to process (default: full video)")
++    ap.add_argument("--duration-seconds", type=float, default=None,
++                    help="Opt-in presentation-time stop: admit frames only while "
++                         "PTS - start_PTS < this many seconds. Independent of "
++                         "--frames, which stays an earlier explicit frame cap.")
+     ap.add_argument("--start-frame", type=int, default=0,
+                     help="Frame index to seek to before processing (default: 0)")
+     ap.add_argument("--no-show",  action="store_true",
+@@ -490,7 +499,8 @@ def main():
+     data_dir = args.data_dir if args.data_dir else os.path.join(PROJECT_DIR, "data")
+     os.makedirs(data_dir, exist_ok=True)
+     sidecar_path = _write_evaluated_count_sidecar(
+-        args.video, data_dir, args.frames, args.start_frame
++        args.video, data_dir, args.frames, args.start_frame,
++        args.duration_seconds
+     )
+     print(f" Evaluated-frame sidecar : {sidecar_path}")
+     t0 = time.time()
+@@ -519,6 +529,7 @@ def main():
+             video_path=args.video,
+             yolo_weight_path=args.yolo,
+             max_frames=args.frames,
++            duration_seconds=args.duration_seconds,
+             start_frame=args.start_frame,
+             show=not args.no_show,
+             data_dir=data_dir,
+diff --git a/src/pipeline/unified_pipeline.py b/src/pipeline/unified_pipeline.py
+index d683f1f7f3007fec20fda64daf8cb9ae3e1d390b..6dca7758e43af94f10a1e9d281c57a5ca828eaee 100644
+--- a/src/pipeline/unified_pipeline.py
++++ b/src/pipeline/unified_pipeline.py
+@@ -84,8 +84,9 @@ def _pyav_frame_iter(video_path: str, start_frame: int = 0,
+             for av_frame in packet.decode():
+                 if frame_idx >= start_frame:
+                     bgr = av_frame.to_ndarray(format="bgr24")
++                    pts = av_frame.time  # presentation seconds, None if absent
+                     del av_frame  # release C-layer frame buffer before yield
+-                    yield frame_idx, bgr, fps, total
++                    yield frame_idx, bgr, fps, total, pts
+                     yielded += 1
+                     if max_source_frames and yielded >= max_source_frames:
+                         container.close()
+@@ -106,7 +107,10 @@ def _pyav_frame_iter(video_path: str, start_frame: int = 0,
+             ok, frame = cap.read()
+             if not ok:
+                 break
+-            yield frame_idx, frame, fps, total
++            _msec = cap.get(cv2.CAP_PROP_POS_MSEC)
++            yield frame_idx, frame, fps, total, (_msec / 1000.0 if _msec
++                                                 or frame_idx == start_frame
++                                                 else None)
+             yielded += 1
+             if max_source_frames and yielded >= max_source_frames:
+                 cap.release()
+@@ -118,6 +122,18 @@ def _pyav_frame_iter(video_path: str, start_frame: int = 0,
+ 
+ # ── NVDEC GPU video decoder (decord) + PyAV fallback ─────────────────────────
+ 
++def _decord_pts(vr, frame_idx: int):
++    """Decord presentation start-seconds for one index, None when unavailable.
++
++    No fps-derived fallback: an unavailable timestamp must stay unavailable so
++    the caller can terminate UNKNOWN instead of inventing a schedule.
++    """
++    try:
++        return float(vr.get_frame_timestamp(frame_idx)[0])
++    except Exception:
++        return None
++
++
+ def _decord_frame_iter(video_path: str, start_frame: int = 0, max_source_frames: int = 0) -> Iterator[tuple]:
+     """
+     Yield (frame_idx, bgr_array, fps, total) using decord GPU NVDEC decode.
+@@ -182,7 +198,8 @@ def _decord_frame_iter(video_path: str, start_frame: int = 0, max_source_frames:
+                         # RGB→BGR via channel flip on GPU
+                         frames_bgr = frames_rgb[:, :, :, [2, 1, 0]]
+                         for j, frame_idx in enumerate(indices):
+-                            yield frame_idx, frames_bgr[j].cpu().numpy(), fps, total
++                            yield (frame_idx, frames_bgr[j].cpu().numpy(), fps,
++                                   total, _decord_pts(vr, frame_idx))
+                         del frames_rgb, frames_bgr
+                         continue
+                     except Exception:
+@@ -195,7 +212,7 @@ def _decord_frame_iter(video_path: str, start_frame: int = 0, max_source_frames:
+                     try:
+                         frame_rgb = vr[i].asnumpy()
+                         bgr = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR)
+-                        yield i, bgr, fps, total
++                        yield i, bgr, fps, total, _decord_pts(vr, i)
+                     except Exception:
+                         continue
+                 continue
+@@ -206,7 +223,7 @@ def _decord_frame_iter(video_path: str, start_frame: int = 0, max_source_frames:
+                 if _bgr_buf is None or _bgr_buf.shape != rgb_frame.shape:
+                     _bgr_buf = np.empty_like(rgb_frame)
+                 cv2.cvtColor(rgb_frame, cv2.COLOR_RGB2BGR, dst=_bgr_buf)
+-                yield frame_idx, _bgr_buf, fps, total
++                yield frame_idx, _bgr_buf, fps, total, _decord_pts(vr, frame_idx)
+ 
+             del frames_rgb  # release batch immediately
+ 
+@@ -247,6 +264,8 @@ class _FramePrefetcher:
+     """
+ 
+     _SENTINEL = (False, None, -1)  # signals end-of-video to the consumer
++    # Queue items carry a 4th element (presentation seconds or None). read()
++    # strips it into .last_pts so the public (ok, bgr, frame_idx) shape holds.
+ 
+     def __init__(
+         self,
+@@ -255,8 +274,17 @@ class _FramePrefetcher:
+         queue_size: int = 8,
+         stride: int = 1,
+         max_source_frames: int = 0,
++        duration_seconds: float = None,
+     ) -> None:
+         self._stride = max(1, stride)
++        self._duration_seconds = duration_seconds
++        self.last_pts = None       # presentation seconds of the last read frame
++        self.pts_available = None  # None until the first frame is read
++        self.termination_reason = "EOF"
++        self.unknown_reason = None
++        self.start_pts = None
++        self.first_boundary_pts = None
++        self._last_seen_pts = None
+         self._q = queue.Queue(maxsize=queue_size)
+         self._thread = threading.Thread(
+             target=self._decode_loop,
+@@ -270,16 +298,37 @@ class _FramePrefetcher:
+                      max_source_frames: int = 0) -> None:
+         """Background: decode frames (respecting stride) and put into queue."""
+         try:
+-            for _fi, bgr, _fps, _total in _decord_frame_iter(
++            for _item in _decord_frame_iter(
+                     video_path, start_frame, max_source_frames=max_source_frames):
+-                # Skip frames that fall outside the stride pattern.
+-                # Uses absolute frame index so frame_idx downstream is always
+-                # the real video position (correct for timestamp calculation).
++                _fi, bgr = _item[0], _item[1]
++                # A wrapped or older producer may still yield 4 elements; an
++                # absent timestamp stays absent rather than becoming a guess.
++                _pts = _item[4] if len(_item) > 4 else None
++                # Validate every decoded PTS BEFORE the stride continue. A
++                # malformed strided-over frame must terminate UNKNOWN, not vanish.
++                if self._duration_seconds is not None:
++                    if _pts is None or _pts != _pts:
++                        self.termination_reason = "UNKNOWN"
++                        self.unknown_reason = "missing_or_nonfinite_pts"
++                        break
++                    if self.start_pts is None:
++                        self.start_pts = _pts
++                        self._pts_deadline = _pts + self._duration_seconds
++                    elif _pts < self._last_seen_pts:
++                        self.termination_reason = "UNKNOWN"
++                        self.unknown_reason = "backwards_pts"
++                        break
++                    if _pts >= self._pts_deadline:
++                        self.termination_reason = "DEADLINE"
++                        self.first_boundary_pts = _pts
++                        break
++                    self._last_seen_pts = _pts
++                # Skip frames that fall outside the stride pattern only after PTS.
+                 if self._stride > 1 and (_fi - start_frame) % self._stride != 0:
+                     continue
+                 # Copy: _decord_frame_iter batch decode reuses a buffer, and
+                 # this frame lives in the queue until the consumer thread reads it.
+-                self._q.put((True, bgr.copy(), _fi))
++                self._q.put((True, bgr.copy(), _fi, _pts))
+         except Exception:
+             pass
+         # Always push sentinel so consumer can detect EOF
+@@ -296,7 +345,12 @@ class _FramePrefetcher:
+         processed-frame counter — callers should use it directly as the
+         frame position for CSV timestamps and position dictionaries.
+         """
+-        return self._q.get()
++        item = self._q.get()
++        if len(item) == 4:
++            self.last_pts = item[3]
++            self.pts_available = item[3] is not None
++            return item[:3]
++        return item
+ 
+     def peek(self, n: int = 7) -> List[np.ndarray]:
+         """Non-blocking peek at up to n queued frames without consuming them.
+@@ -307,7 +361,7 @@ class _FramePrefetcher:
+         frames: List[np.ndarray] = []
+         with self._q.mutex:
+             for item in list(self._q.queue)[:n]:
+-                ok, bgr, _fi = item
++                ok, bgr, _fi = item[0], item[1], item[2]
+                 if ok and bgr is not None:
+                     frames.append(bgr.copy())
+         return frames
+@@ -619,7 +673,11 @@ class UnifiedPipeline:
+     Args:
+         video_path:         Input video file.
+         yolo_weight_path:   Path to YOLO-NAS weights (.pth). Optional.
+-        max_frames:         Stop after N frames (None = full video).
++        max_frames:         Stop after N frames (None = full video). Stays an
++                            explicit EARLIER cap when duration_seconds is set.
++        duration_seconds:   Opt-in presentation-time stop. Admit frames only
++                            while PTS - t0 < duration_seconds, checked BEFORE
++                            stride or detector work. None = legacy behaviour.
+         show:               Display live window.
+         output_video_path:  Write annotated video here. Optional.
+     """
+@@ -629,6 +687,7 @@ class UnifiedPipeline:
+         video_path: str,
+         yolo_weight_path: str = None,
+         max_frames: int = None,
++        duration_seconds: float = None,
+         start_frame: int = 0,
+         show: bool = True,
+         output_video_path: str = None,
+@@ -639,6 +698,7 @@ class UnifiedPipeline:
+     ):
+         self.video_path        = video_path
+         self.max_frames        = max_frames
++        self.duration_seconds  = duration_seconds
+         self.start_frame       = start_frame
+         self.show              = show
+         self.output_video_path = output_video_path
+@@ -1535,6 +1595,13 @@ class UnifiedPipeline:
+         # gameplay_frames counts DECODED frames (1 per stride), so scale down.
+         if self.max_frames and _stride > 1:
+             self.max_frames = max(1, self.max_frames // _stride)
++        # Presentation-time stop state. t0 is the first valid presented PTS, so
++        # the deadline is never derived from fps and never from a frame count.
++        _pts_t0 = None
++        _pts_deadline = None
++        _termination_reason = "EOF"
++        _first_boundary_pts = None
++        _last_admitted_pts = None
+         # Wire fps + stride into EventDetector so shot debounce, drive speed, and
+         # closeout mph are all computed in correct absolute-frame / real-time units.
+         self.event_det.configure(fps, _stride)
+@@ -1556,10 +1623,13 @@ class UnifiedPipeline:
+         # Cap source frames decoded to prevent PyAV from reading full 200K-frame videos
+         # when only 18K gameplay frames are needed.  4× multiplier accounts for up to
+         # 75% non-live content (replays, halftime, ads). 0 = no cap (short clips).
++        # With duration_seconds the caller omits its implicit 3000-frame cap, so
++        # max_frames is None here unless an EXPLICIT --frames was supplied.
+         _max_src = (self.max_frames * _stride * 4) if self.max_frames else 0
+         _prefetcher = _FramePrefetcher(self.video_path, self.start_frame,
+                                        stride=_stride, queue_size=12,
+-                                       max_source_frames=_max_src)
++                                       max_source_frames=_max_src,
++                   duration_seconds=self.duration_seconds)
+ 
+         # Clear stale CSV files from previous runs so incremental append starts fresh
+         for _stale in ("ball_tracking.csv", "scoreboard_log.csv", "events_log.csv", "shot_log.csv"):
+@@ -1677,7 +1747,22 @@ class UnifiedPipeline:
+             ok, frame, _fi = _prefetcher.read()
+             if ok:
+                 frame_idx = _fi  # only update on valid frames; never let sentinel (-1) overwrite
+-            if not ok or frame is None or (self.max_frames and gameplay_frames >= self.max_frames):
++            # Presentation-time stop, BEFORE any stride or detector work on this
++            # frame. Duplicate PTS keep source order but cannot advance elapsed
++            # time; a missing or backwards timestamp is UNKNOWN, never a silent
++            # 30-fps fallback. The boundary frame is recorded, not processed.
++            if ok and self.duration_seconds is not None:
++                _pts_t0 = _prefetcher.start_pts
++                _last_admitted_pts = _prefetcher.last_pts
++            if not ok or frame is None:
++                if self.duration_seconds is not None:
++                    _termination_reason = _prefetcher.termination_reason
++                    _first_boundary_pts = _prefetcher.first_boundary_pts
++                    if _termination_reason == "EOF":
++                        _termination_reason = "EOF_SHORT"
++                break
++            if self.max_frames and gameplay_frames >= self.max_frames:
++                _termination_reason = "FRAME_CAP"
+                 break
+ 
+             # Stride skip is handled inside _FramePrefetcher (NVDEC-level) — no
+@@ -3061,6 +3146,15 @@ class UnifiedPipeline:
+             "stability":      metrics.get("track_stability", 0),
+             "total_frames":   frame_idx,
+             "evaluated_frames": gameplay_frames,  # G331: past the detector gate
++            # Additive stop receipt. Every existing key keeps its meaning;
++            # requested_duration_s is null on every legacy run.
++            "requested_duration_s": self.duration_seconds,
++            "stop_basis": ("frame_count" if self.duration_seconds is None
++                           else "presentation_pts"),
++            "termination_reason": _termination_reason,
++            "start_pts": _pts_t0,
++            "last_admitted_pts": _last_admitted_pts,
++            "first_excluded_pts": _first_boundary_pts,
+             "jump_resets":      self.ball_det._jump_resets,
+             "suspended_frames": suspended_frame_count,
+         }
+diff --git a/scripts/platformkit/tracking/g203_decode_determinism_bisect.py b/scripts/platformkit/tracking/g203_decode_determinism_bisect.py
+index cfdb9137bef36fb954b5e90ae789e982fa0bc654..1ef484f7c6d0a572ea1d8ca954fe733be9f63cb9 100644
+--- a/scripts/platformkit/tracking/g203_decode_determinism_bisect.py
++++ b/scripts/platformkit/tracking/g203_decode_determinism_bisect.py
+@@ -152,11 +152,12 @@ def install_decode_wrappers(observer: DecodeObserver) -> Any:
+             observer.pyav_active = False
+ 
+     def wrapped_decord(*args: Any, **kwargs: Any) -> Iterable[Any]:
+-        for frame_index, frame, fps, total in original_decord(*args, **kwargs):
++        for item in original_decord(*args, **kwargs):
++            frame_index, frame = item[0], item[1]
+             observer.frame_decoder[int(frame_index)] = (
+                 "pyav" if observer.pyav_active else "decord"
+             )
+-            yield frame_index, frame, fps, total
++            yield item
+ 
+     pipeline._pyav_frame_iter = wrapped_pyav
+     pipeline._decord_frame_iter = wrapped_decord
+@@ -185,9 +186,10 @@ def run_isolation(video: Path, source_frames: int) -> dict[str, Any]:
+     observer = DecodeObserver(pipeline)
+     observer.install_trace(pipeline)
+     pipeline = install_decode_wrappers(observer)
+-    for frame_index, frame, _fps, _total in pipeline._decord_frame_iter(
++    for _item in pipeline._decord_frame_iter(
+         str(video), 0, max_source_frames=source_frames
+     ):
++        frame_index, frame = _item[0], _item[1]
+         observer.record(frame_index, frame)
+     return _result(observer, "isolation")
+ 

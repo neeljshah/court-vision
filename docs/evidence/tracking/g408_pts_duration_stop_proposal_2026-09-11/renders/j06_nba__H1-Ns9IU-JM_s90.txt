@@ -1,0 +1,8 @@
+G408 timeline card j06  nba__H1-Ns9IU-JM_s90.mp4
+sha256 1493b3cb648cb243df4cde0eaa7660c288ba5c8d9841c21da4917037a3d7e0a2  bytes 69118919
+duplicate_pts_steps 26  dropped_frames 26  backwards_steps 0  missing_count 0
+
+arm                        cap   admitted  last_pts     first_excl_pts  inherited_extent  last_gap     reason
+A_legacy_frame_cap_3000    3000  3000      50.033311    50.050000        50.049999999999997 49.966689    FRAME_CAP
+B_g401_fps_frame_cap       5995  5995      99.999900    100.016578       100.016578        0.000100     FRAME_CAP
+C_proposed_pts_stop        -     5995      99.999900    100.016578       100.016578        0.000100     DEADLINE

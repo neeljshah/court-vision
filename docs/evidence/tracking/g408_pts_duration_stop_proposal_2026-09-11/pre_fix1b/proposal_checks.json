@@ -1,0 +1,28 @@
+{
+ "base_hashes_declared": {
+  "scripts/platformkit/track_daemon.py": "ee425ee56b0f92500d1d460f6da5610ddd1124b8c236f9f33169c2418d3fd420",
+  "scripts/run_clip.py": "1e490eabc142408144fef8911ee6732743e9b6f710dd727fbf87997c524ba369",
+  "src/pipeline/unified_pipeline.py": "9b732523d93af98ee49ca10c009aff50ee4b8b933ae12453e523576cde4771e1"
+ },
+ "base_hashes_live": {
+  "scripts/platformkit/track_daemon.py": "ee425ee56b0f92500d1d460f6da5610ddd1124b8c236f9f33169c2418d3fd420",
+  "scripts/run_clip.py": "1e490eabc142408144fef8911ee6732743e9b6f710dd727fbf87997c524ba369",
+  "src/pipeline/unified_pipeline.py": "9b732523d93af98ee49ca10c009aff50ee4b8b933ae12453e523576cde4771e1"
+ },
+ "base_hashes_match": true,
+ "diff_byte_domain": "CRLF in the working tree, matching the four base files it patches; LF in the git blob",
+ "diff_sha256_blob_lf": "4aa607a3d23c785da4db91086dba99db30cb85585e63a191a524609af808a4ee",
+ "diff_sha256_worktree_crlf": "af1097d6987e5c360859a74943bc78039ecffe942c8e58efa992680308e53378",
+ "extra_file_base_sha256": "15f43f67e6385895394628fb176206b7fde6d7f6a1235b3406aef02170e6d4b1",
+ "extra_file_reason": "the only other reader that unpacks the private decoder iterator; left unpatched it would break",
+ "extra_non_gated_file_in_diff": "scripts/platformkit/tracking/g203_decode_determinism_bisect.py",
+ "git_apply_check": "OK",
+ "git_apply_check_command": "git apply --check PROPOSED_g408_pts_duration.diff against pristine copies of the four base files in a scratch tree outside this worktree",
+ "legacy_argv_identical_to_landed": true,
+ "patched_modules_executed": false,
+ "patched_modules_parsed_only": true,
+ "proposal_applied_anywhere": false,
+ "reader_survey_rows": 714,
+ "readers_left_unresolved": [],
+ "validation_errors": []
+}

@@ -1,0 +1,8 @@
+G408 timeline card j01  basketball__acb-jHcR5UxPGuE_s3999.mp4
+sha256 4be9495d06a353bc5d8f1b213582572eb1dc85529f5dc4316054c27d7a72754e  bytes 52437550
+duplicate_pts_steps 0  dropped_frames 0  backwards_steps 0  missing_count 0
+
+arm                        cap   admitted  last_pts     first_excl_pts  inherited_extent  last_gap     reason
+A_legacy_frame_cap_3000    3000  3000      49.983333    50.000000        50                50.016667    FRAME_CAP
+B_g401_fps_frame_cap       6000  6000      99.983333    100.000000       100               0.016667     FRAME_CAP
+C_proposed_pts_stop        -     6000      99.983333    100.000000       100               0.016667     DEADLINE

@@ -1,0 +1,8 @@
+G408 timeline card j29  ncaa_basketball__s-0Y7aLxXgM_s4830.mp4
+sha256 57712e03d9af9728fa4927f3e8d2ade44d855fb2abc719e86d8c64d4c883d0b2  bytes 54805277
+duplicate_pts_steps 0  dropped_frames 1  backwards_steps 0  missing_count 0
+
+arm                        cap   admitted  last_pts     first_excl_pts  inherited_extent  last_gap     reason
+A_legacy_frame_cap_3000    3000  3000      50.033311    50.050000        50.049999999999997 49.966689    FRAME_CAP
+B_g401_fps_frame_cap       5995  5995      99.999900    100.016578       100.016578        0.000100     FRAME_CAP
+C_proposed_pts_stop        -     5995      99.999900    100.016578       100.016578        0.000100     DEADLINE

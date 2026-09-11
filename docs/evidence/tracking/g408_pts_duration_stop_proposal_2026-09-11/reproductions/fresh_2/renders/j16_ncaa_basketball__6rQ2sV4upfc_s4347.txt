@@ -1,0 +1,8 @@
+G408 timeline card j16  ncaa_basketball__6rQ2sV4upfc_s4347.mp4
+sha256 9a32663c2072337b85422e463836421bbe65681c4751dd5fbb347661f09c462c  bytes 52188825
+duplicate_pts_steps 25  dropped_frames 25  backwards_steps 0  missing_count 0
+
+arm                        cap   admitted  last_pts     first_excl_pts  inherited_extent  last_gap     reason
+A_legacy_frame_cap_3000    3000  3000      50.033322    50.050000        50.049999999999997 49.966678    FRAME_CAP
+B_g401_fps_frame_cap       5995  5995      99.999900    100.016589       100.016589        0.000100     FRAME_CAP
+C_proposed_pts_stop        -     5995      99.999900    100.016589       100.016589        0.000100     DEADLINE

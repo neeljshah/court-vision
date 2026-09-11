@@ -1,0 +1,31 @@
+{
+    "base_hashes_declared":  {
+                                 "scripts/platformkit/track_daemon.py":  "ee425ee56b0f92500d1d460f6da5610ddd1124b8c236f9f33169c2418d3fd420",
+                                 "scripts/platformkit/tracking/g203_decode_determinism_bisect.py":  "15f43f67e6385895394628fb176206b7fde6d7f6a1235b3406aef02170e6d4b1",
+                                 "scripts/run_clip.py":  "1e490eabc142408144fef8911ee6732743e9b6f710dd727fbf87997c524ba369",
+                                 "src/pipeline/unified_pipeline.py":  "9b732523d93af98ee49ca10c009aff50ee4b8b933ae12453e523576cde4771e1"
+                             },
+    "base_hashes_live":  {
+                             "scripts/platformkit/track_daemon.py":  "ee425ee56b0f92500d1d460f6da5610ddd1124b8c236f9f33169c2418d3fd420",
+                             "scripts/platformkit/tracking/g203_decode_determinism_bisect.py":  "15f43f67e6385895394628fb176206b7fde6d7f6a1235b3406aef02170e6d4b1",
+                             "scripts/run_clip.py":  "1e490eabc142408144fef8911ee6732743e9b6f710dd727fbf87997c524ba369",
+                             "src/pipeline/unified_pipeline.py":  "9b732523d93af98ee49ca10c009aff50ee4b8b933ae12453e523576cde4771e1"
+                         },
+    "base_hashes_match":  true,
+    "diff_byte_domain":  "CRLF working-tree patch; SHA-256 blob domain is LF-normalized patch bytes",
+    "diff_sha256_worktree_crlf":  "e71b46b970e1d5a20ee87b5e3ca9007cc27527fb11ed64d22ae5b281ef90dfa8",
+    "diff_sha256_blob_lf":  "231aa89afac76ad47cfc002386c1b6e36e2c62cd777d5970e2822b36530df5d4",
+    "git_apply_check":  "OK",
+    "git_apply_check_command":  "git apply --check PROPOSED_g408_pts_duration.diff against pristine copies of all four bases in C:/Users/neelj/AppData/Local/Temp/g408_fix1c_88d0168474d74cd0bb8121492e25eca1/verify_pristine",
+    "patched_modules_executed":  false,
+    "patched_modules_parsed_only":  true,
+    "proposal_applied_anywhere":  false,
+    "reader_survey_rows":  714,
+    "readers_left_unresolved":  [
+
+                                ],
+    "legacy_argv_identical_to_landed":  true,
+    "validation_errors":  [
+
+                          ]
+}

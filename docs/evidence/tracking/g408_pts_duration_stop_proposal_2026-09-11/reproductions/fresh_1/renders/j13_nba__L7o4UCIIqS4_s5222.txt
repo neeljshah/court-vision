@@ -1,0 +1,8 @@
+G408 timeline card j13  nba__L7o4UCIIqS4_s5222.mp4
+sha256 683cc5b0c45ba119f7f545359536042468c67f351fbad50babbe5601f7fbc862  bytes 46736475
+duplicate_pts_steps 0  dropped_frames 1  backwards_steps 0  missing_count 0
+
+arm                        cap   admitted  last_pts     first_excl_pts  inherited_extent  last_gap     reason
+A_legacy_frame_cap_3000    3000  3000      50.033311    50.050000        50.049999999999997 49.966689    FRAME_CAP
+B_g401_fps_frame_cap       5995  5995      99.999900    100.016578       100.016578        0.000100     FRAME_CAP
+C_proposed_pts_stop        -     5995      99.999900    100.016578       100.016578        0.000100     DEADLINE
