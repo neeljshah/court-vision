@@ -1,0 +1,4 @@
+cmd: python -m pytest tests/platformkit/test_g403_ball_rater_controls.py -q -p no:cacheprovider --basetemp=C:/Users/neelj/nba-track-a3/.pytest_tmp_g403
+...........                                                              [100%]
+11 passed in 0.82s
+returncode: 0

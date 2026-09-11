@@ -1,0 +1,96 @@
+{
+ "files": {
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11.md": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/amendment_A1.md": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/answer_binding.csv": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/binding_offset.csv": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/binding_offset_round8.csv": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/confusion_by_round.csv": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/control_answers.csv": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/control_catalogue.csv": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/diameter_population.csv": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/eye_index.csv": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/gaps.csv": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/input_hashes.csv": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/instructions.md": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/prereg.md": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/reason_categories.csv": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/repeats.json": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/runtime_receipts/g403_build.log.txt": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/runtime_receipts/g403_repeat.log.txt": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/runtime_receipts/g403_test.log.txt": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/semantic_parity.csv": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/shot_claim_audit.csv": {
+   "hits": 0,
+   "pattern_indices": []
+  },
+  "docs/evidence/tracking/g403_ball_rater_failure_controls_2026-09-11/summary.json": {
+   "hits": 0,
+   "pattern_indices": []
+  }
+ },
+ "non_opaque_hits": 0,
+ "pattern_count": 10,
+ "scanned": 22,
+ "total_hits": 0
+}

@@ -1,0 +1,31 @@
+order_index,case_id,scene,layout,width,height,sheet_scale,occlusion_mask,distractor_boxes,object_note,render
+1,G403-01-01,ACTIVE_BALL_ALONE,1080P_CENTRE,1920,1080,1.0,0|0|0|0,,on-court game ball with visible support,control_01-01.png
+2,G403-02-02,BALL_BESIDE_RIM_HARDWARE,1080P_LEFT,1920,1080,1.0,0|0|0|0,512|444|544|572,on-court game ball; rim hardware is a distractor,control_02-02.png
+3,G403-03-03,ACTIVE_PLUS_BENCH_BALL,1080P_RIGHT,1920,1080,1.0,0|0|0|0,1536|119|1568|151,on-court game ball; bench ball is a distractor,control_03-03.png
+4,G403-04-04,BALL_BESIDE_JERSEY_PATCH,720P_CENTRE,1280,720,1.0,0|0|0|0,544|336|592|384,on-court game ball; jersey patch is a distractor,control_04-04.png
+5,G403-05-05,DISTRACTORS_WITHOUT_BALL,720P_RIGHT,1280,720,1.0,948|348|972|372,888|336|936|384;984|336|1032|384,no on-court game ball is present,control_05-05.png
+6,G403-06-01,IDENTITY_OBSCURED,1080P_CENTRE,1920,1080,1.0,944|524|976|556,928|524|960|556;960|524|992|556,multiple plausible objects have no recoverable identity,control_06-01.png
+7,G403-01-02,ACTIVE_BALL_ALONE,1080P_LEFT,1920,1080,1.0,0|0|0|0,,on-court game ball with visible support,control_01-02.png
+8,G403-02-03,BALL_BESIDE_RIM_HARDWARE,1080P_RIGHT,1920,1080,1.0,0|0|0|0,1472|444|1504|572,on-court game ball; rim hardware is a distractor,control_02-03.png
+9,G403-03-04,ACTIVE_PLUS_BENCH_BALL,720P_CENTRE,1280,720,1.0,0|0|0|0,712|78|736|102,on-court game ball; bench ball is a distractor,control_03-04.png
+10,G403-04-05,BALL_BESIDE_JERSEY_PATCH,720P_RIGHT,1280,720,1.0,0|0|0|0,864|336|912|384,on-court game ball; jersey patch is a distractor,control_04-05.png
+11,G403-05-01,DISTRACTORS_WITHOUT_BALL,1080P_CENTRE,1920,1080,1.0,944|524|976|556,864|508|928|572;992|508|1056|572,no on-court game ball is present,control_05-01.png
+12,G403-06-02,IDENTITY_OBSCURED,1080P_LEFT,1920,1080,1.0,464|524|496|556,448|524|480|556;480|524|512|556,multiple plausible objects have no recoverable identity,control_06-02.png
+13,G403-01-03,ACTIVE_BALL_ALONE,1080P_RIGHT,1920,1080,1.0,0|0|0|0,,on-court game ball with visible support,control_01-03.png
+14,G403-02-04,BALL_BESIDE_RIM_HARDWARE,720P_CENTRE,1280,720,1.0,0|0|0|0,664|288|688|384,on-court game ball; rim hardware is a distractor,control_02-04.png
+15,G403-03-05,ACTIVE_PLUS_BENCH_BALL,720P_RIGHT,1280,720,1.0,0|0|0|0,1032|78|1056|102,on-court game ball; bench ball is a distractor,control_03-05.png
+16,G403-04-01,BALL_BESIDE_JERSEY_PATCH,1080P_CENTRE,1920,1080,1.0,0|0|0|0,832|508|896|572,on-court game ball; jersey patch is a distractor,control_04-01.png
+17,G403-05-02,DISTRACTORS_WITHOUT_BALL,1080P_LEFT,1920,1080,1.0,464|524|496|556,384|508|448|572;512|508|576|572,no on-court game ball is present,control_05-02.png
+18,G403-06-03,IDENTITY_OBSCURED,1080P_RIGHT,1920,1080,1.0,1424|524|1456|556,1408|524|1440|556;1440|524|1472|556,multiple plausible objects have no recoverable identity,control_06-03.png
+19,G403-01-04,ACTIVE_BALL_ALONE,720P_CENTRE,1280,720,1.0,0|0|0|0,,on-court game ball with visible support,control_01-04.png
+20,G403-02-05,BALL_BESIDE_RIM_HARDWARE,720P_RIGHT,1280,720,1.0,0|0|0|0,984|288|1008|384,on-court game ball; rim hardware is a distractor,control_02-05.png
+21,G403-03-01,ACTIVE_PLUS_BENCH_BALL,1080P_CENTRE,1920,1080,1.0,0|0|0|0,1056|119|1088|151,on-court game ball; bench ball is a distractor,control_03-01.png
+22,G403-04-02,BALL_BESIDE_JERSEY_PATCH,1080P_LEFT,1920,1080,1.0,0|0|0|0,352|508|416|572,on-court game ball; jersey patch is a distractor,control_04-02.png
+23,G403-05-03,DISTRACTORS_WITHOUT_BALL,1080P_RIGHT,1920,1080,1.0,1424|524|1456|556,1344|508|1408|572;1472|508|1536|572,no on-court game ball is present,control_05-03.png
+24,G403-06-04,IDENTITY_OBSCURED,720P_CENTRE,1280,720,1.0,628|348|652|372,616|348|640|372;640|348|664|372,multiple plausible objects have no recoverable identity,control_06-04.png
+25,G403-01-05,ACTIVE_BALL_ALONE,720P_RIGHT,1280,720,1.0,0|0|0|0,,on-court game ball with visible support,control_01-05.png
+26,G403-02-01,BALL_BESIDE_RIM_HARDWARE,1080P_CENTRE,1920,1080,1.0,0|0|0|0,992|444|1024|572,on-court game ball; rim hardware is a distractor,control_02-01.png
+27,G403-03-02,ACTIVE_PLUS_BENCH_BALL,1080P_LEFT,1920,1080,1.0,0|0|0|0,576|119|608|151,on-court game ball; bench ball is a distractor,control_03-02.png
+28,G403-04-03,BALL_BESIDE_JERSEY_PATCH,1080P_RIGHT,1920,1080,1.0,0|0|0|0,1312|508|1376|572,on-court game ball; jersey patch is a distractor,control_04-03.png
+29,G403-05-04,DISTRACTORS_WITHOUT_BALL,720P_CENTRE,1280,720,1.0,628|348|652|372,568|336|616|384;664|336|712|384,no on-court game ball is present,control_05-04.png
+30,G403-06-05,IDENTITY_OBSCURED,720P_RIGHT,1280,720,1.0,948|348|972|372,936|348|960|372;960|348|984|372,multiple plausible objects have no recoverable identity,control_06-05.png

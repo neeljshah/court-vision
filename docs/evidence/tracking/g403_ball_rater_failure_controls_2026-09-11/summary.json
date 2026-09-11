@@ -1,0 +1,96 @@
+{
+ "binding_duplicate_ids": [],
+ "binding_missing_ids": {
+  "sol": [],
+  "terra": []
+ },
+ "category_counts": {
+  "BENCH_BALL": 3,
+  "JERSEY": 7,
+  "OTHER_OBJECT": 47,
+  "RIM_HARDWARE": 6,
+  "SAME_OBJECT_LOCALISATION": 39,
+  "UNRESOLVED": 13
+ },
+ "consecutive_control_pairs": 29,
+ "consecutive_controls_distinguishable": 1,
+ "controls_rendered": 30,
+ "controls_sheet_scale": 1.0,
+ "controls_total": 30,
+ "controls_visible": 20,
+ "flag_changes": 0,
+ "g400_handoff_commit": "ad85fd187",
+ "g400_state_label_non_play_share": 0.6133,
+ "gpu_minutes": 0,
+ "invalid_coordinate_answers": [
+  "0746f934c5033313912857a75def3cbcbdb788df30511f21c60d34c00423ac8b"
+ ],
+ "median_native_diameter_px": 27.5,
+ "new_ratings": 0,
+ "other_rounds_aligned": 53,
+ "other_rounds_slipped": 3,
+ "other_rounds_strict_lead_match": 1,
+ "p90_linear_convention_px": 287.385,
+ "pod_jobs": 0,
+ "premise_all_match": 1,
+ "premise_expected": {
+  "archives": 20,
+  "both_visible_pairs": 125,
+  "conflicts": 115,
+  "gaps_over_100_px": 29,
+  "median_centre_gap_px": 24.021,
+  "p90_centre_gap_px": 292.139,
+  "pooled_kappa": 0.7505,
+  "pooled_pairs": 299,
+  "raw_answers": 600,
+  "redaction_records": 8,
+  "round1_n": 29,
+  "round8_kappa": 0.3605,
+  "round8_n": 30,
+  "sealed_keys": 300,
+  "valid_visible_diameters": 288
+ },
+ "premise_measured": {
+  "archives": 20,
+  "both_visible_pairs": 125,
+  "conflicts": 115,
+  "gaps_over_100_px": 29,
+  "median_centre_gap_px": 24.021,
+  "p90_centre_gap_px": 292.139,
+  "pooled_kappa": 0.7505,
+  "pooled_pairs": 299,
+  "raw_answers": 600,
+  "redaction_records": 8,
+  "round1_n": 29,
+  "round8_kappa": 0.3605,
+  "round8_n": 30,
+  "sealed_keys": 300,
+  "valid_visible_diameters": 288
+ },
+ "prereg_amended_by": "amendment_A1.md",
+ "registry_writes": 0,
+ "round8_aligned": 2,
+ "round8_slipped": 4,
+ "round8_slipped_frame_keys": [
+  "94323b993bded6cf19708d96caabb2802960831e86b19bb6be14c655aa8448a1",
+  "b4c21db951a7c24f82d2cdfbc70fe66256b2d4c003b9c132629d16a06c94873f",
+  "b87836a7c968c40018d4b263afe1c31534feee41cfa58541dca9da290a57fc48",
+  "e5d4e960192d4d220d3201eb07ef72f6c2b88aec432bc47a3923739132190b78"
+ ],
+ "round8_strict_lead_match": 3,
+ "rounds_where_lead_text_exceeds_same": [
+  8
+ ],
+ "row": "G403",
+ "sheets_store_available": 1,
+ "shot_audit_n": 30,
+ "shot_audit_non_play": 12,
+ "shot_audit_non_play_ci95": [
+  0.2459,
+  0.5768
+ ],
+ "shot_audit_non_play_share": 0.4,
+ "shot_audit_play": 17,
+ "shot_audit_unclassified": 1,
+ "source_video_decodes": 0
+}

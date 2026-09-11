@@ -1,0 +1,3 @@
+cmd: python -m scripts.platformkit.tracking.g403_build repeat
+G403_REPEAT identical=1 returncodes=[0, 0]
+returncode: 0
