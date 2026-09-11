@@ -1,0 +1,10 @@
+{
+  "candidate_heldout_executions": 1,
+  "source_hashes": {
+    "candidate_weights": "0f05a61618687bda2005ce4ac8343c5987f60ba0076245597de59f7380398762",
+    "frames": "11797e162dd303441a7bde18e66fae4b404341fa2bd611678226182258d58945",
+    "init_weights": "bc979654e281c5de6e0e992e1f9587b3a9faa2eec996ea41b1b03954ba0b6e52",
+    "reference": "ad00670c3601706d5d817de734fc85d82e8fdc379ea03b21bbe1a46e272ad09e"
+  },
+  "state": "SCORING_STARTED"
+}

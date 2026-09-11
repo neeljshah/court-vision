@@ -1,0 +1,19 @@
+{
+ "adjudication": "every hit is an opaque machine-emitted detector value (native pixel coordinate or confidence) or the census file quoting one; Q6 NOTE 2026-09-04 exempts verbatim opaque values and forbids masking them. Per-row adjudication in q6_redaction_manifest.csv. Zero hits in prose, table labels, the memo verdict or the ledger line.",
+ "files_scanned": 21,
+ "hits_in_data_artifacts": {
+  "docs/evidence/tracking/g390_ball_a8_sealed_pass_2026-09-11/predictions_A8.csv": [
+   "0.119",
+   "8.94"
+  ],
+  "docs/evidence/tracking/g390_ball_a8_sealed_pass_2026-09-11/predictions_paired.csv": [
+   "0.119",
+   "8.94"
+  ]
+ },
+ "hits_in_the_census_itself": [
+  "docs/evidence/tracking/g390_ball_a8_sealed_pass_2026-09-11/q6_redaction_manifest.csv",
+  "docs/evidence/tracking/g390_ball_a8_sealed_pass_2026-09-11/q6_scan.json"
+ ],
+ "non_opaque_prose_hits": 0
+}

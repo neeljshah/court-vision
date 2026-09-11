@@ -1,0 +1,21 @@
+{
+ "note": "*.pt is gitignored repo-wide; the fine-tuned weights are retained off-repo and hashed here. They were never written to models/ or to any deploy tree.",
+ "init_checkpoint": {
+  "pod_path": "/workspace/deploy/nba-ai-system/models/weights/yolov8n_ball.pt",
+  "sha256": "bc979654e281c5de6e0e992e1f9587b3a9faa2eec996ea41b1b03954ba0b6e52"
+ },
+ "candidate_final_epoch": {
+  "pod_path": "/workspace/g390_scratch/runs/a8/weights/last.pt",
+  "pc_path": "C:/Users/neelj/nba-track-a11/docs/evidence/tracking/g390_ball_a8_sealed_pass_2026-09-11/a8_final_epoch.pt",
+  "sha256": "0f05a61618687bda2005ce4ac8343c5987f60ba0076245597de59f7380398762",
+  "bytes": 6259242,
+  "epoch": 10,
+  "selected_by": "final completed epoch (last.pt); best.pt was never read",
+  "pc_decode_check": "torch zip archive opened, 365 members"
+ },
+ "deployed_route": {
+  "pod_path": "/workspace/nba-ai-system/src/tracking/ball_detect_track.py",
+  "sha256": "cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea",
+  "matches_g373_route_hashes": true
+ }
+}

@@ -1,0 +1,60 @@
+{
+ "all_bars_pass": false,
+ "baseline_A0": {
+  "all_fp_pass": false,
+  "all_fp_per_absent": 0.0425531914893617,
+  "bar_all_fp_per_absent": 0.01,
+  "bar_coverage": 0.25,
+  "bar_precision_wilson_lo": 0.9,
+  "coverage_pass": false,
+  "coverage_tp_over_549": 0.0,
+  "fn": 302,
+  "fp": 8,
+  "precision_pass": false,
+  "precision_wilson": [
+   0.0,
+   0.32440756488388023
+  ],
+  "precision_wilson_lo": 0.0,
+  "recall_denominator": 302,
+  "recall_on_visible": 0.0,
+  "tp": 0
+ },
+ "candidate_A8": {
+  "all_fp_pass": false,
+  "all_fp_per_absent": 0.898936170212766,
+  "bar_all_fp_per_absent": 0.01,
+  "bar_coverage": 0.25,
+  "bar_precision_wilson_lo": 0.9,
+  "coverage_pass": false,
+  "coverage_tp_over_549": 0.16393442622950818,
+  "fn": 212,
+  "fp": 169,
+  "precision_pass": false,
+  "precision_wilson": [
+   0.29211016505655896,
+   0.40732842292551275
+  ],
+  "precision_wilson_lo": 0.29211016505655896,
+  "recall_denominator": 302,
+  "recall_on_visible": 0.2980132450331126,
+  "tp": 90
+ },
+ "denominators": {
+  "ABSENT": 188,
+  "UNKNOWN": 59,
+  "VISIBLE": 302,
+  "all_heldout_keys": 549
+ },
+ "evaluator": {
+  "baseline_loss": 0.5428051001821493,
+  "candidate_loss": 0.3296903460837887,
+  "groups": 8,
+  "improvement": 0.21311475409836061,
+  "records": 7686
+ },
+ "input_hashes": {
+  "frames": "11797e162dd303441a7bde18e66fae4b404341fa2bd611678226182258d58945",
+  "reference": "ad00670c3601706d5d817de734fc85d82e8fdc379ea03b21bbe1a46e272ad09e"
+ }
+}

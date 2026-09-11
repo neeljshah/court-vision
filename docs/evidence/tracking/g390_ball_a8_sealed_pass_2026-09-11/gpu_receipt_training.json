@@ -1,0 +1,12 @@
+{
+  "cumulative_training_gpu_minutes": 9.232826793193817,
+  "gpu_minutes": 9.232826793193817,
+  "identities": {
+    "final_weights": "0f05a61618687bda2005ce4ac8343c5987f60ba0076245597de59f7380398762",
+    "gpu": "RTX 3090 device 0 (pod 213.192.2.120:40117)",
+    "init_weights": "bc979654e281c5de6e0e992e1f9587b3a9faa2eec996ea41b1b03954ba0b6e52",
+    "route": "cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea"
+  },
+  "phase": "training",
+  "prior_training_gpu_minutes": 0.0
+}

@@ -1,0 +1,18 @@
+{
+  "cache": {
+    "manifest_rows": 1620,
+    "sheets_verified": 1620
+  },
+  "dataset": {
+    "heldout_linked": 0,
+    "images": 955,
+    "negatives": 425,
+    "positives": 530,
+    "yaml": "/workspace/g390_scratch/ds/g390.yaml"
+  },
+  "train": {
+    "elapsed_seconds": 553.969607591629,
+    "epochs": 10,
+    "weights": "/workspace/g390_scratch/runs/a8/weights/last.pt"
+  }
+}
