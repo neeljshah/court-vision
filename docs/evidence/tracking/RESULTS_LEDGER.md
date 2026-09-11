@@ -728,3 +728,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-10 | tracking | G378 | landed PARTIAL: ANCHOR_SIDE_OCR cue resolved 158/240; LEFT 29/49 (Wilson lower 0.452) and RIGHT 33/51 (0.510) vs 0.90; masked 30/30 PASS, mirror 12/30 FAIL (glyph recognition not mirror-invariant); reference kappa 0.715; orbit diagnostic never picks where G371 refused; 8/20 pins pruned in 40 min | PARTIAL (codex-sol att1 REJECT, fix 1b ACCEPT WITH CORRECTIONS applied)
 
+2026-09-10 | tracking | G381 | landed DONE: 2,000 memo digest tokens / 380 memos classified -- 309 identify at landing + 222 unnamed + 2 object ids = 533 (267 per mille) identify committed bytes; 1,467 UNRESOLVED (1,149 never committed, 193 commit refs, 111 pod paths, 14 ambiguous); byte-identical rerun; PROPOSED digest convention + linter | DONE (codex-sol att1 REJECT, fix 1b ACCEPT verbatim)
+

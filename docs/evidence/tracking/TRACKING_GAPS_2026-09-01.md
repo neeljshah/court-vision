@@ -18,6 +18,13 @@
 
 
 
+
+## G381 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G381 | all | premise: 627 tracking memos at the sealed merge-base, 380 carry digests, 2,000 digest tokens (1,375 distinct). Resolution (prereg + A1 SHA-256-of-blob-bytes + A2 seal-form / repo-wide basename rules, each sealed alone): IDENTIFIES_AT_LANDING 309, ARTIFACT_UNNAMED 222, OBJECT_ID 2, UNRESOLVED 1,467 -- artifact never committed 1,149 (pod-only weights, scratch, /tmp), token is not a digest 193 (8-hex commit refs printed as provenance), absolute pod path 111, basename ambiguous 14. Only 533/2,000 (267 per mille) of printed memo digests identify committed bytes; the rest are unverifiable claims or pod-only artifacts. Second run byte-identical; spot checks (G372 A3 seal + track_daemon.py, G376, G374) confirm the resolver. Linter diagnostic 1,402 lines across 627 memos (wired nowhere). Superseded runs disclosed: run 1 (git object ids -> 1,956 UNRESOLVED by construction), run 2 (hung 55 min on a cat-file --batch pipe), run 3 (pre-A2, 1,671 UNRESOLVED). NEW GAPS: census tuples omit token position (1,995 unique of 2,000); marker vs verbatim copy of register prose | g381_memo_digest_census_2026-09-10.md; g381_memo_digest_census_2026-09-10/{prereg, A1, A2, census.csv, per_row.csv, unresolved.csv, summary.json, eye.txt, PROPOSED_digest_convention.md, run1_git_object_ids/, run3_pre_A2/}; G381_VERIFY_att1_REJECT_2026-09-10.md; G381_VERIFY_fix1b_ACCEPT_2026-09-10.md | **DONE -- 73 pct of printed memo digests identify nothing committed; adopt the PROPOSED convention (raw blob SHA-256, 64-hex, artifact path on the same line, pod-only artifacts named as such) for every future row** |
+
 ## G378 result register
 
 | Gap | Sport | Finding | Evidence | Status |
