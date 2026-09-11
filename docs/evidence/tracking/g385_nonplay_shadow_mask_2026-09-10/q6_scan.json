@@ -1,0 +1,13 @@
+{
+ "by_file": {},
+ "ledger_rows": "",
+ "scanned_roots": [
+  "docs/evidence/tracking/g385_nonplay_shadow_mask_2026-09-10",
+  "scripts/platformkit/tracking/g385_pin.py",
+  "scripts/platformkit/tracking/g385_model.py",
+  "scripts/platformkit/tracking/g385_rate.py",
+  "scripts/platformkit/tracking/g385_report.py",
+  "scripts/platformkit/tracking/g385_runtime.py"
+ ],
+ "total_findings": 0
+}

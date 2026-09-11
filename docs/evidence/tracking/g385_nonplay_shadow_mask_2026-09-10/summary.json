@@ -1,0 +1,41 @@
+{
+ "bar_capture": true,
+ "bar_classes": true,
+ "bar_false_mask": true,
+ "captured_nonplay": 94,
+ "false_mask_rate": [
+  0.021367521367521368,
+  0.009160640422243946,
+  0.049035516574102586
+ ],
+ "false_masks": 5,
+ "mask_precision_all_masked": [
+  0.9494949494949495,
+  0.8871729724897823,
+  0.9782367656463484
+ ],
+ "masked_frames": 99,
+ "nonplay_capture": [
+  0.752,
+  0.6695405126262626,
+  0.8194325287147475
+ ],
+ "planned_frames": 360,
+ "reference_definite_nonplay": 125,
+ "reference_play": 234,
+ "reference_unknown": 1,
+ "renders": {
+  "even_spaced": 30,
+  "files": 35,
+  "harmful_play_masks": 5
+ },
+ "sections": 30,
+ "shadow_only_no_flag_no_table_no_data_write": true,
+ "unknown_all_planned": [
+  0.002777777777777778,
+  0.000490514386670163,
+  0.01556444234986213
+ ],
+ "videos": 29,
+ "zero_absent_masks": true
+}

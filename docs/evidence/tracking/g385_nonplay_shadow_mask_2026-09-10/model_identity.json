@@ -1,0 +1,20 @@
+{
+ "development_definite_nonplay": 126,
+ "development_play": 154,
+ "development_sheets": 280,
+ "device": "cpu",
+ "embedding_dim": 512,
+ "extractor": "torchvision_resnet18_imagenet1k_v1",
+ "head": "logistic_l2_C1_balanced_liblinear",
+ "head_sha256": "d5ed7a318e696debdc22bf07804fcef5be99eeafeab7dfe942c382a2ae556cd5",
+ "max_iter": 1000,
+ "random_state": 385,
+ "shadow_only": true,
+ "threshold": 0.95,
+ "training_excluded_unknown": [
+  "sheet_0024:UNKNOWN"
+ ],
+ "weights_path": "/workspace/g364_scratch/weights/resnet18-f37072fd.pth",
+ "weights_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+ "writes_no_flag_table_ledger_or_data": true
+}

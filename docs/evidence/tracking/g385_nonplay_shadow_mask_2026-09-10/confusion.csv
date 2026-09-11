@@ -1,0 +1,7 @@
+reference_label,shadow_decision,frames
+NONPLAY,KEEP,30
+NONPLAY,MASK,94
+NON_SPORT,KEEP,1
+PLAY,KEEP,229
+PLAY,MASK,5
+UNKNOWN,KEEP,1
