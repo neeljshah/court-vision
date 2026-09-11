@@ -1,0 +1,105 @@
+{
+  "census_utc": "2026-09-11T12:33:58Z",
+  "daemon": {
+    "argv": "python3 -u scripts/platformkit/track_daemon.py --workers 8 --forever",
+    "clip_sports": [
+      "wnba",
+      "basketball",
+      "ncaa_basketball",
+      "nba"
+    ],
+    "cwd": "/workspace/deploy/nba-ai-system",
+    "deploy_git_head": "7eb25dc930f68491b63f5a236c57f49ee110e156",
+    "exe": "/usr/bin/python3.12",
+    "job_timeout_seconds": 12000,
+    "pid": 3177187,
+    "producer_argv_template": "run_clip.py --video <src> --game-id <id> --no-show --frames 3000 --data-dir data/tracking/<id>",
+    "track_daemon_py_sha256": "9747d9a085405c492f04c4e3b162ed8b1d897309da6f0f9c014cb7092056f5ac",
+    "workers": 8
+  },
+  "decoder": {
+    "cv2": "4.14.0",
+    "ffmpeg": "6.1.1-3ubuntu5",
+    "fps_handling": "native, no resampling; fps read from the avg_frame_rate rational",
+    "python": "3.12.3"
+  },
+  "feeder_records": {
+    "drop_by_reason": {
+      "duplicate-already-tracked": 3,
+      "liveness-FROZEN": 40,
+      "too-small": 28
+    },
+    "drop_probe_reject": 0,
+    "drop_shipped_extract_sha256": "f6f21b94fe8178a8f93f7f5f582791907e292f6d157ac3ae59430917c0c56d4b",
+    "shipped_by_height": {
+      "1080": 1113,
+      "720": 50
+    }
+  },
+  "first_720p60_finished_utc": "2026-09-07T21:49:41Z",
+  "last_720p60_finished_utc": "2026-09-11T12:30:27Z",
+  "ledger": {
+    "cited_path": "/workspace/deploy/nba-ai-system/data/tracking/track_daemon_ledger.jsonl",
+    "resolved_path": "/workspace/data/tracking/track_daemon_ledger.jsonl",
+    "snapshot_records": 1973,
+    "snapshot_sha256": "5c6d4c4c1ffd1827c15da21683e2650dd765e372ab7271823e5a874c524430a8"
+  },
+  "observed_mix": {
+    "post_boundary": {
+      "attempts": 29,
+      "attempts_by_declared_kind": {
+        "1080p30": 2,
+        "720p60": 27
+      },
+      "declared_resolution": {
+        "1280x720": 27,
+        "1920x1080": 2
+      },
+      "sections_by_declared_kind": {
+        "1080p30": 2,
+        "720p60": 27
+      }
+    },
+    "pre_boundary": {
+      "attempts": 1944,
+      "attempts_by_declared_kind": {
+        "1080p30": 1070,
+        "720p60": 14,
+        "OTHER": 860
+      },
+      "declared_resolution": {
+        "1280x720": 119,
+        "1920x1080": 1755,
+        "640x360": 70
+      },
+      "sections_by_declared_kind": {
+        "1080p30": 781,
+        "720p60": 14,
+        "OTHER": 775
+      }
+    }
+  },
+  "policy": {
+    "boundary_epoch": 1789127451,
+    "boundary_utc": "2026-09-11T11:50:51Z",
+    "file_digests": {
+      "discover_loop.sh": "09864e9f1eb3b5e518d6fe8dbf4fec493da768ae98ca9c9eec7435ee90b08ef7",
+      "discover_sources.py": "00504c02ae66c207ba9f7e7e7b9d7631b7005efee812f1df25c374a272b6f52f",
+      "feeder_pod.sh": "c887a8d8e220a77587f6ca11e29f0a4c634062d58f1a64bc6b56347c04fc6f06",
+      "feeder_pod.sh.bak_0020Z": "b39228e71877af8082d77a152e7d00b0b6a112d56c1e770aa56326356c9be588",
+      "feeder_pod.sh.bak_1152Z": "5838ba4a09c3bca0581b18591c700772d38161dc790ef83066cfda14158fb5e6",
+      "feeder_pod.sh.bak_1212Z": "d6852e2f601191cc73269d6abd37c21fff903ff57f573284f1d955476632c886"
+    },
+    "probe_bar_after": "if [ \"$c\" != h264 ] || [ \"${h:-0}\" -lt 720 ] 2>/dev/null; then",
+    "probe_bar_before": "if [ \"$c\" != h264 ] || [ \"${h:-0}\" -lt 1080 ] 2>/dev/null; then",
+    "relaunch_log_tail": [
+      "RESTARTED-ledger-gate 00:16:02 feeders=0",
+      "RELAUNCH-after-fix2 00:16:39",
+      "RESTARTED 11:50:51 fmt720 patch",
+      "RESTARTED 12:01:53 leading-hyphen skip"
+    ],
+    "selector_after": "if timeout 900 yt-dlp -f \"$fmt/301/312/311/300/bv*[protocol*=m3u8][height>=720][height<=1080]\" --no-playlist --no-warnings $args \\",
+    "selector_before": "if timeout 900 yt-dlp -f \"$fmt/312/270\" --no-playlist --no-warnings $args \\"
+  },
+  "premise_note": "720p60 predates the 2026-09-11T11:50:51Z selector change; the change shifted the mix, it did not create the kind."
+}

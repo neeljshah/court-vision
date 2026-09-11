@@ -1,0 +1,15 @@
+{
+  "decoded_frames": null,
+  "evaluated_frames": null,
+  "formula": "ceil(decoded_frames / stride) when max_frames is null and start_frame is 0",
+  "frame_count_validation": null,
+  "max_frames": 3000,
+  "reason": "max_frames_is_detector_dependent_in_this_route",
+  "schema_version": "g206-v1",
+  "source_fps": null,
+  "source_frame_count": null,
+  "source_path": "/workspace/nba-ai-system/data/videos/full_games_h264/nba__cavs_broadcast_2025.mp4",
+  "source_size_bytes": 307710128,
+  "start_frame": 0,
+  "stride": null
+}

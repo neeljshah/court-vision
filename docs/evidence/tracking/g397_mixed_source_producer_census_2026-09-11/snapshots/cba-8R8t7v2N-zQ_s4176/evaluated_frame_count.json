@@ -1,0 +1,15 @@
+{
+  "decoded_frames": null,
+  "evaluated_frames": 1000,
+  "formula": "ceil(decoded_frames / stride) when max_frames is null and start_frame is 0",
+  "frame_count_validation": null,
+  "max_frames": 3000,
+  "reason": null,
+  "schema_version": "g206-v1",
+  "source_fps": null,
+  "source_frame_count": null,
+  "source_path": "/workspace/nba-ai-system/data/footage_bridge/basketball__cba-8R8t7v2N-zQ_s4176.mp4",
+  "source_size_bytes": 70152035,
+  "start_frame": 0,
+  "stride": null
+}

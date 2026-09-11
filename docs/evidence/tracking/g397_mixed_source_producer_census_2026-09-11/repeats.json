@@ -1,0 +1,37 @@
+{
+  "canonical_digests": {
+    "enriched_ledger.jsonl": "9d2281ccaba9365b35803069ce85412894869d23899acc835fbd70ac4d9876b2",
+    "evaluated_ticks.csv": "b599489368609c3bffcad7e611e314be386af6f511c508404884846fc0e57f74",
+    "held_pairs.csv": "7549f5feacd210fd874134b8e9ec5a70d74bcd326db5f58fc258390d64540efa",
+    "per_section.csv": "0417951347524ff29e176101119d451df1370cd33bf2ecae308bf3d40870c0fe",
+    "summary.json": "b6c31fc1a1f2341c37165bcee83357ec20b9fe11f4a3d267a4cfb32de68ac251"
+  },
+  "identical": true,
+  "rounds": 2,
+  "runs": [
+    {
+      "digests": {
+        "enriched_ledger.jsonl": "9d2281ccaba9365b35803069ce85412894869d23899acc835fbd70ac4d9876b2",
+        "evaluated_ticks.csv": "b599489368609c3bffcad7e611e314be386af6f511c508404884846fc0e57f74",
+        "held_pairs.csv": "7549f5feacd210fd874134b8e9ec5a70d74bcd326db5f58fc258390d64540efa",
+        "per_section.csv": "0417951347524ff29e176101119d451df1370cd33bf2ecae308bf3d40870c0fe",
+        "summary.json": "b6c31fc1a1f2341c37165bcee83357ec20b9fe11f4a3d267a4cfb32de68ac251"
+      },
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "SECTIONS 60 TICKS 40541 HELD 60 ATTEMPTS 67"
+    },
+    {
+      "digests": {
+        "enriched_ledger.jsonl": "9d2281ccaba9365b35803069ce85412894869d23899acc835fbd70ac4d9876b2",
+        "evaluated_ticks.csv": "b599489368609c3bffcad7e611e314be386af6f511c508404884846fc0e57f74",
+        "held_pairs.csv": "7549f5feacd210fd874134b8e9ec5a70d74bcd326db5f58fc258390d64540efa",
+        "per_section.csv": "0417951347524ff29e176101119d451df1370cd33bf2ecae308bf3d40870c0fe",
+        "summary.json": "b6c31fc1a1f2341c37165bcee83357ec20b9fe11f4a3d267a4cfb32de68ac251"
+      },
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "SECTIONS 60 TICKS 40541 HELD 60 ATTEMPTS 67"
+    }
+  ]
+}

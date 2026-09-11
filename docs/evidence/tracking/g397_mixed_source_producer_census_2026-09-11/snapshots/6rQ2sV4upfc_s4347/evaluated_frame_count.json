@@ -1,0 +1,15 @@
+{
+  "decoded_frames": null,
+  "evaluated_frames": 500,
+  "formula": "ceil(decoded_frames / stride) when max_frames is null and start_frame is 0",
+  "frame_count_validation": null,
+  "max_frames": 3000,
+  "reason": null,
+  "schema_version": "g206-v1",
+  "source_fps": null,
+  "source_frame_count": null,
+  "source_path": "/workspace/deploy/nba-ai-system/data/footage_bridge/ncaa_basketball__6rQ2sV4upfc_s4347.mp4",
+  "source_size_bytes": 52188825,
+  "start_frame": 0,
+  "stride": null
+}

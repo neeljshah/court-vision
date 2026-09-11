@@ -1,0 +1,6 @@
+python3 -u scripts/platformkit/track_daemon.py --workers 8 --forever 
+/workspace/deploy/nba-ai-system
+/usr/bin/python3.12
+7eb25dc930f68491b63f5a236c57f49ee110e156
+2
+9747d9a085405c492f04c4e3b162ed8b1d897309da6f0f9c014cb7092056f5ac  scripts/platformkit/track_daemon.py
