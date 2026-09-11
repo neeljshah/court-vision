@@ -1,0 +1,288 @@
+{
+ "absent_arg_provenance": "INHERITED_LIBRARY_DEFAULT_NOT_EXPLICIT_IN_EXERCISED_ROUTE",
+ "absent_at_call_site": {
+  "agnostic_nms": false,
+  "augment": false,
+  "iou": 0.7,
+  "max_det": 300,
+  "rect": false
+ },
+ "captured_before_load": true,
+ "deploy_weights": {
+  "bytes": 6549796,
+  "path": "/workspace/deploy/nba-ai-system/yolov8n.pt",
+  "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+ },
+ "environment": {
+  "cuda_available": true,
+  "env": {
+   "CUDA_VISIBLE_DEVICES": "0",
+   "MKL_NUM_THREADS": "1",
+   "OMP_NUM_THREADS": "1",
+   "OPENBLAS_NUM_THREADS": "1"
+  },
+  "gpu": "NVIDIA GeForce RTX 3090, 10829 MiB, 24576 MiB",
+  "platform": "Linux-6.8.0-111-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "torch": "2.8.0+cu128",
+  "ultralytics": "8.4.146"
+ },
+ "exercised_route": "src/tracking/player_detection.py:FeetDetector.get_players_pos self.model(frame, classes=[0], conf=0.3, verbose=False, imgsz=_infer_imgsz, half=self._use_half, device=self._device)",
+ "frames": [
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_00.png",
+   "sha256": "3faed5506154923e212912d2da485d2443ee76c3269c395b3f1cdbe5f40bfb8d"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_01.png",
+   "sha256": "157352dfe262f581d64fb5c9d3726d180e2f8cb8b878d1b116d9bd373e4fa9ee"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_02.png",
+   "sha256": "b7388e5e15570af298bad9883f5b5d1155a62456ab53cc3c62abde6ee43f121e"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_03.png",
+   "sha256": "87dad8f0d1b71696dba5210c7711debdc2307d5704aa8c4acd4a12d5e17ff5be"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_04.png",
+   "sha256": "40f6904c931371c60442b02ff3915f10bd986f4e95035602cf3c331cd6160e3b"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_05.png",
+   "sha256": "a963aea6abeb2c6db4a01578f3b1f87676bcd983a443c2ebf54fcd3cb9834ca0"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_06.png",
+   "sha256": "269ff5151ef071db733d1eb7f6ef0345664bc8781c17a5d7ed86f6fef22420ec"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_07.png",
+   "sha256": "de48ca0a561e66c2545c78438cf8cdf208dbdd0f21c39a958f1b69609c19ded2"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_08.png",
+   "sha256": "2574deed6900d61cdfad92106e726a8102abe9467b8dc72b9ce413d91662cd4c"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_09.png",
+   "sha256": "66b64c2b0ea4c94a1f1b61bb8af38e3f02b5c09839b33308efcce61526d3174d"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_10.png",
+   "sha256": "0ffdae12bdeebb4f335eaa82e1da0683394119198d0bb5f8711dcd381e44426d"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_11.png",
+   "sha256": "e1a8f092478a4bad6e2ff2c055448cb09baa712b843e5d0557eed9b08695edbb"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_12.png",
+   "sha256": "60a6d10784678d09e2a8a06385007c0b74ce31c80fe87a33265ab037afc2eb1f"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_13.png",
+   "sha256": "cbf26a8973acb5a62e98214732e9fb83a49a94a250e2cb670d2bf899cf59c5e5"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_14.png",
+   "sha256": "a6e3aad1cceca2e0f4dfa79ab0fac6320c0afab786f8ccd6c44f2b0d4a1b90ab"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_15.png",
+   "sha256": "8a27ee6ac382d1c87c31b15b885d33c22da9e5f1f3f90a6bfcd48e57ac8cf0f6"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_16.png",
+   "sha256": "6f49af0664fea4c8fd3989f6d49f4ca24f6fd86e3d83151c4013d6503afbe594"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_17.png",
+   "sha256": "1941a2538703e3334d9efbfaaa7702bb0aabadb2879b2e5a7317f2fea1e230d8"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_18.png",
+   "sha256": "bab6efdca92da53b23bcf6e0f4e90d156c0c9f5eaca1d38785e6d7f892d767e3"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_19.png",
+   "sha256": "48981e6888924faab15108ad004bacc9638f8f2c1c467320ccec6a2b39ee5d88"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_20.png",
+   "sha256": "80164b0a40950abead873bc5382047b74997e5c85c67a060c2c340d3f4716da9"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_21.png",
+   "sha256": "2da92a1bb9d3cc877176f896f1a4bc22e7d0322fd422ea12a66caba64e1bd81c"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_22.png",
+   "sha256": "911b2b6a534b46d1c3ac86bf2cb7ba9e4724022e2fde2525573c2d0b88adab3a"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_23.png",
+   "sha256": "f3aa34b74e226ab7c2c61eb5167ffbbe0b67d1d2c63d7460d051fd68102d0a7f"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_24.png",
+   "sha256": "11ceb2f37bb15854d8a42eb62115bd9f3cc3a865edada3d4beb64621fd0f2e9c"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_25.png",
+   "sha256": "a57f6c5c895d88ac5d1be4414621bb56b449b59dfc9a0d5589951af621ca7b93"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_26.png",
+   "sha256": "1ca064bad731e5bbf721fb70977db3bdd600f9797b2ac93ec15d23fbb011748a"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_27.png",
+   "sha256": "b74acb0bce226ac7477b4702167a955b39c40bf97b5fedd763d6d0fc522d7481"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_28.png",
+   "sha256": "1fa90cbc82a477173d644ff2073720ca00501aeeeaab37347ebc163091fcaa0e"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/1080p30_29.png",
+   "sha256": "7ca30149da85ab90aaf5bf60627fadcb4f7e76ea6c20b6c1328f7a79f40c5e3f"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_00.png",
+   "sha256": "f579a36bae554f7878356795896a7f94ec64f5fae73f3cdd4a804d3752cf682b"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_01.png",
+   "sha256": "b4a5ab26c7d721bfe456f2eecd7f4869bbdad6e63ae35a333ad6c8997bd78683"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_02.png",
+   "sha256": "4dda7e04d027b134de3b020a35644bde64cd78410703fd0323eec1726d58741f"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_03.png",
+   "sha256": "cfb705e4b2345a2f85176a3e521e761028803491c829dbba76c275333d9f9d12"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_04.png",
+   "sha256": "fd0f259b45d3d24da1a4b056764f6dabaf3c67f4a5b7b1bc48f45db68bd48a63"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_05.png",
+   "sha256": "5aa7147dad502b03a92890bfea66fa971dfa312efd4bfd9db56a3bca04937fed"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_06.png",
+   "sha256": "6491c9f9c0acf1ea41dcdf7a36be36f0e6cc710fa8652666f39709dd5f7a6d14"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_07.png",
+   "sha256": "c7bdaf64957fcdb94fca0d7be8ccf231a896fc03a61345721aaf3c429b6aa58a"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_08.png",
+   "sha256": "2779b640a484c46eee5b6eb0f6af08d2656869e3eec708df3753e2165050fb82"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_09.png",
+   "sha256": "db7e8acda31ee4f4c8fb56170941b8e0af87c2612de502f53a8cdf458759f7b4"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_10.png",
+   "sha256": "0ec685c717bb9c244fb90ab155db373d83e1104bb6e193c3989d6bb987291100"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_11.png",
+   "sha256": "b0b41809323bfcbc4c2106a49d965a1e68812cc2f7cc5fb0544fc6f31b6166ee"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_12.png",
+   "sha256": "1e160221a909c3e503aaf50ecc28db1a298599f72293d2086d08ec58a8da2ae7"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_13.png",
+   "sha256": "4862b63d2072cf26ffa636361b34803f5ca291da451884aa385a9a7ffd02303c"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_14.png",
+   "sha256": "fcaa71774fa2cf97e92f6c30f3f5e6842d66ba6878c9425f85421740a4ccc542"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_15.png",
+   "sha256": "f6ee544f2d017af1381b1a282583fb530c08115bc4c896be103607c94e8c6b7a"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_16.png",
+   "sha256": "fd35a282b8c4c74e5bb224f5486a0911833bc9482f04ef0090830222224b9f5b"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_17.png",
+   "sha256": "1fcf838699b61aac1d133c6461796f8ac6b76033f56ccbae4cd4d60a2984be51"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_18.png",
+   "sha256": "99515d812962b572b9fd1a21ff0524c05eb781f72f595e6dfb7299cfbb30335d"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_19.png",
+   "sha256": "34952b272630b9568f06aebacbfb8201ed6109c3c5b1ba6487271bb994a82b83"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_20.png",
+   "sha256": "b33b3aa79d4efed196b3a3738da9e59765ec43bf5dd5f7171b0b5fe2142cc803"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_21.png",
+   "sha256": "ee992b0035f6e1f8d46e47d9059c44a399c953049a48bb021a741d34e5e513c2"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_22.png",
+   "sha256": "1591161474a37e7b52d3be6a4cf6b17cfbc165d80e2cbfa6f55cc58dfec5a89c"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_23.png",
+   "sha256": "8abd8caf48917eed56ba0fa45d40b8a5c312a5fb9b678889bc975c98d111f551"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_24.png",
+   "sha256": "03afef1c4cbe8b43aae5735ad8e70af4c248f0d71635d0c6ba01f210105f2692"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_25.png",
+   "sha256": "6466f10c1b0d85a14e2bc4fdf5bbd3fc97db845d82daae3c0c97759ce2790bba"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_26.png",
+   "sha256": "78438eecb79962fdc3e071001dc67c57dd0362927a9293f032cbe58e49a00d2a"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_27.png",
+   "sha256": "e1d3bac16feca26e775db2843d28928c050a3de0bf737dc79d38f13a51ff2cd9"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_28.png",
+   "sha256": "4c170bcf682b993a36ecc7bdec18d9b04d117f2351b9285f7fe3b0ab4234b039"
+  },
+  {
+   "path": "/workspace/g406_scratch/frames/720p60_29.png",
+   "sha256": "a9562b9fad277674e90a1367cadcbd4fb7494bc6b53313652914d005fb81815e"
+  }
+ ],
+ "frozen_args": {
+  "classes": [
+   0
+  ],
+  "conf": 0.3,
+  "device": 0,
+  "half": true,
+  "imgsz": 640,
+  "verbose": false
+ },
+ "scratch_weights": {
+  "bytes": 6549796,
+  "path": "/workspace/g406_scratch/yolov8n.pt",
+  "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+ }
+}

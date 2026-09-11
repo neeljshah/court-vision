@@ -1,0 +1,246 @@
+{
+ "1080p30": {
+  "blind_instances": 289,
+  "blind_matched_producer": 9,
+  "blind_missed_by_producer": 280,
+  "blind_missed_by_producer_rate": 0.968858,
+  "blind_region_min_persons_not_instance_marked": 2206,
+  "blind_uncertain_instances": 57,
+  "blind_uncertain_regions": 88,
+  "candidate_extent_correct": 0,
+  "candidate_plausibility": 1.0,
+  "candidate_rows": 18,
+  "candidate_supported": 18,
+  "comparator_boxes": 305,
+  "comparator_matched_producer": 32,
+  "comparator_matched_producer_rate": 0.104918,
+  "comparator_silent_ticks": 0,
+  "full_window_denominators": {
+   "bounded_rows": 9146,
+   "candidate_rows": 1565,
+   "decoded_frames": 9000,
+   "evaluated_ticks": 2500,
+   "receipt_zero_output_evaluated_ticks": 151,
+   "receipt_zero_output_unknown_windows": 1,
+   "windows": 30,
+   "zero_candidate_evaluated_ticks_alias_zero_output_evaluated_ticks": 1481
+  },
+  "masked_rows_by_class": {
+   "CLAMP": {
+    "extent_correct": 0,
+    "no_person": 5,
+    "rows": 56,
+    "supported": 51,
+    "supported_rate": 0.910714,
+    "unknown": 0
+   },
+   "DETECTION": {
+    "extent_correct": 0,
+    "no_person": 0,
+    "rows": 18,
+    "supported": 18,
+    "supported_rate": 1.0,
+    "unknown": 0
+   },
+   "PREDICTION": {
+    "extent_correct": 1,
+    "no_person": 1,
+    "rows": 25,
+    "supported": 24,
+    "supported_rate": 0.96,
+    "unknown": 0
+   },
+   "SUBPIXEL": {
+    "extent_correct": 0,
+    "no_person": 0,
+    "rows": 12,
+    "supported": 11,
+    "supported_rate": 0.916667,
+    "unknown": 1
+   }
+  },
+  "producer_matched_comparator": 32,
+  "producer_matched_comparator_rate": 0.288288,
+  "producer_silent_ticks": 1,
+  "sampled_denominators": {
+   "decoded_frames": 30,
+   "evaluated_ticks": 30,
+   "producer_rows": 111
+  },
+  "sampled_producer_rows": 111,
+  "sampled_ticks": 30
+ },
+ "720p60": {
+  "blind_instances": 297,
+  "blind_matched_producer": 10,
+  "blind_missed_by_producer": 287,
+  "blind_missed_by_producer_rate": 0.96633,
+  "blind_region_min_persons_not_instance_marked": 3856,
+  "blind_uncertain_instances": 45,
+  "blind_uncertain_regions": 68,
+  "candidate_extent_correct": 0,
+  "candidate_plausibility": 1.0,
+  "candidate_rows": 16,
+  "candidate_supported": 16,
+  "comparator_boxes": 287,
+  "comparator_matched_producer": 19,
+  "comparator_matched_producer_rate": 0.066202,
+  "comparator_silent_ticks": 0,
+  "full_window_denominators": {
+   "bounded_rows": 9941,
+   "candidate_rows": 1510,
+   "decoded_frames": 18000,
+   "evaluated_ticks": 2810,
+   "receipt_zero_output_evaluated_ticks": 204,
+   "receipt_zero_output_unknown_windows": 0,
+   "windows": 30,
+   "zero_candidate_evaluated_ticks_alias_zero_output_evaluated_ticks": 1796
+  },
+  "masked_rows_by_class": {
+   "CLAMP": {
+    "extent_correct": 0,
+    "no_person": 3,
+    "rows": 49,
+    "supported": 46,
+    "supported_rate": 0.938776,
+    "unknown": 0
+   },
+   "DETECTION": {
+    "extent_correct": 0,
+    "no_person": 0,
+    "rows": 16,
+    "supported": 16,
+    "supported_rate": 1.0,
+    "unknown": 0
+   },
+   "PREDICTION": {
+    "extent_correct": 0,
+    "no_person": 0,
+    "rows": 22,
+    "supported": 20,
+    "supported_rate": 0.909091,
+    "unknown": 2
+   },
+   "SUBPIXEL": {
+    "extent_correct": 0,
+    "no_person": 0,
+    "rows": 8,
+    "supported": 8,
+    "supported_rate": 1.0,
+    "unknown": 0
+   }
+  },
+  "producer_matched_comparator": 19,
+  "producer_matched_comparator_rate": 0.2,
+  "producer_silent_ticks": 4,
+  "sampled_denominators": {
+   "decoded_frames": 30,
+   "evaluated_ticks": 30,
+   "producer_rows": 95
+  },
+  "sampled_producer_rows": 95,
+  "sampled_ticks": 30
+ },
+ "POOLED": {
+  "blind_instances": 586,
+  "blind_matched_producer": 19,
+  "blind_missed_by_producer": 567,
+  "blind_missed_by_producer_rate": 0.967577,
+  "blind_region_min_persons_not_instance_marked": 6062,
+  "blind_uncertain_instances": 102,
+  "blind_uncertain_regions": 156,
+  "candidate_extent_correct": 0,
+  "candidate_plausibility": 1.0,
+  "candidate_rows": 34,
+  "candidate_supported": 34,
+  "comparator_boxes": 592,
+  "comparator_matched_producer": 51,
+  "comparator_matched_producer_rate": 0.086149,
+  "comparator_silent_ticks": 0,
+  "full_window_denominators": {
+   "bounded_rows": 19087,
+   "candidate_rows": 3075,
+   "decoded_frames": 27000,
+   "evaluated_ticks": 5310,
+   "receipt_zero_output_evaluated_ticks": 355,
+   "receipt_zero_output_unknown_windows": 1,
+   "windows": 60,
+   "zero_candidate_evaluated_ticks_alias_zero_output_evaluated_ticks": 3277
+  },
+  "masked_rows_by_class": {
+   "CLAMP": {
+    "extent_correct": 0,
+    "no_person": 8,
+    "rows": 105,
+    "supported": 97,
+    "supported_rate": 0.92381,
+    "unknown": 0
+   },
+   "DETECTION": {
+    "extent_correct": 0,
+    "no_person": 0,
+    "rows": 34,
+    "supported": 34,
+    "supported_rate": 1.0,
+    "unknown": 0
+   },
+   "PREDICTION": {
+    "extent_correct": 1,
+    "no_person": 1,
+    "rows": 47,
+    "supported": 44,
+    "supported_rate": 0.93617,
+    "unknown": 2
+   },
+   "SUBPIXEL": {
+    "extent_correct": 0,
+    "no_person": 0,
+    "rows": 20,
+    "supported": 19,
+    "supported_rate": 0.95,
+    "unknown": 1
+   }
+  },
+  "producer_matched_comparator": 51,
+  "producer_matched_comparator_rate": 0.247573,
+  "producer_silent_ticks": 5,
+  "sampled_denominators": {
+   "decoded_frames": 60,
+   "evaluated_ticks": 60,
+   "producer_rows": 206
+  },
+  "sampled_producer_rows": 206,
+  "sampled_ticks": 60
+ },
+ "geometry": {
+  "nearest_comparator_centre_offset_descriptive_only": {
+   "dx": {
+    "median": 0.0,
+    "n": 206,
+    "p10": -81.43,
+    "p90": 75.82
+   },
+   "dy": {
+    "median": -59.5,
+    "n": 206,
+    "p10": -105.45,
+    "p90": 17.5
+   }
+  },
+  "note": "the nearest-comparator offset is descriptive and is not an association rule; the sealed rule remains one-to-one maximum IoU at 0.50",
+  "sealed_matched_pairs_iou_ge_0_50": {
+   "dx": {
+    "median": 0.0,
+    "n": 51,
+    "p10": -13.5,
+    "p90": 27.25
+   },
+   "dy": {
+    "median": -58.2,
+    "n": 51,
+    "p10": -67.75,
+    "p90": -45.75
+   }
+  }
+ }
+}

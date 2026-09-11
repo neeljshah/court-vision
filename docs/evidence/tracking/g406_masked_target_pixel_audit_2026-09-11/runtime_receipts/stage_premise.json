@@ -1,0 +1,34 @@
+{
+ "candidate_rows": 3075,
+ "class_table": {
+  "CLAMP": 9354,
+  "DETECTION": 3075,
+  "PREDICTION": 5259,
+  "SUBPIXEL": 1399
+ },
+ "class_table_matches_sealed": 1,
+ "distinct_ticks": 60,
+ "draw_matches_g402_eye_index": 1,
+ "forbidden_admissions": 0,
+ "held_rows": 0,
+ "repeated_coordinate": {
+  "CLAMP": 7760,
+  "DETECTION": 0,
+  "PREDICTION": 0,
+  "SUBPIXEL": 1303
+ },
+ "retained_off_pod": 60,
+ "retained_selected": 53,
+ "sealed_rows": 19087,
+ "selected_rows": 206,
+ "source_windows_supplying_ticks": 53,
+ "universe_n": {
+  "1080p30": 2500,
+  "720p60": 2810
+ },
+ "windows_complete": 59,
+ "windows_total": 60,
+ "windows_unknown": [
+  "1080p30/RIrGQJ_jsGQ_s90"
+ ]
+}

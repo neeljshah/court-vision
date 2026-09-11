@@ -1,0 +1,72 @@
+{
+ "sealed_before_launch": true,
+ "comparator_identity": "G402 YOLOv8n person detector, same weights file, same detector family as the producer",
+ "independence": "NOT INDEPENDENT. Same detector family and same weights as the producer route. This is a same-detector consistency comparator, never a teacher.",
+ "weights": {
+  "expected_sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36",
+  "deploy_path": "/workspace/deploy/nba-ai-system/yolov8n.pt",
+  "deploy_bytes": 6549796,
+  "deploy_sha256_before_copy": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36",
+  "scratch_copy_path": "/workspace/g406_scratch/yolov8n.pt",
+  "scratch_copy_bytes": 6549796,
+  "scratch_copy_sha256_before_load": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36",
+  "expected_match": 1,
+  "selection_rule": "_best_yolo_model('yolov8n') returns 'yolov8n.pt' because resources/yolov8n.engine is absent and tensorrt does not import on this pod",
+  "engine_present": 0,
+  "tensorrt_importable": 0
+ },
+ "exercised_route": {
+  "call_site": "src/tracking/player_detection.py:118 FeetDetector.get_players_pos",
+  "call_text": "self.model(frame, classes=[0], conf=0.3, verbose=False, imgsz=_imgsz, half=self._use_half, device=self._device)",
+  "imgsz_source": "src/tracking/player_detection.py:82 self._infer_imgsz = 640",
+  "half_source": "src/tracking/player_detection.py:74 self._use_half = torch.cuda.is_available()",
+  "device_source": "src/tracking/player_detection.py:75 self._device = 0 if self._use_half else 'cpu'",
+  "preprocessing": "full native BGR frame straight from the decoder; the producer pipeline applies no resize before get_players_pos",
+  "route_file_sha256": {
+   "src/tracking/player_detection.py": "c3bc2f7d4c4fda366f83523dd0aac86e47a40fecaf26e36b490d5a8c73ca5cc7",
+   "src/tracking/advanced_tracker.py": "df2ae698ae03e804f67639434d8303638aea9087c3169c016af5a3734dd474d7",
+   "src/pipeline/unified_pipeline.py": "c4eae385bfeebd4e44c8161c791ef7ed4589697020f424d3dde7aec6816d9226",
+   "scripts/run_clip.py": "ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2"
+  },
+  "route_file_hash_timing": "read before launch to seal the arguments; digests captured after the single invocation against the read-only deploy tree",
+  "route_file_matches_g402_original": {
+   "src/tracking/advanced_tracker.py": 1,
+   "src/pipeline/unified_pipeline.py": 1,
+   "scripts/run_clip.py": 1,
+   "src/tracking/player_detection.py": "NO_G402_BASELINE_RECORDED"
+  }
+ },
+ "frozen_args": {
+  "classes": [0],
+  "conf": 0.3,
+  "imgsz": 640,
+  "half": true,
+  "device": 0,
+  "verbose": false
+ },
+ "absent_at_call_site": {
+  "status": "PARTIAL",
+  "reason": "the exercised route never sets a suppression argument, so none could be sealed from it; no default was substituted and none was passed",
+  "inherited_library_defaults_recorded_only": {
+   "iou": 0.7,
+   "max_det": 300,
+   "agnostic_nms": false,
+   "augment": false,
+   "rect": false
+  },
+  "library": "ultralytics 8.4.146"
+ },
+ "runner": {
+  "path": "scripts/platformkit/tracking/g406_comparator.py",
+  "sha256_pc": "712068471b1d69e8254b06de0f20bbfad45288a29be569cd5319048d44d1bf74",
+  "sha256_pod": "712068471b1d69e8254b06de0f20bbfad45288a29be569cd5319048d44d1bf74",
+  "invocations": 1,
+  "sequential": true,
+  "cpu_affinity": "taskset -c 0-5",
+  "torch_num_threads": 1
+ },
+ "known_runtime_notes": [
+  "ultralytics 8.4.146 prints a deprecation warning for the half argument; the argument was passed exactly as the exercised route passes it and was not replaced",
+  "the comparator reads the independently decoded native PNG rather than the producer's in-process VideoCapture buffer, so decoder-level byte identity with the producer run is not established"
+ ]
+}

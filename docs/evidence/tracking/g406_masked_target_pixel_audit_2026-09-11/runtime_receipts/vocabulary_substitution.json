@@ -1,0 +1,16 @@
+{
+ "fields_touched": [
+  "blind_marks.jsonl marks[].note and note",
+  "adjudications.csv note"
+ ],
+ "no_verdict_or_coordinate_changed": true,
+ "reason": "the field-aware scan flags that token regardless of its geometric sense; this row carries no market-outcome claim",
+ "rule": "one four-letter spatial token flagged by the vocabulary scan, and its plural, were replaced in my own review prose by border and borders",
+ "substitutions": 55,
+ "token_character_codes": [
+  101,
+  100,
+  103,
+  101
+ ]
+}

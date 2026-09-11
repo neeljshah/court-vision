@@ -1,0 +1,222 @@
+{
+ "files": [
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/adjudications.csv"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/all_masked_rows.csv"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/associations.csv"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/blind_marks.jsonl"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/blind_order_receipt.csv"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/blind_view_receipts.csv"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/comparator_detections.csv"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/draw.csv"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/eye_index.csv"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/frame_receipts.csv"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/frozen_args.json"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/input_hashes.csv"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/launch_receipts.json"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/per_tick.csv"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/prereg.md"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/q6_scan.json"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/render_receipts.csv"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/repeats.json"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/runtime_receipts/comparator_run.log.txt"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/runtime_receipts/ledger_line_g406.txt"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/runtime_receipts/stage_adjudicate.json"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/runtime_receipts/stage_associate.json"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/runtime_receipts/stage_autofill.json"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/runtime_receipts/stage_decode.json"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/runtime_receipts/stage_marks.json"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/runtime_receipts/stage_order.json"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/runtime_receipts/stage_premise.json"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/runtime_receipts/vocabulary_substitution.json"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/source_receipts.csv"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/summary.json"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/unmatched_boxes.csv"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/window_accounting.csv"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11.md"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g406_masked_target_pixel_audit_2026-09-11/runtime_receipts/ledger_line_g406.txt"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g406_measure.py"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g406_review.py"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g406_render.py"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g406_aggregate.py"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g406_seal.py"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g406_comparator.py"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g406_audit.py"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g406_prepare.py"
+  },
+  {
+   "count": 0,
+   "indices": [],
+   "path": "C:/Users/neelj/nba-track-a7/tests/platformkit/test_g406_target_pixel_audit.py"
+  }
+ ],
+ "non_opaque_hits": 0,
+ "pattern_source": "character codes only; matched text is never emitted",
+ "scanned": 43
+}

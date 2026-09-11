@@ -1,0 +1,121 @@
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_00 11
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_01 11
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_02 2
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_03 9
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_04 14
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_05 10
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_06 11
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_07 11
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_08 15
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_09 9
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_10 5
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_11 11
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_12 13
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_13 13
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_14 4
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_15 4
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_16 3
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_17 15
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_18 15
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_19 4
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_20 6
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_21 14
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_22 12
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_23 8
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_24 11
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_25 15
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_26 11
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_27 17
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_28 7
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+1080p30_29 14
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_00 11
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_01 12
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_02 6
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_03 13
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_04 11
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_05 11
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_06 12
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_07 12
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_08 2
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_09 2
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_10 2
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_11 16
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_12 8
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_13 8
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_14 19
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_15 10
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_16 11
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_17 11
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_18 4
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_19 9
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_20 10
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_21 8
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_22 4
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_23 9
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_24 12
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_25 13
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_26 10
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_27 13
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_28 11
+WARNING ?? 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+720p60_29 7
+{"frames": 60, "rows": 592, "silent_frames": 0}

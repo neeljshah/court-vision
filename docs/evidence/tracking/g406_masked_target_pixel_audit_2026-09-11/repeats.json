@@ -1,0 +1,146 @@
+{
+ "baseline_digests": {
+  "all_masked_rows.csv": "9b38e4fff1c5a0d7f3a5930fc863bc67c17e7bbf95467ba9464b42c2054a1bc4",
+  "associations.csv": "1f7a44cd573c4273724765e3f31ac95c2196500ea5dbbd7986fcdcbe05e20114",
+  "blind_order_receipt.csv": "4c5f4cc6549b0e0ef2be49bc75778c62855ffe77b73e0abbab5a95f3f10e54b8",
+  "draw.csv": "217020519d792a574cfd074bd44aa0a2cd947f4b2bb2d6e6905de0c9caef788e",
+  "input_hashes.csv": "dada9bbb6d3b737ee5be9250c4520d1d5d4361501509b31a3dfba15c4110fe2e",
+  "per_tick.csv": "5fea54f8363a1a95592bf6a61c8863ad0de813cfed178b912438db2ce507a9e8",
+  "render_receipts.csv": "4d1602fbfe598db9f10fd0b78b93ca23a38789558851947c638a87fdc583fd75",
+  "renders/1080p30_00.jpg": "b223588527c09fa3d8e18eeac3559329a74fd0a4d91dd470d768be6e4cba77d4",
+  "source_receipts.csv": "f89cbf1e2e72a2a7c1b48e3873b84855c4f28f016da56d9ba4744017768e0439",
+  "summary.json": "734e2ed8f092942a86c68b64dfaaf8047dfe84a63b551a37ade2ef97c9d70e0f",
+  "unmatched_boxes.csv": "c61c08c86be953e1e53fd7c7f6572c39a86c92ef2b1da113eb4e0e495c55d261",
+  "window_accounting.csv": "1ba094eb4cbbb6e08bb36d4f13c87de00eeb91c6abb1e9571a213fc73461bb03"
+ },
+ "frozen_inputs_not_regenerated": {
+  "adjudications.csv": "7527593cf3df7ce050d2603abf2abc3b5d41953dc892a456623686de67b76250",
+  "blind_marks.jsonl": "e967c91141d4adc7111c4913801aa184cb7c815b4e6a6bc0bdd5ebb9aff6607a",
+  "blind_view_receipts.csv": "e79bcf241cb19adafe3d1b4402b6018cb67b0266ca055520bcebe54318bec125",
+  "comparator_detections.csv": "1c1c928728161616f81b340af4a83f43a4c206b8fc7687dce698330fac28d872",
+  "eye_index.csv": "d0019a5b0460cca99fe5afade3e414173c104eba5997fc1683f43d1de2bcd436",
+  "frame_receipts.csv": "5e83a7e5c5af44ee4f42276742698af8ea5aae43ccac55f99a3c49db8b57c14e",
+  "frozen_args.json": "78cbf48c7f68004553f396bbce92f13beb9af8e2f9d1e9a94e2b8f1218228b80",
+  "launch_receipts.json": "b19cb5c7465d4035b1639a2145f92b8a50096f51cdce5c7a9da1195e44d99eca",
+  "prereg.md": "623d15bb936b232abd6e4691e8fba0494fc33dfaab0d0d89697185da32d9f0db"
+ },
+ "identical": true,
+ "rounds": 2,
+ "runs": [
+  {
+   "identical_to_baseline": true,
+   "per_table_digests": {
+    "all_masked_rows.csv": "9b38e4fff1c5a0d7f3a5930fc863bc67c17e7bbf95467ba9464b42c2054a1bc4",
+    "associations.csv": "1f7a44cd573c4273724765e3f31ac95c2196500ea5dbbd7986fcdcbe05e20114",
+    "blind_order_receipt.csv": "4c5f4cc6549b0e0ef2be49bc75778c62855ffe77b73e0abbab5a95f3f10e54b8",
+    "draw.csv": "217020519d792a574cfd074bd44aa0a2cd947f4b2bb2d6e6905de0c9caef788e",
+    "input_hashes.csv": "dada9bbb6d3b737ee5be9250c4520d1d5d4361501509b31a3dfba15c4110fe2e",
+    "per_tick.csv": "5fea54f8363a1a95592bf6a61c8863ad0de813cfed178b912438db2ce507a9e8",
+    "render_receipts.csv": "4d1602fbfe598db9f10fd0b78b93ca23a38789558851947c638a87fdc583fd75",
+    "renders/1080p30_00.jpg": "b223588527c09fa3d8e18eeac3559329a74fd0a4d91dd470d768be6e4cba77d4",
+    "source_receipts.csv": "f89cbf1e2e72a2a7c1b48e3873b84855c4f28f016da56d9ba4744017768e0439",
+    "summary.json": "734e2ed8f092942a86c68b64dfaaf8047dfe84a63b551a37ade2ef97c9d70e0f",
+    "unmatched_boxes.csv": "c61c08c86be953e1e53fd7c7f6572c39a86c92ef2b1da113eb4e0e495c55d261",
+    "window_accounting.csv": "1ba094eb4cbbb6e08bb36d4f13c87de00eeb91c6abb1e9571a213fc73461bb03"
+   },
+   "returncode": 0,
+   "round": 1,
+   "stdout": "\n}\n{\"blind_instances\": 586, \"cards\": 60, \"pairs\": 391, \"uncertain_regions\": 156, \"unmatched\": 1986}\n{\"blind_before_overlay\": 1, \"rows\": 482}\n{\n   \"extent_correct\": 0,\n   \"no_person\": 0,\n   \"rows\": 20,\n   \"supported\": 19,\n   \"supported_rate\": 0.95,\n   \"unknown\": 1\n  }\n },\n \"producer_matched_comparator\": 51,\n \"producer_matched_comparator_rate\": 0.247573,\n \"producer_silent_ticks\": 5,\n \"sampled_denominators\": {\n  \"decoded_frames\": 60,\n  \"evaluated_ticks\": 60,\n  \"producer_rows\": 206\n },\n \"sampled_producer_rows\": 206,\n \"sampled_ticks\": 60\n}\n{'cards': 60, 'silence_cards': 5, 'total_bytes': 14558730}\n",
+   "steps": [
+    {
+     "module": "g406_measure",
+     "returncode": 0,
+     "stage": "premise",
+     "stderr": "",
+     "stdout": ",\n \"repeated_coordinate\": {\n  \"CLAMP\": 7760,\n  \"DETECTION\": 0,\n  \"PREDICTION\": 0,\n  \"SUBPIXEL\": 1303\n },\n \"retained_off_pod\": 60,\n \"retained_selected\": 53,\n \"sealed_rows\": 19087,\n \"selected_rows\": 206,\n \"source_windows_supplying_ticks\": 53,\n \"universe_n\": {\n  \"1080p30\": 2500,\n  \"720p60\": 2810\n },\n \"windows_complete\": 59,\n \"windows_total\": 60,\n \"windows_unknown\": [\n  \"1080p30/RIrGQJ_jsGQ_s90\"\n ]\n}\n"
+    },
+    {
+     "module": "g406_review",
+     "returncode": 0,
+     "stage": "associate",
+     "stderr": "",
+     "stdout": "{\"blind_instances\": 586, \"cards\": 60, \"pairs\": 391, \"uncertain_regions\": 156, \"unmatched\": 1986}\n"
+    },
+    {
+     "module": "g406_review",
+     "returncode": 0,
+     "stage": "order",
+     "stderr": "",
+     "stdout": "{\"blind_before_overlay\": 1, \"rows\": 482}\n"
+    },
+    {
+     "module": "g406_aggregate",
+     "returncode": 0,
+     "stage": "",
+     "stderr": "written\n",
+     "stdout": "{\n   \"extent_correct\": 0,\n   \"no_person\": 0,\n   \"rows\": 20,\n   \"supported\": 19,\n   \"supported_rate\": 0.95,\n   \"unknown\": 1\n  }\n },\n \"producer_matched_comparator\": 51,\n \"producer_matched_comparator_rate\": 0.247573,\n \"producer_silent_ticks\": 5,\n \"sampled_denominators\": {\n  \"decoded_frames\": 60,\n  \"evaluated_ticks\": 60,\n  \"producer_rows\": 206\n },\n \"sampled_producer_rows\": 206,\n \"sampled_ticks\": 60\n}\n"
+    },
+    {
+     "module": "g406_render",
+     "returncode": 0,
+     "stage": "cards",
+     "stderr": "",
+     "stdout": "{'cards': 60, 'silence_cards': 5, 'total_bytes': 14558730}\n"
+    }
+   ]
+  },
+  {
+   "identical_to_baseline": true,
+   "per_table_digests": {
+    "all_masked_rows.csv": "9b38e4fff1c5a0d7f3a5930fc863bc67c17e7bbf95467ba9464b42c2054a1bc4",
+    "associations.csv": "1f7a44cd573c4273724765e3f31ac95c2196500ea5dbbd7986fcdcbe05e20114",
+    "blind_order_receipt.csv": "4c5f4cc6549b0e0ef2be49bc75778c62855ffe77b73e0abbab5a95f3f10e54b8",
+    "draw.csv": "217020519d792a574cfd074bd44aa0a2cd947f4b2bb2d6e6905de0c9caef788e",
+    "input_hashes.csv": "dada9bbb6d3b737ee5be9250c4520d1d5d4361501509b31a3dfba15c4110fe2e",
+    "per_tick.csv": "5fea54f8363a1a95592bf6a61c8863ad0de813cfed178b912438db2ce507a9e8",
+    "render_receipts.csv": "4d1602fbfe598db9f10fd0b78b93ca23a38789558851947c638a87fdc583fd75",
+    "renders/1080p30_00.jpg": "b223588527c09fa3d8e18eeac3559329a74fd0a4d91dd470d768be6e4cba77d4",
+    "source_receipts.csv": "f89cbf1e2e72a2a7c1b48e3873b84855c4f28f016da56d9ba4744017768e0439",
+    "summary.json": "734e2ed8f092942a86c68b64dfaaf8047dfe84a63b551a37ade2ef97c9d70e0f",
+    "unmatched_boxes.csv": "c61c08c86be953e1e53fd7c7f6572c39a86c92ef2b1da113eb4e0e495c55d261",
+    "window_accounting.csv": "1ba094eb4cbbb6e08bb36d4f13c87de00eeb91c6abb1e9571a213fc73461bb03"
+   },
+   "returncode": 0,
+   "round": 2,
+   "stdout": "\n}\n{\"blind_instances\": 586, \"cards\": 60, \"pairs\": 391, \"uncertain_regions\": 156, \"unmatched\": 1986}\n{\"blind_before_overlay\": 1, \"rows\": 482}\n{\n   \"extent_correct\": 0,\n   \"no_person\": 0,\n   \"rows\": 20,\n   \"supported\": 19,\n   \"supported_rate\": 0.95,\n   \"unknown\": 1\n  }\n },\n \"producer_matched_comparator\": 51,\n \"producer_matched_comparator_rate\": 0.247573,\n \"producer_silent_ticks\": 5,\n \"sampled_denominators\": {\n  \"decoded_frames\": 60,\n  \"evaluated_ticks\": 60,\n  \"producer_rows\": 206\n },\n \"sampled_producer_rows\": 206,\n \"sampled_ticks\": 60\n}\n{'cards': 60, 'silence_cards': 5, 'total_bytes': 14558730}\n",
+   "steps": [
+    {
+     "module": "g406_measure",
+     "returncode": 0,
+     "stage": "premise",
+     "stderr": "",
+     "stdout": ",\n \"repeated_coordinate\": {\n  \"CLAMP\": 7760,\n  \"DETECTION\": 0,\n  \"PREDICTION\": 0,\n  \"SUBPIXEL\": 1303\n },\n \"retained_off_pod\": 60,\n \"retained_selected\": 53,\n \"sealed_rows\": 19087,\n \"selected_rows\": 206,\n \"source_windows_supplying_ticks\": 53,\n \"universe_n\": {\n  \"1080p30\": 2500,\n  \"720p60\": 2810\n },\n \"windows_complete\": 59,\n \"windows_total\": 60,\n \"windows_unknown\": [\n  \"1080p30/RIrGQJ_jsGQ_s90\"\n ]\n}\n"
+    },
+    {
+     "module": "g406_review",
+     "returncode": 0,
+     "stage": "associate",
+     "stderr": "",
+     "stdout": "{\"blind_instances\": 586, \"cards\": 60, \"pairs\": 391, \"uncertain_regions\": 156, \"unmatched\": 1986}\n"
+    },
+    {
+     "module": "g406_review",
+     "returncode": 0,
+     "stage": "order",
+     "stderr": "",
+     "stdout": "{\"blind_before_overlay\": 1, \"rows\": 482}\n"
+    },
+    {
+     "module": "g406_aggregate",
+     "returncode": 0,
+     "stage": "",
+     "stderr": "written\n",
+     "stdout": "{\n   \"extent_correct\": 0,\n   \"no_person\": 0,\n   \"rows\": 20,\n   \"supported\": 19,\n   \"supported_rate\": 0.95,\n   \"unknown\": 1\n  }\n },\n \"producer_matched_comparator\": 51,\n \"producer_matched_comparator_rate\": 0.247573,\n \"producer_silent_ticks\": 5,\n \"sampled_denominators\": {\n  \"decoded_frames\": 60,\n  \"evaluated_ticks\": 60,\n  \"producer_rows\": 206\n },\n \"sampled_producer_rows\": 206,\n \"sampled_ticks\": 60\n}\n"
+    },
+    {
+     "module": "g406_render",
+     "returncode": 0,
+     "stage": "cards",
+     "stderr": "",
+     "stdout": "{'cards': 60, 'silence_cards': 5, 'total_bytes': 14558730}\n"
+    }
+   ]
+  }
+ ],
+ "scope": "two fresh processes regenerate the delivered tables and cards from the delivered comparator output, blind marks and adjudications; this is arithmetic and render reproduction and it does not prove inference repeatability"
+}
