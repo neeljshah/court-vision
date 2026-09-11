@@ -1,0 +1,10 @@
+DISPATCHED run=1789090643120312600 tag=g378_rater_ADJUDICATOR_03 wt=a18 at 2026-09-10T20:37:23-05:00
+STARTED pid=28564 birth=1789090643.126
+agent: I\u2019ll inspect each frame directly and compare only arena-origin text, excluding broadcast graphics.
+agent: f47dd108e0cb.jpg,LEFT
+f4900605161c.jpg,LEFT
+f9e1724d69bf.jpg,UNKNOWN
+fec1648c3b9a.jpg,RIGHT
+TURN_END turn.completed at 2026-09-10T20:37:40-05:00
+EXIT:0 gap=g378_rater_ADJUDICATOR_03 at 2026-09-10T20:37:41-05:00
+DRAINED

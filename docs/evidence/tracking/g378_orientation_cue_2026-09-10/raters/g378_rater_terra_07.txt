@@ -1,0 +1,53 @@
+DISPATCHED run=1789084987389030400 tag=g378_rater_terra_07 wt=a18 at 2026-09-10T19:03:07-05:00
+STARTED pid=17232 birth=1789084987.394
+agent: I\u2019m reviewing the specified frames, excluding the broadcast overlays as requested.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-ChildItem 'docs/evidence/tracking/g378_orientation_cue_2026-09-10/sheets' -File | Where-Object { "'$_.Name -in @('"'805d75ebd96d.jpg','81acdd6dace6.jpg','81f67a32940f.jpg','823fd19bd772.jpg','84cea43159fa.jpg','84d7de5415
+out: 
+Name             Length
+----             ------
+805d75ebd96d.jpg 126894
+81acdd6dace6.jpg  82780
+81f67a32940f.jpg 145427
+823fd19bd772.jpg  77065
+84cea43159fa.jpg 103672
+84d7de541505.jpg 153066
+86dc6cab3163.jpg  71592
+877c54be712f.jpg 121126
+87de4d90bb64.jpg  77794
+88d0007fb38f.jpg 122759
+8b14898f3fb2.jpg  64778
+8b297f244774.jpg  40886
+8df0606b9a95.jpg 119294
+8fcd8123547c.jpg 105560
+903ddf99d571.jpg  79126
+904c4dfe74cd.jpg 122191
+910f2142d8fc.jpg 155421
+92524e73e9aa.jpg 134646
+9265ff411871.jpg  80667
+945ecc9089ff.jpg 147354
+
+
+
+agent: 805d75ebd96d.jpg,RIGHT
+81acdd6dace6.jpg,UNKNOWN
+81f67a32940f.jpg,LEFT
+823fd19bd772.jpg,RIGHT
+84cea43159fa.jpg,UNKNOWN
+84d7de541505.jpg,RIGHT
+86dc6cab3163.jpg,UNKNOWN
+877c54be712f.jpg,RIGHT
+87de4d90bb64.jpg,UNKNOWN
+88d0007fb38f.jpg,LEFT
+8b14898f3fb2.jpg,RIGHT
+8b297f244774.jpg,UNKNOWN
+8df0606b9a95.jpg,LEFT
+8fcd8123547c.jpg,UNKNOWN
+903ddf99d571.jpg,LEFT
+904c4dfe74cd.jpg,LEFT
+910f2142d8fc.jpg,LEFT
+92524e73e9aa.jpg,RIGHT
+9265ff411871.jpg,LEFT
+945ecc9089ff.jpg,RIGHT
+TURN_END turn.completed at 2026-09-10T19:03:58-05:00
+EXIT:0 gap=g378_rater_terra_07 at 2026-09-10T19:03:58-05:00
+DRAINED

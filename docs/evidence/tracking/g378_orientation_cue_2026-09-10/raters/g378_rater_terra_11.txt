@@ -1,0 +1,60 @@
+DISPATCHED run=1789085269584514800 tag=g378_rater_terra_11 wt=a18 at 2026-09-10T19:07:49-05:00
+STARTED pid=1220 birth=1789085269.594
+agent: I\u2019ll inspect each frame while excluding the broadcast graphics, then return only the requested CSV lines.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$frames = @('"'d5e8fc9f3c7c.jpg','d60c82ff24b2.jpg','d68dc449895a.jpg','d88f0affac71.jpg','d8c71e1d4fcd.jpg','d995e3eaf438.jpg','dbb5a6e113ef.jpg','dfb5ead2e279.jpg','dff606927624.jpg','e05dd8c17dc3.jpg','e1a691e891bf.jpg','e
+out: Id : InvokeMethodOnNull
+ 
+Unable to find type [System.Drawing.Image].
+At line:2 char:587
++ ... Path $p)) { "MISSING $_" } else { $i = [System.Drawing.Image]::FromFi ...
++                                            ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Drawing.Image:TypeName) [], RuntimeException
+    + FullyQualifiedErrorId : TypeNotFound
+ 
+e87cd194576d.jpg,x
+You cannot call a method on a null-valued expression.
+At line:2 char:687
++ ... -LiteralPath $p)); "$($_),$($i.Width)x$($i.Height)"; $i.Dispose() } }
++                                                          ~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : InvokeMethodOnNull
+ 
+Unable to find type [System.Drawing.Image].
+At line:2 char:587
++ ... Path $p)) { "MISSING $_" } else { $i = [System.Drawing.Image]::FromFi ...
++                                            ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Drawing.Image:TypeName) [], RuntimeException
+    + FullyQualifiedErrorId : TypeNotFound
+ 
+e89176c2f87e.jpg,x
+You cannot call a method on a null-valued expression.
+At line:2 char:687
++ ... -LiteralPath $p)); "$($_),$($i.Width)x$($i.Height)"; $i.Dispose() } }
++                                                          ~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : InvokeMethodOnNull
+ 
+
+agent: d5e8fc9f3c7c.jpg,UNKNOWN
+d60c82ff24b2.jpg,RIGHT
+d68dc449895a.jpg,UNKNOWN
+d88f0affac71.jpg,RIGHT
+d8c71e1d4fcd.jpg,UNKNOWN
+d995e3eaf438.jpg,LEFT
+dbb5a6e113ef.jpg,UNKNOWN
+dfb5ead2e279.jpg,UNKNOWN
+dff606927624.jpg,UNKNOWN
+e05dd8c17dc3.jpg,RIGHT
+e1a691e891bf.jpg,LEFT
+e1c3e3344d80.jpg,RIGHT
+e24ae112273f.jpg,UNKNOWN
+e3e16b450920.jpg,RIGHT
+e4b2a323a1ac.jpg,UNKNOWN
+e588055643c7.jpg,UNKNOWN
+e69f4cb76f25.jpg,RIGHT
+e788a9a77873.jpg,LEFT
+e87cd194576d.jpg,LEFT
+e89176c2f87e.jpg,UNKNOWN
+TURN_END turn.completed at 2026-09-10T19:08:40-05:00
+EXIT:0 gap=g378_rater_terra_11 at 2026-09-10T19:08:41-05:00
+DRAINED

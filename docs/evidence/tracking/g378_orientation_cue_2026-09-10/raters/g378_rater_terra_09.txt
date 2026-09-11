@@ -1,0 +1,64 @@
+DISPATCHED run=1789085108445457500 tag=g378_rater_terra_09 wt=a18 at 2026-09-10T19:05:08-05:00
+STARTED pid=29444 birth=1789085108.453
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw CLAUDE.md; rg --files docs/evidence/tracking/g378_orientation_cue_2026-09-10/sheets | rg 'a70631723d2a|a80d7029fb22|a81edf17e538|a9551c8f1664|ac17bbf79708|ae920ab17836|af83a5210e5d|afcec191a39c|b083c3eca5f9|b
+out: nfirmation; a PreToolUse hook hard-blocks full-pytest + `--force` (push-to-origin is ALLOWED per the 2026-07-09 override -- secrets-scan first)
+- On `/compact` or auto-compaction, PRESERVE: modified-file list, test commands run, which flags stay OFF, and the no-calibration-only + human-gated invariants
+- Full plan: `.planning/ROADMAP.md` (167KB \xe2\u20ac\u201d grep/section-read only, NEVER full-read) | Session log: `vault/Sessions/Decision Log.md`
+- `_VRAM_FLUSH_INTERVAL` in `unified_pipeline.py` must be **3000** (not 100)
+
+### Vault (Obsidian Brain) \xe2\u20ac\u201d auto-maintenance RETIRED
+`vault/` is brain-only + gitignored now; the old per-note targets (Model Performance / Open Issues / Build Phases / Signal Inventory) are ARCHIVED and the Stop/SessionStart hooks SKIP these writes ("brain-only vault detected"). Don't hand-update vault notes \xe2\u20ac\u201d durable learnings go to auto-memory instead.
+
+
+---
+<!-- nav-footer -->
+**Navigate:** [Up: full doc map](docs/INDEX.md) - [Home](README.md) - [Glossary](docs/GLOSSARY.md)
+
+rg : The term 'rg' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the 
+spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:2 char:29
++ Get-Content -Raw CLAUDE.md; rg --files docs/evidence/tracking/g378_or ...
++                             ~~
+    + CategoryInfo          : ObjectNotFound: (rg:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$dir = '"'docs/evidence/tracking/g378_orientation_cue_2026-09-10/sheets'; Get-ChildItem -LiteralPath "'$dir -File | Where-Object { $_.Name -in @('"'a70631723d2a.jpg','a80d7029fb22.jpg','a81edf17e538.jpg','a9551c8f1664.jpg','a
+out: 18\docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\af83a5210e5d.jpg
+C:\Users\neelj\nba-track-a18\docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\afcec191a39c.jpg
+C:\Users\neelj\nba-track-a18\docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\b083c3eca5f9.jpg
+C:\Users\neelj\nba-track-a18\docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\b2aba0e8b24d.jpg
+C:\Users\neelj\nba-track-a18\docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\b4d28433e03e.jpg
+C:\Users\neelj\nba-track-a18\docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\b4ef1ddcb7cc.jpg
+C:\Users\neelj\nba-track-a18\docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\b5b9c3037702.jpg
+C:\Users\neelj\nba-track-a18\docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\b8186ca96b0c.jpg
+C:\Users\neelj\nba-track-a18\docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\b97cb818da54.jpg
+C:\Users\neelj\nba-track-a18\docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\bbbdb2ce2604.jpg
+C:\Users\neelj\nba-track-a18\docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\bca6cab0296c.jpg
+C:\Users\neelj\nba-track-a18\docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\bd3357a24684.jpg
+C:\Users\neelj\nba-track-a18\docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\bd533e1fe14a.jpg
+C:\Users\neelj\nba-track-a18\docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\bd60eb9e27a3.jpg
+
+agent: a70631723d2a.jpg,UNKNOWN
+a80d7029fb22.jpg,LEFT
+a81edf17e538.jpg,RIGHT
+a9551c8f1664.jpg,UNKNOWN
+ac17bbf79708.jpg,LEFT
+ae920ab17836.jpg,UNKNOWN
+af83a5210e5d.jpg,RIGHT
+afcec191a39c.jpg,RIGHT
+b083c3eca5f9.jpg,RIGHT
+b2aba0e8b24d.jpg,UNKNOWN
+b4d28433e03e.jpg,LEFT
+b4ef1ddcb7cc.jpg,UNKNOWN
+b5b9c3037702.jpg,UNKNOWN
+b8186ca96b0c.jpg,UNKNOWN
+b97cb818da54.jpg,UNKNOWN
+bbbdb2ce2604.jpg,RIGHT
+bca6cab0296c.jpg,LEFT
+bd3357a24684.jpg,UNKNOWN
+bd533e1fe14a.jpg,UNKNOWN
+bd60eb9e27a3.jpg,UNKNOWN
+TURN_END turn.completed at 2026-09-10T19:06:20-05:00
+EXIT:0 gap=g378_rater_terra_09 at 2026-09-10T19:06:20-05:00
+DRAINED

@@ -1,0 +1,53 @@
+DISPATCHED run=1789085188991936300 tag=g378_rater_terra_10 wt=a18 at 2026-09-10T19:06:28-05:00
+STARTED pid=17940 birth=1789085188.996
+agent: I\u2019ll inspect the listed broadcast frames and classify venue lettering by picture half, excluding the broadcast graphics.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$imgRoot = '"'docs/evidence/tracking/g378_orientation_cue_2026-09-10/sheets'; "'$names = @('"'be97981554ae.jpg','bf4cec4e3ce7.jpg','c063e41c11d3.jpg','c0ca4649ce61.jpg','c575d38377dd.jpg','c69c9c9be62b.jpg','c86845f2c4ae.jpg'
+out: Missing closing '}' in statement block or type definition.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingEndCurlyBrace
+ 
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$imgRoot = '"'docs/evidence/tracking/g378_orientation_cue_2026-09-10/sheets'; "'$names = @('"'be97981554ae.jpg','bf4cec4e3ce7.jpg','c063e41c11d3.jpg','c0ca4649ce61.jpg','c575d38377dd.jpg','c69c9c9be62b.jpg','c86845f2c4ae.jpg'
+out: ng\g378_orientation_cue_2026-09-10\sheets\bf4cec4e3ce7.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\c063e41c11d3.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\c0ca4649ce61.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\c575d38377dd.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\c69c9c9be62b.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\c86845f2c4ae.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\ca56356a47eb.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\ca589d2e7eef.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\ca6260dda060.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\cde254e433c4.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\ce979abfc96d.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\ceb08382c3f4.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\cedda3f96c45.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\cee5c624e5ad.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\d038aa6b8c1e.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\d2eab5fc63e3.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\d33da5b16355.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\d585e04f6557.jpg
+docs\evidence\tracking\g378_orientation_cue_2026-09-10\sheets\d5e61da8af47.jpg
+
+agent: be97981554ae.jpg,UNKNOWN
+bf4cec4e3ce7.jpg,RIGHT
+c063e41c11d3.jpg,UNKNOWN
+c0ca4649ce61.jpg,LEFT
+c575d38377dd.jpg,UNKNOWN
+c69c9c9be62b.jpg,LEFT
+c86845f2c4ae.jpg,RIGHT
+ca56356a47eb.jpg,UNKNOWN
+ca589d2e7eef.jpg,LEFT
+ca6260dda060.jpg,LEFT
+cde254e433c4.jpg,RIGHT
+ce979abfc96d.jpg,UNKNOWN
+ceb08382c3f4.jpg,LEFT
+cedda3f96c45.jpg,RIGHT
+cee5c624e5ad.jpg,UNKNOWN
+d038aa6b8c1e.jpg,UNKNOWN
+d2eab5fc63e3.jpg,LEFT
+d33da5b16355.jpg,RIGHT
+d585e04f6557.jpg,UNKNOWN
+d5e61da8af47.jpg,UNKNOWN
+TURN_END turn.completed at 2026-09-10T19:07:33-05:00
+EXIT:0 gap=g378_rater_terra_10 at 2026-09-10T19:07:34-05:00
+DRAINED

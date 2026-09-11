@@ -1,0 +1,147 @@
+DISPATCHED run=1789080893938743000 tag=g378_rater_terra_02 wt=a18 at 2026-09-10T17:54:53-05:00
+STARTED pid=28524 birth=1789080893.943
+agent: I\u2019ll inspect each frame and compare arena-origin text by picture half, excluding broadcast graphics.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "rg --files docs/evidence/tracking/g378_orientation_cue_2026-09-10/sheets | rg \"(160378724ff2|161c52f39d6a|16cce3325121|170fe90b384a|1737315d3325|17c2710a9c3d|18808d033a73|191f559438ac|19745f79209d|1bc50baa19d0|1cdb5a09a5ac|1
+out: rg : The term 'rg' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the 
+spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:2 char:1
++ rg --files docs/evidence/tracking/g378_orientation_cue_2026-09-10/she ...
++ ~~
+    + CategoryInfo          : ObjectNotFound: (rg:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-ChildItem -LiteralPath 'docs/evidence/tracking/g378_orientation_cue_2026-09-10/sheets' -File | Select-Object -ExpandProperty Name"
+out: .jpg
+a43279019c96.jpg
+a5d86b2f2e02.jpg
+a6d2004b7017.jpg
+a70631723d2a.jpg
+a80d7029fb22.jpg
+a81edf17e538.jpg
+a9551c8f1664.jpg
+ac17bbf79708.jpg
+ae920ab17836.jpg
+af83a5210e5d.jpg
+afcec191a39c.jpg
+b083c3eca5f9.jpg
+b2aba0e8b24d.jpg
+b4d28433e03e.jpg
+b4ef1ddcb7cc.jpg
+b5b9c3037702.jpg
+b8186ca96b0c.jpg
+b97cb818da54.jpg
+bbbdb2ce2604.jpg
+bca6cab0296c.jpg
+bd3357a24684.jpg
+bd533e1fe14a.jpg
+bd60eb9e27a3.jpg
+be97981554ae.jpg
+bf4cec4e3ce7.jpg
+c063e41c11d3.jpg
+c0ca4649ce61.jpg
+c575d38377dd.jpg
+c69c9c9be62b.jpg
+c86845f2c4ae.jpg
+ca56356a47eb.jpg
+ca589d2e7eef.jpg
+ca6260dda060.jpg
+cde254e433c4.jpg
+ce979abfc96d.jpg
+ceb08382c3f4.jpg
+cedda3f96c45.jpg
+cee5c624e5ad.jpg
+d038aa6b8c1e.jpg
+d2eab5fc63e3.jpg
+d33da5b16355.jpg
+d585e04f6557.jpg
+d5e61da8af47.jpg
+d5e8fc9f3c7c.jpg
+d60c82ff24b2.jpg
+d68dc449895a.jpg
+d88f0affac71.jpg
+d8c71e1d4fcd.jpg
+d995e3eaf438.jpg
+dbb5a6e113ef.jpg
+dfb5ead2e279.jpg
+dff606927624.jpg
+e05dd8c17dc3.jpg
+e1a691e891bf.jpg
+e1c3e3344d80.jpg
+e24ae112273f.jpg
+e3e16b450920.jpg
+e4b2a323a1ac.jpg
+e588055643c7.jpg
+e69f4cb76f25.jpg
+e788a9a77873.jpg
+e87cd194576d.jpg
+e89176c2f87e.jpg
+e8bab012c8e8.jpg
+e92208fedd6a.jpg
+eb6f19dc75d8.jpg
+ebd5be713e29.jpg
+edd5ea0a28de.jpg
+ee7f52d3bc39.jpg
+f11de969eb23.jpg
+f47dd108e0cb.jpg
+f4900605161c.jpg
+f5350ed27524.jpg
+f66af930fdb6.jpg
+f6b5057e3987.jpg
+f9535cb164a3.jpg
+f9e1724d69bf.jpg
+f9e8719cd79c.jpg
+fc961ff106df.jpg
+fcfe33f92d09.jpg
+fdafbb38741b.jpg
+fec1648c3b9a.jpg
+ffec135f6551.jpg
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$files = @('"'160378724ff2.jpg','161c52f39d6a.jpg','16cce3325121.jpg','170fe90b384a.jpg','1737315d3325.jpg','17c2710a9c3d.jpg','18808d033a73.jpg','191f559438ac.jpg','19745f79209d.jpg','1bc50baa19d0.jpg','1cdb5a09a5ac.jpg','1e
+out: ng of the name, or if a path was included, verify that the path is correct and try again.
+At line:2 char:700
++ ... el '%t' -tile 1x1 -geometry 480x270+4+20 $out } else { magick montage ...
++                                                            ~~~~~~
+    + CategoryInfo          : ObjectNotFound: (magick:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+magick : The term 'magick' is not recognized as the name of a cmdlet, function, script file, or operable program. 
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:2 char:700
++ ... el '%t' -tile 1x1 -geometry 480x270+4+20 $out } else { magick montage ...
++                                                            ~~~~~~
+    + CategoryInfo          : ObjectNotFound: (magick:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+magick : The term 'magick' is not recognized as the name of a cmdlet, function, script file, or operable program. 
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:2 char:700
++ ... el '%t' -tile 1x1 -geometry 480x270+4+20 $out } else { magick montage ...
++                                                            ~~~~~~
+    + CategoryInfo          : ObjectNotFound: (magick:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+
+agent: 160378724ff2.jpg,LEFT
+161c52f39d6a.jpg,UNKNOWN
+16cce3325121.jpg,UNKNOWN
+170fe90b384a.jpg,RIGHT
+1737315d3325.jpg,UNKNOWN
+17c2710a9c3d.jpg,UNKNOWN
+18808d033a73.jpg,RIGHT
+191f559438ac.jpg,UNKNOWN
+19745f79209d.jpg,LEFT
+1bc50baa19d0.jpg,LEFT
+1cdb5a09a5ac.jpg,UNKNOWN
+1e15bc4afd06.jpg,UNKNOWN
+1e5d0b65c981.jpg,RIGHT
+1f50368ad049.jpg,LEFT
+219fd356ef25.jpg,UNKNOWN
+23415e2824a3.jpg,LEFT
+23bc70e86c6d.jpg,UNKNOWN
+23e0f679a19d.jpg,RIGHT
+250d0967d417.jpg,RIGHT
+25e9d51f7060.jpg,RIGHT
+TURN_END turn.completed at 2026-09-10T17:56:08-05:00
+EXIT:0 gap=g378_rater_terra_02 at 2026-09-10T17:56:08-05:00
+DRAINED

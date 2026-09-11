@@ -1,0 +1,83 @@
+{
+ "row": "G378",
+ "cue": {
+  "name": "ANCHOR_SIDE_OCR",
+  "engine": "easyocr",
+  "route_file": "/workspace/wt/a18/src/tracking/scoreboard_ocr.py",
+  "conf_min": 0.3,
+  "top_frac": 0.1,
+  "bottom_frac": 0.82,
+  "mass_floor": 2000.0,
+  "ratio_margin": 1.15,
+  "n_frames": 240,
+  "calls": {
+   "LEFT": 81,
+   "RIGHT": 77,
+   "UNKNOWN": 82
+  },
+  "resolved_over_decoded": 0.658333,
+  "unknown_share": 0.341667
+ },
+ "controls": {
+  "mirror": {
+   "n": 30,
+   "n_pass": 12,
+   "target": 30,
+   "meets": false
+  },
+  "masked": {
+   "n": 30,
+   "n_pass": 30,
+   "target": 30,
+   "meets": true
+  }
+ },
+ "coverage": {
+  "n_frames": 240,
+  "n_unique_frames": 240,
+  "n_sections": 20,
+  "n_games": 16,
+  "development_games": [
+   "basketball__fiba-tZeqmc_-_sA",
+   "ncaa_basketball__g7dzEFLiemQ",
+   "basketball__euroleague-a_GxgklBtEs"
+  ]
+ },
+ "reference_counts": {
+  "left": 62,
+  "right": 65,
+  "unknown": 113,
+  "unadjudicated": 0
+ },
+ "classes": {
+  "left": {
+   "reference_frames": 62,
+   "resolved": 49,
+   "correct": 29,
+   "correct_share": 0.591837,
+   "wilson_lower": 0.452473,
+   "wilson_upper": 0.717848
+  },
+  "right": {
+   "reference_frames": 65,
+   "resolved": 51,
+   "correct": 33,
+   "correct_share": 0.647059,
+   "wilson_lower": 0.509861,
+   "wilson_upper": 0.763655
+  }
+ },
+ "kappa": 0.7154865826058843,
+ "outcomes": {
+  "correct": 62,
+  "cue_unknown": 27,
+  "reference_unknown": 113,
+  "wrong": 38
+ },
+ "bars_short": [
+  "class_left_wilson",
+  "class_right_wilson",
+  "control_mirror"
+ ],
+ "verdict": "PARTIAL: class_left_wilson, class_right_wilson, control_mirror"
+}

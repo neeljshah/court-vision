@@ -1,0 +1,52 @@
+DISPATCHED run=1789089386229982800 tag=g378_rater_sol_12 wt=a18 at 2026-09-10T20:16:26-05:00
+STARTED pid=28648 birth=1789089386.239
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-ChildItem -LiteralPath 'docs/evidence/tracking/g378_orientation_cue_2026-09-10/sheets' -File | Where-Object { "'$_.Name -in @('"'e8bab012c8e8.jpg','e92208fedd6a.jpg','eb6f19dc75d8.jpg','ebd5be713e29.jpg','edd5ea0a28de.jpg
+out: 
+Name             Length
+----             ------
+e8bab012c8e8.jpg  78814
+e92208fedd6a.jpg  73489
+eb6f19dc75d8.jpg  78705
+ebd5be713e29.jpg  93625
+edd5ea0a28de.jpg  87999
+ee7f52d3bc39.jpg  47297
+f11de969eb23.jpg  86906
+f47dd108e0cb.jpg  86145
+f4900605161c.jpg  87774
+f5350ed27524.jpg  77525
+f66af930fdb6.jpg 118276
+f6b5057e3987.jpg 142139
+f9535cb164a3.jpg  92527
+f9e1724d69bf.jpg  68752
+f9e8719cd79c.jpg  50721
+fc961ff106df.jpg  92000
+fcfe33f92d09.jpg 123777
+fdafbb38741b.jpg  71192
+fec1648c3b9a.jpg 131306
+ffec135f6551.jpg  53537
+
+
+
+agent: e8bab012c8e8.jpg UNKNOWN
+e92208fedd6a.jpg UNKNOWN
+eb6f19dc75d8.jpg UNKNOWN
+ebd5be713e29.jpg LEFT
+edd5ea0a28de.jpg UNKNOWN
+ee7f52d3bc39.jpg UNKNOWN
+f11de969eb23.jpg RIGHT
+f47dd108e0cb.jpg UNKNOWN
+f4900605161c.jpg UNKNOWN
+f5350ed27524.jpg UNKNOWN
+f66af930fdb6.jpg LEFT
+f6b5057e3987.jpg RIGHT
+f9535cb164a3.jpg RIGHT
+f9e1724d69bf.jpg RIGHT
+f9e8719cd79c.jpg UNKNOWN
+fc961ff106df.jpg RIGHT
+fcfe33f92d09.jpg LEFT
+fdafbb38741b.jpg RIGHT
+fec1648c3b9a.jpg LEFT
+ffec135f6551.jpg UNKNOWN
+TURN_END turn.completed at 2026-09-10T20:17:58-05:00
+EXIT:0 gap=g378_rater_sol_12 at 2026-09-10T20:17:58-05:00
+DRAINED

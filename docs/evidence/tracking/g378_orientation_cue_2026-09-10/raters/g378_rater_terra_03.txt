@@ -1,0 +1,54 @@
+DISPATCHED run=1789082418801790100 tag=g378_rater_terra_03 wt=a18 at 2026-09-10T18:20:18-05:00
+STARTED pid=22456 birth=1789082418.806
+agent: I\u2019ll inspect the broadcast stills and classify the side with more venue lettering.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$imgDir = '"'docs/evidence/tracking/g378_orientation_cue_2026-09-10/sheets'; Get-ChildItem -LiteralPath "'$imgDir -Filter '"'*.jpg' | Where-Object { "'$_.Name -in @('"'269592452218.jpg','26b3985a3bc7.jpg','27bb68df500d.jpg','
+out: 
+Name             Length
+----             ------
+269592452218.jpg  75523
+26b3985a3bc7.jpg  62079
+27bb68df500d.jpg 119325
+28a758f465b3.jpg 106527
+292902b351ee.jpg 107692
+292ced497d88.jpg  99926
+2cee81369b0b.jpg  45033
+2db343164c2f.jpg  56656
+2e869692fc3f.jpg 149958
+2eecc05c7b90.jpg  89127
+2f60d3752c39.jpg  71033
+3251f21fbf37.jpg 134858
+3268adcd17fe.jpg 102044
+3283c064e054.jpg  52364
+336332efc405.jpg 143945
+34b4c9207586.jpg 149846
+34c9b2210829.jpg  65117
+34ebe101198d.jpg 135973
+35519ecfc3d2.jpg 146357
+35c1c885387f.jpg 120579
+
+
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Command magick -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source'
+agent: 269592452218.jpg,UNKNOWN
+26b3985a3bc7.jpg,UNKNOWN
+27bb68df500d.jpg,UNKNOWN
+28a758f465b3.jpg,UNKNOWN
+292902b351ee.jpg,UNKNOWN
+292ced497d88.jpg,UNKNOWN
+2cee81369b0b.jpg,UNKNOWN
+2db343164c2f.jpg,RIGHT
+2e869692fc3f.jpg,LEFT
+2eecc05c7b90.jpg,UNKNOWN
+2f60d3752c39.jpg,UNKNOWN
+3251f21fbf37.jpg,LEFT
+3268adcd17fe.jpg,UNKNOWN
+3283c064e054.jpg,UNKNOWN
+336332efc405.jpg,UNKNOWN
+34b4c9207586.jpg,UNKNOWN
+34c9b2210829.jpg,UNKNOWN
+34ebe101198d.jpg,LEFT
+35519ecfc3d2.jpg,UNKNOWN
+35c1c885387f.jpg,RIGHT
+TURN_END turn.completed at 2026-09-10T18:21:13-05:00
+EXIT:0 gap=g378_rater_terra_03 at 2026-09-10T18:21:14-05:00
+DRAINED

@@ -1,0 +1,27 @@
+{
+ "row": "G378",
+ "g371_sweep_status_counts": {
+  "NO_DISTINCT_RUNNER_UP": 357,
+  "REFUSED_MARGIN": 1,
+  "REFUSED_VALIDATION": 2
+ },
+ "g371_sweep_orientation_counts": {
+  "UNKNOWN": 360
+ },
+ "g371_selected_orientation_counts": {
+  "UNKNOWN": 4
+ },
+ "g371_n_sweep_cells": 360,
+ "g371_n_selected": 4,
+ "g371_accepts": 0,
+ "g371_orientation_not_unknown": 0,
+ "g367_reference_label_counts": {
+  "left": 12,
+  "right": 16,
+  "unknown": 26
+ },
+ "g367_n_labelled_left_right": 28,
+ "g367_cohen_kappa": 0.824485,
+ "g367_per_class_rail_meets": false,
+ "premise_true": true
+}
