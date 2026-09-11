@@ -1,0 +1,15 @@
+{
+  "identical": true,
+  "first": {
+    "sha256": "05910a811cec5fd0eb26c66e1bb4eb7c0ede0bf5263e30bd4e64a22987c2cc77",
+    "frames": 49,
+    "strokes": 6860,
+    "supports": 460484
+  },
+  "second": {
+    "sha256": "05910a811cec5fd0eb26c66e1bb4eb7c0ede0bf5263e30bd4e64a22987c2cc77",
+    "frames": 49,
+    "strokes": 6860,
+    "supports": 460484
+  }
+}

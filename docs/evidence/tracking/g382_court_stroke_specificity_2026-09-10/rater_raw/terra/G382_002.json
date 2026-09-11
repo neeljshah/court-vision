@@ -1,0 +1,12 @@
+{
+  "frame_key": "G382_002",
+  "image": {"width": 1920, "height": 1080},
+  "painted_markings": [
+    {"physical_marking_id": "LANE_LINE_RIGHT_NEAR", "polygon": [[1049,867],[1057,868],[1054,1056],[1046,1056]]}
+  ],
+  "mask_regions": [
+    {"label": "STANDS", "polygons": [[[0,0],[1920,0],[1920,319],[1252,319],[1252,565],[0,565]]]},
+    {"label": "LED", "polygons": [[[1531,473],[1920,473],[1920,603],[1531,603]]]},
+    {"label": "OTHER", "polygons": [[[0,321],[1210,321],[1210,558],[0,558]] ]}
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "CENSUS_UTC": "2026-09-11T01:58:36Z",
+  "roots": [
+    "/workspace/g364_scratch/val",
+    "/workspace/g380_scratch/sources"
+  ],
+  "n_sections": 33,
+  "n_videos": 18,
+  "ledger_lines": 1205
+}

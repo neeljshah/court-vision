@@ -1,0 +1,10 @@
+{
+  "frame_key": "G382_004",
+  "image": {"width": 1920, "height": 1080},
+  "painted_markings": [],
+  "mask_regions": [
+    {"label": "OTHER", "polygons": [[[0,0],[1920,0],[1920,947],[0,947]]]},
+    {"label": "SCORE_BUG", "polygons": [[[120,947],[1801,947],[1801,1028],[120,1028]]]},
+    {"label": "OTHER", "polygons": [[[0,1028],[1920,1028],[1920,1080],[0,1080]] ]}
+  ]
+}

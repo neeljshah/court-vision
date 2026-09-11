@@ -1,0 +1,14 @@
+{
+  "frame_key": "G382_009",
+  "image": {"width": 1920, "height": 1080},
+  "painted_markings": [
+    {"physical_marking_id": "CENTRE_LINE", "polygon": [[363,330],[370,330],[373,945],[366,945]]},
+    {"physical_marking_id": "FREE_THROW_LINE_RIGHT", "polygon": [[1474,507],[1920,505],[1920,512],[1474,514]]}
+  ],
+  "mask_regions": [
+    {"label": "STANDS", "polygons": [[[0,0],[1920,0],[1920,171],[0,171]]]},
+    {"label": "LED", "polygons": [[[0,171],[1920,171],[1920,293],[0,293]]]},
+    {"label": "SCORE_BUG", "polygons": [[[119,947],[1801,947],[1801,1028],[119,1028]]]},
+    {"label": "OTHER", "polygons": [[[0,1028],[1920,1028],[1920,1080],[0,1080]] ]}
+  ]
+}

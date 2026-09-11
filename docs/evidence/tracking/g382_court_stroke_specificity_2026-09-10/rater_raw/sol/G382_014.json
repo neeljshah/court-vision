@@ -1,0 +1,16 @@
+{
+  "frame_key": "G382_014",
+  "image": {"width": 1920, "height": 1080},
+  "painted_markings": [
+    {"physical_marking_id": "BASELINE_LEFT", "polygon": [[26,1071],[966,410],[975,418],[43,1080]]},
+    {"physical_marking_id": "SIDELINE_FAR", "polygon": [[982,410],[1920,477],[1920,488],[980,421]]},
+    {"physical_marking_id": "LANE_LINE_LEFT_NEAR", "polygon": [[500,771],[1447,840],[1441,849],[500,780]]},
+    {"physical_marking_id": "LANE_LINE_LEFT_FAR", "polygon": [[782,589],[1314,626],[1310,634],[776,598]]},
+    {"physical_marking_id": "FREE_THROW_LINE_LEFT", "polygon": [[1448,838],[1518,749],[1525,753],[1457,845]]}
+  ],
+  "mask_regions": [
+    {"label": "STANDS", "polygons": [[[0,0],[1920,0],[1920,244],[1510,225],[1030,180],[530,155],[0,175]]]},
+    {"label": "OTHER", "polygons": [[[0,178],[251,185],[384,310],[373,676],[43,1058],[0,1058]]]},
+    {"label": "SCORE_BUG", "polygons": [[[540,907],[1381,907],[1381,1032],[540,1032]]]}
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "both": {
+    "painted_identifier_rows": 175,
+    "decisions": {
+      "AGREED": 57,
+      "UNRESOLVED": 118
+    },
+    "same_identifier_pairs": 57,
+    "same_identifier_iou_p50": 0.0,
+    "same_identifier_iou_p90": 0.033608,
+    "same_identifier_iou_max": 0.472406,
+    "same_identifier_pairs_with_zero_overlap": 34,
+    "final_painted_px_over_49_frames": 9931,
+    "frames_with_any_final_painted_px": 17,
+    "region_decisions": {
+      "AGREED": 149,
+      "ONE_RATER_ONLY": 26
+    }
+  },
+  "either": {
+    "painted_identifier_rows": 175,
+    "decisions": {
+      "AGREED": 57,
+      "UNRESOLVED": 118
+    },
+    "same_identifier_pairs": 57,
+    "same_identifier_iou_p50": 0.0,
+    "same_identifier_iou_p90": 0.033608,
+    "same_identifier_iou_max": 0.472406,
+    "same_identifier_pairs_with_zero_overlap": 34,
+    "final_painted_px_over_49_frames": 459703,
+    "frames_with_any_final_painted_px": 28,
+    "region_decisions": {
+      "AGREED": 149,
+      "ONE_RATER_ONLY": 26
+    }
+  },
+  "raters": {
+    "frames_sheeted": 49,
+    "frames_rated_by_both": 49,
+    "raw_painted_traces": {
+      "terra": 68,
+      "sol": 164
+    },
+    "frames_with_zero_painted_trace": {
+      "terra": 14,
+      "sol": 9
+    },
+    "total_archived_traces": 819
+  },
+  "image_area_px_over_49_frames": 101606400
+}
