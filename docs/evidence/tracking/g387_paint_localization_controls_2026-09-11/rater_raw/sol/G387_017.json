@@ -1,0 +1,10 @@
+{
+  "opaque_id": "G387_017",
+  "state": "VISIBLE",
+  "reason": "right lane and baseline visible",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "LANE_LINE_RIGHT_NEAR", "tile": 5, "endpoints": [[684,865],[956,841]], "midpoint": [817,854]},
+    {"physical_marking_id": "BASELINE_RIGHT", "tile": 6, "endpoints": [[1701,790],[1920,923]], "midpoint": [1809,856]}
+  ]
+}

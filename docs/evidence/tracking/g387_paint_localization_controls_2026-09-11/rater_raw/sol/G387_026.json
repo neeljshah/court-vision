@@ -1,0 +1,47 @@
+{
+    "displayed":  {
+                      "tile_height":  540,
+                      "tile_width":  640
+                  },
+    "opaque_id":  "G387_026",
+    "reason":  "left baseline and near sideline legible in tile4",
+    "markings":  [
+                     {
+                         "physical_marking_id":  "BASELINE_LEFT",
+                         "midpoint":  [
+                                          239,
+                                          625
+                                      ],
+                         "tile":  4,
+                         "endpoints":  [
+                                           [
+                                               0,
+                                               711
+                                           ],
+                                           [
+                                               479,
+                                               540
+                                           ]
+                                       ]
+                     },
+                     {
+                         "physical_marking_id":  "SIDELINE_NEAR",
+                         "midpoint":  [
+                                          177,
+                                          870
+                                      ],
+                         "tile":  4,
+                         "endpoints":  [
+                                           [
+                                               0,
+                                               807
+                                           ],
+                                           [
+                                               354,
+                                               932
+                                           ]
+                                       ]
+                     }
+                 ],
+    "state":  "VISIBLE"
+}

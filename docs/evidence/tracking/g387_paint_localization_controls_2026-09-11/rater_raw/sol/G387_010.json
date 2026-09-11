@@ -1,0 +1,9 @@
+{
+  "opaque_id": "G387_010",
+  "state": "VISIBLE",
+  "reason": "left baseline segment is visible",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "BASELINE_LEFT", "tile": 4, "endpoints": [[0,920],[255,902]], "midpoint": [128,911]}
+  ]
+}

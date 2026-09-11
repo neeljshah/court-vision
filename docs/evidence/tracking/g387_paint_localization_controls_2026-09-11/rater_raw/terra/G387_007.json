@@ -1,0 +1,10 @@
+{
+  "opaque_id": "G387_007",
+  "state": "VISIBLE",
+  "reason": "left baseline legible in tile4",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "BASELINE_LEFT", "tile": 4,
+     "endpoints": [[0, 788], [501, 916]], "midpoint": [256, 854]}
+  ]
+}

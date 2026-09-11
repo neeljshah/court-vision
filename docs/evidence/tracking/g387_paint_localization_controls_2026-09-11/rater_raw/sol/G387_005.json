@@ -1,0 +1,10 @@
+{
+  "opaque_id": "G387_005",
+  "state": "VISIBLE",
+  "reason": "two right lane lines legible",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "LANE_LINE_RIGHT_FAR", "tile": 3, "endpoints": [[1452,516],[1920,506]], "midpoint": [1684,510]},
+    {"physical_marking_id": "LANE_LINE_RIGHT_NEAR", "tile": 6, "endpoints": [[1508,674],[1920,678]], "midpoint": [1714,677]}
+  ]
+}

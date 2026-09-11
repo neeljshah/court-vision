@@ -1,0 +1,9 @@
+{
+  "opaque_id": "G387_006",
+  "state": "VISIBLE",
+  "reason": "right baseline visible before player",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "BASELINE_RIGHT", "tile": 2, "endpoints": [[983,338],[1464,623]], "midpoint": [1220,480]}
+  ]
+}

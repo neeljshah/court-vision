@@ -1,0 +1,10 @@
+{
+  "opaque_id": "G387_013",
+  "state": "VISIBLE",
+  "reason": "baseline and free throw line visible",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "BASELINE_LEFT", "tile": 1, "endpoints": [[0,615],[321,355]], "midpoint": [160,486]},
+    {"physical_marking_id": "FREE_THROW_LINE_LEFT", "tile": 1, "endpoints": [[407,474],[795,490]], "midpoint": [601,482]}
+  ]
+}

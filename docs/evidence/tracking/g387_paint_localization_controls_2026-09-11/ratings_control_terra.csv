@@ -1,0 +1,31 @@
+rater,opaque_id,physical_id,state,x,y,x2,y2,mid_x,mid_y,reason
+terra,G387_001,CONTROL_BAND,VISIBLE,1540,704,1662,916,1601,811,white band visible
+terra,G387_002,CONTROL_BAND,VISIBLE,199,810,441,810,320,810,white band with black outline
+terra,G387_003,CONTROL_BAND,VISIBLE,1540,704,1661,916,1601,811,white band visible
+terra,G387_004,CONTROL_BAND,VISIBLE,854,210,1066,332,961,271,white band visible
+terra,G387_005,CONTROL_BAND,VISIBLE,198,269,443,269,321,269,white band visible
+terra,G387_006,CONTROL_BAND,VISIBLE,856,214,1065,332,960,271,white band with black outline
+terra,G387_007,CONTROL_BAND,VISIBLE,855,748,1066,871,960,809,white band with black outline
+terra,G387_008,CONTROL_BAND,VISIBLE,198,269,443,269,321,269,white band visible
+terra,G387_009,CONTROL_BAND,VISIBLE,199,809,441,809,320,809,white band with black outline
+terra,G387_010,CONTROL_BAND,VISIBLE,855,210,1066,332,960,271,white band on dark floor
+terra,G387_011,CONTROL_BAND,VISIBLE,198,809,443,809,320,809,white band on dark floor
+terra,G387_012,CONTROL_BAND,VISIBLE,856,750,1066,871,961,811,white band with black outline
+terra,G387_013,CONTROL_BAND,VISIBLE,1541,703,1662,916,1601,810,white band on dark floor
+terra,G387_014,CONTROL_BAND,VISIBLE,198,269,442,269,320,269,white band on dark floor
+terra,G387_015,CONTROL_BAND,VISIBLE,1540,704,1661,916,1600,810,white band with black outline
+terra,G387_016,CONTROL_BAND,VISIBLE,854,209,1066,333,960,271,white band on dark floor
+terra,G387_017,CONTROL_BAND,VISIBLE,1540,165,1663,375,1602,270,white band with black outline
+terra,G387_018,CONTROL_BAND,VISIBLE,853,750,1066,872,961,811,white band visible
+terra,G387_019,CONTROL_BAND,VISIBLE,197,809,444,809,321,809,white band visible
+terra,G387_020,CONTROL_BAND,VISIBLE,855,750,1066,872,961,811,white band visible
+terra,G387_021,CONTROL_BAND,VISIBLE,1540,164,1661,376,1601,270,white band on dark floor
+terra,G387_022,CONTROL_BAND,VISIBLE,1540,164,1661,376,1601,271,white band visible
+terra,G387_023,CONTROL_BAND,VISIBLE,854,748,1066,872,960,810,white band on dark floor
+terra,G387_024,CONTROL_BAND,VISIBLE,854,209,1066,332,961,271,white band visible
+terra,G387_025,CONTROL_BAND,VISIBLE,1539,704,1661,916,1600,810,white band with black outline
+terra,G387_026,CONTROL_BAND,VISIBLE,1540,165,1662,375,1600,270,white band with black outline
+terra,G387_027,CONTROL_BAND,VISIBLE,1540,164,1661,376,1601,270,white band on dark floor
+terra,G387_028,CONTROL_BAND,VISIBLE,198,237,442,237,320,237,white band on dark floor
+terra,G387_029,CONTROL_BAND,VISIBLE,198,270,441,270,320,270,white band with black outline
+terra,G387_030,CONTROL_BAND,VISIBLE,198,809,443,809,320,809,white band on dark floor

@@ -1,0 +1,10 @@
+{
+  "opaque_id": "G387_007",
+  "state": "VISIBLE",
+  "reason": "baseline and near sideline are legible",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "BASELINE_LEFT", "tile": 4, "endpoints": [[0,901],[580,384]], "midpoint": [288,644]},
+    {"physical_marking_id": "SIDELINE_NEAR", "tile": 4, "endpoints": [[0,966],[538,1078]], "midpoint": [268,1022]}
+  ]
+}

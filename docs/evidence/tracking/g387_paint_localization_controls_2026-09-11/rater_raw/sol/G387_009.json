@@ -1,0 +1,10 @@
+{
+  "opaque_id": "G387_009",
+  "state": "VISIBLE",
+  "reason": "far sideline and right baseline are legible",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "SIDELINE_FAR", "tile": 1, "endpoints": [[0,449],[713,392]], "midpoint": [354,421]},
+    {"physical_marking_id": "BASELINE_RIGHT", "tile": 3, "endpoints": [[1294,303],[1920,731]], "midpoint": [1601,516]}
+  ]
+}

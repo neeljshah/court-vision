@@ -1,0 +1,47 @@
+{
+    "displayed":  {
+                      "tile_height":  540,
+                      "tile_width":  640
+                  },
+    "opaque_id":  "G387_025",
+    "reason":  "near lane line and far three point straight legible",
+    "markings":  [
+                     {
+                         "physical_marking_id":  "LANE_LINE_LEFT_NEAR",
+                         "midpoint":  [
+                                          241,
+                                          707
+                                      ],
+                         "tile":  4,
+                         "endpoints":  [
+                                           [
+                                               0,
+                                               702
+                                           ],
+                                           [
+                                               487,
+                                               712
+                                           ]
+                                       ]
+                     },
+                     {
+                         "physical_marking_id":  "THREE_POINT_STRAIGHT_LEFT_FAR",
+                         "midpoint":  [
+                                          329,
+                                          425
+                                      ],
+                         "tile":  1,
+                         "endpoints":  [
+                                           [
+                                               447,
+                                               328
+                                           ],
+                                           [
+                                               201,
+                                               522
+                                           ]
+                                       ]
+                     }
+                 ],
+    "state":  "VISIBLE"
+}

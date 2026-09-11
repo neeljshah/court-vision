@@ -1,0 +1,1 @@
+{"opaque_id":"G387_023","state":"VISIBLE","reason":"far sideline and centre line are legible","displayed":{"tile_width":640,"tile_height":540},"markings":[{"physical_marking_id":"SIDELINE_FAR","tile":2,"endpoints":[[601,269],[1552,243]],"midpoint":[1075,256]},{"physical_marking_id":"CENTRE_LINE","tile":4,"endpoints":[[499,704],[499,929]],"midpoint":[499,820]}]}

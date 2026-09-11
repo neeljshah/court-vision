@@ -1,0 +1,9 @@
+{
+  "opaque_id": "G387_023",
+  "state": "VISIBLE",
+  "reason": "centre line legible in tile4",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "CENTRE_LINE", "tile": 4, "endpoints": [[501,697],[501,976]], "midpoint": [501,838]}
+  ]
+}

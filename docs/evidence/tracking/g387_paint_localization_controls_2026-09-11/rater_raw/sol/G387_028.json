@@ -1,0 +1,29 @@
+{
+    "displayed":  {
+                      "tile_height":  540,
+                      "tile_width":  640
+                  },
+    "opaque_id":  "G387_028",
+    "reason":  "short near sideline segment visible in tile4",
+    "markings":  [
+                     {
+                         "physical_marking_id":  "SIDELINE_NEAR",
+                         "midpoint":  [
+                                          151,
+                                          865
+                                      ],
+                         "tile":  4,
+                         "endpoints":  [
+                                           [
+                                               61,
+                                               861
+                                           ],
+                                           [
+                                               244,
+                                               869
+                                           ]
+                                       ]
+                     }
+                 ],
+    "state":  "VISIBLE"
+}

@@ -1,0 +1,34 @@
+rater,opaque_id,physical_id,state,x,y,x2,y2,mid_x,mid_y,reason
+terra,G387_001,CENTRE_LINE,VISIBLE,1877,0,1877,613,1877,306,centre line legible in tiles 3 and 6
+terra,G387_002,,ABSENT,,,,,,,no court surface visible
+terra,G387_003,SIDELINE_FAR,VISIBLE,0,230,640,353,320,292,far sideline legible in tile 1
+terra,G387_004,SIDELINE_FAR,VISIBLE,640,343,1280,403,960,373,far sideline legible in tile 2
+terra,G387_005,CENTRE_LINE,VISIBLE,399,336,395,513,397,424,centre line legible in tile 1
+terra,G387_006,OTHER_STRAIGHT_1,VISIBLE,641,578,1000,692,821,635,straight lane marking legible in tile 5
+terra,G387_007,BASELINE_LEFT,VISIBLE,0,788,501,916,256,854,left baseline legible in tile4
+terra,G387_008,,ABSENT,,,,,,,closeup shows no court marking
+terra,G387_009,BASELINE_RIGHT,VISIBLE,1265,366,1914,709,1591,540,right baseline legible in tile3
+terra,G387_010,,ABSENT,,,,,,,court markings obscured or out of frame
+terra,G387_011,BASELINE_RIGHT,VISIBLE,1283,369,1914,718,1588,540,right baseline legible in tile3
+terra,G387_012,,ABSENT,,,,,,,bench closeup shows no court marking
+terra,G387_013,BASELINE_LEFT,VISIBLE,0,616,171,580,84,598,black baseline segment visible in tile4
+terra,G387_014,LANE_LINE_LEFT_FAR,VISIBLE,640,507,785,472,713,489,short white lane boundary visible in tile2
+terra,G387_015,,ABSENT,,,,,,,closeup shows no court marking
+terra,G387_016,OTHER_STRAIGHT_1,VISIBLE,1280,710,1920,545,1601,628,purple straight court line visible in tile6
+terra,G387_017,FREE_THROW_LINE_RIGHT,VISIBLE,477,649,683,865,581,757,two paint boundary segments visible
+terra,G387_017,LANE_LINE_RIGHT_NEAR,VISIBLE,683,865,1199,816,942,840,two paint boundary segments visible
+terra,G387_018,FREE_THROW_LINE_RIGHT,VISIBLE,799,464,938,620,868,542,two paint boundary segments visible
+terra,G387_018,LANE_LINE_RIGHT_NEAR,VISIBLE,938,620,1411,580,1176,600,two paint boundary segments visible
+terra,G387_019,SIDELINE_NEAR,VISIBLE,1495,660,1905,976,1700,817,one sideline segment legible in tile6
+terra,G387_020,CENTRE_LINE,VISIBLE,1201,293,1207,447,1204,370,centre line legible in tile2
+terra,G387_021,FREE_THROW_LINE_LEFT,VISIBLE,642,562,1035,599,839,580,free throw line legible in tile5
+terra,G387_022,OTHER_STRAIGHT_1,VISIBLE,1194,586,1097,781,1147,683,one lane side legible in tile5
+terra,G387_023,CENTRE_LINE,VISIBLE,501,697,501,976,501,838,centre line legible in tile4
+terra,G387_024,OTHER_STRAIGHT_1,VISIBLE,758,613,909,786,834,698,two straight markings legible in tiles5 and 6
+terra,G387_024,SIDELINE_NEAR,VISIBLE,1510,668,1803,1006,1654,837,two straight markings legible in tiles5 and 6
+terra,G387_025,THREE_POINT_STRAIGHT_LEFT_NEAR,VISIBLE,0,672,248,383,125,529,one painted straight segment is legible
+terra,G387_026,SIDELINE_FAR,VISIBLE,462,426,756,475,611,450,far sideline segment is legible
+terra,G387_027,SIDELINE_FAR,VISIBLE,458,427,748,475,603,451,far sideline segment is legible
+terra,G387_028,OTHER_STRAIGHT_1,VISIBLE,1280,441,1345,370,1311,406,one red straight segment is legible
+terra,G387_029,,ABSENT,,,,,,,bench closeup shows no court marking
+terra,G387_030,CENTRE_LINE,VISIBLE,1445,710,1445,890,1445,800,centre line segment is legible

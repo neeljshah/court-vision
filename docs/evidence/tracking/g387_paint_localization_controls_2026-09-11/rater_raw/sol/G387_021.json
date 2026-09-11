@@ -1,0 +1,1 @@
+{"opaque_id":"G387_021","state":"VISIBLE","reason":"left baseline and near lane line are legible","displayed":{"tile_width":640,"tile_height":540},"markings":[{"physical_marking_id":"BASELINE_LEFT","tile":4,"endpoints":[[167,799],[797,339]],"midpoint":[480,574]},{"physical_marking_id":"LANE_LINE_LEFT_NEAR","tile":5,"endpoints":[[635,726],[1075,810]],"midpoint":[850,767]}]}

@@ -1,0 +1,51 @@
+rater,opaque_id,physical_id,state,x,y,x2,y2,mid_x,mid_y,reason
+sol,G387_001,BASELINE_LEFT,VISIBLE,0,806,508,356,252,583,baseline and centre line legible
+sol,G387_001,CENTRE_LINE,VISIBLE,1883,540,1872,947,1878,744,baseline and centre line legible
+sol,G387_002,,ABSENT,,,,,,,no court paint visible
+sol,G387_003,SIDELINE_FAR,VISIBLE,0,231,843,403,421,316,far sideline visible behind player
+sol,G387_004,BASELINE_LEFT,VISIBLE,177,947,497,540,337,744,baseline and near lane line legible
+sol,G387_004,LANE_LINE_LEFT_NEAR,VISIBLE,543,724,1164,766,853,745,baseline and near lane line legible
+sol,G387_005,LANE_LINE_RIGHT_FAR,VISIBLE,1452,516,1920,506,1684,510,two right lane lines legible
+sol,G387_005,LANE_LINE_RIGHT_NEAR,VISIBLE,1508,674,1920,678,1714,677,two right lane lines legible
+sol,G387_006,BASELINE_RIGHT,VISIBLE,983,338,1464,623,1220,480,right baseline visible before player
+sol,G387_007,BASELINE_LEFT,VISIBLE,0,901,580,384,288,644,baseline and near sideline are legible
+sol,G387_007,SIDELINE_NEAR,VISIBLE,0,966,538,1078,268,1022,baseline and near sideline are legible
+sol,G387_008,,ABSENT,,,,,,,no court surface is visible
+sol,G387_009,SIDELINE_FAR,VISIBLE,0,449,713,392,354,421,far sideline and right baseline are legible
+sol,G387_009,BASELINE_RIGHT,VISIBLE,1294,303,1920,731,1601,516,far sideline and right baseline are legible
+sol,G387_010,BASELINE_LEFT,VISIBLE,0,920,255,902,128,911,left baseline segment is visible
+sol,G387_011,SIDELINE_FAR,VISIBLE,0,416,660,363,329,389,far sideline and right baseline are legible
+sol,G387_011,BASELINE_RIGHT,VISIBLE,1268,307,1920,751,1587,526,far sideline and right baseline are legible
+sol,G387_012,,ABSENT,,,,,,,no court surface is visible
+sol,G387_013,BASELINE_LEFT,VISIBLE,0,615,321,355,160,486,baseline and free throw line visible
+sol,G387_013,FREE_THROW_LINE_LEFT,VISIBLE,407,474,795,490,601,482,baseline and free throw line visible
+sol,G387_014,BASELINE_LEFT,VISIBLE,0,749,228,560,111,655,baseline and near sideline visible
+sol,G387_014,SIDELINE_NEAR,VISIBLE,0,887,351,966,174,927,baseline and near sideline visible
+sol,G387_015,,ABSENT,,,,,,,court is not visible
+sol,G387_016,OTHER_STRAIGHT_1,VISIBLE,1612,730,1920,642,1762,685,one straight purple marking visible
+sol,G387_017,LANE_LINE_RIGHT_NEAR,VISIBLE,684,865,956,841,817,854,right lane and baseline visible
+sol,G387_017,BASELINE_RIGHT,VISIBLE,1701,790,1920,923,1809,856,right lane and baseline visible
+sol,G387_018,FREE_THROW_LINE_RIGHT,VISIBLE,795,465,938,618,865,540,free throw line and baseline visible
+sol,G387_018,BASELINE_RIGHT,VISIBLE,1398,426,1918,728,1657,577,free throw line and baseline visible
+sol,G387_019,SIDELINE_FAR,VISIBLE,344,488,1002,411,670,450,far sideline and right baseline are legible
+sol,G387_019,BASELINE_RIGHT,VISIBLE,1465,671,1918,1052,1692,861,far sideline and right baseline are legible
+sol,G387_020,SIDELINE_FAR,VISIBLE,80,314,866,320,470,317,far sideline and centre line are legible
+sol,G387_020,CENTRE_LINE,VISIBLE,1227,743,1227,930,1227,835,far sideline and centre line are legible
+sol,G387_021,BASELINE_LEFT,VISIBLE,167,799,797,339,480,574,left baseline and near lane line are legible
+sol,G387_021,LANE_LINE_LEFT_NEAR,VISIBLE,635,726,1075,810,850,767,left baseline and near lane line are legible
+sol,G387_022,BASELINE_LEFT,VISIBLE,101,928,749,346,425,637,left baseline and near sideline are legible
+sol,G387_022,SIDELINE_NEAR,VISIBLE,103,929,958,969,535,949,left baseline and near sideline are legible
+sol,G387_023,SIDELINE_FAR,VISIBLE,601,269,1552,243,1075,256,far sideline and centre line are legible
+sol,G387_023,CENTRE_LINE,VISIBLE,499,704,499,929,499,820,far sideline and centre line are legible
+sol,G387_024,BASELINE_RIGHT,VISIBLE,1518,714,1848,936,1683,825,right baseline and near lane line are legible
+sol,G387_024,LANE_LINE_RIGHT_NEAR,VISIBLE,1045,768,1396,727,1220,747,right baseline and near lane line are legible
+sol,G387_025,LANE_LINE_LEFT_NEAR,VISIBLE,0,702,487,712,241,707,near lane line and far three point straight legible
+sol,G387_025,THREE_POINT_STRAIGHT_LEFT_FAR,VISIBLE,447,328,201,522,329,425,near lane line and far three point straight legible
+sol,G387_026,BASELINE_LEFT,VISIBLE,0,711,479,540,239,625,left baseline and near sideline legible in tile4
+sol,G387_026,SIDELINE_NEAR,VISIBLE,0,807,354,932,177,870,left baseline and near sideline legible in tile4
+sol,G387_027,BASELINE_LEFT,VISIBLE,0,694,480,540,240,617,left baseline and near sideline legible in tile4
+sol,G387_027,SIDELINE_NEAR,VISIBLE,0,884,353,968,176,926,left baseline and near sideline legible in tile4
+sol,G387_028,SIDELINE_NEAR,VISIBLE,61,861,244,869,151,865,short near sideline segment visible in tile4
+sol,G387_029,,ABSENT,,,,,,,no court surface or painted marking visible
+sol,G387_030,CENTRE_LINE,VISIBLE,1451,649,1444,1079,1448,850,centre line and far sideline clearly visible
+sol,G387_030,SIDELINE_FAR,VISIBLE,640,334,1280,339,960,336,centre line and far sideline clearly visible

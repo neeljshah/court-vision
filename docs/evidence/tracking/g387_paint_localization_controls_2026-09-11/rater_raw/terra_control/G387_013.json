@@ -1,0 +1,7 @@
+{
+  "opaque_id": "G387_013",
+  "state": "VISIBLE",
+  "reason": "white band on dark floor",
+  "coords": "tile",
+  "markings": [{"physical_marking_id": "CONTROL_BAND", "tile": 0, "endpoints": [[261, 163], [382, 376]], "midpoint": [321, 270]}]
+}

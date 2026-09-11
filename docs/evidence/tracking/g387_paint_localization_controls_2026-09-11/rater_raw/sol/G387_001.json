@@ -1,0 +1,10 @@
+{
+  "opaque_id": "G387_001",
+  "state": "VISIBLE",
+  "reason": "baseline and centre line legible",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "BASELINE_LEFT", "tile": 4, "endpoints": [[0,806],[508,356]], "midpoint": [252,583]},
+    {"physical_marking_id": "CENTRE_LINE", "tile": 6, "endpoints": [[1883,540],[1872,947]], "midpoint": [1878,744]}
+  ]
+}

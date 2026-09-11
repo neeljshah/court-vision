@@ -1,0 +1,26 @@
+{
+    "opaque_id":  "G387_024",
+    "state":  "VISIBLE",
+    "reason":  "white band visible",
+    "coords":  "tile",
+    "markings":  [
+                     {
+                         "physical_marking_id":  "CONTROL_BAND",
+                         "tile":  0,
+                         "endpoints":  [
+                                           [
+                                               214,
+                                               209
+                                           ],
+                                           [
+                                               426,
+                                               332
+                                           ]
+                                       ],
+                         "midpoint":  [
+                                          321,
+                                          271
+                                      ]
+                     }
+                 ]
+}

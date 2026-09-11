@@ -1,0 +1,9 @@
+{
+  "opaque_id": "G387_030",
+  "state": "VISIBLE",
+  "reason": "centre line segment is legible",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "CENTRE_LINE", "tile": 6, "endpoints": [[1445,710],[1445,890]], "midpoint": [1445,800]}
+  ]
+}

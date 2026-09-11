@@ -1,0 +1,9 @@
+{
+  "opaque_id": "G387_028",
+  "state": "VISIBLE",
+  "reason": "one red straight segment is legible",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "OTHER_STRAIGHT_1", "tile": 3, "endpoints": [[1280,441],[1345,370]], "midpoint": [1311,406]}
+  ]
+}

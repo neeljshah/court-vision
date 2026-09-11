@@ -1,0 +1,9 @@
+{
+  "opaque_id": "G387_019",
+  "state": "VISIBLE",
+  "reason": "one sideline segment legible in tile6",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "SIDELINE_NEAR", "tile": 6, "endpoints": [[1495,660],[1905,976]], "midpoint": [1700,817]}
+  ]
+}

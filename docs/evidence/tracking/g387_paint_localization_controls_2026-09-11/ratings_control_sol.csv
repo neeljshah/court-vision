@@ -1,0 +1,31 @@
+rater,opaque_id,physical_id,state,x,y,x2,y2,mid_x,mid_y,reason
+sol,G387_001,CONTROL_BAND,VISIBLE,1540,706,1661,915,1600,810,white control band visible
+sol,G387_002,CONTROL_BAND,VISIBLE,200,810,440,810,320,810,white band on video board
+sol,G387_003,CONTROL_BAND,VISIBLE,1540,706,1661,915,1600,810,white control band visible
+sol,G387_004,CONTROL_BAND,VISIBLE,855,210,1066,331,961,270,white control band visible
+sol,G387_005,CONTROL_BAND,VISIBLE,200,270,441,270,320,270,white control band visible
+sol,G387_006,CONTROL_BAND,VISIBLE,856,210,1065,331,961,270,white band over court and bench
+sol,G387_007,CONTROL_BAND,VISIBLE,856,750,1065,871,961,810,white band on court
+sol,G387_008,CONTROL_BAND,VISIBLE,200,270,441,270,320,270,white control band visible
+sol,G387_009,CONTROL_BAND,VISIBLE,200,810,440,810,320,810,white band on court
+sol,G387_010,CONTROL_BAND,VISIBLE,856,210,1066,331,961,270,bright white straight band with black outline
+sol,G387_011,CONTROL_BAND,VISIBLE,199,810,441,810,320,810,bright white straight band with black outline
+sol,G387_012,CONTROL_BAND,VISIBLE,856,750,1065,871,961,810,white band on dark bench area
+sol,G387_013,CONTROL_BAND,VISIBLE,1541,704,1661,916,1601,810,bright white straight band with black outline
+sol,G387_014,CONTROL_BAND,VISIBLE,199,270,441,270,320,270,bright white straight band with black outline
+sol,G387_015,CONTROL_BAND,VISIBLE,1540,706,1661,916,1601,810,white band on dark display
+sol,G387_016,CONTROL_BAND,VISIBLE,855,210,1066,331,961,270,bright white straight band with black outline
+sol,G387_017,CONTROL_BAND,VISIBLE,1540,166,1661,375,1601,270,white band on dark seating area
+sol,G387_018,CONTROL_BAND,VISIBLE,855,750,1066,871,961,810,white control band visible
+sol,G387_019,CONTROL_BAND,VISIBLE,200,810,441,810,320,810,white control band visible
+sol,G387_020,CONTROL_BAND,VISIBLE,855,750,1066,871,961,810,white control band visible
+sol,G387_021,CONTROL_BAND,VISIBLE,1541,165,1661,375,1601,270,bright white straight band with black outline
+sol,G387_022,CONTROL_BAND,VISIBLE,1540,166,1661,375,1600,270,white control band visible
+sol,G387_023,CONTROL_BAND,VISIBLE,855,750,1066,871,961,811,bright white straight band with black outline
+sol,G387_024,CONTROL_BAND,VISIBLE,855,210,1066,331,961,270,white control band visible
+sol,G387_025,CONTROL_BAND,VISIBLE,1540,706,1662,916,1601,810,white band on court
+sol,G387_026,CONTROL_BAND,VISIBLE,1540,166,1661,376,1601,270,white band on arena background
+sol,G387_027,CONTROL_BAND,VISIBLE,1541,166,1661,375,1601,270,bright white straight band with black outline
+sol,G387_028,CONTROL_BAND,VISIBLE,198,270,442,270,321,270,bright white straight band with black outline
+sol,G387_029,CONTROL_BAND,VISIBLE,200,270,440,270,320,270,white band on gray shirt
+sol,G387_030,CONTROL_BAND,VISIBLE,199,810,441,810,320,810,bright white straight band with black outline

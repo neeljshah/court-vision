@@ -1,0 +1,15 @@
+{
+ "adjudicator_visible_no": 6,
+ "adjudicator_visible_unknown": 2,
+ "adjudicator_visible_yes": 22,
+ "canonical_sha256": "7b7ca56f6bb46927d89860a8dd2ce26d17224a0c8d22ff4cee858f31ff5409d1",
+ "control_bar_met": 0,
+ "controls_bar": 27,
+ "controls_denominator": 30,
+ "controls_success": 19,
+ "real_bar": 24,
+ "real_bar_met": 0,
+ "real_denominator": 30,
+ "real_localized": 1,
+ "real_unknown": 2
+}

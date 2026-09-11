@@ -1,0 +1,31 @@
+opaque_id,visibility,paired_ids,localized,terra_points_on_paint,sol_points_on_paint,audit_note
+G387_001,YES,0,0,0,0,no same-id pair within 6 px; not audited
+G387_002,NO,0,0,0,0,both raters ABSENT; no court surface
+G387_003,UNKNOWN,0,0,0,0,no same-id pair within 6 px; not audited
+G387_004,YES,0,0,0,0,no shared physical id
+G387_005,YES,0,0,0,0,no shared physical id
+G387_006,YES,0,0,0,0,no shared physical id
+G387_007,YES,0,0,0,0,no same-id pair within 6 px; not audited
+G387_008,NO,0,0,0,0,both raters ABSENT; no court surface
+G387_009,YES,0,0,0,0,no same-id pair within 6 px; not audited
+G387_010,UNKNOWN,0,0,0,0,terra ABSENT; no shared id
+G387_011,YES,0,0,0,0,no same-id pair within 6 px; not audited
+G387_012,NO,0,0,0,0,both raters ABSENT; no court surface
+G387_013,YES,0,0,0,0,no same-id pair within 6 px; not audited
+G387_014,YES,0,0,0,0,no shared physical id
+G387_015,NO,0,0,0,0,both raters ABSENT; no court surface
+G387_016,NO,0,0,0,0,no same-id pair within 6 px; not audited
+G387_017,YES,0,0,9,9,collinear on one painted lane line but extents differ; pairing fails
+G387_018,YES,1,1,9,9,pair within tolerance; all nine audited points on visible paint
+G387_019,YES,0,0,0,0,no shared physical id
+G387_020,YES,0,0,0,0,no same-id pair within 6 px; not audited
+G387_021,YES,0,0,0,0,no shared physical id
+G387_022,YES,0,0,0,0,no shared physical id
+G387_023,YES,0,0,9,9,collinear on the same painted centre line but extents differ; pairing fails
+G387_024,YES,0,0,0,0,no shared physical id
+G387_025,YES,0,0,0,0,no shared physical id
+G387_026,YES,0,0,0,0,no shared physical id
+G387_027,YES,0,0,0,0,no shared physical id
+G387_028,YES,0,0,0,0,no shared physical id
+G387_029,NO,0,0,0,0,both raters ABSENT; no court surface
+G387_030,YES,0,0,8,9,collinear on the same painted centre line; one terra point on a dark overlay; extents differ

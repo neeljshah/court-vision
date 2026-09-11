@@ -1,0 +1,10 @@
+{
+  "opaque_id": "G387_009",
+  "state": "VISIBLE",
+  "reason": "right baseline legible in tile3",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "BASELINE_RIGHT", "tile": 3,
+     "endpoints": [[1265, 366], [1914, 709]], "midpoint": [1591, 540]}
+  ]
+}

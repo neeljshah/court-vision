@@ -1,0 +1,47 @@
+{
+    "displayed":  {
+                      "tile_height":  540,
+                      "tile_width":  640
+                  },
+    "opaque_id":  "G387_030",
+    "reason":  "centre line and far sideline clearly visible",
+    "markings":  [
+                     {
+                         "physical_marking_id":  "CENTRE_LINE",
+                         "midpoint":  [
+                                          1448,
+                                          850
+                                      ],
+                         "tile":  6,
+                         "endpoints":  [
+                                           [
+                                               1451,
+                                               649
+                                           ],
+                                           [
+                                               1444,
+                                               1079
+                                           ]
+                                       ]
+                     },
+                     {
+                         "physical_marking_id":  "SIDELINE_FAR",
+                         "midpoint":  [
+                                          960,
+                                          336
+                                      ],
+                         "tile":  2,
+                         "endpoints":  [
+                                           [
+                                               640,
+                                               334
+                                           ],
+                                           [
+                                               1280,
+                                               339
+                                           ]
+                                       ]
+                     }
+                 ],
+    "state":  "VISIBLE"
+}

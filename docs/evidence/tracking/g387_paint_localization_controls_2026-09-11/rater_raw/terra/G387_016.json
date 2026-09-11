@@ -1,0 +1,9 @@
+{
+  "opaque_id": "G387_016",
+  "state": "VISIBLE",
+  "reason": "purple straight court line visible in tile6",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "OTHER_STRAIGHT_1", "tile": 6, "endpoints": [[1280, 710], [1920, 545]], "midpoint": [1601, 628]}
+  ]
+}

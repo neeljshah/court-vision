@@ -1,0 +1,10 @@
+{
+  "opaque_id": "G387_024",
+  "state": "VISIBLE",
+  "reason": "two straight markings legible in tiles5 and 6",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "OTHER_STRAIGHT_1", "tile": 5, "endpoints": [[758,613],[909,786]], "midpoint": [834,698]},
+    {"physical_marking_id": "SIDELINE_NEAR", "tile": 6, "endpoints": [[1510,668],[1803,1006]], "midpoint": [1654,837]}
+  ]
+}

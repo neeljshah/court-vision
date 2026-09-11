@@ -1,0 +1,31 @@
+opaque_id,pair_id,endpoint_err_px,collinear_dev_px,terra_points_on_paint,sol_points_on_paint,note
+G387_001,CENTRE_LINE,540.0,20.6,0,0,no same-id pair within 6 px; not audited
+G387_002,NONE,,,0,0,both raters ABSENT; no court surface
+G387_003,SIDELINE_FAR,209.1,10.8,0,0,no same-id pair within 6 px; not audited
+G387_004,NONE,,,0,0,no shared physical id
+G387_005,NONE,,,0,0,no shared physical id
+G387_006,NONE,,,0,0,no shared physical id
+G387_007,BASELINE_LEFT,537.8,535.0,0,0,no same-id pair within 6 px; not audited
+G387_008,NONE,,,0,0,both raters ABSENT; no court surface
+G387_009,BASELINE_RIGHT,69.4,69.3,0,0,no same-id pair within 6 px; not audited
+G387_010,NONE,,,0,0,terra ABSENT; no shared id
+G387_011,BASELINE_RIGHT,63.8,47.0,0,0,no same-id pair within 6 px; not audited
+G387_012,NONE,,,0,0,both raters ABSENT; no court surface
+G387_013,BASELINE_LEFT,270.4,189.3,0,0,no same-id pair within 6 px; not audited
+G387_014,NONE,,,0,0,no shared physical id
+G387_015,NONE,,,0,0,both raters ABSENT; no court surface
+G387_016,OTHER_STRAIGHT_1,332.6,110.4,0,0,no same-id pair within 6 px; not audited
+G387_017,LANE_LINE_RIGHT_NEAR,244.3,3.5,9,9,collinear on one painted lane line but extents differ; pairing fails
+G387_018,FREE_THROW_LINE_RIGHT,4.1,3.7,9,9,pair within tolerance; all nine audited points on visible paint
+G387_019,NONE,,,0,0,no shared physical id
+G387_020,CENTRE_LINE,483.4,26.0,0,0,no same-id pair within 6 px; not audited
+G387_021,NONE,,,0,0,no shared physical id
+G387_022,NONE,,,0,0,no shared physical id
+G387_023,CENTRE_LINE,47.0,2.0,9,9,collinear on the same painted centre line but extents differ; pairing fails
+G387_024,NONE,,,0,0,no shared physical id
+G387_025,NONE,,,0,0,no shared physical id
+G387_026,NONE,,,0,0,no shared physical id
+G387_027,NONE,,,0,0,no shared physical id
+G387_028,NONE,,,0,0,no shared physical id
+G387_029,NONE,,,0,0,both raters ABSENT; no court surface
+G387_030,CENTRE_LINE,189.0,6.0,8,9,collinear on the same painted centre line; one terra point on a dark overlay; extents differ

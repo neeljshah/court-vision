@@ -1,0 +1,9 @@
+{
+  "opaque_id": "G387_014",
+  "state": "VISIBLE",
+  "reason": "short white lane boundary visible in tile2",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "LANE_LINE_LEFT_FAR", "tile": 2, "endpoints": [[640, 507], [785, 472]], "midpoint": [713, 489]}
+  ]
+}

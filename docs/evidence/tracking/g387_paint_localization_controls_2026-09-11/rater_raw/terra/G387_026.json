@@ -1,0 +1,9 @@
+{
+  "opaque_id": "G387_026",
+  "state": "VISIBLE",
+  "reason": "far sideline segment is legible",
+  "displayed": {"tile_width": 640, "tile_height": 540},
+  "markings": [
+    {"physical_marking_id": "SIDELINE_FAR", "tile": 2, "endpoints": [[462,426],[756,475]], "midpoint": [611,450]}
+  ]
+}
