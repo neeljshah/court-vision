@@ -1,0 +1,13 @@
+G411 timeline card draw_j=4
+source nba__3gBeJyl7Szg_s4514.mp4
+time_base 1/90000  validated_fps 60.0  bar_exact 1/60
+idx  integer_pts  rational_s          archived_decimal_s
+ 5997     8995500  99.950000000        99.950000
+ 5998     8997000  99.966666667        99.966667
+ 5999     8998500  99.983333333        99.983333
+ 6000     9000000  100.000000000       100.000000
+ 6001     9001500  100.016666667       100.016667
+ 6002     9003000  100.033333333       100.033333
+first_excluded idx=6000 extent_exact=100/1 extent_s=100.000000000000 within_bar=True
+last_admitted  idx=5999 extent_exact=5999/60 extent_s=99.983333333333 within_bar=True
+archived float first_boundary_extent_s=100 last_admitted_pts=99.983333

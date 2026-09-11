@@ -1,0 +1,49 @@
+{
+ "anomaly_rows_n": 1984,
+ "arm_c_n": 30,
+ "bar_moved": false,
+ "bar_outcome_changes_explained_by_serialization_n": 8,
+ "bar_outcome_changes_n": 8,
+ "construct_matching_declared_n": 32,
+ "construct_n": 32,
+ "draw_n": 30,
+ "epsilon_added": false,
+ "g408_historical_verdict_unchanged": true,
+ "gap": "G411",
+ "not_verified": [
+  "patched-module behavior, deployment, daemon restart, flag change",
+  "runtime cost or quality past the existing 3000-frame flush boundary",
+  "decoder live PTS behavior inside the producer",
+  "inference repeatability (only table reproduction is shown)"
+ ],
+ "premise_float_contained_n": 30,
+ "premise_float_first_excluded_pass_n": 30,
+ "premise_float_last_admitted_pass_n": 26,
+ "premise_float_row_matches_g408_n": 30,
+ "premise_marginal_cases": [
+  {
+   "excess_s": "0.000000333333",
+   "source_name": "basketball__acb-jHcR5UxPGuE_s90.mp4"
+  },
+  {
+   "excess_s": "0.000000333333",
+   "source_name": "basketball__acb-jHcR5UxPGuE_s3999.mp4"
+  },
+  {
+   "excess_s": "0.000000333333",
+   "source_name": "nba__3gBeJyl7Szg_s1196.mp4"
+  },
+  {
+   "excess_s": "0.000000333333",
+   "source_name": "nba__3gBeJyl7Szg_s4514.mp4"
+  }
+ ],
+ "rational_arm_c_contained_n": 30,
+ "rational_arm_c_first_excluded_pass_n": 30,
+ "rational_arm_c_last_admitted_pass_n": 30,
+ "rational_arm_c_unknown_n": 0,
+ "serialization_mismatch_sources_n": 0,
+ "sport": "basketball",
+ "tag": "",
+ "worktree": "a19"
+}

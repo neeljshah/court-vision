@@ -1,0 +1,23 @@
+field,parent_definition,g411_definition,identical_meaning,rows_differing_of_90
+source_name,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+arm,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+rule,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+frame_cap,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+read_frames,admitted frames plus one boundary read when present,admitted frames plus one boundary read when present,yes,0
+admitted_frames,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+first_admitted_index,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+last_admitted_index,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+last_admitted_pts,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+first_excluded_index,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+first_excluded_pts,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+span_s,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+deadline_s,absolute first PTS plus duration in seconds,absolute first PTS plus duration in seconds,yes,0
+endpoint_gap_s,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+first_boundary_extent_s,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+last_admitted_gap_s,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+overshoot_s,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+termination_reason,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+unknown_reason,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+contained,last admitted PTS is strictly before deadline,last admitted PTS is strictly before deadline,yes,0
+native_frame_interval_s,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0
+draw_j,G408 _row field retained unchanged,G408 _row field retained unchanged,yes,0

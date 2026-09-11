@@ -1,0 +1,13 @@
+G411 timeline card draw_j=28
+source ncaa_basketball__s-0Y7aLxXgM_s1275.mp4
+time_base 1/90000  validated_fps 59.94005994005994  bar_exact 50000000000000/2997002997002997
+idx  integer_pts  rational_s          archived_decimal_s
+ 5992     8996988  99.966533333        99.966533
+ 5993     8998490  99.983222222        99.983222
+ 5994     8999991  99.999900000        99.999900
+ 5995     9001493  100.016588889       100.016589
+ 5996     9002994  100.033266667       100.033267
+ 5997     9004496  100.049955556       100.049956
+first_excluded idx=5995 extent_exact=9001493/90000 extent_s=100.016588888889 within_bar=True
+last_admitted  idx=5994 extent_exact=999999/10000 extent_s=99.999900000000 within_bar=True
+archived float first_boundary_extent_s=100.016589 last_admitted_pts=99.999900

@@ -1,0 +1,21 @@
+{
+ "ffmpeg": {
+  "binary_sha256": "d1e2a156261ecc675081943197a85f08f2868784a0af499171ede89353edad31",
+  "invoked_as": "ffmpeg",
+  "resolved_path": "C:\\Users\\neelj\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1-full_build\\bin\\ffmpeg.EXE",
+  "returncode": 0,
+  "version_line": "ffmpeg version 8.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers"
+ },
+ "ffprobe": {
+  "binary_sha256": "70872c3ffbc43d0b2c570f9837f54d6e9a832f4ca25463e9735b6a3ec0621478",
+  "invoked_as": "ffprobe",
+  "resolved_path": "C:\\Users\\neelj\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1-full_build\\bin\\ffprobe.EXE",
+  "returncode": 0,
+  "version_line": "ffprobe version 8.1-full_build-www.gyan.dev Copyright (c) 2007-2026 the FFmpeg developers"
+ },
+ "models_exercised": [],
+ "python": {
+  "implementation": "CPython",
+  "version": "3.10.0"
+ }
+}

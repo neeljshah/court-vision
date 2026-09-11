@@ -1,0 +1,9 @@
+source_name,arm,draw_j,endpoint_definition,float_extent_s,rational_extent_s,rational_extent_exact,extent_delta_s,float_within_bar,rational_within_bar,bar_outcome_changed,serialization_explains_change,float_reason,rational_reason
+basketball__acb-jHcR5UxPGuE_s90.mp4,B_g401_fps_frame_cap,0,last_admitted,99.983333000000,99.983333333333,5999/60,0.000000333333,False,True,True,True,FRAME_CAP,FRAME_CAP
+basketball__acb-jHcR5UxPGuE_s90.mp4,C_proposed_pts_stop,0,last_admitted,99.983333000000,99.983333333333,5999/60,0.000000333333,False,True,True,True,DEADLINE,DEADLINE
+basketball__acb-jHcR5UxPGuE_s3999.mp4,B_g401_fps_frame_cap,1,last_admitted,99.983333000000,99.983333333333,5999/60,0.000000333333,False,True,True,True,FRAME_CAP,FRAME_CAP
+basketball__acb-jHcR5UxPGuE_s3999.mp4,C_proposed_pts_stop,1,last_admitted,99.983333000000,99.983333333333,5999/60,0.000000333333,False,True,True,True,DEADLINE,DEADLINE
+nba__3gBeJyl7Szg_s1196.mp4,B_g401_fps_frame_cap,3,last_admitted,99.983333000000,99.983333333333,5999/60,0.000000333333,False,True,True,True,FRAME_CAP,FRAME_CAP
+nba__3gBeJyl7Szg_s1196.mp4,C_proposed_pts_stop,3,last_admitted,99.983333000000,99.983333333333,5999/60,0.000000333333,False,True,True,True,DEADLINE,DEADLINE
+nba__3gBeJyl7Szg_s4514.mp4,B_g401_fps_frame_cap,4,last_admitted,99.983333000000,99.983333333333,5999/60,0.000000333333,False,True,True,True,FRAME_CAP,FRAME_CAP
+nba__3gBeJyl7Szg_s4514.mp4,C_proposed_pts_stop,4,last_admitted,99.983333000000,99.983333333333,5999/60,0.000000333333,False,True,True,True,DEADLINE,DEADLINE

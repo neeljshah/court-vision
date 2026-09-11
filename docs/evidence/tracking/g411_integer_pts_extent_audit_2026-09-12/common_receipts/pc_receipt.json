@@ -1,0 +1,8 @@
+{
+ "gpu_used": false,
+ "models_exercised": [],
+ "pod_stage": "none; G411 is a PC-only row",
+ "retained_sources_root": "C:/Users/neelj/g401_receiver/sources",
+ "scratch_root": "C:/Users/neelj/AppData/Local/Temp/g411_work",
+ "sources_read_only": true
+}
