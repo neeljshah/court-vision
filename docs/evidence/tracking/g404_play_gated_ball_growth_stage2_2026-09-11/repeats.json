@@ -1,0 +1,87 @@
+{
+ "delivered_digests": {
+  "census.csv": "567ffa002b1d05fb21f59f833088d4f948fb4cf0ca25ff9465f0b09f4c318b21",
+  "game_disjointness.csv": "489a3b62d0836ae61d8a9e76f95a04d62fd22f79f628e6493e7da4df5a4f4a26",
+  "gate_audit.csv": "51b1b825e0ea9ae5762ca8c8f075990b570ad40ddcebed06ba582eb1bc4ed711",
+  "premise.json": "b2532f3c6a1aa0303c60fe628a2ffb7eb89575791c6edd47aa475a11e1c5b2ee",
+  "q6_scan.json": "0b81f9212ad8c07bd20a3572706efcb2ad8b116e54c59d38270a6c27346d9505",
+  "summary.json": "8d5146e59e7a58fbf1602dd4ac9a9cdebde388a66b0545ec8c2755dca9e4ebb3"
+ },
+ "identical": true,
+ "note": "the reproduced operations are the whole-pool census, the disjointness join, the gate-audit scoring and the Q6 scan; decode, embedding and rating are not reproduced by this receipt",
+ "renders": 1,
+ "runs": [
+  {
+   "attempt": 1,
+   "digests": {
+    "census.csv": "567ffa002b1d05fb21f59f833088d4f948fb4cf0ca25ff9465f0b09f4c318b21",
+    "game_disjointness.csv": "489a3b62d0836ae61d8a9e76f95a04d62fd22f79f628e6493e7da4df5a4f4a26",
+    "gate_audit.csv": "51b1b825e0ea9ae5762ca8c8f075990b570ad40ddcebed06ba582eb1bc4ed711",
+    "premise.json": "b2532f3c6a1aa0303c60fe628a2ffb7eb89575791c6edd47aa475a11e1c5b2ee",
+    "q6_scan.json": "0b81f9212ad8c07bd20a3572706efcb2ad8b116e54c59d38270a6c27346d9505",
+    "summary.json": "8d5146e59e7a58fbf1602dd4ac9a9cdebde388a66b0545ec8c2755dca9e4ebb3"
+   },
+   "matches_delivered": {
+    "census.csv": true,
+    "game_disjointness.csv": true,
+    "gate_audit.csv": true,
+    "premise.json": true,
+    "q6_scan.json": true,
+    "summary.json": true
+   },
+   "returncode": 0,
+   "routes": {
+    "census": {
+     "returncode": 1,
+     "stdout": "PREMISE FALSE eligible 14 of required 30 competitions 2"
+    },
+    "finish": {
+     "returncode": 0,
+     "stdout": "{\"eligible_new_games\": 14, \"gate_admitted\": 187, \"gate_audit_pass\": false, \"gate_excluded\": 199, \"required_new_games\": 30, \"supply_premise\": \"FALSE\", \"verdict\": \"PARTIAL\"}"
+    },
+    "q6_scan": {
+     "returncode": 0,
+     "stdout": "Q6 files 38 flagged 1 claim_context 0"
+    }
+   },
+   "stdout": "PREMISE FALSE eligible 14 of required 30 competitions 2\n{\"eligible_new_games\": 14, \"gate_admitted\": 187, \"gate_audit_pass\": false, \"gate_excluded\": 199, \"required_new_games\": 30, \"supply_premise\": \"FALSE\", \"verdict\": \"PARTIAL\"}\nQ6 files 38 flagged 1 claim_context 0",
+   "stdout_note": "run-level returncode = the repeat-wrapper exit code (0 = the wrapper completed every route and wrote its receipts; the parent semantics); nested route returncodes kept as recorded (census 1 = PREMISE FALSE); run-level stdout = the per-route stdouts joined in route order (fix 1c/1d, B2)"
+  },
+  {
+   "attempt": 2,
+   "digests": {
+    "census.csv": "567ffa002b1d05fb21f59f833088d4f948fb4cf0ca25ff9465f0b09f4c318b21",
+    "game_disjointness.csv": "489a3b62d0836ae61d8a9e76f95a04d62fd22f79f628e6493e7da4df5a4f4a26",
+    "gate_audit.csv": "51b1b825e0ea9ae5762ca8c8f075990b570ad40ddcebed06ba582eb1bc4ed711",
+    "premise.json": "b2532f3c6a1aa0303c60fe628a2ffb7eb89575791c6edd47aa475a11e1c5b2ee",
+    "q6_scan.json": "0b81f9212ad8c07bd20a3572706efcb2ad8b116e54c59d38270a6c27346d9505",
+    "summary.json": "8d5146e59e7a58fbf1602dd4ac9a9cdebde388a66b0545ec8c2755dca9e4ebb3"
+   },
+   "matches_delivered": {
+    "census.csv": true,
+    "game_disjointness.csv": true,
+    "gate_audit.csv": true,
+    "premise.json": true,
+    "q6_scan.json": true,
+    "summary.json": true
+   },
+   "returncode": 0,
+   "routes": {
+    "census": {
+     "returncode": 1,
+     "stdout": "PREMISE FALSE eligible 14 of required 30 competitions 2"
+    },
+    "finish": {
+     "returncode": 0,
+     "stdout": "{\"eligible_new_games\": 14, \"gate_admitted\": 187, \"gate_audit_pass\": false, \"gate_excluded\": 199, \"required_new_games\": 30, \"supply_premise\": \"FALSE\", \"verdict\": \"PARTIAL\"}"
+    },
+    "q6_scan": {
+     "returncode": 0,
+     "stdout": "Q6 files 38 flagged 1 claim_context 0"
+    }
+   },
+   "stdout": "PREMISE FALSE eligible 14 of required 30 competitions 2\n{\"eligible_new_games\": 14, \"gate_admitted\": 187, \"gate_audit_pass\": false, \"gate_excluded\": 199, \"required_new_games\": 30, \"supply_premise\": \"FALSE\", \"verdict\": \"PARTIAL\"}\nQ6 files 38 flagged 1 claim_context 0",
+   "stdout_note": "run-level returncode = the repeat-wrapper exit code (0 = the wrapper completed every route and wrote its receipts; the parent semantics); nested route returncodes kept as recorded (census 1 = PREMISE FALSE); run-level stdout = the per-route stdouts joined in route order (fix 1c/1d, B2)"
+  }
+ ]
+}

@@ -1,0 +1,52 @@
+{
+ "delivered_digests": {
+  "census.csv": "567ffa002b1d05fb21f59f833088d4f948fb4cf0ca25ff9465f0b09f4c318b21",
+  "game_disjointness.csv": "489a3b62d0836ae61d8a9e76f95a04d62fd22f79f628e6493e7da4df5a4f4a26",
+  "gate_audit.csv": "51b1b825e0ea9ae5762ca8c8f075990b570ad40ddcebed06ba582eb1bc4ed711",
+  "premise.json": "97dc8bbfc115720531859413b6259a44f0e505c19ee5a791e057b9b7b87691c6",
+  "summary.json": "78f824c08f97ff7260520a5fd32056335dae90f9c34afa7646276ae8c2a3e2f8"
+ },
+ "identical": true,
+ "note": "the reproduced operations are the whole-pool census, the disjointness join and the gate-audit scoring; decode, embedding and rating are not reproduced by this receipt",
+ "renders": 1,
+ "runs": [
+  {
+   "attempt": 1,
+   "digests": {
+    "census.csv": "567ffa002b1d05fb21f59f833088d4f948fb4cf0ca25ff9465f0b09f4c318b21",
+    "game_disjointness.csv": "489a3b62d0836ae61d8a9e76f95a04d62fd22f79f628e6493e7da4df5a4f4a26",
+    "gate_audit.csv": "51b1b825e0ea9ae5762ca8c8f075990b570ad40ddcebed06ba582eb1bc4ed711",
+    "premise.json": "97dc8bbfc115720531859413b6259a44f0e505c19ee5a791e057b9b7b87691c6",
+    "summary.json": "78f824c08f97ff7260520a5fd32056335dae90f9c34afa7646276ae8c2a3e2f8"
+   },
+   "matches_delivered": {
+    "census.csv": true,
+    "game_disjointness.csv": true,
+    "gate_audit.csv": true,
+    "premise.json": true,
+    "summary.json": true
+   },
+   "returncode": 0,
+   "stdout": "g404_census.py rc 1 \ng404_finish.py rc 1"
+  },
+  {
+   "attempt": 2,
+   "digests": {
+    "census.csv": "567ffa002b1d05fb21f59f833088d4f948fb4cf0ca25ff9465f0b09f4c318b21",
+    "game_disjointness.csv": "489a3b62d0836ae61d8a9e76f95a04d62fd22f79f628e6493e7da4df5a4f4a26",
+    "gate_audit.csv": "51b1b825e0ea9ae5762ca8c8f075990b570ad40ddcebed06ba582eb1bc4ed711",
+    "premise.json": "97dc8bbfc115720531859413b6259a44f0e505c19ee5a791e057b9b7b87691c6",
+    "summary.json": "78f824c08f97ff7260520a5fd32056335dae90f9c34afa7646276ae8c2a3e2f8"
+   },
+   "matches_delivered": {
+    "census.csv": true,
+    "game_disjointness.csv": true,
+    "gate_audit.csv": true,
+    "premise.json": true,
+    "summary.json": true
+   },
+   "returncode": 0,
+   "stdout": "g404_census.py rc 1 \ng404_finish.py rc 1"
+  }
+ ]
+}

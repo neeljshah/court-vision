@@ -1,0 +1,13 @@
+field,value
+pc_python,Python 3.10.0
+pc_opencv,4.11.0
+pc_ffprobe,ffprobe version 8.1-full_build-www.gyan.dev Copyright (c) 2007-2026 the FFmpeg developers
+pod_endpoint,213.192.2.120:40117
+pod_scratch,/workspace/g404_scratch
+pod_worktree,/workspace/wt/a18
+receiver_dir,C:/Users/neelj/g404_receiver
+lane_worktree,C:/Users/neelj/nba-track-a18
+base_commit,d316c99f3
+prereg_commit,5112012e9
+amendment_a1_commit,039ac8811
+census_utc,2026-09-11T20:39:09Z

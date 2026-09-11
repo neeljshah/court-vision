@@ -1,0 +1,63 @@
+{
+ "claim_context_hits": 6,
+ "files_scanned": 40,
+ "findings_counts_only": {
+  "C:/Users/neelj/nba-track-a18/scripts/platformkit/tracking/g404_q6_scan.py": {
+   "numeric_pattern_counts": {
+    "numeric_0": {
+     "claim_context": 1,
+     "data_field_context": 0,
+     "fields": [],
+     "retraction_context": 0
+    },
+    "numeric_1": {
+     "claim_context": 1,
+     "data_field_context": 0,
+     "fields": [],
+     "retraction_context": 0
+    },
+    "numeric_2": {
+     "claim_context": 1,
+     "data_field_context": 0,
+     "fields": [],
+     "retraction_context": 0
+    },
+    "numeric_3": {
+     "claim_context": 1,
+     "data_field_context": 0,
+     "fields": [],
+     "retraction_context": 0
+    },
+    "numeric_4": {
+     "claim_context": 1,
+     "data_field_context": 0,
+     "fields": [],
+     "retraction_context": 0
+    },
+    "numeric_5": {
+     "claim_context": 1,
+     "data_field_context": 0,
+     "fields": [],
+     "retraction_context": 0
+    }
+   },
+   "prose_pattern_counts": {}
+  },
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/gate_outputs.csv": {
+   "numeric_pattern_counts": {
+    "numeric_1": {
+     "claim_context": 0,
+     "data_field_context": 3,
+     "fields": [
+      "cosine_distance"
+     ],
+     "retraction_context": 0
+    }
+   },
+   "prose_pattern_counts": {}
+  }
+ },
+ "numeric_patterns": 6,
+ "prose_patterns": 6,
+ "scanner_included": "C:/Users/neelj/nba-track-a18/scripts/platformkit/tracking/g404_q6_scan.py"
+}

@@ -1,0 +1,10 @@
+{
+ "admitted_cards": 30,
+ "admitted_stratum": 187,
+ "cards": 60,
+ "dispatch_sha256": "0ac26c4389221ad3cec73b54d85b5c6c9f4504b61651489e0164aec6b3135ac9",
+ "draw_sha256": "b9c84664cbc010d1c861fb292a54954351b29f7dca61b661bdd1e0b64e3d287f",
+ "excluded_cards": 30,
+ "excluded_stratum": 199,
+ "seed": "36ffa3620e776f6bb3a7e8e335fe1cb4dbd90791ac6d3994743e1cf48eeb4de4"
+}

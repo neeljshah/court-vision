@@ -1,0 +1,56 @@
+{
+ "admitted_bar_reachable": false,
+ "admitted_joint_play_upper_bound": 26,
+ "amendment_a1_commit": "039ac8811",
+ "boxes_530_preserved": true,
+ "candidate_grid_rows": 386,
+ "census_rows": 14,
+ "census_utc": "2026-09-11T20:39:09Z",
+ "competitions": [
+  "bcl",
+  "eurocup"
+ ],
+ "contact_sheet_sha256": "a74060fa61dbcdb42ad308d0732a7fc0420c129c1d16100f48365f6857b997ad",
+ "controls_administered": 0,
+ "eligible_new_games": 14,
+ "excluded_bar_reachable": true,
+ "excluded_joint_nonplay_upper_bound": 25,
+ "flag_changes": 0,
+ "g400_116_candidates_untouched": true,
+ "gate_admitted": 187,
+ "gate_audit_cards": 60,
+ "gate_audit_joint_bar": "NOT EVALUABLE: two independent raters are required and only one reviewer visited the cards",
+ "gate_audit_pass": false,
+ "gate_excluded": 199,
+ "gpu_minutes": 0,
+ "old_identities": 101,
+ "planned_keys_drawn": 0,
+ "prereg_commit": "5112012e9",
+ "ratings_collected": 0,
+ "registry_writes": 0,
+ "required_new_games": 30,
+ "retained_games_censused": 14,
+ "retained_sections_censused": 79,
+ "row": "G404",
+ "sealed_admitted_bar": 27,
+ "sealed_excluded_bar": 24,
+ "single_reviewer_counts": {
+  "ADMITTED": {
+   "NONPLAY": 3,
+   "PLAY": 26,
+   "UNKNOWN": 1,
+   "UNVISITED": 0
+  },
+  "EXCLUDED": {
+   "NONPLAY": 25,
+   "PLAY": 4,
+   "UNKNOWN": 1,
+   "UNVISITED": 0
+  }
+ },
+ "sources_pruned_before_retention": 8,
+ "sources_retained": 6,
+ "supply_premise": "FALSE",
+ "supply_premise_detail": "14 resolved exact-ID-disjoint candidates across 2 competitions vs 30 required; relation to older alternate uploads remains unresolved",
+ "verdict": "PARTIAL"
+}

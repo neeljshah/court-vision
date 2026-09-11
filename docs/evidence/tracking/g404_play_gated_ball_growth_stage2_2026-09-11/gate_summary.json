@@ -1,0 +1,10 @@
+{
+ "admitted": 187,
+ "decoded": 386,
+ "excluded": 199,
+ "games": 6,
+ "grid_rows": 386,
+ "opencv": "4.14.0",
+ "reference_frames": 240,
+ "weights_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec"
+}

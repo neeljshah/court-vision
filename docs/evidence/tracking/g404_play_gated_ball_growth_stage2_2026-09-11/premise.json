@@ -1,0 +1,59 @@
+{
+ "census_utc": "2026-09-11T20:39:09Z",
+ "competitions": [
+  "bcl",
+  "eurocup"
+ ],
+ "eligible_games": 14,
+ "old_identities": 101,
+ "old_identity_sources": [
+  {
+   "field": "game",
+   "identities": 60,
+   "path": "docs/evidence/tracking/g389_ball_reference_completion_2026-09-11/frames_v3.csv",
+   "role": "G389"
+  },
+  {
+   "field": "game",
+   "identities": 27,
+   "path": "docs/evidence/tracking/g389_ball_reference_completion_2026-09-11/dev_boxes_v3.csv",
+   "role": "G389"
+  },
+  {
+   "field": "video_id",
+   "identities": 12,
+   "path": "docs/evidence/tracking/g387_paint_localization_controls_2026-09-11/selection.csv",
+   "role": "G387"
+  },
+  {
+   "field": "game",
+   "identities": 32,
+   "path": "docs/evidence/tracking/g394_ball_person_negatives_2026-09-11/context.csv",
+   "role": "G394"
+  },
+  {
+   "field": "game",
+   "identities": 28,
+   "path": "docs/evidence/tracking/g398_a8_high_resolution_dev_shadow_2026-09-11/dev_manifest.csv",
+   "role": "G398"
+  },
+  {
+   "field": "video_id",
+   "identities": 30,
+   "path": "C:/Users/neelj/nba-ai-system/docs/evidence/tracking/g400_ball_reference_growth_stage1_2026-09-11/draw.csv",
+   "role": "G400"
+  },
+  {
+   "field": "video_id",
+   "identities": 35,
+   "path": "C:/Users/neelj/nba-ai-system/docs/evidence/tracking/g400_ball_reference_growth_stage1_2026-09-11/census.csv",
+   "role": "G400"
+  }
+ ],
+ "old_overlap_excluded": [],
+ "premise": "FALSE",
+ "required_competitions": 2,
+ "required_games": 30,
+ "retained_games": 14,
+ "retained_sections": 79
+}

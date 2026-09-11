@@ -1,0 +1,62 @@
+{
+ "claim_context_hits": 0,
+ "files_scanned": 38,
+ "findings_counts_only": {
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/gate_outputs.csv": {
+   "numeric_pattern_counts": {
+    "numeric_1": {
+     "claim_context": 0,
+     "data_field_context": 3,
+     "fields": [
+      "cosine_distance"
+     ],
+     "retraction_context": 0
+    }
+   },
+   "prose_pattern_counts": {}
+  }
+ },
+ "numeric_patterns": 6,
+ "path_manifest": [
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/amendment_A1.md",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/candidate_grid.csv",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/census.csv",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/census.jsonl",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/common_receipts/environment.csv",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/common_receipts/pod_environment.txt",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/common_receipts/pod_gate_run.log.txt",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/common_receipts/rater_transport.csv",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/common_receipts/route_digests.txt",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/decoded_pts.csv",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/digests.txt",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/game_disjointness.csv",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/gate_audit.csv",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/gate_audit_draw.csv",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/gate_audit_seal.json",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/gate_outputs.csv",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/gate_raw/gate_raw_claude.csv",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/gate_summary.json",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/input_hashes.csv",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/pre_fix1b/common_receipts/route_digests.txt",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/pre_fix1b/gate_audit_draw.csv",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/pre_fix1b/q6_scan.json",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/pre_fix1b/repeats.json",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/pre_fix1b/SHA256SUMS",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/pre_fix1b/summary.json",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/premise.json",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/prereg.md",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/q6_scan.json",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/repeat_route.py",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/repeats.json",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/retained_census.csv",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/SHA256SUMS",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/source_receipts.csv",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11/summary.json",
+  "docs/evidence/tracking/g404_play_gated_ball_growth_stage2_2026-09-11.md",
+  "scripts/platformkit/tracking/g404_finish.py",
+  "tests/platformkit/test_g404_play_gated_growth.py",
+  "scripts/platformkit/tracking/g404_q6_scan.py"
+ ],
+ "prose_patterns": 6,
+ "scanner_included": "scripts/platformkit/tracking/g404_q6_scan.py"
+}

@@ -1,0 +1,61 @@
+card_id,rater,label,support
+card_00,claude_finisher,NONPLAY,tight two-player close-up dead ball
+card_01,claude_finisher,PLAY,wide live play multi-player
+card_02,claude_finisher,NONPLAY,coach close-up sideline
+card_03,claude_finisher,PLAY,wide live play multi-player
+card_04,claude_finisher,NONPLAY,officials at review monitor
+card_05,claude_finisher,PLAY,wide live play multi-player
+card_06,claude_finisher,PLAY,wide live play multi-player
+card_07,claude_finisher,NONPLAY,full-screen score graphic
+card_08,claude_finisher,PLAY,wide live play multi-player
+card_09,claude_finisher,PLAY,ball at rim multi-player action
+card_10,claude_finisher,NONPLAY,player and referee close-up dead ball
+card_11,claude_finisher,PLAY,wide live play multi-player
+card_12,claude_finisher,PLAY,wide live play multi-player
+card_13,claude_finisher,NONPLAY,coach close-up sideline
+card_14,claude_finisher,PLAY,tight multi-player on-court contest
+card_15,claude_finisher,PLAY,wide live play multi-player
+card_16,claude_finisher,PLAY,close rim action two players
+card_17,claude_finisher,PLAY,free-throw set on court
+card_18,claude_finisher,PLAY,wide live play multi-player
+card_19,claude_finisher,PLAY,wide live play multi-player
+card_20,claude_finisher,PLAY,wide live play multi-player
+card_21,claude_finisher,NONPLAY,two-player tight close-up dead ball
+card_22,claude_finisher,NONPLAY,very wide stand view sparse court
+card_23,claude_finisher,NONPLAY,very wide stand view sparse court
+card_24,claude_finisher,NONPLAY,very wide stand view sparse court
+card_25,claude_finisher,NONPLAY,player portrait close-up
+card_26,claude_finisher,NONPLAY,coach close-up sideline
+card_27,claude_finisher,PLAY,wide live play multi-player
+card_28,claude_finisher,NONPLAY,very wide stand view near-empty court
+card_29,claude_finisher,NONPLAY,coach close-up sideline
+card_30,claude_finisher,NONPLAY,very wide stand view sparse court
+card_31,claude_finisher,PLAY,wide live play multi-player
+card_32,claude_finisher,PLAY,wide live play multi-player
+card_33,claude_finisher,PLAY,wide live play multi-player
+card_34,claude_finisher,NONPLAY,player portrait close-up
+card_35,claude_finisher,PLAY,wide live play multi-player
+card_36,claude_finisher,PLAY,free-throw set on court
+card_37,claude_finisher,UNKNOWN,very wide stand view live status unclear
+card_38,claude_finisher,PLAY,free-throw set on court
+card_39,claude_finisher,PLAY,free-throw set on court
+card_40,claude_finisher,PLAY,wide live play multi-player
+card_41,claude_finisher,NONPLAY,cross-dissolve replay transition
+card_42,claude_finisher,PLAY,wide live play multi-player
+card_43,claude_finisher,UNKNOWN,wide view official holds ball live status unclear
+card_44,claude_finisher,NONPLAY,very wide stand view sparse court
+card_45,claude_finisher,PLAY,wide live play multi-player
+card_46,claude_finisher,NONPLAY,timeout huddle with coach
+card_47,claude_finisher,PLAY,wide live play multi-player
+card_48,claude_finisher,NONPLAY,coach close-up sideline
+card_49,claude_finisher,NONPLAY,referee close-up
+card_50,claude_finisher,NONPLAY,courtside interview close-up
+card_51,claude_finisher,NONPLAY,half time graphic teams leaving
+card_52,claude_finisher,NONPLAY,wide arena break teams gathered
+card_53,claude_finisher,PLAY,wide live play multi-player
+card_54,claude_finisher,NONPLAY,wide arena break screen advertisement
+card_55,claude_finisher,NONPLAY,very wide stand view sparse court
+card_56,claude_finisher,NONPLAY,blurred camera whip pan
+card_57,claude_finisher,PLAY,tight two-player live contest
+card_58,claude_finisher,PLAY,free-throw set on court
+card_59,claude_finisher,NONPLAY,very wide stand view sparse court
