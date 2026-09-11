@@ -724,3 +724,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-10 | tracking | G379 | landed PARTIAL: 6 sections / 5 games, 352/360 frames, 3,310 feet; per-section bar 0/6 (VALID 0, feet_inside 94-234 per mille, forward median 15.6-21.8 px vs 8); cascade 0 ACCEPT of 352; negatives 0/264 accepted (kappa 0.954); stroke extraction not court-specific (supports on stands/LED/score bug); corpus rotation lost 16/29 pins in 30 min | PARTIAL (codex-sol ACCEPT WITH CORRECTIONS verbatim, applied)
 
+2026-09-10 | tracking | G373 | landed PHASE 1 MEASURED (PARTIAL): fresh A0 0 TP / 8 FP over 549 (repeatable); reference v2 USABLE 17.33 px vs 18.50 (n 715, p90 287, kappa 0.664); dev boxes 283/500 across 27 games -> no arm scored; Q6 note-field normalisation with manifest; three verify cycles verbatim | PARTIAL (codex-sol att1 REJECT, fix1b REJECT, fix1c ACCEPT WITH CORRECTIONS applied)
+

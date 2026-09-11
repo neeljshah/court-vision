@@ -16,6 +16,13 @@
 
 
 
+
+## G373 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G373 | basketball | phase 1 (reference + premise): fresh A0 on the deployed route (hashes = M363) 0 TP / 8 FP over 549 held-out = C0 0.000000, byte-identical to the archived run (A0 repeatability established); archived A0 0/8 and A7 2/178 reproduce; cache identity 2,643/2,643 file digests and decoded-byte keys (0 absent). Reference v2 (native 1920x1080 blind sheets, terra + sol 1,620/1,620, 0 missing): median centre disagreement 17.33 px vs 18.50 bar (0.5 x median native diameter 37.0) over 715 both-VISIBLE pairs -> USABLE, but p90 287.09 px / max 1521 (about a tenth of pairs rate different objects); kappa 0.664 (v1 0.640). Dev boxes 283 unique / 27 games (92 sealed + 191 extra; extra sample sealed 739 frames / 28 games): quota >= 500 UNMET -> fine-tune arm A8 at LIMIT, A10 unavailable, NO ARM SCORED; 393 dev + 235 held-out frames remain unadjudicated. Q6: geometric token in 21 raw rater note strings normalised with a digest manifest; scan over evidence + code + test 0. Incidents: per-worktree pod quota truncates writes silently; codex bin dir deleted then restored without the image host (batches exited 0 rating nothing; raters refused to invent boxes) | g373_ball_detector_v2_2026-09-10.md; g373_ball_detector_v2_2026-09-10/{prereg + amendment, sealed sample, raters_v2/, ratings, reference_v2_summary.json, dev_boxes_summary.json, adjudication, q6_scan.json, q6_redaction_manifest.csv, sheets/}; G373_VERIFY_att1_REJECT_2026-09-10.md; G373_VERIFY_fix1b_REJECT_2026-09-10.md; G373_VERIFY_fix1c_ACCEPT_WITH_CORRECTIONS_2026-09-10.md | **PHASE 1 MEASURED (PARTIAL) -- the deployed ball route is confirmed blind on broadcast (0/549, repeatable); a usable native reference exists; phase 2 (arms) needs the reference queue completed (dev >= 500 boxes, held-out settled) and a sheet_scale 1.0 frames table; NEW GAPS: finish the G373 reference queue; rater gate counts codex.exe by image name; phase-2 scoring scale trap** |
+
 ## G379 result register
 
 | Gap | Sport | Finding | Evidence | Status |
