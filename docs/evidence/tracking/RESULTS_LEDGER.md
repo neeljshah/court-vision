@@ -734,3 +734,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-10 | tracking | G382 | landed PARTIAL (ambiguous reference): 49/60 native frames, 6,860 strokes / 460,484 supports; on-marking strokes 0 to 20 of 6,860; painted supports 0.0004 to 0.0106; 27.9 pct of supports on both-rater non-court regions; painted-marking reference untraceable (IoU p50 0.000); two extraction runs byte-identical; no fitting | PARTIAL (codex-sol ACCEPT WITH CORRECTIONS applied)
 
+2026-09-11 | tracking | G384 | landed PARTIAL: merged reference 1,114/1,620 settled (506 unsettled); held-out 157/161/26 MET; dev boxes 312/500; A1 even-sample yield 0.483 -> projection 457 [414, 502], arm A8 NOT closed on supply evidence; no arm run, 0 GPU min; four verify cycles verbatim | PARTIAL (codex-sol fix1d ACCEPT WITH CORRECTIONS applied)
+

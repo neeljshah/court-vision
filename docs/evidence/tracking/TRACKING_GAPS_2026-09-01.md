@@ -21,6 +21,13 @@
 
 
 
+
+## G384 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G384 | basketball | premise TRUE: 283 dev boxes / 27 games reproduced; queue 596 unique = 361 dev + 235 held-out (G373 memo's 393 FALSIFIED, sealed in queue_reconciliation.csv); prereg seal verified. The rater queue was already complete (rated_by_both 1,620, rated_by_one 0): the 596 are the finisher backlog (296 CENTRE-GAP, 300 LABEL-DISAGREEMENT). Finisher adjudications: 60 in a prefix draw (ordinals 1..296 step 5; REJECTED as B7) + amendment A1 even whole-queue draw (ordinals 1..591 step 10; 30 reused + 30 new, blind, full native pixels, UNKNOWN retained): merged reference 1,114/1,620 settled, 506 unsettled; held-out VISIBLE 157 / ABSENT 161 / UNKNOWN 26 (both bars MET). Dev boxes 312 audited vs 500; A1 yield 29/60 = 0.483 (Wilson [0.362, 0.607]) -> full-queue projection 457 [414, 502]: the upper bound reaches 500, so arm A8 is NOT closed on supply evidence (it stays at LIMIT only for execution accounting); A9 licence LIMIT; A10 requires A8. No arm trained or scored; 0 GPU minutes; frames_v2 rebuilt at sheet_scale 1.0 (33/33 transform checks incl. 30 planted native matches). Spec-listed phase-2 artifacts (reference_v2.csv, dev_boxes.csv, weights/, predictions.csv, paired_frame_scores.csv, summary.json) NOT PRODUCED because no arm ran. Q6: one geometric token in a finisher adjudication reason redacted with a manifest; scanner literals built from character codes. Four verify cycles: att1 REJECT (B7 prefix sample, B2, B4, Q6), fix 1b REJECT (dropped 30 prior held-out decisions), fix 1c REJECT (default loader reclaimed completed keys), fix 1d ACCEPT WITH CORRECTIONS (digests) | g384_ball_phase2_receipt_2026-09-10.md; g384_ball_phase2_receipt_2026-09-10/{execution prereg, amendment A1, adjudications_g384.csv, g384_a1_new_adjudications.csv, arm_accounting.csv, arm_readiness.json, frames_v2.csv, queue_reconciliation.csv, transform_checks.csv, eye_check_index.csv, q6_*}; G384_VERIFY_att1_REJECT_2026-09-10.md; G384_VERIFY_fix1b_REJECT_2026-09-10.md; G384_VERIFY_fix1c_REJECT_2026-09-10.md; G384_VERIFY_fix1d_ACCEPT_WITH_CORRECTIONS_2026-09-10.md | **PARTIAL -- the held-out ball reference is settled (157/161/26) but the dev box quota (312/500) is not; the fine-tune arm cannot be closed on supply evidence (projection 457, upper 502) -- completing the 506-key backlog is the path to phase 2; NEW GAPS: per-file test lacks native-roundtrip / UNKNOWN-FP / missing-reference assertions** |
+
 ## G382 result register
 
 | Gap | Sport | Finding | Evidence | Status |
