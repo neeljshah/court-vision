@@ -1,0 +1,44 @@
+{
+  "context_id": "G399_007",
+  "state": "VISIBLE",
+  "reason": "White sideline and baseline bands are clearly visible.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 1,
+      "family": "SIDELINE",
+      "points": {
+        "p1": [
+          50,
+          495
+        ],
+        "p2": [
+          410,
+          470
+        ],
+        "p3": [
+          240,
+          481
+        ]
+      }
+    },
+    {
+      "tile": 6,
+      "family": "BASELINE",
+      "points": {
+        "p1": [
+          220,
+          166
+        ],
+        "p2": [
+          380,
+          282
+        ],
+        "p3": [
+          301,
+          225
+        ]
+      }
+    }
+  ]
+}

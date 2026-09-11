@@ -1,0 +1,44 @@
+{
+  "context_id": "G399_018",
+  "state": "VISIBLE",
+  "reason": "Baseline and free throw paint are legible in the lower tiles.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 4,
+      "family": "BASELINE",
+      "points": {
+        "p1": [
+          182,
+          201
+        ],
+        "p2": [
+          299,
+          115
+        ],
+        "p3": [
+          246,
+          154
+        ]
+      }
+    },
+    {
+      "tile": 5,
+      "family": "FREE_THROW",
+      "points": {
+        "p1": [
+          325,
+          39
+        ],
+        "p2": [
+          259,
+          115
+        ],
+        "p3": [
+          287,
+          82
+        ]
+      }
+    }
+  ]
+}

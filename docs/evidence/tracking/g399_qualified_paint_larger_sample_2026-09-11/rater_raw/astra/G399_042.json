@@ -1,0 +1,44 @@
+{
+  "context_id": "G399_042",
+  "state": "VISIBLE",
+  "reason": "Wide court view with sideline and baseline paint visible.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 2,
+      "family": "SIDELINE",
+      "points": {
+        "p1": [
+          60,
+          494
+        ],
+        "p2": [
+          320,
+          505
+        ],
+        "p3": [
+          195,
+          499
+        ]
+      }
+    },
+    {
+      "tile": 4,
+      "family": "BASELINE",
+      "points": {
+        "p1": [
+          260,
+          269
+        ],
+        "p2": [
+          460,
+          98
+        ],
+        "p3": [
+          347,
+          198
+        ]
+      }
+    }
+  ]
+}

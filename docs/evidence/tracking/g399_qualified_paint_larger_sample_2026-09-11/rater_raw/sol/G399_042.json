@@ -1,0 +1,18 @@
+{
+  "context_id": "G399_042",
+  "state": "VISIBLE",
+  "reason": "wide shot, sideline and centre line paint legible",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 4,
+      "family": "SIDELINE",
+      "points": {"p1": [190, 326], "p2": [525, 43], "p3": [350, 191]}
+    },
+    {
+      "tile": 6,
+      "family": "CENTRE_LINE",
+      "points": {"p1": [592, 262], "p2": [594, 515], "p3": [593, 389]}
+    }
+  ]
+}

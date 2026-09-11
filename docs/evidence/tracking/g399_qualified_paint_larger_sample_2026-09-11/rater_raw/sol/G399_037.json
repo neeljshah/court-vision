@@ -1,0 +1,10 @@
+{
+  "context_id": "G399_037",
+  "state": "VISIBLE",
+  "reason": "wide shot with sideline and baseline paint legible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 2, "family": "SIDELINE", "points": {"p1": [10, 420], "p2": [400, 418], "p3": [180, 419]}},
+    {"tile": 6, "family": "BASELINE", "points": {"p1": [50, 28], "p2": [600, 315], "p3": [240, 130]}}
+  ]
+}

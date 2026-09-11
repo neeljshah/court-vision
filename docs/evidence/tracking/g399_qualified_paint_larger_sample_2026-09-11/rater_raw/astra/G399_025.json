@@ -1,0 +1,26 @@
+{
+    "context_id":  "G399_025",
+    "state":  "VISIBLE",
+    "reason":  "White sideline paint is visible below the teal floor border.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  1,
+                          "family":  "SIDELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    50,
+                                                    522
+                                                ],
+                                         "p2":  [
+                                                    250,
+                                                    531
+                                                ],
+                                         "p3":  [
+                                                    160,
+                                                    527
+                                                ]
+                                     }
+                      }
+                  ]
+}

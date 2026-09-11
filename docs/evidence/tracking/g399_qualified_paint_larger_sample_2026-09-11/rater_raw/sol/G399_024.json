@@ -1,0 +1,10 @@
+{
+  "context_id": "G399_024",
+  "state": "VISIBLE",
+  "reason": "wide court shot, centre and free throw paint legible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 2, "family": "CENTRE_LINE", "points": {"p1": [7, 179], "p2": [136, 179], "p3": [78, 179]}},
+    {"tile": 5, "family": "FREE_THROW", "points": {"p1": [12, 399], "p2": [592, 399], "p3": [265, 399]}}
+  ]
+}

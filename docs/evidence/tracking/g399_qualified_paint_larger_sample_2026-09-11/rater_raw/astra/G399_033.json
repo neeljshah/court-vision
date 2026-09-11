@@ -1,0 +1,26 @@
+{
+    "context_id":  "G399_033",
+    "state":  "VISIBLE",
+    "reason":  "Straight dark floor paint is visible near the boundary; family unclear in close view.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  3,
+                          "family":  "UNKNOWN",
+                          "points":  {
+                                         "p1":  [
+                                                    80,
+                                                    180
+                                                ],
+                                         "p2":  [
+                                                    549,
+                                                    273
+                                                ],
+                                         "p3":  [
+                                                    272,
+                                                    218
+                                                ]
+                                     }
+                      }
+                  ]
+}

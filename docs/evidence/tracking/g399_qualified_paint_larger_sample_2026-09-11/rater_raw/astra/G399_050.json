@@ -1,0 +1,26 @@
+{
+  "context_id": "G399_050",
+  "state": "VISIBLE",
+  "reason": "A straight dark lane boundary is visible between the players.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 5,
+      "family": "LANE_LINE",
+      "points": {
+        "p1": [
+          485,
+          400
+        ],
+        "p2": [
+          600,
+          381
+        ],
+        "p3": [
+          546,
+          390
+        ]
+      }
+    }
+  ]
+}

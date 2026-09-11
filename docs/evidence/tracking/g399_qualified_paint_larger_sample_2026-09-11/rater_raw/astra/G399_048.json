@@ -1,0 +1,44 @@
+{
+  "context_id": "G399_048",
+  "state": "VISIBLE",
+  "reason": "Baseline and sideline paint visible around the moving players.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 1,
+      "family": "BASELINE",
+      "points": {
+        "p1": [
+          294,
+          516
+        ],
+        "p2": [
+          392,
+          443
+        ],
+        "p3": [
+          341,
+          481
+        ]
+      }
+    },
+    {
+      "tile": 2,
+      "family": "SIDELINE",
+      "points": {
+        "p1": [
+          280,
+          491
+        ],
+        "p2": [
+          490,
+          501
+        ],
+        "p3": [
+          364,
+          495
+        ]
+      }
+    }
+  ]
+}

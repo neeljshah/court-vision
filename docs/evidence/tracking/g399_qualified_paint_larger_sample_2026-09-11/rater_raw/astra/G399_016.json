@@ -1,0 +1,44 @@
+{
+  "context_id": "G399_016",
+  "state": "VISIBLE",
+  "reason": "Baseline and lane boundary bands are unobstructed in tile four.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 4,
+      "family": "BASELINE",
+      "points": {
+        "p1": [
+          24,
+          119
+        ],
+        "p2": [
+          152,
+          25
+        ],
+        "p3": [
+          91,
+          69
+        ]
+      }
+    },
+    {
+      "tile": 4,
+      "family": "LANE_LINE",
+      "points": {
+        "p1": [
+          200,
+          48
+        ],
+        "p2": [
+          574,
+          76
+        ],
+        "p3": [
+          365,
+          61
+        ]
+      }
+    }
+  ]
+}

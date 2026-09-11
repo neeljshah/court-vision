@@ -1,0 +1,44 @@
+{
+    "context_id":  "G399_052",
+    "state":  "VISIBLE",
+    "reason":  "Straight sideline and lane markings are clear.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  1,
+                          "family":  "SIDELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    100,
+                                                    481
+                                                ],
+                                         "p2":  [
+                                                    350,
+                                                    461
+                                                ],
+                                         "p3":  [
+                                                    239,
+                                                    470
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  6,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    170,
+                                                    162
+                                                ],
+                                         "p2":  [
+                                                    390,
+                                                    131
+                                                ],
+                                         "p3":  [
+                                                    279,
+                                                    146
+                                                ]
+                                     }
+                      }
+                  ]
+}

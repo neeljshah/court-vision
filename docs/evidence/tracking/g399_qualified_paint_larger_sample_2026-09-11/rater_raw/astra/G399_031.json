@@ -1,0 +1,44 @@
+{
+    "context_id":  "G399_031",
+    "state":  "VISIBLE",
+    "reason":  "Close view shows straight dark painted bands on the floor; family unclear.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  3,
+                          "family":  "UNKNOWN",
+                          "points":  {
+                                         "p1":  [
+                                                    70,
+                                                    61
+                                                ],
+                                         "p2":  [
+                                                    570,
+                                                    112
+                                                ],
+                                         "p3":  [
+                                                    260,
+                                                    81
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  4,
+                          "family":  "UNKNOWN",
+                          "points":  {
+                                         "p1":  [
+                                                    30,
+                                                    312
+                                                ],
+                                         "p2":  [
+                                                    330,
+                                                    351
+                                                ],
+                                         "p3":  [
+                                                    167,
+                                                    330
+                                                ]
+                                     }
+                      }
+                  ]
+}

@@ -1,0 +1,44 @@
+{
+  "context_id": "G399_046",
+  "state": "VISIBLE",
+  "reason": "Straight lane and centre line paint visible despite motion blur.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 1,
+      "family": "LANE_LINE",
+      "points": {
+        "p1": [
+          80,
+          490
+        ],
+        "p2": [
+          400,
+          502
+        ],
+        "p3": [
+          260,
+          497
+        ]
+      }
+    },
+    {
+      "tile": 3,
+      "family": "CENTRE_LINE",
+      "points": {
+        "p1": [
+          53,
+          382
+        ],
+        "p2": [
+          43,
+          522
+        ],
+        "p3": [
+          49,
+          443
+        ]
+      }
+    }
+  ]
+}

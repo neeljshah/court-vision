@@ -1,0 +1,44 @@
+{
+  "context_id": "G399_043",
+  "state": "VISIBLE",
+  "reason": "Low court view with straight boundary and corner paint visible.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 4,
+      "family": "SIDELINE",
+      "points": {
+        "p1": [
+          80,
+          366
+        ],
+        "p2": [
+          470,
+          298
+        ],
+        "p3": [
+          290,
+          329
+        ]
+      }
+    },
+    {
+      "tile": 4,
+      "family": "THREE_POINT_STRAIGHT",
+      "points": {
+        "p1": [
+          65,
+          413
+        ],
+        "p2": [
+          310,
+          358
+        ],
+        "p3": [
+          185,
+          386
+        ]
+      }
+    }
+  ]
+}

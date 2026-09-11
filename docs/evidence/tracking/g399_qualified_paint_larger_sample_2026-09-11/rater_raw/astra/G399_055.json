@@ -1,0 +1,44 @@
+{
+    "context_id":  "G399_055",
+    "state":  "VISIBLE",
+    "reason":  "White sideline and lane bands are visible against the patterned floor.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  3,
+                          "family":  "SIDELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    220,
+                                                    372
+                                                ],
+                                         "p2":  [
+                                                    540,
+                                                    393
+                                                ],
+                                         "p3":  [
+                                                    350,
+                                                    380
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  5,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    80,
+                                                    108
+                                                ],
+                                         "p2":  [
+                                                    360,
+                                                    136
+                                                ],
+                                         "p3":  [
+                                                    215,
+                                                    122
+                                                ]
+                                     }
+                      }
+                  ]
+}

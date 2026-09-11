@@ -1,0 +1,56 @@
+DISPATCHED run=1789133854563541600 tag=g399_rater_sol_real05 wt=a12 at 2026-09-11T08:37:34-05:00
+STARTED pid=20732 birth=1789133854.574
+agent: I will read only the specified instruction and batch files, inspect every listed image, and write the required per-line JSON outputs.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -LiteralPath 'C:\\Users\\neelj\\nba-track-a12\\docs\\evidence\\tracking\\g399_qualified_paint_larger_sample_2026-09-11\\frozen_instructions\\rater_instruction_real.md' -Raw"
+out: 
+## What to report per fragment -- THREE POINTS ON THE BAND
+Do NOT report endpoints. Do NOT report a length. Where the visible stretch begins
+and ends is NOT scored. Report three points that each lie ON the painted band:
+
+- `p1` and `p2`: two points on the band, separated by at least 60 px.
+- `p3`: a third point located INDEPENDENTLY by looking at the pixels between `p1`
+  and `p2`. It must lie strictly between them along the band. Do NOT average `p1`
+  and `p2`; an arithmetic midpoint is not an observation.
+
+Report TILE-LOCAL coordinates (x in 0..639, y in 0..539 of that tile image) and the
+tile number the fragment was seen in. Do not rescale anything.
+
+## Family
+Give each fragment one `family` from exactly this list, with no left/right and no
+near/far orientation:
+SIDELINE, BASELINE, CENTRE_LINE, LANE_LINE, FREE_THROW, THREE_POINT_STRAIGHT,
+UNKNOWN.
+Use UNKNOWN when you can see paint but cannot name which marking it is. Never guess
+a family to avoid UNKNOWN.
+
+## Output schema
+{
+  "context_id": "G396_001",
+  "state": "VISIBLE",
+  "reason": "wide shot, lane and baseline paint legible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 4, "family": "BASELINE",
+     "points": {"p1": [x1, y1], "p2": [x2, y2], "p3": [x3, y3]}}
+  ]
+}
+
+States: `VISIBLE` (one or two fragments reported), `ABSENT` (no painted floor
+marking is visible in any tile), `UNKNOWN` (you cannot tell). ASCII only. JSON
+files only, no notes, no summary file, no other output.
+
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -LiteralPath 'C:\\Users\\neelj\\AppData\\Local\\Temp\\g399_work\\batch_real_sol\\batch_05.tsv' -Raw"
+out: es/G399_047_tile3.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_047_tile4.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_047_tile5.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_047_tile6.png
+G399_048	C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_048_tile1.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_048_tile2.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_048_tile3.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_048_tile4.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_048_tile5.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_048_tile6.png
+G399_049	C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_049_tile1.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_049_tile2.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_049_tile3.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_049_tile4.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_049_tile5.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_049_tile6.png
+G399_050	C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_050_tile1.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_050_tile2.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_050_tile3.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_050_tile4.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_050_tile5.png,C:/Users/neelj/AppData/Local/Temp/g399_work/tiles/G399_050_tile6.png
+
+
+agent: The batch contains 10 contexts and 60 tiles. I am inspecting all six tiles for each context in the fixed order before assigning up to two visible painted-band fragments.
+agent: All 60 tiles have now been inspected. I am writing exactly one JSON file for each of the 10 contexts, with no auxiliary files.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "New-Item -ItemType Directory -Force -Path 'C:\\Users\\neelj\\nba-track-a12\\.g399_out\\real_sol' | Out-Null"
+agent: Completed. Wrote 10 JSON files to `.g399_out/real_sol`.
+TURN_END turn.completed at 2026-09-11T08:41:29-05:00
+EXIT:0 gap=g399_rater_sol_real05 at 2026-09-11T08:41:30-05:00
+DRAINED

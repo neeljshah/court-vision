@@ -1,0 +1,44 @@
+{
+    "context_id":  "G399_051",
+    "state":  "VISIBLE",
+    "reason":  "Sideline and lane paint are visible on the floor.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  1,
+                          "family":  "SIDELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    220,
+                                                    432
+                                                ],
+                                         "p2":  [
+                                                    420,
+                                                    411
+                                                ],
+                                         "p3":  [
+                                                    329,
+                                                    420
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  5,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    100,
+                                                    212
+                                                ],
+                                         "p2":  [
+                                                    290,
+                                                    175
+                                                ],
+                                         "p3":  [
+                                                    190,
+                                                    195
+                                                ]
+                                     }
+                      }
+                  ]
+}

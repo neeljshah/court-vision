@@ -1,0 +1,10 @@
+{
+  "context_id": "G399_007",
+  "state": "VISIBLE",
+  "reason": "court view with baseline and lane paint legible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 6, "family": "BASELINE", "points": {"p1": [111, 70], "p2": [613, 444], "p3": [380, 269]}},
+    {"tile": 4, "family": "LANE_LINE", "points": {"p1": [510, 135], "p2": [625, 263], "p3": [567, 200]}}
+  ]
+}

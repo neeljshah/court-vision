@@ -1,0 +1,92 @@
+{
+  "G399_008_pair1": {
+    "astra_judgments": [
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES"
+    ],
+    "astra_points": 9,
+    "card": "renders/audit_cards/G399_008_pair1.jpg",
+    "note": "both trace the same white sideline band; astra sits on the band at all nine points; sol drifts off its lower boundary from point 7 onward (cross distance to the astra line 4.2 to 5.8 px at points 7 to 9)",
+    "same_band": "YES",
+    "sol_judgments": [
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "NO",
+      "NO",
+      "NO"
+    ],
+    "sol_points": 6,
+    "token": "G399-AUDIT-008-1-8f2c"
+  },
+  "G399_022_pair1": {
+    "astra_judgments": [
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES"
+    ],
+    "astra_points": 9,
+    "card": "renders/audit_cards/G399_022_pair1.jpg",
+    "note": "both trace the same white baseline band; astra sits on the band at all nine points; sol point 1 lies on bare floor beyond the band and points 8 and 9 fall on an occluding player rather than on paint",
+    "same_band": "YES",
+    "sol_judgments": [
+      "NO",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "NO",
+      "NO"
+    ],
+    "sol_points": 6,
+    "token": "G399-AUDIT-022-1-b41e"
+  },
+  "G399_031_pair1": {
+    "astra_judgments": [
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES"
+    ],
+    "astra_points": 9,
+    "card": "renders/audit_cards/G399_031_pair1.jpg",
+    "note": "both trace the same dark painted band on the wood floor and every point of both fragments lies inside it; CAVEAT the band is heavily defocused and about eight to twelve native px wide, so a 3 px tolerance is met anywhere inside it and its centre is NOT localized to 3 px; both raters returned family UNKNOWN",
+    "same_band": "YES",
+    "sol_judgments": [
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES",
+      "YES"
+    ],
+    "sol_points": 9,
+    "token": "G399-AUDIT-031-1-c907"
+  }
+}

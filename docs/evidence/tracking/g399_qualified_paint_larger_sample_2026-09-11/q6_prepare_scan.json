@@ -1,0 +1,13 @@
+{
+  "files": {
+    "docs/evidence/tracking/g399_qualified_paint_larger_sample_2026-09-11/g399_prereg_2026-09-11.md": 0,
+    "docs/evidence/tracking/g399_qualified_paint_larger_sample_2026-09-11/premise_receipt.json": 0,
+    "docs/evidence/tracking/g399_qualified_paint_larger_sample_2026-09-11/prepare_status.md": 0,
+    "docs/evidence/tracking/g399_qualified_paint_larger_sample_2026-09-11/source_receipts.csv": 0,
+    "scripts/platformkit/tracking/g399_prepare.py": 0,
+    "scripts/platformkit/tracking/g399_protocol.py": 0,
+    "scripts/platformkit/tracking/g399_q6_scan.py": 0,
+    "tests/platformkit/test_g399_qualified_paint_larger_sample.py": 0
+  },
+  "total_hits": 0
+}

@@ -1,0 +1,44 @@
+{
+  "context_id": "G399_001",
+  "state": "VISIBLE",
+  "reason": "Baseline and centre line paint are visible.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 1,
+      "family": "BASELINE",
+      "points": {
+        "p1": [
+          200,
+          466
+        ],
+        "p2": [
+          304,
+          377
+        ],
+        "p3": [
+          261,
+          414
+        ]
+      }
+    },
+    {
+      "tile": 6,
+      "family": "CENTRE_LINE",
+      "points": {
+        "p1": [
+          376,
+          320
+        ],
+        "p2": [
+          366,
+          410
+        ],
+        "p3": [
+          372,
+          356
+        ]
+      }
+    }
+  ]
+}

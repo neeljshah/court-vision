@@ -1,0 +1,52 @@
+{
+  "astra": {
+    "codex_home": "C:/Users/neelj/.codex-astra",
+    "config_path": "C:/Users/neelj/.codex-astra/config.toml",
+    "config_reasoning_effort": "high",
+    "config_sha256": "caed3dc5756473ff787eedc3269590d80a75687942dbae01c4b64f2508769346",
+    "config_unchanged_since_g396": true,
+    "dispatch_reasoning_effort": "high",
+    "g396_config_sha256": "caed3dc5756473ff787eedc3269590d80a75687942dbae01c4b64f2508769346",
+    "home_edited_by_this_row": false,
+    "qualification_score_g396": 30
+  },
+  "codex_executable": "C:/Users/neelj/AppData/Local/OpenAI/Codex/bin/7ac07f4ce733f89a/codex.exe",
+  "codex_executable_matches_g396": true,
+  "codex_executable_sha256": "3d6ca7085c932b62ef4ee4877e92f15b050fb94b2eb8e6c10a346a06248c6004",
+  "g396_codex_executable": "C:/Users/neelj/AppData/Local/OpenAI/Codex/bin/7ac07f4ce733f89a/codex.exe",
+  "g396_codex_executable_sha256": "3d6ca7085c932b62ef4ee4877e92f15b050fb94b2eb8e6c10a346a06248c6004",
+  "instruction_identity": {
+    "frozen_instructions_astra.md": {
+      "byte_identical": true,
+      "g396_sha256": "3671c7476e6db87b2b792be50686d4a1ef215803ce2b80b2297ea3ca39d88327",
+      "g399_sha256": "3671c7476e6db87b2b792be50686d4a1ef215803ce2b80b2297ea3ca39d88327"
+    },
+    "frozen_instructions_sol.md": {
+      "byte_identical": true,
+      "g396_sha256": "8c4bc0430a0fb47021f5b55c693c3e36f0e7d67d98c4d857bde011cf0b505925",
+      "g399_sha256": "8c4bc0430a0fb47021f5b55c693c3e36f0e7d67d98c4d857bde011cf0b505925"
+    },
+    "rater_instruction_real.md": {
+      "byte_identical": true,
+      "g396_sha256": "58af457d4096191f25e5bc880a382847a6603106c40b16842c46e60a8422cecc",
+      "g399_sha256": "58af457d4096191f25e5bc880a382847a6603106c40b16842c46e60a8422cecc"
+    },
+    "rater_instruction_smoke.md": {
+      "byte_identical": true,
+      "g396_sha256": "0037ad5d3541d3809221cd4e76dd325f210c662777c4513896ee02e738f1c12c",
+      "g399_sha256": "0037ad5d3541d3809221cd4e76dd325f210c662777c4513896ee02e738f1c12c"
+    }
+  },
+  "note": "G399 reuses the G396 real-paint pass verbatim: one identical real-paint instruction for both qualified raters at high effort. The two per-rater frozen corrections were recorded before G396 qualification and, exactly as in the G396 real pass, are not appended to the real-paint instruction; changing that would be configuration drift.",
+  "sol": {
+    "codex_home": "C:/Users/neelj/.codex-sol",
+    "config_path": "C:/Users/neelj/.codex-sol/config.toml",
+    "config_reasoning_effort": "high",
+    "config_sha256": "231dab116ba5cd33dc50d0eb58b0018fb5d2c8e89179eeb9193eaac6af79f0cf",
+    "config_unchanged_since_g396": true,
+    "dispatch_reasoning_effort": "high",
+    "g396_config_sha256": "231dab116ba5cd33dc50d0eb58b0018fb5d2c8e89179eeb9193eaac6af79f0cf",
+    "home_edited_by_this_row": false,
+    "qualification_score_g396": 27
+  }
+}

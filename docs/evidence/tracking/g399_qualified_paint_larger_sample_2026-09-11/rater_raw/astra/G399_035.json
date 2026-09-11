@@ -1,0 +1,44 @@
+{
+    "context_id":  "G399_035",
+    "state":  "VISIBLE",
+    "reason":  "White sideline and centre line paint are visible.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  2,
+                          "family":  "SIDELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    40,
+                                                    407
+                                                ],
+                                         "p2":  [
+                                                    520,
+                                                    424
+                                                ],
+                                         "p3":  [
+                                                    304,
+                                                    417
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  3,
+                          "family":  "CENTRE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    22,
+                                                    446
+                                                ],
+                                         "p2":  [
+                                                    19,
+                                                    516
+                                                ],
+                                         "p3":  [
+                                                    21,
+                                                    476
+                                                ]
+                                     }
+                      }
+                  ]
+}

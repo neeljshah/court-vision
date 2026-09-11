@@ -1,0 +1,18 @@
+{
+  "context_id": "G399_047",
+  "state": "VISIBLE",
+  "reason": "centre and lane markings are visible",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 4,
+      "family": "CENTRE_LINE",
+      "points": {"p1": [8, 287], "p2": [24, 520], "p3": [15, 401]}
+    },
+    {
+      "tile": 6,
+      "family": "LANE_LINE",
+      "points": {"p1": [286, 7], "p2": [545, 194], "p3": [410, 104]}
+    }
+  ]
+}

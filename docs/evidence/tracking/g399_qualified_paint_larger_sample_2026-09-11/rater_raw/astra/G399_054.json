@@ -1,0 +1,44 @@
+{
+    "context_id":  "G399_054",
+    "state":  "VISIBLE",
+    "reason":  "Sideline and baseline paint are clearly visible.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  3,
+                          "family":  "SIDELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    200,
+                                                    457
+                                                ],
+                                         "p2":  [
+                                                    500,
+                                                    492
+                                                ],
+                                         "p3":  [
+                                                    332,
+                                                    472
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  4,
+                          "family":  "BASELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    30,
+                                                    164
+                                                ],
+                                         "p2":  [
+                                                    200,
+                                                    102
+                                                ],
+                                         "p3":  [
+                                                    120,
+                                                    131
+                                                ]
+                                     }
+                      }
+                  ]
+}

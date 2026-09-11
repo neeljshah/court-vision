@@ -1,0 +1,13 @@
+{
+  "context_id": "G399_055",
+  "state": "VISIBLE",
+  "reason": "end-court view with baseline paint clearly visible",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 4,
+      "family": "BASELINE",
+      "points": {"p1": [90, 386], "p2": [497, 96], "p3": [294, 241]}
+    }
+  ]
+}

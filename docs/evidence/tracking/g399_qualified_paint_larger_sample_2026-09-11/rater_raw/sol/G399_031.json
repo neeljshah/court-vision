@@ -1,0 +1,10 @@
+{
+  "context_id": "G399_031",
+  "state": "VISIBLE",
+  "reason": "close shot, two straight painted bands visible on the floor",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 3, "family": "UNKNOWN", "points": {"p1": [20, 54], "p2": [600, 112], "p3": [250, 77]}},
+    {"tile": 6, "family": "UNKNOWN", "points": {"p1": [20, 184], "p2": [600, 267], "p3": [260, 218]}}
+  ]
+}

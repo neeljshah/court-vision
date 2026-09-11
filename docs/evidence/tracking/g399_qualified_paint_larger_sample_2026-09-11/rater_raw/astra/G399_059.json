@@ -1,0 +1,44 @@
+{
+    "context_id":  "G399_059",
+    "state":  "VISIBLE",
+    "reason":  "Sideline and lane paint are visible in the wide court view.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  1,
+                          "family":  "SIDELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    150,
+                                                    497
+                                                ],
+                                         "p2":  [
+                                                    400,
+                                                    480
+                                                ],
+                                         "p3":  [
+                                                    280,
+                                                    489
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  5,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    260,
+                                                    155
+                                                ],
+                                         "p2":  [
+                                                    440,
+                                                    134
+                                                ],
+                                         "p3":  [
+                                                    330,
+                                                    146
+                                                ]
+                                     }
+                      }
+                  ]
+}

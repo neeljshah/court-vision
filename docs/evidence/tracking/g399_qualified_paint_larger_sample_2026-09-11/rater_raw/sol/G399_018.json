@@ -1,0 +1,10 @@
+{
+  "context_id": "G399_018",
+  "state": "VISIBLE",
+  "reason": "wide shot, lane and centre line paint legible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 5, "family": "LANE_LINE", "points": {"p1": [8, 135], "p2": [290, 154], "p3": [183, 148]}},
+    {"tile": 6, "family": "CENTRE_LINE", "points": {"p1": [543, 9], "p2": [543, 354], "p3": [544, 122]}}
+  ]
+}

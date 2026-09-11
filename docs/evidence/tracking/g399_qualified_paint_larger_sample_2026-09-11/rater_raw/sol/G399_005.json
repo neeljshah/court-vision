@@ -1,0 +1,10 @@
+{
+  "context_id": "G399_005",
+  "state": "VISIBLE",
+  "reason": "wide court view with baseline and centre line legible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 2, "family": "BASELINE", "points": {"p1": [216, 299], "p2": [161, 466], "p3": [185, 386]}},
+    {"tile": 3, "family": "CENTRE_LINE", "points": {"p1": [534, 319], "p2": [533, 518], "p3": [534, 412]}}
+  ]
+}

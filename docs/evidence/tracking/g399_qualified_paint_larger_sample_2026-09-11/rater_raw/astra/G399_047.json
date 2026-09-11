@@ -1,0 +1,44 @@
+{
+  "context_id": "G399_047",
+  "state": "VISIBLE",
+  "reason": "Sideline and baseline white paint is visible in the wide shot.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 1,
+      "family": "SIDELINE",
+      "points": {
+        "p1": [
+          70,
+          486
+        ],
+        "p2": [
+          420,
+          465
+        ],
+        "p3": [
+          280,
+          474
+        ]
+      }
+    },
+    {
+      "tile": 3,
+      "family": "BASELINE",
+      "points": {
+        "p1": [
+          70,
+          395
+        ],
+        "p2": [
+          225,
+          510
+        ],
+        "p3": [
+          142,
+          449
+        ]
+      }
+    }
+  ]
+}

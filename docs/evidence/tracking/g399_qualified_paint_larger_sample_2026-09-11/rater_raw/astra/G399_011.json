@@ -1,0 +1,44 @@
+{
+  "context_id": "G399_011",
+  "state": "VISIBLE",
+  "reason": "Baseline and lane paint visible on the floor.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 4,
+      "family": "BASELINE",
+      "points": {
+        "p1": [
+          50,
+          371
+        ],
+        "p2": [
+          224,
+          242
+        ],
+        "p3": [
+          133,
+          309
+        ]
+      }
+    },
+    {
+      "tile": 5,
+      "family": "LANE_LINE",
+      "points": {
+        "p1": [
+          90,
+          261
+        ],
+        "p2": [
+          365,
+          281
+        ],
+        "p3": [
+          236,
+          272
+        ]
+      }
+    }
+  ]
+}

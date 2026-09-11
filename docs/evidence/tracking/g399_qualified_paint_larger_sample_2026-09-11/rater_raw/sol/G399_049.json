@@ -1,0 +1,13 @@
+{
+  "context_id": "G399_049",
+  "state": "VISIBLE",
+  "reason": "one baseline band is visible along the floor boundary",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 5,
+      "family": "BASELINE",
+      "points": {"p1": [12, 495], "p2": [300, 488], "p3": [150, 492]}
+    }
+  ]
+}

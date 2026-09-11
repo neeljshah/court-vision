@@ -1,0 +1,44 @@
+{
+    "context_id":  "G399_039",
+    "state":  "VISIBLE",
+    "reason":  "White baseline and lane boundary paint are unobstructed in the lower left tile.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  4,
+                          "family":  "BASELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    60,
+                                                    273
+                                                ],
+                                         "p2":  [
+                                                    260,
+                                                    186
+                                                ],
+                                         "p3":  [
+                                                    153,
+                                                    233
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  4,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    350,
+                                                    177
+                                                ],
+                                         "p2":  [
+                                                    560,
+                                                    202
+                                                ],
+                                         "p3":  [
+                                                    441,
+                                                    188
+                                                ]
+                                     }
+                      }
+                  ]
+}

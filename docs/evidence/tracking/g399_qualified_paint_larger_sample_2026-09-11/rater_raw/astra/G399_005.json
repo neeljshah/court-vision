@@ -1,0 +1,44 @@
+{
+  "context_id": "G399_005",
+  "state": "VISIBLE",
+  "reason": "Centre line and lane boundary paint are visible in the wide shot.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 2,
+      "family": "LANE_LINE",
+      "points": {
+        "p1": [
+          178,
+          359
+        ],
+        "p2": [
+          324,
+          370
+        ],
+        "p3": [
+          241,
+          364
+        ]
+      }
+    },
+    {
+      "tile": 3,
+      "family": "CENTRE_LINE",
+      "points": {
+        "p1": [
+          556,
+          360
+        ],
+        "p2": [
+          541,
+          445
+        ],
+        "p3": [
+          549,
+          403
+        ]
+      }
+    }
+  ]
+}

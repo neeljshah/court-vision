@@ -1,0 +1,49 @@
+{
+  "candidate_pairs": 3,
+  "claude_visible_states": 42,
+  "decoded_states": 60,
+  "family_disagreement": 30,
+  "parent_accounting_note": "the G387/G396 parent census of 60 planned / 49 retained / 11 decode failures and its 3-of-30 recovery are kept separate; this row is a new 60-state census over the same 30 retained sources",
+  "planned_states": 60,
+  "prereg_seal": "1ce0d72bb49ee61b95bbb92e5742e804d24af576a9c11adbdb65b49aa347f9df",
+  "rater_states": {
+    "astra": {
+      "ABSENT": 14,
+      "NO_ANSWER": 0,
+      "UNKNOWN": 1,
+      "VISIBLE": 45,
+      "fragments": 83
+    },
+    "sol": {
+      "ABSENT": 21,
+      "NO_ANSWER": 0,
+      "UNKNOWN": 0,
+      "VISIBLE": 39,
+      "fragments": 70
+    }
+  },
+  "recovered_of_decoded": {
+    "denominator": 60,
+    "passed": 1
+  },
+  "recovered_of_planned": {
+    "denominator": 60,
+    "passed": 1
+  },
+  "recovered_of_visible": {
+    "denominator": 42,
+    "passed": 1
+  },
+  "recovered_states": [
+    "G399_031"
+  ],
+  "row": "G399",
+  "sections": 30,
+  "sign_convention": "improvement = baseline loss minus candidate loss; positive means candidate better; this row makes no loss comparison",
+  "sources": 30,
+  "sources_matched": 30,
+  "supply_bar": 30,
+  "unmatched_fragments": 147,
+  "verdict": "CLOSED AT LIMIT",
+  "videos": 21
+}

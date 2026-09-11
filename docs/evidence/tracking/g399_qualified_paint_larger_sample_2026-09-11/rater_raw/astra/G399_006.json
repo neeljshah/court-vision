@@ -1,0 +1,26 @@
+{
+  "context_id": "G399_006",
+  "state": "VISIBLE",
+  "reason": "A straight orange painted floor band is clearly visible in the low court view.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 4,
+      "family": "UNKNOWN",
+      "points": {
+        "p1": [
+          120,
+          389
+        ],
+        "p2": [
+          500,
+          435
+        ],
+        "p3": [
+          291,
+          410
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "context_id": "G399_045",
+  "state": "VISIBLE",
+  "reason": "Dark straight free throw and baseline paint is legible.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 5,
+      "family": "FREE_THROW",
+      "points": {
+        "p1": [
+          78,
+          81
+        ],
+        "p2": [
+          160,
+          210
+        ],
+        "p3": [
+          119,
+          146
+        ]
+      }
+    },
+    {
+      "tile": 6,
+      "family": "BASELINE",
+      "points": {
+        "p1": [
+          130,
+          37
+        ],
+        "p2": [
+          330,
+          232
+        ],
+        "p3": [
+          225,
+          131
+        ]
+      }
+    }
+  ]
+}

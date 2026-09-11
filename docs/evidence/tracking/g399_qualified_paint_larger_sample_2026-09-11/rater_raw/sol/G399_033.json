@@ -1,0 +1,9 @@
+{
+  "context_id": "G399_033",
+  "state": "VISIBLE",
+  "reason": "court boundary paint visible behind the player",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 3, "family": "SIDELINE", "points": {"p1": [20, 101], "p2": [600, 247], "p3": [260, 160]}}
+  ]
+}

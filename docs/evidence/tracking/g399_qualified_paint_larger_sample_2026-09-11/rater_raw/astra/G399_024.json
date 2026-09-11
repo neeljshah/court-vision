@@ -1,0 +1,44 @@
+{
+    "context_id":  "G399_024",
+    "state":  "VISIBLE",
+    "reason":  "Centre line and free throw paint are legible.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  1,
+                          "family":  "CENTRE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    330,
+                                                    184
+                                                ],
+                                         "p2":  [
+                                                    600,
+                                                    181
+                                                ],
+                                         "p3":  [
+                                                    445,
+                                                    183
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  5,
+                          "family":  "FREE_THROW",
+                          "points":  {
+                                         "p1":  [
+                                                    100,
+                                                    176
+                                                ],
+                                         "p2":  [
+                                                    530,
+                                                    167
+                                                ],
+                                         "p3":  [
+                                                    363,
+                                                    171
+                                                ]
+                                     }
+                      }
+                  ]
+}

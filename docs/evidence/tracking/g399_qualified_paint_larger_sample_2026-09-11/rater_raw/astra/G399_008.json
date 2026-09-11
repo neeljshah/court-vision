@@ -1,0 +1,44 @@
+{
+  "context_id": "G399_008",
+  "state": "VISIBLE",
+  "reason": "Sideline and baseline paint are visible between occlusions.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 1,
+      "family": "SIDELINE",
+      "points": {
+        "p1": [
+          60,
+          329
+        ],
+        "p2": [
+          270,
+          321
+        ],
+        "p3": [
+          184,
+          324
+        ]
+      }
+    },
+    {
+      "tile": 3,
+      "family": "BASELINE",
+      "points": {
+        "p1": [
+          182,
+          289
+        ],
+        "p2": [
+          298,
+          375
+        ],
+        "p3": [
+          236,
+          330
+        ]
+      }
+    }
+  ]
+}

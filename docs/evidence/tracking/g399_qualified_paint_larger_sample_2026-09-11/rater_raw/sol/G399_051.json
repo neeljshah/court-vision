@@ -1,0 +1,18 @@
+{
+  "context_id": "G399_051",
+  "state": "VISIBLE",
+  "reason": "wide court view with centre line and near sideline paint legible",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 5,
+      "family": "CENTRE_LINE",
+      "points": {"p1": [22, 226], "p2": [407, 217], "p3": [184, 222]}
+    },
+    {
+      "tile": 6,
+      "family": "SIDELINE",
+      "points": {"p1": [295, 536], "p2": [628, 424], "p3": [468, 478]}
+    }
+  ]
+}

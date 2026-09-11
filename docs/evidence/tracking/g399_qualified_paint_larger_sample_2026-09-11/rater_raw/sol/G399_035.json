@@ -1,0 +1,9 @@
+{
+  "context_id": "G399_035",
+  "state": "VISIBLE",
+  "reason": "wide shot with the far sideline paint visible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 2, "family": "SIDELINE", "points": {"p1": [220, 421], "p2": [620, 431], "p3": [400, 427]}}
+  ]
+}

@@ -1,0 +1,26 @@
+{
+    "context_id":  "G399_040",
+    "state":  "VISIBLE",
+    "reason":  "Low court view shows a straight white lane boundary beside the purple paint.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  6,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    150,
+                                                    325
+                                                ],
+                                         "p2":  [
+                                                    500,
+                                                    371
+                                                ],
+                                         "p3":  [
+                                                    270,
+                                                    341
+                                                ]
+                                     }
+                      }
+                  ]
+}

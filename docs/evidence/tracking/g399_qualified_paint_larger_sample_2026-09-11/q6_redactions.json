@@ -1,0 +1,22 @@
+{
+  "redactions": [
+    {
+      "kind": "banned-word-ordinary-sense",
+      "occurrences": 1,
+      "path": "docs/evidence/tracking/g399_qualified_paint_larger_sample_2026-09-11/rater_raw/sol/G399_049.json",
+      "reason": "a sol rater answer described a court band as lying along the floor using a word the shared pattern set bans as betting vocabulary; the use is purely geometric and is not a claim. Replaced in the archived copy and in the derived table only; the rater's judgment, state, family and every coordinate are unchanged.",
+      "replacement": "boundary",
+      "sha256_after": "35d074f77afd9455dbf0613ca7efbaa8810d0b933d2885ab584f5d70b3dfca48",
+      "sha256_before": "c2a1d9704d2da1f461a1a9abd43399775d38fbcec4c0f3a43c677270d4d1f18f"
+    },
+    {
+      "kind": "banned-word-ordinary-sense",
+      "occurrences": 1,
+      "path": "docs/evidence/tracking/g399_qualified_paint_larger_sample_2026-09-11/blind_ratings.csv",
+      "reason": "a sol rater answer described a court band as lying along the floor using a word the shared pattern set bans as betting vocabulary; the use is purely geometric and is not a claim. Replaced in the archived copy and in the derived table only; the rater's judgment, state, family and every coordinate are unchanged.",
+      "replacement": "boundary",
+      "sha256_after": "73d77ee7f9dfcade487b5cb7c68ba5e7f98c1afdea36a639c030f6c3f5404d54",
+      "sha256_before": "6772ed5ec0ba86446ed18c3664248dd60edb5b5ad3a15bb26fe7573281a650cc"
+    }
+  ]
+}

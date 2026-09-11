@@ -1,0 +1,51 @@
+{
+  "frozen_instructions": {
+    "frozen_instructions_astra.md": {
+      "g396_sha256": "3671c7476e6db87b2b792be50686d4a1ef215803ce2b80b2297ea3ca39d88327",
+      "g399_sha256": "3671c7476e6db87b2b792be50686d4a1ef215803ce2b80b2297ea3ca39d88327"
+    },
+    "frozen_instructions_sol.md": {
+      "g396_sha256": "8c4bc0430a0fb47021f5b55c693c3e36f0e7d67d98c4d857bde011cf0b505925",
+      "g399_sha256": "8c4bc0430a0fb47021f5b55c693c3e36f0e7d67d98c4d857bde011cf0b505925"
+    },
+    "rater_instruction_real.md": {
+      "g396_sha256": "58af457d4096191f25e5bc880a382847a6603106c40b16842c46e60a8422cecc",
+      "g399_sha256": "58af457d4096191f25e5bc880a382847a6603106c40b16842c46e60a8422cecc"
+    }
+  },
+  "g396_qualification": {
+    "astra_passed": 30,
+    "holds": true,
+    "joint_passed": 27,
+    "qualification_rows": 60,
+    "real_audit_passes": 3,
+    "sol_passed": 27
+  },
+  "holds": true,
+  "instruction_receipt": {
+    "astra": {
+      "exists": true,
+      "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/frozen_instructions_astra.md",
+      "sha256": "3671c7476e6db87b2b792be50686d4a1ef215803ce2b80b2297ea3ca39d88327"
+    },
+    "sol": {
+      "exists": true,
+      "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/frozen_instructions_sol.md",
+      "sha256": "8c4bc0430a0fb47021f5b55c693c3e36f0e7d67d98c4d857bde011cf0b505925"
+    }
+  },
+  "native_source_access": {
+    "absent": 0,
+    "changed": 0,
+    "matched": 30,
+    "root": "C:/Users/neelj/nba-ai-system/data/pod_backup_2026-09-10/g386_objects",
+    "status": "HOLDS",
+    "total": 30
+  },
+  "prepare_path_fault": "the PREPARE receipt resolved the pod-side source_path column and reported 0/30; the retained PC objects are named by the G386 receiver_receipts retained_path column and all 30 rehash exactly",
+  "runtime": {
+    "holds": true,
+    "runtime_high": true,
+    "runtime_sha256": "def90521102071fcd981056655f1734fe8a70b49587678fb853ef5ecd8ad3258"
+  }
+}

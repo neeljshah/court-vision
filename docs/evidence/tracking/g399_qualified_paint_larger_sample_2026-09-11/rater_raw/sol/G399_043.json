@@ -1,0 +1,18 @@
+{
+  "context_id": "G399_043",
+  "state": "VISIBLE",
+  "reason": "court boundary and lane paint are visible",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 4,
+      "family": "SIDELINE",
+      "points": {"p1": [30, 418], "p2": [580, 270], "p3": [310, 344]}
+    },
+    {
+      "tile": 5,
+      "family": "LANE_LINE",
+      "points": {"p1": [633, 284], "p2": [609, 387], "p3": [622, 337]}
+    }
+  ]
+}

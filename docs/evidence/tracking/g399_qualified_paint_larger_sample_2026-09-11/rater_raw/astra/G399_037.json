@@ -1,0 +1,44 @@
+{
+    "context_id":  "G399_037",
+    "state":  "VISIBLE",
+    "reason":  "White baseline and lane boundary bands are clear against the floor.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  6,
+                          "family":  "BASELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    389,
+                                                    200
+                                                ],
+                                         "p2":  [
+                                                    570,
+                                                    303
+                                                ],
+                                         "p3":  [
+                                                    464,
+                                                    243
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  6,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    20,
+                                                    218
+                                                ],
+                                         "p2":  [
+                                                    330,
+                                                    194
+                                                ],
+                                         "p3":  [
+                                                    155,
+                                                    207
+                                                ]
+                                     }
+                      }
+                  ]
+}

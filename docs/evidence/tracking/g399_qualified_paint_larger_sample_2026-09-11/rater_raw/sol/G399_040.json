@@ -1,0 +1,10 @@
+{
+  "context_id": "G399_040",
+  "state": "VISIBLE",
+  "reason": "low court view with free throw and lane paint visible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 4, "family": "FREE_THROW", "points": {"p1": [120, 391], "p2": [300, 391], "p3": [235, 391]}},
+    {"tile": 6, "family": "LANE_LINE", "points": {"p1": [15, 313], "p2": [600, 341], "p3": [270, 326]}}
+  ]
+}

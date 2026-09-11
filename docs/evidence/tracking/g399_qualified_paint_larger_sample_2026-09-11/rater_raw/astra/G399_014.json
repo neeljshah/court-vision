@@ -1,0 +1,44 @@
+{
+  "context_id": "G399_014",
+  "state": "VISIBLE",
+  "reason": "Baseline and lane boundary paint visible in tile four.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 4,
+      "family": "BASELINE",
+      "points": {
+        "p1": [
+          171,
+          143
+        ],
+        "p2": [
+          306,
+          40
+        ],
+        "p3": [
+          249,
+          84
+        ]
+      }
+    },
+    {
+      "tile": 4,
+      "family": "LANE_LINE",
+      "points": {
+        "p1": [
+          402,
+          23
+        ],
+        "p2": [
+          603,
+          41
+        ],
+        "p3": [
+          485,
+          31
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "all_identical": true,
+  "delivered_answers": {
+    "blind_ratings.csv": "73d77ee7f9dfcade487b5cb7c68ba5e7f98c1afdea36a639c030f6c3f5404d54"
+  },
+  "finalize_runs": [
+    {
+      "blind_ratings_matches_delivered": false,
+      "digests": {
+        "audit_points.csv": "89d9a44a79eb17292cc1c4a044fdebdaaa98754fd177deb8baf6637c1d571926",
+        "blind_ratings.csv": "6772ed5ec0ba86446ed18c3664248dd60edb5b5ad3a15bb26fe7573281a650cc",
+        "pairing.csv": "6522881aa127b06944cc9efa4899c662bd0e76aeee51c14dfaca622fce64e362",
+        "per_frame.csv": "8b9923f60c5036119f020963b5e56bea624097c7fcb81202d568ba721515e022",
+        "summary.json": "139c78427391c68fad8f7eaffb05ed00149ac8e6c5b1e8ce0ef9db0aff9ccac6",
+        "unmatched_fragments.csv": "15b585c56d588589244713684614d50bfea433a7d9991677ca95ba0085f99fc6"
+      },
+      "note": "fresh finalize.py process on 2026-09-11 (post-fix 1c); rebuilds every canonical table from the WORK raw answers, so blind_ratings.csv regenerates PRE-redaction (digest 6772ed5e...) while all other tables match the delivered bytes; delivered bytes restored afterwards",
+      "returncode": 0,
+      "run": 1,
+      "stdout": "SUMMARY planned=60 decoded=60 visible=42 pairs=3 recovered=1 verdict=CLOSED AT LIMIT"
+    },
+    {
+      "blind_ratings_matches_delivered": false,
+      "digests": {
+        "audit_points.csv": "89d9a44a79eb17292cc1c4a044fdebdaaa98754fd177deb8baf6637c1d571926",
+        "blind_ratings.csv": "6772ed5ec0ba86446ed18c3664248dd60edb5b5ad3a15bb26fe7573281a650cc",
+        "pairing.csv": "6522881aa127b06944cc9efa4899c662bd0e76aeee51c14dfaca622fce64e362",
+        "per_frame.csv": "8b9923f60c5036119f020963b5e56bea624097c7fcb81202d568ba721515e022",
+        "summary.json": "139c78427391c68fad8f7eaffb05ed00149ac8e6c5b1e8ce0ef9db0aff9ccac6",
+        "unmatched_fragments.csv": "15b585c56d588589244713684614d50bfea433a7d9991677ca95ba0085f99fc6"
+      },
+      "note": "fresh finalize.py process on 2026-09-11 (post-fix 1c); rebuilds every canonical table from the WORK raw answers, so blind_ratings.csv regenerates PRE-redaction (digest 6772ed5e...) while all other tables match the delivered bytes; delivered bytes restored afterwards",
+      "returncode": 0,
+      "run": 2,
+      "stdout": "SUMMARY planned=60 decoded=60 visible=42 pairs=3 recovered=1 verdict=CLOSED AT LIMIT"
+    }
+  ],
+  "identical": true,
+  "matches_landed": {
+    "audit_points.csv": true,
+    "blind_ratings.csv": true,
+    "pairing.csv": true,
+    "per_frame.csv": true,
+    "summary.json": true
+  },
+  "note": "Fix 1b reran two fresh interpreter processes after the recorded redaction from the delivered post-redaction answers and audit judgments; each canonical table matches the delivered digest.",
+  "process_1": {
+    "audit_points.csv": "89d9a44a79eb17292cc1c4a044fdebdaaa98754fd177deb8baf6637c1d571926",
+    "blind_ratings.csv": "73d77ee7f9dfcade487b5cb7c68ba5e7f98c1afdea36a639c030f6c3f5404d54",
+    "pairing.csv": "6522881aa127b06944cc9efa4899c662bd0e76aeee51c14dfaca622fce64e362",
+    "per_frame.csv": "8b9923f60c5036119f020963b5e56bea624097c7fcb81202d568ba721515e022",
+    "summary.json": "139c78427391c68fad8f7eaffb05ed00149ac8e6c5b1e8ce0ef9db0aff9ccac6"
+  },
+  "process_2": {
+    "audit_points.csv": "89d9a44a79eb17292cc1c4a044fdebdaaa98754fd177deb8baf6637c1d571926",
+    "blind_ratings.csv": "73d77ee7f9dfcade487b5cb7c68ba5e7f98c1afdea36a639c030f6c3f5404d54",
+    "pairing.csv": "6522881aa127b06944cc9efa4899c662bd0e76aeee51c14dfaca622fce64e362",
+    "per_frame.csv": "8b9923f60c5036119f020963b5e56bea624097c7fcb81202d568ba721515e022",
+    "summary.json": "139c78427391c68fad8f7eaffb05ed00149ac8e6c5b1e8ce0ef9db0aff9ccac6"
+  },
+  "runs": [
+    {
+      "digests": {
+        "audit_points.csv": "89d9a44a79eb17292cc1c4a044fdebdaaa98754fd177deb8baf6637c1d571926",
+        "blind_ratings.csv": "73d77ee7f9dfcade487b5cb7c68ba5e7f98c1afdea36a639c030f6c3f5404d54",
+        "pairing.csv": "6522881aa127b06944cc9efa4899c662bd0e76aeee51c14dfaca622fce64e362",
+        "per_frame.csv": "8b9923f60c5036119f020963b5e56bea624097c7fcb81202d568ba721515e022",
+        "summary.json": "139c78427391c68fad8f7eaffb05ed00149ac8e6c5b1e8ce0ef9db0aff9ccac6"
+      },
+      "matches_landed": true,
+      "returncode": 0,
+      "run": 1,
+      "stdout": "SUMMARY planned=60 decoded=60 visible=42 pairs=3 recovered=1 verdict=CLOSED AT LIMIT",
+      "stdout_from": "finalize_runs[0]"
+    },
+    {
+      "digests": {
+        "audit_points.csv": "89d9a44a79eb17292cc1c4a044fdebdaaa98754fd177deb8baf6637c1d571926",
+        "blind_ratings.csv": "73d77ee7f9dfcade487b5cb7c68ba5e7f98c1afdea36a639c030f6c3f5404d54",
+        "pairing.csv": "6522881aa127b06944cc9efa4899c662bd0e76aeee51c14dfaca622fce64e362",
+        "per_frame.csv": "8b9923f60c5036119f020963b5e56bea624097c7fcb81202d568ba721515e022",
+        "summary.json": "139c78427391c68fad8f7eaffb05ed00149ac8e6c5b1e8ce0ef9db0aff9ccac6"
+      },
+      "matches_landed": true,
+      "returncode": 0,
+      "run": 2,
+      "stdout": "SUMMARY planned=60 decoded=60 visible=42 pairs=3 recovered=1 verdict=CLOSED AT LIMIT",
+      "stdout_from": "finalize_runs[1]"
+    }
+  ],
+  "tables": [
+    "pairing.csv",
+    "per_frame.csv",
+    "blind_ratings.csv",
+    "audit_points.csv",
+    "summary.json"
+  ]
+}

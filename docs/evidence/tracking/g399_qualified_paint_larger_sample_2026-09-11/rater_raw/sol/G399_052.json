@@ -1,0 +1,18 @@
+{
+  "context_id": "G399_052",
+  "state": "VISIBLE",
+  "reason": "wide court view with centre line and end-line paint visible",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 5,
+      "family": "CENTRE_LINE",
+      "points": {"p1": [120, 166], "p2": [327, 317], "p3": [240, 253]}
+    },
+    {
+      "tile": 2,
+      "family": "BASELINE",
+      "points": {"p1": [414, 354], "p2": [630, 437], "p3": [525, 398]}
+    }
+  ]
+}

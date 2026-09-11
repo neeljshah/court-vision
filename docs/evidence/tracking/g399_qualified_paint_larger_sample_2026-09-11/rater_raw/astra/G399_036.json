@@ -1,0 +1,44 @@
+{
+    "context_id":  "G399_036",
+    "state":  "VISIBLE",
+    "reason":  "White sideline and lane boundary paint are visible in the wide view.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  1,
+                          "family":  "SIDELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    70,
+                                                    493
+                                                ],
+                                         "p2":  [
+                                                    410,
+                                                    466
+                                                ],
+                                         "p3":  [
+                                                    233,
+                                                    480
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  6,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    270,
+                                                    121
+                                                ],
+                                         "p2":  [
+                                                    464,
+                                                    94
+                                                ],
+                                         "p3":  [
+                                                    350,
+                                                    110
+                                                ]
+                                     }
+                      }
+                  ]
+}

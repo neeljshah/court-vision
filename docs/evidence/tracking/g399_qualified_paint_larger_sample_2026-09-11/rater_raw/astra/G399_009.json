@@ -1,0 +1,44 @@
+{
+  "context_id": "G399_009",
+  "state": "VISIBLE",
+  "reason": "Baseline and free throw line paint are visible in the wide court view.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 4,
+      "family": "BASELINE",
+      "points": {
+        "p1": [
+          426,
+          262
+        ],
+        "p2": [
+          562,
+          184
+        ],
+        "p3": [
+          490,
+          225
+        ]
+      }
+    },
+    {
+      "tile": 6,
+      "family": "FREE_THROW",
+      "points": {
+        "p1": [
+          39,
+          200
+        ],
+        "p2": [
+          130,
+          119
+        ],
+        "p3": [
+          84,
+          160
+        ]
+      }
+    }
+  ]
+}

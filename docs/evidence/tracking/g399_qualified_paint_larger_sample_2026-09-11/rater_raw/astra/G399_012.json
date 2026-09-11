@@ -1,0 +1,44 @@
+{
+  "context_id": "G399_012",
+  "state": "VISIBLE",
+  "reason": "Baseline and lane paint visible in the lower tiles.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 6,
+      "family": "BASELINE",
+      "points": {
+        "p1": [
+          128,
+          100
+        ],
+        "p2": [
+          464,
+          279
+        ],
+        "p3": [
+          319,
+          201
+        ]
+      }
+    },
+    {
+      "tile": 6,
+      "family": "LANE_LINE",
+      "points": {
+        "p1": [
+          80,
+          363
+        ],
+        "p2": [
+          435,
+          332
+        ],
+        "p3": [
+          271,
+          346
+        ]
+      }
+    }
+  ]
+}

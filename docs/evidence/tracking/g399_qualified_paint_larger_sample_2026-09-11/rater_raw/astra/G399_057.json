@@ -1,0 +1,44 @@
+{
+    "context_id":  "G399_057",
+    "state":  "VISIBLE",
+    "reason":  "Dark straight lane and baseline markings are visible.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  5,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    210,
+                                                    190
+                                                ],
+                                         "p2":  [
+                                                    390,
+                                                    165
+                                                ],
+                                         "p3":  [
+                                                    300,
+                                                    177
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  6,
+                          "family":  "BASELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    300,
+                                                    116
+                                                ],
+                                         "p2":  [
+                                                    550,
+                                                    195
+                                                ],
+                                         "p3":  [
+                                                    410,
+                                                    151
+                                                ]
+                                     }
+                      }
+                  ]
+}

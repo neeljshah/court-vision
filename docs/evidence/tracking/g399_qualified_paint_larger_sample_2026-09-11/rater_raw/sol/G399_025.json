@@ -1,0 +1,9 @@
+{
+  "context_id": "G399_025",
+  "state": "VISIBLE",
+  "reason": "close court view with one painted band visible but family unclear",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 4, "family": "UNKNOWN", "points": {"p1": [8, 238], "p2": [414, 239], "p3": [209, 238]}}
+  ]
+}

@@ -1,0 +1,44 @@
+{
+    "context_id":  "G399_060",
+    "state":  "VISIBLE",
+    "reason":  "Dark baseline and lane bands are visible on the floor.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  1,
+                          "family":  "BASELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    90,
+                                                    515
+                                                ],
+                                         "p2":  [
+                                                    220,
+                                                    471
+                                                ],
+                                         "p3":  [
+                                                    160,
+                                                    491
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  4,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    80,
+                                                    129
+                                                ],
+                                         "p2":  [
+                                                    430,
+                                                    150
+                                                ],
+                                         "p3":  [
+                                                    290,
+                                                    141
+                                                ]
+                                     }
+                      }
+                  ]
+}

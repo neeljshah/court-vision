@@ -1,0 +1,26 @@
+{
+    "context_id":  "G399_027",
+    "state":  "VISIBLE",
+    "reason":  "Yellow sideline paint is visible in front of the bench.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  6,
+                          "family":  "SIDELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    170,
+                                                    196
+                                                ],
+                                         "p2":  [
+                                                    435,
+                                                    198
+                                                ],
+                                         "p3":  [
+                                                    325,
+                                                    197
+                                                ]
+                                     }
+                      }
+                  ]
+}

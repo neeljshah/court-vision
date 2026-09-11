@@ -1,0 +1,10 @@
+{
+  "context_id": "G399_001",
+  "state": "VISIBLE",
+  "reason": "wide court view with baseline and lane paint legible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 1, "family": "BASELINE", "points": {"p1": [133, 522], "p2": [332, 361], "p3": [237, 439]}},
+    {"tile": 4, "family": "LANE_LINE", "points": {"p1": [135, 143], "p2": [611, 178], "p3": [359, 159]}}
+  ]
+}

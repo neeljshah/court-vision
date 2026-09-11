@@ -1,0 +1,26 @@
+{
+  "context_id": "G399_049",
+  "state": "VISIBLE",
+  "reason": "A short dark straight floor band is visible below the players; family unclear.",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 5,
+      "family": "UNKNOWN",
+      "points": {
+        "p1": [
+          30,
+          512
+        ],
+        "p2": [
+          215,
+          533
+        ],
+        "p3": [
+          121,
+          523
+        ]
+      }
+    }
+  ]
+}

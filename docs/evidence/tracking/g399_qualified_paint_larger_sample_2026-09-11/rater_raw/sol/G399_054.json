@@ -1,0 +1,18 @@
+{
+  "context_id": "G399_054",
+  "state": "VISIBLE",
+  "reason": "wide court view with lane and sideline paint legible",
+  "coords": "tile",
+  "fragments": [
+    {
+      "tile": 4,
+      "family": "LANE_LINE",
+      "points": {"p1": [376, 72], "p2": [631, 108], "p3": [510, 91]}
+    },
+    {
+      "tile": 4,
+      "family": "SIDELINE",
+      "points": {"p1": [8, 367], "p2": [337, 446], "p3": [160, 402]}
+    }
+  ]
+}
