@@ -1,0 +1,40 @@
+4f882f1e1b08,VISIBLE,1580,544,42,40,held by right wing player
+4fa015dcb42c,VISIBLE,1445,639,42,44,held at shooting pocket
+505346cd0c51,ABSENT,,,,,player closeup without ball
+50a748002cec,ABSENT,,,,,crowd closeup without ball
+50dce783ae7a,ABSENT,,,,,coach closeup without ball
+50e1249eaad6,VISIBLE,1102,368,65,85,motion blurred dribble
+5150b181f4b2,VISIBLE,1172,485,44,46,held near right baseline
+526cb2d97693,ABSENT,,,,,official review closeup
+529d9ff7571f,VISIBLE,831,369,27,29,dribble ahead of runner
+52bf5ee4997d,ABSENT,,,,,player closeup without ball
+53dbf0f11ab2,VISIBLE,925,461,43,48,held above head in lane
+544535309fc9,VISIBLE,486,253,36,36,airborne above shooter
+55390fa05f20,ABSENT,,,,,transition graphic covers frame
+57203e476711,VISIBLE,990,704,39,42,held near sideline
+574d6547a63a,VISIBLE,557,574,38,45,held by perimeter passer
+57bd610284b1,VISIBLE,1467,650,38,45,held by right wing player
+581caeef18eb,ABSENT,,,,,injury closeup without ball
+582edf9bf210,ABSENT,,,,,mascot crowd shot
+586f43f02e67,ABSENT,,,,,coach closeup without ball
+590883b213c7,ABSENT,,,,,player closeup without ball
+5a7a00430493,UNKNOWN,,,,,ball obscured in traffic
+5b140d01ac36,VISIBLE,0,502,32,36,partial ball at left border
+5b3f031bd683,VISIBLE,1171,697,234,232,large ball beside player
+5b626c0e20cc,VISIBLE,1480,387,37,38,held at shooting pocket
+5bb6f4b7699c,UNKNOWN,,,,,motion blur near ballhandler
+5be508986662,VISIBLE,154,658,38,39,dribbled at left sideline
+5cef26d811de,ABSENT,,,,,player closeup without ball
+5d03fad32d30,VISIBLE,1371,597,35,36,dribbled by right wing player
+5d8f03c82ec2,ABSENT,,,,,postgame handshake without ball
+5df1a11c1e66,UNKNOWN,,,,,ball obscured during drive
+5dfdfdc86a27,VISIBLE,688,302,46,48,airborne above shooter
+5e4e5e9060e4,ABSENT,,,,,timeout sideline closeup
+5e861f32c88b,ABSENT,,,,,bench closeup without ball
+5f6fe6f36f21,VISIBLE,672,479,36,37,dribbled at top of key
+5f843579e459,VISIBLE,342,417,36,30,held near left baseline
+600f59a6686d,VISIBLE,759,701,32,32,dribbled across midcourt
+60181200ae11,VISIBLE,820,487,52,53,held during contested drive
+604e46b63415,VISIBLE,247,654,36,36,dribbled by left wing player
+60a8603c8b3b,ABSENT,,,,,postgame interview without ball
+612ef2ab8c55,UNKNOWN,,,,,ball obscured in post action

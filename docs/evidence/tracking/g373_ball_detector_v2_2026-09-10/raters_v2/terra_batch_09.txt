@@ -1,0 +1,40 @@
+5d88e82139c3,VISIBLE,860,743,50,49,dribbling near lane
+5d8aeeeb55a5,VISIBLE,1179,301,31,34,held at midcourt
+5da3241e77e6,ABSENT,,,,,basket graphic only
+5dae5c030d69,ABSENT,,,,,sideline interview
+5dcbda1d60b1,VISIBLE,300,428,45,44,held for inbound
+5ddd9b25dd62,VISIBLE,282,711,43,44,held near sideline
+5dfbffaacae6,VISIBLE,1298,226,29,31,above rim
+5e1d059c77e4,VISIBLE,866,538,49,46,held while driving
+5e54740ed4e7,VISIBLE,759,835,44,47,dribbling at midcourt
+5e728c70cfac,VISIBLE,1295,598,37,38,held on wing
+5ef705e78f2b,VISIBLE,1131,337,28,30,held on perimeter
+5f71a3cb9898,VISIBLE,465,208,64,58,at the rim
+5f81b9f9e38b,VISIBLE,516,499,37,38,held for shot
+5faf12f4f07d,ABSENT,,,,,player closeup
+5fda84db502f,ABSENT,,,,,team huddle
+5fdab714fc92,VISIBLE,57,824,139,119,held in closeup
+5fe37d0cc403,ABSENT,,,,,ball out of frame
+6037df5845d3,VISIBLE,1105,571,29,30,held in paint
+60d18369e4ce,ABSENT,,,,,sideline interview
+61439814103c,ABSENT,,,,,sideline interview
+618600d99e29,ABSENT,,,,,sideline interview
+61efdf2a867a,VISIBLE,662,552,79,76,held for free throw
+6210a2f091bd,ABSENT,,,,,ball not visible
+622ac07d4c36,ABSENT,,,,,players closeup
+625771c20847,ABSENT,,,,,sideline interview
+62e105916483,VISIBLE,62,677,46,48,dribbling left side
+63b3b82354a0,VISIBLE,1178,425,40,40,held near lane
+640da5e14096,VISIBLE,1320,187,29,29,held near basket
+64352477bd14,VISIBLE,937,276,40,40,at the rim
+64b0424b6bdb,VISIBLE,1312,340,38,38,held on wing
+64b97f92e692,ABSENT,,,,,dead ball scene
+64d9361b5213,VISIBLE,470,366,35,35,passing near sideline
+64da58b4ff7c,ABSENT,,,,,player closeup
+64e7d380e359,UNKNOWN,,,,,ball obscured in action
+65082cf67f56,VISIBLE,479,803,34,34,dribbling near arc
+65c1594f57bc,ABSENT,,,,,player closeup
+65d33cab1581,VISIBLE,824,797,32,36,dribbling near sideline
+65e04a6703eb,ABSENT,,,,,crowd shot
+65efed56fbe2,VISIBLE,803,790,34,38,dribbling near lane
+661810290336,UNKNOWN,,,,,ball obscured under basket

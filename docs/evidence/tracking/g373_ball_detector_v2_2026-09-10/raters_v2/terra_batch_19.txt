@@ -1,0 +1,40 @@
+cf13f4ac0e10,ABSENT,,,,,no ball visible
+cf363db185f5,ABSENT,,,,,no ball visible
+cf839e7ef9ae,ABSENT,,,,,no ball visible
+cf9bb3e7d2cd,VISIBLE,1665,746,31,31,held at right sideline
+d071617e6ff7,ABSENT,,,,,empty hoop view
+d0a6fb8d652f,VISIBLE,945,457,30,31,held near sideline
+d0daa78771d3,UNKNOWN,,,,,ball position unclear
+d107d2fe7598,ABSENT,,,,,no ball visible
+d13c6dc3777b,VISIBLE,1599,615,31,31,held at midcourt
+d188f300bf34,VISIBLE,405,313,38,37,held by yellow player
+d1d602cc6a04,ABSENT,,,,,bench scene no ball
+d1ebf594679a,VISIBLE,794,530,103,112,referee holds ball
+d1faf8156156,UNKNOWN,,,,,ball position unclear
+d20dae939d7d,VISIBLE,787,725,28,31,dribbled by ballhandler
+d2453fab516e,VISIBLE,998,147,25,26,ball in flight
+d2a668fbeec0,VISIBLE,1556,522,34,34,held by white player
+d2ea5a73a689,VISIBLE,803,625,32,31,dribbled on fastbreak
+d31f9a0c0ce2,UNKNOWN,,,,,ball position unclear
+d3747f70cbcc,ABSENT,,,,,no ball visible
+d3a3b719e817,VISIBLE,469,568,34,35,dribbled at midcourt
+d3d53b3575ef,VISIBLE,609,615,54,53,held by white player
+d3e2aa486b5b,UNKNOWN,,,,,ball off border unclear
+d58d189f7fd0,VISIBLE,604,299,39,40,ball in flight
+d6342ac414c7,VISIBLE,602,315,37,36,held near basket
+d644011a1cff,UNKNOWN,,,,,ball position unclear
+d705a36eefc0,ABSENT,,,,,closeup no ball
+d727d5b07bf5,ABSENT,,,,,interview scene no ball
+d803f84a1bf2,VISIBLE,493,567,36,37,dribbled by white player
+d81fad7aafb0,UNKNOWN,,,,,ball obscured by players
+d89130c2299a,VISIBLE,841,80,94,97,ball in flight
+d945df5188e9,VISIBLE,1015,690,45,45,held near baseline
+dad6f3f8d4d5,VISIBLE,190,767,36,37,dribbled by black player
+db49e3dc015d,VISIBLE,914,274,39,39,ball in flight
+dbe27a83f38d,VISIBLE,915,274,40,40,ball in flight
+dbfe4e1eba57,ABSENT,,,,,closeup no ball
+dc30f641fd41,ABSENT,,,,,empty hoop view
+dc81dfadb27b,VISIBLE,934,215,32,33,ball above hoop
+dd56edfca863,ABSENT,,,,,bench scene no ball
+dd5deee8e3b4,UNKNOWN,,,,,ball position unclear
+dd6672ddb657,VISIBLE,822,336,28,29,held for jump shot

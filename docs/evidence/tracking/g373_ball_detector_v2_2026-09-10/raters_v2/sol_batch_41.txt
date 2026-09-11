@@ -1,0 +1,40 @@
+8d6e3ca03ccd,ABSENT,,,,,bench reaction with no ball
+8d706f43a663,ABSENT,,,,,sideline closeup with no ball
+8d71b97b4b4c,ABSENT,,,,,official during stoppage
+8d7d15365b5c,VISIBLE,1463,761,29,31,dribble at right wing
+8e320a0fffa0,VISIBLE,803,294,43,42,ball entering rim
+8e75164581e2,ABSENT,,,,,end game court with no ball
+8e7e22d96b7b,VISIBLE,927,324,33,29,ball airborne near lane
+8ec372e96f43,VISIBLE,1551,700,36,30,ball bouncing by baseline
+8f06fcc808b5,VISIBLE,1403,475,44,43,player holding ball overhead
+8f120d7edc05,VISIBLE,238,517,35,33,low dribble at left
+8f7d4e116cd0,VISIBLE,909,797,38,37,loose ball between players
+8f7d53e4aab8,VISIBLE,527,461,28,43,blurred ball by runner
+902b1d349dfb,ABSENT,,,,,postgame player closeup
+908daf01ba0e,UNKNOWN,,,,,ball not discernible in action
+90e9d73df074,ABSENT,,,,,player closeup during stoppage
+915dd10451fb,VISIBLE,1310,378,35,32,ball in runners hand
+916b9889b58b,VISIBLE,532,464,56,57,ball beside rim
+9219999b49a2,VISIBLE,967,426,24,31,ball beside advancing player
+92c1c315e080,ABSENT,,,,,player closeup with no ball
+934d8703b6a0,ABSENT,,,,,full screen bracket graphic
+9367155ab04b,VISIBLE,447,478,44,44,free throw ball in hands
+936793a45a0d,ABSENT,,,,,crowd reaction with no ball
+93a1f9552036,VISIBLE,779,407,27,21,ball airborne near baseline
+93b52117c6a6,UNKNOWN,,,,,ball obscured among players
+9459b9f33210,VISIBLE,1211,387,50,49,ball airborne near basket
+94adde03820c,VISIBLE,1005,461,43,34,ball ahead of runner
+94b7e23b452b,ABSENT,,,,,crowd shot with no ball
+94c286feed13,ABSENT,,,,,only inactive ball by stanchion
+94fa4e491043,VISIBLE,542,596,33,30,ball on live dribble
+955a98cd2fa5,VISIBLE,819,636,58,62,blurred ball in flight
+95bae4ee80ae,ABSENT,,,,,player closeup with no ball
+95e5be960d7a,ABSENT,,,,,arena ceiling shot
+9618f7b182f1,ABSENT,,,,,dead play with no ball
+966fc277e156,ABSENT,,,,,buzzer celebration with no ball
+981f47e8e9d1,UNKNOWN,,,,,ball hidden by close defender
+986b875ca1e8,UNKNOWN,,,,,ball not discernible in offense
+98c855bb751f,ABSENT,,,,,team sideline with no ball
+98dbde0893d6,VISIBLE,477,758,30,27,ball by baseline dribbler
+99c1c03afda6,VISIBLE,852,281,40,50,ball above the rim
+9a4515474e7e,ABSENT,,,,,timeout court with no ball

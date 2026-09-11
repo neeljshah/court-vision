@@ -1,0 +1,40 @@
+ab9d66958bec,VISIBLE,377,647,32,30,dribbled near midcourt
+ac19abac83a3,VISIBLE,1229,448,31,30,held by ballhandler
+ac32eaa830f2,UNKNOWN,,,,ball not discernible
+ac9f7eb7f2bf,VISIBLE,1326,520,32,30,held in paint
+aca604948190,VISIBLE,1340,202,39,39,airborne near basket
+ad95b6516712,ABSENT,,,,timeout shot
+adfe897bd5b6,VISIBLE,778,747,42,42,dribbling at midcourt
+ae193f07928e,ABSENT,,,,bench shot
+aeb0302bb27c,UNKNOWN,,,,ball not discernible
+af03b9f50401,VISIBLE,831,393,32,32,held by ballhandler
+af3d55f58e9e,VISIBLE,1033,699,35,35,dribbling near wing
+af9749790c50,VISIBLE,1158,243,39,39,free throw airborne
+afc6f3608db5,ABSENT,,,,closeup between plays
+afe10082487b,VISIBLE,446,604,36,34,loose near baseline
+b03e2fa047ac,ABSENT,,,,player closeup
+b03e51a438c7,VISIBLE,396,572,36,36,held at wing
+b0448ca4b3a7,ABSENT,,,,player closeup
+b0807ec8ff4d,VISIBLE,360,234,30,30,dribbled in backcourt
+b0dfa7dc180e,ABSENT,,,,dead ball closeup
+b101723974b6,ABSENT,,,,player closeup
+b14aee495a83,VISIBLE,840,593,35,35,dribbling in lane
+b1501c3de99d,VISIBLE,947,108,45,45,airborne shot
+b1826846fffe,UNKNOWN,,,,ball not discernible
+b255be247dea,VISIBLE,838,469,35,35,held under basket
+b264cffd139a,VISIBLE,1307,501,37,37,held by referee
+b269053e49ec,VISIBLE,753,523,38,38,held by referee
+b2ac3849b75b,ABSENT,,,,bench shot
+b3395d884755,VISIBLE,674,520,35,35,loose near baseline
+b341fdd28569,VISIBLE,527,572,34,34,held for inbound
+b3549eb2457d,VISIBLE,534,483,37,37,dribbling in lane
+b38257564a4f,ABSENT,,,,bench closeup
+b3851928e652,VISIBLE,670,357,30,30,held on wing
+b3a34cbc4105,ABSENT,,,,broadcast graphic
+b3b02cc6ab15,ABSENT,,,,bench closeup
+b41047866cf6,ABSENT,,,,postgame interview
+b46d16a16c71,VISIBLE,452,648,36,36,dribbling in backcourt
+b494d694673a,VISIBLE,798,523,31,34,held in paint
+b57d818efdfd,ABSENT,,,,bench reaction
+b643cb7a398b,ABSENT,,,,player closeup
+b6478b24d222,VISIBLE,566,362,42,43,held for shot

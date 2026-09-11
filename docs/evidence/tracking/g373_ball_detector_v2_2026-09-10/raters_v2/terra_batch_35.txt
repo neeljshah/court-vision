@@ -1,0 +1,40 @@
+34f5ff54a594,ABSENT,,,,,postgame sideline shot
+3522f413dafd,ABSENT,,,,,timeout huddle
+35d8cfec5e3d,ABSENT,,,,,postgame players
+35f276b00a43,ABSENT,,,,,bracket graphic
+36532f71366e,VISIBLE,932,188,28,25,above rim
+3694bb364dbf,VISIBLE,1456,351,30,28,held for inbound
+369640d8f3c1,ABSENT,,,,,postgame closeup
+36b7d96fbb5b,VISIBLE,1173,354,20,20,near raised hands
+36dba72e87b9,ABSENT,,,,,bench celebration
+36e8869c1ef7,VISIBLE,880,710,25,24,dribbled low
+36f0eda8c93c,VISIBLE,766,565,25,23,held over head
+3706b27ac296,ABSENT,,,,,city aerial
+37ddcd54a212,ABSENT,,,,,postgame players
+37ee688042c8,VISIBLE,1773,334,35,35,held at right border
+383b142a1be6,VISIBLE,1078,174,22,21,airborne shot
+384c23bc3d0b,VISIBLE,1153,281,234,254,closeup ball
+3864d1ca30de,ABSENT,,,,,player introductions
+3896f57a5bd1,VISIBLE,1007,407,26,25,below basket
+38c098db1bc3,ABSENT,,,,,bench closeup
+394f46686bc9,VISIBLE,1768,445,22,22,dribbled right side
+39b13d9316e0,VISIBLE,881,296,31,29,contested shot
+39c210c1f166,VISIBLE,1139,650,25,24,held by shooter
+3a31d8836b19,VISIBLE,1326,668,23,23,held at midcourt
+3aaaf6bfdbfb,ABSENT,,,,,player closeup
+3ae0fff0a317,VISIBLE,846,280,19,19,airborne pass
+3af5576f26bd,VISIBLE,1169,621,31,30,on the paint
+3b21a9c341ad,ABSENT,,,,,bench shot
+3b2627eeaeb9,ABSENT,,,,,sideline interview
+3b6b6d1f9ef9,VISIBLE,477,740,31,29,dribbled left wing
+3ba99903fb7c,VISIBLE,536,700,29,28,dribbled left wing
+3c5a0b1d8453,ABSENT,,,,,player closeup
+3c5e603d0fe9,ABSENT,,,,,team bench
+3c8c0a448383,VISIBLE,537,523,28,28,held near baseline
+3cd9af01508e,ABSENT,,,,,bench spectators
+3d4891ca3f32,VISIBLE,700,558,50,39,passed ball
+3d5318d0d17c,VISIBLE,1647,505,95,92,held close right
+3e620388667c,VISIBLE,484,607,30,29,dribbled at midcourt
+3e6c6f7d3eaa,ABSENT,,,,,bracket graphic
+3eb2c9bd0862,VISIBLE,1655,500,29,28,held on right wing
+3eee052b569c,VISIBLE,270,533,29,28,held on baseline

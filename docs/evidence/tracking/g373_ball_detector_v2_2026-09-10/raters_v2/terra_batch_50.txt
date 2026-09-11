@@ -1,0 +1,14 @@
+fdc1eaced833,ABSENT,,,,,commentator crowd shot
+fdfa02eec605,VISIBLE,1235,486,39,40,ball held during drive
+fe22e0d21948,VISIBLE,1001,514,83,99,ball held under arm
+fe469757cfaa,VISIBLE,176,409,27,30,ball held near baseline
+fe808f69aa95,VISIBLE,519,567,42,43,ball held in traffic
+feb719b2bc4d,VISIBLE,1177,535,111,111,ball held by player
+fef7b03666a0,ABSENT,,,,,crowd reaction shot
+ff596204ed43,ABSENT,,,,,bench shot
+ff5cebf3f3a0,VISIBLE,1238,567,31,33,ball near player
+ff64f4f343ee,VISIBLE,811,670,40,40,ball bouncing
+ffa2f7f2ccfa,VISIBLE,1578,584,87,85,ball held by player
+ffb962725a4f,VISIBLE,1219,615,65,64,referee holding ball
+ffd026648ce2,VISIBLE,179,642,36,34,ball held on wing
+fffa2b9b9eb7,VISIBLE,1596,383,39,38,ball held for inbound

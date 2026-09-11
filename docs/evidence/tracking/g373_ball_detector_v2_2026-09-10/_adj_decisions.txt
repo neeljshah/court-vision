@@ -1,0 +1,33 @@
+8c130e05cc88,VISIBLE,281,318,38,38,airborne near left sideline
+8d05fd68cf82,VISIBLE,1603,558,58,58,held by official dead ball
+8d7d15365b5c,VISIBLE,1454,772,36,36,dribbled in right corner
+46502ecc1535,VISIBLE,336,436,38,38,held by guard on left wing
+5b140d01ac36,UNKNOWN,,,,,ball not identifiable in transition
+65adde36966d,VISIBLE,1234,314,36,36,held near baseline dead ball
+8c2b4ca650af,VISIBLE,1180,445,45,32,motion blurred in transition
+bfadff084452,VISIBLE,873,340,34,34,dribbled at top of key
+139b5e762e09,UNKNOWN,,,,,ball obscured in rebound scrum
+57bd610284b1,VISIBLE,1474,668,38,38,held by guard on right wing
+485667db795c,VISIBLE,692,317,48,48,at the rim on a free throw
+473ef42aba19,UNKNOWN,,,,,two candidate balls cannot resolve live one
+4889322a19c9,VISIBLE,1596,567,34,34,dribbled by guard on right
+004dfb194535,VISIBLE,1157,208,30,30,airborne above the far backboard
+008404a9932f,VISIBLE,577,301,42,42,held overhead by wing player
+0225e903ba57,VISIBLE,460,603,90,90,gathered by ball handler close shot
+0331961bb5b7,UNKNOWN,,,,,no ball identifiable in transition
+03999f5df54b,VISIBLE,1171,146,34,34,shot in flight above the rim
+03ee5d6d130b,VISIBLE,1059,365,32,32,pass in flight over the paint
+04256d900e04,VISIBLE,462,7,76,76,held by driver at top frame border
+045553dfb1de,VISIBLE,1064,573,34,34,dribbled at the arc
+045ee6fe119e,ABSENT,,,,,close up of player back no ball in frame
+04b79af9c705,UNKNOWN,,,,,ball obscured in rebound scramble
+04c33a2ba3c8,VISIBLE,1015,448,40,40,driver gathering at the rim
+04d4f5b039d4,VISIBLE,1104,524,44,44,held by official at the arc
+04f4187da49b,ABSENT,,,,,sideline celebration no game ball in frame
+0678b8bdbcee,VISIBLE,1362,577,36,36,held by inbounder on the right
+06c4cb648f74,UNKNOWN,,,,,overhead rim cam ball not resolvable
+078b67d10e8d,VISIBLE,880,193,40,40,at the rim on a finish
+08abef457742,VISIBLE,1143,228,34,34,at the rim in overtime
+0c356d7f0194,VISIBLE,425,643,36,36,dribbled low in the backcourt
+0cb724109b5c,VISIBLE,1198,371,30,30,held by inbounder on the baseline
+0cd289ec6c7a,VISIBLE,874,581,32,32,motion blurred at the ball handler hand

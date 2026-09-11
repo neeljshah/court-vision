@@ -1,0 +1,40 @@
+523405dbdd66,VISIBLE,783,374,32,48,airborne near shooter
+525736693e80,VISIBLE,1318,348,37,40,airborne beside backboard
+5274a65d7dae,VISIBLE,1217,386,24,26,held by right wing
+52b0f15257e9,ABSENT,,,,,player closeup no ball
+52bed970ae07,VISIBLE,1298,430,29,27,held on right wing
+5366926a5926,VISIBLE,882,724,35,36,bouncing beside dribbler
+538d2e85209e,VISIBLE,609,761,32,31,bouncing near foul line
+540e83f6d87c,VISIBLE,706,695,32,38,low dribble at midcourt
+545d25ff8432,VISIBLE,1076,171,28,26,airborne above lane
+547a4769bd1d,ABSENT,,,,,pregame introductions no ball
+54c516efc7f6,VISIBLE,1185,730,30,29,bouncing beside ballhandler
+5524c7fb0cc3,VISIBLE,343,301,137,138,held above shooter
+554d4042c100,ABSENT,,,,,ball not in frame
+55e1a59bf974,VISIBLE,1197,668,59,49,dribbled by yellow player
+560a17ccd5de,VISIBLE,605,121,35,34,airborne above backboard
+56424db05fc4,VISIBLE,1046,644,36,38,bouncing before free throw
+56997ebd0894,ABSENT,,,,,coach closeup no ball
+56a85ef3b57c,VISIBLE,1017,222,114,118,held overhead in traffic
+56ec309abe0f,VISIBLE,936,514,32,42,held by driving player
+57197ad5dbbe,ABSENT,,,,,wide ceremony view no ball
+57f8aa9e4681,VISIBLE,1582,527,33,37,low dribble on right wing
+57fb0bcc7c24,VISIBLE,1127,356,34,45,held at players hip
+581fbc7865a2,VISIBLE,1490,382,64,48,pass leaving right hand
+5875f38e37f9,VISIBLE,1027,866,270,214,held at bottom border
+58794fe201bb,VISIBLE,1460,511,26,31,held on right wing
+588c42315e4e,VISIBLE,814,242,53,43,held by inbounder
+58f519105706,VISIBLE,1429,430,30,29,held at ballhandlers waist
+592c0c85869a,ABSENT,,,,,ball above visible frame
+5a00d5af219a,ABSENT,,,,,postgame closeup no ball
+5addcadf30ef,ABSENT,,,,,stoppage scene no ball
+5adff6aa4e48,VISIBLE,915,270,35,32,held above players head
+5ae17f912acd,VISIBLE,1797,573,45,35,held by right sideline player
+5b0c99e32968,VISIBLE,997,340,47,41,airborne beneath basket
+5b4aa6539fcc,UNKNOWN,,,,,interview obscures court action
+5c506515db87,VISIBLE,636,316,67,63,held by player under camera
+5c55340d7f29,VISIBLE,1589,505,32,32,held by right wing guard
+5c7d27dff273,ABSENT,,,,,player closeup no ball
+5d166f69fa8d,UNKNOWN,,,,,ball obscured during active play
+5d2d3a04affe,ABSENT,,,,,postgame bench scene no ball
+5d3fb328a392,UNKNOWN,,,,,ball unclear near crowded rim

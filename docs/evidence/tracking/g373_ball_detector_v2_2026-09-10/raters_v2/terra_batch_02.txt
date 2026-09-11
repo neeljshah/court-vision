@@ -1,0 +1,40 @@
+0b3f308131cb,UNKNOWN,,,,,ball not identifiable
+0bd4386adf80,VISIBLE,895,530,173,178,ball at rim
+0c5bbe8d978a,VISIBLE,1172,458,42,50,ball held overhead
+0cd289ec6c7a,VISIBLE,1243,698,30,30,ball in dribble
+0cd4a064a09a,VISIBLE,1463,354,45,45,ball held right side
+0d48df02e4d5,ABSENT,,,,,player closeup
+0db71514d7ad,UNKNOWN,,,,,ball obscured at left border
+0dc77fa0f893,VISIBLE,604,169,84,86,ball held for shot
+0e28ec60437d,VISIBLE,1697,408,31,31,ball near right sideline
+0e33060e2a2d,ABSENT,,,,,crowd shot
+0e3b7e866168,VISIBLE,826,333,49,47,ball in flight
+0ec893dabad8,ABSENT,,,,,player closeup
+0f10333a93b6,VISIBLE,817,441,45,41,ball in flight
+0f1af2b34fe7,UNKNOWN,,,,,ball not identifiable
+0f5be93bb348,UNKNOWN,,,,,ball not identifiable
+0fcb84765462,UNKNOWN,,,,,ball obscured by players
+0fe4c8ddae33,VISIBLE,1097,130,45,45,ball above rim
+1026ad786353,ABSENT,,,,,timeout huddle
+106212c1ea74,VISIBLE,925,462,34,34,ball in dribble
+10ad02178e7d,VISIBLE,1265,803,35,35,ball in dribble
+10b7527d0321,ABSENT,,,,,player closeup
+10d786b6a025,ABSENT,,,,,postgame interview
+110f054be70c,VISIBLE,149,588,39,40,ball in dribble
+11ffdedbd9f0,VISIBLE,805,315,42,44,ball held in lane
+12fae7c64341,UNKNOWN,,,,,ball not identifiable
+132df7d19402,UNKNOWN,,,,,ball obscured in paint
+139b5e762e09,VISIBLE,1682,544,35,36,ball in dribble
+13dfa04669bf,ABSENT,,,,,celebration closeup
+13fe9b95f2ba,ABSENT,,,,,postgame celebration
+1574171a0438,VISIBLE,338,385,33,34,ball in dribble
+15811f965b33,ABSENT,,,,,bracket graphic
+162155c0f060,ABSENT,,,,,official review closeup
+1623782c2aeb,VISIBLE,1082,323,38,39,ball in flight
+1641577caabb,ABSENT,,,,,postgame interview
+167958b50c68,VISIBLE,1001,581,42,42,ball in dribble
+16c583e45b39,VISIBLE,331,712,39,38,ball in dribble
+1715c179cde0,ABSENT,,,,,postgame interview
+171ccd76427d,VISIBLE,1040,588,39,40,ball held by player
+172177e657ab,VISIBLE,323,720,43,42,ball in dribble
+1756edee9fdc,VISIBLE,1193,358,47,49,ball at rim

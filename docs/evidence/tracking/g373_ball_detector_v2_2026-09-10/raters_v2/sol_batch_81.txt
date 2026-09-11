@@ -1,0 +1,40 @@
+a762f80d6872,VISIBLE,850,568,45,44,ball near baseline
+a763682be4cb,VISIBLE,439,579,31,31,ball beside dribbler
+a7e1b5ad1684,VISIBLE,1318,614,49,72,motion blurred dribble
+a7f31b00c9b3,ABSENT,,,,,ball fully occluded
+a8977cdfc822,ABSENT,,,,,no ball during stoppage
+a8d89721baf9,ABSENT,,,,,player closeup without ball
+aa7570510b13,ABSENT,,,,,pregame introductions
+aa7d6fcc7b2b,ABSENT,,,,,crowd shot without ball
+aaa352df152f,ABSENT,,,,,ceremony without game ball
+aaa9790de898,UNKNOWN,,,,,rim area too ambiguous
+ab0e4f6ada8c,ABSENT,,,,,ball outside frame
+ab3a6c3c5a4a,VISIBLE,1824,483,52,42,ball held at sideline
+ab8c9f666a0d,VISIBLE,965,590,39,40,ball bouncing behind runner
+ab9bb337ea14,VISIBLE,1373,462,28,27,ball beside dribbler
+abe9e4beeee9,ABSENT,,,,,player closeup without ball
+abec4348aee8,VISIBLE,538,445,44,43,ball beside driving player
+ac4cb2e4b2b3,VISIBLE,1137,603,57,53,referee holding game ball
+ac52b0e71b8d,VISIBLE,978,454,43,39,ball above shooters hands
+ad151e200d88,ABSENT,,,,,coach closeup without ball
+ad34786c6902,UNKNOWN,,,,,ball location too unclear
+adbb4cc1d4ac,UNKNOWN,,,,,ball obscured in traffic
+ae6b41a8ad9c,VISIBLE,1128,687,39,44,low dribble in lane
+ae8a0b344a9b,ABSENT,,,,,no ball visible after play
+aeab4d616fbe,VISIBLE,569,653,34,28,ball held in transition
+aef7882af797,VISIBLE,522,449,49,54,ball held near face
+af0f7479d417,ABSENT,,,,,bench reaction without ball
+afb270af4edc,VISIBLE,0,250,68,48,ball held at frame border
+b04ae09d9c5a,ABSENT,,,,,foreground closeup without ball
+b0f8a764a675,VISIBLE,502,436,28,28,ball beside ballhandler
+b0fc8edc219a,VISIBLE,1022,345,30,31,ball above shooter
+b10018a9cfc7,UNKNOWN,,,,,ball obscured by raised hands
+b1134b4190dc,VISIBLE,1334,508,29,29,ball near standing player
+b1314e59adb7,VISIBLE,866,41,124,174,ball behind backboard support
+b1cb6633fc48,VISIBLE,1265,395,49,72,motion blurred dribble
+b1e502781eab,VISIBLE,551,275,48,50,ball airborne near bench
+b21b286038c3,VISIBLE,1177,531,26,30,low dribble at arc
+b253295ef0df,ABSENT,,,,,ball outside frame
+b264120ace7c,ABSENT,,,,,pregame introductions
+b2e56d383f65,VISIBLE,863,531,42,39,free throw ball held
+b31ceb408e4f,VISIBLE,1280,614,48,46,ball held by player

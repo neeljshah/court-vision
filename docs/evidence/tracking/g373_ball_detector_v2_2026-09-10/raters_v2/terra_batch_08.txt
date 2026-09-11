@@ -1,0 +1,40 @@
+523405dbdd66,VISIBLE,787,385,25,29,held near basket
+525736693e80,VISIBLE,1315,354,35,39,shot near rim
+5274a65d7dae,VISIBLE,1241,384,28,28,held by ballhandler
+52b0f15257e9,ABSENT,,,,,player closeup
+52bed970ae07,VISIBLE,1297,447,21,21,held on right wing
+5366926a5926,VISIBLE,883,725,33,33,dribbling ball
+538d2e85209e,VISIBLE,581,764,29,28,free throw ball
+540e83f6d87c,VISIBLE,1140,416,17,17,held near midcourt
+545d25ff8432,VISIBLE,1073,173,24,24,ball above hoop
+547a4769bd1d,ABSENT,,,,,team introduction shot
+54c516efc7f6,VISIBLE,1184,730,32,31,dribbling ball
+5524c7fb0cc3,VISIBLE,346,310,128,132,shooter holds ball
+554d4042c100,ABSENT,,,,,after play no ball
+55e1a59bf974,VISIBLE,1190,675,44,42,held by guard
+560a17ccd5de,VISIBLE,607,130,31,30,ball in flight
+56424db05fc4,VISIBLE,1054,648,28,27,loose ball near player
+56997ebd0894,ABSENT,,,,,coach closeup
+56a85ef3b57c,VISIBLE,1040,239,100,104,held for layup
+56ec309abe0f,VISIBLE,538,347,27,28,held on left wing
+57197ad5dbbe,UNKNOWN,,,,,wide distant court
+57f8aa9e4681,VISIBLE,1595,500,28,27,ballhandler on right
+57fb0bcc7c24,VISIBLE,1001,565,26,27,held in traffic
+581fbc7865a2,VISIBLE,1451,605,40,39,passing ball
+5875f38e37f9,VISIBLE,1139,902,185,176,held closeup ball
+58794fe201bb,VISIBLE,1432,508,25,26,dribbling on wing
+588c42315e4e,VISIBLE,834,229,38,40,held for inbound
+58f519105706,VISIBLE,1405,443,29,29,ballhandler on right
+592c0c85869a,VISIBLE,1482,562,26,27,held near center logo
+5a00d5af219a,ABSENT,,,,,bench closeup
+5addcadf30ef,ABSENT,,,,,dead ball players
+5adff6aa4e48,VISIBLE,872,330,30,30,held near lane
+5ae17f912acd,VISIBLE,1777,575,40,40,held on right sideline
+5b0c99e32968,VISIBLE,994,337,45,45,ball above players
+5b4aa6539fcc,ABSENT,,,,,broadcast interview
+5c506515db87,VISIBLE,674,330,61,60,held under basket
+5c55340d7f29,VISIBLE,1572,538,25,25,ballhandler on right
+5c7d27dff273,ABSENT,,,,,player closeup
+5d166f69fa8d,VISIBLE,1695,289,44,42,pass in flight
+5d2d3a04affe,ABSENT,,,,,bench closeup
+5d3fb328a392,UNKNOWN,,,,,ball occluded in paint

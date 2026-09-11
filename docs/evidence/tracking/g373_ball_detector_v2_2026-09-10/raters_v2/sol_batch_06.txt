@@ -1,0 +1,40 @@
+3d209e63af68,VISIBLE,1443,468,40,39,held at right wing
+3d5bfeaf1491,VISIBLE,995,482,35,45,held under rim
+3da016070261,VISIBLE,1363,583,39,37,right wing dribble
+3e0b4956d16c,ABSENT,,,,,between plays closeup
+3e1def3d25f9,UNKNOWN,,,,,ball obscured in live play
+3e8a35d3ccae,VISIBLE,803,543,93,96,motion blurred dribble
+3ed0ff187412,ABSENT,,,,,postgame player closeup
+3ee198390449,ABSENT,,,,,no ball after buzzer
+3f1856193120,ABSENT,,,,,bench closeup
+3f21f1ddaf0b,VISIBLE,1451,449,35,35,low right wing dribble
+3f35e95e476d,ABSENT,,,,,crowd closeup
+3f41b5db4997,ABSENT,,,,,graphic ball not game ball
+3f583d2f8380,ABSENT,,,,,player closeup
+3fac7667dfa4,ABSENT,,,,,ball only with official
+3ff88c8cbc62,ABSENT,,,,,ball only with official
+4120fe16d5c5,VISIBLE,1142,257,32,36,airborne near basket
+412413c05f7b,UNKNOWN,,,,,ball hidden in contact
+4124266da547,VISIBLE,842,337,55,54,held at chest
+41d019c3b574,ABSENT,,,,,ball only with official
+4209e0afa635,UNKNOWN,,,,,ball hidden by players
+42118b6a72a0,VISIBLE,1193,404,31,22,airborne pass
+422239c9c6fb,UNKNOWN,,,,,ball obscured in lane
+429d0d1fbda6,ABSENT,,,,,bench closeup
+438ec97a3648,UNKNOWN,,,,,dribble obscured by defender
+4391d4db24bc,ABSENT,,,,,sideline interview
+43abca024ee0,VISIBLE,725,543,49,48,controlled in paint
+442d0172d04a,UNKNOWN,,,,,no clear ball at handler
+44d2f30b6681,ABSENT,,,,,player closeup
+45111e3bd05a,ABSENT,,,,,postgame closeup
+45926cdb573c,ABSENT,,,,,player closeup
+45cfedb36b91,VISIBLE,850,394,112,113,ball on rim
+4650fce328c9,UNKNOWN,,,,,ball obscured at wing
+4680eba1cd06,VISIBLE,1237,492,31,31,low dribble
+46b6196afc9b,UNKNOWN,,,,,ball blends with inbounder
+470cd9afd8c5,VISIBLE,1457,793,101,130,close dribble
+473ef42aba19,VISIBLE,668,459,53,51,midcourt dribble
+47826bc60f3c,VISIBLE,483,450,46,76,held by inbounder
+482d0437ff70,VISIBLE,225,473,29,34,left wing dribble
+485667db795c,VISIBLE,716,314,39,41,ball in net
+4889322a19c9,VISIBLE,1598,568,24,27,held on right wing

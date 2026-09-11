@@ -1,0 +1,40 @@
+00256fbe30cd,ABSENT,,,,,interview shot with no ball
+002c2ca7a3c0,ABSENT,,,,,player closeup with no ball
+004dfb194535,VISIBLE,1157,199,31,30,ball airborne above basket
+0089acbec576,ABSENT,,,,,player closeup with no ball
+0161bc9aad42,ABSENT,,,,,player closeup with no ball
+01624a78bbc4,VISIBLE,1012,574,25,26,ball held at chest
+01ce08140eff,VISIBLE,631,219,27,27,ball airborne above rim
+025a8aaacfd8,ABSENT,,,,,player closeup with no ball
+02a8ebb07627,VISIBLE,1432,458,28,31,ball held on right wing
+0382ec91fd1d,ABSENT,,,,,player closeup with no ball
+04256d900e04,VISIBLE,451,4,82,88,ball held by running player
+043421998afd,ABSENT,,,,,dead ball held by official
+04c33a2ba3c8,UNKNOWN,,,,,ball obscured in active play
+054db0ba29fc,VISIBLE,655,706,31,34,ball held by ballhandler
+0560ba4573e3,VISIBLE,746,405,25,27,ball carried in transition
+059f61cfb0f7,ABSENT,,,,,player closeup with no ball
+05cbce45bbb8,ABSENT,,,,,pregame lineup with no ball
+060e54341df9,ABSENT,,,,,player closeup with no ball
+060ffbe2c29d,VISIBLE,1115,283,143,139,ball held in close action
+0678b8bdbcee,UNKNOWN,,,,,ball not identifiable in transition
+068d095b39c7,VISIBLE,1451,493,27,25,ball held near midcourt
+06b15ae77e14,ABSENT,,,,,halftime closeup with no ball
+06b61a76a7ed,VISIBLE,1284,382,45,42,ball near baseline player
+06b7146c14f1,UNKNOWN,,,,,ball obscured under basket
+0714d445d447,UNKNOWN,,,,,ball obscured in post action
+0716d136adb4,UNKNOWN,,,,,loose ball not identifiable
+07663802c029,VISIBLE,1317,119,39,36,ball airborne over crowd
+077503ec977d,VISIBLE,758,643,31,38,ball held in low post
+078b67d10e8d,UNKNOWN,,,,,ball obscured below basket
+08037ac3f452,VISIBLE,201,480,28,25,ball held on left wing
+080b4ae24d37,VISIBLE,658,126,42,37,ball airborne toward basket
+088c36167069,UNKNOWN,,,,,ball not identifiable near baseline
+099600951097,ABSENT,,,,,stoppage closeup with no ball
+09a4d0d36e48,VISIBLE,1181,201,31,27,ball held near baseline
+0a6565dfbcdd,ABSENT,,,,,only graphic ball is shown
+0a8431fe20e0,ABSENT,,,,,crowd shot with no ball
+0af26b423876,VISIBLE,131,572,142,123,ball contested beside rim
+0b0efe5807b1,VISIBLE,1167,371,60,57,ball held between defenders
+0b241fe2e28c,VISIBLE,1553,298,46,37,ball held by inbounder
+0b2a0da950da,ABSENT,,,,,player closeup with no ball

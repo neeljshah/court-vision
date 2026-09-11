@@ -1,0 +1,40 @@
+42a2541be991,ABSENT,,,,,postgame closeup
+43496eca6554,VISIBLE,817,371,49,46,held near the lane
+436f86d45e20,UNKNOWN,,,,,ball obscured during drive
+43838ce60bcd,ABSENT,,,,,postgame team closeup
+441473eea620,VISIBLE,732,188,76,82,held above players head
+4433c39d5da9,UNKNOWN,,,,,ball not identifiable in closeup
+445e5f195edf,VISIBLE,556,649,38,42,low dribble by white player
+4473aedf8e96,UNKNOWN,,,,,court obscured by graphic
+44bf0619ae02,VISIBLE,500,403,37,39,held by left ballhandler
+44c5afc97e5b,VISIBLE,422,562,34,38,held at left hip
+453686d20144,VISIBLE,287,663,66,64,secured under basket
+45ffd4dd7b7f,UNKNOWN,,,,,ball hidden among players
+4611c69c32f6,VISIBLE,1388,655,119,111,low dribble by white player
+46502ecc1535,VISIBLE,304,435,32,34,held by inbounder
+46dde8e433b5,UNKNOWN,,,,,ball not identifiable in transition
+4744fa755565,VISIBLE,0,0,812,218,ball fills rim camera corner
+47a78af1a77e,VISIBLE,884,482,43,48,held before close shot
+47a7d4a4ad1d,ABSENT,,,,,postgame crowd shot
+47ae619aa0c3,ABSENT,,,,,player closeup without ball
+4842b3130b2b,VISIBLE,299,364,31,32,dribble by left player
+485e4097b582,ABSENT,,,,,player closeup without ball
+48677dce980b,ABSENT,,,,,postgame bench shot
+4889cdbaf5f0,ABSENT,,,,,dead ball player closeup
+49341414e11f,UNKNOWN,,,,,ball lost in rim scrum
+494ea1aa0b7e,ABSENT,,,,,broadcast graphic only
+496b17f368a9,UNKNOWN,,,,,ball not identifiable in play
+49ebeb1b5fcd,ABSENT,,,,,postgame player closeup
+4a560b4a53ad,VISIBLE,288,421,38,39,held by left wing player
+4a79394de100,VISIBLE,368,466,38,35,held by left ballhandler
+4b5db2fd8271,VISIBLE,1030,690,35,34,pass in midair
+4b645300c393,VISIBLE,560,423,47,44,pass leaving players hands
+4baeba87f539,VISIBLE,1378,550,43,45,held on right wing
+4cef1965dc2a,ABSENT,,,,,stoppage without visible ball
+4d0ca1a50dca,UNKNOWN,,,,,shot ball not distinguishable
+4d3fe0a8562e,ABSENT,,,,,bench closeup without ball
+4d6bb9251d88,ABSENT,,,,,postgame player closeup
+4de1c405885f,UNKNOWN,,,,,scene obscured by graphic
+4de347374550,VISIBLE,17,481,62,70,held at left frame border
+4eec503af9ec,ABSENT,,,,,dead ball closeup
+4f10c0f51393,VISIBLE,1270,631,43,46,held by free throw shooter

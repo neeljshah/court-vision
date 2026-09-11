@@ -1,0 +1,40 @@
+66294faf6cb6,VISIBLE,1134,380,31,34,held near basket
+6694d39d61a1,VISIBLE,1230,494,36,36,midair near baseline
+66cea5293a7f,UNKNOWN,,,,,partly obscured by graphic
+66f95c9da73d,VISIBLE,156,316,32,32,shot in flight
+67847dd707fc,VISIBLE,599,426,45,49,held by player
+67cf74d777b1,VISIBLE,535,655,24,27,dribbling player
+67f48fec58a7,ABSENT,,,,,dead ball scene
+68157217b961,ABSENT,,,,,closeup without ball
+68b18aeb1053,VISIBLE,1193,497,36,37,referee holding ball
+69134b3fc18b,VISIBLE,1328,635,57,57,ball near basket
+69521c9dd4e0,ABSENT,,,,,timeout huddle
+6979ca1d49e8,VISIBLE,505,452,30,31,pass in flight
+69c25565cb86,UNKNOWN,,,,,ball outside visible area
+6a9cfc1e58d6,VISIBLE,1296,412,31,32,dribbling player
+6af1d5d127b0,VISIBLE,746,436,55,54,held at sideline
+6af73144cd5b,ABSENT,,,,,graphic closeup
+6afc105dd755,VISIBLE,1164,660,29,30,ballhandler near lane
+6b34dba8d44a,VISIBLE,827,503,51,51,free throw ball
+6b4ce5ad7263,UNKNOWN,,,,,ball occluded by players
+6b7dce507b0e,UNKNOWN,,,,,ball obscured under rim
+6ccc80b59e5e,VISIBLE,844,615,38,39,dribbling in transition
+6d18d309bab8,VISIBLE,688,369,53,51,pass in flight
+6d639eeba205,VISIBLE,666,493,38,39,inbounder holding ball
+6d872d267086,ABSENT,,,,,bench view without ball
+6df12376c876,ABSENT,,,,,crowd closeup
+6df3a9076a29,VISIBLE,722,365,30,31,shooter holding ball
+6e9a9606a372,VISIBLE,374,372,33,32,dribbling player
+6ea733bc6255,VISIBLE,1480,105,42,40,ball at rim
+6f644edd363c,UNKNOWN,,,,,ball obscured by players
+6f6d7c2df9ae,VISIBLE,1208,347,37,39,shooter holding ball
+6f9dd93328d7,VISIBLE,1424,645,31,34,loose near baseline
+6faaf410ce8b,VISIBLE,1015,788,91,95,held in huddle
+6fb1ee4d77f1,VISIBLE,890,666,77,75,held by player
+6fcf278b1603,UNKNOWN,,,,,ball out of view
+6fed7dc9b40b,VISIBLE,678,202,38,38,ball near rim
+700e6aa694bb,VISIBLE,1517,424,48,48,ballhandler
+70e494b21995,VISIBLE,285,595,37,37,held at sideline
+7103bd5e7dc7,VISIBLE,1341,646,55,55,ballhandler
+712b543a733e,VISIBLE,674,204,40,42,ball near rim
+714d3bae0764,VISIBLE,1263,658,52,52,ballhandler

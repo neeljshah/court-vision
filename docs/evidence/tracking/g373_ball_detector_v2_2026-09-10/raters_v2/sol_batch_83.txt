@@ -1,0 +1,40 @@
+bfe99622258e,ABSENT,,,,,timeout huddle no ball
+c0cf904ec62b,ABSENT,,,,,player closeup no ball
+c1120c43dbc2,VISIBLE,980,581,25,29,ball near lane players
+c1800a4454c8,ABSENT,,,,,free throw setup no ball
+c19824645178,ABSENT,,,,,bench closeup no ball
+c2041840c536,VISIBLE,855,546,42,49,ball airborne near basket
+c242e569b675,ABSENT,,,,,postgame closeup no ball
+c2d5dece53a3,ABSENT,,,,,cropped action no ball
+c319a3aa5fdb,ABSENT,,,,,postgame sideline no ball
+c369d72b91fb,ABSENT,,,,,dead ball court no ball
+c3a577f7cda5,ABSENT,,,,,sideline interview no ball
+c404ed9b8d60,ABSENT,,,,,crowd reaction no ball
+c44a8961b238,VISIBLE,747,600,33,31,ball held in post
+c46adaa01ddc,UNKNOWN,,,,,ball obscured in player cluster
+c541d47266fa,ABSENT,,,,,coach closeup no ball
+c5df50485f26,VISIBLE,1218,486,29,32,ball held at perimeter
+c61c2c62ab37,ABSENT,,,,,coach reaction no ball
+c6c877370ce1,VISIBLE,1000,580,55,51,ball held while advancing
+c75a0025de87,ABSENT,,,,,player closeup no ball
+c76ee0da93ac,VISIBLE,279,587,27,36,ball held on baseline
+c81c266aebcf,ABSENT,,,,,player closeup no ball
+c88f6bf9c228,ABSENT,,,,,player reaction no ball
+c8b3225fdef5,VISIBLE,500,363,61,55,ball held at wing
+c8fa5d460172,ABSENT,,,,,bench closeup no ball
+ca1a3feb29ab,ABSENT,,,,,bench closeup no ball
+ca704171d6ec,VISIBLE,896,600,118,119,ball above rim
+cb0e506d27ab,ABSENT,,,,,team lineup no ball
+cb38f5846393,VISIBLE,1657,628,31,36,ball in right hand
+cbc8eca2de7e,VISIBLE,420,771,59,64,ball held by dribbler
+cc3030dde3f1,ABSENT,,,,,bench closeup no ball
+cc71b4e368a0,ABSENT,,,,,player closeup no ball
+cd0dbb8ff6e7,VISIBLE,1586,592,29,52,ball bouncing by handler
+cdad96974744,ABSENT,,,,,player closeup no ball
+ce9f105bd677,ABSENT,,,,,free throw closeup no ball
+cf211d542602,VISIBLE,743,951,438,129,ball held below overlay
+cf56394c0fb7,VISIBLE,747,265,32,33,ball airborne left of rim
+cf87bb30a78d,ABSENT,,,,,players waiting no ball
+d091e5fc78da,ABSENT,,,,,postgame celebration no ball
+d0b27501afce,UNKNOWN,,,,,ball unclear near baseline
+d0df4605c11f,ABSENT,,,,,coach closeup no ball

@@ -1,0 +1,40 @@
+c2041840c536,VISIBLE,854,516,40,42,ball in flight near basket
+c242e569b675,ABSENT,,,,closeup without game ball
+c2d5dece53a3,ABSENT,,,,no ball visible
+c319a3aa5fdb,ABSENT,,,,bench scene without ball
+c369d72b91fb,VISIBLE,367,676,34,35,player holds ball
+c3a577f7cda5,ABSENT,,,,postgame interview without ball
+c404ed9b8d60,ABSENT,,,,crowd shot without ball
+c44a8961b238,VISIBLE,754,592,37,38,player holds ball
+c46adaa01ddc,UNKNOWN,,,,ball obscured in paint
+c541d47266fa,ABSENT,,,,coach closeup without ball
+c5df50485f26,VISIBLE,1218,488,29,31,player holds ball
+c61c2c62ab37,ABSENT,,,,bench shot without ball
+c6c877370ce1,VISIBLE,927,596,35,39,dribbler has ball
+c75a0025de87,ABSENT,,,,closeup without ball
+c76ee0da93ac,ABSENT,,,,no ball visible
+c81c266aebcf,ABSENT,,,,player closeup without ball
+c88f6bf9c228,ABSENT,,,,player closeup without ball
+c8b3225fdef5,VISIBLE,485,369,59,55,player holds ball
+c8fa5d460172,ABSENT,,,,bench shot without ball
+ca1a3feb29ab,ABSENT,,,,player closeup without ball
+ca704171d6ec,VISIBLE,897,600,119,117,ball above rim
+cb0e506d27ab,ABSENT,,,,bench shot without ball
+cb38f5846393,VISIBLE,1673,644,40,44,player dribbles ball
+cbc8eca2de7e,VISIBLE,403,762,49,56,player holds ball
+cc3030dde3f1,ABSENT,,,,bench shot without ball
+cc71b4e368a0,ABSENT,,,,player closeup without ball
+cd0dbb8ff6e7,VISIBLE,1581,602,36,40,player dribbles ball
+cdad96974744,ABSENT,,,,player closeup without ball
+ce9f105bd677,ABSENT,,,,player closeup without ball
+cf211d542602,VISIBLE,888,1001,126,79,partly obscured held ball
+cf56394c0fb7,VISIBLE,750,262,29,30,ball in flight
+cf87bb30a78d,ABSENT,,,,bench scene without ball
+d091e5fc78da,ABSENT,,,,celebration without ball
+d0b27501afce,UNKNOWN,,,,ball not distinguishable
+d0df4605c11f,ABSENT,,,,coach closeup without ball
+d16ef963f9fa,VISIBLE,802,443,44,45,ball in traffic
+d24ac86aa7ba,VISIBLE,1154,148,34,35,ball near shooter
+d2b63abf1d49,ABSENT,,,,bench timeout without ball
+d2fb903cc025,ABSENT,,,,player closeup without ball
+d377d870327d,VISIBLE,1413,411,28,29,ball in flight

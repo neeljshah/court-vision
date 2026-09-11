@@ -1,0 +1,40 @@
+2f016c06f208,VISIBLE,1008,291,33,33,airborne pass
+2f04941c7a03,ABSENT,,,,bench closeup
+2f06e36c1ed1,ABSENT,,,,player closeup
+2f243ae981ad,VISIBLE,917,609,30,30,held by ballhandler
+2fa4df83ec62,VISIBLE,243,568,28,30,dribbling left wing
+2faa7ff03a5c,VISIBLE,689,352,31,32,held near baseline
+2fc1c0c397b9,VISIBLE,1203,660,31,31,loose near lane
+2fe64d28cb18,VISIBLE,787,218,31,30,above rim
+30154a7e3110,VISIBLE,1193,230,34,35,at rim
+30356bf13742,ABSENT,,,,ball out of view
+303ac8d28eeb,UNKNOWN,,,,frame too obscured
+311dcabd8fc0,ABSENT,,,,bench closeup
+3130cfa098e5,VISIBLE,754,798,29,29,dribbling
+313bff52e593,VISIBLE,499,405,29,29,midair pass
+320fdea13594,ABSENT,,,,player closeup
+32a9b704493f,ABSENT,,,,player closeup
+32d80de87a3b,VISIBLE,696,507,32,32,held near sideline
+33525f98eccf,ABSENT,,,,dead ball setup
+33b657bad2c0,UNKNOWN,,,,ball obscured by players
+3427c8976d82,ABSENT,,,,coach closeup
+3460c10d21ee,VISIBLE,1580,363,26,28,held near baseline
+34766854d990,ABSENT,,,,coach interview
+34a68e7844f3,VISIBLE,1552,485,30,31,held for inbound
+350458ba9fee,VISIBLE,1035,795,42,43,dribbling
+3522f413dafd,ABSENT,,,,crowd shot
+35d8cfec5e3d,ABSENT,,,,team huddle
+369640d8f3c1,ABSENT,,,,team huddle
+36b7d96fbb5b,ABSENT,,,,interview shot
+3706b27ac296,UNKNOWN,,,,ball obscured in paint
+37bec05d324a,VISIBLE,1201,188,29,31,near basket
+395923ab30bd,VISIBLE,483,621,31,31,held by ballhandler
+39adef9c8324,VISIBLE,293,661,29,31,dribbling sideline
+3a0a3add537a,VISIBLE,1633,741,33,34,dribbling right side
+3a1086cbf894,VISIBLE,85,511,30,32,held for shot
+3a1eac61e1a9,VISIBLE,919,700,36,36,bouncing in lane
+3a43247ea755,VISIBLE,1000,556,34,35,held in paint
+3b2627eeaeb9,ABSENT,,,,postgame interview
+3be793e57b63,VISIBLE,927,282,34,35,free throw flight
+3cd9af01508e,ABSENT,,,,bench closeup
+3d11e940c721,VISIBLE,651,228,35,37,shot in flight

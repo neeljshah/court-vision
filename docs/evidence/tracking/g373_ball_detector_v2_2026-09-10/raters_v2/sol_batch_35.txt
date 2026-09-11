@@ -1,0 +1,40 @@
+3864d1ca30de,ABSENT,,,,,pregame player introductions
+3896f57a5bd1,UNKNOWN,,,,,ball obscured near basket
+38c098db1bc3,ABSENT,,,,,bench closeup
+394f46686bc9,VISIBLE,1765,474,28,33,ball under right hand
+39b13d9316e0,VISIBLE,879,317,34,34,ball held overhead
+39c210c1f166,VISIBLE,420,532,27,34,ball bouncing near baseline
+3a31d8836b19,UNKNOWN,,,,,ball not discernible in play
+3aaaf6bfdbfb,ABSENT,,,,,player closeup
+3ae0fff0a317,VISIBLE,1382,331,28,27,ball in airborne pass
+3af5576f26bd,VISIBLE,1163,619,38,39,ball loose in paint
+3b21a9c341ad,ABSENT,,,,,coach closeup
+3b6b6d1f9ef9,VISIBLE,471,737,34,40,ball held by guard
+3ba99903fb7c,VISIBLE,503,691,33,34,ball on low dribble
+3c5a0b1d8453,ABSENT,,,,,player closeup
+3c5e603d0fe9,ABSENT,,,,,bench celebration
+3c8c0a448383,VISIBLE,550,535,24,30,ball beside inbounder
+3d4891ca3f32,VISIBLE,738,489,102,67,motion blurred pass
+3d5318d0d17c,VISIBLE,1573,479,85,106,ball held near chest
+3e620388667c,VISIBLE,487,608,31,28,ball on low dribble
+3e6c6f7d3eaa,ABSENT,,,,,full screen bracket graphic
+3eb2c9bd0862,VISIBLE,1606,456,49,48,ball held on right wing
+3eee052b569c,VISIBLE,268,522,32,32,ball held at baseline
+3effc13f2142,VISIBLE,925,626,31,31,ball on low dribble
+3fd76abf74a5,VISIBLE,1685,607,39,41,ball on right hand dribble
+3ff2c2140c26,ABSENT,,,,,player closeup
+402913e44b21,VISIBLE,829,318,181,184,ball held while running
+4056ca6a554c,ABSENT,,,,,arena flag display
+405f6ff09dd4,ABSENT,,,,,player closeup
+408efc38c7d5,ABSENT,,,,,no ball visible after score
+40b58bc1baea,UNKNOWN,,,,,ball obscured by ballhandler
+40d21f159f27,VISIBLE,1610,549,45,45,ball held on right wing
+4113b53db476,ABSENT,,,,,crowd celebration
+4176dd6ad3b7,ABSENT,,,,,postgame interview
+41885d9338ca,ABSENT,,,,,officials during stoppage
+41b459271db8,VISIBLE,1405,564,28,29,ball held by guard
+41c64faa79ad,ABSENT,,,,,player closeup
+41db742b731c,VISIBLE,713,505,38,36,ball held above shoulder
+424211bdf26a,VISIBLE,1171,238,30,31,ball above rim
+427befa9c754,ABSENT,,,,,player closeup
+428a37d10f3e,ABSENT,,,,,pregame player introductions

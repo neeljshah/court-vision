@@ -1,0 +1,40 @@
+1b60205b44f2,UNKNOWN,,,,,ball obscured in paint
+1bd46fb15470,VISIBLE,1104,245,31,29,ball above rim
+1bda1144f13c,VISIBLE,481,519,46,45,ball held at hip
+1c2fb1bc8629,VISIBLE,1140,93,35,34,ball above backboard
+1c53069b32d7,ABSENT,,,,,player introduction shot
+1c8b42e646cb,VISIBLE,365,351,42,39,ball held on wing
+1cfcbb1e9d8f,UNKNOWN,,,,,ball hidden by dribbler
+1db0b68cc5e5,ABSENT,,,,,bench closeup
+1e2a891efe60,UNKNOWN,,,,,ball obscured at baseline
+1e330a843b83,ABSENT,,,,,official closeup
+1e37dbc9ff10,UNKNOWN,,,,,ball not discernible in action
+1e63d1a8e8dd,UNKNOWN,,,,,ball obscured under basket
+1fafec2c9852,VISIBLE,403,290,33,31,ball held by official
+1ff7ac29819c,ABSENT,,,,,player closeup
+20c7cbb969b6,VISIBLE,251,627,48,44,ball controlled near sideline
+20ea26903294,VISIBLE,979,385,36,37,ball in flight
+210193738364,ABSENT,,,,,pre game ceremony
+211fa10e2341,VISIBLE,1691,547,54,47,ball held at sideline
+212958716770,VISIBLE,973,384,39,37,ball in flight
+2151cd3a6bba,ABSENT,,,,,player closeup
+2196e69d0c91,VISIBLE,1146,579,52,48,ball at players hands
+22189c790cbe,ABSENT,,,,,player confrontation closeup
+223e2f513ec4,ABSENT,,,,,crowd closeup
+22ad77b6ab07,ABSENT,,,,,crowd closeup
+22c28f55c3ef,ABSENT,,,,,player closeup
+22e98406f7f0,VISIBLE,430,344,43,40,ball in pass
+22f94007fe87,ABSENT,,,,,pre game ceremony
+22fde2ad8dae,ABSENT,,,,,coach interview
+230132ff8c12,ABSENT,,,,,crowd closeup
+2309e67fdc71,VISIBLE,717,343,40,39,ball in pass
+242719c5fbdd,VISIBLE,627,660,37,39,ball dribbling
+26c23880e4b8,ABSENT,,,,,player huddle closeup
+26c27cbb31f8,UNKNOWN,,,,,ball not discernible in play
+26e4e8a6a82a,ABSENT,,,,,schedule graphic
+272146cdabd8,ABSENT,,,,,bench closeup
+275d6449cc1f,ABSENT,,,,,team bench shot
+284ddc4f03ad,VISIBLE,689,520,43,40,ball held by official
+2907518c14b1,UNKNOWN,,,,,ball obscured by players
+290c6cea3654,VISIBLE,302,346,46,43,ball held near sideline
+290f7b67972e,VISIBLE,386,635,49,48,ball held by player

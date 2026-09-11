@@ -1,0 +1,40 @@
+c33c8426f848,ABSENT,,,,,crowd band shot
+c370975d7d0f,ABSENT,,,,,player closeup
+c504b83daeba,VISIBLE,763,297,45,41,ball airborne near baseline
+c53712c3ac6c,ABSENT,,,,,coach interview shot
+c576ee9e3a29,ABSENT,,,,,crowd celebration shot
+c5a93ad76402,ABSENT,,,,,ball outside visible frame
+c5c35b92fd2d,VISIBLE,979,301,58,46,ball held for pass
+c5f71722e4b6,ABSENT,,,,,postgame interview shot
+c63ea555a8e4,ABSENT,,,,,player closeup
+c651943b59dd,VISIBLE,1672,319,25,28,ball held at right side
+c65239bf86fb,VISIBLE,540,481,29,26,ball held on left wing
+c65af6218d9d,ABSENT,,,,,timeout huddle
+c68e36cf6e17,VISIBLE,773,583,45,39,ball loose near baseline
+c699076e0fb5,VISIBLE,1114,608,62,63,ball secured at hip
+c6b1b8c35c70,VISIBLE,1318,628,83,89,ball on low dribble
+c6f3e658d15d,VISIBLE,605,535,40,35,ball held in paint
+c70d5872450e,VISIBLE,379,410,26,27,ball held on left wing
+c822ee49f2fb,VISIBLE,1192,206,37,31,ball above front rim
+c8584a3adc7a,VISIBLE,356,668,30,38,ball on left hand dribble
+c8585e20f673,ABSENT,,,,,player closeup
+c899ecc1d38c,ABSENT,,,,,postgame player closeup
+c8b7a671965c,ABSENT,,,,,players gathered closeup
+c9eb4df95680,ABSENT,,,,,player interview shot
+ca783f13da91,ABSENT,,,,,cheerleader crowd shot
+caaf10a7dd5b,VISIBLE,1033,360,27,28,ball held near sideline
+cac19bad1c9d,VISIBLE,605,586,32,34,free throw shooter holding ball
+cac895e73ca5,VISIBLE,1248,770,56,52,ball controlled on dribble
+cb10f94b2e67,VISIBLE,1125,785,43,47,ball held near lane
+cb9e43cfe826,ABSENT,,,,,player celebration closeup
+cba96941045f,VISIBLE,821,246,39,36,ball at the rim
+cbcac3d74a86,VISIBLE,1000,494,38,39,ball held in traffic
+cc20458c6f06,VISIBLE,1204,452,34,34,ball held near baseline
+cd44868f53a2,VISIBLE,751,399,35,31,ball held under pressure
+cd8fe23cddfb,ABSENT,,,,,players closeup
+cde14e856cbf,VISIBLE,816,370,39,39,ball airborne in transition
+ceadd38ef025,VISIBLE,1331,223,57,56,ball gathered overhead
+ceb578923915,VISIBLE,867,507,84,75,blurred ball airborne
+cee1530bf919,UNKNOWN,,,,,possible ball obscured on dribble
+cee4d81605ae,VISIBLE,878,627,32,34,ball on advancing dribble
+cefcfd5d8442,ABSENT,,,,,crowd graphic shot

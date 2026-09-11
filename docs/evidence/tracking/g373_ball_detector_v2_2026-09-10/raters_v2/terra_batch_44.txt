@@ -1,0 +1,41 @@
+
+adbb4cc1d4ac,VISIBLE,912,97,31,31,ball above lane
+ae193f07928e,ABSENT,,,,,bench shot no ball
+ae6b41a8ad9c,VISIBLE,1128,694,34,37,ball held low
+ae8a0b344a9b,ABSENT,,,,,players resetting no ball
+aeab4d616fbe,VISIBLE,570,650,34,34,ball held by guard
+aeb0302bb27c,ABSENT,,,,,ball not in frame
+aef7882af797,VISIBLE,520,449,39,38,ball held near basket
+af0f7479d417,ABSENT,,,,,sideline shot no ball
+afb270af4edc,VISIBLE,20,253,53,49,ball near baseline
+afc6f3608db5,ABSENT,,,,,player closeup no ball
+b03e2fa047ac,ABSENT,,,,,player closeup no ball
+b0448ca4b3a7,ABSENT,,,,,player closeup no ball
+b04ae09d9c5a,ABSENT,,,,,player closeup no ball
+b0dfa7dc180e,ABSENT,,,,,dead ball view
+b0f8a764a675,VISIBLE,500,430,29,29,ball in dribble
+b0fc8edc219a,VISIBLE,1009,341,35,39,ball at rim
+b10018a9cfc7,UNKNOWN,,,,,ball obscured by players
+b101723974b6,ABSENT,,,,,player closeup no ball
+b1134b4190dc,VISIBLE,1334,514,27,26,ball in player hand
+b1314e59adb7,VISIBLE,862,41,141,137,close ball at backboard
+b1826846fffe,ABSENT,,,,,ball not in frame
+b1cb6633fc48,VISIBLE,1236,420,51,50,ball dribbled
+b1e502781eab,VISIBLE,546,275,57,51,ball in air
+b21b286038c3,VISIBLE,1170,509,28,29,ball held by guard
+b253295ef0df,ABSENT,,,,,sideline no game ball
+b264120ace7c,ABSENT,,,,,intro shot no ball
+b2ac3849b75b,ABSENT,,,,,bench shot no ball
+b2e56d383f65,VISIBLE,864,527,39,35,ball at free throw
+b31ceb408e4f,VISIBLE,1286,611,45,45,ball in pass
+b38257564a4f,ABSENT,,,,,bench shot no ball
+b39e31151eec,ABSENT,,,,,player closeup no ball
+b3a34cbc4105,ABSENT,,,,,full screen graphic
+b3a6a3d78032,VISIBLE,1424,718,31,32,ball held by wing
+b3b02cc6ab15,ABSENT,,,,,bench shot no ball
+b41047866cf6,ABSENT,,,,,postgame interview no ball
+b425a5cbfc22,UNKNOWN,,,,,ball obscured near rim
+b42bbacf639f,VISIBLE,1264,245,28,31,ball at basket
+b4332d855485,ABSENT,,,,,player huddle no ball
+b4dea24a7ecc,VISIBLE,1105,592,54,57,ball in pass
+b4fa72940097,VISIBLE,1336,499,26,31,ball at baseline

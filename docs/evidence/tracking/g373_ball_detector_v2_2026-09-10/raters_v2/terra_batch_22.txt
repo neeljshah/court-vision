@@ -1,0 +1,40 @@
+f1f13c7f22ed,VISIBLE,1233,215,31,31,ball above rim
+f22176d4659e,ABSENT,,,,,no ball visible
+f2d1b5c0bd14,ABSENT,,,,,crowd shot
+f339d0f0f44d,ABSENT,,,,,period ended
+f3b924adc1a6,VISIBLE,733,438,31,30,ball being dribbled
+f43576229b16,UNKNOWN,,,,,ball obscured by players
+f442c7b355e0,VISIBLE,430,563,35,34,ball held by handler
+f46373fc2ad2,ABSENT,,,,,close player shot
+f4745b065625,VISIBLE,1550,346,57,54,ball held for inbound
+f6c38194abd9,UNKNOWN,,,,,distant object unclear
+f77c3f33f4d7,ABSENT,,,,,close player shot
+f7a84e2f89d6,VISIBLE,1037,607,47,45,ball held overhead
+f7d5f65f5257,VISIBLE,854,239,255,270,close ball in hands
+f7f4a82ba9cb,ABSENT,,,,,no ball visible
+f848c4f039c2,VISIBLE,1139,107,147,136,ball held by player
+f8603da6a2db,ABSENT,,,,,close player shot
+f88f6bc56152,VISIBLE,580,571,42,40,ball held near baseline
+f8df04ea06fa,ABSENT,,,,,no ball visible
+f93e941cb10f,VISIBLE,1160,448,83,78,ball held by player
+f9932656ee59,ABSENT,,,,,bench shot
+f9d71135e624,VISIBLE,371,808,26,27,ball on dribble
+fa1b699643c0,UNKNOWN,,,,,ball not clear at border
+face585feda8,VISIBLE,523,671,34,33,ball held near sideline
+fb1b5db3afd2,ABSENT,,,,,no ball visible
+fb255f6b5089,VISIBLE,597,508,62,59,ball in dribbler hand
+fb4f91766c8e,ABSENT,,,,,close player shot
+fbae0d0d4b51,VISIBLE,1179,47,62,60,ball held overhead
+fbda48df8ff7,VISIBLE,751,343,31,31,ball held near wing
+fc7d49e94fc2,ABSENT,,,,,bench shot
+fd56bbf0af4a,ABSENT,,,,,close player shot
+fd74ef3ff877,VISIBLE,1238,321,35,34,ball held by player
+fd9b7a4304f7,VISIBLE,1100,474,30,30,ball in passing lane
+fdb7c19c0bae,ABSENT,,,,,no ball visible
+fdc404d87dff,VISIBLE,571,257,34,33,ball held on wing
+fe43ac29fa44,ABSENT,,,,,close player shot
+fe52609d79e5,ABSENT,,,,,close player shot
+fe542224de89,ABSENT,,,,,no ball visible
+fe5fa5337cc3,VISIBLE,1324,453,36,36,ball held in backcourt
+ff3827e714e6,ABSENT,,,,,bench shot
+ff3ba7406d07,ABSENT,,,,,postgame close shot

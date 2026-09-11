@@ -1,0 +1,40 @@
+f1f13c7f22ed,VISIBLE,1230,210,37,38,airborne above rim
+f22176d4659e,ABSENT,,,,,no ball in player closeup
+f2d1b5c0bd14,ABSENT,,,,,no ball in crowd shot
+f339d0f0f44d,ABSENT,,,,,no active game ball visible
+f3b924adc1a6,VISIBLE,729,436,35,33,dribble at center court
+f43576229b16,UNKNOWN,,,,,ball obscured by players
+f442c7b355e0,UNKNOWN,,,,,ball obscured near handler
+f46373fc2ad2,ABSENT,,,,,no ball in player closeup
+f4745b065625,VISIBLE,1537,334,63,70,held at right baseline
+f6c38194abd9,VISIBLE,1297,227,28,27,dropping near rim
+f77c3f33f4d7,ABSENT,,,,,no ball in player closeup
+f7a84e2f89d6,VISIBLE,1040,601,47,38,held overhead
+f7d5f65f5257,VISIBLE,806,126,407,505,motion blurred closeup ball
+f7f4a82ba9cb,ABSENT,,,,,no ball in sideline view
+f848c4f039c2,VISIBLE,1124,76,127,147,held at upper center
+f8603da6a2db,ABSENT,,,,,no ball in player closeup
+f88f6bc56152,VISIBLE,594,565,57,56,held at left baseline
+f8df04ea06fa,ABSENT,,,,,no ball in player closeup
+f93e941cb10f,VISIBLE,1161,449,70,70,held at right wing
+f9932656ee59,ABSENT,,,,,no ball in bench shot
+f9d71135e624,VISIBLE,368,805,34,42,bouncing near sideline
+fa1b699643c0,UNKNOWN,,,,,ball obscured after basket
+face585feda8,VISIBLE,522,674,31,29,held by inbounder
+fb1b5db3afd2,UNKNOWN,,,,,ball hidden at sideline
+fb255f6b5089,VISIBLE,607,511,57,58,held by ballhandler
+fb4f91766c8e,ABSENT,,,,,no ball in player closeup
+fbae0d0d4b51,VISIBLE,1152,43,64,70,airborne above shooter
+fbda48df8ff7,VISIBLE,836,316,29,29,held near left elbow
+fc7d49e94fc2,ABSENT,,,,,no ball in bench shot
+fd56bbf0af4a,ABSENT,,,,,no ball in player closeup
+fd74ef3ff877,UNKNOWN,,,,,ball obscured near handler
+fd9b7a4304f7,VISIBLE,1101,478,40,31,pass across lane
+fdb7c19c0bae,UNKNOWN,,,,,ball obscured under basket
+fdc404d87dff,UNKNOWN,,,,,ball obscured at left wing
+fe43ac29fa44,ABSENT,,,,,no ball in player closeup
+fe52609d79e5,ABSENT,,,,,no ball in player closeup
+fe542224de89,UNKNOWN,,,,,ball hidden during transition
+fe5fa5337cc3,VISIBLE,1322,450,42,43,held at right side
+ff3827e714e6,ABSENT,,,,,no ball in player closeup
+ff3ba7406d07,ABSENT,,,,,no ball in interview shot

@@ -1,0 +1,40 @@
+3effc13f2142,VISIBLE,925,631,34,34,ball by dribbler
+3fd76abf74a5,VISIBLE,1672,613,42,42,ball at dribbler
+3ff2c2140c26,ABSENT,,,,,player closeup
+402913e44b21,VISIBLE,872,354,154,154,ball held close
+4056ca6a554c,ABSENT,,,,,arena screen view
+405f6ff09dd4,ABSENT,,,,,player closeup
+408efc38c7d5,VISIBLE,1534,465,24,24,ball near passer
+40b58bc1baea,UNKNOWN,,,,,ball obscured by player
+40d21f159f27,VISIBLE,1608,542,36,36,ball at shooter
+4113b53db476,ABSENT,,,,,crowd celebration
+4176dd6ad3b7,ABSENT,,,,,postgame interview
+41885d9338ca,ABSENT,,,,,sideline staff
+41b459271db8,VISIBLE,1377,566,31,31,ball at dribbler
+41c64faa79ad,ABSENT,,,,,player closeup
+41db742b731c,VISIBLE,718,505,30,30,ball at ballhandler
+424211bdf26a,VISIBLE,1221,432,27,27,ball by rim
+427befa9c754,ABSENT,,,,,player closeup
+428a37d10f3e,ABSENT,,,,,pregame lineup
+42a2541be991,ABSENT,,,,,bench closeup
+43496eca6554,VISIBLE,824,382,38,38,ball held in lane
+436f86d45e20,UNKNOWN,,,,,ball above frame
+43838ce60bcd,ABSENT,,,,,team huddle
+441473eea620,ABSENT,,,,,sideline closeup
+4433c39d5da9,VISIBLE,747,175,87,87,ball held overhead
+445e5f195edf,ABSENT,,,,,bench view
+4473aedf8e96,VISIBLE,567,616,31,31,ball at dribbler
+44bf0619ae02,UNKNOWN,,,,,graphic blocks court
+44c5afc97e5b,VISIBLE,531,378,30,30,ball at ballhandler
+453686d20144,VISIBLE,400,596,35,35,ball held on wing
+45ffd4dd7b7f,UNKNOWN,,,,,ball not visible near hoop
+4611c69c32f6,UNKNOWN,,,,,ball obscured in play
+46502ecc1535,VISIBLE,1415,680,78,78,ball at dribbler
+46dde8e433b5,VISIBLE,343,426,34,34,ball inbounding
+4744fa755565,UNKNOWN,,,,,ball partly off frame
+47a78af1a77e,VISIBLE,889,487,34,34,ball held in lane
+47a7d4a4ad1d,ABSENT,,,,,crowd shot
+47ae619aa0c3,ABSENT,,,,,player closeup
+4842b3130b2b,VISIBLE,294,362,32,32,ball at dribbler
+485e4097b582,ABSENT,,,,,player closeup
+48677dce980b,ABSENT,,,,,bench closeup

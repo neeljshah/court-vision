@@ -1,0 +1,40 @@
+dda11891cd04,ABSENT,,,,,empty hoop view
+ddf0fb13aca0,VISIBLE,884,341,23,23,dribbling beside player
+de6c72f8a758,VISIBLE,1365,426,42,45,held at sideline
+de8f6c3ca68a,ABSENT,,,,,timeout huddle
+dec72afbbafe,ABSENT,,,,,player closeup
+dee93ac0d3ca,VISIBLE,1016,620,42,37,rebound in traffic
+def4b74088e9,VISIBLE,395,388,26,25,held before shot
+defe3c0d1e5b,VISIBLE,1282,688,29,28,free throw bounce
+dfe5c5f3a10a,ABSENT,,,,,player closeup
+e039ae267e70,VISIBLE,1149,496,33,28,ball by baseline
+e0b7002a2d9e,VISIBLE,871,681,28,28,dribbling in lane
+e102e7fbb883,ABSENT,,,,,postgame interview
+e11e7a1ddfe7,ABSENT,,,,,full screen graphic
+e144d0710098,UNKNOWN,,,,,background ball unclear
+e156d800c440,VISIBLE,834,416,25,25,held in paint
+e1f1ab7f928f,VISIBLE,1015,80,22,22,shot in flight
+e1ffcf35aa43,VISIBLE,1214,420,29,31,held under basket
+e216c414f1c4,VISIBLE,1255,323,24,25,carried in transition
+e225e1049d6a,VISIBLE,832,392,26,27,rebound in traffic
+e2758462fda6,VISIBLE,1568,505,27,28,held in paint
+e2d26eda8a6a,ABSENT,,,,,coach closeup
+e324bc5f0d6c,UNKNOWN,,,,,ball obscured at free throw
+e36ad0f41058,ABSENT,,,,,band closeup
+e37e781e4500,VISIBLE,356,474,27,28,dribbling on wing
+e3ae0f5c4408,ABSENT,,,,,schedule graphic
+e3f8f96a0d79,ABSENT,,,,,dead ball scene
+e40728622afc,VISIBLE,443,435,29,29,inbounder holds ball
+e414c921e933,VISIBLE,595,642,28,29,guard holding ball
+e463c48202f2,VISIBLE,1506,425,27,27,ball in transition
+e4d79aadcddc,VISIBLE,1695,678,34,34,low dribble
+e54779db1e96,VISIBLE,895,486,35,35,free throw held
+e5883851f448,ABSENT,,,,,coach closeup
+e5bd3c488188,VISIBLE,674,648,31,31,low dribble
+e5c7cb72f83f,ABSENT,,,,,full screen graphic
+e5f28e676ccb,UNKNOWN,,,,,ball not discernible
+e68262a433ba,VISIBLE,1527,451,35,37,held on wing
+e74a40a01841,VISIBLE,655,456,56,58,large moving ball
+e7911da1b253,ABSENT,,,,,full screen graphic
+e79d1d6072d3,VISIBLE,1397,229,22,23,shot in flight
+e848892b2b17,VISIBLE,1182,711,29,31,low dribble

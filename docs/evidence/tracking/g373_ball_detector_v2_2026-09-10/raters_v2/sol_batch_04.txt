@@ -1,0 +1,40 @@
+22bbc4ff9c7e,ABSENT,,,,,crowd closeup
+22fb1eb7d39c,ABSENT,,,,,player closeup
+237d19193aee,ABSENT,,,,,no ball visible
+237f9ae58891,ABSENT,,,,,full screen graphic
+23cbad5a1c2d,ABSENT,,,,,coach closeup
+23cbbd9e412d,ABSENT,,,,,player closeup
+23cca1abd53a,ABSENT,,,,,players after play
+24188290937e,ABSENT,,,,,postgame closeup
+2429eda8f896,ABSENT,,,,,stats graphic
+243411904abf,VISIBLE,1129,255,49,44,airborne ball
+24896f416885,ABSENT,,,,,no ball visible
+24fd0a97b8dd,VISIBLE,1058,360,65,45,motion blurred ball
+24ff204830b9,ABSENT,,,,,interview closeup
+25de3240f18a,VISIBLE,1061,393,44,31,dribbling ball
+263140f3bad0,ABSENT,,,,,player closeup
+2643efedef7d,ABSENT,,,,,player closeup
+26d7d47a599a,VISIBLE,930,270,80,78,ball held overhead
+26eb9cee0a07,VISIBLE,969,482,129,34,motion blurred pass
+27316d5c1509,ABSENT,,,,,full screen graphic
+2798587f7b5c,ABSENT,,,,,player closeup
+27dc4e42485e,VISIBLE,995,812,75,83,ball inside net
+283468ecf8c5,VISIBLE,1325,545,58,46,ball held at baseline
+28ac36198862,ABSENT,,,,,graphic ball only
+28c45077ccf4,ABSENT,,,,,no ball visible
+28f423d90721,ABSENT,,,,,player closeup
+28f92237d044,VISIBLE,389,640,38,33,ball held low
+2910362aaca2,VISIBLE,1606,448,34,26,dribbling ball
+29396a12ecc8,ABSENT,,,,,no ball visible
+296bcac99208,ABSENT,,,,,no ball visible
+299468af20c5,VISIBLE,1499,449,31,36,ball near raised hand
+29a5e8320a70,ABSENT,,,,,no ball visible
+2a9a710a92da,ABSENT,,,,,player closeup
+2bb500a83daf,VISIBLE,926,495,98,99,airborne red white ball
+2bbe984f4a74,VISIBLE,980,164,40,40,ball above shooter
+2c91e135e426,ABSENT,,,,,no ball visible
+2ce019929197,VISIBLE,1519,494,46,42,ball held on wing
+2d4b0c99d15d,ABSENT,,,,,player closeup
+2d61858c5420,VISIBLE,486,423,61,62,ball raised near rim
+2eb34d6a761b,ABSENT,,,,,player closeup
+2efda3987864,ABSENT,,,,,player closeup

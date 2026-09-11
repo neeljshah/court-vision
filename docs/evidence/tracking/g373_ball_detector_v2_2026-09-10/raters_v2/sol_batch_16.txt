@@ -1,0 +1,40 @@
+ab9d66958bec,VISIBLE,385,645,31,31,ball by dribbler left hand
+ac19abac83a3,VISIBLE,1217,430,35,34,ball in handler hand
+ac32eaa830f2,UNKNOWN,,,,,ball obscured in crowded baseline
+ac9f7eb7f2bf,UNKNOWN,,,,,ball not identifiable in contact
+aca604948190,VISIBLE,1332,203,36,46,ball airborne above lane
+ad95b6516712,ABSENT,,,,,no ball in closeup
+adfe897bd5b6,VISIBLE,758,743,42,36,ball bouncing at midcourt
+ae193f07928e,ABSENT,,,,,no ball near bench
+aeb0302bb27c,UNKNOWN,,,,,possible ball occluded by handler
+af03b9f50401,VISIBLE,819,382,37,50,ball cradled at player side
+af3d55f58e9e,VISIBLE,1042,694,42,37,ball moving beside handler
+af9749790c50,VISIBLE,1148,249,44,43,airborne free throw
+afc6f3608db5,ABSENT,,,,,no ball in closeup
+afe10082487b,VISIBLE,447,603,45,43,loose ball by baseline
+b03e2fa047ac,ABSENT,,,,,no ball in closeup
+b03e51a438c7,VISIBLE,419,570,35,37,ball held at hip
+b0448ca4b3a7,ABSENT,,,,,no ball in closeup
+b0807ec8ff4d,VISIBLE,359,237,33,27,ball held by handler
+b0dfa7dc180e,ABSENT,,,,,no ball in dead ball shot
+b101723974b6,ABSENT,,,,,no ball in player closeup
+b14aee495a83,VISIBLE,836,579,34,39,ball bouncing in paint
+b1501c3de99d,VISIBLE,941,47,56,58,airborne game ball
+b1826846fffe,VISIBLE,1114,333,32,31,ball held at chest
+b255be247dea,VISIBLE,858,421,28,31,ball raised between players
+b264cffd139a,ABSENT,,,,,referee holds dead ball
+b269053e49ec,ABSENT,,,,,referee holds dead ball
+b2ac3849b75b,ABSENT,,,,,no ball on bench
+b3395d884755,VISIBLE,664,507,39,39,loose ball near baseline
+b341fdd28569,VISIBLE,184,573,36,38,inbounder holds ball
+b3549eb2457d,VISIBLE,551,500,41,39,handler dribbles ball
+b38257564a4f,ABSENT,,,,,no ball in bench shot
+b3851928e652,VISIBLE,638,330,32,31,ball held near sideline
+b3a34cbc4105,ABSENT,,,,,rules graphic no game ball
+b3b02cc6ab15,ABSENT,,,,,no ball on bench
+b41047866cf6,ABSENT,,,,,interview has no ball
+b46d16a16c71,VISIBLE,1482,478,32,35,ball held near baseline
+b494d694673a,UNKNOWN,,,,,ball hidden in crowded lane
+b57d818efdfd,ABSENT,,,,,no ball in coach closeup
+b643cb7a398b,ABSENT,,,,,no ball in player closeup
+b6478b24d222,VISIBLE,614,339,44,43,ball held above shooter

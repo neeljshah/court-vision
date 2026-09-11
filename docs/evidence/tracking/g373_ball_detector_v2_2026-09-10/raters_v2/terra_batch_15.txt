@@ -1,0 +1,40 @@
+9c8891f0f6e4,VISIBLE,655,642,32,34,held near defender
+9c919fa1a141,ABSENT,,,,,player closeup
+9cdc084bdcf0,ABSENT,,,,,bench shot
+9d27b2b4a8d7,ABSENT,,,,,sideline shot
+9d795f66257b,UNKNOWN,,,,,motion blur obscures ball
+9de0a425b114,ABSENT,,,,,commentators shot
+9df5e693833b,VISIBLE,1117,984,205,96,ball partly covered by graphic
+9ec4658ae5da,VISIBLE,1005,133,41,42,ball above rim
+9f2f9691c5a9,ABSENT,,,,,player introduction
+a04e1a03423e,VISIBLE,705,269,36,37,ball near basket
+a0545d1e9dbb,VISIBLE,1024,592,35,34,ball on pass
+a0afa08b4d63,ABSENT,,,,,bench shot
+a12b95f43c96,ABSENT,,,,,crowd shot
+a1d483474a18,VISIBLE,578,345,30,32,dribbled ball
+a21fcdda9769,VISIBLE,675,747,40,46,held ball
+a2e2075549fe,VISIBLE,473,489,35,37,held for inbound
+a308bded2489,VISIBLE,894,615,30,36,dribbled ball
+a380236945e1,UNKNOWN,,,,,ball obscured by players
+a421f16c9230,VISIBLE,1467,627,20,25,ball in handler hand
+a45b83a13ce2,VISIBLE,990,573,14,12,ball on court
+a4602404e1fa,VISIBLE,1176,194,34,32,airborne ball
+a4866b0f1cb2,VISIBLE,1609,552,38,38,held ball
+a568b80a706e,VISIBLE,863,124,42,36,airborne ball
+a5959793412f,VISIBLE,1250,430,31,35,dribbled ball
+a5e3d23f6e54,VISIBLE,792,452,33,35,held ball
+a62bb168d5c0,UNKNOWN,,,,,ball obscured near hoop
+a682f2f0e1f4,VISIBLE,833,468,35,35,dribbled ball
+a68589ed3bb3,ABSENT,,,,,dead ball setup
+a6877f66c4b6,ABSENT,,,,,players awaiting play
+a6b88ce1c584,VISIBLE,262,564,37,36,held ball
+a7025315194d,VISIBLE,1397,432,28,39,dribbled ball
+a77de0779aba,VISIBLE,613,234,30,35,airborne ball
+a7a44c71744c,VISIBLE,790,626,31,38,referee holding ball
+a7e94a21efb9,ABSENT,,,,,celebration shot
+a886ebe8dcfb,VISIBLE,203,708,35,39,dribbled ball
+a8e70f46eeb3,ABSENT,,,,,arena wide shot
+a9b8c4b4cd72,VISIBLE,943,659,34,36,held in traffic
+a9e2b0ad8512,ABSENT,,,,,rim closeup
+aa7a1eaec87d,ABSENT,,,,,timeout huddle
+aac1ae558308,VISIBLE,860,573,31,34,held ball

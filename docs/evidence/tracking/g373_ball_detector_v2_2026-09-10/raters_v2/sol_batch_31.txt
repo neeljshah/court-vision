@@ -1,0 +1,40 @@
+00088f2f70b5,VISIBLE,888,559,41,40,shooter holding ball
+003818538c6d,VISIBLE,928,91,21,29,ball above backboard
+00670bf31703,VISIBLE,958,581,71,89,player dribbling ball
+008404a9932f,VISIBLE,543,319,40,38,player passing ball
+01301367dd61,ABSENT,,,,,lineup closeup no ball
+01604bfb8b26,VISIBLE,1473,472,29,26,ball in midair
+01d296160027,ABSENT,,,,,player closeup no ball
+0225e903ba57,VISIBLE,438,617,70,78,blurred dribble beside player
+025a7448186c,ABSENT,,,,,player closeup no ball
+02638c6dd88a,ABSENT,,,,,interview no ball
+0292b9f00e53,VISIBLE,626,634,82,98,blurred dribble beside player
+02b8f4143fa6,ABSENT,,,,,player closeup no ball
+0330d2250898,ABSENT,,,,,schedule graphic no live ball
+0331961bb5b7,UNKNOWN,,,,,ball obscured in live play
+036e0193d5a8,VISIBLE,753,541,29,28,ball at handlers hand
+039072cb2ff1,VISIBLE,579,99,25,25,ball above hoop
+03999f5df54b,VISIBLE,1195,190,39,44,ball beside rim
+03ee5d6d130b,VISIBLE,1059,360,32,31,ball airborne near lane
+045553dfb1de,UNKNOWN,,,,,ball obscured by players
+045ee6fe119e,ABSENT,,,,,player closeup no ball
+04b79af9c705,VISIBLE,1184,198,44,48,ball on rim
+04d4f5b039d4,VISIBLE,1097,526,44,45,referee holding ball
+04f4187da49b,ABSENT,,,,,post play closeup no ball
+05d828cb1ced,VISIBLE,657,594,36,40,shooter holding ball
+05efd0f88dfd,VISIBLE,1367,508,36,40,ball near baseline
+05f3012d95d4,ABSENT,,,,,bench closeup no ball
+05f6393f8459,ABSENT,,,,,free throw lineup no ball
+060beffd4317,VISIBLE,579,447,35,43,shooter releasing ball
+06c4cb648f74,UNKNOWN,,,,,ball not discernible overhead
+0736209ccc57,ABSENT,,,,,player closeup no ball
+0807dc952665,ABSENT,,,,,crowd shot no ball
+08abef457742,UNKNOWN,,,,,ball obscured at shooter
+091d2019f15a,VISIBLE,482,372,27,31,background player holding ball
+0926190f8ffb,ABSENT,,,,,interview no ball
+097e98e04c7f,ABSENT,,,,,team introduction no ball
+0a27d36f33c8,ABSENT,,,,,player closeup no ball
+0ab48a08b736,ABSENT,,,,,sideline timeout no ball
+0acc5cca56f9,VISIBLE,992,80,41,41,ball above hoop
+0b3c8204f6f1,VISIBLE,1047,247,33,30,ball beside advancing player
+0c356d7f0194,VISIBLE,427,646,36,43,ball bouncing on floor

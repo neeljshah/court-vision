@@ -1,0 +1,40 @@
+9a6738ee3102,ABSENT,,,,,player closeup no ball
+9a78785d4a14,ABSENT,,,,,player closeup no ball
+9b19924e3298,VISIBLE,799,652,32,38,held by shooter
+9b1cb353938d,VISIBLE,1105,634,55,41,held at free throw
+9b2fabdd9328,ABSENT,,,,,ball not visible
+9b8692e61d05,VISIBLE,379,621,35,35,dribbled at left
+9bebb82ff4ef,ABSENT,,,,,ball not visible
+9c69ce8fab38,VISIBLE,1192,512,44,40,held by referee
+9c9bb180c254,ABSENT,,,,,pregame lineup no ball
+9c9f5b47be6b,VISIBLE,1157,413,37,37,held by baseline player
+9cac0c322194,VISIBLE,1101,474,44,50,held by driving player
+9cfed5db6a87,VISIBLE,1337,151,42,43,ball above rim
+9dd07735ebb2,ABSENT,,,,,transition with no ball
+9dd920ed968a,VISIBLE,1111,413,13,15,referee holds ball
+9e619c8794e0,VISIBLE,1267,533,50,59,dribbled by white player
+9e940b53567f,ABSENT,,,,,player closeup no ball
+9f3e39ba1e78,VISIBLE,975,460,61,65,held at right hip
+9f6bc8235112,VISIBLE,619,405,72,75,held at chest
+9f8c16a01f3d,ABSENT,,,,,commentators no ball
+9f9e8a720827,ABSENT,,,,,action with no ball
+9fc7a394e3af,ABSENT,,,,,timeout closeup no ball
+9fead4c73374,ABSENT,,,,,under basket no ball
+a0234e81a4d3,ABSENT,,,,,player closeup no ball
+a10eb5b2664e,ABSENT,,,,,ball only in graphic
+a125eb8164e8,VISIBLE,1608,534,40,36,pass at right wing
+a2b05ea7a14d,ABSENT,,,,,players gathering no ball
+a2eaffd678d0,VISIBLE,166,516,32,37,dribbled at left
+a3019214448f,VISIBLE,1470,400,38,41,held at chest
+a3d4ec1931d9,VISIBLE,957,309,203,199,ball near camera
+a4c61c2815ca,ABSENT,,,,,ceremonial lineup no ball
+a4f7c1ec97fe,ABSENT,,,,,bench celebration no ball
+a501184c5ce1,VISIBLE,1109,153,50,51,held by lane player
+a5190ec4c92b,VISIBLE,1262,431,53,49,baseline inbounder holds ball
+a54d61eea72b,ABSENT,,,,,bench huddle no ball
+a572ec7277ec,ABSENT,,,,,ball not visible
+a5a065e9cf91,ABSENT,,,,,stopped play no ball
+a5a445b1cadd,VISIBLE,1681,444,37,38,held by right player
+a67b4b75a3a0,ABSENT,,,,,review closeup no ball
+a6be7a977149,VISIBLE,1104,646,26,33,bouncing near referee
+a6c102bbae53,ABSENT,,,,,player closeup no ball

@@ -1,0 +1,40 @@
+ed28f554ab70,ABSENT,,,,,no game ball visible
+ef826f16df2b,VISIBLE,1647,515,35,37,ball at dribblers hand
+efb29f910a9c,ABSENT,,,,,no game ball visible
+f031544fe2de,ABSENT,,,,,postgame interview shot
+f05683bc5d66,ABSENT,,,,,bench closeup without ball
+f0a88241b612,UNKNOWN,,,,,ball location too unclear
+f15eea082d90,UNKNOWN,,,,,motion blur obscures ball
+f1e97ab7c9ec,ABSENT,,,,,graphic trophy ball only
+f2a5561bc90c,ABSENT,,,,,player closeup without ball
+f2cd23e2f7e8,ABSENT,,,,,team entrance without ball
+f2f19e07e189,VISIBLE,1002,183,47,46,ball above raised hands
+f39e98b6c409,VISIBLE,991,493,25,31,ball beside driving player
+f45aa38f9fe6,VISIBLE,793,157,161,150,airborne ball closeup
+f4b8c2436cf9,VISIBLE,584,446,32,33,ball held near baseline
+f4e7ec7502c5,UNKNOWN,,,,,ball obscured in player cluster
+f6662f51ce33,VISIBLE,987,95,30,28,ball airborne above backboard
+f6a57a2f49a5,VISIBLE,924,320,23,23,ball carried in transition
+f6b7b482d319,VISIBLE,630,479,100,101,blurred ball in foreground
+f712f1fe0a07,VISIBLE,876,546,29,31,ball held in lane
+f73ab9fb5392,VISIBLE,812,115,43,41,airborne ball above basket
+f794bd5e5c3b,ABSENT,,,,,player closeup without ball
+f79866f6cbfc,ABSENT,,,,,postgame celebration without ball
+f7caaf20c7bc,VISIBLE,852,568,140,113,ball directly above rim
+f87b8ea1887d,VISIBLE,1347,415,28,28,ball held on right wing
+f8cc97332574,ABSENT,,,,,crowd closeup without ball
+f8eba18fcbc7,VISIBLE,1582,785,49,57,ball beside dribblers leg
+f8f985b5dbde,VISIBLE,1447,831,53,61,ball at drivers hip
+f958412f80f6,ABSENT,,,,,player closeup without ball
+f9c1fede1ee5,UNKNOWN,,,,,ball hidden among left players
+fa8442662e1b,ABSENT,,,,,timeout huddle without ball
+fa9045515642,ABSENT,,,,,player closeup without ball
+fae0913ddf13,ABSENT,,,,,team introductions without ball
+fb1c9981c68b,ABSENT,,,,,blurred player closeup without ball
+fb8993f79ed1,ABSENT,,,,,ball outside visible frame
+fbab927f6fb2,VISIBLE,617,388,45,48,ball above free throw shooter
+fbca26cc64e7,ABSENT,,,,,postgame interview without ball
+fc12e97c2520,ABSENT,,,,,only spare rack balls visible
+fc15514f48cb,ABSENT,,,,,interview shot without ball
+fc41f81dfdfc,VISIBLE,1365,365,29,29,ball passed on right wing
+fc5592b5ab59,ABSENT,,,,,bench reaction without ball

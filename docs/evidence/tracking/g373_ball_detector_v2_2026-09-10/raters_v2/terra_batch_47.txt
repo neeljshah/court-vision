@@ -1,0 +1,40 @@
+d3953152079b,ABSENT,,,,,postgame closeup
+d42bca014465,VISIBLE,1250,303,29,27,ball above shooter
+d43765e3deb5,VISIBLE,1292,408,29,29,ball held on right
+d473e3c985ae,VISIBLE,1213,558,174,210,large ball by rim
+d4e485dcc350,ABSENT,,,,,schedule graphic
+d5082752eaba,VISIBLE,1596,454,28,30,ball being dribbled
+d59480f9b498,VISIBLE,704,643,29,29,ball held by shooter
+d5c48014fb6e,VISIBLE,972,418,74,70,dribbling ball
+d60ce58369ad,VISIBLE,198,674,30,31,low dribble
+d637da23163a,VISIBLE,382,419,32,31,ball held inbound
+d6ec3e73602e,ABSENT,,,,,player closeup
+d6ef57e06dd5,ABSENT,,,,,player closeup
+d7260cedabd7,VISIBLE,1245,244,40,40,ball at rim
+d7f147df3f41,VISIBLE,596,517,35,35,ball in transition
+d835452d9bcd,ABSENT,,,,,player closeup
+d87488aba976,ABSENT,,,,,player closeup
+d8aa51bcedf5,ABSENT,,,,,ball not visible
+d8aab4532989,ABSENT,,,,,lineup introduction
+d8b71b236e3f,VISIBLE,1108,293,27,27,ball at rim
+d8f96cf1f23d,ABSENT,,,,,player closeup
+d935e975e0a8,ABSENT,,,,,ball not visible
+d9c866f3ffaf,ABSENT,,,,,player closeup
+d9cd21752699,VISIBLE,953,708,31,31,ball being dribbled
+d9ebadd3b764,ABSENT,,,,,bracket graphic
+da1357729761,ABSENT,,,,,stats graphic
+da152a192732,VISIBLE,761,281,51,51,ball held overhead
+da67841f4345,VISIBLE,1390,672,37,37,ball held baseline
+dabcfacaf453,ABSENT,,,,,postgame interview
+daf284041d97,ABSENT,,,,,player closeup
+db6c83f5327f,VISIBLE,1068,704,36,36,ball held under basket
+dbbc4dcf2732,VISIBLE,1039,816,75,75,ball held by player
+dc0528ec6cc2,ABSENT,,,,,player closeup
+dc0c28e9374e,UNKNOWN,,,,,ball occluded in play
+dceb30c775bd,VISIBLE,755,339,30,30,jump ball
+dd3611a2f969,VISIBLE,1039,428,185,185,large ball near rim
+ddd35c4fe52c,ABSENT,,,,,player closeup
+de0cc3cf57ce,UNKNOWN,,,,,ball not clear
+de15ef5263fc,ABSENT,,,,,player closeup
+df3624ba30d7,VISIBLE,303,574,30,30,low dribble
+dfc3aeaab31e,VISIBLE,463,450,31,31,ball held baseline

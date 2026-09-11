@@ -1,0 +1,40 @@
+17b7e5165d18,VISIBLE,142,282,42,39,held by left player
+17d6fcd7fb73,ABSENT,,,,,bench closeup
+1857d246757a,UNKNOWN,,,,,obscured at lower border
+18655fec2b19,ABSENT,,,,,player closeup
+189ad3ac6748,VISIBLE,708,713,34,34,held near lane
+18d717b95aad,VISIBLE,451,404,35,32,held by white player
+18f0cbe4d4c6,UNKNOWN,,,,,distant center action
+18f3d180b485,ABSENT,,,,,dead ball scene
+1964f056bc85,VISIBLE,707,475,34,32,dribble near baseline
+196f3c56062a,ABSENT,,,,,coach closeup
+19aa39df5c12,ABSENT,,,,,players walking
+1a1a5c6d446a,VISIBLE,875,146,26,25,held by black player
+1ac73a2dcdf1,ABSENT,,,,,team huddle
+1b52ab7e5d34,ABSENT,,,,,post score scene
+1b7184dbaa29,ABSENT,,,,,intro shot
+1b86f4d0f72a,VISIBLE,1430,619,36,34,dribble on right wing
+1bde52a9fa30,VISIBLE,812,45,59,68,airborne near hoop
+1bf643c2eec3,VISIBLE,720,254,34,31,held by driving player
+1d1cb6529078,VISIBLE,773,408,34,30,held on baseline
+1dbb98c89d42,VISIBLE,1069,267,37,39,airborne near basket
+1de680a0b818,VISIBLE,1254,420,30,31,held under basket
+1e020a4bdc89,VISIBLE,1702,497,31,31,airborne at sideline
+1ed950faa353,VISIBLE,286,177,48,56,airborne pass
+1eeefb37ee64,ABSENT,,,,,referee holds ball
+1ef290866cde,VISIBLE,885,128,43,43,airborne shot
+1f22a2a52847,ABSENT,,,,,player closeup
+1f6c55e79eb3,ABSENT,,,,,bench closeup
+2034fa57099c,ABSENT,,,,,injured player closeup
+2064dd5b1714,VISIBLE,998,597,34,34,held by white player
+20acbc1fcca1,ABSENT,,,,,player closeup
+20cbcbd30962,ABSENT,,,,,dead ball setup
+20e3d59773aa,VISIBLE,428,640,35,34,low dribble
+20ea1070cef4,VISIBLE,1178,405,36,34,dribble at midcourt
+2136a528a2d8,ABSENT,,,,,player closeup
+21397c7b3c55,VISIBLE,1028,366,44,43,airborne by hoop
+21ad836779ea,VISIBLE,730,418,32,33,held at baseline
+21af71171642,ABSENT,,,,,players waiting
+21d9b9c5350f,VISIBLE,468,540,43,46,held near baseline
+22548044b18e,VISIBLE,1326,100,42,46,airborne near backboard
+22965c4756ca,VISIBLE,1097,510,40,39,held under basket

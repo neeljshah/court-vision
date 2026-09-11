@@ -1,0 +1,40 @@
+716a47c0e6fa,VISIBLE,1023,404,42,37,airborne beside ballhandler
+727b74f3b8cc,ABSENT,,,,,player closeup no ball
+727f2ccde3f0,VISIBLE,622,393,48,50,dribble beside player
+72fdd09e64a8,UNKNOWN,,,,,obscured in player cluster
+73021c4609c1,VISIBLE,537,411,39,33,airborne pass
+736f1ffc3672,ABSENT,,,,,player closeup no ball
+73787809c7c4,VISIBLE,829,414,35,34,airborne near paint
+73be1766fb12,ABSENT,,,,,player closeup no ball
+73fb8330d1a0,VISIBLE,1618,447,44,46,ball in right hand
+743b7be3d8ee,VISIBLE,729,585,45,48,referee holding game ball
+746676d0fa6a,ABSENT,,,,,fall aftermath no ball
+74855cdd4b06,VISIBLE,1377,470,34,42,ball beside blue player
+748ad8b5bcfb,UNKNOWN,,,,,no identifiable game ball
+7499f207fded,VISIBLE,701,592,53,41,player carrying ball
+74dfea90b16a,ABSENT,,,,,player closeup no ball
+753192a7f127,VISIBLE,585,417,73,63,airborne pass
+754feaf6ed4e,VISIBLE,1341,640,58,55,ballhandler dribbling
+75772aaa460e,VISIBLE,982,534,72,74,player secures ball
+75ca38a47fa9,ABSENT,,,,,bench closeup no ball
+75fb3b83f334,ABSENT,,,,,player closeup no ball
+7723df499d48,ABSENT,,,,,only bench spare ball
+77718a5881e9,VISIBLE,703,587,43,41,dribble in left hand
+777d15e76433,VISIBLE,1307,360,61,55,player holds ball high
+779d823c6747,VISIBLE,1433,606,59,63,player cradles ball
+77f595ac7e96,UNKNOWN,,,,,ball may be occluded
+7801f246e907,VISIBLE,1115,611,59,61,free thrower holding ball
+7886f160304b,VISIBLE,365,461,48,48,dribble by baseline
+78c1ebe2dc5f,UNKNOWN,,,,,ball obscured in transition
+78f2f0e4d8b4,ABSENT,,,,,timeout huddle no ball
+790bc25fd8ae,VISIBLE,1137,202,76,79,ball above rim
+793ae9295581,UNKNOWN,,,,,courtside ball status unclear
+79c835795943,UNKNOWN,,,,,no identifiable game ball
+79d61366b098,ABSENT,,,,,bench closeup no ball
+79e19c5ef2c3,ABSENT,,,,,crowd closeup no ball
+79e5e79d2bdb,ABSENT,,,,,player closeup no ball
+7a02e9fed24a,VISIBLE,1167,463,48,47,ball at player waist
+7a5abbce1a33,ABSENT,,,,,pregame intro no ball
+7a77ec659be0,ABSENT,,,,,bench celebration no ball
+7affbbd72599,ABSENT,,,,,player closeup no ball
+7b1fefc43357,ABSENT,,,,,postgame closeup no ball

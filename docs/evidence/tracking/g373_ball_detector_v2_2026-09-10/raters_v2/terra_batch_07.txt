@@ -1,0 +1,40 @@
+488ece7f5ce8,ABSENT,,,,,arena exterior
+48a31ddd32d3,VISIBLE,1564,775,27,27,ball dribbling at right
+493100e98464,UNKNOWN,,,,,ball not discernible
+49759debf1d1,VISIBLE,363,433,29,29,ball held by guard
+4a4d42a5cf72,ABSENT,,,,,commentator shot
+4a66870b97d6,ABSENT,,,,,interview shot
+4a8130a3bbf8,VISIBLE,407,318,31,31,ball at rim
+4aa64724a263,VISIBLE,459,506,53,53,ball held for free throw
+4aacb40e95d7,ABSENT,,,,,dead ball close shot
+4b05e098a705,VISIBLE,803,588,35,35,ball held at line
+4b3e14a9ae73,ABSENT,,,,,player closeup
+4b5b66ab7b30,ABSENT,,,,,ball not in frame
+4b90d2fd363e,VISIBLE,1544,566,28,28,ball held by handler
+4b9307a32abd,UNKNOWN,,,,,ball obscured in traffic
+4bd2281bab76,ABSENT,,,,,coach interview
+4bfbd15059d0,VISIBLE,276,451,30,30,ball held at left
+4c04ef3b2fb8,UNKNOWN,,,,,ball not discernible
+4c40b3169cde,ABSENT,,,,,exterior scene
+4c56920ee793,VISIBLE,255,260,135,132,ball in foreground
+4c78585af542,UNKNOWN,,,,,ball not discernible
+4c7e2db6b666,VISIBLE,151,588,32,32,ball held by player
+4ce9feada8d7,UNKNOWN,,,,,ball obscured near basket
+4d0b01c58d65,VISIBLE,809,438,32,32,ball held for inbound
+4d3b973423aa,VISIBLE,1618,590,27,27,ball dribbling at right
+4d4cfea838a0,UNKNOWN,,,,,ball obscured in paint
+4d5ff17b43bd,VISIBLE,348,440,29,29,ball dribbling at left
+4df68823644f,ABSENT,,,,,bench timeout shot
+4f1ca53421db,VISIBLE,516,468,25,25,ball held by guard
+4f64a50ac3c1,VISIBLE,1499,521,31,31,ball held by referee
+4fecde40157e,VISIBLE,579,676,28,28,ball dribbling at left
+5034f7238719,ABSENT,,,,,postgame interview
+5042276960ab,UNKNOWN,,,,,ball not discernible
+50a956f66e3d,VISIBLE,1181,197,31,31,ball at basket
+50fc0905e9b8,UNKNOWN,,,,,ball obscured by players
+51036ebc10cf,VISIBLE,842,537,30,30,ball held by player
+512975438cfd,VISIBLE,1494,648,39,39,ball held by handler
+513d233d9a07,VISIBLE,1346,687,32,32,ball dribbling at right
+51e1d3096ee3,VISIBLE,1095,657,31,31,ball held by player
+5204240b18dd,ABSENT,,,,,coach closeup
+5232ad114239,VISIBLE,1606,367,41,41,ball held at sideline

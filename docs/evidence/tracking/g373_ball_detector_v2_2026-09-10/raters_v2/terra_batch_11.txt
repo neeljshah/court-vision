@@ -1,0 +1,40 @@
+716a47c0e6fa,VISIBLE,1025,402,30,31,dribbling at midcourt
+727b74f3b8cc,ABSENT,,,,,closeup without ball
+727f2ccde3f0,VISIBLE,509,389,58,50,player dribbling
+72fdd09e64a8,VISIBLE,775,421,28,31,held in paint
+73021c4609c1,VISIBLE,537,403,25,28,airborne pass
+736f1ffc3672,ABSENT,,,,,closeup without ball
+73787809c7c4,VISIBLE,1274,505,30,30,held near baseline
+73be1766fb12,ABSENT,,,,,closeup without ball
+73fb8330d1a0,VISIBLE,1619,457,33,34,player dribbling
+743b7be3d8ee,VISIBLE,753,590,31,32,official holding ball
+746676d0fa6a,ABSENT,,,,,ball out of frame
+74855cdd4b06,VISIBLE,1365,461,35,38,player dribbling
+748ad8b5bcfb,VISIBLE,1198,470,22,25,player dribbling
+7499f207fded,VISIBLE,723,585,30,31,player dribbling
+74dfea90b16a,ABSENT,,,,,closeup without ball
+753192a7f127,VISIBLE,595,438,56,51,player dribbling
+754feaf6ed4e,VISIBLE,1343,647,40,39,player dribbling
+75772aaa460e,VISIBLE,987,529,88,86,held at waist
+75ca38a47fa9,ABSENT,,,,,bench closeup
+75fb3b83f334,ABSENT,,,,,bench closeup
+7723df499d48,VISIBLE,922,142,44,43,free throw airborne
+77718a5881e9,VISIBLE,708,584,34,35,player dribbling
+777d15e76433,VISIBLE,1314,361,39,37,near basket
+779d823c6747,VISIBLE,1501,650,36,37,held at sideline
+77f595ac7e96,UNKNOWN,,,,,ball not clearly discernible
+7801f246e907,VISIBLE,1125,602,36,36,free throw held
+7886f160304b,VISIBLE,369,464,37,38,player dribbling
+78c1ebe2dc5f,VISIBLE,506,404,27,29,player dribbling
+78f2f0e4d8b4,ABSENT,,,,,timeout huddle
+790bc25fd8ae,VISIBLE,1155,207,57,73,ball by backboard
+793ae9295581,VISIBLE,1407,397,31,34,held near baseline
+79c835795943,VISIBLE,1424,435,29,31,held for shot
+79d61366b098,ABSENT,,,,,bench closeup
+79e19c5ef2c3,ABSENT,,,,,highlight closeup
+79e5e79d2bdb,ABSENT,,,,,closeup without ball
+7a02e9fed24a,VISIBLE,1185,469,27,29,held in paint
+7a5abbce1a33,ABSENT,,,,,pregame introduction
+7a77ec659be0,VISIBLE,1726,745,33,30,ball on court
+7affbbd72599,ABSENT,,,,,closeup without ball
+7b1fefc43357,ABSENT,,,,,postgame closeup

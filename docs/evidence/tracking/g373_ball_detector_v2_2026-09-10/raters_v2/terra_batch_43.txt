@@ -1,0 +1,40 @@
+a0234e81a4d3,ABSENT,,,,,close player shot
+a10eb5b2664e,ABSENT,,,,,schedule graphic
+a125eb8164e8,VISIBLE,1611,568,32,33,held at right wing
+a2b05ea7a14d,ABSENT,,,,,player huddle
+a2eaffd678d0,VISIBLE,162,516,30,31,dribbled left side
+a3019214448f,VISIBLE,1475,390,38,38,held by official
+a3d4ec1931d9,VISIBLE,1003,309,207,207,ball near camera
+a4c61c2815ca,ABSENT,,,,,anthem lineup
+a4f7c1ec97fe,ABSENT,,,,,bench shot
+a501184c5ce1,VISIBLE,1125,180,40,40,held by player
+a5190ec4c92b,VISIBLE,1283,452,43,43,held on baseline
+a54d61eea72b,ABSENT,,,,,bench shot
+a572ec7277ec,VISIBLE,438,575,31,31,dribbled in backcourt
+a5a065e9cf91,UNKNOWN,,,,,ball not discernible
+a5a445b1cadd,VISIBLE,1652,456,35,36,held near sideline
+a67b4b75a3a0,ABSENT,,,,,close player shot
+a6be7a977149,VISIBLE,1101,650,28,28,bouncing at midcourt
+a6c102bbae53,ABSENT,,,,,close player shot
+a762f80d6872,VISIBLE,844,578,32,32,held by James
+a763682be4cb,VISIBLE,438,575,31,31,dribbled in transition
+a7e1b5ad1684,VISIBLE,1304,621,31,31,bouncing in lane
+a7f31b00c9b3,UNKNOWN,,,,,ball occluded by players
+a8977cdfc822,ABSENT,,,,,free throw setup
+a8d89721baf9,ABSENT,,,,,close player shot
+aa7570510b13,ABSENT,,,,,player introductions
+aa7d6fcc7b2b,ABSENT,,,,,crowd shot
+aaa352df152f,ABSENT,,,,,anthem lineup
+aaa9790de898,UNKNOWN,,,,,ball not discernible
+ab0e4f6ada8c,UNKNOWN,,,,,ball obscured in action
+ab3a6c3c5a4a,VISIBLE,1752,500,37,38,held for inbound
+ab8c9f666a0d,VISIBLE,967,592,34,34,bouncing in transition
+ab9bb337ea14,VISIBLE,990,465,35,35,held for jump shot
+abe9e4beeee9,ABSENT,,,,,close player shot
+abec4348aee8,VISIBLE,538,440,42,42,dribbled in lane
+ac32eaa830f2,UNKNOWN,,,,,ball out of view
+ac4cb2e4b2b3,VISIBLE,1139,604,46,46,held by official
+ac52b0e71b8d,VISIBLE,989,464,35,35,held for jump shot
+ad151e200d88,ABSENT,,,,,coach close shot
+ad34786c6902,UNKNOWN,,,,,ball not discernible
+ad95b6516712,ABSENT,,,,,bench lineup

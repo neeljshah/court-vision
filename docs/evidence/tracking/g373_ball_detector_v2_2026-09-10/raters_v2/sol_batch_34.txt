@@ -1,0 +1,40 @@
+29b9cba3a83e,UNKNOWN,,,,,ball obscured during inbound
+29ccca429264,ABSENT,,,,,postgame interview
+2b468df5ce6c,ABSENT,,,,,player introductions
+2b6e49e2f950,VISIBLE,1583,541,46,62,held on drive
+2b8b1770bc1d,VISIBLE,605,388,41,42,held near shoulder
+2bc7de97f2df,ABSENT,,,,,graphic only
+2bd9356baea4,VISIBLE,1296,400,29,29,held by ballhandler
+2bf155503c1a,VISIBLE,608,407,38,32,held under basket
+2c33de198f97,ABSENT,,,,,player closeup
+2cd5dcb7179b,VISIBLE,374,432,33,34,held on perimeter
+2dcc6abe144f,UNKNOWN,,,,,motion blur obscures ball
+2e0b72280994,UNKNOWN,,,,,blurred live play
+2ea774f6f555,VISIBLE,521,725,31,33,dribbled by ballhandler
+2ef4bdd29f00,VISIBLE,870,539,39,31,held in transition
+2f24e5cd62fa,UNKNOWN,,,,,ball hidden by score graphic
+30dda507fcc2,VISIBLE,785,458,68,66,held at waist
+315d330ad2e8,ABSENT,,,,,player closeup
+3165e55916ce,VISIBLE,930,668,51,85,motion blurred dribble
+317d256f149e,ABSENT,,,,,bench reaction
+31a9cdbd790d,VISIBLE,1457,414,30,31,dribbled upcourt
+31cff4ab4524,VISIBLE,649,452,187,189,held by referee
+3254de6fde50,VISIBLE,553,600,39,34,held during stoppage
+3278c817c181,ABSENT,,,,,players gesturing
+334a7a34aa92,VISIBLE,388,674,40,37,held on wing
+337dffa84db6,ABSENT,,,,,postgame celebration
+33dbd104f0a7,VISIBLE,722,334,28,29,held by ballhandler
+33dc23e5492f,ABSENT,,,,,no ball near rim
+33eb0e7de74f,VISIBLE,1337,418,36,38,held in traffic
+34e078170dd8,ABSENT,,,,,game summary graphic
+34f5ff54a594,ABSENT,,,,,coaches postgame
+35f276b00a43,ABSENT,,,,,bracket graphic
+36532f71366e,VISIBLE,915,166,32,37,ball above rim
+3694bb364dbf,VISIBLE,1448,341,37,32,held for inbound
+36dba72e87b9,ABSENT,,,,,sideline celebration
+36e8869c1ef7,VISIBLE,878,711,29,27,dribbled on perimeter
+36f0eda8c93c,VISIBLE,765,573,34,27,held above head
+37ddcd54a212,ABSENT,,,,,postgame handshakes
+37ee688042c8,VISIBLE,1777,282,46,54,held at right border
+383b142a1be6,VISIBLE,1709,496,26,29,held on right wing
+384c23bc3d0b,VISIBLE,1122,271,274,279,closeup game ball

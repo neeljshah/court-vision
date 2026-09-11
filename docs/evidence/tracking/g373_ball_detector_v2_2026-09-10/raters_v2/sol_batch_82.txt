@@ -1,0 +1,40 @@
+b39e31151eec,ABSENT,,,,,close shot with no ball
+b3a6a3d78032,VISIBLE,1427,718,28,27,ball held by right player
+b425a5cbfc22,UNKNOWN,,,,,ball not identifiable among players
+b42bbacf639f,VISIBLE,1253,252,24,25,ball above players near lane
+b4332d855485,ABSENT,,,,,close shot with no ball
+b4dea24a7ecc,VISIBLE,1110,575,78,77,ball moving from player hands
+b4fa72940097,VISIBLE,1350,505,31,34,ball held near baseline
+b5057d965e32,ABSENT,,,,,player closeup with no ball
+b50d55a74545,VISIBLE,1119,85,27,26,ball airborne above basket
+b56658cf0a25,ABSENT,,,,,full screen bracket graphic
+b5a439dee464,ABSENT,,,,,timeout huddle with no ball
+b5caad775489,VISIBLE,522,373,28,29,ball held by baseline player
+b642c14dbf47,ABSENT,,,,,player closeup with no ball
+b6de0b706f39,ABSENT,,,,,bench shot with no ball
+b74c18a4cc17,VISIBLE,860,555,229,220,ball bouncing before free throw
+b7a2082d6195,VISIBLE,1196,657,48,31,ball traveling through lane
+b7ae0fca9906,VISIBLE,765,499,43,42,free throw shooter holding ball
+b84917cdbf31,ABSENT,,,,,postgame crowd shot
+b84afe301087,VISIBLE,758,178,27,29,ball airborne toward hoop
+b8f36a969244,VISIBLE,869,316,65,65,referee holding game ball
+b9d6f540b400,ABSENT,,,,,bench closeup with no ball
+b9ddfc73add0,VISIBLE,1481,598,42,47,ball airborne near baseline
+ba1d29fe5445,ABSENT,,,,,team lineup with no ball
+bb17798d34b2,VISIBLE,1022,745,218,211,player bouncing ball at line
+bb7cbf538d4b,UNKNOWN,,,,,ball obscured in half court set
+bb99aeb249c6,UNKNOWN,,,,,ball not identifiable in transition
+bc3f5a77cb1d,VISIBLE,977,297,76,74,ball held above player head
+bc7738bc5fc5,UNKNOWN,,,,,game ball not identifiable after score
+bcc1174cac40,VISIBLE,1363,276,31,31,ball held on right wing
+bd251db670c1,VISIBLE,893,624,29,31,ball dribbled at midcourt
+bd3d3a2e1cb4,ABSENT,,,,,player closeup with no ball
+bd522ba09d58,ABSENT,,,,,bench shot with no ball
+bd9a83921c8d,ABSENT,,,,,interview shot with no ball
+bdcf73912f86,UNKNOWN,,,,,released ball not identifiable
+be1e89d51985,UNKNOWN,,,,,ball obscured in crowded lane
+becfa0b9bdff,ABSENT,,,,,pregame introductions with no ball
+bf39621876ff,ABSENT,,,,,player closeup with no ball
+bf9b0e39202e,VISIBLE,711,588,49,48,ball held near left elbow
+bfadff084452,VISIBLE,1848,533,48,50,ball held by right player
+bfd73445edee,ABSENT,,,,,interview shot with no ball

@@ -1,0 +1,40 @@
+9c8891f0f6e4,VISIBLE,646,742,44,42,ball beside dribbler
+9c919fa1a141,ABSENT,,,,,player closeup no ball
+9cdc084bdcf0,ABSENT,,,,,sideline scene no ball
+9d27b2b4a8d7,ABSENT,,,,,sideline scene no ball
+9d795f66257b,UNKNOWN,,,,,motion blur obscures ball
+9de0a425b114,ABSENT,,,,,courtside interview no ball
+9df5e693833b,VISIBLE,1144,968,317,112,held ball at frame border
+9ec4658ae5da,VISIBLE,1211,111,36,36,ball airborne above basket
+9f2f9691c5a9,ABSENT,,,,,player introduction no ball
+a04e1a03423e,VISIBLE,704,272,33,34,ball near raised hands
+a0545d1e9dbb,VISIBLE,1024,398,35,35,ball in midair pass
+a0afa08b4d63,ABSENT,,,,,bench lineup no ball
+a12b95f43c96,ABSENT,,,,,crowd closeup no ball
+a1d483474a18,VISIBLE,568,329,34,36,ball held by advancing player
+a21fcdda9769,VISIBLE,651,744,64,57,ball held at chest
+a2e2075549fe,ABSENT,,,,,official holds dead ball
+a308bded2489,VISIBLE,888,618,37,38,ball on active dribble
+a380236945e1,UNKNOWN,,,,,blurred action hides ball
+a421f16c9230,VISIBLE,1474,598,29,33,ball held by driving player
+a45b83a13ce2,ABSENT,,,,,official holds dead ball
+a4602404e1fa,VISIBLE,1174,190,30,30,ball airborne on shot
+a4866b0f1cb2,VISIBLE,1617,552,31,34,ball held by handler
+a568b80a706e,VISIBLE,863,106,44,39,ball airborne above players
+a5959793412f,VISIBLE,1240,427,32,34,ball held while advancing
+a5e3d23f6e54,VISIBLE,779,438,34,34,ball held by blue player
+a62bb168d5c0,ABSENT,,,,,transition view no ball
+a682f2f0e1f4,VISIBLE,841,485,33,34,ball beside driving player
+a68589ed3bb3,ABSENT,,,,,stoppage scene no ball
+a6877f66c4b6,ABSENT,,,,,stoppage closeup no ball
+a6b88ce1c584,VISIBLE,262,559,31,31,ball held on perimeter
+a7025315194d,VISIBLE,1419,436,26,33,ball on right hand dribble
+a77de0779aba,VISIBLE,599,220,33,32,ball airborne on shot
+a7a44c71744c,ABSENT,,,,,official holds dead ball
+a7e94a21efb9,ABSENT,,,,,postgame celebration no ball
+a886ebe8dcfb,VISIBLE,163,676,67,53,ball on left hand dribble
+a8e70f46eeb3,ABSENT,,,,,pregame court no ball
+a9b8c4b4cd72,VISIBLE,940,659,28,26,ball low in lane
+a9e2b0ad8512,ABSENT,,,,,rim closeup no ball
+aa7a1eaec87d,ABSENT,,,,,timeout huddle no ball
+aac1ae558308,VISIBLE,873,540,31,31,ball held under basket

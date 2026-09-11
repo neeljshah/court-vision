@@ -1,0 +1,40 @@
+00256fbe30cd,ABSENT,,,,,interview shot no ball
+002c2ca7a3c0,ABSENT,,,,,closeup players no ball
+004dfb194535,VISIBLE,1102,245,27,24,ball above backboard
+0089acbec576,ABSENT,,,,,sideline closeup no ball
+0161bc9aad42,ABSENT,,,,,player closeup no ball
+01624a78bbc4,VISIBLE,1236,351,18,17,ball by ballhandler
+01ce08140eff,VISIBLE,629,218,33,34,ball near basket
+025a8aaacfd8,ABSENT,,,,,player closeup no ball
+02a8ebb07627,VISIBLE,1462,460,26,28,ball in player hands
+0382ec91fd1d,ABSENT,,,,,player graphic no ball
+04256d900e04,VISIBLE,456,84,33,37,ball held at sideline
+043421998afd,VISIBLE,1450,510,38,38,referee holding ball
+04c33a2ba3c8,VISIBLE,969,442,29,31,ball in traffic
+054db0ba29fc,VISIBLE,686,704,35,33,ball held by player
+0560ba4573e3,VISIBLE,753,411,27,30,ball by dribbler
+059f61cfb0f7,ABSENT,,,,,player closeup no ball
+05cbce45bbb8,ABSENT,,,,,pre game court view
+060e54341df9,ABSENT,,,,,bench closeup no ball
+060ffbe2c29d,VISIBLE,1098,285,122,128,large ball in hands
+0678b8bdbcee,ABSENT,,,,,ball off frame
+068d095b39c7,VISIBLE,1448,489,23,21,ball by ballhandler
+06b15ae77e14,ABSENT,,,,,halftime closeup no ball
+06b61a76a7ed,VISIBLE,1255,584,47,42,ball in player hands
+06b7146c14f1,ABSENT,,,,,basket view no ball
+0714d445d447,VISIBLE,721,423,25,27,ball in post traffic
+0716d136adb4,ABSENT,,,,,fallen player no ball
+07663802c029,VISIBLE,1316,120,35,36,ball in flight
+077503ec977d,VISIBLE,753,641,32,31,ball held in post
+078b67d10e8d,ABSENT,,,,,under basket no ball
+08037ac3f452,VISIBLE,201,466,37,37,ball held on wing
+080b4ae24d37,VISIBLE,922,137,38,37,ball in flight
+088c36167069,ABSENT,,,,,inbound scene no ball
+099600951097,ABSENT,,,,,players walking no ball
+09a4d0d36e48,VISIBLE,1250,202,29,30,ball held at wing
+0a6565dfbcdd,ABSENT,,,,,score graphic no ball
+0a8431fe20e0,ABSENT,,,,,crowd shot no ball
+0af26b423876,VISIBLE,143,568,127,130,close ball near rim
+0b0efe5807b1,VISIBLE,1118,407,55,55,ball in player hands
+0b241fe2e28c,VISIBLE,1543,347,36,38,ball at baseline
+0b2a0da950da,ABSENT,,,,,player closeup no ball

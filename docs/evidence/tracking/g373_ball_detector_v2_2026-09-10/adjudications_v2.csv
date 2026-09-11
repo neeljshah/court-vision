@@ -1,0 +1,34 @@
+frame_key,rater,label,box_x,box_y,box_w,box_h,cx,cy,pass,reason
+8c130e05cc8810ed199800be2e577a7bd828e8a76db35c046d24709e268d5e4c,ADJUDICATOR,VISIBLE,281,318,38,38,300.0,337.0,adjudication,airborne near left sideline
+8d05fd68cf824e449765befb924755ea9ea18396798e99a3cce63802f0d2ae2a,ADJUDICATOR,VISIBLE,1603,558,58,58,1632.0,587.0,adjudication,held by official dead ball
+8d7d15365b5c1058bf6c4ac6e716b6d77c9faf241880c530435a64665b94fe0b,ADJUDICATOR,VISIBLE,1454,772,36,36,1472.0,790.0,adjudication,dribbled in right corner
+46502ecc1535e1fbd37190885c8e165e53a7fdb574fc3878bf6b2a688eedfd98,ADJUDICATOR,VISIBLE,336,436,38,38,355.0,455.0,adjudication,held by guard on left wing
+5b140d01ac36b802a9ca62cfb5c9ae0bd0dcb47d5b787589bdf9b95a066bb855,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,ball not identifiable in transition
+65adde36966d995e329146bbc5046f3621d977fd931080352bd324dd3f1e68dd,ADJUDICATOR,VISIBLE,1234,314,36,36,1252.0,332.0,adjudication,held near baseline dead ball
+8c2b4ca650afc183c4b868bc71420f45ecc7369c494cd776edcf624da6efc99a,ADJUDICATOR,VISIBLE,1180,445,45,32,1202.5,461.0,adjudication,motion blurred in transition
+bfadff084452d1fd8087015d5c93d693a1e974995ba084b77f3cdf37a0e2fdfd,ADJUDICATOR,VISIBLE,873,340,34,34,890.0,357.0,adjudication,dribbled at top of key
+139b5e762e0905a971a75a59bf0811b9a551726d69b23d7215ea4ae1bcf67ef3,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,ball obscured in rebound scrum
+57bd610284b1c9c46b2d17e88d08f98056d3081a9aa81ad30bfa3405d76c7f01,ADJUDICATOR,VISIBLE,1474,668,38,38,1493.0,687.0,adjudication,held by guard on right wing
+485667db795cdc3a7da389229dedf385a70d4af26a18c5d3c301f39cb5041707,ADJUDICATOR,VISIBLE,692,317,48,48,716.0,341.0,adjudication,at the rim on a free throw
+473ef42aba1992e379cb19efb3aa16eafc727384443a48398759a68f254e9655,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,two candidate balls cannot resolve live one
+4889322a19c9dbb01025e76af2badefd9422b9ac96ff0f4edb75b9b08e2ec741,ADJUDICATOR,VISIBLE,1596,567,34,34,1613.0,584.0,adjudication,dribbled by guard on right
+004dfb194535143b158e2d9be51ecd2b418db9e245983615f657b3c29116dbe5,ADJUDICATOR,VISIBLE,1157,208,30,30,1172.0,223.0,adjudication,airborne above the far backboard
+008404a9932fe4be71fd414f2e8300b1ceb25933d574df5871d543f77ed9fbd7,ADJUDICATOR,VISIBLE,577,301,42,42,598.0,322.0,adjudication,held overhead by wing player
+0225e903ba5721cfcac4503d77dd80f9427c51cc85af60863d645082c096aa20,ADJUDICATOR,VISIBLE,460,603,90,90,505.0,648.0,adjudication,gathered by ball handler close shot
+0331961bb5b734f2d7e21ddb6534673df7341d0af5b0b08c055469ae2dfd717c,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,no ball identifiable in transition
+03999f5df54bbb47f710b05e8c4ef537de410d02c8c6499128369f07b026638b,ADJUDICATOR,VISIBLE,1171,146,34,34,1188.0,163.0,adjudication,shot in flight above the rim
+03ee5d6d130bb5946c06523eb1c6822921ab7cbaf95b7639ecba0d92f2e52883,ADJUDICATOR,VISIBLE,1059,365,32,32,1075.0,381.0,adjudication,pass in flight over the paint
+04256d900e0462c0fb412259b2c1fd7917c094982fe15a25621afbdd2943a3e9,ADJUDICATOR,VISIBLE,462,7,76,76,500.0,45.0,adjudication,held by driver at top frame border
+045553dfb1de2c282684e1c985df80d891f5d6f34772d9afcd9db9ba4c66df63,ADJUDICATOR,VISIBLE,1064,573,34,34,1081.0,590.0,adjudication,dribbled at the arc
+045ee6fe119e5f8aa36b58c6b799d08ce140b1f7f60ce2d953646ab39cc575a6,ADJUDICATOR,ABSENT,,,,,,,adjudication,close up of player back no ball in frame
+04b79af9c7050671e61e2636905384593795b962280400a76400c4b0e5d9dd22,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,ball obscured in rebound scramble
+04c33a2ba3c86c408e325c463d68da8e8d46b843b3136257e3370800df9fadda,ADJUDICATOR,VISIBLE,1015,448,40,40,1035.0,468.0,adjudication,driver gathering at the rim
+04d4f5b039d4413dac9a5b9193b26e334babe8a081cbe58c7e69924980e328b5,ADJUDICATOR,VISIBLE,1104,524,44,44,1126.0,546.0,adjudication,held by official at the arc
+04f4187da49b6aba15e9ab2840638a6905f024842e96149a2bc29128a8e8f14c,ADJUDICATOR,ABSENT,,,,,,,adjudication,sideline celebration no game ball in frame
+0678b8bdbcee81549712edcab7773594ab55b8211d3a77232bf66af50547918f,ADJUDICATOR,VISIBLE,1362,577,36,36,1380.0,595.0,adjudication,held by inbounder on the right
+06c4cb648f746f28764ce2da5fbb3b4771e8077b33dc966e688005751d63439a,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,overhead rim cam ball not resolvable
+078b67d10e8d352cb836eb095e4d3b7e8962cafb312eebb9fa57b34a0d97cdb6,ADJUDICATOR,VISIBLE,880,193,40,40,900.0,213.0,adjudication,at the rim on a finish
+08abef457742414120ef6577b3ddccbb024013343422ad7bfde41ee23a4cf313,ADJUDICATOR,VISIBLE,1143,228,34,34,1160.0,245.0,adjudication,at the rim in overtime
+0c356d7f019485fa69da38bf2f6ec2c4cabd0c0b602431d2e080ceecb4a8f8d2,ADJUDICATOR,VISIBLE,425,643,36,36,443.0,661.0,adjudication,dribbled low in the backcourt
+0cb724109b5c09e5d0df6cf0ecde27e2291ce3115a5214464ca08f1dcf5451a7,ADJUDICATOR,VISIBLE,1198,371,30,30,1213.0,386.0,adjudication,held by inbounder on the baseline
+0cd289ec6c7ac638897bb971594b0a9b66843838e58f207c10b8de92e1f25d58,ADJUDICATOR,VISIBLE,874,581,32,32,890.0,597.0,adjudication,motion blurred at the ball handler hand

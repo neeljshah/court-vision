@@ -1,0 +1,40 @@
+488ece7f5ce8,ABSENT,,,,,exterior venue shot
+48a31ddd32d3,VISIBLE,1571,756,28,53,ball bouncing by player
+493100e98464,VISIBLE,856,552,36,38,ball beside blue player
+49759debf1d1,VISIBLE,401,429,31,33,ball held by guard
+4a4d42a5cf72,ABSENT,,,,,commentators only
+4a66870b97d6,ABSENT,,,,,courtside interview
+4a8130a3bbf8,ABSENT,,,,,no ball discernible
+4aa64724a263,VISIBLE,465,519,66,62,free throw shooter holds ball
+4aacb40e95d7,ABSENT,,,,,players between plays
+4b05e098a705,VISIBLE,837,593,34,33,free throw shooter holds ball
+4b3e14a9ae73,ABSENT,,,,,player closeup
+4b5b66ab7b30,UNKNOWN,,,,,indistinct object at left border
+4b90d2fd363e,VISIBLE,1542,561,35,35,ball controlled by guard
+4b9307a32abd,VISIBLE,1261,504,33,34,ball held in paint
+4bd2281bab76,ABSENT,,,,,postgame interview
+4bfbd15059d0,VISIBLE,83,704,28,29,ball under dribblers hand
+4c04ef3b2fb8,ABSENT,,,,,ball outside visible frame
+4c40b3169cde,ABSENT,,,,,exterior venue shot
+4c56920ee793,VISIBLE,255,239,222,218,ball passing close to camera
+4c78585af542,ABSENT,,,,,ball not visible in transition
+4c7e2db6b666,VISIBLE,164,597,35,33,ball held by left player
+4ce9feada8d7,VISIBLE,939,410,25,22,ball held near lane
+4d0b01c58d65,VISIBLE,773,418,49,50,ball held for inbound
+4d3b973423aa,VISIBLE,1637,590,25,25,guard dribbling at right
+4d4cfea838a0,ABSENT,,,,,ball obscured among players
+4d5ff17b43bd,VISIBLE,568,435,31,31,ball bouncing near guard
+4df68823644f,ABSENT,,,,,team timeout huddle
+4f1ca53421db,VISIBLE,448,467,31,31,ball held by perimeter player
+4f64a50ac3c1,ABSENT,,,,,dead ball held by referee
+4fecde40157e,ABSENT,,,,,ball outside visible frame
+5034f7238719,ABSENT,,,,,courtside interview
+5042276960ab,ABSENT,,,,,ball outside close view
+50a956f66e3d,VISIBLE,1177,196,29,30,ball airborne near basket
+50fc0905e9b8,ABSENT,,,,,ball not visible after pass
+51036ebc10cf,VISIBLE,849,534,31,31,ball held by white player
+512975438cfd,VISIBLE,1430,602,44,45,ball controlled by driver
+513d233d9a07,VISIBLE,1348,684,32,34,ball bouncing by guard
+51e1d3096ee3,VISIBLE,1082,638,56,59,ball cradled at waist
+5204240b18dd,ABSENT,,,,,sideline staff closeup
+5232ad114239,VISIBLE,1625,354,39,39,ball held by red player

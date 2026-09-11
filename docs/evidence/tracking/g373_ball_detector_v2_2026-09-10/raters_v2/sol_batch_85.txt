@@ -1,0 +1,40 @@
+ddd35c4fe52c,ABSENT,,,,,player closeup no ball
+de0cc3cf57ce,ABSENT,,,,,no ball visible
+de15ef5263fc,ABSENT,,,,,player closeup no ball
+df3624ba30d7,VISIBLE,312,575,26,27,dribbled at left wing
+dfc3aeaab31e,VISIBLE,466,449,29,28,held near baseline
+e001ddad149c,ABSENT,,,,,arena graphic no ball
+e0345ad643d4,ABSENT,,,,,bracket graphic no ball
+e03a50f13e07,ABSENT,,,,,courtside commentators
+e0736ab0cfac,ABSENT,,,,,crowd shot only
+e0be0418f582,ABSENT,,,,,stats graphic no ball
+e0cd56a400a9,ABSENT,,,,,no ball visible
+e15bd1387d7e,VISIBLE,551,655,38,36,dribble near midcourt
+e196d99b2484,ABSENT,,,,,player closeup no ball
+e2a5b92056a1,ABSENT,,,,,transition graphic no ball
+e314c989a47e,VISIBLE,1520,574,32,32,held on right wing
+e329af24e6d3,VISIBLE,800,549,32,35,dribble in transition
+e41bb119e114,VISIBLE,946,102,38,40,ball in flight
+e493c139554c,ABSENT,,,,,bracket graphic no ball
+e4caac15f2e6,VISIBLE,292,544,27,28,held by left ballhandler
+e59a47671c93,UNKNOWN,,,,,possible ball blends with crowd
+e5dcbded9303,VISIBLE,779,649,36,36,dribble near lane
+e63b757119f9,ABSENT,,,,,officials closeup no ball
+e77c98c41e98,VISIBLE,604,596,38,36,held by free throw shooter
+e7f0423fca78,VISIBLE,822,524,53,56,partly occluded at waist
+e892aa96b996,ABSENT,,,,,bracket graphic no ball
+e98caae801b3,ABSENT,,,,,empty court crop
+e99a19ae2822,UNKNOWN,,,,,ball unclear near rim
+e9eabd2541fc,VISIBLE,445,416,50,52,held by blue player
+ea1a9b8f2799,VISIBLE,1128,315,30,28,dribble on right wing
+ea46299deb27,VISIBLE,1106,160,66,73,ball below rim
+ea5ff4d2d591,UNKNOWN,,,,,ball obscured in traffic
+eade03ac7867,ABSENT,,,,,no ball visible
+eb0c3ef370b0,ABSENT,,,,,player closeup no ball
+eb263ece4b97,ABSENT,,,,,no ball visible
+eb6b8cc6fbcf,VISIBLE,436,764,38,36,dribble near sideline
+eba8b20097ac,ABSENT,,,,,player closeup no ball
+ec8f4b20825f,VISIBLE,1418,411,47,47,held for free throw
+ecf4275b3c01,VISIBLE,650,402,31,32,dribble near left wing
+ecf9cbb89420,VISIBLE,639,420,36,38,ball in air near baseline
+ed1d4865f8ba,ABSENT,,,,,crowd shot only

@@ -1,0 +1,40 @@
+8860affdc5dc,ABSENT,,,,,bench closeup
+886155fd06a3,VISIBLE,699,539,196,198,official holding ball
+88b149b9fb24,ABSENT,,,,,official closeup
+89b88a939a2e,UNKNOWN,,,,,scrum obscures ball
+8a2212748632,VISIBLE,383,566,27,28,player holds ball
+8a31130a612b,VISIBLE,1176,521,30,31,player dribbling
+8a42016b10cc,VISIBLE,1382,598,39,42,player holds ball
+8a71ecf43fd9,VISIBLE,249,776,28,30,player dribbling
+8a759db21e22,VISIBLE,1194,255,26,28,ball at rim
+8a9954add795,ABSENT,,,,,bench shot
+8ab62119a061,VISIBLE,858,400,29,31,ball in flight
+8afdb97e4ed4,VISIBLE,477,473,29,30,player dribbling
+8b5dddd197b2,VISIBLE,169,394,26,27,player holds ball
+8bb39a7d2728,VISIBLE,1356,117,67,66,shooter holds ball
+8c130e05cc88,VISIBLE,1635,594,39,38,official holds ball
+8d05fd68cf82,VISIBLE,285,330,25,25,inbound ball
+8d33da4087aa,VISIBLE,1635,594,39,38,official holds ball
+8d5b2b3c0b87,ABSENT,,,,,player closeup
+8d6e3ca03ccd,UNKNOWN,,,,,rim view obscures ball
+8d706f43a663,ABSENT,,,,,bench reaction
+8d71b97b4b4c,ABSENT,,,,,bench closeup
+8d7d15365b5c,VISIBLE,523,0,22,7,ball at top border
+8e320a0fffa0,VISIBLE,1421,761,28,29,player dribbling
+8e75164581e2,VISIBLE,791,272,52,47,ball at rim
+8e7e22d96b7b,UNKNOWN,,,,,players obscure ball
+8ec372e96f43,VISIBLE,1570,697,37,38,official holds ball
+8f06fcc808b5,VISIBLE,1414,470,43,43,player holds ball
+8f120d7edc05,VISIBLE,245,526,30,31,player dribbling
+8f7d4e116cd0,VISIBLE,911,792,39,38,loose ball
+8f7d53e4aab8,VISIBLE,1367,449,38,38,player holds ball
+902b1d349dfb,ABSENT,,,,,player closeup
+908daf01ba0e,VISIBLE,882,348,34,33,player holds ball
+90e9d73df074,ABSENT,,,,,player closeup
+915dd10451fb,VISIBLE,1313,377,31,32,player dribbling
+916b9889b58b,VISIBLE,538,478,57,61,ball at basket
+9219999b49a2,VISIBLE,961,452,33,34,ball handler
+92c1c315e080,ABSENT,,,,,player closeup
+934d8703b6a0,ABSENT,,,,,graphic overlay
+9367155ab04b,VISIBLE,449,480,42,43,free throw ball
+936793a45a0d,ABSENT,,,,,crowd shot

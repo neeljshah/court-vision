@@ -1,0 +1,40 @@
+00088f2f70b5,VISIBLE,887,558,42,45,held above shooter
+003818538c6d,VISIBLE,927,93,23,27,above backboard
+00670bf31703,VISIBLE,976,597,55,55,dribbling player
+008404a9932f,VISIBLE,552,298,37,39,held by shooter
+01301367dd61,ABSENT,,,,,pregame walkout
+01604bfb8b26,VISIBLE,1453,468,43,42,midcourt pass
+01d296160027,ABSENT,,,,,closeup no ball
+0225e903ba57,VISIBLE,511,624,60,61,low dribble
+025a7448186c,ABSENT,,,,,player closeup
+02638c6dd88a,ABSENT,,,,,interview shot
+0292b9f00e53,VISIBLE,623,621,82,92,dribbling player
+02b8f4143fa6,ABSENT,,,,,player closeup
+0330d2250898,ABSENT,,,,,schedule graphic
+0331961bb5b7,VISIBLE,421,455,34,39,held by player
+036e0193d5a8,VISIBLE,746,535,38,42,dribbling player
+039072cb2ff1,VISIBLE,577,80,34,35,above basket
+03999f5df54b,VISIBLE,749,538,34,39,held by player
+03ee5d6d130b,VISIBLE,1027,564,35,39,held by player
+045553dfb1de,ABSENT,,,,,player closeup
+045ee6fe119e,VISIBLE,1204,500,39,46,held in lane
+04b79af9c705,UNKNOWN,,,,,ball obscured by players
+04d4f5b039d4,VISIBLE,1163,529,30,35,held by official
+04f4187da49b,VISIBLE,1624,838,57,58,held at sideline
+05d828cb1ced,VISIBLE,653,586,38,40,free throw ball
+05efd0f88dfd,VISIBLE,1366,506,40,43,near baseline
+05f3012d95d4,ABSENT,,,,,bench shot
+05f6393f8459,ABSENT,,,,,free throw setup
+060beffd4317,VISIBLE,580,447,39,43,held by shooter
+06c4cb648f74,ABSENT,,,,,rim camera no ball
+0736209ccc57,ABSENT,,,,,player closeup
+0807dc952665,ABSENT,,,,,crowd shot
+08abef457742,VISIBLE,924,461,39,43,held for free throw
+091d2019f15a,VISIBLE,482,374,34,36,held by player
+0926190f8ffb,ABSENT,,,,,interview shot
+097e98e04c7f,ABSENT,,,,,bench celebration
+0a27d36f33c8,ABSENT,,,,,player closeup
+0ab48a08b736,ABSENT,,,,,timeout huddle
+0acc5cca56f9,VISIBLE,991,72,41,42,airborne shot
+0b3c8204f6f1,VISIBLE,1043,229,37,39,held in transition
+0c356d7f0194,VISIBLE,395,642,39,39,dribbling player

@@ -1,0 +1,40 @@
+93a1f9552036,VISIBLE,820,413,21,20,held near baseline
+93b52117c6a6,UNKNOWN,,,,,scrum obscures ball
+9459b9f33210,VISIBLE,1238,402,34,34,ball in flight
+94adde03820c,VISIBLE,1012,465,31,29,dribbling at midcourt
+94b7e23b452b,ABSENT,,,,,crowd closeup
+94c286feed13,VISIBLE,425,603,29,31,ball by baseline
+94fa4e491043,VISIBLE,545,599,31,31,dribbling ball
+955a98cd2fa5,VISIBLE,814,669,39,39,ball in play
+95bae4ee80ae,ABSENT,,,,,player closeup
+95e5be960d7a,ABSENT,,,,,arena ceiling view
+9618f7b182f1,UNKNOWN,,,,,ball obscured after play
+966fc277e156,VISIBLE,994,510,43,43,ball below basket
+981f47e8e9d1,UNKNOWN,,,,,ball obscured by players
+986b875ca1e8,VISIBLE,493,756,25,25,dribbling ball
+98c855bb751f,ABSENT,,,,,bench shot
+98dbde0893d6,VISIBLE,492,761,27,27,ball near baseline
+99c1c03afda6,VISIBLE,858,286,37,39,ball at rim
+9a4515474e7e,ABSENT,,,,,players between plays
+9a6738ee3102,ABSENT,,,,,player closeup
+9a78785d4a14,ABSENT,,,,,player closeup
+9b19924e3298,VISIBLE,791,656,36,37,free throw ball
+9b1cb353938d,VISIBLE,1106,596,40,40,free throw ball
+9b2fabdd9328,VISIBLE,1572,621,38,39,ball held right
+9b8692e61d05,VISIBLE,374,618,34,34,ball held left
+9bebb82ff4ef,UNKNOWN,,,,,ball obscured at basket
+9c69ce8fab38,VISIBLE,1200,510,39,39,referee holds ball
+9c9bb180c254,ABSENT,,,,,ceremony wide shot
+9c9f5b47be6b,VISIBLE,1164,425,36,37,ball held near hoop
+9cac0c322194,VISIBLE,1095,476,36,37,ball held in paint
+9cfed5db6a87,VISIBLE,1337,179,39,40,ball above rim
+9dd07735ebb2,VISIBLE,1075,369,34,36,ball in paint
+9dd920ed968a,UNKNOWN,,,,,ball too small to identify
+9e619c8794e0,VISIBLE,1231,578,45,45,dribbling ball
+9e940b53567f,ABSENT,,,,,player closeup
+9f3e39ba1e78,VISIBLE,989,1001,35,36,dribbling ball
+9f6bc8235112,ABSENT,,,,,commentators shot
+9f8c16a01f3d,VISIBLE,674,507,36,36,ball held in traffic
+9f9e8a720827,ABSENT,,,,,commentators shot
+9fc7a394e3af,UNKNOWN,,,,,ball outside visible play
+9fead4c73374,VISIBLE,695,851,36,37,ball near baseline

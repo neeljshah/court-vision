@@ -1,0 +1,40 @@
+1b60205b44f2,UNKNOWN,,,,,ball obscured in paint
+1bd46fb15470,VISIBLE,1149,263,34,33,ball beside rim
+1bda1144f13c,VISIBLE,444,464,35,37,ball held at hip
+1c2fb1bc8629,VISIBLE,1139,93,30,30,ball above backboard
+1c53069b32d7,ABSENT,,,,,pregame introduction
+1c8b42e646cb,UNKNOWN,,,,,ball hidden in contact
+1cfcbb1e9d8f,VISIBLE,746,837,50,50,motion blurred bounce
+1db0b68cc5e5,ABSENT,,,,,bench closeup
+1e2a891efe60,UNKNOWN,,,,,ball indistinct near handler
+1e330a843b83,ABSENT,,,,,referee closeup
+1e37dbc9ff10,ABSENT,,,,,players celebrating
+1e63d1a8e8dd,VISIBLE,1263,282,54,48,ball held overhead
+1fafec2c9852,VISIBLE,438,313,31,31,referee holding ball
+1ff7ac29819c,ABSENT,,,,,player closeup
+20c7cbb969b6,VISIBLE,203,640,53,57,ball in low dribble
+20ea26903294,UNKNOWN,,,,,handler cropped at border
+210193738364,ABSENT,,,,,pregame lineup
+211fa10e2341,VISIBLE,1337,688,56,62,ball held in foreground
+212958716770,VISIBLE,978,393,38,38,ball above rim
+2151cd3a6bba,ABSENT,,,,,player closeup
+2196e69d0c91,VISIBLE,1104,570,62,82,motion blurred ball
+22189c790cbe,ABSENT,,,,,sideline closeup
+223e2f513ec4,ABSENT,,,,,crowd closeup
+22ad77b6ab07,ABSENT,,,,,player closeup
+22c28f55c3ef,VISIBLE,435,343,40,40,ball in passing lane
+22e98406f7f0,ABSENT,,,,,pregame lineup
+22f94007fe87,ABSENT,,,,,coach interview
+22fde2ad8dae,ABSENT,,,,,crowd closeup
+230132ff8c12,ABSENT,,,,,bench closeup
+2309e67fdc71,VISIBLE,707,357,25,26,ball with advancing guard
+242719c5fbdd,VISIBLE,629,667,29,30,ball bouncing on court
+26c23880e4b8,ABSENT,,,,,players awaiting restart
+26c27cbb31f8,VISIBLE,1384,639,26,25,ball in right hand dribble
+26e4e8a6a82a,ABSENT,,,,,schedule graphic
+272146cdabd8,ABSENT,,,,,postgame closeup
+275d6449cc1f,ABSENT,,,,,pregame lineup
+284ddc4f03ad,VISIBLE,679,511,39,43,referee holding ball
+2907518c14b1,VISIBLE,738,478,20,20,ball in guarded dribble
+290c6cea3654,VISIBLE,337,288,34,37,ball held overhead
+290f7b67972e,VISIBLE,420,397,52,61,motion blurred pass

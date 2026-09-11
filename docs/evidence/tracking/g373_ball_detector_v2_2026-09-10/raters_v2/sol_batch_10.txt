@@ -1,0 +1,40 @@
+66294faf6cb6,VISIBLE,1129,381,39,39,ball between players
+6694d39d61a1,VISIBLE,1234,494,37,39,ball in midair
+66cea5293a7f,VISIBLE,440,759,55,42,ball beside hoop
+66f95c9da73d,VISIBLE,439,316,37,34,airborne ball
+67847dd707fc,VISIBLE,638,400,66,89,ball cradled near face
+67cf74d777b1,VISIBLE,577,652,25,26,ball by dribbling hand
+67f48fec58a7,ABSENT,,,,,no ball in frame
+68157217b961,ABSENT,,,,,closeup without ball
+68b18aeb1053,VISIBLE,1192,511,38,39,referee holding ball
+69134b3fc18b,VISIBLE,1297,624,74,78,ball right of hoop
+69521c9dd4e0,ABSENT,,,,,timeout huddle without ball
+6979ca1d49e8,VISIBLE,505,453,33,33,ball in midair
+69c25565cb86,ABSENT,,,,,ball outside frame
+6a9cfc1e58d6,VISIBLE,1299,413,29,29,ball by player hand
+6af1d5d127b0,VISIBLE,735,427,63,65,player holding ball
+6af73144cd5b,ABSENT,,,,,closeup without ball
+6afc105dd755,VISIBLE,1164,653,31,31,ball at ballhandler
+6b34dba8d44a,VISIBLE,831,509,42,44,free throw ball
+6b4ce5ad7263,VISIBLE,1107,475,25,23,ball near right wing
+6b7dce507b0e,VISIBLE,730,348,41,38,ball above rim
+6ccc80b59e5e,VISIBLE,850,618,32,32,ball beside dribbler
+6d18d309bab8,VISIBLE,688,370,51,50,airborne pass
+6d639eeba205,VISIBLE,667,496,35,36,player holding ball overhead
+6d872d267086,ABSENT,,,,,sideline lineup without ball
+6df12376c876,ABSENT,,,,,crowd closeup without ball
+6df3a9076a29,VISIBLE,721,365,31,31,shooter holding ball
+6e9a9606a372,VISIBLE,377,376,29,29,ball beside dribbler
+6ea733bc6255,VISIBLE,1481,52,55,50,motion blurred airborne ball
+6f644edd363c,VISIBLE,1036,455,71,61,ball between players
+6f6d7c2df9ae,ABSENT,,,,,closeup without ball
+6f9dd93328d7,VISIBLE,1085,752,39,36,ball at players waist
+6faaf410ce8b,VISIBLE,1222,350,36,37,ball held in traffic
+6fb1ee4d77f1,VISIBLE,1427,645,31,31,ball in midair
+6fcf278b1603,ABSENT,,,,,postgame closeup without ball
+6fed7dc9b40b,VISIBLE,843,543,131,135,player cradling ball
+700e6aa694bb,VISIBLE,646,181,37,36,ball under rim
+70e494b21995,VISIBLE,1030,282,34,31,ball above rim
+7103bd5e7dc7,VISIBLE,414,697,34,33,ball by ballhandler
+712b543a733e,VISIBLE,280,609,26,27,player holding ball
+714d3bae0764,VISIBLE,1271,648,75,72,player carrying ball

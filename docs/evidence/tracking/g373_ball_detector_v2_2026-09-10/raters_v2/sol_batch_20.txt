@@ -1,0 +1,40 @@
+dda11891cd04,ABSENT,,,,,empty hoop closeup
+ddf0fb13aca0,VISIBLE,882,336,23,25,dribbled at left hip
+de6c72f8a758,VISIBLE,1372,410,55,52,held above shooters hands
+de8f6c3ca68a,ABSENT,,,,,timeout huddle no ball
+dec72afbbafe,ABSENT,,,,,player closeup no ball
+dee93ac0d3ca,VISIBLE,1001,601,55,54,held during contested pass
+def4b74088e9,VISIBLE,393,379,28,31,ball above left wing
+defe3c0d1e5b,VISIBLE,1262,684,35,36,free throw dribble
+dfe5c5f3a10a,ABSENT,,,,,player closeup no ball
+e039ae267e70,VISIBLE,1154,501,28,28,ball near baseline
+e0b7002a2d9e,VISIBLE,868,678,35,33,held by ball handler
+e102e7fbb883,ABSENT,,,,,postgame interview no ball
+e11e7a1ddfe7,UNKNOWN,,,,,bumper obscures live view
+e144d0710098,ABSENT,,,,,interview scene no game ball
+e156d800c440,UNKNOWN,,,,,player cluster hides ball
+e1f1ab7f928f,VISIBLE,1001,44,48,66,motion blurred airborne ball
+e1ffcf35aa43,VISIBLE,1176,412,43,43,ball secured under basket
+e216c414f1c4,VISIBLE,1241,311,38,39,held by advancing guard
+e225e1049d6a,UNKNOWN,,,,,scramble obscures ball
+e2758462fda6,VISIBLE,1570,495,36,38,held by baseline player
+e2d26eda8a6a,ABSENT,,,,,coach closeup no ball
+e324bc5f0d6c,UNKNOWN,,,,,shooter body blocks ball
+e36ad0f41058,ABSENT,,,,,band closeup no ball
+e37e781e4500,VISIBLE,353,469,27,30,controlled on left wing
+e3ae0f5c4408,ABSENT,,,,,schedule graphic only
+e3f8f96a0d79,ABSENT,,,,,no ball visible on court
+e40728622afc,VISIBLE,443,437,28,27,inbounder holding ball
+e414c921e933,VISIBLE,591,635,33,36,held at left wing
+e463c48202f2,ABSENT,,,,,transition play no ball visible
+e4d79aadcddc,VISIBLE,1678,675,40,44,dribbled by right guard
+e54779db1e96,VISIBLE,899,488,36,35,held for free throw
+e5883851f448,ABSENT,,,,,coach closeup no ball
+e5bd3c488188,VISIBLE,669,650,36,37,held at players hip
+e5c7cb72f83f,UNKNOWN,,,,,transition graphic obscures play
+e5f28e676ccb,UNKNOWN,,,,,motion blur hides ball
+e68262a433ba,VISIBLE,1542,420,36,36,held on right wing
+e74a40a01841,VISIBLE,640,435,83,101,motion blurred pass
+e7911da1b253,ABSENT,,,,,full screen tournament graphic
+e79d1d6072d3,UNKNOWN,,,,,ball not discernible near baseline
+e848892b2b17,VISIBLE,1154,702,29,37,dribbled at top of key

@@ -1,0 +1,40 @@
+5b3f031bd683,VISIBLE,1195,690,225,225,held close to camera
+5b626c0e20cc,VISIBLE,1475,405,32,32,held on right wing
+5bb6f4b7699c,VISIBLE,815,555,28,28,dribbled by black player
+5be508986662,VISIBLE,165,650,28,28,dribbled near left sideline
+5cef26d811de,ABSENT,,,,,closeup without ball
+5d03fad32d30,VISIBLE,728,527,38,38,held by red player
+5d8f03c82ec2,ABSENT,,,,,postgame scene without ball
+5df1a11c1e66,VISIBLE,337,468,24,24,held by white guard
+5dfdfdc86a27,VISIBLE,958,326,38,38,shot in flight
+5e4e5e9060e4,ABSENT,,,,,timeout shot without ball
+5e861f32c88b,ABSENT,,,,,bench closeup without ball
+5f6fe6f36f21,VISIBLE,678,487,30,30,dribbled by white guard
+5f843579e459,VISIBLE,343,420,30,30,held near baseline
+600f59a6686d,VISIBLE,760,704,26,26,dribbled at midcourt
+60181200ae11,VISIBLE,814,487,52,52,held by red ballhandler
+604e46b63415,VISIBLE,248,655,28,28,dribbled by white player
+60a8603c8b3b,ABSENT,,,,,interview without ball
+612ef2ab8c55,VISIBLE,808,270,29,29,held near basket
+61662c717603,VISIBLE,1572,444,24,24,held near right baseline
+61c95178267f,ABSENT,,,,,team huddle without ball
+620c2af62306,VISIBLE,869,720,31,31,held in sideline scrum
+62b2d7ae5e4b,VISIBLE,775,342,26,26,held near free throw line
+6355816e103c,VISIBLE,911,499,45,45,held for free throw
+64ea756467f8,ABSENT,,,,,interview without ball
+65adde36966d,VISIBLE,249,655,31,31,dribbled by white guard
+6613b7a9b76f,VISIBLE,1400,630,25,25,held by white player
+6679856f073c,VISIBLE,1551,468,29,29,dribbled on right wing
+6742204d3ef6,ABSENT,,,,,player down without ball
+68a61cec9ebd,VISIBLE,1545,662,37,37,dribbled on right wing
+68db51861b83,VISIBLE,1084,431,31,31,free throw ball
+690a03e2b14e,VISIBLE,1430,302,53,53,shot near right baseline
+699f9adcb557,ABSENT,,,,,free throw closeup without ball
+69c8d6565747,VISIBLE,715,294,34,34,shot in flight
+69d4e0992b32,VISIBLE,552,383,40,40,held near left basket
+69fcc9d7036a,ABSENT,,,,,coach closeup without ball
+6a1479e9e4e2,ABSENT,,,,,ball not visible in frame
+6a6248beb181,VISIBLE,1456,650,40,40,shot near rim
+6a99b66848cf,ABSENT,,,,,transition graphic
+6aa27e4930c2,VISIBLE,925,574,34,34,loose ball on court
+6b55ca34b308,VISIBLE,1420,112,52,52,ball at rim

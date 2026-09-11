@@ -1,0 +1,40 @@
+29b9cba3a83e,UNKNOWN,,,,,sideline ball not discernible
+29ccca429264,ABSENT,,,,,interview shot
+2b468df5ce6c,ABSENT,,,,,pregame arena view
+2b6e49e2f950,VISIBLE,1583,581,29,37,ball at driving player
+2b8b1770bc1d,VISIBLE,617,394,38,39,ball held near chest
+2bc7de97f2df,ABSENT,,,,,summary graphic
+2bd9356baea4,VISIBLE,1305,401,31,35,ball held by guard
+2bf155503c1a,VISIBLE,608,402,35,37,ball at shooter
+2c33de198f97,ABSENT,,,,,player closeup
+2cd5dcb7179b,VISIBLE,372,435,28,32,ball dribbled by guard
+2dcc6abe144f,UNKNOWN,,,,,motion blur obscures ball
+2e0b72280994,ABSENT,,,,,ball not in view
+2ea774f6f555,VISIBLE,560,747,31,31,ball at dribbler
+2ef4bdd29f00,VISIBLE,872,531,45,43,ball carried in transition
+2f04941c7a03,ABSENT,,,,,bench closeup
+2f06e36c1ed1,ABSENT,,,,,player closeup
+2f24e5cd62fa,VISIBLE,902,503,29,30,ball in player hands
+30356bf13742,VISIBLE,673,235,25,27,ball at rim
+303ac8d28eeb,ABSENT,,,,,bench closeup
+30dda507fcc2,VISIBLE,787,462,59,59,ball held by player
+311dcabd8fc0,VISIBLE,749,802,33,33,ball being dribbled
+315d330ad2e8,ABSENT,,,,,player closeup
+3165e55916ce,VISIBLE,980,670,57,57,ball being dribbled
+317d256f149e,ABSENT,,,,,bench reaction
+31a9cdbd790d,VISIBLE,1463,423,31,32,ball being dribbled
+31cff4ab4524,VISIBLE,650,465,197,179,ball held by referee
+320fdea13594,ABSENT,,,,,player closeup
+3254de6fde50,VISIBLE,555,642,43,42,ball held before free throw
+3278c817c181,ABSENT,,,,,ball not in view
+32a9b704493f,VISIBLE,727,512,40,40,ball held by player
+334a7a34aa92,VISIBLE,391,673,38,39,ball held by player
+33525f98eccf,VISIBLE,216,231,40,41,ball held on wing
+337dffa84db6,ABSENT,,,,,dead ball sideline shot
+33b657bad2c0,ABSENT,,,,,coach closeup
+33dbd104f0a7,VISIBLE,721,300,36,38,ball held by shooter
+33dc23e5492f,VISIBLE,563,347,37,38,ball held by player
+33eb0e7de74f,UNKNOWN,,,,,ball obscured in action
+3427c8976d82,VISIBLE,700,757,26,28,ball carried by official
+34766854d990,VISIBLE,1316,453,35,37,ball held for inbound
+34e078170dd8,ABSENT,,,,,full screen graphic

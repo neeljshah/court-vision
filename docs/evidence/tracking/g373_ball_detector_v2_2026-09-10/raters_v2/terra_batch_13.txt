@@ -1,0 +1,40 @@
+87e899b0a031,VISIBLE,1208,372,27,25,held by player
+88a603090bfc,VISIBLE,1467,457,29,28,held by player
+88b95d236e19,ABSENT,,,,,crowd shot
+88dc262ed748,VISIBLE,1661,594,29,28,held by player
+89521b5d0d6a,ABSENT,,,,,no game ball visible
+8986d22a3ee6,VISIBLE,519,515,31,29,held by player
+89b4f8ed448c,VISIBLE,1288,335,30,29,referee holding ball
+89dd8715dd8a,VISIBLE,1818,358,42,43,held by player
+8a6623a9c489,VISIBLE,198,169,30,29,referee holding ball
+8b2d24c1bd75,VISIBLE,793,413,31,29,held by player
+8b7a7979b56c,VISIBLE,1267,341,30,29,near the rim
+8bfa5dc8d8c9,UNKNOWN,,,,,ball obscured
+8c2b4ca650af,VISIBLE,399,444,28,27,held for inbound
+8c364576216e,VISIBLE,835,1038,58,42,partly cropped ball
+8c596a426560,VISIBLE,383,599,25,24,held by player
+8d4631207aa6,VISIBLE,1670,462,42,41,in flight
+8d80190d0e2b,ABSENT,,,,,no game ball visible
+8d8066eb6700,VISIBLE,510,676,29,27,on the court
+8d8ac1354238,ABSENT,,,,,no game ball visible
+8da2fd2e41cd,VISIBLE,428,657,29,27,dribbled by player
+8db551391476,ABSENT,,,,,crowd shot
+8df8b92593df,ABSENT,,,,,graphic ball only
+8e018c1de817,UNKNOWN,,,,,ball obscured
+8eaa76587cb1,VISIBLE,1425,369,29,28,held by player
+8eddb6561311,VISIBLE,1232,570,28,27,dribbled by player
+8f745c2bbdd6,VISIBLE,1324,83,24,23,in flight
+8fc5f69f7542,VISIBLE,992,472,30,29,referee holding ball
+9061d91c2aad,ABSENT,,,,,no game ball visible
+90b32b232312,ABSENT,,,,,bench shot
+90c2505a735a,ABSENT,,,,,closeup without ball
+90ec31471472,VISIBLE,1138,567,75,55,held by player
+91237c714d31,ABSENT,,,,,no game ball visible
+914518aa85f5,VISIBLE,939,577,29,29,held by player
+91472eb3a624,VISIBLE,566,301,25,24,held by player
+918f12e96516,ABSENT,,,,,no game ball visible
+91a032cf73e1,ABSENT,,,,,closeup without ball
+9205d986172e,VISIBLE,1565,429,37,38,held for inbound
+921ecafd36e4,ABSENT,,,,,crowd shot
+9220eea33e68,ABSENT,,,,,closeup without ball
+934374068bfc,ABSENT,,,,,closeup without ball

@@ -1,0 +1,40 @@
+d16ef963f9fa,VISIBLE,829,444,43,45,ball at players chest
+d24ac86aa7ba,VISIBLE,1119,389,44,43,ball above red shooter
+d2b63abf1d49,ABSENT,,,,,bench timeout no game ball
+d2fb903cc025,ABSENT,,,,,player closeup no ball
+d377d870327d,VISIBLE,1388,400,20,20,ball airborne at right
+d3953152079b,ABSENT,,,,,celebration closeup no ball
+d42bca014465,VISIBLE,1235,316,31,30,ball above raised hand
+d43765e3deb5,VISIBLE,1315,379,31,27,ball held on right wing
+d473e3c985ae,VISIBLE,1206,552,226,215,ball above rim
+d4e485dcc350,ABSENT,,,,,full screen bracket graphic
+d5082752eaba,VISIBLE,1617,458,31,33,ball at dribblers hand
+d59480f9b498,VISIBLE,663,638,34,34,ball at left guard
+d5c48014fb6e,VISIBLE,946,410,82,94,motion blurred dribble
+d60ce58369ad,VISIBLE,195,672,31,38,ball bouncing by guard
+d637da23163a,VISIBLE,381,415,48,45,inbounder holding ball
+d6ec3e73602e,ABSENT,,,,,player closeup no ball
+d6ef57e06dd5,ABSENT,,,,,player closeup no ball
+d7260cedabd7,VISIBLE,1238,243,42,42,ball above rim
+d7f147df3f41,VISIBLE,598,512,34,34,guard dribbling in transition
+d835452d9bcd,ABSENT,,,,,player closeup no ball
+d87488aba976,ABSENT,,,,,free throw closeup no ball
+d8aa51bcedf5,UNKNOWN,,,,,ball not discernible in blur
+d8aab4532989,ABSENT,,,,,pregame introduction no ball
+d8b71b236e3f,VISIBLE,1362,284,32,31,ball above rim
+d8f96cf1f23d,ABSENT,,,,,player closeup no ball
+d935e975e0a8,UNKNOWN,,,,,ball not discernible in crowd
+d9c866f3ffaf,ABSENT,,,,,player closeup no ball
+d9cd21752699,VISIBLE,943,716,33,32,ball at dribblers hand
+d9ebadd3b764,ABSENT,,,,,full screen bracket graphic
+da1357729761,ABSENT,,,,,stats graphic no game ball
+da152a192732,ABSENT,,,,,replay shooter no ball
+da67841f4345,VISIBLE,1304,635,35,35,red player holding ball
+dabcfacaf453,ABSENT,,,,,postgame interview no ball
+daf284041d97,ABSENT,,,,,player closeup no ball
+db6c83f5327f,VISIBLE,1080,724,39,37,white player holding ball
+dbbc4dcf2732,VISIBLE,997,813,47,69,motion blurred held ball
+dc0528ec6cc2,ABSENT,,,,,player closeup no ball
+dc0c28e9374e,VISIBLE,1424,432,29,31,ball at right guards hand
+dceb30c775bd,VISIBLE,656,338,23,24,ball airborne near midcourt
+dd3611a2f969,VISIBLE,1041,431,176,176,ball above rim

@@ -1,0 +1,40 @@
+2f016c06f208,VISIBLE,1007,319,33,32,ball airborne above defender
+2f04941c7a03,ABSENT,,,,,timeout bench closeup
+2f06e36c1ed1,ABSENT,,,,,player closeup without ball
+2f243ae981ad,VISIBLE,916,612,31,31,ball held at waist
+2fa4df83ec62,VISIBLE,243,569,27,31,ball beside dribbler
+2faa7ff03a5c,VISIBLE,645,348,31,29,ball in extended hand
+2fc1c0c397b9,VISIBLE,1198,651,37,38,ball bouncing in paint
+2fe64d28cb18,VISIBLE,789,218,30,29,ball above the rim
+30154a7e3110,VISIBLE,1048,479,28,29,ball held under basket
+30356bf13742,VISIBLE,709,510,30,29,ball secured in traffic
+303ac8d28eeb,ABSENT,,,,,bench closeup without ball
+311dcabd8fc0,VISIBLE,752,797,31,34,ball below dribbling hand
+3130cfa098e5,UNKNOWN,,,,,ball obscured near handler
+313bff52e593,ABSENT,,,,,player closeup without ball
+320fdea13594,ABSENT,,,,,player closeup without ball
+32a9b704493f,VISIBLE,692,512,33,33,ball held between players
+32d80de87a3b,ABSENT,,,,,ball outside visible court
+33525f98eccf,VISIBLE,323,268,25,25,ball held near defender
+33b657bad2c0,ABSENT,,,,,coach closeup without ball
+3427c8976d82,VISIBLE,1527,394,23,24,ball at handlers hand
+3460c10d21ee,ABSENT,,,,,interview closeup without ball
+34766854d990,VISIBLE,1323,444,30,30,ball held by inbounder
+34a68e7844f3,VISIBLE,1064,796,52,55,ball bouncing near sideline
+350458ba9fee,ABSENT,,,,,crowd closeup without ball
+3522f413dafd,ABSENT,,,,,timeout huddle without ball
+35d8cfec5e3d,ABSENT,,,,,postgame court crowd
+369640d8f3c1,ABSENT,,,,,postgame interview scene
+36b7d96fbb5b,VISIBLE,1173,286,30,30,ball held in rim traffic
+3706b27ac296,ABSENT,,,,,city aerial without game ball
+37bec05d324a,VISIBLE,1199,191,29,29,ball airborne near rim
+395923ab30bd,VISIBLE,489,606,31,31,ball held by handler
+39adef9c8324,VISIBLE,296,668,28,27,ball bouncing by dribbler
+3a0a3add537a,VISIBLE,1639,764,29,31,ball beside right hand
+3a1086cbf894,VISIBLE,372,355,29,28,ball traveling across court
+3a1eac61e1a9,VISIBLE,909,687,51,53,ball bouncing in foreground
+3a43247ea755,VISIBLE,989,552,39,38,ball secured in both hands
+3b2627eeaeb9,ABSENT,,,,,postgame interview without ball
+3be793e57b63,VISIBLE,672,250,34,38,free throw ball airborne
+3cd9af01508e,ABSENT,,,,,spectator closeup without ball
+3d11e940c721,VISIBLE,642,227,48,43,shot ball high in air

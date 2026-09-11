@@ -1,0 +1,40 @@
+93765f85386b,VISIBLE,1021,636,37,31,ball between players
+93d0e95c3c22,ABSENT,,,,,no ball visible
+93d561d0abd7,ABSENT,,,,,player closeup no ball
+94565bfe6ace,VISIBLE,695,543,31,24,airborne pass
+947b87f4c0e6,VISIBLE,620,691,31,35,low dribble
+9534d65f18d2,VISIBLE,386,422,27,36,held by ballhandler
+9553ae33713a,ABSENT,,,,,official holds dead ball
+95a0ce7b9587,VISIBLE,447,726,27,30,ball at left hip
+95cd346765f1,UNKNOWN,,,,,ball obscured in play
+9654729789be,UNKNOWN,,,,,ball hidden by bodies
+96bef25962ec,VISIBLE,1341,321,29,29,pass near right wing
+9746fd6fd103,VISIBLE,1727,801,37,34,held at right border
+97b0f9504773,ABSENT,,,,,free throw setup no ball
+97d09f6e9182,VISIBLE,992,205,29,30,ball above shooter
+97d7b429f1c7,UNKNOWN,,,,,ball obscured by defender
+97ddf468f289,VISIBLE,913,572,30,30,ball on low dribble
+98429c1bb9ae,VISIBLE,776,158,30,29,airborne shot
+98bae19d49ab,ABSENT,,,,,stoppage no ball visible
+98c7fd78a17a,UNKNOWN,,,,,ball lost in crowd
+98d4313d277b,VISIBLE,839,287,78,72,ball at the rim
+98d9b066d866,ABSENT,,,,,free throw setup no ball
+98fd5ff88f79,UNKNOWN,,,,,ball hidden behind player
+9965a6928457,ABSENT,,,,,broadcast graphic no ball
+996c9c8a64da,ABSENT,,,,,bench closeup no ball
+9a153a7bf4f0,VISIBLE,1438,723,47,48,held near right sideline
+9a228ea59ee6,VISIBLE,791,357,31,34,ball above shooter
+9a36cd5a2114,ABSENT,,,,,official holds dead ball
+9a43195cc9df,UNKNOWN,,,,,graphic obscures play
+9a52f5e42e75,VISIBLE,1117,197,32,34,airborne shot
+9a6c98434331,ABSENT,,,,,player closeup no ball
+9a7fd86aca89,VISIBLE,355,534,35,35,held by ballhandler
+9a98b3eb9ad1,UNKNOWN,,,,,ball not identifiable
+9aabc8a8d721,ABSENT,,,,,player closeup no ball
+9ab9acf3cf2b,ABSENT,,,,,postgame closeup no ball
+9afdaea39bee,VISIBLE,790,244,30,35,ball above leaping player
+9b3c40ebe88f,VISIBLE,555,423,43,42,held by ballhandler
+9b505d1a3645,ABSENT,,,,,crowd shot no ball
+9c2f3a5abf47,ABSENT,,,,,crowd huddle no ball
+9c4c692c9a8f,UNKNOWN,,,,,ball obscured near baseline
+9c55d00df5a8,UNKNOWN,,,,,ball obscured near sideline

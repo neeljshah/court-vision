@@ -1,0 +1,40 @@
+e8521bf0d237,ABSENT,,,,,no ball visible
+e86b1958b0e9,ABSENT,,,,,crowd closeup
+e89b2b5cefc1,VISIBLE,756,497,49,40,blurred pass
+e979919ec474,ABSENT,,,,,reporter shot
+e9a686856100,UNKNOWN,,,,,ball obscured near baseline
+e9fe387a041c,VISIBLE,1012,50,29,34,ball in flight
+ea06480bfc22,ABSENT,,,,,transition graphic
+ea21e74200df,ABSENT,,,,,bench closeup
+ea2300654a31,ABSENT,,,,,player closeup
+ea840f4d4a33,UNKNOWN,,,,,ball not discernible
+eaa882f182d8,VISIBLE,593,412,30,31,player dribbling
+eab3e7c6acef,UNKNOWN,,,,,ball obscured in traffic
+eadfc76d8ce4,UNKNOWN,,,,,ball not discernible
+eb1b380880aa,ABSENT,,,,,sideline staff
+eb8de85a969d,ABSENT,,,,,crowd shot
+eba8c3908739,VISIBLE,1492,631,33,34,player dribbling
+ebc26084e402,ABSENT,,,,,team huddle
+ebc32a31ced1,ABSENT,,,,,bench shot
+ec8cbc20f4b7,UNKNOWN,,,,,ball not discernible
+ec8f5ca63a7b,VISIBLE,1306,866,64,63,held ball
+ecc0d3be31ce,ABSENT,,,,,interview shot
+ed005cbfedb0,ABSENT,,,,,player closeup
+ed5e6a35bf81,VISIBLE,935,168,29,30,ball in flight
+eda38fd4a991,ABSENT,,,,,bracket graphic
+edce8ae845c0,VISIBLE,144,187,200,188,held closeup ball
+ede870077542,ABSENT,,,,,bench celebration
+ee27ca49da66,UNKNOWN,,,,,ball not discernible
+ee311d78fabf,VISIBLE,514,696,31,33,player dribbling
+ee74084b8982,ABSENT,,,,,venue screen
+ee76f9191cdb,VISIBLE,350,355,55,53,held ball
+ee7f587678cc,VISIBLE,1350,525,29,33,inbound ball
+ee801423da41,ABSENT,,,,,postgame closeup
+ef38a29a9b12,VISIBLE,1269,743,34,36,player dribbling
+ef983fcccd3a,ABSENT,,,,,postgame closeup
+f0679fbea70c,ABSENT,,,,,team celebration
+f15fccffca03,ABSENT,,,,,player interview
+f183ac9e41aa,VISIBLE,1094,388,67,68,ball in flight
+f19823b78128,ABSENT,,,,,exterior graphic
+f19899cc7b14,VISIBLE,398,239,131,115,ball in flight
+f1bbb0bdf833,VISIBLE,1010,596,118,112,held ball

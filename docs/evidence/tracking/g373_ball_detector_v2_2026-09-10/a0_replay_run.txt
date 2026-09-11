@@ -1,0 +1,3 @@
+ROUTE models/weights/yolov8n_ball.pt=bc979654e281c5de6e0e992e1f9587b3a9faa2eec996ea41b1b03954ba0b6e52 src/tracking/ball_detect_track.py=cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea
+VRAM free_mib=11088 coco_fallback=False arm=A0 imgsz=384 conf=0.05 tile=0
+ARM A0 split=heldout frames=549 gpu_minutes=0.76 fps=11.97 a0_fidelity_mismatches=4

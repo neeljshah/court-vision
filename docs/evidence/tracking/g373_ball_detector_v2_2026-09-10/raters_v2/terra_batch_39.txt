@@ -1,0 +1,40 @@
+6bbbe3cd59be,ABSENT,,,,,arena introduction
+6c20179ba59c,VISIBLE,1097,426,96,132,dribbling ball
+6c9755ad2833,VISIBLE,1201,658,39,45,dribbling ball
+6cb85a29d283,VISIBLE,856,758,34,40,held ball
+6cdd84cb0f2b,ABSENT,,,,,player closeup
+6cfb1fb8d36d,ABSENT,,,,,player closeup
+6d75621d11cd,VISIBLE,784,536,43,42,contested ball
+6d7c262af9d9,VISIBLE,908,1021,119,59,free throw ball
+6dac09f07860,ABSENT,,,,,player introduction
+6daede2260da,VISIBLE,1468,590,48,48,held ball
+6e42bf0de215,ABSENT,,,,,player closeup
+6e87f7f43855,ABSENT,,,,,player closeup
+6e891db299c2,ABSENT,,,,,timeout bench shot
+6eeddd8f1750,VISIBLE,125,460,47,52,held ball
+6fda11eb77b6,VISIBLE,853,437,40,40,dribbling ball
+6fe274c47d1e,ABSENT,,,,,player closeup
+70599b415590,ABSENT,,,,,coach closeup
+7085206fd147,ABSENT,,,,,bench celebration
+719900eee66c,VISIBLE,1165,478,40,43,dribbling ball
+723f3a98d77b,VISIBLE,1159,480,40,43,dribbling ball
+726d4d1ef621,ABSENT,,,,,postgame interview
+730c27852a70,VISIBLE,805,667,32,38,dribbling ball
+7328b5b77865,ABSENT,,,,,player introduction
+737c1d5502b5,ABSENT,,,,,player introduction
+738b8e170bb3,VISIBLE,1421,544,37,42,dribbling ball
+738c2e44e7cd,ABSENT,,,,,schedule graphic
+73f850d90cb7,VISIBLE,789,298,35,37,official holds ball
+7425bd4ef81c,VISIBLE,1358,776,39,42,dribbling ball
+7454f6240515,VISIBLE,684,654,33,35,loose ball
+74b17667a7b0,ABSENT,,,,,player closeup
+7691b236d852,VISIBLE,431,396,35,45,held ball
+76b23fa86814,ABSENT,,,,,player closeup
+76d829c36fb3,VISIBLE,411,126,49,54,ball at rim
+76ec3fbe857d,UNKNOWN,,,,,ball obscured by players
+77530f7009fb,ABSENT,,,,,player closeup
+782cd096c79c,UNKNOWN,,,,,ball obscured by rim
+7864c6cf5bce,ABSENT,,,,,team huddle
+795e215fec08,ABSENT,,,,,team huddle
+79db2d9dd194,UNKNOWN,,,,,ball obscured by players
+7a1198d2d1ba,ABSENT,,,,,team huddle

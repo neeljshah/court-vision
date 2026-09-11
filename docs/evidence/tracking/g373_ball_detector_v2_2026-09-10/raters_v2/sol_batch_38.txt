@@ -1,0 +1,40 @@
+61662c717603,VISIBLE,1641,399,44,41,ball near right sideline
+61c95178267f,ABSENT,,,,,player huddle closeup
+620c2af62306,UNKNOWN,,,,,ball obscured in action
+62b2d7ae5e4b,VISIBLE,740,344,27,25,ball beside moving player
+6355816e103c,VISIBLE,946,542,33,31,ball held for free throw
+64ea756467f8,ABSENT,,,,,interview closeup
+65adde36966d,VISIBLE,1264,349,27,26,ball held under basket
+6613b7a9b76f,VISIBLE,1401,511,22,22,ball held by guard
+6679856f073c,VISIBLE,1549,487,30,31,ball on right hand dribble
+6742204d3ef6,ABSENT,,,,,injured player closeup
+68a61cec9ebd,VISIBLE,1547,656,30,29,ball on right wing dribble
+68db51861b83,UNKNOWN,,,,,release area too unclear
+690a03e2b14e,VISIBLE,1470,313,59,63,ball above shooters hands
+699f9adcb557,ABSENT,,,,,shooter closeup without ball
+69c8d6565747,VISIBLE,728,320,27,27,airborne ball near basket
+69d4e0992b32,VISIBLE,558,387,27,25,ball near left baseline
+69fcc9d7036a,ABSENT,,,,,coach closeup
+6a1479e9e4e2,UNKNOWN,,,,,ball not identifiable in transition
+6a6248beb181,VISIBLE,1488,629,45,44,ball near right baseline
+6a99b66848cf,ABSENT,,,,,broadcast graphic only
+6aa27e4930c2,VISIBLE,895,586,29,30,ball bouncing in lane
+6b55ca34b308,VISIBLE,1424,91,50,65,ball above backboard
+6bbbe3cd59be,ABSENT,,,,,arena crowd ceremony
+6c20179ba59c,VISIBLE,1111,438,92,105,ball on close dribble
+6c9755ad2833,VISIBLE,1198,664,33,35,ball on center court dribble
+6cb85a29d283,VISIBLE,881,784,24,25,ball beside handlers hand
+6cdd84cb0f2b,ABSENT,,,,,player closeup without ball
+6cfb1fb8d36d,ABSENT,,,,,player closeup without ball
+6d75621d11cd,VISIBLE,742,563,35,34,ball held in lane traffic
+6d7c262af9d9,VISIBLE,853,1060,166,20,partial ball at bottom border
+6dac09f07860,ABSENT,,,,,arena introduction shot
+6daede2260da,VISIBLE,1487,589,50,49,ball held on right wing
+6e42bf0de215,ABSENT,,,,,player reaction closeup
+6e87f7f43855,ABSENT,,,,,player closeup without ball
+6e891db299c2,ABSENT,,,,,timeout bench shot
+6eeddd8f1750,VISIBLE,193,464,30,31,ball held on left wing
+6fda11eb77b6,UNKNOWN,,,,,ball not identifiable in setup
+6fe274c47d1e,VISIBLE,866,441,29,29,ball held in the lane
+70599b415590,ABSENT,,,,,player closeup without ball
+7085206fd147,ABSENT,,,,,coach closeup

@@ -1,0 +1,40 @@
+17b7e5165d18,VISIBLE,142,283,47,48,ball held at left wing
+17d6fcd7fb73,ABSENT,,,,,bench timeout closeup
+1857d246757a,ABSENT,,,,,bench scene without ball
+18655fec2b19,ABSENT,,,,,player closeup without ball
+189ad3ac6748,VISIBLE,708,717,32,31,ball held near lane
+18d717b95aad,VISIBLE,446,399,39,36,ball partly behind screener
+18f0cbe4d4c6,UNKNOWN,,,,,ball not discernible in wide view
+18f3d180b485,VISIBLE,1104,453,33,31,ball held in paint
+1964f056bc85,VISIBLE,711,472,31,33,ball beside driving player
+196f3c56062a,ABSENT,,,,,timeout interview closeup
+19aa39df5c12,ABSENT,,,,,no ball visible on court
+1a1a5c6d446a,UNKNOWN,,,,,ball obscured in transition
+1ac73a2dcdf1,ABSENT,,,,,team huddle closeup
+1b52ab7e5d34,VISIBLE,991,557,27,26,loose ball near baseline
+1b7184dbaa29,ABSENT,,,,,pregame introduction scene
+1b86f4d0f72a,VISIBLE,1444,627,25,24,ball on right wing
+1bde52a9fa30,VISIBLE,811,46,70,67,ball flying toward camera
+1bf643c2eec3,ABSENT,,,,,no ball visible on court
+1d1cb6529078,VISIBLE,756,396,39,34,ball held by baseline player
+1dbb98c89d42,VISIBLE,1071,266,45,42,ball airborne above lane
+1de680a0b818,VISIBLE,1178,570,39,38,ball held near baseline
+1e020a4bdc89,VISIBLE,1730,498,41,36,ball airborne at sideline
+1ed950faa353,VISIBLE,291,193,48,41,ball crossing upper left
+1eeefb37ee64,ABSENT,,,,,dead ball held by official
+1ef290866cde,VISIBLE,882,118,53,55,ball airborne over lane
+1f22a2a52847,ABSENT,,,,,player closeup without ball
+1f6c55e79eb3,ABSENT,,,,,bench closeup without ball
+2034fa57099c,ABSENT,,,,,injured player closeup
+2064dd5b1714,VISIBLE,997,605,34,32,ball held near free throw line
+20acbc1fcca1,ABSENT,,,,,player closeup without ball
+20cbcbd30962,ABSENT,,,,,stoppage without visible ball
+20e3d59773aa,VISIBLE,430,638,31,30,ball held by left handler
+20ea1070cef4,UNKNOWN,,,,,ball hidden by broadcast graphic
+2136a528a2d8,ABSENT,,,,,player closeup without ball
+21397c7b3c55,VISIBLE,1028,370,43,43,shot airborne right of rim
+21ad836779ea,ABSENT,,,,,dead ball outside baseline
+21af71171642,ABSENT,,,,,stoppage closeup without ball
+21d9b9c5350f,VISIBLE,472,548,40,39,ball held in traffic
+22548044b18e,VISIBLE,1330,101,39,39,shot above backboard
+22965c4756ca,VISIBLE,1098,501,41,40,ball secured under basket

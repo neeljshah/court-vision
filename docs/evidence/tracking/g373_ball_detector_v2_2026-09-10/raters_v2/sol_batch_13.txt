@@ -1,0 +1,40 @@
+87e899b0a031,VISIBLE,1172,369,26,28,ball held by baseline player
+88a603090bfc,VISIBLE,1458,459,31,32,ball held by right wing player
+88b95d236e19,ABSENT,,,,,bench closeup without game ball
+88dc262ed748,VISIBLE,1658,582,33,38,ball in right hand
+89521b5d0d6a,ABSENT,,,,,arena ceremony without game ball
+8986d22a3ee6,VISIBLE,512,510,42,44,ball held in lane traffic
+89b4f8ed448c,VISIBLE,1234,321,36,37,ball held by referee
+89dd8715dd8a,ABSENT,,,,,celebration closeup without ball
+8a6623a9c489,VISIBLE,193,173,43,39,ball held by left referee
+8b2d24c1bd75,UNKNOWN,,,,,ball obscured during blurred play
+8b7a7979b56c,VISIBLE,1248,305,32,40,ball above raised hands
+8bfa5dc8d8c9,UNKNOWN,,,,,ball hidden in floor scramble
+8c2b4ca650af,VISIBLE,397,442,33,32,ball held by inbounder
+8c364576216e,ABSENT,,,,,timeout huddle without game ball
+8c596a426560,UNKNOWN,,,,,ball obscured by clustered players
+8d4631207aa6,VISIBLE,1618,415,56,58,ball traveling toward receiver
+8d80190d0e2b,ABSENT,,,,,player closeup without game ball
+8d8066eb6700,VISIBLE,512,674,28,30,ball bouncing near baseline
+8d8ac1354238,ABSENT,,,,,player closeup without game ball
+8da2fd2e41cd,VISIBLE,422,652,32,31,ball controlled by left handler
+8db551391476,ABSENT,,,,,bench closeup without game ball
+8df8b92593df,ABSENT,,,,,graphic basketball is not game ball
+8e018c1de817,UNKNOWN,,,,,ball outside view or obscured
+8eaa76587cb1,VISIBLE,1389,340,36,38,ball held in shooting motion
+8eddb6561311,VISIBLE,1235,569,29,29,ball bouncing beside dribbler
+8f745c2bbdd6,VISIBLE,1439,271,27,30,ball above shooters hands
+8fc5f69f7542,ABSENT,,,,,stoppage view without game ball
+9061d91c2aad,ABSENT,,,,,player closeup without game ball
+90b32b232312,ABSENT,,,,,sideline celebration without ball
+90c2505a735a,ABSENT,,,,,player closeup without game ball
+90ec31471472,VISIBLE,1150,778,62,58,ball bouncing during transition
+91237c714d31,VISIBLE,761,220,31,33,ball dropping through basket
+914518aa85f5,VISIBLE,562,258,29,28,ball held by sideline inbounder
+91472eb3a624,UNKNOWN,,,,,ball obscured in halfcourt action
+918f12e96516,UNKNOWN,,,,,ball outside view or obscured
+91a032cf73e1,ABSENT,,,,,player closeup without game ball
+9205d986172e,VISIBLE,1565,422,38,36,ball held by baseline inbounder
+921ecafd36e4,ABSENT,,,,,arena presentation without game ball
+9220eea33e68,ABSENT,,,,,postgame closeup without game ball
+934374068bfc,ABSENT,,,,,player closeup without game ball

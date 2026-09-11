@@ -1,0 +1,18 @@
+{
+ "by_file": {
+  "docs/evidence/tracking/g373_ball_detector_v2_2026-09-10/adjudication_queue.csv": {
+   "exempt_path": 1,
+   "findings": 0,
+   "samples": []
+  }
+ },
+ "ledger_rows": "",
+ "scanned_roots": [
+  "docs/evidence/tracking/g373_ball_detector_v2_2026-09-10",
+  "docs/evidence/tracking/g373_ball_detector_v2_2026-09-10.md",
+  "scripts/platformkit/tracking/g373_q6_scan.py",
+  "scripts/platformkit/tracking/g373_q6_redact.py",
+  "tests/platformkit/test_g373_ball_detector_v2.py"
+ ],
+ "total_findings": 0
+}

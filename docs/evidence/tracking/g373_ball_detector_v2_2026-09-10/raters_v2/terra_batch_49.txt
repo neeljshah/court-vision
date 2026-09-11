@@ -1,0 +1,40 @@
+f0a88241b612,VISIBLE,834,275,30,31,ball held near baseline
+f15eea082d90,UNKNOWN,,,,ball not distinguishable
+f1e97ab7c9ec,ABSENT,,,,summary graphic
+f2a5561bc90c,ABSENT,,,,player closeup
+f2cd23e2f7e8,ABSENT,,,,team celebration
+f2f19e07e189,VISIBLE,941,189,42,47,ball in flight
+f39e98b6c409,VISIBLE,896,535,35,42,ball at driving player
+f45aa38f9fe6,ABSENT,,,,broadcast graphic
+f4b8c2436cf9,VISIBLE,365,446,28,29,ball held inbound
+f4e7ec7502c5,UNKNOWN,,,,ball obscured near basket
+f6662f51ce33,VISIBLE,987,96,28,31,ball in flight
+f6a57a2f49a5,VISIBLE,926,321,28,26,ball in transition
+f6b7b482d319,VISIBLE,625,480,76,76,ball in foreground
+f712f1fe0a07,VISIBLE,850,538,26,29,ball held in lane
+f73ab9fb5392,VISIBLE,824,115,27,24,ball above rim
+f794bd5e5c3b,ABSENT,,,,player closeup
+f79866f6cbfc,ABSENT,,,,postgame closeup
+f7caaf20c7bc,VISIBLE,837,572,116,116,ball above rim
+f87b8ea1887d,UNKNOWN,,,,ball obscured in play
+f8cc97332574,ABSENT,,,,crowd closeup
+f8eba18fcbc7,VISIBLE,1587,797,34,39,ball by dribbler
+f8f985b5dbde,VISIBLE,1207,523,25,29,ball near passer
+f958412f80f6,ABSENT,,,,player closeup
+f9c1fede1ee5,UNKNOWN,,,,ball obscured in cluster
+fa8442662e1b,ABSENT,,,,timeout huddle
+fa9045515642,ABSENT,,,,player closeup
+fae0913ddf13,ABSENT,,,,team celebration
+fb1c9981c68b,ABSENT,,,,motion blurred closeup
+fb8993f79ed1,UNKNOWN,,,,ball not distinguishable
+fbab927f6fb2,VISIBLE,619,387,44,43,ball held for free throw
+fbca26cc64e7,ABSENT,,,,interview shot
+fc12e97c2520,VISIBLE,0,0,209,112,partial ball at border
+fc15514f48cb,ABSENT,,,,sideline interview
+fc41f81dfdfc,VISIBLE,1364,362,30,30,ball in pass
+fc5592b5ab59,ABSENT,,,,bench reaction
+fd1b5c3bc6b5,ABSENT,,,,player closeup
+fd1e14933d09,ABSENT,,,,dead ball scene
+fd2878a8cfe7,UNKNOWN,,,,ball obscured near baseline
+fd393e6eede9,ABSENT,,,,bracket graphic
+fdae9452f4bc,UNKNOWN,,,,ball obscured near dribbler

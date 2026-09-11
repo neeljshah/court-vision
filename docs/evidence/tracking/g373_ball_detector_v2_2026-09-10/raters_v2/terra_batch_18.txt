@@ -1,0 +1,40 @@
+c33c8426f848,ABSENT,,,,,band crowd shot
+c370975d7d0f,ABSENT,,,,,player closeup
+c504b83daeba,VISIBLE,768,261,47,45,airborne near basket
+c53712c3ac6c,ABSENT,,,,,sideline interview
+c576ee9e3a29,ABSENT,,,,,crowd shot
+c5a93ad76402,VISIBLE,1487,385,34,34,shooter holds ball
+c5c35b92fd2d,VISIBLE,982,316,45,34,pass in progress
+c5f71722e4b6,ABSENT,,,,,postgame interview
+c63ea555a8e4,ABSENT,,,,,warmup closeup
+c651943b59dd,VISIBLE,508,219,38,41,held near rim
+c65239bf86fb,VISIBLE,529,476,33,32,ballhandler holds ball
+c65af6218d9d,ABSENT,,,,,timeout huddle
+c68e36cf6e17,UNKNOWN,,,,,ball obscured in traffic
+c699076e0fb5,VISIBLE,1106,598,62,63,held in lane
+c6b1b8c35c70,VISIBLE,1326,638,76,78,low dribble
+c6f3e658d15d,UNKNOWN,,,,,ball obscured under basket
+c70d5872450e,VISIBLE,382,404,29,42,ballhandler dribbling
+c822ee49f2fb,VISIBLE,1040,176,62,40,ball at rim
+c8584a3adc7a,VISIBLE,351,666,35,40,ballhandler dribbling
+c8585e20f673,ABSENT,,,,,player closeup
+c899ecc1d38c,ABSENT,,,,,bench closeup
+c8b7a671965c,ABSENT,,,,,dead ball huddle
+c9eb4df95680,ABSENT,,,,,postgame interview
+ca783f13da91,ABSENT,,,,,cheerleader shot
+caaf10a7dd5b,VISIBLE,1037,343,36,35,held during stoppage
+cac19bad1c9d,VISIBLE,593,580,29,35,free throw ball
+cac895e73ca5,VISIBLE,1275,772,31,29,low dribble
+cb10f94b2e67,VISIBLE,1097,780,41,34,ballhandler dribbling
+cb9e43cfe826,ABSENT,,,,,player closeup
+cba96941045f,VISIBLE,777,242,44,42,ball at rim
+cbcac3d74a86,VISIBLE,1034,456,37,39,held in traffic
+cc20458c6f06,VISIBLE,1198,430,45,44,ballhandler holds ball
+cd44868f53a2,VISIBLE,777,393,45,47,held in post
+cd8fe23cddfb,ABSENT,,,,,player closeup
+cde14e856cbf,VISIBLE,816,369,38,38,airborne pass
+ceadd38ef025,VISIBLE,1331,249,48,53,shooter holds ball
+ceb578923915,VISIBLE,876,699,44,44,airborne ball
+cee1530bf919,VISIBLE,1196,470,32,36,ballhandler dribbling
+cee4d81605ae,VISIBLE,865,628,35,39,ballhandler dribbling
+cefcfd5d8442,ABSENT,,,,,crowd graphic

@@ -1,0 +1,40 @@
+b6bb6ae761d1,VISIBLE,1395,334,48,49,referee holds ball
+b70a17fb2007,VISIBLE,666,802,42,42,player dribbling ball
+b716e12e42a7,VISIBLE,1259,703,29,29,ball at player hip
+b8556e868f73,VISIBLE,1304,478,27,27,ball by baseline player
+b86e4c31ee79,VISIBLE,1448,397,36,36,player holds ball
+b8a141378049,ABSENT,,,,,close player shot
+b91495e19405,VISIBLE,1067,535,29,29,ball above shooter
+ba0cc82a3fe4,VISIBLE,744,488,30,30,player holds ball
+ba855df11c50,ABSENT,,,,,team closeup
+ba9c0b904e81,VISIBLE,1252,294,27,27,ball near ballhandler
+bb224239090a,VISIBLE,634,574,28,28,ball near player hands
+bbcf6a50aeef,ABSENT,,,,,player closeup
+bc46741fe103,VISIBLE,1063,734,31,31,referee holds ball
+bc51adfffdaa,VISIBLE,346,604,29,29,ball by ballhandler
+bc77f4a2b217,UNKNOWN,,,,,ball not discernible
+bcb481fbcc70,UNKNOWN,,,,,ball not discernible
+bcd6bde84d4f,UNKNOWN,,,,,ball obscured by players
+bd090799c4f8,VISIBLE,427,207,30,30,player dribbling ball
+bd0d6bb3e74b,ABSENT,,,,,celebration crowd shot
+bdd7a34c674c,VISIBLE,1284,471,34,34,player holds ball
+be34c82fab19,ABSENT,,,,,crowd shot
+be78f22c1c03,ABSENT,,,,,coach closeup
+bea639731fa9,VISIBLE,1259,323,28,28,ball by ballhandler
+bed46a2ee91c,ABSENT,,,,,coach interview
+bee7aed2a269,ABSENT,,,,,player closeup
+befc9d17fba7,VISIBLE,389,309,28,28,player dribbling ball
+bf2251ab8fae,VISIBLE,1483,370,26,26,player holds ball
+bf661bdb9582,VISIBLE,690,406,28,28,shooter holds ball
+bf710d95bb51,ABSENT,,,,,non basketball scene
+bf77cbc60af0,VISIBLE,553,451,27,27,player dribbling ball
+bf815b638380,VISIBLE,1210,379,211,214,ball at camera
+bfadf48da1eb,ABSENT,,,,,player closeup
+bfb8daf6db57,VISIBLE,234,481,31,31,player dribbling ball
+c07853b2493f,ABSENT,,,,,dead ball players
+c09e17b5ace9,VISIBLE,758,514,126,126,referee holds ball
+c130340efee4,VISIBLE,1655,696,39,39,inbounder holds ball
+c132da3e321d,VISIBLE,188,537,31,31,player dribbling ball
+c1bbbb7f318c,VISIBLE,330,380,33,33,inbounder holds ball
+c23aaae11919,ABSENT,,,,,crowd closeup
+c2579c7c4aba,ABSENT,,,,,crowd closeup

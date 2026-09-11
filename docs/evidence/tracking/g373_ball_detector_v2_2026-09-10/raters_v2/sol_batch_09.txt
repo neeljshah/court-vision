@@ -1,0 +1,40 @@
+5d88e82139c3,VISIBLE,854,754,43,43,ball at dribblers hand
+5d8aeeeb55a5,VISIBLE,1181,303,27,27,ball held near waist
+5da3241e77e6,VISIBLE,940,405,58,88,ball falling through net
+5dae5c030d69,ABSENT,,,,,postgame interview
+5dcbda1d60b1,VISIBLE,335,436,35,40,ball held by inbounder
+5ddd9b25dd62,VISIBLE,283,661,53,62,ball held at hip
+5dfbffaacae6,VISIBLE,1297,195,32,30,ball above rim
+5e1d059c77e4,VISIBLE,865,531,66,53,ball secured by driver
+5e54740ed4e7,VISIBLE,762,837,40,43,ball bouncing on court
+5e728c70cfac,VISIBLE,1282,594,46,32,ball leaving shooters hands
+5ef705e78f2b,VISIBLE,1451,474,37,42,ball beside handlers hand
+5f71a3cb9898,VISIBLE,647,748,60,65,ball held by driver
+5f81b9f9e38b,VISIBLE,536,504,35,34,ball at free throw release
+5faf12f4f07d,ABSENT,,,,,player closeup without ball
+5fda84db502f,ABSENT,,,,,team celebration closeup
+5fdab714fc92,VISIBLE,49,757,182,175,ball held in closeup
+5fe37d0cc403,ABSENT,,,,,player closeup without ball
+6037df5845d3,VISIBLE,1075,635,27,29,ball held in traffic
+60d18369e4ce,ABSENT,,,,,sideline interview
+61439814103c,ABSENT,,,,,sideline interview
+618600d99e29,ABSENT,,,,,postgame interview
+61efdf2a867a,VISIBLE,643,550,85,79,ball held for free throw
+6210a2f091bd,UNKNOWN,,,,,ball not discernible
+622ac07d4c36,ABSENT,,,,,sideline interview
+625771c20847,VISIBLE,81,679,44,40,ball bouncing near sideline
+62e105916483,VISIBLE,1177,388,35,35,ball held by advancing player
+63b3b82354a0,UNKNOWN,,,,,ball obscured by player
+640da5e14096,ABSENT,,,,,postgame interview
+64352477bd14,VISIBLE,938,276,39,40,ball airborne beside rim
+64b0424b6bdb,UNKNOWN,,,,,ball not discernible
+64b97f92e692,UNKNOWN,,,,,transition graphic obscures play
+64d9361b5213,VISIBLE,491,464,33,34,ball beside handlers hand
+64da58b4ff7c,ABSENT,,,,,player closeup without ball
+64e7d380e359,UNKNOWN,,,,,ball obscured near baseline
+65082cf67f56,VISIBLE,511,809,27,27,ball bouncing near handler
+65c1594f57bc,ABSENT,,,,,postgame interview
+65d33cab1581,VISIBLE,1378,326,28,27,ball held in background
+65e04a6703eb,ABSENT,,,,,crowd shot without game ball
+65efed56fbe2,VISIBLE,824,800,29,28,ball bouncing beside handler
+661810290336,VISIBLE,696,315,27,26,ball at the rim

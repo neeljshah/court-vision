@@ -1,0 +1,40 @@
+7c87fcdb9ebf,ABSENT,,,,,closeup without ball
+7ca0d220a93b,VISIBLE,970,708,27,30,ball carried in transition
+7cb042e3cc02,UNKNOWN,,,,,ball obscured in traffic
+7cf949ee5ae2,VISIBLE,434,567,28,32,ball on low dribble
+7d2ca3793b10,ABSENT,,,,,player introductions no ball
+7d768bd0334d,UNKNOWN,,,,,ball not distinguishable
+7d91f76d5af8,VISIBLE,969,496,22,27,ball held in lane
+7d9d521aeec6,VISIBLE,497,682,32,33,ball passing toward corner
+7dac93726975,VISIBLE,521,503,20,21,ball held at perimeter
+7e5fb041828c,ABSENT,,,,,closeup without ball
+7f5565ff893c,VISIBLE,951,1042,133,38,ball clipped at bottom border
+7f7214b5c09a,ABSENT,,,,,bench closeup no ball
+80333f68bec0,ABSENT,,,,,interview without ball
+805123a819fe,VISIBLE,533,535,29,28,ball on advancing dribble
+806edbdc1576,ABSENT,,,,,sideline closeup no ball
+8130c788f800,VISIBLE,1626,588,28,30,ball bouncing at right
+8168d1d83bea,VISIBLE,493,551,34,29,ball in handler hand
+819977e602ed,VISIBLE,1105,707,34,43,ball partially held low
+825f402b5578,ABSENT,,,,,timeout scene no ball
+82f00fdd476d,ABSENT,,,,,player closeup no ball
+82fbbc268e44,ABSENT,,,,,celebration with no ball
+83048a796e33,VISIBLE,1368,295,28,25,ball above the rim
+831ec00d02df,UNKNOWN,,,,,released ball not distinguishable
+835deb004d08,ABSENT,,,,,mascot crowd shot
+836422850d55,VISIBLE,62,509,27,26,ball on left hand dribble
+83f1c26a9270,VISIBLE,1077,574,61,53,ball held before inbound
+8502ab18f680,ABSENT,,,,,player closeup no ball
+852d06bee969,VISIBLE,847,486,22,22,ball held near left block
+852f5100c7bf,ABSENT,,,,,stoppage closeup no ball
+853663d3fa88,ABSENT,,,,,interview without ball
+85597a5e8bf8,VISIBLE,904,121,35,31,ball in flight
+858022bbc89b,VISIBLE,334,504,29,28,ball held on wing
+85ad63a5999b,ABSENT,,,,,blurred court no ball
+85cb6b627d5b,ABSENT,,,,,postgame interview no ball
+85f8416413ff,VISIBLE,1512,480,31,31,referee holding game ball
+867f70f40b5a,ABSENT,,,,,postgame interview no ball
+869565cc29e6,UNKNOWN,,,,,ball hidden during stoppage
+86fe4e94afa2,ABSENT,,,,,player closeup no ball
+877154041e4d,VISIBLE,890,732,29,34,ball held near sideline
+87a426f02ac1,ABSENT,,,,,crowd shot no ball

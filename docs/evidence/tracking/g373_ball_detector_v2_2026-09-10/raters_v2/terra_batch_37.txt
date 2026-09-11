@@ -1,0 +1,40 @@
+4889cdbaf5f0,ABSENT,,,,,player closeup no ball
+49341414e11f,VISIBLE,1195,276,26,27,ball at rim
+494ea1aa0b7e,ABSENT,,,,,broadcast graphic only
+496b17f368a9,VISIBLE,542,510,26,28,ball by dribbler
+49ebeb1b5fcd,ABSENT,,,,,player closeup no ball
+4a560b4a53ad,VISIBLE,240,465,38,38,ball held left wing
+4a79394de100,VISIBLE,370,470,34,34,ball held by guard
+4b5db2fd8271,VISIBLE,1030,692,34,34,ball in front of player
+4b645300c393,VISIBLE,563,423,40,40,ball held by passer
+4baeba87f539,VISIBLE,1391,550,34,34,ball held on right
+4cef1965dc2a,ABSENT,,,,,players between plays
+4d0ca1a50dca,VISIBLE,787,263,27,26,ball above shooter
+4d3fe0a8562e,ABSENT,,,,,bench closeup no ball
+4d6bb9251d88,ABSENT,,,,,player closeup no ball
+4de1c405885f,ABSENT,,,,,broadcast graphic only
+4de347374550,VISIBLE,45,505,53,49,ball at left border
+4eec503af9ec,ABSENT,,,,,player closeup no ball
+4f10c0f51393,VISIBLE,1266,619,39,44,ball at free throw
+4f882f1e1b08,VISIBLE,1588,544,31,36,ball held near sideline
+4fa015dcb42c,VISIBLE,1472,620,35,38,ball at shooter
+505346cd0c51,ABSENT,,,,,crowd closeup no ball
+50a748002cec,ABSENT,,,,,crowd closeup no ball
+50dce783ae7a,ABSENT,,,,,coach closeup no ball
+50e1249eaad6,VISIBLE,1064,431,36,35,ball by dribbler
+5150b181f4b2,VISIBLE,1172,490,37,40,ball held near baseline
+526cb2d97693,ABSENT,,,,,official review no ball
+529d9ff7571f,ABSENT,,,,,bench closeup no ball
+52bf5ee4997d,VISIBLE,868,367,25,26,ball in transition
+53dbf0f11ab2,ABSENT,,,,,player closeup no ball
+544535309fc9,VISIBLE,953,465,38,39,ball held in lane
+55390fa05f20,VISIBLE,390,246,30,31,ball above shooter
+57203e476711,ABSENT,,,,,transition graphic only
+574d6547a63a,UNKNOWN,,,,,ball not distinguishable
+57bd610284b1,VISIBLE,554,577,42,41,ball held on wing
+581caeef18eb,VISIBLE,1491,668,40,42,ball held at baseline
+582edf9bf210,VISIBLE,1018,175,39,40,ball held overhead
+586f43f02e67,ABSENT,,,,,mascot shot no ball
+590883b213c7,ABSENT,,,,,coach closeup no ball
+5a7a00430493,ABSENT,,,,,player closeup no ball
+5b140d01ac36,VISIBLE,1125,462,32,34,ball held in post

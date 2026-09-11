@@ -1,0 +1,49 @@
+{
+ "boxes": 283,
+ "by_source": {
+  "extra": 191,
+  "sealed": 92
+ },
+ "development_reference_labels": {
+  "ABSENT": 383,
+  "UNKNOWN": 43,
+  "VISIBLE": 284
+ },
+ "game_ids": [
+  "0SQ709_N0Yg",
+  "1zPhldjbJnU",
+  "3eeaJz1PJTM",
+  "3fT6aYz2N9w",
+  "5PNHcMafoX8",
+  "6FlZaoWSfFw",
+  "7Ci3zQ5Vm4M",
+  "850xnW8BoAU",
+  "9sq-YMlIo9Q",
+  "E-5WuXXdGSA",
+  "EqseleqhpTk",
+  "GNjSxoeDT-E",
+  "QXFM3hlaDAk",
+  "VEUJpELt_yA",
+  "X5w3V6rh26s",
+  "XCaGht2GmPg",
+  "bt3NwN7k8bY",
+  "eaKqXq9dfig",
+  "fXLNra4sjjU",
+  "g7dzEFLiemQ",
+  "h5pTl8fOM2U",
+  "hLv8cwl0asQ",
+  "jKoEJNdiRyI",
+  "q9kHoUZvxik",
+  "ql7kzzTRo4M",
+  "wJSOHbeQcg4",
+  "wptZj4SuFtE"
+ ],
+ "games": 27,
+ "quota": {
+  "boxes_required": 500,
+  "games_required": 5,
+  "met": false
+ },
+ "skipped_causal_neighbour": 1,
+ "unique_frames": 283
+}

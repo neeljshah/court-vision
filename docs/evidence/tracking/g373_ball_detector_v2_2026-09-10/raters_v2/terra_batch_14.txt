@@ -1,0 +1,40 @@
+93765f85386b,VISIBLE,1014,625,34,32,ball amid players
+93d0e95c3c22,ABSENT,,,,,no ball visible
+93d561d0abd7,ABSENT,,,,,player graphic shot
+94565bfe6ace,VISIBLE,695,542,31,29,ball in flight
+947b87f4c0e6,VISIBLE,623,684,30,31,dribbled ball
+9534d65f18d2,VISIBLE,382,425,32,35,ball in left hand
+9553ae33713a,UNKNOWN,,,,,ball obscured by players
+95a0ce7b9587,VISIBLE,833,657,31,29,ball in player hands
+95cd346765f1,UNKNOWN,,,,,ball not distinguishable
+9654729789be,VISIBLE,1210,589,35,39,ball in traffic
+96bef25962ec,VISIBLE,1334,300,27,27,ball held on wing
+9746fd6fd103,VISIBLE,918,584,26,26,loose ball near player
+97b0f9504773,UNKNOWN,,,,,free throw ball not visible
+97d09f6e9182,VISIBLE,958,298,29,30,ball held overhead
+97d7b429f1c7,UNKNOWN,,,,,ball obscured on right
+97ddf468f289,VISIBLE,917,583,31,33,dribbled ball
+98429c1bb9ae,VISIBLE,777,161,29,30,ball in flight
+98bae19d49ab,UNKNOWN,,,,,dead ball not visible
+98c7fd78a17a,UNKNOWN,,,,,ball obscured in rebound
+98d4313d277b,VISIBLE,824,281,78,72,ball at rim
+98d9b066d866,ABSENT,,,,,no ball visible
+98fd5ff88f79,ABSENT,,,,,no ball visible
+9965a6928457,ABSENT,,,,,full screen graphic
+996c9c8a64da,ABSENT,,,,,sideline closeup
+9a153a7bf4f0,VISIBLE,1428,714,57,55,ball held at right
+9a228ea59ee6,VISIBLE,792,330,33,39,ball above players
+9a36cd5a2114,VISIBLE,697,507,45,44,referee holding ball
+9a43195cc9df,ABSENT,,,,,full screen graphic
+9a52f5e42e75,VISIBLE,1112,197,32,34,ball in flight
+9a6c98434331,ABSENT,,,,,player closeup
+9a7fd86aca89,VISIBLE,358,538,31,31,ball held on left
+9a98b3eb9ad1,VISIBLE,1053,481,29,30,dribbled ball
+9aabc8a8d721,ABSENT,,,,,player closeup
+9ab9acf3cf2b,ABSENT,,,,,player closeup
+9afdaea39bee,VISIBLE,781,247,38,43,ball at rim
+9b3c40ebe88f,VISIBLE,548,414,43,42,dribbled ball
+9b505d1a3645,ABSENT,,,,,crowd shot
+9c2f3a5abf47,ABSENT,,,,,crowd timeout shot
+9c4c692c9a8f,UNKNOWN,,,,,ball not distinguishable
+9c55d00df5a8,VISIBLE,578,341,33,36,ball held on left

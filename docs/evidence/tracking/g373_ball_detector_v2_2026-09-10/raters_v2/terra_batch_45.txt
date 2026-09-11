@@ -1,0 +1,40 @@
+b5057d965e32,ABSENT,,,,,close player shot no ball
+b50d55a74545,UNKNOWN,,,,,ball obscured by players
+b56658cf0a25,ABSENT,,,,,schedule graphic
+b57d818efdfd,ABSENT,,,,,bench reaction shot
+b5a439dee464,ABSENT,,,,,timeout huddle
+b5caad775489,VISIBLE,534,369,35,35,player holds inbound ball
+b642c14dbf47,ABSENT,,,,,player closeup
+b643cb7a398b,ABSENT,,,,,player closeup
+b6de0b706f39,ABSENT,,,,,bench shot
+b74c18a4cc17,VISIBLE,959,568,139,147,free throw ball motion blur
+b7a2082d6195,VISIBLE,767,500,39,39,shooter holds ball
+b7ae0fca9906,ABSENT,,,,,celebration dancers
+b84917cdbf31,VISIBLE,748,173,35,34,ball above basket
+b84afe301087,VISIBLE,838,331,49,51,referee holds ball
+b8f36a969244,ABSENT,,,,,bench shot
+b9d6f540b400,VISIBLE,1488,602,40,42,referee holds ball
+b9ddfc73add0,ABSENT,,,,,team bench shot
+ba1d29fe5445,VISIBLE,1014,756,140,155,Curry holds ball
+bb17798d34b2,VISIBLE,314,587,40,40,player holds ball
+bb7cbf538d4b,ABSENT,,,,,transition players no ball
+bb99aeb249c6,VISIBLE,973,299,56,58,player raises ball
+bc3f5a77cb1d,VISIBLE,584,292,36,36,ball near basket
+bc7738bc5fc5,UNKNOWN,,,,,ball obscured by players
+bcc1174cac40,VISIBLE,889,617,39,42,player dribbles ball
+bd251db670c1,ABSENT,,,,,player closeup
+bd3d3a2e1cb4,ABSENT,,,,,bench shot
+bd522ba09d58,ABSENT,,,,,sideline interview
+bd9a83921c8d,ABSENT,,,,,sideline interview
+bdcf73912f86,VISIBLE,1497,445,32,32,shooter holds ball
+be1e89d51985,ABSENT,,,,,team introduction
+becfa0b9bdff,VISIBLE,302,266,34,34,shooter releases ball
+bf39621876ff,ABSENT,,,,,player closeup
+bf9b0e39202e,VISIBLE,724,573,39,41,player holds ball
+bfadff084452,VISIBLE,840,338,34,34,player dribbles ball
+bfd73445edee,ABSENT,,,,,sideline interview
+bfe99622258e,ABSENT,,,,,timeout huddle
+c0cf904ec62b,ABSENT,,,,,player closeup
+c1120c43dbc2,VISIBLE,982,586,37,39,ball in lane
+c1800a4454c8,UNKNOWN,,,,,ball not clearly visible
+c19824645178,ABSENT,,,,,timeout closeup

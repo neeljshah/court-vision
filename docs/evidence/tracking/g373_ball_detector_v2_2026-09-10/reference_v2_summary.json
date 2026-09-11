@@ -1,0 +1,44 @@
+{
+ "adjudication_queue": 596,
+ "bar": {
+  "min_pairs": 30,
+  "observed_median_px": 17.33,
+  "observed_pairs": 715,
+  "rule": "median centre disagreement <= 0.5 x median native diameter",
+  "threshold_px": 18.5,
+  "verdict": "usable"
+ },
+ "census": {
+  "census_rows": 1024,
+  "unsettled_frames": 596,
+  "unsettled_wide_or_boxless_pair": 296
+ },
+ "centre_disagreement_native_px": {
+  "max": 1521.26,
+  "n": 715,
+  "p50": 17.33,
+  "p90": 287.09,
+  "population": "both-VISIBLE pairs carrying a box from each primary rater"
+ },
+ "cohen_kappa": 0.6642328686951492,
+ "counts": {
+  "both_visible": 715,
+  "both_visible_missing_box": 0,
+  "label_disagreement": 312,
+  "rated_by_both": 1620,
+  "rated_by_none": 0,
+  "rated_by_one": 0,
+  "scheduled": 1620
+ },
+ "native_diameter_px": {
+  "max": 505.0,
+  "n": 1430,
+  "p50": 37.0,
+  "p90": 67.0,
+  "population": "every box of a both-VISIBLE pair, one per rater per frame"
+ },
+ "queue_reasons": {
+  "CENTRE-GAP": 296,
+  "LABEL-DISAGREEMENT": 300
+ }
+}

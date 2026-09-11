@@ -1,0 +1,40 @@
+cf13f4ac0e10,UNKNOWN,,,,,possible ball blends with hand
+cf363db185f5,ABSENT,,,,,player closeup no ball
+cf839e7ef9ae,ABSENT,,,,,official closeup no ball
+cf9bb3e7d2cd,VISIBLE,1669,748,28,34,ball beside dribbler
+d071617e6ff7,ABSENT,,,,,hoop closeup no ball
+d0a6fb8d652f,VISIBLE,948,455,23,32,ball at players hip
+d0daa78771d3,VISIBLE,832,448,28,34,ball held at torso
+d107d2fe7598,ABSENT,,,,,players track offscreen ball
+d13c6dc3777b,VISIBLE,1165,608,29,42,low dribble by guard
+d188f300bf34,VISIBLE,408,294,29,32,ball held at chest
+d1d602cc6a04,ABSENT,,,,,team huddle no ball
+d1ebf594679a,VISIBLE,746,525,126,166,official holds game ball
+d1faf8156156,UNKNOWN,,,,,ball obscured during inbound
+d20dae939d7d,VISIBLE,818,729,27,31,ball beside ballhandler
+d2453fab516e,VISIBLE,999,140,28,27,airborne ball above court
+d2a668fbeec0,VISIBLE,1591,511,25,25,ball held by guard
+d2ea5a73a689,VISIBLE,805,620,31,29,ball in low dribble
+d31f9a0c0ce2,VISIBLE,190,740,33,39,motion blurred dribble
+d3747f70cbcc,UNKNOWN,,,,,ball obscured in transition
+d3a3b719e817,VISIBLE,477,570,28,31,ball under left hand
+d3d53b3575ef,VISIBLE,611,617,45,52,motion blurred carried ball
+d3e2aa486b5b,ABSENT,,,,,fast break ball offscreen
+d58d189f7fd0,VISIBLE,601,307,32,34,ball above raised hands
+d6342ac414c7,UNKNOWN,,,,,ball too small to locate
+d644011a1cff,ABSENT,,,,,player closeup no ball
+d705a36eefc0,ABSENT,,,,,courtside interview no ball
+d727d5b07bf5,VISIBLE,529,570,31,27,ball at dribblers side
+d803f84a1bf2,VISIBLE,1348,508,32,31,ball held on right wing
+d81fad7aafb0,VISIBLE,840,44,126,136,airborne ball close view
+d89130c2299a,ABSENT,,,,,crowd shot no ball
+d945df5188e9,UNKNOWN,,,,,ball obscured between players
+dad6f3f8d4d5,VISIBLE,189,746,30,30,low dribble near sideline
+db49e3dc015d,VISIBLE,890,276,30,32,airborne ball near basket
+dbe27a83f38d,ABSENT,,,,,player closeup no ball
+dbfe4e1eba57,ABSENT,,,,,postgame closeup no ball
+dc30f641fd41,VISIBLE,765,544,50,62,official holds game ball
+dc81dfadb27b,VISIBLE,937,218,29,30,ball above backboard
+dd56edfca863,ABSENT,,,,,bench closeup no ball
+dd5deee8e3b4,ABSENT,,,,,wide reset no ball
+dd6672ddb657,VISIBLE,848,310,32,32,airborne ball above shooter

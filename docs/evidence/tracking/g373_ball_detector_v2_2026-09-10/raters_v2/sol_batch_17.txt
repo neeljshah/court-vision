@@ -1,0 +1,40 @@
+b6bb6ae761d1,VISIBLE,1391,332,55,55,ball held by referee
+b70a17fb2007,VISIBLE,531,800,47,60,blurred dribble at left
+b716e12e42a7,VISIBLE,1209,682,55,48,ball held at right hip
+b8556e868f73,VISIBLE,1346,478,31,35,ball near right baseline
+b86e4c31ee79,VISIBLE,1448,366,48,58,ball held by blue player
+b8a141378049,ABSENT,,,,,closeup with no ball
+b91495e19405,VISIBLE,1101,529,32,33,ball above player head
+ba0cc82a3fe4,VISIBLE,691,488,49,53,ball held under basket
+ba855df11c50,ABSENT,,,,,bench celebration no ball
+ba9c0b904e81,UNKNOWN,,,,,ball obscured during possession
+bb224239090a,VISIBLE,620,570,47,46,ball beside driving player
+bbcf6a50aeef,ABSENT,,,,,player closeup no ball
+bc46741fe103,VISIBLE,1270,374,30,34,ball held near baseline
+bc51adfffdaa,UNKNOWN,,,,,ball hidden at left border
+bc77f4a2b217,VISIBLE,283,390,31,31,ball held near sideline
+bcb481fbcc70,UNKNOWN,,,,,ball occluded by ballhandler
+bcd6bde84d4f,VISIBLE,1108,461,32,33,ball amid rebound contest
+bd090799c4f8,VISIBLE,428,208,35,34,ball bouncing near handler
+bd0d6bb3e74b,ABSENT,,,,,crowd celebration no ball
+bdd7a34c674c,VISIBLE,1269,472,35,35,ball held in lane
+be34c82fab19,ABSENT,,,,,bench closeup no ball
+be78f22c1c03,ABSENT,,,,,coach closeup no ball
+bea639731fa9,VISIBLE,1330,347,31,35,ball at right hip
+bed46a2ee91c,ABSENT,,,,,coach interview no ball
+bee7aed2a269,ABSENT,,,,,player closeup no ball
+befc9d17fba7,UNKNOWN,,,,,ball obscured during play
+bf2251ab8fae,VISIBLE,1499,305,30,31,ball held by perimeter player
+bf661bdb9582,VISIBLE,646,352,30,32,ball above shooters hands
+bf710d95bb51,ABSENT,,,,,river scene no game ball
+bf77cbc60af0,VISIBLE,582,445,29,28,ball held by left player
+bf815b638380,VISIBLE,1211,360,215,243,ball close to rim camera
+bfadf48da1eb,ABSENT,,,,,player closeup no ball
+bfb8daf6db57,VISIBLE,231,487,27,28,ball beside left handler
+c07853b2493f,VISIBLE,1336,807,30,34,ball held near right hip
+c09e17b5ace9,ABSENT,,,,,coach closeup no ball
+c130340efee4,VISIBLE,716,494,222,213,ball held by referee
+c132da3e321d,VISIBLE,1687,678,58,75,ball held at right border
+c1bbbb7f318c,VISIBLE,221,544,26,28,ball held by left handler
+c23aaae11919,VISIBLE,331,377,33,34,ball held by inbounder
+c2579c7c4aba,ABSENT,,,,,crowd closeup no ball

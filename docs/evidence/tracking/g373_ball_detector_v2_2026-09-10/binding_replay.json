@@ -1,0 +1,103 @@
+{
+ "counts": {
+  "A0_archived_heldout": {
+   "fp": 8,
+   "n_frames": 549,
+   "tp": 0
+  },
+  "A0_fresh_heldout": {
+   "coverage": 0.0,
+   "fp": 8,
+   "fp_per_absent": 0.03292181069958848,
+   "n_absent": 243,
+   "n_frames": 549,
+   "n_unknown": 21,
+   "n_visible": 285,
+   "precision_wilson_lo": 0.0,
+   "tp": 0
+  },
+  "A0_historical_memo": {
+   "fp": 8,
+   "tp": 0
+  },
+  "A7_archived_heldout": {
+   "fp": 178,
+   "n_frames": 549,
+   "tp": 2
+  },
+  "A7_historical_memo": {
+   "fp": 178,
+   "tp": 2
+  }
+ },
+ "fresh_vs_archived_A0": {
+  "archived_rows": 9,
+  "counts_identical": true,
+  "differing_rows": 0,
+  "fresh_rows": 9,
+  "keys_identical": true,
+  "rows_identical": true
+ },
+ "gate": {
+  "c0_fresh": 0.0,
+  "name": "NEW A0 screening gate of G373",
+  "note": "NEW; distinct from G363's own 0.50 gate. Crossing it does not resume the historical x3 row, whose verdict is LIMIT and final.",
+  "premise_false": false,
+  "rule": "C0 >= 0.05 is PREMISE FALSE",
+  "value": 0.05
+ },
+ "matching_tolerance": {
+  "max": 136.67,
+  "n": 285,
+  "p50": 12.33,
+  "p90": 24.0,
+  "population": "VISIBLE heldout reference frames",
+  "units": "pixels normalised to 720p"
+ },
+ "nearest_centre": {
+  "A0_archived": {
+   "arm": "A0",
+   "estimator": "G363 g363_centre_diag.quantiles order statistic",
+   "max": 782.48,
+   "n": 4,
+   "n_visible": 285,
+   "p50": 776.35,
+   "p90": 782.48,
+   "population": "VISIBLE reference frames carrying a rank-0 prediction"
+  },
+  "A0_fresh": {
+   "arm": "A0",
+   "estimator": "G363 g363_centre_diag.quantiles order statistic",
+   "max": 782.48,
+   "n": 4,
+   "n_visible": 285,
+   "p50": 776.35,
+   "p90": 782.48,
+   "population": "VISIBLE reference frames carrying a rank-0 prediction"
+  },
+  "A7_archived": {
+   "arm": "A7",
+   "estimator": "G363 g363_centre_diag.quantiles order statistic",
+   "max": 1030.9,
+   "n": 103,
+   "n_visible": 285,
+   "p50": 487.5,
+   "p90": 815.65,
+   "population": "VISIBLE reference frames carrying a rank-0 prediction"
+  }
+ },
+ "reference": {
+  "census": "G363 v1 adjudicated (sealed, unedited)",
+  "cohen_kappa": 0.640120432422561,
+  "rated_frames": 881,
+  "unadjudicated_frames": 0
+ },
+ "reproduces_archived": {
+  "A0": true,
+  "A7": true
+ },
+ "route_hashes_A11": {
+  "models/weights/yolov8n_ball.pt": "bc979654e281c5de6e0e992e1f9587b3a9faa2eec996ea41b1b03954ba0b6e52",
+  "src/tracking/ball_detect_track.py": "cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea"
+ }
+}

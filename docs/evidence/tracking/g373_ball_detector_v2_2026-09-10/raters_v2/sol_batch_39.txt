@@ -1,0 +1,40 @@
+719900eee66c,ABSENT,,,,,postgame sideline closeup
+723f3a98d77b,VISIBLE,1168,494,26,28,ball beside dribbler
+726d4d1ef621,ABSENT,,,,,postgame player interview
+730c27852a70,VISIBLE,766,722,31,29,low dribble near baseline
+7328b5b77865,ABSENT,,,,,pregame player introduction
+737c1d5502b5,VISIBLE,1427,565,29,34,ball under right hand
+738b8e170bb3,ABSENT,,,,,full screen bracket graphic
+738c2e44e7cd,ABSENT,,,,,no game ball visible
+73f850d90cb7,VISIBLE,1384,795,31,31,ball in low dribble
+7425bd4ef81c,VISIBLE,672,666,36,32,ball bouncing near player
+7454f6240515,ABSENT,,,,,player closeup during stoppage
+74b17667a7b0,ABSENT,,,,,bench closeup during play
+7691b236d852,VISIBLE,468,405,30,45,ball held at hip
+76b23fa86814,ABSENT,,,,,postgame player closeup
+76d829c36fb3,VISIBLE,429,61,42,45,ball beside the rim
+76ec3fbe857d,UNKNOWN,,,,,ball obscured among players
+77530f7009fb,ABSENT,,,,,players awaiting restart
+782cd096c79c,VISIBLE,222,446,28,28,ball held for inbound
+7864c6cf5bce,ABSENT,,,,,timeout huddle closeup
+795e215fec08,ABSENT,,,,,postgame player closeup
+79db2d9dd194,UNKNOWN,,,,,ball obscured during play
+7a1198d2d1ba,ABSENT,,,,,timeout huddle closeup
+7a5519b3683d,VISIBLE,336,373,32,35,ball above left rim
+7ace3e278ac1,VISIBLE,888,407,25,25,ball held above defender
+7ad5d791eb1c,ABSENT,,,,,player closeup during stoppage
+7ae5f319a06f,ABSENT,,,,,bench closeup during timeout
+7b82a471249c,ABSENT,,,,,referee closeup after game
+7bc374cd6349,UNKNOWN,,,,,ball hidden by foreground graphic
+7c229a130027,UNKNOWN,,,,,ball obscured near sideline
+7c38e9a68ae4,VISIBLE,642,808,41,53,motion blurred low dribble
+7c8d66483487,ABSENT,,,,,postgame player closeup
+7d7bf8fb49ec,VISIBLE,699,704,29,30,ball in left hand dribble
+7da2e358d5a1,UNKNOWN,,,,,ball obscured between players
+7e84521a4fcc,VISIBLE,795,620,30,31,ball carried in transition
+7f15971559a5,ABSENT,,,,,player closeup after whistle
+7fa446ff38f0,VISIBLE,764,366,39,43,ball airborne near baseline
+7fc70ffdb29e,ABSENT,,,,,postgame court interview
+7fc87220c352,VISIBLE,623,814,37,35,low dribble near sideline
+8091f087514e,ABSENT,,,,,players closeup during stoppage
+80a17e269ff5,VISIBLE,1047,755,39,38,ball held by passer

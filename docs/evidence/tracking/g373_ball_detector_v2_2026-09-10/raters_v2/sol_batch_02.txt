@@ -1,0 +1,40 @@
+0b3f308131cb,ABSENT,,,,,no game ball visible
+0bd4386adf80,VISIBLE,757,496,209,205,ball above rim
+0c5bbe8d978a,VISIBLE,1170,445,39,45,ball held overhead
+0cd289ec6c7a,ABSENT,,,,,no game ball visible
+0cd4a064a09a,VISIBLE,1503,371,45,43,ball held on wing
+0d48df02e4d5,ABSENT,,,,,player closeup
+0db71514d7ad,VISIBLE,1282,919,51,55,ball bouncing near player
+0dc77fa0f893,VISIBLE,596,155,69,70,shooter holding ball
+0e28ec60437d,ABSENT,,,,,no game ball visible
+0e33060e2a2d,ABSENT,,,,,crowd shot
+0e3b7e866168,VISIBLE,609,336,52,42,airborne pass
+0ec893dabad8,ABSENT,,,,,player closeup
+0f10333a93b6,VISIBLE,554,444,35,29,airborne near baseline
+0f1af2b34fe7,ABSENT,,,,,crowd shot
+0f5be93bb348,VISIBLE,1092,430,26,31,ball bouncing in transition
+0fcb84765462,ABSENT,,,,,no game ball visible
+0fe4c8ddae33,ABSENT,,,,,no game ball visible
+1026ad786353,VISIBLE,1146,0,405,362,close ball above rim
+106212c1ea74,ABSENT,,,,,no game ball visible
+10ad02178e7d,VISIBLE,1099,112,49,47,ball above rim
+10b7527d0321,ABSENT,,,,,timeout huddle
+10d786b6a025,VISIBLE,675,507,22,22,low dribble near midcourt
+110f054be70c,VISIBLE,1271,802,29,35,guard dribbling ball
+11ffdedbd9f0,ABSENT,,,,,timeout closeup
+12fae7c64341,ABSENT,,,,,postgame interview
+132df7d19402,VISIBLE,225,579,27,31,ball with left handler
+139b5e762e09,VISIBLE,768,413,27,32,low dribble in traffic
+13dfa04669bf,ABSENT,,,,,no game ball visible
+13fe9b95f2ba,UNKNOWN,,,,,ball obscured in traffic
+1574171a0438,VISIBLE,1717,543,29,30,ball held on right wing
+15811f965b33,ABSENT,,,,,celebration closeup
+162155c0f060,ABSENT,,,,,postgame celebration
+1623782c2aeb,VISIBLE,340,403,26,32,dribble on left wing
+1641577caabb,ABSENT,,,,,full screen graphic
+167958b50c68,ABSENT,,,,,official review shot
+16c583e45b39,VISIBLE,963,359,32,33,ball held in lane
+1715c179cde0,ABSENT,,,,,postgame interview
+171ccd76427d,VISIBLE,1020,399,72,79,airborne pass
+172177e657ab,VISIBLE,331,715,37,36,low dribble on left
+1756edee9fdc,VISIBLE,1209,365,42,43,ball held under basket

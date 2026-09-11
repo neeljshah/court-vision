@@ -1,0 +1,19 @@
+fd1b5c3bc6b5,ABSENT,,,,,no ball visible
+fd1e14933d09,ABSENT,,,,,no ball visible after whistle
+fd2878a8cfe7,UNKNOWN,,,,,ball obscured by players
+fd393e6eede9,ABSENT,,,,,broadcast graphic only
+fdae9452f4bc,ABSENT,,,,,no ball visible
+fdc1eaced833,ABSENT,,,,,commentators on screen
+fdfa02eec605,VISIBLE,1234,513,43,43,ball in dribblers hand
+fe22e0d21948,VISIBLE,950,515,82,76,ball held at torso
+fe469757cfaa,VISIBLE,395,397,24,24,ball near baseline players
+fe808f69aa95,VISIBLE,515,573,36,39,ball between defenders
+feb719b2bc4d,VISIBLE,1183,533,91,94,ball held while running
+fef7b03666a0,ABSENT,,,,,celebration crowd shot
+ff596204ed43,ABSENT,,,,,team lineup no ball
+ff5cebf3f3a0,VISIBLE,1236,568,34,34,ball beneath basket
+ff64f4f343ee,VISIBLE,811,672,40,40,ball on dribble
+ffa2f7f2ccfa,VISIBLE,1579,583,84,85,ball held at chest
+ffb962725a4f,VISIBLE,1222,616,51,48,referee holding game ball
+ffd026648ce2,VISIBLE,214,637,24,25,ball at left wing
+fffa2b9b9eb7,VISIBLE,1603,388,31,27,inbounder holding ball

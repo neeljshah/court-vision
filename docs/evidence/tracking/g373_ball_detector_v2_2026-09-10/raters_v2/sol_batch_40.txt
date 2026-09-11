@@ -1,0 +1,40 @@
+80ba95dba40b,UNKNOWN,,,,,ball not identifiable
+815b708aa1eb,VISIBLE,784,604,33,33,ball on dribble
+81873f75ec75,UNKNOWN,,,,,ball obscured near handler
+81d9dabe6926,VISIBLE,877,520,22,27,ball on dribble
+820dc247d6fc,ABSENT,,,,,interview shot without ball
+821d25c767cb,ABSENT,,,,,wide arena shot without ball
+82c470d69995,VISIBLE,1117,235,42,42,ball in flight
+82ca705caaff,VISIBLE,768,453,29,30,ball in open court
+83290a1a5b17,UNKNOWN,,,,,ball not identifiable
+839db258cd89,UNKNOWN,,,,,ball not identifiable
+83e72190fee7,ABSENT,,,,,commentator closeup without ball
+841406dea175,VISIBLE,620,428,38,41,ball held near chest
+844ef811f933,VISIBLE,869,54,68,59,ball in flight
+84e4527ec67f,ABSENT,,,,,player closeup without ball
+8520dce5c60c,VISIBLE,331,529,47,48,ball on dribble
+853f9e7ce168,ABSENT,,,,,bench lineup without ball
+8558da84390d,ABSENT,,,,,postgame court without ball
+857d01dfed9f,ABSENT,,,,,interview shot without ball
+8684ac24673b,UNKNOWN,,,,,ball not identifiable
+86d64ffa5f68,VISIBLE,1028,318,30,32,ball held by passer
+874b0ce2aba3,UNKNOWN,,,,,inbound area obscured
+87d72d267f6c,ABSENT,,,,,graphic ball is not game ball
+8860affdc5dc,ABSENT,,,,,bench closeup without ball
+886155fd06a3,VISIBLE,673,546,221,210,referee holding ball
+88b149b9fb24,ABSENT,,,,,referee closeup without ball
+89b88a939a2e,UNKNOWN,,,,,scrum obscures ball
+8a2212748632,VISIBLE,438,588,31,32,ball near baseline handler
+8a31130a612b,VISIBLE,751,566,41,27,ball on low dribble
+8a42016b10cc,VISIBLE,1381,598,39,39,ball held by handler
+8a71ecf43fd9,VISIBLE,263,769,35,37,ball on dribble
+8a759db21e22,UNKNOWN,,,,,paint action obscures ball
+8a9954add795,ABSENT,,,,,bench lineup without ball
+8ab62119a061,VISIBLE,858,399,37,36,ball in midcourt pass
+8afdb97e4ed4,VISIBLE,528,468,31,32,ball on dribble
+8b5dddd197b2,VISIBLE,370,312,28,29,ball in flight
+8bb39a7d2728,VISIBLE,1351,112,70,72,ball held overhead
+8c130e05cc88,VISIBLE,284,327,29,29,ball in inbound pass
+8d05fd68cf82,VISIBLE,1611,570,51,50,referee holding ball
+8d33da4087aa,ABSENT,,,,,player closeup without ball
+8d5b2b3c0b87,UNKNOWN,,,,,ball not identifiable
