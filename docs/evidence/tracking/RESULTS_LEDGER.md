@@ -766,3 +766,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G399 | landed CLOSED AT LIMIT: 60 new contexts from the 30 retained sources, both qualified raters 60/60, 3 of 153 fragments pair, pixel audit 1 pass -> recovery 1/60 (1/42 visible) vs the 30 bar; paint fitter line PAUSES; four verify memos verbatim | CLOSED AT LIMIT (codex-sol fix 1d ACCEPT)
 
+2026-09-11 | tracking | G400 | landed PARTIAL + NOT VALIDATED + CLOSED AT LIMIT: 30 new video ids x 10 frames, 300/300 decoded, terra + sol 20/20 rounds, pooled kappa 0.75 (n = 299 INCOMPLETE), round 8 0.36 FAIL, median centre gap 24.0 px vs 13.75 FAIL, yield 116/300 = 0.387 <= 0.40 -> uniform growth closed; 61 pct non-play frames; 116 candidate boxes not accepted; three verify memos verbatim | PARTIAL + NOT VALIDATED + CLOSED AT LIMIT (codex-sol fix 1c CLOSED AT LIMIT)
+
