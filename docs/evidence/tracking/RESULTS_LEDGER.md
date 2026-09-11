@@ -764,3 +764,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G401 | landed PARTIAL: 16/34 post-preference sections (all 59.94 fps) lose > 5 s to the fixed 3000-frame cap -> 30 fps preference not sufficient; paired mechanics 0/30 vs 29/30 (one PTS-gap source) NOT VALIDATED; PROPOSED_g401_fps_cap.diff ready for the user deploy path, applied nowhere; verify memo verbatim | PARTIAL (codex-sol ACCEPT WITH CORRECTIONS applied)
 
+2026-09-11 | tracking | G399 | landed CLOSED AT LIMIT: 60 new contexts from the 30 retained sources, both qualified raters 60/60, 3 of 153 fragments pair, pixel audit 1 pass -> recovery 1/60 (1/42 visible) vs the 30 bar; paint fitter line PAUSES; four verify memos verbatim | CLOSED AT LIMIT (codex-sol fix 1d ACCEPT)
+
