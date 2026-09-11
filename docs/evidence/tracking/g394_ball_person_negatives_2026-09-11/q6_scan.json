@@ -1,0 +1,6 @@
+{
+  "findings": {},
+  "non_opaque_hits": 0,
+  "note": "patterns are built from character codes; one geometric token in a raw rater log was replaced with calibration-only and its before/after digests are disclosed in q6_redaction_manifest.csv",
+  "scanned": 47
+}

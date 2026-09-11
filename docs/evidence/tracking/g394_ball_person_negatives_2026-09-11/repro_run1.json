@@ -1,0 +1,38 @@
+{
+  "A0": {
+    "coverage": 0.0,
+    "fn": 302,
+    "fp": 8,
+    "fp_per_absent": 0.0425531914893617,
+    "n_absent": 188,
+    "n_frames": 549,
+    "n_unknown": 59,
+    "n_visible": 302,
+    "precision_wilson_lo": 0.0,
+    "tp": 0
+  },
+  "A10": {
+    "coverage": 0.15300546448087432,
+    "fn": 218,
+    "fp": 156,
+    "fp_per_absent": 0.8297872340425532,
+    "n_absent": 188,
+    "n_frames": 549,
+    "n_unknown": 59,
+    "n_visible": 302,
+    "precision_wilson_lo": 0.29244980923302405,
+    "tp": 84
+  },
+  "A8": {
+    "coverage": 0.16393442622950818,
+    "fn": 212,
+    "fp": 169,
+    "fp_per_absent": 0.898936170212766,
+    "n_absent": 188,
+    "n_frames": 549,
+    "n_unknown": 59,
+    "n_visible": 302,
+    "precision_wilson_lo": 0.29211016505655896,
+    "tp": 90
+  }
+}

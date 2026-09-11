@@ -1,0 +1,224 @@
+{
+  "a10_keys_without_detection": 309,
+  "arms": {
+    "A0": {
+      "abstention": 0.9854280510018215,
+      "arm": "A0",
+      "coverage": 0.0,
+      "fp": 8,
+      "fp_on_absent_per_absent": 0.010638297872340425,
+      "fp_per_absent": 0.0425531914893617,
+      "games": 32,
+      "inherits": "",
+      "n_absent": 188,
+      "n_frames": 549,
+      "n_unknown": 59,
+      "n_visible": 302,
+      "precision": 0.0,
+      "precision_wilson_hi": 0.32440756488388023,
+      "precision_wilson_lo": 0.0,
+      "recall_on_visible": 0.0,
+      "split": "heldout",
+      "tp": 0
+    },
+    "A10": {
+      "abstention": 0.5628415300546448,
+      "arm": "A10",
+      "coverage": 0.15300546448087432,
+      "fp": 156,
+      "fp_on_absent_per_absent": 0.18617021276595744,
+      "fp_per_absent": 0.8297872340425532,
+      "games": 32,
+      "inherits": "",
+      "n_absent": 188,
+      "n_frames": 549,
+      "n_unknown": 59,
+      "n_visible": 302,
+      "precision": 0.35,
+      "precision_wilson_hi": 0.4122763667494435,
+      "precision_wilson_lo": 0.29244980923302405,
+      "recall_on_visible": 0.2781456953642384,
+      "split": "heldout",
+      "tp": 84
+    },
+    "A8": {
+      "abstention": 0.5282331511839709,
+      "arm": "A8",
+      "coverage": 0.16393442622950818,
+      "fp": 169,
+      "fp_on_absent_per_absent": 0.26595744680851063,
+      "fp_per_absent": 0.898936170212766,
+      "games": 32,
+      "inherits": "",
+      "n_absent": 188,
+      "n_frames": 549,
+      "n_unknown": 59,
+      "n_visible": 302,
+      "precision": 0.3474903474903475,
+      "precision_wilson_hi": 0.40732842292551275,
+      "precision_wilson_lo": 0.29211016505655896,
+      "recall_on_visible": 0.2980132450331126,
+      "split": "heldout",
+      "tp": 90
+    }
+  },
+  "audit": {
+    "accepted": 49,
+    "accepted_games": 15,
+    "accepted_unique_frames": 49,
+    "excluded": 6,
+    "exclusion_reasons": {
+      "terra_BALL_AT_MARKER": 2,
+      "terra_BALL_AT_MARKER|sol_BALL_AT_MARKER": 2,
+      "terra_BALL_AT_MARKER|sol_BALL_ELSEWHERE": 1,
+      "terra_BALL_ELSEWHERE": 1
+    },
+    "eye_check_cards": 30,
+    "meets_supply_bar": true,
+    "min_accepted": 30,
+    "min_games": 5,
+    "rated_by_both": 55,
+    "rated_by_sol": 55,
+    "rated_by_terra": 55,
+    "rater_states": {
+      "sol": {
+        "BALL_AT_MARKER": 2,
+        "BALL_ELSEWHERE": 1,
+        "NO_BALL_VISIBLE": 52
+      },
+      "terra": {
+        "BALL_AT_MARKER": 5,
+        "BALL_ELSEWHERE": 1,
+        "NO_BALL_VISIBLE": 49
+      }
+    },
+    "raw_state_agreement": 0.927273,
+    "selected": 55
+  },
+  "bars": {
+    "A0": {
+      "all_fp_met": false,
+      "all_fp_per_absent": 0.0425531914893617,
+      "all_fp_per_absent_bar": 0.01,
+      "c0": 0.0,
+      "c0_bar": 0.25,
+      "c0_met": false,
+      "precision_met": false,
+      "precision_wilson_lo": 0.0,
+      "precision_wilson_lo_bar": 0.9
+    },
+    "A10": {
+      "all_fp_met": false,
+      "all_fp_per_absent": 0.8297872340425532,
+      "all_fp_per_absent_bar": 0.01,
+      "c0": 0.15300546448087432,
+      "c0_bar": 0.25,
+      "c0_met": false,
+      "precision_met": false,
+      "precision_wilson_lo": 0.29244980923302405,
+      "precision_wilson_lo_bar": 0.9
+    },
+    "A8": {
+      "all_fp_met": false,
+      "all_fp_per_absent": 0.898936170212766,
+      "all_fp_per_absent_bar": 0.01,
+      "c0": 0.16393442622950818,
+      "c0_bar": 0.25,
+      "c0_met": false,
+      "precision_met": false,
+      "precision_wilson_lo": 0.29211016505655896,
+      "precision_wilson_lo_bar": 0.9
+    }
+  },
+  "candidates": {
+    "candidate_games": 16,
+    "candidates": 55,
+    "closed_at_limit": false,
+    "elapsed_seconds": 25.666,
+    "eligible": 386,
+    "identities": {
+      "a8_infer": {
+        "agnostic_nms": false,
+        "augment": false,
+        "conf": 0.05,
+        "device": 0,
+        "half": true,
+        "imgsz": 960,
+        "iou": 0.7,
+        "max_det": 300,
+        "verbose": false,
+        "visualize": false
+      },
+      "a8_weights": "0f05a61618687bda2005ce4ac8343c5987f60ba0076245597de59f7380398762",
+      "init_weights": "bc979654e281c5de6e0e992e1f9587b3a9faa2eec996ea41b1b03954ba0b6e52",
+      "person_infer": {
+        "augment": false,
+        "classes": [
+          0
+        ],
+        "conf": 0.25,
+        "device": 0,
+        "half": true,
+        "imgsz": 640,
+        "iou": 0.7,
+        "max_det": 300,
+        "verbose": false,
+        "visualize": false
+      },
+      "person_weights": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36",
+      "person_weights_path": "/workspace/deploy/nba-ai-system/yolov8n.pt",
+      "route": "cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea",
+      "route_path": "/workspace/nba-ai-system/src/tracking/ball_detect_track.py"
+    },
+    "isolation": {
+      "binding_counts": {
+        "dev_absent": 425,
+        "dev_absent_in_box_games": 386,
+        "dev_boxes": 530,
+        "dev_games": 27,
+        "heldout_absent": 188,
+        "heldout_unknown": 59,
+        "heldout_visible": 302
+      },
+      "eligible_games": 27,
+      "eligible_keys": 386,
+      "eligible_sections": 27,
+      "game_overlap": 0,
+      "heldout_games": 32,
+      "heldout_sections": 35,
+      "manifest_rows": 1620,
+      "section_overlap": 0,
+      "sheets_verified": 386
+    },
+    "selected": 55,
+    "selected_games": 16,
+    "with_call": 88
+  },
+  "final_weights_sha256": "3b0fe860ab4ee5c63747decb61ae3b2dfe73817e0d3ba418ddc6b8868533cf54",
+  "input_hashes": {
+    "frames": "11797e162dd303441a7bde18e66fae4b404341fa2bd611678226182258d58945",
+    "reference": "ad00670c3601706d5d817de734fc85d82e8fdc379ea03b21bbe1a46e272ad09e"
+  },
+  "launch_accounting": {
+    "candidate_heldout_executions": 1,
+    "candidate_inference_charged": true,
+    "candidate_inference_charged_at": "2026-09-11T11:43:22Z",
+    "candidate_weights_sha256": "3b0fe860ab4ee5c63747decb61ae3b2dfe73817e0d3ba418ddc6b8868533cf54",
+    "cumulative_training_gpu_minutes": 19.0269,
+    "dataset": {
+      "audited_negatives": 49,
+      "heldout_linked": 0,
+      "images": 1004,
+      "negatives": 425,
+      "positives": 530,
+      "yaml": "/workspace/wt/a7/.g394_scratch/ds/g394.yaml"
+    },
+    "inference_gpu_minutes": 0.2848,
+    "init_weights_sha256": "bc979654e281c5de6e0e992e1f9587b3a9faa2eec996ea41b1b03954ba0b6e52",
+    "prior_training_gpu_minutes": 9.232826793193817,
+    "training_charged": true,
+    "training_charged_at": "2026-09-11T11:32:32Z",
+    "training_gpu_minutes": 9.7941
+  },
+  "planned_heldout_keys": 549
+}

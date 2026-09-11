@@ -1,0 +1,27 @@
+{
+  "a8_input_weights": {
+    "pod_path": "/workspace/wt/a7/.g394_scratch/a8_final_epoch.pt",
+    "sha256": "0f05a61618687bda2005ce4ac8343c5987f60ba0076245597de59f7380398762"
+  },
+  "candidate_final_epoch": {
+    "bytes": 6309994,
+    "epoch": 10,
+    "pod_path": "/workspace/wt/a7/.g394_scratch/runs/a10/weights/last.pt",
+    "selected_by": "final completed epoch (last.pt); best.pt was never read",
+    "sha256": "3b0fe860ab4ee5c63747decb61ae3b2dfe73817e0d3ba418ddc6b8868533cf54"
+  },
+  "deployed_route": {
+    "matches_g373_route_hashes": true,
+    "pod_path": "/workspace/nba-ai-system/src/tracking/ball_detect_track.py",
+    "sha256": "cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea"
+  },
+  "init_checkpoint": {
+    "pod_path": "/workspace/deploy/nba-ai-system/models/weights/yolov8n_ball.pt",
+    "sha256": "bc979654e281c5de6e0e992e1f9587b3a9faa2eec996ea41b1b03954ba0b6e52"
+  },
+  "note": "*.pt is gitignored repo-wide; the A10 fine-tuned weights are retained off-repo and hashed here. They were never written to models/ or to any deploy tree.",
+  "person_checkpoint": {
+    "pod_path": "/workspace/deploy/nba-ai-system/yolov8n.pt",
+    "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36"
+  }
+}

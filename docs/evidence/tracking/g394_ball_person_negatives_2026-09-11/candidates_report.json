@@ -1,0 +1,64 @@
+{
+  "candidate_games": 16,
+  "candidates": 55,
+  "closed_at_limit": false,
+  "elapsed_seconds": 25.666,
+  "eligible": 386,
+  "identities": {
+    "a8_infer": {
+      "agnostic_nms": false,
+      "augment": false,
+      "conf": 0.05,
+      "device": 0,
+      "half": true,
+      "imgsz": 960,
+      "iou": 0.7,
+      "max_det": 300,
+      "verbose": false,
+      "visualize": false
+    },
+    "a8_weights": "0f05a61618687bda2005ce4ac8343c5987f60ba0076245597de59f7380398762",
+    "init_weights": "bc979654e281c5de6e0e992e1f9587b3a9faa2eec996ea41b1b03954ba0b6e52",
+    "person_infer": {
+      "augment": false,
+      "classes": [
+        0
+      ],
+      "conf": 0.25,
+      "device": 0,
+      "half": true,
+      "imgsz": 640,
+      "iou": 0.7,
+      "max_det": 300,
+      "verbose": false,
+      "visualize": false
+    },
+    "person_weights": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36",
+    "person_weights_path": "/workspace/deploy/nba-ai-system/yolov8n.pt",
+    "route": "cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea",
+    "route_path": "/workspace/nba-ai-system/src/tracking/ball_detect_track.py"
+  },
+  "isolation": {
+    "binding_counts": {
+      "dev_absent": 425,
+      "dev_absent_in_box_games": 386,
+      "dev_boxes": 530,
+      "dev_games": 27,
+      "heldout_absent": 188,
+      "heldout_unknown": 59,
+      "heldout_visible": 302
+    },
+    "eligible_games": 27,
+    "eligible_keys": 386,
+    "eligible_sections": 27,
+    "game_overlap": 0,
+    "heldout_games": 32,
+    "heldout_sections": 35,
+    "manifest_rows": 1620,
+    "section_overlap": 0,
+    "sheets_verified": 386
+  },
+  "selected": 55,
+  "selected_games": 16,
+  "with_call": 88
+}

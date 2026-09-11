@@ -1,0 +1,21 @@
+{
+  "candidate_heldout_executions": 1,
+  "candidate_inference_charged": true,
+  "candidate_inference_charged_at": "2026-09-11T11:43:22Z",
+  "candidate_weights_sha256": "3b0fe860ab4ee5c63747decb61ae3b2dfe73817e0d3ba418ddc6b8868533cf54",
+  "cumulative_training_gpu_minutes": 19.0269,
+  "dataset": {
+    "audited_negatives": 49,
+    "heldout_linked": 0,
+    "images": 1004,
+    "negatives": 425,
+    "positives": 530,
+    "yaml": "/workspace/wt/a7/.g394_scratch/ds/g394.yaml"
+  },
+  "inference_gpu_minutes": 0.2848,
+  "init_weights_sha256": "bc979654e281c5de6e0e992e1f9587b3a9faa2eec996ea41b1b03954ba0b6e52",
+  "prior_training_gpu_minutes": 9.232826793193817,
+  "training_charged": true,
+  "training_charged_at": "2026-09-11T11:32:32Z",
+  "training_gpu_minutes": 9.7941
+}

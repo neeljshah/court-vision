@@ -1,0 +1,25 @@
+{
+  "allowance": {
+    "candidate_heldout_inferences": 1,
+    "cumulative_training_cap_minutes": 120,
+    "gpu_stage_cap_minutes": 90,
+    "training_launches": 1
+  },
+  "gpu": "RTX 3090 device 0 (pod 213.192.2.120:40117)",
+  "gpu_minutes": {
+    "candidate_inference": 0.2848,
+    "cumulative_training": 19.0269,
+    "dev_candidate_pass": 0.4278,
+    "prior_training_charged": 9.232826793193817,
+    "training": 9.7941
+  },
+  "identities": {
+    "a10_final_weights": "3b0fe860ab4ee5c63747decb61ae3b2dfe73817e0d3ba418ddc6b8868533cf54",
+    "a8_input_weights": "0f05a61618687bda2005ce4ac8343c5987f60ba0076245597de59f7380398762",
+    "init_weights": "bc979654e281c5de6e0e992e1f9587b3a9faa2eec996ea41b1b03954ba0b6e52",
+    "person_checkpoint": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36",
+    "route": "cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea",
+    "scorer": "0788392d5136c897090a0e0ed2c4a95b53d2baf22a218cd9af95acd75cbc1e1b"
+  },
+  "lane_scratch": "/workspace/wt/a7/.g394_scratch"
+}

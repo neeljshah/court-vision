@@ -1,0 +1,16 @@
+{
+  "dataset": {
+    "audited_negatives": 49,
+    "heldout_linked": 0,
+    "images": 1004,
+    "negatives": 425,
+    "positives": 530,
+    "yaml": "/workspace/wt/a7/.g394_scratch/ds/g394.yaml"
+  },
+  "train": {
+    "elapsed_seconds": 587.6432430744171,
+    "epochs": 10,
+    "final_weights_sha256": "3b0fe860ab4ee5c63747decb61ae3b2dfe73817e0d3ba418ddc6b8868533cf54",
+    "weights": "/workspace/wt/a7/.g394_scratch/runs/a10/weights/last.pt"
+  }
+}

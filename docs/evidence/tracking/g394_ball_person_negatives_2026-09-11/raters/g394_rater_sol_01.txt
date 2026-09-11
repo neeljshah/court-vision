@@ -1,0 +1,30 @@
+G394-000-d291088aa638ccfb,NO_BALL_VISIBLE,LOW,only players and bench visible
+G394-001-3fb1e72a40dd9805,NO_BALL_VISIBLE,LOW,players walking after stoppage
+G394-002-b06ea70a3e0ed1a2,NO_BALL_VISIBLE,LOW,team area with no ball
+G394-003-6b06b54fac750cf8,NO_BALL_VISIBLE,LOW,timeout huddle with no ball
+G394-004-b4d98c5b3adc1fa8,NO_BALL_VISIBLE,LOW,crowded bench scene no ball
+G394-005-6cd00e77ec82782b,NO_BALL_VISIBLE,LOW,players standing with no ball
+G394-006-f4e83bf83bf50a83,NO_BALL_VISIBLE,LOW,bench closeup and jersey logo
+G394-007-dc0387c22c618c60,NO_BALL_VISIBLE,LOW,coaches seated with no ball
+G394-008-6d3a9d4708c86d5a,NO_BALL_VISIBLE,LOW,players between plays no ball
+G394-009-9809014dc47c711d,NO_BALL_VISIBLE,LOW,coach closeup with no ball
+G394-010-e213c83f4772aed6,NO_BALL_VISIBLE,LOW,player reacting with no ball
+G394-011-e9b33ecadbaae052,NO_BALL_VISIBLE,LOW,sideline staff with no ball
+G394-012-270828cd1875f934,NO_BALL_VISIBLE,LOW,cheerleaders and court no ball
+G394-013-5777f7091678cb1a,NO_BALL_VISIBLE,LOW,players celebrating with no ball
+G394-014-fbd21e54420b1867,NO_BALL_VISIBLE,LOW,postgame interview no ball
+G394-015-69ca06983979f6b8,NO_BALL_VISIBLE,LOW,postgame interview no ball
+G394-016-b65ebb1b598f9466,NO_BALL_VISIBLE,LOW,bench reaction with no ball
+G394-017-396e285b22addc54,NO_BALL_VISIBLE,LOW,bench reaction with no ball
+G394-018-4c16cc9738339ecc,NO_BALL_VISIBLE,LOW,court scene with no ball
+G394-019-6807c7c515e08a9c,NO_BALL_VISIBLE,LOW,crowd shot with no ball
+G394-020-0cc7d4f5851228c0,NO_BALL_VISIBLE,LOW,postgame group with no ball
+G394-021-65ac90c22275c229,NO_BALL_VISIBLE,LOW,player greeting fans no ball
+G394-022-90df43aa233aae6f,NO_BALL_VISIBLE,LOW,courtside interview no ball
+G394-023-8177f8c0a482ae0d,NO_BALL_VISIBLE,LOW,courtside interview no ball
+G394-024-00e8cb1d2da46d1a,NO_BALL_VISIBLE,LOW,timeout sideline no ball
+G394-025-ec1e60391d6ac749,NO_BALL_VISIBLE,LOW,team huddle with no ball
+G394-026-0f11379d56743515,NO_BALL_VISIBLE,LOW,coach signaling with no ball
+G394-027-f9023114fe45c890,NO_BALL_VISIBLE,LOW,coach walking with no ball
+G394-028-1a6fc28618e1425a,NO_BALL_VISIBLE,LOW,postgame conversation no ball
+G394-029-6239a15e9a355621,BALL_AT_MARKER,LOW,referee holding game ball

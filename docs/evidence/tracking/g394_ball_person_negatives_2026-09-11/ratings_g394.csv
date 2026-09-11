@@ -1,0 +1,111 @@
+packet_id,rater,ball_state,uncertainty,reason
+G394-000-d291088aa638ccfb,terra,BALL_AT_MARKER,MEDIUM,blurred ball in hands
+G394-001-3fb1e72a40dd9805,terra,NO_BALL_VISIBLE,LOW,crowd and players only
+G394-002-b06ea70a3e0ed1a2,terra,NO_BALL_VISIBLE,LOW,timeout huddle only
+G394-003-6b06b54fac750cf8,terra,NO_BALL_VISIBLE,LOW,team huddle only
+G394-004-b4d98c5b3adc1fa8,terra,NO_BALL_VISIBLE,LOW,crowd and team only
+G394-005-6cd00e77ec82782b,terra,NO_BALL_VISIBLE,LOW,players and crowd only
+G394-006-f4e83bf83bf50a83,terra,NO_BALL_VISIBLE,LOW,logo on jacket only
+G394-007-dc0387c22c618c60,terra,NO_BALL_VISIBLE,LOW,bench staff only
+G394-008-6d3a9d4708c86d5a,terra,NO_BALL_VISIBLE,LOW,players between plays
+G394-009-9809014dc47c711d,terra,NO_BALL_VISIBLE,LOW,coach and bench only
+G394-010-e213c83f4772aed6,terra,NO_BALL_VISIBLE,LOW,players between plays
+G394-011-e9b33ecadbaae052,terra,NO_BALL_VISIBLE,LOW,coach and staff only
+G394-012-270828cd1875f934,terra,NO_BALL_VISIBLE,LOW,cheerleaders after game
+G394-013-5777f7091678cb1a,terra,NO_BALL_VISIBLE,LOW,celebrating players only
+G394-014-fbd21e54420b1867,terra,NO_BALL_VISIBLE,LOW,court interview only
+G394-015-69ca06983979f6b8,terra,NO_BALL_VISIBLE,LOW,court interview only
+G394-016-b65ebb1b598f9466,terra,NO_BALL_VISIBLE,LOW,coaches and bench only
+G394-017-396e285b22addc54,terra,NO_BALL_VISIBLE,LOW,coaches and bench only
+G394-018-4c16cc9738339ecc,terra,NO_BALL_VISIBLE,LOW,players and bench only
+G394-019-6807c7c515e08a9c,terra,NO_BALL_VISIBLE,LOW,crowd shot only
+G394-020-0cc7d4f5851228c0,terra,NO_BALL_VISIBLE,LOW,players and crowd only
+G394-021-65ac90c22275c229,terra,NO_BALL_VISIBLE,LOW,crowd shot only
+G394-022-90df43aa233aae6f,terra,NO_BALL_VISIBLE,LOW,court interview only
+G394-023-8177f8c0a482ae0d,terra,NO_BALL_VISIBLE,LOW,court interview only
+G394-024-00e8cb1d2da46d1a,terra,NO_BALL_VISIBLE,LOW,team sideline only
+G394-025-ec1e60391d6ac749,terra,NO_BALL_VISIBLE,LOW,team huddle only
+G394-026-0f11379d56743515,terra,NO_BALL_VISIBLE,LOW,coach celebration only
+G394-027-f9023114fe45c890,terra,NO_BALL_VISIBLE,LOW,coach walking only
+G394-028-1a6fc28618e1425a,terra,NO_BALL_VISIBLE,LOW,postgame interaction only
+G394-029-6239a15e9a355621,terra,BALL_AT_MARKER,LOW,official holds basketball
+G394-030-0c6b60be205872f8,terra,NO_BALL_VISIBLE,LOW,crowd closeup no ball
+G394-031-d979c6ac6f6203a6,terra,NO_BALL_VISIBLE,LOW,crowd closeup no ball
+G394-032-70df191939fee37e,terra,NO_BALL_VISIBLE,LOW,sideline closeup no ball
+G394-033-865ace608193c53f,terra,NO_BALL_VISIBLE,LOW,sideline closeup no ball
+G394-034-edb416ab944b4173,terra,NO_BALL_VISIBLE,LOW,bench closeup no ball
+G394-035-31e65565a80d5aec,terra,NO_BALL_VISIBLE,LOW,introduction graphic no ball
+G394-036-b816b7170fec8b61,terra,NO_BALL_VISIBLE,LOW,player introduction no ball
+G394-037-6837ff414b33dce7,terra,NO_BALL_VISIBLE,LOW,player closeup no ball
+G394-038-74c1d42626900a45,terra,NO_BALL_VISIBLE,LOW,player closeup no ball
+G394-039-bb40e80575de102f,terra,BALL_ELSEWHERE,MEDIUM,orange ball at left border
+G394-040-8a8c0b6548953cfa,terra,NO_BALL_VISIBLE,LOW,bench closeup no ball
+G394-041-8390f5a5e9e615c7,terra,BALL_AT_MARKER,LOW,referee holds ball
+G394-042-4bda996e06822aa9,terra,NO_BALL_VISIBLE,LOW,crowd shot no ball
+G394-043-e4fcec365b40c0a0,terra,NO_BALL_VISIBLE,LOW,player closeup no ball
+G394-044-d3948163fa612e37,terra,NO_BALL_VISIBLE,LOW,player closeup no ball
+G394-045-60cb43dc223f0851,terra,NO_BALL_VISIBLE,MEDIUM,stopped court view no ball
+G394-046-a44cc34f8308278b,terra,NO_BALL_VISIBLE,LOW,bench closeup no ball
+G394-047-c8bcefbd85ef55d2,terra,NO_BALL_VISIBLE,LOW,bench closeup no ball
+G394-048-61e6983187daaeaf,terra,BALL_AT_MARKER,LOW,ball beside player
+G394-049-a1d2a8f2cb3c7042,terra,NO_BALL_VISIBLE,LOW,postgame closeup no ball
+G394-050-44fa61adc1e71071,terra,NO_BALL_VISIBLE,LOW,graphic and crowd no ball
+G394-051-21492e3ae25939f1,terra,NO_BALL_VISIBLE,LOW,graphic and crowd no ball
+G394-052-afdfc7de671ae64c,terra,NO_BALL_VISIBLE,LOW,interview shot no ball
+G394-053-48ae81e428203f41,terra,NO_BALL_VISIBLE,LOW,bench closeup no ball
+G394-054-a6c7741c2c54f8ad,terra,BALL_AT_MARKER,LOW,official holds ball
+G394-000-d291088aa638ccfb,sol,NO_BALL_VISIBLE,LOW,only players and bench visible
+G394-001-3fb1e72a40dd9805,sol,NO_BALL_VISIBLE,LOW,players walking after stoppage
+G394-002-b06ea70a3e0ed1a2,sol,NO_BALL_VISIBLE,LOW,team area with no ball
+G394-003-6b06b54fac750cf8,sol,NO_BALL_VISIBLE,LOW,timeout huddle with no ball
+G394-004-b4d98c5b3adc1fa8,sol,NO_BALL_VISIBLE,LOW,crowded bench scene no ball
+G394-005-6cd00e77ec82782b,sol,NO_BALL_VISIBLE,LOW,players standing with no ball
+G394-006-f4e83bf83bf50a83,sol,NO_BALL_VISIBLE,LOW,bench closeup and jersey logo
+G394-007-dc0387c22c618c60,sol,NO_BALL_VISIBLE,LOW,coaches seated with no ball
+G394-008-6d3a9d4708c86d5a,sol,NO_BALL_VISIBLE,LOW,players between plays no ball
+G394-009-9809014dc47c711d,sol,NO_BALL_VISIBLE,LOW,coach closeup with no ball
+G394-010-e213c83f4772aed6,sol,NO_BALL_VISIBLE,LOW,player reacting with no ball
+G394-011-e9b33ecadbaae052,sol,NO_BALL_VISIBLE,LOW,sideline staff with no ball
+G394-012-270828cd1875f934,sol,NO_BALL_VISIBLE,LOW,cheerleaders and court no ball
+G394-013-5777f7091678cb1a,sol,NO_BALL_VISIBLE,LOW,players celebrating with no ball
+G394-014-fbd21e54420b1867,sol,NO_BALL_VISIBLE,LOW,postgame interview no ball
+G394-015-69ca06983979f6b8,sol,NO_BALL_VISIBLE,LOW,postgame interview no ball
+G394-016-b65ebb1b598f9466,sol,NO_BALL_VISIBLE,LOW,bench reaction with no ball
+G394-017-396e285b22addc54,sol,NO_BALL_VISIBLE,LOW,bench reaction with no ball
+G394-018-4c16cc9738339ecc,sol,NO_BALL_VISIBLE,LOW,court scene with no ball
+G394-019-6807c7c515e08a9c,sol,NO_BALL_VISIBLE,LOW,crowd shot with no ball
+G394-020-0cc7d4f5851228c0,sol,NO_BALL_VISIBLE,LOW,postgame group with no ball
+G394-021-65ac90c22275c229,sol,NO_BALL_VISIBLE,LOW,player greeting fans no ball
+G394-022-90df43aa233aae6f,sol,NO_BALL_VISIBLE,LOW,courtside interview no ball
+G394-023-8177f8c0a482ae0d,sol,NO_BALL_VISIBLE,LOW,courtside interview no ball
+G394-024-00e8cb1d2da46d1a,sol,NO_BALL_VISIBLE,LOW,timeout sideline no ball
+G394-025-ec1e60391d6ac749,sol,NO_BALL_VISIBLE,LOW,team huddle with no ball
+G394-026-0f11379d56743515,sol,NO_BALL_VISIBLE,LOW,coach signaling with no ball
+G394-027-f9023114fe45c890,sol,NO_BALL_VISIBLE,LOW,coach walking with no ball
+G394-028-1a6fc28618e1425a,sol,NO_BALL_VISIBLE,LOW,postgame conversation no ball
+G394-029-6239a15e9a355621,sol,BALL_AT_MARKER,LOW,referee holding game ball
+G394-030-0c6b60be205872f8,sol,NO_BALL_VISIBLE,LOW,player closeup with no ball
+G394-031-d979c6ac6f6203a6,sol,NO_BALL_VISIBLE,LOW,player closeup with no ball
+G394-032-70df191939fee37e,sol,NO_BALL_VISIBLE,LOW,sideline view with no ball
+G394-033-865ace608193c53f,sol,NO_BALL_VISIBLE,LOW,sideline view with no ball
+G394-034-edb416ab944b4173,sol,NO_BALL_VISIBLE,LOW,bench view with no ball
+G394-035-31e65565a80d5aec,sol,NO_BALL_VISIBLE,LOW,pregame introduction with no ball
+G394-036-b816b7170fec8b61,sol,NO_BALL_VISIBLE,LOW,pregame court with no ball
+G394-037-6837ff414b33dce7,sol,NO_BALL_VISIBLE,LOW,player closeup with no ball
+G394-038-74c1d42626900a45,sol,NO_BALL_VISIBLE,LOW,players standing with no ball
+G394-039-bb40e80575de102f,sol,NO_BALL_VISIBLE,LOW,player closeup with no ball
+G394-040-8a8c0b6548953cfa,sol,NO_BALL_VISIBLE,LOW,player closeup with no ball
+G394-041-8390f5a5e9e615c7,sol,BALL_AT_MARKER,LOW,official holding game ball
+G394-042-4bda996e06822aa9,sol,NO_BALL_VISIBLE,LOW,bench closeup with no ball
+G394-043-e4fcec365b40c0a0,sol,NO_BALL_VISIBLE,LOW,players waiting with no ball
+G394-044-d3948163fa612e37,sol,NO_BALL_VISIBLE,LOW,review stoppage with no ball
+G394-045-60cb43dc223f0851,sol,NO_BALL_VISIBLE,LOW,stopped play with no ball
+G394-046-a44cc34f8308278b,sol,NO_BALL_VISIBLE,LOW,bench closeup with no ball
+G394-047-c8bcefbd85ef55d2,sol,NO_BALL_VISIBLE,LOW,bench closeup with no ball
+G394-048-61e6983187daaeaf,sol,BALL_ELSEWHERE,LOW,ball visible above the rim
+G394-049-a1d2a8f2cb3c7042,sol,NO_BALL_VISIBLE,LOW,postgame scene with no ball
+G394-050-44fa61adc1e71071,sol,NO_BALL_VISIBLE,LOW,arena graphic with no ball
+G394-051-21492e3ae25939f1,sol,NO_BALL_VISIBLE,LOW,marker shows orange apparel
+G394-052-afdfc7de671ae64c,sol,NO_BALL_VISIBLE,LOW,postgame interview with no ball
+G394-053-48ae81e428203f41,sol,NO_BALL_VISIBLE,LOW,shirt graphic is not game ball
+G394-054-a6c7741c2c54f8ad,sol,NO_BALL_VISIBLE,LOW,game action with ball offscreen

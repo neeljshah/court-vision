@@ -1,0 +1,20 @@
+{
+  "binding_counts": {
+    "dev_absent": 425,
+    "dev_absent_in_box_games": 386,
+    "dev_boxes": 530,
+    "dev_games": 27,
+    "heldout_absent": 188,
+    "heldout_unknown": 59,
+    "heldout_visible": 302
+  },
+  "eligible_games": 27,
+  "eligible_keys": 386,
+  "eligible_sections": 27,
+  "game_overlap": 0,
+  "heldout_games": 32,
+  "heldout_sections": 35,
+  "manifest_rows": 1620,
+  "section_overlap": 0,
+  "sheets_verified": 386
+}

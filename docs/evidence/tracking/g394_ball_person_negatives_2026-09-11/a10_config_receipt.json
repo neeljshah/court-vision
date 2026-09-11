@@ -1,0 +1,79 @@
+{
+  "allowance": {
+    "alternate_seed_or_crop_quota": "forbidden",
+    "candidate_heldout_inferences_permitted": 1,
+    "epoch_selection": "final epoch only",
+    "threshold_sweep": "forbidden",
+    "training_launches_permitted": 1
+  },
+  "compute_path": {
+    "declared_before_training": true,
+    "note": "every G394 pod computation runs under the lane worktree path named by the spec",
+    "pod_lane_scratch": "/workspace/wt/a7/.g394_scratch"
+  },
+  "evaluator_context": {
+    "cpcv_groups": 8,
+    "embargo_days": 1,
+    "sha256_lf": "c68a6dafcff4478d262381ed966549abfe77bb0297ab0b1d884d19fa08d6efe7",
+    "source": "docs/evidence/tracking/g390_ball_a8_sealed_pass_2026-09-11/evaluator_context.csv"
+  },
+  "identities": {
+    "a8_final_weights": "0f05a61618687bda2005ce4ac8343c5987f60ba0076245597de59f7380398762",
+    "deployed_route_path": "/workspace/nba-ai-system/src/tracking/ball_detect_track.py",
+    "deployed_route_sha256": "cbc7cd9dfb7e18691f310b7594be046ac0d3184a279c43d8eb427210355bc9ea",
+    "dev_boxes_v3_sha256_lf": "e151f932c3b4bffe84c89aa8fde18f08c346a1e3a6e65d27ed4b36f095b7b4fa",
+    "frames_v3_sha256_lf": "11797e162dd303441a7bde18e66fae4b404341fa2bd611678226182258d58945",
+    "person_checkpoint_path": "/workspace/deploy/nba-ai-system/yolov8n.pt",
+    "person_checkpoint_sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36",
+    "readiness_sha256_lf": "d11a1c8cdd52098ee6de16aec6df103ca22990c00cd45cd4bb4f8712bd7c8ef6",
+    "reference_v3_sha256_lf": "ad00670c3601706d5d817de734fc85d82e8fdc379ea03b21bbe1a46e272ad09e"
+  },
+  "initialization": {
+    "note": "A8's own initialization checkpoint; this is a NEW run, not extra epochs on A8",
+    "path": "/workspace/deploy/nba-ai-system/models/weights/yolov8n_ball.pt",
+    "sha256": "bc979654e281c5de6e0e992e1f9587b3a9faa2eec996ea41b1b03954ba0b6e52"
+  },
+  "recipe": {
+    "amp": false,
+    "augmentation": "none",
+    "batch": 2,
+    "deterministic": true,
+    "epochs": 10,
+    "imgsz": 960,
+    "optimizer": "SGD",
+    "permitted_deviation": "data and output identities only",
+    "seed": 373,
+    "sha256_lf": "463157bf0730a6457e5515c8fb609b1c16900210accae7a851742d10e6709aec",
+    "single_cls": true,
+    "source": "docs/evidence/tracking/g390_ball_a8_sealed_pass_2026-09-11/args.yaml",
+    "val": false
+  },
+  "scoring": {
+    "absent": 188,
+    "bars": {
+      "all_fp_per_absent_max": 0.01,
+      "c0_min": 0.25,
+      "precision_wilson_lower_min": 0.9
+    },
+    "baselines": {
+      "A0": "archived deployed-route predictions rescored",
+      "A8": "archived G390 predictions rescored"
+    },
+    "candidate_conf": 0.05,
+    "centre_tolerance": "max(3 px, diameter_720p/2)",
+    "heldout_states": 549,
+    "scorer": "scripts/platformkit/tracking/g363_score.py score_arm",
+    "unknown": 59,
+    "visible": 302
+  },
+  "training_data": {
+    "accepted_negatives_sha256_lf": "7d45c53e80cfa7ac7065075f508d845cc445c583e3518feff6c1418a52e93731",
+    "audit_agreement_sha256_lf": "bc06fadac677b660899332a7d22246fc00ef646968cc8318b92a4a2f20871afc",
+    "audited_hard_negatives_added": 49,
+    "each_crop_appended": "exactly once",
+    "label_for_added_crops": "empty file",
+    "negative_manifest_sha256_lf": "8e681a4652c6684f94452ce95882e838541310406f9206be9155f6cacdde21a4",
+    "original_absent_negatives": 425,
+    "original_positives": 530
+  }
+}

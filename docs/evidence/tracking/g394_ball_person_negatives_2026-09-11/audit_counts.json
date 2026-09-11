@@ -1,0 +1,33 @@
+{
+  "accepted": 49,
+  "accepted_games": 15,
+  "accepted_unique_frames": 49,
+  "excluded": 6,
+  "exclusion_reasons": {
+    "terra_BALL_AT_MARKER": 2,
+    "terra_BALL_AT_MARKER|sol_BALL_AT_MARKER": 2,
+    "terra_BALL_AT_MARKER|sol_BALL_ELSEWHERE": 1,
+    "terra_BALL_ELSEWHERE": 1
+  },
+  "eye_check_cards": 30,
+  "meets_supply_bar": true,
+  "min_accepted": 30,
+  "min_games": 5,
+  "rated_by_both": 55,
+  "rated_by_sol": 55,
+  "rated_by_terra": 55,
+  "rater_states": {
+    "sol": {
+      "BALL_AT_MARKER": 2,
+      "BALL_ELSEWHERE": 1,
+      "NO_BALL_VISIBLE": 52
+    },
+    "terra": {
+      "BALL_AT_MARKER": 5,
+      "BALL_ELSEWHERE": 1,
+      "NO_BALL_VISIBLE": 49
+    }
+  },
+  "raw_state_agreement": 0.927273,
+  "selected": 55
+}
