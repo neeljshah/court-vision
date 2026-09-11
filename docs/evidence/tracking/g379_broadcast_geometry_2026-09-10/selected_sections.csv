@@ -1,0 +1,7 @@
+section_id,game_id,n_ticks,n_court,n_non_court,n_abstain,court_share,eligible,draw_rank,draw_pass
+ncaa_basketball__UzaYBYy3GZg_s155,ncaa_basketball__UzaYBYy3GZg,12,9,2,1,0.75,1,0,0
+nba__pPHOlLVyjQc_s1603,nba__pPHOlLVyjQc,12,11,1,0,0.916667,1,1,0
+ncaa_basketball__QXFM3hlaDAk_s1440,ncaa_basketball__QXFM3hlaDAk,12,9,3,0,0.75,1,2,0
+basketball__euroleague-a_GxgklBtEs_s2783,basketball__euroleague-a_GxgklBtEs,12,11,1,0,0.916667,1,3,0
+ncaa_basketball__g7dzEFLiemQ_s1258,ncaa_basketball__g7dzEFLiemQ,12,6,5,1,0.5,1,4,0
+ncaa_basketball__UzaYBYy3GZg_s4019,ncaa_basketball__UzaYBYy3GZg,12,8,4,0,0.666667,1,5,1

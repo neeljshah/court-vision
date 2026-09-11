@@ -1,0 +1,7 @@
+{
+ "device": "cuda",
+ "embedding_dim": 512,
+ "extractor": "torchvision_resnet18_imagenet1k_v1",
+ "weights_path": "/workspace/g364_scratch/weights/resnet18-f37072fd.pth",
+ "weights_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec"
+}

@@ -1,0 +1,67 @@
+{
+ "broadcast_forward_median_hits": [
+  {
+   "line": 1124,
+   "path": "TRACKING_GAPS_2026-09-01.md",
+   "text": "| G365 | basketball | OPEN -- allocated 2026-09-09 (prerequisite row from G362 PARTIAL decb187d: the sealed known-H recovery gate reads 1.6516 px vs the 1.0 px bar, deterministic, and 1.33 / 1.78 / 1."
+  },
+  {
+   "line": 1138,
+   "path": "TRACKING_GAPS_2026-09-01.md",
+   "text": "| G379 | basketball | OPEN -- allocated 2026-09-10 (astra next-rows seed BROADCAST_GEOMETRY, the registration wall; inputs landed today: G374 PARTIAL fc66787a0 = the frozen court-presence head VALIDAT"
+  },
+  {
+   "line": 33,
+   "path": "g352_calibration_whole_template_2026-09-08.md",
+   "text": "## CARRY-OVER (a) TO (e) (a) PASSED before any broadcast frame, numbers above. (b) DONE: `residuals.csv` carries one row per template point per frame, 126962 rows, and every per-section forward figure"
+  }
+ ],
+ "g362_known_h": {
+  "bar_px": 1.0,
+  "forward_median_px": 5.874,
+  "inverse_median_px": 4.6486,
+  "n_hypotheses": 115976,
+  "n_strokes": 48,
+  "n_val_points": 508,
+  "n_val_strokes": 13,
+  "reason": "valid",
+  "reprojection_median_px": 1.6516,
+  "state": "VALID",
+  "verdict": "PARTIAL"
+ },
+ "g364_head_sha256": "a2a08eaac5e79315e329308b5d1ddaff4aede200b39039900932ee492dff966e",
+ "g364_threshold": 0.3,
+ "g365_summary_b": {
+  "assign_max_px": 12.0,
+  "attempt": 2,
+  "band_px": 6.0,
+  "bar_px": 1.0,
+  "candidate": "B",
+  "conv_px": 0.01,
+  "draws": 40,
+  "huber_delta_px": 1.0,
+  "init_fail_px": 50.0,
+  "max_iter": 200,
+  "min_assigned": 12,
+  "optimiser": "scipy.optimize.least_squares(method=trf, loss=huber), 3 template-guided re-association rounds",
+  "rounds": 3,
+  "row": "G365",
+  "seed_prefix": "G365B",
+  "support_spacing_px": 6.0,
+  "tol": 1e-10,
+  "verdict": "FINISHER WRITES THIS"
+ },
+ "g371_summary_keys": [
+  "budgets_m",
+  "controls",
+  "modulo_form",
+  "orientation_status",
+  "renders_written",
+  "row",
+  "selected",
+  "sensitivity",
+  "sweep"
+ ],
+ "g374_verdict_line": "VERDICT: PARTIAL -- the frozen G364 head VALIDATES on both metric bars and misses one coverage bar. On the sealed 300, USABLE_COURT precision 0.962162 (Wilson 95 pct [0.923969, 0.981553]) clears the 0.90 bar and recall 0.967391 (Wilson 95 pct [0.930695, 0.984971]) clears the 0.80 bar, both with the LOWER bound above the bar. The ONE unmet bar is \"at least 60 rated rows in each predicted stratum\": the ABSTAIN stratum carries 14 rows because 14 is every abstaining frame in the whole 360-frame pool (38.888889 per mille). That bar is unreachable by construction at this threshold and is NOT lowered; the two SCORED strata hold 185 COURT and 101 NON_COURT.",
+ "premise_false": false
+}

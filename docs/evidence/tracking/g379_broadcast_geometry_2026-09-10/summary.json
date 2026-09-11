@@ -1,0 +1,200 @@
+{
+ "bars": {
+  "cascade_accepts_allowed": 0,
+  "feet_inside": 0.6,
+  "forward_median_px": 8.0,
+  "negatives_required": 200,
+  "sections_required": 4,
+  "valid_share": 0.5
+ },
+ "constants": {
+  "BASE_HEIGHT": 720,
+  "MAX_MEDIAN_PX": 8.0,
+  "MIN_VAL_FAMILIES": 2,
+  "MIN_VAL_POINTS": 30,
+  "PENALTY_PX": 64.0,
+  "SUPPORT_SPACING_PX": 6.0
+ },
+ "feet_inside_total": 611,
+ "feet_total": 3310,
+ "n_frames": 360,
+ "n_games": 5,
+ "n_sections": 6,
+ "negatives": {
+  "cascade_accepted_negatives": 0,
+  "cascade_accepted_pool": 0,
+  "negative_games": 11,
+  "negative_presence": {
+   "ABSTAIN": 13,
+   "COURT": 7,
+   "NON_COURT": 244
+  },
+  "negative_raw_state": {
+   "REFUSED": 264
+  },
+  "negative_sections": 30,
+  "negative_selection": {
+   "NO_CANDIDATES": 24,
+   "NO_DISTINCT_RUNNER_UP": 22,
+   "REFUSED_MARGIN": 189,
+   "REFUSED_VALIDATION": 29
+  },
+  "negative_validation": {
+   "NO_CANDIDATES": 24,
+   "REFUSED": 240
+  },
+  "negatives": 264,
+  "pool_rated": 600,
+  "reference_labels": {
+   "CLOSEUP": 167,
+   "CROWD_GRAPHICS": 97,
+   "USABLE_COURT": 336
+  }
+ },
+ "presence_totals": {
+  "": 8,
+  "ABSTAIN": 12,
+  "COURT": 259,
+  "NON_COURT": 81
+ },
+ "raw_state_totals": {
+  "DECODE_FAILED": 8,
+  "REFUSED": 352
+ },
+ "row": "G379",
+ "sections": [
+  {
+   "feet_inside": 0.09375,
+   "forward_median_px_charged": 20.055,
+   "forward_median_px_evaluable": 19.514299,
+   "game_id": "basketball__euroleague-a_GxgklBtEs",
+   "n_cascade_accept": 0,
+   "n_decoded": 60,
+   "n_feet": 640,
+   "n_feet_inside": 60,
+   "n_feet_near_half": 25,
+   "n_frames_evaluable": 59,
+   "n_scheduled": 60,
+   "n_valid": 0,
+   "presence_counts": "{\"ABSTAIN\": 1, \"COURT\": 48, \"NON_COURT\": 11}",
+   "raw_state_counts": "{\"REFUSED\": 60}",
+   "section_id": "basketball__euroleague-a_GxgklBtEs_s2783",
+   "selection_status_counts": "{\"NO_CANDIDATES\": 1, \"NO_DISTINCT_RUNNER_UP\": 5, \"REFUSED_MARGIN\": 49, \"REFUSED_VALIDATION\": 5}",
+   "valid_share": 0.0,
+   "validation_status_counts": "{\"NO_CANDIDATES\": 1, \"REFUSED\": 59}"
+  },
+  {
+   "feet_inside": 0.202454,
+   "forward_median_px_charged": 16.6493,
+   "forward_median_px_evaluable": 16.108601,
+   "game_id": "nba__pPHOlLVyjQc",
+   "n_cascade_accept": 0,
+   "n_decoded": 58,
+   "n_feet": 489,
+   "n_feet_inside": 99,
+   "n_feet_near_half": 36,
+   "n_frames_evaluable": 58,
+   "n_scheduled": 60,
+   "n_valid": 0,
+   "presence_counts": "{\"\": 2, \"COURT\": 53, \"NON_COURT\": 5}",
+   "raw_state_counts": "{\"DECODE_FAILED\": 2, \"REFUSED\": 58}",
+   "section_id": "nba__pPHOlLVyjQc_s1603",
+   "selection_status_counts": "{\"\": 2, \"NO_DISTINCT_RUNNER_UP\": 10, \"REFUSED_MARGIN\": 34, \"REFUSED_VALIDATION\": 14}",
+   "valid_share": 0.0,
+   "validation_status_counts": "{\"DECODE_FAILED\": 2, \"REFUSED\": 58}"
+  },
+  {
+   "feet_inside": 0.192377,
+   "forward_median_px_charged": 15.5679,
+   "forward_median_px_evaluable": 14.1986,
+   "game_id": "ncaa_basketball__QXFM3hlaDAk",
+   "n_cascade_accept": 0,
+   "n_decoded": 58,
+   "n_feet": 551,
+   "n_feet_inside": 106,
+   "n_feet_near_half": 48,
+   "n_frames_evaluable": 57,
+   "n_scheduled": 60,
+   "n_valid": 0,
+   "presence_counts": "{\"\": 2, \"COURT\": 47, \"NON_COURT\": 11}",
+   "raw_state_counts": "{\"DECODE_FAILED\": 2, \"REFUSED\": 58}",
+   "section_id": "ncaa_basketball__QXFM3hlaDAk_s1440",
+   "selection_status_counts": "{\"\": 2, \"NO_CANDIDATES\": 1, \"NO_DISTINCT_RUNNER_UP\": 5, \"REFUSED_MARGIN\": 48, \"REFUSED_VALIDATION\": 4}",
+   "valid_share": 0.0,
+   "validation_status_counts": "{\"DECODE_FAILED\": 2, \"NO_CANDIDATES\": 1, \"REFUSED\": 57}"
+  },
+  {
+   "feet_inside": 0.233766,
+   "forward_median_px_charged": 19.387899,
+   "forward_median_px_evaluable": 18.306499,
+   "game_id": "ncaa_basketball__UzaYBYy3GZg",
+   "n_cascade_accept": 0,
+   "n_decoded": 58,
+   "n_feet": 539,
+   "n_feet_inside": 126,
+   "n_feet_near_half": 27,
+   "n_frames_evaluable": 57,
+   "n_scheduled": 60,
+   "n_valid": 0,
+   "presence_counts": "{\"\": 2, \"ABSTAIN\": 4, \"COURT\": 42, \"NON_COURT\": 12}",
+   "raw_state_counts": "{\"DECODE_FAILED\": 2, \"REFUSED\": 58}",
+   "section_id": "ncaa_basketball__UzaYBYy3GZg_s155",
+   "selection_status_counts": "{\"\": 2, \"NO_CANDIDATES\": 1, \"NO_DISTINCT_RUNNER_UP\": 6, \"REFUSED_MARGIN\": 47, \"REFUSED_VALIDATION\": 4}",
+   "valid_share": 0.0,
+   "validation_status_counts": "{\"DECODE_FAILED\": 2, \"NO_CANDIDATES\": 1, \"REFUSED\": 57}"
+  },
+  {
+   "feet_inside": 0.229358,
+   "forward_median_px_charged": 15.5679,
+   "forward_median_px_evaluable": 14.7393,
+   "game_id": "ncaa_basketball__UzaYBYy3GZg",
+   "n_cascade_accept": 0,
+   "n_decoded": 58,
+   "n_feet": 545,
+   "n_feet_inside": 125,
+   "n_feet_near_half": 36,
+   "n_frames_evaluable": 58,
+   "n_scheduled": 60,
+   "n_valid": 0,
+   "presence_counts": "{\"\": 2, \"ABSTAIN\": 1, \"COURT\": 38, \"NON_COURT\": 19}",
+   "raw_state_counts": "{\"DECODE_FAILED\": 2, \"REFUSED\": 58}",
+   "section_id": "ncaa_basketball__UzaYBYy3GZg_s4019",
+   "selection_status_counts": "{\"\": 2, \"NO_DISTINCT_RUNNER_UP\": 6, \"REFUSED_MARGIN\": 48, \"REFUSED_VALIDATION\": 4}",
+   "valid_share": 0.0,
+   "validation_status_counts": "{\"DECODE_FAILED\": 2, \"REFUSED\": 58}"
+  },
+  {
+   "feet_inside": 0.173993,
+   "forward_median_px_charged": 21.8386,
+   "forward_median_px_evaluable": 18.9736,
+   "game_id": "ncaa_basketball__g7dzEFLiemQ",
+   "n_cascade_accept": 0,
+   "n_decoded": 60,
+   "n_feet": 546,
+   "n_feet_inside": 95,
+   "n_feet_near_half": 28,
+   "n_frames_evaluable": 54,
+   "n_scheduled": 60,
+   "n_valid": 0,
+   "presence_counts": "{\"ABSTAIN\": 6, \"COURT\": 31, \"NON_COURT\": 23}",
+   "raw_state_counts": "{\"REFUSED\": 60}",
+   "section_id": "ncaa_basketball__g7dzEFLiemQ_s1258",
+   "selection_status_counts": "{\"NO_CANDIDATES\": 6, \"NO_DISTINCT_RUNNER_UP\": 3, \"REFUSED_MARGIN\": 43, \"REFUSED_VALIDATION\": 8}",
+   "valid_share": 0.0,
+   "validation_status_counts": "{\"NO_CANDIDATES\": 6, \"REFUSED\": 54}"
+  }
+ ],
+ "sections_meeting_all_three": 0,
+ "selection_status_totals": {
+  "": 8,
+  "NO_CANDIDATES": 9,
+  "NO_DISTINCT_RUNNER_UP": 35,
+  "REFUSED_MARGIN": 269,
+  "REFUSED_VALIDATION": 39
+ },
+ "validation_status_totals": {
+  "DECODE_FAILED": 8,
+  "NO_CANDIDATES": 9,
+  "REFUSED": 343
+ }
+}
