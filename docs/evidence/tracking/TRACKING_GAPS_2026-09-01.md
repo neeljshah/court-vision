@@ -45,6 +45,13 @@
 
 
 
+
+## G412 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G412 | basketball | DONE (PROPOSED ONLY) (codex-sol ACCEPT WITH CORRECTIONS, applied): premise TRUE and reproduced first (60 exact-even ticks / 53 sections, 206 stored rows, 5 producer-silent ticks, 592 comparator boxes, 51 pairs / 28 frames; 60/60 sources and 60/60 decoded frames rehash equal; the production writer and all 59 landed raw tables carry NO box receipt). COORDINATE ACCOUNTING DONE: 12-stage archived-byte route chain with file:line + digests (TOPCUT 60 src/tracking/video_handler.py:11; PAD 15 src/tracking/player_detection.py:20; store advanced_tracker.py:1336; tuple permutation unified_pipeline.py:2736); 178 bbox reader hits over 53 files; 60/60 native cards (55 measured, 5 UNKNOWN silence). WRITER/GEOMETRY DONE: 32/32 CONSTRUCT controls vs an independent corner-loop oracle; 206/206 legacy fields byte-identical; 34 BOUND (box_frame topcut60_pad15 / origin 60 / pad 15) + 172 UNKNOWN-with-reason; PROPOSED additive writer diff +21/-0 applied nowhere (src/ byte-unchanged); 2/206 boxes exceed crop_height+PAD (both CLAMP rows from the unclipped store). COMPARATOR RE-DERIVATION (diagnostic): dy median -58.203 -> +1.797 by the exact +60 on all 51 pairs, clipping logged separately (18/51), no fitted constant. G409 (a12) agrees; G410 shares all four citations. Geometry quality NOT VERIFIED. Verifier NEW GAPs: q6 manifest omits SHA256SUMS; diff_fixture does not replay the persistent box_route state over the 206 rows (add before live integration). | g412_box_frame_contract_2026-09-12.md + dir (route_chain.json, reader_manifest.csv, transforms.json, construct_cases.csv, writer_compatibility.csv, per_frame.csv, paired_residuals.csv, renders/, PROPOSED_g412_box_frame_contract.diff copy, SHA256SUMS); G412_VERIFY_att1_ACCEPT_WITH_CORRECTIONS_2026-09-11.md | **DONE (PROPOSED ONLY) -- the coordinate contract is sealed and checkable; licenses G413's contract-transformed re-audit; does not license applying the diff, any pixel-target export or any accuracy claim** |
+
 ## G404 result register
 
 | Gap | Sport | Finding | Evidence | Status |

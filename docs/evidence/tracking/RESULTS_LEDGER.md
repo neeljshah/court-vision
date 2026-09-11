@@ -783,3 +783,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G404 | landed PARTIAL: 14 resolved exact-ID-disjoint games across 2 competitions vs 30 required; 386 unique candidates (187 admitted, 199 excluded); one-reviewer audit -> two-rater bar NOT EVALUABLE; repeat-wrapper returncode 0 with nested census returncode 1 (verified: codex-sol ACCEPT, contract A/B/Q)
 
+2026-09-11 | tracking | G412 | landed DONE (PROPOSED ONLY): 60/60 cards; 32/32 controls; 206/206 legacy parity; dy -58.203 to +1.797 on 51 pairs/28 frames; proposed only (verified: codex-sol ACCEPT WITH CORRECTIONS applied, contract A/B/Q)
+
