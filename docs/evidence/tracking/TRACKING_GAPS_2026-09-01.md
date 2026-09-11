@@ -24,6 +24,13 @@
 
 
 
+
+## G388 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G388 | basketball | premise HOLDS: G382/G387 states reproduced (60 planned / 49 retained, 49/49 native sha256 + 1920x1080, 0 marking-only strokes, G387 controls 13/30 admissible, real localization 1/30, visibility 22/6/2). Sealed band-membership + unoriented line-family protocol with NEW known-position synthetic controls: 10/30 admissible within 3 px (terra control batch 02 wrote nothing under a sandbox refusal and is COUNTED as 10 failures per the no-retry clause; the one named LIMIT run re-issued those 10 through a permission-tested path and reached 13/30) vs the 27/30 bar -> PROTOCOL NOT QUALIFIED. Cause measured: terra recovers band orientation precisely (angle error p50 0.11 deg) but its absolute position is bimodal (perpendicular p50 1.0 px, p90 30.0, max 31.0); sol scores 28/30. Real paint (DIAGNOSTIC, controls failed): band membership 0/30 all contexts, 0/23 visible contexts; 8 contexts produced 8 one-to-one same-tile same-family candidate pairs, none passes the sealed 6 px rule (closest 4.46 px symmetric, one point at 6.1 px) and none survives the 8-of-9 native-pixel audit; family disagreement 19/30; 0 missing responses. Metric vindicated: re-observations move 13.89 px median ALONG a band but 0.06 px PERPENDICULAR -- the extent arbitrariness G387 scored as 47-244 px; retrospective rescore G382 1/57, G387 4/12 same-band vs 1/12 under its endpoint rule. Q6 0 non-opaque hits over 161 text artifacts incl. rater logs (5 opaque); four files carried a geometric token replaced with digests disclosed. LANDMINE: a codex bin dir without codex-code-mode-host.exe sorted newest and rates nothing (resolver fixed) | g388_paint_band_protocol_2026-09-11.md; g388_paint_band_protocol_2026-09-11/{prereg, controls/, ratings, pairing.csv, per_frame.csv, summary.json, SHA256SUMS, renders/, rater logs}; G388_VERIFY_ACCEPT_WITH_CORRECTIONS_2026-09-11.md | **PARTIAL -- the perpendicular band metric is the right unit, but one rater's absolute-position bimodality keeps the coordinate protocol unqualified; the next protocol needs a per-rater qualification gate (a rater failing its own controls is excluded before real paint is scored) and rater-side calibration on the synthetic controls; registration remains unsolved** |
+
 ## G386 result register
 
 | Gap | Sport | Finding | Evidence | Status |

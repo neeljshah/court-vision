@@ -740,3 +740,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G386 | landed PARTIAL: one-pass pin+copy+receipt under A1 -- captured 30/30, retained off-pod 30/30 (2.32 GB, readback + re-decode 30/30), pixel 29 MATCH + 1 ORIGINAL_ABSENT; originals in the live pool 11/11 gone by +45 min; controls 6/7 (same-size mutation undetectable on this volume); first measurement superseded | PARTIAL (codex-sol att1 REJECT, re-measurement REJECT, fix 1c ACCEPT verbatim)
 
+2026-09-11 | tracking | G388 | landed PARTIAL (protocol not qualified): band-membership controls 10/30 admissible (13/30 LIMIT) vs 27/30 -- terra absolute position bimodal, sol 28/30; real-paint band membership 0/30; perpendicular metric vindicated (0.06 px perpendicular vs 13.89 px along); no-retry honoured | PARTIAL (codex-sol ACCEPT WITH CORRECTIONS applied)
+
