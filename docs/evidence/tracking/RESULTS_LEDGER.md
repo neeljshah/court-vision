@@ -744,3 +744,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G389 | landed DONE: 506/506 backlog keys settled (0 faults), merge reproduces 1,114/1,114 prior decisions -> 1,620/1,620; dev boxes 530/500 over 27 games; held-out 302/188/59; usability 17.33 vs 18.50 px; no arm run; G390 condition MET | DONE (codex-sol ACCEPT WITH CORRECTIONS applied)
 
+2026-09-11 | tracking | G393 | landed CLOSED AT LIMIT: leading-hyphen game_ids (G375 census 3/1,031) fail run_clip argument parsing on all 30 replayed ids; no caller-side form survives the sealed option-shaped controls (equals 5/6, separator 0/68); caller diff PROPOSED-CONDITIONAL applied nowhere, parser-side change is the remedy; 14 caller sites censused | CLOSED AT LIMIT (codex-sol verdict x2, corrections applied)
+

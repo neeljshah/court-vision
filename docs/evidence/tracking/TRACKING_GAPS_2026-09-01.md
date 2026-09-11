@@ -26,6 +26,13 @@
 
 
 
+
+## G393 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G393 | basketball | premise TRUE: G375 census 3/1,031 game_ids start with a hyphen (ledger-snapshot counts were measured but withdrawn from the acceptance text because the snapshot is not landable). Sealed argparse replay (preregistration e36198383; re-run after the seal byte-identical to the pre-seal run, 73/73 files): all 30 leading-hyphen ids fail through the current run_clip.py parser exactly as track_daemon.build_command emits them. Candidate caller-side forms vs the sealed option-shaped controls: equals single-token 30/30 leading + 30/30 ordinary + 2/2 extra but 5/6 sealed controls (an id equal to a double dash is silently parsed as an empty list, exit 0); separator form 0/68. No caller-side form survives: an equals-form diff for the caller track_daemon.py is archived PROPOSED-CONDITIONAL and applied nowhere; the parser-side change in the human-gated scripts/run_clip.py is the real remedy. Caller census 14 affected lines / 12 files (footage_cycle.py:154 same split pair; footage_bridge.py:500 a shell string with a quoting hazard); the census walk excludes agent worktrees (a first landing attempt counted 215 lines from stale .claude/worktrees trees). Incidental: master-vs-deployed run_clip differs by CRLF only. Q6 0 non-opaque hits | g393_leading_hyphen_game_id_2026-09-11.md; g393_leading_hyphen_game_id_2026-09-11/{preregistration.md, argv.jsonl, cases.csv, caller_census.csv, parsed_before_after.jsonl, failure_stderr.txt, eye_cards/, pre_seal_run/, summary.json, source_hashes.json, digests.txt, PROPOSED_g393_game_id.diff}; G393_VERIFY_CLOSED_AT_LIMIT_2026-09-11.md; G393_VERIFY_fix1d_CLOSED_AT_LIMIT_2026-09-11.md | **CLOSED AT LIMIT -- the defect is real and reproducible but unfixable from the callers; adoption of a parser-side run_clip.py change is a separate human-gated deploy decision; NEW GAPS: the parser-side diff itself, the 13 other caller sites, the footage_bridge shell-string quoting hazard** |
+
 ## G389 result register
 
 | Gap | Sport | Finding | Evidence | Status |
