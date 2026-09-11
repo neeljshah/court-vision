@@ -750,3 +750,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G392 | landed PARTIAL (protocol not qualified): per-rater gates after calibration sol 30/30 QUALIFIED, terra 20/30 EXCLUDED (max 26.6 px tail), joint 20/30 vs 27/30; real paint not scored (fewer than two qualified raters); calibration moved sol 28->30, terra 11->20 | PARTIAL (codex-sol ACCEPT WITH CORRECTIONS applied)
 
+2026-09-11 | tracking | G391 | landed DONE: blind audit of 169 false + 90 true calls (kappa 0.709/0.783, 0 faults) -- person/apparel 93, crowd 40, equipment 10, signage 9, near-miss 9, suspect reference 6, court/logo 2, duplicate 0; oracle FP removal leaves C0 0.164 (suppression CLOSED AT LIMIT); causal SHADOW NOT MEASURED (0/549 neighbours) | DONE (codex-sol ACCEPT WITH CORRECTIONS x2 applied)
+

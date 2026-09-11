@@ -29,6 +29,13 @@
 
 
 
+
+## G391 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G391 | basketball | premise TRUE: 549 states / 259 rank-0 calls / TP 90 / FP 169 / FN 212, FP partition VISIBLE 100 / ABSENT 50 / UNKNOWN 19, 530 DEV boxes; LF-normalised digests match the spec (the PREPARE mismatch was a CRLF artifact). Blind characterisation of all 169 false calls MIXED with all 90 true calls (sealed shuffled order; codex terra + sol, 16 batches, 259/259 rated by both, 0 faults; 68 disagreements adjudicated blind from pixels, 0 unresolved; kappa object 0.709, ball location 0.783): false calls = person or apparel 93 (0.550), crowd 40 (0.237), equipment 10 (0.059), signage/graphic 9 (0.053), near-miss localisation 9 (0.053), suspected reference error 6 (0.036; 5 UNKNOWN + 1 ABSENT, recorded only, no label revised), court or logo 2, duplicate/second ball 0; non-ball objects 154/169 = 0.911; TP controls 88/90 at-marker. Independent reproduction gives 90/169/212 twice with identical digests. Suppression CLOSED AT LIMIT: oracle removal of every false call leaves C0 90/549 = 0.164 under the unmoved 0.25 bar. Causal SHADOW NOT MEASURED: 0/549 targets have a causal neighbour within 0.2 s (minimum gap 244 frames) and only 25 DEV pairs (< 30); 30 even 549-target timeline cards show both prior slots MISSING. Q6 0 non-opaque hits | g391_ball_false_call_audit_2026-09-11.md; g391_ball_false_call_audit_2026-09-11/{preregistration.md, packets, rater outputs, adjudication, class tables, context_census.csv, eye_check_index.csv, renders/ incl. timeline/, summary.json}; G391_VERIFY_att1_ACCEPT_WITH_CORRECTIONS_2026-09-11.md; G391_VERIFY_fix1b_ACCEPT_WITH_CORRECTIONS_2026-09-11.md | **DONE -- A8's false calls are PEOPLE (79 pct person/apparel + crowd), not court features or localisation; this licenses exactly one training change (G394: A8 recipe + audited person-detector-masked hard negatives from the same dev games), never a runtime veto; NEW GAPS: the six suspect reference labels; 18 BALL_UNCERTAIN reviews; a temporal rule needs a denser held-out design** |
+
 ## G392 result register
 
 | Gap | Sport | Finding | Evidence | Status |
