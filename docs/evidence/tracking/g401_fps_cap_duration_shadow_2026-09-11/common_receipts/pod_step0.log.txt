@@ -1,0 +1,70 @@
+== relaunch.log ==
+RESTARTED 15:15:52 1
+RESTARTED 17:49:22 dup-gate
+RESTARTED-ledger-gate 00:16:02 feeders=0
+RELAUNCH-after-fix2 00:16:39
+RESTARTED 11:50:51 fmt720 patch
+RESTARTED 12:01:53 leading-hyphen skip
+RESTARTED 13:08:37 prefer-30fps selector (G397)
+
+== feeder_pod.sh selector line 156 ==
+    if timeout 900 yt-dlp -f "$fmt/312/301/311/300/bv*[protocol*=m3u8][height>=720][height<=1080]" --no-playlist --no-warnings $args \
+== pre-preference bak_1350Z line 156 ==
+    if timeout 900 yt-dlp -f "$fmt/301/312/311/300/bv*[protocol*=m3u8][height>=720][height<=1080]" --no-playlist --no-warnings $args \
+== deploy build_command ==
+def build_command(sport: str, video: Path, game_id: str) -> list:
+    """The tracking command for a sport. Mirrors footage_bridge's routing."""
+    if sport in CLIP_SPORTS:
+        # 3000, not 18000. run_clip.py is the full production pipeline, not a
+        # light adapter, and at this concurrency an 18000-frame job was measured
+        # still running after 18216 seconds (5.06 hours). Every such job would
+        # now simply hit JOB_TIMEOUT_SECONDS and yield NOTHING, burning a slot
+        # for 45 minutes each. A shorter clip that actually finishes is worth
+        # more than a long one that never does.
+        # --data-dir is not optional. Without it run_clip defaults data_dir to
+        # <repo>/data (scripts/run_clip.py:302) and writes data/tracking_data.csv
+        # -- a path tracking_rows() never reads. Four completed 3000-frame jobs
+        # were graded "thin rows=0" while their own logs printed run_clip's
+        # success summary, and all four wrote the SAME repo-root file at once.
+        # footage_cycle.py:142 has always passed it; this caller just omitted it.
+        return [sys.executable, "scripts/run_clip.py", "--video", str(video),
+                "--game-id", game_id, "--no-show", "--frames", "3000",
+                "--data-dir", str(TRACKING / game_id)]
+    adapter = SPORT_ADAPTER.get(sport, sport)
+    return [sys.executable, "-m", "scripts.platformkit.adapter_run",
+            adapter, str(video), game_id]
+== deploy caller ==
+        try:
+            handle = log_path.open("w", encoding="utf-8")
+            proc = subprocess.Popen(build_command(sport, path, game_id),
+                                    stdout=handle, stderr=subprocess.STDOUT)
+        except OSError as exc:
+            print("launch failed %s: %s" % (game_id, exc), flush=True)
+            continue
+        siblings = sibling_paths(STAGE, sport, game_id)
+        active[path.name] = {"proc": proc, "video": path, "log": log_path,
+                             "sport": sport, "game_id": game_id,
+                             "started": time.time(), "source": probe_source(path),
+                             "source_variants": [item.name for item in siblings if item != path],
+                             "retained_videos": siblings}
+== cap units ==
+        _base_stride = max(_FRAME_STRIDE, round(fps / 10.0)) if fps > 35 else _FRAME_STRIDE
+        _stride = _base_stride if total_video_frames > _FRAME_STRIDE_THRESH else 1
+        # max_frames is given in source-frame units (calibrated by _fps_adjusted_frames).
+        # gameplay_frames counts DECODED frames (1 per stride), so scale down.
+        if self.max_frames and _stride > 1:
+            self.max_frames = max(1, self.max_frames // _stride)
+        # Wire fps + stride into EventDetector so shot debounce, drive speed, and
+            if ok:
+                frame_idx = _fi  # only update on valid frames; never let sentinel (-1) overwrite
+            if not ok or frame is None or (self.max_frames and gameplay_frames >= self.max_frames):
+                break
+== vram ==
+        _VRAM_FLUSH_INTERVAL = 3000
+== deploy hashes ==
+9747d9a085405c492f04c4e3b162ed8b1d897309da6f0f9c014cb7092056f5ac  scripts/platformkit/track_daemon.py
+ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2  scripts/run_clip.py
+c4eae385bfeebd4e44c8161c791ef7ed4589697020f424d3dde7aec6816d9226  src/pipeline/unified_pipeline.py
+== daemon ==
+3177187 Thu Sep 10 22:09:43 2026 python3 -u scripts/platformkit/track_daemon.py --workers 8 --forever
+2026-09-11T14:25:11Z

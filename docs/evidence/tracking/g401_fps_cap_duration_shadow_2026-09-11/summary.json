@@ -1,0 +1,49 @@
+{
+ "attribution_counts": {
+  "CAP": 25,
+  "EOF": 3,
+  "FAILED_ATTEMPT": 1,
+  "UNKNOWN": 5
+ },
+ "cap_loss_over_5s_count": 16,
+ "census_utc": "2026-09-11T14:07:17Z",
+ "gap": "G401",
+ "not_verified": [
+  "runtime cost of more than 3000 processed frames, which crosses _VRAM_FLUSH_INTERVAL=3000",
+  "receipt retention and output quality across that flush boundary",
+  "producer-emitted tick coverage under either cap",
+  "any tracking-quality effect of a longer window",
+  "tracking quality under either cap",
+  "that any window section's producer-emitted ticks match the DECLARED stride opportunities"
+ ],
+ "paired_arm_a_reaching_target_n": 0,
+ "paired_arm_b_reaching_target_n": 29,
+ "paired_mechanics_bar": "arm B extent within one native frame interval of 100 s on all 30 valid sources",
+ "paired_mechanics_pass": false,
+ "paired_valid_n": 30,
+ "policy_status": "POSITIVE_LOSS",
+ "preference_activation_utc": "2026-09-11T13:08:37Z",
+ "preference_alone_sufficient_for_this_window": false,
+ "prereg_sha256": "35133397a0d6ef07f71ebbb05b4248867acf498889056cf48e34b48bf12cd568",
+ "prereg_verified": true,
+ "primary_metric_cap_loss_over_5s_fraction": 0.47058823529411764,
+ "proposal_applied_anywhere": false,
+ "proposal_new_argv_flags": [],
+ "proposal_touches_files": [
+  "scripts/platformkit/track_daemon.py"
+ ],
+ "proposed_diff_sha256": "dca612ca4a739a8f5ada20e90ed2e89c7555e5bc8db54e1b1c7e578cf5d4cce0",
+ "reproduced_by_two_fresh_processes": true,
+ "shadow_draw_n": 30,
+ "shadow_population_n": 89,
+ "sport": "basketball",
+ "unknown_sections": 5,
+ "unscored_sections": 6,
+ "window_sections": 34,
+ "window_sections_by_source_fps": {
+  "23.98": 6,
+  "30.00": 7,
+  "59.94": 21
+ },
+ "worktree": "a11"
+}

@@ -1,0 +1,34 @@
+{
+ "applied_anywhere": false,
+ "applies_clean_to_deploy_bytes": "git apply --check -p1 against the LF deploy bytes: OK, 1 file changed, 45 insertions, 4 deletions",
+ "argv_parses_with_unchanged_run_clip": true,
+ "default_argv_matches_legacy": true,
+ "deploy_run_clip_sha256": "ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2",
+ "deploy_track_daemon_sha256": "9747d9a085405c492f04c4e3b162ed8b1d897309da6f0f9c014cb7092056f5ac",
+ "deploy_unified_pipeline_sha256": "c4eae385bfeebd4e44c8161c791ef7ed4589697020f424d3dde7aec6816d9226",
+ "new_argv_flags": [],
+ "not_verified": [
+  "runtime cost of more than 3000 processed frames, which crosses _VRAM_FLUSH_INTERVAL=3000",
+  "receipt retention and output quality across that flush boundary",
+  "producer-emitted tick coverage under either cap",
+  "any tracking-quality effect of a longer window"
+ ],
+ "preserved_aliases": [
+  "--frames",
+  "_VRAM_FLUSH_INTERVAL",
+  "build_command",
+  "decoded_frames",
+  "evaluated_frame_count",
+  "evaluated_frames",
+  "max_frames",
+  "source_frame_count"
+ ],
+ "proposed_diff_path": "docs/research/organization-sprint/PROPOSED_g401_fps_cap.diff",
+ "proposed_diff_sha256": "dca612ca4a739a8f5ada20e90ed2e89c7555e5bc8db54e1b1c7e578cf5d4cce0",
+ "reader_rows": 716,
+ "reader_rows_changed": 3,
+ "touches_files": [
+  "scripts/platformkit/track_daemon.py"
+ ],
+ "vram_flush_interval_untouched": true
+}
