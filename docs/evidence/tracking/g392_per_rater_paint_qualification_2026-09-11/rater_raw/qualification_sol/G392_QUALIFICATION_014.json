@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_QUALIFICATION_014",
+  "state": "VISIBLE",
+  "reason": "steep white diagonal band over stands",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_qualification/G392_QUALIFICATION_014.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 3,
+  "offset": [1280, 0],
+  "coords": "tile",
+  "points": {"p1": [150, 122], "p2": [245, 285], "p3": [202, 210]},
+  "native_points": {"p1": [1430, 122], "p2": [1525, 285], "p3": [1482, 210]}
+}

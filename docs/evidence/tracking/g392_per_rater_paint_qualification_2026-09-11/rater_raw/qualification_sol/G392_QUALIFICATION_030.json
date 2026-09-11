@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_QUALIFICATION_030",
+  "state": "VISIBLE",
+  "reason": "white horizontal band over the sideline bench",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_qualification/G392_QUALIFICATION_030.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 1,
+  "offset": [0, 0],
+  "coords": "tile",
+  "points": {"p1": [56, 254], "p2": [269, 254], "p3": [166, 254]},
+  "native_points": {"p1": [56, 254], "p2": [269, 254], "p3": [166, 254]}
+}

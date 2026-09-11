@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_PRACTICE_022",
+  "state": "VISIBLE",
+  "reason": "white horizontal band visible over court floor",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_practice/G392_PRACTICE_022.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 4,
+  "offset": [0, 540],
+  "coords": "tile",
+  "points": {"p1": [185, 172], "p2": [390, 172], "p3": [280, 172]},
+  "native_points": {"p1": [185, 712], "p2": [390, 712], "p3": [280, 712]}
+}

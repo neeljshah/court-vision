@@ -1,0 +1,19 @@
+{
+  "bar": 27,
+  "controls": 30,
+  "decision": "REAL PAINT NOT SCORED -- PROTOCOL NOT QUALIFIED",
+  "excluded_raters": [
+    "terra"
+  ],
+  "joint": 20,
+  "per_rater_passed": {
+    "sol": 30,
+    "terra": 20
+  },
+  "qualified_raters": [
+    "sol"
+  ],
+  "real_dispatch_allowed": false,
+  "real_scored": false,
+  "retry_or_substitute": "none -- the sealed method forbids both"
+}

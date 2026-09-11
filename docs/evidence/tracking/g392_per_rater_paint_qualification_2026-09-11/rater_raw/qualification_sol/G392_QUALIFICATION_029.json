@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_QUALIFICATION_029",
+  "state": "VISIBLE",
+  "reason": "white steep diagonal band over the seated coach",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_qualification/G392_QUALIFICATION_029.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 6,
+  "offset": [1280, 540],
+  "coords": "tile",
+  "points": {"p1": [221, 136], "p2": [324, 312], "p3": [276, 229]},
+  "native_points": {"p1": [1501, 676], "p2": [1604, 852], "p3": [1556, 769]}
+}

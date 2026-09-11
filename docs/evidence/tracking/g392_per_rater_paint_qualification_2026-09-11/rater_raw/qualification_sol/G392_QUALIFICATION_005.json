@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_QUALIFICATION_005",
+  "state": "VISIBLE",
+  "reason": "bright white band with black outline",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_qualification/G392_QUALIFICATION_005.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 6,
+  "offset": [1280, 540],
+  "coords": "tile",
+  "points": {"p1": [207, 190], "p2": [291, 337], "p3": [249, 263]},
+  "native_points": {"p1": [1487, 730], "p2": [1571, 877], "p3": [1529, 803]}
+}

@@ -1,0 +1,120 @@
+{
+  "files": 174,
+  "findings": [
+    {
+      "context": "DISPATCHED run=1789116594439943100 tag=g392_rater_terra_practice03 wt=a13 at 2026-09-11T03:49:54-05:00",
+      "kind": "bare-integer",
+      "line": 1,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/logs/cx_g392_rater_terra_practice03.log"
+    },
+    {
+      "context": "03:49:54 launch terra practice 03 codex=/c/Users/neelj/AppData/Local/OpenAI/Codex/bin/7ac07f4ce733f89a//codex.exe",
+      "kind": "bare-integer",
+      "line": 5,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/logs/disp_terra_practice.log"
+    },
+    {
+      "context": "G392_PRACTICE_007,practice,392,G387_007,1,0,0,G387_007_tile1.png,993fc3465326c14599438de40ae3be9ef3a77153f52c3cff02bfd3f1353d4641,0.0,379.806,488.980,619.806,48",
+      "kind": "bare-integer",
+      "line": 8,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/practice/truth.csv"
+    },
+    {
+      "context": "G392_PRACTICE_019,practice,392,G387_019,1,0,0,G387_019_tile1.png,67532bb61e703dac739bfd740b7bf0aaa54ec7e0aa60a23397cac350ea333f39,0.0,337.184,255.282,577.184,25",
+      "kind": "bare-integer",
+      "line": 20,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/practice/truth.csv"
+    },
+    {
+      "context": "G392_QUALIFICATION_011,qualification,392,G387_011,6,1280,540,G387_011_tile6.png,00d1cbf16f92de90fa0a145d45b847540e10bd5eae9baeaf6685325b17f2d357,60.0,1529.010,7",
+      "kind": "bare-integer",
+      "line": 12,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/qualification/truth.csv"
+    },
+    {
+      "context": "G392_QUALIFICATION_021,qualification,392,G387_021,4,0,540,G387_021_tile4.png,7cd19675ea62f858aba9a3abff720349efe2f5abf214bab65c77356e54da7e3f,0.0,296.231,760.02",
+      "kind": "bare-integer",
+      "line": 22,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/qualification/truth.csv"
+    },
+    {
+      "context": "G392_QUALIFICATION_028,qualification,392,G387_028,5,640,540,G387_028_tile5.png,496df89aff0d3d4f40f990b1c15c4267ad53d2bdc40edfd196eb8a1d79f1f0c2,30.0,950.816,906",
+      "kind": "bare-integer",
+      "line": 29,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/qualification/truth.csv"
+    },
+    {
+      "context": "7256b34035e41b31782b7d54ff57acc030f49a5b00577716aed0b4c95498c5fc  docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/dispatch/correction.sh",
+      "kind": "bare-integer",
+      "line": 2,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/SHA256SUMS"
+    },
+    {
+      "context": "4db6d14a288c8d5fbca4b22220156e011e54be293c00e1f8143aaeb27f617d0a  docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/rater_raw/practice_sol/G3",
+      "kind": "bare-integer",
+      "line": 51,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/SHA256SUMS"
+    },
+    {
+      "context": "d512708f7fae69cc6c74f9a9a70a3a81893734b9bf83c8ea59588b2ecba54e8b  docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/rater_raw/practice_sol/G3",
+      "kind": "bare-integer",
+      "line": 69,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/SHA256SUMS"
+    },
+    {
+      "context": "b44747571967c67740b277a8582f0d6e372aea397e45214fe804e20603d04a54  docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/rater_raw/qualification_s",
+      "kind": "bare-integer",
+      "line": 107,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/SHA256SUMS"
+    },
+    {
+      "context": "f6a888c8f54ac38bea67ad0395d8e9cc5f61f6f85e89a587f929092cadda115c  docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/rater_raw/qualification_s",
+      "kind": "bare-integer",
+      "line": 123,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/SHA256SUMS"
+    },
+    {
+      "context": "0e9fe4d918a05dbb6af35c135e9d8a54a1b65d6c87394d8e9815bbf8daf4c114  docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/rater_raw/qualification_s",
+      "kind": "bare-integer",
+      "line": 127,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/SHA256SUMS"
+    },
+    {
+      "context": "c506c4bc1bc54f78604d5fea53bd18d9d6ec13be369055029f0e94d07adc2c8d  docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/rater_raw/qualification_t",
+      "kind": "bare-integer",
+      "line": 139,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/SHA256SUMS"
+    }
+  ],
+  "hits": 14,
+  "non_opaque": 0,
+  "redactions": []
+}

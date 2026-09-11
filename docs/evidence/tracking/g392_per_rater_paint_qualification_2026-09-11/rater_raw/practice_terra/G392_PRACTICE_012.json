@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_PRACTICE_012",
+  "state": "VISIBLE",
+  "reason": "white band on dark clothing",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_practice/G392_PRACTICE_012.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 6,
+  "offset": [1280, 540],
+  "coords": "tile",
+  "points": {"p1": [356, 164], "p2": [477, 404], "p3": [416, 284]},
+  "native_points": {"p1": [1636, 704], "p2": [1757, 944], "p3": [1696, 824]}
+}

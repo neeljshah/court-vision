@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_QUALIFICATION_015",
+  "state": "VISIBLE",
+  "reason": "white horizontal band over the broadcast graphic",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_qualification/G392_QUALIFICATION_015.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 4,
+  "offset": [0, 540],
+  "coords": "tile",
+  "points": {"p1": [170, 387], "p2": [389, 387], "p3": [279, 387]},
+  "native_points": {"p1": [170, 927], "p2": [389, 927], "p3": [279, 927]}
+}

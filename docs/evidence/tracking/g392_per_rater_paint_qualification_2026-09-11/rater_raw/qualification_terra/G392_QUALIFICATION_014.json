@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_QUALIFICATION_014",
+  "state": "VISIBLE",
+  "reason": "white diagonal band on arena background",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_qualification/G392_QUALIFICATION_014.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 3,
+  "offset": [1280, 0],
+  "coords": "tile",
+  "points": {"p1": [157, 131], "p2": [242, 278], "p3": [200, 204]},
+  "native_points": {"p1": [1437, 131], "p2": [1522, 278], "p3": [1480, 204]}
+}

@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_QUALIFICATION_027",
+  "state": "VISIBLE",
+  "reason": "white band on wood floor",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_qualification/G392_QUALIFICATION_027.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 4,
+  "offset": [0, 540],
+  "coords": "tile",
+  "points": {"p1": [340, 134], "p2": [578, 134], "p3": [458, 134]},
+  "native_points": {"p1": [340, 674], "p2": [578, 674], "p3": [458, 674]}
+}

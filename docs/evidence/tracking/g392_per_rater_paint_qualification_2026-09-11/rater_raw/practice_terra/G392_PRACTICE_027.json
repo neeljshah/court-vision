@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_PRACTICE_027",
+  "state": "VISIBLE",
+  "reason": "white diagonal band on dark background",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_practice/G392_PRACTICE_027.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 3,
+  "offset": [1280, 0],
+  "coords": "tile",
+  "points": {"p1": [270, 94], "p2": [360, 250], "p3": [314, 172]},
+  "native_points": {"p1": [1550, 94], "p2": [1640, 250], "p3": [1594, 172]}
+}

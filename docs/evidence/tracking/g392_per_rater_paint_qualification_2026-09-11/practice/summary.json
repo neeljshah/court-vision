@@ -1,0 +1,58 @@
+{
+  "bar": 27,
+  "controls": 30,
+  "excluded": [
+    "terra"
+  ],
+  "joint": 17,
+  "per_rater": {
+    "sol": {
+      "angle_error_deg": {
+        "max": 3.435,
+        "n": 30,
+        "p50": 0.079,
+        "p90": 0.366
+      },
+      "answered": 30,
+      "controls": 30,
+      "conversion_ok": 30,
+      "fail_reasons": {
+        "PERPENDICULAR": 1
+      },
+      "passed": 29,
+      "perpendicular_px": {
+        "max": 15.332,
+        "n": 90,
+        "p50": 0.512,
+        "p90": 1.294
+      }
+    },
+    "terra": {
+      "angle_error_deg": {
+        "max": 7.306,
+        "n": 30,
+        "p50": 0.18,
+        "p90": 2.242
+      },
+      "answered": 30,
+      "controls": 30,
+      "conversion_ok": 30,
+      "fail_reasons": {
+        "OUTSIDE_FINITE_BAND": 7,
+        "PERPENDICULAR": 6
+      },
+      "passed": 17,
+      "perpendicular_px": {
+        "max": 31.02,
+        "n": 90,
+        "p50": 0.803,
+        "p90": 9.016
+      }
+    }
+  },
+  "qualified": false,
+  "raters": [
+    "sol",
+    "terra"
+  ]
+}

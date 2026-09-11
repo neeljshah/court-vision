@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_QUALIFICATION_026",
+  "state": "VISIBLE",
+  "reason": "white steep diagonal band over the arena wall",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_qualification/G392_QUALIFICATION_026.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 3,
+  "offset": [1280, 0],
+  "coords": "tile",
+  "points": {"p1": [405, 102], "p2": [504, 273], "p3": [460, 197]},
+  "native_points": {"p1": [1685, 102], "p2": [1784, 273], "p3": [1740, 197]}
+}

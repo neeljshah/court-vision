@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_QUALIFICATION_019",
+  "state": "VISIBLE",
+  "reason": "white diagonal band over dark sideline",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_qualification/G392_QUALIFICATION_019.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 2,
+  "offset": [640, 0],
+  "coords": "tile",
+  "points": {"p1": [60, 221], "p2": [220, 314], "p3": [151, 274]},
+  "native_points": {"p1": [700, 221], "p2": [860, 314], "p3": [791, 274]}
+}

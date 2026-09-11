@@ -1,0 +1,5 @@
+{
+  "requested": true,
+  "correction": "When selecting p1 and p2, first visually confirm each is on the finite painted white segment rather than extending its line beyond either end.",
+  "rationale": "Practice feedback shows several points lay beyond the finite band despite being close to its centerline. This correction targets that recurring error while preserving the existing paint-only rule."
+}

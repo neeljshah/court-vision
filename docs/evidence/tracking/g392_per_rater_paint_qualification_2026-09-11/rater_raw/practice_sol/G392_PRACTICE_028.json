@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_PRACTICE_028",
+  "state": "VISIBLE",
+  "reason": "horizontal white band over courtside seats",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_practice/G392_PRACTICE_028.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 4,
+  "offset": [0, 540],
+  "coords": "tile",
+  "points": {"p1": [320, 429], "p2": [520, 429], "p3": [411, 429]},
+  "native_points": {"p1": [320, 969], "p2": [520, 969], "p3": [411, 969]}
+}

@@ -1,0 +1,48 @@
+{
+  "batches": {
+    "practice": {
+      "sol": [
+        "C:/Users/neelj/AppData/Local/Temp/g392_work/batch_practice_sol/batch_01.tsv",
+        "C:/Users/neelj/AppData/Local/Temp/g392_work/batch_practice_sol/batch_02.tsv",
+        "C:/Users/neelj/AppData/Local/Temp/g392_work/batch_practice_sol/batch_03.tsv"
+      ],
+      "terra": [
+        "C:/Users/neelj/AppData/Local/Temp/g392_work/batch_practice_terra/batch_01.tsv",
+        "C:/Users/neelj/AppData/Local/Temp/g392_work/batch_practice_terra/batch_02.tsv",
+        "C:/Users/neelj/AppData/Local/Temp/g392_work/batch_practice_terra/batch_03.tsv"
+      ]
+    },
+    "qualification": {
+      "sol": [
+        "C:/Users/neelj/AppData/Local/Temp/g392_work/batch_qualification_sol/batch_01.tsv",
+        "C:/Users/neelj/AppData/Local/Temp/g392_work/batch_qualification_sol/batch_02.tsv",
+        "C:/Users/neelj/AppData/Local/Temp/g392_work/batch_qualification_sol/batch_03.tsv"
+      ],
+      "terra": [
+        "C:/Users/neelj/AppData/Local/Temp/g392_work/batch_qualification_terra/batch_01.tsv",
+        "C:/Users/neelj/AppData/Local/Temp/g392_work/batch_qualification_terra/batch_02.tsv",
+        "C:/Users/neelj/AppData/Local/Temp/g392_work/batch_qualification_terra/batch_03.tsv"
+      ]
+    }
+  },
+  "disjoint": {
+    "disjoint": true,
+    "shared_context_tile": [],
+    "shared_pixels": [],
+    "shared_truth": []
+  },
+  "identity": {
+    "contexts": 30,
+    "contexts_matched": 30,
+    "contexts_mismatched": [],
+    "holds": true,
+    "natives_absent": [],
+    "natives_matched": 49,
+    "retained_natives": 49,
+    "tiles": 180,
+    "tiles_matched": 180,
+    "tiles_mismatched": []
+  },
+  "practice_truth_sha256": "3a1fe41aad699517afbb43b03098b38ea01eaa489d934a5ce1f02092a104d349",
+  "qualification_truth_sha256": "dd0a78abffe74fb58dc08818a3de4a2d3240cb00d1a34c83b0ff2abc6e3dab15"
+}

@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_QUALIFICATION_008",
+  "state": "VISIBLE",
+  "reason": "steep white diagonal band over player",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_qualification/G392_QUALIFICATION_008.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 3,
+  "offset": [1280, 0],
+  "coords": "tile",
+  "points": {"p1": [215, 287], "p2": [312, 455], "p3": [269, 381]},
+  "native_points": {"p1": [1495, 287], "p2": [1592, 455], "p3": [1549, 381]}
+}

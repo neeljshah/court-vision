@@ -1,0 +1,16 @@
+{
+  "raters": {
+    "sol": {
+      "correction": "For steep diagonal bands, verify all three selected points lie on the same bright white centerline by inspecting the original-resolution pixels before recording coordinates.",
+      "feedback_sheet": "docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/practice/feedback_sol.md",
+      "rationale": "Practice control 006 was the only failure, with all three points displaced from the band and two far outside the allowed perpendicular tolerance. An explicit same-centerline verification should prevent recurrence without changing the coordinate rules.",
+      "requested": true
+    },
+    "terra": {
+      "correction": "When selecting p1 and p2, first visually confirm each is on the finite painted white segment rather than extending its line beyond either end.",
+      "feedback_sheet": "docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/practice/feedback_terra.md",
+      "rationale": "Practice feedback shows several points lay beyond the finite band despite being close to its centerline. This correction targets that recurring error while preserving the existing paint-only rule.",
+      "requested": true
+    }
+  }
+}

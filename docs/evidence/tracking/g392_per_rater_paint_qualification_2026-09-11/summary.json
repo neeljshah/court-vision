@@ -1,0 +1,146 @@
+{
+  "eligibility": {
+    "bar": 27,
+    "controls": 30,
+    "decision": "REAL PAINT NOT SCORED -- PROTOCOL NOT QUALIFIED",
+    "excluded_raters": [
+      "terra"
+    ],
+    "joint": 20,
+    "per_rater_passed": {
+      "sol": 30,
+      "terra": 20
+    },
+    "qualified_raters": [
+      "sol"
+    ],
+    "real_dispatch_allowed": false,
+    "real_scored": false,
+    "retry_or_substitute": "none -- the sealed method forbids both"
+  },
+  "parent_states": {
+    "native_ready": 49,
+    "parent_failures": 11,
+    "retained": 49,
+    "states": 60
+  },
+  "practice": {
+    "bar": 27,
+    "controls": 30,
+    "excluded": [
+      "terra"
+    ],
+    "joint": 17,
+    "per_rater": {
+      "sol": {
+        "angle_error_deg": {
+          "max": 3.435,
+          "n": 30,
+          "p50": 0.079,
+          "p90": 0.366
+        },
+        "answered": 30,
+        "controls": 30,
+        "conversion_ok": 30,
+        "fail_reasons": {
+          "PERPENDICULAR": 1
+        },
+        "passed": 29,
+        "perpendicular_px": {
+          "max": 15.332,
+          "n": 90,
+          "p50": 0.512,
+          "p90": 1.294
+        }
+      },
+      "terra": {
+        "angle_error_deg": {
+          "max": 7.306,
+          "n": 30,
+          "p50": 0.18,
+          "p90": 2.242
+        },
+        "answered": 30,
+        "controls": 30,
+        "conversion_ok": 30,
+        "fail_reasons": {
+          "OUTSIDE_FINITE_BAND": 7,
+          "PERPENDICULAR": 6
+        },
+        "passed": 17,
+        "perpendicular_px": {
+          "max": 31.02,
+          "n": 90,
+          "p50": 0.803,
+          "p90": 9.016
+        }
+      }
+    },
+    "qualified": false,
+    "raters": [
+      "sol",
+      "terra"
+    ]
+  },
+  "protocol_qualified": false,
+  "qualification": {
+    "bar": 27,
+    "controls": 30,
+    "excluded": [
+      "terra"
+    ],
+    "joint": 20,
+    "per_rater": {
+      "sol": {
+        "angle_error_deg": {
+          "max": 1.213,
+          "n": 30,
+          "p50": 0.042,
+          "p90": 0.337
+        },
+        "answered": 30,
+        "controls": 30,
+        "conversion_ok": 30,
+        "fail_reasons": {},
+        "passed": 30,
+        "perpendicular_px": {
+          "max": 2.45,
+          "n": 90,
+          "p50": 0.39,
+          "p90": 1.431
+        }
+      },
+      "terra": {
+        "angle_error_deg": {
+          "max": 6.93,
+          "n": 30,
+          "p50": 0.158,
+          "p90": 0.642
+        },
+        "answered": 30,
+        "controls": 30,
+        "conversion_ok": 30,
+        "fail_reasons": {
+          "OUTSIDE_FINITE_BAND": 6,
+          "PERPENDICULAR": 4
+        },
+        "passed": 20,
+        "perpendicular_px": {
+          "max": 26.628,
+          "n": 90,
+          "p50": 0.975,
+          "p90": 2.826
+        }
+      }
+    },
+    "qualified": false,
+    "raters": [
+      "sol",
+      "terra"
+    ]
+  },
+  "real_paint_note": "not scored: fewer than two qualified raters; G388's 0/30 audited and 0/23 visible-conditioned diagnostic stands unrepeated and is not restated as a G392 result",
+  "real_paint_scored": false,
+  "row": "G392",
+  "verdict": "PARTIAL -- PROTOCOL NOT QUALIFIED"
+}

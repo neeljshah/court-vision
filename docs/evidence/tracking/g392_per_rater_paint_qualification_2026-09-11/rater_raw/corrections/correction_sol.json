@@ -1,0 +1,5 @@
+{
+  "requested": true,
+  "correction": "For steep diagonal bands, verify all three selected points lie on the same bright white centerline by inspecting the original-resolution pixels before recording coordinates.",
+  "rationale": "Practice control 006 was the only failure, with all three points displaced from the band and two far outside the allowed perpendicular tolerance. An explicit same-centerline verification should prevent recurrence without changing the coordinate rules."
+}

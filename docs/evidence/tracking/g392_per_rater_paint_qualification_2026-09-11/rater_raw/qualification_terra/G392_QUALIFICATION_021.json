@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_QUALIFICATION_021",
+  "state": "VISIBLE",
+  "reason": "white band on court",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_qualification/G392_QUALIFICATION_021.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 4,
+  "offset": [0, 540],
+  "coords": "tile",
+  "points": {"p1": [296, 221], "p2": [537, 221], "p3": [414, 221]},
+  "native_points": {"p1": [296, 761], "p2": [537, 761], "p3": [414, 761]}
+}

@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_PRACTICE_001",
+  "state": "VISIBLE",
+  "reason": "horizontal white band across baseline crowd",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_practice/G392_PRACTICE_001.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 1,
+  "offset": [0, 0],
+  "coords": "tile",
+  "points": {"p1": [177, 302], "p2": [376, 302], "p3": [283, 302]},
+  "native_points": {"p1": [177, 302], "p2": [376, 302], "p3": [283, 302]}
+}

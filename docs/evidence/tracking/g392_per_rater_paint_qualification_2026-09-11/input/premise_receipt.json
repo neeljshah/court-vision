@@ -1,0 +1,23 @@
+{
+  "g388_protocol_qualified": false,
+  "holds": true,
+  "limit_controls": {
+    "denominator": 30,
+    "joint": 13,
+    "sol": 28,
+    "terra": 14
+  },
+  "qualified_successors": [],
+  "real_audited_recovery": {
+    "denominator": 30,
+    "passed": 0
+  },
+  "retained_native_identities": 49,
+  "sealed_controls": {
+    "denominator": 30,
+    "joint": 10,
+    "sol": 28,
+    "terra": 11
+  },
+  "selected_context_identities": 30
+}

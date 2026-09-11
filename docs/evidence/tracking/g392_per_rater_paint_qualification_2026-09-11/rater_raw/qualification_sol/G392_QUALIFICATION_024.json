@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_QUALIFICATION_024",
+  "state": "VISIBLE",
+  "reason": "white horizontal band over the stands",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_qualification/G392_QUALIFICATION_024.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 1,
+  "offset": [0, 0],
+  "coords": "tile",
+  "points": {"p1": [393, 201], "p2": [614, 201], "p3": [505, 201]},
+  "native_points": {"p1": [393, 201], "p2": [614, 201], "p3": [505, 201]}
+}

@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_QUALIFICATION_011",
+  "state": "VISIBLE",
+  "reason": "white band over court and scoreboard",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_qualification/G392_QUALIFICATION_011.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 6,
+  "offset": [1280, 540],
+  "coords": "tile",
+  "points": {"p1": [250, 214], "p2": [372, 423], "p3": [311, 319]},
+  "native_points": {"p1": [1530, 754], "p2": [1652, 963], "p3": [1591, 859]}
+}

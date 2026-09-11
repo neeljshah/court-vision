@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_QUALIFICATION_009",
+  "state": "VISIBLE",
+  "reason": "white band below scoreboard",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_qualification/G392_QUALIFICATION_009.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 4,
+  "offset": [0, 540],
+  "coords": "tile",
+  "points": {"p1": [215, 496], "p2": [425, 496], "p3": [330, 496]},
+  "native_points": {"p1": [215, 1036], "p2": [425, 1036], "p3": [330, 1036]}
+}

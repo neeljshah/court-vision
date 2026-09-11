@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_PRACTICE_007",
+  "state": "VISIBLE",
+  "reason": "white band on court",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_practice/G392_PRACTICE_007.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 1,
+  "offset": [0, 0],
+  "coords": "tile",
+  "points": {"p1": [400, 520], "p2": [600, 520], "p3": [500, 520]},
+  "native_points": {"p1": [400, 520], "p2": [600, 520], "p3": [500, 520]}
+}

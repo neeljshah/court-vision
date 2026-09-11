@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_PRACTICE_011",
+  "state": "VISIBLE",
+  "reason": "white diagonal band over court and score graphic",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_practice/G392_PRACTICE_011.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 5,
+  "offset": [640, 540],
+  "coords": "tile",
+  "points": {"p1": [307, 285], "p2": [479, 385], "p3": [392, 334]},
+  "native_points": {"p1": [947, 825], "p2": [1119, 925], "p3": [1032, 874]}
+}

@@ -1,0 +1,13 @@
+{
+  "control_id": "G392_QUALIFICATION_023",
+  "state": "VISIBLE",
+  "reason": "white diagonal band over the court and seating",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g392_work/images_qualification/G392_QUALIFICATION_023.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 6,
+  "offset": [1280, 540],
+  "coords": "tile",
+  "points": {"p1": [340, 194], "p2": [438, 362], "p3": [385, 271]},
+  "native_points": {"p1": [1620, 734], "p2": [1718, 902], "p3": [1665, 811]}
+}
