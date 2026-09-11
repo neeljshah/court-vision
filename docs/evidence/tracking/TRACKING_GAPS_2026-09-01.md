@@ -28,6 +28,13 @@
 
 
 
+
+## G392 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G392 | basketball | premise HOLDS: G388 sealed controls joint 10/30 (terra 11, sol 28), LIMIT 13/30; audited real recovery 0/30; 49 retained native identities; 30 selected contexts; no qualified successor. Sealed per-rater gate (blind, feedback-free, one attempt each; bar >= 27/30 per rater AND joint >= 27/30) after an unscored calibration pass with exactly one frozen correction per rater (practice sol 29/30, terra 17/30): sol 30/30 QUALIFIED (perpendicular p50 0.390 / p90 1.431 / max 2.450 px; angle p50 0.042 / p90 0.337 deg; 0 failures); terra 20/30 EXCLUDED (perpendicular p50 0.975 / p90 2.826 / max 26.628 px; finite-band overruns 003, 004, 010, 011, 017, 021, displaced trace 020, 4 perpendicular misses); joint 20/30. Fewer than two qualified raters -> the real-paint task was NOT issued (sealed clause); G388's 0/30 and 0/23 diagnostic stands unrepeated. Calibration effect vs G388: sol 28 -> 30, terra 11 (13 joint) -> 20, terra perpendicular p90 30.0 -> 2.8 px with a residual bimodal tail. Identity 180/180 tiles, 30/30 contexts, 49/49 natives; control sets disjoint; fresh-process rescore byte-identical; both raters answered 30/30, no faults. Q6 0 non-opaque over 174 files (two rater tokens redacted with digests) | g392_per_rater_paint_qualification_2026-09-11.md; g392_per_rater_paint_qualification_2026-09-11/{prereg, input/, dispatch, frozen instructions, practice/, qualification/, rater_raw/, logs/, correction_receipt.json, eligibility.json, renders/, SHA256SUMS, summary.json}; G392_VERIFY_ACCEPT_WITH_CORRECTIONS_2026-09-11.md | **PARTIAL -- calibration qualifies one rater (sol) but not the other; the paint protocol needs a second qualified rater (a third rater tier) before real paint is scored; NEW GAPS: SHA256SUMS lists a stale self-digest; g392_q6_scan lacks direct unit coverage** |
+
 ## G390 result register
 
 | Gap | Sport | Finding | Evidence | Status |

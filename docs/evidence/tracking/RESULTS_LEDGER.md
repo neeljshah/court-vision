@@ -748,3 +748,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G390 | landed NOT VALIDATED (adjudicated): one sealed A8 pass TP 90 / FP 169 / FN 212 over 549 (recall 0.298, C0 0.164, precision lower 0.292, ALL FP/N_absent 0.899, ABSENT-only 0.266) vs deployed 0/8; all three sealed bars missed; readiness digest and scratch route uncorrectable after the single allowance; four verify cycles verbatim | NOT VALIDATED (adjudicated)
 
+2026-09-11 | tracking | G392 | landed PARTIAL (protocol not qualified): per-rater gates after calibration sol 30/30 QUALIFIED, terra 20/30 EXCLUDED (max 26.6 px tail), joint 20/30 vs 27/30; real paint not scored (fewer than two qualified raters); calibration moved sol 28->30, terra 11->20 | PARTIAL (codex-sol ACCEPT WITH CORRECTIONS applied)
+
