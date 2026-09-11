@@ -1,0 +1,25 @@
+{
+ "candidate_heldout_executions": 0,
+ "dev_box_games": 27,
+ "dev_box_games_quota": 5,
+ "dev_boxes_audited": 530,
+ "dev_boxes_quota": 500,
+ "gpu_minutes_used": 0,
+ "heldout_absent": 188,
+ "heldout_unknown": 59,
+ "heldout_visible": 302,
+ "note": "a permitted G390 premise check is not an authorisation to score any arm",
+ "queue_keys_completed": 506,
+ "queue_keys_total": 506,
+ "readiness": {
+  "development_boxes_500": true,
+  "development_games_5": true,
+  "g390_premise_check_permitted": true,
+  "heldout_absent_150": true,
+  "heldout_visible_150": true,
+  "reference_complete": true
+ },
+ "reference_scheduled": 1620,
+ "reference_settled": 1620,
+ "still_queued": 0
+}

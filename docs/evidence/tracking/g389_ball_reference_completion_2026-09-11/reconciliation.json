@@ -1,0 +1,18 @@
+{
+ "agreement_with_primaries": {
+  "AGREES-BOTH": 229,
+  "AGREES-NEITHER": 53,
+  "AGREES-ONE": 211,
+  "UNRESOLVED": 13
+ },
+ "audit_centre_max_px": 1080.16,
+ "audit_centre_p50_px": 29.68,
+ "audit_keys": 30,
+ "audit_label_agreement": 0.7666666666666667,
+ "audit_pairs_with_both_centres": 16,
+ "conflicts_open": 0,
+ "conflicts_resolved_from_pixels": 29,
+ "decisions": 506,
+ "judged_keys": 506,
+ "median_native_diameter_px": 37.0
+}

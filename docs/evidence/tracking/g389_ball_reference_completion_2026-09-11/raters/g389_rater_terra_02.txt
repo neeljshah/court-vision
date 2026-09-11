@@ -1,0 +1,40 @@
+167958b50c68,ABSENT,,,,,official review shot
+52bed970ae07,VISIBLE,1287,440,29,32,held by player
+3d209e63af68,VISIBLE,1417,472,35,33,held by shooter
+4bfbd15059d0,VISIBLE,274,450,26,28,held in backcourt
+41d019c3b574,VISIBLE,817,603,31,32,held by referee
+2910362aaca2,VISIBLE,1603,450,27,27,dribbled at right
+bc77f4a2b217,VISIBLE,916,0,28,24,partly at top calibration-only
+be1e89d51985,VISIBLE,1244,402,59,54,dribbled near defender
+b1cb6633fc48,UNKNOWN,,,,,ball obscured near shooter
+b9ddfc73add0,VISIBLE,1492,600,28,30,held by referee
+33dbd104f0a7,VISIBLE,726,304,25,29,held by ballhandler
+52bf5ee4997d,ABSENT,,,,,bench closeup
+c6f3e658d15d,UNKNOWN,,,,,ball obscured in paint
+65efed56fbe2,VISIBLE,822,798,32,29,dribbled in lane
+ceb578923915,VISIBLE,872,695,68,67,loose ball in court
+82c470d69995,VISIBLE,1115,233,26,30,free throw ball
+0f10333a93b6,VISIBLE,778,455,31,25,pass in flight
+311dcabd8fc0,VISIBLE,749,802,29,27,dribbled near sideline
+e156d800c440,UNKNOWN,,,,,ball obscured by players
+fe542224de89,ABSENT,,,,,no ball visible
+5f81b9f9e38b,VISIBLE,535,504,33,34,held for free throw
+6b7dce507b0e,VISIBLE,727,360,33,37,at the rim
+42118b6a72a0,VISIBLE,1190,410,28,25,pass in flight
+7cb042e3cc02,VISIBLE,787,341,32,29,held by player
+fb8993f79ed1,VISIBLE,1226,410,27,33,pass in flight
+44c5afc97e5b,ABSENT,,,,,transition graphic
+4de1c405885f,ABSENT,,,,,bench closeup
+fc12e97c2520,VISIBLE,444,535,31,31,held near baseline
+8a2212748632,VISIBLE,820,324,38,35,at the rim
+8e320a0fffa0,VISIBLE,822,309,40,37,at the rim
+bc51adfffdaa,VISIBLE,371,593,32,31,dribbled near baseline
+9b1cb353938d,VISIBLE,1092,654,43,43,held for free throw
+4fecde40157e,VISIBLE,1342,538,25,29,dribbled in backcourt
+49759debf1d1,VISIBLE,396,442,28,28,held by ballhandler
+d188f300bf34,VISIBLE,401,320,38,39,held on wing
+a7a44c71744c,VISIBLE,798,632,31,31,held by referee
+aac1ae558308,ABSENT,,,,,postgame interview
+4391d4db24bc,VISIBLE,381,474,27,28,shot in flight
+8b5dddd197b2,VISIBLE,1021,828,109,107,held close to camera
+bb17798d34b2,ABSENT,,,,,dark empty frame

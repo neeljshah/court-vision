@@ -1,0 +1,35 @@
+{
+ "binding_counts": {
+  "manifest": 1620,
+  "settled": 1114,
+  "pending": 506,
+  "pending_development": 301,
+  "pending_heldout": 205,
+  "dev_boxes": 312,
+  "heldout_absent": 161,
+  "heldout_visible": 157,
+  "heldout_unknown": 26,
+  "candidate_executions": 0
+ },
+ "binding_verdict": "HOLDS",
+ "pending_sheets": 506,
+ "sheets_opened": 506,
+ "sheets_hash_match": 506,
+ "sheets_native_1920x1080": 506,
+ "sheets_missing_pixels": 0,
+ "sheet_bytes_total": 96460210,
+ "bins": 30,
+ "permutation_len": 506,
+ "allocation": {
+  "terra": 253,
+  "sol": 253
+ },
+ "audit_duplicate_keys": 30,
+ "checkpoints": [
+  30,
+  120,
+  240,
+  360,
+  506
+ ]
+}

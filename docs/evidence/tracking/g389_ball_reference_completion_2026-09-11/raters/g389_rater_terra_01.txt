@@ -1,0 +1,40 @@
+147fa3791fb1,VISIBLE,770,317,20,21,held above shooter
+49341414e11f,UNKNOWN,,,,,obscured at rim
+62b2d7ae5e4b,VISIBLE,764,338,21,22,held near defender
+ab9bb337ea14,VISIBLE,1355,457,31,31,dribbled on right wing
+874b0ce2aba3,ABSENT,,,,,no ball visible
+b494d694673a,VISIBLE,805,567,27,27,held in lane
+46dde8e433b5,UNKNOWN,,,,,ball not discernible
+5df1a11c1e66,VISIBLE,540,750,33,30,held by white guard
+2ea774f6f555,VISIBLE,559,759,31,30,held by white guard
+83048a796e33,UNKNOWN,,,,,obscured beneath rim
+0714d445d447,VISIBLE,688,387,24,24,held by Duke player
+3a0a3add537a,VISIBLE,1627,747,27,29,dribbled on sideline
+3460c10d21ee,ABSENT,,,,,interview shot
+2c91e135e426,VISIBLE,784,651,25,24,held for free throw
+78c1ebe2dc5f,VISIBLE,502,409,25,24,carried by runner
+8afdb97e4ed4,VISIBLE,529,465,30,31,dribbled in transition
+d377d870327d,VISIBLE,1414,401,31,28,airborne pass
+b50d55a74545,VISIBLE,1112,77,33,35,airborne shot
+3c8c0a448383,VISIBLE,547,529,25,27,held by red player
+737c1d5502b5,VISIBLE,1410,565,27,29,dribbled at midcourt
+69c8d6565747,VISIBLE,732,299,30,32,raised for shot
+496b17f368a9,UNKNOWN,,,,,ball not discernible
+f4b8c2436cf9,VISIBLE,362,448,30,31,held at baseline
+6ea733bc6255,VISIBLE,1495,65,45,43,airborne near rim
+839db258cd89,ABSENT,,,,,dead ball not visible
+9a98b3eb9ad1,VISIBLE,1057,489,26,27,dribbled at top
+3f21f1ddaf0b,VISIBLE,1450,449,28,29,held on wing
+62e105916483,VISIBLE,1107,415,28,28,held in traffic
+640da5e14096,ABSENT,,,,,interview shot
+3ff88c8cbc62,VISIBLE,956,606,32,31,held by official
+02a8ebb07627,VISIBLE,1454,458,29,29,held on wing
+9c55d00df5a8,UNKNOWN,,,,,ball obscured by players
+0e28ec60437d,UNKNOWN,,,,,ball not discernible
+6037df5845d3,VISIBLE,1084,564,28,28,held in paint
+d59480f9b498,VISIBLE,666,645,29,29,dribbled on left wing
+5d03fad32d30,VISIBLE,1370,601,28,30,dribbled on wing
+36532f71366e,VISIBLE,912,194,35,35,at basket
+582edf9bf210,ABSENT,,,,,mascot crowd shot
+ab0e4f6ada8c,UNKNOWN,,,,,ball obscured in closeup
+c6c877370ce1,VISIBLE,1042,603,35,33,dribbled in transition

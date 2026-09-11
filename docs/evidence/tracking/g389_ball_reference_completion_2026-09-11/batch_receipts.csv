@@ -1,0 +1,15 @@
+batch,rater,raw_rows,unique_keys,in_allocation,duplicate_with_earlier,log_exit,status
+g389_rater_terra_01,terra,40,40,40,0,0,OK
+g389_rater_terra_02,terra,40,40,40,0,0,OK
+g389_rater_terra_03,terra,40,40,40,0,0,OK
+g389_rater_terra_04,terra,40,40,40,0,0,OK
+g389_rater_terra_05,terra,40,40,40,0,0,OK
+g389_rater_terra_06,terra,40,40,40,0,0,OK
+g389_rater_terra_07,terra,28,28,28,0,0,OK
+g389_rater_sol_01,sol,40,40,40,0,0,OK
+g389_rater_sol_02,sol,40,40,40,0,0,OK
+g389_rater_sol_03,sol,40,40,40,0,0,OK
+g389_rater_sol_04,sol,40,40,40,0,0,OK
+g389_rater_sol_05,sol,40,40,40,0,0,OK
+g389_rater_sol_06,sol,40,40,40,0,0,OK
+g389_rater_sol_07,sol,28,28,28,0,0,OK

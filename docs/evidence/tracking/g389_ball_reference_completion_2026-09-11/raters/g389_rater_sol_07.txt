@@ -1,0 +1,28 @@
+730c27852a70,VISIBLE,765,722,28,28,ball beside dribblers hand
+852d06bee969,VISIBLE,848,449,20,20,ball between guarded players
+9746fd6fd103,VISIBLE,1005,638,25,24,ball below bent handler
+dceb30c775bd,VISIBLE,961,439,25,27,ball at center tip
+9cfed5db6a87,VISIBLE,1335,183,36,36,ball above the rim
+9b2fabdd9328,VISIBLE,623,261,46,43,ball over front rim
+c369d72b91fb,ABSENT,,,,,no game ball visible
+10d786b6a025,VISIBLE,665,505,22,24,ball beside advancing handler
+4b9307a32abd,UNKNOWN,,,,,ball obscured among players
+1de680a0b818,VISIBLE,1219,414,32,30,ball held by inbounder
+b91495e19405,VISIBLE,1112,529,36,33,ball above shooters hands
+0cd4a064a09a,VISIBLE,1522,376,39,34,ball held on right wing
+2bbe984f4a74,VISIBLE,727,166,29,29,ball above jump shooter
+0b0efe5807b1,VISIBLE,1176,378,43,45,ball held near sideline
+30154a7e3110,UNKNOWN,,,,,ball hidden at the rim
+e7f0423fca78,UNKNOWN,,,,,ball obscured by players
+3165e55916ce,VISIBLE,696,674,55,69,blurred ball on low bounce
+4c7e2db6b666,VISIBLE,169,597,31,29,ball in handlers left hand
+2e0b72280994,ABSENT,,,,,no game ball visible
+155bc49efcbe,VISIBLE,1227,355,26,28,ball above the rim
+6f9dd93328d7,UNKNOWN,,,,,ball hidden by bodies
+33dc23e5492f,ABSENT,,,,,no game ball visible
+8eaa76587cb1,VISIBLE,1413,347,43,40,ball gathered for shot
+95a0ce7b9587,VISIBLE,838,668,39,40,ball above paint players
+56ec309abe0f,UNKNOWN,,,,,ball obscured by defender
+d3747f70cbcc,VISIBLE,1387,379,42,53,ball airborne on right
+7103bd5e7dc7,VISIBLE,419,701,31,30,ball beside sideline handler
+d31f9a0c0ce2,VISIBLE,175,738,48,57,blurred ball on bounce

@@ -1,0 +1,40 @@
+32d80de87a3b,UNKNOWN,,,,,ball not identifiable
+f15fccffca03,VISIBLE,1110,390,52,52,airborne ball above players
+4ce9feada8d7,VISIBLE,936,411,25,25,ball held near post
+cd44868f53a2,VISIBLE,727,398,53,52,ball held near lane
+cb38f5846393,VISIBLE,1677,631,47,42,ball held at right wing
+d42bca014465,VISIBLE,1247,312,38,37,ball beside rim
+2309e67fdc71,VISIBLE,706,359,26,25,airborne transition ball
+1857d246757a,ABSENT,,,,,bench closeup without ball
+9f6bc8235112,VISIBLE,637,425,44,48,ball secured in lane
+1778a54bcaca,VISIBLE,1620,314,67,68,ball held on perimeter
+3e1def3d25f9,VISIBLE,1387,616,20,20,ball near right dribbler
+700e6aa694bb,VISIBLE,692,255,34,34,ball near basket
+30356bf13742,UNKNOWN,,,,,ball not identifiable
+4650fce328c9,UNKNOWN,,,,,ball obscured by handler
+58794fe201bb,VISIBLE,1463,515,26,24,ball held at right wing
+befc9d17fba7,UNKNOWN,,,,,ball not identifiable
+b264cffd139a,VISIBLE,1308,501,42,41,referee holding ball
+39c210c1f166,VISIBLE,422,530,28,29,airborne ball at left
+e99a19ae2822,UNKNOWN,,,,,ball hidden among players
+f2f19e07e189,VISIBLE,947,178,41,39,airborne ball above shooter
+3ae0fff0a317,UNKNOWN,,,,,ball not identifiable
+b7ae0fca9906,VISIBLE,767,502,37,35,free throw ball held
+c07853b2493f,VISIBLE,1337,814,25,25,player carrying ball
+a5a065e9cf91,VISIBLE,202,629,29,27,ball held at sideline
+eb263ece4b97,UNKNOWN,,,,,ball not identifiable
+b8f36a969244,VISIBLE,891,333,53,57,referee holding ball
+18f3d180b485,UNKNOWN,,,,,ball not identifiable
+bea639731fa9,UNKNOWN,,,,,ball obscured by defenders
+4d5ff17b43bd,VISIBLE,345,440,29,30,ball bouncing by handler
+5274a65d7dae,VISIBLE,1205,383,38,32,ball held at right elbow
+d644011a1cff,ABSENT,,,,,player closeup without ball
+1574171a0438,VISIBLE,1716,542,31,28,ball held on right wing
+9e619c8794e0,VISIBLE,1242,578,54,54,ball held while driving
+ed28f554ab70,UNKNOWN,,,,,ball not identifiable
+9dd07735ebb2,UNKNOWN,,,,,ball not identifiable
+39b13d9316e0,VISIBLE,884,310,49,49,airborne ball above players
+6679856f073c,VISIBLE,1544,486,30,29,ball by right dribbler
+a5190ec4c92b,VISIBLE,1283,435,41,42,player holding inbound ball
+5dcbda1d60b1,VISIBLE,333,435,43,43,player holding baseline ball
+13fe9b95f2ba,VISIBLE,897,458,31,30,ball held by lane driver

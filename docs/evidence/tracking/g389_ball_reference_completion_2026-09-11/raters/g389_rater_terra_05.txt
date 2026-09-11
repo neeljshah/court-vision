@@ -1,0 +1,40 @@
+89dd8715dd8a,VISIBLE,1833,356,42,42,held at right calibration-only
+1b295a878742,ABSENT,,,,,no ball visible
+32a9b704493f,VISIBLE,726,518,29,29,ball in air
+6d75621d11cd,VISIBLE,799,560,37,37,held in paint
+dd5deee8e3b4,ABSENT,,,,,no ball visible
+b3549eb2457d,VISIBLE,550,501,39,39,dribbling near lane
+dbbc4dcf2732,VISIBLE,1000,814,42,42,held by foreground player
+438ec97a3648,UNKNOWN,,,,,ball obscured by players
+b255be247dea,VISIBLE,847,444,28,28,contested under basket
+10ad02178e7d,VISIBLE,1082,121,43,43,above rim
+110f054be70c,VISIBLE,1266,799,34,34,dribbling at right wing
+57f8aa9e4681,VISIBLE,1567,476,33,33,held by right player
+09a4d0d36e48,VISIBLE,1177,205,28,28,held near baseline
+313bff52e593,ABSENT,,,,,closeup without ball
+d5082752eaba,VISIBLE,1588,435,31,31,dribbling on right
+f0a88241b612,VISIBLE,784,297,24,24,held near top
+b4fa72940097,VISIBLE,1336,499,27,27,held on baseline
+93a1f9552036,VISIBLE,782,406,28,28,held near sideline
+3a31d8836b19,UNKNOWN,,,,,ball not clearly discernible
+db49e3dc015d,VISIBLE,924,260,45,45,ball in air
+6f6d7c2df9ae,ABSENT,,,,,bench closeup
+2b6e49e2f950,VISIBLE,1578,563,45,45,held by driver
+139142e42c9d,UNKNOWN,,,,,ball obscured by player
+966fc277e156,ABSENT,,,,,post buzzer scene
+cba96941045f,VISIBLE,779,242,34,34,at rim
+d81fad7aafb0,VISIBLE,840,74,106,106,ball in air
+5b4aa6539fcc,ABSENT,,,,,interview shot
+91237c714d31,VISIBLE,781,312,30,30,near basket
+4680eba1cd06,VISIBLE,1286,432,30,30,dribbling at wing
+33525f98eccf,VISIBLE,287,236,31,31,held at left wing
+574d6547a63a,VISIBLE,554,574,34,34,held by shooter
+9618f7b182f1,ABSENT,,,,,ball not visible
+bcc1174cac40,VISIBLE,1354,290,31,31,held at right wing
+9c8891f0f6e4,VISIBLE,649,668,28,28,held near top
+a421f16c9230,VISIBLE,1439,608,34,34,dribbling on right
+f87b8ea1887d,VISIBLE,1355,475,30,30,held at right side
+82ca705caaff,VISIBLE,988,448,32,32,held by ballhandler
+a62bb168d5c0,ABSENT,,,,,no ball visible
+8d6e3ca03ccd,VISIBLE,1410,524,31,31,held on right side
+d803f84a1bf2,VISIBLE,1388,505,32,32,held at wing

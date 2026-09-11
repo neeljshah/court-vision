@@ -1,0 +1,40 @@
+1bd46fb15470,VISIBLE,1120,271,27,29,ball at rim
+5232ad114239,VISIBLE,1628,363,37,35,held at sideline
+857d01dfed9f,ABSENT,,,,,player interview
+d42bca014465,VISIBLE,1248,304,34,34,ball near basket
+80ba95dba40b,VISIBLE,1266,445,33,32,ball under basket
+1fafec2c9852,VISIBLE,418,313,33,35,referee holds ball
+290f7b67972e,VISIBLE,399,425,29,35,player holds ball
+3eb2c9bd0862,VISIBLE,1636,472,31,32,ball handler right
+088c36167069,UNKNOWN,,,,,ball not clear
+0f1af2b34fe7,ABSENT,,,,,crowd shot
+89b4f8ed448c,VISIBLE,1264,288,42,44,referee holds ball
+d89130c2299a,ABSENT,,,,,crowd shot
+58794fe201bb,VISIBLE,1437,504,29,33,player dribbling
+ba9c0b904e81,UNKNOWN,,,,,ball not clear
+581caeef18eb,VISIBLE,1023,93,49,47,player holds ball
+9a36cd5a2114,VISIBLE,684,503,40,37,referee holds ball
+d2a668fbeec0,VISIBLE,1596,516,27,31,player dribbling
+9a43195cc9df,UNKNOWN,,,,,graphic obscures court
+6355816e103c,VISIBLE,940,506,38,37,free throw ball
+dc0c28e9374e,VISIBLE,1331,191,27,29,ball in air
+b21b286038c3,VISIBLE,1183,532,29,34,player dribbling
+a5a065e9cf91,VISIBLE,1260,405,27,30,held for inbound
+1e63d1a8e8dd,VISIBLE,1321,367,38,39,player holds ball
+b84afe301087,VISIBLE,754,177,29,31,ball in air
+24896f416885,VISIBLE,958,408,31,32,ball at basket
+98fd5ff88f79,UNKNOWN,,,,,ball blocked from view
+34a68e7844f3,VISIBLE,1050,792,55,58,player dribbling
+350458ba9fee,ABSENT,,,,,crowd shot
+d6342ac414c7,VISIBLE,1701,637,27,31,ball handler right
+01624a78bbc4,VISIBLE,204,489,25,29,player holds ball
+9e619c8794e0,VISIBLE,1236,572,47,45,player dribbling
+bdcf73912f86,UNKNOWN,,,,,ball not clear
+e1ffcf35aa43,VISIBLE,1213,399,29,32,ball at basket
+b1826846fffe,VISIBLE,1103,341,30,34,player dribbling
+45926cdb573c,ABSENT,,,,,player closeup
+5ae17f912acd,VISIBLE,1791,575,33,34,player dribbling
+ba1d29fe5445,ABSENT,,,,,bench shot
+f8f985b5dbde,VISIBLE,1518,633,27,32,player dribbling
+d727d5b07bf5,VISIBLE,524,555,30,35,player dribbling
+63b3b82354a0,VISIBLE,940,268,47,49,player holds ball

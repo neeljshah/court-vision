@@ -1,0 +1,269 @@
+frame_key,rater,label,box_x,box_y,box_w,box_h,cx,cy,pass,reason
+147fa3791fb1d77fcc9592d6c70f2a3773fbd9df4dc68b795387bf4852dfe67a,terra,VISIBLE,770,317,20,21,780.0,327.5,full_frame,held above shooter
+49341414e11fe056a26aeb57fd4e2b23f0fcfa2e6782e7140ee89adda72ec608,terra,UNKNOWN,,,,,,,full_frame,obscured at rim
+62b2d7ae5e4b00b044ce2cd0e85b4ad22e3deff4c5d8c226ec46b2bc5b073d3f,terra,VISIBLE,764,338,21,22,774.5,349.0,full_frame,held near defender
+ab9bb337ea14772dbae79c2b8e53e2f386e6408898af87d9cba29b1c0469dab9,terra,VISIBLE,1355,457,31,31,1370.5,472.5,full_frame,dribbled on right wing
+874b0ce2aba3ff14d775e032c4bd5818c6bb09d652352ad48b283e82e50e2ff7,terra,ABSENT,,,,,,,full_frame,no ball visible
+b494d694673a2b364d451c42102d394b93283931baf02eec4f374171b7d616e3,terra,VISIBLE,805,567,27,27,818.5,580.5,full_frame,held in lane
+46dde8e433b5c3028ebeef71d2669bbfb6425dc6de9dc6ac2eb0622d418dc48a,terra,UNKNOWN,,,,,,,full_frame,ball not discernible
+5df1a11c1e666bc1ef3dcbb12daf787b895593d5140c5326467ba70b2d7f46d5,terra,VISIBLE,540,750,33,30,556.5,765.0,full_frame,held by white guard
+2ea774f6f5552f26ea8f6f959b28362e546e7efe8c6fe3b370680c44919ae654,terra,VISIBLE,559,759,31,30,574.5,774.0,full_frame,held by white guard
+83048a796e3367c151899264bb8d4a03851209931e0e34da7ce21dba41349b90,terra,UNKNOWN,,,,,,,full_frame,obscured beneath rim
+0714d445d447cd121675c903f4e6b79a77bf4fa7d4a9f0abb53fe142698754b8,terra,VISIBLE,688,387,24,24,700.0,399.0,full_frame,held by Duke player
+3a0a3add537a99d8a33af4c485aaebe4c0c8711637fa6b301af109f67ab70b0d,terra,VISIBLE,1627,747,27,29,1640.5,761.5,full_frame,dribbled on sideline
+3460c10d21ee16eaa06c2ae873e279e4fbba155b259be0c12f2494d06576eee1,terra,ABSENT,,,,,,,full_frame,interview shot
+2c91e135e4269b4dc9cfd74019f56a035f34266a9e6d0eb77d095291ff9d0df6,terra,VISIBLE,784,651,25,24,796.5,663.0,full_frame,held for free throw
+78c1ebe2dc5f1a72164bec33fc0c97dacceff477384d2e7f4d37c1ded520d147,terra,VISIBLE,502,409,25,24,514.5,421.0,full_frame,carried by runner
+8afdb97e4ed4975c13366c296f32940f37b56c5860c92d3b561e7621c9950f80,terra,VISIBLE,529,465,30,31,544.0,480.5,full_frame,dribbled in transition
+d377d870327deaab186158c707e9e5dc48aad395333b76fc9d0fc69790542867,terra,VISIBLE,1414,401,31,28,1429.5,415.0,full_frame,airborne pass
+b50d55a74545f50c699cf0451ac33a0986e401674802df5e9eca1ffca292f748,terra,VISIBLE,1112,77,33,35,1128.5,94.5,full_frame,airborne shot
+3c8c0a44838309207cf22158cbb7e9914cc67e24114ec6a0f28a9dda882fcdfd,terra,VISIBLE,547,529,25,27,559.5,542.5,full_frame,held by red player
+737c1d5502b5460479290270e1edd7c2c40313b99d30ca3a816fd98efa5e68c4,terra,VISIBLE,1410,565,27,29,1423.5,579.5,full_frame,dribbled at midcourt
+69c8d65657470a90320bf75ef1a4354f5d8ea2de7cd2eeb18ce94deaf36c6e7e,terra,VISIBLE,732,299,30,32,747.0,315.0,full_frame,raised for shot
+496b17f368a9e490d9a203531fb0a5239d30c2f863d7b5a0c8755e88d9f19c17,terra,UNKNOWN,,,,,,,full_frame,ball not discernible
+f4b8c2436cf9bcb5f988bcc06f60178dfadd942e7896cf4c275ca4c417a5cb80,terra,VISIBLE,362,448,30,31,377.0,463.5,full_frame,held at baseline
+6ea733bc62553892f9f58bb305267994d1d64625eb6f8409d324cfe5617e0596,terra,VISIBLE,1495,65,45,43,1517.5,86.5,full_frame,airborne near rim
+839db258cd89c74955aa838f19d61d0de1412c5caacde5aa827f688bdb6c70ff,terra,ABSENT,,,,,,,full_frame,dead ball not visible
+9a98b3eb9ad17c060e332c6faf9f0496a06ca012588a532ace89143a8deccc6b,terra,VISIBLE,1057,489,26,27,1070.0,502.5,full_frame,dribbled at top
+3f21f1ddaf0bf659c0e6b1a2729684e4bf9314a76b2c3fd356f62c5524ca8d68,terra,VISIBLE,1450,449,28,29,1464.0,463.5,full_frame,held on wing
+62e105916483cc76c43ce0286daf6cc4dd1d4e897cd6bd88493850b1cfd26ce6,terra,VISIBLE,1107,415,28,28,1121.0,429.0,full_frame,held in traffic
+640da5e14096ed438c6d768e65a8eb67f93f41e642d9488b6ed8ec60e39ead5a,terra,ABSENT,,,,,,,full_frame,interview shot
+3ff88c8cbc62e29a9bb402c16b78ba628c458b0cdc4d9e1e29bdab0f46eee40a,terra,VISIBLE,956,606,32,31,972.0,621.5,full_frame,held by official
+02a8ebb076270a5e8156d01dd9351034a2358f6c799902ea671c86bf3bf6d635,terra,VISIBLE,1454,458,29,29,1468.5,472.5,full_frame,held on wing
+9c55d00df5a80514cef10b4a521418bcf466aefaeed08201231b76e124d83aca,terra,UNKNOWN,,,,,,,full_frame,ball obscured by players
+0e28ec60437d97badf30bfeebc4bfefd2af91be56c178e38903ba8e81356707e,terra,UNKNOWN,,,,,,,full_frame,ball not discernible
+6037df5845d3d2a0cdcb3209c7f78a8c3af43a80fb0d8dbbddbf296c554fa1ee,terra,VISIBLE,1084,564,28,28,1098.0,578.0,full_frame,held in paint
+d59480f9b498cc710e78436a2d940eac320668e92fab7086d2d5026cf380446d,terra,VISIBLE,666,645,29,29,680.5,659.5,full_frame,dribbled on left wing
+5d03fad32d3076a2ba9e2c6080fef49b8126f67e979226a114dc87a8d38827bc,terra,VISIBLE,1370,601,28,30,1384.0,616.0,full_frame,dribbled on wing
+36532f71366e5a2dc0f1a1c065a989f8baf353045b2b8ae885c374fec1e9c8e7,terra,VISIBLE,912,194,35,35,929.5,211.5,full_frame,at basket
+582edf9bf2107782543d4f8a5885620f78d829e419ae726379d51ca14a16326c,terra,ABSENT,,,,,,,full_frame,mascot crowd shot
+ab0e4f6ada8cdda8e2b9ba35d1b812d141fa9795803eb8645caf24da4d697ed2,terra,UNKNOWN,,,,,,,full_frame,ball obscured in closeup
+c6c877370ce1ce4ffcafb507055a4a44c37e0f0f5cdd5094cad2a44516859d07,terra,VISIBLE,1042,603,35,33,1059.5,619.5,full_frame,dribbled in transition
+167958b50c68c4e4a66e3a490eda19b440264c9845ca2909291cd357e741ad9f,terra,ABSENT,,,,,,,full_frame,official review shot
+52bed970ae0792b81fd9c55c6404dcbf7c74b3007150b876b8cf6f279bc59871,terra,VISIBLE,1287,440,29,32,1301.5,456.0,full_frame,held by player
+3d209e63af68ec4bd5dde83a5465e5fd96e003ab244c9b9f92405fe09f556636,terra,VISIBLE,1417,472,35,33,1434.5,488.5,full_frame,held by shooter
+4bfbd15059d0c58f0997241208c12f7623edd999b41b8cfcdff9d5fcdaae37b1,terra,VISIBLE,274,450,26,28,287.0,464.0,full_frame,held in backcourt
+41d019c3b574a31c1a73f27c69c1923021c4d5984c3eb04e81ff63d63c0aa3b0,terra,VISIBLE,817,603,31,32,832.5,619.0,full_frame,held by referee
+2910362aaca2fd21ed16ef886f80acd40b51ecb66fe487b1d0972bdc56112d26,terra,VISIBLE,1603,450,27,27,1616.5,463.5,full_frame,dribbled at right
+bc77f4a2b217155434b683cc98bb534490a213d5e4bf7100586f7c778b41f540,terra,VISIBLE,916,0,28,24,930.0,12.0,full_frame,partly at top border
+be1e89d51985ee87dead837ecdb68dc78749a28a3c12a53bc3d73a6fc03415d7,terra,VISIBLE,1244,402,59,54,1273.5,429.0,full_frame,dribbled near defender
+b1cb6633fc48051c209137f0885df2837158d54cc9ec222a42587cf6fa37e4f7,terra,UNKNOWN,,,,,,,full_frame,ball obscured near shooter
+b9ddfc73add0532c0ba667ff69bf6ced4cbd9c2a3c811197b37e07630d997d61,terra,VISIBLE,1492,600,28,30,1506.0,615.0,full_frame,held by referee
+33dbd104f0a73329c1c73af8b184788d76676b73fef93b514d545b18bc2d7741,terra,VISIBLE,726,304,25,29,738.5,318.5,full_frame,held by ballhandler
+52bf5ee4997d267f0dda861eb1a58401d5b87ee8fd6bcd27e6d15624377469c8,terra,ABSENT,,,,,,,full_frame,bench closeup
+c6f3e658d15d209b2d9b0d1568cf27c1b43a8516c255dbc89b5b43778ad60a04,terra,UNKNOWN,,,,,,,full_frame,ball obscured in paint
+65efed56fbe2179ab44fd671b5583580a7b27bffa283e9d592f2519cc66923af,terra,VISIBLE,822,798,32,29,838.0,812.5,full_frame,dribbled in lane
+ceb578923915b5469c15bfc27a34660f304e2244a42d4a48228ff4d033901694,terra,VISIBLE,872,695,68,67,906.0,728.5,full_frame,loose ball in court
+82c470d699956c885fe6f200926b670df97dad40b19613843cfc29b73a5fbc70,terra,VISIBLE,1115,233,26,30,1128.0,248.0,full_frame,free throw ball
+0f10333a93b690a10420bb8b30fb96f6699978f52fb28c1a25563c440a034495,terra,VISIBLE,778,455,31,25,793.5,467.5,full_frame,pass in flight
+311dcabd8fc06df051cac04a20433cddd8ae920a34ee3f2540859fad02969855,terra,VISIBLE,749,802,29,27,763.5,815.5,full_frame,dribbled near sideline
+e156d800c4405fb89da685a79ff9ad540add767bbdfc5bf0176885997875a3a9,terra,UNKNOWN,,,,,,,full_frame,ball obscured by players
+fe542224de892f6b3360d9b40409e1acf7270c185087f4bd7872f14dd7f3eb90,terra,ABSENT,,,,,,,full_frame,no ball visible
+5f81b9f9e38b5466e0f9e8de08b166779c1dc2e3e58994cd3e1f769ad0d28269,terra,VISIBLE,535,504,33,34,551.5,521.0,full_frame,held for free throw
+6b7dce507b0eca22820a99da08b661159a6eb53c84e523d2842a066eb4dff82f,terra,VISIBLE,727,360,33,37,743.5,378.5,full_frame,at the rim
+42118b6a72a0f59ea5950ec9fe1f7f6a3c2303d1fbd0537d6fb9971f18ab9f21,terra,VISIBLE,1190,410,28,25,1204.0,422.5,full_frame,pass in flight
+7cb042e3cc028e947cd3c380ff55dc052a1e49a285c49cc2a5818cba561b8727,terra,VISIBLE,787,341,32,29,803.0,355.5,full_frame,held by player
+fb8993f79ed1da944090a4c404d2f728c9df8070bd0c328f3c03533de062075f,terra,VISIBLE,1226,410,27,33,1239.5,426.5,full_frame,pass in flight
+44c5afc97e5bc535fedb3ffcf6371ebae4f670bac4b6e250e40dc5d2f4dc97e5,terra,ABSENT,,,,,,,full_frame,transition graphic
+4de1c405885f132d8c5747f9b392d626708dfe6306316130cb3da21aada3db45,terra,ABSENT,,,,,,,full_frame,bench closeup
+fc12e97c2520e53ad321f09e2b3b643f3e1231725432085751c8bf3bf6f3a94a,terra,VISIBLE,444,535,31,31,459.5,550.5,full_frame,held near baseline
+8a2212748632966926bdb8aa1f2840da60419430f33ac0a187a6dc95ee31c422,terra,VISIBLE,820,324,38,35,839.0,341.5,full_frame,at the rim
+8e320a0fffa0fdb87ee022d1ea7b194ae6424a72f17809c079ebf50ae50f136a,terra,VISIBLE,822,309,40,37,842.0,327.5,full_frame,at the rim
+bc51adfffdaa6ebfdd34da17dca7c8f26fcb974b7288ee6f08402bbdd4721c0a,terra,VISIBLE,371,593,32,31,387.0,608.5,full_frame,dribbled near baseline
+9b1cb353938d3904440b6cdff324bac8baed6ac035193edd5c04e7a4556dc89a,terra,VISIBLE,1092,654,43,43,1113.5,675.5,full_frame,held for free throw
+4fecde40157eb2e3864127bbf27a6c1cba754ddb60b39e6c0de0d08e0efd7d2a,terra,VISIBLE,1342,538,25,29,1354.5,552.5,full_frame,dribbled in backcourt
+49759debf1d117119d61a2cf7a79034cc51e177d741377a0fd4b679f7c43cb27,terra,VISIBLE,396,442,28,28,410.0,456.0,full_frame,held by ballhandler
+d188f300bf34656e8894ac210d9523c7cf0289fc4a3349a056ebdc5fe7d8b48f,terra,VISIBLE,401,320,38,39,420.0,339.5,full_frame,held on wing
+a7a44c71744c91a886460f3901f06f6c13a383869cf154a0c40fa5536bba5c1a,terra,VISIBLE,798,632,31,31,813.5,647.5,full_frame,held by referee
+aac1ae55830894f5bebfac48d529381e965ce0484192e19d712e866553f279a2,terra,ABSENT,,,,,,,full_frame,postgame interview
+4391d4db24bc5d6405403dadfe69125f35ba14b76a1584133a2c522d86928e01,terra,VISIBLE,381,474,27,28,394.5,488.0,full_frame,shot in flight
+8b5dddd197b26820d699f81a375ba72783e2d25868bc07cc672e934ae5ac08f2,terra,VISIBLE,1021,828,109,107,1075.5,881.5,full_frame,held close to camera
+bb17798d34b275ccb795db4341406c7c8eafb77d42c9ee45fb878c9d98ac0e38,terra,ABSENT,,,,,,,full_frame,dark empty frame
+1bd46fb1547090b1bbe4da8f34cb9c4f516cac3978d13855d04fbeb27117d43d,terra,VISIBLE,1120,271,27,29,1133.5,285.5,full_frame,ball at rim
+5232ad114239443128b1eba7fdd23bed50c4c791b62186315fc0c23184387e97,terra,VISIBLE,1628,363,37,35,1646.5,380.5,full_frame,held at sideline
+857d01dfed9f343348d633f45ad158d6fd4b6cfb1748f8db6b0613dd44bdfa67,terra,ABSENT,,,,,,,full_frame,player interview
+d42bca0144652c3c6af2e91c8ef726d9a4fc32a2fc6e14095514da5199699192,terra,VISIBLE,1248,304,34,34,1265.0,321.0,full_frame,ball near basket
+80ba95dba40b40e4ca1623c12a3c39256d4c3231d66d6b5672632cc82098ed24,terra,VISIBLE,1266,445,33,32,1282.5,461.0,full_frame,ball under basket
+1fafec2c985200986e1739e650e91ad59aa773f9fd0ea50d95327df09a4ddc39,terra,VISIBLE,418,313,33,35,434.5,330.5,full_frame,referee holds ball
+290f7b67972e672fe1a0a0b2cc4f6ab788add9e028e3a949aee479a66bca4dee,terra,VISIBLE,399,425,29,35,413.5,442.5,full_frame,player holds ball
+3eb2c9bd0862a6d1db8476adf4a1b3d4cc36a4281c1be2dae96a4c6769454461,terra,VISIBLE,1636,472,31,32,1651.5,488.0,full_frame,ball handler right
+088c361670696e6a29f5f5ea6f0009a47928be5e093fd13f6d48e27c83176f71,terra,UNKNOWN,,,,,,,full_frame,ball not clear
+0f1af2b34fe774fae42afebeb8f8d079b0e0d7eea52c96f3cb9516a1c875c899,terra,ABSENT,,,,,,,full_frame,crowd shot
+89b4f8ed448c865dcda2a730ea3cf22c9221a1175a09cf6c4de184b988a2bd89,terra,VISIBLE,1264,288,42,44,1285.0,310.0,full_frame,referee holds ball
+d89130c2299a26280faa875fd3c86e4afa065898199528d0884c14b3018a5a08,terra,ABSENT,,,,,,,full_frame,crowd shot
+58794fe201bb50a0f931bcbd47e033cb612421d00b348c2ce8f6b237a6ea7e04,terra,VISIBLE,1437,504,29,33,1451.5,520.5,full_frame,player dribbling
+ba9c0b904e8171f4134c59b7fee28daa443976ce8cac81f285844d4d70d6d696,terra,UNKNOWN,,,,,,,full_frame,ball not clear
+581caeef18eba2a2e9479409135d2d047de4c69d0566bea5e34f478e06ed1c2c,terra,VISIBLE,1023,93,49,47,1047.5,116.5,full_frame,player holds ball
+9a36cd5a21143857ac8350e624d82b7771a29ab40cf6f44fffd07bd02dc42402,terra,VISIBLE,684,503,40,37,704.0,521.5,full_frame,referee holds ball
+d2a668fbeec06def70b50253d68d47295e3e6135d27436fd6aec306721f356c1,terra,VISIBLE,1596,516,27,31,1609.5,531.5,full_frame,player dribbling
+9a43195cc9df5c4f94480b816d414874899fad38f9940f49dc4aba23375536cc,terra,UNKNOWN,,,,,,,full_frame,graphic obscures court
+6355816e103ceb0c623b2695971caa778054b7edbb94c71388543d442b42eb9e,terra,VISIBLE,940,506,38,37,959.0,524.5,full_frame,free throw ball
+dc0c28e9374e18f9a92441b8f9459e0300713e12f2c164d0d2f07d87755c4bd0,terra,VISIBLE,1331,191,27,29,1344.5,205.5,full_frame,ball in air
+b21b286038c3db21b89558d40249b6cff4dc4dc617537dcdfc2222bab82386c2,terra,VISIBLE,1183,532,29,34,1197.5,549.0,full_frame,player dribbling
+a5a065e9cf918653fd6bcc3941f0456691438a9eb67e1eb7411345221c88fc45,terra,VISIBLE,1260,405,27,30,1273.5,420.0,full_frame,held for inbound
+1e63d1a8e8ddc1a2af1e39236a50aebb69dd25aa2209cbd68db06324a550ad45,terra,VISIBLE,1321,367,38,39,1340.0,386.5,full_frame,player holds ball
+b84afe3010872a855c45c1a25aa029b7fd886fe0bbc8f4bf2851b795b76c227d,terra,VISIBLE,754,177,29,31,768.5,192.5,full_frame,ball in air
+24896f416885b7cc499029d081e869ebc69559396cb60cdfa62d03bc7007657c,terra,VISIBLE,958,408,31,32,973.5,424.0,full_frame,ball at basket
+98fd5ff88f79649a6fe17e13eda946c352892597e832581b1c8c18b2a554a23d,terra,UNKNOWN,,,,,,,full_frame,ball blocked from view
+34a68e7844f33d03dc91bf0ac111d896bb6f340377dbf2be9dc62f1ee5c3fcc7,terra,VISIBLE,1050,792,55,58,1077.5,821.0,full_frame,player dribbling
+350458ba9feec4e39bf5581d4b4537cff555839a192050d9322d8bf57de03859,terra,ABSENT,,,,,,,full_frame,crowd shot
+d6342ac414c7fa42e782def5293e7fe0cd292bd37536cf667288ef6dc2129290,terra,VISIBLE,1701,637,27,31,1714.5,652.5,full_frame,ball handler right
+01624a78bbc487d9602526cfe4540a4fe96c753bc7e126774fc5c604335e2917,terra,VISIBLE,204,489,25,29,216.5,503.5,full_frame,player holds ball
+9e619c8794e085b29bed04b1c6223c1f77b2834bf45e30e8afcd932710032343,terra,VISIBLE,1236,572,47,45,1259.5,594.5,full_frame,player dribbling
+bdcf73912f8622330a88d8ab513cc74c7b92e0f816cbc925ef88e7d177f4849f,terra,UNKNOWN,,,,,,,full_frame,ball not clear
+e1ffcf35aa4328f0ddb050f9cc7d11d65e047f5adf73a404311ca539246c75be,terra,VISIBLE,1213,399,29,32,1227.5,415.0,full_frame,ball at basket
+b1826846fffe8b200cc10fc36a63f3d4ce3424ef747297205f2fe20d96f3a8b9,terra,VISIBLE,1103,341,30,34,1118.0,358.0,full_frame,player dribbling
+45926cdb573cba3b61704085067ea133edde6dabb8a0c1a4b28921e1d2626a50,terra,ABSENT,,,,,,,full_frame,player closeup
+5ae17f912acd7dc3981204f19e712d276b2592ffd53a3a407c9b8dbe18260192,terra,VISIBLE,1791,575,33,34,1807.5,592.0,full_frame,player dribbling
+ba1d29fe544563fe15630b04e0343868154aab26e718cfca3702ebef6978ffc8,terra,ABSENT,,,,,,,full_frame,bench shot
+f8f985b5dbdef19f9d7fc80281e9d73711619c6e39d9c18287802fedd3c3d7f8,terra,VISIBLE,1518,633,27,32,1531.5,649.0,full_frame,player dribbling
+d727d5b07bf5a0a7f68837307ff260a12a7e3163f45d5fba4a6e608291a3823b,terra,VISIBLE,524,555,30,35,539.0,572.5,full_frame,player dribbling
+63b3b82354a0f12afac8c71ba2083b3ae0d6638094338a3434ac42e5718ebc03,terra,VISIBLE,940,268,47,49,963.5,292.5,full_frame,player holds ball
+70e494b21995e75785c69eeebe42d8553639a3f32eebb734a022f10959e940f4,terra,VISIBLE,1034,279,27,28,1047.5,293.0,full_frame,ball above basket
+e11e7a1ddfe77d0bff58d7056e7793326d94ddbb7c09562e58f513f6745cb652,terra,ABSENT,,,,,,,full_frame,transition graphic
+97b0f9504773181b12c920ba3b1b1c0e2349fc5526f283e90be4c1fe9b69917f,terra,ABSENT,,,,,,,full_frame,free throw setup no ball
+4d4cfea838a047c54af112649205a1192f978b5179773030db3740d272430a68,terra,VISIBLE,585,536,30,30,600.0,551.0,full_frame,ball held by player
+bf2251ab8fae16353a7237f24c3b628d2be82819a703c90e84fd682dc5d4d32f,terra,VISIBLE,1513,274,25,25,1525.5,286.5,full_frame,ball held by player
+b269053e49ec9b387d5de45db8143142eca8cb0ffb842e4a20495cf0d5e77069,terra,ABSENT,,,,,,,full_frame,rim camera maintenance
+bc3f5a77cb1d4e7a18aadb1fb129f41df38d70ed048d78ec0534e8e8e677f93d,terra,VISIBLE,970,301,62,65,1001.0,333.5,full_frame,ball held overhead
+fe469757cfaa2715ded2260b727f2cb386695566d00ba29c0dc4914ebaaa3a2e,terra,VISIBLE,1403,458,23,23,1414.5,469.5,full_frame,ball held by player
+0f5be93bb3489c3bd006eaad1f46de00e9964a77bbb8f3756cd7f5b9f7ec58da,terra,VISIBLE,1095,435,23,24,1106.5,447.0,full_frame,ball in transition
+ef826f16df2b6357674340f2e44f7abff82a3ed2e66b63e3caba7da12d8c8619,terra,VISIBLE,1650,526,27,27,1663.5,539.5,full_frame,ball held by player
+1040d086c38221cb0682df1ccbf787ab00ddf8c41f26e45a9b214a7212566482,terra,VISIBLE,1576,603,29,29,1590.5,617.5,full_frame,ball held by player
+a5a445b1cadd6908fac48e28f0428a6b92ca5b4dc2ba3e2d1001b2fd3f9822b2,terra,VISIBLE,1700,458,25,25,1712.5,470.5,full_frame,ball held by player
+7a77ec659be073fb416f9a55a0d02d91e305815fa40f3412bb561bea897ba90b,terra,ABSENT,,,,,,,full_frame,bench shot
+3d4891ca3f32702ffa095d3de82a1d88937a97847eeceaf8df020f9493b687d6,terra,VISIBLE,655,519,86,55,698.0,546.5,full_frame,motion blurred pass
+efb29f910a9cff50380d3504e314d1f7a24f3dc11dfefa739b6f412ab62a048b,terra,VISIBLE,1070,969,104,111,1122.0,1024.5,full_frame,partially cropped ball
+e225e1049d6a4cb08e8aac64fbcbdc8e7190185dd3cb7aeee20756abe9bfd12e,terra,VISIBLE,805,424,23,23,816.5,435.5,full_frame,contested ball
+429d0d1fbda6316ac6e85bc976d268e5c0f40afda19e1c692e7902e8187d3c48,terra,ABSENT,,,,,,,full_frame,bench shot
+96bef25962ec6ad0102df132db9be9d9b96a38d4a325236dd5485b153b8b372e,terra,UNKNOWN,,,,,,,full_frame,ball obscured by players
+b8556e868f732cc5d70d9c5371e7a9e0a8b56a95b9659e3edb33fe1da5bd7246,terra,VISIBLE,1351,478,27,27,1364.5,491.5,full_frame,ball held for inbound
+adfe897bd5b6a32ab89286f2d6e60e86feb4f7b0e64d41e715d43e21dc8bd954,terra,VISIBLE,798,749,33,33,814.5,765.5,full_frame,ball dribbling
+97d09f6e918233c8dfa0abf95226ce4b0e9b5b0232b5b0bbf2a926daf9a029c7,terra,VISIBLE,944,270,27,27,957.5,283.5,full_frame,ball held overhead
+dc30f641fd411f5eae982edb6032c3c5d34a421e8174341e4f16b62bb2b7dfb6,terra,ABSENT,,,,,,,full_frame,rim camera maintenance
+ea5ff4d2d591eda627f24149dd17f61bf78cbb5634a20d2a657f0a685f4c532e,terra,VISIBLE,1305,383,25,25,1317.5,395.5,full_frame,ball held near sideline
+81873f75ec75df73958dedc3a36ef5f92e8e1e770870ae26bfdbf72d2f376dc7,terra,VISIBLE,293,497,27,27,306.5,510.5,full_frame,ball held by player
+20ea26903294e40b4c13c060e70bc0d662f403b4cc854b61116d71acc8f86ef7,terra,VISIBLE,920,401,25,25,932.5,413.5,full_frame,ball in transition
+a125eb8164e8a1027fe805be43b683adfa472a4ab3aa7e31af970eb630dfa8db,terra,VISIBLE,1594,566,33,33,1610.5,582.5,full_frame,ball held overhead
+a7f31b00c9b3068214105265be850e393ce00daebe4b0a421c6ac44ce8321daf,terra,UNKNOWN,,,,,,,full_frame,ball obscured by players
+d16ef963f9fa50e4135a8333965a0588c25576961e790a64ac759bf5cab3942b,terra,VISIBLE,813,442,31,31,828.5,457.5,full_frame,ball in paint
+c76ee0da93ac518297c823172a6a1c8f8795495dbb2083867130ee29549477f2,terra,UNKNOWN,,,,,,,full_frame,ball not discernible
+3be793e57b63e9c348c3f5568c40b12da5f0ab670a9b501d50f99e9e2686b053,terra,VISIBLE,939,250,42,42,960.0,271.0,full_frame,free throw ball
+c68e36cf6e1742074cc63f8a5717cca89aa15e59bb7557aa74885870e5e9fda3,terra,VISIBLE,948,418,39,39,967.5,437.5,full_frame,ball at rim
+8d5b2b3c0b8763b0f0db5d8b4e074138b845cf9751720663a6ff217428452fd1,terra,UNKNOWN,,,,,,,full_frame,ball not discernible
+661810290336c62bd4aa6f982bccdb11ab94da055c7d6974bd84e38043d18d31,terra,VISIBLE,393,502,25,25,405.5,514.5,full_frame,ball held near baseline
+5c55340d7f2914b1b8589bd326b689518040199b492e89f37794f183ef81ad22,terra,VISIBLE,1532,500,25,25,1544.5,512.5,full_frame,ball dribbling
+4d3b973423aaa40c186ed70239f05c85fcd889f189ee090cb87c573ffdb4ceee,terra,VISIBLE,1605,580,25,25,1617.5,592.5,full_frame,ball held by player
+ba0cc82a3fe4304cf23eb9b24a9da7d36dac016ca416f4afac57d6d468a8f0c1,terra,VISIBLE,755,493,28,28,769.0,507.0,full_frame,ball held in paint
+5adff6aa4e48148482c44d0861b5a738f1afd8ed39f08c8e4da53ae88bdc0559,terra,VISIBLE,874,281,22,22,885.0,292.0,full_frame,ball held overhead
+ff4169c59f81bb3188d80864ba7eb8993ca011c8beb08d32de06952776be41f3,terra,VISIBLE,397,425,20,20,407.0,435.0,full_frame,ball held by player
+d43765e3deb55ea4f2aa5c35d86e3a7dc64ea26bfe62d9d5582c158da8293ff7,terra,VISIBLE,1416,443,20,20,1426.0,453.0,full_frame,ball held by player
+f442c7b355e0d3c2fef1eab175358a9adaa17b9512436ec645af7e227497ced1,terra,VISIBLE,409,544,22,22,420.0,555.0,full_frame,ball held by player
+89dd8715dd8a53230e612760e0e9faaa294f4cf71a215a36fcbd0e8f14505647,terra,VISIBLE,1833,356,42,42,1854.0,377.0,full_frame,held at right border
+1b295a87874298ae201d4cfe5ee4e545bb47e4bcf5cc4b7b049f66b7ee01873a,terra,ABSENT,,,,,,,full_frame,no ball visible
+32a9b704493fbb795fb761f37bef3fdce018f9bee88a4ec8ec651ab518983bac,terra,VISIBLE,726,518,29,29,740.5,532.5,full_frame,ball in air
+6d75621d11cdcb03d8e88f40c4435707e05225ca49a948284ab190bb2f1ea082,terra,VISIBLE,799,560,37,37,817.5,578.5,full_frame,held in paint
+dd5deee8e3b4502cbda9ea36e30509e77697479a0d94e0ccff6d602019aa5f3c,terra,ABSENT,,,,,,,full_frame,no ball visible
+b3549eb2457dab26b5e94f42636d3c96600905779732d92ccf4a4165c8d32bb9,terra,VISIBLE,550,501,39,39,569.5,520.5,full_frame,dribbling near lane
+dbbc4dcf2732bb135a017bf9bd31bbd92979f356375ff9daff5494cdd22d7165,terra,VISIBLE,1000,814,42,42,1021.0,835.0,full_frame,held by foreground player
+438ec97a364869617e96721e963604375ae841664b055410bf29900a6197c760,terra,UNKNOWN,,,,,,,full_frame,ball obscured by players
+b255be247dea55232bc0606c2012271c1c1cb886b43bb5beb14089f90abd37bf,terra,VISIBLE,847,444,28,28,861.0,458.0,full_frame,contested under basket
+10ad02178e7d11a79a1d4911a941be512f13e93fd6711324138085919e3a168d,terra,VISIBLE,1082,121,43,43,1103.5,142.5,full_frame,above rim
+110f054be70cd154599e5f285465922b9fbf9a086b04f2a3d321912f5c1557c9,terra,VISIBLE,1266,799,34,34,1283.0,816.0,full_frame,dribbling at right wing
+57f8aa9e46814f1e9b221b97b4ac21a6fb30da72427c990bd31fd4cf22b134e9,terra,VISIBLE,1567,476,33,33,1583.5,492.5,full_frame,held by right player
+09a4d0d36e4889f9edcb88f707e82e15af5d84f8e1af5769f4346d2b5fc4fd8e,terra,VISIBLE,1177,205,28,28,1191.0,219.0,full_frame,held near baseline
+313bff52e59385f621946dc5a1184395813ac6d11ff8969370b15855d18d01e6,terra,ABSENT,,,,,,,full_frame,closeup without ball
+d5082752eaba097c3035d9adb80efeaa6109ff71a5caa026861365ad9d461233,terra,VISIBLE,1588,435,31,31,1603.5,450.5,full_frame,dribbling on right
+f0a88241b612d84cad54d4a4f0b1a327b09a5b8509ff65d9230f0c73d240149a,terra,VISIBLE,784,297,24,24,796.0,309.0,full_frame,held near top
+b4fa729400972598aad1a850558b73c723eb394da591492185d1fb6df46e9410,terra,VISIBLE,1336,499,27,27,1349.5,512.5,full_frame,held on baseline
+93a1f9552036ab4f8824a729903fc83dc58e7d19805b28801ad80c6920ebf7eb,terra,VISIBLE,782,406,28,28,796.0,420.0,full_frame,held near sideline
+3a31d8836b19581181d5ea0bf18e89a0fc42b01f7df725eeb8903baac1c22d0e,terra,UNKNOWN,,,,,,,full_frame,ball not clearly discernible
+db49e3dc015de9f52fe2ea47810e1ea60213f6cdeadbd884ae5f37e3ca2793b0,terra,VISIBLE,924,260,45,45,946.5,282.5,full_frame,ball in air
+6f6d7c2df9aefa1e8084ea92d6055f567678cc19f3be21b4389e91e409088151,terra,ABSENT,,,,,,,full_frame,bench closeup
+2b6e49e2f950178f74349cb185aaf579c151d5a3d640232cdba6ec8a872be2d4,terra,VISIBLE,1578,563,45,45,1600.5,585.5,full_frame,held by driver
+139142e42c9d159d8a8fb24d669124ced9c67f1c9f21db24493cdaf84b8c35c3,terra,UNKNOWN,,,,,,,full_frame,ball obscured by player
+966fc277e15622e5212657ad4d9559959244e0ebf1c85bce0f583038db478097,terra,ABSENT,,,,,,,full_frame,post buzzer scene
+cba96941045f0167baff7a2c2e7f5f5ba5938416fe6ea67dc4e92b15c3edb0aa,terra,VISIBLE,779,242,34,34,796.0,259.0,full_frame,at rim
+d81fad7aafb0125c9c7a43799ecfe96b2f8a0365842d357747d006b5bce6dbad,terra,VISIBLE,840,74,106,106,893.0,127.0,full_frame,ball in air
+5b4aa6539fcc28f7006c3627f7efc904221a86875b35846d5cb5143ccc1a0147,terra,ABSENT,,,,,,,full_frame,interview shot
+91237c714d311e4b716de96beedb2ee2da3bb41ea73a5ea15ed68175697e3622,terra,VISIBLE,781,312,30,30,796.0,327.0,full_frame,near basket
+4680eba1cd06ec91b0046cd3789bb61d43dbd9a4afffb4975e87e2a003d47e18,terra,VISIBLE,1286,432,30,30,1301.0,447.0,full_frame,dribbling at wing
+33525f98eccfbcfe08bd471bb58e98acfa141df0fbaecbf1f08e08d1e88dcd18,terra,VISIBLE,287,236,31,31,302.5,251.5,full_frame,held at left wing
+574d6547a63a7841295dedbe3076a6e217b5d63306a6168379ba17db4699b20f,terra,VISIBLE,554,574,34,34,571.0,591.0,full_frame,held by shooter
+9618f7b182f118664218c13d3bc0694ec24af865ec747ade93afe2f011b7b1c5,terra,ABSENT,,,,,,,full_frame,ball not visible
+bcc1174cac40a7db7fe859f14e22737f098826f06202f674fde4942198d42c11,terra,VISIBLE,1354,290,31,31,1369.5,305.5,full_frame,held at right wing
+9c8891f0f6e49302adefce0da2eb45fa54e4be9c1acb68a114a46bcff388a74d,terra,VISIBLE,649,668,28,28,663.0,682.0,full_frame,held near top
+a421f16c9230b5a3286c6cbf01505585edc0af534638b0a46516b346d978d2c9,terra,VISIBLE,1439,608,34,34,1456.0,625.0,full_frame,dribbling on right
+f87b8ea1887d1d2393139e48fe6079d80206809a4184acec725feafb4ddba02e,terra,VISIBLE,1355,475,30,30,1370.0,490.0,full_frame,held at right side
+82ca705caaffafbfbde713d6bf1cb30ac2114267a4aa3ac1583017a7bd6cd795,terra,VISIBLE,988,448,32,32,1004.0,464.0,full_frame,held by ballhandler
+a62bb168d5c0dfbe23b2afcfdfd348e112352be82e3f9367bc74742d3764f29a,terra,ABSENT,,,,,,,full_frame,no ball visible
+8d6e3ca03ccdc8d53e89533b7ccf83fc930c8ac37c8c76486ebd943ba9944e09,terra,VISIBLE,1410,524,31,31,1425.5,539.5,full_frame,held on right side
+d803f84a1bf2829d52c6f2f180783289ad27e9a97dc38450e15007f5b909c1f5,terra,VISIBLE,1388,505,32,32,1404.0,521.0,full_frame,held at wing
+26eb9cee0a07399b0c7a82b50d4af683e63d03f766083601ace7c0007bcf3699,terra,VISIBLE,541,432,35,38,558.5,451.0,full_frame,held near sideline
+fdc404d87dff0f2aa2cb8335c3b61419a04f6255496e1997c5ec3ad6a9de68b4,terra,VISIBLE,1187,538,31,37,1202.5,556.5,full_frame,held in paint
+66cea5293a7f7eb181ae2ebead07218e4e883e2748d49632dc96bbb11013c1de,terra,VISIBLE,453,755,38,36,472.0,773.0,full_frame,partly behind graphic
+16c583e45b3936aa65d2dce0135ff0a6bd95f0fb9cd5725e34c56abbfae258b7,terra,VISIBLE,1048,266,31,31,1063.5,281.5,full_frame,above shooter
+412413c05f7beb7a5953de30667025544b440f6ee801edc89d1b9b177c43df2a,terra,UNKNOWN,,,,,,,full_frame,obscured by players
+69c25565cb86617fd3fc5bbee55c509bfebc1aefa2d7e8da8e4d6e4092ab074c,terra,VISIBLE,1050,15,36,34,1068.0,32.0,full_frame,above raised hands
+914518aa85f595b1534a72b83bde1f3768c13030027215f2cda311cd22b70684,terra,VISIBLE,920,560,33,33,936.5,576.5,full_frame,held at lane
+cee1530bf9195ce8f20672a014f24ab73a04b41000112e03cc3103a9bc0aa46c,terra,VISIBLE,1277,508,30,32,1292.0,524.0,full_frame,dribbled in transition
+da152a192732381bd61278c32c8cc126d803631c48e73d8d2e923d360f5b8386,terra,VISIBLE,810,303,32,32,826.0,319.0,full_frame,above shooter
+3896f57a5bd1667fcc6c93327347c3d0b9f7f1366c471362499853464b2d44a7,terra,VISIBLE,1004,374,30,29,1019.0,388.5,full_frame,at basket
+544535309fc9c57266af20adddfeeb74dcbcbf61f17e17037e3e4537e3d7bc6e,terra,VISIBLE,482,256,27,27,495.5,269.5,full_frame,in shooting arc
+c2041840c53638e2be1ebc5aebe086e3480d9af53b6e4e6f4595972fccd4364a,terra,VISIBLE,860,546,38,39,879.0,565.5,full_frame,near rebounders
+1a1a5c6d446a2ef6bf07093214156f1023d53314952932e1938a1868210b9c26,terra,UNKNOWN,,,,,,,full_frame,not clearly identifiable
+540e83f6d87c34f919e61e464047771e8a31061fa2320f570eb4ec107a727333,terra,VISIBLE,1152,434,29,31,1166.5,449.5,full_frame,held by ballhandler
+d8aa51bcedf5b6314fd9eaf2f43803a6b73cb724a93e6bd6120953ab4b7196f2,terra,VISIBLE,1498,151,32,33,1514.0,167.5,full_frame,held by official
+738b8e170bb373b22eaacef20dc1c172db25db9b78c3f7d917840b408c7005e0,terra,ABSENT,,,,,,,full_frame,full screen graphic
+d20dae939d7d3441f7fad84c37cbd4bc728af92027181193b07d93cbc5d9e2a5,terra,VISIBLE,798,720,29,31,812.5,735.5,full_frame,dribbled at wing
+46b6196afc9b02b1fb2691a64c4b963d6f9d8d245468d0bacd908d5f810635e3,terra,VISIBLE,1346,398,32,33,1362.0,414.5,full_frame,held for inbound
+f183ac9e41aa49dde97766504e80649a4e977cd4b2546ee4e3f0251db1b38702,terra,ABSENT,,,,,,,full_frame,arena exterior shot
+779d823c6747f97f30dbdc10ec8a9bd00ff91c00139acdc85d20138d88ce3baf,terra,VISIBLE,1500,667,37,38,1518.5,686.0,full_frame,held in sideline scrum
+cb10f94b2e678bf34463c8cfef1a517c4c94d5b3538a8d8c3dee7a246b0c81d5,terra,UNKNOWN,,,,,,,full_frame,covered by lower graphic
+dbe27a83f38d25d487242a35438181866fc0e4ca7e64281692ee449e105d407b,terra,ABSENT,,,,,,,full_frame,player closeup
+1c8b42e646cb97ed346f4802fadf1988adc137bcaf843ea8ea632b8a07aaf725,terra,VISIBLE,390,342,29,30,404.5,357.0,full_frame,held near sideline
+6b4ce5ad7263ecbc75b1dfdd91cf8139feb690749b8a8b67f393f172c680223c,terra,UNKNOWN,,,,,,,full_frame,not clearly identifiable
+b1501c3de99d2e76dae00520d2d6160d34f3b83a2f127362efb6935dcac0d374,terra,VISIBLE,952,96,46,47,975.0,119.5,full_frame,ball in flight
+6fb1ee4d77f16071e4b16f0271e0d4cd9a39d403043d0b6403d14df7208765c0,terra,VISIBLE,1426,642,33,35,1442.5,659.5,full_frame,ball in flight
+8b7a7979b56cf25bce732b80cb6ae7a1f4f52d8264571c798c5b705402a74926,terra,VISIBLE,1250,310,36,39,1268.0,329.5,full_frame,at rim
+c130340efee4549e459681638e244506e98b84a3a5dd7aa17077c3088927043d,terra,VISIBLE,753,514,178,171,842.0,599.5,full_frame,held by official
+de0cc3cf57ce7c958c9fc4d723ed30c4497c02170e6c817c91a5b480044b4af2,terra,VISIBLE,362,492,30,32,377.0,508.0,full_frame,held for inbound
+383b142a1be68bb5e8312a29b9c99fb1cdb479809b6acfeb03726e622afec6da,terra,VISIBLE,1094,342,28,30,1108.0,357.0,full_frame,above shooter
+a7e1b5ad168411710f9f674f5a11dbe988c2bf3f8aaccb1e982caf5e1953efa6,terra,VISIBLE,1335,619,34,35,1352.0,636.5,full_frame,dribbling
+12fae7c643419925b0a63d4c7d30afc1a04c1a565d5ce9068fb177a8f9c525c4,terra,ABSENT,,,,,,,full_frame,postgame interview
+a682f2f0e1f494a797162098be5f659f09ffde60adfe739c080e6101731c6e0d,terra,VISIBLE,817,443,29,31,831.5,458.5,full_frame,held in transition
+d945df5188e96ac7c4b857c6710a4c7ea298d394d82afdd8992f3c3e44a0e98f,terra,UNKNOWN,,,,,,,full_frame,not clearly identifiable
+b341fdd285693c9916e1beaea19625431cae32a94842e8501f56b64cbfde8c8f,terra,VISIBLE,177,568,38,40,196.0,588.0,full_frame,held for inbound
+5ef705e78f2b76707123257b180720ee731df1c7e84659a1d47ecefa35fc27f0,terra,VISIBLE,1127,339,32,34,1143.0,356.0,full_frame,held at wing
+67847dd707fc61d6060b098b5e94a4633a68c84f4080ecc191d10024382517dc,terra,VISIBLE,597,443,58,57,626.0,471.5,full_frame,held by player
+0db71514d7adcb20ac39ded1d0da68e41a75d4c0a51e9981f8dcc9e0345de487,terra,UNKNOWN,,,,,,,full_frame,obscured at left border
+e77c98c41e982028acfbee8a02b3c6b73e37a8154fde2c7a9ac52342845a39d1,terra,VISIBLE,573,590,37,39,591.5,609.5,full_frame,held for free throw
+4611c69c32f611af37909a8fb2aacbfd5c58d331e9877c62b69024298b5b8c80,terra,VISIBLE,1424,665,78,78,1463.0,704.0,full_frame,low dribble
+45cfedb36b91bb8d81f68eb7248fb402ef4d13819b9c7379b773ce3d818104d3,terra,VISIBLE,865,403,110,110,920.0,458.0,full_frame,ball at rim
+83290a1a5b174292eddcc46f2b8e0f4c68d79c88a584833ade464e5582a20950,terra,VISIBLE,698,612,27,29,711.5,626.5,full_frame,held in left lane
+1e020a4bdc8924fa0053f68a60d1f7954eb5d78e887924970ecc0bc2bc710281,terra,VISIBLE,1717,498,33,34,1733.5,515.0,full_frame,airborne by sideline
+512975438cfd0a649cf3b623e04d12f990dce55155044c5671dfaff19b7b3599,terra,VISIBLE,1457,600,59,53,1486.5,626.5,full_frame,dribbling in paint
+33eb0e7de74f3a78beb15afce8026676fc78705cead13fc362192b505e8db36b,terra,UNKNOWN,,,,,,,full_frame,ball obscured near shooter
+9b2fabdd9328188b5a76c441e9045e19c35784458993d72fb1ea2fe3488c1fe1,terra,VISIBLE,1557,527,65,61,1589.5,557.5,full_frame,held on right side
+73f850d90cb72fdb318fafe8653c4be5daa374a1016c8a8204f54f56e14b3a33,terra,VISIBLE,1395,781,47,45,1418.5,803.5,full_frame,dribbling at bottom right
+1026ad7863539feb258bc12c3ea8c21c4d1adfba574f89f0c01a2784468b55b4,terra,VISIBLE,1177,0,367,359,1360.5,179.5,full_frame,large ball above rim
+c504b83daebade3fce04c2952e811c49fbb588922a51779b229b1ed5f411d155,terra,VISIBLE,762,260,39,44,781.5,282.0,full_frame,airborne in paint
+82fbbc268e44bafcf5363d701f43b75fc70ddfb804314586a64323bad9b07a9e,terra,VISIBLE,795,372,43,44,816.5,394.0,full_frame,held by dark uniform player
+482d0437ff70368ac28435e0bb71c577b3d0864232c4b2dd25d523e2d8c11749,terra,VISIBLE,197,468,25,29,209.5,482.5,full_frame,dribbling at left wing
+c23aaae11919107b8cb0e9f971a67c897c2378b5701672a0679066d73a4c64a6,terra,VISIBLE,332,380,30,30,347.0,395.0,full_frame,held for inbound
+e79d1d6072d37b3c0407b26e0ff50b2eace06cb7f4c7d02f425c6552eb037337,terra,VISIBLE,1235,341,24,27,1247.0,354.5,full_frame,held near right wing
+65d33cab1581e220b4ffba9fb8dfb2d5b2a92ee1f7200f312699b7dd03981bdf,terra,VISIBLE,1599,339,44,49,1621.0,363.5,full_frame,held on right side
+30154a7e31103db64f8bbe2024a6f240d6327313267156aba1a723009f6a356d,terra,VISIBLE,1168,192,36,49,1186.0,216.5,full_frame,ball at backboard
+8a759db21e22d9b46c4257aa6dda0e6e16a6191c1a5ccb5d36ba28bdfddbae95,terra,UNKNOWN,,,,,,,full_frame,ball obscured below rim
+6613b7a9b76fcff763047af30180973b833959066fd5434cf9fa049d998d602f,terra,VISIBLE,1422,632,30,28,1437.0,646.0,full_frame,held on right wing
+3d5318d0d17c46655c5510847dddb32433691623b4f59c53f79a3e9ded650d95,terra,VISIBLE,1590,471,79,120,1629.5,531.0,full_frame,held close to camera
+8f7d53e4aab80f0da34787e4fc9b9b532c231776ea1830d879ec543f25695a11,terra,VISIBLE,1327,410,50,51,1352.0,435.5,full_frame,held on right baseline
+e463c48202f2d155e4545d2e726b1e8dfcd6e3206b331bfed34cba705f79a0e8,terra,UNKNOWN,,,,,,,full_frame,ball obscured among players
+2f24e5cd62fabfd2ed1e1c05d0a6336ae09f0f80086bc670f87759a165a87d9d,terra,VISIBLE,842,384,53,53,868.5,410.5,full_frame,held above player
+e144d07100989d3a36482458cfdf3a7fbf7dd00eb3de9599b58fc06cb31fd96b,terra,ABSENT,,,,,,,full_frame,postgame interview frame
+4b5b66ab7b3050228a0cd033f4234af41a9e91813b3f571cf5b71e4eadf64e10,terra,ABSENT,,,,,,,full_frame,no ball in frame
+95a0ce7b95876ad2a4d58556798b5b5af68f384a74d886cde957ac64939a8cc0,terra,VISIBLE,836,660,44,45,858.0,682.5,full_frame,airborne above players
+a7025315194d1fbbe984cf84095df51739fabb70710850e1f4972b6a77eed975,terra,VISIBLE,1405,423,38,52,1424.0,449.0,full_frame,dribbling on right wing
+c09e17b5ace9e2bfc121561c1b8c809ed858dc1afa99ea2c2e1111d0d6ec2ce8,terra,ABSENT,,,,,,,full_frame,coach closeup no ball
+9a228ea59ee671a3df1c0c0d6424d09d22291c6c6cb56defd497b902f1831383,terra,VISIBLE,787,327,37,48,805.5,351.0,full_frame,held above paint
+11ffdedbd9f04b6098ce0f03bd22b0f31745226dfd46e16388e88c91c6a3f823,terra,ABSENT,,,,,,,full_frame,timeout closeup no ball

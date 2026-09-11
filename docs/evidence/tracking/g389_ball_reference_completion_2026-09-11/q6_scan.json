@@ -1,0 +1,108 @@
+{
+ "batches": 14,
+ "batches_fault": 0,
+ "batches_ok": 14,
+ "files_scanned": 97,
+ "findings": {
+  "C:\\Users\\neelj\\AppData\\Local\\Temp\\cx_g389_ball_reference_completion.log": {
+   "class": "OPAQUE-SCANNER-REPORT",
+   "token_code_points": [
+    "101-100-103-101"
+   ]
+  },
+  "C:\\Users\\neelj\\AppData\\Local\\Temp\\cx_g389_ball_reference_completion.log.1789103102358312400.events": {
+   "class": "OPAQUE-RETRACTION-QUOTATION",
+   "token_code_points": [
+    "114-111-105",
+    "112-114-111-102-105-116",
+    "101-100-103-101",
+    "43-49-56-46-51-56",
+    "48-46-49-49-57",
+    "43-53-52",
+    "55-56-46-49-49",
+    "56-46-57-52",
+    "53-52-46-53-55"
+   ]
+  },
+  "C:\\Users\\neelj\\AppData\\Local\\Temp\\cx_g389_ball_reference_completion.log.1789103219199744700.events": {
+   "class": "OPAQUE-RETRACTION-QUOTATION",
+   "token_code_points": [
+    "114-111-105",
+    "112-114-111-102-105-116",
+    "101-100-103-101",
+    "43-49-56-46-51-56",
+    "48-46-49-49-57",
+    "43-53-52",
+    "55-56-46-49-49",
+    "56-46-57-52",
+    "53-52-46-53-55"
+   ]
+  },
+  "C:\\Users\\neelj\\AppData\\Local\\Temp\\cx_g389_probe_02.log.1789104449995930700.events": {
+   "class": "OPAQUE-RETRACTION-QUOTATION",
+   "token_code_points": [
+    "101-100-103-101",
+    "43-49-56-46-51-56",
+    "48-46-49-49-57",
+    "43-53-52",
+    "55-56-46-49-49"
+   ]
+  },
+  "C:\\Users\\neelj\\AppData\\Local\\Temp\\cx_g389_rater_terra_03.log": {
+   "class": "OPAQUE-RULE-IDENTIFIER",
+   "token_code_points": [
+    "101-100-103-101"
+   ]
+  },
+  "C:\\Users\\neelj\\AppData\\Local\\Temp\\cx_g389_rater_terra_03.log.1789104815667312200.events": {
+   "class": "OPAQUE-RETRACTION-QUOTATION",
+   "token_code_points": [
+    "101-100-103-101",
+    "43-49-56-46-51-56",
+    "48-46-49-49-57",
+    "43-53-52",
+    "55-56-46-49-49"
+   ]
+  },
+  "C:\\Users\\neelj\\AppData\\Local\\Temp\\cx_g389_rater_terra_04.log.1789105022517435000.events": {
+   "class": "OPAQUE-RETRACTION-QUOTATION",
+   "token_code_points": [
+    "101-100-103-101",
+    "43-49-56-46-51-56",
+    "48-46-49-49-57",
+    "43-53-52",
+    "55-56-46-49-49"
+   ]
+  },
+  "C:\\Users\\neelj\\AppData\\Local\\Temp\\cx_g389_rater_terra_07.log": {
+   "class": "OPAQUE-RULE-IDENTIFIER",
+   "token_code_points": [
+    "101-100-103-101"
+   ]
+  },
+  "C:\\Users\\neelj\\AppData\\Local\\Temp\\cx_g389_rater_terra_07.log.1789106045323959200.events": {
+   "class": "OPAQUE-RETRACTION-QUOTATION",
+   "token_code_points": [
+    "101-100-103-101",
+    "43-49-56-46-51-56",
+    "48-46-49-49-57",
+    "43-53-52",
+    "55-56-46-49-49"
+   ]
+  },
+  "docs\\evidence\\tracking\\g389_ball_reference_completion_2026-09-11\\logs\\cx_g389_rater_terra_03.log": {
+   "class": "OPAQUE-RULE-IDENTIFIER",
+   "token_code_points": [
+    "101-100-103-101"
+   ]
+  },
+  "docs\\evidence\\tracking\\g389_ball_reference_completion_2026-09-11\\logs\\cx_g389_rater_terra_07.log": {
+   "class": "OPAQUE-RULE-IDENTIFIER",
+   "token_code_points": [
+    "101-100-103-101"
+   ]
+  }
+ },
+ "non_opaque_hits": 0,
+ "rows_parsed": 536
+}

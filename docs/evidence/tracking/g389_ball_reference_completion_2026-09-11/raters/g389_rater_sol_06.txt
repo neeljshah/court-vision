@@ -1,0 +1,40 @@
+b70a17fb2007,VISIBLE,506,779,71,80,ball in low dribble
+26eb9cee0a07,VISIBLE,951,489,60,39,airborne pass
+ac19abac83a3,ABSENT,,,,,no ball visible
+7d91f76d5af8,VISIBLE,720,179,27,28,ball above rim
+918f12e96516,VISIBLE,350,183,55,62,ball beside player
+442d0172d04a,UNKNOWN,,,,,ball location unclear
+4a8130a3bbf8,VISIBLE,389,305,34,35,ball at rim
+ffd026648ce2,VISIBLE,163,625,43,45,ball held in corner
+fbda48df8ff7,VISIBLE,831,312,31,31,ball held near baseline
+3896f57a5bd1,VISIBLE,952,355,23,24,ball below rim
+b84917cdbf31,ABSENT,,,,,celebration without ball
+57197ad5dbbe,UNKNOWN,,,,,distant ball unclear
+4a560b4a53ad,VISIBLE,286,444,30,31,ball held on wing
+76d829c36fb3,VISIBLE,421,73,45,48,ball at backboard
+8e75164581e2,ABSENT,,,,,no ball visible
+1bda1144f13c,VISIBLE,442,478,38,49,ball in left hand
+cf13f4ac0e10,VISIBLE,1182,402,51,51,ball at shooters hands
+4f1ca53421db,VISIBLE,453,463,29,29,ball by ballhandler
+f183ac9e41aa,ABSENT,,,,,arena exterior
+57fb0bcc7c24,VISIBLE,1123,373,41,44,ball held by screener
+c132da3e321d,VISIBLE,1688,670,56,57,ball held at sideline
+8c364576216e,ABSENT,,,,,timeout without ball
+9654729789be,VISIBLE,1124,512,42,52,ball in crowded paint
+66f95c9da73d,VISIBLE,437,348,39,39,airborne shot
+424211bdf26a,VISIBLE,1169,237,30,30,ball above rim
+f45aa38f9fe6,VISIBLE,790,157,167,151,close airborne ball
+6fcf278b1603,UNKNOWN,,,,,possible ball partly hidden
+c130340efee4,VISIBLE,719,485,216,229,referee holding game ball
+fdb7c19c0bae,ABSENT,,,,,no ball visible
+445e5f195edf,VISIBLE,548,657,45,59,ball in low dribble
+db6c83f5327f,VISIBLE,1081,727,43,38,ball held in paint
+5f71a3cb9898,VISIBLE,439,154,69,64,ball at rim
+24fd0a97b8dd,VISIBLE,479,845,53,70,ball bouncing near player
+b46d16a16c71,ABSENT,,,,,no ball visible
+21ad836779ea,ABSENT,,,,,dead ball not visible
+c5a93ad76402,ABSENT,,,,,released ball out of frame
+67847dd707fc,VISIBLE,624,419,83,99,player clutching ball
+fb1b5db3afd2,UNKNOWN,,,,,ball obscured near sideline
+4c04ef3b2fb8,ABSENT,,,,,no ball visible
+159ec8146872,VISIBLE,1075,595,28,29,ball carried at midcourt

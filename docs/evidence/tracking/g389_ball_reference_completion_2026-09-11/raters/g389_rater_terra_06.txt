@@ -1,0 +1,40 @@
+26eb9cee0a07,VISIBLE,541,432,35,38,held near sideline
+fdc404d87dff,VISIBLE,1187,538,31,37,held in paint
+66cea5293a7f,VISIBLE,453,755,38,36,partly behind graphic
+16c583e45b39,VISIBLE,1048,266,31,31,above shooter
+412413c05f7b,UNKNOWN,,,,,obscured by players
+69c25565cb86,VISIBLE,1050,15,36,34,above raised hands
+914518aa85f5,VISIBLE,920,560,33,33,held at lane
+cee1530bf919,VISIBLE,1277,508,30,32,dribbled in transition
+da152a192732,VISIBLE,810,303,32,32,above shooter
+3896f57a5bd1,VISIBLE,1004,374,30,29,at basket
+544535309fc9,VISIBLE,482,256,27,27,in shooting arc
+c2041840c536,VISIBLE,860,546,38,39,near rebounders
+1a1a5c6d446a,UNKNOWN,,,,,not clearly identifiable
+540e83f6d87c,VISIBLE,1152,434,29,31,held by ballhandler
+d8aa51bcedf5,VISIBLE,1498,151,32,33,held by official
+738b8e170bb3,ABSENT,,,,,full screen graphic
+d20dae939d7d,VISIBLE,798,720,29,31,dribbled at wing
+46b6196afc9b,VISIBLE,1346,398,32,33,held for inbound
+f183ac9e41aa,ABSENT,,,,,arena exterior shot
+779d823c6747,VISIBLE,1500,667,37,38,held in sideline scrum
+cb10f94b2e67,UNKNOWN,,,,,covered by lower graphic
+dbe27a83f38d,ABSENT,,,,,player closeup
+1c8b42e646cb,VISIBLE,390,342,29,30,held near sideline
+6b4ce5ad7263,UNKNOWN,,,,,not clearly identifiable
+b1501c3de99d,VISIBLE,952,96,46,47,ball in flight
+6fb1ee4d77f1,VISIBLE,1426,642,33,35,ball in flight
+8b7a7979b56c,VISIBLE,1250,310,36,39,at rim
+c130340efee4,VISIBLE,753,514,178,171,held by official
+de0cc3cf57ce,VISIBLE,362,492,30,32,held for inbound
+383b142a1be6,VISIBLE,1094,342,28,30,above shooter
+a7e1b5ad1684,VISIBLE,1335,619,34,35,dribbling
+12fae7c64341,ABSENT,,,,,postgame interview
+a682f2f0e1f4,VISIBLE,817,443,29,31,held in transition
+d945df5188e9,UNKNOWN,,,,,not clearly identifiable
+b341fdd28569,VISIBLE,177,568,38,40,held for inbound
+5ef705e78f2b,VISIBLE,1127,339,32,34,held at wing
+67847dd707fc,VISIBLE,597,443,58,57,held by player
+0db71514d7ad,UNKNOWN,,,,,obscured at left calibration-only
+e77c98c41e98,VISIBLE,573,590,37,39,held for free throw
+4611c69c32f6,VISIBLE,1424,665,78,78,low dribble

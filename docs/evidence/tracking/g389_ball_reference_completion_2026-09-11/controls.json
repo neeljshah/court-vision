@@ -1,0 +1,72 @@
+{
+ "context_audit": {
+  "games": 27,
+  "rows": 530,
+  "rows_from_heldout_games": 0,
+  "rows_from_heldout_sections": 0,
+  "unique_frame_keys": 530,
+  "unique_section_frame_pairs": 530
+ },
+ "control_rows": [
+  {
+   "check": "planted_native_match",
+   "detail": "prediction planted at the reference centre",
+   "expected": "30/30 TP",
+   "observed": "30/30 TP",
+   "split": "development",
+   "status": "PASS"
+  },
+  {
+   "check": "planted_native_match",
+   "detail": "prediction planted at the reference centre",
+   "expected": "30/30 TP",
+   "observed": "30/30 TP",
+   "split": "heldout",
+   "status": "PASS"
+  },
+  {
+   "check": "sheet_scale",
+   "detail": "every native reference row",
+   "expected": "['1.0']",
+   "observed": "['1.0']",
+   "split": "all",
+   "status": "PASS"
+  }
+ ],
+ "eye_check_audit": 30,
+ "eye_check_backlog": 30,
+ "transform_controls": {
+  "development": {
+   "fp": 0,
+   "planted": 30,
+   "tp": 30
+  },
+  "heldout": {
+   "fp": 0,
+   "planted": 30,
+   "tp": 30
+  }
+ },
+ "usability_inherited_all_scheduled_keys": {
+  "boxless_pairs": 0,
+  "max_px": 1521.26,
+  "median_native_diameter_px": 37.0,
+  "n_pairs": 715,
+  "p50_px": 17.33,
+  "p90_px": 287.09,
+  "rule": "median centre disagreement <= 0.5 x median native diameter",
+  "threshold_px": 18.5,
+  "verdict": "usable"
+ },
+ "usability_settled_keys": {
+  "boxless_pairs": 0,
+  "max_px": 1521.26,
+  "median_native_diameter_px": 37.0,
+  "n_pairs": 715,
+  "p50_px": 17.33,
+  "p90_px": 287.09,
+  "rule": "median centre disagreement <= 0.5 x median native diameter",
+  "threshold_px": 18.5,
+  "verdict": "usable"
+ }
+}

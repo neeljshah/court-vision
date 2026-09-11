@@ -1,0 +1,269 @@
+frame_key,rater,label,box_x,box_y,box_w,box_h,cx,cy,pass,reason
+85597a5e8bf84c4e99fc09019eaa3af4712cc575a5b5fe507a837000c06b34c7,sol,VISIBLE,901,119,42,36,922.0,137.0,full_frame,ball airborne above lane
+defe3c0d1e5b03d1838a890e52849dac4a007c54d71ba1ba3b393bcbb3f40124,sol,VISIBLE,1263,687,36,36,1281.0,705.0,full_frame,ball bouncing by shooter
+ee76f9191cdbd8d5027d46596a903214dfcbc5bc2ff5f55c377abe4dc4fe6fea,sol,VISIBLE,313,360,38,34,332.0,377.0,full_frame,ball held for pass
+a572ec7277ec937e6831766f0bc7d846843f95f1b2772167469bec39b15befd8,sol,VISIBLE,491,561,29,34,505.5,578.0,full_frame,ball controlled on drive
+874b0ce2aba3ff14d775e032c4bd5818c6bb09d652352ad48b283e82e50e2ff7,sol,UNKNOWN,,,,,,,full_frame,ball not identifiable near inbounder
+c1800a4454c8725c6e03b09d0d79af2bbdc34ba6f050e0ec3494de1a0c44e1af,sol,UNKNOWN,,,,,,,full_frame,ball obscured during stoppage
+dad6f3f8d4d54a7dfa5db5a15ea5aaa6cd0b327195b0cf6703ce0f8b0ede9606,sol,VISIBLE,192,779,31,37,207.5,797.5,full_frame,ball bouncing by handler
+44bf0619ae02ca31c3364d9dd7395594714817101afb7e07b5030a30af24b984,sol,VISIBLE,495,453,29,34,509.5,470.0,full_frame,ball held at right hip
+9fead4c7337464183e293595e9c535922b01a9c22723953c0667dc80833e7c2c,sol,UNKNOWN,,,,,,,full_frame,ball obscured during dead ball
+908daf01ba0ea03fc9b0bbc244f165b9df3515477ac7e0775c1127331d26bdc4,sol,UNKNOWN,,,,,,,full_frame,ball not identifiable among players
+712b543a733ed4d91c0b827b3de5fee8bd8f2b27d8efeabfb5e73fcd11594835,sol,VISIBLE,283,607,29,28,297.5,621.0,full_frame,ball held on left wing
+6faaf410ce8baeb68cd1aae766f1a9963602ce6a30a92f480013269f29eab2b9,sol,VISIBLE,1203,340,40,40,1223.0,360.0,full_frame,ball held overhead
+395923ab30bd9f5175dd813fbe027bc57a05bb928cd7c2f6cfc5c341a645a33d,sol,VISIBLE,488,603,36,39,506.0,622.5,full_frame,ball held by white player
+3460c10d21ee16eaa06c2ae873e279e4fbba155b259be0c12f2494d06576eee1,sol,ABSENT,,,,,,,full_frame,interview shot without game ball
+20ea1070cef466b895f7eef7c87325e152af9358bd76ef5c722eb2e08133a5af,sol,UNKNOWN,,,,,,,full_frame,ball hidden in transition
+c651943b59ddbb91da9eccdfe04c602c1096f832e6057a3054d4808e12d136ce,sol,UNKNOWN,,,,,,,full_frame,ball hidden in transition
+b6478b24d22284a33fa2e084ca4b2b92ad795abd7a32e6475f3295368112799f,sol,VISIBLE,611,353,33,34,627.5,370.0,full_frame,ball raised by shooter
+9fc7a394e3af6f381fc37a5e344e94f7935de035195138cae2c5e4e26a5a0e4a,sol,ABSENT,,,,,,,full_frame,timeout closeup without game ball
+11490e40048bdff582ba91dfef0f49a5d65e64e3240f2837ec3b4d697d91d1b8,sol,VISIBLE,711,507,40,40,731.0,527.0,full_frame,referee holding ball
+d935e975e0a8292121501de9866e7cb8710ec5f4b471ef2f7e3a1ff215013d8f,sol,UNKNOWN,,,,,,,full_frame,ball not identifiable after shot
+6210a2f091bda239e733240299b7918c64c7e2d0e47675ae6c9b50c0c756e61d,sol,UNKNOWN,,,,,,,full_frame,ball not identifiable during stoppage
+9ec4658ae5da7ea22987575bc9ec1aa4b4eeb28c3cfcf5cac77a9625cece245a,sol,VISIBLE,989,109,40,42,1009.0,130.0,full_frame,ball airborne toward hoop
+496b17f368a9e490d9a203531fb0a5239d30c2f863d7b5a0c8755e88d9f19c17,sol,UNKNOWN,,,,,,,full_frame,ball obscured by handler
+1e37dbc9ff10abc234165e3f925fba54d99a35f7824171685aadafd30333660b,sol,UNKNOWN,,,,,,,full_frame,ball not identifiable near basket
+8fc5f69f75423607a5af3ff25e76b8393faea61e80b5cf5bab9336e7458c8af8,sol,VISIBLE,1143,726,41,45,1163.5,748.5,full_frame,referee holding ball
+50fc0905e9b86426b0a3b203e59639cc3a07a57faf306181eb59db5829f10a36,sol,UNKNOWN,,,,,,,full_frame,ball obscured among players
+a45b83a13ce2a68bc5d60e23aeda2e7b1cfc0df45619f65f4cc9846a44971acf,sol,UNKNOWN,,,,,,,full_frame,ball not identifiable during stoppage
+91472eb3a6244434131930847469dbc873a1f11412a2a137fc5c8e262485240b,sol,VISIBLE,590,272,31,32,605.5,288.0,full_frame,ball held on left wing
+080b4ae24d37915b8a352eccbef7306919a4520c6c07ff4cef75fc397e5e62b7,sol,VISIBLE,913,126,44,36,935.0,144.0,full_frame,ball airborne on pass
+fd74ef3ff8775523a9726de1fd609b2296f73d66b81bce6d432f5ee1c349752b,sol,UNKNOWN,,,,,,,full_frame,ball obscured by handler
+f6c38194abd9fb6f1b8100df9cee13e4012d5208a103640ec4a9fc4ac9f9eec9,sol,UNKNOWN,,,,,,,full_frame,ball unclear at rim
+02a8ebb076270a5e8156d01dd9351034a2358f6c799902ea671c86bf3bf6d635,sol,VISIBLE,1427,458,38,38,1446.0,477.0,full_frame,ball held on right wing
+d13c6dc3777b23232d2fc1109060ae21e20fb376be523825218a502044b1fb3c,sol,VISIBLE,1158,603,38,46,1177.0,626.0,full_frame,ball bouncing at midcourt
+592c0c85869af2165da4e905ec3ed3fe25e6421aa22e2928926c148960cfecb5,sol,UNKNOWN,,,,,,,full_frame,ball not identifiable by handler
+7723df499d48da5900ec7c5e5582ee2f872c602455750840bc55e031ca1a7608,sol,VISIBLE,913,142,45,35,935.5,159.5,full_frame,ball airborne on free throw
+fe22e0d21948082bf65a2c94a391c21230a8b1bee5ef7467f8e1b2f9cbb0c8eb,sol,VISIBLE,927,507,115,86,984.5,550.0,full_frame,ball secured on drive
+5a7a00430493c186a8dd1495e8f8b39a1005cbbf6f4c49b30fc673938dd2d4e6,sol,VISIBLE,1107,427,47,39,1130.5,446.5,full_frame,ball held at chest
+bd251db670c174f56456f38789b25fb69a887d5741b2c48ee32c1434cdf0efac,sol,VISIBLE,894,627,33,36,910.5,645.0,full_frame,ball bouncing by handler
+8ec372e96f437d5cc58b205b33ceec70b7d60e6c7d0a4e3628da189fc0199e8c,sol,VISIBLE,1550,698,35,35,1567.5,715.5,full_frame,ball bouncing near baseline
+493100e98464b4fd6069f97bf684305eb9f66930f355dbadf330a3fe3b6075f4,sol,VISIBLE,847,548,43,43,868.5,569.5,full_frame,ball controlled in transition
+c6c877370ce1ce4ffcafb507055a4a44c37e0f0f5cdd5094cad2a44516859d07,sol,VISIBLE,1008,582,39,44,1027.5,604.0,full_frame,ball held by dribbler
+ab3a6c3c5a4aeb475adcf9bb0fc9cdba9c4f0a03110f6663f9139cb2a40ba440,sol,VISIBLE,1742,481,65,66,1774.5,514.0,full_frame,ball held on right wing
+b3851928e652b8d4cafd9cef64c210bae068adbccdeb63b86436fda1c92b8660,sol,VISIBLE,643,346,28,30,657.0,361.0,full_frame,ball held near sideline
+1623782c2aebfa8ca01815dc8824efd1bc748dec80580a27181bb14350d87767,sol,VISIBLE,334,391,23,25,345.5,403.5,full_frame,ball by left dribbler
+edce8ae845c0dd71d5cb5e6862086be7657d5a6aa80893adb11cbcf0205aeae7,sol,VISIBLE,0,145,145,247,72.5,268.5,full_frame,ball held at left border
+3a1086cbf8943b8233eb6e9c621c8750283d5b0d2e11a30e99bd73cea799f3ab,sol,VISIBLE,368,323,32,32,384.0,339.0,full_frame,ball airborne on left
+64b0424b6bdbe9f91340e587ed47c04879a5bb09cf7871d54c078ac284b7ad0a,sol,VISIBLE,1318,350,28,30,1332.0,365.0,full_frame,ball held near midcourt
+0bd4386adf802886b9b44360e518cb26ccaba0a6ad0250f497075e4e2f0acbb7,sol,VISIBLE,716,486,289,247,860.5,609.5,full_frame,ball above rim closeup
+adbb4cc1d4ac9a043ed18e6e92da64dd78023d6191bd134408d257091d6629b5,sol,VISIBLE,873,475,30,37,888.0,493.5,full_frame,ball among central players
+b1cb6633fc48051c209137f0885df2837158d54cc9ec222a42587cf6fa37e4f7,sol,VISIBLE,1247,410,66,70,1280.0,445.0,full_frame,ball beside dribbler
+b9d6f540b4000ae4b66f960f41a609881e7af7688503c661c978f5ee39e09311,sol,ABSENT,,,,,,,full_frame,bench closeup no ball
+a501184c5ce1ba7445f0cb8b2f593f21d9de0dbba03b2a1c2367659200e2fd20,sol,VISIBLE,1124,169,63,65,1155.5,201.5,full_frame,ball held by player 33
+bc46741fe1036968019ec24fe5606241ebacc92acadbc13a8c2ca62b3604ddf0,sol,VISIBLE,1275,374,29,30,1289.5,389.0,full_frame,ball held on baseline
+422239c9c6fb0e2e7582a06e2c51ff7a3c25dba2e8858d44bfaa84d8f10cd4a3,sol,VISIBLE,769,454,22,24,780.0,466.0,full_frame,ball held in traffic
+e59a47671c939a2fac174ef719417bf6603a0515a5980131ce2f9a28ec535f9c,sol,UNKNOWN,,,,,,,full_frame,ball not discernible in play
+e5c7cb72f83fa496bc3184c61096d327e2971c52977999c6792a68037704c3ad,sol,ABSENT,,,,,,,full_frame,broadcast graphic no ball
+17e6d839fc6bf897372105d62514a44b171717ebb5eeaad0bc854d342194b553,sol,VISIBLE,1614,336,45,54,1636.5,363.0,full_frame,ball beside right dribbler
+57203e476711e545033caf6a188710e92015c86527866b5d777ac08ae6dd3889,sol,VISIBLE,1002,650,38,49,1021.0,674.5,full_frame,ball below player hand
+311dcabd8fc06df051cac04a20433cddd8ae920a34ee3f2540859fad02969855,sol,VISIBLE,748,799,33,34,764.5,816.0,full_frame,ball at low dribble
+e68262a433bafad167691e9a21dd34b4030045a3dab058364914bade2b50ff88,sol,UNKNOWN,,,,,,,full_frame,ball obscured in traffic
+a2e2075549febda5567a7e5d7c454afe9897d3a72f0541825899b63de48664f8,sol,ABSENT,,,,,,,full_frame,official holds ball out of play
+a77de0779abafb5ce70dba85a83170c17bbb4b4b3237f1d56ed35cbedb798df5,sol,VISIBLE,600,223,35,33,617.5,239.5,full_frame,ball airborne after shot
+8f745c2bbdd6d80498297e647eb691a8b9e87a80b9b97632edb0fdce66ac06e0,sol,VISIBLE,1444,299,25,27,1456.5,312.5,full_frame,ball above shooters hands
+5ddd9b25dd622cc5bc13075a68cd0d6a667f73cb764244580453f63371336bb7,sol,VISIBLE,272,641,62,84,303.0,683.0,full_frame,ball held by player 27
+9f3e39ba1e780d197a84b9d59abf69b98904538c1c1a3c9924c7e196443c66d6,sol,VISIBLE,974,478,59,62,1003.5,509.0,full_frame,ball held behind defender
+2907518c14b187e352f9ecd8c7e8724c263e2df27e9cae75731b594f31ef1d5b,sol,VISIBLE,744,469,18,21,753.0,479.5,full_frame,ball at dribblers hand
+4d0ca1a50dcaddd48d69b4d55d1f2ad5083270177e76bd2b9e5964df7546dc48,sol,VISIBLE,785,298,31,33,800.5,314.5,full_frame,ball above shooters hands
+4de1c405885f132d8c5747f9b392d626708dfe6306316130cb3da21aada3db45,sol,ABSENT,,,,,,,full_frame,broadcast graphic no ball
+408efc38c7d543ce0eeade31cf43247c2562e14d5f184813bf56acef94f91e1a,sol,VISIBLE,1363,414,33,33,1379.5,430.5,full_frame,ball passed on baseline
+fdfa02eec605709d6f190ac0f44f3aae3009c3e9a498587e98db0d51514d1c61,sol,VISIBLE,1233,477,42,48,1254.0,501.0,full_frame,ball extended by driver
+4473aedf8e96a8cbf91702640ea4d9ee124fb8c1750c503e1b627cb211dbde09,sol,UNKNOWN,,,,,,,full_frame,graphic obscures live action
+94c286feed13a545a8d4d114510f2bab69e6b6df4a0f457e823242dabe127c49,sol,ABSENT,,,,,,,full_frame,ball out of play by official
+61662c717603cef63dd7ea6482f664f85f39481d2117678293b94c7b53f3de4b,sol,VISIBLE,1632,398,49,45,1656.5,420.5,full_frame,ball airborne on right
+303ac8d28eeb70d76f501c2db26c060116a2737673e2e628fe09f29d9abc4764,sol,ABSENT,,,,,,,full_frame,bench closeup no game ball
+793ae92955816d2ffe6e7238cdeaba6e08acea023b3540b42ae9aa024a357073,sol,VISIBLE,1407,394,31,38,1422.5,413.0,full_frame,ball near baseline player
+2d61858c542071d4f2f868987ebbb8806cd8a10168b82dd63928c38d90b9f03d,sol,VISIBLE,558,459,38,43,577.0,480.5,full_frame,ball held under basket
+d188f300bf34656e8894ac210d9523c7cf0289fc4a3349a056ebdc5fe7d8b48f,sol,VISIBLE,412,285,44,47,434.0,308.5,full_frame,ball held on left wing
+47826bc60f3c7de62941f86f607822d55a0662c6b19699f8cbb5880649344f90,sol,VISIBLE,484,448,43,56,505.5,476.0,full_frame,ball held for inbound
+64d9361b521300c8d4b001f35a25d98dcc2913678bc3f3640ebf2cc737e9c7d2,sol,VISIBLE,494,454,29,32,508.5,470.0,full_frame,ball by left ballhandler
+877154041e4d137235a64bf2cfc886112b9d7acf53745c34d65266eb8dc09bd5,sol,VISIBLE,1452,510,35,39,1469.5,529.5,full_frame,ball held on right wing
+32d80de87a3b4734d676565e434a26c5367c5dc832319936f1ab373124f096c0,sol,UNKNOWN,,,,,,,full_frame,ball not identifiable
+f15fccffca03276c1d8633ea654df2261496ddb605f7b304fe28a00fd21910fd,sol,VISIBLE,1110,390,52,52,1136.0,416.0,full_frame,airborne ball above players
+4ce9feada8d79aaee3dd2e51ad95f11af8bcf774d20e93383c24d6059b5ef97f,sol,VISIBLE,936,411,25,25,948.5,423.5,full_frame,ball held near post
+cd44868f53a2b5d0bcb3f5df980fe58f4e0a7dd414da4f639ff24443912e88fe,sol,VISIBLE,727,398,53,52,753.5,424.0,full_frame,ball held near lane
+cb38f5846393f5c265f3c46a326277ec99fa139d615322ba5d2dba277d66be7b,sol,VISIBLE,1677,631,47,42,1700.5,652.0,full_frame,ball held at right wing
+d42bca0144652c3c6af2e91c8ef726d9a4fc32a2fc6e14095514da5199699192,sol,VISIBLE,1247,312,38,37,1266.0,330.5,full_frame,ball beside rim
+2309e67fdc71bfdddf3d319748817c69c0bdcdf18d962791500928e731a3dc9a,sol,VISIBLE,706,359,26,25,719.0,371.5,full_frame,airborne transition ball
+1857d246757a862a829d8d1446a84402b35a7d4a93bd454bd19071bff262ebdf,sol,ABSENT,,,,,,,full_frame,bench closeup without ball
+9f6bc8235112d70b1d5fe4cbbfcdb9fb7d717326ad86c5737d49e1e1b5a779c1,sol,VISIBLE,637,425,44,48,659.0,449.0,full_frame,ball secured in lane
+1778a54bcacad278319e75544646c916d4a1695a32acdd75d145530384b822a8,sol,VISIBLE,1620,314,67,68,1653.5,348.0,full_frame,ball held on perimeter
+3e1def3d25f97e16f4213a2e990cbc8bd901c29da79e22ddf10eb5f9fbfc37d6,sol,VISIBLE,1387,616,20,20,1397.0,626.0,full_frame,ball near right dribbler
+700e6aa694bba2dc7aeb4529c463dcb4f4e9a56ac4e1205821e2b52c82a05096,sol,VISIBLE,692,255,34,34,709.0,272.0,full_frame,ball near basket
+30356bf13742170128ef8fcec769eca428171917548ad839851350ae93776098,sol,UNKNOWN,,,,,,,full_frame,ball not identifiable
+4650fce328c9f95e72e2eea82a69b831d283c708530ab1edac9a640bec77279a,sol,UNKNOWN,,,,,,,full_frame,ball obscured by handler
+58794fe201bb50a0f931bcbd47e033cb612421d00b348c2ce8f6b237a6ea7e04,sol,VISIBLE,1463,515,26,24,1476.0,527.0,full_frame,ball held at right wing
+befc9d17fba77b3a3f20a028b72cb3bd4c023437df3e89cec53b137e2ae71d4c,sol,UNKNOWN,,,,,,,full_frame,ball not identifiable
+b264cffd139ad025805e92c60eefcbbd45708fe59a50f29f40f4da32b464b8b7,sol,VISIBLE,1308,501,42,41,1329.0,521.5,full_frame,referee holding ball
+39c210c1f166a373abb750fe5d06199a4782e395b68b3a57a65441b1a7c54a5c,sol,VISIBLE,422,530,28,29,436.0,544.5,full_frame,airborne ball at left
+e99a19ae2822107ad333278c4a9286f6c5cef3d824129e5c7a6f924948dcebd6,sol,UNKNOWN,,,,,,,full_frame,ball hidden among players
+f2f19e07e189ad0f8f4e8aae40dbe47995d9fa9ab437d49f521d47cd084a602e,sol,VISIBLE,947,178,41,39,967.5,197.5,full_frame,airborne ball above shooter
+3ae0fff0a317153afef93c383efcc1b40c3b37f53b32a6fef0ca3954cc687fbb,sol,UNKNOWN,,,,,,,full_frame,ball not identifiable
+b7ae0fca9906e6bc00fb0ba9160320180650bd2fd2651f5881023e2d4eb05c40,sol,VISIBLE,767,502,37,35,785.5,519.5,full_frame,free throw ball held
+c07853b2493f6ad8ccb12aa1119702270ed4eb485df1fceae0daf56095757b16,sol,VISIBLE,1337,814,25,25,1349.5,826.5,full_frame,player carrying ball
+a5a065e9cf918653fd6bcc3941f0456691438a9eb67e1eb7411345221c88fc45,sol,VISIBLE,202,629,29,27,216.5,642.5,full_frame,ball held at sideline
+eb263ece4b97b5e0cc72dc93962931240e59e3508497cea948e91866f35bd5c9,sol,UNKNOWN,,,,,,,full_frame,ball not identifiable
+b8f36a9692448126812862e4cdbdf5a2290f01907a3faa59c4ad4c767d2f137c,sol,VISIBLE,891,333,53,57,917.5,361.5,full_frame,referee holding ball
+18f3d180b4854a548ba4cd699bd2cd3452fb4d7882658dced319d09ae2037998,sol,UNKNOWN,,,,,,,full_frame,ball not identifiable
+bea639731fa94154f1208b6c86e2eea8e2a5ce2f7fa050cd7c6c8ba742283db0,sol,UNKNOWN,,,,,,,full_frame,ball obscured by defenders
+4d5ff17b43bdbdf6d70a7aa78414db6fe98669c4751c2f3f535bddddc9b16161,sol,VISIBLE,345,440,29,30,359.5,455.0,full_frame,ball bouncing by handler
+5274a65d7dae569dce3e35ed40b898e77a539d7704ee802a4c0ba8e30e1c57e6,sol,VISIBLE,1205,383,38,32,1224.0,399.0,full_frame,ball held at right elbow
+d644011a1cffb42cfa23739f40c4995d43b372a93571ae52c86bd533841c4b9c,sol,ABSENT,,,,,,,full_frame,player closeup without ball
+1574171a0438267ad6899c56745773b4dc6b78e79bc455a83bfb15774fc9f7d9,sol,VISIBLE,1716,542,31,28,1731.5,556.0,full_frame,ball held on right wing
+9e619c8794e085b29bed04b1c6223c1f77b2834bf45e30e8afcd932710032343,sol,VISIBLE,1242,578,54,54,1269.0,605.0,full_frame,ball held while driving
+ed28f554ab708533808caf2354a45ac6f2173c1c030504be0bb9045575a49ed4,sol,UNKNOWN,,,,,,,full_frame,ball not identifiable
+9dd07735ebb2c1f0b8940edb31161569a544b2a48793b7efb68fa581345e4c81,sol,UNKNOWN,,,,,,,full_frame,ball not identifiable
+39b13d9316e05aa162168010bc88eea8d6a9318faf9416821db1b579950b6c5f,sol,VISIBLE,884,310,49,49,908.5,334.5,full_frame,airborne ball above players
+6679856f073c073940a82b5df8553a3643f59368fc595e9330263a7bd2540048,sol,VISIBLE,1544,486,30,29,1559.0,500.5,full_frame,ball by right dribbler
+a5190ec4c92b51f2abb2386526ba30b131022d83dfe385df458072633a45b304,sol,VISIBLE,1283,435,41,42,1303.5,456.0,full_frame,player holding inbound ball
+5dcbda1d60b16b2c9fc8d023e2f84719f342804a024b5d7e2a352b586c8c6040,sol,VISIBLE,333,435,43,43,354.5,456.5,full_frame,player holding baseline ball
+13fe9b95f2baa8247ef5b480db021592c1f1b12bbfbfce4ae710f4b67a61ac29,sol,VISIBLE,897,458,31,30,912.5,473.0,full_frame,ball held by lane driver
+37ee688042c8248578268f968f4d5d8d1caa2730366d4551c0307d93254079d0,sol,VISIBLE,1765,301,35,35,1782.5,318.5,full_frame,ball beside right player
+63b3b82354a0f12afac8c71ba2083b3ae0d6638094338a3434ac42e5718ebc03,sol,UNKNOWN,,,,,,,full_frame,ball obscured near handler
+e848892b2b1700dc05b6c9a1b91fdb65db644b5ae13bebecf3cec627330c222f,sol,VISIBLE,1152,702,29,35,1166.5,719.5,full_frame,ball at dribblers hand
+831ec00d02dfe5881fde406d7143b2c5993b956357e391e7d2b24d277806fa22,sol,VISIBLE,1412,440,29,29,1426.5,454.5,full_frame,ball in passing lane
+2faa7ff03a5c92ab1171b9db598ac35dec447153b5d8b2ddf224c55ae60ec7d7,sol,VISIBLE,646,341,35,33,663.5,357.5,full_frame,ball held on wing
+c1bbbb7f318c63fb7fd810608e2115f29fb2f75ab2b2b25205b44f0595e07289,sol,VISIBLE,226,548,31,31,241.5,563.5,full_frame,ball held at waist
+296bcac9920829e44e07e65abc78d00136d9c7a02ac7c408fd07f86a6ab69571,sol,VISIBLE,1450,427,30,30,1465.0,442.0,full_frame,ball above shooters hands
+0fcb847654626ca47b1cea6a7c42470ec4bdb91e299b01c2b0bb442e1e315b72,sol,VISIBLE,346,681,34,36,363.0,699.0,full_frame,ball held by inbounder
+6cb85a29d283a18e01c4ddb2cd9ab27040a700a6d808971a1d21e26f4f72fa89,sol,VISIBLE,886,782,28,31,900.0,797.5,full_frame,ball at handlers hip
+748ad8b5bcfb830d91434d7be35cd0141c7e6112fbd645cb24b9d8145325d2c8,sol,VISIBLE,244,351,30,30,259.0,366.0,full_frame,ball near rim
+0f5be93bb3489c3bd006eaad1f46de00e9964a77bbb8f3756cd7f5b9f7ec58da,sol,VISIBLE,1092,427,27,32,1105.5,443.0,full_frame,ball bouncing in transition
+bcd6bde84d4f564334e2158f6779d3dbd669ed1a6f18a54c726da569e6775e5a,sol,VISIBLE,1103,452,42,42,1124.0,473.0,full_frame,ball in rebound crowd
+7fc87220c35280d26f8d711656eb4df34f2b601bfcdc5158a76fe901f1a8e398,sol,VISIBLE,393,813,42,42,414.0,834.0,full_frame,ball on low dribble
+26c27cbb31f84f96a5da3482aa015dd0e9f8d48597ff7a0c27467f74ab25bba9,sol,UNKNOWN,,,,,,,full_frame,ball obscured near handler
+bb7cbf538d4b2a22d3248ca614631d9cdffeb9e00b082496c2de524570400c2c,sol,VISIBLE,248,612,29,29,262.5,626.5,full_frame,ball held on left wing
+22c28f55c3efe6b0f206f20d8aa2336d8ea3506057151d8a344dcba758005f36,sol,VISIBLE,435,344,39,37,454.5,362.5,full_frame,ball traveling across court
+5d166f69fa8d84fc031becc44371761c7add798113397e15e0bd518c64507a9a,sol,ABSENT,,,,,,,full_frame,no game ball visible
+50e1249eaad66208d52c08d96dafeef6efb0778b4b91a9977a18d722b1ca3c14,sol,VISIBLE,1094,391,57,66,1122.5,424.0,full_frame,blurred ball on dribble
+06b61a76a7ed92f4e227015c169b53e2bd2699dd8c7c5fe8fb0f38d92c9527a6,sol,VISIBLE,1279,378,39,38,1298.5,397.0,full_frame,ball held by inbounder
+96bef25962ec6ad0102df132db9be9d9b96a38d4a325236dd5485b153b8b372e,sol,VISIBLE,1182,336,29,32,1196.5,352.0,full_frame,ball held by shooter
+d0daa78771d38fbb6789e50395d2168800483be92f525246ca5845be27d8fc43,sol,VISIBLE,838,432,34,35,855.0,449.5,full_frame,ball held under basket
+8d4631207aa624276d7d7f682e9fbe9740585c8a2b39fee7eb2ab34fd18b1cf8,sol,VISIBLE,1639,445,50,47,1664.0,468.5,full_frame,ball in midair
+98bae19d49ab1b1daf5363ed409f57e0b3d6dbbe82906b7d570a5f6fc062ecb1,sol,VISIBLE,1183,365,34,35,1200.0,382.5,full_frame,ball held near baseline
+1bf643c2eec3b066c6c9ef5bf4972ec773b2be2c1c1bb4dc728159a46d1efac5,sol,VISIBLE,159,390,31,32,174.5,406.0,full_frame,ball held by left handler
+d24ac86aa7ba64d870f7af0ea3a0b5260cdef25e78d54ca8dbfdb75c35b93b78,sol,VISIBLE,1118,384,34,35,1135.0,401.5,full_frame,ball above raised hands
+8684ac24673bc0956e06bedea7df176aed54646629e2babf8223438a25655089,sol,VISIBLE,1316,366,27,27,1329.5,379.5,full_frame,ball near passing hands
+441473eea62061e77f4daca047f9f757aaad339078fa2f73b3faa5300b7b1040,sol,VISIBLE,744,177,77,74,782.5,214.0,full_frame,ball held overhead
+a7f31b00c9b3068214105265be850e393ce00daebe4b0a421c6ac44ce8321daf,sol,UNKNOWN,,,,,,,full_frame,ball hidden between players
+6fe274c47d1e9fe3ce8f5f7ac2da38badcc9bb0eb295c2bb10bdfd5ff1f8ba27,sol,VISIBLE,862,440,30,28,877.0,454.0,full_frame,ball held in the lane
+79c83579594353a96af5ac22ce9dcbae396f715ea6a0546ff0fc1afeb92d500d,sol,ABSENT,,,,,,,full_frame,shot ball outside frame
+53dbf0f11ab23f4b2433ec13e1e720236f1c1360d356f75d66f209b5b11d5129,sol,VISIBLE,941,467,39,38,960.5,486.0,full_frame,ball held above forehead
+955a98cd2fa522a84e7f594f917e45b2fe00588fbf40d79367af10e9ae388527,sol,VISIBLE,817,644,57,64,845.5,676.0,full_frame,blurred ball in midair
+211fa10e2341460440db8ae4572be85ef1ad51365304cb18458cf4ddb8572c25,sol,VISIBLE,1336,704,50,50,1361.0,729.0,full_frame,ball held by right player
+bf661bdb958235995b9bc4f4c5137dfb29c1a3f5d720f4fd581015db775cf124,sol,VISIBLE,644,369,39,42,663.5,390.0,full_frame,ball above shooters hands
+dd6672ddb657e5e47c0108623eb80670d8a25d687fcafefe5d3e783aa7536f82,sol,VISIBLE,827,317,30,32,842.0,333.0,full_frame,ball in flight
+06b7146c14f12cbd722f89b4164cc1c10ab99530456e6615fa38a5107f7643a3,sol,ABSENT,,,,,,,full_frame,no game ball visible
+ba0cc82a3fe4304cf23eb9b24a9da7d36dac016ca416f4afac57d6d468a8f0c1,sol,VISIBLE,708,500,43,44,729.5,522.0,full_frame,ball secured under basket
+b716e12e42a764637e3398a5d33153cd8133d4532da6039e2fa5adf783802d04,sol,VISIBLE,1229,683,46,46,1252.0,706.0,full_frame,ball held by handler
+8c596a426560b8676b573b19bfcb2425c3b0189835703260e6e7d6a12ece4e2a,sol,UNKNOWN,,,,,,,full_frame,ball obscured by defender
+054db0ba29fc8e4ded1791cd9cf25f22812f33c60f74080c78cf35f4f69e10f8,sol,VISIBLE,653,700,40,41,673.0,720.5,full_frame,ball held on left wing
+4120fe16d5c55c3885999b18d77b7a2d0eb5e1a10c2712e5709aca3d58bff755,sol,VISIBLE,1141,260,30,31,1156.0,275.5,full_frame,ball above shooter
+41b459271db851cf2c861263ac11e2e52bbeeb648a592f1ea404c58cbb6536e5,sol,VISIBLE,1398,560,29,33,1412.5,576.5,full_frame,ball held by ballhandler
+cbcac3d74a867a70882820740b59fede2dd69ef455fb805bc58a1ca56eed253f,sol,VISIBLE,1056,466,31,33,1071.5,482.5,full_frame,ball held in paint
+7425bd4ef81c68e48328dbc88d59153d747f31e8f38d74c7e7ce5ffb9cc93d8d,sol,VISIBLE,672,667,34,31,689.0,682.5,full_frame,ball bouncing near player
+28c45077ccf499e1a5228bc129a9ee25c1b7fe2ee89e3ee786eb20c9783d92a5,sol,UNKNOWN,,,,,,,full_frame,ball blends with rim
+dd5deee8e3b4502cbda9ea36e30509e77697479a0d94e0ccff6d602019aa5f3c,sol,UNKNOWN,,,,,,,full_frame,ball not discernible
+ac9f7eb7f2bfaf11de9c7a133474ff2c53b2f888be207da3ff8da413517bd516,sol,UNKNOWN,,,,,,,full_frame,players obscure ball
+a886ebe8dcfbabd0a7b75f04cacb4423a1c585a272f47b694045f84870f5ec7e,sol,VISIBLE,181,681,41,39,201.5,700.5,full_frame,ball beside dribbler
+2196e69d0c916df286e836ee1448f6a5c22d8a855786e3497cc489d13aa1b850,sol,UNKNOWN,,,,,,,full_frame,crowded paint obscures ball
+8b2d24c1bd75b4ec6813145e25619a689d560780c87b6a793a869559e027073a,sol,UNKNOWN,,,,,,,full_frame,motion blur hides ball
+eaa882f182d838e614de6785087352906fae1defe182255a4ea61825ee7eab7d,sol,VISIBLE,594,416,27,25,607.5,428.5,full_frame,ball beside handler
+33b657bad2c022d318d4f3142032e547d2796ab3df86293418c04ffc26cda55a,sol,ABSENT,,,,,,,full_frame,sideline closeup without ball
+0fe4c8ddae336a282ae19bce206c65ec4a54eed69b2eb6303488544000d2c7a7,sol,UNKNOWN,,,,,,,full_frame,ball obscured by players
+5c506515db87449e470232ee6f57f63de339cfc44f0bca1a18e25fa592f43911,sol,VISIBLE,644,326,53,55,670.5,353.5,full_frame,ball held near chest
+313bff52e59385f621946dc5a1184395813ac6d11ff8969370b15855d18d01e6,sol,ABSENT,,,,,,,full_frame,player closeup without ball
+5dfbffaacae647643991cae5464059616876c343b6bf5b5b13b91ca12b29f7c0,sol,VISIBLE,1297,191,31,29,1312.5,205.5,full_frame,ball above rim
+8a31130a612bf0911742c50ed2c50f3bd75d2784fed55be85b52f477828eb7de,sol,VISIBLE,752,563,42,31,773.0,578.5,full_frame,ball low between players
+f712f1fe0a07c7c6ed44cea23ad08f08e34fb8267635e8ad65f195e7c89d76fe,sol,VISIBLE,879,550,26,29,892.0,564.5,full_frame,ball held in lane
+e9eabd2541fcdefc0ab625ef0f0684c41f4c52b01243f8a0d7df71b4908d695b,sol,VISIBLE,461,410,50,48,486.0,434.0,full_frame,ball held by player
+9219999b49a21ec154d0aa4764186021647adfcc913df6943167108859a61629,sol,VISIBLE,960,433,25,24,972.5,445.0,full_frame,ball beside advancing player
+d8b71b236e3fcb8714ab4234c6192af52e6ac682e1163a880be84c907c71667f,sol,VISIBLE,1127,280,24,22,1139.0,291.0,full_frame,ball above rim
+6a1479e9e4e22332cda67c6a0e64e28445aaf00db3863d131c2558b1a5ba3d45,sol,UNKNOWN,,,,,,,full_frame,ball not discernible
+690a03e2b14efb66b1d688d53241fec2b948ab1cb19ac9c3fdea18887a86d4bb,sol,VISIBLE,1468,308,49,49,1492.5,332.5,full_frame,ball above shooter
+139142e42c9d159d8a8fb24d669124ced9c67f1c9f21db24493cdaf84b8c35c3,sol,VISIBLE,696,457,45,43,718.5,478.5,full_frame,ball held by player
+7c38e9a68ae4466a3a3f947f7aa1f6de70fce0e80057bb67068ba7a987e340be,sol,VISIBLE,629,807,43,51,650.5,832.5,full_frame,ball beside dribbler
+0b3f308131cbbd453856325831312cba0ee41b607e376f5a6bb7fa3845eec80b,sol,UNKNOWN,,,,,,,full_frame,ball not discernible
+36b7d96fbb5b5ae81d39193fef2a27b129ec5af36ac9b5e11350a135efeb6279,sol,UNKNOWN,,,,,,,full_frame,crowded play obscures ball
+a0545d1e9dbbea7e2642da4c94b427005fa1af700020ad1205449442406313c4,sol,VISIBLE,1023,399,36,37,1041.0,417.5,full_frame,ball in midair
+5042276960abad3600bc36257c2fde450a2e98b8f28e7843e15266ae9da3411f,sol,UNKNOWN,,,,,,,full_frame,ball outside clear view
+299468af20c51dbf3e2090310433847fecdb8dbc1138dae74f3314da344bebf7,sol,UNKNOWN,,,,,,,full_frame,ball not discernible
+6f644edd363caa0bc7fc3c1e8be185f59c8dfd93840a36e772bff2a11f7d5c7e,sol,VISIBLE,1044,457,49,52,1068.5,483.0,full_frame,ball between players
+7691b236d8526bc570e5ff879031fce2c283bb3b50ac74844d4db2bee2afac12,sol,VISIBLE,440,409,36,41,458.0,429.5,full_frame,ball held at hip
+9618f7b182f118664218c13d3bc0694ec24af865ec747ade93afe2f011b7b1c5,sol,ABSENT,,,,,,,full_frame,stoppage without visible ball
+612ef2ab8c55cd0ceff5b761bdbf93aa4b247dab9a0affb1ff6be137dd0d36a8,sol,UNKNOWN,,,,,,,full_frame,baseline players obscure ball
+727f2ccde3f0ae050d7f86b7637a2cc26bdb615c699a999daff9006d0c7ca7f9,sol,VISIBLE,505,405,52,48,531.0,429.0,full_frame,ball beside dribbler
+719900eee66c2050e5f49731a1bae05e30c5651ac033cc635896343b3dad626b,sol,ABSENT,,,,,,,full_frame,postgame closeup without ball
+becfa0b9bdff7d9fe8835390d9d755dc5f9286a743ef5b58e8daf0a5eb14bbae,sol,ABSENT,,,,,,,full_frame,pregame introductions without ball
+e9a686856100d65a562621af0d9f4d268d32b44ec363fd0382391c47eb41c5dd,sol,VISIBLE,947,438,33,29,963.5,452.5,full_frame,ball beside baseline handler
+7a5519b3683d493279dffd3b2368e275ba904e52998ba3d7103fa09d9b174be9,sol,VISIBLE,343,379,35,33,360.5,395.5,full_frame,ball near backboard
+6a6248beb18152cb5364ae41b3cebfdf880dfcba5a1e0102e534c49edc23ab96,sol,VISIBLE,513,90,52,42,539.0,111.0,full_frame,ball in flight
+b70a17fb2007e6ea1da09c86d5b9ed95a3f35e44c3e77dba7bd59844d7f6fa0b,sol,VISIBLE,506,779,71,80,541.5,819.0,full_frame,ball in low dribble
+26eb9cee0a07399b0c7a82b50d4af683e63d03f766083601ace7c0007bcf3699,sol,VISIBLE,951,489,60,39,981.0,508.5,full_frame,airborne pass
+ac19abac83a32f840d6658fba73c7b945f82d6c31e20ff0f3b661c429b01edf9,sol,ABSENT,,,,,,,full_frame,no ball visible
+7d91f76d5af8a7051375460ef2c8114d5a8b8785916c3cd052faf475fe599afc,sol,VISIBLE,720,179,27,28,733.5,193.0,full_frame,ball above rim
+918f12e96516f2d52f3a4b88f0ab8846a71ca4e7e3deec9fa422a0d888934753,sol,VISIBLE,350,183,55,62,377.5,214.0,full_frame,ball beside player
+442d0172d04ac1e8943bee1b954bfdb4822abae9d0042570a86d02100364d12c,sol,UNKNOWN,,,,,,,full_frame,ball location unclear
+4a8130a3bbf855cc6a7adf626c78baea0c41cbc852651b7e99ee2de097f98955,sol,VISIBLE,389,305,34,35,406.0,322.5,full_frame,ball at rim
+ffd026648ce2097d744fb53db6bf70ffdfe6a14cd7cab41df4105f38fa895007,sol,VISIBLE,163,625,43,45,184.5,647.5,full_frame,ball held in corner
+fbda48df8ff799d24b5917944fc848319dd73d13fc0370366a95338347039437,sol,VISIBLE,831,312,31,31,846.5,327.5,full_frame,ball held near baseline
+3896f57a5bd1667fcc6c93327347c3d0b9f7f1366c471362499853464b2d44a7,sol,VISIBLE,952,355,23,24,963.5,367.0,full_frame,ball below rim
+b84917cdbf318586d4153d6dee73109728d82b3f872b867bd965d482bf79af2c,sol,ABSENT,,,,,,,full_frame,celebration without ball
+57197ad5dbbe6f6c8b8d8917538cca1d89c24805549f99c1a15061766bede4c9,sol,UNKNOWN,,,,,,,full_frame,distant ball unclear
+4a560b4a53ad369904dea201e1072393c307935cf894fdf4fd91c1d0de62aed5,sol,VISIBLE,286,444,30,31,301.0,459.5,full_frame,ball held on wing
+76d829c36fb38249a4a351194cc548e43eeae15c03c9a8162ddaa8eed47ca739,sol,VISIBLE,421,73,45,48,443.5,97.0,full_frame,ball at backboard
+8e75164581e242118111d367503ceb68f6d53d09f7fbd7f1b710409b3c8f27a9,sol,ABSENT,,,,,,,full_frame,no ball visible
+1bda1144f13c51902e27b29c0faae8004ed3bbb1523d6c124423f30dbb44a0c5,sol,VISIBLE,442,478,38,49,461.0,502.5,full_frame,ball in left hand
+cf13f4ac0e105eec8fafedf9a55015fed09a73cb0e602efeb5291d32d6838f84,sol,VISIBLE,1182,402,51,51,1207.5,427.5,full_frame,ball at shooters hands
+4f1ca53421db45c87e44819b935fc030c9dc2fc56443bba10930628f8ac8f8b3,sol,VISIBLE,453,463,29,29,467.5,477.5,full_frame,ball by ballhandler
+f183ac9e41aa49dde97766504e80649a4e977cd4b2546ee4e3f0251db1b38702,sol,ABSENT,,,,,,,full_frame,arena exterior
+57fb0bcc7c24b36e23611118b9a107fad87ed58002f32d1b3f5c719e90dc8ec9,sol,VISIBLE,1123,373,41,44,1143.5,395.0,full_frame,ball held by screener
+c132da3e321d975c9f0e54dc4a04e319df17332e74c44876dd896bdb7605e1d9,sol,VISIBLE,1688,670,56,57,1716.0,698.5,full_frame,ball held at sideline
+8c364576216e062ae80d7dc44545f90fb9c96f55698c6ba3bdd9b5843e975ed1,sol,ABSENT,,,,,,,full_frame,timeout without ball
+9654729789be2f7d2df4f8409e9824e820ce337d4ab537a59e3c1f97f5991012,sol,VISIBLE,1124,512,42,52,1145.0,538.0,full_frame,ball in crowded paint
+66f95c9da73da975684ff915d7af4343ad76e0fc2e1b568221aa79a84e3e9f43,sol,VISIBLE,437,348,39,39,456.5,367.5,full_frame,airborne shot
+424211bdf26aa550870d00f7bb1e8cfcd06c21dab0354f1db14e382cb9541bf7,sol,VISIBLE,1169,237,30,30,1184.0,252.0,full_frame,ball above rim
+f45aa38f9fe625ae43a4ed6c84c0a8389d9291e58fb24a1502151adce2c67903,sol,VISIBLE,790,157,167,151,873.5,232.5,full_frame,close airborne ball
+6fcf278b16033b938a8444e26794ffff2e5231dd22080a7deda9a97c2ebda398,sol,UNKNOWN,,,,,,,full_frame,possible ball partly hidden
+c130340efee4549e459681638e244506e98b84a3a5dd7aa17077c3088927043d,sol,VISIBLE,719,485,216,229,827.0,599.5,full_frame,referee holding game ball
+fdb7c19c0baea25d0ad3c01a57c81665987b1ac401c8fac6ab0a5891ae4fa36c,sol,ABSENT,,,,,,,full_frame,no ball visible
+445e5f195edf4007ddcfb0ab6b008e2bf83fe6fc22c56f21f45000cbf27b557c,sol,VISIBLE,548,657,45,59,570.5,686.5,full_frame,ball in low dribble
+db6c83f5327fb31a641ac0a512d8f7c203b8ec9416e0185f0762ab03997837a6,sol,VISIBLE,1081,727,43,38,1102.5,746.0,full_frame,ball held in paint
+5f71a3cb9898d5d5fa7464e11472149c9a260eea5134f9d43ca76fe62ad28609,sol,VISIBLE,439,154,69,64,473.5,186.0,full_frame,ball at rim
+24fd0a97b8dd48fb65390c75b3bc5f69734e729687e17adde219149614006ef4,sol,VISIBLE,479,845,53,70,505.5,880.0,full_frame,ball bouncing near player
+b46d16a16c713c1a93c3009b7aa8cd69aefe9eb465030d9e30f27fe2576da6c7,sol,ABSENT,,,,,,,full_frame,no ball visible
+21ad836779ea367c0d211410934d94bc61d8343faa66103b0839eeb7e52bf042,sol,ABSENT,,,,,,,full_frame,dead ball not visible
+c5a93ad76402254df4b91b451682785176e98d712e6bc8bb75bbeb47dd5f7b6a,sol,ABSENT,,,,,,,full_frame,released ball out of frame
+67847dd707fc61d6060b098b5e94a4633a68c84f4080ecc191d10024382517dc,sol,VISIBLE,624,419,83,99,665.5,468.5,full_frame,player clutching ball
+fb1b5db3afd29b4429d1c5f2e93da793e200c5c617464d3c5b86b9e2536f263f,sol,UNKNOWN,,,,,,,full_frame,ball obscured near sideline
+4c04ef3b2fb85097adb026e04254f1dca19ea33de08d51d63e707e45925becdb,sol,ABSENT,,,,,,,full_frame,no ball visible
+159ec8146872d132315e5f3f5bccd1ba5472b1ae121958363530870db08f140f,sol,VISIBLE,1075,595,28,29,1089.0,609.5,full_frame,ball carried at midcourt
+730c27852a70c0f919f50dd34294d1c52e47a7b2e64f4f0b68a6122ba7a6ab26,sol,VISIBLE,765,722,28,28,779.0,736.0,full_frame,ball beside dribblers hand
+852d06bee969ba6c5e5a15a39b087825591a97ee1dac2de00f0fbf8d63337ab3,sol,VISIBLE,848,449,20,20,858.0,459.0,full_frame,ball between guarded players
+9746fd6fd1039a88834733853858a22098eb0c921e125b0a33c552d364618373,sol,VISIBLE,1005,638,25,24,1017.5,650.0,full_frame,ball below bent handler
+dceb30c775bdff9a1bd07e6e269e37c9c1b1e628073ecc172436beb2500e549a,sol,VISIBLE,961,439,25,27,973.5,452.5,full_frame,ball at center tip
+9cfed5db6a874e31939804f68111e31f37903181a25b8b2fbc8a001dd8852667,sol,VISIBLE,1335,183,36,36,1353.0,201.0,full_frame,ball above the rim
+9b2fabdd9328188b5a76c441e9045e19c35784458993d72fb1ea2fe3488c1fe1,sol,VISIBLE,623,261,46,43,646.0,282.5,full_frame,ball over front rim
+c369d72b91fbeff401d1bc4ece46c8fc627d0b73dfcc6544220d968f5102a1ca,sol,ABSENT,,,,,,,full_frame,no game ball visible
+10d786b6a025c8eeceff884b41b28a9acc1b459b8d71fdb613f2daf951d1d850,sol,VISIBLE,665,505,22,24,676.0,517.0,full_frame,ball beside advancing handler
+4b9307a32abd3afa640af868637260ef879f046917f24c748bc55e80e9a1daf1,sol,UNKNOWN,,,,,,,full_frame,ball obscured among players
+1de680a0b8185f7ae4ecfe73680f91b1c91ab01a84a4db246805c0829c70a689,sol,VISIBLE,1219,414,32,30,1235.0,429.0,full_frame,ball held by inbounder
+b91495e194056e3578100f3bb5b831ce72f661d4126fed9b0fb82d189b3da927,sol,VISIBLE,1112,529,36,33,1130.0,545.5,full_frame,ball above shooters hands
+0cd4a064a09a5aef1b0a15bf646ad3462b57c51d326009f471d0e1de9e417f56,sol,VISIBLE,1522,376,39,34,1541.5,393.0,full_frame,ball held on right wing
+2bbe984f4a74b18664c665c3420d3ce26fbf10d4597350334bca69f149859531,sol,VISIBLE,727,166,29,29,741.5,180.5,full_frame,ball above jump shooter
+0b0efe5807b194b9bab3e6f262ff9a0ac6f07c73a08655dba70840d85db064c5,sol,VISIBLE,1176,378,43,45,1197.5,400.5,full_frame,ball held near sideline
+30154a7e31103db64f8bbe2024a6f240d6327313267156aba1a723009f6a356d,sol,UNKNOWN,,,,,,,full_frame,ball hidden at the rim
+e7f0423fca786cb8825073fc441c3ee49f8b86cdd8e1423ee75932c0a497fa13,sol,UNKNOWN,,,,,,,full_frame,ball obscured by players
+3165e55916cea74c57ac4c0a9bdc9bd708c8f0f7fa25e8a193ca6faa9db76de6,sol,VISIBLE,696,674,55,69,723.5,708.5,full_frame,blurred ball on low bounce
+4c7e2db6b6661d0bc867297b88bac7925e543d77653e8a1730377eaebbb7b0e6,sol,VISIBLE,169,597,31,29,184.5,611.5,full_frame,ball in handlers left hand
+2e0b72280994946d59aa37cb37eef81a89e3ead8e763fa672bdb82177d6e7810,sol,ABSENT,,,,,,,full_frame,no game ball visible
+155bc49efcbe441d87bdfae6564605959ed84229bf34d2c2fc6731ff14bd9b52,sol,VISIBLE,1227,355,26,28,1240.0,369.0,full_frame,ball above the rim
+6f9dd93328d7fb3f12bf41e1b26a21f369462e3aaa1789c41284ed3e6c6e1b44,sol,UNKNOWN,,,,,,,full_frame,ball hidden by bodies
+33dc23e5492f0b49d19cb87f93aeff6e83e1fa811076128357352f6835141c6e,sol,ABSENT,,,,,,,full_frame,no game ball visible
+8eaa76587cb161a74b611168e90626963c5a629290f5b0979e635b6e6525d378,sol,VISIBLE,1413,347,43,40,1434.5,367.0,full_frame,ball gathered for shot
+95a0ce7b95876ad2a4d58556798b5b5af68f384a74d886cde957ac64939a8cc0,sol,VISIBLE,838,668,39,40,857.5,688.0,full_frame,ball above paint players
+56ec309abe0f27e23f9887c9d5eb182f86aecf756d3403c7be1e73f98da48f4a,sol,UNKNOWN,,,,,,,full_frame,ball obscured by defender
+d3747f70cbcce00c72da265771bed172cc9c3c914bd146bd27e14854d48b91cb,sol,VISIBLE,1387,379,42,53,1408.0,405.5,full_frame,ball airborne on right
+7103bd5e7dc79ca3e7f68d410e84c3abf20cba98a32b1aec25261092f07a0cf9,sol,VISIBLE,419,701,31,30,434.5,716.0,full_frame,ball beside sideline handler
+d31f9a0c0ce22b96036d80126d652e92eba5ed96415b998a4f30574739177851,sol,VISIBLE,175,738,48,57,199.0,766.5,full_frame,blurred ball on bounce

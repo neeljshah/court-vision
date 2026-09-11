@@ -1,0 +1,40 @@
+70e494b21995,VISIBLE,1034,279,27,28,ball above basket
+e11e7a1ddfe7,ABSENT,,,,,transition graphic
+97b0f9504773,ABSENT,,,,,free throw setup no ball
+4d4cfea838a0,VISIBLE,585,536,30,30,ball held by player
+bf2251ab8fae,VISIBLE,1513,274,25,25,ball held by player
+b269053e49ec,ABSENT,,,,,rim camera maintenance
+bc3f5a77cb1d,VISIBLE,970,301,62,65,ball held overhead
+fe469757cfaa,VISIBLE,1403,458,23,23,ball held by player
+0f5be93bb348,VISIBLE,1095,435,23,24,ball in transition
+ef826f16df2b,VISIBLE,1650,526,27,27,ball held by player
+1040d086c382,VISIBLE,1576,603,29,29,ball held by player
+a5a445b1cadd,VISIBLE,1700,458,25,25,ball held by player
+7a77ec659be0,ABSENT,,,,,bench shot
+3d4891ca3f32,VISIBLE,655,519,86,55,motion blurred pass
+efb29f910a9c,VISIBLE,1070,969,104,111,partially cropped ball
+e225e1049d6a,VISIBLE,805,424,23,23,contested ball
+429d0d1fbda6,ABSENT,,,,,bench shot
+96bef25962ec,UNKNOWN,,,,,ball obscured by players
+b8556e868f73,VISIBLE,1351,478,27,27,ball held for inbound
+adfe897bd5b6,VISIBLE,798,749,33,33,ball dribbling
+97d09f6e9182,VISIBLE,944,270,27,27,ball held overhead
+dc30f641fd41,ABSENT,,,,,rim camera maintenance
+ea5ff4d2d591,VISIBLE,1305,383,25,25,ball held near sideline
+81873f75ec75,VISIBLE,293,497,27,27,ball held by player
+20ea26903294,VISIBLE,920,401,25,25,ball in transition
+a125eb8164e8,VISIBLE,1594,566,33,33,ball held overhead
+a7f31b00c9b3,UNKNOWN,,,,,ball obscured by players
+d16ef963f9fa,VISIBLE,813,442,31,31,ball in paint
+c76ee0da93ac,UNKNOWN,,,,,ball not discernible
+3be793e57b63,VISIBLE,939,250,42,42,free throw ball
+c68e36cf6e17,VISIBLE,948,418,39,39,ball at rim
+8d5b2b3c0b87,UNKNOWN,,,,,ball not discernible
+661810290336,VISIBLE,393,502,25,25,ball held near baseline
+5c55340d7f29,VISIBLE,1532,500,25,25,ball dribbling
+4d3b973423aa,VISIBLE,1605,580,25,25,ball held by player
+ba0cc82a3fe4,VISIBLE,755,493,28,28,ball held in paint
+5adff6aa4e48,VISIBLE,874,281,22,22,ball held overhead
+ff4169c59f81,VISIBLE,397,425,20,20,ball held by player
+d43765e3deb5,VISIBLE,1416,443,20,20,ball held by player
+f442c7b355e0,VISIBLE,409,544,22,22,ball held by player

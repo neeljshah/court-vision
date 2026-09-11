@@ -1,0 +1,40 @@
+85597a5e8bf8,VISIBLE,901,119,42,36,ball airborne above lane
+defe3c0d1e5b,VISIBLE,1263,687,36,36,ball bouncing by shooter
+ee76f9191cdb,VISIBLE,313,360,38,34,ball held for pass
+a572ec7277ec,VISIBLE,491,561,29,34,ball controlled on drive
+874b0ce2aba3,UNKNOWN,,,,,ball not identifiable near inbounder
+c1800a4454c8,UNKNOWN,,,,,ball obscured during stoppage
+dad6f3f8d4d5,VISIBLE,192,779,31,37,ball bouncing by handler
+44bf0619ae02,VISIBLE,495,453,29,34,ball held at right hip
+9fead4c73374,UNKNOWN,,,,,ball obscured during dead ball
+908daf01ba0e,UNKNOWN,,,,,ball not identifiable among players
+712b543a733e,VISIBLE,283,607,29,28,ball held on left wing
+6faaf410ce8b,VISIBLE,1203,340,40,40,ball held overhead
+395923ab30bd,VISIBLE,488,603,36,39,ball held by white player
+3460c10d21ee,ABSENT,,,,,interview shot without game ball
+20ea1070cef4,UNKNOWN,,,,,ball hidden in transition
+c651943b59dd,UNKNOWN,,,,,ball hidden in transition
+b6478b24d222,VISIBLE,611,353,33,34,ball raised by shooter
+9fc7a394e3af,ABSENT,,,,,timeout closeup without game ball
+11490e40048b,VISIBLE,711,507,40,40,referee holding ball
+d935e975e0a8,UNKNOWN,,,,,ball not identifiable after shot
+6210a2f091bd,UNKNOWN,,,,,ball not identifiable during stoppage
+9ec4658ae5da,VISIBLE,989,109,40,42,ball airborne toward hoop
+496b17f368a9,UNKNOWN,,,,,ball obscured by handler
+1e37dbc9ff10,UNKNOWN,,,,,ball not identifiable near basket
+8fc5f69f7542,VISIBLE,1143,726,41,45,referee holding ball
+50fc0905e9b8,UNKNOWN,,,,,ball obscured among players
+a45b83a13ce2,UNKNOWN,,,,,ball not identifiable during stoppage
+91472eb3a624,VISIBLE,590,272,31,32,ball held on left wing
+080b4ae24d37,VISIBLE,913,126,44,36,ball airborne on pass
+fd74ef3ff877,UNKNOWN,,,,,ball obscured by handler
+f6c38194abd9,UNKNOWN,,,,,ball unclear at rim
+02a8ebb07627,VISIBLE,1427,458,38,38,ball held on right wing
+d13c6dc3777b,VISIBLE,1158,603,38,46,ball bouncing at midcourt
+592c0c85869a,UNKNOWN,,,,,ball not identifiable by handler
+7723df499d48,VISIBLE,913,142,45,35,ball airborne on free throw
+fe22e0d21948,VISIBLE,927,507,115,86,ball secured on drive
+5a7a00430493,VISIBLE,1107,427,47,39,ball held at chest
+bd251db670c1,VISIBLE,894,627,33,36,ball bouncing by handler
+8ec372e96f43,VISIBLE,1550,698,35,35,ball bouncing near baseline
+493100e98464,VISIBLE,847,548,43,43,ball controlled in transition

@@ -1,0 +1,40 @@
+37ee688042c8,VISIBLE,1765,301,35,35,ball beside right player
+63b3b82354a0,UNKNOWN,,,,,ball obscured near handler
+e848892b2b17,VISIBLE,1152,702,29,35,ball at dribblers hand
+831ec00d02df,VISIBLE,1412,440,29,29,ball in passing lane
+2faa7ff03a5c,VISIBLE,646,341,35,33,ball held on wing
+c1bbbb7f318c,VISIBLE,226,548,31,31,ball held at waist
+296bcac99208,VISIBLE,1450,427,30,30,ball above shooters hands
+0fcb84765462,VISIBLE,346,681,34,36,ball held by inbounder
+6cb85a29d283,VISIBLE,886,782,28,31,ball at handlers hip
+748ad8b5bcfb,VISIBLE,244,351,30,30,ball near rim
+0f5be93bb348,VISIBLE,1092,427,27,32,ball bouncing in transition
+bcd6bde84d4f,VISIBLE,1103,452,42,42,ball in rebound crowd
+7fc87220c352,VISIBLE,393,813,42,42,ball on low dribble
+26c27cbb31f8,UNKNOWN,,,,,ball obscured near handler
+bb7cbf538d4b,VISIBLE,248,612,29,29,ball held on left wing
+22c28f55c3ef,VISIBLE,435,344,39,37,ball traveling across court
+5d166f69fa8d,ABSENT,,,,,no game ball visible
+50e1249eaad6,VISIBLE,1094,391,57,66,blurred ball on dribble
+06b61a76a7ed,VISIBLE,1279,378,39,38,ball held by inbounder
+96bef25962ec,VISIBLE,1182,336,29,32,ball held by shooter
+d0daa78771d3,VISIBLE,838,432,34,35,ball held under basket
+8d4631207aa6,VISIBLE,1639,445,50,47,ball in midair
+98bae19d49ab,VISIBLE,1183,365,34,35,ball held near baseline
+1bf643c2eec3,VISIBLE,159,390,31,32,ball held by left handler
+d24ac86aa7ba,VISIBLE,1118,384,34,35,ball above raised hands
+8684ac24673b,VISIBLE,1316,366,27,27,ball near passing hands
+441473eea620,VISIBLE,744,177,77,74,ball held overhead
+a7f31b00c9b3,UNKNOWN,,,,,ball hidden between players
+6fe274c47d1e,VISIBLE,862,440,30,28,ball held in the lane
+79c835795943,ABSENT,,,,,shot ball outside frame
+53dbf0f11ab2,VISIBLE,941,467,39,38,ball held above forehead
+955a98cd2fa5,VISIBLE,817,644,57,64,blurred ball in midair
+211fa10e2341,VISIBLE,1336,704,50,50,ball held by right player
+bf661bdb9582,VISIBLE,644,369,39,42,ball above shooters hands
+dd6672ddb657,VISIBLE,827,317,30,32,ball in flight
+06b7146c14f1,ABSENT,,,,,no game ball visible
+ba0cc82a3fe4,VISIBLE,708,500,43,44,ball secured under basket
+b716e12e42a7,VISIBLE,1229,683,46,46,ball held by handler
+8c596a426560,UNKNOWN,,,,,ball obscured by defender
+054db0ba29fc,VISIBLE,653,700,40,41,ball held on left wing

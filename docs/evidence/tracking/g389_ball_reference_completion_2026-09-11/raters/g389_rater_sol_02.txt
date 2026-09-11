@@ -1,0 +1,40 @@
+c6c877370ce1,VISIBLE,1008,582,39,44,ball held by dribbler
+ab3a6c3c5a4a,VISIBLE,1742,481,65,66,ball held on right wing
+b3851928e652,VISIBLE,643,346,28,30,ball held near sideline
+1623782c2aeb,VISIBLE,334,391,23,25,ball by left dribbler
+edce8ae845c0,VISIBLE,0,145,145,247,ball held at left calibration-only
+3a1086cbf894,VISIBLE,368,323,32,32,ball airborne on left
+64b0424b6bdb,VISIBLE,1318,350,28,30,ball held near midcourt
+0bd4386adf80,VISIBLE,716,486,289,247,ball above rim closeup
+adbb4cc1d4ac,VISIBLE,873,475,30,37,ball among central players
+b1cb6633fc48,VISIBLE,1247,410,66,70,ball beside dribbler
+b9d6f540b400,ABSENT,,,,,bench closeup no ball
+a501184c5ce1,VISIBLE,1124,169,63,65,ball held by player 33
+bc46741fe103,VISIBLE,1275,374,29,30,ball held on baseline
+422239c9c6fb,VISIBLE,769,454,22,24,ball held in traffic
+e59a47671c93,UNKNOWN,,,,,ball not discernible in play
+e5c7cb72f83f,ABSENT,,,,,broadcast graphic no ball
+17e6d839fc6b,VISIBLE,1614,336,45,54,ball beside right dribbler
+57203e476711,VISIBLE,1002,650,38,49,ball below player hand
+311dcabd8fc0,VISIBLE,748,799,33,34,ball at low dribble
+e68262a433ba,UNKNOWN,,,,,ball obscured in traffic
+a2e2075549fe,ABSENT,,,,,official holds ball out of play
+a77de0779aba,VISIBLE,600,223,35,33,ball airborne after shot
+8f745c2bbdd6,VISIBLE,1444,299,25,27,ball above shooters hands
+5ddd9b25dd62,VISIBLE,272,641,62,84,ball held by player 27
+9f3e39ba1e78,VISIBLE,974,478,59,62,ball held behind defender
+2907518c14b1,VISIBLE,744,469,18,21,ball at dribblers hand
+4d0ca1a50dca,VISIBLE,785,298,31,33,ball above shooters hands
+4de1c405885f,ABSENT,,,,,broadcast graphic no ball
+408efc38c7d5,VISIBLE,1363,414,33,33,ball passed on baseline
+fdfa02eec605,VISIBLE,1233,477,42,48,ball extended by driver
+4473aedf8e96,UNKNOWN,,,,,graphic obscures live action
+94c286feed13,ABSENT,,,,,ball out of play by official
+61662c717603,VISIBLE,1632,398,49,45,ball airborne on right
+303ac8d28eeb,ABSENT,,,,,bench closeup no game ball
+793ae9295581,VISIBLE,1407,394,31,38,ball near baseline player
+2d61858c5420,VISIBLE,558,459,38,43,ball held under basket
+d188f300bf34,VISIBLE,412,285,44,47,ball held on left wing
+47826bc60f3c,VISIBLE,484,448,43,56,ball held for inbound
+64d9361b5213,VISIBLE,494,454,29,32,ball by left ballhandler
+877154041e4d,VISIBLE,1452,510,35,39,ball held on right wing

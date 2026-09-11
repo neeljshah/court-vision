@@ -1,0 +1,1 @@
+g389_rater_sol_01 ids=40 parsed=0 exit=OPERATOR-STOPPED reason=finisher halted the loop to verify image-open receipts before any judgment landed; no output file was written so no judgment was completed and the ids were reassigned to a later batch

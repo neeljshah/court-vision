@@ -1,0 +1,40 @@
+4120fe16d5c5,VISIBLE,1141,260,30,31,ball above shooter
+41b459271db8,VISIBLE,1398,560,29,33,ball held by ballhandler
+cbcac3d74a86,VISIBLE,1056,466,31,33,ball held in paint
+7425bd4ef81c,VISIBLE,672,667,34,31,ball bouncing near player
+28c45077ccf4,UNKNOWN,,,,,ball blends with rim
+dd5deee8e3b4,UNKNOWN,,,,,ball not discernible
+ac9f7eb7f2bf,UNKNOWN,,,,,players obscure ball
+a886ebe8dcfb,VISIBLE,181,681,41,39,ball beside dribbler
+2196e69d0c91,UNKNOWN,,,,,crowded paint obscures ball
+8b2d24c1bd75,UNKNOWN,,,,,motion blur hides ball
+eaa882f182d8,VISIBLE,594,416,27,25,ball beside handler
+33b657bad2c0,ABSENT,,,,,sideline closeup without ball
+0fe4c8ddae33,UNKNOWN,,,,,ball obscured by players
+5c506515db87,VISIBLE,644,326,53,55,ball held near chest
+313bff52e593,ABSENT,,,,,player closeup without ball
+5dfbffaacae6,VISIBLE,1297,191,31,29,ball above rim
+8a31130a612b,VISIBLE,752,563,42,31,ball low between players
+f712f1fe0a07,VISIBLE,879,550,26,29,ball held in lane
+e9eabd2541fc,VISIBLE,461,410,50,48,ball held by player
+9219999b49a2,VISIBLE,960,433,25,24,ball beside advancing player
+d8b71b236e3f,VISIBLE,1127,280,24,22,ball above rim
+6a1479e9e4e2,UNKNOWN,,,,,ball not discernible
+690a03e2b14e,VISIBLE,1468,308,49,49,ball above shooter
+139142e42c9d,VISIBLE,696,457,45,43,ball held by player
+7c38e9a68ae4,VISIBLE,629,807,43,51,ball beside dribbler
+0b3f308131cb,UNKNOWN,,,,,ball not discernible
+36b7d96fbb5b,UNKNOWN,,,,,crowded play obscures ball
+a0545d1e9dbb,VISIBLE,1023,399,36,37,ball in midair
+5042276960ab,UNKNOWN,,,,,ball outside clear view
+299468af20c5,UNKNOWN,,,,,ball not discernible
+6f644edd363c,VISIBLE,1044,457,49,52,ball between players
+7691b236d852,VISIBLE,440,409,36,41,ball held at hip
+9618f7b182f1,ABSENT,,,,,stoppage without visible ball
+612ef2ab8c55,UNKNOWN,,,,,baseline players obscure ball
+727f2ccde3f0,VISIBLE,505,405,52,48,ball beside dribbler
+719900eee66c,ABSENT,,,,,postgame closeup without ball
+becfa0b9bdff,ABSENT,,,,,pregame introductions without ball
+e9a686856100,VISIBLE,947,438,33,29,ball beside baseline handler
+7a5519b3683d,VISIBLE,343,379,35,33,ball near backboard
+6a6248beb181,VISIBLE,513,90,52,42,ball in flight

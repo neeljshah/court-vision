@@ -1,0 +1,4 @@
+check,split,detail,observed,expected,status
+planted_native_match,development,prediction planted at the reference centre,30/30 TP,30/30 TP,PASS
+planted_native_match,heldout,prediction planted at the reference centre,30/30 TP,30/30 TP,PASS
+sheet_scale,all,every native reference row,['1.0'],['1.0'],PASS
