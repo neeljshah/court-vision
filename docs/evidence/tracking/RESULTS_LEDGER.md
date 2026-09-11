@@ -752,3 +752,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G391 | landed DONE: blind audit of 169 false + 90 true calls (kappa 0.709/0.783, 0 faults) -- person/apparel 93, crowd 40, equipment 10, signage 9, near-miss 9, suspect reference 6, court/logo 2, duplicate 0; oracle FP removal leaves C0 0.164 (suppression CLOSED AT LIMIT); causal SHADOW NOT MEASURED (0/549 neighbours) | DONE (codex-sol ACCEPT WITH CORRECTIONS x2 applied)
 
+2026-09-11 | tracking | G380 | landed PARTIAL (adjudicated): provenance labels trace-exact 2,453/2,453, controls 10/10, replay 30 pairs ratio 1.017, attempt-level receipt equality 30/30 (21,177 ticks), held share 96.9 pct CLAMP; identity 0/30 and live HELD CLOSED AT LIMIT; live coverage deferred to G395; three verify cycles verbatim | PARTIAL (adjudicated; codex-sol fix 1c ACCEPT WITH CORRECTIONS applied)
+
