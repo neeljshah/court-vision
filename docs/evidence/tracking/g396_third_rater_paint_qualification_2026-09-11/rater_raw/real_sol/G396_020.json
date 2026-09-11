@@ -1,0 +1,10 @@
+{
+  "context_id": "G396_020",
+  "state": "VISIBLE",
+  "reason": "centre line and sideline paint are clearly visible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 2, "family": "CENTRE_LINE", "points": {"p1": [558, 292], "p2": [558, 480], "p3": [558, 379]}},
+    {"tile": 4, "family": "SIDELINE", "points": {"p1": [5, 392], "p2": [345, 394], "p3": [178, 393]}}
+  ]
+}

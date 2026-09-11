@@ -1,0 +1,9 @@
+{
+  "context_id": "G396_014",
+  "state": "VISIBLE",
+  "reason": "wide shot, baseline paint is legible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 4, "family": "BASELINE", "points": {"p1": [20, 193], "p2": [355, 12], "p3": [184, 103]}}
+  ]
+}

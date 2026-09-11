@@ -1,0 +1,34 @@
+DISPATCHED run=1789124945392572900 tag=g396_rater_astra_practice02 wt=a3 at 2026-09-11T06:09:05-05:00
+STARTED pid=4612 birth=1789124945.405
+agent: I will read the instruction file and batch, inspect every listed image, and write the JSON ratings to the specified output directory.
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -LiteralPath 'C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/rater_instruction_control.md'; Get-Content -LiteralPath 'C:/Users/neelj/AppData/Local/Temp/g396_work
+out: 
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 3,
+  "offset": [1280, 0],
+  "coords": "tile",
+  "points": {"p1": [x1, y1], "p2": [x2, y2], "p3": [x3, y3]},
+  "native_points": {"p1": [X1, Y1], "p2": [X2, Y2], "p3": [X3, Y3]}
+}
+```
+
+ASCII only. JSON files only, no notes, no summary file, no other output.
+G396_PRACTICE_016	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_016.png	4	0	540	640	540
+G396_PRACTICE_008	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_008.png	2	640	0	640	540
+G396_PRACTICE_006	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_006.png	6	1280	540	640	540
+G396_PRACTICE_022	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_022.png	4	0	540	640	540
+G396_PRACTICE_007	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_007.png	1	0	0	640	540
+G396_PRACTICE_028	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_028.png	4	0	540	640	540
+G396_PRACTICE_013	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_013.png	1	0	0	640	540
+G396_PRACTICE_027	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_027.png	3	1280	0	640	540
+G396_PRACTICE_017	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_017.png	5	640	540	640	540
+G396_PRACTICE_023	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_023.png	5	640	540	640	540
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "New-Item -ItemType Directory -Force -Path 'C:/Users/neelj/nba-track-a3/.g396_out/practice_astra' | Out-Null
+Set-Content -LiteralPath 'C:/Users/neelj/nba-track-a3/.g396_out/practice_astra/G396_PRACTICE_016.json' -Encoding Asci
+agent: 
+TURN_END turn.completed at 2026-09-11T06:10:30-05:00
+EXIT:0 gap=g396_rater_astra_practice02 at 2026-09-11T06:10:31-05:00
+DRAINED

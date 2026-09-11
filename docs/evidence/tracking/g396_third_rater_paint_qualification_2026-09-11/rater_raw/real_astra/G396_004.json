@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_004",
+    "state":  "VISIBLE",
+    "reason":  "Two straight lane boundary bands are visible on the floor.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  5,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    35,
+                                                    31
+                                                ],
+                                         "p2":  [
+                                                    330,
+                                                    49
+                                                ],
+                                         "p3":  [
+                                                    200,
+                                                    41
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  5,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    75,
+                                                    197
+                                                ],
+                                         "p2":  [
+                                                    401,
+                                                    218
+                                                ],
+                                         "p3":  [
+                                                    256,
+                                                    209
+                                                ]
+                                     }
+                      }
+                  ]
+}

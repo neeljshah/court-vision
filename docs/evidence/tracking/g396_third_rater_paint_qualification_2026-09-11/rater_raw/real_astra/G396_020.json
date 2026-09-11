@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_020",
+    "state":  "VISIBLE",
+    "reason":  "The white sideline and centre line are unobstructed on the floor.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  4,
+                          "family":  "SIDELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    40,
+                                                    393
+                                                ],
+                                         "p2":  [
+                                                    305,
+                                                    397
+                                                ],
+                                         "p3":  [
+                                                    164,
+                                                    395
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  5,
+                          "family":  "CENTRE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    586,
+                                                    230
+                                                ],
+                                         "p2":  [
+                                                    585,
+                                                    360
+                                                ],
+                                         "p3":  [
+                                                    585,
+                                                    285
+                                                ]
+                                     }
+                      }
+                  ]
+}

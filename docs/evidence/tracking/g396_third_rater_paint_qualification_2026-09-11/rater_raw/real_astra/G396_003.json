@@ -1,0 +1,26 @@
+{
+    "context_id":  "G396_003",
+    "state":  "VISIBLE",
+    "reason":  "Dark straight floor paint is visible in the close shot.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  6,
+                          "family":  "UNKNOWN",
+                          "points":  {
+                                         "p1":  [
+                                                    52,
+                                                    248
+                                                ],
+                                         "p2":  [
+                                                    503,
+                                                    202
+                                                ],
+                                         "p3":  [
+                                                    308,
+                                                    222
+                                                ]
+                                     }
+                      }
+                  ]
+}

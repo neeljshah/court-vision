@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_025",
+    "state":  "VISIBLE",
+    "reason":  "Baseline and lane boundary paint are legible.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  1,
+                          "family":  "BASELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    244,
+                                                    484
+                                                ],
+                                         "p2":  [
+                                                    369,
+                                                    388
+                                                ],
+                                         "p3":  [
+                                                    320,
+                                                    426
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  4,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    90,
+                                                    166
+                                                ],
+                                         "p2":  [
+                                                    449,
+                                                    190
+                                                ],
+                                         "p3":  [
+                                                    290,
+                                                    180
+                                                ]
+                                     }
+                      }
+                  ]
+}

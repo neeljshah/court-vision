@@ -1,0 +1,10 @@
+{
+  "context_id": "G396_011",
+  "state": "VISIBLE",
+  "reason": "lane and baseline paint are clearly visible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 2, "family": "LANE_LINE", "points": {"p1": [230, 535], "p2": [612, 490], "p3": [410, 513]}},
+    {"tile": 3, "family": "BASELINE", "points": {"p1": [24, 331], "p2": [300, 526], "p3": [153, 423]}}
+  ]
+}

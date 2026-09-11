@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_011",
+    "state":  "VISIBLE",
+    "reason":  "Baseline and lane boundary paint are visible beside the key.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  3,
+                          "family":  "BASELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    142,
+                                                    405
+                                                ],
+                                         "p2":  [
+                                                    277,
+                                                    497
+                                                ],
+                                         "p3":  [
+                                                    203,
+                                                    447
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  5,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    461,
+                                                    97
+                                                ],
+                                         "p2":  [
+                                                    603,
+                                                    85
+                                                ],
+                                         "p3":  [
+                                                    530,
+                                                    91
+                                                ]
+                                     }
+                      }
+                  ]
+}

@@ -1,0 +1,26 @@
+{
+    "context_id":  "G396_013",
+    "state":  "VISIBLE",
+    "reason":  "A straight dark lane boundary is visible beside the painted key.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  4,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    110,
+                                                    36
+                                                ],
+                                         "p2":  [
+                                                    260,
+                                                    47
+                                                ],
+                                         "p3":  [
+                                                    174,
+                                                    41
+                                                ]
+                                     }
+                      }
+                  ]
+}

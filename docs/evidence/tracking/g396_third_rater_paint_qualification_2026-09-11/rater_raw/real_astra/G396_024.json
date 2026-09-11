@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_024",
+    "state":  "VISIBLE",
+    "reason":  "The free throw band and a lane boundary are clearly visible around the blue key.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  5,
+                          "family":  "FREE_THROW",
+                          "points":  {
+                                         "p1":  [
+                                                    144,
+                                                    103
+                                                ],
+                                         "p2":  [
+                                                    239,
+                                                    214
+                                                ],
+                                         "p3":  [
+                                                    190,
+                                                    157
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  5,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    180,
+                                                    67
+                                                ],
+                                         "p2":  [
+                                                    359,
+                                                    51
+                                                ],
+                                         "p3":  [
+                                                    270,
+                                                    59
+                                                ]
+                                     }
+                      }
+                  ]
+}

@@ -1,0 +1,73 @@
+DISPATCHED run=1789125151657732600 tag=g396_rater_astra_correction01 wt=a3 at 2026-09-11T06:12:31-05:00
+STARTED pid=7212 birth=1789125151.669
+agent: I will read the two specified files and write the correction JSON.
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw -LiteralPath 'C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/practice/feedback_astra.md'"
+out: ACTICE_020 | 2 | 334.4,407.7 | 542.3,527.7 | 0.1093,0.233 | 0.8933,0.140 | 0.4359,0.008 | 0.233/0.140/0.008 | PASS |
+| G396_PRACTICE_021 | 3 | 297.6,308.6 | 417.6,516.5 | 0.1422,0.356 | 0.8647,0.700 | 0.4260,0.301 | 0.356/0.700/0.301 | PASS |
+| G396_PRACTICE_022 | 4 | 58.2,353.0 | 298.2,353.0 | 0.0741,0.050 | 0.9116,0.050 | 0.3907,0.050 | 0.050/0.050/0.050 | PASS |
+| G396_PRACTICE_023 | 5 | 155.4,404.3 | 363.2,524.3 | 0.0953,0.311 | 0.9129,0.181 | 0.4069,0.146 | 0.311/0.181/0.146 | PASS |
+| G396_PRACTICE_024 | 6 | 296.7,304.8 | 416.7,512.6 | 0.1079,0.383 | 0.8769,0.057 | 0.4681,0.122 | 0.383/0.057/0.122 | PASS |
+| G396_PRACTICE_025 | 1 | 307.7,377.6 | 547.7,377.6 | 0.0969,0.427 | 0.8927,0.427 | 0.4302,0.427 | 0.427/0.427/0.427 | PASS |
+| G396_PRACTICE_026 | 2 | 362.6,213.1 | 570.5,333.1 | 0.1132,0.305 | 0.8972,0.211 | 0.4492,0.054 | 0.305/0.211/0.054 | PASS |
+| G396_PRACTICE_027 | 3 | 437.8,208.0 | 557.8,415.8 | 0.1012,0.032 | 0.8909,0.304 | 0.3999,0.209 | 0.032/0.304/0.209 | PASS |
+| G396_PRACTICE_028 | 4 | 278.1,104.0 | 518.1,104.0 | 0.0746,0.045 | 0.9204,0.045 | 0.4162,0.045 | 0.045/0.045/0.045 | PASS |
+| G396_PRACTICE_029 | 5 | 395.8,96.2 | 603.7,216.2 | 0.1309,0.062 | 0.8906,0.130 | 0.4275,0.628 | 0.062/0.130/0.628 | PASS |
+| G396_PRACTICE_030 | 6 | 235.5,286.9 | 355.5,494.7 | 0.1023,0.304 | 0.9049,0.058 | 0.4589,0.543 | 0.304/0.058/0.543 | PASS |
+
+Columns `your p1/p2/p3` are `position-along-band,perpendicular-px`.
+A perpendicular value above 3.0 px is a failed point.
+
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw -LiteralPath 'C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/rater_instruction_control.md'"
+out: u actually observed when you opened the file.
+
+## The target
+
+Exactly one target: the bright WHITE straight band with a black outline drawn over
+the photograph. It is about 240 px long and about 6 px wide. Its position inside
+the image is different for every control; never assume it is centred.
+
+## What to report -- THREE POINTS ON THE BAND
+
+Do NOT report endpoints. Do NOT report a length. Report three points that each lie
+ON the white band, anywhere along it:
+
+- `p1` and `p2`: two points on the band, separated by at least 60 px.
+- `p3`: a third point on the band that you locate INDEPENDENTLY by looking at the
+  pixels between `p1` and `p2`. It must lie strictly between them along the band.
+  Do NOT average `p1` and `p2`; an arithmetic midpoint is not an observation.
+
+Each point must sit on the white paint itself, not on the black outline beside it.
+Where the band stops does not matter and is not scored.
+
+If you cannot find the band, use state `UNKNOWN` with an empty `points` object.
+Never guess.
+
+## Output schema
+
+```
+{
+  "control_id": "G396_PRACTICE_001",
+  "state": "VISIBLE",
+  "reason": "white band on dark floor",
+  "opened_path": "C:/.../G396_PRACTICE_001.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 3,
+  "offset": [1280, 0],
+  "coords": "tile",
+  "points": {"p1": [x1, y1], "p2": [x2, y2], "p3": [x3, y3]},
+  "native_points": {"p1": [X1, Y1], "p2": [X2, Y2], "p3": [X3, Y3]}
+}
+```
+
+ASCII only. JSON files only, no notes, no summary file, no other output.
+
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "New-Item -ItemType Directory -Force -Path 'C:/Users/neelj/nba-track-a3/.g396_out/corrections' | Out-Null
+"'$json = [ordered]@{ requested = $false; correction = '"''; rationale = 'All 30 practice controls passed, with every re
+agent: 
+TURN_END turn.completed at 2026-09-11T06:12:50-05:00
+EXIT:0 gap=g396_rater_astra_correction01 at 2026-09-11T06:12:51-05:00
+DRAINED

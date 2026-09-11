@@ -1,0 +1,44 @@
+DISPATCHED run=1789124818391890100 tag=g396_rater_astra_smoke01 wt=a3 at 2026-09-11T06:06:58-05:00
+STARTED pid=21772 birth=1789124818.395
+agent: I will read the instruction file and batch file, inspect every listed image, and write the required JSON files to the output directory.
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -LiteralPath 'C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/rater_instruction_smoke.md'"
+out: # G396 plumbing fixture (UNSCORED -- no rating, no geometry)
+
+This is a permissions and image-access test only. Nothing here is scored and
+nothing here is a control.
+
+Your batch file lists one line as
+`FIXTURE_ID<TAB>IMAGE_PATH<TAB>TILE_INDEX<TAB>OFFSET_X<TAB>OFFSET_Y<TAB>DISPLAY_WIDTH<TAB>DISPLAY_HEIGHT`.
+
+Open the listed image. Then write exactly one JSON file `<FIXTURE_ID>.json` into
+your output directory with this schema:
+
+```
+{
+  "fixture_id": "G396_SMOKE",
+  "opened": true,
+  "opened_path": "C:/.../file.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "offset": [OFFSET_X, OFFSET_Y],
+  "note": "plumbing only"
+}
+```
+
+Do not report any coordinate of anything drawn in the image. Do not rate.
+ASCII only. One JSON file, no notes, no summary file, no other output.
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -LiteralPath 'C:/Users/neelj/AppData/Local/Temp/g396_work/batch_smoke_astra/batch_01.tsv'"
+out: G396_SMOKE	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_012.png	6	1280	540	640	540
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "New-Item -ItemType Directory -Path 'C:/Users/neelj/nba-track-a3/.g396_out/smoke_astra' -Force | Out-Null
+"'$json = @'"'
+{
+  \"fixture_id\": \"G396_SMOKE\",
+  \"opened\": true,
+  \"opened_path\": \"C:/Users/neelj/AppData/Local
+agent: 
+TURN_END turn.completed at 2026-09-11T06:07:30-05:00
+EXIT:0 gap=g396_rater_astra_smoke01 at 2026-09-11T06:07:30-05:00
+DRAINED

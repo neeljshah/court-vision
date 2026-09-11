@@ -1,0 +1,19 @@
+{
+  "g392_controls": 30,
+  "g392_rows": 60,
+  "holds": true,
+  "identity": {
+    "context_bad": [],
+    "contexts": 30,
+    "holds": true,
+    "native_bad": [],
+    "parent_decode_failures": 11,
+    "retained_natives": 49,
+    "tile_bad": [],
+    "tiles": 180
+  },
+  "joint": 20,
+  "real_scored": false,
+  "sol": 30,
+  "terra": 20
+}

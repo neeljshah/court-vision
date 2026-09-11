@@ -1,0 +1,26 @@
+{
+    "context_id":  "G396_010",
+    "state":  "VISIBLE",
+    "reason":  "A straight dark floor marking is visible below the score graphic; its family is uncertain.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  5,
+                          "family":  "UNKNOWN",
+                          "points":  {
+                                         "p1":  [
+                                                    80,
+                                                    515
+                                                ],
+                                         "p2":  [
+                                                    400,
+                                                    499
+                                                ],
+                                         "p3":  [
+                                                    265,
+                                                    506
+                                                ]
+                                     }
+                      }
+                  ]
+}

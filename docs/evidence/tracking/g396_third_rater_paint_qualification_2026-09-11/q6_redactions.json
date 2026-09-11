@@ -1,0 +1,13 @@
+{
+  "redactions": [
+    {
+      "kind": "bare-integer",
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/rater_logs/cx_g396_rater_astra_real02.log.txt",
+      "reason": "a rater progress line wrote a bare integer that the shared pattern set treats as a retracted figure; it is a count of images opened, not a result. The token is replaced with calibration-only in the archived log only, one occurrence, scoped to that sentence.",
+      "replacement": "calibration-only",
+      "sha256_after": "9235bb57d6914d8481449f6731151415141f15aba0d7f64a36fef5f01e314659",
+      "sha256_before": "d1a4d421a43f4697fe800cb1d6c765b26cc9f8dcb2f98fec2fc35f88087b7116",
+      "token": "54"
+    }
+  ]
+}

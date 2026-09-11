@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_026",
+    "state":  "VISIBLE",
+    "reason":  "White sideline and lane boundary bands are visible.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  4,
+                          "family":  "SIDELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    45,
+                                                    355
+                                                ],
+                                         "p2":  [
+                                                    285,
+                                                    410
+                                                ],
+                                         "p3":  [
+                                                    176,
+                                                    385
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  5,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    60,
+                                                    134
+                                                ],
+                                         "p2":  [
+                                                    280,
+                                                    174
+                                                ],
+                                         "p3":  [
+                                                    174,
+                                                    155
+                                                ]
+                                     }
+                      }
+                  ]
+}

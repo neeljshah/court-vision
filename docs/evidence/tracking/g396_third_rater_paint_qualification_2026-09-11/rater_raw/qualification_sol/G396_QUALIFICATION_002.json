@@ -1,0 +1,13 @@
+{
+  "control_id": "G396_QUALIFICATION_002",
+  "state": "VISIBLE",
+  "reason": "white diagonal band over courtside scene",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_002.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 3,
+  "offset": [1280, 0],
+  "coords": "tile",
+  "points": {"p1": [326, 163], "p2": [421, 325], "p3": [375, 247]},
+  "native_points": {"p1": [1606, 163], "p2": [1701, 325], "p3": [1655, 247]}
+}

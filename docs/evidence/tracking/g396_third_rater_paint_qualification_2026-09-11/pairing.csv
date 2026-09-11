@@ -1,0 +1,7 @@
+pair_id,context_id,tile,family,symmetric_line_px,astra_span_px,sol_span_px,passes_sealed_6px_rule,claude_audit_same_painted_band,audit_points_within_3px,audit_note,card
+G396_004_pair1,G396_004,5,LANE_LINE,2.85,326.7,470.7,YES,NO,astra 9/9; sol 4/9,astra traces the dark painted boundary line; sol sits 5-7 px below it on bare floor for five of its nine points,renders/audit_cards/G396_004_pair1.png
+G396_013_pair1,G396_013,4,LANE_LINE,0.22,150.4,491.3,YES,NO,astra 9/9; sol 7/9,"astra on the dark painted line; sol sits in the light stripe above it, one point occluded by a leg and one beyond 3 px",renders/audit_cards/G396_013_pair1.png
+G396_017_pair1,G396_017,5,LANE_LINE,2.04,180.8,575.4,YES,NO,astra 9/9; sol 7/9,"both on the white lane line, but sol's eighth and ninth points fall where players occlude the line, so no visible paint within 3 px",renders/audit_cards/G396_017_pair1.png
+G396_020_pair1,G396_020,4,SIDELINE,2.04,265.0,340.0,YES,YES,astra 9/9; sol 9/9,both nine-point series lie on the same white sideline band with its dark border,renders/audit_cards/G396_020_pair1.png
+G396_022_pair1,G396_022,5,LANE_LINE,2.59,218.0,406.4,YES,YES,astra 9/9; sol 9/9,both series lie on the same dark straight court line; the two occluding players do not cover any click,renders/audit_cards/G396_022_pair1.png
+G396_023_pair1,G396_023,4,CENTRE_LINE,0.53,202.0,248.0,YES,YES,astra 9/9; sol 9/9,both series lie on the same dark vertical court line,renders/audit_cards/G396_023_pair1.png

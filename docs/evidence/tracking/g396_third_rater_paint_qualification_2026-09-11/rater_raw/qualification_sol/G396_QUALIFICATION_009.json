@@ -1,0 +1,13 @@
+{
+  "control_id": "G396_QUALIFICATION_009",
+  "state": "VISIBLE",
+  "reason": "white horizontal band over court logo",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_009.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 4,
+  "offset": [0, 540],
+  "coords": "tile",
+  "points": {"p1": [35, 90], "p2": [240, 90], "p3": [139, 90]},
+  "native_points": {"p1": [35, 630], "p2": [240, 630], "p3": [139, 630]}
+}

@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_023",
+    "state":  "VISIBLE",
+    "reason":  "Centre line and a straight lane boundary are visible.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  4,
+                          "family":  "CENTRE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    501,
+                                                    146
+                                                ],
+                                         "p2":  [
+                                                    501,
+                                                    348
+                                                ],
+                                         "p3":  [
+                                                    501,
+                                                    231
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  6,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    351,
+                                                    94
+                                                ],
+                                         "p2":  [
+                                                    606,
+                                                    86
+                                                ],
+                                         "p3":  [
+                                                    479,
+                                                    90
+                                                ]
+                                     }
+                      }
+                  ]
+}

@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_001",
+    "state":  "VISIBLE",
+    "reason":  "The free throw line and centre line are visible as dark painted bands.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  5,
+                          "family":  "FREE_THROW",
+                          "points":  {
+                                         "p1":  [
+                                                    236,
+                                                    112
+                                                ],
+                                         "p2":  [
+                                                    296,
+                                                    35
+                                                ],
+                                         "p3":  [
+                                                    265,
+                                                    74
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  6,
+                          "family":  "CENTRE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    601,
+                                                    280
+                                                ],
+                                         "p2":  [
+                                                    584,
+                                                    390
+                                                ],
+                                         "p3":  [
+                                                    593,
+                                                    330
+                                                ]
+                                     }
+                      }
+                  ]
+}

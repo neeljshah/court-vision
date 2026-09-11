@@ -1,0 +1,13 @@
+{
+  "control_id": "G396_QUALIFICATION_023",
+  "state": "VISIBLE",
+  "reason": "white band visible over the photograph",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_023.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 6,
+  "offset": [1280, 540],
+  "coords": "tile",
+  "points": {"p1": [400, 224], "p2": [500, 397], "p3": [451, 312]},
+  "native_points": {"p1": [1680, 764], "p2": [1780, 937], "p3": [1731, 852]}
+}

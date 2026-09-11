@@ -1,0 +1,120 @@
+{
+  "files": 217,
+  "findings": [
+    {
+      "context": "G396_PRACTICE_019,practice,396,G387_019,1,0,0,G387_019_tile1.png,67532bb61e703dac739bfd740b7bf0aaa54ec7e0aa60a23397cac350ea333f39,0.0,116.748,397.094,356.748,39",
+      "kind": "bare-integer",
+      "line": 20,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/practice/truth.csv"
+    },
+    {
+      "context": "G396_PRACTICE_020,practice,396,G387_020,2,640,0,G387_020_tile2.png,81dbadf236117b1bbbfa134c38f7c42958c1cf5d51eddac6f8d62be888b2991d,30.0,974.406,407.686,1182.25",
+      "kind": "bare-integer",
+      "line": 21,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/practice/truth.csv"
+    },
+    {
+      "context": "G396_QUALIFICATION_021,qualification,396,G387_021,4,0,540,G387_021_tile4.png,7cd19675ea62f858aba9a3abff720349efe2f5abf214bab65c77356e54da7e3f,0.0,318.795,938.91",
+      "kind": "bare-integer",
+      "line": 22,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/qualification/truth.csv"
+    },
+    {
+      "context": "G396_QUALIFICATION_025,qualification,396,G387_025,2,640,0,G387_025_tile2.png,70d140781be9f9f2c7f49d2ac4965247b51631ae19822176d383735a444841d4,30.0,1046.704,62.1",
+      "kind": "bare-integer",
+      "line": 26,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/qualification/truth.csv"
+    },
+    {
+      "context": "G396_QUALIFICATION_026,qualification,396,G387_026,3,1280,0,G387_026_tile3.png,408028494348c8fb083b2b57337cf733e686a5a5819b654b1534f593a0721d34,60.0,1633.394,271",
+      "kind": "bare-integer",
+      "line": 27,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/qualification/truth.csv"
+    },
+    {
+      "context": "54,",
+      "kind": "bare-integer",
+      "line": 16,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/rater_raw/qualification_astra/G396_QUALIFICATION_007.json"
+    },
+    {
+      "context": "b7b06aa70b5cee161a54dff269678e2cb367221ed2ac9654fb694afa0f2f998e  docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/logs/cx_g396_rater_astr",
+      "kind": "bare-integer",
+      "line": 18,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/SHA256SUMS"
+    },
+    {
+      "context": "a41f54c636a0a9d220b201e43c2511d693c9c95f97017c758d7667937a0e449e  docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/logs/disp_sol_qualifica",
+      "kind": "bare-integer",
+      "line": 33,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/SHA256SUMS"
+    },
+    {
+      "context": "3d2d21a39448a0697f54df5b6bb792b0e99f4e1035ba5de2725c38e1be29d5ba  docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/rater_raw/qualification",
+      "kind": "bare-integer",
+      "line": 91,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/SHA256SUMS"
+    },
+    {
+      "context": "5635aa5d8c26d77e97a08424ebbedb54e9d6dbcc2e002876025265341166a56d  docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/rater_raw/real_astra/G3",
+      "kind": "bare-integer",
+      "line": 157,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/SHA256SUMS"
+    },
+    {
+      "context": "7ebfe0e54c140333ee457a0bbbdb35d6c9b1696375dc7286cdd02126c5f1fbd7  docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/rater_raw/real_sol/G396",
+      "kind": "bare-integer",
+      "line": 197,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/SHA256SUMS"
+    },
+    {
+      "context": "d1fbffb2f76d6343780ba60bf660c2e0ed7fc6fc82bd5f9ed5747605162a4d54  docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/renders/qualification/G",
+      "kind": "bare-integer",
+      "line": 269,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/SHA256SUMS"
+    },
+    {
+      "context": "f9210d711a357c3441b85ceb3ac94b0e7afca5223436d9dae1da9ad3f37d8c54  docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/renders/qualification/G",
+      "kind": "bare-integer",
+      "line": 272,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/SHA256SUMS"
+    },
+    {
+      "context": "4023e02d64dd76e0042c455ec980cb19dcada1c563e5b4dbd54d2cc09d802840  docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/renders/real/G396_014_t",
+      "kind": "bare-integer",
+      "line": 294,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/SHA256SUMS"
+    }
+  ],
+  "hits": 14,
+  "non_opaque": 0,
+  "redactions": []
+}

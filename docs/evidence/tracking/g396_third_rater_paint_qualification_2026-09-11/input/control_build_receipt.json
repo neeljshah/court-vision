@@ -1,0 +1,48 @@
+{
+  "batches": {
+    "practice": {
+      "astra": [
+        "C:/Users/neelj/AppData/Local/Temp/g396_work/batch_practice_astra/batch_01.tsv",
+        "C:/Users/neelj/AppData/Local/Temp/g396_work/batch_practice_astra/batch_02.tsv",
+        "C:/Users/neelj/AppData/Local/Temp/g396_work/batch_practice_astra/batch_03.tsv"
+      ]
+    },
+    "qualification": {
+      "astra": [
+        "C:/Users/neelj/AppData/Local/Temp/g396_work/batch_qualification_astra/batch_01.tsv",
+        "C:/Users/neelj/AppData/Local/Temp/g396_work/batch_qualification_astra/batch_02.tsv",
+        "C:/Users/neelj/AppData/Local/Temp/g396_work/batch_qualification_astra/batch_03.tsv"
+      ],
+      "sol": [
+        "C:/Users/neelj/AppData/Local/Temp/g396_work/batch_qualification_sol/batch_01.tsv",
+        "C:/Users/neelj/AppData/Local/Temp/g396_work/batch_qualification_sol/batch_02.tsv",
+        "C:/Users/neelj/AppData/Local/Temp/g396_work/batch_qualification_sol/batch_03.tsv"
+      ]
+    }
+  },
+  "disjoint": true,
+  "disjoint_from_g392": {
+    "practice": true,
+    "qualification": true
+  },
+  "identity": {
+    "contexts": 30,
+    "contexts_matched": 30,
+    "contexts_mismatched": [],
+    "holds": true,
+    "natives_absent": [],
+    "natives_matched": 49,
+    "retained_natives": 49,
+    "tiles": 180,
+    "tiles_matched": 180,
+    "tiles_mismatched": []
+  },
+  "practice_truth_sha256": "5fd46dd129d1c4a86313f11698c2396657d90e02129b4b40e4773f5368ccff62",
+  "qualification_truth_sha256": "f90dc5caec2f7898fe3f89bcb4ef11db55c23fb2c198fe583926be7a6362ebb8",
+  "within_g396": {
+    "disjoint": true,
+    "shared_context_tile": [],
+    "shared_pixels": [],
+    "shared_truth": []
+  }
+}

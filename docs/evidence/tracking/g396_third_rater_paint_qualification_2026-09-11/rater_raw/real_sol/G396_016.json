@@ -1,0 +1,9 @@
+{
+  "context_id": "G396_016",
+  "state": "VISIBLE",
+  "reason": "court paint visible behind the players",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 6, "family": "CENTRE_LINE", "points": {"p1": [203, 198], "p2": [548, 103], "p3": [381, 149]}}
+  ]
+}

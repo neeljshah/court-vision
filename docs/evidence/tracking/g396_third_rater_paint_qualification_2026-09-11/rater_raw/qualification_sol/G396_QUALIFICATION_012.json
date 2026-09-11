@@ -1,0 +1,13 @@
+{
+  "control_id": "G396_QUALIFICATION_012",
+  "state": "VISIBLE",
+  "reason": "white horizontal band on blue background",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_012.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 1,
+  "offset": [0, 0],
+  "coords": "tile",
+  "points": {"p1": [350, 276], "p2": [550, 276], "p3": [445, 276]},
+  "native_points": {"p1": [350, 276], "p2": [550, 276], "p3": [445, 276]}
+}

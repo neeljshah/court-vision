@@ -1,0 +1,56 @@
+DISPATCHED run=1789125984351105500 tag=g396_rater_sol_real03 wt=a3 at 2026-09-11T06:26:24-05:00
+STARTED pid=7156 birth=1789125984.358
+agent: I will read only the specified instruction and batch files, inspect every listed image, and write the required per-line JSON files to the stated output directory.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -NoProfile -Command "Get-Content -LiteralPath 'C:\\Users\\neelj\\nba-track-a3\\docs\\evidence\\tracking\\g396_third_rater_paint_qualification_2026-09-11\\rater_instruction_real.md' -Raw"
+out: anything not painted on the floor.
+
+## What to report per fragment -- THREE POINTS ON THE BAND
+Do NOT report endpoints. Do NOT report a length. Where the visible stretch begins
+and ends is NOT scored. Report three points that each lie ON the painted band:
+
+- `p1` and `p2`: two points on the band, separated by at least 60 px.
+- `p3`: a third point located INDEPENDENTLY by looking at the pixels between `p1`
+  and `p2`. It must lie strictly between them along the band. Do NOT average `p1`
+  and `p2`; an arithmetic midpoint is not an observation.
+
+Report TILE-LOCAL coordinates (x in 0..639, y in 0..539 of that tile image) and the
+tile number the fragment was seen in. Do not rescale anything.
+
+## Family
+Give each fragment one `family` from exactly this list, with no left/right and no
+near/far orientation:
+SIDELINE, BASELINE, CENTRE_LINE, LANE_LINE, FREE_THROW, THREE_POINT_STRAIGHT,
+UNKNOWN.
+Use UNKNOWN when you can see paint but cannot name which marking it is. Never guess
+a family to avoid UNKNOWN.
+
+## Output schema
+{
+  "context_id": "G396_001",
+  "state": "VISIBLE",
+  "reason": "wide shot, lane and baseline paint legible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 4, "family": "BASELINE",
+     "points": {"p1": [x1, y1], "p2": [x2, y2], "p3": [x3, y3]}}
+  ]
+}
+
+States: `VISIBLE` (one or two fragments reported), `ABSENT` (no painted floor
+marking is visible in any tile), `UNKNOWN` (you cannot tell). ASCII only. JSON
+files only, no notes, no summary file, no other output.
+
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -NoProfile -Command "Get-Content -LiteralPath 'C:\\Users\\neelj\\AppData\\Local\\Temp\\g396_work\\batch_real_sol\\batch_03.tsv'"
+out: /Local/Temp/g387_native/tiles/G387_029_tile4.png,C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_029_tile5.png,C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_029_tile6.png
+G396_021	C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_021_tile1.png,C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_021_tile2.png,C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_021_tile3.png,C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_021_tile4.png,C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_021_tile5.png,C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_021_tile6.png
+G396_009	C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_009_tile1.png,C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_009_tile2.png,C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_009_tile3.png,C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_009_tile4.png,C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_009_tile5.png,C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_009_tile6.png
+G396_002	C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_002_tile1.png,C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_002_tile2.png,C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_002_tile3.png,C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_002_tile4.png,C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_002_tile5.png,C:/Users/neelj/AppData/Local/Temp/g387_native/tiles/G387_002_tile6.png
+
+agent: I have the 10 contexts. I am now inspecting all six tiles for each context in their fixed order and will report no more than two clearly observed painted bands per context.
+agent: All 60 tiles have been inspected. I found clear qualifying paint in six contexts; the remaining four contexts show no painted floor marking. I am writing exactly one JSON file for each batch line.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -NoProfile -Command "New-Item -ItemType Directory -Force -Path 'C:\\Users\\neelj\\nba-track-a3\\.g396_out\\real_sol' | Out-Null"
+agent: Completed. Wrote 10 JSON files to the specified output directory.
+TURN_END turn.completed at 2026-09-11T06:29:57-05:00
+EXIT:0 gap=g396_rater_sol_real03 at 2026-09-11T06:29:58-05:00
+DRAINED

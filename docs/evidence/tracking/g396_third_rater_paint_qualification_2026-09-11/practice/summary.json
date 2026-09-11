@@ -1,0 +1,31 @@
+{
+  "bar": 27,
+  "controls": 30,
+  "excluded": [],
+  "joint": 30,
+  "per_rater": {
+    "astra": {
+      "angle_error_deg": {
+        "max": 0.136,
+        "n": 30,
+        "p50": 0.041,
+        "p90": 0.108
+      },
+      "answered": 30,
+      "controls": 30,
+      "conversion_ok": 30,
+      "fail_reasons": {},
+      "passed": 30,
+      "perpendicular_px": {
+        "max": 0.794,
+        "n": 90,
+        "p50": 0.21,
+        "p90": 0.427
+      }
+    }
+  },
+  "qualified": false,
+  "raters": [
+    "astra"
+  ]
+}

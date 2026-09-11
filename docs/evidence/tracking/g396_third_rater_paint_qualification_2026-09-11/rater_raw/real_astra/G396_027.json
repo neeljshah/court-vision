@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_027",
+    "state":  "VISIBLE",
+    "reason":  "White baseline and sideline paint border the blue perimeter.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  4,
+                          "family":  "BASELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    70,
+                                                    131
+                                                ],
+                                         "p2":  [
+                                                    320,
+                                                    39
+                                                ],
+                                         "p3":  [
+                                                    207,
+                                                    81
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  4,
+                          "family":  "SIDELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    42,
+                                                    354
+                                                ],
+                                         "p2":  [
+                                                    309,
+                                                    410
+                                                ],
+                                         "p3":  [
+                                                    163,
+                                                    379
+                                                ]
+                                     }
+                      }
+                  ]
+}

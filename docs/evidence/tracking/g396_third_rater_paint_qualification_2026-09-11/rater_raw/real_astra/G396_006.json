@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_006",
+    "state":  "VISIBLE",
+    "reason":  "Wide court view with clear baseline and lane paint.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  2,
+                          "family":  "BASELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    370,
+                                                    376
+                                                ],
+                                         "p2":  [
+                                                    542,
+                                                    477
+                                                ],
+                                         "p3":  [
+                                                    447,
+                                                    421
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  5,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    105,
+                                                    175
+                                                ],
+                                         "p2":  [
+                                                    300,
+                                                    150
+                                                ],
+                                         "p3":  [
+                                                    218,
+                                                    161
+                                                ]
+                                     }
+                      }
+                  ]
+}

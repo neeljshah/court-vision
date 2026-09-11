@@ -1,0 +1,297 @@
+DISPATCHED run=1789122581047442600 tag=g396_third_rater_paint_qualification wt=a3 at 2026-09-11T05:29:41-05:00
+STARTED pid=12252 birth=1789122581.053
+agent: I\u2019ll prepare only the sealed preregistration, requested tracking modules, focused test, and evidence memo in this worktree. I\u2019m using the file-based planning skill because this is a multi-step, contract-governed preparation task.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw 'C:\\Users\\neelj\\.agents\\skills\\planning-with-files\\SKILL.md'; Write-Output \""'`n---SPEC---"; Get-Content -Raw '"'docs\\evidence\\tracking\\specs\\G396_spec.md'; Write-Output \""'`n---CONTRACT---"; Get-
+out:  RAILS ARE PART OF THE LANDING. `tests/platformkit/test_loc_rail_scope.py`
+    carries a per-file LOC allowlist. When a verified landing GROWS an allowlisted
+    file, the verifier raises that file's entry **in the same commit**, with a
+    one-line reason naming the commit, and runs that rail test as part of the
+    per-file test list before reporting.
+    Why this exists: G197 grew `scripts/platformkit/tracking_harness.py` from 331
+    to 416 lines without raising its entry. Master's rail went red and BLOCKED THE
+    PEER SESSION'S LANDINGS for about 15 minutes. The peer raised it and told us.
+    A green per-file test in the lane's own worktree does not prove master is green
+    for everyone else -- this repo is shared, and a rail is a shared surface.
+    A file pushed over the 300-line rail is also a split candidate the next time it
+    is touched; note it, do not split it opportunistically inside an unrelated row.
+
+B5 NOTE (2026-09-04 09:35 CDT, user decision): heavy compute MAY run on the pod BEFORE ACCEPT, but only as a compute-only run in a per-worktree scratch directory /workspace/wt/<aN>/ via ~/bin/pod_run (ships the lane python tree, links the pod data tree read-only, fetches outputs back). The deployed tree /workspace/nba-ai-system is never written before ACCEPT; backtest_fwer.jsonl, hypotheses*.sqlite and data/registry never reach the pod; no pod process is ever killed or restarted by a lane. A verifier does not reject a pod scratch run under B5.
+
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$targets = @('"'task_plan.md','findings.md','progress.md','CLAUDE.md','docs\\evidence\\tracking\\specs\\G396_spec.md','docs\\research\\astra_round5_2026-09-11.md'); foreach ("'$target in $targets) { if (Test-Path -LiteralPath
+out: splaced parallel band fails, pair audit cannot be reused across candidates, scorer repeat from raw answers.
+VERSION 2026-09-11 v1 PROPOSED; one fixed third-rater tier, one practice correction, one fresh joint qualification. Failure pauses this paint line; success qualifies only this reference protocol and sample.
+
+ORCHESTRATOR FOOTER (binding, 2026-09-11): codex terra PREPARES (prereg sealed alone as its OWN commit, `SEAL sha256 <hex>` = sha256 of every LF byte above the seal line, no blank line before it); a Claude finisher MEASURES; codex-sol VERIFIES; `src/`, `kernel/`, `api/`, `intel/`, `scripts/run_clip.py`, `scripts/platformkit/track_daemon.py` READ only in every LANDING tree (PROPOSED diffs only; the G395 overlay is applied ONLY to /workspace/deploy under the 2026-09-08 user authorization with backup, smoke, ONE restart and the watchdog revert); never write `data/registry/`, never flip a flag, never touch the register; **ADD ONE RESULTS_LEDGER.md ROW IN THE SAME COMMIT** as the memo; every new file <= 300 lines; vocabulary follows contract Q6 with an automated scan over EVERY text artifact incl. rater logs (patterns built from character codes); n >= 30 with even sampling; no threshold sweep on any held-out set; ASCII stdout; **NEVER PARK.** Astra source: docs/research/astra_round5_2026-09-11.md (local-only). G391's evidence lands on master after its verify; a build that needs it waits for that landing.
+
+ABSENT-IN-WORKTREE docs\research\astra_round5_2026-09-11.md
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "rg --files scripts/platformkit/tracking tests/platformkit docs/evidence/tracking | rg \"(g392|g396|RESULTS_LEDGER|G396|paint_qualification)\"; rg -n --glob '*.py' \"g392|qualification|finite.?band|pair.*audit|third.*rater\" s
+out: rg : The term 'rg' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the 
+spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:2 char:1
++ rg --files scripts/platformkit/tracking tests/platformkit docs/eviden ...
++ ~~
+    + CategoryInfo          : ObjectNotFound: (rg:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+rg : The term 'rg' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the 
+spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:2 char:142
++ ...  rg "(g392|g396|RESULTS_LEDGER|G396|paint_qualification)"; rg -n --gl ...
++                                                                ~~
+    + CategoryInfo          : ObjectNotFound: (rg:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+
+agent: The prerequisite research note is absent in this worktree, so I\u2019m proceeding from the binding specification. `rg` is not available here; I\u2019ll use PowerShell\u2019s file discovery as the fallback.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-ChildItem -Path scripts/platformkit/tracking,tests/platformkit,docs/evidence/tracking -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -match '"'g392|g396|RESULTS_LEDGER|paint_qualification' -or "'$_.
+out:                         9 from scripts....
+C:\Users\neelj\nba-track-a3\tests\platformkit\test_g392_per_rater_paint.py                          11 PREREG = Path...
+C:\Users\neelj\nba-track-a3\tests\platformkit\test_g392_per_rater_paint.py                          35     result = ...
+C:\Users\neelj\nba-track-a3\tests\platformkit\test_g392_per_rater_paint.py                          62     assert g3...
+C:\Users\neelj\nba-track-a3\tests\platformkit\test_g392_per_rater_paint.py                          66     from scri...
+C:\Users\neelj\nba-track-a3\tests\platformkit\test_g392_per_rater_paint.py                          69     qualifica...
+C:\Users\neelj\nba-track-a3\tests\platformkit\test_g392_per_rater_paint.py                          70     assert le...
+C:\Users\neelj\nba-track-a3\tests\platformkit\test_g392_per_rater_paint.py                          71     assert g3...
+C:\Users\neelj\nba-track-a3\tests\platformkit\test_g392_per_rater_paint.py                          75     from scri...
+C:\Users\neelj\nba-track-a3\tests\platformkit\test_g392_per_rater_paint.py                          76     truth_row...
+C:\Users\neelj\nba-track-a3\tests\platformkit\test_g392_per_rater_paint.py                          79     row = g39...
+C:\Users\neelj\nba-track-a3\tests\platformkit\test_g392_per_rater_paint.py                          84     from scri...
+C:\Users\neelj\nba-track-a3\tests\platformkit\test_g392_per_rater_paint.py                          89     summary =...
+
+
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$files = @('"'scripts/platformkit/tracking/g392_protocol.py','scripts/platformkit/tracking/g392_controls.py','scripts/platformkit/tracking/g392_score.py','scripts/platformkit/tracking/g392_finish.py','tests/platformkit/test_g
+out: and every
+point has perpendicular distance at most 3 native pixels. Missing output is a
+failure. Each rater and their joint contexts must pass at least 27 of 30.
+There is no substitute, retry, fitted offset, or blanket displacement.
+
+If either rater fails, real dispatch is blocked and the verdict is `PARTIAL --
+PROTOCOL NOT QUALIFIED`. If both raters qualify, use G388's sealed even 30 of
+49 real contexts. Raters mark at most two fragments in fixed tile order with
+the allowed family values in the specification, retaining ABSENT, UNKNOWN,
+and unmatched fragments. Pair by tile/family and stable smallest symmetric
+line distance. The third point, pair tolerance, and nine-point native-paint
+audit remain exactly 3 px, 6 px, and 8/9 at 3 px respectively.
+
+Arithmetic is repeated in separate processes. This preparation has no
+measured delta. If a later comparison records one, its sign convention is
+improvement = baseline loss minus candidate loss; positive means candidate
+better.
+
+## Fixed limits and boundaries
+
+No source under `src/`, `kernel/`, `api/`, `intel/`, `scripts/run_clip.py`, or
+`scripts/platformkit/track_daemon.py` is edited. No evaluator, pod, ledger,
+register, feature flag, or path under `data/` is used. Every text artifact,
+including later rater logs, is scanned with character-code-built prohibited
+vocabulary patterns before reporting. This file uses LF line endings.
+SEAL sha256 399de158742953dddd80cb195e4799173503e80127553bde96ef39de23106e9a
+
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw 'scripts/platformkit/tracking/g392_prepare.py'; Get-Content -Raw 'scripts/platformkit/tracking/g392_finish.py'; Get-Content -Raw 'tests/platformkit/test_g392_per_rater_paint.py'; Get-Content -Raw 'scripts/pla
+out: ECTIONS applied)
+
+2026-09-11 | tracking | G389 | landed DONE: 506/506 backlog keys settled (0 faults), merge reproduces 1,114/1,114 prior decisions -> 1,620/1,620; dev boxes 530/500 over 27 games; held-out 302/188/59; usability 17.33 vs 18.50 px; no arm run; G390 condition MET | DONE (codex-sol ACCEPT WITH CORRECTIONS applied)
+
+2026-09-11 | tracking | G393 | landed CLOSED AT LIMIT: leading-hyphen game_ids (G375 census 3/1,031) fail run_clip argument parsing on all 30 replayed ids; no caller-side form survives the sealed option-shaped controls (equals 5/6, separator 0/68); caller diff PROPOSED-CONDITIONAL applied nowhere, parser-side change is the remedy; 14 caller sites censused | CLOSED AT LIMIT (codex-sol verdict x2, corrections applied)
+
+2026-09-11 | tracking | G390 | landed NOT VALIDATED (adjudicated): one sealed A8 pass TP 90 / FP 169 / FN 212 over 549 (recall 0.298, C0 0.164, precision lower 0.292, ALL FP/N_absent 0.899, ABSENT-only 0.266) vs deployed 0/8; all three sealed bars missed; readiness digest and scratch route uncorrectable after the single allowance; four verify cycles verbatim | NOT VALIDATED (adjudicated)
+
+2026-09-11 | tracking | G392 | landed PARTIAL (protocol not qualified): per-rater gates after calibration sol 30/30 QUALIFIED, terra 20/30 EXCLUDED (max 26.6 px tail), joint 20/30 vs 27/30; real paint not scored (fewer than two qualified raters); calibration moved sol 28->30, terra 11->20 | PARTIAL (codex-sol ACCEPT WITH CORRECTIONS applied)
+
+
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -Raw 'scripts/platformkit/tracking/g387_tiles.py'; Get-Content -Raw 'docs/evidence/tracking/g392_per_rater_paint_qualification_2026-09-11/input/control_build_receipt.json'; Get-ChildItem 'docs/evidence/tracking/g3
+out: ADY,2a0e26946e9adcd0b4ec121122658827d7808491dd627eaa21cc3cb1b3284b71,3459828,1920,1080
+tZeqmc_-_sA_s1332:001053,RETAINED,C:\Users\neelj\g382_pc_scratch\frames\tZeqmc_-_sA_s1332_002.png,READY,12524f705c2cfc5c79939943756063be4b37e4a83b2a3d1368fea37ba55c7c2a,1201236,1920,1080
+tZeqmc_-_sA_s1332:002025,RETAINED,C:\Users\neelj\g382_pc_scratch\frames\tZeqmc_-_sA_s1332_003.png,READY,d1a155e0d3dd86b042b363a437831d450bedc8e47167842c404c3ea51aa6f045,3383952,1920,1080
+tZeqmc_-_sA_s1332:002997,RETAINED,C:\Users\neelj\g382_pc_scratch\frames\tZeqmc_-_sA_s1332_004.png,READY,0f392ab3e74f2135b219f288f5d0cc9340fa675bb9cb567ebd1d33de4ad4c843,3321912,1920,1080
+tZeqmc_-_sA_s1332:004010,DECODE_FAILED,.,ABSENT,,0,,
+wHs1OssEcAw_s90:000081,RETAINED,C:\Users\neelj\g382_pc_scratch\frames\wHs1OssEcAw_s90_001.png,READY,3918968977792de587970de0e15bbbc2fceaac4eee94f58ce65890ad3e1fc734,4346136,1920,1080
+wHs1OssEcAw_s90:002106,RETAINED,C:\Users\neelj\g382_pc_scratch\frames\wHs1OssEcAw_s90_002.png,READY,1a6649ce49b57800b1675f5947731ca6523580d979b9b804e99a77601487cc3e,2174127,1920,1080
+wHs1OssEcAw_s90:004050,RETAINED,C:\Users\neelj\g382_pc_scratch\frames\wHs1OssEcAw_s90_003.png,READY,b1540a42587b4382b67295a83054ef80ae61424fd4042cdcb7eb93605fbdc929,4232087,1920,1080
+wHs1OssEcAw_s90:005995,RETAINED,C:\Users\neelj\g382_pc_scratch\frames\wHs1OssEcAw_s90_004.png,READY,519e523f4fa7e169f13f0b108c38ad9c8b00046bbce3470908962b19ace73606,3638512,1920,1080
+wHs1OssEcAw_s90:008020,DECODE_FAILED,.,ABSENT,,0,,
+
+
+
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-ChildItem -Path 'docs/evidence/tracking/g387_paint_localization_controls_2026-09-11' -Recurse -File -Filter 'G387_001_context.png' | Select-Object FullName,Length; Get-ChildItem -Path 'docs/evidence/tracking/g387_paint_lo
+out: opaque_id,frame_key,tile,x,y,width,height,context,context_sha256,sender_sha256,tile_sha256,native_width,native_height,pts_seconds
+G387_001,9sq-YMlIo9Q_s2346:000040,G387_001_tile1.png,0,0,640,540,G387_001_context.png,80d9748c7cf3de81b42afdc83f9aeb2d78dec0bb482a1e529f3e4f30cc19d903,80d9748c7cf3de81b42afdc83f9aeb2d78dec0bb482a1e529f3e4f30cc19d903,5cb56d322929ad4beec3fdbc39fd9c3bcdc7d845a5d0ee018025c2051ffde510,1920,1080,UNKNOWN
+G387_001,9sq-YMlIo9Q_s2346:000040,G387_001_tile2.png,640,0,640,540,G387_001_context.png,80d9748c7cf3de81b42afdc83f9aeb2d78dec0bb482a1e529f3e4f30cc19d903,80d9748c7cf3de81b42afdc83f9aeb2d78dec0bb482a1e529f3e4f30cc19d903,2bd40cf01737e16872529b147acc6deb51dfea25a1396318423bea47fe3ffada,1920,1080,UNKNOWN
+track-a3
+
+agent: I\u2019ve confirmed the G392 premise data still reports sol 30/30, terra 20/30, joint 20/30, and no real dispatch. I\u2019m now sealing the G396 prepare-only preregistration before creating any control or rating machinery.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$path='"'docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/g396_prereg_2026-09-11.md'; "'$text=[IO.File]::ReadAllText((Resolve-Path $path)); $normalized=$text.Replace("`r`n","`n").Replace("`r","`n"); $pre
+out: Method invocation failed because [System.Security.Cryptography.SHA256] does not contain a method named 'HashData'.
+At line:2 char:336
++ ... s($prefix); [Convert]::ToHexString([Security.Cryptography.SHA256]::Ha ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : MethodNotFound
+ 
+True
+False
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$path='"'docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/g396_prereg_2026-09-11.md'; "'$text=[IO.File]::ReadAllText((Resolve-Path $path)); $normalized=$text.Replace("`r`n","`n").Replace("`r","`n"); $pre
+out: 18124321ca2b0daf315283e16ec79f06c5498cd2bb6948bd65f2893c2976dd12
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$path='"'docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/g396_prereg_2026-09-11.md'; git add -- "'$path; if ($LASTEXITCODE -eq 0) { git commit -m '"'tracking: seal G396 preregistration' -- "'$path }'
+out: fatal: Unable to create 'C:/Users/neelj/nba-ai-system/.git/worktrees/nba-track-a3/index.lock': Permission denied
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$native='"'C:\\Users\\neelj\\g382_pc_scratch\\frames\\9sq-YMlIo9Q_s2346_001.png'; "'$cache='"'C:\\Users\\neelj\\AppData\\Local\\Temp\\g392_work'; \"NATIVE_EXISTS="'$([bool](Test-Path -LiteralPath $native))"; "CACHE_EXISTS=$([
+out: NATIVE_EXISTS=True
+CACHE_EXISTS=True
+
+FullName                                                                                                               
+--------                                                                                                               
+C:\Users\neelj\nba-track-a3\docs\evidence\tracking\g387_paint_localization_controls_2026-09-11\controls\control_resu...
+C:\Users\neelj\nba-track-a3\docs\evidence\tracking\g387_paint_localization_controls_2026-09-11\controls\known_points...
+
+
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-ChildItem -LiteralPath 'C:\\Users\\neelj\\AppData\\Local\\Temp\\g392_work' -Force | Select-Object Name,Attributes; Get-ChildItem -LiteralPath 'C:\\Users\\neelj\\AppData\\Local\\Temp\\g392_work\\cache' -File -ErrorAction S
+out: 
+Name                         Attributes
+----                         ----------
+batch_practice_sol            Directory
+batch_practice_terra          Directory
+batch_qualification_sol       Directory
+batch_qualification_terra     Directory
+batch_smoke_sol               Directory
+batch_smoke_terra             Directory
+images_practice               Directory
+images_qualification          Directory
+disp_sol_practice.log           Archive
+disp_sol_qualification.log      Archive
+disp_terra_practice.log         Archive
+disp_terra_qualification.log    Archive
+q6_interim.json                 Archive
+q6_memo.json                    Archive
+repeat_scores.csv               Archive
+repeat_summary.json             Archive
+
+
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-ChildItem -LiteralPath 'C:\\Users\\neelj\\AppData\\Local\\Temp' -Directory -Filter 'g387*' -ErrorAction SilentlyContinue | Select-Object FullName; Get-ChildItem -LiteralPath 'C:\\Users\\neelj\\g382_pc_scratch' -Directory 
+out: 
+FullName                                        
+--------                                        
+C:\Users\neelj\AppData\Local\Temp\g387_land_tmp 
+C:\Users\neelj\AppData\Local\Temp\g387_land_tmp2
+C:\Users\neelj\AppData\Local\Temp\g387_native   
+C:\Users\neelj\AppData\Local\Temp\g387_tmp      
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+
+
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-ChildItem -LiteralPath 'C:\\Users\\neelj\\AppData\\Local\\Temp\\g387_native' -File -ErrorAction SilentlyContinue | Select-Object -First 4 Name,Length; Get-ChildItem -LiteralPath 'C:\\Users\\neelj\\AppData\\Local\\Temp\\g3
+out: 
+Name                            Length
+----                            ------
+dispatch.sh                       1911
+disp_sol_control.log               224
+disp_sol_real.log                  357
+disp_terra_control.log             238
+test_canonical_receipt_is_proc0       
+test_committed_prereg_seal_rea0       
+test_even_selector_is_not_a_he0       
+test_known_position_control_sc0       
+test_native_tile_roundtrip_and0       
+test_seal_change_detection_and0       
+test_unknown_is_charged_and_co0       
+
+
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$names=@('"'G387_001_context.png','G387_001_tile1.png'); "'$roots=@('"'C:\\Users\\neelj\\AppData\\Local\\Temp\\g387_native','C:\\Users\\neelj\\AppData\\Local\\Temp\\g387_tmp','C:\\Users\\neelj\\AppData\\Local\\Temp\\g387_land
+out: C:\Users\neelj\AppData\Local\Temp\g387_native\G387_001_context.png=False
+C:\Users\neelj\AppData\Local\Temp\g387_native\G387_001_tile1.png=False
+C:\Users\neelj\AppData\Local\Temp\g387_tmp\G387_001_context.png=False
+C:\Users\neelj\AppData\Local\Temp\g387_tmp\G387_001_tile1.png=False
+C:\Users\neelj\AppData\Local\Temp\g387_land_tmp\G387_001_context.png=False
+C:\Users\neelj\AppData\Local\Temp\g387_land_tmp\G387_001_tile1.png=False
+C:\Users\neelj\AppData\Local\Temp\g387_land_tmp2\G387_001_context.png=False
+C:\Users\neelj\AppData\Local\Temp\g387_land_tmp2\G387_001_tile1.png=False
+
+agent: The preregistration is sealed on disk. The index lock is sandbox-denied, so it cannot be committed here; I\u2019ll retain it unchanged for the orchestrator\u2019s explicit-path `lane_commit` flow and continue with the requested prepare-only files.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'python -m pytest tests/platformkit/test_g396_third_rater_paint.py -q -p no:cacheprovider; if ($LASTEXITCODE -eq 0) { python -m py_compile scripts/platformkit/tracking/g396_protocol.py scripts/platformkit/tracking/g396_prepare
+out: .......                                                                  [100%]
+7 passed in 0.91s
+
+agent: The focused preparation test passes (7 tests). I\u2019m adding the required vocabulary scanner and scanning the prepared evidence now; it does not inspect controls or produce a result.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'python -m scripts.platformkit.tracking.g396_q6_scan docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11 --out docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/q6_prepare_scan.json; if 
+out: G396_SCAN files=1 hits=0
+.......                                                                  [100%]
+7 passed in 0.79s
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'python -m scripts.platformkit.tracking.g396_q6_scan docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11.md docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11 --out docs/evidence/tracking
+out: G396_SCAN files=2 hits=0
+.......                                                                  [100%]
+7 passed in 0.69s
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$files=@('"'docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/g396_prereg_2026-09-11.md','docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11.md','docs/evidence/tracking/g396_third_rate
+out: docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/g396_prereg_2026-09-11.md lines=66 crlf=False
+docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11.md lines=48 crlf=False
+docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/q6_prepare_scan.json lines=5 crlf=False
+scripts/platformkit/tracking/g396_protocol.py lines=111 crlf=False
+scripts/platformkit/tracking/g396_prepare.py lines=97 crlf=False
+scripts/platformkit/tracking/g396_score.py lines=20 crlf=False
+scripts/platformkit/tracking/g396_q6_scan.py lines=40 crlf=False
+tests/platformkit/test_g396_third_rater_paint.py lines=59 crlf=False
+?? docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11.md
+?? docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/
+?? scripts/platformkit/tracking/g396_prepare.py
+?? scripts/platformkit/tracking/g396_protocol.py
+?? scripts/platformkit/tracking/g396_q6_scan.py
+?? scripts/platformkit/tracking/g396_score.py
+?? tests/platformkit/test_g396_third_rater_paint.py
+
+agent: All requested prepare-only files are in place, LF-only, and under the 300-line rail. The evidence vocabulary scan found 0 hits; the focused test remains 7/7 passing.
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$path='"'docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/g396_prereg_2026-09-11.md'; "'$text=[IO.File]::ReadAllText((Resolve-Path $path)).Replace("`r`n","`n").Replace("`r","`n"); $prefix=$text.Substring
+out: seal_expected=18124321ca2b0daf315283e16ec79f06c5498cd2bb6948bd65f2893c2976dd12
+seal_actual=18124321ca2b0daf315283e16ec79f06c5498cd2bb6948bd65f2893c2976dd12
+seal_verified=True
+?? docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11.md
+?? docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/
+?? scripts/platformkit/tracking/g396_prepare.py
+?? scripts/platformkit/tracking/g396_protocol.py
+?? scripts/platformkit/tracking/g396_q6_scan.py
+?? scripts/platformkit/tracking/g396_score.py
+?? tests/platformkit/test_g396_third_rater_paint.py
+
+agent: Prepared G396 only; no rating, scoring, pod work, deployment, restart, register, or ledger change was run.
+
+- Sealed prereg verified: `18124321ca2b0daf315283e16ec79f06c5498cd2bb6948bd65f2893c2976dd12`
+- Added G396 protocol, premise/identity helpers, raw-answer repeat scorer, Q6 scanner, focused test, and prepare-only memo.
+- Test: `7 passed`
+- Vocabulary scan: `0 hits`
+- All new files are LF-only and below 300 lines.
+
+SHA: NOT CREATED (sandbox); files ready for lane_commit
+
+Paths ready for explicit-path commit:
+
+- `docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11.md`
+- `docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/`
+- `scripts/platformkit/tracking/g396_prepare.py`
+- `scripts/platformkit/tracking/g396_protocol.py`
+- `scripts/platformkit/tracking/g396_q6_scan.py`
+- `scripts/platformkit/tracking/g396_score.py`
+- `tests/platformkit/test_g396_third_rater_paint.py`
+TURN_END turn.completed at 2026-09-11T05:40:49-05:00
+EXIT:0 gap=g396_third_rater_paint_qualification at 2026-09-11T05:40:50-05:00
+DRAINED

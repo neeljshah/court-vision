@@ -1,0 +1,9 @@
+{
+  "context_id": "G396_025",
+  "state": "VISIBLE",
+  "reason": "wide shot, lane boundary paint is clear",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 5, "family": "LANE_LINE", "points": {"p1": [61, 160], "p2": [145, 20], "p3": [103, 90]}}
+  ]
+}

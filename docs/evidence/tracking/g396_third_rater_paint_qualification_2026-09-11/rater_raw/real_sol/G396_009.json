@@ -1,0 +1,10 @@
+{
+  "context_id": "G396_009",
+  "state": "VISIBLE",
+  "reason": "wide shot, centre line and baseline paint are clear",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 4, "family": "CENTRE_LINE", "points": {"p1": [18, 334], "p2": [101, 520], "p3": [59, 426]}},
+    {"tile": 3, "family": "BASELINE", "points": {"p1": [20, 347], "p2": [450, 529], "p3": [235, 438]}}
+  ]
+}

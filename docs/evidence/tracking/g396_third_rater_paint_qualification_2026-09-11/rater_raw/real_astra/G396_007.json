@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_007",
+    "state":  "VISIBLE",
+    "reason":  "Baseline and corner three-point paint are unobstructed.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  4,
+                          "family":  "BASELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    100,
+                                                    296
+                                                ],
+                                         "p2":  [
+                                                    360,
+                                                    116
+                                                ],
+                                         "p3":  [
+                                                    247,
+                                                    194
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  4,
+                          "family":  "THREE_POINT_STRAIGHT",
+                          "points":  {
+                                         "p1":  [
+                                                    110,
+                                                    365
+                                                ],
+                                         "p2":  [
+                                                    435,
+                                                    393
+                                                ],
+                                         "p3":  [
+                                                    268,
+                                                    379
+                                                ]
+                                     }
+                      }
+                  ]
+}

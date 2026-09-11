@@ -1,0 +1,15 @@
+{
+  "raters": {
+    "astra": {
+      "correction": "none requested",
+      "feedback_sheet": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/practice/feedback_astra.md",
+      "rationale": "All 30 practice controls passed, with every reported perpendicular error below 0.8 px against the 3.0 px failure threshold. The feedback provides no evidence that an instruction or display correction is needed.",
+      "requested": false
+    }
+  },
+  "sol": {
+    "correction_permitted": false,
+    "feedback_given": false,
+    "instruction": "frozen_instructions_sol.md carried verbatim from G392"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "context_id": "G396_019",
+  "state": "VISIBLE",
+  "reason": "baseline and sideline paint are clearly visible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 2, "family": "BASELINE", "points": {"p1": [329, 345], "p2": [482, 493], "p3": [405, 420]}},
+    {"tile": 6, "family": "SIDELINE", "points": {"p1": [285, 292], "p2": [598, 529], "p3": [447, 414]}}
+  ]
+}

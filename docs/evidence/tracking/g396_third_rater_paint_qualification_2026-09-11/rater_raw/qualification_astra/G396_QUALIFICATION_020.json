@@ -1,0 +1,42 @@
+{
+    "control_id":  "G396_QUALIFICATION_020",
+    "state":  "VISIBLE",
+    "reason":  "bright white straight band with black outline",
+    "opened_path":  "C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_020.png",
+    "opened_width":  640,
+    "opened_height":  540,
+    "tile":  3,
+    "offset":  [
+                   1280,
+                   0
+               ],
+    "coords":  "tile",
+    "points":  {
+                   "p1":  [
+                              242,
+                              191
+                          ],
+                   "p2":  [
+                              335,
+                              351
+                          ],
+                   "p3":  [
+                              281,
+                              259
+                          ]
+               },
+    "native_points":  {
+                          "p1":  [
+                                     1522,
+                                     191
+                                 ],
+                          "p2":  [
+                                     1615,
+                                     351
+                                 ],
+                          "p3":  [
+                                     1561,
+                                     259
+                                 ]
+                      }
+}

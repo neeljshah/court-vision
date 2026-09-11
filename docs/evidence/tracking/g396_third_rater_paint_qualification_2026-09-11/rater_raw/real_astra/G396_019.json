@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_019",
+    "state":  "VISIBLE",
+    "reason":  "White lane and baseline paint are visible around the black key.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  5,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    70,
+                                                    127
+                                                ],
+                                         "p2":  [
+                                                    265,
+                                                    99
+                                                ],
+                                         "p3":  [
+                                                    151,
+                                                    115
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  6,
+                          "family":  "BASELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    50,
+                                                    99
+                                                ],
+                                         "p2":  [
+                                                    210,
+                                                    229
+                                                ],
+                                         "p3":  [
+                                                    128,
+                                                    162
+                                                ]
+                                     }
+                      }
+                  ]
+}

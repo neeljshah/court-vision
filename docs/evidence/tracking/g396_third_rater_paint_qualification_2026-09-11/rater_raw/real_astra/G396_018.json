@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_018",
+    "state":  "VISIBLE",
+    "reason":  "White sideline and baseline paint are clearly visible.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  2,
+                          "family":  "SIDELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    100,
+                                                    335
+                                                ],
+                                         "p2":  [
+                                                    500,
+                                                    318
+                                                ],
+                                         "p3":  [
+                                                    345,
+                                                    324
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  3,
+                          "family":  "BASELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    40,
+                                                    385
+                                                ],
+                                         "p2":  [
+                                                    254,
+                                                    508
+                                                ],
+                                         "p3":  [
+                                                    158,
+                                                    453
+                                                ]
+                                     }
+                      }
+                  ]
+}

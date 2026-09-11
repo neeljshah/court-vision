@@ -1,0 +1,10 @@
+{
+  "context_id": "G396_021",
+  "state": "VISIBLE",
+  "reason": "wide shot, sideline and lane paint are legible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 4, "family": "SIDELINE", "points": {"p1": [160, 280], "p2": [418, 12], "p3": [289, 146]}},
+    {"tile": 5, "family": "LANE_LINE", "points": {"p1": [20, 245], "p2": [500, 286], "p3": [260, 265]}}
+  ]
+}

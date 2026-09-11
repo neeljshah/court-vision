@@ -1,0 +1,13 @@
+{
+  "control_id": "G396_QUALIFICATION_019",
+  "state": "VISIBLE",
+  "reason": "white band visible above basket",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_019.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 2,
+  "offset": [640, 0],
+  "coords": "tile",
+  "points": {"p1": [365, 65], "p2": [526, 156], "p3": [446, 111]},
+  "native_points": {"p1": [1005, 65], "p2": [1166, 156], "p3": [1086, 111]}
+}

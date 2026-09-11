@@ -1,0 +1,7 @@
+pair_id,same_band,points_within_3px,note
+G396_004_pair1,NO,astra 9/9; sol 4/9,astra traces the dark painted boundary line; sol sits 5-7 px below it on bare floor for five of its nine points
+G396_013_pair1,NO,astra 9/9; sol 7/9,"astra on the dark painted line; sol sits in the light stripe above it, one point occluded by a leg and one beyond 3 px"
+G396_017_pair1,NO,astra 9/9; sol 7/9,"both on the white lane line, but sol's eighth and ninth points fall where players occlude the line, so no visible paint within 3 px"
+G396_020_pair1,YES,astra 9/9; sol 9/9,both nine-point series lie on the same white sideline band with its dark border
+G396_022_pair1,YES,astra 9/9; sol 9/9,both series lie on the same dark straight court line; the two occluding players do not cover any click
+G396_023_pair1,YES,astra 9/9; sol 9/9,both series lie on the same dark vertical court line

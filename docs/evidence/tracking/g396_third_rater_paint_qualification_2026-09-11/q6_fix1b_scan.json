@@ -1,0 +1,104 @@
+{
+  "files": 6,
+  "findings": [
+    {
+      "context": "qualification,G396_QUALIFICATION_019_eye.jpg,d1fbffb2f76d6343780ba60bf660c2e0ed7fc6fc82bd5f9ed5747605162a4d54,d1fbffb2f76d6343780ba60bf660c2e0ed7fc6fc82bd5f9ed5",
+      "kind": "bare-integer",
+      "line": 68,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/renders_repeat_digests.csv"
+    },
+    {
+      "context": "qualification,G396_QUALIFICATION_019_eye.jpg,d1fbffb2f76d6343780ba60bf660c2e0ed7fc6fc82bd5f9ed5747605162a4d54,d1fbffb2f76d6343780ba60bf660c2e0ed7fc6fc82bd5f9ed5",
+      "kind": "bare-integer",
+      "line": 68,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/renders_repeat_digests.csv"
+    },
+    {
+      "context": "qualification,G396_QUALIFICATION_019_eye.jpg,d1fbffb2f76d6343780ba60bf660c2e0ed7fc6fc82bd5f9ed5747605162a4d54,d1fbffb2f76d6343780ba60bf660c2e0ed7fc6fc82bd5f9ed5",
+      "kind": "bare-integer",
+      "line": 68,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/renders_repeat_digests.csv"
+    },
+    {
+      "context": "qualification,G396_QUALIFICATION_022_eye.jpg,f9210d711a357c3441b85ceb3ac94b0e7afca5223436d9dae1da9ad3f37d8c54,f9210d711a357c3441b85ceb3ac94b0e7afca5223436d9dae1",
+      "kind": "bare-integer",
+      "line": 71,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/renders_repeat_digests.csv"
+    },
+    {
+      "context": "qualification,G396_QUALIFICATION_022_eye.jpg,f9210d711a357c3441b85ceb3ac94b0e7afca5223436d9dae1da9ad3f37d8c54,f9210d711a357c3441b85ceb3ac94b0e7afca5223436d9dae1",
+      "kind": "bare-integer",
+      "line": 71,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/renders_repeat_digests.csv"
+    },
+    {
+      "context": "qualification,G396_QUALIFICATION_022_eye.jpg,f9210d711a357c3441b85ceb3ac94b0e7afca5223436d9dae1da9ad3f37d8c54,f9210d711a357c3441b85ceb3ac94b0e7afca5223436d9dae1",
+      "kind": "bare-integer",
+      "line": 71,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/renders_repeat_digests.csv"
+    },
+    {
+      "context": "real,G396_019_trace.jpg,0b419bfecdf3710440622b5cf98863b54a8d6ce087a51bf0dff70fd36a09c0ef,0b419bfecdf3710440622b5cf98863b54a8d6ce087a51bf0dff70fd36a09c0ef,0b419b",
+      "kind": "bare-integer",
+      "line": 98,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/renders_repeat_digests.csv"
+    },
+    {
+      "context": "real,G396_019_trace.jpg,0b419bfecdf3710440622b5cf98863b54a8d6ce087a51bf0dff70fd36a09c0ef,0b419bfecdf3710440622b5cf98863b54a8d6ce087a51bf0dff70fd36a09c0ef,0b419b",
+      "kind": "bare-integer",
+      "line": 98,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/renders_repeat_digests.csv"
+    },
+    {
+      "context": "real,G396_019_trace.jpg,0b419bfecdf3710440622b5cf98863b54a8d6ce087a51bf0dff70fd36a09c0ef,0b419bfecdf3710440622b5cf98863b54a8d6ce087a51bf0dff70fd36a09c0ef,0b419b",
+      "kind": "bare-integer",
+      "line": 98,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/renders_repeat_digests.csv"
+    },
+    {
+      "context": "real,G396_021_trace.jpg,d54dd6f338dfa6296cf63c9678c8b0a13d37144053992f36c7faa61e6283baed,d54dd6f338dfa6296cf63c9678c8b0a13d37144053992f36c7faa61e6283baed,d54dd6",
+      "kind": "bare-integer",
+      "line": 100,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/renders_repeat_digests.csv"
+    },
+    {
+      "context": "real,G396_021_trace.jpg,d54dd6f338dfa6296cf63c9678c8b0a13d37144053992f36c7faa61e6283baed,d54dd6f338dfa6296cf63c9678c8b0a13d37144053992f36c7faa61e6283baed,d54dd6",
+      "kind": "bare-integer",
+      "line": 100,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/renders_repeat_digests.csv"
+    },
+    {
+      "context": "real,G396_021_trace.jpg,d54dd6f338dfa6296cf63c9678c8b0a13d37144053992f36c7faa61e6283baed,d54dd6f338dfa6296cf63c9678c8b0a13d37144053992f36c7faa61e6283baed,d54dd6",
+      "kind": "bare-integer",
+      "line": 100,
+      "match": "54",
+      "opaque": true,
+      "path": "docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/renders_repeat_digests.csv"
+    }
+  ],
+  "hits": 12,
+  "non_opaque": 0,
+  "redactions": []
+}

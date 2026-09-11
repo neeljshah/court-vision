@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_005",
+    "state":  "VISIBLE",
+    "reason":  "Centre line and lane paint are visible in the wide view.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  1,
+                          "family":  "CENTRE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    398,
+                                                    357
+                                                ],
+                                         "p2":  [
+                                                    392,
+                                                    485
+                                                ],
+                                         "p3":  [
+                                                    395,
+                                                    431
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  6,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    272,
+                                                    134
+                                                ],
+                                         "p2":  [
+                                                    542,
+                                                    128
+                                                ],
+                                         "p3":  [
+                                                    455,
+                                                    130
+                                                ]
+                                     }
+                      }
+                  ]
+}

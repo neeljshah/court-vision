@@ -1,0 +1,23 @@
+{
+  "astra": {
+    "codex_home": "C:/Users/neelj/.codex-astra",
+    "config_model": "gpt-6-astra",
+    "config_path": "C:/Users/neelj/.codex-astra/config.toml",
+    "config_reasoning_effort": "high",
+    "config_sha256": "caed3dc5756473ff787eedc3269590d80a75687942dbae01c4b64f2508769346",
+    "dispatch_reasoning_effort": "high",
+    "home_edited_by_this_row": false
+  },
+  "codex_executable": "C:/Users/neelj/AppData/Local/OpenAI/Codex/bin/7ac07f4ce733f89a/codex.exe",
+  "codex_executable_sha256": "3d6ca7085c932b62ef4ee4877e92f15b050fb94b2eb8e6c10a346a06248c6004",
+  "note": "G392 dispatched both raters at medium; G396 dispatches both at high, the tier both homes configure. Sol is re-qualified on the fresh G396 controls at the setting it ran, so no G392 score is carried across.",
+  "sol": {
+    "codex_home": "C:/Users/neelj/.codex-sol",
+    "config_model": "gpt-5.6-sol",
+    "config_path": "C:/Users/neelj/.codex-sol/config.toml",
+    "config_reasoning_effort": "high",
+    "config_sha256": "231dab116ba5cd33dc50d0eb58b0018fb5d2c8e89179eeb9193eaac6af79f0cf",
+    "dispatch_reasoning_effort": "high",
+    "home_edited_by_this_row": false
+  }
+}

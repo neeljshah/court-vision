@@ -1,0 +1,133 @@
+{
+  "eligibility": {
+    "bar": 27,
+    "controls": 30,
+    "decision": "REAL PAINT DISPATCH PERMITTED",
+    "excluded_raters": [],
+    "joint": 27,
+    "per_rater_passed": {
+      "astra": 30,
+      "sol": 27
+    },
+    "qualified_raters": [
+      "astra",
+      "sol"
+    ],
+    "real_dispatch_allowed": true,
+    "real_scored": true,
+    "retry_or_substitute": "none -- the sealed method forbids both"
+  },
+  "parent_states": {
+    "native_ready": 49,
+    "parent_failures": 11,
+    "retained": 49,
+    "states": 60
+  },
+  "practice": {
+    "bar": 27,
+    "controls": 30,
+    "excluded": [],
+    "joint": 30,
+    "per_rater": {
+      "astra": {
+        "angle_error_deg": {
+          "max": 0.136,
+          "n": 30,
+          "p50": 0.041,
+          "p90": 0.108
+        },
+        "answered": 30,
+        "controls": 30,
+        "conversion_ok": 30,
+        "fail_reasons": {},
+        "passed": 30,
+        "perpendicular_px": {
+          "max": 0.794,
+          "n": 90,
+          "p50": 0.21,
+          "p90": 0.427
+        }
+      }
+    },
+    "qualified": false,
+    "raters": [
+      "astra"
+    ]
+  },
+  "protocol_qualified": true,
+  "qualification": {
+    "bar": 27,
+    "controls": 30,
+    "excluded": [],
+    "joint": 27,
+    "per_rater": {
+      "astra": {
+        "angle_error_deg": {
+          "max": 0.256,
+          "n": 30,
+          "p50": 0.029,
+          "p90": 0.235
+        },
+        "answered": 30,
+        "controls": 30,
+        "conversion_ok": 30,
+        "fail_reasons": {},
+        "passed": 30,
+        "perpendicular_px": {
+          "max": 1.327,
+          "n": 90,
+          "p50": 0.332,
+          "p90": 1.091
+        }
+      },
+      "sol": {
+        "angle_error_deg": {
+          "max": 5.727,
+          "n": 30,
+          "p50": 0.161,
+          "p90": 0.556
+        },
+        "answered": 30,
+        "controls": 30,
+        "conversion_ok": 30,
+        "fail_reasons": {
+          "PERPENDICULAR": 3
+        },
+        "passed": 27,
+        "perpendicular_px": {
+          "max": 23.896,
+          "n": 90,
+          "p50": 0.673,
+          "p90": 2.312
+        }
+      }
+    },
+    "qualified": true,
+    "raters": [
+      "astra",
+      "sol"
+    ]
+  },
+  "real_paint": {
+    "candidate_pairs": 6,
+    "denominator_note": "conditional on the 49 retained native images of the 60-state parent census; the 11 parent decode failures are in neither denominator",
+    "family_disagreement": 17,
+    "recovered_of_all": {
+      "denominator": 30,
+      "passed": 3
+    },
+    "recovered_of_visible": {
+      "denominator": 22,
+      "passed": 3
+    },
+    "states_accounted": 30,
+    "unknown_or_absent": {
+      "astra": 5,
+      "sol": 5
+    }
+  },
+  "real_paint_note": "scored on the sealed even 30-of-49 retained contexts; denominator is conditional on retained images",
+  "real_paint_scored": true,
+  "row": "G396",
+  "verdict": "DONE"
+}

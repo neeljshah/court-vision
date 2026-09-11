@@ -1,0 +1,42 @@
+{
+  "control_id": "G396_PRACTICE_012",
+  "state": "VISIBLE",
+  "reason": "bright white straight band with black outline",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_012.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 6,
+  "offset": [
+    1280,
+    540
+  ],
+  "coords": "tile",
+  "points": {
+    "p1": [
+      409,
+      245
+    ],
+    "p2": [
+      499,
+      401
+    ],
+    "p3": [
+      448,
+      313
+    ]
+  },
+  "native_points": {
+    "p1": [
+      1689,
+      785
+    ],
+    "p2": [
+      1779,
+      941
+    ],
+    "p3": [
+      1728,
+      853
+    ]
+  }
+}

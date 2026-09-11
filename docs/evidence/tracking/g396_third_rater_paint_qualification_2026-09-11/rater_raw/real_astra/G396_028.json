@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_028",
+    "state":  "VISIBLE",
+    "reason":  "White sideline and baseline bands are distinguishable from the floor pattern.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  2,
+                          "family":  "SIDELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    165,
+                                                    279
+                                                ],
+                                         "p2":  [
+                                                    540,
+                                                    307
+                                                ],
+                                         "p3":  [
+                                                    336,
+                                                    292
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  4,
+                          "family":  "BASELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    71,
+                                                    302
+                                                ],
+                                         "p2":  [
+                                                    202,
+                                                    193
+                                                ],
+                                         "p3":  [
+                                                    134,
+                                                    250
+                                                ]
+                                     }
+                      }
+                  ]
+}

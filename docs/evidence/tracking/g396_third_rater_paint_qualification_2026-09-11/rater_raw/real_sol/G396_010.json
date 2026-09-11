@@ -1,0 +1,9 @@
+{
+  "context_id": "G396_010",
+  "state": "VISIBLE",
+  "reason": "a straight painted sideline is visible beside the court",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 4, "family": "SIDELINE", "points": {"p1": [10, 392], "p2": [284, 389], "p3": [147, 390]}}
+  ]
+}

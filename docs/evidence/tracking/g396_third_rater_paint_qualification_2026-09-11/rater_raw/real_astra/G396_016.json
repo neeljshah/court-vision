@@ -1,0 +1,26 @@
+{
+    "context_id":  "G396_016",
+    "state":  "VISIBLE",
+    "reason":  "White floor boundary paint is visible beside the black perimeter.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  3,
+                          "family":  "SIDELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    125,
+                                                    426
+                                                ],
+                                         "p2":  [
+                                                    539,
+                                                    388
+                                                ],
+                                         "p3":  [
+                                                    302,
+                                                    410
+                                                ]
+                                     }
+                      }
+                  ]
+}

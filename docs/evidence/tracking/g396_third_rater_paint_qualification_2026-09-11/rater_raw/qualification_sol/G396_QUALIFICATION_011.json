@@ -1,0 +1,13 @@
+{
+  "control_id": "G396_QUALIFICATION_011",
+  "state": "VISIBLE",
+  "reason": "steep white band visible near scorer table",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_011.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 6,
+  "offset": [1280, 540],
+  "coords": "tile",
+  "points": {"p1": [473, 190], "p2": [562, 345], "p3": [518, 267]},
+  "native_points": {"p1": [1753, 730], "p2": [1842, 885], "p3": [1798, 807]}
+}

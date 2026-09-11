@@ -1,0 +1,18 @@
+{
+  "candidate_pairs": 6,
+  "denominator_note": "conditional on the 49 retained native images of the 60-state parent census; the 11 parent decode failures are in neither denominator",
+  "family_disagreement": 17,
+  "recovered_of_all": {
+    "denominator": 30,
+    "passed": 3
+  },
+  "recovered_of_visible": {
+    "denominator": 22,
+    "passed": 3
+  },
+  "states_accounted": 30,
+  "unknown_or_absent": {
+    "astra": 5,
+    "sol": 5
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "control_id": "G396_QUALIFICATION_021",
+  "state": "VISIBLE",
+  "reason": "white horizontal band over sideline scene",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_021.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 4,
+  "offset": [0, 540],
+  "coords": "tile",
+  "points": {"p1": [335, 399], "p2": [540, 399], "p3": [438, 399]},
+  "native_points": {"p1": [335, 939], "p2": [540, 939], "p3": [438, 939]}
+}

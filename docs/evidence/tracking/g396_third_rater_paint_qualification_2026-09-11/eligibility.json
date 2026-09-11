@@ -1,0 +1,18 @@
+{
+  "bar": 27,
+  "controls": 30,
+  "decision": "REAL PAINT DISPATCH PERMITTED",
+  "excluded_raters": [],
+  "joint": 27,
+  "per_rater_passed": {
+    "astra": 30,
+    "sol": 27
+  },
+  "qualified_raters": [
+    "astra",
+    "sol"
+  ],
+  "real_dispatch_allowed": true,
+  "real_scored": true,
+  "retry_or_substitute": "none -- the sealed method forbids both"
+}

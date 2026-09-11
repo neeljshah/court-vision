@@ -1,0 +1,42 @@
+{
+  "control_id": "G396_QUALIFICATION_017",
+  "state": "VISIBLE",
+  "reason": "Bright white straight band with black outline visible over photograph",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_017.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 6,
+  "offset": [
+    1280,
+    540
+  ],
+  "coords": "tile",
+  "points": {
+    "p1": [
+      153,
+      70
+    ],
+    "p2": [
+      248,
+      234
+    ],
+    "p3": [
+      194,
+      141
+    ]
+  },
+  "native_points": {
+    "p1": [
+      1433,
+      610
+    ],
+    "p2": [
+      1528,
+      774
+    ],
+    "p3": [
+      1474,
+      681
+    ]
+  }
+}

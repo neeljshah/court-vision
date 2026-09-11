@@ -1,0 +1,71 @@
+DISPATCHED run=1789125368737025200 tag=g396_rater_astra_qualification03 wt=a3 at 2026-09-11T06:16:08-05:00
+STARTED pid=16520 birth=1789125368.747
+agent: I will read the instruction file and batch, inspect every listed image, and write the required JSON files using ASCII only.
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -LiteralPath 'C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/frozen_instructions_astra.md' -Raw"
+out: HITE straight band with a black outline drawn over
+the photograph. It is about 240 px long and about 6 px wide. Its position inside
+the image is different for every control; never assume it is centred.
+
+## What to report -- THREE POINTS ON THE BAND
+
+Do NOT report endpoints. Do NOT report a length. Report three points that each lie
+ON the white band, anywhere along it:
+
+- `p1` and `p2`: two points on the band, separated by at least 60 px.
+- `p3`: a third point on the band that you locate INDEPENDENTLY by looking at the
+  pixels between `p1` and `p2`. It must lie strictly between them along the band.
+  Do NOT average `p1` and `p2`; an arithmetic midpoint is not an observation.
+
+Each point must sit on the white paint itself, not on the black outline beside it.
+Where the band stops does not matter and is not scored.
+
+If you cannot find the band, use state `UNKNOWN` with an empty `points` object.
+Never guess.
+
+## Output schema
+
+```
+{
+  "control_id": "G396_PRACTICE_001",
+  "state": "VISIBLE",
+  "reason": "white band on dark floor",
+  "opened_path": "C:/.../G396_PRACTICE_001.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 3,
+  "offset": [1280, 0],
+  "coords": "tile",
+  "points": {"p1": [x1, y1], "p2": [x2, y2], "p3": [x3, y3]},
+  "native_points": {"p1": [X1, Y1], "p2": [X2, Y2], "p3": [X3, Y3]}
+}
+```
+
+ASCII only. JSON files only, no notes, no summary file, no other output.
+
+## Frozen rater-side correction (exactly one, recorded before qualification)
+
+none requested
+
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -LiteralPath 'C:/Users/neelj/AppData/Local/Temp/g396_work/batch_qualification_astra/batch_03.tsv' -Raw"
+out: G396_QUALIFICATION_003	C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_003.png	4	0	540	640	540
+G396_QUALIFICATION_014	C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_014.png	3	1280	0	640	540
+G396_QUALIFICATION_012	C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_012.png	1	0	0	640	540
+G396_QUALIFICATION_005	C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_005.png	6	1280	540	640	540
+G396_QUALIFICATION_025	C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_025.png	2	640	0	640	540
+G396_QUALIFICATION_018	C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_018.png	1	0	0	640	540
+G396_QUALIFICATION_029	C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_029.png	6	1280	540	640	540
+G396_QUALIFICATION_021	C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_021.png	4	0	540	640	540
+G396_QUALIFICATION_009	C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_009.png	4	0	540	640	540
+G396_QUALIFICATION_002	C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_002.png	3	1280	0	640	540
+
+
+agent: I have inspected seven images. I will inspect the remaining three and write the JSON files.
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$null = New-Item -ItemType Directory -Force -Path '"'C:/Users/neelj/nba-track-a3/.g396_out/qualification_astra'
+[System.IO.File]::WriteAllText('C:/Users/neelj/nba-track-a3/.g396_out/qualification_astra/G396_QUALIFICATION_003.
+agent: 
+TURN_END turn.completed at 2026-09-11T06:17:35-05:00
+EXIT:0 gap=g396_rater_astra_qualification03 at 2026-09-11T06:17:35-05:00
+DRAINED

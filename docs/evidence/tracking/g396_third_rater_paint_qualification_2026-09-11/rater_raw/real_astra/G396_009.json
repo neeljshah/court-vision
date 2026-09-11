@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_009",
+    "state":  "VISIBLE",
+    "reason":  "Baseline and lane markings are visible in the wide shot.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  3,
+                          "family":  "BASELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    120,
+                                                    374
+                                                ],
+                                         "p2":  [
+                                                    305,
+                                                    492
+                                                ],
+                                         "p3":  [
+                                                    227,
+                                                    443
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  5,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    480,
+                                                    126
+                                                ],
+                                         "p2":  [
+                                                    599,
+                                                    114
+                                                ],
+                                         "p3":  [
+                                                    548,
+                                                    119
+                                                ]
+                                     }
+                      }
+                  ]
+}

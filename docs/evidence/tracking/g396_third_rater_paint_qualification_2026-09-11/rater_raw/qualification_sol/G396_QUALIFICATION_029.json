@@ -1,0 +1,13 @@
+{
+  "control_id": "G396_QUALIFICATION_029",
+  "state": "VISIBLE",
+  "reason": "white diagonal band over bench scene",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_029.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 6,
+  "offset": [1280, 540],
+  "coords": "tile",
+  "points": {"p1": [365, 320], "p2": [463, 486], "p3": [413, 402]},
+  "native_points": {"p1": [1645, 860], "p2": [1743, 1026], "p3": [1693, 942]}
+}

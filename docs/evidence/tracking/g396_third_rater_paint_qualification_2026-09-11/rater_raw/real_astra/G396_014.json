@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_014",
+    "state":  "VISIBLE",
+    "reason":  "Wide view shows clear baseline and lane paint.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  4,
+                          "family":  "BASELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    70,
+                                                    184
+                                                ],
+                                         "p2":  [
+                                                    315,
+                                                    92
+                                                ],
+                                         "p3":  [
+                                                    205,
+                                                    134
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  5,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    80,
+                                                    142
+                                                ],
+                                         "p2":  [
+                                                    330,
+                                                    186
+                                                ],
+                                         "p3":  [
+                                                    232,
+                                                    169
+                                                ]
+                                     }
+                      }
+                  ]
+}

@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_017",
+    "state":  "VISIBLE",
+    "reason":  "White lane boundary and baseline paint are clearly visible.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  5,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    91,
+                                                    319
+                                                ],
+                                         "p2":  [
+                                                    271,
+                                                    302
+                                                ],
+                                         "p3":  [
+                                                    193,
+                                                    309
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  6,
+                          "family":  "BASELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    215,
+                                                    141
+                                                ],
+                                         "p2":  [
+                                                    513,
+                                                    313
+                                                ],
+                                         "p3":  [
+                                                    371,
+                                                    232
+                                                ]
+                                     }
+                      }
+                  ]
+}

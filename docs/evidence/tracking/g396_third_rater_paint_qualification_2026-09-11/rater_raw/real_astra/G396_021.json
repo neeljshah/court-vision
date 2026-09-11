@@ -1,0 +1,44 @@
+{
+    "context_id":  "G396_021",
+    "state":  "VISIBLE",
+    "reason":  "Dark baseline and lane paint are visible on the floor.",
+    "coords":  "tile",
+    "fragments":  [
+                      {
+                          "tile":  4,
+                          "family":  "BASELINE",
+                          "points":  {
+                                         "p1":  [
+                                                    225,
+                                                    335
+                                                ],
+                                         "p2":  [
+                                                    400,
+                                                    176
+                                                ],
+                                         "p3":  [
+                                                    320,
+                                                    249
+                                                ]
+                                     }
+                      },
+                      {
+                          "tile":  5,
+                          "family":  "LANE_LINE",
+                          "points":  {
+                                         "p1":  [
+                                                    100,
+                                                    246
+                                                ],
+                                         "p2":  [
+                                                    450,
+                                                    283
+                                                ],
+                                         "p3":  [
+                                                    283,
+                                                    266
+                                                ]
+                                     }
+                      }
+                  ]
+}

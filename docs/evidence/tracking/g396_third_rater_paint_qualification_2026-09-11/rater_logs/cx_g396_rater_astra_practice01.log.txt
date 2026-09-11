@@ -1,0 +1,71 @@
+DISPATCHED run=1789124862125069800 tag=g396_rater_astra_practice01 wt=a3 at 2026-09-11T06:07:42-05:00
+STARTED pid=29060 birth=1789124862.128
+agent: I will read the instruction file and batch file, inspect every listed image, and write the JSON ratings to the specified output directory.
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -LiteralPath 'C:/Users/neelj/nba-track-a3/docs/evidence/tracking/g396_third_rater_paint_qualification_2026-09-11/rater_instruction_control.md'"
+out: ile.
+
+## The target
+
+Exactly one target: the bright WHITE straight band with a black outline drawn over
+the photograph. It is about 240 px long and about 6 px wide. Its position inside
+the image is different for every control; never assume it is centred.
+
+## What to report -- THREE POINTS ON THE BAND
+
+Do NOT report endpoints. Do NOT report a length. Report three points that each lie
+ON the white band, anywhere along it:
+
+- `p1` and `p2`: two points on the band, separated by at least 60 px.
+- `p3`: a third point on the band that you locate INDEPENDENTLY by looking at the
+  pixels between `p1` and `p2`. It must lie strictly between them along the band.
+  Do NOT average `p1` and `p2`; an arithmetic midpoint is not an observation.
+
+Each point must sit on the white paint itself, not on the black outline beside it.
+Where the band stops does not matter and is not scored.
+
+If you cannot find the band, use state `UNKNOWN` with an empty `points` object.
+Never guess.
+
+## Output schema
+
+```
+{
+  "control_id": "G396_PRACTICE_001",
+  "state": "VISIBLE",
+  "reason": "white band on dark floor",
+  "opened_path": "C:/.../G396_PRACTICE_001.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 3,
+  "offset": [1280, 0],
+  "coords": "tile",
+  "points": {"p1": [x1, y1], "p2": [x2, y2], "p3": [x3, y3]},
+  "native_points": {"p1": [X1, Y1], "p2": [X2, Y2], "p3": [X3, Y3]}
+}
+```
+
+ASCII only. JSON files only, no notes, no summary file, no other output.
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Get-Content -LiteralPath 'C:/Users/neelj/AppData/Local/Temp/g396_work/batch_practice_astra/batch_01.tsv'"
+out: G396_PRACTICE_004	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_004.png	4	0	540	640	540
+G396_PRACTICE_030	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_030.png	6	1280	540	640	540
+G396_PRACTICE_010	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_010.png	4	0	540	640	540
+G396_PRACTICE_024	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_024.png	6	1280	540	640	540
+G396_PRACTICE_001	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_001.png	1	0	0	640	540
+G396_PRACTICE_011	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_011.png	5	640	540	640	540
+G396_PRACTICE_026	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_026.png	2	640	0	640	540
+G396_PRACTICE_019	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_019.png	1	0	0	640	540
+G396_PRACTICE_015	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_015.png	3	1280	0	640	540
+G396_PRACTICE_020	C:/Users/neelj/AppData/Local/Temp/g396_work/images_practice/G396_PRACTICE_020.png	2	640	0	640	540
+
+agent: The bands are visible in the images inspected so far. I am recording three points on each band and applying the listed offsets for native coordinates.
+
+cmd: "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$ratingOutputDir = '"'C:/Users/neelj/nba-track-a3/.g396_out/practice_astra'
+[System.IO.Directory]::CreateDirectory("'$ratingOutputDir) | Out-Null
+$ratingRecords = @'"'
+[{\"control_id\":\"G396_PRACTICE_004\",\"state\":\"VISIBL
+agent: 
+TURN_END turn.completed at 2026-09-11T06:09:03-05:00
+EXIT:0 gap=g396_rater_astra_practice01 at 2026-09-11T06:09:04-05:00
+DRAINED

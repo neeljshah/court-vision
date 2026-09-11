@@ -1,0 +1,13 @@
+{
+  "control_id": "G396_QUALIFICATION_003",
+  "state": "VISIBLE",
+  "reason": "white band on broadcast graphic",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_003.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 4,
+  "offset": [0, 540],
+  "coords": "tile",
+  "points": {"p1": [300, 526], "p2": [500, 526], "p3": [410, 526]},
+  "native_points": {"p1": [300, 1066], "p2": [500, 1066], "p3": [410, 1066]}
+}

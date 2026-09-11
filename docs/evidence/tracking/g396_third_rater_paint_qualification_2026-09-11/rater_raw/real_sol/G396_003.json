@@ -1,0 +1,9 @@
+{
+  "context_id": "G396_003",
+  "state": "VISIBLE",
+  "reason": "close shot, one straight white floor band is visible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 2, "family": "UNKNOWN", "points": {"p1": [4, 389], "p2": [120, 522], "p3": [58, 451]}}
+  ]
+}

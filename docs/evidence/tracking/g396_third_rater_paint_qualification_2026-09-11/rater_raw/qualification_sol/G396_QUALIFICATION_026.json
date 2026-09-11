@@ -1,0 +1,13 @@
+{
+  "control_id": "G396_QUALIFICATION_026",
+  "state": "VISIBLE",
+  "reason": "steep white band visible over court",
+  "opened_path": "C:/Users/neelj/AppData/Local/Temp/g396_work/images_qualification/G396_QUALIFICATION_026.png",
+  "opened_width": 640,
+  "opened_height": 540,
+  "tile": 3,
+  "offset": [1280, 0],
+  "coords": "tile",
+  "points": {"p1": [363, 261], "p2": [458, 448], "p3": [410, 355]},
+  "native_points": {"p1": [1643, 261], "p2": [1738, 448], "p3": [1690, 355]}
+}

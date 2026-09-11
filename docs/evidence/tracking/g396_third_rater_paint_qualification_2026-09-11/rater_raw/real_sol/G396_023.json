@@ -1,0 +1,9 @@
+{
+  "context_id": "G396_023",
+  "state": "VISIBLE",
+  "reason": "centre line paint is clearly visible",
+  "coords": "tile",
+  "fragments": [
+    {"tile": 4, "family": "CENTRE_LINE", "points": {"p1": [501, 143], "p2": [500, 391], "p3": [502, 268]}}
+  ]
+}
