@@ -1,0 +1,66 @@
+{
+  "failures": {
+    "1080p30/RIrGQJ_jsGQ_s90": "PREFLIGHT_PERSON_COUNT"
+  },
+  "masked_classes_admitted": 0,
+  "per_kind": {
+    "1080p30": {
+      "all_decoded_frames": 9000,
+      "all_evaluated_ticks": 2500,
+      "candidate_rows": 1565,
+      "candidate_rows_per_row": 0.171113,
+      "complete": 29,
+      "decoded_frames_with_candidate": 1019,
+      "distinct_games": 13,
+      "evaluated_ticks_with_candidate": 1019,
+      "held_pairs": 4379,
+      "held_share_pooled": 0.581232,
+      "no_shared_pairs": 217,
+      "planned": 30,
+      "provenance_frequencies": {
+        "CLAMP": 4485,
+        "DETECTION": 1565,
+        "PREDICTION": 2381,
+        "SUBPIXEL": 715
+      },
+      "receipt_equals_trace": 29,
+      "rows": 9146,
+      "schedule_unknown": 1,
+      "shared_pairs": 7534,
+      "status": {
+        "COMPLETE": 29,
+        "INCOMPLETE": 1
+      },
+      "zero_output_evaluated_ticks": 151
+    },
+    "720p60": {
+      "all_decoded_frames": 18000,
+      "all_evaluated_ticks": 2810,
+      "candidate_rows": 1510,
+      "candidate_rows_per_row": 0.151896,
+      "complete": 30,
+      "decoded_frames_with_candidate": 1014,
+      "distinct_games": 16,
+      "evaluated_ticks_with_candidate": 1014,
+      "held_pairs": 4684,
+      "held_share_pooled": 0.582805,
+      "no_shared_pairs": 307,
+      "planned": 30,
+      "provenance_frequencies": {
+        "CLAMP": 4869,
+        "DETECTION": 1510,
+        "PREDICTION": 2878,
+        "SUBPIXEL": 684
+      },
+      "receipt_equals_trace": 30,
+      "rows": 9941,
+      "schedule_unknown": 0,
+      "shared_pairs": 8037,
+      "status": {
+        "COMPLETE": 30
+      },
+      "zero_output_evaluated_ticks": 204
+    }
+  },
+  "planned_total": 60
+}

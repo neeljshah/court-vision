@@ -1,0 +1,139 @@
+DATABASE_URL not set — _pg_write_tracking_rows will skip (SQLite-only mode). Set DATABASE_URL=postgresql://... to enable PostgreSQL writes.
+WARN: YOLO-NAS shot-detection weights not found (looked for: None). Shot-attempt / made-basket detection will be disabled. Ball tracking is unaffected (uses separate yolov8n_ball engine). To restore: place YOLO-NAS weights at the configured path.
+WARN: YOLO-NAS shot-detection weights not found (looked for: None). Shot-attempt / made-basket detection will be disabled. Ball tracking is unaffected (uses separate yolov8n_ball engine). To restore: place YOLO-NAS weights at the configured path.
+[preflight] Sampling 10 frames for person detection...
+[preflight] OK -- median persons/frame = 5.0
+ Evaluated-frame sidecar : /workspace/g402_scratch/out/3eeaJz1PJTM_s6295/evaluated_frame_count.json
+
+============================================================
+ Stage 1 / 3 -- Tracking
+============================================================
+ Video : /workspace/g402_scratch/srcs/wnba__3eeaJz1PJTM_s6295.mp4
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ No video-specific pano cached — building from gameplay frames...
+ Scanning 2.2 min video for gameplay...
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+[h264 @ 0x17aa3080] mmco: unref short failure
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+[h264 @ 0x17aa3080] mmco: unref short failure
+[h264 @ 0x17aa3080] mmco: unref short failure
+[h264 @ 0x17aa3080] mmco: unref short failure
+[h264 @ 0x17aa3080] mmco: unref short failure
+[h264 @ 0x17aa3080] mmco: unref short failure
+[h264 @ 0x17aa3080] mmco: unref short failure
+[h264 @ 0x17aa3080] mmco: unref short failure
+[h264 @ 0x17b47740] mmco: unref short failure
+[h264 @ 0x17b47740] mmco: unref short failure
+[h264 @ 0x17b47740] mmco: unref short failure
+[h264 @ 0x17b47740] mmco: unref short failure
+_build_court: rectified portrait (1711x3404) — rotated 90° → landscape (3404x1711)
+  Gameplay at frame 150 (0.1 min, 8 people)
+ Stitching 30 frames into panorama...
+  Stitch failed (could not broadcast input array from shape (1020,1920,3) into shape (1020,1070,3)), using single frame as pano
+  Stitched pano invalid (1920×1020, ratio=1.9) — falling back to general pano
+  Using general pano fallback: pano_enhanced.png (G330: NOT cached per-video)
+[unified_pipeline] Using static Rectify1.npy for 'wnba__3eeaJz1PJTM_s6295.mp4' — per-clip M1 will be updated during gameplay
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+
+[PROFILE f=3560] gameplay=0.012s  homog=0.160s  players=0.331s  ball=0.414s  TOTAL=0.918s
+[SUBPROFILE] yolo=0.275  ac_call=0.007  hsv=0.000  warmup=0.000  classify_dyn=0.000  ctrack_upd=0.018  n_boxes=3.000  crops_step3=0.027  osnet=0.014  assign_render=0.001  total=0.317
+ Frame 3560... Frame 3563... Frame 3566... Frame 3569... Frame 3572... Frame 3575... Frame 3578...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 3581... Frame 3584... Frame 3587... Frame 3590... Frame 3593... Frame 3596... Frame 3599...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 3602... Frame 3605... Frame 3608... Frame 3611... Frame 3614... Frame 3617... Frame 3620...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 3623... Frame 3626... Frame 3629... Frame 3632... Frame 3635... Frame 3638... Frame 3641...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 3644... Frame 3647...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+[court_detector] detected per-clip homography from 5 court frames (5 supplied)
+ Frame 3830... Frame 3833... Frame 3836... Frame 3839... Frame 3842...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 3845... Frame 3848... Frame 3851... Frame 3854... Frame 3857... Frame 3860...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 3863... Frame 3866... Frame 3869... Frame 3872... Frame 3875... Frame 3878... Frame 3881...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 3884... Frame 3887...
+[PROFILE f=3890] gameplay=0.000s  homog=0.000s  players=0.037s  ball=0.032s  TOTAL=0.069s
+[SUBPROFILE] yolo=0.000  ac_call=0.005  hsv=0.003  warmup=0.010  classify_dyn=0.000  ctrack_upd=0.001  n_boxes=1.000  crops_step3=0.019  osnet=0.010  assign_render=0.004  total=0.033
+ Frame 3890... Frame 3893... Frame 3896...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 3899...[db] DATABASE_URL unset — skipping PostgreSQL tracking_frames write (93 rows). Set DATABASE_URL to enable.
+nba_api not installed — jersey→player_id resolution disabled
+PlayerResolver: no jersey_name_map.json fallback at /workspace/g402_scratch/out/3eeaJz1PJTM_s6295/jersey_name_map.json
+
+  [team_names] NBA API failed (No module named 'nba_api') — using team_a/team_b fallback
+  [court_side] API failed (No module named 'nba_api') — using alphabetical fallback
+  [team_colors] written → /workspace/g402_scratch/out/3eeaJz1PJTM_s6295/team_colors.json
+
+[checkpoint] flushed 93 rows → /workspace/g402_scratch/out/3eeaJz1PJTM_s6295/tracking_data.csv
+Tracking data → data/tracking_data.csv  (clip_id=a0bf7787-6cb7-495b-82a7-26ce6a26ce85)
+Possessions: 0 kept, 1 skipped (<2.0s noise)
+Possessions: 0 after same-team merge (was 0)
+Possessions     → /workspace/g402_scratch/out/3eeaJz1PJTM_s6295/possessions.csv  (0 rows)
+Player stats    → /workspace/g402_scratch/out/3eeaJz1PJTM_s6295/player_clip_stats.csv  (6 players)
+Player name backfill: 93 rows updated in tracking_data.csv
+Player name backfill: 0 rows updated in shot_log.csv
+scoreboard_period backfill: filled 93 (preserved 0 OCR values) in tracking_data.csv
+  [poss_id_remap] no possession_id found in possessions.csv — skipped
+
+Enriching shots with NBA API  (game_id=3eeaJz1PJTM_s6295, period=1, fps=30.00)
+  [enrichment] Auto-calibrated clip_start_sec=-118.7s (from ball_tracking.csv first detected frame)
+
+Enriching data for game 3eeaJz1PJTM_s6295 · period 1 · clip_start=-119s
+  [enrichment] failed (non-fatal): nba_api not installed. Run: pip install nba_api
+
+ Frames processed : 3899
+ Track stability  : 1.000
+ Est. ID switches : 0
+  [mem] GPU memory released for post-processing
+
+============================================================
+ Stage 2 / 3 -- NBA API Enrichment
+============================================================
+  [enrichment] Auto-calibrated clip_start_sec=-118.7s (from ball_tracking.csv first detected frame)
+
+Enriching data for game 3eeaJz1PJTM_s6295 · periods [1] · clip_start=-119s
+  NBA enrichment failed: nba_api not installed. Run: pip install nba_api
+  (Tracking data is still complete -- enrichment is optional)
+
+============================================================
+ Stage 4 / 4 -- OCR Identity Annotation
+============================================================
+[run_clip] Running OCR annotation pass...
+[run_clip] DATABASE_URL not set -- skipping identity persistence
+
+============================================================
+ Stage 3 / 3 -- Feature Engineering
+============================================================
+Loaded 93 rows, 39 frames, 6 players
+  [fill_spatial] nearest_opponent: filled 0 blank rows
+[injury_monitor] ESPN fetch error: 403 Client Error: Forbidden for url: https://site.api.espn.com/apis/site/v2/sports/basketball/nba/injuries
+[injury_monitor] feedparser not installed — run: pip install feedparser
+[injury_monitor] ESPN fetch error: 403 Client Error: Forbidden for url: https://site.api.espn.com/apis/site/v2/sports/basketball/nba/injuries
+[injury_monitor] feedparser not installed — run: pip install feedparser
+  team_abbrev applied from /workspace/g402_scratch/out/3eeaJz1PJTM_s6295/team_colors.json
+Features -> /workspace/g402_scratch/out/3eeaJz1PJTM_s6295/features.csv  (93 rows, 169 cols)
+  [provenance] tracking_data.csv declared image_px/observed/none
+
+============================================================
+ Output Summary
+============================================================
+  OK  tracking_data.csv               (93 rows)     Per-frame player data (36 cols)
+  OK  ball_tracking.csv               (54 rows)     Per-frame ball position
+  OK  possessions.csv                 (0 rows)      Per-possession aggregate stats
+  OK  shot_log.csv                    (0 rows)      Per-shot attempt log
+  OK  player_clip_stats.csv           (6 rows)      Per-player clip aggregates
+  OK  features.csv                    (93 rows)     ML-ready engineered features
+
+ ML Dataset
+  features.csv : (93 rows)  169 columns
+  Frames        : 3899  (130s @ 30fps)
+  possessions   : (not found) labeled rows (team / result / score_diff) -- train your model here
+  shot_log      : (not found) labeled rows (zone / quality / made) -- shot-quality model target
+
+ Total time: 59.3s
+============================================================

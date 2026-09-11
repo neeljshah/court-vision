@@ -1,0 +1,29 @@
+{
+  "1080p30": {
+    "distinct_competitions": 4,
+    "distinct_games": 14,
+    "eligible_sections": 40,
+    "required": 30,
+    "supply": "COMPLETE",
+    "trees": [
+      "footage_bridge",
+      "footage_corpus",
+      "g364_scratch_val"
+    ]
+  },
+  "720p60": {
+    "distinct_competitions": 4,
+    "distinct_games": 16,
+    "eligible_sections": 79,
+    "required": 30,
+    "supply": "COMPLETE",
+    "trees": [
+      "footage_corpus"
+    ]
+  },
+  "census_rows": 155,
+  "drawn": 60,
+  "excluded_trees": {
+    "/workspace/feeder/work": "LIVE_FEEDER_WORKING_DIR_NEVER_TOUCHED"
+  }
+}

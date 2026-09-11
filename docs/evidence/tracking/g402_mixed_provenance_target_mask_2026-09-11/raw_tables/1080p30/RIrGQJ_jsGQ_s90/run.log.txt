@@ -1,0 +1,7 @@
+[preflight] Sampling 10 frames for person detection...
+
+[PREFLIGHT FAIL] Median person count = 2 (threshold: 3)
+Video appears to be non-broadcast footage (app UI, overlays, no court).
+This is a YOLO detection check -- if the video is a real broadcast,
+re-download from a different source and retry.
+

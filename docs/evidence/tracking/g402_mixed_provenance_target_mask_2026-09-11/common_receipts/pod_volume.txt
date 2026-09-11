@@ -1,0 +1,1 @@
+mfs#eu-cz-1.runpod.net:9421  943T  562T  382T  60% /workspace

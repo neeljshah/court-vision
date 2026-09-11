@@ -1,0 +1,20 @@
+[
+  {
+    "digest_equal": true,
+    "from": "/workspace/data/footage_bridge/ncaa_basketball__4JS090XPhmM_s2388.mp4",
+    "section_id": "4JS090XPhmM_s2388",
+    "to": "/workspace/data/footage_corpus/ncaa_basketball__4JS090XPhmM_s2388.mp4"
+  },
+  {
+    "digest_equal": true,
+    "from": "/workspace/data/footage_bridge/ncaa_basketball__4JS090XPhmM_s3537.mp4",
+    "section_id": "4JS090XPhmM_s3537",
+    "to": "/workspace/data/footage_corpus/ncaa_basketball__4JS090XPhmM_s3537.mp4"
+  },
+  {
+    "digest_equal": true,
+    "from": "/workspace/data/footage_bridge/ncaa_basketball__4JS090XPhmM_s4686.mp4",
+    "section_id": "4JS090XPhmM_s4686",
+    "to": "/workspace/data/footage_corpus/ncaa_basketball__4JS090XPhmM_s4686.mp4"
+  }
+]

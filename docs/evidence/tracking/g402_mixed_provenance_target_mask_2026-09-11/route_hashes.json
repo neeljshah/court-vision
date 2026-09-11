@@ -1,0 +1,88 @@
+{
+  "deploy_tree": "/workspace/deploy/nba-ai-system",
+  "env": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "modified": {
+    "scripts/platformkit/track_daemon.py": "0056c85ccbf334f459cb578d874aa129462214a056884df36f1e3ea51fa7de72",
+    "scripts/run_clip.py": "eb6d4e7ff3774162d69311df7ec4cbc77eab3c0de9d05e548b45a63570dfcfa1",
+    "src/pipeline/unified_pipeline.py": "a5bfcf8eaa1cebfba913913075f617f3ee6662096ac4cafecb89d5f3aeaf7839",
+    "src/tracking/advanced_tracker.py": "27c3d6aa4615b0c0ca4f1bc6b2922f65345837d6fcae05358522080bee6a87c4"
+  },
+  "original": {
+    "scripts/platformkit/track_daemon.py": "9747d9a085405c492f04c4e3b162ed8b1d897309da6f0f9c014cb7092056f5ac",
+    "scripts/run_clip.py": "ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2",
+    "src/pipeline/unified_pipeline.py": "c4eae385bfeebd4e44c8161c791ef7ed4589697020f424d3dde7aec6816d9226",
+    "src/tracking/advanced_tracker.py": "df2ae698ae03e804f67639434d8303638aea9087c3169c016af5a3734dd474d7"
+  },
+  "platform": "linux",
+  "provenance_module_sha256": "f7c46872b2aede7cca5b6d74e94f53986bcda6574960c7c76e07bff312433e9c",
+  "python": "3.12.3",
+  "scratch_tree": "/workspace/g402_scratch/tree",
+  "trace_hook_sha256": "6563e67640afca8960717eac0021f45a8d1bc323fe2f349771cfab915a6020bf",
+  "tree_sha256_digest": "651d6c3e637f748ed0ec8e2abbbe102d6736f155b1c710be252f8cd9ab68f68c",
+  "weights": {},
+  "model_identity_receipt": {
+    "captured_utc": "2026-09-11T18:45Z",
+    "source": ".g402_out/model_receipts_pod.json",
+    "timing": "post_hoc_after_run_against_unchanged_deploy_tree",
+    "deploy_route_files_rehash_unchanged_per_launch_receipts": true,
+    "exercise_basis": "all 60 argv records invoke scripts/run_clip.py without --yolo-weight; route logs show yolo, osnet, pose-features and Stage 4 OCR execution",
+    "models": [
+      {
+        "role": "detector (YOLOv8n)",
+        "path": "/workspace/deploy/nba-ai-system/yolov8n.pt",
+        "bytes": 6549796,
+        "sha256": "f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36",
+        "exercise_status": "EXERCISED"
+      },
+      {
+        "role": "pose (YOLOv8n-pose)",
+        "path": "/workspace/deploy/nba-ai-system/yolov8n-pose.pt",
+        "bytes": 6832633,
+        "sha256": "c6fa93dd1ee4a2c18c900a45c1d864a1c6f7aba75d84f91648a30b7fb641d212",
+        "exercise_status": "EXERCISED"
+      },
+      {
+        "role": "re-id (OSNet x0.25)",
+        "path": "/workspace/data/models/osnet_x0_25_imagenet.pth",
+        "bytes": 2973731,
+        "sha256": "f54941a66bad4ddd07f2907f498c810ce639ce7a1abeaf2a151f8da118d84693",
+        "exercise_status": "EXERCISED"
+      },
+      {
+        "role": "ocr detector (EasyOCR CRAFT)",
+        "path": "/root/.EasyOCR/model/craft_mlt_25k.pth",
+        "bytes": 83152330,
+        "sha256": "4a5efbfb48b4081100544e75e1e2b57f8de3d84f213004b14b85fd4b3748db17",
+        "exercise_status": "EXERCISED"
+      },
+      {
+        "role": "ocr recognizer (EasyOCR english_g2)",
+        "path": "/root/.EasyOCR/model/english_g2.pth",
+        "bytes": 15143997,
+        "sha256": "e2272681d9d67a04e2dff396b6e95077bc19001f8f6d3593c307b9852e1c29e8",
+        "exercise_status": "EXERCISED"
+      },
+      {
+        "role": "live win-prob MLP",
+        "path": "/workspace/data/models/multitask_mlp_live.pt",
+        "bytes": 267074,
+        "sha256": "92d68dc4f41de57cc341eb10703c0ec519e9b66d59424fe768f745d87a775c32",
+        "exercise_status": "NOT_EXERCISED"
+      },
+      {
+        "role": "live win-prob LSTM",
+        "path": "/workspace/data/models/live_win_prob_lstm.pt",
+        "bytes": 218722,
+        "sha256": "a6b915a1e4623e5a3ec5920e270d7137abfd87cca7201706e1acf083ba0e952a",
+        "exercise_status": "NOT_EXERCISED"
+      }
+    ],
+    "aggregate_launch_weight_digest": "a167df3e58ff0e01842a1e724d1ad93b2586ca8f7898a9b11eb0421356a9fbda",
+    "aggregate_algorithm": "sha256(LF-joined sorted exercised-model sha256 values plus sorted modified route-file sha256 values, trailing LF)"
+  }
+}

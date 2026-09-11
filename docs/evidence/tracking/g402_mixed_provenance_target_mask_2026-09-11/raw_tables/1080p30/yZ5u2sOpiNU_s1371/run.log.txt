@@ -1,0 +1,172 @@
+DATABASE_URL not set — _pg_write_tracking_rows will skip (SQLite-only mode). Set DATABASE_URL=postgresql://... to enable PostgreSQL writes.
+WARN: YOLO-NAS shot-detection weights not found (looked for: None). Shot-attempt / made-basket detection will be disabled. Ball tracking is unaffected (uses separate yolov8n_ball engine). To restore: place YOLO-NAS weights at the configured path.
+WARN: YOLO-NAS shot-detection weights not found (looked for: None). Shot-attempt / made-basket detection will be disabled. Ball tracking is unaffected (uses separate yolov8n_ball engine). To restore: place YOLO-NAS weights at the configured path.
+[preflight] Sampling 10 frames for person detection...
+[preflight] OK -- median persons/frame = 13.0
+ Evaluated-frame sidecar : /workspace/g402_scratch/out/yZ5u2sOpiNU_s1371/evaluated_frame_count.json
+
+============================================================
+ Stage 1 / 3 -- Tracking
+============================================================
+ Video : /workspace/g402_scratch/srcs/nba__yZ5u2sOpiNU_s1371.mp4
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ No video-specific pano cached — building from gameplay frames...
+ Scanning 2.3 min video for gameplay...
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+_build_court: rectified portrait (1711x3404) — rotated 90° → landscape (3404x1711)
+  Gameplay at frame 0 (0.0 min, 12 people)
+ Stitching 30 frames into panorama...
+  Stitch failed (could not broadcast input array from shape (1020,1920,3) into shape (1020,1070,3)), using single frame as pano
+  Stitched pano invalid (1920×1020, ratio=1.9) — falling back to general pano
+  Using general pano fallback: pano_enhanced.png (G330: NOT cached per-video)
+[unified_pipeline] Using static Rectify1.npy for 'nba__yZ5u2sOpiNU_s1371.mp4' — per-clip M1 will be updated during gameplay
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+[BALL] discarding degenerate ball bbox (1561, 969, 78, 78) (frame 1920x1020)
+
+[PROFILE f=1947] gameplay=0.018s  homog=0.198s  players=0.529s  ball=0.436s  TOTAL=1.182s
+[SUBPROFILE] yolo=0.307  ac_call=0.007  hsv=0.003  warmup=0.008  classify_dyn=0.000  ctrack_upd=0.042  n_boxes=6.000  crops_step3=0.061  osnet=0.134  assign_render=0.002  total=0.504
+ Frame 1947...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 1950... Frame 1953...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+[BALL] discarding degenerate ball bbox (292, 938, 86, 86) (frame 1920x1020)
+ Frame 1956...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 1959... Frame 1962...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 1965... Frame 1968...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+[BALL] discarding degenerate ball bbox (403, 910, 120, 120) (frame 1920x1020)
+ Frame 1971...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 1974... Frame 1977... Frame 1980...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+[BALL] discarding degenerate ball bbox (1440, 928, 94, 94) (frame 1920x1020)
+ Frame 1983...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 1986... Frame 1989... Frame 1992...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 1995... Frame 1998...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2001...
+[checkpoint] flushed 60 rows → /workspace/g402_scratch/out/yZ5u2sOpiNU_s1371/tracking_data.csv
+
+[MEM] checkpoint f=2001  RSS=2837MB  tracking_rows=0  ball=0  events=0  poss=0
+ Frame 2004...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2007... Frame 2010...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2013... Frame 2016...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2019... Frame 2022...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2025...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2028...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2031... Frame 2034...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2307... Frame 2310...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2313... Frame 2316...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2319...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2322... Frame 2325...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2328... Frame 2331...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2334... Frame 2337...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2340... Frame 2343...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2346... Frame 2349... Frame 2352...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2355... Frame 2358... Frame 2361... Frame 2364...
+[PROFILE f=2367] gameplay=0.000s  homog=0.001s  players=0.085s  ball=0.033s  TOTAL=0.119s
+[SUBPROFILE] yolo=0.000  ac_call=0.008  hsv=0.012  warmup=0.046  classify_dyn=0.007  ctrack_upd=0.001  n_boxes=5.000  crops_step3=0.067  osnet=0.012  assign_render=0.001  total=0.081
+ Frame 2367... Frame 2370... Frame 2373...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2376... Frame 2379... Frame 2382... Frame 2385... Frame 2388... Frame 2391... Frame 2394...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2397... Frame 2400... Frame 2403... Frame 2406... Frame 2409... Frame 2412... Frame 2415...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2418... Frame 2421... Frame 2424... Frame 2427... Frame 2430... Frame 2433... Frame 2436...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2439... Frame 2442... Frame 2445... Frame 2448... Frame 2451... Frame 2454... Frame 2457...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2460... Frame 2463... Frame 2466... Frame 2469... Frame 2472... Frame 2475... Frame 2478...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+nba_api not installed — jersey→player_id resolution disabled
+PlayerResolver: no jersey_name_map.json fallback at /workspace/g402_scratch/out/yZ5u2sOpiNU_s1371/jersey_name_map.json
+
+PlayerResolver — Jersey OCR Resolution Report
+  frames processed : 301
+  slots with votes : 3
+  roster entries   : 0
+
+  slot  1 (green) → jersey #None pid=None name='green#?'  votes=[(1, 1)]
+  slot  8 (white) → jersey #None pid=None name='white#?'  votes=[(1, 2)]
+  slot  9 (white) → jersey #None pid=None name='white#?'  votes=[(0, 1)]
+ Frame 2481... Frame 2484...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2487... Frame 2490... Frame 2493... Frame 2496... Frame 2499...WARNING ⚠️ 'half' is deprecated and will be removed in the future. Use 'quantize' instead.
+ Frame 2502... Frame 2505... Frame 2508... Frame 2511... Frame 2514...[db] DATABASE_URL unset — skipping PostgreSQL tracking_frames write (269 rows). Set DATABASE_URL to enable.
+
+  [team_names] NBA API failed (No module named 'nba_api') — using team_a/team_b fallback
+  [court_side] API failed (No module named 'nba_api') — using alphabetical fallback
+  [team_colors] written → /workspace/g402_scratch/out/yZ5u2sOpiNU_s1371/team_colors.json
+
+[checkpoint] flushed 269 rows → /workspace/g402_scratch/out/yZ5u2sOpiNU_s1371/tracking_data.csv
+Tracking data → data/tracking_data.csv  (clip_id=e403408f-34aa-4151-99fd-9a4a81d16285)
+Possessions: 1 kept, 0 skipped (<2.0s noise)
+Possessions: 1 after same-team merge (was 1)
+Possessions     → /workspace/g402_scratch/out/yZ5u2sOpiNU_s1371/possessions.csv  (1 rows)
+Player stats    → /workspace/g402_scratch/out/yZ5u2sOpiNU_s1371/player_clip_stats.csv  (10 players)
+Player name backfill: 329 rows updated in tracking_data.csv
+Player name backfill: 2 rows updated in shot_log.csv
+scoreboard_period backfill: filled 329 (preserved 0 OCR values) in tracking_data.csv
+pose-features backfill: 0/2 (0%) contest_arm_angle | 2/2 (100%) dribble_count
+  [poss_id_remap] tracking_data.csv: 295/329 rows remapped
+  [poss_id_remap] shot_log.csv: 2/2 rows remapped
+[db] shot_log write failed (non-fatal): no such table: shots
+
+Enriching shots with NBA API  (game_id=yZ5u2sOpiNU_s1371, period=1, fps=29.97)
+  [enrichment] Auto-calibrated clip_start_sec=-65.1s (from ball_tracking.csv first detected frame)
+
+Enriching data for game yZ5u2sOpiNU_s1371 · period 1 · clip_start=-65s
+  [enrichment] failed (non-fatal): nba_api not installed. Run: pip install nba_api
+
+ Frames processed : 2517
+ Track stability  : 1.000
+ Est. ID switches : 0
+  [mem] GPU memory released for post-processing
+
+============================================================
+ Stage 2 / 3 -- NBA API Enrichment
+============================================================
+  [enrichment] Auto-calibrated clip_start_sec=-65.1s (from ball_tracking.csv first detected frame)
+
+Enriching data for game yZ5u2sOpiNU_s1371 · periods [1] · clip_start=-65s
+  NBA enrichment failed: nba_api not installed. Run: pip install nba_api
+  (Tracking data is still complete -- enrichment is optional)
+
+============================================================
+ Stage 4 / 4 -- OCR Identity Annotation
+============================================================
+[run_clip] Running OCR annotation pass...
+[run_clip] DATABASE_URL not set -- skipping identity persistence
+
+============================================================
+ Stage 3 / 3 -- Feature Engineering
+============================================================
+Loaded 329 rows, 82 frames, 10 players
+  [fill_spatial] nearest_opponent: filled 2 blank rows
+  [fill_spatial] handler_isolation: filled 0 blank frames
+[injury_monitor] ESPN fetch error: 403 Client Error: Forbidden for url: https://site.api.espn.com/apis/site/v2/sports/basketball/nba/injuries
+[injury_monitor] feedparser not installed — run: pip install feedparser
+[injury_monitor] ESPN fetch error: 403 Client Error: Forbidden for url: https://site.api.espn.com/apis/site/v2/sports/basketball/nba/injuries
+[injury_monitor] feedparser not installed — run: pip install feedparser
+  team_abbrev applied from /workspace/g402_scratch/out/yZ5u2sOpiNU_s1371/team_colors.json
+Features -> /workspace/g402_scratch/out/yZ5u2sOpiNU_s1371/features.csv  (329 rows, 169 cols)
+  [provenance] tracking_data.csv declared image_px/observed/none
+
+============================================================
+ Output Summary
+============================================================
+  OK  tracking_data.csv               (329 rows)    Per-frame player data (36 cols)
+  OK  ball_tracking.csv               (100 rows)    Per-frame ball position
+  OK  possessions.csv                 (1 rows)      Per-possession aggregate stats
+  OK  shot_log.csv                    (2 rows)      Per-shot attempt log
+  OK  player_clip_stats.csv           (10 rows)     Per-player clip aggregates
+  OK  features.csv                    (329 rows)    ML-ready engineered features
+
+ ML Dataset
+  features.csv : (329 rows)  169 columns
+  Frames        : 2517  (84s @ 30fps)
+  possessions   : (not found) labeled rows (team / result / score_diff) -- train your model here
+  shot_log      : (not found) labeled rows (zone / quality / made) -- shot-quality model target
+
+ Total time: 90.1s
+============================================================

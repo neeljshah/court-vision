@@ -1,0 +1,1 @@
+{"audited_boxes": 152, "boxes_outside_native_frame": 0, "cards": 60, "per_kind": {"1080p30": 30, "720p60": 30}, "rendered": 43, "silent_cards": 4}

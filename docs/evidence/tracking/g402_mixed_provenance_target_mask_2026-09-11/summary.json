@@ -1,0 +1,189 @@
+{
+ "binding_supply_before_condition": "SATISFIED by 40/79 eligible unique sections",
+ "claims": "provenance diagnostic only; no target qualified, no training caller, no deployment",
+ "eye_audit": {
+  "audited_boxes": 206,
+  "boxes_outside_native_frame": 34,
+  "cards": 60,
+  "degenerate_boxes": 0,
+  "rendered": 60,
+  "silent_cards": 5
+ },
+ "failures": {
+  "1080p30/RIrGQJ_jsGQ_s90": "PREFLIGHT_PERSON_COUNT"
+ },
+ "fix_1b": {
+  "coverage_rows": 60,
+  "date": "2026-09-11",
+  "excluded_admitted_rows": 317,
+  "excluded_overrun_rows": 2347,
+  "failed_window_coverage_status": "UNKNOWN",
+  "model_receipt": "post_hoc_after_run",
+  "raw_rows": 21434,
+  "replaced_audit_cards": [
+   "1080p30_01",
+   "720p60_22",
+   "720p60_25"
+  ],
+  "sealed_candidate_rows": 3075,
+  "sealed_rows": 19087,
+  "sealed_window": "[start_frame,start_frame+frames)"
+ },
+ "fix_1c": {
+  "bbox_fields_from_raw_tables": true,
+  "cards_rerendered": 60,
+  "date": "2026-09-11",
+  "degenerate_boxes": 0,
+  "draw": "floor(j*(N-1)/29+0.5) over draw_order then bounded receipt ticks",
+  "superseded_renders": "renders_pre_fix1c"
+ },
+ "masked_classes_admitted": 0,
+ "per_kind": {
+  "1080p30": {
+   "all_decoded_frames": 9000,
+   "all_evaluated_ticks": 2500,
+   "candidate_rows": 1565,
+   "candidate_rows_per_row": 0.171113,
+   "complete": 29,
+   "decoded_frames_with_candidate": 1019,
+   "distinct_games": 13,
+   "evaluated_ticks_with_candidate": 1019,
+   "held_pairs": 4379,
+   "held_share_pooled": 0.581232,
+   "no_shared_pairs": 217,
+   "planned": 30,
+   "provenance_frequencies": {
+    "CLAMP": 4485,
+    "DETECTION": 1565,
+    "PREDICTION": 2381,
+    "SUBPIXEL": 715
+   },
+   "receipt_equals_trace": 29,
+   "rows": 9146,
+   "schedule_unknown": 1,
+   "shared_pairs": 7534,
+   "status": {
+    "COMPLETE": 29,
+    "INCOMPLETE": 1
+   },
+   "zero_output_evaluated_ticks": 151
+  },
+  "720p60": {
+   "all_decoded_frames": 18000,
+   "all_evaluated_ticks": 2810,
+   "candidate_rows": 1510,
+   "candidate_rows_per_row": 0.151896,
+   "complete": 30,
+   "decoded_frames_with_candidate": 1014,
+   "distinct_games": 16,
+   "evaluated_ticks_with_candidate": 1014,
+   "held_pairs": 4684,
+   "held_share_pooled": 0.582805,
+   "no_shared_pairs": 307,
+   "planned": 30,
+   "provenance_frequencies": {
+    "CLAMP": 4869,
+    "DETECTION": 1510,
+    "PREDICTION": 2878,
+    "SUBPIXEL": 684
+   },
+   "receipt_equals_trace": 30,
+   "rows": 9941,
+   "schedule_unknown": 0,
+   "shared_pairs": 8037,
+   "status": {
+    "COMPLETE": 30
+   },
+   "zero_output_evaluated_ticks": 204
+  }
+ },
+ "premise": {
+  "g380_attempt_transport": "30/30",
+  "g380_clamp": 85333,
+  "g380_clamp_share": 0.96879,
+  "g380_subpixel": 2749,
+  "g380_unchanged_column_identity": "0/30",
+  "g397_disposition": "PARTIAL d5ddcaa4c",
+  "prepare_claimed_retained": {
+   "1080p30": 2,
+   "720p60": 20
+  },
+  "prepare_supply_premise": "FALSIFIED by live census"
+ },
+ "prereg_commit": "6120fc58f",
+ "prereg_seal_sha256": "0bfd1363cc6df3796e11894c7973062c2078ee9aa2c0951961b114d238cd4955",
+ "reproduction": {
+  "identical": true,
+  "rounds": 2
+ },
+ "retention": {
+  "planned": 60,
+  "receiver_dir": "C:\\Users\\neelj\\g402_receiver",
+  "retained_off_pod": 60,
+  "sha256_equal": 60
+ },
+ "route": {
+  "anchors_matched": 22,
+  "deploy_original": {
+   "scripts/platformkit/track_daemon.py": "9747d9a085405c492f04c4e3b162ed8b1d897309da6f0f9c014cb7092056f5ac",
+   "scripts/run_clip.py": "ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2",
+   "src/pipeline/unified_pipeline.py": "c4eae385bfeebd4e44c8161c791ef7ed4589697020f424d3dde7aec6816d9226",
+   "src/tracking/advanced_tracker.py": "df2ae698ae03e804f67639434d8303638aea9087c3169c016af5a3734dd474d7"
+  },
+  "distinct_tree_digests_across_launches": 1,
+  "drift": 0,
+  "model_identity_receipt": {
+   "aggregate_launch_weight_digest": "a167df3e58ff0e01842a1e724d1ad93b2586ca8f7898a9b11eb0421356a9fbda",
+   "non_producer_models_not_exercised": 2,
+   "post_hoc": true,
+   "producer_models_exercised": 5
+  },
+  "scratch_modified": {
+   "scripts/platformkit/track_daemon.py": "0056c85ccbf334f459cb578d874aa129462214a056884df36f1e3ea51fa7de72",
+   "scripts/run_clip.py": "eb6d4e7ff3774162d69311df7ec4cbc77eab3c0de9d05e548b45a63570dfcfa1",
+   "src/pipeline/unified_pipeline.py": "a5bfcf8eaa1cebfba913913075f617f3ee6662096ac4cafecb89d5f3aeaf7839",
+   "src/tracking/advanced_tracker.py": "27c3d6aa4615b0c0ca4f1bc6b2922f65345837d6fcae05358522080bee6a87c4"
+  },
+  "tree_sha256_digest": "651d6c3e637f748ed0ec8e2abbbe102d6736f155b1c710be252f8cd9ab68f68c"
+ },
+ "stage": {
+  "gpu_seconds_total": 4133.7,
+  "planned_windows": 60,
+  "sealed_deadline_minutes": 85
+ },
+ "supply_census": {
+  "1080p30": {
+   "distinct_competitions": 4,
+   "distinct_games": 14,
+   "eligible_sections": 40,
+   "required": 30,
+   "supply": "COMPLETE",
+   "trees": [
+    "footage_bridge",
+    "footage_corpus",
+    "g364_scratch_val"
+   ]
+  },
+  "720p60": {
+   "distinct_competitions": 4,
+   "distinct_games": 16,
+   "eligible_sections": 79,
+   "required": 30,
+   "supply": "COMPLETE",
+   "trees": [
+    "footage_corpus"
+   ]
+  },
+  "census_rows": 155,
+  "drawn": 60,
+  "excluded_trees": {
+   "/workspace/feeder/work": "LIVE_FEEDER_WORKING_DIR_NEVER_TOUCHED"
+  }
+ },
+ "verdict": "PARTIAL",
+ "window_pts": {
+  "monotonic_in_decode_order": 45,
+  "note": "decode-order inversions are B-frame reordering, not gaps",
+  "probed_ok": 60
+ }
+}
