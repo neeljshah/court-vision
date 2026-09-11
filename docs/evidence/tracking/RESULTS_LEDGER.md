@@ -760,3 +760,5 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking | G398 | landed CLOSED AT LIMIT (this option): A8 at imgsz 1920 vs 960 on the full 1,071-key DEV reference, one paired shadow launch (42.9 GPU s): TP 121 vs 251, FP 310 vs 198, C0 0.113 vs 0.234; all continuation components fail; resolution is not the lever; verify memo verbatim | CLOSED AT LIMIT (codex-sol, no corrections)
 
+2026-09-11 | tracking | G397 | landed PARTIAL: mixed-source census 1,973 attempts (1080p30 1072, 720p60 41, OTHER 860); the fixed 3000-frame cap halves the evaluated window at 60 fps (ticks 500 vs 1000, rows per tick +0.19); provenance fields complete 1973/1973; sources rotate before probing (130/1973) and schedules 29/30 + 26/30 -> comparison NOT VALIDATED; feeder now prefers 30 fps; verify memo verbatim | PARTIAL (codex-sol ACCEPT WITH CORRECTIONS applied)
+
