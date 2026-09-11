@@ -1,0 +1,5 @@
+arm,state,unmet_quotas,candidate_heldout_executions
+A0,ARCHIVED BASELINE,,0
+A8,CLOSED AT LIMIT,reference_complete;time_budget;development_boxes_500,0
+A9,CLOSED AT LIMIT,reference_complete;time_budget;pinned_licence_dependency_receipt,0
+A10,CLOSED AT LIMIT,reference_complete;time_budget;A8_available,0

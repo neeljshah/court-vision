@@ -1,0 +1,31 @@
+ordinal,frame_key,split,why,label,cx,cy,diameter,reason
+301,6eeddd8f17506e7b27834807a8b0baa9ff74b6583041ce5280b041dc15988882,development,CENTRE-GAP,VISIBLE,148.5,486.0,47.0,ball held at left wing
+311,6fda11eb77b6d356db6cdb7fc50d5a18cca57dd06d33dfeff6b45a6cf9c767aa,development,LABEL-DISAGREEMENT,VISIBLE,873.0,457.0,40.0,ball at post player hands
+321,73787809c7c4a8c3ce994480c214f4221aff009d34f00ae0e1e97717532ed432,development,CENTRE-GAP,VISIBLE,1289.0,520.0,30.0,ball at paint handler
+331,7454f6240515e193688ac25cc3878dfcb701670aa11fa93d573dd24bc6a58531,development,LABEL-DISAGREEMENT,ABSENT,,,,player closeup without ball
+341,782cd096c79ce0124a3dbbbb88b1a5d9801aeb43f55f435bb16164347ec2065d,development,LABEL-DISAGREEMENT,UNKNOWN,,,,under rim action is occluded
+351,7ca0d220a93be3dc20606d84aa657d63984eccb96741f12370a0ceadf748b787,development,LABEL-DISAGREEMENT,UNKNOWN,,,,transition action has no confident centre
+361,821d25c767cb4ada985469b30524c5ae8a138e729990ff6e6f04dc6d7d459a19,development,LABEL-DISAGREEMENT,ABSENT,,,,wide ceremonial court view without ball
+371,841406dea175fadeafa282e4a46ab01c22f30793c201c2c42442b5e9fa07c01a,development,CENTRE-GAP,VISIBLE,624.5,412.0,35.0,ball held at left block
+381,86d64ffa5f682f0bbe49b7ae6df4c540a94e4602e960ce9127c2558b5931c3d1,development,LABEL-DISAGREEMENT,VISIBLE,1043.0,334.0,30.0,ball at upper paint
+391,8a71ecf43fd98056aa4c7051593402c5045349b8f50cd71fc9e865561945dfc0,development,CENTRE-GAP,VISIBLE,263.0,791.0,28.0,ball at left side handler
+401,8d33da4087aae1ca3066be26b29bdf1fe338c536f7d05f156c34abcaf2403dd3,development,LABEL-DISAGREEMENT,VISIBLE,1654.5,613.0,39.0,ball at wing dribbler
+411,8e7e22d96b7b81077ac9bca460f03e6f7ed360ec84124a0d4d41969871a383a2,development,LABEL-DISAGREEMENT,ABSENT,,,,player closeup without ball
+421,90ec31471472043e2f5d66f91dacfb4dffe01e30a60459856a55fc1bd8642b2e,development,CENTRE-GAP,VISIBLE,1175.5,594.5,75.0,ball at right-side handler
+431,9553ae33713a507c8435a5f3fd836f986abb1d7d06575ddb2d63def9b5d80937,development,LABEL-DISAGREEMENT,ABSENT,,,,motion frame without discernible ball
+441,986b875ca1e846ef09f76f5781b3fdb15444810a6a504abc62b7d7cb49643048,development,LABEL-DISAGREEMENT,UNKNOWN,,,,court action leaves ball unresolvable
+451,9bebb82ff4efdcb1879f9a506830b6e3be33831a60f2bcbd11844090352caf76,development,LABEL-DISAGREEMENT,ABSENT,,,,set action without visible ball
+461,9dd920ed968a0c7b8fde40ed18f4c661a938831dd4ccd9e1f21dc4cf108aabf8,development,LABEL-DISAGREEMENT,UNKNOWN,,,,rim view leaves ball unresolvable
+471,9f8c16a01f3d6fbc21b84da67099223e0977555a98be864c7b1048601a74d824,development,LABEL-DISAGREEMENT,ABSENT,,,,broadcast crew shot without ball
+481,a5e3d23f6e545af2e266e273014227a307296c7759129c47fbafc15a72ec6314,development,CENTRE-GAP,VISIBLE,808.5,469.5,33.0,ball held in lane
+491,b03e51a438c71b2c69a33825b1e111a5d685abaa91740a3bad11c20c2467abf1,development,CENTRE-GAP,VISIBLE,414.0,590.0,36.0,ball held at left side
+501,b7a2082d6195c6155c525ef5d6230be373b1c2a6b0ac19b99a58da74f122083b,development,CENTRE-GAP,VISIBLE,786.5,519.5,39.0,ball at low-post handler
+511,bb99aeb249c68a0d4a8f089c30498fab82442d57812d09fbdc6bda45563e99ae,development,LABEL-DISAGREEMENT,UNKNOWN,,,,transition frame has no confident centre
+521,bf77cbc60af01953c39c553bc094a0ecdef43e23bcb3ea502fe94026aba062a9,development,CENTRE-GAP,VISIBLE,566.5,464.5,27.0,ball at left wing
+531,c822ee49f2fbedcc32f47b19daf12acbc82f9bd97d770dc3b33cd202c797de07,development,CENTRE-GAP,VISIBLE,1071.0,196.0,62.0,ball at right baseline
+541,d3e2aa486b5bfb8cec472cd36d1ac53d711ac406c227bf5699848a93ec59050f,development,LABEL-DISAGREEMENT,UNKNOWN,,,,blurred baseline action is unresolved
+551,da67841f4345b5b7edf3f20c98d13ae2e8c9b9a4f05946f0e8a7cb4663efd5d6,development,CENTRE-GAP,VISIBLE,1408.5,690.5,37.0,ball held near sideline
+561,e0cd56a400a9b26b26c3aabb1994c1ee14da8a467eccc6161bc30060b4184991,development,LABEL-DISAGREEMENT,VISIBLE,1369.0,511.0,22.0,ball at baseline player
+571,e9fe387a041cc4240edb0ff0d05494312c538d6d83bbe50c90d275dd0f070bc0,development,CENTRE-GAP,VISIBLE,1026.5,67.0,29.0,ball in flight above lane
+581,f39e98b6c40929376130fb6c59f3a4725854b2b998806444da915e89067ec003,development,CENTRE-GAP,VISIBLE,913.5,556.0,35.0,ball in paint action
+591,fdae9452f4bc08115aacaadc81678ba2cd53976e10a90d2c150b4935d59d204b,development,LABEL-DISAGREEMENT,ABSENT,,,,close crop without ball

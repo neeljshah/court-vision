@@ -1,0 +1,19 @@
+{
+ "queued": 596,
+ "development": 361,
+ "heldout": 235,
+ "manifest": 1620,
+ "reference": 1024,
+ "adjudications": 33,
+ "unresolved": 596,
+ "rater_cache_completed": 1620,
+ "new_rater_tasks": 0,
+ "memo_stated_development": 393,
+ "reconciled_development": 361,
+ "settled_g384": 90,
+ "settled_reference_after": 1114,
+ "unsettled_after": 506,
+ "cohen_kappa_primary": 0.6642328686951492,
+ "new_adjudications": 90,
+ "centre_gap_not_readmitted": 296
+}

@@ -1,0 +1,34 @@
+check,frame_key,detail,observed,expected,status,verdict,verdict_g384
+sheet_scale,,every native reference row,['1.0'],['1.0'],PASS,PASS,PASS
+planted_native_match,,development planted at the reference centre,20/20 TP,20/20 TP,PASS,PASS,PASS
+planted_native_match,,heldout planted at the reference centre,10/10 TP,10/10 TP,PASS,PASS,PASS
+coordinate_roundtrip,00088f2f70b5452bebcca594720d11f344ec849cd88e8972dac6257c104f9300,cx / sheet_scale,908.25,908.25,PASS,PASS,PASS
+coordinate_roundtrip,045553dfb1de2c282684e1c985df80d891f5d6f34772d9afcd9db9ba4c66df63,cx / sheet_scale,1081.0,1081.0,PASS,PASS,PASS
+coordinate_roundtrip,0acc5cca56f9c05ccb9da6cb701419cfa9676b6b54528c6768fdd4828b70c84e,cx / sheet_scale,1012.0,1012.0,PASS,PASS,PASS
+coordinate_roundtrip,172583873a8444b783f4fece1029dcac07d6b2640e7ed1f93c8bc87f9010f751,cx / sheet_scale,1356.0,1356.0,PASS,PASS,PASS
+coordinate_roundtrip,1dbb98c89d42ef9d5c05d638ced58174eba27f09cb3b8f7beb2c7aad763fb690,cx / sheet_scale,1090.5,1090.5,PASS,PASS,PASS
+coordinate_roundtrip,283468ecf8c555331c501fd825e5c21f435e3b8d2262528670e1d2d759b2e5fe,cx / sheet_scale,1352.25,1352.25,PASS,PASS,PASS
+coordinate_roundtrip,30dda507fcc2eb9afcb3964d7fbcce2317cc49421b1623d26ca2bd59efd08a7e,cx / sheet_scale,817.75,817.75,PASS,PASS,PASS
+coordinate_roundtrip,3ba99903fb7cae0ff0489953252e89d6c609ffaf3c610876c0abf2204a1263ad,cx / sheet_scale,535.0,535.0,PASS,PASS,PASS
+coordinate_roundtrip,4842b3130b2beffbcdee70274e2208821cd3a99e86ef16fd261835d3804bbfda,cx / sheet_scale,312.25,312.25,PASS,PASS,PASS
+coordinate_roundtrip,4f882f1e1b083aa8a26dcdcef7edd0df5bf80a343ee79bd16e13cb12237a3f99,cx / sheet_scale,1602.25,1602.25,PASS,PASS,PASS
+coordinate_roundtrip,560a17ccd5de3c151990adb9409ce4b2302151451342771dbc62162d0bae49a3,cx / sheet_scale,622.5,622.5,PASS,PASS,PASS
+coordinate_roundtrip,5e54740ed4e79b8c688333d775f2fdaff271cced9f39a8ba672b1f4d64d2a6bc,cx / sheet_scale,781.5,781.5,PASS,PASS,PASS
+coordinate_roundtrip,68a61cec9ebd8923eb12c5ecdd7db14794c0ea9df1f772b804ee7132fa25948b,cx / sheet_scale,1562.75,1562.75,PASS,PASS,PASS
+coordinate_roundtrip,6d639eeba20508f9d7d588e211ab62f246448f56ce3e091f3f1cec70dcd0acfc,cx / sheet_scale,684.75,684.75,PASS,PASS,PASS
+coordinate_roundtrip,7499f207fded6dc07b570a2c3c5e61d65c0d81d19f4d730674ed975dcfbaeefb,cx / sheet_scale,732.75,732.75,PASS,PASS,PASS
+coordinate_roundtrip,7f5565ff893c451ea2f13bc412b7dd85c7098b67626f4d6817ca098cf6477b04,cx / sheet_scale,1007.25,1007.25,PASS,PASS,PASS
+coordinate_roundtrip,85f8416413ff85976efc4561566ef4b21ff800f2dbe7694cdca10ab51fe3a15e,cx / sheet_scale,1524.0,1524.0,PASS,PASS,PASS
+coordinate_roundtrip,8d8066eb670080ea5a2d8353b4ea0c812e8b96f5d6200debfd055ca9abe0a39f,cx / sheet_scale,525.25,525.25,PASS,PASS,PASS
+coordinate_roundtrip,94fa4e49104336b7efe92f3686f61e0b5434fc2d23ce29acac87ee90bb9098ff,cx / sheet_scale,559.5,559.5,PASS,PASS,PASS
+coordinate_roundtrip,9c9f5b47be6b8faadcb13a5a6871f3b2de17fc200bfcfd009bb7b99ed4cd99c5,cx / sheet_scale,1178.75,1178.75,PASS,PASS,PASS
+coordinate_roundtrip,a6be7a97714930c186896648b0a902b82e059be946beedb03e1eefba00b58dc6,cx / sheet_scale,1116.0,1116.0,PASS,PASS,PASS
+coordinate_roundtrip,afb270af4edc79a767e8ee6180bafd952c5134c5c16ebbd6c6ba7a21ec5772f9,cx / sheet_scale,40.25,40.25,PASS,PASS,PASS
+coordinate_roundtrip,b4dea24a7ecc7bbfa3df0a6b2c6ab34fba128ebb6fe4c78fed0a3628915a8b4d,cx / sheet_scale,1140.5,1140.5,PASS,PASS,PASS
+coordinate_roundtrip,c5c35b92fd2daca3da01f67c29963c4b5a659e20e626c40c1d3e8534d0dafc46,cx / sheet_scale,1006.25,1006.25,PASS,PASS,PASS
+coordinate_roundtrip,cde14e856cbfa65efea9e3123df30ccc35c8746966f6ed6ca50b40c4b9fdd92c,cx / sheet_scale,835.25,835.25,PASS,PASS,PASS
+coordinate_roundtrip,d60ce58369ad36ca1138613bf36fda04fac805b3d75c0c86f205139e6073f4a3,cx / sheet_scale,211.75,211.75,PASS,PASS,PASS
+coordinate_roundtrip,e0cd56a400a9b26b26c3aabb1994c1ee14da8a467eccc6161bc30060b4184991,cx / sheet_scale,1369.0,1369.0,PASS,PASS,PASS
+coordinate_roundtrip,e74a40a018413a3d3fba48c4ab55f627b373f8a4dcf95d39829aec1547c6ffce,cx / sheet_scale,682.25,682.25,PASS,PASS,PASS
+coordinate_roundtrip,f19899cc7b14e1a2c6e036400065fa3d393c8c7958c9465d6804b2ccc40d9be1,cx / sheet_scale,464.5,464.5,PASS,PASS,PASS
+coordinate_roundtrip,f93e941cb10f14df6ca6b1e41f95ad3bfc2211288efd8c88a9e9b7c350536725,cx / sheet_scale,1198.75,1198.75,PASS,PASS,PASS

@@ -1,0 +1,13 @@
+{
+ "by_file": {},
+ "ledger_rows": "",
+ "scanned_roots": [
+  "docs/evidence/tracking/g384_ball_phase2_2026-09-10",
+  "docs/evidence/tracking/g384_ball_phase2_receipt_2026-09-10.md",
+  "scripts/platformkit/tracking/g384_queue.py",
+  "scripts/platformkit/tracking/g384_native_frames.py",
+  "scripts/platformkit/tracking/g384_arm_receipt.py",
+  "tests/platformkit/test_g384_ball_phase2_receipt.py"
+ ],
+ "total_findings": 0
+}

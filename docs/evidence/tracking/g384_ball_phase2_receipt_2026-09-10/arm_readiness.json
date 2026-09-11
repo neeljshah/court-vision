@@ -1,0 +1,28 @@
+{
+ "dev_boxes_audited": 312,
+ "dev_boxes_quota": 500,
+ "dev_boxes_projected_full_queue": 457,
+ "dev_boxes_projected_ci95": [
+  414,
+  502
+ ],
+ "heldout_visible": 157,
+ "heldout_absent": 161,
+ "heldout_unknown": 26,
+ "reference_settled": 1114,
+ "reference_scheduled": 1620,
+ "still_queued": 506,
+ "readiness": {
+  "reference_complete": false,
+  "reference_usable": true,
+  "heldout_visible_150": true,
+  "heldout_absent_150": true,
+  "time_budget": false,
+  "development_boxes_500": false,
+  "development_games_5": true,
+  "pinned_licence_dependency_receipt": false,
+  "A8_available": false
+ },
+ "candidate_heldout_executions": 0,
+ "gpu_minutes_used": 0
+}

@@ -1,0 +1,91 @@
+frame_key,rater,label,box_x,box_y,box_w,box_h,cx,cy,pass,reason
+0d2ba648eac22051a8ab8cfc6d58f4acd4743d600cd7d81cf27886be5e7a1e4a,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,both candidates on bench crowd arm no ball; dunk occluded
+043421998afdec270096c172f35f200dde5d1f723fe1132a02a567d1efedec98,ADJUDICATOR,VISIBLE,1450,510,38,38,1469.0,529.0,adjudication,official holding ball at hip
+105128881d24d61dd16bfad9759f7d33ac00960c65d7b033c037f21526744d9b,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,both candidates on blurred arm over signage; no ball at either
+0716d136adb43568d2a75382627391a0cbf7145f5e409edc998c9f8732245ffb,ADJUDICATOR,ABSENT,,,,,,,adjudication,extreme close-up player on floor no ball in frame
+13ff1900748f2486706891d974958874b20273b5a4672b254c4fcf85d8decc39,ADJUDICATOR,VISIBLE,595,623,38,38,614.0,642.0,adjudication,ball at ball-handler hip both candidates bracket it
+0b241fe2e28c13757d751c8df6bf0dc9808ec56f08b1725c5c354396b7f826a2,ADJUDICATOR,VISIBLE,1553,334,34,34,1570.0,351.0,adjudication,ball at chest of red jersey between both candidates
+171ccd76427d46b36945a39241cc9cab358c95c8570aec46c8bbf65b004c0afb,ADJUDICATOR,VISIBLE,1017,404,74,74,1054.0,441.0,adjudication,clear ball at P1 crosshair P2 on court
+0e3b7e8661689213774c1287168ca73ac6945355d8efbfeef736625138e5b201,ADJUDICATOR,VISIBLE,827,328,42,42,848.0,349.0,adjudication,motion-blurred ball at P2 crosshair
+1aa34231797bc6772c1bdf1cd1e0a277e103f9883952332c0fa4ff5e7497536a,ADJUDICATOR,VISIBLE,570,53,55,55,598.0,81.0,adjudication,ball in flight both candidates on it
+106212c1ea74de3259854c30e0209c33616fb651c69e2d341fa56b7d3992c672,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,candidate on blurred jersey; no ball confidently locatable
+1cfcbb1e9d8f130372ac02126672f6af28d02f07a568563e4afe45e84f17b52a,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,white blurred floor blob ambiguous vs ball
+132df7d1940203dc725c171bce5209ac2ccfb10e45e2c5568aa45e70f6bf7e8d,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,pale blob at hip ambiguous
+20c7cbb969b611d2cc3c321ea90034970a6a170e3b191feddb03f41dc572bb45,ADJUDICATOR,VISIBLE,236,643,52,52,262.0,669.0,adjudication,dribbled ball both candidates bracket it
+1b52ab7e5d34a109084c217412ed79683aa3bfaaa85bb7936bcd28ae13f333c4,ADJUDICATOR,VISIBLE,991,556,27,27,1005.0,570.0,adjudication,loose ball on court at P1 crosshair
+22e98406f7f0f899d6465019599dd6680c6a8736673ddfe06e251525ad697f69,ADJUDICATOR,ABSENT,,,,,,,adjudication,wide pre-game arena anthem shot no ball
+237d19193aeede4824f524531944087848308ef4fe92f97b28b4e45c9bdf166d,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,tangled players dark round object ambiguous
+290c6cea365404bae102a2f78e22a9b4d107c09e87493de858c7ba03b45c4480,ADJUDICATOR,VISIBLE,331,277,34,34,348.0,294.0,adjudication,pale ball at handler both candidates bracket it
+29396a12ecc8abc4e34ee6c08b698ea1b464d1df679a2019eaab5d52e5a453ad,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,blurred arm at candidate no ball locatable
+2f016c06f20894d50f6bf44eb17b2a86b28c2072faaba6a0a3cb7e74d300fa49,ADJUDICATOR,VISIBLE,1007,292,34,34,1024.0,309.0,adjudication,ball bouncing at sideline P1 crosshair on it
+2ce019929197f1f70f73d69b7ebee54395e3d9230d2112fa7b0479a8f0cd5e8c,ADJUDICATOR,VISIBLE,1516,493,35,35,1534.0,511.0,adjudication,dribbled ball both candidates bracket it
+3254de6fde5024f61e8505fb0a185b0fb526b5b6c80568ffdb6aa07e9c809164,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,both candidates on limbs no ball at either
+3130cfa098e54f28258c10bf925e8b4e8c0c0f33b36a0afd2aeb3c4ff383c93a,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,candidate on bare court ball not locatable
+34766854d990d4a26907caad5d2686f9434d7c284421a529b278b7fa31cbd08f,ADJUDICATOR,VISIBLE,1323,444,30,30,1338.0,459.0,adjudication,ball at waist of white jersey at P1 crosshair
+3427c8976d82fa8ad83e5576b91d3e5733d1fbf89c6b8c1e199dac4877e6d29c,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,no ball at candidate none locatable
+394f46686bc97ad1945fefa8ec8f48f74ce24cbc08bc18cf7e3bf02c9b65475c,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,both candidates on player legs no ball
+3706b27ac29699d598acf43c919dc3ccc2f72451f9797aaf9f209651c43c1bcf,ADJUDICATOR,ABSENT,,,,,,,adjudication,aerial city beauty shot no court no ball
+3ba99903fb7cae0ff0489953252e89d6c609ffaf3c610876c0abf2204a1263ad,ADJUDICATOR,VISIBLE,517,688,36,36,535.0,706.0,adjudication,dribbled ball both candidates bracket it
+3da016070261f317f62e1023453b415bfc76365c7aca1bbb75ed144cf77b5be2,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,candidate on shooter torso not the ball; own box not placeable
+3d5bfeaf149137570da522c6d992297469c1a205b1708c0484ce376bf6f02812,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,both candidates in baseline crowd; rim action occluded
+4124266da547b10bce25bd4466cd55031e7f4ff3dc530fbab2cb13eca9f51771,ADJUDICATOR,VISIBLE,905,341,35,35,923.0,359.0,adjudication,ball right of P1 crosshair both candidates off by 50px
+4209e0afa63523ada47374829906a6895816cea5b6326dc490abfb52feeba092,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,candidate on jersey; paint action no ball locatable
+43abca024ee0133823832eaab48ce3e9d334131640876245faf137e3b0d72717,ADJUDICATOR,VISIBLE,723,543,49,49,748.0,568.0,adjudication,orange ball in paint at P1 crosshair
+4433c39d5da92ee7786f63058d6b00c2a3e84671fae8797514e15e39e9d1b8c3,ADJUDICATOR,ABSENT,,,,,,,adjudication,extreme close-up of player back at signage no ball
+470cd9afd8c573a081402230c5fe6cc82945b6c54ab5c5de5ae158ff4aca2caa,ADJUDICATOR,VISIBLE,1464,804,95,95,1512.0,852.0,adjudication,motion-blurred ball mid-dribble near P1 crosshair
+453686d20144ab5ca65bdeffdd9f95ae2cde4e1cb321bfdfad4837b65885c927,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,tangled low-angle paint action ambiguous at both candidates
+4b05e098a7059b2de698d1a5665249995291732360fc88ec23375a788bb121ad,ADJUDICATOR,VISIBLE,840,591,33,33,857.0,608.0,adjudication,ball at hip of white jersey both candidates bracket it
+4744fa7555650701b590b615e3f20ef303d8455f51fb43e22b0f4a64ab771d28,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,ball fills frame corner under-rim lens clipped no usable centre
+4d0b01c58d65e01ff97ae232627dda289fcd6484dee1d91d4416b9d9c5c367d5,ADJUDICATOR,VISIBLE,817,424,33,33,834.0,441.0,adjudication,ball beside shooter head both candidates bracket it
+4c78585af542a3077aeb640d0159be8fb86d97fab80133675cad55515042d2be,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,no rater box; transition wide shot ball not confidently locatable
+4f64a50ac3c15f025f2bd8a96133be5be89f4b2ac049a1572f577af8229ba4ed,ADJUDICATOR,VISIBLE,1499,521,31,31,1514.5,536.5,adjudication,orange ball at P1 crosshair in front of signage
+4fa015dcb42c41266b334822735652e11af194fd48e56d6fec58dabd6161ebe9,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,pale round object confusable with shooter head
+538d2e85209eac040555e63e077cecc0184fcf87d0f61daf1cc0a7a4d66c48f7,ADJUDICATOR,VISIBLE,609,760,32,32,625.0,776.5,adjudication,loose ball on floor at P1 crosshair P2 offset
+529d9ff7571fca0545c7df164117c1f45a8b6c6f56fdb196798707877639a686,ADJUDICATOR,VISIBLE,831,370,27,27,844.5,383.5,adjudication,motion-blurred ball mid-bounce in transition at P1 crosshair
+58f51910570677304c194d54924cccc78e939f618dccebd801e003b81516e109,ADJUDICATOR,VISIBLE,1429,429,30,30,1444.0,444.5,adjudication,ball at waist of dark jersey at P1 crosshair
+55390fa05f2076b45fd19050207232f8a5313a587f9c21111e3d61cb4a1fc7df,ADJUDICATOR,ABSENT,,,,,,,adjudication,full-frame broadcast graphic wipe no ball
+5da3241e77e653e0c620e078e4399c714f8021eb3b2cf39ecef16f044f06bd25,ADJUDICATOR,ABSENT,,,,,,,adjudication,rim and net close-up after made shot ball gone
+581fbc7865a25dd0941dd6de967de9dfc6b1d5f7f64792134122e0ea24a43467,ADJUDICATOR,VISIBLE,1496,378,55,55,1524.0,406.0,adjudication,ball at handler at P2 crosshair P1 on jersey back
+625771c208470357d3748afb303e493f20fd776dc622a1872d85b5ca09af653e,ADJUDICATOR,VISIBLE,81,677,44,44,103.0,699.0,adjudication,motion-blurred ball dribbled at left frame border at P1 crosshair
+5bb6f4b7699ccadfd90897ca8fb1fd8f352e95e37f54e9d58a8304be2b19aa9f,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,candidate on blurred limb; transition ball not locatable
+65082cf67f56023ddd2048dfb33d81456b925f95c8cf7fb5a691e4ede13dc50b,ADJUDICATOR,VISIBLE,509,806,30,30,524.0,821.0,adjudication,pale motion-blurred ball at feet at P1 crosshair
+5dfdfdc86a2754f8a7b74c5b3ea4a0d4169ba9000b020970f8a230df0cb347c6,ADJUDICATOR,VISIBLE,953,325,38,38,972.0,344.0,adjudication,shot in flight near rim against crowd at P1 crosshair
+67cf74d777b13d0d1892db39626731a60588c3b5c02beae8de26f7af1afe3062,ADJUDICATOR,VISIBLE,562,651,24,24,574.0,663.5,adjudication,ball in hand right of P2 crosshair P1 on wrist
+620c2af62306f9ede417022d461d7318eb9e91044cf6d6b8616831328cccf9d2,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,candidate on jersey; low dark object in paint ambiguous
+6fed7dc9b40b039c561610c7427be477b3bc1311793462e80035b11386c30eb1,ADJUDICATOR,VISIBLE,860,552,110,110,915.0,607.0,adjudication,large close-up ball held by handler at P1 crosshair
+64b97f92e69247b7a4ce4314e114784943bb9d5ac46fa740e681f1d624124191,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,free-throw setup with graphic overlay; ball not visible or occluded
+72fdd09e64a899a0c7f4b80d077693ac17a3c043c7e2ab6f25cebfe57c0fc2d0,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,scrum at free-throw line no ball locatable
+68db51861b834a46b3eca24c56614a3d977ac2ff1be4802df89a218682a03346,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,shooter follow-through; candidate on hand no ball resolvable
+8168d1d83bea6b28537f382ddfe06c812f42971f5661647e8d9b299d22183251,ADJUDICATOR,VISIBLE,289,541,31,31,305.0,557.0,adjudication,far-left dribbler ball at P2 crosshair P1 on legs
+6aa27e4930c2aeeb81bbf72101d99c9768ebb417c7bd2dc7210024a12aa3ece9,ADJUDICATOR,VISIBLE,925,574,34,34,942.0,591.0,adjudication,loose ball in transition at P2 crosshair P1 offset right
+87e899b0a0313af2eb471f4026a341d4744a1f3fc564c98e84f94cd8ff50b8e7,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,orange jersey and ball confusable at both candidates
+6eeddd8f17506e7b27834807a8b0baa9ff74b6583041ce5280b041dc15988882,ADJUDICATOR,VISIBLE,125,462,47,47,148.5,486.0,adjudication,ball held at left wing
+6fda11eb77b6d356db6cdb7fc50d5a18cca57dd06d33dfeff6b45a6cf9c767aa,ADJUDICATOR,VISIBLE,853,437,40,40,873.0,457.0,adjudication,ball at post player hands
+73787809c7c4a8c3ce994480c214f4221aff009d34f00ae0e1e97717532ed432,ADJUDICATOR,VISIBLE,1274,505,30,30,1289.0,520.0,adjudication,ball at paint handler
+7454f6240515e193688ac25cc3878dfcb701670aa11fa93d573dd24bc6a58531,ADJUDICATOR,ABSENT,,,,,,,adjudication,player closeup without ball
+782cd096c79ce0124a3dbbbb88b1a5d9801aeb43f55f435bb16164347ec2065d,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,under rim action is occluded
+7ca0d220a93be3dc20606d84aa657d63984eccb96741f12370a0ceadf748b787,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,transition action has no confident centre
+821d25c767cb4ada985469b30524c5ae8a138e729990ff6e6f04dc6d7d459a19,ADJUDICATOR,ABSENT,,,,,,,adjudication,wide ceremonial court view without ball
+841406dea175fadeafa282e4a46ab01c22f30793c201c2c42442b5e9fa07c01a,ADJUDICATOR,VISIBLE,607,394,35,35,624.5,412.0,adjudication,ball held at left block
+86d64ffa5f682f0bbe49b7ae6df4c540a94e4602e960ce9127c2558b5931c3d1,ADJUDICATOR,VISIBLE,1028,319,30,30,1043.0,334.0,adjudication,ball at upper paint
+8a71ecf43fd98056aa4c7051593402c5045349b8f50cd71fc9e865561945dfc0,ADJUDICATOR,VISIBLE,249,777,28,28,263.0,791.0,adjudication,ball at left side handler
+8d33da4087aae1ca3066be26b29bdf1fe338c536f7d05f156c34abcaf2403dd3,ADJUDICATOR,VISIBLE,1635,593,39,39,1654.5,613.0,adjudication,ball at wing dribbler
+8e7e22d96b7b81077ac9bca460f03e6f7ed360ec84124a0d4d41969871a383a2,ADJUDICATOR,ABSENT,,,,,,,adjudication,player closeup without ball
+90ec31471472043e2f5d66f91dacfb4dffe01e30a60459856a55fc1bd8642b2e,ADJUDICATOR,VISIBLE,1138,557,75,75,1175.5,594.5,adjudication,ball at right-side handler
+9553ae33713a507c8435a5f3fd836f986abb1d7d06575ddb2d63def9b5d80937,ADJUDICATOR,ABSENT,,,,,,,adjudication,motion frame without discernible ball
+986b875ca1e846ef09f76f5781b3fdb15444810a6a504abc62b7d7cb49643048,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,court action leaves ball unresolvable
+9bebb82ff4efdcb1879f9a506830b6e3be33831a60f2bcbd11844090352caf76,ADJUDICATOR,ABSENT,,,,,,,adjudication,set action without visible ball
+9dd920ed968a0c7b8fde40ed18f4c661a938831dd4ccd9e1f21dc4cf108aabf8,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,rim view leaves ball unresolvable
+9f8c16a01f3d6fbc21b84da67099223e0977555a98be864c7b1048601a74d824,ADJUDICATOR,ABSENT,,,,,,,adjudication,broadcast crew shot without ball
+a5e3d23f6e545af2e266e273014227a307296c7759129c47fbafc15a72ec6314,ADJUDICATOR,VISIBLE,792,453,33,33,808.5,469.5,adjudication,ball held in lane
+b03e51a438c71b2c69a33825b1e111a5d685abaa91740a3bad11c20c2467abf1,ADJUDICATOR,VISIBLE,396,572,36,36,414.0,590.0,adjudication,ball held at left side
+b7a2082d6195c6155c525ef5d6230be373b1c2a6b0ac19b99a58da74f122083b,ADJUDICATOR,VISIBLE,767,500,39,39,786.5,519.5,adjudication,ball at low-post handler
+bb99aeb249c68a0d4a8f089c30498fab82442d57812d09fbdc6bda45563e99ae,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,transition frame has no confident centre
+bf77cbc60af01953c39c553bc094a0ecdef43e23bcb3ea502fe94026aba062a9,ADJUDICATOR,VISIBLE,553,451,27,27,566.5,464.5,adjudication,ball at left wing
+c822ee49f2fbedcc32f47b19daf12acbc82f9bd97d770dc3b33cd202c797de07,ADJUDICATOR,VISIBLE,1040,165,62,62,1071.0,196.0,adjudication,ball at right baseline
+d3e2aa486b5bfb8cec472cd36d1ac53d711ac406c227bf5699848a93ec59050f,ADJUDICATOR,UNKNOWN,,,,,,,adjudication,blurred baseline action is unresolved
+da67841f4345b5b7edf3f20c98d13ae2e8c9b9a4f05946f0e8a7cb4663efd5d6,ADJUDICATOR,VISIBLE,1390,672,37,37,1408.5,690.5,adjudication,ball held near sideline
+e0cd56a400a9b26b26c3aabb1994c1ee14da8a467eccc6161bc30060b4184991,ADJUDICATOR,VISIBLE,1358,500,22,22,1369.0,511.0,adjudication,ball at baseline player
+e9fe387a041cc4240edb0ff0d05494312c538d6d83bbe50c90d275dd0f070bc0,ADJUDICATOR,VISIBLE,1012,52,29,29,1026.5,67.0,adjudication,ball in flight above lane
+f39e98b6c40929376130fb6c59f3a4725854b2b998806444da915e89067ec003,ADJUDICATOR,VISIBLE,896,538,35,35,913.5,556.0,adjudication,ball in paint action
+fdae9452f4bc08115aacaadc81678ba2cd53976e10a90d2c150b4935d59d204b,ADJUDICATOR,ABSENT,,,,,,,adjudication,close crop without ball
