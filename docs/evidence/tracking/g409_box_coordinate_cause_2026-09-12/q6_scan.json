@@ -1,0 +1,733 @@
+{
+ "ledger_row_receipt": {
+  "count": 0,
+  "hits": [],
+  "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/RESULTS_LEDGER.md",
+  "scope": "G409 Fix 1d ledger line"
+ },
+ "manifest": [
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/SHA256SUMS",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/blind_receipt.csv",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/card_panel_manifest.csv",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/common_receipts/census_utc.txt",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/common_receipts/daemon_cmdline.txt",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/common_receipts/deploy_route_hashes.txt",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/common_receipts/nvidia_smi.log.txt",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/common_receipts/pod_volume.txt",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/common_receipts/python_env.txt",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/construct_cases.csv",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/controls.csv",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/crop_rebind.csv",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/draw.csv",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/export_join.csv",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/eye_index.csv",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/input_hashes.csv",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/launch_receipts.json",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/per_tick_transform.csv",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/prereg.md",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/q6_scan.json",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_00.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_01.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_02.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_03.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_04.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_05.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_06.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_07.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_08.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_09.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_10.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_11.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_12.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_13.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_14.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_15.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_16.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_17.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_18.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_19.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_20.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_21.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_22.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_23.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_24.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_25.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_26.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_27.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_28.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/1080p30_29.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_00.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_01.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_02.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_03.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_04.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_05.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_06.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_07.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_08.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_09.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_10.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_11.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_12.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_13.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_14.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_15.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_16.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_17.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_18.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_19.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_20.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_21.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_22.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_23.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_24.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_25.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_26.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_27.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_28.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders/720p60_29.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_00.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_01.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_02.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_03.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_04.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_05.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_06.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_07.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_08.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_09.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_10.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_11.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_12.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_13.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_14.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_15.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_16.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_17.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_18.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_19.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_20.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_21.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_22.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_23.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_24.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_25.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_26.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_27.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_28.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/1080p30_29.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_00.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_01.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_02.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_03.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_04.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_05.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_06.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_07.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_08.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_09.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_10.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_11.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_12.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_13.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_14.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_15.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_16.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_17.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_18.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_19.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_20.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_21.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_22.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_23.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_24.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_25.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_26.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_27.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_28.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/renders_pre_fix1b/720p60_29.jpg",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/repeats.json",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/residuals.csv",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/archived_code_sites.txt",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__3eeaJz1PJTM_s1331.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__3eeaJz1PJTM_s2572.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__3eeaJz1PJTM_s3813.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__3eeaJz1PJTM_s90.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__4JS090XPhmM_s2388.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__4JS090XPhmM_s3537.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__4JS090XPhmM_s4686.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__9sq-YMlIo9Q_s2346.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__J8pMOFvFlsU_s1384.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__J8pMOFvFlsU_s3972.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__J8pMOFvFlsU_s90.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__UCVSlzgun0o_s2298.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__UCVSlzgun0o_s90.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__UzaYBYy3GZg_s90.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__Vm0FqeGo-8g_s1317.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__Vm0FqeGo-8g_s90.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__X5w3V6rh26s_s90.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__Y1cgaIWW8gk_s1437.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__Y1cgaIWW8gk_s2784.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__tFnl0NVn6FA_s2774.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__tFnl0NVn6FA_s90.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__tZeqmc_-_sA_s2574.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__yZ5u2sOpiNU_s3933.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__yZ5u2sOpiNU_s5214.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__yZ5u2sOpiNU_s90.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__3gBeJyl7Szg_s2302.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__3gBeJyl7Szg_s90.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__6rQ2sV4upfc_s1509.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__6rQ2sV4upfc_s90.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__7blRl4zVfrY_s3489.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__7blRl4zVfrY_s90.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__FyMWTVsJvv8_s4332.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__Ge4uewCFUFQ_s2382.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__Ge4uewCFUFQ_s4674.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__IpR4pT8iN0Y_s2432.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__KZK9rv9TnGE_s1474.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__KZK9rv9TnGE_s4242.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__KZK9rv9TnGE_s90.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__Kh7Fj4ogPN4_s3606.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__Kh7Fj4ogPN4_s5950.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__Ktu6yFS9iMo_s2532.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__Ktu6yFS9iMo_s6195.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__L7o4UCIIqS4_s2656.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__L7o4UCIIqS4_s5222.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__acb-jHcR5UxPGuE_s1393.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__acb-jHcR5UxPGuE_s90.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__dAy3tnlu3EQ_s4326.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__oL9Uaie2v2A_s5960.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__qTXrSRHHR2M_s2262.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__s-0Y7aLxXgM_s1275.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__s-0Y7aLxXgM_s4830.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__xv0WyG7_99c_s1200.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__xv0WyG7_99c_s4530.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/plan.tsv",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/status.tsv",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observer_injection.json",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/route_and_model_hashes.txt",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/source_receipts.csv",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/stage_trace.jsonl",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/summary.json",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/tick_accounting.csv",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/transforms.json",
+  "scripts/platformkit/tracking/g409_fix1b.py",
+  "tests/platformkit/test_g409_box_coordinate_cause.py",
+  "docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12.md",
+  "docs/evidence/tracking/G409_VERIFY_fix1c_REJECT_2026-09-11.md",
+  "docs/evidence/tracking/RESULTS_LEDGER.md"
+ ],
+ "scanned": 87,
+ "scans": [
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/blind_receipt.csv"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/card_panel_manifest.csv"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/common_receipts/census_utc.txt"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/common_receipts/daemon_cmdline.txt"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/common_receipts/deploy_route_hashes.txt"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/common_receipts/nvidia_smi.log.txt"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/common_receipts/pod_volume.txt"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/common_receipts/python_env.txt"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/construct_cases.csv"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/controls.csv"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/crop_rebind.csv"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/draw.csv"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/export_join.csv"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/eye_index.csv"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/input_hashes.csv"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/launch_receipts.json"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/per_tick_transform.csv"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/prereg.md"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/repeats.json"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/residuals.csv"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/archived_code_sites.txt"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__3eeaJz1PJTM_s1331.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__3eeaJz1PJTM_s2572.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__3eeaJz1PJTM_s3813.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__3eeaJz1PJTM_s90.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__4JS090XPhmM_s2388.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__4JS090XPhmM_s3537.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__4JS090XPhmM_s4686.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__9sq-YMlIo9Q_s2346.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__J8pMOFvFlsU_s1384.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__J8pMOFvFlsU_s3972.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__J8pMOFvFlsU_s90.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__tFnl0NVn6FA_s2774.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__tFnl0NVn6FA_s90.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__tZeqmc_-_sA_s2574.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__UCVSlzgun0o_s2298.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__UCVSlzgun0o_s90.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__UzaYBYy3GZg_s90.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__Vm0FqeGo-8g_s1317.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__Vm0FqeGo-8g_s90.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__X5w3V6rh26s_s90.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__Y1cgaIWW8gk_s1437.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__Y1cgaIWW8gk_s2784.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__yZ5u2sOpiNU_s3933.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__yZ5u2sOpiNU_s5214.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/1080p30__yZ5u2sOpiNU_s90.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__3gBeJyl7Szg_s2302.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__3gBeJyl7Szg_s90.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__6rQ2sV4upfc_s1509.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__6rQ2sV4upfc_s90.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__7blRl4zVfrY_s3489.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__7blRl4zVfrY_s90.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__acb-jHcR5UxPGuE_s1393.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__acb-jHcR5UxPGuE_s90.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__dAy3tnlu3EQ_s4326.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__FyMWTVsJvv8_s4332.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__Ge4uewCFUFQ_s2382.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__Ge4uewCFUFQ_s4674.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__IpR4pT8iN0Y_s2432.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__Kh7Fj4ogPN4_s3606.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__Kh7Fj4ogPN4_s5950.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__Ktu6yFS9iMo_s2532.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__Ktu6yFS9iMo_s6195.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__KZK9rv9TnGE_s1474.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__KZK9rv9TnGE_s4242.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__KZK9rv9TnGE_s90.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__L7o4UCIIqS4_s2656.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__L7o4UCIIqS4_s5222.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__oL9Uaie2v2A_s5960.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__qTXrSRHHR2M_s2262.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__s-0Y7aLxXgM_s1275.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__s-0Y7aLxXgM_s4830.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__xv0WyG7_99c_s1200.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/720p60__xv0WyG7_99c_s4530.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/plan.tsv"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observations/status.tsv"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/observer_injection.json"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/runtime_receipts/route_and_model_hashes.txt"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/source_receipts.csv"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/stage_trace.jsonl"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/summary.json"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/tick_accounting.csv"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12/transforms.json"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/scripts/platformkit/tracking/g409_fix1b.py"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/tests/platformkit/test_g409_box_coordinate_cause.py"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/g409_box_coordinate_cause_2026-09-12.md"
+  },
+  {
+   "count": 0,
+   "hits": [],
+   "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/G409_VERIFY_fix1c_REJECT_2026-09-11.md"
+  }
+ ],
+ "shared_log_scan": {
+  "count": 17,
+  "hits": [
+   {
+    "field": "line:63",
+    "pattern_index": 2
+   },
+   {
+    "field": "line:92",
+    "pattern_index": 2
+   },
+   {
+    "field": "line:111",
+    "pattern_index": 2
+   },
+   {
+    "field": "line:233",
+    "pattern_index": 2
+   },
+   {
+    "field": "line:254",
+    "pattern_index": 2
+   },
+   {
+    "field": "line:257",
+    "pattern_index": 2
+   },
+   {
+    "field": "line:267",
+    "pattern_index": 2
+   },
+   {
+    "field": "line:323",
+    "pattern_index": 2
+   },
+   {
+    "field": "line:324",
+    "pattern_index": 2
+   },
+   {
+    "field": "line:328",
+    "pattern_index": 2
+   },
+   {
+    "field": "line:333",
+    "pattern_index": 2
+   },
+   {
+    "field": "line:335",
+    "pattern_index": 2
+   },
+   {
+    "field": "line:336",
+    "pattern_index": 2
+   },
+   {
+    "field": "line:340",
+    "pattern_index": 2
+   },
+   {
+    "field": "line:349",
+    "pattern_index": 2
+   },
+   {
+    "field": "line:398",
+    "pattern_index": 2
+   },
+   {
+    "field": "line:408",
+    "pattern_index": 2
+   }
+  ],
+  "path": "C:/Users/neelj/nba-track-a12/docs/evidence/tracking/RESULTS_LEDGER.md"
+ },
+ "total_hits": 0
+}

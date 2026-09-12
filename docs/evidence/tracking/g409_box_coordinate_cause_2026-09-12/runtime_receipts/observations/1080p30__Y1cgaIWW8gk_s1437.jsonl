@@ -1,0 +1,1 @@
+{"frame": 1239, "native": {"sha256": "b7ba8220a089f5f492820568d69f5d319b53563f3e820f92752a3d33f80c5383", "shape": [1080, 1920, 3]}, "post_crop": {"sha256": "3950d9483fc07d8294f64cba4226f3798d760ac7f8c20cd346b0ee95a17fb006", "shape": [1020, 1920, 3]}, "stage": "crop", "topcut": 60}

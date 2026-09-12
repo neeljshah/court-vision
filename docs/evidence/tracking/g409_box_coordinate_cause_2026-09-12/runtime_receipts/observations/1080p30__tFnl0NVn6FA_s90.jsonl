@@ -1,0 +1,7 @@
+{"frame": 1936, "native": {"sha256": "f2bc62f544ed14835d33d610a013e471f46bb2962f47e7899a367236d4038093", "shape": [1080, 1920, 3]}, "post_crop": {"sha256": "c4c832ac3bf9ab26b15752666466e20ce6656971774ed1742e2df5a7e0fb1c44", "shape": [1020, 1920, 3]}, "stage": "crop", "topcut": 60}
+{"bbox": [162.0, 548.0, 1027.0, 978.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 2, "stage": "detector_box", "timestamp": 1936}
+{"bbox": [159.0, -15.0, 1021.0, 487.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 3, "stage": "detector_box", "timestamp": 1936}
+{"bbox": [70.0, 1006.0, 1023.0, 1615.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 4, "stage": "detector_box", "timestamp": 1936}
+{"bbox": [582.0, 1108.0, 751.0, 1210.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 8, "stage": "detector_box", "timestamp": 1936}
+{"bbox": [70.0, 1006.0, 1023.0, 1615.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [1020, 1920, 3], "frame": 1936, "player_id": 5, "serialized": {"bbox_x1": 1006.0, "bbox_x2": 1615.0, "bbox_y1": 70.0, "bbox_y2": 1023.0}, "stage": "export"}
+{"bbox": [582.0, 1108.0, 751.0, 1210.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [1020, 1920, 3], "frame": 1936, "player_id": 9, "serialized": {"bbox_x1": 1108.0, "bbox_x2": 1210.0, "bbox_y1": 582.0, "bbox_y2": 751.0}, "stage": "export"}

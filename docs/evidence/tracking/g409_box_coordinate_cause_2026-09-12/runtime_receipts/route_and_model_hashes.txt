@@ -1,0 +1,19 @@
+# archived producer route (read-only deploy tree, git 7eb25dc)
+7eb25dc docs(tracking): allocate G369 prospective identity, G370 admission v0, G371 truth-free symmetry margin (astra day review 2026-09-09); NEXT_GAP_ID G369 -> G372 (PC master writer while the pod is down)
+c4eae385bfeebd4e44c8161c791ef7ed4589697020f424d3dde7aec6816d9226  src/pipeline/unified_pipeline.py
+df2ae698ae03e804f67639434d8303638aea9087c3169c016af5a3734dd474d7  src/tracking/advanced_tracker.py
+5e78e7fa8a43a251f6b2e5a855a37e2b93e24cb2607a3010123fc93aa74c6bc0  src/tracking/video_handler.py
+ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2  scripts/run_clip.py
+9747d9a085405c492f04c4e3b162ed8b1d897309da6f0f9c014cb7092056f5ac  scripts/platformkit/track_daemon.py
+# models
+f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36  yolov8n.pt
+c6fa93dd1ee4a2c18c900a45c1d864a1c6f7aba75d84f91648a30b7fb641d212  yolov8n-pose.pt
+f54941a66bad4ddd07f2907f498c810ce639ce7a1abeaf2a151f8da118d84693  /workspace/data/models/osnet_x0_25_imagenet.pth
+4a5efbfb48b4081100544e75e1e2b57f8de3d84f213004b14b85fd4b3748db17  /root/.EasyOCR/model/craft_mlt_25k.pth
+e2272681d9d67a04e2dff396b6e95077bc19001f8f6d3593c307b9852e1c29e8  /root/.EasyOCR/model/english_g2.pth
+# scratch route tree (observer-injected copy)
+135d5197a3b790f615504fc95be103bf7ad0c04660f95451e335fd35ac5ea119  /workspace/g409_scratch/tree/src/pipeline/unified_pipeline.py
+80d5548f20504422eee0f2a8176f070db9656f8868bf1b3c9552209823e1cd6f  /workspace/g409_scratch/tree/src/tracking/advanced_tracker.py
+5e78e7fa8a43a251f6b2e5a855a37e2b93e24cb2607a3010123fc93aa74c6bc0  /workspace/g409_scratch/tree/src/tracking/video_handler.py
+ccd08d32c8c4cb8625ec5ef67535206f74f4df307a8e191ec01f5700fb40d8c2  /workspace/g409_scratch/tree/scripts/run_clip.py
+c4e4176c9827d45acc6d0511ddc0276fbd7c3a62a98d426699e348158362b8d2  /workspace/g409_scratch/tree/scripts/platformkit/tracking/g409_observer.py

@@ -1,0 +1,11 @@
+{"frame": 908, "native": {"sha256": "a74e35e44d77ff74e4d0b3a1cb14fbd3c5186fa40653c9bde1eab6afec64a045", "shape": [1080, 1920, 3]}, "post_crop": {"sha256": "d96e8739a8f9c682b83023d8786fce3f457387feec7d43b70fbec28c2279e045", "shape": [1020, 1920, 3]}, "stage": "crop", "topcut": 60}
+{"bbox": [498.0, 1485.0, 788.0, 1632.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 0, "stage": "detector_box", "timestamp": 908}
+{"bbox": [276.0, 1383.0, 519.0, 1491.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 1, "stage": "detector_box", "timestamp": 908}
+{"bbox": [258.0, 921.0, 479.0, 1080.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 2, "stage": "detector_box", "timestamp": 908}
+{"bbox": [307.0, 1152.0, 538.0, 1272.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 3, "stage": "detector_box", "timestamp": 908}
+{"bbox": [478.0, 1293.0, 731.0, 1473.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 4, "stage": "detector_box", "timestamp": 908}
+{"bbox": [724.0, 1525.0, 1035.0, 1666.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 5, "stage": "detector_box", "timestamp": 908}
+{"bbox": [142.0, 750.0, 331.0, 837.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 8, "stage": "detector_box", "timestamp": 908}
+{"bbox": [478.0, 1293.0, 731.0, 1473.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [1020, 1920, 3], "frame": 908, "player_id": 5, "serialized": {"bbox_x1": 1293.0, "bbox_x2": 1473.0, "bbox_y1": 478.0, "bbox_y2": 731.0}, "stage": "export"}
+{"bbox": [724.0, 1525.0, 1035.0, 1666.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [1020, 1920, 3], "frame": 908, "player_id": 6, "serialized": {"bbox_x1": 1525.0, "bbox_x2": 1666.0, "bbox_y1": 724.0, "bbox_y2": 1035.0}, "stage": "export"}
+{"bbox": [142.0, 750.0, 331.0, 837.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [1020, 1920, 3], "frame": 908, "player_id": 9, "serialized": {"bbox_x1": 750.0, "bbox_x2": 837.0, "bbox_y1": 142.0, "bbox_y2": 331.0}, "stage": "export"}

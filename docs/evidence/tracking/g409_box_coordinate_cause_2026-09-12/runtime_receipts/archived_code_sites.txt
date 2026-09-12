@@ -1,0 +1,28 @@
+--- src/tracking/video_handler.py:11 (TOPCUT constant)
+TOPCUT = 60   # remove scoreboard only; 320 cut off far-end players on 720p broadcast
+--- src/pipeline/unified_pipeline.py:1687-1693 (the crop)
+            # BUG 41 FIX: keep pre-TOPCUT frame for scoreboard OCR.
+            # frame[TOPCUT:] removes the broadcast scoreboard strip (top 60px)
+            # which contains the period indicator ("1ST QTR", "Q2", etc.).
+            # The OCR must see the original frame; all other processing still
+            # uses the TOPCUT-cropped frame so YOLO/tracking are unaffected.
+            _frame_for_ocr = frame
+            frame = frame[TOPCUT:]
+--- src/pipeline/unified_pipeline.py:1909-1910 (prefetch cache cropped)
+                    _pf_list = [f[TOPCUT:] for f in _peek_frames]
+                    self.feet_det.prefetch_yolo(_pf_list)
+--- src/pipeline/unified_pipeline.py:1917-1918 (detector input)
+            frame, map_snap, map_txt = self.feet_det.get_players_pos(
+                M, self.M1, frame, frame_idx, map_snap,
+--- src/tracking/advanced_tracker.py:626 (tracker stores the raw model box)
+        p.previous_bb = det["bbox"]
+--- src/pipeline/unified_pipeline.py:2041 (bbox carried to the export dict)
+                    "bbox":             p.previous_bb,
+--- src/pipeline/unified_pipeline.py:2702-2703 (export read + cropped-frame bounds)
+                bbox = track["bbox"]  # stored as (y1, x1, y2, x2)
+                if UnifiedPipeline._bbox_off_frame(bbox, frame.shape[1], frame.shape[0]):
+--- src/pipeline/unified_pipeline.py:2736-2739 (SERIALIZATION: tuple reorder only, NO uncrop)
+                    "bbox_x1":            bbox[1] if bbox else "",
+                    "bbox_y1":            bbox[0] if bbox else "",
+                    "bbox_x2":            bbox[3] if bbox else "",
+                    "bbox_y2":            bbox[2] if bbox else "",

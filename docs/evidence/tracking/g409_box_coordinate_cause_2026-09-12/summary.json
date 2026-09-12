@@ -1,0 +1,126 @@
+{
+ "blind_marks": {
+  "blind_marks_precede_every_overlay": true,
+  "distinct_frames": 55,
+  "hits_ge_0_50_after": 65,
+  "hits_ge_0_50_before": 21,
+  "improved": 142,
+  "median_best_iou_after": 0.4044,
+  "median_best_iou_before": 0.2924,
+  "not_improved": 64,
+  "rows": 206
+ },
+ "construct": {
+  "cases": 7,
+  "code_consistent": 7,
+  "exact_inverse_cases": 3
+ },
+ "coordinates_equal_rows": 206,
+ "declared_transform": {
+  "exact_when": "the native box lies fully below the crop line (native y1 >= 60)",
+  "expression": "native_x = stored_x; native_y = stored_y + TOPCUT",
+  "fitted": false,
+  "lossy_when": "the native box straddles y = 60; the crop clips it and y1 cannot be recovered",
+  "topcut": 60
+ },
+ "export_join": {
+  "MATCH": 206
+ },
+ "geometry_matched_pairs": {
+  "by_position_source": {
+   "CLAMP": {
+    "dx_median": 0.12,
+    "dy_after_median": 1.52,
+    "dy_before_median": -58.48,
+    "n": 30
+   },
+   "DETECTION": {
+    "dx_median": 1.0,
+    "dy_after_median": 1.69,
+    "dy_before_median": -58.31,
+    "n": 9
+   },
+   "PREDICTION": {
+    "dx_median": 0.0,
+    "dy_after_median": 5.97,
+    "dy_before_median": -54.03,
+    "n": 10
+   },
+   "SUBPIXEL": {
+    "dx_median": -11.55,
+    "dy_after_median": 5.69,
+    "dy_before_median": -54.31,
+    "n": 2
+   }
+  },
+  "dx": {
+   "after": {
+    "median": 0.0,
+    "p10": -13.5,
+    "p90": 27.25
+   },
+   "before": {
+    "median": 0.0,
+    "p10": -13.5,
+    "p90": 27.25
+   },
+   "n": 51,
+   "within_15px_after": 37,
+   "within_15px_before": 37
+  },
+  "dy": {
+   "after": {
+    "median": 1.8,
+    "p10": -7.75,
+    "p90": 14.25
+   },
+   "before": {
+    "median": -58.2,
+    "p10": -67.75,
+    "p90": -45.75
+   },
+   "n": 51,
+   "within_15px_after": 44,
+   "within_15px_before": 0
+  }
+ },
+ "premise_step0": {
+  "comparator_boxes": 592,
+  "distinct_frames_in_matched_pairs": 28,
+  "distinct_ticks": 60,
+  "expected_input_digests_matched": 3,
+  "matched_pairs": 51,
+  "producer_rows": 206,
+  "silent_ticks": 5,
+  "sources_absent": 0,
+  "sources_rehashed_equal": 60,
+  "ticks": 60,
+  "ticks_accounted": 60,
+  "ticks_with_producer_rows": 55
+ },
+ "renders": {
+  "absent": 0,
+  "cards": 60,
+  "ok": 60
+ },
+ "stage_trace": {
+  "crop_records": 60,
+  "detector_records": 180,
+  "export_records": 215,
+  "historical_inference_equality": "UNKNOWN",
+  "note": "the replay binds the executed frame contract at every sealed tick; it is not expected to reproduce the historical box values because the pod library stack has moved since the G402 run",
+  "replay_export_rows_at_sealed_ticks": 215,
+  "shape_pairs": {
+   "[1080, 1920, 3]->[1020, 1920, 3]": 30,
+   "[720, 1280, 3]->[660, 1280, 3]": 30
+  },
+  "stored_rows": 206,
+  "stored_rows_exactly_reproduced_by_replay": 64,
+  "ticks_observed": 60,
+  "topcut_values": {
+   "60": 60
+  },
+  "windows_absent": 0,
+  "windows_with_observations": 53
+ }
+}

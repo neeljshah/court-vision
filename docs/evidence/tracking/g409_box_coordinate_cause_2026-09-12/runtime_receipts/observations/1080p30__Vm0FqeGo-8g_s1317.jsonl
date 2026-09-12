@@ -1,0 +1,15 @@
+{"frame": 960, "native": {"sha256": "585e65005c3204dd05143c3e276396c72d48d9cbbc955ec0a8d498f8a9c8f8ac", "shape": [1080, 1920, 3]}, "post_crop": {"sha256": "6129cd8112fa8ccae1f03437171325c89507fa1311c92a86c1c81ad3a2d8a4eb", "shape": [1020, 1920, 3]}, "stage": "crop", "topcut": 60}
+{"bbox": [551.0, 906.0, 838.0, 1081.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 0, "stage": "detector_box", "timestamp": 960}
+{"bbox": [373.0, 482.0, 633.0, 696.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 1, "stage": "detector_box", "timestamp": 960}
+{"bbox": [439.0, 1366.0, 711.0, 1476.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 2, "stage": "detector_box", "timestamp": 960}
+{"bbox": [609.0, 528.0, 874.0, 654.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 3, "stage": "detector_box", "timestamp": 960}
+{"bbox": [417.0, 1150.0, 657.0, 1249.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 4, "stage": "detector_box", "timestamp": 960}
+{"bbox": [186.0, 1494.0, 384.0, 1605.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 5, "stage": "detector_box", "timestamp": 960}
+{"bbox": [210.0, 939.0, 413.0, 1077.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 9, "stage": "detector_box", "timestamp": 960}
+{"bbox": [551.0, 906.0, 838.0, 1081.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [1020, 1920, 3], "frame": 960, "player_id": 1, "serialized": {"bbox_x1": 906.0, "bbox_x2": 1081.0, "bbox_y1": 551.0, "bbox_y2": 838.0}, "stage": "export"}
+{"bbox": [373.0, 482.0, 633.0, 696.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [1020, 1920, 3], "frame": 960, "player_id": 2, "serialized": {"bbox_x1": 482.0, "bbox_x2": 696.0, "bbox_y1": 373.0, "bbox_y2": 633.0}, "stage": "export"}
+{"bbox": [609.0, 528.0, 874.0, 654.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [1020, 1920, 3], "frame": 960, "player_id": 4, "serialized": {"bbox_x1": 528.0, "bbox_x2": 654.0, "bbox_y1": 609.0, "bbox_y2": 874.0}, "stage": "export"}
+{"bbox": [417.0, 1150.0, 657.0, 1249.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [1020, 1920, 3], "frame": 960, "player_id": 5, "serialized": {"bbox_x1": 1150.0, "bbox_x2": 1249.0, "bbox_y1": 417.0, "bbox_y2": 657.0}, "stage": "export"}
+{"bbox": [186.0, 1494.0, 384.0, 1605.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [1020, 1920, 3], "frame": 960, "player_id": 6, "serialized": {"bbox_x1": 1494.0, "bbox_x2": 1605.0, "bbox_y1": 186.0, "bbox_y2": 384.0}, "stage": "export"}
+{"bbox": [210.0, 939.0, 413.0, 1077.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [1020, 1920, 3], "frame": 960, "player_id": 10, "serialized": {"bbox_x1": 939.0, "bbox_x2": 1077.0, "bbox_y1": 210.0, "bbox_y2": 413.0}, "stage": "export"}
+{"bbox": [286.1475830078125, 68.04182434082031, 502.27001953125, 164.65277099609375], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [1020, 1920, 3], "frame": 960, "player_id": 9, "serialized": {"bbox_x1": 68.04182434082031, "bbox_x2": 164.65277099609375, "bbox_y1": 286.1475830078125, "bbox_y2": 502.27001953125}, "stage": "export"}

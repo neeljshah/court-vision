@@ -1,0 +1,2 @@
+mfs#eu-cz-1.runpod.net:9421  943T  564T  380T  60% /workspace
+1.1G	/workspace/g409_scratch

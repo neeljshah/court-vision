@@ -1,0 +1,11 @@
+{"frame": 3286, "native": {"sha256": "ac7f2afacde41cbebf814adfcb80a5cfab7e4634579b502c6a18be7421742e89", "shape": [1080, 1920, 3]}, "post_crop": {"sha256": "c83443d5ac03be618e27053d9686eb7f0ecb3208569996b18b8b8184a604bcba", "shape": [1020, 1920, 3]}, "stage": "crop", "topcut": 60}
+{"bbox": [856.0, 245.0, 1018.0, 327.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 0, "stage": "detector_box", "timestamp": 3286}
+{"bbox": [933.0, 1818.0, 1035.0, 1896.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 1, "stage": "detector_box", "timestamp": 3286}
+{"bbox": [945.0, 1210.0, 1035.0, 1291.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 2, "stage": "detector_box", "timestamp": 3286}
+{"bbox": [919.0, 740.0, 1035.0, 833.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 3, "stage": "detector_box", "timestamp": 3286}
+{"bbox": [927.0, 1495.0, 1035.0, 1576.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 4, "stage": "detector_box", "timestamp": 3286}
+{"bbox": [930.0, 1545.0, 1035.0, 1623.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 6, "stage": "detector_box", "timestamp": 3286}
+{"bbox": [772.0, 387.0, 918.0, 467.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 8, "stage": "detector_box", "timestamp": 3286}
+{"bbox": [927.0, 1495.0, 1035.0, 1576.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [1020, 1920, 3], "frame": 3286, "player_id": 5, "serialized": {"bbox_x1": 1495.0, "bbox_x2": 1576.0, "bbox_y1": 927.0, "bbox_y2": 1035.0}, "stage": "export"}
+{"bbox": [930.0, 1545.0, 1035.0, 1623.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [1020, 1920, 3], "frame": 3286, "player_id": 7, "serialized": {"bbox_x1": 1545.0, "bbox_x2": 1623.0, "bbox_y1": 930.0, "bbox_y2": 1035.0}, "stage": "export"}
+{"bbox": [772.0, 387.0, 918.0, 467.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [1020, 1920, 3], "frame": 3286, "player_id": 9, "serialized": {"bbox_x1": 387.0, "bbox_x2": 467.0, "bbox_y1": 772.0, "bbox_y2": 918.0}, "stage": "export"}

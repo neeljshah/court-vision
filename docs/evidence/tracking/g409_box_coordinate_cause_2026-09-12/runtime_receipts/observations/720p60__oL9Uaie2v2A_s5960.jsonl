@@ -1,0 +1,11 @@
+{"frame": 3175, "native": {"sha256": "c5a29d2dc3caeac2cac478ee4a4b6830143044940d33ee737d09d0b862dab974", "shape": [720, 1280, 3]}, "post_crop": {"sha256": "11fd37028ac56af1734e2363c5d8f1e5093f6ae37db1543c77d41257dabfcf02", "shape": [660, 1280, 3]}, "stage": "crop", "topcut": 60}
+{"bbox": [212.0, 741.0, 512.0, 972.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 1, "stage": "detector_box", "timestamp": 3175}
+{"bbox": [209.0, 648.0, 432.0, 775.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 3, "stage": "detector_box", "timestamp": 3175}
+{"bbox": [125.0, 458.0, 322.0, 612.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 6, "stage": "detector_box", "timestamp": 3175}
+{"bbox": [425.0, 798.0, 660.0, 1002.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 9, "stage": "detector_box", "timestamp": 3175}
+{"bbox": [190.0, 578.0, 471.0, 717.0], "bbox_tuple_order": "y1x1y2x2", "confidence": -1.0, "slot": 4, "stage": "detector_box", "timestamp": 3175}
+{"bbox": [212.0, 741.0, 512.0, 972.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [660, 1280, 3], "frame": 3175, "player_id": 2, "serialized": {"bbox_x1": 741.0, "bbox_x2": 972.0, "bbox_y1": 212.0, "bbox_y2": 512.0}, "stage": "export"}
+{"bbox": [209.0, 648.0, 432.0, 775.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [660, 1280, 3], "frame": 3175, "player_id": 4, "serialized": {"bbox_x1": 648.0, "bbox_x2": 775.0, "bbox_y1": 209.0, "bbox_y2": 432.0}, "stage": "export"}
+{"bbox": [125.0, 458.0, 322.0, 612.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [660, 1280, 3], "frame": 3175, "player_id": 7, "serialized": {"bbox_x1": 458.0, "bbox_x2": 612.0, "bbox_y1": 125.0, "bbox_y2": 322.0}, "stage": "export"}
+{"bbox": [425.0, 798.0, 660.0, 1002.0], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [660, 1280, 3], "frame": 3175, "player_id": 10, "serialized": {"bbox_x1": 798.0, "bbox_x2": 1002.0, "bbox_y1": 425.0, "bbox_y2": 660.0}, "stage": "export"}
+{"bbox": [130.76812744140625, 1478.1180419921875, 396.25469970703125, 1599.3431396484375], "bbox_tuple_order": "y1x1y2x2", "export_frame_shape": [660, 1280, 3], "frame": 3175, "player_id": 9, "serialized": {"bbox_x1": 1478.1180419921875, "bbox_x2": 1599.3431396484375, "bbox_y1": 130.76812744140625, "bbox_y2": 396.25469970703125}, "stage": "export"}
