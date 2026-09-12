@@ -1,0 +1,196 @@
+{
+  "files": [
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/associations.csv"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/denominator_table.csv"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/draw.csv"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/eye_index.csv"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/g412_transforms_handoff.json"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/input_hashes.csv"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/old_pair_residuals.csv"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/per_tick.csv"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/prereg.md"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/q6_scan.json"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/repeats.json"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/residuals.csv"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/review.csv"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/runtime_receipts/commands.json"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/runtime_receipts/environment.json"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/runtime_receipts/measure.log.txt"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/source_receipts.csv"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/summary.json"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/transformed_rows.csv"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/unmatched_boxes.csv"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g413_contract.py"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g413_hash_inputs.py"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g413_measure.py"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g413_finalize.py"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g413_prepare.py"
+    },
+    {
+      "count": 0,
+      "indices": [],
+      "path": "C:/Users/neelj/nba-track-a7/tests/platformkit/test_g413_native_box_reaudit.py"
+    }
+  ],
+  "path_manifest": [
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/associations.csv",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/denominator_table.csv",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/draw.csv",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/eye_index.csv",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/g412_transforms_handoff.json",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/input_hashes.csv",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/old_pair_residuals.csv",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/per_tick.csv",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/prereg.md",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/q6_scan.json",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/repeats.json",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/residuals.csv",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/review.csv",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/runtime_receipts/commands.json",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/runtime_receipts/environment.json",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/runtime_receipts/measure.log.txt",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/source_receipts.csv",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/summary.json",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/transformed_rows.csv",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/g413_native_box_reaudit_2026-09-12/unmatched_boxes.csv",
+    "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g413_contract.py",
+    "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g413_hash_inputs.py",
+    "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g413_measure.py",
+    "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g413_finalize.py",
+    "C:/Users/neelj/nba-track-a7/scripts/platformkit/tracking/g413_prepare.py",
+    "C:/Users/neelj/nba-track-a7/tests/platformkit/test_g413_native_box_reaudit.py",
+    "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/RESULTS_LEDGER.md"
+  ],
+  "scanner": "scripts/platformkit/tracking/g413_contract.py:field_scan",
+  "shared_log_scan": {
+    "count": 26,
+    "indices": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "path": "C:/Users/neelj/nba-track-a7/docs/evidence/tracking/RESULTS_LEDGER.md"
+  }
+}

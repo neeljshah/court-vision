@@ -1,0 +1,10 @@
+[
+  {
+    "command": "python -m scripts.platformkit.tracking.g413_measure --out docs/evidence/tracking/g413_native_box_reaudit_2026-09-12",
+    "returncode": 0
+  },
+  {
+    "command": "python -m scripts.platformkit.tracking.g413_finalize",
+    "returncode": 0
+  }
+]

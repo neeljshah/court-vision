@@ -1,0 +1,27 @@
+scope,metric,value,denominator
+inherited_population,decoded_frames,27000,all retained windows
+inherited_population,evaluated_ticks,5310,all retained windows
+inherited_population,bounded_rows,19087,all retained windows
+inherited_population,masked_candidates,3075,all retained windows
+sample,draw_frames,60,60 sealed cards
+sample,producer_rows,206,206 stored rows
+sample,comparator_boxes,592,592 saved boxes
+sample,new_matches,117,206 producer rows / 592 comparator boxes
+sample,producer_match_fraction,117,206 producer rows
+sample,comparator_match_fraction,117,592 comparator boxes
+sample,matched_frames,48,60 sealed cards
+sample,candidate_frames,55,60 sealed cards
+sample,producer_silent_ticks,5,60 sealed cards
+accounting,unmatched_units,564,206 + 592 units
+retention,source_receipts_OK,59,60 sealed cards
+clip,clip_left,6,206 transformed rows
+clip,clip_top,20,206 transformed rows
+clip,clip_right,15,206 transformed rows
+clip,clip_bottom,18,206 transformed rows
+branch,src/pipeline/unified_pipeline.py:jump_clamp,102,206 transformed rows
+branch,src/pipeline/unified_pipeline.py:subpixel_hold,20,206 transformed rows
+branch,src/tracking/advanced_tracker.py:_activate_slot,37,206 transformed rows
+branch,src/tracking/advanced_tracker.py:id_merge,31,206 transformed rows
+branch,src/tracking/advanced_tracker.py:kalman_homography,16,206 transformed rows
+resolution,1280x720,95,206 transformed rows
+resolution,1920x1080,111,206 transformed rows

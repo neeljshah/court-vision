@@ -1,0 +1,71 @@
+{
+  "complete_native_reaudit": "PARTIAL",
+  "counts": {
+    "1280x720": 95,
+    "1920x1080": 111,
+    "bounded_rows": 19087,
+    "candidate_frames": 55,
+    "clip_bottom": 18,
+    "clip_left": 6,
+    "clip_right": 15,
+    "clip_top": 20,
+    "comparator_boxes": 592,
+    "comparator_match_fraction": 117,
+    "decoded_frames": 27000,
+    "draw_frames": 60,
+    "evaluated_ticks": 5310,
+    "masked_candidates": 3075,
+    "matched_frames": 48,
+    "new_matches": 117,
+    "producer_match_fraction": 117,
+    "producer_rows": 206,
+    "producer_silent_ticks": 5,
+    "source_receipts_OK": 59,
+    "src/pipeline/unified_pipeline.py:jump_clamp": 102,
+    "src/pipeline/unified_pipeline.py:subpixel_hold": 20,
+    "src/tracking/advanced_tracker.py:_activate_slot": 37,
+    "src/tracking/advanced_tracker.py:id_merge": 31,
+    "src/tracking/advanced_tracker.py:kalman_homography": 16,
+    "unmatched_units": 564
+  },
+  "g412_acceptance_receipt": {
+    "path": "master 5a0b84cba: docs/evidence/tracking/g412_box_frame_contract_2026-09-12/transforms.json",
+    "sha256_lf": "957ab0da4d1b14ae055a0e94157ef5cb60d470207e54b1809c65f4d805e86864",
+    "sha256_raw": "859b09571b73010c215b65d409cfb2a809d152384fb2580d26261b6eb2b26ed1"
+  },
+  "g412_acceptance_receipt_lane_sha256": "049fdaedadcd65b9e70a48e1690724abf0ad6be71fd41ba2ae490db742896d95",
+  "g412_receipt_path_lane": "docs/evidence/tracking/G412_VERIFY_att1_ACCEPT_WITH_CORRECTIONS_2026-09-11.md",
+  "g412_verify_status": "ACCEPT_WITH_CORRECTIONS_APPLIED_LANDED_master_5a0b84cba",
+  "gap": "G413",
+  "model_set": [],
+  "not_verified": [
+    "independent teacher",
+    "physical court geometry",
+    "production equality",
+    "training suitability"
+  ],
+  "reproduction_schema": "DONE",
+  "residual": {
+    "absolute_max": "100.5",
+    "absolute_p50": "5.609499999999997",
+    "absolute_p90": "24.0",
+    "budget_status": "PASS",
+    "card_id": "POOLED",
+    "draw_kind": "",
+    "equal_frame_median_dx": "-0.75",
+    "equal_frame_median_dy": "-0.375",
+    "matched_boxes": "117",
+    "matched_frames": "48",
+    "median_dx": "",
+    "median_dy": "",
+    "row_type": "summary"
+  },
+  "residual_translation": "PASS",
+  "source_unknown": 1,
+  "tie_rule": "scripts/platformkit/tracking/g406_audit.py:27-49",
+  "visual_adjudication": {
+    "UNKNOWN": 117,
+    "correct_object": 0,
+    "wrong_object": 0
+  }
+}
