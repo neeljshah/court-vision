@@ -49,6 +49,13 @@
 
 
 
+
+## G413 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G413 | basketball | PARTIAL (complete native re-audit: one source/frame identity receipt UNKNOWN) + residual PASS within budget + reproduction DONE (codex-sol ACCEPT WITH CORRECTIONS, corrections applied; FINISHED BY CODEX TERRA in 22 min under the night rails): premise reproduced (60 exact-even G406 ticks 30/kind; 206 stored producer rows; 592 saved comparator boxes; 51 historical pairs / 28 frames; five producer-silent ticks; blind marks kept historical); G412 prerequisite = ACCEPT WITH CORRECTIONS applied and landed (master 5a0b84cba; handoff transforms.json byte-identical). Every stored box transformed with the sealed contract (native padded / native unpadded detector-form; clip before the origin restore) beside its original coordinates; one-pass one-to-one max-IoU association at 0.50 with the inherited tie rule over ALL transformed producer boxes vs ALL 592 comparator boxes: 117/206 producer and 117/592 comparator matches on 48 distinct frames (>= 30 required), 564 unmatched units enumerated. RESIDUAL TRANSLATION PASS within the fixed budget: equal-frame-weighted signed medians dx -0.75 / dy -0.375 native px (budget abs <= 5 on both); absolute residual p50 ~5.6 px (ordinary median; corrected from an upper-middle percentile), p90 24 px; tails and per-kind splits reported; old-pair residuals reproduced descriptively (dy -58.2 -> +1.8). Fresh overlay-informed review saved separately from the historical blind marks; visual_adjudication state (correct / wrong / UNKNOWN per association) added at fix 1b. Population counts (27,000 decoded frames; 5,310 evaluated ticks; 19,087 bounded rows; 3,075 masked candidates) published apart from the 60 / 206 / 592 sampled denominators. LIMITS: the comparator is the same detector family / weights, not an independent teacher; a conditional signed median is not box accuracy; 89/206 producer boxes unmatched. | g413_native_box_reaudit_2026-09-12.md + dir (transformed_rows.csv, associations.csv, unmatched_boxes.csv, per_tick.csv, residuals.csv, review.csv, denominator_table.csv, old_pair_residuals.csv, g412_transforms_handoff.json, renders/, repeats.json, q6_scan.json, SHA256SUMS); G413_VERIFY_att1_ACCEPT_WITH_CORRECTIONS_2026-09-11.md | **PARTIAL + residual PASS + reproduction DONE -- the sealed contract holds on the same-weights comparator within 1 px median; licenses G415's fresh-frame export measurement; does not license any box-accuracy or teacher-quality claim** |
+
 ## G409 result register
 
 | Gap | Sport | Finding | Evidence | Status |
