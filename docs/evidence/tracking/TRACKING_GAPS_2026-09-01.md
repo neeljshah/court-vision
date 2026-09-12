@@ -47,6 +47,13 @@
 
 
 
+
+## G411 result register
+
+| Gap | Sport | Finding | Evidence | Status |
+|---|---|---|---|---|
+| G411 | basketball | DONE (DIAGNOSTIC, PROPOSED ONLY) -- ADJUDICATED LANDING after four codex-sol REJECT cycles, every one on parent-schema fidelity of edge paths that no sealed timeline exercises (dropped G408 columns; read_frames / deadline / contained meanings; UNKNOWN-path state after k admissions; the empty-schedule path), each corrected in turn (fix 1b-1e) with the 90 real rows byte-unchanged and the measurement never contested: premise reproduced from the archived unrounded values (30/30 containment; arm C 30/30 first-excluded, 26/30 last-admitted; the four 60/1 last-admitted failures exceed the 1/60 s bar by ~3.3e-7 s). EXACT INTEGER-PTS RECOMPUTATION on the same 30 retained G401 timelines (time base 1/90000 on all 30; 30/30 readers agree; 0 missing PTS; the decimal stream re-derives from the integers 30/30 sources / 0 mismatching frames): under the SAME inherited unrounded bar (no epsilon, no rounding) the exact rational extents pass 30/30 on BOTH endpoint definitions; the 8 bar-outcome changes vs the float representation are ALL serialization (exact extent 5999/60 s vs a float rendering of it; marginal_cases.csv); 32/32 CONSTRUCT boundary cases match hand-declared expectations. The historical G408 verdict is NOT altered (arm A 0/30, arm B 29/30, arm C 30/30 first-excluded, 26/30 last-admitted stands); this is a precision hypothesis for the USER's G401 duration decision (fps-aware frame cap vs the G408 PTS stop): precision does not force the endpoint choice. paired_stops.csv carries the seven G408 parent columns with same-semantics seconds aliases plus G411 alias columns; 90-row parent_field_audit.csv. Verifier NEW GAPs recorded (A1 cannot run on master before landing; source_receipts width added at fix 1e). | g411_integer_pts_extent_audit_2026-09-12.md + dir (paired_stops.csv, endpoint_comparison.csv, marginal_cases.csv, construct_cases.csv, anomalies.csv, stream_join.csv, time_bases.csv, source_receipts.csv, parent_field_audit.csv, integer_pts/, renders/, repeats.json, q6_scan.json, SHA256SUMS); G411_VERIFY_att1/fix1b/fix1c/fix1d REJECT memos | **DONE (DIAGNOSTIC, PROPOSED ONLY; ADJUDICATED) -- exact-PTS endpoint precision passes the inherited bar 30/30; informs the user's G401 decision; does not alter G408, does not license any runtime change** |
+
 ## G410 result register
 
 | Gap | Sport | Finding | Evidence | Status |

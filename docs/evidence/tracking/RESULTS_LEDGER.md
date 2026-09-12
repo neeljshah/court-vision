@@ -787,3 +787,4 @@ Only measured numbers with an artifact. Honest FAIL/REJECT lines belong here too
 
 2026-09-11 | tracking geometry | G410 | landed PARTIAL + NOT VALIDATED: premise 19087 rows; 279 checks classify 2/107/36/124/10; pre-launch identity 31/39; stored boxes in the TOPCUT-cropped frame with PAD 15, court points from the unpadded clipped box (verified: codex-sol ACCEPT WITH CORRECTIONS applied, contract A/B/Q)
 
+2026-09-12 | tracking | G411 | landed DONE (DIAGNOSTIC, PROPOSED ONLY; ADJUDICATED after 4 edge-path REJECTs, fix 1b-1e applied, 90 real rows unchanged): premise 30/30 containment, 30/30 first-excluded, 26/30 last-admitted; exact PTS 30/30 both endpoints; 8 bar-outcome changes all serialization (5999/60 s) (verified: codex-sol REJECT x4 on edge-path schema only; measurement reproduced each cycle, contract A/B/Q)
