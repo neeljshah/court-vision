@@ -1,0 +1,632 @@
+{
+ "paths": [
+  {
+   "path": "docs/evidence/tracking/G416_VERIFY_fix1b_REJECT_2026-09-11.md",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/RESULTS_LEDGER.md",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 26
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12.md",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/PROPOSED_g416_court_point.diff",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/SHA256SUMS",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/binding_deficits.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/compatibility.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/construct_cases.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/denominator_table.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/draw.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/exclusions.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/eye_index.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/field_restoration.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/file_manifest.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/input_hashes.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/oracle_checks.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/original_retention.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/paired_clamp_counts.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/parent_schema.json",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/pre_fix1b/repeats_inherited_g410.json",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/prereg.md",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/q6_scan.json",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/reader_manifest.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_00.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_01.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_02.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_03.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_04.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_05.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_06.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_07.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_08.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_09.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_10.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_11.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_12.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_13.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_14.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_15.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_16.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_17.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_18.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_19.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_20.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_21.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_22.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_23.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_24.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_25.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_26.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_27.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_28.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/renders/card_29.jpg",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/repeats.json",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/replay_shadow_points.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/review.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/runtime_receipts/environment.json",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/runtime_receipts/git_apply_check.txt",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/runtime_receipts/run1.json",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/runtime_receipts/run2.json",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/serializer_fixture.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/source_receipts.csv",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/evidence/tracking/g416_court_point_proposal_2026-09-12/summary.json",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "docs/research/organization-sprint/PROPOSED_g416_court_point.diff",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "scripts/platformkit/tracking/g416_finish.py",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "scripts/platformkit/tracking/g416_fix1c.py",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "scripts/platformkit/tracking/g416_q6_scan.py",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  },
+  {
+   "path": "tests/platformkit/test_g416_court_point_proposal.py",
+   "pattern_indices_with_counts": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   }
+  }
+ ],
+ "scanner": "scripts/platformkit/tracking/g416_q6_scan.py",
+ "shared_log_scan": {
+  "classification": {
+   "3": {
+    "classification": "rows older than G416 = inherited context",
+    "count": 26
+   }
+  },
+  "path": "docs/evidence/tracking/RESULTS_LEDGER.md",
+  "pattern_indices_with_counts": {
+   "0": 0,
+   "1": 0,
+   "2": 0,
+   "3": 26
+  }
+ }
+}

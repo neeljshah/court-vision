@@ -1,0 +1,26 @@
+{
+ "command": "PYTHONPATH=C:/Users/neelj/nba-track-a10 python -m scripts.platformkit.tracking.g416_finish",
+ "returncode": 0,
+ "stdout": "",
+ "table_digests": {
+  "binding_deficits.csv": "cbc6d5634e377144d18576f26c412ea36291e5ba9c88c67d5b99b38cbf652170",
+  "compatibility.csv": "8ab6fbdc9a704876bd754d728802487f989c2138243e3e14d6677905b97fccbb",
+  "construct_cases.csv": "c1df53992a24f0b497fec539edce6de49f22bbf7378629e364243163928f3542",
+  "denominator_table.csv": "d8e3bcb03f071870eb0ce46a3558d9a9fd47b1686f32d51ab4d752fcc7fa969b",
+  "draw.csv": "4540f2092d5627cccdd48c779c21e9bd9f9730d0b19442d149496fc0a75506c4",
+  "exclusions.csv": "558ce077c8f6701aa4e740b644108bcc3495d8f8288cb0e18b8f76e15dabe636",
+  "eye_index.csv": "c0df299c3922723fc79ed5454afaec2c7f8c0e2cab513265bab14a4804a63b54",
+  "field_restoration.csv": "b2ebe3531ce06d567d5c1291d03e7225ea58689ff48534fb5b1b652dc11dd95f",
+  "input_hashes.csv": "d31f765486eadda0f54de0b9f01508b8f52762f0bc3baa602518c4f4499a61ec",
+  "oracle_checks.csv": "cc03c9979f1c53addc7e57e9b4921780d85c7bfde6c9da80c91a1fd270e583df",
+  "original_retention.csv": "d04e1356620abf6e8ca9246f0229ce1f7a2f24be32ba7f107b574b170517de32",
+  "paired_clamp_counts.csv": "a091f928a4fe3533fc562aabbcf9b279ee0417222d404cc6847012fd7a968011",
+  "parent_schema.json": "fdc5d4fb197ebb12179a8782e74bbcf3504fe05a849652bd1703a7320e6259ed",
+  "reader_manifest.csv": "7b08de998636c5f95e0429e9ed6062a633a24cdc737e8aedc10da8d65771433b",
+  "replay_shadow_points.csv": "3261c62a62582a34aaea2b3c7c91d979a926cfa4233a0439a84be94910ea2de6",
+  "review.csv": "c0df299c3922723fc79ed5454afaec2c7f8c0e2cab513265bab14a4804a63b54",
+  "serializer_fixture.csv": "368c7d8cb23722d4abd2fbbe90bd5b5a83fe9af5e9bae057d73bc5f8bf0823db",
+  "source_receipts.csv": "c78fe32579db21dd7affc29d41ca18f03aeb7d99601dcbd7368409b1c27e1edc",
+  "summary.json": "323c180b11603b980d04676a77c24ea61ecbc1cc8b30969382689d7ffaddbe44"
+ }
+}

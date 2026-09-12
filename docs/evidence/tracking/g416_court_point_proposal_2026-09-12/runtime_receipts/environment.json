@@ -1,0 +1,6 @@
+{
+ "command": "PYTHONPATH=C:/Users/neelj/nba-track-a10 python -m scripts.platformkit.tracking.g416_finish",
+ "machine": "PC",
+ "model_set": [],
+ "tracker_sha256": "fa3b6db7dd180f1da5d12f962e95a9f052f3abdee3373c7c2dcade10cc7a1477"
+}

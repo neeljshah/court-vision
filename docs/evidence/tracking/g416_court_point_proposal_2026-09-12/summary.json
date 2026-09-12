@@ -1,0 +1,44 @@
+{
+ "archived_projection_lines": "advanced_tracker.py:1426-1428",
+ "archived_tracker_sha256": "fa3b6db7dd180f1da5d12f962e95a9f052f3abdee3373c7c2dcade10cc7a1477",
+ "binding_census": "0/279 independently call-bound; 279 deficits",
+ "bound_detection_rows_reproduced": "0/0",
+ "citations": [
+  "g412 transforms.json: court_point_rule",
+  "g412 route_chain.json: stages J-L"
+ ],
+ "construct_controls": "32/32",
+ "draw_oracle_or_unknown": "30/30",
+ "empirical_clamp_improvement": "NOT_VALIDATED_FIXED_AT_ENTRY",
+ "machine": "PC",
+ "model_set": [],
+ "not_verified": [
+  "CLAMP quality",
+  "physical homography",
+  "original model identity",
+  "live behavior"
+ ],
+ "original_retention": {
+  "clamp_rows": 118,
+  "moving_boxes": 97
+ },
+ "premise": {
+  "binding_deficits": [],
+  "branch_trace_sha256": "1cab601fcc7b17501243d36010caf8f14c008bd30dd9e26735cc8264baa0a046",
+  "check_sections": 37,
+  "checks": 279,
+  "guard_rows": 7,
+  "guard_sections": 5,
+  "matrices_sha256": "138e5840ad8809fcb60a97d58de53db8a5bca03a1074674591537679176dfc3b",
+  "original_keys": 478,
+  "original_rows": 479,
+  "replay_emitted_duplicate_keys": 13,
+  "replay_emitted_files": 39,
+  "replay_emitted_keys": 473,
+  "replay_emitted_rows": 486,
+  "replay_matrix_keys": 58,
+  "replay_matrix_rows": 58
+ },
+ "projection_receipt_mechanics": "DONE_PROPOSED_ONLY",
+ "row": "G416"
+}

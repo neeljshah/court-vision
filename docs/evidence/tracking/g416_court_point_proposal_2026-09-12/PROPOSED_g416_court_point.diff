@@ -1,0 +1,98 @@
+--- a/src/tracking/advanced_tracker.py
++++ b/src/tracking/advanced_tracker.py
+@@ -624,6 +624,11 @@
+ 
+         p = self.players[slot]
+         p.previous_bb = det["bbox"]
++        for field in ("shadow_court_x", "shadow_court_y", "shadow_status",
++                      "matrix_receipt", "source_receipt", "call_receipt",
++                      "would_violate_existing_guard"):
++            setattr(p, field, det.get(field, "UNKNOWN"))
++        p._g416_shadow_timestamp = timestamp
+         new_pos = (det["homo"][0], det["homo"][1])
+         # Velocity clamp: if projected position jumps > MAX_2D_JUMP from the last
+         # known position, the SIFT homography is noisy — keep the last known position.
+@@ -1409,6 +1414,7 @@
+             # ── Foot position: ankle keypoints (pose) or bbox_bottom ──────
+             head_x = (x1c + x2c) // 2
+             foot_y = y2c  # fallback: bbox bottom
++            shadow_route = "BOX"
+             if _kpts_xy is not None and box_i < len(_kpts_xy):
+                 ankles_xy   = _kpts_xy[box_i, 15:17, :]   # left/right ankle (2,2)
+                 ankle_confs = (
+@@ -1418,6 +1424,7 @@
+                 # Accept ankle kpts with confidence > 0.5 (fallback to bbox_bottom below)
+                 valid = ankle_confs > 0.5
+                 if valid.any():
++                    shadow_route = "ANKLE"
+                     foot_y = int(ankles_xy[valid, 1].mean())
+                     # head_x: midpoint of visible ankles gives better horizontal pos
+                     head_x = int(ankles_xy[valid, 0].mean())
+@@ -1426,6 +1433,16 @@
+             kpt  = np.array([head_x, foot_y, 1])
+             homo = M1 @ (M @ kpt.reshape(3, 1))
+             homo = np.int32(homo / homo[-1]).ravel()
++            shadow_homo = M1 @ (M @ kpt.reshape(3, 1))
++            shadow_homo = np.int32(shadow_homo / shadow_homo[-1]).ravel()
++            shadow_known = shadow_route == "BOX" and (0 <= shadow_homo[0] < map_2d.shape[1] and 0 <= shadow_homo[1] < map_2d.shape[0])
++            shadow_court_x = int(shadow_homo[0]) if shadow_known else "UNKNOWN"
++            shadow_court_y = int(shadow_homo[1]) if shadow_known else "UNKNOWN"
++            shadow_status = "PROPOSED" if shadow_known else "UNKNOWN"
++            matrix_receipt = "M1_AT_M_AT_KPT_ONE_NORMALIZATION_INT32" if shadow_known else "UNKNOWN"
++            source_receipt = "DETECTION_BOX" if shadow_known else "UNKNOWN"
++            call_receipt = "CURRENT_DETECTION_CALL" if shadow_known else "UNKNOWN"
++            would_violate_existing_guard = "UNKNOWN"
+ 
+             if not (0 <= homo[0] < map_2d.shape[1] and 0 <= homo[1] < map_2d.shape[0]):
+                 continue
+@@ -1447,6 +1464,13 @@
+                 "bbox":      bbox,
+                 "team":      team,
+                 "homo":      homo,
++                "shadow_court_x": shadow_court_x,
++                "shadow_court_y": shadow_court_y,
++                "shadow_status": shadow_status,
++                "matrix_receipt": matrix_receipt,
++                "source_receipt": source_receipt,
++                "call_receipt": call_receipt,
++                "would_violate_existing_guard": would_violate_existing_guard,
+                 "color":     color_bgr,
+                 "crop_bgr":  det_crop,
+                 "score":     score,
+--- a/src/pipeline/unified_pipeline.py
++++ b/src/pipeline/unified_pipeline.py
+@@ -2033,12 +2033,20 @@
+                         x2d, y2d = last_pos[0], last_pos[1]
+ 
+                 slot     = self.players.index(p)
++                shadow_bound = getattr(p, "_g416_shadow_timestamp", None) == frame_idx
+                 conf     = max(0.0, 1.0 - self.feet_det._lost_ages.get(slot, 0) / 15)
+                 team_pos[p.ID] = (p.team, int(x2d), int(y2d))
+                 frame_tracks.append({
+                     "player_id":        p.ID,
+                     "team":             p.team,
+                     "bbox":             p.previous_bb,
++                    "shadow_court_x": getattr(p, "shadow_court_x", "UNKNOWN") if shadow_bound else "UNKNOWN",
++                    "shadow_court_y": getattr(p, "shadow_court_y", "UNKNOWN") if shadow_bound else "UNKNOWN",
++                    "shadow_status": getattr(p, "shadow_status", "UNKNOWN") if shadow_bound else "UNKNOWN",
++                    "matrix_receipt": getattr(p, "matrix_receipt", "UNKNOWN") if shadow_bound else "UNKNOWN",
++                    "source_receipt": getattr(p, "source_receipt", "UNKNOWN") if shadow_bound else "UNKNOWN",
++                    "call_receipt": getattr(p, "call_receipt", "UNKNOWN") if shadow_bound else "UNKNOWN",
++                    "would_violate_existing_guard": getattr(p, "would_violate_existing_guard", "UNKNOWN") if shadow_bound else "UNKNOWN",
+                     "x2d":              int(x2d),
+                     "y2d":              int(y2d),
+                     "confidence":       round(conf, 3),
+@@ -2737,6 +2745,13 @@
+                     "bbox_y1":            bbox[0] if bbox else "",
+                     "bbox_x2":            bbox[3] if bbox else "",
+                     "bbox_y2":            bbox[2] if bbox else "",
++                    "shadow_court_x":   track.get("shadow_court_x", "UNKNOWN"),
++                    "shadow_court_y":   track.get("shadow_court_y", "UNKNOWN"),
++                    "shadow_status":     track.get("shadow_status", "UNKNOWN"),
++                    "matrix_receipt":    track.get("matrix_receipt", "UNKNOWN"),
++                    "source_receipt":    track.get("source_receipt", "UNKNOWN"),
++                    "call_receipt":      track.get("call_receipt", "UNKNOWN"),
++                    "would_violate_existing_guard": track.get("would_violate_existing_guard", "UNKNOWN"),
+                     "ball_x2d":           ball_pos[0] if ball_pos else "",
+                     "ball_y2d":           ball_pos[1] if ball_pos else "",
+                     "ball_velocity":      ball_vel_2d,

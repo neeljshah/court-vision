@@ -1,0 +1,5 @@
+command=git apply --check docs/research/organization-sprint/PROPOSED_g416_court_point.diff
+returncode=0
+stdout=
+
+stderr=

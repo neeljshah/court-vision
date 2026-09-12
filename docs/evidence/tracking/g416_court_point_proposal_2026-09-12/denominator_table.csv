@@ -1,0 +1,8 @@
+measure,numerator,denominator,status
+replay_checks,279,279,ACCOUNTED
+draw_sections,30,30,ACCOUNTED
+bound_call_identity,0,279,UNKNOWN
+replay_clamp_pairs,0,7,DESCRIPTIVE_ONLY
+original_clamp_rows,118,118,DESCRIPTIVE
+bound_detection_rows_reproduced,0,0,NO_COMPLETE_CALL_IDENTITY
+construct_controls,32,32,PASS
