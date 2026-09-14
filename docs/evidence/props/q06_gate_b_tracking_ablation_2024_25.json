@@ -15,7 +15,7 @@
     },
     "n_rows": 26181
   },
-  "adv_join_match_rate": 0.6392,
+  "adv_join_match_rate": 0.9527,
   "tracking_columns": {
     "player_tracking_prior_season": [
       "trk_drives_gp",

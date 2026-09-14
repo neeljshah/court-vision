@@ -6,11 +6,10 @@
   ],
   "corpora": [
     "2023-24",
-    "2024-25"
-  ],
-  "waiting_on": [
+    "2024-25",
     "2025-26"
   ],
+  "waiting_on": [],
   "overall_verdict_per_stat": {
     "pts": "CEILING_ZERO",
     "reb": "CEILING_ZERO",
@@ -28,7 +27,80 @@
     "the 2023-24 within-season split trains and tests on the SAME season; a season-constant player-level feature (a prior-season aggregate) is effectively a player fixed effect shared between train and test there, not proof of true out-of-sample generalisation.",
     "def_priorN_switches_per_game_asof is constant (0.0) across every non-null row in the source table itself, not only after imputation."
   ],
-  "markdown_summary": "champion = landed per-game prop model (Q15); baseline comparison is champion vs champion+tracking; 2023-24 is a within-season fallback split; calibration only; no monetary claim. CEILING_ZERO = no improvement bigger than mde_80pct detected, not proof of exactly zero. NOT_TESTED = that family's columns were constant in train (dead weight), not a measured null.\n\n| stat | corpus | n_test | verdict_full | delta_crps_full | mde_80pct | champ_crps | verdict_dm_only |\n|---|---|---|---|---|---|---|---|\n| pts | 2023-24 | 7938 | CEILING_NEGATIVE | -0.0240 [-0.0322, -0.0156] | 0.0119 | 4.2684 | NOT_TESTED |\n| reb | 2023-24 | 7938 | CEILING_ZERO | -0.0005 [-0.0050, 0.0039] | 0.0063 | 1.7981 | NOT_TESTED |\n| ast | 2023-24 | 7938 | CEILING_ZERO | -0.0033 [-0.0071, 0.0005] | 0.0055 | 1.2744 | NOT_TESTED |\n| pts | 2024-25 | 26181 | CEILING_ZERO | -0.0016 [-0.0058, 0.0025] | 0.0060 | 4.3777 | NOT_TESTED |\n| reb | 2024-25 | 26181 | CEILING_POSITIVE | 0.0027 [0.0006, 0.0047] | 0.0029 | 1.8259 | NOT_TESTED |\n| ast | 2024-25 | 26181 | CEILING_NEGATIVE | -0.0071 [-0.0087, -0.0055] | 0.0023 | 1.2683 | NOT_TESTED |",
-  "within_2025_26_dm_only": null,
+  "markdown_summary": "champion = landed per-game prop model (Q15); baseline comparison is champion vs champion+tracking; 2023-24 is a within-season fallback split; calibration only; no monetary claim. CEILING_ZERO = no improvement bigger than mde_80pct detected, not proof of exactly zero. NOT_TESTED = that family's columns were constant in train (dead weight), not a measured null.\n\n| stat | corpus | n_test | verdict_full | delta_crps_full | mde_80pct | champ_crps | verdict_dm_only |\n|---|---|---|---|---|---|---|---|\n| pts | 2023-24 | 7938 | CEILING_NEGATIVE | -0.0240 [-0.0322, -0.0156] | 0.0119 | 4.2684 | NOT_TESTED |\n| reb | 2023-24 | 7938 | CEILING_ZERO | -0.0005 [-0.0050, 0.0039] | 0.0063 | 1.7981 | NOT_TESTED |\n| ast | 2023-24 | 7938 | CEILING_ZERO | -0.0033 [-0.0071, 0.0005] | 0.0055 | 1.2744 | NOT_TESTED |\n| pts | 2024-25 | 26181 | CEILING_ZERO | -0.0016 [-0.0058, 0.0025] | 0.0060 | 4.3777 | NOT_TESTED |\n| reb | 2024-25 | 26181 | CEILING_POSITIVE | 0.0027 [0.0006, 0.0047] | 0.0029 | 1.8259 | NOT_TESTED |\n| ast | 2024-25 | 26181 | CEILING_NEGATIVE | -0.0071 [-0.0087, -0.0055] | 0.0023 | 1.2683 | NOT_TESTED |\n| pts | 2025-26 | 24954 | CEILING_POSITIVE | 0.0146 [0.0108, 0.0184] | 0.0055 | 4.3983 | CEILING_POSITIVE |\n| reb | 2025-26 | 24954 | CEILING_POSITIVE | 0.0071 [0.0056, 0.0086] | 0.0022 | 1.7983 | CEILING_POSITIVE |\n| ast | 2025-26 | 24954 | CEILING_POSITIVE | 0.0113 [0.0101, 0.0124] | 0.0017 | 1.2649 | CEILING_POSITIVE |",
+  "within_2025_26_dm_only": [
+    {
+      "stat": "pts",
+      "corpus": "2025-26_within",
+      "split": "within_season_fallback",
+      "note": "no prior season in table; trained on this season's first ~70pct of dates (embargoed), not a prior season",
+      "n_train": 16940,
+      "n_test": 7621,
+      "family_constant_in_train": {
+        "defender_matchup": {
+          "constant_cols": [
+            "def_priorN_switches_per_game_asof"
+          ],
+          "all_constant": false
+        }
+      },
+      "delta_crps_defender_matchup_only": {
+        "positive_means_challenger_better": true,
+        "point": 0.005,
+        "ci_lo": -0.00099,
+        "ci_hi": 0.01117
+      },
+      "verdict": "CEILING_ZERO",
+      "edge_claimed": false
+    },
+    {
+      "stat": "reb",
+      "corpus": "2025-26_within",
+      "split": "within_season_fallback",
+      "note": "no prior season in table; trained on this season's first ~70pct of dates (embargoed), not a prior season",
+      "n_train": 16940,
+      "n_test": 7621,
+      "family_constant_in_train": {
+        "defender_matchup": {
+          "constant_cols": [
+            "def_priorN_switches_per_game_asof"
+          ],
+          "all_constant": false
+        }
+      },
+      "delta_crps_defender_matchup_only": {
+        "positive_means_challenger_better": true,
+        "point": 0.00717,
+        "ci_lo": 0.00443,
+        "ci_hi": 0.00971
+      },
+      "verdict": "CEILING_POSITIVE",
+      "edge_claimed": false
+    },
+    {
+      "stat": "ast",
+      "corpus": "2025-26_within",
+      "split": "within_season_fallback",
+      "note": "no prior season in table; trained on this season's first ~70pct of dates (embargoed), not a prior season",
+      "n_train": 16940,
+      "n_test": 7621,
+      "family_constant_in_train": {
+        "defender_matchup": {
+          "constant_cols": [
+            "def_priorN_switches_per_game_asof"
+          ],
+          "all_constant": false
+        }
+      },
+      "delta_crps_defender_matchup_only": {
+        "positive_means_challenger_better": true,
+        "point": -0.007,
+        "ci_lo": -0.00887,
+        "ci_hi": -0.00513
+      },
+      "verdict": "CEILING_NEGATIVE",
+      "edge_claimed": false
+    }
+  ],
   "edge_claimed": false
 }
