@@ -1,0 +1,18 @@
+"use client";
+import { useState } from "react";
+import { humanize, number, type DashboardData, type Sport } from "@/lib/analytics/dashboardTypes";
+import { Empty, Panel } from "./Primitives";
+const pitchNames: Record<string, string> = { FF: "Four-seam fastball", SI: "Sinker", SL: "Slider", CH: "Changeup", ST: "Sweeper", FC: "Cutter", CU: "Curveball", FS: "Splitter", KC: "Knuckle curve" };
+export function Coverage({ data, sport }: { data: DashboardData; sport: Sport }) {
+  const [pitch, setPitch] = useState("FF"); const [all, setAll] = useState(false);
+  const velocity = data.pitches.velocity.find(v => v.pitch_type === pitch);
+  const distribution = data.pitches.distribution.find(v => v.pitch_type === pitch);
+  return <div className="cv-coverage-grid">{(sport === "all" || sport === "mlb") && <Panel title="Inside the pitch corpus" eyebrow="Baseball / 2025 Statcast" source="statcast_showcase">
+    <div className="cv-big-number">{number(data.pitches.n)}<span>pitches in the published pull</span></div>
+    <div className="cv-distribution">{data.pitches.distribution.slice(0, 9).map(p => <button key={p.pitch_type} aria-pressed={pitch === p.pitch_type} onClick={() => setPitch(p.pitch_type)} aria-label={`Inspect ${pitchNames[p.pitch_type] || p.pitch_type}`}><span>{p.pitch_type}</span><div className="cv-track"><i className="cv-bar cv-model" style={{ width: `${p.pct / 35 * 100}%` }} /></div><b>{p.pct.toFixed(1)}%</b></button>)}</div>
+    <div className="cv-pitch-detail" aria-live="polite"><h3>{pitchNames[pitch] || pitch}</h3><p>{distribution ? number(distribution.n) : "Unavailable"} pitches in mix</p>{velocity ? <><div className="cv-velocity">{(["p10", "p50", "p90"] as const).map(k => <div key={k}><span>{k === "p50" ? "Median" : k.toUpperCase()}</span><strong>{velocity[k].toFixed(1)}<small> mph</small></strong></div>)}</div><p className="cv-footnote">Velocity observations: {number(velocity.n)}. Counts differ when velocity is missing.</p></> : <p>Velocity percentiles unavailable.</p>}</div>
+    <p className="cv-footnote">Nine most common pitch types shown. Descriptive pitch mix and velocity; not a predictive result.</p>
+  </Panel>}{(sport === "all" || sport === "nba") && <Panel title="How complete are player dossiers?" eyebrow="Basketball / coverage audit" source="dossier_completeness">
+    <div className="cv-coverage-stats"><div className="cv-big-number">{(data.coverage.median * 100).toFixed(1)}%<span>median completeness</span></div><div className="cv-big-number">{number(data.coverage.n)}<span>dossiers audited</span></div></div><div className="cv-fill-rates">{(all ? data.coverage.rates : [...data.coverage.rates.slice(0, 5), ...data.coverage.rates.slice(-3)]).map(r => <div key={r.name}><div><span>{humanize(r.name)}</span><b>{(r.value * 100).toFixed(1)}%</b></div><div className="cv-track"><i className="cv-bar cv-market" style={{ width: `${r.value * 100}%` }} /></div></div>)}</div><button className="cv-text-button" onClick={() => setAll(!all)}>{all ? "Show summary" : `Show all ${data.coverage.rates.length} categories`}</button><p className="cv-footnote">Fill rate is the fraction of dossiers containing a category. Presence does not establish accuracy.</p>
+  </Panel>}{sport !== "all" && sport !== "nba" && sport !== "mlb" && <Panel title="Coverage for this sport"><Empty>No equivalent pitch or dossier audit is published for this sport. Its entity profiles and research remain available in their tabs.</Empty></Panel>}</div>;
+}
