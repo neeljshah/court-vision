@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useRef, useState } from "react";
 import { displayMeasurement as display, type LabField, type LabRow } from "@/lib/analytics/labTypes";
 
 export function RankedPlot({ rows, field, onSelect }: { rows: LabRow[]; field: LabField; onSelect: (r: LabRow) => void }) {
@@ -16,15 +17,32 @@ export function RankedPlot({ rows, field, onSelect }: { rows: LabRow[]; field: L
   </div>;
 }
 export function ScatterPlot({ rows, x, y, onSelect }: { rows: LabRow[]; x: LabField; y: LabField; onSelect: (r: LabRow) => void }) {
+  const container = useRef<HTMLDivElement>(null);
+  const [plotWidth, setPlotWidth] = useState(740);
+  useEffect(() => {
+    const node = container.current;
+    if (!node) return;
+    const update = (width: number) => { if (width > 0) setPlotWidth(Math.round(width)); };
+    update(node.getBoundingClientRect().width);
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(entries => update(entries[0]?.contentRect.width || 0));
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
   const paired = rows.filter(r => r.values[x.key] !== null && r.values[y.key] !== null && Number.isFinite(r.values[x.key]) && Number.isFinite(r.values[y.key]));
-  if (!paired.length) return <div className="cv-empty">No rows contain both selected measurements.</div>;
+  if (!paired.length) return <div ref={container} className="lab-scatter"><div className="cv-empty">No rows contain both selected measurements.</div></div>;
   const xs = paired.map(r => r.values[x.key]!); const ys = paired.map(r => r.values[y.key]!);
   const loX = Math.min(...xs), hiX = Math.max(...xs), loY = Math.min(...ys), hiY = Math.max(...ys);
-  const px = (v: number) => 75 + (v - loX) / (hiX - loX || 1) * 590;
-  const py = (v: number) => 265 - (v - loY) / (hiY - loY || 1) * 225;
-  return <div className="lab-scatter"><span className="lab-y-label">{y.label}</span><svg viewBox="0 0 740 325" role="group" aria-label={`${y.label} against ${x.label}; inspect individual points or use the data table`}><title>{`${y.label} against ${x.label}`}</title>
-    {[0, .25, .5, .75, 1].map(t => <g key={t}><line x1="75" x2="665" y1={40 + t * 225} y2={40 + t * 225} stroke="var(--cv-line)" strokeDasharray="3 4" /><text x="66" y={44 + t * 225} textAnchor="end">{display(hiY - t * (hiY - loY), y)}</text><text x={75 + t * 590} y="290" textAnchor="middle">{display(loX + t * (hiX - loX), x)}</text></g>)}
+  const compact = plotWidth < 500, height = 280, right = compact ? 16 : 75, top = 24, bottom = 45;
+  const ticks = compact ? [0, .5, 1] : [0, .25, .5, .75, 1];
+  const yLabelWidth = Math.max(...ticks.map(t => display(hiY - t * (hiY - loY), y).length)) * 7 + 16;
+  const left = compact ? Math.min(112, Math.max(70, yLabelWidth)) : 75;
+  const innerWidth = Math.max(1, plotWidth - left - right), innerHeight = height - top - bottom;
+  const px = (v: number) => left + (v - loX) / (hiX - loX || 1) * innerWidth;
+  const py = (v: number) => top + (1 - (v - loY) / (hiY - loY || 1)) * innerHeight;
+  return <div ref={container} className="lab-scatter"><span className="lab-y-label">{y.label}</span><svg viewBox={`0 0 ${plotWidth} ${height}`} role="group" aria-label={`${y.label} against ${x.label}; inspect individual points or use the data table`}><title>{`${y.label} against ${x.label}`}</title>
+    {ticks.map(t => <g key={t}><line x1={left} x2={plotWidth - right} y1={top + t * innerHeight} y2={top + t * innerHeight} stroke="var(--cv-line)" strokeDasharray="3 4" /><text x={left - 9} y={top + t * innerHeight + 4} textAnchor="end">{display(hiY - t * (hiY - loY), y)}</text><text x={left + t * innerWidth} y={height - 28} textAnchor={compact && t === 0 ? "start" : compact && t === 1 ? "end" : "middle"}>{display(loX + t * (hiX - loX), x)}</text></g>)}
     {paired.map(r => <circle key={r.id} cx={px(r.values[x.key]!)} cy={py(r.values[y.key]!)} r="5" role="button" tabIndex={0} focusable="true" aria-label={`Inspect ${r.label}: ${x.label} ${display(r.values[x.key], x)}; ${y.label} ${display(r.values[y.key], y)}`} onClick={() => onSelect(r)} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(r); } }}><title>{`${r.label}: ${x.label} ${display(r.values[x.key], x)}; ${y.label} ${display(r.values[y.key], y)}`}</title></circle>)}
-    <text x="370" y="321" textAnchor="middle">{x.label}</text>
+    <text x={plotWidth / 2} y={height - 6} textAnchor="middle">{x.label}</text>
   </svg><p className="cv-footnote">{paired.length} paired {paired.length === 1 ? "row" : "rows"}. Axes span the selected data. This plot does not estimate a causal relationship or a fitted prediction.</p></div>;
 }
