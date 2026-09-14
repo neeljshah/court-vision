@@ -1,9 +1,5 @@
 // Build-time sitemap for the public analytics site. Static export emits this as
-// /court-vision/sitemap.xml. The canonical URL list is the SAME 1,637-record
-// index the command palette uses (search_records.json) -- the destinations we
-// actually want indexed (1,549 entity cards + 69 modules + findings + pages),
-// not every one of the 3,319 exported routes (many are duplicative variants).
-//
+// /court-vision/sitemap.xml. Includes the public search index plus primary hubs.
 // URLs are absolute (origin + basePath), because a project-site sitemap under a
 // subpath must spell out the full https URL for crawlers to resolve it.
 import type { MetadataRoute } from "next";
@@ -25,7 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     hrefs = [];
   }
   // The home + hub roots always belong in, even if the index failed to load.
-  const roots = ["/analytics", "/analytics/findings", "/analytics/players", "/analytics/browse"];
+  const roots = ["/analytics", "/analytics/ask", "/analytics/lab", "/analytics/compare", "/analytics/evidence", "/analytics/findings", "/analytics/players", "/analytics/browse"];
   const seen = new Set<string>();
   const urls: MetadataRoute.Sitemap = [];
   for (const h of [...roots, ...hrefs]) {

@@ -11,9 +11,10 @@ name: Deploy demo
 
 on:
   push:
-    branches: [master, main]
+    branches: [master]
     paths:
       - "webapp/**"
+      - ".github/workflows/deploy-demo.yml"
   workflow_dispatch:
 
 permissions:
@@ -43,11 +44,32 @@ jobs:
       - name: Install deps
         run: npm ci
 
+      - name: Analytics unit tests (one file per process)
+        run: |
+          npx vitest run lib/analytics/dashboardData.test.ts
+          npx vitest run lib/analytics/labData.test.ts
+          npx vitest run lib/analytics/comparisonData.test.ts
+          npx vitest run lib/analytics/askSearch.test.ts
+          npx vitest run lib/analytics/scoutCorpus.test.ts
+          npx vitest run components/analytics/AskBox.test.tsx
+          npx vitest run components/analytics/compare/CompareExperience.test.tsx
+          npx vitest run components/analytics/lab/MeasurementLab.test.tsx
+          npx vitest run components/analytics/lab/LabTable.test.ts
+          npx vitest run components/analytics/evidence/EvidenceGallery.test.tsx
+          npx vitest run components/analytics/CommandPalette.test.tsx
+          npx vitest run components/analytics/AnalyticsNavigation.test.tsx
+          npx vitest run components/analytics/workspace/Workspace.test.tsx
+
       - name: Static export (snapshot data mode)
         env:
           NEXT_PUBLIC_DATA_MODE: snapshot
           NEXT_PUBLIC_BASE_PATH: /court-vision
         run: npm run build
+
+      - name: Verify analytics export (hard gate)
+        env:
+          NEXT_PUBLIC_BASE_PATH: /court-vision
+        run: node scripts/verify-analytics-export.mjs
 
       - uses: actions/configure-pages@v5
 

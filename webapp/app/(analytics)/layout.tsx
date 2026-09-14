@@ -10,6 +10,7 @@ import Link from "next/link";
 import { analyticsFontVars } from "@/lib/analytics/fonts";
 import { CommandPalette } from "@/components/analytics/CommandPalette";
 import { PaletteTrigger } from "@/components/analytics/PaletteTrigger";
+import { AnalyticsNavigation } from "@/components/analytics/AnalyticsNavigation";
 
 // Static-export builds serve at basePath /court-vision; next/font + <Link> auto-
 // prefix, but the metadata icon URLs do NOT (same landmine as the terminal layout).
@@ -36,7 +37,7 @@ const THEME_INIT = `(function(){try{var t=localStorage.getItem('cv-analytics-the
 // Post-hydration chrome: wire the theme toggle + mark the active nav pillar from the
 // current path. Vanilla JS keeps the root layout a server component (no client file,
 // no bundle) -- both are progressive enhancements over server-rendered links.
-const CHROME_JS = `(function(){var r=document.documentElement;var b=document.getElementById('a-theme-toggle');if(b){b.addEventListener('click',function(){var n=r.getAttribute('data-theme')==='dark'?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem('cv-analytics-theme',n);}catch(e){}});}var p=location.pathname.replace(/^\\/court-vision/,'').replace(/\\/+$/,'');if(p==='')p='/';var L=document.querySelectorAll('a[data-nav]');for(var i=0;i<L.length;i++){var h=L[i].getAttribute('data-nav');var on=h==='/analytics'?p==='/analytics':(p===h||p.indexOf(h+'/')===0);if(on)L[i].classList.add('active');}})();`;
+const CHROME_JS = `(function(){var r=document.documentElement;var b=document.getElementById('a-theme-toggle');if(b){b.addEventListener('click',function(){var n=r.getAttribute('data-theme')==='dark'?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem('cv-analytics-theme',n);}catch(e){}});}})();`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
@@ -71,25 +72,23 @@ export const metadata: Metadata = {
   },
 };
 
-// Product pillars (IA Sec. 4) + the two flagship prediction surfaces from the
-// NIGHT_PLAN elevated goal (Forecaster, The Loop) -- predictions are the crown.
-// Hrefs point at the routes that actually ship: Explore=browse, Entities=players.
-// The old Mechanisms + Findings pillars are folded into The Loop (which renders the
-// mechanism ledger + graveyard + honesty exhibit); About / Explainers / Retractions
-// are reachable from the footer secondary links below.
+// Primary customer workflows. Specialist research pages remain in the footer.
 const PILLARS: Array<{ href: string; label: string }> = [
-  { href: "/analytics", label: "Home" },
-  { href: "/analytics/forecaster", label: "Forecaster" },
-  { href: "/analytics/the-loop", label: "The Loop" },
-  { href: "/analytics/novel", label: "Novel Stats" },
-  { href: "/analytics/browse", label: "Explore" },
-  { href: "/analytics/players", label: "Entities" },
+  { href: "/analytics", label: "Overview" },
+  { href: "/analytics/lab", label: "Measurement lab" },
+  { href: "/analytics/compare", label: "Compare" },
+  { href: "/analytics/browse", label: "Library" },
+  { href: "/analytics/evidence", label: "Evidence" },
   { href: "/analytics/ask", label: "Ask Scout" },
 ];
 
 // Footer secondary links -- keep About / Explainers / Retractions reachable from
 // every page (they are not top-nav pillars but must not be orphaned URLs).
 const FOOT_LINKS: Array<{ href: string; label: string }> = [
+  { href: "/analytics/forecaster", label: "Forecaster" },
+  { href: "/analytics/the-loop", label: "Research loop" },
+  { href: "/analytics/novel", label: "Experimental metrics" },
+  { href: "/analytics/players", label: "All entities" },
   { href: "/analytics/about", label: "About" },
   { href: "/analytics/explainers", label: "Explainers" },
   { href: "/analytics/findings", label: "Findings" },
@@ -115,21 +114,7 @@ export default function AnalyticsRootLayout({ children }: { children: ReactNode 
                 <span className="a-kicker">ANALYTICS</span>
               </span>
             </Link>
-            <div className="navlinks">
-              {PILLARS.map((p) => (
-                // suppressHydrationWarning: CHROME_JS marks the active pillar by
-                // adding class="active" BEFORE React hydrates, so React would
-                // otherwise see an "extra attributes from the server: class"
-                // mismatch on whichever pillar matches the current route and bail
-                // the whole layout Suspense boundary to client rendering (the
-                // home/forecaster/browse hydration errors). prefetch={false}: on a
-                // static export the RSC prefetch payload does not exist, so every
-                // prefetch is a wasted 404 with no benefit.
-                <Link key={p.href} href={p.href} data-nav={p.href} prefetch={false} suppressHydrationWarning>
-                  {p.label}
-                </Link>
-              ))}
-            </div>
+            <AnalyticsNavigation links={PILLARS} />
             <PaletteTrigger />
             <button id="a-theme-toggle" className="a-theme" type="button" aria-label="Toggle light or dark theme">
               <svg className="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">

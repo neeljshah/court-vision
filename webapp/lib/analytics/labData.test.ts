@@ -1,0 +1,40 @@
+import { describe, expect, it } from "vitest";
+import { getLabData } from "./labData";
+import { displayMeasurement, rankedRows } from "./labTypes";
+const data = getLabData();
+describe("measurement lab source contracts", () => {
+  it("preserves literal source values and their units", () => {
+    const fatigue = data.datasets.find(d => d.id === "schedule-fatigue")!;
+    expect(fatigue.rows).toHaveLength(90);
+    const denver = fatigue.rows.find(r => r.label === "DEN" && r.group === "2025-26")!;
+    expect(denver.values.sft_credible_pts_per100_ortg).toBe(-.3771);
+    expect(displayMeasurement(.218, { key: "b2b", label: "B2B", unit: "percent" })).toBe("21.8%");
+    expect(displayMeasurement(-.0618, { key: "delta", label: "Difference", unit: "pp" })).toBe("-6.18 pp");
+  });
+  it("preserves censoring and empty WTA cohorts instead of zero effects", () => {
+    const lhl = data.datasets.find(d => d.id === "line-half-life")!;
+    expect(lhl.rows.find(r => r.label === "TENNIS")?.values.half_life_hours).toBeNull();
+    expect(lhl.rows.find(r => r.label === "TENNIS")?.note).toContain(">6");
+    expect(data.datasets.filter(d => d.id.startsWith("tennis-wta")).every(d => d.rows.length === 0)).toBe(true);
+  });
+  it("keeps both pitch denominators and selected-subset disclosure", () => {
+    const ff = data.datasets.find(d => d.id === "pitch-profiles")!.rows.find(r => r.label === "FF")!;
+    expect(ff.values.mix_n).toBe(220235);
+    expect(ff.values.velocity_n).toBe(220233);
+    expect(ff.values.p50).toBe(94.5);
+    expect(data.datasets.find(d => d.id === "nba-consistency")?.caveat).toContain("not the complete player population");
+  });
+  it("has unique rows and no nonfinite numbers in any view", () => {
+    expect(new Set(data.datasets.map(d => d.id)).size).toBe(data.datasets.length);
+    for (const d of data.datasets) {
+      expect(new Set(d.rows.map(r => r.id)).size).toBe(d.rows.length);
+      expect(d.rows.every(r => Object.values(r.values).every(v => v === null || Number.isFinite(v)))).toBe(true);
+    }
+    expect(data.novel).toHaveLength(6);
+  });
+  it("ranks numeric rows without coercing null and preserves true zero", () => {
+    const rows = [{ id: "a", label: "Missing", group: "x", values: { n: null } }, { id: "b", label: "Zero", group: "x", values: { n: 0 } }, { id: "c", label: "Negative", group: "x", values: { n: -1 } }];
+    expect(rankedRows(rows, "n", true).map(r => r.id)).toEqual(["c", "b"]);
+    expect(displayMeasurement(null, { key: "n", label: "Count", unit: "number" })).toBe("Unavailable");
+  });
+});

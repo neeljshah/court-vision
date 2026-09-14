@@ -116,9 +116,9 @@
       "alt_phrasings": ["season-long walk-forward result", "are you well calibrated but not profitable", "the market efficiency proof"],
       "a": {
         "status": "ok",
-        "answer": "The full-season leak-free walk-forward backtest (with truncation-invariance proven) shows the model is well-calibrated but does not beat the close: season Brier 0.208 versus the closing line's 0.198. Spread and total pregame closing-line value is essentially zero, with correlation-with-outcome of 0.001. That negative result is exactly what a rigorous validation framework is supposed to produce.",
-        "source_artifact": "docs/PUBLIC_EVIDENCE.md",
-        "as_of": "2026-06-11"
+        "answer": "Correction published 2026-09-14: the earlier full-season 0.208 model / 0.198 close pair could not be reproduced and has no supporting artifact in the public evidence-packet audit. It is withdrawn and should not be used as performance proof. See docs/JOB_EVIDENCE_PACKET.md.",
+        "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
+        "as_of": "2026-09-14"
       },
       "tags": ["market-efficiency", "calibration", "backtest"]
     },
