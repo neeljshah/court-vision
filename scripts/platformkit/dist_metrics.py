@@ -1,4 +1,4 @@
-"""scripts/platformkit/dist_metrics.py — Proper scoring for distribution/interval markets.
+"""scripts/platformkit/dist_metrics.py -- Proper scoring for distribution/interval markets.
 
 Proper scoring rules for totals, props, and scoreline markets (real-valued / count outcomes).
 Does NOT duplicate crps_binary / crps_mean from calibration_ladder.py (binary-only).
@@ -13,7 +13,7 @@ from scipy.stats import chisquare
 
 __all__ = [
     "pinball_loss", "interval_coverage", "coverage_calibration",
-    "crps_ensemble", "crps_poisson_pmf", "distribution_scorecard",
+    "crps_ensemble", "crps_ensemble_rows", "crps_poisson_pmf", "distribution_scorecard",
     "pit_values", "pit_histogram",
 ]
 
@@ -36,7 +36,7 @@ def _finite(*arrays: np.ndarray) -> np.ndarray:
 # ---------------------------------------------------------------------------
 
 def pinball_loss(y_true: ArrayLike, q_pred: ArrayLike, quantile: float) -> float:
-    """Quantile (pinball) loss — proper scoring rule for quantile forecasts.
+    """Quantile (pinball) loss -- proper scoring rule for quantile forecasts.
 
     L_tau(y, q) = tau * max(y-q, 0) + (1-tau) * max(q-y, 0).
     Minimised (in expectation) at the true tau-quantile.  Lower is better.
@@ -101,14 +101,10 @@ def coverage_calibration(
 # crps_ensemble
 # ---------------------------------------------------------------------------
 
-def crps_ensemble(y_true: ArrayLike, samples: ArrayLike) -> float:
-    """CRPS for an ensemble forecast via the energy-form estimator (Gneiting & Raftery 2007).
-
-    CRPS(F, y) = E|S-y| - 0.5*E|S-S'|.  Proper scoring rule; lower is better.
-    Degenerate 1-member ensemble collapses to |pred - y|.
-    samples: shape (m,) for single obs or (n, m) for n observations.  NaN-safe.
-    calibration != edge.
-    """
+def _crps_rows(y_true: ArrayLike, samples: ArrayLike) -> np.ndarray:
+    """Per-row CRPS via the energy-form estimator (Gneiting & Raftery 2007); NaN row if
+    unscoreable. Shared by crps_ensemble (aggregate) and crps_ensemble_rows (per-row, for
+    game-clustered bootstrap deltas). samples: (m,) single obs or (n, m) n observations."""
     s = np.asarray(samples, dtype=float)
     y = np.asarray(y_true, dtype=float)
     if s.ndim == 1:
@@ -138,8 +134,28 @@ def crps_ensemble(y_true: ArrayLike, samples: ArrayLike) -> float:
             # O(m log m) energy-form spread: sum|s_i - s_j| / m^2 = dot(weights, sorted) / (m*(m-1))
             spread = float(np.dot(2.0 * np.arange(m, dtype=float) - (m - 1), si_s)) / (m * (m - 1))
         crps_vals[i] = mean_abs - 0.5 * spread
+    return crps_vals
+
+
+def crps_ensemble(y_true: ArrayLike, samples: ArrayLike) -> float:
+    """CRPS for an ensemble forecast via the energy-form estimator (Gneiting & Raftery 2007).
+
+    CRPS(F, y) = E|S-y| - 0.5*E|S-S'|.  Proper scoring rule; lower is better.
+    Degenerate 1-member ensemble collapses to |pred - y|.
+    samples: shape (m,) for single obs or (n, m) for n observations.  NaN-safe.
+    calibration != edge.
+    """
+    crps_vals = _crps_rows(y_true, samples)
     valid = crps_vals[np.isfinite(crps_vals)]
     return float(valid.mean()) if len(valid) > 0 else float("nan")
+
+
+def crps_ensemble_rows(y_true: ArrayLike, samples: ArrayLike) -> np.ndarray:
+    """Per-row CRPS (same definition as crps_ensemble) instead of its mean -- for a
+    game-clustered bootstrap over a per-row CRPS delta. NaN row if unscoreable.
+    calibration only; no monetary claim.
+    """
+    return _crps_rows(y_true, samples)
 
 
 # ---------------------------------------------------------------------------
@@ -217,7 +233,7 @@ def pit_values(y_true: ArrayLike, samples: ArrayLike, rng: Optional[np.random.Ge
 
 
 def pit_histogram(pit_vals: ArrayLike, bins: int = 10) -> dict:
-    """PIT histogram + chi-square uniformity test (Δ-calibration diagnostic).
+    """PIT histogram + chi-square uniformity test (delta-calibration diagnostic).
 
     Flat histogram (high uniformity_p) = calibrated. U_SHAPE (both end bins
     overloaded) = overconfident/too-narrow. CENTRAL_HUMP (an interior bin

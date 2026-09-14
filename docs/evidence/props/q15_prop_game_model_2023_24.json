@@ -1,0 +1,284 @@
+{
+  "corpus": "2023-24",
+  "n_rows_total": 26283,
+  "n_games_total": 1230,
+  "n_players_total": 571,
+  "feature_list": [
+    "min_ma5",
+    "min_ma10",
+    "min_ma20",
+    "pts_ma5",
+    "pts_ma10",
+    "pts_ma20",
+    "reb_ma5",
+    "reb_ma10",
+    "reb_ma20",
+    "ast_ma5",
+    "ast_ma10",
+    "ast_ma20",
+    "fg3m_ma5",
+    "fg3m_ma10",
+    "fg3m_ma20",
+    "stl_ma5",
+    "stl_ma10",
+    "stl_ma20",
+    "blk_ma5",
+    "blk_ma10",
+    "blk_ma20",
+    "tov_ma5",
+    "tov_ma10",
+    "tov_ma20",
+    "usagepercentage_ma5",
+    "usagepercentage_ma10",
+    "usagepercentage_ma20",
+    "trueshootingpercentage_ma5",
+    "trueshootingpercentage_ma10",
+    "trueshootingpercentage_ma20",
+    "min_ewm10",
+    "pts_ewm10",
+    "reb_ewm10",
+    "ast_ewm10",
+    "fg3m_ewm10",
+    "stl_ewm10",
+    "blk_ewm10",
+    "tov_ewm10",
+    "usagepercentage_ewm10",
+    "trueshootingpercentage_ewm10",
+    "games_played",
+    "rest_days",
+    "is_home",
+    "starter"
+  ],
+  "taus": [
+    0.1,
+    0.25,
+    0.5,
+    0.75,
+    0.9
+  ],
+  "feature_set_label": "as-of prior games plus pregame-announced lineup status (starter)",
+  "adv_join_match_rate": 0.6392,
+  "n_boot": 2000,
+  "library_versions": {
+    "pandas": "2.2.3",
+    "numpy": "2.2.6",
+    "sklearn": "1.6.1",
+    "lightgbm": "4.6.0",
+    "statsmodels": "0.14.4"
+  },
+  "acceptance_rule_met": {
+    "met": false,
+    "reasons": [
+      "3 of 7 target stats covered this run (need >=5 for the row's acceptance rule)",
+      "nightly train/inference byte-identity fixture not built"
+    ]
+  },
+  "results": [
+    {
+      "stat": "pts",
+      "corpus": "2023-24",
+      "status": "OK",
+      "n_train": 17830,
+      "n_test": 7938,
+      "n_games_test": 374,
+      "n_players_test": 517,
+      "split": "within_season_fallback",
+      "note": "no prior season in table; trained on this season's first ~70pct of dates (embargoed), not a prior season",
+      "imputed_share": 0.1066,
+      "lightgbm_quantile": {
+        "pinball_avg": 1.5591326633261513,
+        "crps_approx": 4.268361661788733,
+        "coverage_10_90": 0.798689846308894,
+        "mae_median": 4.482509324941139,
+        "n_scored": 7938
+      },
+      "baseline_trailing10_marcel": {
+        "pinball_avg": 1.6643832712501088,
+        "crps_approx": 4.57509987583355,
+        "coverage_10_90": 0.8020912068531116,
+        "mae_median": 4.654387388322986,
+        "n_scored": 7938
+      },
+      "negbinom_glm": {
+        "pinball_avg": 1.6867649281934995,
+        "crps_approx": 4.890753338372385,
+        "coverage_10_90": 0.8065003779289494,
+        "mae_median": 4.651675485008818,
+        "n_scored": 7938
+      },
+      "baseline_season_to_date_mae": 4.763,
+      "delta_baseline_minus_model_pinball": {
+        "positive_means_model_better": true,
+        "point": 0.10525,
+        "ci_lo": 0.0926,
+        "ci_hi": 0.11734
+      },
+      "delta_baseline_minus_model_crps": {
+        "positive_means_model_better": true,
+        "point": 0.30674,
+        "ci_lo": 0.27797,
+        "ci_hi": 0.33311
+      },
+      "verdict_crps": "AHEAD",
+      "verdict_pinball": "AHEAD",
+      "ablation_no_starter": {
+        "feature_set": "as_of_prior_games_only_no_pregame_lineup",
+        "delta_pinball": {
+          "point": 0.08015,
+          "ci_lo": 0.06838,
+          "ci_hi": 0.09221
+        },
+        "verdict": "AHEAD"
+      },
+      "secondary_within_season_tscv": {
+        "n_splits": 4,
+        "fold_pinball_avg": [
+          1.6138419906827735,
+          1.5675931732231974,
+          1.553320859714376,
+          1.5568473425418614
+        ],
+        "mean_pinball_avg": 1.572900841540552
+      },
+      "edge_claimed": false
+    },
+    {
+      "stat": "reb",
+      "corpus": "2023-24",
+      "status": "OK",
+      "n_train": 17830,
+      "n_test": 7938,
+      "n_games_test": 374,
+      "n_players_test": 517,
+      "split": "within_season_fallback",
+      "note": "no prior season in table; trained on this season's first ~70pct of dates (embargoed), not a prior season",
+      "imputed_share": 0.1066,
+      "lightgbm_quantile": {
+        "pinball_avg": 0.6540249782847471,
+        "crps_approx": 1.7980768959487599,
+        "coverage_10_90": 0.8182161753590325,
+        "mae_median": 1.8783605395444323,
+        "n_scored": 7938
+      },
+      "baseline_trailing10_marcel": {
+        "pinball_avg": 0.6965778650736488,
+        "crps_approx": 1.9091557301472977,
+        "coverage_10_90": 0.8052406147644243,
+        "mae_median": 1.9315715594150296,
+        "n_scored": 7938
+      },
+      "negbinom_glm": {
+        "pinball_avg": 0.6811111111111111,
+        "crps_approx": 1.908238851095994,
+        "coverage_10_90": 0.8876291257243638,
+        "mae_median": 1.9537666918619299,
+        "n_scored": 7938
+      },
+      "baseline_season_to_date_mae": 1.9598,
+      "delta_baseline_minus_model_pinball": {
+        "positive_means_model_better": true,
+        "point": 0.04255,
+        "ci_lo": 0.03668,
+        "ci_hi": 0.04841
+      },
+      "delta_baseline_minus_model_crps": {
+        "positive_means_model_better": true,
+        "point": 0.11108,
+        "ci_lo": 0.09874,
+        "ci_hi": 0.12376
+      },
+      "verdict_crps": "AHEAD",
+      "verdict_pinball": "AHEAD",
+      "ablation_no_starter": {
+        "feature_set": "as_of_prior_games_only_no_pregame_lineup",
+        "delta_pinball": {
+          "point": 0.03251,
+          "ci_lo": 0.02738,
+          "ci_hi": 0.03776
+        },
+        "verdict": "AHEAD"
+      },
+      "secondary_within_season_tscv": {
+        "n_splits": 4,
+        "fold_pinball_avg": [
+          0.6803564824976198,
+          0.6361688769281317,
+          0.6459970202437941,
+          0.6530451699895278
+        ],
+        "mean_pinball_avg": 0.6538918874147683
+      },
+      "edge_claimed": false
+    },
+    {
+      "stat": "ast",
+      "corpus": "2023-24",
+      "status": "OK",
+      "n_train": 17830,
+      "n_test": 7938,
+      "n_games_test": 374,
+      "n_players_test": 517,
+      "split": "within_season_fallback",
+      "note": "no prior season in table; trained on this season's first ~70pct of dates (embargoed), not a prior season",
+      "imputed_share": 0.1066,
+      "lightgbm_quantile": {
+        "pinball_avg": 0.46138379973839116,
+        "crps_approx": 1.274400235306206,
+        "coverage_10_90": 0.8334593096497859,
+        "mae_median": 1.3251431851268438,
+        "n_scored": 7938
+      },
+      "baseline_trailing10_marcel": {
+        "pinball_avg": 0.5054299161640954,
+        "crps_approx": 1.37125983232819,
+        "coverage_10_90": 0.800957420005039,
+        "mae_median": 1.374997568965167,
+        "n_scored": 7938
+      },
+      "negbinom_glm": {
+        "pinball_avg": 0.4805908289241622,
+        "crps_approx": 1.3576404635928447,
+        "coverage_10_90": 0.917989417989418,
+        "mae_median": 1.3938019652305367,
+        "n_scored": 7938
+      },
+      "baseline_season_to_date_mae": 1.3942,
+      "delta_baseline_minus_model_pinball": {
+        "positive_means_model_better": true,
+        "point": 0.04405,
+        "ci_lo": 0.03994,
+        "ci_hi": 0.0479
+      },
+      "delta_baseline_minus_model_crps": {
+        "positive_means_model_better": true,
+        "point": 0.09686,
+        "ci_lo": 0.08787,
+        "ci_hi": 0.10502
+      },
+      "verdict_crps": "AHEAD",
+      "verdict_pinball": "AHEAD",
+      "ablation_no_starter": {
+        "feature_set": "as_of_prior_games_only_no_pregame_lineup",
+        "delta_pinball": {
+          "point": 0.03989,
+          "ci_lo": 0.03578,
+          "ci_hi": 0.04374
+        },
+        "verdict": "AHEAD"
+      },
+      "secondary_within_season_tscv": {
+        "n_splits": 4,
+        "fold_pinball_avg": [
+          0.46893030839410993,
+          0.45488898802741085,
+          0.4554517779911475,
+          0.46314515047442856
+        ],
+        "mean_pinball_avg": 0.46060405622177425
+      },
+      "edge_claimed": false
+    }
+  ],
+  "markdown_summary": "split: within_season_fallback | baseline = trailing-10-game mean, not a market line; calibration only\ncoverage(0.1-0.9): pts: lgb=0.799 base=0.802 nb=0.807 | reb: lgb=0.818 base=0.805 nb=0.888 | ast: lgb=0.833 base=0.801 nb=0.918\n\n| stat | n_test | verdict_crps | verdict_pinball | model_pinball | baseline_pinball | delta_pinball_ci |\n|---|---|---|---|---|---|---|\n| pts | 7938 | AHEAD | AHEAD | 1.5591 | 1.6644 | 0.1052 [0.0926, 0.1173] |\n| reb | 7938 | AHEAD | AHEAD | 0.6540 | 0.6966 | 0.0425 [0.0367, 0.0484] |\n| ast | 7938 | AHEAD | AHEAD | 0.4614 | 0.5054 | 0.0440 [0.0399, 0.0479] |",
+  "edge_claimed": false
+}
