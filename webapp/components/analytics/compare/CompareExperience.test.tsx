@@ -27,6 +27,8 @@ describe("CompareExperience controls", () => {
     expect(screen.getByText("25th percentile")).toBeInTheDocument();
     expect(screen.getByRole("table")).toHaveAccessibleName("Published values and within-pack percentile ranks");
     expect(screen.getByRole("img", { name: "25th percentile visual bar" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Where these profiles separate" })).toBeInTheDocument();
+    expect(screen.getByText("1 shared axes")).toBeInTheDocument();
     expect(screen.getByText(/Higher means a higher raw measured value, never better/)).toBeInTheDocument();
     await waitFor(() => expect(window.location.search).toContain("pack=nba_players"));
     expect(window.location.search).toContain("a=alpha");
@@ -42,6 +44,16 @@ describe("CompareExperience controls", () => {
     expect(b).toHaveValue("Alpha");
     expect(window.location.search).toContain("a=beta");
     expect(window.location.search).toContain("b=alpha");
+  });
+
+  it("offers sport-first entry tabs and switches the active sport", async () => {
+    render(<CompareExperience />);
+    await screen.findByLabelText("Profile A");
+    const soccer = screen.getByRole("button", { name: "Soccer" });
+    expect(screen.getByRole("button", { name: "NBA" })).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(soccer);
+    expect(soccer).toHaveAttribute("aria-pressed", "true");
+    await waitFor(() => expect(window.location.search).toContain("pack=soccer"));
   });
 
   it("supports retry after a failed load and rejects an unmatched typed profile", async () => {

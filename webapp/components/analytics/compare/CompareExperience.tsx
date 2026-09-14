@@ -8,6 +8,7 @@ import {
   normalizeComparisonPack, type ComparisonEntity, type ComparisonPack, type ComparisonPackKey,
   type RawComparables, type RawManifest, type RawPercentiles,
 } from "@/lib/analytics/comparisonData";
+import { matchupInsights, sharedMeasuredAxisCount } from "@/lib/analytics/matchupInsights";
 
 const DATA_ROOT = "/data/showcase/";
 
@@ -17,6 +18,17 @@ function publicPath(path: string): string {
 
 function packInfo(key: ComparisonPackKey) {
   return COMPARISON_PACKS.find((pack) => pack.key === key)!;
+}
+
+const SPORT_GROUPS = [
+  { key: "nba", label: "NBA", packs: ["nba_players", "nba_teams"] as ComparisonPackKey[] },
+  { key: "mlb", label: "MLB", packs: ["mlb_batters", "mlb_pitch"] as ComparisonPackKey[] },
+  { key: "soccer", label: "Soccer", packs: ["soccer"] as ComparisonPackKey[] },
+  { key: "tennis", label: "Tennis", packs: ["tennis"] as ComparisonPackKey[] },
+] as const;
+
+function sportForPack(key: ComparisonPackKey) {
+  return SPORT_GROUPS.find((sport) => sport.packs.includes(key));
 }
 
 function displayDate(value?: string): string | undefined {
@@ -107,6 +119,7 @@ export function CompareExperience() {
   const a = useMemo(() => data?.entities.find((entity) => entity.slug === aSlug), [data, aSlug]);
   const b = useMemo(() => data?.entities.find((entity) => entity.slug === bSlug), [data, bSlug]);
   const info = packInfo(packKey);
+  const activeSport = sportForPack(packKey);
 
   const changePack = (value: string) => {
     const next = value as ComparisonPackKey;
@@ -148,6 +161,12 @@ export function CompareExperience() {
 
   return (
     <section className="compare-experience" aria-label="Entity comparison controls and results">
+      <div className="compare-sport-switcher" aria-label="Choose a sport">
+        <span className="compare-section-label">Start with a sport</span>
+        <div className="compare-sport-tabs">
+          {SPORT_GROUPS.map((sport) => <button key={sport.key} type="button" aria-pressed={activeSport?.key === sport.key} className={activeSport?.key === sport.key ? "is-active" : ""} onClick={() => changePack(sport.packs[0])}>{sport.label}</button>)}
+        </div>
+      </div>
       <div className="compare-controls">
         <label><span>Pack</span><select value={packKey} onChange={(event) => changePack(event.target.value)}>{COMPARISON_PACKS.map((pack) => <option key={pack.key} value={pack.key}>{pack.label}</option>)}</select></label>
         <label><span>Profile A</span><input list="compare-entities-a" value={aQuery} onChange={(event) => chooseA(event.target.value)} placeholder="Search a profile" aria-label="Profile A" />
@@ -159,23 +178,30 @@ export function CompareExperience() {
       <p className="compare-status">{data ? `${data.nInPack} profiles in ${info.label}.` : "Loading published pack data..."}</p>
       {error ? <p className="compare-error" role="alert">{error} <button type="button" onClick={() => setRetry((value) => value + 1)}>Retry</button></p> : null}
       {noMatch ? <p className="compare-empty" role="status">Choose a published profile from the list.</p> : null}
-      {data && a && b && aMatchesInput && bMatchesInput ? <ComparisonResults pack={data} a={a} b={b} manifest={info.manifest} /> : null}
+      {data && a && b && aMatchesInput && bMatchesInput ? <ComparisonResults pack={data} a={a} b={b} manifest={info.manifest} sport={activeSport?.key} /> : null}
     </section>
   );
 }
 
-function ComparisonResults({ pack, a, b, manifest }: { pack: ComparisonPack; a: ComparisonEntity; b: ComparisonEntity; manifest: string }) {
+function ComparisonResults({ pack, a, b, manifest, sport }: { pack: ComparisonPack; a: ComparisonEntity; b: ComparisonEntity; manifest: string; sport?: string }) {
+  const insights = matchupInsights(pack, a, b);
+  const axisCount = sharedMeasuredAxisCount(pack, a, b);
   return <>
     <div className="compare-profiles" aria-label="Compared profiles">
       <ProfileHeading entity={a} pack={pack.key} label="Profile A" />
       <div className="compare-versus" aria-hidden="true">vs</div>
       <ProfileHeading entity={b} pack={pack.key} label="Profile B" />
     </div>
+    <section className="compare-insights" aria-labelledby="compare-insights-title">
+      <div className="compare-insights-heading"><div><span className="compare-section-label">Measured contrasts</span><h2 id="compare-insights-title">Where these profiles separate</h2></div><span className="compare-overlap">{axisCount} shared axes</span></div>
+      <p className="compare-insights-intro">Largest percentile gaps among fields reported for both profiles. Values stay tied to the published historical corpus.</p>
+      {insights.length ? <div className="compare-insight-grid">{insights.map((insight) => <article className="compare-insight" key={insight.field}><div className="compare-insight-top"><strong>{insight.label}</strong><span>{Math.round(insight.gap)} pt gap</span></div><div className="compare-insight-values"><span><b>{insight.aValue}</b><small>{a.name} - {formatPercentile(insight.aPercentile)}</small></span><span><b>{insight.bValue}</b><small>{b.name} - {formatPercentile(insight.bPercentile)}</small></span></div></article>)}</div> : <p className="compare-empty">No shared numeric axes are published for this pair.</p>}
+    </section>
     {pack.metricKeys.length ? <div className="compare-table-wrap"><table className="compare-table"><caption>Published values and within-pack percentile ranks</caption><thead><tr><th scope="col">Metric</th><th scope="col"><span>Profile A</span>{a.name}</th><th scope="col"><span>Profile B</span>{b.name}</th></tr></thead><tbody>
       {pack.metricKeys.map((key) => <MetricRow key={key} field={key} a={a} b={b} />)}
     </tbody></table></div> : <p className="compare-empty">This pack has no published within-pack percentile fields, so it cannot show a ranked comparison.</p>}
     <p className="compare-note">Percentiles are within this pack only. Higher means a higher raw measured value, never better. Corpus labels describe the years represented by the card; they are not projections.</p>
-    <p className="compare-sources">Sources: <a href={publicPath(manifest)} target="_blank" rel="noreferrer">raw manifest</a>, <a href={publicPath("entity_percentiles.json")} target="_blank" rel="noreferrer">raw percentiles</a>, and <a href={publicPath("entity_comparables.json")} target="_blank" rel="noreferrer">raw comparables</a>.</p>
+    <p className="compare-sources">Sources: <a href={publicPath(manifest)} target="_blank" rel="noreferrer">raw manifest</a>, <a href={publicPath("entity_percentiles.json")} target="_blank" rel="noreferrer">raw percentiles</a>, and <a href={publicPath("entity_comparables.json")} target="_blank" rel="noreferrer">raw comparables</a>. <Link href={sport === "nba" ? "/analytics/research/nba-matchup-profile-contrast/" : sport ? `/analytics/browse/?sport=${sport}` : "/analytics/browse/"}>More {sport === "nba" ? "NBA profile research" : "library analysis"}</Link></p>
   </>;
 }
 

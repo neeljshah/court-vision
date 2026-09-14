@@ -49,10 +49,17 @@ jobs:
           npx vitest run lib/analytics/dashboardData.test.ts
           npx vitest run lib/analytics/labData.test.ts
           npx vitest run lib/analytics/comparisonData.test.ts
+          npx vitest run lib/analytics/researchBasketball.test.ts
+          npx vitest run lib/analytics/researchMultisport.test.ts
+          npx vitest run lib/analytics/researchValidation.test.ts
+          npx vitest run lib/analytics/libraryData.test.ts
+          npx vitest run lib/analytics/matchupInsights.test.ts
           npx vitest run lib/analytics/askSearch.test.ts
           npx vitest run lib/analytics/scoutCorpus.test.ts
           npx vitest run components/analytics/AskBox.test.tsx
           npx vitest run components/analytics/compare/CompareExperience.test.tsx
+          npx vitest run components/analytics/library/LibraryExplorer.test.tsx
+          npx vitest run components/analytics/library/ResearchDetail.test.tsx
           npx vitest run components/analytics/lab/MeasurementLab.test.tsx
           npx vitest run components/analytics/lab/LabTable.test.ts
           npx vitest run components/analytics/evidence/EvidenceGallery.test.tsx

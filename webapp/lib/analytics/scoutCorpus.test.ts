@@ -6,10 +6,11 @@ const corpus = loadScoutCorpus();
 
 describe("loadScoutCorpus", () => {
   it("keeps curated answers and expands all public entity and module records", () => {
-    expect(corpus.length).toBe(2_088);
+    expect(corpus.length).toBe(2_112);
     expect(corpus.some((entry) => entry.q === "Does the model actually beat the betting market?")).toBe(true);
     expect(corpus.filter((entry) => entry.bucket === "public-entity-profile")).toHaveLength(1_549);
     expect(corpus.filter((entry) => entry.bucket === "public-analytics-module")).toHaveLength(74);
+    expect(corpus.filter((entry) => entry.bucket === "public-derived-analysis")).toHaveLength(24);
   });
 
   it("marks both curated full-season Brier answers as withdrawn corrections", () => {
@@ -20,6 +21,15 @@ describe("loadScoutCorpus", () => {
       expect(entry.a.answer).toContain("withdrawn");
       expect(entry.a.as_of).toBe("2026-09-14");
       expect(entry.a.source_artifact).toBe("docs/JOB_EVIDENCE_PACKET.md");
+    }
+  });
+
+  it("retrieves a derived formula with its source and denominator limits", () => {
+    const result = resolveQuestion("Which historical matchups run high or close?", corpus);
+    expect(result).toMatchObject({ kind: "direct", entry: { bucket: "public-derived-analysis", a: { status: "ok", source_artifact: "webapp/public/data/showcase/nba_matchup_grid.json" } } });
+    if (result?.kind === "direct" && result.entry) {
+      expect(result.entry.a.answer).toContain("meeting-weighted");
+      expect(result.entry.a.answer).toContain("not forecasts");
     }
   });
 

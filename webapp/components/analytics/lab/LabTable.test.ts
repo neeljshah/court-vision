@@ -9,4 +9,7 @@ it("exports source context, censoring notes, missing values, and unscaled numeri
   expect(csv).toContain('"True zero","Other",0,-0.02,');
   expect(csv).toContain('"snapshot","Historical cohort","Subset only"');
   expect(csv).not.toContain("undefined");
+  const derived = buildLabCSV({ ...dataset, ...{ formula: "rate = numerator / denominator" } }, [{ id: "x", label: "Sample", group: "Test", values: { half: null, rate: .25 } }]);
+  expect(derived).toContain('"Formula"');
+  expect(derived).toContain('"rate = numerator / denominator"');
 });

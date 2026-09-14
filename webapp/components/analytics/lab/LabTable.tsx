@@ -4,8 +4,9 @@ import { displayMeasurement as display, type LabDataset, type LabRow } from "@/l
 import { Pagination } from "@/components/analytics/workspace/Primitives";
 export function buildLabCSV(dataset: LabDataset, rows: LabRow[]): string {
   const escape = (value: string) => `"${(/^[=+@\-\t\r]/.test(value) ? "'" + value : value).replace(/"/g, '""')}"`;
-  const headers = ["Entity", "Group", ...dataset.fields.map(f => `${f.label} (${f.unit}; raw value)`), "Row note", "Source", "Scope", "Caveat"];
-  const lines = [headers.map(escape).join(","), ...rows.map(r => [escape(r.label), escape(r.group), ...dataset.fields.map(f => typeof r.values[f.key] === "number" && Number.isFinite(r.values[f.key]) ? String(r.values[f.key]) : ""), escape(r.note || ""), escape(dataset.source), escape(dataset.scope), escape(dataset.caveat)].join(","))];
+  const formula = "formula" in dataset && typeof dataset.formula === "string" ? dataset.formula : null;
+  const headers = ["Entity", "Group", ...dataset.fields.map(f => `${f.label} (${f.unit}; raw value)`), "Row note", "Source", "Scope", "Caveat", ...(formula ? ["Formula"] : [])];
+  const lines = [headers.map(escape).join(","), ...rows.map(r => [escape(r.label), escape(r.group), ...dataset.fields.map(f => typeof r.values[f.key] === "number" && Number.isFinite(r.values[f.key]) ? String(r.values[f.key]) : ""), escape(r.note || ""), escape(dataset.source), escape(dataset.scope), escape(dataset.caveat), ...(formula ? [escape(formula)] : [])].join(","))];
   return lines.join("\r\n");
 }
 export function exportLabCSV(dataset: LabDataset, rows: LabRow[]) {

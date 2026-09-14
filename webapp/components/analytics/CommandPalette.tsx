@@ -48,7 +48,7 @@ export function CommandPalette() {
   const load = useCallback((retry = false) => {
     if (loadState === "loading" || (!retry && loadState !== "idle")) return;
     setLoadState("loading");
-    fetch(`${BASE_PATH}/data/showcase/search_records.json`)
+    fetch(`${BASE_PATH}/analytics/search-index.json`)
       .then((r) => {
         if (!r.ok) throw new Error(String(r.status));
         return r.json();

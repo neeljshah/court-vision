@@ -3,6 +3,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { AskEntry } from "./askSearch";
+import { getResearchAnalyses } from "./researchData";
 
 type RawEntry = { entity: string; key_numbers: Record<string, unknown>; as_of: string | null };
 type Manifest = { entries: RawEntry[] };
@@ -138,5 +139,11 @@ function moduleEntries(): AskEntry[] {
 export function loadScoutCorpus(): AskEntry[] {
   const curated = readRequired<{ entries: AskEntry[] }>("ask/corpus.json");
   if (!Array.isArray(curated.entries)) throw new Error("Missing entries in Scout source: ask/corpus.json");
-  return [...curated.entries, ...entityEntries(), ...moduleEntries()];
+  const research: AskEntry[] = getResearchAnalyses().map(a => ({
+    q: `Explain the analysis: ${a.title}`,
+    alt_phrasings: [a.title, `${a.title} formula`, a.id.replace(/-/g, " ")],
+    tags: [a.sport, "derived-analysis", ...words(a.title)], bucket: "public-derived-analysis",
+    a: { status: "ok", answer: `${a.description} Formula: ${a.formula} ${a.interpretation} Scope: ${a.scope} Limitations: ${a.caveat} This is derived from a published snapshot, not a live forecast.`, source_artifact: `webapp/public/data/showcase/${a.source}.json`, as_of: a.asOf || "unknown" },
+  }));
+  return [...curated.entries, ...entityEntries(), ...moduleEntries(), ...research];
 }

@@ -13,4 +13,7 @@ it("updates active navigation when the client route changes", () => {
   view.rerender(<AnalyticsNavigation links={links} />);
   expect(screen.getByRole("link", { name: "Lab" }).getAttribute("aria-current")).toBeNull();
   expect(screen.getByRole("link", { name: "Library" }).getAttribute("aria-current")).toBe("page");
+  path = "/court-vision/analytics/research/mlb-velocity-shape/";
+  view.rerender(<AnalyticsNavigation links={links} />);
+  expect(screen.getByRole("link", { name: "Library" }).getAttribute("aria-current")).toBe("page");
 });

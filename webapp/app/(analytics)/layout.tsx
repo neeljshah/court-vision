@@ -3,6 +3,7 @@
 // with zero CSS bleed from the terminal (globals.css is never imported here). URLs
 // are unchanged; pages live at app/(analytics)/analytics/* -> /analytics/*.
 import "./analytics.css";
+import "./brand.css";
 
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
@@ -11,6 +12,7 @@ import { analyticsFontVars } from "@/lib/analytics/fonts";
 import { CommandPalette } from "@/components/analytics/CommandPalette";
 import { PaletteTrigger } from "@/components/analytics/PaletteTrigger";
 import { AnalyticsNavigation } from "@/components/analytics/AnalyticsNavigation";
+import { BrandMark } from "@/components/analytics/BrandMark";
 
 // Static-export builds serve at basePath /court-vision; next/font + <Link> auto-
 // prefix, but the metadata icon URLs do NOT (same landmine as the terminal layout).
@@ -106,9 +108,7 @@ export default function AnalyticsRootLayout({ children }: { children: ReactNode 
         <nav className="a-nav" aria-label="Analytics">
           <div className="wrap a-navrow">
             <Link href="/analytics" className="a-lockup" aria-label="CourtVision Analytics home" prefetch={false}>
-              <span className="a-mark" aria-hidden="true">
-                <span>&#9650;</span>
-              </span>
+              <span className="a-mark"><BrandMark /></span>
               <span>
                 <span className="a-name">CourtVision</span>{" "}
                 <span className="a-kicker">ANALYTICS</span>
@@ -133,9 +133,7 @@ export default function AnalyticsRootLayout({ children }: { children: ReactNode 
         <footer className="a-footer">
           <div className="wrap">
             <div className="a-foot-top">
-              <span className="a-foot-mark" aria-hidden="true">
-                <span>&#9650;</span>
-              </span>
+              <span className="a-foot-mark"><BrandMark /></span>
               <span className="a-foot-name">CourtVision Analytics</span>
             </div>
             <p className="a-honesty">

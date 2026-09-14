@@ -5,6 +5,7 @@
 import type { MetadataRoute } from "next";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { getResearchAnalyses } from "@/lib/analytics/researchData";
 
 export const dynamic = "force-static";
 
@@ -24,7 +25,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const roots = ["/analytics", "/analytics/ask", "/analytics/lab", "/analytics/compare", "/analytics/evidence", "/analytics/findings", "/analytics/players", "/analytics/browse"];
   const seen = new Set<string>();
   const urls: MetadataRoute.Sitemap = [];
-  for (const h of [...roots, ...hrefs]) {
+  const research = getResearchAnalyses().map(a => `/analytics/research/${a.id}`);
+  for (const h of [...roots, ...hrefs, ...research]) {
     if (seen.has(h)) continue;
     seen.add(h);
     // next.config has trailingSlash:true, so the canonical exported page is

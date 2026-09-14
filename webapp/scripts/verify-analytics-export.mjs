@@ -18,6 +18,7 @@ const REQUIRED_ROUTES = [
   "/analytics/lab/",
   "/analytics/compare/",
   "/analytics/evidence/",
+  "/analytics/browse/",
 ];
 const BUDGETS = new Map([
   ["/analytics/", 200_000],
@@ -25,6 +26,7 @@ const BUDGETS = new Map([
   ["/analytics/compare/", 400_000],
   ["/analytics/ask/", 500_000],
   ["/analytics/evidence/", 100_000],
+  ["/analytics/browse/", 100_000],
 ]);
 const ASSET_EXTENSIONS = /\.(?:json|png|jpe?g|webp|gif|svg|avif|ico)$/i;
 
@@ -175,6 +177,18 @@ function verifyBudget(route, maxBytes, failures) {
 }
 
 const failures = [];
+const searchIndexFile = join(OUT, "analytics", "search-index.json");
+if (!existsSync(searchIndexFile)) failures.push("required analytics search index is missing");
+else {
+  const records = JSON.parse(readFileSync(searchIndexFile, "utf8")).records;
+  const derived = records.filter(r => r.id.startsWith("research-"));
+  if (derived.length < 24) failures.push("search index is missing derived analyses");
+  for (const record of derived) {
+    const route = `${record.href.replace(/\/$/, "")}/`;
+    REQUIRED_ROUTES.push(route);
+    BUDGETS.set(route, 150_000);
+  }
+}
 const checked = new Set();
 const sitemapFile = join(OUT, "sitemap.xml");
 const sitemap = existsSync(sitemapFile) ? readFileSync(sitemapFile, "utf8") : "";
