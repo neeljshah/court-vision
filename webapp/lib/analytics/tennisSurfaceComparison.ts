@@ -9,6 +9,7 @@ export type TennisSurfaceRow = {
   kind: "surface_rate" | "within_player_delta";
   window: TennisWindow;
   unit: "percent" | "pp";
+  nRanked?: number;
   a: TennisSurfaceValue;
   b: TennisSurfaceValue;
 };
@@ -36,10 +37,12 @@ const DELTAS: Partial<Record<TennisSurface, { stem: string; label: string }>> = 
   grass: { stem: "grass_adapt", label: "Grass minus overall win rate" },
 };
 const finite = (value: unknown): number | null => typeof value === "number" && Number.isFinite(value) ? value : null;
+const percentile = (value: unknown): number | null =>
+  typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 100 ? value : null;
 
 function measurement(entity: ComparisonEntity, key: string): TennisSurfaceValue {
   const value = finite(entity.values[key]);
-  return { value, percentile: value === null ? null : finite(entity.percentiles[key]) };
+  return { value, percentile: value === null ? null : percentile(entity.percentiles[key]) };
 }
 
 function entityEvidence(entity: ComparisonEntity): TennisSurfaceEntityEvidence {
@@ -50,15 +53,16 @@ export function tennisSurfaceComparison(
   a: ComparisonEntity,
   b: ComparisonEntity,
   surface: TennisSurface,
+  nRankedByMetric?: Record<string, number>,
 ): TennisSurfaceComparison {
   const rows: TennisSurfaceRow[] = [];
   for (const window of ["career", "recent"] as const) {
     const rateKey = `${surface}_wr_${window}`;
-    rows.push({ key: rateKey, label: `${LABELS[surface]} win rate`, kind: "surface_rate", window, unit: "percent", a: measurement(a, rateKey), b: measurement(b, rateKey) });
+    rows.push({ key: rateKey, label: `${LABELS[surface]} win rate`, kind: "surface_rate", window, unit: "percent", nRanked: nRankedByMetric?.[rateKey], a: measurement(a, rateKey), b: measurement(b, rateKey) });
     const delta = DELTAS[surface];
     if (delta) {
       const deltaKey = `${delta.stem}_${window}`;
-      rows.push({ key: deltaKey, label: delta.label, kind: "within_player_delta", window, unit: "pp", a: measurement(a, deltaKey), b: measurement(b, deltaKey) });
+      rows.push({ key: deltaKey, label: delta.label, kind: "within_player_delta", window, unit: "pp", nRanked: nRankedByMetric?.[deltaKey], a: measurement(a, deltaKey), b: measurement(b, deltaKey) });
     }
   }
   const sameAsOf = a.asOf && b.asOf ? a.asOf === b.asOf : null;

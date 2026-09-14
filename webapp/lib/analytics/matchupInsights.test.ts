@@ -15,4 +15,16 @@ describe("matchupInsights", () => {
     ]);
     expect(sharedMeasuredAxisCount(pack, a, b)).toBe(2);
   });
+
+  it("rejects invalid ranks and missing raw values while retaining zero", () => {
+    const fields = ["zero", "negative", "over", "nan", "infinite", "missing"];
+    const guardedPack = { ...pack, metricKeys: fields };
+    const values = { zero: 0, negative: 1, over: 1, nan: 1, infinite: 1, missing: null };
+    const a = entity("Alpha", values, { zero: 0, negative: -1, over: 101, nan: NaN, infinite: Infinity, missing: 50 });
+    const b = entity("Beta", { ...values, missing: 2 }, { zero: 100, negative: 50, over: 50, nan: 50, infinite: 50, missing: 50 });
+    expect(matchupInsights(guardedPack, a, b)).toEqual([
+      { field: "zero", label: "zero", aValue: "0", bValue: "0", aPercentile: 0, bPercentile: 100, gap: 100 },
+    ]);
+    expect(sharedMeasuredAxisCount(guardedPack, a, b)).toBe(1);
+  });
 });

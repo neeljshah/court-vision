@@ -13,9 +13,20 @@ describe("comparison data normalization", () => {
     expect(entrySlugs(manifest.entries).map((item) => item.slug)).toEqual(["shared", "beta_two"]);
     const pack = normalizeComparisonPack("demo", manifest, percentiles, comparables);
     expect(pack.metricKeys).toEqual(["career_pts_per36", "career_fg_pct"]);
+    expect(pack.nRankedByMetric).toEqual({ career_pts_per36: 2, career_fg_pct: 1 });
     expect(pack.suggestedPair).toEqual(["shared", "beta_two"]);
     expect(pack.entities[0].percentiles.career_pts_per36).toBe(25);
     expect(pack.entities[0]).toMatchObject({ sourceEntity: "Alpha One", asOf: "2026-04-12", floors: "minutes>=800", status: "partial" });
+  });
+
+  it("preserves only published finite nonnegative integer cohort sizes", () => {
+    const fields = {
+      zero: { n_ranked: 0 }, smaller: { n_ranked: 1 }, missing: {},
+      fractional: { n_ranked: 1.5 }, negative: { n_ranked: -1 }, infinite: { n_ranked: Infinity },
+    };
+    const pack = normalizeComparisonPack("demo", manifest, { packs: { demo: { n_in_pack: 2, fields } } }, {});
+    expect(pack.metricKeys).toEqual(Object.keys(fields));
+    expect(pack.nRankedByMetric).toEqual({ zero: 0, smaller: 1 });
   });
 
   it("keeps missing values missing and labels units without inventing a zero", () => {

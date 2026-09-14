@@ -16,17 +16,16 @@ const b: ComparisonEntity = {
 describe("TennisSurfaceComparison", () => {
   it("shows paired raw surface records, preserves asymmetric unavailable values, and changes surfaces", () => {
     const onSurfaceChange = vi.fn();
-    render(<TennisSurfaceComparison a={a} b={b} surface="hard" onSurfaceChange={onSurfaceChange} sourceHref="/data/showcase/atlas_tennis_manifest.json" />);
+    render(<TennisSurfaceComparison a={a} b={b} surface="hard" onSurfaceChange={onSurfaceChange} sourceHref="/data/showcase/atlas_tennis_manifest.json" nRankedByMetric={{ hard_wr_career: 2, hard_wr_recent: 0 }} />);
     expect(screen.getByRole("heading", { name: "Recorded surface history" })).toBeInTheDocument();
     expect(screen.getByText("69.0%")).toBeInTheDocument();
     expect(screen.getByText("50.0%")).toBeInTheDocument();
     expect(screen.getByText("Not reported")).toBeInTheDocument();
     expect(screen.getByText("Not ranked")).toBeInTheDocument();
+    expect(screen.getByText("80th percentile")).toBeInTheDocument();
+    expect(screen.getAllByText("Ranked among 2 profiles")).toHaveLength(2);
     expect(screen.getByText(/not head-to-head results or forecasts/i)).toBeInTheDocument();
     expect(screen.getByText(/Career: 2015-2025 pooled/)).toBeInTheDocument();
-    fireEvent.click(screen.getByText("Exact published eligibility wording"));
-    expect(screen.getByText(/Alpha \(ATP\):/)).toBeInTheDocument();
-    expect(screen.getByText(/Beta \(ATP\):/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Clay" }));
     expect(onSurfaceChange).toHaveBeenCalledWith("clay");
   });
@@ -36,5 +35,14 @@ describe("TennisSurfaceComparison", () => {
     expect(screen.getByText(/No published grass measurements/)).toBeInTheDocument();
     expect(screen.getByText(/Source date:/)).toBeInTheDocument();
     expect(screen.getByTitle("2026-07-19")).toBeInTheDocument();
+  });
+
+  it("keeps a zero record ranked while suppressing malformed surface ranks", () => {
+    render(<TennisSurfaceComparison a={{ ...a, values: { hard_wr_career: 0, hard_wr_recent: NaN }, percentiles: { hard_wr_career: 0, hard_wr_recent: 50 } }} b={{ ...b, values: { hard_wr_career: .5, hard_wr_recent: .5 }, percentiles: { hard_wr_career: Infinity, hard_wr_recent: 101 } }} surface="hard" onSurfaceChange={vi.fn()} sourceHref="/data/showcase/atlas_tennis_manifest.json" nRankedByMetric={{ hard_wr_career: 2, hard_wr_recent: 2 }} />);
+    expect(screen.getByText("0.0%")).toBeInTheDocument();
+    expect(screen.getByText("0th percentile")).toBeInTheDocument();
+    expect(screen.getAllByText("Ranked among 2 profiles")).toHaveLength(1);
+    expect(screen.getAllByText("Not ranked")).toHaveLength(2);
+    expect(screen.queryByText("101st percentile")).not.toBeInTheDocument();
   });
 });

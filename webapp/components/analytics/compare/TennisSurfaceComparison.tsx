@@ -11,12 +11,14 @@ type Props = {
   surface: TennisSurface;
   onSurfaceChange: (surface: TennisSurface) => void;
   sourceHref: string;
+  nRankedByMetric?: Record<string, number>;
 };
 
-function Value({ value, percentile, field, unit }: { value: number | null; percentile: number | null; field: string; unit: "percent" | "pp" }) {
-  if (value === null) return <span className="tennis-surface-unavailable">Not reported</span>;
+function Value({ value, percentile, field, unit, nRanked }: { value: number | null; percentile: number | null; field: string; unit: "percent" | "pp"; nRanked?: number }) {
+  if (value === null || !Number.isFinite(value)) return <span className="tennis-surface-unavailable">Not reported</span>;
   const displayField = unit === "pp" ? "clay_minus_hard_career" : field;
-  return <><strong>{formatMetric(value, displayField)}</strong><small>{percentile !== null ? formatPercentile(percentile) : "Not ranked"}</small></>;
+  const ranked = typeof percentile === "number" && Number.isFinite(percentile) && percentile >= 0 && percentile <= 100 && typeof nRanked === "number" && Number.isInteger(nRanked) && nRanked > 0;
+  return <><strong>{formatMetric(value, displayField)}</strong><small>{ranked ? formatPercentile(percentile) : "Not ranked"}</small>{ranked ? <small className="tennis-surface-rank-context">Ranked among {nRanked} profiles</small> : null}</>;
 }
 
 function surfaceEligibility(surface: TennisSurface): string {
@@ -32,8 +34,8 @@ function shortDate(value: string): string {
   return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(date);
 }
 
-export function TennisSurfaceComparison({ a, b, surface, onSurfaceChange, sourceHref }: Props) {
-  const comparison = tennisSurfaceComparison(a, b, surface);
+export function TennisSurfaceComparison({ a, b, surface, onSurfaceChange, sourceHref, nRankedByMetric }: Props) {
+  const comparison = tennisSurfaceComparison(a, b, surface, nRankedByMetric);
   const availableRows = comparison.rows.filter((row) => row.a.value !== null || row.b.value !== null);
   const aDate = comparison.entities.a.asOf;
   const bDate = comparison.entities.b.asOf;
@@ -50,16 +52,14 @@ export function TennisSurfaceComparison({ a, b, surface, onSurfaceChange, source
       <div className="tennis-surface-row tennis-surface-labels" role="row"><span role="columnheader">Recorded measure</span><span role="columnheader" aria-label={a.name}><span className="tennis-surface-compact-label">Profile A</span><span className="tennis-surface-full-label">{a.name}</span></span><span role="columnheader" aria-label={b.name}><span className="tennis-surface-compact-label">Profile B</span><span className="tennis-surface-full-label">{b.name}</span></span></div>
       {comparison.rows.map((row) => <div className="tennis-surface-row" role="row" key={row.key}>
         <span role="rowheader"><b>{row.label}</b><small>{row.window === "career" ? "Career record" : "Recent record"}</small></span>
-        <span role="cell"><Value value={row.a.value} percentile={row.a.percentile} field={row.key} unit={row.unit} /></span>
-        <span role="cell"><Value value={row.b.value} percentile={row.b.percentile} field={row.key} unit={row.unit} /></span>
+        <span role="cell"><Value value={row.a.value} percentile={row.a.percentile} field={row.key} unit={row.unit} nRanked={row.nRanked} /></span>
+        <span role="cell"><Value value={row.b.value} percentile={row.b.percentile} field={row.key} unit={row.unit} nRanked={row.nRanked} /></span>
       </div>)}
     </div> : <p className="compare-empty">No published {comparison.surfaceLabel.toLowerCase()} measurements are available for either selected profile.</p>}
     <div className="tennis-surface-meta">
       <p><b>Eligibility:</b> {surfaceEligibility(surface)}</p>
-      <details><summary>Exact published eligibility wording</summary>{comparison.entities.a.floors === comparison.entities.b.floors ? <p>{comparison.entities.a.floors || "Not reported"}</p> : <><p><b>{a.name}:</b> {comparison.entities.a.floors || "Not reported"}</p><p><b>{b.name}:</b> {comparison.entities.b.floors || "Not reported"}</p></>}</details>
       <p><b>Published windows:</b> Career: {comparison.comparability.windows.career}. Recent: {comparison.comparability.windows.recent}.</p>
       <p>{comparison.comparability.note} The shared publication date does not mean matching player observation windows; collected history can vary with active period. {comparison.comparability.sameAsOf === false ? "The profiles have different published as-of dates." : ""}</p>
-      <p>Published status: {comparison.entities.a.status || "not reported"} for {a.name}; {comparison.entities.b.status || "not reported"} for {b.name}.</p>
       <p>Source date: {aDate && bDate && aDate === bDate ? <time title={aDate}>{shortDate(aDate)}</time> : <>{aDate ? <span title={aDate}>{a.name}: {shortDate(aDate)}</span> : `${a.name}: not reported`}; {bDate ? <span title={bDate}>{b.name}: {shortDate(bDate)}</span> : `${b.name}: not reported`}</>}. <a href={sourceHref} target="_blank" rel="noreferrer">Raw tennis manifest</a></p>
     </div>
   </section>;

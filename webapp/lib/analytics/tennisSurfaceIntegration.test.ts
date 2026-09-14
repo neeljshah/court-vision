@@ -15,10 +15,11 @@ describe("published tennis surface integration", () => {
     for (const [index, a] of pack.entities.entries()) {
       const source = manifest.entries![index];
       for (const surface of ["hard", "clay", "grass"] as TennisSurface[]) {
-        const result = tennisSurfaceComparison(a, pack.entities[(index + 1) % pack.entities.length], surface);
+        const result = tennisSurfaceComparison(a, pack.entities[(index + 1) % pack.entities.length], surface, pack.nRankedByMetric);
         expect(result.entities.a).toMatchObject({ floors: source.floors, status: source.status, asOf: source.as_of });
         for (const row of result.rows) {
           const value = source.key_numbers[row.key];
+          expect(row.nRanked).toBe(pack.nRankedByMetric?.[row.key]);
           expect(row.a.value).toBe(typeof value === "number" && Number.isFinite(value) ? value : null);
           if (row.a.value === null) expect(row.a.percentile).toBeNull();
           else {
@@ -35,7 +36,7 @@ describe("published tennis surface integration", () => {
     const b = pack.entities.find(entity => entity.slug === "ivo_karlovic_atp")!;
     expect(a).toBeDefined();
     expect(b).toBeDefined();
-    const result = tennisSurfaceComparison(a, b, "grass");
+    const result = tennisSurfaceComparison(a, b, "grass", pack.nRankedByMetric);
     expect(result.rows.find(row => row.key === "grass_wr_recent")?.a.value).toBeNull();
     expect(result.rows.find(row => row.key === "grass_adapt_recent")?.a.value).toBe(-0.0054);
     expect(result.rows.filter(row => row.window === "recent").every(row => row.b.value === null)).toBe(true);
@@ -48,9 +49,10 @@ describe("published tennis surface integration", () => {
     const measured = pack.entities.filter(entity => typeof entity.values.grass_wr_recent === "number");
     expect(measured).toHaveLength(3);
     for (const a of measured) {
-      const row = tennisSurfaceComparison(a, pack.entities[0], "grass").rows.find(item => item.key === "grass_wr_recent");
+      const row = tennisSurfaceComparison(a, pack.entities[0], "grass", pack.nRankedByMetric).rows.find(item => item.key === "grass_wr_recent");
       expect(row?.a.value).toBe(a.values.grass_wr_recent);
       expect(row?.a.percentile).toBeNull();
+      expect(row?.nRanked).toBeUndefined();
     }
   });
 });

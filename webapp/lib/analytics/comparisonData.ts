@@ -39,6 +39,7 @@ export type ComparisonPack = {
   key: string;
   nInPack: number;
   metricKeys: string[];
+  nRankedByMetric?: Record<string, number>;
   entities: ComparisonEntity[];
   suggestedPair?: [string, string];
 };
@@ -99,6 +100,12 @@ export function normalizeComparisonPack(
   }));
   const metricKeys = Object.keys(percentilePack?.fields || {})
     .filter((field) => !/_id$/.test(field));
+  const nRankedByMetric = Object.fromEntries(metricKeys.flatMap((field) => {
+    const value = percentilePack?.fields?.[field]?.n_ranked;
+    return typeof value === "number" && Number.isFinite(value) && Number.isInteger(value) && value >= 0
+      ? [[field, value]]
+      : [];
+  }));
   const first = entries[0]?.slug;
   const suggested = first && comparables.packs?.[key]?.entities?.[first]?.similar?.[0]?.slug;
   const fallback = entries.find((item) => item.slug !== first)?.slug;
@@ -106,6 +113,7 @@ export function normalizeComparisonPack(
     key,
     nInPack: percentilePack?.n_in_pack || entries.length,
     metricKeys,
+    nRankedByMetric,
     entities: entries,
     suggestedPair: first && (suggested || fallback) ? [first, suggested || fallback!] : undefined,
   };

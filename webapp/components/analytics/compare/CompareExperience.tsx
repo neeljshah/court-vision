@@ -46,6 +46,11 @@ function mlbAtlasFamily(entity: ComparisonEntity): "pitch_type" | "team" | "coun
   return undefined;
 }
 
+function rankedCount(pack: ComparisonPack, field: string): number | undefined {
+  const value = pack.nRankedByMetric?.[field];
+  return typeof value === "number" && Number.isInteger(value) && value > 0 ? value : undefined;
+}
+
 function displayDate(value?: string): string | undefined {
   return value && /^\d{4}-\d{2}-\d{2}[ T]\d{2}:/.test(value) ? value.slice(0, 10) : value;
 }
@@ -231,15 +236,15 @@ function ComparisonResults({ pack, a, b, manifest, sport, surface, onSurfaceChan
       <ProfileHeading entity={b} pack={pack.key} label="Profile B" />
     </div>
     {mixedMlbAtlas ? <p className="compare-empty" role="status">Choose two pitch types, two teams, or two count states to compare recorded MLB atlas values.</p> : null}
-    {pack.key === "tennis" ? <TennisSurfaceComparison a={a} b={b} surface={surface} onSurfaceChange={onSurfaceChange} sourceHref={publicPath(manifest)} /> : null}
+    {pack.key === "tennis" ? <TennisSurfaceComparison a={a} b={b} surface={surface} onSurfaceChange={onSurfaceChange} sourceHref={publicPath(manifest)} nRankedByMetric={pack.nRankedByMetric} /> : null}
     {rawMlbAtlas ? <PitchCountComparison a={a} b={b} sourceHref={publicPath(manifest)} /> : null}
     {!mixedMlbAtlas && !rawMlbAtlas ? <section className="compare-insights" aria-labelledby="compare-insights-title">
       <div className="compare-insights-heading"><div><span className="compare-section-label">Measured contrasts</span><h2 id="compare-insights-title">Where these profiles separate</h2></div><span className="compare-overlap">{axisCount} shared axes</span></div>
       <p className="compare-insights-intro">Largest percentile gaps among fields reported for both profiles. Values stay tied to the published historical corpus.</p>
-      {insights.length ? <div className="compare-insight-grid">{insights.map((insight) => <article className="compare-insight" key={insight.field}><div className="compare-insight-top"><strong>{insight.label}</strong><span>{Math.round(insight.gap)} pt gap</span></div><div className="compare-insight-values"><span><b>{insight.aValue}</b><small>{a.name} - {formatPercentile(insight.aPercentile)}</small></span><span><b>{insight.bValue}</b><small>{b.name} - {formatPercentile(insight.bPercentile)}</small></span></div></article>)}</div> : <p className="compare-empty">No shared numeric axes are published for this pair.</p>}
+      {insights.length ? <div className="compare-insight-grid">{insights.map((insight) => { const nRanked = rankedCount(pack, insight.field); return <article className="compare-insight" key={insight.field}><div className="compare-insight-top"><strong>{insight.label}</strong><span>{Math.round(insight.gap)} pt gap</span></div><div className="compare-insight-values"><span><b>{insight.aValue}</b><small>{a.name} - {formatPercentile(insight.aPercentile)}</small></span><span><b>{insight.bValue}</b><small>{b.name} - {formatPercentile(insight.bPercentile)}</small></span></div>{nRanked ? <small className="compare-rank-context">Ranked among {nRanked} profiles with this measurement.</small> : null}</article>; })}</div> : <p className="compare-empty">No shared numeric axes are published for this pair.</p>}
     </section> : null}
     {!mixedMlbAtlas ? (pack.metricKeys.length ? <div className="compare-table-wrap"><table className="compare-table"><caption>{rawMlbAtlas ? "Published raw values" : "Published values and within-pack percentile ranks"}</caption><thead><tr><th scope="col">Metric</th><th scope="col"><span>Profile A</span>{a.name}</th><th scope="col"><span>Profile B</span>{b.name}</th></tr></thead><tbody>
-      {pack.metricKeys.map((key) => <MetricRow key={key} field={key} a={a} b={b} showRanks={!rawMlbAtlas} />)}
+      {pack.metricKeys.map((key) => <MetricRow key={key} field={key} a={a} b={b} showRanks={!rawMlbAtlas} nRanked={rankedCount(pack, key)} />)}
     </tbody></table></div> : <p className="compare-empty">This pack has no published within-pack percentile fields, so it cannot show a ranked comparison.</p>) : null}
     <p className="compare-note">{pack.key === "mlb_pitch" ? "Raw records are shown only for same-family MLB atlas pairs. Source percentiles mix pitch types, teams, and count states, so ranks and percentile gaps are omitted." : "Percentiles are within this pack only. Higher means a higher raw measured value, never better. Corpus labels describe the years represented by the card; they are not projections."}</p>
     <p className="compare-sources">Sources: <a href={publicPath(manifest)} target="_blank" rel="noreferrer">raw manifest</a>, <a href={publicPath("entity_percentiles.json")} target="_blank" rel="noreferrer">raw percentiles</a>, and <a href={publicPath("entity_comparables.json")} target="_blank" rel="noreferrer">raw comparables</a>. <Link href={sport === "nba" ? "/analytics/research/nba-matchup-profile-contrast/" : sport ? `/analytics/browse/?sport=${sport}` : "/analytics/browse/"}>More {sport === "nba" ? "NBA profile research" : "library analysis"}</Link></p>
@@ -248,16 +253,23 @@ function ComparisonResults({ pack, a, b, manifest, sport, surface, onSurfaceChan
 
 function ProfileHeading({ entity, pack, label }: { entity: ComparisonEntity; pack: string; label: string }) {
   const asOf = displayDate(entity.asOf);
-  return <article className="compare-profile"><span className="compare-profile-label">{label}</span><div className="compare-monogram" aria-hidden="true">{entity.name.slice(0, 1)}</div><h2><Link href={`/analytics/players/${pack}/${entity.slug}`}>{entity.name}</Link></h2><p>{asOf ? `As of ${asOf}` : "No published as-of date"}</p></article>;
+  return <article className="compare-profile"><span className="compare-profile-label">{label}</span><div className="compare-monogram" aria-hidden="true">{entity.name.slice(0, 1)}</div><h2><Link href={`/analytics/players/${pack}/${entity.slug}`}>{entity.name}</Link></h2><p>{asOf ? `As of ${asOf}` : "No published as-of date"}</p><ProfileEvidence entity={entity} /></article>;
 }
 
-function MetricRow({ field, a, b, showRanks = true }: { field: string; a: ComparisonEntity; b: ComparisonEntity; showRanks?: boolean }) {
+function ProfileEvidence({ entity }: { entity: ComparisonEntity }) {
+  if (!entity.floors && !entity.status) return null;
+  return <details className="compare-profile-evidence"><summary>Published evidence</summary>{entity.floors ? <p><b>Floors:</b> {entity.floors}</p> : null}{entity.status ? <p><b>Status:</b> {entity.status}</p> : null}</details>;
+}
+
+function MetricRow({ field, a, b, showRanks = true, nRanked }: { field: string; a: ComparisonEntity; b: ComparisonEntity; showRanks?: boolean; nRanked?: number }) {
   const unit = metricUnit(field);
-  return <tr><th scope="row"><span>{metricLabel(field)}</span>{unit ? <small>{unit}</small> : null}</th><MetricCell value={a.values[field]} percentile={a.percentiles[field]} field={field} showRank={showRanks} /><MetricCell value={b.values[field]} percentile={b.percentiles[field]} field={field} showRank={showRanks} /></tr>;
+  return <tr><th scope="row"><span>{metricLabel(field)}</span>{unit ? <small>{unit}</small> : null}</th><MetricCell value={a.values[field]} percentile={a.percentiles[field]} field={field} showRank={showRanks} nRanked={nRanked} /><MetricCell value={b.values[field]} percentile={b.percentiles[field]} field={field} showRank={showRanks} nRanked={nRanked} /></tr>;
 }
 
-function MetricCell({ value, percentile, field, showRank }: { value: unknown; percentile: unknown; field: string; showRank: boolean }) {
-  const rank = typeof percentile === "number" ? Math.max(0, Math.min(100, percentile)) : undefined;
+function MetricCell({ value, percentile, field, showRank, nRanked }: { value: unknown; percentile: unknown; field: string; showRank: boolean; nRanked?: number }) {
+  const hasRawMeasurement = typeof value === "number" && Number.isFinite(value);
+  const rank = typeof percentile === "number" && Number.isFinite(percentile) && percentile >= 0 && percentile <= 100 ? percentile : undefined;
   const formattedRank = formatPercentile(percentile);
-  return <td><strong>{formatMetric(value, field)}</strong>{showRank ? <><span className="compare-rank">{formattedRank}</span>{rank !== undefined ? <span className="compare-bar" role="img" aria-label={`${formattedRank} visual bar`}><i aria-hidden="true" style={{ width: `${rank}%` }} /></span> : null}</> : null}</td>;
+  const ranked = showRank && hasRawMeasurement && rank !== undefined && nRanked !== undefined;
+  return <td><strong>{formatMetric(value, field)}</strong>{ranked ? <><span className="compare-rank">{formattedRank}</span><small className="compare-rank-context">Ranked among {nRanked} profiles</small><span className="compare-bar" role="img" aria-label={`${formattedRank} visual bar`}><i aria-hidden="true" style={{ width: `${rank}%` }} /></span></> : showRank ? <span className="compare-rank">Not ranked</span> : null}</td>;
 }

@@ -3,11 +3,18 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CompareExperience } from "./CompareExperience";
 
 const manifest = { entries: [
-  { entity: "Alpha", card_path: "atlas/alpha.png", key_numbers: { career_pts_per36: 10 } },
-  { entity: "Beta", card_path: "atlas/beta.png", key_numbers: { career_pts_per36: 14 } },
+  { entity: "Alpha", card_path: "atlas/alpha.png", floors: "alpha published floor", status: "complete", key_numbers: { career_pts_per36: 10 } },
+  { entity: "Beta", card_path: "atlas/beta.png", floors: "beta published floor", key_numbers: { career_pts_per36: 14 } },
 ] };
 const percentiles = { packs: { nba_players: { n_in_pack: 2, fields: { career_pts_per36: { n_ranked: 2 } }, entities: { alpha: { career_pts_per36: 25 }, beta: { career_pts_per36: 75 } } } } };
 const comparables = { packs: { nba_players: { entities: { alpha: { similar: [{ slug: "beta" }] } } } } };
+const invalidRankManifest = { entries: [
+  { entity: "Alpha", card_path: "atlas/alpha.png", key_numbers: { null_raw: null, zero_raw: 0, nan_raw: NaN, infinite_raw: Infinity, out_of_range: 8 } },
+  { entity: "Beta", card_path: "atlas/beta.png", key_numbers: { null_raw: 4, zero_raw: 2, nan_raw: 4, infinite_raw: 4, out_of_range: 4 } },
+] };
+const invalidRankPercentiles = { packs: { nba_players: { n_in_pack: 2, fields: {
+  null_raw: { n_ranked: 2 }, zero_raw: { n_ranked: 2 }, nan_raw: { n_ranked: 2 }, infinite_raw: { n_ranked: 2 }, out_of_range: { n_ranked: 2 },
+}, entities: { alpha: { null_raw: 50, zero_raw: 0, nan_raw: 50, infinite_raw: 50, out_of_range: 101 }, beta: { null_raw: 50, zero_raw: 50, nan_raw: NaN, infinite_raw: Infinity, out_of_range: -1 } } } } };
 const tennisManifest = { entries: [
   { entity: "Alpha (ATP)", card_path: "atlas/alpha.png", as_of: "2026-07-19", floors: "hard_n>=30", key_numbers: { hard_wr_career: .69, clay_wr_career: .74 } },
   { entity: "Beta (ATP)", card_path: "atlas/beta.png", as_of: "2026-07-19", floors: "hard_n>=30", key_numbers: { hard_wr_career: .5 } },
@@ -44,6 +51,7 @@ describe("CompareExperience controls", () => {
     await waitFor(() => expect(a).toHaveValue("Alpha"));
     expect(b).toHaveValue("Beta");
     expect(screen.getByText("25th percentile")).toBeInTheDocument();
+    expect(screen.getAllByText("Ranked among 2 profiles").length).toBeGreaterThan(0);
     expect(screen.getByRole("table")).toHaveAccessibleName("Published values and within-pack percentile ranks");
     expect(screen.getByRole("img", { name: "25th percentile visual bar" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Where these profiles separate" })).toBeInTheDocument();
@@ -88,6 +96,17 @@ describe("CompareExperience controls", () => {
     expect(screen.queryByText("25th percentile")).not.toBeInTheDocument();
   });
 
+  it("renders ranks only for finite raw values and published 0-100 percentiles", async () => {
+    vi.mocked(fetch).mockImplementation((url: string) => Promise.resolve({ ok: true, json: async () => url.includes("atlas_nba_manifest") ? invalidRankManifest : url.includes("percentiles") ? invalidRankPercentiles : comparables } as Response));
+    render(<CompareExperience />);
+    expect(await screen.findByText("0th percentile")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "0th percentile visual bar" })).toBeInTheDocument();
+    expect(screen.getAllByText("Ranked among 2 profiles")).toHaveLength(3);
+    expect(screen.getAllByText("Not ranked").length).toBeGreaterThanOrEqual(7);
+    expect(screen.queryByText("101st percentile")).not.toBeInTheDocument();
+    expect(screen.queryByText("-1st percentile")).not.toBeInTheDocument();
+  });
+
   it("keeps the loaded pair and share URL when the active sport is selected again", async () => {
     render(<CompareExperience />);
     const a = await screen.findByLabelText("Profile A");
@@ -99,6 +118,13 @@ describe("CompareExperience controls", () => {
     expect(window.location.search).toContain("pack=nba_players");
     expect(window.location.search).toContain("a=alpha");
     expect(window.location.search).toContain("b=beta");
+    const evidence = screen.getAllByText("Published evidence");
+    fireEvent.click(evidence[0]);
+    fireEvent.click(evidence[1]);
+    expect(screen.getByText(/alpha published floor/)).toBeInTheDocument();
+    expect(screen.getByText(/beta published floor/)).toBeInTheDocument();
+    expect(screen.getByText("Status:")).toBeInTheDocument();
+    expect(screen.getByText("complete")).toBeInTheDocument();
   });
 
   it("restores a tennis surface deep link without serializing the default pack, updates it, and removes it outside tennis", async () => {
@@ -169,6 +195,7 @@ describe("CompareExperience controls", () => {
     expect(await screen.findByText(/Choose two pitch types, two teams, or two count states/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "pitch type FF" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "team NYY" })).toBeInTheDocument();
+    expect(screen.queryByText("Published evidence")).not.toBeInTheDocument();
     expect(screen.queryByRole("table", { name: "Published raw values" })).not.toBeInTheDocument();
   });
 });

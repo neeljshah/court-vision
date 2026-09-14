@@ -10,11 +10,19 @@ const entity = (name: string, values: Record<string, unknown>, percentiles: Reco
 describe("tennisSurfaceComparison", () => {
   it("returns only hard rates and preserves exact evidence metadata", () => {
     const a = entity("A", { hard_wr_career: .6, hard_wr_recent: .5 }, { hard_wr_career: 40, hard_wr_recent: 30 });
-    const result = tennisSurfaceComparison(a, entity("B", { hard_wr_career: .7, hard_wr_recent: .65 }), "hard");
+    const result = tennisSurfaceComparison(a, entity("B", { hard_wr_career: .7, hard_wr_recent: .65 }), "hard", { hard_wr_career: 44, hard_wr_recent: 0 });
     expect(result.rows.map(row => row.key)).toEqual(["hard_wr_career", "hard_wr_recent"]);
     expect(result.rows.every(row => row.kind === "surface_rate" && row.unit === "percent")).toBe(true);
+    expect(result.rows.map(row => row.nRanked)).toEqual([44, 0]);
     expect(result.entities.a).toMatchObject({ floors: floor, status: "partial (9/10 metrics)", asOf: a.asOf });
     expect(result.comparability).toMatchObject({ sameAsOf: true, windows: { career: "2015-2025 pooled", recent: "matches on or after 2023-01-01" } });
+  });
+
+  it("does not infer cohort metadata for an unknown raw-only field", () => {
+    const result = tennisSurfaceComparison(entity("A", { grass_wr_recent: .6 }), entity("B", {}), "grass", { grass_wr_career: 70 });
+    expect(result.rows.find(row => row.key === "grass_wr_career")?.nRanked).toBe(70);
+    expect(result.rows.find(row => row.key === "grass_wr_recent")?.nRanked).toBeUndefined();
+    expect(result.rows.find(row => row.key === "grass_adapt_recent")?.nRanked).toBeUndefined();
   });
 
   it("adds the relevant clay delta, retaining zero and asymmetric missing support", () => {
@@ -40,5 +48,16 @@ describe("tennisSurfaceComparison", () => {
     const result = tennisSurfaceComparison(a, entity("B", { hard_wr_career: .5 }), "hard");
     expect(result.comparability.sameAsOf).toBeNull();
     expect(result.rows[0].a).toEqual({ value: null, percentile: null });
+  });
+
+  it("rejects invalid percentiles and never attaches a rank to missing raw data", () => {
+    const keys = ["hard_wr_career", "hard_wr_recent"];
+    for (const invalid of [-1, 101, NaN, Infinity]) {
+      const result = tennisSurfaceComparison(entity("A", { hard_wr_career: .5 }, { hard_wr_career: invalid }), entity("B", {}), "hard", { hard_wr_career: 44 });
+      expect(result.rows[0]).toMatchObject({ nRanked: 44, a: { value: .5, percentile: null } });
+    }
+    const result = tennisSurfaceComparison(entity("A", { hard_wr_career: 0, hard_wr_recent: null }, { hard_wr_career: 0, hard_wr_recent: 50 }), entity("B", {}), "hard");
+    expect(result.rows.map(row => row.a)).toEqual([{ value: 0, percentile: 0 }, { value: null, percentile: null }]);
+    expect(result.rows.map(row => row.key)).toEqual(keys);
   });
 });
