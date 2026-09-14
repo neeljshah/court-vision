@@ -222,7 +222,8 @@ def capture_once(*, client: Optional["GovernedClient"] = None, now: Optional[dat
     polled: set = set()
     for market, idx, token_id, book_body, mid_body, ts_ms, enqueue_ts_ms, reason in fetched:
         polled.add(market["condition_id"])
-        one_row = row.book_row(market, token_id, idx, book_body, mid_body, ts_ms, capture_ts, enqueue_ts_ms) \
+        one_row = row.book_row(market, token_id, idx, book_body, mid_body, ts_ms, capture_ts, enqueue_ts_ms,
+                                close_time=market.get("close_time")) \
             if book_body is not None else \
             row.fetch_error_row(market, token_id, idx, ts_ms, enqueue_ts_ms, capture_ts, reason)
         rows_by_sport.setdefault(market["sport"], []).append(one_row)

@@ -189,6 +189,11 @@ def extract_markets(events: List[Dict[str, Any]], now: datetime) -> List[Dict[st
                 "token_ids": token_ids, "volume24hr": market.get("volume24hr"),
                 "liquidity": market.get("liquidity"), "sport": sport,
                 "state": state, "cadence_sec": cadence_sec,
+                # ADDITIVE: the event's own endDate, threaded through under the
+                # same field name Kalshi's raw payload already uses (close_time)
+                # so both capture modules can read market.get("close_time")
+                # identically -- see polymarket_book_row.book_row.
+                "close_time": event.get("endDate"),
             })
     return out
 

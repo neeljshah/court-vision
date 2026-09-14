@@ -178,8 +178,11 @@ def capture_once(*, client: Optional["GovernedClient"] = None, sports: Optional[
     rows_by_sport: Dict[str, List[Dict[str, Any]]] = {}
     for market, body, ts_ms, enqueue_ts_ms, reason in fetched:
         last_polled[market["ticker"]] = nowc
-        one_row = row.book_row(market, body, ts_ms, capture_ts, enqueue_ts_ms) if body is not None \
-            else row.fetch_error_row(market, ts_ms, enqueue_ts_ms, capture_ts, reason)
+        # close_time: prefer the market's own close_time, else expected_expiration_time
+        # (both raw Kalshi payload fields, preserved verbatim by kalshi_series_scope).
+        close_time = market.get("close_time") or market.get("expected_expiration_time")
+        one_row = row.book_row(market, body, ts_ms, capture_ts, enqueue_ts_ms, close_time=close_time) \
+            if body is not None else row.fetch_error_row(market, ts_ms, enqueue_ts_ms, capture_ts, reason)
         rows_by_sport.setdefault(market["sport"], []).append(one_row)
 
     hb_state = state.setdefault("hb", {})

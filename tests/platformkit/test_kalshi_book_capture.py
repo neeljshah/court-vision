@@ -127,6 +127,21 @@ def test_book_row_yes_and_no_payload_stores_raw_and_derives_both_sides(monkeypat
     assert out["yes_bid_top5_asc"] == [[0.30, 2.0], [0.40, 3.0]]
 
 
+def test_book_row_close_time_yields_minutes_to_close_and_omitted_yields_nulls(monkeypatch):
+    market = {"sport": "nba", "series_ticker": "KXNBAGAME", "ticker": "T4",
+              "event_ticker": "EVT4", "state": "live"}
+    monkeypatch.setattr(row, "parse_orderbook", lambda _b: (0.40, 0.45, 0.0, 0.0, 4))
+    monkeypatch.setattr(row, "_raw_ladders", lambda _b: {"yes": [], "no": []})
+    # ts_ms = 2026-09-14T19:30:00Z, close_time 30 minutes later -> +30.0
+    ts_ms = 1789414200000
+    with_close = row.book_row(market, {}, ts_ms=ts_ms, capture_ts="2026-09-14T19:30:00.000000Z",
+                               close_time="2026-09-14T20:00:00Z")
+    assert with_close["close_time"] == "2026-09-14T20:00:00Z"
+    assert round(with_close["minutes_to_close"], 6) == 30.0
+    omitted = row.book_row(market, {}, ts_ms=ts_ms, capture_ts="2026-09-14T19:30:00.000000Z")
+    assert omitted["close_time"] is None and omitted["minutes_to_close"] is None
+
+
 def test_book_row_yes_only_payload_leaves_the_no_side_none(monkeypatch):
     market = {"sport": "nba", "series_ticker": "KXNBAGAME", "ticker": "T2",
               "event_ticker": "EVT2", "state": "pregame"}

@@ -141,6 +141,19 @@ def test_book_row_mid_falls_back_to_bid_ask_average_without_a_midpoint_fetch():
     assert out["mid"] == 0.50, "no midpoint payload -> falls back to (0.40+0.60)/2"
 
 
+def test_book_row_close_time_yields_minutes_to_close_and_omitted_yields_nulls():
+    book_body = {"bids": [{"price": "0.40", "size": "1"}], "asks": [{"price": "0.60", "size": "1"}]}
+    # ts_ms = 2026-09-14T19:30:00Z, close_time 30 minutes later -> +30.0
+    ts_ms = 1789414200000
+    with_close = row.book_row(_market(), "TOK1", 0, book_body, None, ts_ms=ts_ms,
+                               capture_ts="2026-09-14T19:30:00.000000Z", close_time="2026-09-14T20:00:00Z")
+    assert with_close["close_time"] == "2026-09-14T20:00:00Z"
+    assert round(with_close["minutes_to_close"], 6) == 30.0
+    omitted = row.book_row(_market(), "TOK1", 0, book_body, None, ts_ms=ts_ms,
+                            capture_ts="2026-09-14T19:30:00.000000Z")
+    assert omitted["close_time"] is None and omitted["minutes_to_close"] is None
+
+
 def test_book_row_one_sided_book_leaves_the_missing_side_none_and_mid_none():
     book_body = {"bids": [{"price": "0.20", "size": "2"}], "asks": []}
     out = row.book_row(_market(), "TOK1", 0, book_body, None,

@@ -34,6 +34,7 @@ CAPTURE_VERSION = "polymarket_book_capture_v1"
 iso = kb_row.iso
 append = kb_row.append
 write_json_atomic = kb_row.write_json_atomic
+compute_minutes_to_close = kb_row.compute_minutes_to_close
 
 
 def live_archive_enabled(env: Optional[Dict[str, str]] = None) -> bool:
@@ -105,11 +106,15 @@ def _mid(best_bid: Optional[float], best_ask: Optional[float], midpoint_body: An
 
 def book_row(market: Dict[str, Any], token_id: str, outcome_index: int, book_body: Any,
              midpoint_body: Any, ts_ms: int, capture_ts: str,
-             enqueue_ts_ms: Optional[int] = None) -> Dict[str, Any]:
+             enqueue_ts_ms: Optional[int] = None,
+             close_time: Optional[str] = None) -> Dict[str, Any]:
     """One per-TOKEN snapshot row (a market has up to 2 outcome tokens, each
     polled and rowed separately). Raw /book payload stored verbatim under
     'book'; raw /midpoint payload verbatim under 'midpoint_raw' -- neither is
-    transformed. best_bid/best_ask/sizes/depth derived via book_metrics()."""
+    transformed. best_bid/best_ask/sizes/depth derived via book_metrics().
+    ADDITIVE (contract B2, mirrors kalshi_book_row.book_row): close_time (ISO
+    8601 UTC string, or None) stored verbatim; minutes_to_close derived from it
+    via the reused compute_minutes_to_close."""
     best_bid, best_ask, best_bid_size, best_ask_size, depth_bid, depth_ask = book_metrics(book_body)
     outcomes = market.get("outcomes") or []
     outcome_label = outcomes[outcome_index] if outcome_index < len(outcomes) else None
@@ -125,6 +130,8 @@ def book_row(market: Dict[str, Any], token_id: str, outcome_index: int, book_bod
         "best_bid_size": best_bid_size, "best_ask_size": best_ask_size,
         "depth_bid": depth_bid, "depth_ask": depth_ask,
         "mid": _mid(best_bid, best_ask, midpoint_body),
+        "close_time": close_time if isinstance(close_time, str) else None,
+        "minutes_to_close": compute_minutes_to_close(close_time, ts_ms),
         "capture_version": CAPTURE_VERSION,
     }
 
@@ -141,5 +148,5 @@ def fetch_error_row(market: Dict[str, Any], token_id: str, outcome_index: int,
 
 
 __all__ = ["LIVE_ARCHIVE_ROOT", "SCRATCH_ARCHIVE_ROOT", "CAPTURE_VERSION",
-           "iso", "append", "write_json_atomic", "live_archive_enabled",
+           "iso", "append", "write_json_atomic", "compute_minutes_to_close", "live_archive_enabled",
            "archive_path", "heartbeat_path", "book_metrics", "book_row", "fetch_error_row"]

@@ -87,6 +87,24 @@ def write_json_atomic(path: Path, data: Dict[str, Any]) -> None:
         pass
 
 
+def compute_minutes_to_close(close_time: Optional[str], ts_ms: int) -> Optional[float]:
+    """Minutes from ts_ms (epoch millis) to *close_time* (ISO 8601, 'Z' or offset
+    suffix). None on missing/unparseable input -- never raises. Manual 'Z'
+    handling because fromisoformat only gains native 'Z' support in Py3.11+
+    (this repo pins Py3.10.20 locally)."""
+    if not isinstance(close_time, str) or not close_time.strip():
+        return None
+    text = close_time.strip()
+    if text.endswith("Z"):
+        text = text[:-1] + "+00:00"
+    try:
+        dt = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    dt = dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+    return (dt.timestamp() * 1000.0 - ts_ms) / 60000.0
+
+
 def _ladder(rungs: Any) -> List[List[float]]:
     """Coerce one orderbook_fp ladder to [[price_float, size_float], ...] ASC,
     skipping any unusable rung. Never raises; malformed/absent -> []."""
@@ -104,7 +122,8 @@ def _ladder(rungs: Any) -> List[List[float]]:
 
 
 def book_row(market: Dict[str, Any], body: Any, ts_ms: int, capture_ts: str,
-             enqueue_ts_ms: Optional[int] = None) -> Dict[str, Any]:
+             enqueue_ts_ms: Optional[int] = None,
+             close_time: Optional[str] = None) -> Dict[str, Any]:
     """One snapshot row. DERIVED-PRICE CONVENTION: the venue's keyless orderbook
     endpoint returns only two resting-BID ladders, price units in [0,1] ASC (see
     ingame_book_depth_kalshi.py's docstring for the field layout; reused here via
@@ -112,7 +131,12 @@ def book_row(market: Dict[str, Any], body: Any, ts_ms: int, capture_ts: str,
     separate ask ladder exists: parse_orderbook already derives yes_ask from the
     raw no-side ladder; this function then derives no_bid/no_ask as the algebraic
     inverse of yes_ask/yes_bid (not re-derived from the raw no ladder again). The
-    raw response is stored verbatim under "book" -- no transformation there."""
+    raw response is stored verbatim under "book" -- no transformation there.
+    ADDITIVE (contract B2): close_time (ISO 8601 UTC string, or None if the
+    caller has none) is stored verbatim; minutes_to_close is derived from it via
+    compute_minutes_to_close. Both are optional/null when close_time is omitted
+    -- coherence_audit.minutes_to_close() already reads exactly these two field
+    names, they were simply never written here until now."""
     best_yes_bid, best_yes_ask, _bid_thin, _ask_thin, _n = parse_orderbook(
         body if isinstance(body, dict) else {})
     best_no_bid = (1.0 - best_yes_ask) if best_yes_ask is not None else None
@@ -134,6 +158,8 @@ def book_row(market: Dict[str, Any], body: Any, ts_ms: int, capture_ts: str,
         "depth_bid": round(sum(sz for _p, sz in yes_ladder), 2),
         "depth_ask": round(sum(sz for _p, sz in no_ladder), 2),
         "yes_bid_top5_asc": yes_ladder[-5:], "no_bid_top5_asc": no_ladder[-5:],
+        "close_time": close_time if isinstance(close_time, str) else None,
+        "minutes_to_close": compute_minutes_to_close(close_time, ts_ms),
         "capture_version": CAPTURE_VERSION,
     }
 
@@ -149,4 +175,5 @@ def fetch_error_row(market: Dict[str, Any], ts_ms: Optional[int], enqueue_ts_ms:
 
 __all__ = ["LIVE_ARCHIVE_ROOT", "SCRATCH_ARCHIVE_ROOT", "CAPTURE_VERSION", "ENV_INCLUDE_MLB",
            "iso", "live_archive_enabled", "default_sports", "archive_path", "heartbeat_path",
-           "append", "write_json_atomic", "book_row", "fetch_error_row", "parse_orderbook"]
+           "append", "write_json_atomic", "compute_minutes_to_close", "book_row",
+           "fetch_error_row", "parse_orderbook"]
