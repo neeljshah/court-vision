@@ -9,6 +9,8 @@ import {
   type RawComparables, type RawManifest, type RawPercentiles,
 } from "@/lib/analytics/comparisonData";
 import { matchupInsights, sharedMeasuredAxisCount } from "@/lib/analytics/matchupInsights";
+import { type TennisSurface } from "@/lib/analytics/tennisSurfaceComparison";
+import { TennisSurfaceComparison } from "./TennisSurfaceComparison";
 
 const DATA_ROOT = "/data/showcase/";
 
@@ -29,6 +31,10 @@ const SPORT_GROUPS = [
 
 function sportForPack(key: ComparisonPackKey) {
   return SPORT_GROUPS.find((sport) => sport.packs.includes(key));
+}
+
+function urlSurface(value: string | null): TennisSurface {
+  return value === "clay" || value === "grass" ? value : "hard";
 }
 
 function displayDate(value?: string): string | undefined {
@@ -69,12 +75,22 @@ export function CompareExperience() {
   const [bQuery, setBQuery] = useState("");
   const [error, setError] = useState("");
   const [retry, setRetry] = useState(0);
+  const [surface, setSurface] = useState<TennisSurface>("hard");
+  const [urlReady, setUrlReady] = useState(false);
+  const [pairReady, setPairReady] = useState(false);
 
   const readUrl = () => {
     const params = new URLSearchParams(window.location.search);
     const pack = COMPARISON_PACKS.find((item) => item.key === params.get("pack"))?.key || "nba_players";
+    setPairReady(false);
+    setASlug("");
+    setBSlug("");
+    setAQuery("");
+    setBQuery("");
     setRequested({ pack, a: params.get("a") || undefined, b: params.get("b") || undefined });
+    setSurface(pack === "tennis" ? urlSurface(params.get("surface")) : "hard");
     setPackKey(pack);
+    setUrlReady(true);
   };
 
   useEffect(() => {
@@ -84,6 +100,7 @@ export function CompareExperience() {
   }, []);
 
   useEffect(() => {
+    if (!urlReady) return;
     const info = packInfo(packKey);
     let active = true;
     setData(undefined);
@@ -93,10 +110,10 @@ export function CompareExperience() {
       if (active) setData(normalizeComparisonPack(packKey, manifest, percentiles, comparables));
     }).catch(() => { if (active) setError("Published comparison artifacts could not be loaded."); });
     return () => { active = false; };
-  }, [packKey, retry]);
+  }, [packKey, retry, urlReady]);
 
   useEffect(() => {
-    if (!data?.entities.length) return;
+    if (!urlReady || data?.key !== packKey || !data.entities.length) return;
     const valid = new Set(data.entities.map((entity) => entity.slug));
     const a = requested.pack === packKey && requested.a && valid.has(requested.a) ? requested.a : data.suggestedPair?.[0] || data.entities[0].slug;
     const candidate = requested.pack === packKey && requested.b && valid.has(requested.b) && requested.b !== a ? requested.b : data.suggestedPair?.[1];
@@ -105,16 +122,19 @@ export function CompareExperience() {
     setBSlug(b);
     setAQuery(data.entities.find((entity) => entity.slug === a)?.name || "");
     setBQuery(data.entities.find((entity) => entity.slug === b)?.name || "");
-  }, [data, packKey, requested]);
+    setPairReady(true);
+  }, [data, packKey, requested, urlReady]);
 
   useEffect(() => {
-    if (!aSlug || !bSlug) return;
+    if (!urlReady || !pairReady || data?.key !== packKey || !aSlug || !bSlug) return;
     const url = new URL(window.location.href);
     url.searchParams.set("pack", packKey);
     url.searchParams.set("a", aSlug);
     url.searchParams.set("b", bSlug);
-    window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
-  }, [packKey, aSlug, bSlug]);
+    if (packKey === "tennis") url.searchParams.set("surface", surface);
+    else url.searchParams.delete("surface");
+    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
+  }, [packKey, aSlug, bSlug, surface, urlReady, pairReady, data]);
 
   const a = useMemo(() => data?.entities.find((entity) => entity.slug === aSlug), [data, aSlug]);
   const b = useMemo(() => data?.entities.find((entity) => entity.slug === bSlug), [data, bSlug]);
@@ -123,6 +143,9 @@ export function CompareExperience() {
 
   const changePack = (value: string) => {
     const next = value as ComparisonPackKey;
+    if (next === packKey) return;
+    setPairReady(false);
+    setData(undefined);
     setRequested({ pack: next });
     setASlug("");
     setBSlug("");
@@ -132,7 +155,9 @@ export function CompareExperience() {
     url.searchParams.set("pack", next);
     url.searchParams.delete("a");
     url.searchParams.delete("b");
-    window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+    url.searchParams.delete("surface");
+    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
+    setSurface("hard");
     setPackKey(next);
   };
   const swap = () => { setASlug(bSlug); setBSlug(aSlug); setAQuery(bQuery); setBQuery(aQuery); };
@@ -178,12 +203,12 @@ export function CompareExperience() {
       <p className="compare-status">{data ? `${data.nInPack} profiles in ${info.label}.` : "Loading published pack data..."}</p>
       {error ? <p className="compare-error" role="alert">{error} <button type="button" onClick={() => setRetry((value) => value + 1)}>Retry</button></p> : null}
       {noMatch ? <p className="compare-empty" role="status">Choose a published profile from the list.</p> : null}
-      {data && a && b && aMatchesInput && bMatchesInput ? <ComparisonResults pack={data} a={a} b={b} manifest={info.manifest} sport={activeSport?.key} /> : null}
+      {pairReady && data?.key === packKey && a && b && aMatchesInput && bMatchesInput ? <ComparisonResults pack={data} a={a} b={b} manifest={info.manifest} sport={activeSport?.key} surface={surface} onSurfaceChange={setSurface} /> : null}
     </section>
   );
 }
 
-function ComparisonResults({ pack, a, b, manifest, sport }: { pack: ComparisonPack; a: ComparisonEntity; b: ComparisonEntity; manifest: string; sport?: string }) {
+function ComparisonResults({ pack, a, b, manifest, sport, surface, onSurfaceChange }: { pack: ComparisonPack; a: ComparisonEntity; b: ComparisonEntity; manifest: string; sport?: string; surface: TennisSurface; onSurfaceChange: (surface: TennisSurface) => void }) {
   const insights = matchupInsights(pack, a, b);
   const axisCount = sharedMeasuredAxisCount(pack, a, b);
   return <>
@@ -192,6 +217,7 @@ function ComparisonResults({ pack, a, b, manifest, sport }: { pack: ComparisonPa
       <div className="compare-versus" aria-hidden="true">vs</div>
       <ProfileHeading entity={b} pack={pack.key} label="Profile B" />
     </div>
+    {pack.key === "tennis" ? <TennisSurfaceComparison a={a} b={b} surface={surface} onSurfaceChange={onSurfaceChange} sourceHref={publicPath(manifest)} /> : null}
     <section className="compare-insights" aria-labelledby="compare-insights-title">
       <div className="compare-insights-heading"><div><span className="compare-section-label">Measured contrasts</span><h2 id="compare-insights-title">Where these profiles separate</h2></div><span className="compare-overlap">{axisCount} shared axes</span></div>
       <p className="compare-insights-intro">Largest percentile gaps among fields reported for both profiles. Values stay tied to the published historical corpus.</p>

@@ -3,7 +3,7 @@ import { entrySlugs, formatMetric, formatPercentile, metricUnit, normalizeCompar
 
 describe("comparison data normalization", () => {
   const manifest = { entries: [
-    { entity: "Alpha One", card_path: "docs/a/shared.png", key_numbers: { career_pts_per36: 12, player_id: 1, career_fg_pct: null }, as_of: "2026-04-12" },
+    { entity: "Alpha One", card_path: "docs/a/shared.png", key_numbers: { career_pts_per36: 12, player_id: 1, career_fg_pct: null }, as_of: "2026-04-12", floors: "minutes>=800", status: "partial" },
     { entity: "Beta Two", card_path: "docs/b/shared.png", key_numbers: { career_pts_per36: 16, player_id: 2, career_fg_pct: 41.5 } },
   ] };
   const percentiles = { packs: { demo: { n_in_pack: 2, fields: { career_pts_per36: { n_ranked: 2 }, career_fg_pct: { n_ranked: 1 } }, entities: { shared: { career_pts_per36: 25 }, beta_two: { career_pts_per36: 75, career_fg_pct: 50 } } } } };
@@ -15,6 +15,7 @@ describe("comparison data normalization", () => {
     expect(pack.metricKeys).toEqual(["career_pts_per36", "career_fg_pct"]);
     expect(pack.suggestedPair).toEqual(["shared", "beta_two"]);
     expect(pack.entities[0].percentiles.career_pts_per36).toBe(25);
+    expect(pack.entities[0]).toMatchObject({ asOf: "2026-04-12", floors: "minutes>=800", status: "partial" });
   });
 
   it("keeps missing values missing and labels units without inventing a zero", () => {

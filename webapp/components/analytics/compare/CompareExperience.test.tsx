@@ -8,13 +8,23 @@ const manifest = { entries: [
 ] };
 const percentiles = { packs: { nba_players: { n_in_pack: 2, fields: { career_pts_per36: { n_ranked: 2 } }, entities: { alpha: { career_pts_per36: 25 }, beta: { career_pts_per36: 75 } } } } };
 const comparables = { packs: { nba_players: { entities: { alpha: { similar: [{ slug: "beta" }] } } } } };
+const tennisManifest = { entries: [
+  { entity: "Alpha (ATP)", card_path: "atlas/alpha.png", as_of: "2026-07-19", floors: "hard_n>=30", key_numbers: { hard_wr_career: .69, clay_wr_career: .74 } },
+  { entity: "Beta (ATP)", card_path: "atlas/beta.png", as_of: "2026-07-19", floors: "hard_n>=30", key_numbers: { hard_wr_career: .5 } },
+] };
+const tennisPercentiles = { packs: { tennis: { n_in_pack: 2, fields: { hard_wr_career: { n_ranked: 2 }, clay_wr_career: { n_ranked: 1 } }, entities: { alpha: { hard_wr_career: 75, clay_wr_career: 80 }, beta: { hard_wr_career: 25 } } } } };
+const destinationManifest = { entries: [
+  { entity: "Gamma", card_path: "atlas/gamma.png", key_numbers: { career_pts_per36: 15 } },
+  { entity: "Delta", card_path: "atlas/delta.png", key_numbers: { career_pts_per36: 11 } },
+] };
+const destinationPercentiles = { packs: { nba_players: { n_in_pack: 2, fields: { career_pts_per36: { n_ranked: 2 } }, entities: { gamma: { career_pts_per36: 80 }, delta: { career_pts_per36: 20 } } } } };
 
 describe("CompareExperience controls", () => {
   beforeEach(() => {
     window.history.replaceState(null, "", "/analytics/compare");
     vi.stubGlobal("fetch", vi.fn((url: string) => Promise.resolve({
       ok: true,
-      json: async () => url.includes("atlas_nba_manifest") ? manifest : url.includes("percentiles") ? percentiles : comparables,
+      json: async () => url.includes("atlas_tennis_manifest") ? tennisManifest : url.includes("atlas_nba_manifest") ? manifest : url.includes("percentiles") ? percentiles : comparables,
     })));
   });
 
@@ -67,5 +77,67 @@ describe("CompareExperience controls", () => {
     fireEvent.change(a, { target: { value: "No Such Profile" } });
     expect(screen.getByRole("status")).toHaveTextContent("Choose a published profile");
     expect(screen.queryByText("25th percentile")).not.toBeInTheDocument();
+  });
+
+  it("keeps the loaded pair and share URL when the active sport is selected again", async () => {
+    render(<CompareExperience />);
+    const a = await screen.findByLabelText("Profile A");
+    await waitFor(() => expect(a).toHaveValue("Alpha"));
+    fireEvent.click(screen.getByRole("button", { name: "NBA" }));
+    expect(screen.getByLabelText("Profile A")).toHaveValue("Alpha");
+    expect(screen.getByLabelText("Profile B")).toHaveValue("Beta");
+    expect(screen.getByRole("heading", { name: "Where these profiles separate" })).toBeInTheDocument();
+    expect(window.location.search).toContain("pack=nba_players");
+    expect(window.location.search).toContain("a=alpha");
+    expect(window.location.search).toContain("b=beta");
+  });
+
+  it("restores a tennis surface deep link without serializing the default pack, updates it, and removes it outside tennis", async () => {
+    window.history.replaceState({ next: true }, "", "/analytics/compare?pack=tennis&a=alpha&b=beta&surface=clay");
+    vi.mocked(fetch).mockImplementation((url: string) => Promise.resolve({ ok: true, json: async () => url.includes("atlas_tennis_manifest") ? tennisManifest : url.includes("percentiles") ? tennisPercentiles : comparables } as Response));
+    render(<CompareExperience />);
+    expect(await screen.findByRole("heading", { name: "Recorded surface history" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Clay" })).toHaveAttribute("aria-pressed", "true");
+    expect(window.location.search).toContain("pack=tennis");
+    expect(window.location.search).toContain("surface=clay");
+    fireEvent.click(screen.getByRole("button", { name: "Grass" }));
+    await waitFor(() => expect(window.location.search).toContain("surface=grass"));
+    fireEvent.click(screen.getByRole("button", { name: "Swap profile A and profile B" }));
+    await waitFor(() => expect(screen.getByLabelText("Profile A")).toHaveValue("Beta (ATP)"));
+    window.history.pushState({ next: true }, "", "/analytics/compare?pack=tennis&a=alpha&b=beta&surface=clay");
+    window.dispatchEvent(new PopStateEvent("popstate"));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Clay" })).toHaveAttribute("aria-pressed", "true"));
+    await waitFor(() => expect(screen.getByLabelText("Profile A")).toHaveValue("Alpha (ATP)"));
+    fireEvent.click(screen.getByRole("button", { name: "NBA" }));
+    await waitFor(() => expect(window.location.search).not.toContain("surface="));
+    expect(window.history.state).toEqual({ next: true });
+  });
+
+  it("keeps a cross-pack popstate pair in the URL while its destination pack is pending or rejected, then restores it on retry", async () => {
+    let rejectDestination: (error: Error) => void = () => undefined;
+    let destinationAttempt = 0;
+    const pendingDestination = new Promise<Response>((_, reject) => { rejectDestination = reject; });
+    window.history.replaceState(null, "", "/analytics/compare?pack=tennis&a=alpha&b=beta&surface=hard");
+    vi.mocked(fetch).mockImplementation((url: string) => {
+      if (url.includes("atlas_tennis_manifest")) return Promise.resolve({ ok: true, json: async () => tennisManifest } as Response);
+      if (url.includes("atlas_nba_manifest")) {
+        destinationAttempt += 1;
+        return destinationAttempt === 1 ? pendingDestination : Promise.resolve({ ok: true, json: async () => destinationManifest } as Response);
+      }
+      if (url.includes("percentiles")) return Promise.resolve({ ok: true, json: async () => destinationAttempt ? destinationPercentiles : tennisPercentiles } as Response);
+      return Promise.resolve({ ok: true, json: async () => comparables } as Response);
+    });
+    render(<CompareExperience />);
+    expect(await screen.findByRole("heading", { name: "Recorded surface history" })).toBeInTheDocument();
+    window.history.pushState(null, "", "/analytics/compare?pack=nba_players&a=gamma&b=delta");
+    window.dispatchEvent(new PopStateEvent("popstate"));
+    await waitFor(() => expect(window.location.search).toBe("?pack=nba_players&a=gamma&b=delta"));
+    expect(screen.queryByRole("heading", { name: "Recorded surface history" })).not.toBeInTheDocument();
+    rejectDestination(new Error("offline"));
+    expect(await screen.findByRole("alert")).toHaveTextContent("could not be loaded");
+    expect(window.location.search).toBe("?pack=nba_players&a=gamma&b=delta");
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    await waitFor(() => expect(screen.getByLabelText("Profile A")).toHaveValue("Gamma"));
+    expect(screen.getByLabelText("Profile B")).toHaveValue("Delta");
   });
 });

@@ -6,6 +6,8 @@ export type RawEntry = {
   card_path: string;
   key_numbers: Record<string, unknown>;
   as_of?: string;
+  floors?: string;
+  status?: string;
 };
 
 export type RawManifest = { entries?: RawEntry[] };
@@ -28,6 +30,8 @@ export type ComparisonEntity = {
   values: Record<string, unknown>;
   percentiles: Record<string, number>;
   asOf?: string;
+  floors?: string;
+  status?: string;
 };
 
 export type ComparisonPack = {
@@ -88,6 +92,8 @@ export function normalizeComparisonPack(
     values: entry.key_numbers || {},
     percentiles: percentilePack?.entities?.[slug] || {},
     asOf: entry.as_of,
+    floors: entry.floors,
+    status: entry.status,
   }));
   const metricKeys = Object.keys(percentilePack?.fields || {})
     .filter((field) => !/_id$/.test(field));
