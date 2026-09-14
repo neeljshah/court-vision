@@ -1,9 +1,18 @@
 {
   "corpus": "2024-25",
   "match_rates": {
-    "player_tracking_prior_season": 0.8579,
-    "hustle_prior_season": 0.8571,
-    "defender_matchup_asof": 0.3886,
+    "player_tracking_prior_season": {
+      "join_rate": 0.8579,
+      "nonnull_rate": 0.8579
+    },
+    "hustle_prior_season": {
+      "join_rate": 0.8571,
+      "nonnull_rate": 0.8571
+    },
+    "defender_matchup_asof": {
+      "join_rate": 0.4103,
+      "nonnull_rate": 0.3886
+    },
     "n_rows": 26181
   },
   "adv_join_match_rate": 0.6392,
@@ -90,8 +99,32 @@
       "n_test": 26181,
       "n_games_test": 1225,
       "imputed_share_challenger": 0.6788,
+      "family_constant_in_train": {
+        "tracking": {
+          "constant_cols": [],
+          "all_constant": false
+        },
+        "hustle": {
+          "constant_cols": [],
+          "all_constant": false
+        },
+        "defender_matchup": {
+          "constant_cols": [
+            "def_priorN_fg_pct_allowed_asof",
+            "def_priorN_fg3_pct_allowed_asof",
+            "def_priorN_pts_allowed_per36_asof",
+            "def_priorN_blocks_per_game_asof",
+            "def_priorN_switches_per_game_asof",
+            "def_priorN_matchup_min_asof",
+            "def_n_prior"
+          ],
+          "all_constant": true
+        }
+      },
       "coverage_10_90_champion": 0.8096329399182614,
       "coverage_10_90_challenger": 0.8055078110079829,
+      "champion_crps_level": 4.3777,
+      "challenger_crps_level": 4.3793,
       "champion_pinball": 1.570524652458785,
       "challenger_pinball": 1.5721697518485196,
       "delta_crps_full": {
@@ -106,6 +139,7 @@
         "ci_lo": -0.00367,
         "ci_hi": 0.00034
       },
+      "mde_80pct_crps_full": 0.00597,
       "verdict_crps_full": "CEILING_ZERO",
       "verdict_pinball_full": "CEILING_ZERO",
       "delta_crps_defender_matchup_only": {
@@ -114,7 +148,7 @@
         "ci_lo": 0.0,
         "ci_hi": 0.0
       },
-      "verdict_crps_defender_matchup_only": "CEILING_ZERO",
+      "verdict_crps_defender_matchup_only": "NOT_TESTED",
       "tracking_feature_importance_gain": [
         {
           "feature": "trk_drives_min",
@@ -177,7 +211,34 @@
           "gain": 47.58
         }
       ],
-      "edge_claimed": false
+      "edge_claimed": false,
+      "seed_stability_full": {
+        "colsample_bytree": 0.8,
+        "per_seed": [
+          {
+            "seed": 13,
+            "point": 0.0026,
+            "ci_lo": -0.00173,
+            "ci_hi": 0.00693,
+            "verdict": "CEILING_ZERO"
+          },
+          {
+            "seed": 7,
+            "point": -0.00846,
+            "ci_lo": -0.01351,
+            "ci_hi": -0.00353,
+            "verdict": "CEILING_NEGATIVE"
+          },
+          {
+            "seed": 101,
+            "point": 0.00329,
+            "ci_lo": -0.00115,
+            "ci_hi": 0.00772,
+            "verdict": "CEILING_ZERO"
+          }
+        ],
+        "seed_stable": false
+      }
     },
     {
       "stat": "reb",
@@ -191,8 +252,32 @@
       "n_test": 26181,
       "n_games_test": 1225,
       "imputed_share_challenger": 0.6788,
+      "family_constant_in_train": {
+        "tracking": {
+          "constant_cols": [],
+          "all_constant": false
+        },
+        "hustle": {
+          "constant_cols": [],
+          "all_constant": false
+        },
+        "defender_matchup": {
+          "constant_cols": [
+            "def_priorN_fg_pct_allowed_asof",
+            "def_priorN_fg3_pct_allowed_asof",
+            "def_priorN_pts_allowed_per36_asof",
+            "def_priorN_blocks_per_game_asof",
+            "def_priorN_switches_per_game_asof",
+            "def_priorN_matchup_min_asof",
+            "def_n_prior"
+          ],
+          "all_constant": true
+        }
+      },
       "coverage_10_90_champion": 0.8301439975554792,
       "coverage_10_90_challenger": 0.8259424773690844,
+      "champion_crps_level": 1.8259,
+      "challenger_crps_level": 1.8232,
       "champion_pinball": 0.6539622708137673,
       "challenger_pinball": 0.6556279298531753,
       "delta_crps_full": {
@@ -207,6 +292,7 @@
         "ci_lo": -0.00267,
         "ci_hi": -0.00068
       },
+      "mde_80pct_crps_full": 0.00294,
       "verdict_crps_full": "CEILING_POSITIVE",
       "verdict_pinball_full": "CEILING_NEGATIVE",
       "delta_crps_defender_matchup_only": {
@@ -215,7 +301,7 @@
         "ci_lo": 0.0,
         "ci_hi": 0.0
       },
-      "verdict_crps_defender_matchup_only": "CEILING_ZERO",
+      "verdict_crps_defender_matchup_only": "NOT_TESTED",
       "tracking_feature_importance_gain": [
         {
           "feature": "hus_hustle_screen_assists",
@@ -278,7 +364,34 @@
           "gain": 42.48
         }
       ],
-      "edge_claimed": false
+      "edge_claimed": false,
+      "seed_stability_full": {
+        "colsample_bytree": 0.8,
+        "per_seed": [
+          {
+            "seed": 13,
+            "point": 0.00616,
+            "ci_lo": 0.00397,
+            "ci_hi": 0.00833,
+            "verdict": "CEILING_POSITIVE"
+          },
+          {
+            "seed": 7,
+            "point": -0.00188,
+            "ci_lo": -0.00412,
+            "ci_hi": 0.00034,
+            "verdict": "CEILING_ZERO"
+          },
+          {
+            "seed": 101,
+            "point": 0.00227,
+            "ci_lo": 0.00011,
+            "ci_hi": 0.00447,
+            "verdict": "CEILING_POSITIVE"
+          }
+        ],
+        "seed_stable": false
+      }
     },
     {
       "stat": "ast",
@@ -292,8 +405,32 @@
       "n_test": 26181,
       "n_games_test": 1225,
       "imputed_share_challenger": 0.6788,
+      "family_constant_in_train": {
+        "tracking": {
+          "constant_cols": [],
+          "all_constant": false
+        },
+        "hustle": {
+          "constant_cols": [],
+          "all_constant": false
+        },
+        "defender_matchup": {
+          "constant_cols": [
+            "def_priorN_fg_pct_allowed_asof",
+            "def_priorN_fg3_pct_allowed_asof",
+            "def_priorN_pts_allowed_per36_asof",
+            "def_priorN_blocks_per_game_asof",
+            "def_priorN_switches_per_game_asof",
+            "def_priorN_matchup_min_asof",
+            "def_n_prior"
+          ],
+          "all_constant": true
+        }
+      },
       "coverage_10_90_champion": 0.8638707459608113,
       "coverage_10_90_challenger": 0.8666972231771132,
+      "champion_crps_level": 1.2683,
+      "challenger_crps_level": 1.2754,
       "champion_pinball": 0.4509436496231215,
       "challenger_pinball": 0.4525415126073755,
       "delta_crps_full": {
@@ -308,6 +445,7 @@
         "ci_lo": -0.00237,
         "ci_hi": -0.00083
       },
+      "mde_80pct_crps_full": 0.00229,
       "verdict_crps_full": "CEILING_NEGATIVE",
       "verdict_pinball_full": "CEILING_NEGATIVE",
       "delta_crps_defender_matchup_only": {
@@ -316,7 +454,7 @@
         "ci_lo": 0.0,
         "ci_hi": 0.0
       },
-      "verdict_crps_defender_matchup_only": "CEILING_ZERO",
+      "verdict_crps_defender_matchup_only": "NOT_TESTED",
       "tracking_feature_importance_gain": [
         {
           "feature": "hus_hustle_box_outs",
@@ -379,9 +517,36 @@
           "gain": 12.97
         }
       ],
-      "edge_claimed": false
+      "edge_claimed": false,
+      "seed_stability_full": {
+        "colsample_bytree": 0.8,
+        "per_seed": [
+          {
+            "seed": 13,
+            "point": -0.00467,
+            "ci_lo": -0.00634,
+            "ci_hi": -0.00302,
+            "verdict": "CEILING_NEGATIVE"
+          },
+          {
+            "seed": 7,
+            "point": -0.00845,
+            "ci_lo": -0.01008,
+            "ci_hi": -0.00679,
+            "verdict": "CEILING_NEGATIVE"
+          },
+          {
+            "seed": 101,
+            "point": -0.00339,
+            "ci_lo": -0.00497,
+            "ci_hi": -0.00174,
+            "verdict": "CEILING_NEGATIVE"
+          }
+        ],
+        "seed_stable": true
+      }
     }
   ],
-  "markdown_summary": "champion = landed per-game prop model (Q15); baseline comparison is champion vs champion+tracking; 2023-24 is a within-season fallback split; calibration only; no monetary claim.\n\n| stat | corpus | n_test | verdict_crps_full | delta_crps_full | verdict_crps_defmatch_only | cov_champ | cov_chall |\n|---|---|---|---|---|---|---|---|\n| pts | 2024-25 | 26181 | CEILING_ZERO | -0.0016 [-0.0058, 0.0025] | CEILING_ZERO | 0.810 | 0.806 |\n| reb | 2024-25 | 26181 | CEILING_POSITIVE | 0.0027 [0.0006, 0.0047] | CEILING_ZERO | 0.830 | 0.826 |\n| ast | 2024-25 | 26181 | CEILING_NEGATIVE | -0.0071 [-0.0087, -0.0055] | CEILING_ZERO | 0.864 | 0.867 |",
+  "markdown_summary": "champion = landed per-game prop model (Q15); baseline comparison is champion vs champion+tracking; 2023-24 is a within-season fallback split; calibration only; no monetary claim. CEILING_ZERO = no improvement bigger than mde_80pct detected, not proof of exactly zero. NOT_TESTED = that family's columns were constant in train (dead weight), not a measured null.\n\n| stat | corpus | n_test | verdict_full | delta_crps_full | mde_80pct | champ_crps | verdict_dm_only |\n|---|---|---|---|---|---|---|---|\n| pts | 2024-25 | 26181 | CEILING_ZERO | -0.0016 [-0.0058, 0.0025] | 0.0060 | 4.3777 | NOT_TESTED |\n| reb | 2024-25 | 26181 | CEILING_POSITIVE | 0.0027 [0.0006, 0.0047] | 0.0029 | 1.8259 | NOT_TESTED |\n| ast | 2024-25 | 26181 | CEILING_NEGATIVE | -0.0071 [-0.0087, -0.0055] | 0.0023 | 1.2683 | NOT_TESTED |",
   "edge_claimed": false
 }

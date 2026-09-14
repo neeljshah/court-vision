@@ -7,6 +7,11 @@ No network.
 (c) ceiling_verdict on three CI cases (excludes-0-favour / excludes-0-against / contains-0).
 (d) build_challenger_frame returns the same rows in the same order as the input frame, plus
     the tracking columns, on a synthetic fixture.
+(e) review-round: join_rate (merge indicator) can exceed nonnull_rate (first-column notna)
+    when a row joins but the matched table row itself is null in that column.
+(f) review-round: constant_in_train_families flags a family whose columns are ALL constant
+    after the model's own imputation, and leaves a genuinely-varying family untouched --
+    this is the guard that turns a degenerate {0,0,0} CI into NOT_TESTED, not CEILING_ZERO.
 
 Run: python -m pytest tests/platformkit/test_gate_b_tracking_ablation.py -q
 """
@@ -16,7 +21,9 @@ import numpy as np
 import pandas as pd
 
 from scripts.platformkit.proof_nba.gate_b_tracking_ablation import (
-    build_challenger_frame, ceiling_verdict, join_prior_season, load_tracking_family)
+    build_challenger_frame, ceiling_verdict, join_game_asof, join_prior_season,
+    load_tracking_family, match_rates_for_corpus)
+from scripts.platformkit.proof_nba.gate_b_diagnostics import constant_in_train_families
 
 
 def _synthetic_champion_frame() -> pd.DataFrame:
@@ -82,7 +89,7 @@ def test_ceiling_verdict_three_cases():
 def test_challenger_frame_same_rows_same_order_plus_tracking_cols():
     df = _synthetic_champion_frame()
     fam = _synthetic_family()
-    df2, trk_cols, hus_cols, dm_cols = build_challenger_frame(df, fam)
+    df2, trk_cols, hus_cols, dm_cols, matched_cols = build_challenger_frame(df, fam)
     assert len(df2) == len(df)
     assert df2["player_id"].tolist() == df["player_id"].tolist()
     assert df2["game_id"].tolist() == df["game_id"].tolist()
@@ -93,3 +100,37 @@ def test_challenger_frame_same_rows_same_order_plus_tracking_cols():
     # defender_matchup joined on (player_id, game_id) directly -- g2 belongs to player 1.
     g2 = df2[df2["game_id"] == "g2"].iloc[0]
     assert g2["def_test_asof"] == 0.4
+    for m in matched_cols.values():
+        assert m in df2.columns
+
+
+def test_join_rate_can_exceed_nonnull_rate():
+    # the matched TABLE row exists (join succeeds) but its own feature value is null --
+    # e.g. an as-of stat with insufficient prior history. join_rate must reflect the
+    # successful join; nonnull_rate must reflect the (lower) usable-value rate.
+    df = pd.DataFrame({"player_id": [1, 2, 3], "season": ["2024-25"] * 3,
+                        "game_id": ["g1", "g2", "g3"], "date": pd.to_datetime(["2024-11-01"] * 3)})
+    table = pd.DataFrame({"player_id": [1, 2], "game_id": ["g1", "g2"],
+                           "def_x_asof": [np.nan, 0.5]})  # row 1 joins but its stat is NaN
+    df2, cols, matched_col = join_game_asof(df, table, ["def_x_asof"], "dm")
+    rates = match_rates_for_corpus(df2, "2024-25", [], [], cols,
+                                    {"trk": matched_col, "hus": matched_col, "dm": matched_col})
+    dm = rates["defender_matchup_asof"]
+    assert dm["join_rate"] == round(2 / 3, 4)      # rows 1 and 2 both found a table row
+    assert dm["nonnull_rate"] == round(1 / 3, 4)   # only row 2's value is usable
+    assert dm["join_rate"] > dm["nonnull_rate"]
+
+
+def test_constant_in_train_guard_flags_dead_family_only():
+    # "dead" column: after train-median imputation it collapses to a single value (all-NaN
+    # in train, same failure mode as defender_matchup when train predates its coverage).
+    train_df = pd.DataFrame({
+        "dead_col": [np.nan, np.nan, np.nan, np.nan],
+        "live_col": [1.0, 2.0, 3.0, np.nan],
+    })
+    out = constant_in_train_families(train_df, {"dead_family": ["dead_col"],
+                                                  "live_family": ["live_col"]})
+    assert out["dead_family"]["all_constant"] is True
+    assert out["dead_family"]["constant_cols"] == ["dead_col"]
+    assert out["live_family"]["all_constant"] is False
+    assert out["live_family"]["constant_cols"] == []
