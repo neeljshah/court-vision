@@ -214,7 +214,7 @@ export function verifyExport(out, basePath = BASE_PATH) {
     catch { failures.push("analytics search index is invalid JSON"); }
   }
   const derived = records.filter((record) => String(record?.id || "").startsWith("research-") && record.href);
-  if (derived.length < 24) failures.push("search index is missing derived analyses");
+  if (derived.length < 33) failures.push("search index is missing derived analyses");
   const indexedRoutes = new Set(records.map((record) => record?.href).filter(Boolean).map((href) => `${href.replace(/\/$/, "")}/`));
   const requiredRoutes = [...new Set([...REQUIRED_ROUTES, ...derived.map((record) => `${record.href.replace(/\/$/, "")}/`)])];
   const sitemapFile = join(OUT, "sitemap.xml");

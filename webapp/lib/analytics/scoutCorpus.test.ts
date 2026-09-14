@@ -6,11 +6,11 @@ const corpus = loadScoutCorpus();
 
 describe("loadScoutCorpus", () => {
   it("keeps curated answers and expands all public entity and module records", () => {
-    expect(corpus.length).toBe(2_112);
+    expect(corpus.length).toBe(2_121);
     expect(corpus.some((entry) => entry.q === "Does the model actually beat the betting market?")).toBe(true);
     expect(corpus.filter((entry) => entry.bucket === "public-entity-profile")).toHaveLength(1_549);
     expect(corpus.filter((entry) => entry.bucket === "public-analytics-module")).toHaveLength(74);
-    expect(corpus.filter((entry) => entry.bucket === "public-derived-analysis")).toHaveLength(24);
+    expect(corpus.filter((entry) => entry.bucket === "public-derived-analysis")).toHaveLength(33);
   });
 
   it("marks both curated full-season Brier answers as withdrawn corrections", () => {
@@ -88,4 +88,13 @@ describe("loadScoutCorpus", () => {
       entry: { a: { status: "no_data" } },
     });
   });
+});
+
+
+it("routes every derived analysis to its exact source and interactive page", () => {
+  for (const entry of corpus.filter(record => record.bucket === "public-derived-analysis")) {
+    const result = resolveQuestion(entry.q, corpus);
+    expect(result, entry.q).toMatchObject({ kind: "direct", entry: { q: entry.q, a: { source_artifact: entry.a.source_artifact, explore_path: entry.a.explore_path } } });
+    expect(entry.a.explore_path).toMatch(/^\/analytics\/research\/[a-z0-9-]+\/$/);
+  }
 });

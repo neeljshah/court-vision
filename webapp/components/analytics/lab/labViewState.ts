@@ -6,7 +6,7 @@ export type LabViewState = {
   sport: Sport;
   fieldKey: string;
   otherKey: string;
-  mode: "rank" | "scatter" | "table";
+  mode: "rank" | "scatter" | "table" | "distribution";
   query: string;
   group: string;
   ascending: boolean;
@@ -14,7 +14,7 @@ export type LabViewState = {
 };
 
 const sports = new Set<Sport>(["all", "nba", "mlb", "soccer", "tennis"]);
-const modes = new Set<LabViewState["mode"]>(["rank", "scatter", "table"]);
+const modes = new Set<LabViewState["mode"]>(["rank", "scatter", "table", "distribution"]);
 const sportGroup = (sport: Sport) => sport === "soccer" ? "INTERNATIONAL SOCCER" : sport.toUpperCase();
 const rowsForSport = (dataset: LabData["datasets"][number], sport: Sport) =>
   dataset.sport === "all" && sport !== "all" ? dataset.rows.filter(row => row.group === sportGroup(sport)) : dataset.rows;

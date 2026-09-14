@@ -17,7 +17,7 @@ export function useResearchView(a: ResearchAnalysis) {
       if (a.rows.some(r => r.group === p.get("group"))) next.group = p.get("group")!;
       next.query = p.get("q") || "";
       next.ascending = p.get("order") === "asc";
-      if (["rank", "scatter", "table"].includes(p.get("view") || "")) next.view = p.get("view")!;
+      if (["rank", "scatter", "table", "distribution"].includes(p.get("view") || "")) next.view = p.get("view")!;
       const terms = next.query.toLowerCase().trim().split(/\s+/).filter(Boolean);
       const selected = a.rows.find(r => r.id === p.get("row") && (next.group === "all" || r.group === next.group) && terms.every(t => `${r.label} ${r.group} ${r.note || ""}`.toLowerCase().includes(t)));
       next.row = selected?.id || "";

@@ -28,7 +28,7 @@ test("fixture scan catches nested missing routes, base path, and malformed links
     mkdirSync(resolve(fixture, "brand"), { recursive: true });
     copyFileSync(resolve(out, "brand", "courtvision-emblem.webp"), resolve(fixture, "brand", "courtvision-emblem.webp"));
     writeFileSync(resolve(fixture, "analytics", "index.html"), '<a href="/analytics/ok/">base</a><a href="/court-vision/analytics/nested/missing/">nested</a><a href="http://[bad">bad</a>');
-    const records = Array.from({ length: 24 }, (_, index) => ({ id: `research-fixture-${index}`, href: "/analytics/nested/missing" }));
+    const records = Array.from({ length: 33 }, (_, index) => ({ id: `research-fixture-${index}`, href: "/analytics/nested/missing" }));
     writeFileSync(resolve(fixture, "analytics", "search-index.json"), JSON.stringify({ records }));
     const result = verifyExport(fixture, "/court-vision");
     assert.ok(result.failures.some((failure) => failure.includes("missing basePath for /analytics/ok/")));

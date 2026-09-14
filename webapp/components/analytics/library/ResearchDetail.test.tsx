@@ -38,6 +38,17 @@ describe("ResearchDetail", () => {
 });
 
 describe("ResearchDetail investigation continuity", () => {
+  it("restores the distribution view and recalculates summaries after filtering", () => {
+    window.history.replaceState(null, "", "?metric=rate&view=distribution&q=Alpha");
+    render(<ResearchDetail analysis={analysis} related={[]} />);
+    expect(screen.getByRole("button", { name: "Distribution", exact: true })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("region", { name: "Measurement summary" })).toHaveTextContent("50%");
+    expect(screen.getByRole("region", { name: "Measurement distribution" })).toHaveTextContent("Every measured row has the same value: 50%");
+    fireEvent.change(screen.getByRole("textbox", { name: "Search analysis rows" }), { target: { value: "Beta" } });
+    expect(screen.getByRole("region", { name: "Measurement summary" })).toHaveTextContent("25%");
+    expect(new URLSearchParams(window.location.search).get("view")).toBe("distribution");
+  });
+
   it("restores a shared investigation and clears stale selection when filtering", () => {
     window.history.replaceState(null, "", "?metric=rate&y=score&group=East&q=gamma&order=asc&view=scatter&row=3&utm_source=shared");
     render(<ResearchDetail analysis={analysis} related={[]} />);
