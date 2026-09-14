@@ -8,6 +8,7 @@ import { Research } from "./Research";
 import { Coverage } from "./Coverage";
 import { Panel } from "./Primitives";
 import { Benchmarks, WalkForward } from "./Benchmarks";
+import { WorkspaceIntro } from "./WorkspaceIntro";
 
 const views = [ { id: "overview", label: "Overview", Icon: ChartNoAxesCombined }, { id: "quality", label: "Model quality", Icon: Layers3 }, { id: "research", label: "Research ledger", Icon: FlaskConical }, { id: "entities", label: "Entity atlas", Icon: Users }, { id: "coverage", label: "Data coverage", Icon: Database }, { id: "library", label: "All analytics", Icon: BookOpen } ];
 export default function Workspace({ data }: { data: DashboardData }) {
@@ -15,9 +16,8 @@ export default function Workspace({ data }: { data: DashboardData }) {
   const setView = (id: string) => { setActiveView(id); if (id === "library") setSport("all"); };
   const records = data.mechanisms.filter(m => sport === "all" || m.sport === sport);
   const entities = data.entities.filter(e => sport === "all" || e.sport === sport);
-  return <div className="cv-workspace"><div className="cv-workspace-inner">
-    <header className="cv-masthead"><div><p className="cv-eyebrow"><span className="cv-square" /> CourtVision / Intelligence workspace</p><h1>See the game.<br className="cv-mobile-break" /> Understand the evidence.</h1><p>Explore performance, test the predictions, and trace every finding to its source.</p></div><a className="cv-primary" href={`${base}/analytics/ask/`}>Ask Scout <ArrowUpRight size={17} /></a></header>
-    <nav className="cv-launch" aria-label="Explore deeper"><a href={`${base}/analytics/lab/`}><FlaskConical size={16} /><strong>Measurement lab</strong><span>Rank, plot & inspect source data</span><ArrowUpRight size={15} /></a><a href={`${base}/analytics/compare/`}><Users size={16} /><strong>Compare profiles</strong><span>Two entities. One shared context.</span><ArrowUpRight size={15} /></a><a href={`${base}/analytics/evidence/`}><BookOpen size={16} /><strong>Evidence gallery</strong><span>Visual results & platform methods</span><ArrowUpRight size={15} /></a></nav>
+  return <div className="cv-workspace cv-overview"><div className="cv-workspace-inner">
+    <WorkspaceIntro />
     <div className="cv-controls"><div className="cv-sports" aria-label="Filter analytics by sport">{SPORTS.map(s => <button key={s.id} onClick={() => setSport(s.id)} aria-pressed={sport === s.id} disabled={view === "library"}>{s.label}</button>)}</div><span className="cv-snapshot"><span />Historical snapshots <b>2026</b></span></div>
     <div className="cv-stat-grid"><button onClick={() => setView("entities")}><Users size={18} /><span>Entity profiles</span><strong>{number(entities.length)}</strong><small>Players, teams & statistical profiles <ArrowUpRight size={13} /></small></button><button onClick={() => setView("research")}><FlaskConical size={18} /><span>Research records</span><strong>{number(records.length)}</strong><small>Original verdicts, full evidence <ArrowUpRight size={13} /></small></button><button onClick={() => setView("library")}><Layers3 size={18} /><span>Analytics library</span><strong>{data.modules.length}</strong><small>Published modules across all sports <ArrowUpRight size={13} /></small></button><div><Database size={18} /><span>Snapshot checks</span><strong>{data.checks ? data.checks.pass : "--"}<em>/{data.checks ? data.checks.total : "--"}</em></strong><small>Recorded in the July manifest</small></div></div>
     <nav className="cv-view-nav" aria-label="Analytics workspace views">{views.map(({ id, label, Icon }) => <button key={id} aria-pressed={view === id} onClick={() => setView(id)}><Icon size={16} />{label}</button>)}</nav>

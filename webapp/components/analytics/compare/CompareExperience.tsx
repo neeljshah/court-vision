@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { ArrowLeftRight } from "lucide-react";
 import {
   COMPARISON_PACKS, formatMetric, formatPercentile, metricLabel, metricUnit,
   normalizeComparisonPack, type ComparisonEntity, type ComparisonPack, type ComparisonPackKey,
@@ -151,7 +152,7 @@ export function CompareExperience() {
         <label><span>Pack</span><select value={packKey} onChange={(event) => changePack(event.target.value)}>{COMPARISON_PACKS.map((pack) => <option key={pack.key} value={pack.key}>{pack.label}</option>)}</select></label>
         <label><span>Profile A</span><input list="compare-entities-a" value={aQuery} onChange={(event) => chooseA(event.target.value)} placeholder="Search a profile" aria-label="Profile A" />
           <datalist id="compare-entities-a">{data?.entities.map((entity) => <option key={entity.slug} value={entity.name} />)}</datalist></label>
-        <button className="compare-swap" type="button" onClick={swap} disabled={!a || !b} aria-label="Swap profile A and profile B">Swap</button>
+        <button className="compare-swap" type="button" onClick={swap} disabled={!a || !b} aria-label="Swap profile A and profile B"><ArrowLeftRight aria-hidden="true" size={15} /> Swap</button>
         <label><span>Profile B</span><input list="compare-entities-b" value={bQuery} onChange={(event) => chooseB(event.target.value)} placeholder="Search a profile" aria-label="Profile B" />
           <datalist id="compare-entities-b">{data?.entities.filter((entity) => entity.slug !== aSlug).map((entity) => <option key={entity.slug} value={entity.name} />)}</datalist></label>
       </div>
@@ -165,11 +166,12 @@ export function CompareExperience() {
 
 function ComparisonResults({ pack, a, b, manifest }: { pack: ComparisonPack; a: ComparisonEntity; b: ComparisonEntity; manifest: string }) {
   return <>
-    <div className="compare-profiles">
+    <div className="compare-profiles" aria-label="Compared profiles">
       <ProfileHeading entity={a} pack={pack.key} label="Profile A" />
+      <div className="compare-versus" aria-hidden="true">vs</div>
       <ProfileHeading entity={b} pack={pack.key} label="Profile B" />
     </div>
-    {pack.metricKeys.length ? <div className="compare-table-wrap"><table className="compare-table"><thead><tr><th scope="col">Metric</th><th scope="col">{a.name}</th><th scope="col">{b.name}</th></tr></thead><tbody>
+    {pack.metricKeys.length ? <div className="compare-table-wrap"><table className="compare-table"><caption>Published values and within-pack percentile ranks</caption><thead><tr><th scope="col">Metric</th><th scope="col"><span>Profile A</span>{a.name}</th><th scope="col"><span>Profile B</span>{b.name}</th></tr></thead><tbody>
       {pack.metricKeys.map((key) => <MetricRow key={key} field={key} a={a} b={b} />)}
     </tbody></table></div> : <p className="compare-empty">This pack has no published within-pack percentile fields, so it cannot show a ranked comparison.</p>}
     <p className="compare-note">Percentiles are within this pack only. Higher means a higher raw measured value, never better. Corpus labels describe the years represented by the card; they are not projections.</p>
@@ -179,7 +181,7 @@ function ComparisonResults({ pack, a, b, manifest }: { pack: ComparisonPack; a: 
 
 function ProfileHeading({ entity, pack, label }: { entity: ComparisonEntity; pack: string; label: string }) {
   const asOf = displayDate(entity.asOf);
-  return <article className="compare-profile"><span>{label}</span><h2><Link href={`/analytics/players/${pack}/${entity.slug}`}>{entity.name}</Link></h2><p>{asOf ? `As of ${asOf}` : "No published as-of date"}</p></article>;
+  return <article className="compare-profile"><span className="compare-profile-label">{label}</span><div className="compare-monogram" aria-hidden="true">{entity.name.slice(0, 1)}</div><h2><Link href={`/analytics/players/${pack}/${entity.slug}`}>{entity.name}</Link></h2><p>{asOf ? `As of ${asOf}` : "No published as-of date"}</p></article>;
 }
 
 function MetricRow({ field, a, b }: { field: string; a: ComparisonEntity; b: ComparisonEntity }) {
@@ -189,5 +191,6 @@ function MetricRow({ field, a, b }: { field: string; a: ComparisonEntity; b: Com
 
 function MetricCell({ value, percentile, field }: { value: unknown; percentile: unknown; field: string }) {
   const rank = typeof percentile === "number" ? Math.max(0, Math.min(100, percentile)) : undefined;
-  return <td><strong>{formatMetric(value, field)}</strong><span className="compare-rank">{formatPercentile(percentile)}</span>{rank !== undefined ? <span className="compare-bar" aria-label={formatPercentile(rank)}><i style={{ width: `${rank}%` }} /></span> : null}</td>;
+  const formattedRank = formatPercentile(percentile);
+  return <td><strong>{formatMetric(value, field)}</strong><span className="compare-rank">{formattedRank}</span>{rank !== undefined ? <span className="compare-bar" role="img" aria-label={`${formattedRank} visual bar`}><i aria-hidden="true" style={{ width: `${rank}%` }} /></span> : null}</td>;
 }

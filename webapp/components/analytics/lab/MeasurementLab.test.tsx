@@ -31,7 +31,7 @@ describe("MeasurementLab sport filtering and inspection", () => {
     render(<MeasurementLab data={fixture} />);
     fireEvent.change(screen.getByLabelText("Filter lab by sport"), { target: { value: "tennis" } });
 
-    expect(screen.getByRole("status")).toHaveTextContent("1 published rows match");
+    expect(screen.getByRole("status")).toHaveTextContent("1 published row matches");
     expect(screen.getByRole("button", { name: /Inspect TENNIS/ })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Inspect MLB/ })).not.toBeInTheDocument();
 

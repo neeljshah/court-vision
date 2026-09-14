@@ -25,6 +25,9 @@ describe("CompareExperience controls", () => {
     await waitFor(() => expect(a).toHaveValue("Alpha"));
     expect(b).toHaveValue("Beta");
     expect(screen.getByText("25th percentile")).toBeInTheDocument();
+    expect(screen.getByRole("table")).toHaveAccessibleName("Published values and within-pack percentile ranks");
+    expect(screen.getByRole("img", { name: "25th percentile visual bar" })).toBeInTheDocument();
+    expect(screen.getByText(/Higher means a higher raw measured value, never better/)).toBeInTheDocument();
     await waitFor(() => expect(window.location.search).toContain("pack=nba_players"));
     expect(window.location.search).toContain("a=alpha");
     expect(window.location.search).toContain("b=beta");

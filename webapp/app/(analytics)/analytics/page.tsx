@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Workspace from "@/components/analytics/workspace/Workspace";
 import { getDashboardData } from "@/lib/analytics/dashboardData";
 import "./workspace.css";
+import "./overview.css";
 
 export const metadata: Metadata = {
   title: { absolute: "CourtVision Analytics | Sports Intelligence Workspace" },
