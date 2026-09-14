@@ -25,15 +25,7 @@ const destinationManifest = { entries: [
   { entity: "Delta", card_path: "atlas/delta.png", key_numbers: { career_pts_per36: 11 } },
 ] };
 const destinationPercentiles = { packs: { nba_players: { n_in_pack: 2, fields: { career_pts_per36: { n_ranked: 2 } }, entities: { gamma: { career_pts_per36: 80 }, delta: { career_pts_per36: 20 } } } } };
-const pitchManifest = { entries: [
-  { entity: "pitch_type:FF", card_path: "atlas/ff.png", as_of: "2025-09-28", key_numbers: { n_pitches: 100, count_leverage_pct: { pitcher_ahead: 30, even: 40, pitcher_behind: 30 } } },
-  { entity: "pitch_type:SC", card_path: "atlas/sc.png", as_of: "2025-09-28", key_numbers: { n_pitches: 7, count_leverage_pct: { pitcher_ahead: 0, even: 42.9, pitcher_behind: 57.1 } } },
-] };
-const pitchPercentiles = { packs: { mlb_pitch: { n_in_pack: 2, fields: { n_pitches: { n_ranked: 2 } }, entities: { ff: { n_pitches: 90 }, sc: { n_pitches: 10 } } } } };
-const mixedPitchManifest = { entries: [
-  { entity: "pitch_type:FF", card_path: "atlas/ff.png", key_numbers: { n_pitches: 100, count_leverage_pct: { pitcher_ahead: 30, even: 40, pitcher_behind: 30 } } },
-  { entity: "team:NYY", card_path: "atlas/nyy.png", key_numbers: { n_pitches: 200 } },
-] };
+const datalistValues = (id: string) => Array.from(document.querySelectorAll(`#${id} option`)).map((option) => option.getAttribute("value"));
 
 describe("CompareExperience controls", () => {
   beforeEach(() => {
@@ -50,6 +42,7 @@ describe("CompareExperience controls", () => {
     const b = screen.getByLabelText("Profile B");
     await waitFor(() => expect(a).toHaveValue("Alpha"));
     expect(b).toHaveValue("Beta");
+    expect(datalistValues("compare-entities-a")).toContain("Beta");
     expect(screen.getByText("25th percentile")).toBeInTheDocument();
     expect(screen.getAllByText("Ranked among 2 profiles").length).toBeGreaterThan(0);
     expect(screen.getByRole("table")).toHaveAccessibleName("Published values and within-pack percentile ranks");
@@ -61,10 +54,16 @@ describe("CompareExperience controls", () => {
     expect(window.location.search).toContain("a=alpha");
     expect(window.location.search).toContain("b=beta");
 
+    fireEvent.change(a, { target: { value: "Beta" } });
+    await waitFor(() => expect(a).toHaveValue("Beta"));
+    expect(b).toHaveValue("Alpha");
+    expect(window.location.search).toContain("a=beta");
+    expect(window.location.search).toContain("b=alpha");
+
     fireEvent.change(a, { target: { value: "alpha" } });
-    await waitFor(() => expect(a).toHaveValue("alpha"));
+    await waitFor(() => expect(a).toHaveValue("Alpha"));
+    expect(b).toHaveValue("Beta");
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
-    fireEvent.change(a, { target: { value: "Alpha" } });
 
     fireEvent.click(screen.getByRole("button", { name: "Swap profile A and profile B" }));
     await waitFor(() => expect(a).toHaveValue("Beta"));
@@ -199,26 +198,4 @@ describe("CompareExperience controls", () => {
     expect(screen.getByLabelText("Profile B")).toHaveValue("Delta");
   });
 
-  it("mounts recorded count context only for the MLB pitch-type pack", async () => {
-    window.history.replaceState(null, "", "/analytics/compare?pack=mlb_pitch&a=ff&b=sc");
-    vi.mocked(fetch).mockImplementation((url: string) => Promise.resolve({ ok: true, json: async () => url.includes("atlas_mlb_pitch_manifest") ? pitchManifest : url.includes("percentiles") ? pitchPercentiles : comparables } as Response));
-    render(<CompareExperience />);
-    expect(await screen.findByRole("heading", { name: "Recorded count context" })).toBeInTheDocument();
-    expect(screen.getByText("0.0%")).toBeInTheDocument();
-    expect(screen.getByRole("table", { name: "Published raw values" })).toBeInTheDocument();
-    expect(screen.queryByText("90th percentile")).not.toBeInTheDocument();
-    expect(screen.getByText(/Source percentiles mix pitch types, teams, and count states/)).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "MLB pitch atlas" })).toBeInTheDocument();
-  });
-
-  it("keeps MLB atlas headers but blocks mixed-family comparisons", async () => {
-    window.history.replaceState(null, "", "/analytics/compare?pack=mlb_pitch&a=ff&b=nyy");
-    vi.mocked(fetch).mockImplementation((url: string) => Promise.resolve({ ok: true, json: async () => url.includes("atlas_mlb_pitch_manifest") ? mixedPitchManifest : url.includes("percentiles") ? pitchPercentiles : comparables } as Response));
-    render(<CompareExperience />);
-    expect(await screen.findByText(/Choose two pitch types, two teams, or two count states/)).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "pitch type FF" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "team NYY" })).toBeInTheDocument();
-    expect(screen.queryByText("Published evidence")).not.toBeInTheDocument();
-    expect(screen.queryByRole("table", { name: "Published raw values" })).not.toBeInTheDocument();
-  });
 });

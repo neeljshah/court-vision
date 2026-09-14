@@ -1,19 +1,18 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import { ArrowLeftRight } from "lucide-react";
 import {
-  COMPARISON_PACKS, formatMetric, formatPercentile, metricLabel, metricUnit,
+  COMPARISON_PACKS,
   normalizeComparisonPack, type ComparisonEntity, type ComparisonPack, type ComparisonPackKey,
   type RawComparables, type RawManifest, type RawPercentiles,
 } from "@/lib/analytics/comparisonData";
-import { matchupInsights, sharedMeasuredAxisCount } from "@/lib/analytics/matchupInsights";
 import { type TennisSurface } from "@/lib/analytics/tennisSurfaceComparison";
-import { TennisSurfaceComparison } from "./TennisSurfaceComparison";
-import { PitchCountComparison } from "./PitchCountComparison";
+import { mlbAtlasFamily, mlbAtlasFamilyOptions, parseMlbAtlasFamily, type MlbAtlasFamily } from "@/lib/analytics/mlbAtlasFamily";
+import { ComparisonResults } from "./ComparisonResults";
 
 const DATA_ROOT = "/data/showcase/";
+type RequestedPair = { pack: ComparisonPackKey; a?: string; b?: string; family?: MlbAtlasFamily };
 
 function publicPath(path: string): string {
   return `${process.env.NEXT_PUBLIC_BASE_PATH || ""}${DATA_ROOT}${path}`;
@@ -36,23 +35,6 @@ function sportForPack(key: ComparisonPackKey) {
 
 function urlSurface(value: string | null): TennisSurface {
   return value === "clay" || value === "grass" ? value : "hard";
-}
-
-function mlbAtlasFamily(entity: ComparisonEntity): "pitch_type" | "team" | "count" | undefined {
-  const source = entity.sourceEntity;
-  if (source?.startsWith("pitch_type:")) return "pitch_type";
-  if (source?.startsWith("team:")) return "team";
-  if (source?.startsWith("count:")) return "count";
-  return undefined;
-}
-
-function rankedCount(pack: ComparisonPack, field: string): number | undefined {
-  const value = pack.nRankedByMetric?.[field];
-  return typeof value === "number" && Number.isInteger(value) && value > 0 ? value : undefined;
-}
-
-function displayDate(value?: string): string | undefined {
-  return value && /^\d{4}-\d{2}-\d{2}[ T]\d{2}:/.test(value) ? value.slice(0, 10) : value;
 }
 
 function objectValue(value: unknown): value is Record<string, unknown> {
@@ -81,7 +63,8 @@ async function fetchJson(path: string): Promise<unknown> {
 
 export function CompareExperience() {
   const [packKey, setPackKey] = useState<ComparisonPackKey>("nba_players");
-  const [requested, setRequested] = useState<{ pack: ComparisonPackKey; a?: string; b?: string }>({ pack: "nba_players" });
+  const [requested, setRequested] = useState<RequestedPair>({ pack: "nba_players" });
+  const [explicitMlbFamily, setExplicitMlbFamily] = useState<MlbAtlasFamily>();
   const [data, setData] = useState<ComparisonPack>();
   const [aSlug, setASlug] = useState("");
   const [bSlug, setBSlug] = useState("");
@@ -111,7 +94,9 @@ export function CompareExperience() {
     setBSlug("");
     setAQuery("");
     setBQuery("");
-    setRequested({ pack, a: params.get("a") || undefined, b: params.get("b") || undefined });
+    const family = pack === "mlb_pitch" ? parseMlbAtlasFamily(params.get("family")) : undefined;
+    setRequested({ pack, a: params.get("a") || undefined, b: params.get("b") || undefined, family });
+    setExplicitMlbFamily(family);
     setSurface(pack === "tennis" ? urlSurface(params.get("surface")) : "hard");
     setPackKey(pack);
     setUrlReady(true);
@@ -139,9 +124,20 @@ export function CompareExperience() {
   useEffect(() => {
     if (intentRevision.current !== activeRevision || !urlReady || data?.key !== packKey || !data.entities.length) return;
     const valid = new Set(data.entities.map((entity) => entity.slug));
+    if (packKey === "mlb_pitch" && (requested.family && (!requested.a || !requested.b) || Boolean(requested.a) !== Boolean(requested.b))) {
+      const a = requested.a && valid.has(requested.a) ? requested.a : "";
+      const b = requested.b && valid.has(requested.b) ? requested.b : "";
+      setASlug(a); setBSlug(b);
+      setAQuery(data.entities.find((entity) => entity.slug === a)?.name || ""); setBQuery(data.entities.find((entity) => entity.slug === b)?.name || "");
+      setPairReady(false);
+      return;
+    }
     const a = requested.pack === packKey && requested.a && valid.has(requested.a) ? requested.a : data.suggestedPair?.[0] || data.entities[0].slug;
     const candidate = requested.pack === packKey && requested.b && valid.has(requested.b) && requested.b !== a ? requested.b : data.suggestedPair?.[1];
     const b = candidate && candidate !== a ? candidate : data.entities.find((entity) => entity.slug !== a)?.slug || a;
+    const requestedPairFamily = packKey === "mlb_pitch" ? mlbAtlasFamily(data.entities.find((entity) => entity.slug === a)?.sourceEntity) : undefined;
+    const linkedFamily = parseMlbAtlasFamily(new URL(window.location.href).searchParams.get("family"));
+    if (requestedPairFamily && requestedPairFamily === mlbAtlasFamily(data.entities.find((entity) => entity.slug === b)?.sourceEntity) && linkedFamily && linkedFamily !== requestedPairFamily) { setExplicitMlbFamily(undefined); setRequested({ ...requested, family: undefined }); const url = new URL(window.location.href); url.searchParams.delete("family"); window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`); }
     setASlug(a);
     setBSlug(b);
     setAQuery(data.entities.find((entity) => entity.slug === a)?.name || "");
@@ -157,8 +153,12 @@ export function CompareExperience() {
     url.searchParams.set("b", bSlug);
     if (packKey === "tennis") url.searchParams.set("surface", surface);
     else url.searchParams.delete("surface");
+    const currentPairFamily = packKey === "mlb_pitch" ? mlbAtlasFamily(data.entities.find((entity) => entity.slug === aSlug)?.sourceEntity) : undefined;
+    const otherPairFamily = packKey === "mlb_pitch" ? mlbAtlasFamily(data.entities.find((entity) => entity.slug === bSlug)?.sourceEntity) : undefined;
+    if (packKey === "mlb_pitch" && explicitMlbFamily && (!currentPairFamily || currentPairFamily === otherPairFamily && explicitMlbFamily === currentPairFamily)) url.searchParams.set("family", explicitMlbFamily);
+    else url.searchParams.delete("family");
     window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
-  }, [packKey, aSlug, bSlug, surface, urlReady, pairReady, data, activeRevision]);
+  }, [packKey, aSlug, bSlug, surface, urlReady, pairReady, data, activeRevision, explicitMlbFamily]);
 
   const a = useMemo(() => data?.entities.find((entity) => entity.slug === aSlug), [data, aSlug]);
   const b = useMemo(() => data?.entities.find((entity) => entity.slug === bSlug), [data, bSlug]);
@@ -172,6 +172,7 @@ export function CompareExperience() {
     setPairReady(false);
     setData(undefined);
     setRequested({ pack: next });
+    setExplicitMlbFamily(undefined);
     setASlug("");
     setBSlug("");
     setAQuery("");
@@ -181,16 +182,52 @@ export function CompareExperience() {
     url.searchParams.delete("a");
     url.searchParams.delete("b");
     url.searchParams.delete("surface");
+    url.searchParams.delete("family");
     window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
     setSurface("hard");
     setPackKey(next);
   };
   const swap = () => { setASlug(bSlug); setBSlug(aSlug); setAQuery(bQuery); setBQuery(aQuery); };
-  const findByName = (value: string) => data?.entities.find((entity) => entity.name.toLocaleLowerCase() === value.trim().toLocaleLowerCase());
+  const pairFamily = packKey === "mlb_pitch" && a && b && mlbAtlasFamily(a.sourceEntity) === mlbAtlasFamily(b.sourceEntity) ? mlbAtlasFamily(a.sourceEntity) : undefined;
+  const singleFamily = packKey === "mlb_pitch" && Boolean(a) !== Boolean(b) ? mlbAtlasFamily(a?.sourceEntity || b?.sourceEntity) : undefined;
+  const activeMlbFamily = packKey === "mlb_pitch" ? pairFamily || explicitMlbFamily || singleFamily : undefined;
+  const selectableEntities = activeMlbFamily ? (data?.entities || []).filter((entity) => mlbAtlasFamily(entity.sourceEntity) === activeMlbFamily) : data?.entities || [];
+  const writeMlbUrl = (family: MlbAtlasFamily | undefined, nextA?: string, nextB?: string) => {
+    const url = new URL(window.location.href);
+    if (family) url.searchParams.set("family", family); else url.searchParams.delete("family");
+    if (nextA) url.searchParams.set("a", nextA); else url.searchParams.delete("a");
+    if (nextB) url.searchParams.set("b", nextB); else url.searchParams.delete("b");
+    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
+  };
+  const chooseMlbFamily = (value: string) => {
+    const family = parseMlbAtlasFamily(value);
+    if (!family || family === activeMlbFamily) return;
+    beginNavigation("mlb_pitch");
+    setExplicitMlbFamily(family);
+    setRequested({ pack: "mlb_pitch", family });
+    setASlug(""); setBSlug(""); setAQuery(""); setBQuery("");
+    setPairReady(false);
+    writeMlbUrl(family);
+  };
+  const findByName = (value: string) => selectableEntities.find((entity) => entity.name.toLocaleLowerCase() === value.trim().toLocaleLowerCase());
   const chooseA = (value: string) => {
     setAQuery(value);
+    if (packKey === "mlb_pitch" && !value.trim()) {
+      const family = activeMlbFamily;
+      beginNavigation("mlb_pitch");
+      setExplicitMlbFamily(family);
+      setRequested({ pack: "mlb_pitch", family, b: bSlug || undefined });
+      setASlug(""); setPairReady(false);
+      writeMlbUrl(family, undefined, bSlug || undefined);
+      return;
+    }
     const hit = findByName(value);
     if (!hit) return;
+    if (packKey === "mlb_pitch") {
+      if (hit.slug === bSlug) return;
+      setASlug(hit.slug); setPairReady(Boolean(bSlug)); writeMlbUrl(explicitMlbFamily, hit.slug, bSlug || undefined);
+      return;
+    }
     if (hit.slug === bSlug) {
       setASlug(hit.slug);
       setBSlug(aSlug);
@@ -202,8 +239,20 @@ export function CompareExperience() {
   };
   const chooseB = (value: string) => {
     setBQuery(value);
+    if (packKey === "mlb_pitch" && !value.trim()) {
+      const family = activeMlbFamily;
+      beginNavigation("mlb_pitch");
+      setExplicitMlbFamily(family);
+      setRequested({ pack: "mlb_pitch", family, a: aSlug || undefined });
+      setBSlug(""); setPairReady(false);
+      writeMlbUrl(family, aSlug || undefined);
+      return;
+    }
     const hit = findByName(value);
-    if (hit && hit.slug !== aSlug) setBSlug(hit.slug);
+    if (hit && hit.slug !== aSlug) {
+      setBSlug(hit.slug);
+      if (packKey === "mlb_pitch") { setPairReady(Boolean(aSlug)); writeMlbUrl(explicitMlbFamily, aSlug || undefined, hit.slug); }
+    }
   };
   const aMatchesInput = Boolean(a && aQuery.trim() && a.name.toLocaleLowerCase() === aQuery.trim().toLocaleLowerCase());
   const bMatchesInput = Boolean(b && bQuery.trim() && b.name.toLocaleLowerCase() === bQuery.trim().toLocaleLowerCase());
@@ -217,13 +266,14 @@ export function CompareExperience() {
           {SPORT_GROUPS.map((sport) => <button key={sport.key} type="button" aria-pressed={activeSport?.key === sport.key} className={activeSport?.key === sport.key ? "is-active" : ""} onClick={() => changePack(sport.packs[0])}>{sport.label}</button>)}
         </div>
       </div>
-      <div className="compare-controls">
+      <div className={`compare-controls${packKey === "mlb_pitch" ? " has-family" : ""}`}>
         <label><span>Pack</span><select value={packKey} onChange={(event) => changePack(event.target.value)}>{COMPARISON_PACKS.map((pack) => <option key={pack.key} value={pack.key}>{pack.label}</option>)}</select></label>
+        {packKey === "mlb_pitch" ? <label className="compare-family"><span>Record type</span><select value={activeMlbFamily || ""} onChange={(event) => chooseMlbFamily(event.target.value)} aria-label="MLB atlas record type"><option value="">Choose a record type</option>{mlbAtlasFamilyOptions(data?.entities || []).map((option) => <option key={option.family} value={option.family}>{option.label} ({option.count})</option>)}</select></label> : null}
         <label><span>Profile A</span><input list="compare-entities-a" value={aQuery} onChange={(event) => chooseA(event.target.value)} placeholder="Search a profile" aria-label="Profile A" />
-          <datalist id="compare-entities-a">{data?.entities.map((entity) => <option key={entity.slug} value={entity.name} />)}</datalist></label>
+          <datalist id="compare-entities-a">{selectableEntities.filter((entity) => packKey !== "mlb_pitch" || entity.slug !== bSlug).map((entity) => <option key={entity.slug} value={entity.name} />)}</datalist></label>
         <button className="compare-swap" type="button" onClick={swap} disabled={!a || !b} aria-label="Swap profile A and profile B"><ArrowLeftRight aria-hidden="true" size={15} /> Swap</button>
         <label><span>Profile B</span><input list="compare-entities-b" value={bQuery} onChange={(event) => chooseB(event.target.value)} placeholder="Search a profile" aria-label="Profile B" />
-          <datalist id="compare-entities-b">{data?.entities.filter((entity) => entity.slug !== aSlug).map((entity) => <option key={entity.slug} value={entity.name} />)}</datalist></label>
+          <datalist id="compare-entities-b">{selectableEntities.filter((entity) => entity.slug !== aSlug).map((entity) => <option key={entity.slug} value={entity.name} />)}</datalist></label>
       </div>
       <p className="compare-status">{data ? `${data.nInPack} profiles in ${info.label}.` : "Loading published pack data..."}</p>
       {error ? <p className="compare-error" role="alert">{error} <button type="button" onClick={() => setRetry((value) => value + 1)}>Retry</button></p> : null}
@@ -231,56 +281,4 @@ export function CompareExperience() {
       {pairReady && data?.key === packKey && a && b && aMatchesInput && bMatchesInput ? <ComparisonResults pack={data} a={a} b={b} manifest={info.manifest} sport={activeSport?.key} surface={surface} onSurfaceChange={setSurface} /> : null}
     </section>
   );
-}
-
-function ComparisonResults({ pack, a, b, manifest, sport, surface, onSurfaceChange }: { pack: ComparisonPack; a: ComparisonEntity; b: ComparisonEntity; manifest: string; sport?: string; surface: TennisSurface; onSurfaceChange: (surface: TennisSurface) => void }) {
-  const aFamily = pack.key === "mlb_pitch" ? mlbAtlasFamily(a) : undefined;
-  const bFamily = pack.key === "mlb_pitch" ? mlbAtlasFamily(b) : undefined;
-  const mixedMlbAtlas = pack.key === "mlb_pitch" && (!aFamily || aFamily !== bFamily);
-  const rawMlbAtlas = pack.key === "mlb_pitch" && !mixedMlbAtlas;
-  const insights = matchupInsights(pack, a, b);
-  const axisCount = sharedMeasuredAxisCount(pack, a, b);
-  return <>
-    <div className="compare-profiles" aria-label="Compared profiles">
-      <ProfileHeading entity={a} pack={pack.key} label="Profile A" />
-      <div className="compare-versus" aria-hidden="true">vs</div>
-      <ProfileHeading entity={b} pack={pack.key} label="Profile B" />
-    </div>
-    {mixedMlbAtlas ? <p className="compare-empty" role="status">Choose two pitch types, two teams, or two count states to compare recorded MLB atlas values.</p> : null}
-    {pack.key === "tennis" ? <TennisSurfaceComparison a={a} b={b} surface={surface} onSurfaceChange={onSurfaceChange} sourceHref={publicPath(manifest)} nRankedByMetric={pack.nRankedByMetric} /> : null}
-    {rawMlbAtlas ? <PitchCountComparison a={a} b={b} sourceHref={publicPath(manifest)} /> : null}
-    {!mixedMlbAtlas && !rawMlbAtlas ? <section className="compare-insights" aria-labelledby="compare-insights-title">
-      <div className="compare-insights-heading"><div><span className="compare-section-label">Measured contrasts</span><h2 id="compare-insights-title">Where these profiles separate</h2></div><span className="compare-overlap">{axisCount} shared axes</span></div>
-      <p className="compare-insights-intro">Largest percentile gaps among fields reported for both profiles. Values stay tied to the published historical corpus.</p>
-      {insights.length ? <div className="compare-insight-grid">{insights.map((insight) => { const nRanked = rankedCount(pack, insight.field); return <article className="compare-insight" key={insight.field}><div className="compare-insight-top"><strong>{insight.label}</strong><span>{Math.round(insight.gap)} pt gap</span></div><div className="compare-insight-values"><span><b>{insight.aValue}</b><small>{a.name} - {formatPercentile(insight.aPercentile)}</small></span><span><b>{insight.bValue}</b><small>{b.name} - {formatPercentile(insight.bPercentile)}</small></span></div>{nRanked ? <small className="compare-rank-context">Ranked among {nRanked} profiles with this measurement.</small> : null}</article>; })}</div> : <p className="compare-empty">No shared numeric axes are published for this pair.</p>}
-    </section> : null}
-    {!mixedMlbAtlas ? (pack.metricKeys.length ? <div className="compare-table-wrap"><table className="compare-table"><caption>{rawMlbAtlas ? "Published raw values" : "Published values and within-pack percentile ranks"}</caption><thead><tr><th scope="col">Metric</th><th scope="col"><span>Profile A</span>{a.name}</th><th scope="col"><span>Profile B</span>{b.name}</th></tr></thead><tbody>
-      {pack.metricKeys.map((key) => <MetricRow key={key} field={key} a={a} b={b} showRanks={!rawMlbAtlas} nRanked={rankedCount(pack, key)} />)}
-    </tbody></table></div> : <p className="compare-empty">This pack has no published within-pack percentile fields, so it cannot show a ranked comparison.</p>) : null}
-    <p className="compare-note">{pack.key === "mlb_pitch" ? "Raw records are shown only for same-family MLB atlas pairs. Source percentiles mix pitch types, teams, and count states, so ranks and percentile gaps are omitted." : "Percentiles are within this pack only. Higher means a higher raw measured value, never better. Corpus labels describe the years represented by the card; they are not projections."}</p>
-    <p className="compare-sources">Sources: <a href={publicPath(manifest)} target="_blank" rel="noreferrer">raw manifest</a>, <a href={publicPath("entity_percentiles.json")} target="_blank" rel="noreferrer">raw percentiles</a>, and <a href={publicPath("entity_comparables.json")} target="_blank" rel="noreferrer">raw comparables</a>. <Link href={sport === "nba" ? "/analytics/research/nba-matchup-profile-contrast/" : sport ? `/analytics/browse/?sport=${sport}` : "/analytics/browse/"}>More {sport === "nba" ? "NBA profile research" : "library analysis"}</Link></p>
-  </>;
-}
-
-function ProfileHeading({ entity, pack, label }: { entity: ComparisonEntity; pack: string; label: string }) {
-  const asOf = displayDate(entity.asOf);
-  return <article className="compare-profile"><span className="compare-profile-label">{label}</span><div className="compare-monogram" aria-hidden="true">{entity.name.slice(0, 1)}</div><h2><Link href={`/analytics/players/${pack}/${entity.slug}`}>{entity.name}</Link></h2><p>{asOf ? `As of ${asOf}` : "No published as-of date"}</p><ProfileEvidence entity={entity} /></article>;
-}
-
-function ProfileEvidence({ entity }: { entity: ComparisonEntity }) {
-  if (!entity.floors && !entity.status) return null;
-  return <details className="compare-profile-evidence"><summary>Published evidence</summary>{entity.floors ? <p><b>Floors:</b> {entity.floors}</p> : null}{entity.status ? <p><b>Status:</b> {entity.status}</p> : null}</details>;
-}
-
-function MetricRow({ field, a, b, showRanks = true, nRanked }: { field: string; a: ComparisonEntity; b: ComparisonEntity; showRanks?: boolean; nRanked?: number }) {
-  const unit = metricUnit(field);
-  return <tr><th scope="row"><span>{metricLabel(field)}</span>{unit ? <small>{unit}</small> : null}</th><MetricCell value={a.values[field]} percentile={a.percentiles[field]} field={field} showRank={showRanks} nRanked={nRanked} /><MetricCell value={b.values[field]} percentile={b.percentiles[field]} field={field} showRank={showRanks} nRanked={nRanked} /></tr>;
-}
-
-function MetricCell({ value, percentile, field, showRank, nRanked }: { value: unknown; percentile: unknown; field: string; showRank: boolean; nRanked?: number }) {
-  const hasRawMeasurement = typeof value === "number" && Number.isFinite(value);
-  const rank = typeof percentile === "number" && Number.isFinite(percentile) && percentile >= 0 && percentile <= 100 ? percentile : undefined;
-  const formattedRank = formatPercentile(percentile);
-  const ranked = showRank && hasRawMeasurement && rank !== undefined && nRanked !== undefined;
-  return <td><strong>{formatMetric(value, field)}</strong>{ranked ? <><span className="compare-rank">{formattedRank}</span><small className="compare-rank-context">Ranked among {nRanked} profiles</small><span className="compare-bar" role="img" aria-label={`${formattedRank} visual bar`}><i aria-hidden="true" style={{ width: `${rank}%` }} /></span></> : showRank ? <span className="compare-rank">Not ranked</span> : null}</td>;
 }
