@@ -285,7 +285,6 @@ def test_bare_integer_does_not_match_inside_a_decimal(tmp_path):
     # a feature gain of 54.05 is a number, not the bare retracted figure
     from scripts.platformkit.tracking import contract_preflight as cp
     f = tmp_path / "a.json"
-    f.write_text('{"gain": 54.05, "n": 1}
-', encoding="utf-8")
+    f.write_text('{"gain": 54.05, "n": 1}', encoding="utf-8")
     ok, _detail, hits = cp.check_vocab([f])
     assert ok and not hits
