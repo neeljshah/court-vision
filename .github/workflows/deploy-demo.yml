@@ -53,6 +53,7 @@ jobs:
           npx vitest run lib/analytics/comparisonData.test.ts
           npx vitest run lib/analytics/tennisSurfaceComparison.test.ts
           npx vitest run lib/analytics/tennisSurfaceIntegration.test.ts
+          npx vitest run lib/analytics/pitchCountComparison.test.ts
           npx vitest run lib/analytics/researchBasketball.test.ts
           npx vitest run lib/analytics/researchMultisport.test.ts
           npx vitest run lib/analytics/researchValidation.test.ts
@@ -66,6 +67,7 @@ jobs:
           npx vitest run components/analytics/AskBox.test.tsx
           npx vitest run components/analytics/compare/CompareExperience.test.tsx
           npx vitest run components/analytics/compare/TennisSurfaceComparison.test.tsx
+          npx vitest run components/analytics/compare/PitchCountComparison.test.tsx
           npx vitest run components/analytics/library/LibraryExplorer.test.tsx
           npx vitest run components/analytics/library/ResearchDetail.test.tsx
           npx vitest run components/analytics/lab/MeasurementLab.test.tsx

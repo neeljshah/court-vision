@@ -27,6 +27,7 @@ export type RawComparables = {
 export type ComparisonEntity = {
   slug: string;
   name: string;
+  sourceEntity?: string;
   values: Record<string, unknown>;
   percentiles: Record<string, number>;
   asOf?: string;
@@ -46,7 +47,7 @@ export const COMPARISON_PACKS = [
   { key: "nba_players", label: "NBA players", manifest: "atlas_nba_manifest.json" },
   { key: "nba_teams", label: "NBA teams", manifest: "atlas_nba_teams_manifest.json" },
   { key: "mlb_batters", label: "MLB batters", manifest: "atlas_mlb_batters_manifest.json" },
-  { key: "mlb_pitch", label: "MLB pitch types", manifest: "atlas_mlb_pitch_manifest.json" },
+  { key: "mlb_pitch", label: "MLB pitch atlas", manifest: "atlas_mlb_pitch_manifest.json" },
   { key: "soccer", label: "Soccer teams", manifest: "atlas_soccer_manifest.json" },
   { key: "tennis", label: "Tennis players", manifest: "atlas_tennis_manifest.json" },
   { key: "calibration", label: "Calibration checkpoints", manifest: "atlas_calibration_manifest.json" },
@@ -89,6 +90,7 @@ export function normalizeComparisonPack(
   const entries = entrySlugs(manifest.entries || []).map(({ slug, entry }) => ({
     slug,
     name: entityName(entry),
+    sourceEntity: entry.entity,
     values: entry.key_numbers || {},
     percentiles: percentilePack?.entities?.[slug] || {},
     asOf: entry.as_of,

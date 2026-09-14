@@ -15,7 +15,7 @@ describe("comparison data normalization", () => {
     expect(pack.metricKeys).toEqual(["career_pts_per36", "career_fg_pct"]);
     expect(pack.suggestedPair).toEqual(["shared", "beta_two"]);
     expect(pack.entities[0].percentiles.career_pts_per36).toBe(25);
-    expect(pack.entities[0]).toMatchObject({ asOf: "2026-04-12", floors: "minutes>=800", status: "partial" });
+    expect(pack.entities[0]).toMatchObject({ sourceEntity: "Alpha One", asOf: "2026-04-12", floors: "minutes>=800", status: "partial" });
   });
 
   it("keeps missing values missing and labels units without inventing a zero", () => {
