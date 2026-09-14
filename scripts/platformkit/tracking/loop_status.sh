@@ -29,3 +29,13 @@ ssh -o ConnectTimeout=15 -p "${POD_PORT:-40193}" "root@${POD_HOST:-213.192.2.83}
    nvidia-smi --query-gpu=utilization.gpu,memory.used --format=csv,noheader | sed "s/^/  gpu /"; \
    tail -1 /workspace/track_daemon_ledger.jsonl 2>/dev/null | cut -c1-120' 2>/dev/null || echo "  pod unreachable"
 python "$REPO/scripts/platformkit/tracking/pod_drift.py" --repo "$REPO"
+
+echo "== loop metrics (S333/Q10): codex jobs per landed row, ship rows per day, last 3 days)"
+for d in $(seq 0 2); do
+  day=$(date -d "-$d day" +%F 2>/dev/null || date -v-"$d"d +%F)
+  jobs=$(ls -l --time-style=+%F "$TMP"/cx_g*.log "$TMP"/cx_s*.log 2>/dev/null | awk -v D="$day" '$6==D' | wc -l)
+  rows=$(grep -hE "^$day \|" "$REPO/docs/evidence/tracking/RESULTS_LEDGER.md" "$REPO/docs/evidence/RESULTS_LEDGER_SYSTEM.md" 2>/dev/null | wc -l)
+  ship=$(grep -hE "^$day \|" "$REPO/docs/evidence/tracking/RESULTS_LEDGER.md" "$REPO/docs/evidence/RESULTS_LEDGER_SYSTEM.md" 2>/dev/null | grep -ciE "LANDED|deployed|applied" )
+  ratio=$( [ "$rows" -gt 0 ] && awk -v J="$jobs" -v R="$rows" 'BEGIN{printf "%.1f", J/R}' || echo "n/a" )
+  echo "  $day codex_jobs=$jobs landed_rows=$rows ship_rows=$ship jobs_per_row=$ratio (targets: <=4 jobs/row, >=1 ship/day)"
+done
