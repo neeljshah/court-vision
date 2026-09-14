@@ -83,6 +83,29 @@ describe("CompareExperience controls", () => {
     await waitFor(() => expect(window.location.search).toContain("pack=soccer"));
   });
 
+  it("keeps a quick sport selection URL when the previous pack settles and the new load fails", async () => {
+    let resolveNba: (response: Response) => void = () => undefined;
+    let rejectSoccer: (error: Error) => void = () => undefined;
+    const pendingNba = new Promise<Response>((resolve) => { resolveNba = resolve; });
+    const pendingSoccer = new Promise<Response>((_, reject) => { rejectSoccer = reject; });
+    vi.mocked(fetch).mockImplementation((url: string) => {
+      if (url.includes("atlas_nba_manifest")) return pendingNba;
+      if (url.includes("atlas_soccer_manifest")) return pendingSoccer;
+      return Promise.resolve({ ok: true, json: async () => url.includes("percentiles") ? percentiles : comparables } as Response);
+    });
+    render(<CompareExperience />);
+    await waitFor(() => expect(vi.mocked(fetch)).toHaveBeenCalledWith(expect.stringContaining("atlas_nba_manifest")));
+    fireEvent.click(screen.getByRole("button", { name: "Soccer" }));
+    expect(window.location.search).toBe("?pack=soccer");
+    resolveNba({ ok: true, json: async () => manifest } as Response);
+    await waitFor(() => expect(vi.mocked(fetch)).toHaveBeenCalledWith(expect.stringContaining("atlas_soccer_manifest")));
+    expect(window.location.search).toBe("?pack=soccer");
+    rejectSoccer(new Error("offline"));
+    expect(await screen.findByRole("alert")).toHaveTextContent("could not be loaded");
+    expect(window.location.search).toBe("?pack=soccer");
+    expect(screen.getByRole("button", { name: "Soccer" })).toHaveAttribute("aria-pressed", "true");
+  });
+
   it("supports retry after a failed load and rejects an unmatched typed profile", async () => {
     const fetchMock = vi.mocked(fetch);
     fetchMock.mockImplementationOnce(() => Promise.reject(new Error("offline")));

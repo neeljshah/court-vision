@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeftRight } from "lucide-react";
 import {
@@ -92,10 +92,20 @@ export function CompareExperience() {
   const [surface, setSurface] = useState<TennisSurface>("hard");
   const [urlReady, setUrlReady] = useState(false);
   const [pairReady, setPairReady] = useState(false);
+  const intendedPack = useRef<ComparisonPackKey>("nba_players");
+  const intentRevision = useRef(0);
+  const [activeRevision, setActiveRevision] = useState(0);
+
+  const beginNavigation = (pack: ComparisonPackKey) => {
+    intendedPack.current = pack;
+    intentRevision.current += 1;
+    setActiveRevision(intentRevision.current);
+  };
 
   const readUrl = () => {
     const params = new URLSearchParams(window.location.search);
     const pack = COMPARISON_PACKS.find((item) => item.key === params.get("pack"))?.key || "nba_players";
+    beginNavigation(pack);
     setPairReady(false);
     setASlug("");
     setBSlug("");
@@ -127,7 +137,7 @@ export function CompareExperience() {
   }, [packKey, retry, urlReady]);
 
   useEffect(() => {
-    if (!urlReady || data?.key !== packKey || !data.entities.length) return;
+    if (intentRevision.current !== activeRevision || !urlReady || data?.key !== packKey || !data.entities.length) return;
     const valid = new Set(data.entities.map((entity) => entity.slug));
     const a = requested.pack === packKey && requested.a && valid.has(requested.a) ? requested.a : data.suggestedPair?.[0] || data.entities[0].slug;
     const candidate = requested.pack === packKey && requested.b && valid.has(requested.b) && requested.b !== a ? requested.b : data.suggestedPair?.[1];
@@ -137,10 +147,10 @@ export function CompareExperience() {
     setAQuery(data.entities.find((entity) => entity.slug === a)?.name || "");
     setBQuery(data.entities.find((entity) => entity.slug === b)?.name || "");
     setPairReady(true);
-  }, [data, packKey, requested, urlReady]);
+  }, [data, packKey, requested, urlReady, activeRevision]);
 
   useEffect(() => {
-    if (!urlReady || !pairReady || data?.key !== packKey || !aSlug || !bSlug) return;
+    if (intendedPack.current !== packKey || intentRevision.current !== activeRevision || !urlReady || !pairReady || data?.key !== packKey || !aSlug || !bSlug) return;
     const url = new URL(window.location.href);
     url.searchParams.set("pack", packKey);
     url.searchParams.set("a", aSlug);
@@ -148,7 +158,7 @@ export function CompareExperience() {
     if (packKey === "tennis") url.searchParams.set("surface", surface);
     else url.searchParams.delete("surface");
     window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
-  }, [packKey, aSlug, bSlug, surface, urlReady, pairReady, data]);
+  }, [packKey, aSlug, bSlug, surface, urlReady, pairReady, data, activeRevision]);
 
   const a = useMemo(() => data?.entities.find((entity) => entity.slug === aSlug), [data, aSlug]);
   const b = useMemo(() => data?.entities.find((entity) => entity.slug === bSlug), [data, bSlug]);
@@ -158,6 +168,7 @@ export function CompareExperience() {
   const changePack = (value: string) => {
     const next = value as ComparisonPackKey;
     if (next === packKey) return;
+    beginNavigation(next);
     setPairReady(false);
     setData(undefined);
     setRequested({ pack: next });
