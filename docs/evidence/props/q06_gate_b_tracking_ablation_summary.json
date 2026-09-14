@@ -1,0 +1,27 @@
+{
+  "stats": [
+    "pts",
+    "reb",
+    "ast"
+  ],
+  "corpora": [
+    "2023-24",
+    "2024-25"
+  ],
+  "overall_verdict_per_stat": {
+    "pts": "CEILING_ZERO",
+    "reb": "CEILING_ZERO",
+    "ast": "CEILING_ZERO"
+  },
+  "not_verified": [
+    "prior-season aggregates (player_tracking_features, hustle_features) are a proxy for what a broadcast teacher would emit in-season; not validated against a real broadcast signal.",
+    "atlas_player_spacing_gravity (as_of 2026-05-31, single snapshot -- no as-of builder, excluded)",
+    "atlas_player_matchup_splits (as_of 2026-05-31, single snapshot -- excluded)",
+    "catch_shoot_vs_pullup (as_of 2026-05-31, single snapshot -- excluded)",
+    "win-prob challenger not run -- the pregame NBA harness has only one season of odds on disk.",
+    "defender_matchup_states' *_asof columns are trusted as pre-computed prior-N-games-as-of-this-game by the upstream table producer; not independently re-derived here.",
+    "defender_matchup_states covers games from 2024-10-22 onward; the 2023-24 corpus therefore has a 0 pct match rate for that table by construction, not a bug."
+  ],
+  "markdown_summary": "champion = landed per-game prop model (Q15); baseline comparison is champion vs champion+tracking; 2023-24 is a within-season fallback split; calibration only; no monetary claim.\n\n| stat | corpus | n_test | verdict_crps_full | delta_crps_full | verdict_crps_defmatch_only | cov_champ | cov_chall |\n|---|---|---|---|---|---|---|---|\n| pts | 2023-24 | 7938 | CEILING_NEGATIVE | -0.0240 [-0.0322, -0.0156] | CEILING_ZERO | 0.799 | 0.794 |\n| reb | 2023-24 | 7938 | CEILING_ZERO | -0.0005 [-0.0050, 0.0039] | CEILING_ZERO | 0.818 | 0.809 |\n| ast | 2023-24 | 7938 | CEILING_ZERO | -0.0033 [-0.0071, 0.0005] | CEILING_ZERO | 0.833 | 0.831 |\n| pts | 2024-25 | 26181 | CEILING_ZERO | -0.0016 [-0.0058, 0.0025] | CEILING_ZERO | 0.810 | 0.806 |\n| reb | 2024-25 | 26181 | CEILING_POSITIVE | 0.0027 [0.0006, 0.0047] | CEILING_ZERO | 0.830 | 0.826 |\n| ast | 2024-25 | 26181 | CEILING_NEGATIVE | -0.0071 [-0.0087, -0.0055] | CEILING_ZERO | 0.864 | 0.867 |",
+  "edge_claimed": false
+}

@@ -54,7 +54,7 @@ CHECK_NAMES = ("vocab", "crlf", "loc", "schema", "head_slice", "spec_threshold",
                "removed_artifact", "row_duplication")
 
 DIGEST_RE = re.compile(r"[0-9a-fA-F]{32,}")
-_ALNUM_BOUND = r"(?<![A-Za-z0-9])(%s)(?![A-Za-z0-9])"
+_ALNUM_BOUND = r"(?<![A-Za-z0-9.])(?:%s)(?![A-Za-z0-9.])"
 # Figures must be bounded by non-alphanumeric characters on both sides (never inside a digest).
 NUMBER_RE = re.compile(_ALNUM_BOUND % "|".join(n.replace(".", r"\.") for n in BANNED_NUMBERS))
 BARE_RE = re.compile(_ALNUM_BOUND % re.escape(BARE_INTEGER))
