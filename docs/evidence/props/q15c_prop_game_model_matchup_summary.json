@@ -1,0 +1,45 @@
+{
+ "stats": [
+  "reb",
+  "pts",
+  "ast"
+ ],
+ "champion_version": {
+  "incumbent": "prop_game_model v1",
+  "candidate": "v1+matchup"
+ },
+ "adv_join_match_rate": 0.9527,
+ "verdict_per_stat": {
+  "reb": {
+   "verdict": "HOLD",
+   "reasons": [
+    "cut B: seed_stable=False"
+   ]
+  },
+  "pts": {
+   "verdict": "HOLD",
+   "reasons": [
+    "cut B: verdict_crps=UNDERPOWERED",
+    "cut B: seed_stable=False"
+   ]
+  },
+  "ast": {
+   "verdict": "HOLD",
+   "reasons": [
+    "cut A: seed_stable=False",
+    "cut B: verdict_crps=BEHIND",
+    "cut B: seed_stable=False"
+   ]
+  }
+ },
+ "not_verified": [
+  "single full-coverage season (2025-26); no second full-coverage corpus exists yet to replicate cut B -- reopen only when 2026-27 accrues.",
+  "byte-identity train/inference fixture not built (matches Q15's own open item).",
+  "no market comparison -- no player-prop line archive joined in this row; calibration only.",
+  "def_priorN_switches_per_game_asof is constant (0.0) across every non-null row in the source table itself, not only after imputation (same finding as gate_b_tracking_ablation.py).",
+  "cut C (2024-25 cross-season) trains on 2023-24, which has 0 pct defender_matchup join rate by construction -- its guard verdict is NOT_TESTED, not a measured negative."
+ ],
+ "markdown_summary": "candidate = landed per-game champion + published per-game defender-matchup as-of features; no market line; calibration only.\n\n| stat | cut | n_test | verdict_crps | delta_crps_ci | mde_80pct | seed_stable | weak |\n|---|---|---|---|---|---|---|---|\n| reb | A_cross_season_2025_26 | 24954 | AHEAD | 0.0061 [0.0050, 0.0073] | 0.0017 | True | False |\n| pts | A_cross_season_2025_26 | 24954 | AHEAD | 0.0118 [0.0088, 0.0148] | 0.0043 | True | False |\n| ast | A_cross_season_2025_26 | 24954 | AHEAD | 0.0046 [0.0040, 0.0052] | 0.0008 | False | False |\n| reb | B_within_2025_26 | 7621 | AHEAD | 0.0072 [0.0044, 0.0097] | 0.0038 | False | False |\n| pts | B_within_2025_26 | 7621 | UNDERPOWERED | 0.0050 [-0.0010, 0.0112] | 0.0087 | False | False |\n| ast | B_within_2025_26 | 7621 | BEHIND | -0.0070 [-0.0089, -0.0051] | 0.0027 | False | False |\n| reb | C_cross_season_2024_25_WEAK | 26181 | NOT_TESTED | 0.0000 [0.0000, 0.0000] | 0.0000 | n/a | True |\n| pts | C_cross_season_2024_25_WEAK | 26181 | NOT_TESTED | 0.0000 [0.0000, 0.0000] | 0.0000 | n/a | True |\n| ast | C_cross_season_2024_25_WEAK | 26181 | NOT_TESTED | 0.0000 [0.0000, 0.0000] | 0.0000 | n/a | True |",
+ "edge_claimed": false,
+ "presentation_note": "values >= 10 rounded to 1 decimal for the vocabulary rail (gain scores); deltas and CIs untouched"
+}

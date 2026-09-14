@@ -1,0 +1,306 @@
+{
+ "cut": "B_within_2025_26",
+ "champion_version": {
+  "incumbent": "prop_game_model v1",
+  "candidate": "v1+matchup"
+ },
+ "matchup_columns": [
+  "def_priorN_fg_pct_allowed_asof",
+  "def_priorN_fg3_pct_allowed_asof",
+  "def_priorN_pts_allowed_per36_asof",
+  "def_priorN_blocks_per_game_asof",
+  "def_priorN_matchup_min_asof",
+  "def_n_prior"
+ ],
+ "dropped_constant_column": "def_priorN_switches_per_game_asof",
+ "results": [
+  {
+   "stat": "reb",
+   "cut": "B_within_2025_26",
+   "status": "OK",
+   "weak": false,
+   "split": "within_season_fallback",
+   "note": "no prior season in table; trained on this season's first ~70pct of dates (embargoed), not a prior season",
+   "n_train": 16940,
+   "n_test": 7621,
+   "n_games_test": 354,
+   "train_side_matchup_coverage": {
+    "join_rate": 0.9873,
+    "nonnull_rate": 0.9814
+   },
+   "imputed_share_candidate": 0.0483,
+   "family_constant_in_train": {
+    "constant_cols": [],
+    "all_constant": false
+   },
+   "champion_pinball": 0.6479777343670583,
+   "candidate_pinball": 0.6473377402562364,
+   "champion_crps_level": 1.7784,
+   "candidate_crps_level": 1.7712,
+   "coverage_10_90_champion": 0.8042251673008791,
+   "coverage_10_90_candidate": 0.7887416349560425,
+   "delta_crps": {
+    "positive_means_candidate_better": true,
+    "point": 0.00717,
+    "ci_lo": 0.00443,
+    "ci_hi": 0.00971
+   },
+   "delta_pinball": {
+    "positive_means_candidate_better": true,
+    "point": 0.00064,
+    "ci_lo": -0.00071,
+    "ci_hi": 0.00193
+   },
+   "mde_80pct_crps": 0.00377,
+   "verdict_crps": "AHEAD",
+   "verdict_pinball": "UNDERPOWERED",
+   "seed_stability": {
+    "colsample_bytree": 0.8,
+    "per_seed": [
+     {
+      "seed": 13,
+      "point": 0.00879,
+      "ci_lo": 0.00603,
+      "ci_hi": 0.01151,
+      "verdict": "CEILING_POSITIVE"
+     },
+     {
+      "seed": 7,
+      "point": 0.00245,
+      "ci_lo": -0.00043,
+      "ci_hi": 0.00528,
+      "verdict": "CEILING_ZERO"
+     },
+     {
+      "seed": 101,
+      "point": 0.00414,
+      "ci_lo": 0.00129,
+      "ci_hi": 0.00691,
+      "verdict": "CEILING_POSITIVE"
+     }
+    ],
+    "seed_stable": false
+   },
+   "matchup_feature_importance_gain": [
+    {
+     "feature": "def_priorN_matchup_min_asof",
+     "gain": 246.5
+    },
+    {
+     "feature": "def_priorN_fg_pct_allowed_asof",
+     "gain": 178.9
+    },
+    {
+     "feature": "def_priorN_pts_allowed_per36_asof",
+     "gain": 153.4
+    },
+    {
+     "feature": "def_priorN_fg3_pct_allowed_asof",
+     "gain": 143.9
+    },
+    {
+     "feature": "def_n_prior",
+     "gain": 63.2
+    },
+    {
+     "feature": "def_priorN_blocks_per_game_asof",
+     "gain": 34.9
+    }
+   ],
+   "edge_claimed": false
+  },
+  {
+   "stat": "pts",
+   "cut": "B_within_2025_26",
+   "status": "OK",
+   "weak": false,
+   "split": "within_season_fallback",
+   "note": "no prior season in table; trained on this season's first ~70pct of dates (embargoed), not a prior season",
+   "n_train": 16940,
+   "n_test": 7621,
+   "n_games_test": 354,
+   "train_side_matchup_coverage": {
+    "join_rate": 0.9873,
+    "nonnull_rate": 0.9814
+   },
+   "imputed_share_candidate": 0.0483,
+   "family_constant_in_train": {
+    "constant_cols": [],
+    "all_constant": false
+   },
+   "champion_pinball": 1.5976678576333725,
+   "candidate_pinball": 1.5969566865855263,
+   "champion_crps_level": 4.3791,
+   "candidate_crps_level": 4.3741,
+   "coverage_10_90_champion": 0.7938590736123868,
+   "coverage_10_90_candidate": 0.7937278572365831,
+   "delta_crps": {
+    "positive_means_candidate_better": true,
+    "point": 0.005,
+    "ci_lo": -0.00099,
+    "ci_hi": 0.01117
+   },
+   "delta_pinball": {
+    "positive_means_candidate_better": true,
+    "point": 0.00071,
+    "ci_lo": -0.0023,
+    "ci_hi": 0.00371
+   },
+   "mde_80pct_crps": 0.00869,
+   "verdict_crps": "UNDERPOWERED",
+   "verdict_pinball": "UNDERPOWERED",
+   "seed_stability": {
+    "colsample_bytree": 0.8,
+    "per_seed": [
+     {
+      "seed": 13,
+      "point": 0.00818,
+      "ci_lo": 0.00093,
+      "ci_hi": 0.01509,
+      "verdict": "CEILING_POSITIVE"
+     },
+     {
+      "seed": 7,
+      "point": -0.00059,
+      "ci_lo": -0.00666,
+      "ci_hi": 0.00561,
+      "verdict": "CEILING_ZERO"
+     },
+     {
+      "seed": 101,
+      "point": 0.00234,
+      "ci_lo": -0.00363,
+      "ci_hi": 0.00862,
+      "verdict": "CEILING_ZERO"
+     }
+    ],
+    "seed_stable": false
+   },
+   "matchup_feature_importance_gain": [
+    {
+     "feature": "def_priorN_matchup_min_asof",
+     "gain": 324.9
+    },
+    {
+     "feature": "def_priorN_fg3_pct_allowed_asof",
+     "gain": 209.5
+    },
+    {
+     "feature": "def_priorN_pts_allowed_per36_asof",
+     "gain": 206.3
+    },
+    {
+     "feature": "def_priorN_fg_pct_allowed_asof",
+     "gain": 169.0
+    },
+    {
+     "feature": "def_priorN_blocks_per_game_asof",
+     "gain": 36.8
+    },
+    {
+     "feature": "def_n_prior",
+     "gain": 18.4
+    }
+   ],
+   "edge_claimed": false
+  },
+  {
+   "stat": "ast",
+   "cut": "B_within_2025_26",
+   "status": "OK",
+   "weak": false,
+   "split": "within_season_fallback",
+   "note": "no prior season in table; trained on this season's first ~70pct of dates (embargoed), not a prior season",
+   "n_train": 16940,
+   "n_test": 7621,
+   "n_games_test": 354,
+   "train_side_matchup_coverage": {
+    "join_rate": 0.9873,
+    "nonnull_rate": 0.9814
+   },
+   "imputed_share_candidate": 0.0483,
+   "family_constant_in_train": {
+    "constant_cols": [],
+    "all_constant": false
+   },
+   "champion_pinball": 0.4627232498660856,
+   "candidate_pinball": 0.46355938233246285,
+   "champion_crps_level": 1.2679,
+   "candidate_crps_level": 1.2749,
+   "coverage_10_90_champion": 0.827056816690723,
+   "coverage_10_90_candidate": 0.8366356121243931,
+   "delta_crps": {
+    "positive_means_candidate_better": true,
+    "point": -0.007,
+    "ci_lo": -0.00887,
+    "ci_hi": -0.00513
+   },
+   "delta_pinball": {
+    "positive_means_candidate_better": true,
+    "point": -0.00084,
+    "ci_lo": -0.00172,
+    "ci_hi": 4e-05
+   },
+   "mde_80pct_crps": 0.00267,
+   "verdict_crps": "BEHIND",
+   "verdict_pinball": "UNDERPOWERED",
+   "seed_stability": {
+    "colsample_bytree": 0.8,
+    "per_seed": [
+     {
+      "seed": 13,
+      "point": 0.00114,
+      "ci_lo": -0.00063,
+      "ci_hi": 0.00295,
+      "verdict": "CEILING_ZERO"
+     },
+     {
+      "seed": 7,
+      "point": 0.00205,
+      "ci_lo": 9e-05,
+      "ci_hi": 0.00408,
+      "verdict": "CEILING_POSITIVE"
+     },
+     {
+      "seed": 101,
+      "point": 0.00176,
+      "ci_lo": -0.00015,
+      "ci_hi": 0.00371,
+      "verdict": "CEILING_ZERO"
+     }
+    ],
+    "seed_stable": false
+   },
+   "matchup_feature_importance_gain": [
+    {
+     "feature": "def_priorN_pts_allowed_per36_asof",
+     "gain": 290.1
+    },
+    {
+     "feature": "def_priorN_fg_pct_allowed_asof",
+     "gain": 149.5
+    },
+    {
+     "feature": "def_priorN_matchup_min_asof",
+     "gain": 68.2
+    },
+    {
+     "feature": "def_priorN_fg3_pct_allowed_asof",
+     "gain": 67.1
+    },
+    {
+     "feature": "def_priorN_blocks_per_game_asof",
+     "gain": 7.2
+    },
+    {
+     "feature": "def_n_prior",
+     "gain": 2.08
+    }
+   ],
+   "edge_claimed": false
+  }
+ ],
+ "markdown_summary": "candidate = landed per-game champion + published per-game defender-matchup as-of features; no market line; calibration only.\n\n| stat | cut | n_test | verdict_crps | delta_crps_ci | mde_80pct | seed_stable | weak |\n|---|---|---|---|---|---|---|---|\n| reb | B_within_2025_26 | 7621 | AHEAD | 0.0072 [0.0044, 0.0097] | 0.0038 | False | False |\n| pts | B_within_2025_26 | 7621 | UNDERPOWERED | 0.0050 [-0.0010, 0.0112] | 0.0087 | False | False |\n| ast | B_within_2025_26 | 7621 | BEHIND | -0.0070 [-0.0089, -0.0051] | 0.0027 | False | False |",
+ "edge_claimed": false,
+ "presentation_note": "values >= 10 rounded to 1 decimal for the vocabulary rail (gain scores); deltas and CIs untouched"
+}

@@ -1,0 +1,255 @@
+{
+ "cut": "C_cross_season_2024_25_WEAK",
+ "champion_version": {
+  "incumbent": "prop_game_model v1",
+  "candidate": "v1+matchup"
+ },
+ "matchup_columns": [
+  "def_priorN_fg_pct_allowed_asof",
+  "def_priorN_fg3_pct_allowed_asof",
+  "def_priorN_pts_allowed_per36_asof",
+  "def_priorN_blocks_per_game_asof",
+  "def_priorN_matchup_min_asof",
+  "def_n_prior"
+ ],
+ "dropped_constant_column": "def_priorN_switches_per_game_asof",
+ "results": [
+  {
+   "stat": "reb",
+   "cut": "C_cross_season_2024_25_WEAK",
+   "status": "OK",
+   "weak": true,
+   "split": "cross_season",
+   "prior_seasons": [
+    "2023-24"
+   ],
+   "n_train": 26283,
+   "n_test": 26181,
+   "n_games_test": 1225,
+   "train_side_matchup_coverage": {
+    "join_rate": 0.0,
+    "nonnull_rate": 0.0
+   },
+   "imputed_share_candidate": 0.6172,
+   "family_constant_in_train": {
+    "constant_cols": [
+     "def_priorN_fg_pct_allowed_asof",
+     "def_priorN_fg3_pct_allowed_asof",
+     "def_priorN_pts_allowed_per36_asof",
+     "def_priorN_blocks_per_game_asof",
+     "def_priorN_matchup_min_asof",
+     "def_n_prior"
+    ],
+    "all_constant": true
+   },
+   "champion_pinball": 0.6539622708137673,
+   "candidate_pinball": 0.6539622708137673,
+   "champion_crps_level": 1.8259,
+   "candidate_crps_level": 1.8259,
+   "coverage_10_90_champion": 0.8301439975554792,
+   "coverage_10_90_candidate": 0.8301439975554792,
+   "delta_crps": {
+    "positive_means_candidate_better": true,
+    "point": 0.0,
+    "ci_lo": 0.0,
+    "ci_hi": 0.0
+   },
+   "delta_pinball": {
+    "positive_means_candidate_better": true,
+    "point": 0.0,
+    "ci_lo": 0.0,
+    "ci_hi": 0.0
+   },
+   "mde_80pct_crps": 0.0,
+   "verdict_crps": "NOT_TESTED",
+   "verdict_pinball": "NOT_TESTED",
+   "seed_stability": null,
+   "matchup_feature_importance_gain": [
+    {
+     "feature": "def_priorN_fg_pct_allowed_asof",
+     "gain": 0.0
+    },
+    {
+     "feature": "def_priorN_fg3_pct_allowed_asof",
+     "gain": 0.0
+    },
+    {
+     "feature": "def_priorN_pts_allowed_per36_asof",
+     "gain": 0.0
+    },
+    {
+     "feature": "def_priorN_blocks_per_game_asof",
+     "gain": 0.0
+    },
+    {
+     "feature": "def_priorN_matchup_min_asof",
+     "gain": 0.0
+    },
+    {
+     "feature": "def_n_prior",
+     "gain": 0.0
+    }
+   ],
+   "edge_claimed": false
+  },
+  {
+   "stat": "pts",
+   "cut": "C_cross_season_2024_25_WEAK",
+   "status": "OK",
+   "weak": true,
+   "split": "cross_season",
+   "prior_seasons": [
+    "2023-24"
+   ],
+   "n_train": 26283,
+   "n_test": 26181,
+   "n_games_test": 1225,
+   "train_side_matchup_coverage": {
+    "join_rate": 0.0,
+    "nonnull_rate": 0.0
+   },
+   "imputed_share_candidate": 0.6172,
+   "family_constant_in_train": {
+    "constant_cols": [
+     "def_priorN_fg_pct_allowed_asof",
+     "def_priorN_fg3_pct_allowed_asof",
+     "def_priorN_pts_allowed_per36_asof",
+     "def_priorN_blocks_per_game_asof",
+     "def_priorN_matchup_min_asof",
+     "def_n_prior"
+    ],
+    "all_constant": true
+   },
+   "champion_pinball": 1.570524652458785,
+   "candidate_pinball": 1.570524652458785,
+   "champion_crps_level": 4.3777,
+   "candidate_crps_level": 4.3777,
+   "coverage_10_90_champion": 0.8096329399182614,
+   "coverage_10_90_candidate": 0.8096329399182614,
+   "delta_crps": {
+    "positive_means_candidate_better": true,
+    "point": 0.0,
+    "ci_lo": 0.0,
+    "ci_hi": 0.0
+   },
+   "delta_pinball": {
+    "positive_means_candidate_better": true,
+    "point": 0.0,
+    "ci_lo": 0.0,
+    "ci_hi": 0.0
+   },
+   "mde_80pct_crps": 0.0,
+   "verdict_crps": "NOT_TESTED",
+   "verdict_pinball": "NOT_TESTED",
+   "seed_stability": null,
+   "matchup_feature_importance_gain": [
+    {
+     "feature": "def_priorN_fg_pct_allowed_asof",
+     "gain": 0.0
+    },
+    {
+     "feature": "def_priorN_fg3_pct_allowed_asof",
+     "gain": 0.0
+    },
+    {
+     "feature": "def_priorN_pts_allowed_per36_asof",
+     "gain": 0.0
+    },
+    {
+     "feature": "def_priorN_blocks_per_game_asof",
+     "gain": 0.0
+    },
+    {
+     "feature": "def_priorN_matchup_min_asof",
+     "gain": 0.0
+    },
+    {
+     "feature": "def_n_prior",
+     "gain": 0.0
+    }
+   ],
+   "edge_claimed": false
+  },
+  {
+   "stat": "ast",
+   "cut": "C_cross_season_2024_25_WEAK",
+   "status": "OK",
+   "weak": true,
+   "split": "cross_season",
+   "prior_seasons": [
+    "2023-24"
+   ],
+   "n_train": 26283,
+   "n_test": 26181,
+   "n_games_test": 1225,
+   "train_side_matchup_coverage": {
+    "join_rate": 0.0,
+    "nonnull_rate": 0.0
+   },
+   "imputed_share_candidate": 0.6172,
+   "family_constant_in_train": {
+    "constant_cols": [
+     "def_priorN_fg_pct_allowed_asof",
+     "def_priorN_fg3_pct_allowed_asof",
+     "def_priorN_pts_allowed_per36_asof",
+     "def_priorN_blocks_per_game_asof",
+     "def_priorN_matchup_min_asof",
+     "def_n_prior"
+    ],
+    "all_constant": true
+   },
+   "champion_pinball": 0.4509436496231215,
+   "candidate_pinball": 0.4509436496231215,
+   "champion_crps_level": 1.2683,
+   "candidate_crps_level": 1.2683,
+   "coverage_10_90_champion": 0.8638707459608113,
+   "coverage_10_90_candidate": 0.8638707459608113,
+   "delta_crps": {
+    "positive_means_candidate_better": true,
+    "point": 0.0,
+    "ci_lo": 0.0,
+    "ci_hi": 0.0
+   },
+   "delta_pinball": {
+    "positive_means_candidate_better": true,
+    "point": 0.0,
+    "ci_lo": 0.0,
+    "ci_hi": 0.0
+   },
+   "mde_80pct_crps": 0.0,
+   "verdict_crps": "NOT_TESTED",
+   "verdict_pinball": "NOT_TESTED",
+   "seed_stability": null,
+   "matchup_feature_importance_gain": [
+    {
+     "feature": "def_priorN_fg_pct_allowed_asof",
+     "gain": 0.0
+    },
+    {
+     "feature": "def_priorN_fg3_pct_allowed_asof",
+     "gain": 0.0
+    },
+    {
+     "feature": "def_priorN_pts_allowed_per36_asof",
+     "gain": 0.0
+    },
+    {
+     "feature": "def_priorN_blocks_per_game_asof",
+     "gain": 0.0
+    },
+    {
+     "feature": "def_priorN_matchup_min_asof",
+     "gain": 0.0
+    },
+    {
+     "feature": "def_n_prior",
+     "gain": 0.0
+    }
+   ],
+   "edge_claimed": false
+  }
+ ],
+ "markdown_summary": "candidate = landed per-game champion + published per-game defender-matchup as-of features; no market line; calibration only.\n\n| stat | cut | n_test | verdict_crps | delta_crps_ci | mde_80pct | seed_stable | weak |\n|---|---|---|---|---|---|---|---|\n| reb | C_cross_season_2024_25_WEAK | 26181 | NOT_TESTED | 0.0000 [0.0000, 0.0000] | 0.0000 | n/a | True |\n| pts | C_cross_season_2024_25_WEAK | 26181 | NOT_TESTED | 0.0000 [0.0000, 0.0000] | 0.0000 | n/a | True |\n| ast | C_cross_season_2024_25_WEAK | 26181 | NOT_TESTED | 0.0000 [0.0000, 0.0000] | 0.0000 | n/a | True |",
+ "edge_claimed": false,
+ "presentation_note": "values >= 10 rounded to 1 decimal for the vocabulary rail (gain scores); deltas and CIs untouched"
+}
