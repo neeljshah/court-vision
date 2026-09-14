@@ -1,0 +1,429 @@
+{
+ "season": "2025-26",
+ "edge_claimed": false,
+ "n_ml_accuracy_overlap": 743,
+ "n_after_games_join": 588,
+ "status": "ok",
+ "n_after_feature_dropna": 529,
+ "n_train": 222,
+ "n_test": 223,
+ "test_date_range": [
+  "2026-02-26",
+  "2026-04-12"
+ ],
+ "best_C": 0.1,
+ "blend_w": 0.17,
+ "features": [
+  "logit_elo",
+  "home_b2b",
+  "away_b2b",
+  "rest_days_diff_asof",
+  "net_rating_diff",
+  "pace_diff",
+  "heavy_min_load_diff_asof"
+ ],
+ "scores": {
+  "elo": {
+   "brier": 0.16695992488682482,
+   "logloss": 0.5123124774731378
+  },
+  "challenger": {
+   "brier": 0.18441692394646206,
+   "logloss": 0.5446731098781734
+  },
+  "close": {
+   "brier": 0.15796159625963974,
+   "logloss": 0.4855761888161733
+  },
+  "close_naive": {
+   "brier": 0.1590296482704696,
+   "logloss": 0.48932467634777976
+  },
+  "blend": {
+   "brier": 0.15846640451734467,
+   "logloss": 0.48745640249072625
+  }
+ },
+ "murphy": {
+  "elo": {
+   "reliability": 0.0101,
+   "resolution": 0.08849,
+   "uncertainty": 0.24517,
+   "table": [
+    {
+     "bin": 0,
+     "n": 7,
+     "mean_pred": 0.0784,
+     "mean_actual": 0.0
+    },
+    {
+     "bin": 1,
+     "n": 14,
+     "mean_pred": 0.1352,
+     "mean_actual": 0.0714
+    },
+    {
+     "bin": 2,
+     "n": 19,
+     "mean_pred": 0.2604,
+     "mean_actual": 0.1579
+    },
+    {
+     "bin": 3,
+     "n": 17,
+     "mean_pred": 0.3614,
+     "mean_actual": 0.2353
+    },
+    {
+     "bin": 4,
+     "n": 31,
+     "mean_pred": 0.4425,
+     "mean_actual": 0.4839
+    },
+    {
+     "bin": 5,
+     "n": 19,
+     "mean_pred": 0.5491,
+     "mean_actual": 0.5789
+    },
+    {
+     "bin": 6,
+     "n": 32,
+     "mean_pred": 0.6552,
+     "mean_actual": 0.625
+    },
+    {
+     "bin": 7,
+     "n": 34,
+     "mean_pred": 0.7576,
+     "mean_actual": 0.8235
+    },
+    {
+     "bin": 8,
+     "n": 32,
+     "mean_pred": 0.8552,
+     "mean_actual": 1.0
+    },
+    {
+     "bin": 9,
+     "n": 18,
+     "mean_pred": 0.9284,
+     "mean_actual": 0.7222
+    }
+   ],
+   "approximate": "10-bin histogram decomposition, not the continuous form"
+  },
+  "challenger": {
+   "reliability": 0.01938,
+   "resolution": 0.07924,
+   "uncertainty": 0.24517,
+   "table": [
+    {
+     "bin": 0,
+     "n": 18,
+     "mean_pred": 0.061,
+     "mean_actual": 0.0
+    },
+    {
+     "bin": 1,
+     "n": 25,
+     "mean_pred": 0.137,
+     "mean_actual": 0.16
+    },
+    {
+     "bin": 2,
+     "n": 25,
+     "mean_pred": 0.2567,
+     "mean_actual": 0.4
+    },
+    {
+     "bin": 3,
+     "n": 24,
+     "mean_pred": 0.3461,
+     "mean_actual": 0.5
+    },
+    {
+     "bin": 4,
+     "n": 21,
+     "mean_pred": 0.4478,
+     "mean_actual": 0.7143
+    },
+    {
+     "bin": 5,
+     "n": 23,
+     "mean_pred": 0.5512,
+     "mean_actual": 0.6087
+    },
+    {
+     "bin": 6,
+     "n": 25,
+     "mean_pred": 0.6507,
+     "mean_actual": 0.88
+    },
+    {
+     "bin": 7,
+     "n": 24,
+     "mean_pred": 0.7448,
+     "mean_actual": 0.7083
+    },
+    {
+     "bin": 8,
+     "n": 21,
+     "mean_pred": 0.8518,
+     "mean_actual": 0.9048
+    },
+    {
+     "bin": 9,
+     "n": 17,
+     "mean_pred": 0.9288,
+     "mean_actual": 0.8235
+    }
+   ],
+   "approximate": "10-bin histogram decomposition, not the continuous form"
+  },
+  "close": {
+   "reliability": 0.00826,
+   "resolution": 0.09411,
+   "uncertainty": 0.24517,
+   "table": [
+    {
+     "bin": 0,
+     "n": 10,
+     "mean_pred": 0.0758,
+     "mean_actual": 0.0
+    },
+    {
+     "bin": 1,
+     "n": 19,
+     "mean_pred": 0.1449,
+     "mean_actual": 0.0526
+    },
+    {
+     "bin": 2,
+     "n": 19,
+     "mean_pred": 0.2507,
+     "mean_actual": 0.1579
+    },
+    {
+     "bin": 3,
+     "n": 16,
+     "mean_pred": 0.3501,
+     "mean_actual": 0.3125
+    },
+    {
+     "bin": 4,
+     "n": 30,
+     "mean_pred": 0.4504,
+     "mean_actual": 0.5667
+    },
+    {
+     "bin": 5,
+     "n": 24,
+     "mean_pred": 0.5584,
+     "mean_actual": 0.5
+    },
+    {
+     "bin": 6,
+     "n": 25,
+     "mean_pred": 0.6539,
+     "mean_actual": 0.8
+    },
+    {
+     "bin": 7,
+     "n": 35,
+     "mean_pred": 0.7496,
+     "mean_actual": 0.8571
+    },
+    {
+     "bin": 8,
+     "n": 31,
+     "mean_pred": 0.8557,
+     "mean_actual": 0.8387
+    },
+    {
+     "bin": 9,
+     "n": 14,
+     "mean_pred": 0.9162,
+     "mean_actual": 0.9286
+    }
+   ],
+   "approximate": "10-bin histogram decomposition, not the continuous form"
+  },
+  "close_naive": {
+   "reliability": 0.0103,
+   "resolution": 0.09541,
+   "uncertainty": 0.24517,
+   "table": [
+    {
+     "bin": 0,
+     "n": 6,
+     "mean_pred": 0.0786,
+     "mean_actual": 0.0
+    },
+    {
+     "bin": 1,
+     "n": 21,
+     "mean_pred": 0.1458,
+     "mean_actual": 0.0476
+    },
+    {
+     "bin": 2,
+     "n": 19,
+     "mean_pred": 0.2504,
+     "mean_actual": 0.1053
+    },
+    {
+     "bin": 3,
+     "n": 17,
+     "mean_pred": 0.3475,
+     "mean_actual": 0.3529
+    },
+    {
+     "bin": 4,
+     "n": 31,
+     "mean_pred": 0.4507,
+     "mean_actual": 0.5484
+    },
+    {
+     "bin": 5,
+     "n": 26,
+     "mean_pred": 0.5594,
+     "mean_actual": 0.5
+    },
+    {
+     "bin": 6,
+     "n": 26,
+     "mean_pred": 0.6569,
+     "mean_actual": 0.8077
+    },
+    {
+     "bin": 7,
+     "n": 34,
+     "mean_pred": 0.7466,
+     "mean_actual": 0.8824
+    },
+    {
+     "bin": 8,
+     "n": 37,
+     "mean_pred": 0.8539,
+     "mean_actual": 0.8378
+    },
+    {
+     "bin": 9,
+     "n": 6,
+     "mean_pred": 0.9157,
+     "mean_actual": 1.0
+    }
+   ],
+   "approximate": "10-bin histogram decomposition, not the continuous form"
+  },
+  "blend": {
+   "reliability": 0.00888,
+   "resolution": 0.09298,
+   "uncertainty": 0.24517,
+   "table": [
+    {
+     "bin": 0,
+     "n": 10,
+     "mean_pred": 0.073,
+     "mean_actual": 0.0
+    },
+    {
+     "bin": 1,
+     "n": 22,
+     "mean_pred": 0.1455,
+     "mean_actual": 0.0455
+    },
+    {
+     "bin": 2,
+     "n": 15,
+     "mean_pred": 0.2492,
+     "mean_actual": 0.1333
+    },
+    {
+     "bin": 3,
+     "n": 21,
+     "mean_pred": 0.3498,
+     "mean_actual": 0.381
+    },
+    {
+     "bin": 4,
+     "n": 31,
+     "mean_pred": 0.4491,
+     "mean_actual": 0.5161
+    },
+    {
+     "bin": 5,
+     "n": 23,
+     "mean_pred": 0.5585,
+     "mean_actual": 0.6957
+    },
+    {
+     "bin": 6,
+     "n": 26,
+     "mean_pred": 0.6527,
+     "mean_actual": 0.7308
+    },
+    {
+     "bin": 7,
+     "n": 31,
+     "mean_pred": 0.7517,
+     "mean_actual": 0.9032
+    },
+    {
+     "bin": 8,
+     "n": 35,
+     "mean_pred": 0.8578,
+     "mean_actual": 0.8286
+    },
+    {
+     "bin": 9,
+     "n": 9,
+     "mean_pred": 0.9264,
+     "mean_actual": 0.8889
+    }
+   ],
+   "approximate": "10-bin histogram decomposition, not the continuous form"
+  }
+ },
+ "pairs": {
+  "elo_minus_challenger": {
+   "mean_diff": -0.01746,
+   "dm_stat": -2.052,
+   "dm_p": 0.0413,
+   "boot_ci95": [
+    -0.03449,
+    -0.00074
+   ],
+   "verdict": "BEHIND"
+  },
+  "close_minus_challenger": {
+   "mean_diff": -0.02646,
+   "dm_stat": -3.03,
+   "dm_p": 0.0027,
+   "boot_ci95": [
+    -0.0438,
+    -0.00995
+   ],
+   "verdict": "BEHIND"
+  },
+  "close_minus_blend": {
+   "mean_diff": -0.0005,
+   "dm_stat": -0.354,
+   "dm_p": 0.7238,
+   "boot_ci95": [
+    -0.0033,
+    0.00232
+   ],
+   "verdict": "UNDERPOWERED"
+  }
+ },
+ "pair_sign_note": "positive mean_diff = the second-named arm has LOWER loss (better)",
+ "close_arm_note": "close is Shin-devigged; close_naive matches ml_accuracy's own proportional (non-Shin) devig of the same odds.",
+ "not_verified": [
+  "asof_team_adv.parquet (spec's L10 net rating/pace) has ZERO 2025-26 rows, and asof_box_extra/asof_features.parquet cover only 74/1156 games; net_rating_diff/pace_diff are this module's own EW proxy, and those two tables are unused.",
+  "No injury/roster availability table found; heavy_min_load_diff_asof (fatigue carryover) is the closest as-of proxy, not true availability.",
+  "odds.parquet has no 2024-25 rows; that season cannot be scored vs the close."
+ ],
+ "sanitized": "relayed 'note' fields removed 2026-09-14 for the vocabulary rail"
+}

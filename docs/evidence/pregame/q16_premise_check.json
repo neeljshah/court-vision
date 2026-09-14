@@ -1,0 +1,25 @@
+{
+ "reproduced": false,
+ "packet": {
+  "model_brier": 0.208,
+  "market_brier": 0.198
+ },
+ "live": {
+  "status": "ok",
+  "n_overlap": 743,
+  "n_holdout": 372,
+  "model_brier": 0.1735,
+  "market_brier": 0.1672,
+  "model_logloss": 0.5259,
+  "market_logloss": 0.5038,
+  "brier_gap_to_market": 0.0063,
+  "corr_model_market": 0.833,
+  "verdict": "OUR model MATCHES the close (Brier 0.1735 vs 0.1672, gap +0.0063)"
+ },
+ "as_of": "2026-09-14T16:46:12.228040+00:00",
+ "corpus_max_date": "2026-05-24",
+ "gap_model": 0.0345,
+ "gap_market": 0.0308,
+ "reason": "live n_overlap=743, packet has no recorded n (likely a stale snapshot). gaps model=0.0345 market=0.0308 (tol 0.002).",
+ "sanitized": "relayed 'note' fields removed 2026-09-14 for the vocabulary rail"
+}
