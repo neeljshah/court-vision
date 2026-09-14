@@ -60,3 +60,25 @@ positive mean_diff = the second-named arm has LOWER loss (better)
 | elo_minus_challenger | -0.01746 | 0.0413 | [-0.03449, -0.00074] | BEHIND |
 | close_minus_challenger | -0.02646 | 0.0027 | [-0.0438, -0.00995] | BEHIND |
 | close_minus_blend | -0.0005 | 0.7238 | [-0.0033, 0.00232] | UNDERPOWERED |
+
+
+## Re-run 2026-09-14 (later) on the refreshed as-of tables (asof_team_adv, asof_features, asof_box_extra at 1,156/1,156 for 2025-26)
+
+Features: logit_elo, home_b2b, away_b2b, rest_days_diff_asof, heavy_min_load_diff_asof, net_rating_diff_asof, pace_diff_asof, ast_rate_diff_asof, dreb_diff_asof, fg3m_diff_asof, stl_diff_asof, blk_diff_asof (12; the EW proxies removed).
+n_after_feature_dropna 529, train 264 / test 265 (2026-02-21..04-12), best_C 0.03, blend_w 0.07.
+
+| arm | Brier | logloss |
+|---|---|---|
+| elo | 0.18075 | 0.54143 |
+| challenger | 0.21612 | 0.62314 |
+| close (Shin) | 0.16465 | 0.50025 |
+| close_naive | 0.16559 | 0.50372 |
+| blend | 0.16546 | 0.50314 |
+
+| pair (positive = second-named arm lower loss) | mean_diff | dm_p | boot_ci95 | verdict |
+|---|---|---|---|---|
+| elo_minus_challenger | -0.03537 | 0.0001 | [-0.05233, -0.01849] | BEHIND |
+| close_minus_challenger | -0.05147 | <0.0001 | [-0.06768, -0.03450] | BEHIND |
+| close_minus_blend | -0.00081 | 0.0863 | [-0.00168, +0.00012] | UNDERPOWERED |
+
+Verdict unchanged and stronger: the as-of team-form challenger is BEHIND Elo and BEHIND the close; the blend sits on the close. No feature pruning was done after seeing the result. Calibration only; no monetary claim.

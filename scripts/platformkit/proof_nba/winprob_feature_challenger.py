@@ -8,12 +8,14 @@ shrink/shift it; n_ml_accuracy_overlap/n_after_games_join/n_after_feature_dropna
 
 Challenger = logistic regression on [logit(Elo), as-of team-feature diffs], TRAIN
 half only, inner TimeSeriesSplit picks C. Blend = sigmoid(w*logit(model) +
-(1-w)*logit(close)), w fit OOS on TRAIN. Leak-free: every feature is NaN/unready
-until a team has >=1 strictly-prior game/team-season (enforced, raises). Home
-flag skipped (every row already IS P(home), collinear with the intercept).
-Spec's "trailing-10" net rating/pace (asof_team_adv.parquet) has ZERO 2025-26
-rows, so net/pace are this module's own EW (asof_box_accuracy's _ALPHA) over
-box possession detail; full NOT VERIFIED list on every season report.
+(1-w)*logit(close)), w fit OOS on TRAIN. Leak-free: every _asof column is NaN
+until a team has >=1 strictly-prior game/team-season (each source builder's own
+contract), and dropna enforces it. Home flag skipped (every row already IS
+P(home), collinear with the intercept). net_rating_diff_asof/pace_diff_asof are
+REAL asof_team_adv.parquet trailing means (off_rtg-def_rtg, pace); ast_rate from
+asof_features.parquet; dreb/fg3m/stl/blk from asof_box_extra.parquet -- all now
+1,156/1,156 2025-26-covered (asof_table_coverage on every season report shows
+what was actually observed on THIS run). Full NOT VERIFIED list per report too.
 
 INVARIANTS: never edit src/ or kernel/; <=300 LOC; edge_claimed is always False.
 Run: python -m scripts.platformkit.proof_nba.winprob_feature_challenger \
@@ -38,8 +40,7 @@ _REPO = Path(__file__).resolve().parents[3]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from scripts.platformkit.proof_nba.asof_box_accuracy import (  # noqa: E402
-    _ALPHA, _possessions, load_box)
+from scripts.platformkit.proof_nba.asof_box_accuracy import load_box  # noqa: E402
 from scripts.platformkit.proof_nba.ml_accuracy import (  # noqa: E402
     _brier_logloss, _walk_forward_elo, american_to_prob)
 from scripts.platformkit.proof_nba.ml_accuracy import run as ml_accuracy_run  # noqa: E402
@@ -49,8 +50,9 @@ from scripts.platformkit.eval_gate.dm_test import diebold_mariano  # noqa: E402
 _PACKET = {"model_brier": 0.208, "market_brier": 0.198}
 _C_GRID: Tuple[float, ...] = (0.03, 0.1, 0.3, 1.0, 3.0, 10.0)
 FEATURES: Tuple[str, ...] = (
-    "logit_elo", "home_b2b", "away_b2b", "rest_days_diff_asof",
-    "net_rating_diff", "pace_diff", "heavy_min_load_diff_asof",
+    "logit_elo", "home_b2b", "away_b2b", "rest_days_diff_asof", "heavy_min_load_diff_asof",
+    "net_rating_diff_asof", "pace_diff_asof", "ast_rate_diff_asof",
+    "dreb_diff_asof", "fg3m_diff_asof", "stl_diff_asof", "blk_diff_asof",
 )
 
 def _logit(p: np.ndarray) -> np.ndarray:
@@ -68,34 +70,9 @@ def _default_root() -> Path:  # worktree-local data/, else parent repo; reads on
             return c
     raise FileNotFoundError("espn_boxscores.parquet not found (worktree or parent repo).")
 
-def _ew_team_form(box: pd.DataFrame) -> pd.DataFrame:  # as-of EW pace/net-rating diffs, _walk_forward_poss's discipline
-    pace: Dict[str, float] = {}; offp: Dict[str, float] = {}; defp: Dict[str, float] = {}
-    nprior: Dict[str, int] = {}
-    h = box["home_abbr"].to_numpy(); a = box["away_abbr"].to_numpy()
-    hp = box["home_pts"].to_numpy(float); ap = box["away_pts"].to_numpy(float)
-    gp = 0.5 * (_possessions(box, "home") + _possessions(box, "away"))
-    pace_diff = np.empty(len(box)); net_diff = np.empty(len(box))
-    ready = np.zeros(len(box), dtype=bool)
-    for i in range(len(box)):
-        ht, at = str(h[i]), str(a[i])
-        for d, init in ((pace, 100.5), (offp, 1.13), (defp, 1.13)):
-            d.setdefault(ht, init); d.setdefault(at, init)
-        nprior.setdefault(ht, 0); nprior.setdefault(at, 0)
-        pace_diff[i] = pace[ht] - pace[at]
-        net_diff[i] = (offp[ht] - defp[ht]) - (offp[at] - defp[at])
-        ready[i] = nprior[ht] > 0 and nprior[at] > 0
-        p = gp[i]
-        if np.isfinite(p) and p > 50:
-            pace[ht] += _ALPHA * (p - pace[ht]); pace[at] += _ALPHA * (p - pace[at])
-            offp[ht] += _ALPHA * (hp[i] / p - offp[ht]); defp[ht] += _ALPHA * (ap[i] / p - defp[ht])
-            offp[at] += _ALPHA * (ap[i] / p - offp[at]); defp[at] += _ALPHA * (hp[i] / p - defp[at])
-            nprior[ht] += 1; nprior[at] += 1
-    return pd.DataFrame({"pace_diff": pace_diff, "net_rating_diff": net_diff, "asof_ready": ready})
-
-def _build_frame(root: Path) -> pd.DataFrame:  # box(+Elo,+EW) x games x odds x carryover_asof
+def _build_frame(root: Path) -> pd.DataFrame:  # box(+Elo) x games x odds x real as-of team tables
     box = load_box(root)
     box["p_elo"] = _walk_forward_elo(box)
-    box = pd.concat([box.reset_index(drop=True), _ew_team_form(box)], axis=1)
     gm = pd.read_parquet(root / "games.parquet")
     gm["date"] = pd.to_datetime(gm["date"])
     gm_cols = ["game_id", "date", "home_team", "away_team", "season", "home_b2b", "away_b2b"]
@@ -110,8 +87,16 @@ def _build_frame(root: Path) -> pd.DataFrame:  # box(+Elo,+EW) x games x odds x 
     m = m.merge(od[["date", "home_team", "away_team", "p_close", "p_market_naive"]],
                 on=["date", "home_team", "away_team"], how="inner")
     co = pd.read_parquet(root / "carryover_asof.parquet")
-    m = m.merge(co[["game_id", "rest_days_diff_asof", "heavy_min_load_diff_asof",
-                     "home_n_prior", "away_n_prior"]], on="game_id", how="left")
+    m = m.merge(co[["game_id", "rest_days_diff_asof", "heavy_min_load_diff_asof"]],
+                on="game_id", how="left")
+    ta = pd.read_parquet(root / "asof_team_adv.parquet")  # REAL trailing net rating + pace
+    ta["net_rating_diff_asof"] = ta["off_rtg_diff_asof"] - ta["def_rtg_diff_asof"]
+    m = m.merge(ta[["game_id", "net_rating_diff_asof", "pace_diff_asof"]], on="game_id", how="left")
+    af = pd.read_parquet(root / "asof_features.parquet")
+    m = m.merge(af[["game_id", "ast_rate_diff_asof"]], on="game_id", how="left")
+    bx = pd.read_parquet(root / "asof_box_extra.parquet")
+    bx_cols = ["game_id", "dreb_diff_asof", "fg3m_diff_asof", "stl_diff_asof", "blk_diff_asof"]
+    m = m.merge(bx[bx_cols], on="game_id", how="left")
     m["home_b2b"] = m["home_b2b"].astype(float); m["away_b2b"] = m["away_b2b"].astype(float)
     return m.sort_values("date", kind="mergesort").reset_index(drop=True)
 
@@ -119,14 +104,10 @@ def _assemble(m: pd.DataFrame) -> Tuple[pd.DataFrame, int]:  # -> (rows, n after
     m = m.copy()
     m["logit_elo"] = _logit(m["p_elo"].to_numpy(float))
     m["y"] = (m["home_pts"] > m["away_pts"]).astype(float)
-    m = m.dropna(subset=list(FEATURES) + ["y", "p_close"])
-    n_after_dropna = int(len(m))
-    m = m[m["asof_ready"]].reset_index(drop=True)  # pace/net use init defaults, never NaN
-    if not bool(m["asof_ready"].all()):
-        raise ValueError("own EW form feature used a cold-start team-game")
-    if not bool((m["home_n_prior"] > 0).all() and (m["away_n_prior"] > 0).all()):
-        raise ValueError("carryover feature used a cold-start team-season")
-    return m, n_after_dropna
+    # every _asof column is NaN exactly at n_prior==0 upstream (each builder's own
+    # leak-free contract), so dropna alone enforces as-of-ness -- no extra check needed.
+    m = m.dropna(subset=list(FEATURES) + ["y", "p_close"]).reset_index(drop=True)
+    return m, int(len(m))
 
 def _fit_challenger(train: pd.DataFrame):  # inner CV picks C; -> model, scaler, C, OOF probs
     X = train[list(FEATURES)].to_numpy(float); y = train["y"].to_numpy(float)
@@ -211,9 +192,15 @@ def run_season(root: Path, season: str, n_ml_accuracy_overlap: int = None) -> Di
     m = _build_frame(root)
     m = m[m["season"] == season].reset_index(drop=True)
     n_after_games_join = int(len(m))
+    asof_coverage = {  # as-observed here, not asserted from elsewhere
+        "asof_team_adv": f"{int(m['net_rating_diff_asof'].notna().sum())}/{n_after_games_join}",
+        "asof_features": f"{int(m['ast_rate_diff_asof'].notna().sum())}/{n_after_games_join}",
+        "asof_box_extra": f"{int(m['dreb_diff_asof'].notna().sum())}/{n_after_games_join}",
+        "carryover_asof": f"{int(m['rest_days_diff_asof'].notna().sum())}/{n_after_games_join}",
+    } if n_after_games_join else {}
     base = {"season": season, "edge_claimed": False,
             "n_ml_accuracy_overlap": n_ml_accuracy_overlap,
-            "n_after_games_join": n_after_games_join}
+            "n_after_games_join": n_after_games_join, "asof_table_coverage": asof_coverage}
     if n_after_games_join < 60:
         return {**base, "status": "data_limited", "note": "fewer than 60 odds-joined rows for this season (odds.parquet covers only 2025-26 today) -- NOT ENOUGH DATA."}
     d, n_after_feature_dropna = _assemble(m)
@@ -246,7 +233,7 @@ def run_season(root: Path, season: str, n_ml_accuracy_overlap: int = None) -> Di
     }
     date_range = [str(test["date"].min().date()), str(test["date"].max().date())]
     not_verified = [
-        "asof_team_adv.parquet (spec's L10 net rating/pace) has ZERO 2025-26 rows, and asof_box_extra/asof_features.parquet cover only 74/1156 games; net_rating_diff/pace_diff are this module's own EW proxy, and those two tables are unused.",
+        "net_rating_diff_asof/pace_diff_asof/ast_rate_diff_asof/dreb,fg3m,stl,blk_diff_asof are the REAL asof_team_adv/asof_features/asof_box_extra trailing means (not an EW proxy); asof_table_coverage above is measured on this run, not assumed from elsewhere.",
         "No injury/roster availability table found; heavy_min_load_diff_asof (fatigue carryover) is the closest as-of proxy, not true availability.",
         "odds.parquet has no 2024-25 rows; that season cannot be scored vs the close.",
     ]

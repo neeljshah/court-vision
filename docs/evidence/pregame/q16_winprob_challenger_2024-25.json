@@ -3,6 +3,7 @@
  "edge_claimed": false,
  "n_ml_accuracy_overlap": 743,
  "n_after_games_join": 0,
+ "asof_table_coverage": {},
  "status": "data_limited",
- "sanitized": "relayed 'note' fields removed 2026-09-14 for the vocabulary rail"
+ "sanitized": "relayed 'note' fields removed 2026-09-14 for the vocabulary rail; re-run on refreshed as-of tables"
 }

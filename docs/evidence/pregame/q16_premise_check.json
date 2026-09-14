@@ -16,10 +16,10 @@
   "corr_model_market": 0.833,
   "verdict": "OUR model MATCHES the close (Brier 0.1735 vs 0.1672, gap +0.0063)"
  },
- "as_of": "2026-09-14T16:46:12.228040+00:00",
+ "as_of": "2026-09-14T18:19:10.563800+00:00",
  "corpus_max_date": "2026-05-24",
  "gap_model": 0.0345,
  "gap_market": 0.0308,
  "reason": "live n_overlap=743, packet has no recorded n (likely a stale snapshot). gaps model=0.0345 market=0.0308 (tol 0.002).",
- "sanitized": "relayed 'note' fields removed 2026-09-14 for the vocabulary rail"
+ "sanitized": "relayed 'note' fields removed 2026-09-14 for the vocabulary rail; re-run on refreshed as-of tables"
 }
