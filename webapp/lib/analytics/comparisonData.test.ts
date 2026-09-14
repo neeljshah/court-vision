@@ -23,6 +23,14 @@ describe("comparison data normalization", () => {
     expect(formatMetric(0.6906, "hard_wr_career")).toBe("69.06%");
     expect(formatMetric(0.1351, "clean_sheet_rate_season")).toBe("13.51%");
     expect(formatMetric(0.06, "pct_of_all_pitches")).toBe("0.06%");
+    expect(formatMetric(0.056, "clay_minus_hard_career")).toBe("5.6 pp");
+    expect(formatMetric(-0.043, "grass_adapt_career")).toBe("-4.3 pp");
+    expect(formatMetric(-0, "clay_minus_hard_recent")).toBe("0 pp");
+    expect(formatMetric(0.00000001, "hard_wr_career")).toBe("<0.001%");
+    expect(formatMetric(-0.00000001, "grass_adapt_recent")).toBe(">-0.01 pp");
+    expect(formatMetric(0.0000001, "estimated_woba")).toBe("<0.001");
+    expect(metricUnit("clay_minus_hard_career")).toBe("percentage points");
+    expect(metricUnit("grass_adapt_recent")).toBe("percentage points");
     expect(metricUnit("career_pts_per36")).toBe("per 36");
     expect(formatPercentile(undefined)).toBe("Not ranked");
     expect(formatPercentile(32)).toBe("32nd percentile");

@@ -1,4 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
+import { hydrateRoot } from "react-dom/client";
+import { renderToString } from "react-dom/server";
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import MeasurementLab from "./MeasurementLab";
@@ -10,11 +12,11 @@ const fixture: LabData = {
     {
       id: "cross-sport", title: "Cross-sport metric", sport: "all", category: "Experimental metrics",
       source: "novel_line_half_life", description: "A cross-sport fixture.", scope: "Fixture scope.", caveat: "Fixture caveat.", status: "Descriptive",
-      fields: [{ key: "value", label: "Value", unit: "number" }],
+      fields: [{ key: "value", label: "Value", unit: "number" }, { key: "alt", label: "Alternate", unit: "number" }],
       rows: [
-        { id: "mlb", label: "MLB", group: "MLB", values: { value: 2 } },
-        { id: "tennis", label: "TENNIS", group: "TENNIS", values: { value: 1 } },
-        { id: "missing", label: "Missing value", group: "MLB", values: { value: null } },
+        { id: "mlb", label: "MLB", group: "MLB", values: { value: 2, alt: 1 } },
+        { id: "tennis", label: "TENNIS", group: "TENNIS", values: { value: 1, alt: 2 } },
+        { id: "missing", label: "Missing value", group: "MLB", values: { value: null, alt: null } },
       ],
     },
     {
@@ -53,6 +55,61 @@ describe("MeasurementLab sport filtering and inspection", () => {
     expect(screen.getByRole("region", { name: "Selected measurement" })).toHaveTextContent("7");
   });
 
+  it("restores a shareable filtered table view and selected row on reload", () => {
+    window.history.replaceState(null, "", "/analytics/lab?sport=all&dataset=cross-sport&field=alt&other=value&group=MLB&order=asc&view=scatter&q=MLB&row=mlb");
+    render(<MeasurementLab data={fixture} />);
+
+    expect(screen.getByLabelText("Choose dataset")).toHaveValue("cross-sport");
+    expect(screen.getByLabelText("Primary measurement")).toHaveValue("alt");
+    expect(screen.getByLabelText("Vertical measurement")).toHaveValue("value");
+    expect(screen.getByLabelText("Published group")).toHaveValue("MLB");
+    expect(screen.getByRole("button", { name: "Scatter plot" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("region", { name: "Selected measurement" })).toHaveTextContent("MLB");
+    expect(window.location.search).toContain("row=mlb");
+  });
+
+  it("falls back safely from malformed lab view parameters", () => {
+    window.history.replaceState(null, "", "/analytics/lab?sport=cricket&dataset=missing&field=wrong&other=bad&group=unknown&order=sideways&view=map&row=nope");
+    render(<MeasurementLab data={fixture} />);
+
+    expect(screen.getByLabelText("Filter lab by sport")).toHaveValue("all");
+    expect(screen.getByLabelText("Choose dataset")).toHaveValue("cross-sport");
+    expect(screen.getByLabelText("Primary measurement")).toHaveValue("value");
+    expect(screen.getByRole("button", { name: "Ranked bars" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.queryByRole("region", { name: "Selected measurement" })).not.toBeInTheDocument();
+  });
+
+  it("restores browser navigation and clears stale selected rows after filtering", () => {
+    render(<MeasurementLab data={fixture} />);
+    window.history.replaceState(null, "", "/analytics/lab?sport=all&dataset=cross-sport&field=value&other=value&group=all&order=desc&view=rank&q=&row=mlb");
+    act(() => window.dispatchEvent(new PopStateEvent("popstate")));
+    expect(screen.getByRole("region", { name: "Selected measurement" })).toHaveTextContent("MLB");
+
+    fireEvent.change(screen.getByLabelText("Search measurement rows"), { target: { value: "TENNIS" } });
+    expect(screen.queryByRole("region", { name: "Selected measurement" })).not.toBeInTheDocument();
+    expect(window.location.search).not.toContain("row=mlb");
+  });
+
+  it("hydrates a deep URL without a recoverable mismatch", async () => {
+    const markup = renderToString(<MeasurementLab data={fixture} />);
+    const container = document.createElement("div");
+    container.innerHTML = markup;
+    document.body.append(container);
+    window.history.replaceState({ next: "metadata" }, "", "/analytics/lab?dataset=cross-sport&field=alt&other=value&group=MLB&order=asc&view=scatter&q=MLB&row=mlb&keep=present");
+    const recoverable = vi.fn();
+    let root: ReturnType<typeof hydrateRoot>;
+    await act(async () => {
+      root = hydrateRoot(container, <MeasurementLab data={fixture} />, { onRecoverableError: recoverable });
+      await Promise.resolve();
+    });
+
+    expect(recoverable).not.toHaveBeenCalled();
+    expect(window.location.search).toContain("keep=present");
+    expect(window.history.state).toEqual({ next: "metadata" });
+    act(() => root!.unmount());
+    container.remove();
+  });
+
   it("keeps scatter labels readable in a narrow container and selects a point by keyboard", () => {
     let resize: ((entries: Array<{ contentRect: { width: number } }>) => void) | undefined;
     vi.stubGlobal("ResizeObserver", class {
@@ -63,7 +120,7 @@ describe("MeasurementLab sport filtering and inspection", () => {
     fireEvent.click(screen.getByRole("button", { name: "Scatter plot" }));
     act(() => resize?.([{ contentRect: { width: 300 } }]));
 
-    expect(screen.getByRole("group", { name: /Value against Value/ })).toHaveAttribute("viewBox", "0 0 300 280");
+    expect(screen.getByRole("group", { name: /Alternate against Value/ })).toHaveAttribute("viewBox", "0 0 300 280");
     expect(screen.queryByRole("button", { name: /Inspect Missing value/ })).not.toBeInTheDocument();
     fireEvent.keyDown(screen.getByRole("button", { name: /Inspect MLB/ }), { key: "Enter" });
     expect(screen.getByRole("region", { name: "Selected measurement" })).toHaveTextContent("MLB");

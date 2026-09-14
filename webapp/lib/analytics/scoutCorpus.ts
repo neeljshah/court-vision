@@ -143,7 +143,7 @@ export function loadScoutCorpus(): AskEntry[] {
     q: `Explain the analysis: ${a.title}`,
     alt_phrasings: [a.title, `${a.title} formula`, a.id.replace(/-/g, " ")],
     tags: [a.sport, "derived-analysis", ...words(a.title)], bucket: "public-derived-analysis",
-    a: { status: "ok", answer: `${a.description} Formula: ${a.formula} ${a.interpretation} Scope: ${a.scope} Limitations: ${a.caveat} This is derived from a published snapshot, not a live forecast.`, source_artifact: `webapp/public/data/showcase/${a.source}.json`, as_of: a.asOf || "unknown" },
+    a: { status: "ok", answer: `${a.description} Formula: ${a.formula} ${a.interpretation} Scope: ${a.scope} Limitations: ${a.caveat} This is derived from a published snapshot, not a live forecast.`, source_artifact: `webapp/public/data/showcase/${a.source}.json`, as_of: a.asOf || "unknown", explore_path: `/analytics/research/${a.id}/` },
   }));
   return [...curated.entries, ...entityEntries(), ...moduleEntries(), ...research];
 }

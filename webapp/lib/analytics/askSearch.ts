@@ -8,6 +8,7 @@ export interface AskAnswer {
   answer: string;
   source_artifact: string;
   as_of?: string;
+  explore_path?: string;
 }
 
 export interface AskEntry {
@@ -98,7 +99,9 @@ interface Candidate {
 const FOLLOWUP_GENERIC = new Set([
   "nba", "mlb", "soccer", "tennis", "calibration", "player", "team", "batter",
   "pitch", "pitch_type", "type", "checkpoint", "public", "profile", "analytics", "module",
-  "ok", "confirmed", "partial", "not_buildable",
+  "ok", "confirmed", "partial", "not_buildable", "derived", "analysis", "descriptive",
+  "experimental", "published", "snapshot", "source", "formula", "scope", "limitations",
+  "historical", "live", "forecast", "record", "data",
 ]);
 const SPORT_TERMS = new Set(["nba", "mlb", "soccer", "tennis"]);
 
@@ -178,15 +181,28 @@ function matchesStaticQuestion(queryTerms: string[], entry: AskEntry): boolean {
 }
 
 function followUps(entries: AskEntry[], selected: AskEntry, queryTerms: string[]): string[] {
-  const selectedTags = new Set(tokens(selected.tags.join(" ")));
-  const selectedSpecific = Array.from(selectedTags).filter((term) => !FOLLOWUP_GENERIC.has(term));
+  const selectedTerms = new Set(
+    tokens(`${selected.q} ${selected.alt_phrasings.join(" ")} ${selected.tags.join(" ")}`)
+  );
+  const selectedSpecific = Array.from(selectedTerms).filter((term) => !FOLLOWUP_GENERIC.has(term) && !SPORT_TERMS.has(term));
+  const selectedSports = new Set(tokens(selected.tags.join(" ")).filter((term) => SPORT_TERMS.has(term)));
   return entries
-    .filter((entry) => entry.q !== selected.q && entry.a.status === "ok")
+    .filter((entry) => entry.q !== selected.q && entry.a.status === "ok" &&
+      (!selected.a.explore_path || entry.a.source_artifact === selected.a.source_artifact))
     .map((entry) => {
-      const entryTerms = new Set(tokens(`${entry.q} ${entry.tags.join(" ")} ${entry.a.answer}`));
+      const entryTerms = new Set(tokens(`${entry.q} ${entry.alt_phrasings.join(" ")} ${entry.tags.join(" ")}`));
+      const entrySports = new Set(Array.from(entryTerms).filter((term) => SPORT_TERMS.has(term)));
+      const hasSportConflict = selectedSports.size > 0 && entrySports.size > 0 &&
+        !Array.from(selectedSports).some((sport) => entrySports.has(sport));
       const sharedSpecific = selectedSpecific.filter((term) => entryTerms.has(term)).length;
       const sharedQuery = queryTerms.filter((term) => !FOLLOWUP_GENERIC.has(term) && entryTerms.has(term)).length;
-      return { entry, score: sharedSpecific * 8 + sharedQuery * 2 };
+      const sameSource = entry.a.source_artifact === selected.a.source_artifact;
+      const sameSport = Array.from(selectedSports).some((sport) => entrySports.has(sport));
+      const hasContext = sameSource || sharedSpecific + sharedQuery > 0;
+      const score = hasSportConflict || !hasContext
+        ? 0
+        : (sameSource ? 40 : 0) + sharedSpecific * 8 + sharedQuery * 2 + (sameSport ? 1 : 0);
+      return { entry, score };
     })
     .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score || a.entry.q.localeCompare(b.entry.q))

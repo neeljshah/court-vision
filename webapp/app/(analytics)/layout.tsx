@@ -43,6 +43,7 @@ const CHROME_JS = `(function(){var r=document.documentElement;var b=document.get
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
+  manifest: `${BASE_PATH}/manifest.webmanifest`,
   title: {
     template: "%s | CourtVision Analytics",
     default: "CourtVision Analytics",

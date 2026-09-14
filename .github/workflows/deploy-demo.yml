@@ -48,6 +48,7 @@ jobs:
         run: |
           npx vitest run lib/analytics/dashboardData.test.ts
           npx vitest run lib/analytics/labData.test.ts
+          npx vitest run lib/analytics/labTypes.test.ts
           npx vitest run lib/analytics/comparisonData.test.ts
           npx vitest run lib/analytics/researchBasketball.test.ts
           npx vitest run lib/analytics/researchMultisport.test.ts
@@ -61,6 +62,7 @@ jobs:
           npx vitest run components/analytics/library/LibraryExplorer.test.tsx
           npx vitest run components/analytics/library/ResearchDetail.test.tsx
           npx vitest run components/analytics/lab/MeasurementLab.test.tsx
+          npx vitest run components/analytics/lab/LabPlot.test.tsx
           npx vitest run components/analytics/lab/LabTable.test.ts
           npx vitest run components/analytics/evidence/EvidenceGallery.test.tsx
           npx vitest run components/analytics/CommandPalette.test.tsx
@@ -76,7 +78,9 @@ jobs:
       - name: Verify analytics export (hard gate)
         env:
           NEXT_PUBLIC_BASE_PATH: /court-vision
-        run: node scripts/verify-analytics-export.mjs
+        run: |
+          node scripts/verify-analytics-export.mjs
+          node --test scripts/verify-analytics-export.test.mjs
 
       - uses: actions/configure-pages@v5
 

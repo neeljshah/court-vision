@@ -29,6 +29,7 @@ function demoGeneratedAt(): string | null {
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 export const metadata: Metadata = {
+  manifest: `${BASE_PATH}/manifest.webmanifest`,
   title: {
     template: "%s | CourtVision",
     default: "CourtVision",

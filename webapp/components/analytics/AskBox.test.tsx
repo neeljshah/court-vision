@@ -22,4 +22,23 @@ describe("AskBox", () => {
     expect(screen.getByLabelText("Cited answer")).not.toHaveTextContent("A new, unsubmitted question");
     expect(window.location.search).toBe("?q=Known+question");
   });
+
+  it("links a derived answer to its validated internal analysis path", () => {
+    const derived = [{ ...entries[0], a: { ...entries[0].a, explore_path: "/analytics/research/nba-matchup-profile-contrast/" } }];
+    render(<AskBox entries={derived} tours={[]} />);
+    fireEvent.change(screen.getByLabelText("Ask Scout a question"), { target: { value: "Known question" } });
+    fireEvent.click(screen.getByRole("button", { name: "Search Scout's cited answers" }));
+
+    expect(screen.getByRole("link", { name: "Explore this analysis" })).toHaveAttribute("href", "/analytics/research/nba-matchup-profile-contrast/");
+    expect(screen.getByRole("link", { name: "Open published answer record" })).toBeInTheDocument();
+  });
+
+  it("does not render an internal link for an unvalidated path", () => {
+    const invalid = [{ ...entries[0], a: { ...entries[0].a, explore_path: "https://example.test/" } }];
+    render(<AskBox entries={invalid} tours={[]} />);
+    fireEvent.change(screen.getByLabelText("Ask Scout a question"), { target: { value: "Known question" } });
+    fireEvent.click(screen.getByRole("button", { name: "Search Scout's cited answers" }));
+
+    expect(screen.queryByRole("link", { name: "Explore this analysis" })).not.toBeInTheDocument();
+  });
 });

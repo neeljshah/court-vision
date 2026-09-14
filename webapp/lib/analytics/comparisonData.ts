@@ -116,6 +116,7 @@ export function metricLabel(key: string): string {
 }
 
 export function metricUnit(key: string): string | undefined {
+  if (/clay_minus_hard|grass_adapt/.test(key)) return "percentage points";
   if (/pct|_wr_|rate/.test(key)) return "%";
   if (/per36/.test(key)) return "per 36";
   if (/minutes/.test(key)) return "minutes";
@@ -130,13 +131,27 @@ export function metricUnit(key: string): string | undefined {
   return undefined;
 }
 
+function roundedMeasurement(value: number, digits: number): string {
+  const normalized = Object.is(value, -0) ? 0 : value;
+  if (normalized === 0) return "0";
+  const rounded = Number(normalized.toFixed(digits));
+  if (rounded !== 0) return String(rounded);
+  const threshold = 10 ** -digits;
+  return normalized > 0 ? `<${threshold}` : `>-${threshold}`;
+}
+
 export function formatMetric(value: unknown, key: string): string {
   if (typeof value !== "number" || !Number.isFinite(value)) return "Not reported";
+  if (/clay_minus_hard|grass_adapt/.test(key)) {
+    return `${roundedMeasurement(value * 100, 2)} pp`;
+  }
   if (/pct|_wr_|rate/.test(key)) {
     const percent = /_wr_|rate/.test(key) && Math.abs(value) <= 1 ? value * 100 : value;
-    return `${Number.isInteger(percent) ? percent.toFixed(1) : Number(percent.toFixed(3))}%`;
+    const normalized = Object.is(percent, -0) ? 0 : percent;
+    return `${Number.isInteger(normalized) ? normalized.toFixed(1) : roundedMeasurement(normalized, 3)}%`;
   }
-  return Number.isInteger(value) ? String(value) : String(Number(value.toFixed(3)));
+  const normalized = Object.is(value, -0) ? 0 : value;
+  return Number.isInteger(normalized) ? String(normalized) : roundedMeasurement(normalized, 3);
 }
 
 export function formatPercentile(value: unknown): string {

@@ -30,6 +30,10 @@ describe("loadScoutCorpus", () => {
     if (result?.kind === "direct" && result.entry) {
       expect(result.entry.a.answer).toContain("meeting-weighted");
       expect(result.entry.a.answer).toContain("not forecasts");
+      expect(result.entry.a.explore_path).toBe("/analytics/research/nba-matchup-profile-contrast/");
+      expect(result.followUps).toContain("What does the Nba Matchup Grid analytics module cover?");
+      expect(result.followUps).not.toContain("Explain the analysis: Calibration support concentration");
+      expect(result.followUps.some((question) => /tennis/i.test(question))).toBe(false);
     }
   });
 
