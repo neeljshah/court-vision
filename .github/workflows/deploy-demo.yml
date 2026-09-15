@@ -63,6 +63,7 @@ jobs:
           npx vitest run lib/analytics/researchBasketballDepth.test.ts
           npx vitest run lib/analytics/researchMultisportDepth.test.ts
           npx vitest run lib/analytics/researchTennisWindows.test.ts
+          npx vitest run lib/analytics/researchBasketballMatchupRange.test.ts
           npx vitest run lib/analytics/researchIntegration.test.ts
           npx vitest run lib/analytics/libraryData.test.ts
           npx vitest run lib/analytics/matchupInsights.test.ts
@@ -79,6 +80,7 @@ jobs:
           npx vitest run components/analytics/library/LibraryExplorer.test.tsx
           npx vitest run components/analytics/library/ResearchDetail.test.tsx
           npx vitest run components/analytics/library/TennisWindowResearch.test.tsx
+          npx vitest run components/analytics/library/BasketballMatchupRange.test.tsx
           npx vitest run components/analytics/lab/MeasurementLab.test.tsx
           npx vitest run components/analytics/lab/LabPlot.test.tsx
           npx vitest run components/analytics/lab/DistributionSummary.test.tsx

@@ -1,0 +1,124 @@
+import { field as f, snapshot } from "./labHelpers";
+import type { LabRow } from "./labTypes";
+import type { ResearchAnalysis, ResearchReference } from "./researchTypes";
+
+export type MatchupRangePair = {
+  row: unknown;
+  col: unknown;
+  n_meetings: unknown;
+  mean_total: unknown;
+};
+export type MatchupRangeSource = {
+  input_coverage?: { games_total?: unknown; seasons?: unknown; date_max?: unknown };
+  mask?: { min_meetings?: unknown };
+  pairings: MatchupRangePair[];
+};
+
+const REFERENCES: ResearchReference[] = [{
+  title: "Published NBA matchup-grid method",
+  url: "https://github.com/neeljshah/court-vision/blob/master/scripts/platformkit/analytics_showcase/nba_matchup_grid.py",
+}];
+
+type Pair = { row: string; col: string; total: number; meetings: number };
+
+function validPair(raw: MatchupRangePair): Pair | null {
+  const row = typeof raw.row === "string" ? raw.row.trim() : "";
+  const col = typeof raw.col === "string" ? raw.col.trim() : "";
+  const total = raw.mean_total;
+  const meetings = raw.n_meetings;
+  if (!row || !col || row === col || typeof total !== "number" || !Number.isFinite(total) || total < 0 ||
+      typeof meetings !== "number" || !Number.isInteger(meetings) || meetings <= 0) return null;
+  return { row, col, total, meetings };
+}
+
+function compatiblePairs(raw: MatchupRangePair[], minimum: number): Pair[] {
+  const candidates = new Map<string, Pair[]>();
+  for (const item of raw) {
+    const pair = validPair(item);
+    if (!pair || pair.meetings < minimum) continue;
+    const key = `${pair.row}\u0000${pair.col}`;
+    candidates.set(key, [...(candidates.get(key) || []), pair]);
+  }
+  const unique = new Map<string, Pair>();
+  for (const [key, values] of candidates) {
+    if (values.every(value => value.total === values[0].total && value.meetings === values[0].meetings)) unique.set(key, values[0]);
+  }
+  return [...unique.values()].filter(pair => {
+    const reverse = unique.get(`${pair.col}\u0000${pair.row}`);
+    return reverse?.total === pair.total && reverse.meetings === pair.meetings;
+  });
+}
+
+function rangeRows(source: MatchupRangeSource): LabRow[] {
+  const byTeam = new Map<string, Pair[]>();
+  const rawMinimum = source.mask?.min_meetings;
+  if (typeof rawMinimum !== "number" || !Number.isInteger(rawMinimum) || rawMinimum < 2) return [];
+  const minimum = rawMinimum;
+  for (const pair of compatiblePairs(source.pairings, minimum)) byTeam.set(pair.row, [...(byTeam.get(pair.row) || []), pair]);
+  return [...byTeam].sort(([a], [b]) => a.localeCompare(b)).flatMap(([team, pairs]) => {
+    const distinct = new Map(pairs.map(pair => [pair.col, pair]));
+    const ordered = [...distinct.values()].sort((a, b) => a.total - b.total || a.col.localeCompare(b.col));
+    if (ordered.length < 2) return [];
+    const low = ordered[0];
+    const high = ordered.find(pair => pair.total === ordered[ordered.length - 1].total)!;
+    const lowTies = ordered.filter(pair => pair.total === low.total);
+    const highTies = ordered.filter(pair => pair.total === high.total);
+    const endpoints = (pairs: Pair[]) => pairs.map(pair => `${pair.col} (${pair.meetings} meetings)`).join(", ");
+    return [{
+      id: `matchup-range-${team.toLowerCase()}`,
+      label: team,
+      group: "Historical opponent range",
+      values: {
+        total_range: high.total - low.total,
+        high_mean_total: high.total,
+        low_mean_total: low.total,
+        high_meetings: high.meetings,
+        low_meetings: low.meetings,
+        opponents: ordered.length,
+      },
+      note: `Highest opponent endpoint${highTies.length > 1 ? "s" : ""}: ${endpoints(highTies)}. Lowest opponent endpoint${lowTies.length > 1 ? "s" : ""}: ${endpoints(lowTies)}. Numeric meeting fields use the first alphabetic endpoint when tied.`,
+    }];
+  });
+}
+
+export function buildBasketballMatchupRangeResearch(source: MatchupRangeSource): ResearchAnalysis[] {
+  const rows = rangeRows(source);
+  const seasons = Array.isArray(source.input_coverage?.seasons)
+    ? source.input_coverage.seasons.filter(value => typeof value === "string" && value.trim()).join(", ")
+    : "published seasons";
+  const games = source.input_coverage?.games_total;
+  const minimum = source.mask?.min_meetings;
+  const date = source.input_coverage?.date_max;
+  const validGames = typeof games === "number" && Number.isInteger(games) && games >= 0 ? games : null;
+  const validMinimum = typeof minimum === "number" && Number.isInteger(minimum) && minimum >= 2 ? minimum : null;
+  const parsedDate = typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date) ? Date.parse(`${date}T00:00:00Z`) : NaN;
+  const validDate = typeof date === "string" && Number.isFinite(parsedDate) && new Date(parsedDate).toISOString().slice(0, 10) === date ? date : undefined;
+  return [{
+    id: "nba-opponent-total-range",
+    title: "Opponent scoring range by team",
+    sport: "nba",
+    category: "Matchup explorer",
+    source: "nba_matchup_grid",
+    description: "For each team, compares its highest and lowest published opponent-specific mean combined point totals.",
+    scope: `${rows.length} teams derived from the ${validGames === null ? "published input" : `${validGames}-game input corpus`} across ${seasons}${validDate ? `; latest input date ${validDate}` : ""}. ${validMinimum === null ? "Source meeting floor is unavailable or invalid; no rows are included." : `Each endpoint uses at least ${validMinimum} meetings.`}`,
+    caveat: "These are extrema among opponent means, so the range is selection-sensitive. Seasons and venues are pooled, with no published regular-season or playoff filter; rosters, opponent strength and recency are not adjusted. Team points are reconstructed by summing source player box-score points, without a published completeness audit. Pair means are serialized to two decimals, and endpoint meeting counts differ. The latest input date is not a per-pair cutoff. This describes prior games and is not a forecast.",
+    status: "Descriptive",
+    fields: [
+      f("total_range", "High-low mean-total range"),
+      f("high_mean_total", "Highest opponent mean total"),
+      f("low_mean_total", "Lowest opponent mean total"),
+      f("high_meetings", "Selected high-end pair meetings", "number", 0),
+      f("low_meetings", "Selected low-end pair meetings", "number", 0),
+      f("opponents", "Opponents represented", "number", 0),
+    ],
+    rows,
+    formula: "Range = max over opponents of mean(row-team points + opponent points per meeting) - min over opponents of that same mean.",
+    interpretation: "A larger value means the team's opponent-specific historical mean combined totals span a wider interval; inspect both endpoint means and their meeting counts.",
+    references: REFERENCES,
+    novelty: "Derived analysis",
+  }];
+}
+
+export function getBasketballMatchupRangeResearch(): ResearchAnalysis[] {
+  return buildBasketballMatchupRangeResearch(snapshot<MatchupRangeSource>("nba_matchup_grid"));
+}

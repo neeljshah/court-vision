@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Download, Search, SlidersHorizontal, X } from "lucide-react";
 import { base, humanize, moduleUrl, sourceUrl, SPORTS, type Sport } from "@/lib/analytics/dashboardTypes";
-import { displayMeasurement as display, rankedRows, type LabData } from "@/lib/analytics/labTypes";
+import { displayMeasurement as display, rankedRows, type LabData, type LabRow } from "@/lib/analytics/labTypes";
 import { DistributionSummary, DistributionPlot } from "./DistributionSummary";
 import { RankedPlot, ScatterPlot } from "./LabPlot";
 import { LabTable, exportLabCSV } from "./LabTable";
@@ -18,6 +18,7 @@ const rowsForSport = (dataset: LabData["datasets"][number], sport: Sport) =>
 export default function MeasurementLab({ data }: { data: LabData }) {
   const [viewState, setViewState] = useState<LabViewState>(() => readLabViewState("", data));
   const [restored, setRestored] = useState(false);
+  const inspector = useRef<HTMLElement>(null), trigger = useRef<Element | null>(null);
   const { id, sport, fieldKey, otherKey, mode, query, group, ascending, selectedId } = viewState;
   const update = (change: Partial<LabViewState>) => setViewState(current => ({ ...current, ...change }));
   const dataset = data.datasets.find(d => d.id === id) || data.datasets[0];
@@ -58,6 +59,9 @@ export default function MeasurementLab({ data }: { data: LabData }) {
     window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
   }, [restored, viewState]);
   const selected = filtered.find(row => row.id === selectedId) || null;
+  const inspect = (row: LabRow) => { trigger.current = document.activeElement; update({ selectedId: row.id }); };
+  const close = () => { update({ selectedId: null }); if (trigger.current instanceof HTMLElement || trigger.current instanceof SVGElement) trigger.current.focus(); };
+  useEffect(() => { if (selected) inspector.current?.focus(); }, [selected]);
   return <div className="cv-workspace"><div className="cv-workspace-inner lab-page"><header className="cv-masthead"><div><p className="cv-eyebrow">CourtVision / Measurement lab</p><h1>Follow your curiosity into the data.</h1><p>Change the metric. Inspect the rows. Keep the evidence in view.</p></div><a className="cv-primary" href={`${base}/analytics/compare/`}>Compare profiles <ArrowUpRight size={16} /></a></header>
     <div className="lab-shell"><aside className="lab-sidebar"><label className="lab-field-label">Explore a sport<select value={sport} aria-label="Filter lab by sport" onChange={e => chooseSport(e.target.value as Sport)}>{SPORTS.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}</select></label>
       <label className="lab-field-label lab-dataset-picker">Dataset<select value={dataset.id} aria-label="Choose dataset" onChange={e => choose(e.target.value)}>{categories.map(category => <optgroup key={category} label={category}>{choices.filter(d => d.category === category).map(d => <option key={d.id} value={d.id}>{d.title}</option>)}</optgroup>)}</select></label>
@@ -69,8 +73,8 @@ export default function MeasurementLab({ data }: { data: LabData }) {
       <p className="cv-result-count" role="status">{rowLabel(filtered.length)} {countVerb(filtered.length, "matches", "match")}; {ranked.length} {countVerb(ranked.length, "contains", "contain")} {field.label.toLowerCase()}.</p>
       {mode === "scatter" && <label className="lab-field-label lab-second-axis">Vertical measurement<select aria-label="Vertical measurement" value={other.key} onChange={e => update({ otherKey: e.target.value })}>{dataset.fields.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}</select></label>}
       <DistributionSummary rows={filtered} field={field} />
-      {!filtered.length ? <Empty>{dataset.sport === "all" && sport !== "all" && !sportRows.length ? `No published measurements for ${sportLabel} in this metric. The source's data gap is preserved.` : dataset.rows.length ? "No rows match this search and group." : "No qualifying measurements were published for this view. The source's data gap is preserved."}</Empty> : mode === "table" ? <LabTable dataset={dataset} rows={[...ranked, ...filtered.filter(r => !ranked.some(n => n.id === r.id))]} onSelect={row => update({ selectedId: row.id })} /> : mode === "distribution" ? <DistributionPlot rows={filtered} field={field} /> : mode === "scatter" ? <ScatterPlot rows={filtered} x={field} y={other} onSelect={row => update({ selectedId: row.id })} /> : ranked.length ? <RankedPlot rows={ranked} field={field} onSelect={row => update({ selectedId: row.id })} /> : <Empty>Numeric measurements are unavailable or censored. The data table preserves those rows and their notes.</Empty>}
-      {selected && <section className="lab-inspector" aria-label="Selected measurement"><button className="lab-close" aria-label="Close measurement details" onClick={() => update({ selectedId: null })}><X size={16} /></button><p className="cv-eyebrow">{selected.group}</p><h3>{selected.label}</h3><dl>{dataset.fields.map(f => <div key={f.key}><dt>{f.label}</dt><dd>{display(selected.values[f.key], f)}</dd></div>)}</dl>{selected.note && <p>{selected.note}</p>}</section>}
+      {!filtered.length ? <Empty>{dataset.sport === "all" && sport !== "all" && !sportRows.length ? `No published measurements for ${sportLabel} in this metric. The source's data gap is preserved.` : dataset.rows.length ? "No rows match this search and group." : "No qualifying measurements were published for this view. The source's data gap is preserved."}</Empty> : mode === "table" ? <LabTable dataset={dataset} rows={[...ranked, ...filtered.filter(r => !ranked.some(n => n.id === r.id))]} onSelect={inspect} /> : mode === "distribution" ? <DistributionPlot rows={filtered} field={field} /> : mode === "scatter" ? <ScatterPlot rows={filtered} x={field} y={other} onSelect={inspect} /> : ranked.length ? <RankedPlot rows={ranked} field={field} onSelect={inspect} /> : <Empty>Numeric measurements are unavailable or censored. The data table preserves those rows and their notes.</Empty>}
+      {selected && <section ref={inspector} tabIndex={-1} className="lab-inspector" aria-label="Selected measurement" onKeyDown={e => { if (e.key === "Escape") close(); }}><button className="lab-close" aria-label="Close measurement details" onClick={close}><X size={16} /></button><p className="cv-eyebrow">{selected.group}</p><h3>{selected.label}</h3><dl>{dataset.fields.map(f => <div key={f.key}><dt>{f.label}</dt><dd>{display(selected.values[f.key], f)}</dd></div>)}</dl>{selected.note && <p>{selected.note}</p>}</section>}
     </section><section className="lab-evidence-note"><SlidersHorizontal size={19} /><div><h3>Read the measurement in context</h3><p>{dataset.scope}</p><p>{dataset.caveat}</p><a href={moduleUrl(dataset.source)}>Full method and source artifact <ArrowUpRight size={13} /></a></div></section>
     <section className="cv-panel lab-novel-index"><p className="cv-eyebrow">Published experimental metrics</p><h2>Six lenses, with the assumptions attached.</h2><p className="cv-muted">These are the project's published metric formulations. Prior-art labels include incremental contributions and novel packaging; inclusion does not establish universal originality or predictive value.</p><div>{data.novel.map(n => <article key={n.module}><b>{n.abbrev}</b><h3><a href={moduleUrl(n.module)}>{n.stat_name}</a></h3><span className="cv-badge">{n.is_honest_null ? "Honest null" : humanize(n.prior_art_verdict)}</span><p>{n.headline}</p><details><summary>View formula</summary><code>{n.formula}</code></details></article>)}</div></section>
     </div></div></div></div>;

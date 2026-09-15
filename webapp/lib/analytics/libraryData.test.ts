@@ -7,11 +7,11 @@ describe("getLibraryEntries", () => {
   const sources = entries.filter(entry => entry.kind === "source");
 
   it("merges the complete source manifest with every derived analysis", () => {
-    expect(entries).toHaveLength(110);
+    expect(entries).toHaveLength(111);
     expect(sources).toHaveLength(74);
     expect(new Set(entries.map(entry => entry.id)).size).toBe(entries.length);
-    expect(derived).toHaveLength(36);
-    expect(derived.reduce((sum, entry) => sum + (entry.rows ?? 0), 0)).toBe(1293);
+    expect(derived).toHaveLength(37);
+    expect(derived.reduce((sum, entry) => sum + (entry.rows ?? 0), 0)).toBe(1323);
   });
 
   it("keeps routes public and numeric previews finite", () => {

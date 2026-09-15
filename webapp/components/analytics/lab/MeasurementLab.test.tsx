@@ -64,6 +64,23 @@ describe("MeasurementLab sport filtering and inspection", () => {
     expect(screen.getByRole("region", { name: "Selected measurement" })).toHaveTextContent("7");
   });
 
+  it("focuses selected details and restores its row after Escape", () => {
+    render(<MeasurementLab data={fixture} />);
+    fireEvent.click(screen.getByRole("button", { name: /NBA profile/ }));
+    const row = screen.getByRole("button", { name: /Inspect Nikola Jokic/ });
+    row.focus();
+    fireEvent.click(row);
+    const details = screen.getByRole("region", { name: "Selected measurement" });
+    expect(details).toHaveFocus();
+    const close = screen.getByRole("button", { name: "Close measurement details" });
+    close.focus();
+    fireEvent.keyDown(close, { key: "Escape" });
+
+    expect(screen.queryByRole("region", { name: "Selected measurement" })).not.toBeInTheDocument();
+    expect(window.location.search).not.toContain("row=jokic");
+    expect(row).toHaveFocus();
+  });
+
   it("restores a shareable filtered table view and selected row on reload", () => {
     window.history.replaceState(null, "", "/analytics/lab?sport=all&dataset=cross-sport&field=alt&other=value&group=MLB&order=asc&view=scatter&q=MLB&row=mlb");
     render(<MeasurementLab data={fixture} />);
