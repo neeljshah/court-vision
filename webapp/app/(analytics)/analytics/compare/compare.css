@@ -1,6 +1,7 @@
 @import "./tennisSurface.css";
 @import "./pitchCount.css";
 @import "./pitchResult.css";
+@import "./soccerVenue.css";
 
 .compare-profile-evidence{margin-top:8px;color:var(--cv-muted);font-size:10px;line-height:1.45}.compare-profile-evidence summary{width:max-content;max-width:100%;cursor:pointer;color:var(--cv-text);font-weight:650}.compare-profile-evidence summary:focus-visible{outline:2px solid var(--cv-blue);outline-offset:2px}.compare-profile-evidence p{margin:4px 0;overflow-wrap:anywhere}.compare-rank-context{display:block;margin-top:3px;color:var(--cv-muted);font-size:9px;line-height:1.35}.compare-controls.has-family{grid-template-columns:minmax(135px,.65fr) minmax(150px,.7fr) minmax(180px,1fr) auto minmax(180px,1fr)}
 
