@@ -30,8 +30,22 @@ describe("Published NBA opponent mean-total investigation", () => {
     expect(csv).toContain("nba_matchup_grid");
     expect(csv).toContain("IND");
     expect(csv).toContain("HOU");
+    expect(csv).toContain("Atlanta Hawks");
     expect(csv).toContain(analysis.caveat);
     expect(csv).toContain(analysis.formula);
     expect(screen.getByRole("link", { name: /Published source JSON/ })).toHaveAttribute("href", "/data/showcase/nba_matchup_grid.json");
+  });
+
+  it("finds published city and team names while preserving multi-word search", () => {
+    render(<ResearchDetail analysis={analysis} related={[]} />);
+    const search = screen.getByRole("textbox", { name: "Search analysis rows" });
+    for (const [query, team] of [["Atlanta", "ATL"], ["Hawks", "ATL"], ["aTlAnTa hAwKs", "ATL"], ["New York Knicks", "NYK"], ["LA Clippers", "LAC"]]) {
+      fireEvent.change(search, { target: { value: query } });
+      expect(screen.getByRole("status")).toHaveTextContent("1 matching row;");
+      expect(screen.getByRole("button", { name: new RegExp(`^Inspect ${team}:`) })).toBeInTheDocument();
+    }
+    fireEvent.change(search, { target: { value: "Atlanta Lakers" } });
+    expect(screen.getByRole("status")).toHaveTextContent("0 matching rows;");
+    expect(screen.getByText("No published rows match this search and population.")).toBeVisible();
   });
 });

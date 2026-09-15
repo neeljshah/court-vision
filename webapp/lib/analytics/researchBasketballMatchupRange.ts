@@ -13,10 +13,16 @@ export type MatchupRangeSource = {
   mask?: { min_meetings?: unknown };
   pairings: MatchupRangePair[];
 };
+export type MatchupRangeTeamAtlas = {
+  entries: Array<{ entity: unknown; key_numbers?: { team_full_name?: unknown } }>;
+};
 
 const REFERENCES: ResearchReference[] = [{
   title: "Published NBA matchup-grid method",
   url: "https://github.com/neeljshah/court-vision/blob/master/scripts/platformkit/analytics_showcase/nba_matchup_grid.py",
+}, {
+  title: "Published NBA team-name atlas",
+  url: "https://github.com/neeljshah/court-vision/blob/master/webapp/public/data/showcase/atlas_nba_teams_manifest.json",
 }];
 
 type Pair = { row: string; col: string; total: number; meetings: number };
@@ -49,7 +55,21 @@ function compatiblePairs(raw: MatchupRangePair[], minimum: number): Pair[] {
   });
 }
 
-function rangeRows(source: MatchupRangeSource): LabRow[] {
+function teamNames(atlas?: MatchupRangeTeamAtlas): Map<string, string> {
+  const candidates = new Map<string, Set<string>>();
+  for (const entry of atlas?.entries || []) {
+    const code = typeof entry.entity === "string" ? entry.entity.trim() : "";
+    const rawName = entry.key_numbers?.team_full_name;
+    const name = typeof rawName === "string" ? rawName.trim() : "";
+    if (!code || !name) continue;
+    const names = candidates.get(code) || new Set<string>();
+    names.add(name);
+    candidates.set(code, names);
+  }
+  return new Map([...candidates].flatMap(([code, names]) => names.size === 1 ? [[code, [...names][0]] as const] : []));
+}
+
+function rangeRows(source: MatchupRangeSource, names: Map<string, string>): LabRow[] {
   const byTeam = new Map<string, Pair[]>();
   const rawMinimum = source.mask?.min_meetings;
   if (typeof rawMinimum !== "number" || !Number.isInteger(rawMinimum) || rawMinimum < 2) return [];
@@ -76,13 +96,14 @@ function rangeRows(source: MatchupRangeSource): LabRow[] {
         low_meetings: low.meetings,
         opponents: ordered.length,
       },
-      note: `Highest opponent endpoint${highTies.length > 1 ? "s" : ""}: ${endpoints(highTies)}. Lowest opponent endpoint${lowTies.length > 1 ? "s" : ""}: ${endpoints(lowTies)}. Numeric meeting fields use the first alphabetic endpoint when tied.`,
+      note: `${names.has(team) ? `Team: ${names.get(team)}. ` : ""}Highest opponent endpoint${highTies.length > 1 ? "s" : ""}: ${endpoints(highTies)}. Lowest opponent endpoint${lowTies.length > 1 ? "s" : ""}: ${endpoints(lowTies)}. Numeric meeting fields use the first alphabetic endpoint when tied.`,
     }];
   });
 }
 
-export function buildBasketballMatchupRangeResearch(source: MatchupRangeSource): ResearchAnalysis[] {
-  const rows = rangeRows(source);
+export function buildBasketballMatchupRangeResearch(source: MatchupRangeSource, teamAtlas?: MatchupRangeTeamAtlas): ResearchAnalysis[] {
+  const names = teamNames(teamAtlas);
+  const rows = rangeRows(source, names);
   const seasons = Array.isArray(source.input_coverage?.seasons)
     ? source.input_coverage.seasons.filter(value => typeof value === "string" && value.trim()).join(", ")
     : "published seasons";
@@ -100,7 +121,7 @@ export function buildBasketballMatchupRangeResearch(source: MatchupRangeSource):
     category: "Matchup explorer",
     source: "nba_matchup_grid",
     description: "For each team, compares its highest and lowest published opponent-specific mean combined point totals.",
-    scope: `${rows.length} teams derived from the ${validGames === null ? "published input" : `${validGames}-game input corpus`} across ${seasons}${validDate ? `; latest input date ${validDate}` : ""}. ${validMinimum === null ? "Source meeting floor is unavailable or invalid; no rows are included." : `Each endpoint uses at least ${validMinimum} meetings.`}`,
+    scope: `${rows.length} teams derived from the ${validGames === null ? "published input" : `${validGames}-game input corpus`} across ${seasons}${validDate ? `; latest input date ${validDate}` : ""}. ${validMinimum === null ? "Source meeting floor is unavailable or invalid; no rows are included." : `Each endpoint uses at least ${validMinimum} meetings.`}${names.size ? " Team names come separately from atlas_nba_teams_manifest and do not affect matchup values or dates." : ""}`,
     caveat: "These are extrema among opponent means, so the range is selection-sensitive. Seasons and venues are pooled, with no published regular-season or playoff filter; rosters, opponent strength and recency are not adjusted. Team points are reconstructed by summing source player box-score points, without a published completeness audit. Pair means are serialized to two decimals, and endpoint meeting counts differ. The latest input date is not a per-pair cutoff. This describes prior games and is not a forecast.",
     status: "Descriptive",
     fields: [
@@ -120,5 +141,8 @@ export function buildBasketballMatchupRangeResearch(source: MatchupRangeSource):
 }
 
 export function getBasketballMatchupRangeResearch(): ResearchAnalysis[] {
-  return buildBasketballMatchupRangeResearch(snapshot<MatchupRangeSource>("nba_matchup_grid"));
+  return buildBasketballMatchupRangeResearch(
+    snapshot<MatchupRangeSource>("nba_matchup_grid"),
+    snapshot<MatchupRangeTeamAtlas>("atlas_nba_teams_manifest"),
+  );
 }

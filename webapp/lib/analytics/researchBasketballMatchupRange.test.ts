@@ -21,6 +21,9 @@ describe("NBA opponent mean-total range research", () => {
     expect(analysis.id).toBe("nba-opponent-total-range");
     expect(analysis.rows).toHaveLength(30);
     expect(analysis.rows.every(row => row.values.opponents === 29)).toBe(true);
+    expect(analysis.rows.every(row => row.note?.startsWith("Team: "))).toBe(true);
+    expect(analysis.rows.find(row => row.label === "ATL")?.note).toContain("Team: Atlanta Hawks.");
+    expect(analysis.scope).toContain("atlas_nba_teams_manifest");
     expect(analysis.caveat).toContain("Seasons and venues are pooled");
     expect(analysis.caveat).toContain("serialized to two decimals");
     expect(analysis.scope).toContain("latest input date 2026-04-12");
@@ -83,5 +86,26 @@ describe("NBA opponent mean-total range research", () => {
     })[0];
     expect(rollover.rows).toHaveLength(1);
     expect(rollover.scope).not.toContain("2026-02-30");
+  });
+
+  it("retains evidence without inventing missing, invalid, or ambiguous team names", () => {
+    const pairings = [...reciprocal("A", "B", 10, 2), ...reciprocal("A", "C", 20, 2)];
+    const base = buildBasketballMatchupRangeResearch(source(pairings))[0].rows[0];
+    expect(base.note).not.toContain("Team:");
+    expect(base.note).not.toContain("undefined");
+    const ambiguous = buildBasketballMatchupRangeResearch(source(pairings), { entries: [
+      { entity: "A", key_numbers: { team_full_name: "Alpha" } },
+      { entity: "A", key_numbers: { team_full_name: "Another Alpha" } },
+      { entity: "B", key_numbers: { team_full_name: { invalid: true } } },
+    ] })[0].rows[0];
+    expect(ambiguous.values).toEqual(base.values);
+    expect(ambiguous.note).toEqual(base.note);
+    for (const team_full_name of [{ invalid: true }, "   ", undefined]) {
+      const invalid = buildBasketballMatchupRangeResearch(source(pairings), { entries: [
+        { entity: "A", key_numbers: { team_full_name } },
+      ] })[0].rows[0];
+      expect(invalid.values).toEqual(base.values);
+      expect(invalid.note).toEqual(base.note);
+    }
   });
 });
