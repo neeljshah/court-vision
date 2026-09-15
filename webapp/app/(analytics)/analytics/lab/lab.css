@@ -21,8 +21,11 @@
 .lab-readout b{font-weight:600;color:var(--cv-text)}
 .lab-readout span{font-family:var(--font-mono);font-size:9px}
 .lab-export{display:flex;align-items:center;gap:7px;background:var(--cv-surface);border:1px solid var(--cv-line);padding:8px 11px;border-radius:5px;font-size:10px!important;white-space:nowrap}
-.lab-axis{display:flex;justify-content:space-between;padding-left:43%;font-size:9px;color:var(--cv-muted);margin:22px 0 15px;gap:14px}
-.lab-axis span:nth-child(2){text-align:center}
+.lab-axis{display:grid;grid-template-columns:22px minmax(110px,.8fr) minmax(70px,1fr) 82px;column-gap:12px;row-gap:6px;font-size:9px;color:var(--cv-muted);margin:22px 0 15px}
+.lab-axis span{grid-column:3;grid-row:2}
+.lab-axis span:first-child{justify-self:start}
+.lab-axis span:nth-child(2){grid-column:1/-1;grid-row:1;justify-self:center;text-align:center}
+.lab-axis span:last-child{justify-self:end}
 .lab-rank{display:grid;grid-template-columns:22px minmax(110px,.8fr) minmax(70px,1fr) 82px;align-items:center;gap:12px;min-height:52px;padding:8px 0;border:0;border-top:1px solid var(--cv-line);background:none;width:100%;text-align:left}
 .lab-rank:hover,.lab-rank:focus-visible{background:var(--cv-soft)}
 .lab-rank-number{color:var(--cv-muted);font-size:9px;font-family:var(--font-mono)}
@@ -30,10 +33,10 @@
 .lab-rank-label small{display:block;font-size:8px;color:var(--cv-muted);margin-top:4px}
 .lab-rank>b{font-family:var(--font-mono);font-size:10px;font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
 .lab-rank-track{display:block;position:relative;height:14px;background:var(--cv-soft);border-radius:2px}
-.lab-rank-track>i{position:absolute;height:100%;display:block;border-radius:2px;min-width:1px;transition:width .2s ease}
+.lab-rank-track>i{position:absolute;height:100%;display:block;border-radius:2px;transition:width .2s ease}
 .lab-bar-positive{background:var(--cv-blue)}
 .lab-bar-negative{background:var(--cv-teal)}
-.lab-rank-track .lab-zero{background:var(--cv-line);width:1px;height:24px;top:-5px}
+.lab-rank-track .lab-zero{background:var(--cv-line);width:1px;min-width:1px;height:24px;top:-5px}
 .lab-second-axis{max-width:330px;margin:16px 0}
 .lab-scatter svg{display:block;width:100%;height:280px}
 .lab-scatter svg text{font-size:10px;fill:var(--cv-muted);font-family:var(--font-mono)}
@@ -65,7 +68,7 @@
 .lab-novel-index summary{cursor:pointer;color:var(--cv-blue);padding:8px 0}
 .lab-novel-index code{display:block;background:var(--cv-soft);font-size:10px;padding:12px;line-height:1.8}
 @media(max-width:1050px){
-  .lab-shell{grid-template-columns:190px minmax(0,1fr);gap:18px}.lab-rank{grid-template-columns:18px minmax(80px,.8fr) minmax(50px,1fr) 65px;gap:8px}
+  .lab-shell{grid-template-columns:190px minmax(0,1fr);gap:18px}.lab-rank,.lab-axis{grid-template-columns:18px minmax(80px,.8fr) minmax(50px,1fr) 65px;gap:8px}
   .lab-inspector dl{grid-template-columns:1fr 1fr}.lab-controls{grid-template-columns:1fr 1fr}.lab-controls>label:last-child{grid-column:1/-1}
   .lab-analysis-head h2{font-size:21px}.lab-novel-index>div{grid-template-columns:1fr}
 }
@@ -73,8 +76,9 @@
   .lab-shell{display:block}.lab-sidebar{position:static;max-height:none;overflow:visible;border:1px solid var(--cv-line);border-radius:6px;padding:13px;margin-bottom:16px}
   .lab-dataset-picker{display:grid}.lab-dataset-catalog{display:none}.lab-analysis-head{flex-wrap:wrap;gap:7px}.lab-analysis-head h2{font-size:20px}.lab-analysis-head .cv-source{margin-left:auto}
   .lab-controls{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;padding-top:17px}.lab-controls>label:first-child{grid-column:1/-1}.lab-controls>label:last-child{grid-column:auto}.lab-chart-controls{gap:10px;margin:15px 0;flex-wrap:wrap}
-  .lab-chart-controls .cv-segment button{font-size:10px;padding:8px}.lab-readout{margin-top:7px}.lab-export{margin-left:auto}.lab-axis{padding-left:0;font-size:8px}
-  .lab-rank{grid-template-columns:14px minmax(82px,1fr) minmax(42px,.7fr) 58px;gap:6px;min-height:54px}.lab-rank-label{font-size:10px}.lab-rank>b{font-size:9px}.lab-rank-label small{font-size:8px}
+  .lab-chart-controls .cv-segment button{font-size:10px;padding:8px}.lab-readout{margin-top:7px}.lab-export{margin-left:auto}.lab-axis{grid-template-columns:14px minmax(0,1fr) 58px;column-gap:8px;row-gap:6px;font-size:11px}
+  .lab-axis span{grid-column:2;grid-row:2}.lab-axis span:nth-child(2){grid-column:1/-1;grid-row:1}
+  .lab-rank{grid-template-columns:14px minmax(0,1fr) 58px;grid-template-rows:auto auto;column-gap:8px;row-gap:5px;min-height:66px}.lab-rank-number{grid-column:1;grid-row:1/-1}.lab-rank-label{grid-column:2/-1;grid-row:1;font-size:12px;overflow:visible;text-overflow:clip;white-space:normal}.lab-rank-track{grid-column:2;grid-row:2}.lab-rank>b{grid-column:3;grid-row:2;font-size:11px}.lab-rank-label small{font-size:10px}
   .lab-inspector{padding:16px}.lab-inspector dl{grid-template-columns:1fr 1fr}.lab-inspector dd{font-size:15px}.lab-novel-index article{padding:16px}.lab-scatter svg{min-width:0}
   .lab-data-table th:first-child,.lab-data-table td:first-child{position:sticky;left:0;background:var(--cv-surface);box-shadow:5px 0 7px #00000008}.lab-data-table td:first-child{min-width:145px}
   .lab-evidence-note{padding-left:0;padding-right:0}.lab-page>.cv-masthead{flex-wrap:wrap}
