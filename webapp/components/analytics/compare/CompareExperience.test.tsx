@@ -137,9 +137,12 @@ describe("CompareExperience controls", () => {
     expect(screen.getByLabelText("Profile A")).toHaveValue("Alpha");
     expect(screen.getByLabelText("Profile B")).toHaveValue("Beta");
     expect(screen.getByRole("heading", { name: "Where these profiles separate" })).toBeInTheDocument();
-    expect(window.location.search).toContain("pack=nba_players");
-    expect(window.location.search).toContain("a=alpha");
-    expect(window.location.search).toContain("b=beta");
+    await waitFor(() => expect(window.location.search).toBe("?pack=nba_players&a=alpha&b=beta"));
+    const settledQuery = window.location.search;
+    fireEvent.click(screen.getByRole("button", { name: "NBA" }));
+    expect(window.location.search).toBe(settledQuery);
+    expect(screen.getByLabelText("Profile A")).toHaveValue("Alpha");
+    expect(screen.getByLabelText("Profile B")).toHaveValue("Beta");
     const evidence = screen.getAllByText("Published evidence");
     fireEvent.click(evidence[0]);
     fireEvent.click(evidence[1]);
