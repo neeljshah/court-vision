@@ -1,3 +1,4 @@
+import { getResearchAnalyses } from "@/lib/analytics/researchData";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { getDashboardData } from "@/lib/analytics/dashboardData";
@@ -51,7 +52,7 @@ describe("analytics workspace interactions", () => {
   });
   it("shows the derived analysis count and six latest published analyses", () => {
     render(<Workspace data={data} />);
-    expect(screen.getByRole("button", { name: /Derived analyses/ })).toHaveTextContent("46");
+    expect(screen.getByRole("button", { name: /Derived analyses/ })).toHaveTextContent(String(getResearchAnalyses().length));
     const recent = screen.getByRole("heading", { name: "Recently added analyses" }).closest("section")!;
     const links = within(recent).getAllByRole("link");
     expect(links).toHaveLength(6);
