@@ -45,7 +45,7 @@ export default function PapersIndex({ papers }: { papers: Paper[] }) {
     <div className="wrap paper-index">
       <header className="paper-index-head">
         <p className="overline">Research papers</p>
-        <h1 className="serif">Method notes with their receipts attached</h1>
+        <h1 className="serif">Studies of forecast reliability and game context</h1>
         <p className="paper-sub">
           Each paper states a question, names the committed artifact behind every number, and ends on
           what the measurement does not establish. Calibration and description only.
