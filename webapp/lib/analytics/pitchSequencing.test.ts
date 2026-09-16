@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { loadPitchSequencing } from "./pitchSequencing.server";
 import { buildPitchSequencing, pitchCell } from "./pitchSequencing";
 
 const fixture = {
@@ -21,5 +22,15 @@ describe("pitch sequencing data", () => {
     const data = buildPitchSequencing({ ...fixture, by_class: [{ ...fixture.by_class[0], class: "two_strike", overlapping: true }] });
     expect(data.classes[0].overlapping).toBe(true);
     expect(data.classes[0].probabilityMatrix[0]).toEqual([0.2, 0.3]);
+  });
+
+  it("loads the committed browser-safe snapshot without changing its published axes", () => {
+    const data = loadPitchSequencing();
+    expect(data).toMatchObject({
+      pitchTypes: ["FF", "SI", "SL", "CH", "ST", "FC", "CU", "FS"],
+      rowMinN: 200,
+      asOf: "2026-07-25T11:13:31.944905+00:00",
+    });
+    expect(data.classes.map(item => item.id)).toEqual(["all", "behind", "even", "ahead", "two_strike", "three_ball"]);
   });
 });

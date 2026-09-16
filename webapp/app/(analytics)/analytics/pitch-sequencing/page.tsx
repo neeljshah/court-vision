@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PitchSequencing } from "@/components/analytics/pitch-sequencing/PitchSequencing";
-import { loadPitchSequencing } from "@/lib/analytics/pitchSequencing";
+import { loadPitchSequencing } from "@/lib/analytics/pitchSequencing.server";
 import "./pitch-sequencing.css";
 
 export const metadata: Metadata = {

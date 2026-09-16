@@ -1,5 +1,3 @@
-import { snapshot } from "./labHelpers";
-
 type RecordValue = Record<string, unknown>;
 
 export interface PitchSequencingClass {
@@ -85,9 +83,4 @@ export function pitchCell(data: PitchSequencingData, selected: PitchSequencingCl
     probability: selected.probabilityMatrix[row]?.[column] ?? null,
     masked: selected.rowBelowFloor[row] === true,
   };
-}
-
-/** Reads the build-time JSON snapshot; no browser fetch is used. */
-export function loadPitchSequencing(): PitchSequencingData {
-  return buildPitchSequencing(snapshot<unknown>("pitch_sequencing"));
 }
