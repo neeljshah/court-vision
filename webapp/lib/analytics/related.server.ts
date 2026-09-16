@@ -16,7 +16,7 @@ const exactSport = (left: string, right: string) => sportKey(left) === sportKey(
 const sourceIds = (entry: ReadingEntry) => entry.sources || [];
 
 function withdrawnSuffix(moduleIds: readonly string[]): string {
-  return noticesForModules(moduleIds).some((notice) => notice.status === "pending-regeneration")
+  return noticesForModules(moduleIds).some((notice) => notice.status === "withdrawn-pending-regeneration")
     ? " (withdrawn pending regeneration)" : "";
 }
 
