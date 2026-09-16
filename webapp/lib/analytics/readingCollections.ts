@@ -25,7 +25,9 @@ export const readingCollections: ReadingCollection[] = [
       { kind: "module", id: "murphy_decomposition" },
       { kind: "finding", id: "reliability" },
       { kind: "inspector", id: "calibration" },
+      { kind: "inspector", id: "state-reliability" },
       { kind: "inspector", id: "score-decomposition" },
+      { kind: "inspector", id: "cross-sport-comparability" },
     ],
   },
   {
@@ -64,6 +66,7 @@ export const readingCollections: ReadingCollection[] = [
       { kind: "analysis", id: "mlb-pitch-mix-concentration" },
       { kind: "analysis", id: "mlb-count-contrast" },
       { kind: "inspector", id: "pitch-sequencing" },
+      { kind: "inspector", id: "count-context" },
     ],
   },
   {

@@ -23,12 +23,15 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     sourceModuleIds: ["calibration_stability"],
   },
   {
+    id: "state-reliability",
     route: "/analytics/state-reliability",
     title: "State reliability",
     purpose: "Inspect published state-conditioned calibration rows and source-specific support.",
+    sport: "all",
+    populationId: "state_conditioned_calibration_buckets",
+    prerequisite: "Read the calibration reliability bins before comparing state-conditioned cells.",
+    nextQuestion: "Which time and probability cells carry the least support behind their gap?",
     sourceModuleIds: ["state_conditioned_calibration"],
-  },
-  {
   },
   {
     id: "pitch-sequencing",
@@ -42,12 +45,15 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     sourceModuleIds: ["pitch_sequencing"],
   },
   {
+    id: "count-context",
     route: "/analytics/count-context",
     title: "Count context",
     purpose: "Inspect published pitch mix and outcome proxies by count-leverage class.",
+    sport: "mlb",
+    populationId: "mlb_count_leverage_classes",
+    prerequisite: "Read the count-state cards before comparing pitch mixes across leverage classes.",
+    nextQuestion: "Which previous pitch changes the next-pitch probability inside a count class?",
     sourceModuleIds: ["mlb_count_leverage"],
-  },
-  {
   },
   {
     id: "score-decomposition",
@@ -105,9 +111,14 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     sourceModuleIds: ["why_attribution"],
   },
   {
+    id: "cross-sport-comparability",
     route: "/analytics/cross-sport-comparability",
     title: "Cross-sport comparability",
     purpose: "Read the published gate for reliability-component comparisons across sports.",
+    sport: "all",
+    populationId: "cross_sport_reliability_rows",
+    prerequisite: "Read each sport's calibration reliability before comparing components across sports.",
+    nextQuestion: "Which sports publish a reference the model can be held against?",
     sourceModuleIds: ["kernel_transfer"],
   },
 ];
