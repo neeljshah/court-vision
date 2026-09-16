@@ -130,6 +130,9 @@ jobs:
         env:
           NEXT_PUBLIC_BASE_PATH: /court-vision
         run: |
+          node scripts/check-client-imports.mjs
+          node scripts/check-paper-evidence.mjs
+          node scripts/check-analytics-copy.mjs --data
           node scripts/verify-analytics-export.mjs
           node --test scripts/verify-analytics-export.test.mjs
 
