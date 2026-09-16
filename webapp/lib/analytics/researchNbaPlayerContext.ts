@@ -85,7 +85,7 @@ export function buildNbaPlayerContextResearch(source: PlayerContextSources): Res
   const selected = allCells.filter(cell => cell.modules.size >= minimumSources).sort((left, right) => left.name.localeCompare(right.name));
   const rows: ResearchRow[] = selected.map(cell => ({ id: `nba-player-context-${playerKey(cell.name)}`, label: cell.name, group: `${cell.modules.size} published sources`, values: { consistency_cv: null, q4_points_shift: null, q4_rebounds_shift: null, q4_assists_shift: null, context_sensitivity: null, home_away_ts_difference: null, net_rating_delta: null, career_points_per36: null, career_rebounds_per36: null, career_assists_per36: null, ...cell.values }, note: `Published in ${cell.modules.size} joined source modules. Null means that source module did not publish this measurement for the player.`, sourcePaths: [...new Set(cell.paths)] }));
   const sourceTotals = new Map<string, number>([["nba_consistency_profiles", 0], ["nba_q4_shift", 0], ["ctx_player_splits", 0], ["on_off_showcase", 0], ["atlas_nba_manifest", 0]]);
-  for (const cell of allCells) for (const module of cell.modules) sourceTotals.set(module, (sourceTotals.get(module) || 0) + 1);
+  for (const cell of allCells) for (const moduleId of cell.modules) sourceTotals.set(moduleId, (sourceTotals.get(moduleId) || 0) + 1);
   const sourceCoverage = [...sourceTotals].map(([module, total]) => coverage(module, selected, total)).join("; ");
   const excludedNames = allCells.filter(cell => cell.modules.size === 1 && !cell.modules.has("atlas_nba_manifest")).map(cell => cell.name).sort((left, right) => left.localeCompare(right));
   const sources: ResearchSource[] = [
