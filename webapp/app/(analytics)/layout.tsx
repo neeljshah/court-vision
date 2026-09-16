@@ -95,6 +95,7 @@ const FOOT_LINKS: Array<{ href: string; label: string }> = [
   { href: "/analytics/the-loop", label: "Research loop" },
   { href: "/analytics/novel", label: "Experimental metrics" },
   { href: "/analytics/pitch-sequencing", label: "Pitch sequencing" },
+  { href: "/analytics/count-context", label: "Count context" },
   { href: "/analytics/score-decomposition", label: "Score decomposition" },
   { href: "/analytics/residual-anatomy", label: "Residual anatomy" },
   { href: "/analytics/players", label: "All entities" },

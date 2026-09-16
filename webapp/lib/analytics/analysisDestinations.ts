@@ -25,6 +25,12 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     sourceModuleIds: ["pitch_sequencing"],
   },
   {
+    route: "/analytics/count-context",
+    title: "Count context",
+    purpose: "Inspect published pitch mix and outcome proxies by count-leverage class.",
+    sourceModuleIds: ["mlb_count_leverage"],
+  },
+  {
     route: "/analytics/score-decomposition",
     title: "Score decomposition",
     purpose: "Inspect published Brier components and reconstruction remainders.",
