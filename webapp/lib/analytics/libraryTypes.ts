@@ -8,6 +8,7 @@ export type LibraryEntry = {
   keywords: string; rows: number | null; fields: number | null;
   preview: number[]; previewLabel: string;
   sourceSummary?: LibrarySourceSummary;
+  integrityNotice?: string;
 };
 export function filterLibrary(entries: LibraryEntry[], sport: Sport, kind: string, query: string, collectionIds: string[] = []) {
   const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);

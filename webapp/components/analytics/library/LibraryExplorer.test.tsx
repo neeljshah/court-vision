@@ -53,6 +53,19 @@ describe("LibraryExplorer", () => {
     expect(screen.getByText("2026-07-24")).toBeInTheDocument();
   });
 
+  it("labels affected cards before their preview without marking clear sources", () => {
+    const notice = "Source integrity: MLB results withdrawn; MLB/soccer under review.";
+    render(<LibraryExplorer entries={[{ ...entries[0], integrityNotice: notice }, entries[1]]} />);
+    const warning = screen.getByText(notice);
+    const affected = screen.getByRole("link", { name: /NBA Pace Formula/ });
+    const clear = screen.getByRole("link", { name: /MLB Pitch Source/ });
+    expect(affected).toContainElement(warning);
+    expect(clear).not.toHaveTextContent("Source integrity");
+    const preview = affected.querySelector(".library-preview");
+    expect(preview).not.toBeNull();
+    expect(warning.compareDocumentPosition(preview!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+
   it("uses the entry's explicit reading-kind label on its card", () => {
     render(<LibraryExplorer entries={[entry("finding", "Published finding", "nba", "finding", "finding")]} />);
     expect(screen.getByText("Finding")).toBeInTheDocument();

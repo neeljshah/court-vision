@@ -7,7 +7,7 @@ export interface AskAnswer {
   status: AskStatus;
   answer: string;
   source_artifact: string;
-  as_of?: string;
+  as_of?: string; source_module_ids?: string[];
   explore_path?: string;
 }
 export interface AskEntry {

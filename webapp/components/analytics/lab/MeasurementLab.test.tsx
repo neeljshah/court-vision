@@ -7,33 +7,38 @@ import MeasurementLab from "./MeasurementLab";
 import { ScatterPlot } from "./LabPlot";
 import { getLabData } from "@/lib/analytics/labData";
 import type { LabData, LabField, LabRow } from "@/lib/analytics/labTypes";
-
 const fixture: LabData = {
   datasets: [
     {
       id: "cross-sport", title: "Cross-sport metric", sport: "all", category: "Experimental metrics",
       source: "novel_line_half_life", description: "A cross-sport fixture.", scope: "Fixture scope.", caveat: "Fixture caveat.", status: "Descriptive",
       fields: [{ key: "value", label: "Value", unit: "number" }, { key: "alt", label: "Alternate", unit: "number" }],
-      rows: [
-        { id: "mlb", label: "MLB", group: "MLB", values: { value: 2, alt: 1 }, definition: { population: "Fixture rows" } },
-        { id: "tennis", label: "TENNIS", group: "TENNIS", values: { value: 1, alt: 2 }, definition: { population: "Fixture rows" } },
-        { id: "missing", label: "Missing value", group: "MLB", values: { value: null, alt: null }, definition: { population: "Fixture rows" } },
-      ],
+      rows: [{ id: "mlb", label: "MLB", group: "MLB", values: { value: 2, alt: 1 }, definition: { population: "Fixture rows" } }, { id: "tennis", label: "TENNIS", group: "TENNIS", values: { value: 1, alt: 2 }, definition: { population: "Fixture rows" } }, { id: "missing", label: "Missing value", group: "MLB", values: { value: null, alt: null }, definition: { population: "Fixture rows" } }],
     },
     {
       id: "nba-profile", title: "NBA profile", sport: "nba", category: "Player & team",
       source: "nba_consistency_profiles", description: "An NBA fixture.", scope: "Fixture scope.", caveat: "Fixture caveat.", status: "Descriptive",
-      fields: [{ key: "value", label: "Value", unit: "number" }],
-      rows: [{ id: "jokic", label: "Nikola Jokic", group: "Published rows", values: { value: 7 }, note: "Fixture detail.", definition: { population: "Fixture rows" } }],
+      fields: [{ key: "value", label: "Value", unit: "number" }], rows: [{ id: "jokic", label: "Nikola Jokic", group: "Published rows", values: { value: 7 }, note: "Fixture detail.", definition: { population: "Fixture rows" } }],
     },
   ],
   novel: [],
 };
-
 beforeEach(() => window.history.replaceState(null, "", "/analytics/lab"));
 afterEach(() => vi.unstubAllGlobals());
 
 describe("MeasurementLab sport filtering and inspection", () => {
+  it("updates source integrity notices when the selected dataset changes", () => {
+    const integrityFixture: LabData = { ...fixture, datasets: [fixture.datasets[0], { ...fixture.datasets[1], id: "live-clock", title: "Live Clock", sport: "all", source: "novel_live_clock_fraction" }] };
+    render(<MeasurementLab data={integrityFixture} />);
+    expect(screen.queryByRole("complementary", { name: "Data integrity" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Live Clock/ }));
+    const notice = screen.getByRole("complementary", { name: "Data integrity" });
+    expect(notice).toHaveTextContent(/MLB\/soccer rows are under review.*novel_live_clock_fraction/);
+    expect(notice.compareDocumentPosition(screen.getByText("Primary measurement")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /Cross-sport metric/ }));
+    expect(screen.queryByRole("complementary", { name: "Data integrity" })).not.toBeInTheDocument();
+  });
+
   it("isolates rim-deterrence to one season and suppresses pooled summaries", () => {
     window.history.replaceState(null, "", "/analytics/lab?dataset=rim-deterrence");
     render(<MeasurementLab data={getLabData()} />);

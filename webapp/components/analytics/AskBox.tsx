@@ -3,6 +3,7 @@
 // no fetch, and no live-data path; retrieval only selects an existing envelope.
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Receipt, type ReceiptData } from "./Receipt";
+import { DataIntegrityNotice } from "./DataIntegrityNotice";
 import Link from "next/link";
 
 // Source JSON files are static assets, not routes: a plain anchor (base-path prefixed by hand)
@@ -11,6 +12,7 @@ const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 import type { Verdict } from "./VerdictDot";
 import { typeset } from "@/lib/analytics/format";
 import { isReadingRoomPath } from "@/lib/analytics/scoutInspectorAnswers";
+import { scoutIntegrity } from "@/lib/analytics/scoutIntegrity";
 import {
   resolveQuestion,
   type AskAnswer,
@@ -120,6 +122,7 @@ function AnswerEnvelope({ result, query, onAsk, excludedQuestions, entries }: {
   }
 
   const { entry } = result;
+  const integrity = scoutIntegrity(entry.a);
   const related = result.kind === "related";
   const neutral = related || entry.a.status !== "ok";
   const publicArtifact = /^webapp\/public\/data\/(?:showcase|papers|explainers)\/[a-z0-9_-]+\.json$/i.test(entry.a.source_artifact);
@@ -141,6 +144,7 @@ function AnswerEnvelope({ result, query, onAsk, excludedQuestions, entries }: {
           </p>
         ) : null}
         {related ? <div style={{ ...questionStyle, fontStyle: "italic" }}>{entry.q}</div> : null}
+        <DataIntegrityNotice notices={integrity.notices} moduleIds={integrity.moduleIds} />
         <div style={answerStyle}>{typeset(entry.a.answer)}</div>
         <div style={chipRow}>
           {result.compareOffer ? <Link href={result.compareOffer.href} style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)" }}>{result.compareOffer.label}</Link> : null}

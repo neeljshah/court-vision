@@ -81,9 +81,14 @@ jobs:
           npx vitest run lib/analytics/countContext.test.ts
           npx vitest run lib/analytics/matchupInsights.test.ts
           npx vitest run lib/analytics/askSearch.test.ts
+          npx vitest run lib/analytics/dataIntegrity.test.ts
+          npx vitest run lib/analytics/scoutIntegrity.test.ts
+          npx vitest run lib/analytics/sourceIntegrity.server.test.ts
+          npx vitest run components/analytics/DataIntegrityNotice.test.tsx
           npx vitest run lib/analytics/askEntityIntent.test.ts
           npx vitest run lib/analytics/scoutCorpus.test.ts
           npx vitest run components/analytics/AskBox.test.tsx
+          npx vitest run components/analytics/AskBox.integrity.test.tsx
           npx vitest run components/analytics/compare/CompareExperience.test.tsx
           npx vitest run components/analytics/compare/MlbAtlasCompareExperience.test.tsx
           npx vitest run components/analytics/compare/TennisSurfaceComparison.test.tsx
@@ -106,6 +111,7 @@ jobs:
           npx vitest run components/analytics/library/TennisWindowResearch.test.tsx
           npx vitest run components/analytics/library/BasketballMatchupRange.test.tsx
           npx vitest run components/analytics/lab/MeasurementLab.test.tsx
+          npx vitest run components/analytics/lab/MeasurementLabIntegrity.test.tsx
           npx vitest run components/analytics/lab/LabPlot.test.tsx
           npx vitest run components/analytics/lab/ScatterSummary.test.tsx
           npx vitest run components/analytics/lab/DistributionSummary.test.tsx

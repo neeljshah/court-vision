@@ -31,6 +31,16 @@ describe("getLibraryEntries", () => {
     expect(derivedAsOf({ asOf: "2026-07-26", sources: [{ id: "source", asOf: "2026-07-25" }] })).toBe("2026-07-26");
   });
 
+  it("carries source integrity labels into discovery without flagging unrelated MLB data", () => {
+    expect(sources.find(entry => entry.id === "calibration_stability")?.integrityNotice).toContain("MLB results withdrawn");
+    expect(derived.find(entry => entry.id === "brier-skill-score-by-game-phase")?.integrityNotice).toContain("MLB results withdrawn");
+    expect(entries.find(entry => entry.id === "state-reliability" && entry.kind === "inspector")?.integrityNotice).toContain("MLB results withdrawn");
+    expect(sources.find(entry => entry.id === "novel_live_clock_fraction")?.integrityNotice).toBe("Source integrity: MLB/soccer under review.");
+    expect(sources.find(entry => entry.id === "statcast_showcase")?.integrityNotice).toBeUndefined();
+    expect(entries.filter(entry => entry.kind === "paper" && entry.integrityNotice).length).toBeGreaterThan(0);
+    expect(entries.find(entry => entry.id === "what-calibration-means" && entry.kind === "explainer")?.integrityNotice).toContain("MLB results withdrawn");
+  });
+
   it("classifies non-prefixed single-sport sources explicitly", () => {
     const expectedNba = [
       "aging_curve_lite", "box_value_index", "cf_pace_variance", "cf_star_removal",
