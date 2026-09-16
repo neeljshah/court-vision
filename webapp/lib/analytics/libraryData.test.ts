@@ -9,10 +9,10 @@ describe("getLibraryEntries", () => {
   const sources = entries.filter(entry => entry.kind === "source");
 
   it("merges the complete source manifest with every derived analysis", () => {
-    expect(entries).toHaveLength(134);
+    expect(entries).toHaveLength(136);
     expect(sources).toHaveLength(74);
     expect(new Set(entries.map(entry => entry.id)).size).toBe(entries.length);
-    expect(derived).toHaveLength(60);
+    expect(derived).toHaveLength(62);
     expect(derived.reduce((sum, entry) => sum + (entry.rows ?? 0), 0)).toBe(4477);
   });
 

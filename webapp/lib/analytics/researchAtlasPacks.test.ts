@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildAtlasResearch, type AtlasManifest, type AtlasPack } from "./researchAtlasPacks";
+import { buildAtlasResearch, getAtlasPackResearch, type AtlasManifest, type AtlasPack } from "./researchAtlasPacks";
 
 const pack: AtlasPack = {
   key: "nba_players", source: "atlas_nba_manifest", id: "nba-player-atlas-measurements",
@@ -57,5 +57,18 @@ describe("atlas pack research", () => {
     const analysis = buildAtlasResearch(pack, { entries: [{ entity: "Player", card_path: "player.png", key_numbers: { new_rate: 0.612 } }] });
     expect(analysis.fields[0]).toMatchObject({ key: "new_rate", label: "New Rate", unit: "number" });
     expect(analysis.rows[0].values.new_rate).toBe(0.612);
+  });
+
+  it("registers three non-overlapping MLB pitch atlas cohorts", () => {
+    const analyses = getAtlasPackResearch().filter((analysis) => analysis.source === "atlas_mlb_pitch_manifest");
+    expect(analyses.map((analysis) => [analysis.id, analysis.rows.length, analysis.fields[0].key])).toEqual([
+      ["mlb-pitch-type-atlas-measurements", 19, "velo_p50"],
+      ["mlb-team-pitch-atlas-measurements", 30, "n_pitches"],
+      ["mlb-count-state-atlas-measurements", 12, "balls"],
+    ]);
+    expect(analyses[0].rows.every((row) => row.label.startsWith("pitch type "))).toBe(true);
+    expect(analyses[1].rows.every((row) => row.label.startsWith("team "))).toBe(true);
+    expect(analyses[2].rows.every((row) => row.label.startsWith("count:"))).toBe(true);
+    expect(new Set(analyses.flatMap((analysis) => analysis.rows.map((row) => row.id))).size).toBe(61);
   });
 });

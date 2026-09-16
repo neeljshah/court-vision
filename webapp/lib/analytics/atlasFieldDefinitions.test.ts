@@ -14,6 +14,14 @@ describe("atlas field definitions", () => {
     expect(atlasFieldDefinition("nba_players", "team_id").isIdentifier).toBe(true);
   });
 
+  it("uses the published tennis baseline and NBA corpus scope", () => {
+    expect(atlasFieldDefinition("tennis", "grass_adapt_career").label).toBe("Grass minus overall win rate, career");
+    const nbaLabels = Object.entries(ATLAS_FIELD_DEFINITIONS.nba_players)
+      .filter(([key]) => key.startsWith("career_"))
+      .map(([, field]) => field.label.toLowerCase());
+    expect(nbaLabels.every((label) => label.includes("corpus") && !label.includes("career"))).toBe(true);
+  });
+
   it("keeps unknown fields as plain numbers", () => {
     expect(atlasFieldDefinition("nba_players", "new_rate")).toMatchObject({ label: "New Rate", unit: "number", decimals: 3 });
   });

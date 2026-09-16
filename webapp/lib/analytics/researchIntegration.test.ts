@@ -8,7 +8,7 @@ const sourceRoot = resolve(__dirname, "../../public/data/showcase");
 
 describe("research analysis integration", () => {
   it("keeps the complete public registry structurally safe", () => {
-    expect(analyses).toHaveLength(60);
+    expect(analyses).toHaveLength(62);
     const ids = analyses.map((analysis) => analysis.id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(ids.every((id) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id))).toBe(true);

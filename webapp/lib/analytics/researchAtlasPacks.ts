@@ -1,17 +1,17 @@
 import { field as f, snapshot } from "./labHelpers";
 import { atlasFieldDefinition } from "./atlasFieldDefinitions";
+import { getMlbPitchAtlasCohorts } from "./atlasResearchCohorts";
 import { entrySlugs, entityName, type RawEntry } from "./comparisonData";
 import type { LabField } from "./labTypes";
 import type { ResearchAnalysis, ResearchReference, ResearchRow } from "./researchTypes";
 
-export type AtlasManifest = { entries?: RawEntry[]; generated_at?: unknown };
-export type AtlasPack = { key: string; source: string; id: string; title: string; sport: ResearchAnalysis["sport"]; noun: string };
+export type AtlasManifest = { entries?: RawEntry[]; generated_at?: unknown; sourceIndexes?: number[] };
+export type AtlasPack = { key: string; source: string; id: string; title: string; sport: ResearchAnalysis["sport"]; noun: string; defaultMeasurement?: string };
 
 const PACKS: AtlasPack[] = [
   { key: "nba_players", source: "atlas_nba_manifest", id: "nba-player-atlas-measurements", title: "NBA player atlas measurements", sport: "nba", noun: "NBA players" },
   { key: "nba_teams", source: "atlas_nba_teams_manifest", id: "nba-team-atlas-measurements", title: "NBA team atlas measurements", sport: "nba", noun: "NBA teams" },
   { key: "mlb_batters", source: "atlas_mlb_batters_manifest", id: "mlb-batter-atlas-measurements", title: "MLB batter atlas measurements", sport: "mlb", noun: "MLB batters" },
-  { key: "mlb_pitch", source: "atlas_mlb_pitch_manifest", id: "mlb-pitch-atlas-measurements", title: "MLB pitch atlas measurements", sport: "mlb", noun: "MLB pitch types" },
   { key: "soccer", source: "atlas_soccer_manifest", id: "soccer-team-atlas-measurements", title: "Soccer team atlas measurements", sport: "soccer", noun: "soccer teams" },
   { key: "tennis", source: "atlas_tennis_manifest", id: "tennis-player-atlas-measurements", title: "Tennis player atlas measurements", sport: "tennis", noun: "tennis players" },
 ];
@@ -36,9 +36,12 @@ function displayedValue(pack: string, value: unknown, key: string): number | nul
   return value;
 }
 
-function scalarKeys(pack: string, entries: RawEntry[]): string[] {
-  return [...new Set(entries.flatMap((entry) => Object.entries(entry.key_numbers || {})
+function scalarKeys(pack: string, entries: RawEntry[], defaultMeasurement?: string): string[] {
+  const keys = [...new Set(entries.flatMap((entry) => Object.entries(entry.key_numbers || {})
     .flatMap(([key, value]) => finite(value) && !atlasFieldDefinition(pack, key).isIdentifier ? [key] : [])))].sort();
+  return defaultMeasurement && keys.includes(defaultMeasurement)
+    ? [defaultMeasurement, ...keys.filter((key) => key !== defaultMeasurement)]
+    : keys;
 }
 
 function dates(entries: RawEntry[]): string | undefined {
@@ -52,15 +55,15 @@ function floors(entries: RawEntry[]): string {
 
 export function buildAtlasResearch(pack: AtlasPack, manifest: AtlasManifest): ResearchAnalysis {
   const entries = manifest.entries || [];
-  const keys = scalarKeys(pack.key, entries);
+  const keys = scalarKeys(pack.key, entries, pack.defaultMeasurement);
   const rows: ResearchRow[] = entrySlugs(entries).map(({ slug, entry }, index) => ({
-    id: `${pack.key}-${slug || index + 1}`,
+    id: `${pack.id}-${slug || index + 1}`,
     label: entityName(entry),
     group: pack.noun,
     values: Object.fromEntries(keys.map((key) => [key, displayedValue(pack.key, entry.key_numbers?.[key], key)])),
     note: typeof entry.floors === "string" ? entry.floors : undefined,
     href: `/analytics/players/${pack.key}/${slug}`,
-    sourcePaths: keys.map((key) => `entries[${index}].key_numbers.${key}`),
+    sourcePaths: keys.map((key) => `entries[${manifest.sourceIndexes?.[index] ?? index}].key_numbers.${key}`),
   }));
   const publishedFloors = floors(entries);
   return {
@@ -86,5 +89,11 @@ export function buildAtlasResearch(pack: AtlasPack, manifest: AtlasManifest): Re
 }
 
 export function getAtlasPackResearch(): ResearchAnalysis[] {
-  return PACKS.map((pack) => buildAtlasResearch(pack, snapshot<AtlasManifest>(pack.source)));
+  const standard = PACKS.map((pack) => buildAtlasResearch(pack, snapshot<AtlasManifest>(pack.source)));
+  const mlbPitch = snapshot<AtlasManifest>("atlas_mlb_pitch_manifest");
+  const cohorts = getMlbPitchAtlasCohorts(mlbPitch.entries || []).map((cohort) => buildAtlasResearch({
+    key: "mlb_pitch", source: "atlas_mlb_pitch_manifest", id: cohort.id, title: cohort.title,
+    sport: "mlb", noun: cohort.noun, defaultMeasurement: cohort.defaultMeasurement,
+  }, { ...mlbPitch, entries: cohort.entries, sourceIndexes: cohort.sourceIndexes }));
+  return [...standard, ...cohorts];
 }
