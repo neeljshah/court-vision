@@ -9,8 +9,14 @@ export type AtlasEntity = {
 
 export type EntityIntent = {
   entities: AtlasEntity[];
+  candidates: AtlasEntity[];
   isComparison: boolean;
 };
+
+const COMMON_IDENTIFIERS = new Set([
+  "away", "baseball", "basketball", "batter", "count", "home", "mlb", "nba",
+  "pitch", "player", "soccer", "sport", "stat", "stats", "team", "tennis", "type",
+]);
 
 export function normalizeEntityName(value: string): string {
   return value
@@ -30,28 +36,89 @@ export function entityForms(entity: AtlasEntity): string[] {
   return Array.from(new Set([fullName, surname, givenName].filter(Boolean)));
 }
 
-function matchPosition(query: string, entity: AtlasEntity): number {
-  return entityForms(entity).reduce((first, form) => {
-    const position = ` ${query} `.indexOf(` ${form} `);
-    return position >= 0 && (first < 0 || position < first) ? position : first;
-  }, -1);
+function matchPosition(query: string, form: string): number {
+  return ` ${query} `.indexOf(` ${form} `);
+}
+
+function entityKey(entity: AtlasEntity): string {
+  return `${entity.pack}:${entity.slug}`;
+}
+
+function sortMatches(matches: { entity: AtlasEntity; position: number }[]): AtlasEntity[] {
+  return matches
+    .sort((a, b) => a.position - b.position)
+    .map(({ entity }) => entity);
+}
+
+function atlasStopList(atlasEntities: AtlasEntity[]): Set<string> {
+  const appearances = new Map<string, number>();
+  atlasEntities.forEach((entity) => {
+    new Set(normalizeEntityName(entity.name).split(" ").filter(Boolean)).forEach((token) => {
+      appearances.set(token, (appearances.get(token) || 0) + 1);
+    });
+  });
+  return new Set([...COMMON_IDENTIFIERS, ...Array.from(appearances)
+    .filter(([, count]) => count > 25)
+    .map(([token]) => token)]);
+}
+
+function hasComparisonCue(query: string): boolean {
+  return /\b(compare|vs|versus)\b/.test(query) || /\band\b/.test(query);
 }
 
 export function resolveEntityIntent(query: string, atlasEntities: AtlasEntity[]): EntityIntent {
   const normalizedQuery = normalizeEntityName(query);
-  const seen = new Set<string>();
-  const matches = atlasEntities.flatMap((entity) => {
-    const position = matchPosition(normalizedQuery, entity);
-    if (position < 0) return [];
-    const key = `${entity.pack}:${entity.slug}`;
-    if (seen.has(key)) return [];
-    seen.add(key);
-    return [{ entity, position }];
-  }).sort((a, b) => a.position - b.position || a.entity.name.localeCompare(b.entity.name));
-  const entities = matches.map((match) => match.entity);
-  const mentionedNames = new Set(matches.map((match) => match.position)).size;
-  const hasComparisonWord = /\b(compare|vs|versus)\b/.test(normalizedQuery);
-  const hasAndPair = mentionedNames === 2 && /\band\b/.test(normalizedQuery);
-  const hasImplicitPair = mentionedNames === 2 && !hasComparisonWord && !hasAndPair;
-  return { entities, isComparison: mentionedNames === 2 && (hasComparisonWord || hasAndPair || hasImplicitPair) };
+  if (!normalizedQuery) return { entities: [], candidates: [], isComparison: false };
+
+  const stopList = atlasStopList(atlasEntities);
+  const fullMatches = atlasEntities.flatMap((entity) => {
+    const fullName = normalizeEntityName(entity.name);
+    const position = matchPosition(normalizedQuery, fullName);
+    return position >= 0 ? [{ entity, position, fullName }] : [];
+  });
+  const consumedAliases = new Set(fullMatches.flatMap(({ entity }) => entityForms(entity).slice(1)));
+  const resolved = new Map<string, { entity: AtlasEntity; position: number }>();
+  const ambiguous = new Map<string, { entity: AtlasEntity; position: number }>();
+
+  fullMatches.forEach(({ entity, position, fullName }) => {
+    const sameName = fullMatches.filter((match) => match.fullName === fullName);
+    const target = sameName.length === 1 ? resolved : ambiguous;
+    target.set(entityKey(entity), { entity, position });
+  });
+
+  const aliases = new Map<string, { entity: AtlasEntity; position: number; isGivenName: boolean }[]>();
+  atlasEntities.forEach((entity) => {
+    const forms = entityForms(entity);
+    forms.slice(1).forEach((form, index) => {
+      if (stopList.has(form) || consumedAliases.has(form)) return;
+      const position = matchPosition(normalizedQuery, form);
+      if (position < 0) return;
+      const matches = aliases.get(form) || [];
+      matches.push({ entity, position, isGivenName: index === 1 });
+      aliases.set(form, matches);
+    });
+  });
+
+  aliases.forEach((matches) => {
+    const distinct = Array.from(new Map(matches.map((match) => [entityKey(match.entity), match])).values());
+    const isGivenName = distinct.some((match) => match.isGivenName);
+    // A given-name alias that identifies exactly one published entity resolves; several -> a choice.
+    const target = distinct.length > 1 ? ambiguous : resolved;
+    distinct.forEach(({ entity, position }) => {
+      if (!resolved.has(entityKey(entity))) target.set(entityKey(entity), { entity, position });
+    });
+  });
+
+  const entities = sortMatches(Array.from(resolved.values()));
+  const candidates = sortMatches(Array.from(ambiguous.values()).filter(({ entity }) => !resolved.has(entityKey(entity))));
+  // Two resolved identities and nothing else in the query ("Jokic Giannis") is a pair request too.
+  const leftover = entities
+    .reduce((text, entity) => entityForms(entity).reduce((inner, form) => inner.replace(form, " "), text), normalizedQuery)
+    .replace(/(compare|vs|versus|and)/g, " ")
+    .trim();
+  return {
+    entities,
+    candidates,
+    isComparison: candidates.length === 0 && entities.length === 2 && (hasComparisonCue(normalizedQuery) || leftover.length === 0),
+  };
 }

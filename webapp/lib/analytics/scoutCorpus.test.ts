@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { resolveEntityIntent } from "./askEntityIntent";
 import { resolveQuestion } from "./askSearch";
 import { loadScoutCorpus } from "./scoutCorpus";
 
@@ -71,6 +72,27 @@ describe("loadScoutCorpus", () => {
     expect(resolveQuestion("Tell me about Ohtani", corpus)).toMatchObject({ kind: "direct", entry: { q: "What public metrics are available for Shohei Ohtani?" } });
     expect(resolveQuestion("What is Unknown Person's NBA profile?", corpus)?.kind).not.toBe("direct");
     expect(resolveQuestion("What are Ohtani's latest stats?", corpus)).toMatchObject({ kind: "direct", entry: { a: { status: "no_data" } } });
+  });
+
+  it("resolves published Atlas names without promoting aliases into comparisons", () => {
+    const atlasEntities = corpus.flatMap((entry) => entry.entity ? [entry.entity] : []);
+    const stephen = { name: "Stephen Curry", pack: "nba_players", slug: "stephen_curry" };
+    const seth = { name: "Seth Curry", pack: "nba_players", slug: "seth_curry" };
+    const jokic = { name: "Nikola Jokic", pack: "nba_players", slug: "nikola_jokic" };
+    const giannis = { name: "Giannis Antetokounmpo", pack: "nba_players", slug: "giannis_antetokounmpo" };
+
+    expect(resolveEntityIntent("Stephen Curry", atlasEntities)).toMatchObject({ entities: [stephen], candidates: [], isComparison: false });
+    expect(resolveEntityIntent("Compare Stephen Curry and Seth Curry", atlasEntities)).toMatchObject({ entities: [stephen, seth], candidates: [], isComparison: true });
+    expect(resolveEntityIntent("Compare Nikola Jokic and Giannis Antetokounmpo", atlasEntities)).toMatchObject({ entities: [jokic, giannis], candidates: [], isComparison: true });
+    expect(resolveEntityIntent("Nikola", atlasEntities)).toMatchObject({ entities: [], isComparison: false });
+    expect(resolveEntityIntent("Nikola", atlasEntities).candidates.map((entity) => entity.slug)).toEqual(expect.arrayContaining([
+      "nikola_jokic", "nikola_jovic", "nikola_vucevic",
+    ]));
+    expect(resolveEntityIntent("Curry", atlasEntities).candidates).toEqual([stephen, seth]);
+    expect(resolveEntityIntent("pitch velocity", atlasEntities)).toMatchObject({ entities: [], candidates: [], isComparison: false });
+
+    expect(resolveQuestion("Nikola", corpus)).toMatchObject({ entry: null, kind: "none" });
+    expect(resolveQuestion("Curry", corpus)).toMatchObject({ entry: null, kind: "none" });
   });
 
   it("does not answer a named entity directly when the query adds conflicting scope", () => {

@@ -73,6 +73,25 @@ describe("AskBox", () => {
     );
   });
 
+  it("renders an explicit profile choice for an ambiguous short name", () => {
+    const players = [
+      { ...entries[0], q: "Stephen Curry profile", entity: { name: "Stephen Curry", pack: "nba_players", slug: "stephen_curry" } },
+      { ...entries[0], q: "Seth Curry profile", entity: { name: "Seth Curry", pack: "nba_players", slug: "seth_curry" } },
+    ];
+    render(<AskBox entries={players} tours={[]} />);
+    fireEvent.change(screen.getByLabelText("Ask Scout a question"), { target: { value: "Curry" } });
+    fireEvent.click(screen.getByRole("button", { name: "Search Scout's cited answers" }));
+
+    expect(screen.getByText("Did you mean:")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Stephen Curry (NBA players)" })).toHaveAttribute(
+      "href", "/analytics/players/nba_players/stephen_curry"
+    );
+    expect(screen.getByRole("link", { name: "Seth Curry (NBA players)" })).toHaveAttribute(
+      "href", "/analytics/players/nba_players/seth_curry"
+    );
+    expect(screen.queryByLabelText("Cited answer")).not.toBeInTheDocument();
+  });
+
   it("does not repeat a suggested question in the follow-up panel", () => {
     const withFollowUp = [...entries, { ...entries[0], q: "Try another question" }];
     render(<AskBox entries={withFollowUp} tours={[{ label: "Start here", questions: ["Try another question"] }]} />);

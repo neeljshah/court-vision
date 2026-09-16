@@ -28,6 +28,7 @@ export interface ResolvedQuestion {
   kind: MatchKind;
   followUps: string[];
   compareOffer?: { label: string; href: string };
+  entityChoices?: AtlasEntity[];
 }
 
 const STOP = new Set(
@@ -237,6 +238,12 @@ export function resolveQuestion(query: string, entries: AskEntry[]): ResolvedQue
   if (!queryTerms.length) return null;
   if (!entries.length) return { entry: null, kind: "unavailable", followUps: [] };
   const intent = resolveEntityIntent(query, entries.flatMap((entry) => entry.entity ? [entry.entity] : []));
+  if (intent.candidates.length) return {
+    entry: null,
+    kind: "none",
+    followUps: [],
+    entityChoices: intent.candidates,
+  };
   const offer = intent.isComparison ? comparisonOffer(intent.entities) : undefined;
 
   // The site has no current-data feed. Prefer the curated scope refusal before a

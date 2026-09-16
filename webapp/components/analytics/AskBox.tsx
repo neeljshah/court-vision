@@ -64,6 +64,20 @@ const answerStyle: CSSProperties = { fontSize: 15.5, color: "var(--ink-2)", line
 const questionStyle: CSSProperties = { fontSize: 13, color: "var(--ink-3)", marginBottom: 6 };
 const chipRow: CSSProperties = { display: "flex", flexWrap: "wrap", gap: "6px 16px", marginTop: 10 };
 
+const PACK_LABELS: Record<string, string> = {
+  calibration: "Calibration checkpoints",
+  mlb_batters: "MLB batters",
+  mlb_pitch: "MLB pitch types",
+  nba_players: "NBA players",
+  nba_teams: "NBA teams",
+  soccer: "Soccer teams",
+  tennis: "Tennis players",
+};
+
+function profilePath({ pack, slug }: { pack: string; slug: string }): string {
+  return `/analytics/players/${pack}/${slug}`;
+}
+
 function AnswerEnvelope({ result, query, onAsk, excludedQuestions }: {
   result: ResolvedQuestion;
   query: string;
@@ -81,7 +95,18 @@ function AnswerEnvelope({ result, query, onAsk, excludedQuestions }: {
             <Link href={result.compareOffer.href} style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)" }}>{result.compareOffer.label}</Link>
           </div> : null}
           <div style={answerStyle}>
-            {unavailable ? (
+            {result.entityChoices?.length ? (
+              <>
+                <strong style={{ color: "var(--ink)" }}>Did you mean:</strong>
+                <div style={chipRow}>
+                  {result.entityChoices.map((entity) => (
+                    <Link key={`${entity.pack}:${entity.slug}`} href={profilePath(entity)} style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)" }}>
+                      {entity.name} ({PACK_LABELS[entity.pack] || entity.pack})
+                    </Link>
+                  ))}
+                </div>
+              </>
+            ) : unavailable ? (
               <><strong style={{ color: "var(--ink)" }}>Scout's public corpus is unavailable.</strong> No answer can be verified until its committed sources load.</>
             ) : (
               <><strong style={{ color: "var(--ink)" }}>No verified result.</strong> Scout searches published questions and answers. Try a player, team, sport, or a metric such as calibration, Brier score, pitch mix, or home advantage.</>

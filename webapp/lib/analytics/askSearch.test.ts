@@ -76,7 +76,7 @@ describe("resolveQuestion", () => {
     expect(result?.kind).not.toBe("direct");
   });
 
-  it.each(["Jokic Giannis", "Compare Jokic and Giannis"])("keeps the requested identities for %s", (query) => {
+  it("keeps the requested identities for an explicit comparison", () => {
     const jokic = { name: "Nikola Jokic", pack: "nba_players", slug: "nikola_jokic" };
     const giannis = { name: "Giannis Antetokounmpo", pack: "nba_players", slug: "giannis_antetokounmpo" };
     const pairQuestion = "Which published records cover Nikola Jokic and Giannis Antetokounmpo?";
@@ -88,7 +88,7 @@ describe("resolveQuestion", () => {
       { q: lukaQuestion, alt_phrasings: [], tags: ["nba"], bucket: "players-teams", a: { status: "ok", answer: "Published comparison.", source_artifact: "luka-jokic.json" } },
       { q: pairQuestion, alt_phrasings: [], tags: ["nba"], bucket: "players-teams", a: { status: "ok", answer: "Published pair note.", source_artifact: "pair.json" } },
     ];
-    const result = resolveQuestion(query, entityEntries);
+    const result = resolveQuestion("Compare Nikola Jokic and Giannis Antetokounmpo", entityEntries);
 
     expect(result).toMatchObject({
       kind: "related",

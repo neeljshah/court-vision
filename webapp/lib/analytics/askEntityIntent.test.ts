@@ -4,6 +4,8 @@ import { resolveEntityIntent, type AtlasEntity } from "./askEntityIntent";
 const atlasEntities: AtlasEntity[] = [
   { name: "Nikola Jokic", pack: "nba_players", slug: "nikola_jokic" },
   { name: "Giannis Antetokounmpo", pack: "nba_players", slug: "giannis_antetokounmpo" },
+  { name: "Stephen Curry", pack: "nba_players", slug: "stephen_curry" },
+  { name: "Seth Curry", pack: "nba_players", slug: "seth_curry" },
   { name: "Alex Smith", pack: "nba_players", slug: "alex_smith" },
   { name: "Alex Smith", pack: "tennis", slug: "alex_smith" },
 ];
@@ -23,8 +25,11 @@ describe("resolveEntityIntent", () => {
     });
   });
 
-  it("recognizes an unambiguous given name in a common player reference", () => {
-    expect(resolveEntityIntent("Jokic Giannis", atlasEntities).entities).toEqual([atlasEntities[0], atlasEntities[1]]);
+  it("treats two bare resolved identities as a pair, but not when other words remain", () => {
+    expect(resolveEntityIntent("Jokic Giannis", atlasEntities)).toMatchObject({
+      entities: [atlasEntities[0], atlasEntities[1]], candidates: [], isComparison: true,
+    });
+    expect(resolveEntityIntent("Jokic Giannis rebounds", atlasEntities).isComparison).toBe(false);
   });
 
   it("recognizes a pair introduced with compare and joined by and", () => {
@@ -35,7 +40,33 @@ describe("resolveEntityIntent", () => {
 
   it("retains ambiguous names from every pack", () => {
     const result = resolveEntityIntent("Alex Smith", atlasEntities);
-    expect(result.entities).toEqual([atlasEntities[2], atlasEntities[3]]);
+    expect(result.entities).toEqual([]);
+    expect(result.candidates).toEqual([atlasEntities[4], atlasEntities[5]]);
     expect(result.isComparison).toBe(false);
+  });
+
+  it("lets a full name consume matching first-name and surname aliases", () => {
+    expect(resolveEntityIntent("Stephen Curry", atlasEntities)).toMatchObject({
+      entities: [atlasEntities[2]], candidates: [], isComparison: false,
+    });
+  });
+
+  it("resolves an explicit full-name comparison without short-name ambiguity", () => {
+    expect(resolveEntityIntent("Compare Nikola Jokic and Giannis Antetokounmpo", atlasEntities)).toMatchObject({
+      entities: [atlasEntities[0], atlasEntities[1]], candidates: [], isComparison: true,
+    });
+  });
+
+  it("returns choices for a shared surname and resolves a given name that identifies one entity", () => {
+    expect(resolveEntityIntent("Curry", atlasEntities).candidates).toEqual([atlasEntities[2], atlasEntities[3]]);
+    expect(resolveEntityIntent("Nikola", atlasEntities)).toMatchObject({
+      entities: [atlasEntities[0]], candidates: [], isComparison: false,
+    });
+  });
+
+  it("does not treat common sport words as entity aliases", () => {
+    expect(resolveEntityIntent("pitch velocity", [
+      { name: "Pitch Type FF", pack: "mlb_pitch", slug: "pitch_type_ff" },
+    ])).toMatchObject({ entities: [], candidates: [], isComparison: false });
   });
 });
