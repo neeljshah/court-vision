@@ -8,11 +8,11 @@ const sourceRoot = resolve(__dirname, "../../public/data/showcase");
 
 describe("research analysis integration", () => {
   it("keeps the complete public registry structurally safe", () => {
-    expect(analyses).toHaveLength(38);
+    expect(analyses).toHaveLength(42);
     const ids = analyses.map((analysis) => analysis.id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(ids.every((id) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id))).toBe(true);
-    expect(analyses.reduce((total, analysis) => total + analysis.rows.length, 0)).toBe(1808);
+    expect(analyses.reduce((total, analysis) => total + analysis.rows.length, 0)).toBe(2354);
     for (const analysis of analyses) {
       const fieldKeys = analysis.fields.map((field) => field.key);
       expect(fieldKeys.length).toBeGreaterThan(0);
@@ -32,6 +32,20 @@ describe("research analysis integration", () => {
         expect(date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
         expect(new Date(`${date}T00:00:00Z`).toISOString().startsWith(date)).toBe(true);
       }
+    }
+  });
+
+  it("registers the four A3 analyses with row-level published field paths", () => {
+    const expected = new Map([
+      ["pace-variance-favorite-probability", 24],
+      ["star-removal-team-win-probability", 30],
+      ["lineup-proxy-active-missed-record", 408],
+      ["comeback-rates-deficit-time", 84],
+    ]);
+    for (const [id, rows] of expected) {
+      const analysis = analyses.find((candidate) => candidate.id === id);
+      expect(analysis?.rows).toHaveLength(rows);
+      expect(analysis?.rows.every((row) => row.sourcePaths?.length)).toBe(true);
     }
   });
 });
