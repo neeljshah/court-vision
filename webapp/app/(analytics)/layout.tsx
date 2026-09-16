@@ -101,6 +101,7 @@ const FOOT_LINKS: Array<{ href: string; label: string }> = [
   { href: "/analytics/players", label: "All entities" },
   { href: "/analytics/about", label: "About" },
   { href: "/analytics/explainers", label: "Explainers" },
+  { href: "/analytics/papers", label: "Research papers" },
   { href: "/analytics/findings", label: "Findings" },
   { href: "/analytics/observation-dependence", label: "Observation dependence" },
   { href: "/analytics/blowout-timing", label: "Blowout timing" },

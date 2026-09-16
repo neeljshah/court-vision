@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const FORBIDDEN = /(?<![A-Za-z0-9_])(edge|edges|bet|bets|betting|bettor|bettors|bookmaker|bookmakers|sportsbook|profit|profits|profitable|roi|wager|wagers|wagering|bankroll|bankrolls|payout|payouts|odds boost|financial returns?|betting returns?|dollar)(?![A-Za-z0-9])/gi;
 const SOURCE_ROOTS = ["app/(analytics)", "components/analytics", "lib/analytics"];
-const DATA_TARGETS = ["public/data/showcase/site_manifest.json", "public/data/insights", "public/data/ask", "public/data/explainers"];
+const DATA_TARGETS = ["public/data/showcase/site_manifest.json", "public/data/insights", "public/data/ask", "public/data/explainers", "public/data/papers"];
 const DATA_PROSE_KEYS = new Set(["answer", "body_md", "caveat", "dek", "headline_insight", "how_to_read", "note", "one_line", "q_free_prose", "question", "title", "what_it_means", "why_it_matters"]);
 
 function sourceFiles(root, directory) {

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import LibraryExplorer from "./LibraryExplorer";
 import type { LibraryEntry } from "@/lib/analytics/libraryTypes";
 
-const kindLabels: Record<LibraryEntry["kind"], string> = { source: "Source module", derived: "Derived analysis", finding: "Finding", inspector: "Inspector", explainer: "Explainer" };
+const kindLabels: Record<LibraryEntry["kind"], string> = { source: "Source module", derived: "Derived analysis", finding: "Finding", inspector: "Inspector", explainer: "Explainer", paper: "Paper" };
 const entry = (id: string, title: string, sport: LibraryEntry["sport"], kind: LibraryEntry["kind"], keywords: string): LibraryEntry => ({ id, title, sport, kind, kindLabel: kindLabels[kind], keywords, description: `${title} description`, category: "Methods", status: "published", href: `/analytics/research/${id}/`, asOf: kind === "source" ? "2026-07-25" : null, rows: 4, fields: 2, preview: [1, 2], previewLabel: "Published values", sourceSummary: kind === "source" ? { asOf: "2026-07-25", scope: "42 observed games", measurements: [{ label: "Games", value: "42" }], availability: "partial", previewRows: [[{ label: "Team", value: "A" }]] } : undefined });
 const entries: LibraryEntry[] = [
   { ...entry("nba-formula", "NBA Pace Formula", "nba", "derived", "pace formula possession"), asOf: "2026-07-24" },

@@ -6,6 +6,7 @@ import type { MetadataRoute } from "next";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { getResearchAnalyses } from "@/lib/analytics/researchData";
+import { loadPapers } from "@/lib/analytics/papers.server";
 
 export const dynamic = "force-static";
 
@@ -22,11 +23,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     hrefs = [];
   }
   // The home + hub roots always belong in, even if the index failed to load.
-  const roots = ["/analytics", "/analytics/ask", "/analytics/lab", "/analytics/compare", "/analytics/evidence", "/analytics/findings", "/analytics/players", "/analytics/browse", "/analytics/calibration", "/analytics/state-reliability", "/analytics/pitch-sequencing", "/analytics/score-decomposition", "/analytics/observation-dependence", "/analytics/residual-anatomy", "/analytics/blowout-timing", "/analytics/state-contrasts", "/analytics/cross-sport-comparability", "/analytics/count-context"];
+  const roots = ["/analytics", "/analytics/ask", "/analytics/lab", "/analytics/compare", "/analytics/evidence", "/analytics/findings", "/analytics/players", "/analytics/browse", "/analytics/calibration", "/analytics/state-reliability", "/analytics/pitch-sequencing", "/analytics/score-decomposition", "/analytics/observation-dependence", "/analytics/residual-anatomy", "/analytics/blowout-timing", "/analytics/state-contrasts", "/analytics/cross-sport-comparability", "/analytics/count-context", "/analytics/papers"];
   const seen = new Set<string>();
   const urls: MetadataRoute.Sitemap = [];
   const research = getResearchAnalyses().map(a => `/analytics/research/${a.id}`);
-  for (const h of [...roots, ...hrefs, ...research]) {
+  const papers = loadPapers().map(p => `/analytics/papers/${p.slug}`);
+  for (const h of [...roots, ...hrefs, ...research, ...papers]) {
     if (seen.has(h)) continue;
     seen.add(h);
     // next.config has trailingSlash:true, so the canonical exported page is

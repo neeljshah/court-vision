@@ -7,12 +7,13 @@ import type { ResearchAnalysis } from "./researchTypes";
 import type { Sport } from "./dashboardTypes";
 import type { LibraryEntry } from "./libraryTypes";
 import { summarizeLibrarySource } from "./librarySourceSummaries";
+import { loadPapers } from "./papers.server";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 type Explainer = { slug: string; title: string; dek: string; as_of?: string; sport?: Sport };
 const kindLabel = {
-  source: "Source module", derived: "Derived analysis", finding: "Finding", inspector: "Inspector", explainer: "Explainer",
+  source: "Source module", derived: "Derived analysis", finding: "Finding", inspector: "Inspector", explainer: "Explainer", paper: "Paper",
 } as const;
 
 function explainers(): Explainer[] {
@@ -93,5 +94,11 @@ export function getLibraryEntries(): LibraryEntry[] {
     kind: "explainer", kindLabel: kindLabel.explainer, status: "published", href: `/analytics/explainers/${essay.slug}/`, asOf: essay.as_of || null,
     keywords: essay.slug.replace(/-/g, " "), rows: null, fields: null, preview: [], previewLabel: "",
   }));
-  return [...derived, ...sources, ...findings, ...inspectors, ...explainerEntries];
+  const paperEntries: LibraryEntry[] = loadPapers().map(paper => ({
+    id: paper.slug, title: paper.title, description: paper.subtitle, category: "Papers",
+    sport: paper.sport === "soccer_intl" ? "soccer" : paper.sport,
+    kind: "paper", kindLabel: kindLabel.paper, status: "published", href: `/analytics/papers/${paper.slug}/`, asOf: paper.date,
+    keywords: paper.keywords.join(" "), rows: null, fields: null, preview: [], previewLabel: "",
+  }));
+  return [...derived, ...sources, ...findings, ...inspectors, ...explainerEntries, ...paperEntries];
 }

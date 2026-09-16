@@ -28,6 +28,7 @@ const REQUIRED_ROUTES = [
   "/analytics/blowout-timing/",
   "/analytics/state-contrasts/",
   "/analytics/cross-sport-comparability/",
+  "/analytics/papers/",
 ];
 const BUDGETS = new Map([
   ["/analytics/", 200_000],
