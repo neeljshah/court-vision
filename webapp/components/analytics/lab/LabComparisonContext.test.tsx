@@ -17,8 +17,12 @@ describe("LabComparisonContext", () => {
     expect(context).toHaveTextContent("178 games");
     expect(context).toHaveTextContent("2026-06-18 to 2026-07-17 (30 days)");
   });
-  it("renders nothing when no definition is published", () => {
-    const { container } = render(<LabComparisonContext rows={[{ id: "a", label: "A", group: "A", values: { value: 1 } }]} />);
-    expect(container).toBeEmptyDOMElement();
+  it("marks unavailable core definition fields as not published", () => {
+    render(<LabComparisonContext rows={[{ id: "a", label: "A", group: "A", values: { value: 1 } }]} />);
+    const context = screen.getByRole("region", { name: "Published definition" });
+    expect(context).toHaveTextContent("Sport");
+    expect(context).toHaveTextContent("Population");
+    expect(context).toHaveTextContent("Observation window");
+    expect(context).toHaveTextContent("Not published");
   });
 });

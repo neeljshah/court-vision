@@ -12,7 +12,8 @@ export function LabComparisonContext({ rows }: { rows: LabRow[] }) {
     ["Season", valuesFor(rows, row => row.definition?.season)],
     ["Population", valuesFor(rows, row => row.definition?.population)],
     ["Observation window", valuesFor(rows, row => row.definition?.observationWindow)],
-  ].filter(([, values]) => values.length) as [string, string[]][];
-  if (!definitions.length) return null;
-  return <section className="lab-definition" aria-label="Published definition"><p className="cv-eyebrow">Published definition</p><dl>{definitions.map(([label, values]) => <div key={label}><dt>{label}</dt><dd>{values.join("; ")}</dd></div>)}</dl></section>;
+  ] as [string, string[]][];
+  const required = new Set(["Sport", "Population", "Observation window"]);
+  const visible = definitions.filter(([label, values]) => required.has(label) || values.length);
+  return <section className="lab-definition" aria-label="Published definition"><p className="cv-eyebrow">Published definition</p><dl>{visible.map(([label, values]) => <div key={label}><dt>{label}</dt><dd>{values.length ? values.join("; ") : "Not published"}</dd></div>)}</dl></section>;
 }

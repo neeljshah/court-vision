@@ -39,7 +39,7 @@ describe("MeasurementLab sport filtering and inspection", () => {
     render(<MeasurementLab data={getLabData()} />);
 
     expect(screen.getByRole("status")).toHaveTextContent("15 rows");
-    expect(screen.getByLabelText("Published group")).toHaveValue("season=2025-26");
+    expect(screen.getByLabelText("Published group")).toHaveValue("sport=NBA|season=2025-26");
     expect(within(screen.getByRole("region", { name: "Published definition" })).getByText("2025-26")).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("Published group"), { target: { value: "all" } });
@@ -53,12 +53,12 @@ describe("MeasurementLab sport filtering and inspection", () => {
   });
 
   it("restores a selected cohort from the lab URL", () => {
-    window.history.replaceState(null, "", "/analytics/lab?dataset=rim-deterrence&cohort=season%3D2024-25");
+    window.history.replaceState(null, "", "/analytics/lab?dataset=rim-deterrence&cohort=sport%3DNBA%7Cseason%3D2024-25");
     render(<MeasurementLab data={getLabData()} />);
 
-    expect(screen.getByLabelText("Published group")).toHaveValue("season=2024-25");
+    expect(screen.getByLabelText("Published group")).toHaveValue("sport=NBA|season=2024-25");
     expect(screen.getByRole("status")).toHaveTextContent("15 rows");
-    expect(window.location.search).toContain("cohort=season%3D2024-25");
+    expect(window.location.search).toContain("season%3D2024-25");
   });
 
   it("defaults incompatible definitions to one cohort and never renders a pooled median", () => {
@@ -68,7 +68,7 @@ describe("MeasurementLab sport filtering and inspection", () => {
     ] }] };
     render(<MeasurementLab data={incompatible} />);
     expect(screen.getByRole("status")).toHaveTextContent("1 row");
-    expect(screen.getByRole("region", { name: "Cohort comparison notice" })).toHaveTextContent("Showing MLB / 3 runs / inning by default");
+    expect(screen.getByRole("region", { name: "Cohort comparison notice" })).toHaveTextContent(/Showing MLB \/ 3 runs \/ inning/);
     fireEvent.change(screen.getByLabelText("Published group"), { target: { value: "all" } });
     expect(screen.getByRole("option", { name: "Show all cohorts (not comparable)" })).toBeInTheDocument();
     expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
@@ -76,13 +76,28 @@ describe("MeasurementLab sport filtering and inspection", () => {
     fireEvent.click(screen.getByRole("button", { name: "Data table" }));
     fireEvent.click(screen.getByRole("button", { name: "Inspect MLB" }));
     expect(screen.queryByRole("region", { name: "Measurement context" })).not.toBeInTheDocument();
-    expect(screen.getByText("Select one comparable cohort to see measurement context.")).toBeInTheDocument();
-    const cohort = screen.getByRole("option", { name: "MLB / 3 runs / inning" }) as HTMLOptionElement;
+    expect(screen.getByText("A complete published cohort definition is required for measurement context.")).toBeInTheDocument();
+    const cohort = screen.getByRole("option", { name: /^MLB \/ 3 runs \/ inning/ }) as HTMLOptionElement;
     fireEvent.change(screen.getByLabelText("Published group"), { target: { value: cohort.value } });
     fireEvent.click(screen.getByRole("button", { name: "Inspect MLB" }));
     const context = screen.getByRole("region", { name: "Measurement context" });
     expect(context).toHaveTextContent("MLB / 3 runs / inning");
     expect(within(context).getByText("Measured").parentElement).toHaveTextContent("1 / 1");
+  });
+  it("defaults market-foresight to one sport cohort and keeps the all-row table reachable", () => {
+    window.history.replaceState(null, "", "/analytics/lab?dataset=market-foresight");
+    render(<MeasurementLab data={getLabData()} />);
+
+    const group = screen.getByLabelText("Published group") as HTMLSelectElement;
+    expect(group.value).toContain("sport=MLB");
+    expect(screen.getByRole("status")).toHaveTextContent("10 rows");
+    expect(screen.getByRole("region", { name: "Measurement summary" })).toBeInTheDocument();
+
+    fireEvent.change(group, { target: { value: "all" } });
+    expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Data table" }));
+    expect(screen.getAllByRole("button", { name: /^Inspect MLB \/ 1/ }).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByRole("button", { name: /^Inspect INTERNATIONAL SOCCER \/ 0/ }).length).toBeGreaterThanOrEqual(1);
   });
   it("keeps a censored half-life label visible and out of numeric ranking", () => {
     const censored = { ...fixture, datasets: [{ ...fixture.datasets[0], id: "line-half-life", rows: [

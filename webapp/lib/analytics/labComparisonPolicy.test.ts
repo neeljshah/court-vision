@@ -34,4 +34,26 @@ describe("labComparisonPolicy", () => {
     expect(policy.compatible).toBe(false);
     expect(policy.reason).toContain("compatibility is unknown");
   });
+  it("keeps all-unknown rows out of pooled comparisons", () => {
+    const policy = labComparisonPolicy([row("a", undefined), row("b", undefined)]);
+    expect(policy.compatibility).toBe("unknown");
+    expect(policy.cohorts[0].compatibility).toBe("unknown");
+    expect(policy.compatible).toBe(false);
+  });
+  it("marks mixed known and missing seasons as unknown", () => {
+    const policy = labComparisonPolicy([row("known", { season: "2025-26" }), row("missing", { sport: "NBA" })]);
+    expect(policy.compatibility).toBe("unknown");
+    expect(policy.cohorts.at(-1)?.compatibility).toBe("unknown");
+  });
+  it("splits differing observation windows", () => {
+    const policy = labComparisonPolicy([row("early", { sport: "MLB", observationWindow: "Checkpoints 1 to 10" }), row("late", { sport: "MLB", observationWindow: "Checkpoints 2 to 10" })]);
+    expect(policy.compatibility).toBe("incompatible");
+    expect(policy.reason).toContain("observation windows");
+  });
+  it("accepts identical complete published definitions", () => {
+    const definition = { sport: "MLB", population: "178 games", observationWindow: "2026-06-18 to 2026-07-17", unit: "runs", clockField: "inning", threshold: 3, season: "2025-26" };
+    const policy = labComparisonPolicy([row("a", definition), row("b", definition)]);
+    expect(policy.compatibility).toBe("compatible");
+    expect(policy.cohorts).toHaveLength(1);
+  });
 });
