@@ -54,6 +54,12 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     purpose: "Compare published outcome-frequency differences between adjacent state buckets.",
     sourceModuleIds: ["why_attribution"],
   },
+  {
+    route: "/analytics/cross-sport-comparability",
+    title: "Cross-sport comparability",
+    purpose: "Read the published gate for reliability-component comparisons across sports.",
+    sourceModuleIds: ["kernel_transfer"],
+  },
 ];
 
 export type SearchPageRecord = {
