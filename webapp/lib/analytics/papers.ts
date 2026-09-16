@@ -118,6 +118,8 @@ export function validatePaper(value: unknown, artifacts: ReadonlySet<string>): s
     if (!target || typeof target.kind !== "string" || !RELATED_KINDS.has(target.kind) || !filled(target.id)) {
       return "related entries need a known kind and an id";
     }
+    if (target.kind === "module" && !artifacts.has(`${target.id}.json`)) return `related module ${target.id} has no published module page`;
+    if (target.kind === "inspector" && !analysisDestinations.some(entry => entry.id === target.id)) return `related inspector ${target.id} is not registered`;
   }
   for (const text of paperStrings(item)) {
     if (!PRINTABLE_ASCII.test(text)) return `non-ASCII text in ${JSON.stringify(text.slice(0, 40))}`;

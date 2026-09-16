@@ -2,10 +2,18 @@
   "slug": "pitch-velocity-shape-by-type",
   "title": "Pitch velocity shape: what the distribution says, and what it does not",
   "subtitle": "Per-type velocity percentiles and mph bands across 19 published 2025 Statcast pitch-type codes",
-  "authors": ["CourtVision research"],
+  "authors": [
+    "CourtVision research"
+  ],
   "date": "2026-09-16",
   "sport": "mlb",
-  "keywords": ["pitch velocity", "pitch type", "percentile", "distribution", "descriptive"],
+  "keywords": [
+    "pitch velocity",
+    "pitch type",
+    "percentile",
+    "distribution",
+    "descriptive"
+  ],
   "abstract": "This note describes the shape of pitch velocity by pitch-type code in a local 2025 Statcast pull (source data/cache/statcast/statcast_fuller__2025.parquet), not just its average. statcast_showcase.json publishes 19 pitch-type codes covering 693,037 pitches (n_pitches, pitch_type_distribution); the four-seam fastball (FF) alone accounts for 220,235 of them, 31.78 percent. Sixteen of those 19 codes also carry a published 10th, 50th, and 90th percentile of release speed (velo_percentiles_by_pitch_type); the other three -- UNK, UN, and SC -- appear in the raw count but have no published percentile row. For the two most common shapes, the picture differs by more than the median: the four-seam fastball's middle 80 percent of readings spans 91.3 to 97.7 mph, a 6.4 mph derived spread, while the curveball (CU) spans 75.1 to 83.9 mph, an 8.8 mph spread, around a lower median. mlb_velo_bands.json's fixed-width mph bands make the same point a different way: 89.78 percent of four-seam fastballs land in the three consecutive 89-98 mph bands, while 97.42 percent of curveballs land at or below 86 mph. A percentile or share is only meaningful within the row set it was computed over: the same 693,037 pitches partition into 19 rows by pitch type and, separately, into 12 rows by exact ball-strike count (mlb_count_leverage.json), and pitch_sequencing.json restricts pitch type itself to a further 8-row, 512,289-transition axis with its own floor. None of these row sets are interchangeable, and this paper does not rank pitchers, forecast a next pitch, or make any predictive claim beyond description.",
   "sections": [
     {
@@ -73,27 +81,187 @@
         {
           "type": "table",
           "caption": "All 19 published 2025 pitch-type codes: raw count, share of all pitches, and velocity percentiles where published",
-          "columns": ["Pitch type", "n (pitches)", "Pct of all pitches", "n (velocity)", "p10 mph", "p50 mph", "p90 mph"],
+          "columns": [
+            "Pitch type",
+            "n (pitches)",
+            "Pct of all pitches",
+            "n (velocity)",
+            "p10 mph",
+            "p50 mph",
+            "p90 mph"
+          ],
           "rows": [
-            ["FF", "220,235", "31.78%", "220,233", "91.3", "94.5", "97.7"],
-            ["SI", "107,136", "15.46%", "107,135", "90.3", "94.0", "97.2"],
-            ["SL", "99,357", "14.34%", "99,357", "82.7", "86.4", "89.7"],
-            ["CH", "71,270", "10.28%", "71,270", "80.5", "86.3", "90.1"],
-            ["ST", "52,681", "7.6%", "52,681", "78.7", "82.7", "86.2"],
-            ["FC", "51,867", "7.48%", "51,867", "86.0", "89.6", "93.3"],
-            ["CU", "46,489", "6.71%", "46,489", "75.1", "79.9", "83.9"],
-            ["FS", "22,473", "3.24%", "22,473", "82.2", "86.3", "90.9"],
-            ["KC", "12,412", "1.79%", "12,412", "77.6", "83.0", "87.5"],
-            ["SV", "3,427", "0.49%", "3,427", "78.6", "81.8", "85.0"],
-            ["UNK", "2,544", "0.37%", "n/a", "n/a", "n/a", "n/a"],
-            ["EP", "970", "0.14%", "970", "38.9", "50.1", "60.3"],
-            ["FA", "854", "0.12%", "854", "58.5", "67.9", "79.8"],
-            ["FO", "721", "0.10%", "721", "80.9", "83.0", "85.6"],
-            ["CS", "393", "0.06%", "393", "52.3", "72.4", "74.9"],
-            ["KN", "135", "0.02%", "135", "56.8", "77.4", "83.0"],
-            ["PO", "53", "0.01%", "53", "85.7", "91.4", "94.9"],
-            ["UN", "13", "0.00%", "n/a", "n/a", "n/a", "n/a"],
-            ["SC", "7", "0.00%", "n/a", "n/a", "n/a", "n/a"]
+            [
+              "FF",
+              "220,235",
+              "31.78%",
+              "220,233",
+              "91.3",
+              "94.5",
+              "97.7"
+            ],
+            [
+              "SI",
+              "107,136",
+              "15.46%",
+              "107,135",
+              "90.3",
+              "94.0",
+              "97.2"
+            ],
+            [
+              "SL",
+              "99,357",
+              "14.34%",
+              "99,357",
+              "82.7",
+              "86.4",
+              "89.7"
+            ],
+            [
+              "CH",
+              "71,270",
+              "10.28%",
+              "71,270",
+              "80.5",
+              "86.3",
+              "90.1"
+            ],
+            [
+              "ST",
+              "52,681",
+              "7.6%",
+              "52,681",
+              "78.7",
+              "82.7",
+              "86.2"
+            ],
+            [
+              "FC",
+              "51,867",
+              "7.48%",
+              "51,867",
+              "86.0",
+              "89.6",
+              "93.3"
+            ],
+            [
+              "CU",
+              "46,489",
+              "6.71%",
+              "46,489",
+              "75.1",
+              "79.9",
+              "83.9"
+            ],
+            [
+              "FS",
+              "22,473",
+              "3.24%",
+              "22,473",
+              "82.2",
+              "86.3",
+              "90.9"
+            ],
+            [
+              "KC",
+              "12,412",
+              "1.79%",
+              "12,412",
+              "77.6",
+              "83.0",
+              "87.5"
+            ],
+            [
+              "SV",
+              "3,427",
+              "0.49%",
+              "3,427",
+              "78.6",
+              "81.8",
+              "85.0"
+            ],
+            [
+              "UNK",
+              "2,544",
+              "0.37%",
+              "n/a",
+              "n/a",
+              "n/a",
+              "n/a"
+            ],
+            [
+              "EP",
+              "970",
+              "0.14%",
+              "970",
+              "38.9",
+              "50.1",
+              "60.3"
+            ],
+            [
+              "FA",
+              "854",
+              "0.12%",
+              "854",
+              "58.5",
+              "67.9",
+              "79.8"
+            ],
+            [
+              "FO",
+              "721",
+              "0.10%",
+              "721",
+              "80.9",
+              "83.0",
+              "85.6"
+            ],
+            [
+              "CS",
+              "393",
+              "0.06%",
+              "393",
+              "52.3",
+              "72.4",
+              "74.9"
+            ],
+            [
+              "KN",
+              "135",
+              "0.02%",
+              "135",
+              "56.8",
+              "77.4",
+              "83.0"
+            ],
+            [
+              "PO",
+              "53",
+              "0.01%",
+              "53",
+              "85.7",
+              "91.4",
+              "94.9"
+            ],
+            [
+              "UN",
+              "13",
+              "0.00%",
+              "n/a",
+              "n/a",
+              "n/a",
+              "n/a"
+            ],
+            [
+              "SC",
+              "7",
+              "0.00%",
+              "n/a",
+              "n/a",
+              "n/a",
+              "n/a"
+            ]
           ],
           "note": "n (pitches) and pct of all pitches: statcast_showcase.json, pitch_type_distribution, n_pitches=693,037. n (velocity), p10/p50/p90: statcast_showcase.json, velo_percentiles_by_pitch_type. Date not published on this artifact."
         },
@@ -109,17 +277,57 @@
         {
           "type": "table",
           "caption": "Velocity band shares, four-seam fastball (FF) vs curveball (CU)",
-          "columns": ["Band (mph)", "FF share pct (n=220,233)", "CU share pct (n=46,489)"],
+          "columns": [
+            "Band (mph)",
+            "FF share pct (n=220,233)",
+            "CU share pct (n=46,489)"
+          ],
           "rows": [
-            ["<80", "0.0", "50.41"],
-            ["80-83", "0.0", "33.65"],
-            ["83-86", "0.2", "13.36"],
-            ["86-89", "1.58", "2.5"],
-            ["89-92", "13.06", "0.08"],
-            ["92-95", "41.94", "0.0"],
-            ["95-98", "34.78", "0.0"],
-            ["98-101", "8.0", "0.0"],
-            ["101+", "0.44", "0.0"]
+            [
+              "<80",
+              "0.0",
+              "50.41"
+            ],
+            [
+              "80-83",
+              "0.0",
+              "33.65"
+            ],
+            [
+              "83-86",
+              "0.2",
+              "13.36"
+            ],
+            [
+              "86-89",
+              "1.58",
+              "2.5"
+            ],
+            [
+              "89-92",
+              "13.06",
+              "0.08"
+            ],
+            [
+              "92-95",
+              "41.94",
+              "0.0"
+            ],
+            [
+              "95-98",
+              "34.78",
+              "0.0"
+            ],
+            [
+              "98-101",
+              "8.0",
+              "0.0"
+            ],
+            [
+              "101+",
+              "0.44",
+              "0.0"
+            ]
           ],
           "note": "FF median 94.5 mph, CU median 79.9 mph. Source: mlb_velo_bands.json, velo_band_shares_by_pitch_type[pitch_type=FF/CU].band_share_pct, floors.band_share_min_pitches_per_type=500 (both types clear the floor)."
         },
@@ -300,10 +508,21 @@
     "Descriptive only: no forecast, no calibration check, and no claim about any single pitcher's next pitch or velocity."
   ],
   "related": [
-    { "kind": "analysis", "id": "mlb-velocity-shape" },
-    { "kind": "analysis", "id": "mlb-pitch-mix-concentration" },
-    { "kind": "inspector", "id": "pitch-sequencing" },
-    { "kind": "module", "id": "mlb_velo_bands" },
-    { "kind": "module", "id": "entity_percentiles" }
+    {
+      "kind": "analysis",
+      "id": "mlb-velocity-shape"
+    },
+    {
+      "kind": "analysis",
+      "id": "mlb-pitch-mix-concentration"
+    },
+    {
+      "kind": "inspector",
+      "id": "pitch-sequencing"
+    },
+    {
+      "kind": "module",
+      "id": "mlb_velo_bands"
+    }
   ]
 }
