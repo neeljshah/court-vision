@@ -6,6 +6,7 @@ export interface CountPitchMix {
   pct: number;
 }
 
+/** Outcome rates remain source fractions; display consumers convert them to percentages. */
 export interface CountOutcomeProxies {
   nType: number | null;
   strikeRate: number | null;

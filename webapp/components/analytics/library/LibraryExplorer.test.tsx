@@ -58,6 +58,23 @@ describe("LibraryExplorer", () => {
     expect(screen.getByText("Finding")).toBeInTheDocument();
   });
 
+  it.each(["finding", "inspector", "explainer"] as const)("filters %s readings from links and the type selector", async (kind) => {
+    const readings = [...entries, ...(["finding", "inspector", "explainer"] as const).map(item =>
+      entry(`reading-${item}`, `Published ${item}`, "nba", item, "reading"))];
+    window.history.replaceState(null, "", `/analytics/browse/?kind=${kind}`);
+    render(<LibraryExplorer entries={readings} />);
+    const select = screen.getByRole("combobox", { name: "Entry type" });
+    await waitFor(() => expect(select).toHaveValue(kind));
+    expect(screen.getByRole("status")).toHaveTextContent("1 entry");
+    expect(screen.getByRole("heading", { name: `Published ${kind}` })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "NBA Pace Formula" })).not.toBeInTheDocument();
+    fireEvent.change(select, { target: { value: "all" } });
+    expect(screen.getByRole("status")).toHaveTextContent("8 entries");
+    fireEvent.change(select, { target: { value: kind } });
+    expect(screen.getByRole("status")).toHaveTextContent("1 entry");
+    expect(window.location.search).toBe(`?kind=${kind}`);
+  });
+
   it("restores a question-led collection from the URL and keeps it after a search", async () => {
     window.history.replaceState(null, "", "/analytics/browse/?collection=forecast-calibration");
     render(<LibraryExplorer entries={entries} />);

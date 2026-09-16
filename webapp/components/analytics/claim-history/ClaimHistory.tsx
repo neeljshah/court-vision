@@ -55,6 +55,7 @@ export function ClaimHistory({ ledger }: { ledger: ClaimHistoryLedger }) {
   const [changedOnly, setChangedOnly] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
+  const [pendingHashFamily, setPendingHashFamily] = useState<string | null>(null);
   const sports = useMemo(() => Array.from(new Set(ledger.families.map(family => family.sport))), [ledger.families]);
   const statuses = useMemo(() => Array.from(new Set(ledger.families.map(family => family.currentStatus))), [ledger.families]);
   const filtered = useMemo(() => {
@@ -76,18 +77,31 @@ export function ClaimHistory({ ledger }: { ledger: ClaimHistoryLedger }) {
     const openHashFamily = () => {
       const target = window.location.hash.slice(1);
       const index = ledger.families.findIndex(family => claimFamilyId(family) === target);
-      if (index < 0) return;
+      if (index < 0) {
+        setPendingHashFamily(null);
+        return;
+      }
       setQuery("");
       setSport("all");
       setStatus("all");
       setChangedOnly(false);
       setVisibleCount(Math.max(PAGE_SIZE, index + 1));
       setExpanded(new Set([target]));
+      setPendingHashFamily(target);
     };
     openHashFamily();
     window.addEventListener("hashchange", openHashFamily);
     return () => window.removeEventListener("hashchange", openHashFamily);
   }, [ledger.families]);
+
+  useEffect(() => {
+    if (!pendingHashFamily) return;
+    const target = document.getElementById(pendingHashFamily);
+    if (!target) return;
+    target.scrollIntoView({ block: "start" });
+    target.querySelector<HTMLButtonElement>(".ch-family-button")?.focus({ preventScroll: true });
+    setPendingHashFamily(null);
+  }, [pendingHashFamily]);
 
   return <section className="ch-ledger" aria-labelledby="claim-history-heading">
     <div className="ch-heading">

@@ -12,4 +12,15 @@ describe("libraryViewState", () => {
     expect(readLibraryViewState("?page=none").page).toBe(1);
     expect(libraryViewSearch("?keep=reading", { sport: "all", kind: "all", query: "", collection: "all", page: 1 })).toBe("keep=reading");
   });
+
+  it.each(["finding", "inspector", "explainer"] as const)("restores and preserves the %s reading filter", (kind) => {
+    const state = readLibraryViewState(`?kind=${kind}&sport=nba&q=context&page=2`);
+    expect(state).toMatchObject({ kind, sport: "nba", query: "context", page: 2 });
+    expect(readLibraryViewState(libraryViewSearch("?keep=reading", state))).toEqual(state);
+    expect(libraryViewSearch("?keep=reading", state)).toContain("keep=reading");
+  });
+
+  it("does not accept an unknown entry type", () => {
+    expect(readLibraryViewState("?kind=unknown").kind).toBe("all");
+  });
 });

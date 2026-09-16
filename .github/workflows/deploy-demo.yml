@@ -75,6 +75,9 @@ jobs:
           npx vitest run lib/analytics/publicCopy.test.ts
           npx vitest run lib/analytics/researchIntegration.test.ts
           npx vitest run lib/analytics/libraryData.test.ts
+          npx vitest run lib/analytics/libraryViewState.test.ts
+          npx vitest run lib/analytics/claimHistory.test.ts
+          npx vitest run lib/analytics/countContext.test.ts
           npx vitest run lib/analytics/matchupInsights.test.ts
           npx vitest run lib/analytics/askSearch.test.ts
           npx vitest run lib/analytics/askEntityIntent.test.ts
@@ -88,6 +91,8 @@ jobs:
           npx vitest run components/analytics/compare/PitchCountComparison.test.tsx
           npx vitest run components/analytics/compare/PitchResultComparison.test.tsx
           npx vitest run components/analytics/library/LibraryExplorer.test.tsx
+          npx vitest run components/analytics/claim-history/ClaimHistory.test.tsx
+          npx vitest run components/analytics/count-context/CountContext.test.tsx
           npx vitest run components/analytics/library/ResearchDetail.test.tsx
           npx vitest run components/analytics/library/MeasurementCoverage.test.tsx
           npx vitest run components/analytics/library/useResearchView.test.tsx

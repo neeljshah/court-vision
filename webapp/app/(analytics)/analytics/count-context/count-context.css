@@ -35,3 +35,4 @@
 .cc-empty { margin-top: 20px; border: 1px dashed var(--rule-strong); border-radius: var(--radius-card); color: var(--ink-3); padding: 24px; }
 @media (max-width: 760px) { .cc-section-head { align-items: start; flex-direction: column; } .cc-group > div { grid-template-columns: 1fr; } }
 @media (max-width: 680px) { .cc-page { padding: 34px 16px 48px; } .cc-page h1 { font-size: 2.35rem; } }
+@media (max-width: 560px) { .cc-outcomes .cc-table-wrap table { min-width: 560px; table-layout: fixed; } .cc-outcomes .cc-table-wrap th:first-child { position: sticky; left: 0; z-index: 2; width: 112px; min-width: 112px; background: var(--paper-raised); box-shadow: 6px 0 8px -8px var(--ink-3); } .cc-outcomes .cc-table-wrap thead th:first-child { z-index: 3; background: var(--paper-tint); } .cc-outcomes .cc-table-wrap thead th:not(:first-child) { width: 112px; min-width: 112px; white-space: normal; overflow-wrap: anywhere; line-height: 1.35; } }

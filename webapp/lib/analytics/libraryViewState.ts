@@ -1,16 +1,17 @@
 import type { Sport } from "./dashboardTypes";
+import type { LibraryEntryKind } from "./libraryTypes";
 import { readingCollections } from "./readingCollections";
 
 export type LibraryViewState = {
   sport: Sport;
-  kind: "all" | "derived" | "source";
+  kind: "all" | LibraryEntryKind;
   query: string;
   collection: string;
   page: number;
 };
 
 const sports = new Set<Sport>(["all", "nba", "mlb", "soccer", "tennis"]);
-const kinds = new Set<LibraryViewState["kind"]>(["all", "derived", "source"]);
+const kinds = new Set<LibraryViewState["kind"]>(["all", "derived", "source", "finding", "inspector", "explainer"]);
 
 export function readLibraryViewState(search: string): LibraryViewState {
   const params = new URLSearchParams(search);
