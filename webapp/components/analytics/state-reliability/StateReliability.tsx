@@ -42,7 +42,7 @@ function SourceGrid({ sport, source, metric }: { sport: StateReliabilitySport; s
   const label = sources.find(item => item.id === source)?.label || source;
   return <section className="sr-grid-panel" aria-label={`${label} state grid`}>
     <h3>{label}</h3>
-    <div className="sr-grid-wrap" data-scroll-region>
+    <div className="sr-grid-wrap" role="region" aria-label={`${label} state grid, scrolls horizontally`} tabIndex={0} data-scroll-region>
       <table className="sr-grid-table">
         <caption>{label} by time and probability bucket for {sportLabel(sport.sport)}</caption>
         <thead><tr><th scope="col">Time</th>{sport.probabilityBuckets.map(bucket => <th scope="col" key={bucket}>{bucket}</th>)}</tr></thead>
@@ -76,7 +76,7 @@ export function StateReliability({ sports }: { sports: StateReliabilitySport[] }
     <p className="sr-metric" aria-live="polite">Showing <strong>{metricLabel}</strong> for {sportLabel(selected.sport)}. Signed gap is mean_y minus mean_p; absolute gap is the published calibration_error.</p>
     <div className="sr-legend" aria-label="Grid scales"><span className="sr-legend-gap">Signed gap scale: observed minus forecast</span><span className="sr-legend-support">Support scale: published observation count</span><span className="sr-legend-missing">not published</span></div>
     <div className="sr-grid-layout">{sources.map(source => <SourceGrid key={source.id} sport={selected} source={source.id} metric={metric} />)}</div>
-    <div className="sr-table-wrap" role="region" aria-label={`${sportLabel(selected.sport)} state-conditioned rows`} data-scroll-region>
+    <div className="sr-table-wrap" role="region" aria-label={`${sportLabel(selected.sport)} state-conditioned rows`} tabIndex={0} data-scroll-region>
       <table className="sr-table"><caption>All published state-conditioned rows for {sportLabel(selected.sport)}</caption><thead><tr><th>Source</th><th>Time bucket</th><th>Probability bucket</th><th>n</th><th>Mean forecast</th><th>Observed frequency</th><th>Signed gap (pp)</th><th>Absolute gap (pp)</th></tr></thead><tbody>{selected.rows.map(row => <tr key={`${row.source}-${row.timeBucket}-${row.probabilityBucket}`}><td>{row.source === "market" ? "Reference" : "Model"}</td><td>{row.timeBucket}</td><td>{row.probabilityBucket}</td><td>{number(row.n)}</td><td>{(row.meanP * 100).toFixed(2)}%</td><td>{(row.meanY * 100).toFixed(2)}%</td><td>{stateReliabilityMetricValue(row, "signed-gap").toFixed(2)} pp</td><td>{stateReliabilityMetricValue(row, "absolute-gap").toFixed(2)} pp</td></tr>)}</tbody></table>
     </div>
     <p className="sr-source-fields">Source fields: state_conditioned_calibration.json -&gt; sports[sport].n_records, n_skipped_no_state_field, and buckets[] -&gt; time_bucket, prob_bucket, source, n, mean_p, mean_y, calibration_error.</p>
