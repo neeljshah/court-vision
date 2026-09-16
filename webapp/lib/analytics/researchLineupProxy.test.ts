@@ -10,6 +10,7 @@ describe("lineup proxy research", () => {
     expect(analysis.rows[0].values).toMatchObject({ win_rate_difference: 0.3, wald_95_half_width: 0.15, games_active: 20, games_missed: 5 });
     expect(analysis.rows[0].sourcePaths).toContain("players[].ci95_offset[1]");
     expect(analysis.bindings?.every(binding => binding.valueKey in analysis.rows[0].values)).toBe(true);
+    expect(analysis.caveat).toContain("This comparison does not isolate the player's causal contribution.");
   });
 
   it("orders players by active-minus-missed rate", () => {

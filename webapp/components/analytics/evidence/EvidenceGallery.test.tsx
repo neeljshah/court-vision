@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { EvidenceGallery } from "./EvidenceGallery";
 
@@ -35,5 +35,15 @@ describe("EvidenceGallery", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "Search published charts" }), { target: { value: "Load-Bearing" } });
     expect(screen.getByRole("status")).toHaveTextContent("1 published chart shown");
     expect(screen.getByText("Novel Load Bearing Index")).toBeInTheDocument();
+  });
+
+  it("uses a data figure for an unapproved PNG", () => {
+    render(<EvidenceGallery charts={[{ id: "ctx_team_states", title: "Team states", description: "Published team measurements.", status: "published", asOf: "2026-05-21", imageSrc: "/ctx_team_states.png", sourceUrl: "https://example.com/source", evidenceUrl: null }]} />);
+    const card = screen.getByRole("article");
+    expect(within(card).getByTestId("published-data-figure")).toHaveTextContent("Published team measurements.");
+    expect(within(card).queryByRole("img")).not.toBeInTheDocument();
+    fireEvent.click(within(card).getByRole("button", { name: "Open larger view of Team states" }));
+    expect(screen.getByRole("dialog", { name: "Team states" })).toHaveTextContent("Published team measurements.");
+    expect(screen.getByRole("dialog").querySelector("img")).toBeNull();
   });
 });

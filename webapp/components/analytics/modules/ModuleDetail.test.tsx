@@ -30,4 +30,12 @@ describe("ModuleDetail", () => {
     render(<ModuleDetail mod={{ ...mod, as_of: null as unknown as string }} out={out} subtitle="When a lead becomes permanent." insight={null} />);
     expect(screen.getAllByText(/date not published/).length).toBeGreaterThan(0);
   });
+
+  it("uses a data figure instead of an unapproved PNG", () => {
+    const unsafe = { ...mod, id: "ctx_team_states", title: "Team states", chart_path: "ctx_team_states.png" };
+    render(<ModuleDetail mod={unsafe} out={{ teams: [{ team: "ATL", n_games: 2, front_runner_2h_margin: 1, comeback_2h_margin: 8 }] }} subtitle="Published team measurements." insight={null} />);
+    expect(screen.getByTestId("published-data-figure")).toHaveTextContent("ATL");
+    expect(screen.queryByRole("img", { name: "Team states chart" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "View full size" })).not.toBeInTheDocument();
+  });
 });

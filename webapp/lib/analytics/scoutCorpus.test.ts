@@ -2,13 +2,15 @@ import { describe, expect, it } from "vitest";
 import { resolveEntityIntent } from "./askEntityIntent";
 import { resolveQuestion } from "./askSearch";
 import { loadScoutCorpus } from "./scoutCorpus";
+// @ts-expect-error -- the executable scanner is deliberately dependency-free ESM.
+import { PROHIBITED_TOKEN_RE } from "../../scripts/check-analytics-copy.mjs";
 
 const corpus = loadScoutCorpus();
 
 describe("loadScoutCorpus", () => {
   it("keeps curated answers and expands all public entity and module records", () => {
     expect(corpus.length).toBe(2_150);
-    expect(corpus.some((entry) => entry.q === "Does the model actually beat the betting market?")).toBe(true);
+    expect(corpus.some((entry) => entry.q === "How does forecast calibration compare with the closing reference?")).toBe(true);
     expect(corpus.filter((entry) => entry.bucket === "public-entity-profile")).toHaveLength(1_549);
     expect(corpus.filter((entry) => entry.bucket === "public-analytics-module")).toHaveLength(74);
     expect(corpus.filter((entry) => entry.bucket === "public-derived-analysis")).toHaveLength(62);
@@ -125,6 +127,14 @@ describe("loadScoutCorpus", () => {
       entry: { a: { status: "no_data" } },
     });
   });
+});
+
+it("keeps every Scout corpus string outside the prohibited vocabulary", () => {
+  const values = (value: unknown): string[] => typeof value === "string" ? [value] : Array.isArray(value) ? value.flatMap(values) : value && typeof value === "object" ? Object.values(value).flatMap(values) : [];
+  for (const value of values(corpus)) {
+    PROHIBITED_TOKEN_RE.lastIndex = 0;
+    expect(PROHIBITED_TOKEN_RE.test(value), value).toBe(false);
+  }
 });
 
 

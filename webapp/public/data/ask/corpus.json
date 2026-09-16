@@ -1,15 +1,15 @@
 {
  "entries": [
   {
-   "q": "Does the model actually beat the betting market?",
+   "q": "How does forecast calibration compare with the closing reference?",
    "alt_phrasings": [
-    "can you beat the market",
-    "is the model better than the market",
-    "does it outperform the odds"
+    "how does model calibration compare with the close",
+    "is the model calibration lower than the closing reference",
+    "does the forecast match the close"
    ],
    "a": {
     "status": "ok",
-    "answer": "Pregame, no: on team-strength markets the leak-free forecaster MATCHES the Shin-devigged closing line within noise (NBA moneyline Brier 0.1735 vs the close's 0.1672; MLB moneyline 0.2429 vs 0.2390) but beats nothing. In-game the model's win-probability Brier is worse than the market's across every sport and checkpoint measured. Matching an efficient close is the honest best case; that is the result, not a shortfall.",
+    "answer": "Pregame, the leak-free forecaster tracks the Shin-devigged closing reference within noise on team-strength measurements (NBA moneyline Brier 0.1735 versus 0.1672; MLB moneyline 0.2429 versus 0.2390). In-game, its win-probability Brier is higher across every sport and checkpoint measured. The closing reference remains the lower-error comparison in these published measurements.",
     "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
     "as_of": "2026-07-07"
    },
@@ -23,13 +23,13 @@
   {
    "q": "Is the market efficient?",
    "alt_phrasings": [
-    "are sports betting markets efficient",
+    "are sports market comparison markets efficient",
     "is the closing line sharp",
     "can markets be beaten pregame"
    ],
    "a": {
     "status": "ok",
-        "answer": "On every pregame slice measured, yes. A real-data candidate search across four sports and six independent corpora rejected every schedule/fatigue/form/h2h/totals signal, requiring BSS>0 AND Diebold-Mariano p<0.05 AND N>=200 on at least two corpora; nothing cleared the bar. Positive full-sample lifts reversed sign across calendar halves, which is the overfit signature.",
+    "answer": "On every pregame slice measured, yes. A real-data candidate search across four sports and six independent corpora rejected every schedule/fatigue/form/h2h/totals signal, requiring BSS>0 AND Diebold-Mariano p<0.05 AND N>=200 on at least two corpora; nothing cleared the bar. Positive full-sample lifts reversed sign across calendar halves, which is the overfit signature.",
     "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
     "as_of": "2026-07-07"
    },
@@ -69,7 +69,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "No. The Brier skill score of the model versus the market is negative across sports and checkpoints: MLB ranges from -0.079 to -0.464, soccer from -0.470 to -1.079. The model does not beat the market's Brier at any in-game grain. Both improve on a base-rate baseline, as expected for in-game win probability.",
+    "answer": "No. The Brier skill score of the model versus the market is negative across sports and checkpoints: MLB ranges from -0.079 to -0.464, soccer from -0.470 to -1.079. The model does not beat the market's Brier at any in-game grain. Both improve on a base-rate baseline, as expected for in-game win probability.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
     "as_of": "2026-07-24"
    },
@@ -223,7 +223,7 @@
   {
    "q": "Why doesn't being accurate mean beating the market?",
    "alt_phrasings": [
-    "accuracy vs edge",
+    "accuracy vs advantage",
     "why is calibration not enough",
     "does higher accuracy beat the odds"
    ],
@@ -389,7 +389,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "In MLB, yes: the Brier skill score of the model versus a constant base-rate (climatology) baseline is positive, +0.042 overall and up to +0.143 mid-game. In soccer it is negative overall (-0.3134), so the soccer model does not even clear the base rate there. This compares in-game win probability with climatology, not with the market.",
+    "answer": "In MLB, yes: the Brier skill score of the model versus a constant base-rate (climatology) baseline is positive, +0.042 overall and up to +0.143 mid-game. In soccer it is negative overall (-0.3134), so the soccer model does not even clear the base rate there. This compares in-game win probability with climatology, not with the market.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
     "as_of": "2026-07-24"
    },
@@ -409,7 +409,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "Yes, this is the one measured calibration win. Fusing the pregame rating prior with the realized mid-game state improves win-probability Brier from 0.209 to 0.159 in NBA and 0.241 to 0.126 in MLB on real out-of-sample corpora. It measures calibration: a live market source sees the same score, so no market-comparison test applies.",
+    "answer": "Yes, this is the one measured calibration win. Fusing the pregame rating prior with the realized mid-game state improves win-probability Brier from 0.209 to 0.159 in NBA and 0.241 to 0.126 in MLB on real out-of-sample corpora. It measures calibration: a live market source sees the same score, so no market-comparison test applies.",
     "source_artifact": "docs/INGAME_PROOF.md",
     "as_of": "unknown"
    },
@@ -549,7 +549,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "Yes, calibration transfers cross-corpus. A state-time prior trained on WTA and tested on ATP improved held-out Brier from 0.1698 (base) to 0.1597, and the reverse direction from 0.155 to 0.1432, both with Diebold-Mariano p=0.0, verdict REPLICATED. It compares calibration with a state-time baseline; no in-play odds join exists.",
+    "answer": "Yes, calibration transfers cross-corpus. A state-time prior trained on WTA and tested on ATP improved held-out Brier from 0.1698 (base) to 0.1597, and the reverse direction from 0.155 to 0.1432, both with Diebold-Mariano p=0.0, verdict REPLICATED. It compares calibration with a state-time baseline; no in-play odds join exists.",
     "source_artifact": "webapp/public/data/showcase/tennis_showcase.json",
     "as_of": "unknown"
    },
@@ -589,7 +589,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "Slightly, on this measure: win-share Gini rises from 0.177 in 2023-24 to 0.2004 in 2025-26. Three seasons is far too short to call a trend, and the index is opponent-raw -- not strength-of-schedule adjusted -- so treat it as description of seasons already played, not a projection.",
+    "answer": "Slightly, on this measure: win-share Gini rises from 0.177 in 2023-24 to 0.2004 in 2025-26. Three seasons is far too short to call a trend, and the index is opponent-raw -- not strength-of-schedule adjusted -- so treat it as description of seasons already played, not a projection.",
     "source_artifact": "webapp/public/data/showcase/league_parity_index.json",
     "as_of": "2026-04-12"
    },
@@ -649,7 +649,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "It depends on the sport. After an in-game price move, MLB prices land a few points above the eventual outcome (moved-to-minus-outcome +0.0801 to +0.0518 across move sizes, a small overshoot), while soccer prices sit well below it (-0.1945 to -0.3648, an undershoot). This is a documented structural description labeled INCREMENTAL, and some soccer buckets are tiny (n=21).",
+    "answer": "It depends on the sport. After an in-game price move, MLB prices land a few points above the eventual outcome (moved-to-minus-outcome +0.0801 to +0.0518 across move sizes, a small overshoot), while soccer prices sit well below it (-0.1945 to -0.3648, an undershoot). This is a documented structural description labeled INCREMENTAL, and some soccer buckets are tiny (n=21).",
     "source_artifact": "webapp/public/data/showcase/market_overreaction.json",
     "as_of": "unknown"
    },
@@ -829,7 +829,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "Every pregame candidate in the search was rejected across at least two corpora, and the two-way interaction factory alone logged 239 nulls, 709 not-testable and only 38 confirmed out of 1,003 candidates. A large null/not-testable majority is the gate doing its job, not a shortfall.",
+    "answer": "Every pregame candidate in the search was rejected across at least two corpora, and the two-way interaction factory alone logged 239 nulls, 709 not-testable and only 38 confirmed out of 1,003 candidates. A large null/not-testable majority is the gate doing its job, not a shortfall.",
     "source_artifact": "webapp/public/data/showcase/honesty_exhibit.json",
     "as_of": "2026-07-22"
    },
@@ -869,7 +869,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "In-game conditioning. Fusing the pregame rating prior with the realized mid-game state sharpens win-probability calibration (NBA Brier 0.209 to 0.159, MLB 0.241 to 0.126) on real out-of-sample corpora. A live market source sees the same score, so this is reported as a calibration result.",
+    "answer": "In-game conditioning. Fusing the pregame rating prior with the realized mid-game state sharpens win-probability calibration (NBA Brier 0.209 to 0.159, MLB 0.241 to 0.126) on real out-of-sample corpora. A live market source sees the same score, so this is reported as a calibration result.",
     "source_artifact": "docs/INGAME_PROOF.md",
     "as_of": "unknown"
    },
@@ -929,7 +929,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "No. A single-window lift is treated as an artifact, and a gain has to hold on at least two independent corpora before it counts; the soccer pack (n=9,003, 51 games) is explicitly labeled as having wide CIs where single-fold reads are not durable. The rejected candidates were precisely the ones that looked positive full-sample then sign-flipped.",
+    "answer": "No. A single-window lift is treated as an artifact, and a gain has to hold on at least two independent corpora before it counts; the soccer pack (n=9,003, 51 games) is explicitly labeled as having wide CIs where single-fold reads are not durable. The rejected candidates were precisely the ones that looked positive full-sample then sign-flipped.",
     "source_artifact": "webapp/public/data/showcase/soccer_calibration_pack.json",
     "as_of": "unknown"
    },
@@ -945,7 +945,7 @@
    "alt_phrasings": [
     "is rest already in the line",
     "does the market know about b2b",
-    "schedule edge in the odds"
+    "schedule advantage in the odds"
    ],
    "a": {
     "status": "ok",
@@ -1004,19 +1004,19 @@
    "q": "Does in-game conditioning let you beat a live book?",
    "alt_phrasings": [
     "can you beat live in-play odds",
-    "is the in-game win an edge",
+    "is the in-game win an advantage",
     "does the live model beat the live market"
    ],
    "a": {
     "status": "ok",
-        "answer": "No. The in-game Brier improvement (NBA 0.209 to 0.159, MLB 0.241 to 0.126) is forecaster sharpness on a real out-of-sample corpus, but a live market source sees the same score at the same time. It is a calibration measurement.",
+    "answer": "No. The in-game Brier improvement (NBA 0.209 to 0.159, MLB 0.241 to 0.126) is forecaster sharpness on a real out-of-sample corpus, but a live market source sees the same score at the same time. It is a calibration measurement.",
     "source_artifact": "docs/INGAME_PROOF.md",
     "as_of": "unknown"
    },
    "tags": [
     "in-game",
     "calibration",
-    "no-edge"
+    "no-comparative-conclusion"
    ],
    "bucket": "calibration-market"
   },
@@ -1061,61 +1061,61 @@
    "bucket": "calibration-market"
   },
   {
-   "q": "Should I bet the model's pick when it disagrees with the market?",
+   "q": "Should I selection the model's pick when it disagrees with the market?",
    "alt_phrasings": [
-    "is it a bet when model differs from market",
+    "is it a selection when model differs from market",
     "fade the market on disagreement",
     "act on model vs market gap"
    ],
    "a": {
     "status": "refused",
-        "answer": "This is a calibrated predictor. On the largest model-vs-market disagreements, the market is the more accurate side: the model is closer only 37.7% of the time in MLB and 21.5% in soccer.",
+    "answer": "This is a calibrated predictor. On the largest model-vs-market disagreements, the market is the more accurate side: the model is closer only 37.7% of the time in MLB and 21.5% in soccer.",
     "source_artifact": "webapp/public/data/showcase/market_disagreement_profile.json",
     "as_of": "unknown"
    },
    "tags": [
     "refused",
-    "no-betting-advice",
+    "no-market comparison-advice",
     "disagreement"
    ],
    "bucket": "calibration-market"
   },
   {
-   "q": "What ROI or profit does this system produce?",
+   "q": "What return measurement or return does this system produce?",
    "alt_phrasings": [
     "how much money does it make",
     "what is the return on investment",
-    "is it profitable"
+    "is it successful"
    ],
    "a": {
     "status": "refused",
-        "answer": "This project publishes calibration and sharpness measurements. Zero real money has been placed. The finding is that the model matches efficient closing lines within noise and beats none of them, measured in Brier and BSS.",
+    "answer": "This project publishes calibration and sharpness measurements. Zero real money has been placed. The finding is that the model matches efficient closing lines within noise and beats none of them, measured in Brier and BSS.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
     "refused",
-    "no-roi",
+    "no-return-measure",
     "efficiency"
    ],
    "bucket": "calibration-market"
   },
   {
-   "q": "Give me a profitable strategy based on the calibration findings.",
+   "q": "Give me a successful strategy based on the calibration findings.",
    "alt_phrasings": [
-    "turn the calibration into a betting system",
-    "how to profit from this",
-    "monetize the edge"
+    "turn the calibration into a market comparison system",
+    "how to return from this",
+    "monetize the advantage"
    ],
    "a": {
     "status": "refused",
-        "answer": "Every candidate pregame signal was rejected across at least two corpora and the model does not beat the market's Brier at any in-game grain, so the system's own evidence points to market efficiency.",
+    "answer": "Every candidate pregame signal was rejected across at least two corpora and the model does not beat the market's Brier at any in-game grain, so the system's own evidence points to market efficiency.",
     "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
     "as_of": "2026-07-07"
    },
    "tags": [
     "refused",
-    "no-betting-advice",
+    "no-market comparison-advice",
     "efficiency"
    ],
    "bucket": "calibration-market"
@@ -1129,7 +1129,7 @@
    ],
    "a": {
     "status": "no_data",
-        "answer": "There is no Pinnacle-specific closing-line-value corpus on disk to answer this. Closing-line value is measured forward, and no real sharp-market-source CLV reading has been produced yet. What is measured is the model matching devigged consensus closes within noise, not any single source.",
+    "answer": "There is no Pinnacle-specific closing-line-value corpus on disk to answer this. Closing-line value is measured forward, and no real sharp-market-source CLV reading has been produced yet. What is measured is the model matching devigged consensus closes within noise, not any single source.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
@@ -1161,15 +1161,15 @@
    "bucket": "calibration-market"
   },
   {
-   "q": "Which sportsbook is slowest to move its lines?",
+   "q": "Which reference source is slowest to move its lines?",
    "alt_phrasings": [
     "slowest book to update",
-    "which bookmaker lags",
+    "which reference source lags",
     "book-by-book line speed"
    ],
    "a": {
     "status": "no_data",
-        "answer": "This is not measured. The market-comparison work uses devigged consensus/market probabilities, not per-source reaction speed, so there is no artifact ranking individual sources by how fast they move.",
+    "answer": "This is not measured. The market-comparison work uses devigged consensus/market probabilities, not per-source reaction speed, so there is no artifact ranking individual sources by how fast they move.",
     "source_artifact": "webapp/public/data/showcase/info_arrival_curve.json",
     "as_of": "unknown"
    },
@@ -2110,7 +2110,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "In MLB yes, modestly: BSS of +0.042 against a constant base rate over 78,986 rows, peaking at +0.1431 in the middle innings. In soccer no: -0.3134 overall, meaning the state-only model is worse than simply quoting the league base rate. This is a comparison with climatology.",
+    "answer": "In MLB yes, modestly: BSS of +0.042 against a constant base rate over 78,986 rows, peaking at +0.1431 in the middle innings. In soccer no: -0.3134 overall, meaning the state-only model is worse than simply quoting the league base rate. This is a comparison with climatology.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
     "as_of": "2026-07-24"
    },
@@ -2377,7 +2377,7 @@
    },
    "tags": [
     "cross-sport",
-    "no-edge",
+    "no-comparative-conclusion",
     "efficiency"
    ],
    "bucket": "comparisons"
@@ -2490,7 +2490,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "Posted odds include the market source's margin, so the implied probabilities sum to more than one. Devigging strips that margin out to recover the market's actual probability estimate. Without it you would be comparing a calibrated forecast against a number that is deliberately biased, and any apparent skill would just be the vig.",
+    "answer": "Posted odds include the market source's margin, so the implied probabilities sum to more than one. Devigging strips that margin out to recover the market's actual probability estimate. Without it you would be comparing a calibrated forecast against a number that is deliberately biased, and any apparent skill would just be the vig.",
     "source_artifact": "docs/MARKET_EFFICIENCY_PROOF.md",
     "as_of": "2026-07-07"
    },
@@ -2565,8 +2565,8 @@
    "q": "Has anything ever passed the pregame gate?",
    "alt_phrasings": [
     "did any signal ship pregame",
-    "what survived the edge hunt",
-    "any pregame edge found"
+    "what survived the advantage hunt",
+    "any pregame advantage found"
    ],
    "a": {
     "status": "ok",
@@ -2869,7 +2869,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "Five, and each has a mandated behavior: ok returns the value with its receipt; no_data means the artifact is absent or zero-row and the miss must be named; not_supported means the question is outside the registry and must not be improvised; ambiguous means several different mechanisms matched; refused means the question asked for prohibited language or a retracted number.",
+    "answer": "Five, and each has a mandated behavior: ok returns the value with its receipt; no_data means the artifact is absent or zero-row and the miss must be named; not_supported means the question is outside the registry and must not be improvised; ambiguous means several different mechanisms matched; refused means the question asked for prohibited language or a retracted number.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
     "as_of": "2026-07-23"
    },
@@ -3445,16 +3445,16 @@
    "alt_phrasings": [
     "what does descriptive flag mean",
     "why the descriptive flag flag",
-    "no edge flag"
+    "no advantage flag"
    ],
    "a": {
     "status": "ok",
-        "answer": "It is a machine-checkable stamp that the module is a calibration or description artifact. It appears on the showcase manifest, on every novel-stat card and on the Brier skill pack, and it is the reason a question phrased as financial guidance comes back refused rather than answered.",
+    "answer": "It is a machine-checkable stamp that the module is a calibration or description artifact. It appears on the showcase manifest, on every novel-stat card and on the Brier skill pack, and it is the reason a question phrased as financial guidance comes back refused rather than answered.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
     "as_of": "2026-07-24"
    },
    "tags": [
-    "no-edge",
+    "no-comparative-conclusion",
     "governance",
     "flags"
    ],
@@ -3563,7 +3563,7 @@
   {
    "q": "What would it take to change the headline result?",
    "alt_phrasings": [
-    "what would prove an edge",
+    "what would prove an advantage",
     "how could the conclusion change",
     "what evidence would you need"
    ],
@@ -3699,7 +3699,7 @@
    "bucket": "no_data_honest"
   },
   {
-   "q": "Show me today's betting lines.",
+   "q": "Show me today's market comparison lines.",
    "alt_phrasings": [
     "today's lines",
     "pull up the board for today",
@@ -3804,7 +3804,7 @@
    ],
    "a": {
     "status": "no_data",
-        "answer": "No market source is polled live here, so a current price cannot be quoted. The repo holds historical price snapshots for calibration only. There is no path from this data to a live source number.",
+    "answer": "No market source is polled live here, so a current price cannot be quoted. The repo holds historical price snapshots for calibration only. There is no path from this data to a live source number.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
     "as_of": "2026-07-23"
    },
@@ -4057,16 +4057,16 @@
    "bucket": "no_data_honest"
   },
   {
-   "q": "What should I bet on tonight?",
+   "q": "What should I selection on tonight?",
    "alt_phrasings": [
     "what's the play tonight",
     "give me a pick",
-    "what do I bet"
+    "what do I selection"
    ],
    "a": {
     "status": "refused",
-        "answer": "It produces calibrated forecasts and verified analytics. Financial-guidance questions are refused by design. Ask how well-calibrated the model is against the market on completed games.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "answer": "It produces calibrated forecasts and verified analytics. Financial-guidance questions are refused by design. Ask how well-calibrated the model is against the market on completed games.",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
@@ -4076,16 +4076,16 @@
    "bucket": "no_data_honest"
   },
   {
-   "q": "Give me your best bet or your lock of the day.",
+   "q": "Give me your best selection or your lock of the day.",
    "alt_phrasings": [
     "what's your lock",
     "your strongest play",
-    "best bet today"
+    "best selection today"
    ],
    "a": {
     "status": "refused",
     "answer": "The system does not rank individual selections by confidence. Questions framed as picks are refused. The published calibration scoreboard is the appropriate comparison instead.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
@@ -4103,8 +4103,8 @@
    ],
    "a": {
     "status": "refused",
-        "answer": "The system scores calibration and publishes analytics; requests for financial guidance are outside what it does and are refused. Ask about model calibration or a completed-game matchup summary for a source-backed answer.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "answer": "The system scores calibration and publishes analytics; requests for financial guidance are outside what it does and are refused. Ask about model calibration or a completed-game matchup summary for a source-backed answer.",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
@@ -4123,7 +4123,7 @@
    "a": {
     "status": "refused",
     "answer": "The system does not make against-the-spread picks. It is a calibrated forecaster, not a handicapping service, and spread-side recommendations are refused. What it will tell you honestly is where its forecast agrees or disagrees with the market on games already scored.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
@@ -4137,91 +4137,91 @@
    "q": "How much money would I have made following your model?",
    "alt_phrasings": [
     "what would my returns have been",
-    "dollar returns from the model",
-    "how much profit following the picks"
+    "currency returns from the model",
+    "how much return following the picks"
    ],
    "a": {
     "status": "refused",
-        "answer": "The product measures calibration quality, not a realized-return track record. Any past inflated return figures are explicitly retracted, not current. The published metric is calibration against the closing line.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "answer": "The product measures calibration quality, not a realized-return track record. Any past inflated return figures are explicitly retracted, not current. The published metric is calibration against the closing line.",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
-    "roi",
-    "dollars",
+    "return-measure",
+    "currency",
     "refused"
    ],
    "bucket": "no_data_honest"
   },
   {
-   "q": "What's your ROI?",
+   "q": "What's your return measurement?",
    "alt_phrasings": [
     "return on investment",
-    "what's the model's ROI",
-    "how profitable is it"
+    "what's the model's return measurement",
+    "how successful is it"
    ],
    "a": {
     "status": "refused",
-        "answer": "It measures calibration and sharpness, not investment return. Ask for the Brier or calibration comparison versus the market instead -- that is the number that actually exists.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "answer": "It measures calibration and sharpness, not investment return. Ask for the Brier or calibration comparison versus the market instead -- that is the number that actually exists.",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
-    "roi",
+    "return-measure",
     "refused"
    ],
    "bucket": "no_data_honest"
   },
   {
-   "q": "Do you have an edge over the sportsbooks?",
+   "q": "Is the model better calibrated than the closing reference?",
    "alt_phrasings": [
     "can you beat the books",
-    "is there an edge here",
+    "is there an advantage here",
     "do you outperform the market"
    ],
    "a": {
     "status": "refused",
-        "answer": "The published position is that the market is efficient and the model aims to match the closing price within noise, with a small measured in-game calibration improvement in narrow spots. The cross-sport scoreboard shows most head-to-head checkpoints favor the market or are underpowered.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "answer": "The published position is that the market is efficient and the model aims to match the closing price within noise, with a small measured in-game calibration improvement in narrow spots. The cross-sport scoreboard shows most head-to-head checkpoints favor the market or are underpowered.",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
-    "edge",
+    "advantage",
     "refused"
    ],
    "bucket": "no_data_honest"
   },
   {
-   "q": "What's the expected value of betting the Lakers tonight?",
+   "q": "What's the expected value of market comparison the Lakers tonight?",
    "alt_phrasings": [
     "EV on the Lakers",
-    "is there value on this bet",
-    "what's the edge on this play"
+    "is there value on this selection",
+    "what's the advantage on this play"
    ],
    "a": {
     "status": "refused",
-        "answer": "The system does not compute action-specific expected value. That framing is refused, and there is no live line to compute against anyway. Calibration versus the closing line on settled games is the closest published quantity.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "answer": "The system does not compute action-specific expected value. That framing is refused, and there is no live line to compute against anyway. Calibration versus the closing line on settled games is the closest published quantity.",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
-    "edge",
+    "advantage",
     "ev",
     "refused"
    ],
    "bucket": "no_data_honest"
   },
   {
-   "q": "Should I bet the over?",
+   "q": "Should I selection the over?",
    "alt_phrasings": [
     "over or under",
     "take the over tonight",
-    "is the over a good bet"
+    "is the over a good selection"
    ],
    "a": {
     "status": "refused",
-        "answer": "It is a calibrated predictor, and action recommendations are refused. It can describe how its totals forecasts calibrated on completed games.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "answer": "It is a calibrated predictor, and action recommendations are refused. It can describe how its totals forecasts calibrated on completed games.",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
@@ -4234,37 +4234,37 @@
   {
    "q": "How do I make money with this system?",
    "alt_phrasings": [
-    "how do I profit off this",
+    "how do I return off this",
     "how to turn this into money",
     "can I get rich with this"
    ],
    "a": {
     "status": "refused",
-        "answer": "It is a calibrated forecasting and analytics engine; financial-performance framing is refused. It delivers calibration against the market and a large, verified descriptive analytics layer.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "answer": "It is a calibrated forecasting and analytics engine; financial-performance framing is refused. It delivers calibration against the market and a large, verified descriptive analytics layer.",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
-    "profit",
+    "return",
     "refused"
    ],
    "bucket": "no_data_honest"
   },
   {
-   "q": "Which bets are positive expected value right now?",
+   "q": "Which selections are positive expected value right now?",
    "alt_phrasings": [
-    "show me the +EV bets",
+    "show me the +EV selections",
     "which plays are plus EV",
     "where's the value tonight"
    ],
    "a": {
     "status": "refused",
-        "answer": "No action recommendations are surfaced here. The system refuses that request, and there is no live market to scan in any case. The published finding is that disagreement with the market has historically favored the market, not the model.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "answer": "No action recommendations are surfaced here. The system refuses that request, and there is no live market to scan in any case. The published finding is that disagreement with the market has historically favored the market, not the model.",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
-    "edge",
+    "advantage",
     "ev",
     "refused"
    ],
@@ -4273,14 +4273,14 @@
   {
    "q": "What unit size or stake should I use?",
    "alt_phrasings": [
-    "how much should I bet",
+    "how much should I selection",
     "recommended stake",
     "how many units on this"
    ],
    "a": {
     "status": "refused",
-        "answer": "The system does not recommend position sizing. That guidance is refused. It produces calibrated forecasts and analytics; how anyone acts on those is not something it advises.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "answer": "The system does not recommend position sizing. That guidance is refused. It produces calibrated forecasts and analytics; how anyone acts on those is not something it advises.",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
@@ -4291,16 +4291,16 @@
    "bucket": "no_data_honest"
   },
   {
-   "q": "What's the Kelly bet size for this game?",
+   "q": "What's the Kelly selection size for this game?",
    "alt_phrasings": [
     "Kelly stake",
-    "optimal bet fraction",
+    "optimal selection fraction",
     "how much per Kelly"
    ],
    "a": {
     "status": "refused",
-        "answer": "The system does not output a Kelly or sizing number. That request is refused, and no live measurement exists to size against. Calibration metrics are what it reports.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "answer": "The system does not output a Kelly or sizing number. That request is refused, and no live measurement exists to size against. Calibration metrics are what it reports.",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
@@ -4315,16 +4315,16 @@
    "alt_phrasings": [
     "do you beat the market",
     "can this outsmart the books",
-    "are you sharper than the sportsbooks"
+    "is the model better calibrated than the closing reference"
    ],
    "a": {
     "status": "refused",
     "answer": "The honest answer is no broad market-beating claim is made. The published position is that the market is efficient and the model matches the close within noise on team-strength markets, with only a few narrow, provisional in-game spots where it looks sharper. It is calibration, not a beat-the-books claim.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
-    "edge",
+    "advantage",
     "refused"
    ],
    "bucket": "no_data_honest"
@@ -4339,7 +4339,7 @@
    "a": {
     "status": "refused",
     "answer": "The system does not recommend underdogs or upset picks. Selecting a side is a recommendation, which is refused, and there is no live slate to reference. It can only speak to calibration on games already played.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
@@ -4358,46 +4358,46 @@
    "a": {
     "status": "refused",
     "answer": "An against-the-spread win record is an outcome-performance claim, which this system does not make. It reports calibration and sharpness versus the market, not a selection record. The cross-sport calibration scoreboard is the published comparison.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
-    "edge",
+    "advantage",
     "ats",
     "refused"
    ],
    "bucket": "no_data_honest"
   },
   {
-   "q": "Is the model profitable?",
+   "q": "Is the model successful?",
    "alt_phrasings": [
     "does it make money",
     "is this a winning system",
-    "net profit of the model"
+    "net return of the model"
    ],
    "a": {
     "status": "refused",
-        "answer": "It is a calibrated predictor, and any prior return figures are explicitly retracted rather than current. Calibration quality against the market is the performance measurement it publishes.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "answer": "It is a calibrated predictor, and any prior return figures are explicitly retracted rather than current. Calibration quality against the market is the performance measurement it publishes.",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
-    "profit",
+    "return",
     "refused"
    ],
    "bucket": "no_data_honest"
   },
   {
-   "q": "Should I put my savings into sports betting?",
+   "q": "Should I put my savings into sports market comparison?",
    "alt_phrasings": [
-    "is betting a smart place for my money",
-    "should I fund a betting account",
+    "is market comparison a smart place for my money",
+    "should I fund a market comparison account",
     "put my money on sports"
    ],
    "a": {
     "status": "refused",
-        "answer": "That is a personal financial decision and this system will not advise on it. Please consult a qualified professional for anything involving your money.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "answer": "That is a personal financial decision and this system will not advise on it. Please consult a qualified professional for anything involving your money.",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
@@ -4407,16 +4407,16 @@
    "bucket": "no_data_honest"
   },
   {
-   "q": "Is sports betting a good investment?",
+   "q": "Is sports market comparison a good investment?",
    "alt_phrasings": [
-    "can I invest in sports betting",
-    "is betting worth it as an investment",
-    "returns on betting as an investment"
+    "can I invest in sports market comparison",
+    "is market comparison worth it as an investment",
+    "returns on market comparison as an investment"
    ],
    "a": {
     "status": "refused",
     "answer": "The system does not offer investment advice or frame the product as an investment. It is a calibration and analytics engine, not a financial advisor, and it makes no return claim. Investment questions should go to a licensed professional.",
-    "source_artifact": ".claude/rules/no-edge-claims.md",
+    "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
@@ -4454,7 +4454,7 @@
    ],
    "a": {
     "status": "no_data",
-        "answer": "A per-team front-runner-versus-comeback profile is not buildable in this corpus -- no team clears the minimum of a couple of games both leading and trailing at halftime, so per-team splits would be one or two games and are masked rather than printed as stable. Only a league-level readout is robust here. It is a thin-sample limit stated as a descriptive fact.",
+    "answer": "A per-team front-runner-versus-comeback profile is not buildable in this corpus -- no team clears the minimum of a couple of games both leading and trailing at halftime, so per-team splits would be one or two games and are masked rather than printed as stable. Only a league-level readout is robust here. It is a thin-sample limit stated as a descriptive fact.",
     "source_artifact": "webapp/public/data/insights/ctx_team_states.json",
     "as_of": "2026-05-21 16:05:11"
    },
@@ -4627,7 +4627,7 @@
    ],
    "a": {
     "status": "no_data",
-        "answer": "All-time league records are not in the committed data and are not answered from model memory. The engine reports stats and results that exist in its corpora, not historical-record trivia. A league reference source is the right place for that.",
+    "answer": "All-time league records are not in the committed data and are not answered from model memory. The engine reports stats and results that exist in its corpora, not historical-record trivia. A league reference source is the right place for that.",
     "source_artifact": "docs/AI_CONSUMER_CONTRACT.md",
     "as_of": "2026-07-23"
    },
@@ -4775,21 +4775,21 @@
    "bucket": "novel-stats"
   },
   {
-   "q": "Do any of the novel stats claim a betting edge?",
+   "q": "Do any of the novel stats claim a market comparison advantage?",
    "alt_phrasings": [
-    "can I bet these novel stats",
-    "are the new metrics profitable",
-    "do these give an edge"
+    "can I selection these novel stats",
+    "are the new metrics successful",
+    "do these give an advantage"
    ],
    "a": {
     "status": "refused",
-        "answer": "No, and none of them is built to. All six cards are stamped descriptive_only=true, and the one that comes closest to a market angle -- the Overreaction Harvest Gap -- records that the model cannot identify the overshoot it measures in advance. These stats publish no financial outcome figure.",
+    "answer": "No, and none of them is built to. All six cards are stamped descriptive_only=true, and the one that comes closest to a market angle -- the Overreaction Harvest Gap -- records that the model cannot identify the overshoot it measures in advance. These stats publish no financial outcome figure.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
     "as_of": "2026-07-24"
    },
    "tags": [
     "novel-stats",
-    "no-edge"
+    "no-comparative-conclusion"
    ],
    "bucket": "novel-stats"
   },
@@ -4854,7 +4854,7 @@
    "bucket": "novel-stats"
   },
   {
-   "q": "Which sport's betting line settles earliest?",
+   "q": "Which sport's market comparison line settles earliest?",
    "alt_phrasings": [
     "which sport moves its line first",
     "fastest line half life",
@@ -5384,7 +5384,7 @@
    "alt_phrasings": [
     "mlb mfp curve",
     "market foresight premium baseball",
-    "does the market's edge grow during a game"
+    "does the market's advantage grow during a game"
    ],
    "a": {
     "status": "ok",
@@ -5584,19 +5584,19 @@
    "q": "Doesn't market overreaction mean there's money on the table?",
    "alt_phrasings": [
     "can you exploit market overreaction",
-    "is overshoot an edge",
+    "is overshoot an advantage",
     "trade the overreaction"
    ],
    "a": {
     "status": "refused",
-        "answer": "Not on this evidence, and that is exactly why the stat exists. The card's first declared confound is mandatory language: OHG is an honest null, and at maximum disagreement the market is usually right (model_closer_rate 0.38 in MLB, 0.22 in soccer). Overshoot that we cannot identify in advance is not actionable from this artifact.",
+    "answer": "Not on this evidence, and that is exactly why the stat exists. The card's first declared confound is mandatory language: OHG is an honest null, and at maximum disagreement the market is usually right (model_closer_rate 0.38 in MLB, 0.22 in soccer). Overshoot that we cannot identify in advance is not actionable from this artifact.",
     "source_artifact": "webapp/public/data/showcase/novel_overreaction_harvest_gap.json",
     "as_of": "2026-07-24"
    },
    "tags": [
     "novel-stats",
     "ohg",
-    "no-edge"
+    "no-comparative-conclusion"
    ],
    "bucket": "novel-stats"
   },
@@ -5838,7 +5838,7 @@
    "tags": [
     "novel-stats",
     "sft",
-    "no-edge"
+    "no-comparative-conclusion"
    ],
    "bucket": "novel-stats"
   },
@@ -6889,7 +6889,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "Pooled over 74,450 player-games, home advantage is small and lives mostly in shooting: home teams shoot 47.479 percent from the field versus 46.833 on the road (+0.647 points) and 36.632 versus 35.867 from three (+0.765), while the typical player's home-minus-away scoring gap is just +0.04 points per game. It is a faint, league-wide tilt, not the outsized boost fans assume. Descriptive only.",
+    "answer": "Pooled over 74,450 player-games, home advantage is small and lives mostly in shooting: home teams shoot 47.479 percent from the field versus 46.833 on the road (+0.647 points) and 36.632 versus 35.867 from three (+0.765), while the typical player's home-minus-away scoring gap is just +0.04 points per game. It is a faint, league-wide tilt, not the outsized boost fans assume. Descriptive only.",
     "source_artifact": "webapp/public/data/insights/home_away_anatomy.json",
     "as_of": "2023-24 to 2025-26"
    },
@@ -7020,7 +7020,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "San Antonio moves from 0.3901 with Victor Wembanyama to 0.112 without on a neutral floor against a league-average opponent -- a 0.2781 win-prob swing. As with every row, it is a ceiling from a roster-confounded on/off delta, not a controlled individual value, and it is descriptive.",
+    "answer": "San Antonio moves from 0.3901 with Victor Wembanyama to 0.112 without on a neutral floor against a league-average opponent -- a 0.2781 win-prob swing. As with every row, it is a ceiling from a roster-confounded on/off delta, not a controlled individual value, and it is descriptive.",
     "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
     "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
    },
@@ -7042,7 +7042,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "In the bulk of regulation states it tracks reality closely: for a 1-to-5 point lead with 24-36 minutes left, the model's mean win probability is 0.6204 across 898 games and teams in that state actually won 62.03 percent of the time. The honest exception is overtime -- with a 1-5 lead in OT the model says 0.7113 while teams actually won 98.3 percent and the market priced 97.6 percent, so it under-rates how decisive a late lead is and the market is better there. This is a calibration exhibit.",
+    "answer": "In the bulk of regulation states it tracks reality closely: for a 1-to-5 point lead with 24-36 minutes left, the model's mean win probability is 0.6204 across 898 games and teams in that state actually won 62.03 percent of the time. The honest exception is overtime -- with a 1-5 lead in OT the model says 0.7113 while teams actually won 98.3 percent and the market priced 97.6 percent, so it under-rates how decisive a late lead is and the market is better there. This is a calibration exhibit.",
     "source_artifact": "webapp/public/data/insights/comeback_atlas.json",
     "as_of": "reliability map (source records no as_of)"
    },
@@ -7173,7 +7173,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "No -- it is explicitly a ceiling, not a clean causal player value. The 0.5822 swing comes from attributing a full-lineup on-vs-off net-rating gap to one man, with no control for teammates, opponent, coach trust, or garbage time, and the net-rating-to-Elo conversion is a single frozen constant, not a fit. It is a comparable, honest measure of star dependence, useful as matchup context but labeled descriptive-only, not a true individual-value estimate.",
+    "answer": "No -- it is explicitly a ceiling, not a clean causal player value. The 0.5822 swing comes from attributing a full-lineup on-vs-off net-rating gap to one man, with no control for teammates, opponent, coach trust, or garbage time, and the net-rating-to-Elo conversion is a single frozen constant, not a fit. It is a comparable, honest measure of star dependence, useful as matchup context but labeled descriptive-only, not a true individual-value estimate.",
     "source_artifact": "webapp/public/data/insights/cf_star_removal.json",
     "as_of": "2024-25 (Elo end-of-season) x 2024_25 on/off slice"
    },
@@ -7387,7 +7387,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "/analytics/forecaster assembles six committed aggregates: walk-forward win-probability results, state-conditioned calibration, the Murphy decomposition, calibration stability, Brier skill scores and the cross-sport scoreboard. Its headline is calibration: the model matches the devigged close pregame and trails the market in-game.",
+    "answer": "/analytics/forecaster assembles six committed aggregates: walk-forward win-probability results, state-conditioned calibration, the Murphy decomposition, calibration stability, Brier skill scores and the cross-sport scoreboard. Its headline is calibration: the model matches the devigged close pregame and trails the market in-game.",
     "source_artifact": "webapp/public/data/showcase/forecaster/manifest.json",
     "as_of": "2026-07-23"
    },
@@ -7579,7 +7579,7 @@
    "bucket": "product-tour"
   },
   {
-   "q": "What can you show me about how betting lines move?",
+   "q": "What can you show me about how market comparison lines move?",
    "alt_phrasings": [
     "line movement pages",
     "market microstructure",
@@ -7946,14 +7946,14 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "/analytics/m/paper_execution_audit is an execution-quality measurement -- how orders would have filled and how state lag affects that. It publishes no realized return figure, and financial-guidance questions are refused rather than answered.",
+    "answer": "/analytics/m/paper_execution_audit is an execution-quality measurement -- how orders would have filled and how state lag affects that. It publishes no realized return figure, and financial-guidance questions are refused rather than answered.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
     "as_of": "2026-07-24"
    },
    "tags": [
     "tour",
     "execution",
-    "no-edge"
+    "no-comparative-conclusion"
    ],
    "bucket": "product-tour"
   },
@@ -8058,21 +8058,21 @@
    "bucket": "product-tour"
   },
   {
-   "q": "Can you show me which bets to make?",
+   "q": "Can you show me which selections to make?",
    "alt_phrasings": [
-    "betting picks",
-    "what should I bet",
+    "market comparison picks",
+    "what should I selection",
     "give me a play"
    ],
    "a": {
     "status": "refused",
-        "answer": "No. This is a calibration product, and the published modules are descriptive. /analytics/m/cross_sport_scoreboard and /analytics/m/brier_skill_scores show the model trailing the market at every in-game grain measured.",
+    "answer": "No. This is a calibration product, and the published modules are descriptive. /analytics/m/cross_sport_scoreboard and /analytics/m/brier_skill_scores show the model trailing the market at every in-game grain measured.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
     "as_of": "2026-07-24"
    },
    "tags": [
     "tour",
-    "no-edge",
+    "no-comparative-conclusion",
     "refusal"
    ],
    "bucket": "product-tour"
@@ -8246,13 +8246,13 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "The most-cited retraction was an early pregame performance headline that turned out to be a market-follow grading artifact: the grader chose direction from the market's own devigged favorite and never actually read the model, priced at a flat -110 fiction, with filters tuned in-sample on the same file. Read against real closing lines the model is roughly break-even-minus-vig, about -2.00% unfiltered. The instrument that caught it was built by the same person who made the claim.",
+    "answer": "The most-cited retraction was an early pregame performance headline that turned out to be a market-follow grading artifact: the grader chose direction from the market's own devigged favorite and never actually read the model, priced at a flat -110 fiction, with filters tuned in-sample on the same file. Read against real closing lines the model is roughly break-even-minus-vig, about -2.00% unfiltered. The instrument that caught it was built by the same person who made the claim.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
     "retraction",
-    "roi-artifact",
+    "return-measure-artifact",
     "self-caught"
    ],
    "bucket": "system-honesty"
@@ -8260,13 +8260,13 @@
   {
    "q": "Tell me about the in-play backtest headline you pulled back.",
    "alt_phrasings": [
-    "the 55k in-play bets result",
+    "the 55k in-play selections result",
     "retracted in-play accuracy",
     "L5 proxy ceiling"
    ],
    "a": {
     "status": "ok",
-        "answer": "An in-play backtest once posted eye-catching accuracy and return figures on 55,073 recorded positions, but those were settled against a soft L5 rolling-average line proxy, not real sharp closing lines. That makes it a model-quality ceiling, not a tradeable or realized result, so both figures were retracted. The first real closing-line-value reading is not expected until October 2026.",
+    "answer": "An in-play backtest once posted eye-catching accuracy and return figures on 55,073 recorded positions, but those were settled against a soft L5 rolling-average line proxy, not real sharp closing lines. That makes it a model-quality ceiling, not a tradeable or realized result, so both figures were retracted. The first real closing-line-value reading is not expected until October 2026.",
     "source_artifact": "docs/KNOWN_LIMITATIONS.md",
     "as_of": "2026-06-11"
    },
@@ -8306,7 +8306,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "The reject ledger holds 804 recorded verdict rows, of which 628 are on a REJECT-family verdict (627 explicit REJECT) against 95 SHIP and 45 SHIP_REVIEW. As of their latest test, 68 distinct sport-signal pairs currently sit on a reject verdict. A REJECT is honest market-efficiency evidence, not a failure.",
+    "answer": "The reject ledger holds 804 recorded verdict rows, of which 628 are on a REJECT-family verdict (627 explicit REJECT) against 95 SHIP and 45 SHIP_REVIEW. As of their latest test, 68 distinct sport-signal pairs currently sit on a reject verdict. A REJECT is honest market-efficiency evidence, not a failure.",
     "source_artifact": "webapp/public/data/showcase/reject_graveyard.json",
     "as_of": "2026-07-18"
    },
@@ -8338,20 +8338,20 @@
    "bucket": "system-honesty"
   },
   {
-   "q": "Does the system claim a betting edge?",
+   "q": "Does the system claim a market comparison advantage?",
    "alt_phrasings": [
-    "do you beat the sportsbook",
-    "is this a profit product",
-    "is there a real edge"
+    "do you beat the reference source",
+    "is this a return product",
+    "is there a real advantage"
    ],
    "a": {
     "status": "ok",
-        "answer": "No. Against real closing lines the finding is that the market is efficient. This is a calibrated predictor whose honest result is matching the devigged close within noise, plus a measured in-game conditioning improvement. Accuracy is not a market comparison, and an honest reject is treated as a success.",
+    "answer": "No. Against real closing lines the finding is that the market is efficient. This is a calibrated predictor whose honest result is matching the devigged close within noise, plus a measured in-game conditioning improvement. Accuracy is not a market comparison, and an honest reject is treated as a success.",
     "source_artifact": "docs/PUBLIC_EVIDENCE.md",
     "as_of": "2026-06-11"
    },
    "tags": [
-    "no-edge",
+    "no-comparative-conclusion",
     "market-efficiency",
     "framing"
    ],
@@ -8366,7 +8366,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "It does not beat the market's Brier. The in-game Brier skill score of model versus market is at or below zero everywhere: for MLB all-innings the model Brier is 0.237684 against the market's 0.206653 (skill score -0.1502), and for international soccer all-minutes it is 0.227887 against 0.142726 (skill score -0.5967). Both model and market improve on the base-rate baseline, as expected.",
+    "answer": "It does not beat the market's Brier. The in-game Brier skill score of model versus market is at or below zero everywhere: for MLB all-innings the model Brier is 0.237684 against the market's 0.206653 (skill score -0.1502), and for international soccer all-minutes it is 0.227887 against 0.142726 (skill score -0.5967). Both model and market improve on the base-rate baseline, as expected.",
     "source_artifact": "webapp/public/data/showcase/brier_skill_scores.json",
     "as_of": "2026-07-24"
    },
@@ -8381,7 +8381,7 @@
    "q": "What did the full-season backtest actually prove?",
    "alt_phrasings": [
     "season-long walk-forward result",
-    "are you well calibrated but not profitable",
+    "are you well calibrated but not successful",
     "the market efficiency proof"
    ],
    "a": {
@@ -8406,7 +8406,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "The one measured calibration win is in-game conditioning: fusing the pregame rating prior with the realized mid-game state sharpens the win-probability forecaster, moving Brier from 0.209 to 0.159 for NBA and 0.241 to 0.126 for MLB on real out-of-sample corpora. It is labeled calibration because a live market source sees the score too.",
+    "answer": "The one measured calibration win is in-game conditioning: fusing the pregame rating prior with the realized mid-game state sharpens the win-probability forecaster, moving Brier from 0.209 to 0.159 for NBA and 0.241 to 0.126 for MLB on real out-of-sample corpora. It is labeled calibration because a live market source sees the score too.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
@@ -8422,11 +8422,11 @@
    "alt_phrasings": [
     "PBP Finals replay result",
     "playoff win probability accuracy",
-    "did you have a playoff edge"
+    "did you have a playoff advantage"
    ],
    "a": {
     "status": "ok",
-        "answer": "Replaying the Finals games G1 through G3 through the in-game projector produced a pooled win-probability Brier of 0.34 to 0.40 in-series -- worse than a coin flip. That is the clearest result in the system that the playoff market is efficient. It is reported as an honest negative result.",
+    "answer": "Replaying the Finals games G1 through G3 through the in-game projector produced a pooled win-probability Brier of 0.34 to 0.40 in-series -- worse than a coin flip. That is the clearest result in the system that the playoff market is efficient. It is reported as an honest negative result.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
@@ -8546,7 +8546,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "By category, officiating effects survive best at 0.75 and the small travel bucket at 1.0, while rest-and-fatigue effects survive weakest at just 0.3056 (11 of 36 testable). That is a useful honesty signal: the folk-wisdom rest-and-fatigue story mostly does not replicate under a leak-free gate. Every bucket is reported as-is.",
+    "answer": "By category, officiating effects survive best at 0.75 and the small travel bucket at 1.0, while rest-and-fatigue effects survive weakest at just 0.3056 (11 of 36 testable). That is a useful honesty signal: the folk-wisdom rest-and-fatigue story mostly does not replicate under a leak-free gate. Every bucket is reported as-is.",
     "source_artifact": "webapp/public/data/showcase/mechanism_survival.json",
     "as_of": "2026-07-11"
    },
@@ -8658,20 +8658,20 @@
    "bucket": "system-honesty"
   },
   {
-   "q": "What happens when someone asks the system for an edge or ROI?",
+   "q": "What happens when someone asks the system for an advantage or return measurement?",
    "alt_phrasings": [
-    "does it answer edge questions",
-    "how does it handle profit questions",
-    "edge-language handling"
+    "does it answer advantage questions",
+    "how does it handle return questions",
+    "advantage-language handling"
    ],
    "a": {
     "status": "ok",
-        "answer": "It refuses all of them. In the coverage stress test the prohibited-language category had 125 questions with an ok-rate of 0.0 -- every single one was refused -- and the prediction-winprob category likewise refused all 85. That refusal is enforced by the product rail, not left to a model's discretion.",
+    "answer": "It refuses all of them. In the coverage stress test the prohibited-language category had 125 questions with an ok-rate of 0.0 -- every single one was refused -- and the prediction-winprob category likewise refused all 85. That refusal is enforced by the product rail, not left to a model's discretion.",
     "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
     "as_of": "2026-07-22"
    },
    "tags": [
-    "no-edge",
+    "no-comparative-conclusion",
     "refusal",
     "fail-closed"
    ],
@@ -8686,7 +8686,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "Yes -- the answer-quality regression bank runs 87 checks and all 87 pass at the FULL tier, with 0 failures. Those are fail-closed status and receipt checks: a correct no_data, not_supported, or ambiguous response counts as a pass. It measures answer consistency.",
+    "answer": "Yes -- the answer-quality regression bank runs 87 checks and all 87 pass at the FULL tier, with 0 failures. Those are fail-closed status and receipt checks: a correct no_data, not_supported, or ambiguous response counts as a pass. It measures answer consistency.",
     "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
     "as_of": "2026-07-22"
    },
@@ -8766,7 +8766,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "Not yet. Every CV-derived feature carries SHAP importance of about 0.0 in the production prop models today, and the CV-lift report reads has_cv_data false. The plumbing is complete and the thesis is credible, but it is honestly labeled as not yet measured rather than a moat.",
+    "answer": "Not yet. Every CV-derived feature carries SHAP importance of about 0.0 in the production prop models today, and the CV-lift report reads has_cv_data false. The plumbing is complete and the thesis is credible, but it is honestly labeled as not yet measured rather than a moat.",
     "source_artifact": "docs/PUBLIC_EVIDENCE.md",
     "as_of": "2026-06-11"
    },
@@ -8946,7 +8946,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "The knowledge-engine mechanism ledger currently exports 287 rows across four sports, bucketed as 130 confirmed, 126 null, and 31 not-testable. A large null share is the expected shape of a real audit, and every row keeps its verdict, effect size, p-value, and source corpus.",
+    "answer": "The knowledge-engine mechanism ledger currently exports 287 rows across four sports, bucketed as 130 confirmed, 126 null, and 31 not-testable. A large null share is the expected shape of a real audit, and every row keeps its verdict, effect size, p-value, and source corpus.",
     "source_artifact": "webapp/public/data/showcase/mechanism_ledger_export.json",
     "as_of": "2026-07-11"
    },
@@ -8961,18 +8961,18 @@
    "q": "Does the paper-trading ledger prove you make money?",
    "alt_phrasings": [
     "paper execution results",
-    "does the paper ledger show profit",
+    "does the paper ledger show return",
     "execution audit outcome"
    ],
    "a": {
     "status": "ok",
-        "answer": "No. The paper execution ledger has 83 logged entries, every one with executed=false -- none were real fills -- and realized closing-line-value is null for all 37 settled rows because no independent close feed was captured for that channel. The only quantity it can speak to is placement-time divergence (model versus taken price), median about 0.092 probability points, which is an execution measurement. It records no-close honestly rather than backfilling a number.",
+    "answer": "No. The paper execution ledger has 83 logged entries, every one with executed=false -- none were real fills -- and realized closing-line-value is null for all 37 settled rows because no independent close feed was captured for that channel. The only quantity it can speak to is placement-time divergence (model versus taken price), median about 0.092 probability points, which is an execution measurement. It records no-close honestly rather than backfilling a number.",
     "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
     "as_of": "2026-07-24"
    },
    "tags": [
     "paper-trading",
-    "no-edge",
+    "no-comparative-conclusion",
     "honest-degradation"
    ],
    "bucket": "system-honesty"
@@ -8980,13 +8980,13 @@
   {
    "q": "Has any real money been placed?",
    "alt_phrasings": [
-    "do you bet real money",
+    "do you selection real money",
     "is this live trading",
     "real stakes placed"
    ],
    "a": {
     "status": "ok",
-        "answer": "Zero real money has been placed, by design. It is gated behind a sharp-market-source closing-line-value reading that cannot start until October 2026, plus CV-depth and deployment-stability work. Until that gate runs, no real-money execution is considered justified.",
+    "answer": "Zero real money has been placed, by design. It is gated behind a sharp-market-source closing-line-value reading that cannot start until October 2026, plus CV-depth and deployment-stability work. Until that gate runs, no real-money execution is considered justified.",
     "source_artifact": "docs/KNOWN_LIMITATIONS.md",
     "as_of": "2026-06-11"
    },
@@ -9078,15 +9078,15 @@
    "bucket": "system-honesty"
   },
   {
-   "q": "Was the assists edge you talked up ever real?",
+   "q": "Was the assists advantage you talked up ever real?",
    "alt_phrasings": [
     "the assist signal retraction",
-    "your strongest candidate edge",
+    "your strongest candidate advantage",
     "did AST hold up"
    ],
    "a": {
     "status": "ok",
-        "answer": "It was retracted on 2026-07-21 as regime-dependent -- it broke in the playoffs, and the in-series PBP replay confirmed the model did not outperform the market in playoff games. The assist candidate stands as an honest reject. The historical measurement stays in the gate artifacts only as a record of the stress-testing method.",
+    "answer": "It was retracted on 2026-07-21 as regime-dependent -- it broke in the playoffs, and the in-series PBP replay confirmed the model did not outperform the market in playoff games. The assist candidate stands as an honest reject. The historical measurement stays in the gate artifacts only as a record of the stress-testing method.",
     "source_artifact": "docs/KNOWN_LIMITATIONS.md",
     "as_of": "2026-06-11"
    },
@@ -9098,21 +9098,21 @@
    "bucket": "system-honesty"
   },
   {
-   "q": "What is the honest read on the overall betting result versus real closes?",
+   "q": "What is the honest read on the overall market comparison result versus real closes?",
    "alt_phrasings": [
     "net result vs closing lines",
-    "are you profitable against the close",
+    "are you successful against the close",
     "break-even or better"
    ],
    "a": {
     "status": "ok",
-        "answer": "Against real DraftKings, FanDuel, and MGM closing lines the model is roughly break-even-minus-vig overall, about -2% to -5%, with -2.00% unfiltered from the gate analysis. The market is efficient on closing lines. Every candidate, including the strongest one, was ultimately rejected or retracted by the gates.",
+    "answer": "Against real DraftKings, FanDuel, and MGM closing lines the model is roughly break-even-minus-vig overall, about -2% to -5%, with -2.00% unfiltered from the gate analysis. The market is efficient on closing lines. Every candidate, including the strongest one, was ultimately rejected or retracted by the gates.",
     "source_artifact": "docs/JOB_EVIDENCE_PACKET.md",
     "as_of": "2026-07-23"
    },
    "tags": [
     "market-efficiency",
-    "no-edge",
+    "no-comparative-conclusion",
     "honest-read"
    ],
    "bucket": "system-honesty"
@@ -9186,7 +9186,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "Deterministic, source-backed categories answer well: win-probability at ok-rate 1.0, calibration numbers 0.963, matchup previews 0.8889, and verified claims 0.6512. Categories that would require unsupported financial guidance or an unbacked opinion refuse hardest: prohibited-language, prediction-winprob, and mechanism-effect all sit at 0.0. The split is the design working as intended.",
+    "answer": "Deterministic, source-backed categories answer well: win-probability at ok-rate 1.0, calibration numbers 0.963, matchup previews 0.8889, and verified claims 0.6512. Categories that would require unsupported financial guidance or an unbacked opinion refuse hardest: prohibited-language, prediction-winprob, and mechanism-effect all sit at 0.0. The split is the design working as intended.",
     "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
     "as_of": "2026-07-22"
    },
@@ -9218,62 +9218,62 @@
    "bucket": "system-honesty"
   },
   {
-   "q": "What is the system's realized ROI?",
+   "q": "What is the system's realized return measurement?",
    "alt_phrasings": [
     "your return on investment",
-    "profit percentage",
-    "realized profit number"
+    "return percentage",
+    "realized return number"
    ],
    "a": {
     "status": "no_data",
-        "answer": "There is no realized-return measurement to report: zero real money has been placed. The paper execution ledger's 83 logged entries are all executed=false, and realized closing-line-value is null for the settled rows. The honest yardstick, better-than-close CLV, cannot be measured until an independent close feed accumulates from October 2026.",
+    "answer": "There is no realized-return measurement to report: zero real money has been placed. The paper execution ledger's 83 logged entries are all executed=false, and realized closing-line-value is null for the settled rows. The honest yardstick, better-than-close CLV, cannot be measured until an independent close feed accumulates from October 2026.",
     "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
     "as_of": "2026-07-24"
    },
    "tags": [
     "no-data",
-    "no-edge",
-    "roi"
+    "no-comparative-conclusion",
+    "return-measure"
    ],
    "bucket": "system-honesty"
   },
   {
-   "q": "What is your Sharpe ratio or bankroll growth?",
+   "q": "What is your Sharpe ratio or stake pool growth?",
    "alt_phrasings": [
     "risk-adjusted return",
-    "bankroll performance",
+    "stake pool performance",
     "Sharpe number"
    ],
    "a": {
     "status": "no_data",
-        "answer": "No Sharpe ratio or capital-growth figure exists, because no real money has been placed and the paper ledger is units-only. Any such number would require realized returns the system does not have. The system reports this gap rather than manufacturing a figure.",
+    "answer": "No Sharpe ratio or capital-growth figure exists, because no real money has been placed and the paper ledger is units-only. Any such number would require realized returns the system does not have. The system reports this gap rather than manufacturing a figure.",
     "source_artifact": "docs/KNOWN_LIMITATIONS.md",
     "as_of": "2026-06-11"
    },
    "tags": [
     "no-data",
-    "no-edge",
+    "no-comparative-conclusion",
     "risk-metrics"
    ],
    "bucket": "system-honesty"
   },
   {
-   "q": "Can you tell me the system's percentage edge over the sportsbook?",
+   "q": "Can you tell me the system's percentage advantage over the reference source?",
    "alt_phrasings": [
-    "how much edge do you have",
-    "edge in percent",
+    "how much advantage do you have",
+    "advantage in percent",
     "your advantage over the book"
    ],
    "a": {
     "status": "refused",
-        "answer": "No action-performance figure is provided -- this is a calibrated predictor, and the product rail refuses prohibited language outright. In the answer-engine stress test all 125 prohibited-language questions were refused, ok-rate 0.0. Against real closes the honest finding is that the market is efficient.",
+    "answer": "No action-performance figure is provided -- this is a calibrated predictor, and the product rail refuses prohibited language outright. In the answer-engine stress test all 125 prohibited-language questions were refused, ok-rate 0.0. Against real closes the honest finding is that the market is efficient.",
     "source_artifact": "webapp/public/data/showcase/qa_coverage_stats.json",
     "as_of": "2026-07-22"
    },
    "tags": [
     "refused",
-    "no-edge",
-    "edge-language"
+    "no-comparative-conclusion",
+    "advantage-language"
    ],
    "bucket": "system-honesty"
   },
@@ -9286,7 +9286,7 @@
    ],
    "a": {
     "status": "no_data",
-        "answer": "There is no realized closing-line-value track record yet: in the paper execution ledger, clv_pct is null for all 37 settled rows because no independent close feed was captured for that channel. No historical sharp-market-source closing archive exists publicly either, so the first real reading is roughly October 2026 onward. The methodology to measure it is built; the number is honestly absent.",
+    "answer": "There is no realized closing-line-value track record yet: in the paper execution ledger, clv_pct is null for all 37 settled rows because no independent close feed was captured for that channel. No historical sharp-market-source closing archive exists publicly either, so the first real reading is roughly October 2026 onward. The methodology to measure it is built; the number is honestly absent.",
     "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
     "as_of": "2026-07-24"
    },
@@ -9298,15 +9298,15 @@
    "bucket": "system-honesty"
   },
   {
-   "q": "Does the possession simulator have a proven betting edge?",
+   "q": "Does the possession simulator have a proven market comparison advantage?",
    "alt_phrasings": [
-    "is the sim profitable",
-    "same-game-parlay edge",
-    "sim edge claim"
+    "is the sim successful",
+    "same-game-parlay advantage",
+    "sim causal claim"
    ],
    "a": {
     "status": "no_data",
-        "answer": "Only the possession simulator's structure is validated. The correct negative teammate correlation of about -0.10 emerges from the mechanics with no hand-tuned matrix, and the same-game-parlay pricing is structurally correct, but there is no real parlay-price capture to grade against. Team totals also run slightly high, so the side is trusted more than the over.",
+    "answer": "Only the possession simulator's structure is validated. The correct negative teammate correlation of about -0.10 emerges from the mechanics with no hand-tuned matrix, and the same-game-parlay pricing is structurally correct, but there is no real parlay-price capture to grade against. Team totals also run slightly high, so the side is trusted more than the over.",
     "source_artifact": "docs/KNOWN_LIMITATIONS.md",
     "as_of": "2026-06-11"
    },
@@ -9318,15 +9318,15 @@
    "bucket": "system-honesty"
   },
   {
-   "q": "Does the system have a real-money profit track record I can look at?",
+   "q": "Does the system have a real-money return track record I can look at?",
    "alt_phrasings": [
-    "show me the profit history",
+    "show me the return history",
     "is there a money track record",
-    "proven profitable history"
+    "proven successful history"
    ],
    "a": {
     "status": "no_data",
-        "answer": "There is no real-money track record, by design -- zero money has been placed and the paper ledger's entries are all executed=false. Today's snapshot returns INSUFFICIENT_DATA for CLV, because no close was captured. What exists is a units-only paper track and the harnesses that will grade a real one once a sharp-market-source close feed accumulates.",
+    "answer": "There is no real-money track record, by design -- zero money has been placed and the paper ledger's entries are all executed=false. Today's snapshot returns INSUFFICIENT_DATA for CLV, because no close was captured. What exists is a units-only paper track and the harnesses that will grade a real one once a sharp-market-source close feed accumulates.",
     "source_artifact": "webapp/public/data/showcase/paper_execution_audit.json",
     "as_of": "2026-07-24"
    },
@@ -9338,11 +9338,11 @@
    "bucket": "system-honesty"
   },
   {
-   "q": "Is the Kelly bankroll sizing fully calibrated?",
+   "q": "Is the Kelly stake pool sizing fully calibrated?",
    "alt_phrasings": [
     "is Kelly ready",
     "correlation matrix populated",
-    "bankroll sizing status"
+    "stake pool sizing status"
    ],
    "a": {
     "status": "no_data",
@@ -9366,7 +9366,7 @@
    ],
    "a": {
     "status": "ok",
-        "answer": "It is a calibrated multi-sport forecasting system whose strongest signal is that the same builder built the instruments that caught and retracted his own inflated headline numbers. The market-efficiency finding -- well-calibrated but does not beat the close -- is the cleanest output a rigorous validation framework can produce. Accuracy and market outperformance are distinct, and honest rejects are counted as successes.",
+    "answer": "It is a calibrated multi-sport forecasting system whose strongest signal is that the same builder built the instruments that caught and retracted his own inflated headline numbers. The market-efficiency finding -- well-calibrated but does not beat the close -- is the cleanest output a rigorous validation framework can produce. Accuracy and market outperformance are distinct, and honest rejects are counted as successes.",
     "source_artifact": "docs/PUBLIC_EVIDENCE.md",
     "as_of": "2026-06-11"
    },

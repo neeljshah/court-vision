@@ -4,6 +4,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Search, X } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import type { EvidenceChart } from "@/lib/analytics/evidenceHub";
+import { getPublishedChartPresentation } from "@/lib/analytics/publishedChartPresentation";
 
 export interface EvidenceGalleryProps {
   readonly charts: EvidenceChart[];
@@ -29,12 +30,12 @@ interface ChartDialogProps {
 
 function ChartDialog({ chart }: ChartDialogProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const presentation = getPublishedChartPresentation(chart.id);
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
         <button ref={triggerRef} className="evidence-preview" type="button" aria-label={`Open larger view of ${chart.title}`}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={chart.imageSrc} alt="" loading="lazy" />
+          {presentation.approved ? <img src={chart.imageSrc} alt="" loading="lazy" /> : <span className="evidence-data-preview" data-testid="published-data-figure"><strong>Published data figure</strong><span>{chart.description}</span></span>}
           <span>View chart</span>
         </button>
       </Dialog.Trigger>
@@ -48,8 +49,7 @@ function ChartDialog({ chart }: ChartDialogProps) {
             <div><Dialog.Title>{chart.title}</Dialog.Title><p id={`chart-description-${chart.id}`}>{asOfLabel(chart.asOf)}</p></div>
             <Dialog.Close className="evidence-dialog-close" aria-label="Close chart"><X size={19} /></Dialog.Close>
           </div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={chart.imageSrc} alt={`${chart.title} chart`} />
+          {presentation.approved ? <img src={chart.imageSrc} alt={`${chart.title} chart`} /> : <figure className="evidence-data-dialog" data-testid="published-data-figure"><figcaption>{chart.description}</figcaption><p>{presentation.reason}</p><a href={chart.sourceUrl} target="_blank" rel="noreferrer">Source module</a></figure>}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

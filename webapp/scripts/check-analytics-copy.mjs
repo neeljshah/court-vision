@@ -2,10 +2,13 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const FORBIDDEN = /(?<![A-Za-z0-9_])(edge|edges|bet|bets|betting|bettor|bettors|bookmaker|bookmakers|sportsbook|profit|profits|profitable|roi|wager|wagers|wagering|bankroll|bankrolls|payout|payouts|odds boost|financial returns?|betting returns?|dollar)(?![A-Za-z0-9])/gi;
+export const PROHIBITED_TOKEN_RE = /(?<![A-Za-z0-9_])(edge|edges|bet|bets|betting|bettor|bettors|profit|profits|profitable|roi|wager|wagers|wagering|bankroll|bankrolls|payout|payouts|odds boost|financial returns?|betting returns?|dollar)(?![A-Za-z0-9_])/i;
+// global clone for matchAll; the exported regex is stateless so `.test` is safe for every caller
+const PROHIBITED_TOKEN_RE_G = new RegExp(PROHIBITED_TOKEN_RE.source, "gi");
 const SOURCE_ROOTS = ["app/(analytics)", "components/analytics", "lib/analytics"];
+// These adapters create prose that is rendered by the public derived-analysis views.
+export const SCAN_LIB_FILES = ["lib/analytics/researchStarRemoval.ts", "lib/analytics/researchLineupProxy.ts"];
 const DATA_TARGETS = ["public/data/showcase/site_manifest.json", "public/data/insights", "public/data/ask", "public/data/explainers", "public/data/papers"];
-const DATA_PROSE_KEYS = new Set(["answer", "body_md", "caveat", "dek", "headline_insight", "how_to_read", "note", "one_line", "q_free_prose", "question", "title", "what_it_means", "why_it_matters"]);
 
 function sourceFiles(root, directory) {
   const current = join(root, directory);
@@ -22,8 +25,7 @@ function lineAt(source, index) {
 }
 
 function hasForbiddenToken(value) {
-  FORBIDDEN.lastIndex = 0;
-  return FORBIDDEN.test(value);
+  return PROHIBITED_TOKEN_RE.test(value);
 }
 
 function isNonProseLiteral(literal) {
@@ -106,12 +108,12 @@ export function scanSourceText(path, source) {
 
 /** Checks text after rendering, where JSX literals are no longer available. */
 export function scanRenderedText(value) {
-  FORBIDDEN.lastIndex = 0;
-  return Array.from(value.matchAll(FORBIDDEN), (match) => match[0]);
+  return Array.from(value.matchAll(PROHIBITED_TOKEN_RE_G), (match) => match[0]);
 }
 
 export function scanAnalyticsCopy(root = process.cwd()) {
-  return SOURCE_ROOTS.flatMap((directory) => sourceFiles(root, directory)).flatMap((absolute) => {
+  const files = [...SOURCE_ROOTS.flatMap((directory) => sourceFiles(root, directory)), ...SCAN_LIB_FILES.map((path) => join(root, path)).filter(existsSync)];
+  return files.flatMap((absolute) => {
     const path = relative(root, absolute).replaceAll("\\", "/");
     const source = readFileSync(absolute, "utf8");
     return scanSourceText(path, source);
@@ -135,14 +137,14 @@ function jsonPathPart(key) {
   return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(key) ? `.${key}` : `[${JSON.stringify(key)}]`;
 }
 
-function dataFindings(value, path, jsonPath, findings, key = "") {
+function dataFindings(value, path, jsonPath, findings) {
   if (typeof value === "string") {
-    if (DATA_PROSE_KEYS.has(key) && hasForbiddenToken(value)) findings.push({ file: path, jsonPath, text: value });
+    if (hasForbiddenToken(value)) findings.push({ file: path, jsonPath, text: value });
     return;
   }
-  if (Array.isArray(value)) value.forEach((entry, index) => dataFindings(entry, path, `${jsonPath}[${index}]`, findings, key));
+  if (Array.isArray(value)) value.forEach((entry, index) => dataFindings(entry, path, `${jsonPath}[${index}]`, findings));
   else if (value && typeof value === "object") {
-    for (const [entryKey, entry] of Object.entries(value)) dataFindings(entry, path, `${jsonPath}${jsonPathPart(entryKey)}`, findings, entryKey);
+    for (const [entryKey, entry] of Object.entries(value)) dataFindings(entry, path, `${jsonPath}${jsonPathPart(entryKey)}`, findings);
   }
 }
 

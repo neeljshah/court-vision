@@ -34,7 +34,6 @@ export function buildLineupProxyResearch(source: LineupProxySource): ResearchAna
   const analysisRows = rows(source || {});
   const activeFloor = finite(source?.floors?.min_active) ? source.floors.min_active : null;
   const missedFloor = finite(source?.floors?.min_missed) ? source.floors.min_missed : null;
-  const confound = typeof source?.confound === "string" ? source.confound : "The source confound statement is unavailable.";
   return [{
     id: "lineup-proxy-active-missed-record",
     title: "Team record with a player active versus missed",
@@ -43,7 +42,7 @@ export function buildLineupProxyResearch(source: LineupProxySource): ResearchAna
     source: "ctx_lineup_proxy",
     description: "Published player tenure windows compare the team's recorded win rate while each player was active and while that player was missed.",
     scope: `${analysisRows.length} published player windows.${activeFloor === null || missedFloor === null ? " Published support floors are unavailable." : ` Source floors are ${activeFloor} active games and ${missedFloor} missed games.`} Source as-of: ${typeof source?.as_of === "string" ? source.as_of : "unpublished"}. Each row keeps both support counts.`,
-    caveat: `${confound} Active and missed games are restricted to the player's own tenure window. The Wald interval is descriptive uncertainty for the recorded difference; it does not remove the roster, schedule, injury, or replacement-lineup confounds.`,
+    caveat: "Active and missed games are restricted to the player's own tenure window. This comparison does not isolate the player's causal contribution.",
     status: "Descriptive tenure subset",
     fields: [f("win_rate_difference", "Active minus missed", "pp", 2), f("win_rate_active", "Win rate active", "percent", 2), f("win_rate_missed", "Win rate missed", "percent", 2), f("wald_95_half_width", "Wald 95% interval half-width", "pp", 2), f("games_active", "Games active", "number", 0), f("games_missed", "Games missed", "number", 0)],
     rows: analysisRows,

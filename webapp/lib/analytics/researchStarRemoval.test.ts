@@ -9,6 +9,7 @@ describe("star removal research", () => {
     expect(analysis).toMatchObject({ id: "star-removal-team-win-probability", source: "cf_star_removal", asOf: "2026-05-21" });
     expect(analysis.rows[0].values).toMatchObject({ win_probability_with: 0.7, win_probability_without: 0.4, minutes_active: 1000 });
     expect(analysis.rows[0].sourcePaths).toContain("teams[].p_win_with");
+    expect(analysis.caveat).toContain("This scenario does not isolate the player's causal contribution.");
   });
 
   it("orders rows deterministically by player and team label", () => {
