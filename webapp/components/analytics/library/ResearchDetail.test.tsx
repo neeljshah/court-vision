@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ResearchDetail from "./ResearchDetail";
 import * as table from "../lab/LabTable";
@@ -44,6 +44,28 @@ describe("ResearchDetail", () => {
 });
 
 describe("ResearchDetail investigation continuity", () => {
+  it("compares a searched row with its whole selected population and updates the active metric", () => {
+    render(<ResearchDetail analysis={analysis} related={[]} />);
+    fireEvent.change(screen.getByRole("textbox", { name: "Search analysis rows" }), { target: { value: "Alpha" } });
+    fireEvent.click(screen.getByRole("button", { name: /^Inspect Alpha/ }));
+    let context = screen.getByRole("region", { name: "Measurement context" });
+    expect(context).toHaveTextContent("All published groups");
+    expect(within(context).getByText("Reference rows").parentElement).toHaveTextContent("3 rows");
+    expect(within(context).getByText("Measured").parentElement).toHaveTextContent("2 / 3");
+    expect(within(context).getByText("Missing").parentElement).toHaveTextContent("1 row");
+    expect(within(context).getByText("Difference from median").parentElement).toHaveTextContent("+2.5");
+
+    fireEvent.change(screen.getByRole("combobox", { name: "Population" }), { target: { value: "East" } });
+    expect(screen.queryByRole("region", { name: "Measurement context" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /^Inspect Alpha/ }));
+    fireEvent.change(screen.getByRole("combobox", { name: "Measurement" }), { target: { value: "rate" } });
+    context = screen.getByRole("region", { name: "Measurement context" });
+    expect(context).toHaveTextContent("East");
+    expect(within(context).getByText("Measured").parentElement).toHaveTextContent("2 / 2");
+    expect(within(context).getByText("Median").parentElement).toHaveTextContent("62.5%");
+    expect(within(context).getByText("Difference from median").parentElement).toHaveTextContent("-12.5 pp");
+  });
+
   it("restores the distribution view and recalculates summaries after filtering", () => {
     window.history.replaceState(null, "", "?metric=rate&view=distribution&q=Alpha");
     render(<ResearchDetail analysis={analysis} related={[]} />);

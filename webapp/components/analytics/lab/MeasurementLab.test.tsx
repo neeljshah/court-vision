@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import { useState } from "react";
@@ -45,6 +45,16 @@ describe("MeasurementLab sport filtering and inspection", () => {
     expect(screen.getByRole("option", { name: "Show all cohorts (not comparable)" })).toBeInTheDocument();
     expect(screen.queryByRole("region", { name: "Measurement summary" })).not.toBeInTheDocument();
     expect(screen.getByText(/without a pooled ranking or median/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Data table" }));
+    fireEvent.click(screen.getByRole("button", { name: "Inspect MLB" }));
+    expect(screen.queryByRole("region", { name: "Measurement context" })).not.toBeInTheDocument();
+    expect(screen.getByText("Select one comparable cohort to see measurement context.")).toBeInTheDocument();
+    const cohort = screen.getByRole("option", { name: "MLB / 3 runs / inning" }) as HTMLOptionElement;
+    fireEvent.change(screen.getByLabelText("Published group"), { target: { value: cohort.value } });
+    fireEvent.click(screen.getByRole("button", { name: "Inspect MLB" }));
+    const context = screen.getByRole("region", { name: "Measurement context" });
+    expect(context).toHaveTextContent("MLB / 3 runs / inning");
+    expect(within(context).getByText("Measured").parentElement).toHaveTextContent("1 / 1");
   });
   it("keeps a censored half-life label visible and out of numeric ranking", () => {
     const censored = { ...fixture, datasets: [{ ...fixture.datasets[0], id: "line-half-life", rows: [
@@ -59,6 +69,25 @@ describe("MeasurementLab sport filtering and inspection", () => {
   it("groups measurement view choices semantically", () => {
     render(<MeasurementLab data={fixture} />);
     expect(screen.getByRole("group", { name: "Measurement visualization" })).toBeInTheDocument();
+  });
+
+  it("restores reference context before search while preserving sport scope and missing rows", () => {
+    window.history.replaceState(null, "", "?sport=mlb&dataset=cross-sport&q=MLB&row=mlb");
+    render(<MeasurementLab data={fixture} />);
+    let context = screen.getByRole("region", { name: "Measurement context" });
+    expect(context).toHaveTextContent("Baseball / All published groups");
+    expect(within(context).getByText("Reference rows").parentElement).toHaveTextContent("2 rows");
+    expect(within(context).getByText("Measured").parentElement).toHaveTextContent("1 / 2");
+    expect(within(context).getByText("Missing").parentElement).toHaveTextContent("1 row");
+    expect(within(context).getByText("Difference from median").parentElement).toHaveTextContent("0");
+
+    fireEvent.change(screen.getByLabelText("Search measurement rows"), { target: { value: "Missing" } });
+    fireEvent.click(screen.getByRole("button", { name: "Data table" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Inspect Missing value/ }));
+    context = screen.getByRole("region", { name: "Measurement context" });
+    expect(context).toHaveTextContent("The selected value is unavailable");
+    expect(within(context).getByText("Measured").parentElement).toHaveTextContent("1 / 2");
+    expect(within(context).queryByText("Below selected value")).not.toBeInTheDocument();
   });
 
   it("explains an empty published dataset, rather than offering a filter reset", () => {
@@ -111,6 +140,7 @@ describe("MeasurementLab sport filtering and inspection", () => {
     expect(screen.getByRole("region", { name: "Selected measurement" })).toHaveTextContent("Nikola Jokic");
     expect(screen.getByRole("region", { name: "Selected measurement" })).toHaveTextContent("Fixture detail.");
     expect(screen.getByRole("region", { name: "Selected measurement" })).toHaveTextContent("7");
+    expect(screen.getByRole("region", { name: "Measurement context" })).toHaveTextContent("Basketball / All published groups");
   });
 
   it("focuses selected details and restores its row after Escape", () => {
