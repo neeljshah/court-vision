@@ -1,8 +1,8 @@
 {
  "edge_claimed": false,
- "generated_at": "2026-07-25T11:13:30.548227+00:00",
+ "generated_at": "2026-09-16T21:29:55.878078+00:00",
  "method": "composition only -- each card copied from its module's own novel_*.json output",
- "n_stats": 6,
+ "n_stats": 7,
  "stats": [
   {
    "stat_name": "Line Half-Life",
@@ -145,6 +145,24 @@
    "chart": "docs/img/novel_overreaction_harvest_gap.png",
    "n_results": 2,
    "artifact": "scripts/platformkit/analytics_showcase/out/novel_overreaction_harvest_gap.json"
+  },
+  {
+   "stat_name": "Rest Asymmetry",
+   "abbrev": "RA",
+   "module": "novel_rest_asymmetry",
+   "formula": "P(home win | rest_days_home - rest_days_away in cell), and on the priced subset the same frequency minus the mean devigged pregame market forecast for that cell.",
+   "prior_art_verdict": "INCREMENTAL",
+   "prior_art_citation": "Rest and back-to-back effects on NBA outcomes are long documented. What is added here is the separation of the rest DIFFERENTIAL from symmetric congestion, each with a game-cluster interval and a declared mask floor, plus a season-stability check showing the pooled gradient is not reproduced in 2025-26 -- the one season that carries a recorded pregame price.",
+   "source_artifacts": [
+    "data/domains/basketball_nba/games.parquet",
+    "data/domains/basketball_nba/odds.parquet",
+    "data/domains/basketball_nba/game_finals_corrected.parquet"
+   ],
+   "headline": "Across 4793 NBA games the home win frequency rises from 0.4944 when the visitor is the better-rested side by two or more days (n=180) to 0.6409 when the home side is (n=259), a 0.1465 spread, while two teams sharing the same congestion move nothing: at an equal differential both on a back-to-back win 0.5510 (n=245) against 0.5518 (n=2394) when neither is.",
+   "n_results": 5,
+   "edge_claimed": false,
+   "artifact": "scripts/platformkit/analytics_showcase/out/novel_rest_asymmetry.json",
+   "is_honest_null": false
   },
   {
    "stat_name": "Schedule Fatigue Tax",

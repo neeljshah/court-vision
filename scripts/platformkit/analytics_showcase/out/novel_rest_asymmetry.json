@@ -1,0 +1,474 @@
+{
+ "id": "novel_rest_asymmetry",
+ "title": "Rest asymmetry: the differential moves outcomes, the shared load does not",
+ "as_of": "2026-09-16",
+ "sport": "nba",
+ "descriptive_only": true,
+ "headline": "Across 4793 NBA games the home win frequency rises from 0.4944 when the visitor is the better-rested side by two or more days (n=180) to 0.6409 when the home side is (n=259), a 0.1465 spread, while two teams sharing the same congestion move nothing: at an equal differential both on a back-to-back win 0.5510 (n=245) against 0.5518 (n=2394) when neither is.",
+ "headline_insight": "Across 4793 NBA games the home win frequency rises from 0.4944 when the visitor is the better-rested side by two or more days (n=180) to 0.6409 when the home side is (n=259), a 0.1465 spread, while two teams sharing the same congestion move nothing: at an equal differential both on a back-to-back win 0.5510 (n=245) against 0.5518 (n=2394) when neither is.",
+ "verdict": "The differential is what moves the frequency, not the load. Pooled over 4793 games the gradient is monotone across all five cells, and only the home +2 or more contrast against equal rest has a bootstrap interval that excludes zero. It is not stable season to season: the home-rested-minus-away-rested gradient clears 5 points in 3 of 4 seasons and is flat or reversed in 2025-26. The 1103 games that carry a recorded pregame moneyline are all from 2025-26, and there the observed-minus-market gap stays inside its 95 percent interval of zero in every unmasked rest cell. So this corpus cannot separate 'the recorded forecast already carries the rest state' from 'this season had no gradient to carry'; the pricing question is recorded as a null, not as a finding.",
+ "population": "NBA regular-season games recorded in data/domains/basketball_nba/games.parquet, seasons 2022-23, 2023-24, 2024-25, 2025-26, 4793 games with a resolved home_win label.",
+ "unit_of_observation": "one game",
+ "conditioning_variable": "rest differential = rest_days_home - rest_days_away, a schedule quantity fixed before tip-off, binned into five cells; and for the congestion panel, whether both, one or neither side played the previous day.",
+ "timing_guarantee": "Every conditioning variable is a property of the schedule that is known before the opening tip: rest days come from the gap to each team's previous game date, and the moneyline is the recorded pregame quote. Nothing observed during or after the game enters a cell assignment.",
+ "definitions": {
+  "rest_days": "days since that team's previous game, capped at 10 in the source table",
+  "cells": "<= -2 away +2 or more; -1 away +1; 0 equal; +1 home +1; >= +2 home +2 or more",
+  "back_to_back": "rest_days == 1; at an equal differential this is symmetric, so the mixed congestion cell is empty by construction",
+  "market_forecast": "two-way devigged home probability from the recorded pregame American moneyline pair, normalized so home plus away equals 1",
+  "gap_observed_minus_market": "observed home win frequency in the cell minus the mean devigged market forecast in the same cell"
+ },
+ "method": {
+  "interval": "percentile 95 percent interval from a bootstrap that resamples whole game clusters with replacement",
+  "n_boot": 2000,
+  "seed": 20260916,
+  "floor_games_per_cell": 30,
+  "mask_rule": "a cell with fewer than 30 games keeps its count and reports no frequency or interval"
+ },
+ "sources": [
+  "data/domains/basketball_nba/games.parquet",
+  "data/domains/basketball_nba/odds.parquet",
+  "data/domains/basketball_nba/game_finals_corrected.parquet"
+ ],
+ "is_honest_null": false,
+ "index_card": {
+  "stat_name": "Rest Asymmetry",
+  "abbrev": "RA",
+  "module": "novel_rest_asymmetry",
+  "formula": "P(home win | rest_days_home - rest_days_away in cell), and on the priced subset the same frequency minus the mean devigged pregame market forecast for that cell.",
+  "prior_art_verdict": "INCREMENTAL",
+  "prior_art_citation": "Rest and back-to-back effects on NBA outcomes are long documented. What is added here is the separation of the rest DIFFERENTIAL from symmetric congestion, each with a game-cluster interval and a declared mask floor, plus a season-stability check showing the pooled gradient is not reproduced in 2025-26 -- the one season that carries a recorded pregame price.",
+  "source_artifacts": [
+   "data/domains/basketball_nba/games.parquet",
+   "data/domains/basketball_nba/odds.parquet",
+   "data/domains/basketball_nba/game_finals_corrected.parquet"
+  ],
+  "headline": "Across 4793 NBA games the home win frequency rises from 0.4944 when the visitor is the better-rested side by two or more days (n=180) to 0.6409 when the home side is (n=259), a 0.1465 spread, while two teams sharing the same congestion move nothing: at an equal differential both on a back-to-back win 0.5510 (n=245) against 0.5518 (n=2394) when neither is.",
+  "n_results": 5
+ },
+ "panels": {
+  "rest_differential": {
+   "n_games": 4793,
+   "cells": [
+    {
+     "cell": "away +2 or more",
+     "n_games": 180,
+     "home_win_frequency": 0.4944,
+     "ci95": [
+      0.4236,
+      0.5668
+     ],
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "away +1",
+     "n_games": 775,
+     "home_win_frequency": 0.5161,
+     "ci95": [
+      0.4809,
+      0.5519
+     ],
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "equal",
+     "n_games": 2639,
+     "home_win_frequency": 0.5517,
+     "ci95": [
+      0.5333,
+      0.5709
+     ],
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "home +1",
+     "n_games": 940,
+     "home_win_frequency": 0.5755,
+     "ci95": [
+      0.543,
+      0.6062
+     ],
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "home +2 or more",
+     "n_games": 259,
+     "home_win_frequency": 0.6409,
+     "ci95": [
+      0.5827,
+      0.7016
+     ],
+     "masked": false,
+     "mask_reason": null
+    }
+   ]
+  },
+  "contrast_vs_equal_rest": [
+   {
+    "cell": "away +2 or more",
+    "n_games": 180,
+    "delta_vs_equal": -0.0573,
+    "ci95": [
+     -0.1307,
+     0.0165
+    ],
+    "masked": false,
+    "excludes_zero": false
+   },
+   {
+    "cell": "away +1",
+    "n_games": 775,
+    "delta_vs_equal": -0.0356,
+    "ci95": [
+     -0.0739,
+     0.0037
+    ],
+    "masked": false,
+    "excludes_zero": false
+   },
+   {
+    "cell": "home +1",
+    "n_games": 940,
+    "delta_vs_equal": 0.0238,
+    "ci95": [
+     -0.0142,
+     0.0595
+    ],
+    "masked": false,
+    "excludes_zero": false
+   },
+   {
+    "cell": "home +2 or more",
+    "n_games": 259,
+    "delta_vs_equal": 0.0892,
+    "ci95": [
+     0.0257,
+     0.1502
+    ],
+    "masked": false,
+    "excludes_zero": true
+   }
+  ],
+  "symmetric_congestion": {
+   "n_games": 2639,
+   "note": "restricted to games at an equal rest differential",
+   "cells": [
+    {
+     "cell": "both on a back-to-back",
+     "n_games": 245,
+     "home_win_frequency": 0.551,
+     "ci95": [
+      0.4857,
+      0.6136
+     ],
+     "masked": false,
+     "mask_reason": null
+    },
+    {
+     "cell": "mixed",
+     "n_games": 0,
+     "home_win_frequency": null,
+     "ci95": [
+      null,
+      null
+     ],
+     "masked": true,
+     "mask_reason": "no games in this cell"
+    },
+    {
+     "cell": "neither on a back-to-back",
+     "n_games": 2394,
+     "home_win_frequency": 0.5518,
+     "ci95": [
+      0.5325,
+      0.5728
+     ],
+     "masked": false,
+     "mask_reason": null
+    }
+   ]
+  },
+  "season_stability": [
+   {
+    "season": "2022-23",
+    "n_games": 1230,
+    "cells": [
+     {
+      "cell": "away rested more",
+      "n_games": 209,
+      "home_win_frequency": 0.555,
+      "ci95": [
+       0.4837,
+       0.6214
+      ],
+      "masked": false,
+      "mask_reason": null
+     },
+     {
+      "cell": "equal",
+      "n_games": 665,
+      "home_win_frequency": 0.5699,
+      "ci95": [
+       0.5291,
+       0.6078
+      ],
+      "masked": false,
+      "mask_reason": null
+     },
+     {
+      "cell": "home rested more",
+      "n_games": 356,
+      "home_win_frequency": 0.6152,
+      "ci95": [
+       0.5652,
+       0.6667
+      ],
+      "masked": false,
+      "mask_reason": null
+     }
+    ],
+    "home_more_minus_away_more": 0.0602
+   },
+   {
+    "season": "2023-24",
+    "n_games": 1230,
+    "cells": [
+     {
+      "cell": "away rested more",
+      "n_games": 260,
+      "home_win_frequency": 0.4885,
+      "ci95": [
+       0.4291,
+       0.5508
+      ],
+      "masked": false,
+      "mask_reason": null
+     },
+     {
+      "cell": "equal",
+      "n_games": 687,
+      "home_win_frequency": 0.5429,
+      "ci95": [
+       0.5037,
+       0.5799
+      ],
+      "masked": false,
+      "mask_reason": null
+     },
+     {
+      "cell": "home rested more",
+      "n_games": 283,
+      "home_win_frequency": 0.5936,
+      "ci95": [
+       0.5382,
+       0.6504
+      ],
+      "masked": false,
+      "mask_reason": null
+     }
+    ],
+    "home_more_minus_away_more": 0.1051
+   },
+   {
+    "season": "2024-25",
+    "n_games": 1230,
+    "cells": [
+     {
+      "cell": "away rested more",
+      "n_games": 250,
+      "home_win_frequency": 0.488,
+      "ci95": [
+       0.4241,
+       0.5493
+      ],
+      "masked": false,
+      "mask_reason": null
+     },
+     {
+      "cell": "equal",
+      "n_games": 692,
+      "home_win_frequency": 0.539,
+      "ci95": [
+       0.4993,
+       0.5771
+      ],
+      "masked": false,
+      "mask_reason": null
+     },
+     {
+      "cell": "home rested more",
+      "n_games": 288,
+      "home_win_frequency": 0.6042,
+      "ci95": [
+       0.548,
+       0.6616
+      ],
+      "masked": false,
+      "mask_reason": null
+     }
+    ],
+    "home_more_minus_away_more": 0.1162
+   },
+   {
+    "season": "2025-26",
+    "n_games": 1103,
+    "cells": [
+     {
+      "cell": "away rested more",
+      "n_games": 236,
+      "home_win_frequency": 0.5254,
+      "ci95": [
+       0.4602,
+       0.5907
+      ],
+      "masked": false,
+      "mask_reason": null
+     },
+     {
+      "cell": "equal",
+      "n_games": 595,
+      "home_win_frequency": 0.5563,
+      "ci95": [
+       0.5168,
+       0.5957
+      ],
+      "masked": false,
+      "mask_reason": null
+     },
+     {
+      "cell": "home rested more",
+      "n_games": 272,
+      "home_win_frequency": 0.5368,
+      "ci95": [
+       0.4769,
+       0.5974
+      ],
+      "masked": false,
+      "mask_reason": null
+     }
+    ],
+    "home_more_minus_away_more": 0.0114
+   }
+  ],
+  "market_residual": {
+   "n_games": 1103,
+   "seasons": [
+    "2025-26"
+   ],
+   "cells": [
+    {
+     "cell": "away +2 or more",
+     "n_games": 38,
+     "mean_market_forecast": 0.4795,
+     "home_win_frequency": 0.4474,
+     "gap_observed_minus_market": -0.0321,
+     "ci95": [
+      -0.1942,
+      0.1186
+     ],
+     "masked": false,
+     "excludes_zero": false
+    },
+    {
+     "cell": "away +1",
+     "n_games": 198,
+     "mean_market_forecast": 0.5141,
+     "home_win_frequency": 0.5404,
+     "gap_observed_minus_market": 0.0263,
+     "ci95": [
+      -0.034,
+      0.0881
+     ],
+     "masked": false,
+     "excludes_zero": false
+    },
+    {
+     "cell": "equal",
+     "n_games": 595,
+     "mean_market_forecast": 0.5476,
+     "home_win_frequency": 0.5563,
+     "gap_observed_minus_market": 0.0087,
+     "ci95": [
+      -0.0268,
+      0.0444
+     ],
+     "masked": false,
+     "excludes_zero": false
+    },
+    {
+     "cell": "home +1",
+     "n_games": 221,
+     "mean_market_forecast": 0.5785,
+     "home_win_frequency": 0.5294,
+     "gap_observed_minus_market": -0.0491,
+     "ci95": [
+      -0.1094,
+      0.0111
+     ],
+     "masked": false,
+     "excludes_zero": false
+    },
+    {
+     "cell": "home +2 or more",
+     "n_games": 51,
+     "mean_market_forecast": 0.5824,
+     "home_win_frequency": 0.5686,
+     "gap_observed_minus_market": -0.0137,
+     "ci95": [
+      -0.1302,
+      0.1008
+     ],
+     "masked": false,
+     "excludes_zero": false
+    }
+   ]
+  }
+ },
+ "checks": {
+  "label_crosscheck_source": "data/domains/basketball_nba/game_finals_corrected.parquet",
+  "label_crosscheck_n": 3563,
+  "label_agreement": 0.9997,
+  "market_panel_seasons": [
+   "2025-26"
+  ],
+  "schedule_panel_seasons": [
+   "2022-23",
+   "2023-24",
+   "2024-25",
+   "2025-26"
+  ],
+  "congestion_mixed_n": 0,
+  "rest_days_capped_at": 10.0,
+  "dropped_games_missing_rest": 53
+ },
+ "what_it_means": "Rest is a relative quantity here. A team that is better rested than its opponent wins more often, and the frequency climbs with the size of that advantage, but two tired teams play out almost exactly like two fresh teams. The pooled gradient is also a four-season average that one season does not reproduce.",
+ "how_to_read": "Each cell reports n_games first, then the observed home win frequency and its game-cluster bootstrap interval. The contrast panel subtracts the equal-rest cell on the same resample, so its interval is paired. In the market panel a gap whose interval contains zero means the recorded pregame forecast and the observed frequency agree within noise for that cell.",
+ "why_it_matters": "It separates a schedule state that tracks outcomes from one that does not, and it shows the limit of the local corpus: the seasons with the clearest gradient are the seasons with no recorded price, so the pricing question stays open.",
+ "caveat": "Descriptive conditional frequencies, not a forecast and not a causal estimate. Rest differential is confounded with travel, opponent strength and where a game sits in a road trip, none of which are controlled here. The market panel covers one season only.",
+ "cited": [
+  {
+   "path": "webapp/public/data/insights/novel_rest_asymmetry.json",
+   "field": "panels.rest_differential.cells[4] home_win_frequency / n_games",
+   "value": "0.6409 / 259"
+  },
+  {
+   "path": "webapp/public/data/insights/novel_rest_asymmetry.json",
+   "field": "panels.rest_differential.cells[0] home_win_frequency / n_games",
+   "value": "0.4944 / 180"
+  },
+  {
+   "path": "webapp/public/data/insights/novel_rest_asymmetry.json",
+   "field": "panels.symmetric_congestion.cells home_win_frequency (both / neither)",
+   "value": "0.551 / 0.5518 (gap -0.0008)"
+  },
+  {
+   "path": "webapp/public/data/insights/novel_rest_asymmetry.json",
+   "field": "panels.market_residual.n_games",
+   "value": 1103
+  }
+ ]
+}

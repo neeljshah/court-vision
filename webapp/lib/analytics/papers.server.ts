@@ -1,4 +1,5 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { findingsIndex } from "./findingsIndex";
 import { join } from "node:path";
 import { analysisDestinations } from "./analysisDestinations";
 import { getResearchAnalyses } from "./researchData";
@@ -81,10 +82,12 @@ export function resolveRelated(links: PaperRelated[], papers?: Paper[]): Resolve
   const analyses = new Map(getResearchAnalyses().map(entry => [entry.id, entry.title]));
   const sources = new Map(manifestModules().map(entry => [entry.id, entry.title]));
   const others = new Map((papers || loadPapers()).map(entry => [entry.slug, entry.title]));
+  const findings = new Map(findingsIndex.map(entry => [entry.slug, entry.title]));
   const titleFor = (link: PaperRelated) =>
     (link.kind === "inspector" ? inspectors.get(link.id)
       : link.kind === "analysis" ? analyses.get(link.id)
         : link.kind === "module" ? sources.get(link.id)
-          : others.get(link.id)) || link.id.replace(/[-_]/g, " ");
+          : link.kind === "finding" ? findings.get(link.id)
+            : others.get(link.id)) || link.id.replace(/[-_]/g, " ");
   return links.map(link => ({ kind: link.kind, id: link.id, href: relatedHref(link), title: titleFor(link) }));
 }

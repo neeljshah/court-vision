@@ -1,6 +1,6 @@
 {
  "generated_from": "scripts/platformkit/analytics_showcase/out",
- "module_count": 74,
+ "module_count": 75,
  "atlas_card_count": 1549,
  "checks_green": {
   "green": true,
@@ -557,6 +557,17 @@
    "status": "ok",
    "edge_claimed": false,
    "as_of": null,
+   "evidence_page": null
+  },
+  {
+   "id": "novel_rest_asymmetry",
+   "title": "Novel Rest Asymmetry",
+   "one_line": "Across 4793 NBA games the home win frequency rises from 0.4944 when the visitor is the better-rested side by two or more days (n=180) to 0.6409 when the home side is (n=259), a 0.1465 spread, while two teams sharing the same congestion m...",
+   "out_path": "scripts/platformkit/analytics_showcase/out/novel_rest_asymmetry.json",
+   "chart_path": null,
+   "status": "ok",
+   "edge_claimed": false,
+   "as_of": "2026-09-16",
    "evidence_page": null
   },
   {

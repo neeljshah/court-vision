@@ -1,0 +1,207 @@
+{
+ "slug": "nba-rest-asymmetry",
+ "title": "Rest is a relative quantity",
+ "subtitle": "The NBA schedule differential tracks outcomes; shared congestion does not, and the one season with a recorded price cannot tell us whether either is carried",
+ "authors": ["CourtVision research"],
+ "date": "2026-09-16",
+ "sport": "nba",
+ "keywords": ["schedule", "rest", "conditional frequency", "calibration", "null result"],
+ "abstract": "Two claims about NBA rest are usually run together: that a tired team plays worse, and that a team tired relative to its opponent wins less often. They are separable in the schedule itself, and they do not behave the same way. Over 4,793 regular-season games from 2022-23 through 2025-26, the home win frequency climbs monotonically with the rest differential, from 0.4944 when the visitor is the better-rested side by two or more days (n=180) to 0.6409 when the home side is (n=259). Symmetric congestion moves nothing: restricted to the 2,639 games at an equal differential, both teams on a back-to-back produce a home win frequency of 0.5510 (n=245) against 0.5518 (n=2,394) when neither is. Only one contrast against equal rest separates from zero under a 2,000-replicate game-cluster bootstrap: home rested by two or more days, +0.0892 with a 95 percent interval of 0.0257 to 0.1502. The pooled gradient is not stable: the home-rested-minus-away-rested difference is 0.0602, 0.1051 and 0.1162 in the first three seasons and 0.0114 in 2025-26. The 1,103 games carrying a recorded pregame moneyline are all from 2025-26, and there the observed frequency minus the devigged market forecast contains zero in all five rest cells. The pricing question is recorded as a null, not as a finding.",
+ "sections": [
+  {
+   "id": "question",
+   "heading": "Question",
+   "blocks": [
+    {"type": "p", "text": "Everyone knows NBA teams are tired in a compressed schedule, and the repo already carries one measurement of it: the schedule_density module reports that on the second night of a back-to-back, per-36 box-composite production dips about 0.315 against rested games. That is a statement about how a team performs. It is not the same statement as how often a team wins, and it is not obvious that the two move together."},
+    {"type": "p", "text": "The reason they need not move together is that a basketball game has two tired teams in it, or none, or one. If fatigue worked on outcomes the way it works on production, two teams both playing the second night of a back-to-back would give a different result than two teams both coming off two days off. The absolute level of congestion in the game would matter. If instead only the asymmetry matters, then a game where both sides are tired should look like an ordinary game, and only the gap between the two rest states should show up in the win frequency."},
+    {"type": "p", "text": "That split is testable directly from the schedule, without any model, because the number of days since each team's previous game is a fact about the calendar that is fixed before the opening tip. This paper asks three things of it. First, does the home win frequency change with the rest differential, and by how much, with an honest interval. Second, at an equal differential, does it matter whether both teams are tired or neither is. Third, on the subset of games that carries a recorded pregame moneyline, does the observed frequency in a rest cell differ from what that recorded forecast already implies."},
+    {"type": "callout", "label": "Definition", "text": "Rest differential = rest_days_home - rest_days_away, where rest_days is the number of days since that team's previous game. Positive means the home side is the better-rested one. It is a property of the schedule, not of the game."}
+   ]
+  },
+  {
+   "id": "data",
+   "heading": "Data and definitions",
+   "blocks": [
+    {"type": "p", "text": "The schedule spine is data/domains/basketball_nba/games.parquet, one row per game with a date, a season, the two team codes, a resolved home_win label, rest_days_home, rest_days_away and back-to-back flags for both sides. It holds 4,846 rows across the 2022-23, 2023-24, 2024-25 and 2025-26 seasons. Fifty-three of those rows carry a missing rest day on one side or the other, all in 2025-26; they are dropped rather than pushed into a cell, and the artifact records the count in checks.dropped_games_missing_rest. That leaves the 4,793 games this paper reports on, recorded in panels.rest_differential.n_games."},
+    {"type": "p", "text": "Rest days in the source table are capped at 10, recorded in checks.rest_days_capped_at. The cap matters only for season openers and the longest breaks, and because both sides of such a game are usually capped together, those games land in the equal cell. The back-to-back flag is exactly rest_days == 1, which has a consequence used later: at an equal rest differential the flag is symmetric, so a game where one side is on a back-to-back and the other is not cannot occur. The artifact confirms it empirically with checks.congestion_mixed_n, which is 0."},
+    {"type": "p", "text": "The outcome label was cross-checked against a second table, data/domains/basketball_nba/game_finals_corrected.parquet, which carries an independently corrected home_win_true column. On the 3,563 games present in both, the two labels agree on 0.9997 of rows, recorded in checks.label_agreement."},
+    {"type": "p", "text": "The market forecast comes from data/domains/basketball_nba/odds.parquet, joined to the schedule on date, home team and away team. The join yields 1,103 games, recorded in panels.market_residual.n_games, and every one of them is from the 2025-26 season, recorded in panels.market_residual.seasons. The table stores an American moneyline for each side and does not store the timestamp of the quote, so it is treated here as a pregame reference forecast and not specifically as the close. The two lines are converted to implied probabilities and normalized so that home and away sum to one; the definitions.market_forecast field in the artifact states the same conversion."},
+    {"type": "list", "items": [
+     "Population: NBA regular-season games in games.parquet with a resolved home_win label and a complete rest state, 4,793 games over four seasons.",
+     "Unit of observation: one game. Every panel row is a count of games, never of possessions, players or ticks.",
+     "Conditioning variable: the rest differential, binned as -2 or lower, -1, 0, +1, +2 or higher; and for the congestion panel, whether both, one or neither side played the previous day.",
+     "Outcome: home_win, one or zero.",
+     "Priced subset: the 1,103 games that join to a recorded pregame moneyline pair, all from 2025-26."
+    ]}
+   ]
+  },
+  {
+   "id": "method",
+   "heading": "Method",
+   "blocks": [
+    {"type": "p", "text": "Each panel is a conditional frequency table. A cell is a set of games sharing a value of the conditioning variable; the reported quantity is the share of those games the home team won. No model is fitted and nothing is smoothed, so there is no training window to argue about. The only estimate is a mean of zeros and ones."},
+    {"type": "math", "text": "frequency(cell) = mean(home_win | cell);  gap(cell) = mean(home_win | cell) - mean(market_forecast | cell)"},
+    {"type": "p", "text": "Intervals come from a bootstrap that resamples whole game clusters with replacement, 2,000 replicates at seed 20260916, reported as the 2.5 and 97.5 percentiles of the replicate distribution. The unit and the cluster are the same object here, one game, so the resampling is a plain game-level bootstrap; the implementation groups rows by game_id and draws groups rather than rows, so the interval stays honest on a corpus with several rows per game. The method block in the artifact records n_boot, seed and the interval rule."},
+    {"type": "p", "text": "Contrasts against the equal-rest cell are computed on the same replicate rather than from two independent bootstraps, so the interval on a difference is paired and does not double-count the shared variation in the reference cell. The excludes_zero flag on each contrast row is simply whether that paired interval lies entirely on one side of zero."},
+    {"type": "callout", "label": "Caution", "text": "A cell with fewer than 30 games keeps its count and reports no frequency and no interval. The mask reason distinguishes a thin cell from one that is empty by construction, so a zero is never silently read as a measurement."},
+    {"type": "p", "text": "Timing is the part worth being explicit about. Rest days are derived from the gap to each team's previous game date, which exists before the game is played. The moneyline is a pregame quote. Nothing observed during or after the game enters a cell assignment, and the outcome label is used only as the thing being averaged. The artifact states this in its timing_guarantee field."}
+   ]
+  },
+  {
+   "id": "results",
+   "heading": "Results",
+   "blocks": [
+    {"type": "p", "text": "The rest differential tracks the home win frequency, and it does so monotonically across all five cells."},
+    {"type": "table", "caption": "Home win frequency by rest differential, 4,793 games, four seasons",
+     "columns": ["Rest cell", "Games (n)", "Home win frequency", "95 percent interval"],
+     "rows": [
+      ["away +2 or more", "180", "0.4944", "0.4236 to 0.5668"],
+      ["away +1", "775", "0.5161", "0.4809 to 0.5519"],
+      ["equal", "2,639", "0.5517", "0.5333 to 0.5709"],
+      ["home +1", "940", "0.5755", "0.5430 to 0.6062"],
+      ["home +2 or more", "259", "0.6409", "0.5827 to 0.7016"]
+     ],
+     "note": "Source: novel_rest_asymmetry.json, panels.rest_differential.cells, as of 2026-09-16."},
+    {"type": "p", "text": "The spread between the two extreme cells is 0.1465, a larger swing than the whole home advantage the equal cell carries over a coin. But the intervals overlap heavily between adjacent cells, and the contrast panel is the honest reading of which differences survive resampling."},
+    {"type": "table", "caption": "Each rest cell against the equal-rest cell, paired on the same resamples",
+     "columns": ["Rest cell", "Games (n)", "Difference vs equal", "95 percent interval", "Interval excludes zero"],
+     "rows": [
+      ["away +2 or more", "180", "-0.0573", "-0.1307 to 0.0165", "no"],
+      ["away +1", "775", "-0.0356", "-0.0739 to 0.0037", "no"],
+      ["home +1", "940", "0.0238", "-0.0142 to 0.0595", "no"],
+      ["home +2 or more", "259", "0.0892", "0.0257 to 0.1502", "yes"]
+     ],
+     "note": "Source: novel_rest_asymmetry.json, panels.contrast_vs_equal_rest."},
+    {"type": "p", "text": "One contrast separates from zero: the home side rested by two or more days, at +0.0892 with an interval of 0.0257 to 0.1502. The away +1 cell at -0.0356 comes close, with an upper bound of 0.0037, and the away +2 or more cell at -0.0573 does not, on 180 games. The shape of the gradient is more convincing than any single cell in it, and the shape is exactly what a relative-rest story predicts."},
+    {"type": "p", "text": "The congestion panel is where the absolute-fatigue story fails. Restricted to the 2,639 games at an equal rest differential, the home win frequency barely moves between the two ends of the congestion range."},
+    {"type": "table", "caption": "Home win frequency at an equal rest differential, split by shared congestion",
+     "columns": ["Congestion state", "Games (n)", "Home win frequency", "95 percent interval"],
+     "rows": [
+      ["both on a back-to-back", "245", "0.5510", "0.4857 to 0.6136"],
+      ["mixed", "0", "masked", "empty by construction"],
+      ["neither on a back-to-back", "2,394", "0.5518", "0.5325 to 0.5728"]
+     ],
+     "note": "Source: novel_rest_asymmetry.json, panels.symmetric_congestion.cells. The mixed cell cannot occur because the back-to-back flag is rest_days == 1."},
+    {"type": "p", "text": "The difference between the two populated cells is 0.0008. Two teams that both played last night produce almost exactly the game that two rested teams produce. Whatever fatigue does to per-36 production, it does not survive into the win frequency once both sides carry it."},
+    {"type": "p", "text": "The season panel is the least comfortable result in the artifact, and the one that most constrains what the rest of it can be used for."},
+    {"type": "table", "caption": "Season stability of the rest gradient",
+     "columns": ["Season", "Games (n)", "Away rested more: freq (n)", "Equal: freq (n)", "Home rested more: freq (n)", "Home-more minus away-more"],
+     "rows": [
+      ["2022-23", "1,230", "0.5550 (209)", "0.5699 (665)", "0.6152 (356)", "0.0602"],
+      ["2023-24", "1,230", "0.4885 (260)", "0.5429 (687)", "0.5936 (283)", "0.1051"],
+      ["2024-25", "1,230", "0.4880 (250)", "0.5390 (692)", "0.6042 (288)", "0.1162"],
+      ["2025-26", "1,103", "0.5254 (236)", "0.5563 (595)", "0.5368 (272)", "0.0114"]
+     ],
+     "note": "Source: novel_rest_asymmetry.json, panels.season_stability. The 2025-26 row is short 53 games dropped for a missing rest day."},
+    {"type": "p", "text": "In the first three seasons the gradient is present and growing. In 2025-26 it is 0.0114, and the ordering inverts: the home side wins 0.5368 when it is the rested one against 0.5563 when the two sides are level. On 272 and 595 games those two numbers are not separable from each other, but they are also not a reproduction of the earlier seasons. The pooled four-season gradient is therefore an average over three seasons that show it and one that does not."},
+    {"type": "p", "text": "That matters immediately, because the 1,103 games carrying a recorded pregame moneyline are all from 2025-26."},
+    {"type": "table", "caption": "Observed frequency minus the devigged pregame market forecast, 1,103 games, 2025-26 only",
+     "columns": ["Rest cell", "Games (n)", "Mean market forecast", "Home win frequency", "Gap", "95 percent interval"],
+     "rows": [
+      ["away +2 or more", "38", "0.4795", "0.4474", "-0.0321", "-0.1942 to 0.1186"],
+      ["away +1", "198", "0.5141", "0.5404", "0.0263", "-0.0340 to 0.0881"],
+      ["equal", "595", "0.5476", "0.5563", "0.0087", "-0.0268 to 0.0444"],
+      ["home +1", "221", "0.5785", "0.5294", "-0.0491", "-0.1094 to 0.0111"],
+      ["home +2 or more", "51", "0.5824", "0.5686", "-0.0137", "-0.1302 to 0.1008"]
+     ],
+     "note": "Source: novel_rest_asymmetry.json, panels.market_residual.cells."},
+    {"type": "p", "text": "Every interval contains zero, and the signs alternate rather than trending with the rest state. The mean market forecast does move with the rest cell, from 0.4795 at away +2 or more to 0.5824 at home +2 or more, which is a 0.1029 span across the same axis. So the recorded forecast is not blind to rest. What this panel cannot do is separate a forecast that carries the rest state correctly from a season in which there was no rest gradient to carry. Both explanations predict exactly this table."},
+    {"type": "callout", "label": "Verdict", "text": "The differential moves the frequency and the shared load does not. Pooled over 4,793 games the gradient is monotone across all five cells, and only the home +2 or more contrast excludes zero. It is not stable season to season, and the one season with a recorded pregame forecast is the season without a gradient, so the pricing question is recorded as a null rather than as a finding."}
+   ]
+  },
+  {
+   "id": "checks",
+   "heading": "Robustness and what would falsify this",
+   "blocks": [
+    {"type": "p", "text": "Four checks are carried in the artifact rather than asserted in prose. The outcome label agrees with an independently corrected finals table on 0.9997 of the 3,563 overlapping games, so the result does not rest on one label source. The 53 games with a missing rest day are dropped and counted rather than binned into a cell they do not belong in. The mixed congestion cell is reported as empty with its own mask reason rather than as a zero frequency. And the season panel is published in full rather than summarized, so the instability sits next to the pooled number instead of behind it."},
+    {"type": "p", "text": "The masking floor of 30 games never bites in the main panel, where the smallest cell holds 180 games, but it is close in the priced subset, where away +2 or more holds 38 games and home +2 or more holds 51. Those two rows survive the floor and still carry intervals over 0.3 wide, which is the honest reason they cannot decide anything."},
+    {"type": "p", "text": "What would falsify the central claim is straightforward and does not require a new method, only more data. If the congestion panel were rerun on a corpus several times this size and both-tired games came back a few points away from neither-tired with an interval clear of zero, the absolute-fatigue story would be back and this paper would be wrong about the mechanism. If the rest gradient were absent in the next two seasons as it was in 2025-26, the pooled four-season number would have to be read as a property of a particular stretch of schedule rather than of the sport. And if a corpus of recorded pregame forecasts covering 2023-24 and 2024-25 were assembled, the pricing question would become answerable, because it would put the price next to the seasons where the gradient exists."},
+    {"type": "p", "text": "One check that was deliberately not run: no attempt was made to control for opponent strength, travel distance or position within a road trip, all of which are present in the source table and all of which are correlated with rest. The panels are conditional frequencies, not adjusted estimates, and the caveat field in the artifact says so."}
+   ]
+  },
+  {
+   "id": "limitations",
+   "heading": "Limitations",
+   "blocks": [
+    {"type": "list", "items": [
+     "The rest differential is confounded with travel, opponent strength and where a game sits in a road trip; none of those are controlled, so the gradient is an association and not a causal estimate.",
+     "The comparison between the pooled gradient and the priced subset is an unpaired comparison of different game sets, not the same games measured twice.",
+     "The priced subset is one season, 1,103 games, and it is the season in which the schedule-only gradient is absent, so the null on the pricing question is a coverage limit rather than evidence that the forecast carries rest.",
+     "The odds table does not record the timestamp of the moneyline, so it is treated as a pregame reference forecast; whether it is an opening or a closing quote is unknown and the artifact does not claim either.",
+     "The congestion panel compares 245 games against 2,394, so its interval is dominated by the small side and could not detect a difference much smaller than a few points.",
+     "Rest days are capped at 10 in the source table, which compresses the long-break tail into the equal cell and makes the extreme cells slightly less extreme than the calendar would suggest."
+    ]}
+   ]
+  },
+  {
+   "id": "use",
+   "heading": "How to read this on the site",
+   "blocks": [
+    {"type": "p", "text": "The module page for novel_rest_asymmetry carries the full artifact; read the panels in the order they are written. panels.rest_differential is the headline frequency table, where every row gives n_games before it gives a frequency and a masked row keeps its count. panels.contrast_vs_equal_rest restates the same data as paired differences against the equal-rest cell, and it is the panel to quote when the question is whether a difference is separable from noise."},
+    {"type": "p", "text": "panels.symmetric_congestion answers the absolute-versus-relative question and should be read together with the schedule_density module, which measures the same fatigue at the box-score grain rather than the outcome grain. The two are not in conflict: production can fall on a back-to-back while the win frequency does not move, because in a symmetric-congestion game both sides lose the same production."},
+    {"type": "p", "text": "panels.season_stability should be read before panels.market_residual, not after, because the season panel is what tells you how much the market panel can mean. And the verdict field on the artifact is the one-sentence version of all of it, written so that the null on the pricing question is not rounded up into a claim."}
+   ]
+  }
+ ],
+ "evidence": [
+  {
+   "artifact": "novel_rest_asymmetry.json",
+   "module": "novel_rest_asymmetry",
+   "asOf": "2026-09-16",
+   "fields": [
+    "panels.rest_differential.n_games",
+    "panels.rest_differential.cells[].cell",
+    "panels.rest_differential.cells[].n_games",
+    "panels.rest_differential.cells[].home_win_frequency",
+    "panels.rest_differential.cells[].ci95",
+    "panels.contrast_vs_equal_rest[].delta_vs_equal",
+    "panels.contrast_vs_equal_rest[].ci95",
+    "panels.contrast_vs_equal_rest[].excludes_zero",
+    "panels.symmetric_congestion.n_games",
+    "panels.symmetric_congestion.cells[].home_win_frequency",
+    "panels.symmetric_congestion.cells[].mask_reason",
+    "panels.season_stability[].season",
+    "panels.season_stability[].n_games",
+    "panels.season_stability[].cells[].home_win_frequency",
+    "panels.season_stability[].home_more_minus_away_more",
+    "panels.market_residual.n_games",
+    "panels.market_residual.seasons",
+    "panels.market_residual.cells[].mean_market_forecast",
+    "panels.market_residual.cells[].home_win_frequency",
+    "panels.market_residual.cells[].gap_observed_minus_market",
+    "panels.market_residual.cells[].ci95",
+    "checks.label_agreement",
+    "checks.label_crosscheck_n",
+    "checks.congestion_mixed_n",
+    "checks.rest_days_capped_at",
+    "checks.dropped_games_missing_rest",
+    "method.n_boot",
+    "method.seed",
+    "method.floor_games_per_cell",
+    "definitions.market_forecast",
+    "timing_guarantee",
+    "verdict"
+   ]
+  },
+  {
+   "artifact": "schedule_density.json",
+   "module": "schedule_density",
+   "asOf": null,
+   "fields": ["back-to-back per-36 box-composite dip of about 0.315 versus rested games"]
+  }
+ ],
+ "limitations": [
+  "Rest differential is confounded with travel, opponent strength and road-trip position; nothing is controlled and the gradient is an association, not a causal estimate.",
+  "The pooled four-season gradient averages three seasons that show it and one, 2025-26, that does not, so it is not a stable property of the sport on this evidence.",
+  "The priced subset covers 1,103 games from a single season and is exactly the season without a gradient, so the null on the pricing question is a coverage limit rather than a measurement of the forecast.",
+  "The source odds table records no quote timestamp, so the recorded moneyline is treated as a pregame reference forecast of unknown vintage.",
+  "The congestion comparison is 245 games against 2,394 and could not resolve a difference much smaller than a few points.",
+  "All comparisons across panels are unpaired comparisons of different game sets rather than the same games measured under two conditions."
+ ],
+ "related": [
+  {"kind": "module", "id": "novel_rest_asymmetry"},
+  {"kind": "module", "id": "schedule_density"},
+  {"kind": "module", "id": "novel_schedule_fatigue_tax"},
+  {"kind": "paper", "id": "lasting-leads-mlb-soccer"}
+ ]
+}

@@ -1,0 +1,189 @@
+{
+ "slug": "where-forecast-errors-live",
+ "title": "Where the forecast errors live",
+ "subtitle": "Residual anatomy of MLB and international-soccer win forecasts, by game-state time bucket and forecast-probability band",
+ "authors": ["CourtVision research"],
+ "date": "2026-09-16",
+ "sport": "all",
+ "keywords": ["residual anatomy", "calibration", "forecast error", "game state", "MLB", "soccer_intl"],
+ "abstract": "We decompose forecast error for two graded in-game corpora -- MLB (78,986 rows, 227 games) and international soccer (soccer_intl; 9,003 rows, 51 games) -- into cells crossing a game-state time bucket with a five-band forecast-probability split (0-.2 through .8-1), using residual_anatomy.json's mean_abs_residual (the average |forecast - outcome| per row, a rate) and total_abs_residual_mass (that rate times the cell's row count, a sum). After dropping rows with no game-state field (26,340 of 78,986 for MLB; 5,345 of 9,003 for soccer_intl), MLB's 13 populated cells hold 52,646 rows and 22,133.62 total residual mass; soccer_intl's 26 cells hold 3,658 rows and 1,643.08. In both sports the single largest-mass cell is also the single largest-n cell: MLB's early-innings, .4-.6 forecast band (n=12,344, mean_abs_residual 0.4912, 27.4 percent of MLB's mass) and soccer's minute-45-60, 0-.2 forecast band (n=416, mean_abs_residual 0.5677, 14.4 percent of soccer's mass) -- a count effect, since mass scales with n even at a fixed per-row rate. The two leading cells differ in why their per-row rate is high: MLB's cell carries a small aggregate bias (calibration_error 0.0497, from the matching state_conditioned_calibration.json cell) despite its large per-row residual, consistent with binary-outcome noise near an even-money forecast; soccer's cell carries a calibration_error of 0.4889, nearly equal to its residual, consistent with a real, biased miss. why_attribution.json's largest between-bucket move (soccer, -0.7683, min_support_n=120) is a difference between two group means across time buckets, not an observed within-game transition. This is a calibration and error-decomposition exercise; it does not measure whether acting on either forecast would have produced a return.",
+ "sections": [
+  {
+   "id": "question",
+   "heading": "Question",
+   "blocks": [
+    {"type": "p", "text": "Where does a win forecast's error actually accumulate once a season of graded in-game rows is split into cells by game-state time bucket and forecast-probability band? residual_anatomy.json answers this for two corpora with graded, game-state-tagged rows -- MLB and international soccer (soccer_intl) -- and reports two different numbers per cell: mean_abs_residual, the average absolute gap between forecast and outcome for a single row, and total_abs_residual_mass, the sum of that gap across every row in the cell. This paper reads both numbers together, shows which cells hold the most total error mass in each sport, and separates how much of that ranking is simply a function of how many rows landed in a cell (a count effect) from how much reflects a genuinely larger per-row miss."},
+    {"type": "p", "text": "This is a calibration and error-decomposition exercise. It does not test whether acting on either the model's or the market's forecast would have produced a return, and it does not claim any of the between-bucket comparisons below describes an observed in-game trajectory for any single contest; both scope limits are addressed directly in Method and Limitations."}
+   ]
+  },
+  {
+   "id": "data",
+   "heading": "Data and definitions",
+   "blocks": [
+    {"type": "p", "text": "residual_anatomy.json (module residual_anatomy; date not published) carries, per sport, segments[] rows keyed by time_bucket (MLB: early(inn1-3), mid(inn4-6), late(inn7+); soccer_intl: 0-15, 15-30, 30-45, 45-60, 60-75, 75-90+ minutes) crossed with prob_bucket (0-.2, .2-.4, .4-.6, .6-.8, .8-1), each carrying n, mean_abs_residual, and total_abs_residual_mass. MLB starts from 78,986 records across 227 files and drops 26,340 rows with no game-state field, leaving 52,646 rows across 13 populated cells; soccer_intl starts from 9,003 records across 51 files and drops 5,345, leaving 3,658 rows across 26 cells. Both sports also list one skipped source, mlb_clean, excluded as a byte-identical duplicate of the mlb corpus so the same games are not counted twice. The artifact's own story field frames the ranking as where fixing the model removes the most cumulative error -- the improvement backlog."},
+    {"type": "p", "text": "state_conditioned_calibration.json (module state_conditioned_calibration; date not published) buckets the same style of rows into the same time_bucket x prob_bucket grid, but keeps model and market as two separately built sources and adds mean_p, mean_y, and calibration_error (the absolute gap between mean_p and mean_y) per cell. Checking several cells against residual_anatomy.json's segments shows an identical n for the model source at the same time_bucket / prob_bucket label -- for example MLB early(inn1-3)/.4-.6 has n=12,344 in both files, and MLB late(inn7+)/.8-1 has n=5,037 in both -- so the two artifacts describe the same underlying rows on the model side, and a residual_anatomy cell's mass can be read next to that same cell's calibration_error without the row-mismatch caution that applies when comparing a model cell to a market cell."},
+    {"type": "p", "text": "why_attribution.json (module why_attribution; source_as_of not published) builds 40 MLB and 80 soccer_intl transitions from state_conditioned_calibration.json's model-source buckets, restricted to adjacent time buckets only (no skipped phases), dropping any bucket with n below 30, and recording winprob_delta = mean_y(later bucket) - mean_y(earlier bucket) alongside a min_support_n floor. NBA is skipped entirely: only a checkpoint Brier score exists for it, with no per-state-bucket realized win rate to build a transition delta from."}
+   ]
+  },
+  {
+   "id": "method",
+   "heading": "Method",
+   "blocks": [
+    {"type": "math", "text": "total_abs_residual_mass(cell) = sum over rows in cell of |forecast_i - outcome_i| = n(cell) x mean_abs_residual(cell)"},
+    {"type": "callout", "label": "Definition", "text": "mean_abs_residual is the average, across the rows in a cell, of that row's own |forecast - outcome|; it is a rate, unaffected by how many rows sit in the cell. total_abs_residual_mass is the sum of that same per-row error across every row in the cell; it is n times the rate, so a cell with a modest rate but many rows can carry more mass than a cell with a much worse rate but few rows."},
+    {"type": "p", "text": "Ranking cells by mass (as residual_anatomy.json's own framing does) answers where would improving the model save the most total error; ranking by mean_abs_residual answers which cells are least accurate per forecast. Both are legitimate questions and this paper reports both, but a table of top cells by mass should not be read as a list of the least-accurate cells -- a large, well-populated cell with an average rate can out-rank a small cell with a much worse rate."},
+    {"type": "p", "text": "Because residual_anatomy.json's n matches state_conditioned_calibration.json's model-source n at the cells checked above, we pair a cell's mass and mean_abs_residual with that same cell's calibration_error and mean_p / mean_y to ask whether a high per-row residual reflects aggregate bias (a real miscalibration, visible as a large calibration_error) or looks more like row-level noise around an approximately correct average forecast (a small calibration_error despite a large mean_abs_residual). A forecast near 0.5 mechanically produces a large |forecast - outcome| on roughly half its rows regardless of how well calibrated it is, because the outcome itself is binary (0 or 1); that mechanical floor is highest near the .4-.6 band and lowest near the .8-1 and 0-.2 bands, so mean_abs_residual by itself is not directly comparable across prob_bucket bands without also checking calibration_error."},
+    {"type": "p", "text": "why_attribution.json's winprob_delta is a difference between two group means -- mean_y of all rows in the later bucket minus mean_y of all rows in the earlier bucket. It is not computed by following individual games from one bucket into the next; the artifact's own assumptions say so directly, recording that it captures the win-prob difference between two states rather than observed transition frequencies, and that transitions are restricted to consecutive time buckets with no skipping. min_support_n is, in every transition checked, the smaller of the two buckets' n (for example the soccer verdict transition below has min_support_n = 120 = min(120, 123)), so it acts as a conservative floor on how much data backs a given delta, not an independent count of games that made that specific move."}
+   ]
+  },
+  {
+   "id": "results",
+   "heading": "Results",
+   "blocks": [
+    {"type": "p", "text": "MLB's 13 populated cells (52,646 rows; 26,340 of 78,986 dropped for no game-state field) hold 22,133.62 total residual mass. Table 1 lists all 13, ranked by mass."},
+    {"type": "table", "caption": "MLB segments ranked by total absolute residual mass (source: residual_anatomy.json, sports.mlb.segments[]; date not published)", "columns": ["Time bucket", "Prob band", "n", "Mean abs residual", "Total abs residual mass", "Share of MLB mass"], "rows": [
+      ["early(inn1-3)", ".4-.6", "12344", "0.4912", "6063.25", "27.4%"],
+      ["early(inn1-3)", ".6-.8", "5098", "0.4864", "2479.79", "11.2%"],
+      ["mid(inn4-6)", ".4-.6", "4872", "0.4908", "2391.22", "10.8%"],
+      ["mid(inn4-6)", ".6-.8", "4683", "0.4453", "2085.16", "9.4%"],
+      ["mid(inn4-6)", ".2-.4", "4413", "0.4048", "1786.45", "8.1%"],
+      ["late(inn7+)", ".8-1", "5037", "0.3493", "1759.26", "7.9%"],
+      ["late(inn7+)", "0-.2", "5431", "0.2669", "1449.65", "6.5%"],
+      ["early(inn1-3)", ".2-.4", "2458", "0.4529", "1113.34", "5.0%"],
+      ["mid(inn4-6)", ".8-1", "2718", "0.3127", "849.82", "3.8%"],
+      ["late(inn7+)", ".4-.6", "1395", "0.4990", "696.12", "3.1%"],
+      ["mid(inn4-6)", "0-.2", "2079", "0.2996", "622.78", "2.8%"],
+      ["late(inn7+)", ".6-.8", "1167", "0.4141", "483.24", "2.2%"],
+      ["late(inn7+)", ".2-.4", "951", "0.3718", "353.54", "1.6%"]
+     ],
+     "note": "n sums to 52,646 = 78,986 - 26,340; mass sums to 22,133.62."
+    },
+    {"type": "p", "text": "The single largest cell by mass is also the single largest cell by n: early(inn1-3)/.4-.6, with n=12,344 (the largest n of any MLB cell) contributing 6,063.25 of mass, 27.4 percent of the MLB total, at a mean_abs_residual of 0.4912 -- a middling per-row rate, not the highest one (late(inn7+)/.4-.6 has a higher rate, 0.4990, but only n=1,395 and 696.12 of mass, 3.1 percent). The matching state_conditioned_calibration.json cell (model source, same n=12,344) shows mean_p=0.5058, mean_y=0.456, calibration_error=0.0497 -- a small aggregate bias next to a large mean_abs_residual, the signature described in Method of binary-outcome noise dominating a near-even forecast rather than a real miscalibration."},
+    {"type": "p", "text": "Contrast that with MLB's late(inn7+)/.8-1 cell: n=5,037, mean_abs_residual 0.3493, mass 1,759.26 (7.9 percent of the total). Its matching state_conditioned_calibration.json cell (same n=5,037) shows mean_p=0.9211, mean_y=0.6853, calibration_error=0.2357 -- here the aggregate bias is large and close to the per-row residual, so this cell's error looks like a real, systematic miss (the model is confident and wrong on this slice), not noise."},
+    {"type": "table", "caption": "MLB total absolute residual mass by time bucket (source: residual_anatomy.json, sports.mlb.segments[], summed within each time_bucket)", "columns": ["Time bucket", "n", "Share of n", "Total abs residual mass", "Share of mass", "Mass per row"], "rows": [
+      ["early(inn1-3)", "19900", "37.8%", "9656.38", "43.6%", "0.4853"],
+      ["mid(inn4-6)", "18765", "35.6%", "7735.43", "34.9%", "0.4122"],
+      ["late(inn7+)", "13981", "26.6%", "4741.81", "21.4%", "0.3392"]
+     ],
+     "note": "Mass per row = total abs residual mass / n; sums are arithmetic totals of Table 1's per-cell fields."
+    },
+    {"type": "p", "text": "Early innings carry the most mass (43.6 percent) on both more rows (37.8 percent of n) and a higher per-row rate (mass per row = 0.4853) than mid or late innings (0.4122 and 0.3392); late innings carry the least mass (21.4 percent) despite holding 26.6 percent of the rows, because its per-row rate is the lowest of the three. So MLB's early-inning dominance in the mass ranking is not purely a count effect -- the per-row rate itself declines from early to late."},
+    {"type": "p", "text": "soccer_intl's 26 populated cells (3,658 rows; 5,345 of 9,003, 59 percent, dropped for no game-state field) hold 1,643.08 total residual mass. Table 3 lists the top 10 by mass (81.8 percent of the total); the remaining 16 cells, concentrated in the .6-.8 and .8-1 bands across all six time windows, hold the remaining 18.2 percent."},
+    {"type": "table", "caption": "Top 10 soccer_intl segments by total absolute residual mass, of 26 populated cells (source: residual_anatomy.json, sports.soccer_intl.segments[]; date not published)", "columns": ["Time bucket (min)", "Prob band", "n", "Mean abs residual", "Total abs residual mass", "Share of soccer mass"], "rows": [
+      ["45-60", "0-.2", "416", "0.5677", "236.16", "14.4%"],
+      ["75-90+", "0-.2", "379", "0.5358", "203.06", "12.4%"],
+      ["60-75", "0-.2", "343", "0.5320", "182.49", "11.1%"],
+      ["30-45", "0-.2", "264", "0.6077", "160.44", "9.8%"],
+      ["0-15", ".2-.4", "288", "0.4588", "132.14", "8.0%"],
+      ["15-30", ".2-.4", "255", "0.4452", "113.52", "6.9%"],
+      ["15-30", "0-.2", "176", "0.5281", "92.95", "5.7%"],
+      ["45-60", ".2-.4", "232", "0.3664", "85.00", "5.2%"],
+      ["0-15", ".4-.6", "158", "0.4944", "78.12", "4.8%"],
+      ["15-30", ".4-.6", "120", "0.5000", "60.00", "3.7%"]
+     ],
+     "note": "Top 10 hold 81.8% of the 1,643.08 soccer_intl total; the remaining 16 cells hold 18.2%."
+    },
+    {"type": "p", "text": "soccer's leading cell, minute 45-60 / 0-.2, is again the largest-n cell in its sport (n=416), contributing 236.16 of mass, 14.4 percent of the total, at mean_abs_residual 0.5677. Unlike MLB's leading cell, this one's matching state_conditioned_calibration.json cell (model source, same n=416) shows mean_p=0.0832, mean_y=0.5721, calibration_error=0.4889 -- nearly equal to the mean_abs_residual, so this cell's mass mostly reflects a real bias (a confident prediction of losing, with the observed side winning more than half the time), not binary-outcome noise. The next-largest cell, minute 75-90+ / 0-.2 (n=379, mass 203.06, 12.4 percent), shows the same pattern: mean_p=0.0661, mean_y=0.5739, calibration_error=0.5078."},
+    {"type": "table", "caption": "soccer_intl total absolute residual mass by time bucket (source: residual_anatomy.json, sports.soccer_intl.segments[], summed within each time_bucket)", "columns": ["Time bucket (min)", "n", "Share of n", "Total abs residual mass", "Share of mass", "Mass per row"], "rows": [
+      ["0-15", "627", "17.1%", "272.37", "16.6%", "0.4344"],
+      ["15-30", "666", "18.2%", "290.65", "17.7%", "0.4364"],
+      ["30-45", "628", "17.2%", "273.02", "16.6%", "0.4348"],
+      ["45-60", "828", "22.6%", "346.85", "21.1%", "0.4189"],
+      ["60-75", "504", "13.8%", "247.99", "15.1%", "0.4921"],
+      ["75-90+", "405", "11.1%", "212.20", "12.9%", "0.5240"]
+     ],
+     "note": "Mass per row = total abs residual mass / n; sums are arithmetic totals of the per-cell fields."
+    },
+    {"type": "p", "text": "soccer's per-row rate (mass per row) is comparatively flat across the first four windows (0.4344 to 0.4364 in the first three, 0.4189 in minute 45-60) and rises late (0.4921 in 60-75, 0.5240 in 75-90+). Minute 45-60 leads both the n share (22.6 percent) and the mass share (21.1 percent), matching the count-effect pattern described above; minute 75-90+ has the highest per-row rate of any window but the smallest n share (11.1 percent), so its mass share (12.9 percent) stays modest despite that rate."},
+    {"type": "figure", "module": "residual_anatomy", "caption": "MLB and soccer_intl residual anatomy: mean_abs_residual and total_abs_residual_mass by time bucket x forecast-probability band, from the segments tables above."},
+    {"type": "p", "text": "why_attribution.json builds 40 MLB and 80 soccer_intl adjacent-bucket transitions from these same model-source cells and reports winprob_delta = mean_y(to) - mean_y(from). Its largest single move anywhere is in soccer: from minute 15-30/.4-.6 (mean_y=1.0, n=120) to minute 30-45/.2-.4 (mean_y=0.2317, n=123), winprob_delta=-0.7683, min_support_n=120. MLB's largest drop runs from mid(inn4-6)/.8-1 (mean_y=0.7671, n=2,718) to late(inn7+)/0-.2 (mean_y=0.2276, n=5,431), winprob_delta=-0.5395, min_support_n=2,718; MLB's largest gain runs the other direction, from mid(inn4-6)/0-.2 (mean_y=0.2063, n=2,079) to late(inn7+)/.8-1 (mean_y=0.6853, n=5,037), winprob_delta=+0.4790, min_support_n=2,079."},
+    {"type": "p", "text": "None of these deltas describes a single game moving from one state to the other. Each is the difference between the realized win rate of all rows that landed in the earlier bucket and the realized win rate of all rows that landed in the later bucket -- adjacent in time order but not matched game by game. A between-bucket contrast this large says the two states are associated with very different realized outcomes on average; it does not say that a game observed in the earlier state has that probability of ending up in the later state, or that the later state's outcome rate is what the earlier state's own rows specifically went on to experience."}
+   ]
+  },
+  {
+   "id": "checks",
+   "heading": "Robustness and what would falsify this",
+   "blocks": [
+    {"type": "list", "items": [
+      "If a later MLB corpus shifted more graded rows into mid or late innings (changing the 37.8 / 35.6 / 26.6 percent n split in Table 2), the mass ranking could reorder even with no change in any cell's mean_abs_residual -- the clean test of how much of the ranking is a count effect.",
+      "If MLB's early(inn1-3)/.4-.6 cell's calibration_error grew materially above 0.0497 in a later corpus while mean_abs_residual stayed near 0.49, the noise-dominated reading of that cell in Results would no longer hold.",
+      "soccer_intl's thinnest cells (several under n=50) would either persist or wash out with more games; at 51 games they are not yet distinguishable from noise.",
+      "why_attribution.json's cross-sectional deltas would only become evidence about actual in-game transitions if paired with a game_id-linked panel tracking the same contests from the earlier bucket into the later one; no such panel is cited here.",
+      "mlb_clean is excluded from residual_anatomy.json and state_conditioned_calibration.json as a verified byte-identical duplicate of mlb; reversing that exclusion would roughly double every MLB count above without adding independent rows."
+     ]}
+   ]
+  },
+  {
+   "id": "limitations",
+   "heading": "Limitations",
+   "blocks": [
+    {"type": "list", "items": [
+      "residual_anatomy.json, state_conditioned_calibration.json, and why_attribution.json all carry a null as_of / source_as_of field in the site manifest -- date not published -- so none of the numbers above can be tied to a specific measurement date.",
+      "mean_abs_residual and total_abs_residual_mass carry no confidence interval; the mass rankings in Tables 1 and 3 are point-estimate rankings, not tested for statistical significance the way a bootstrapped reliability bin would be.",
+      "26,340 of 78,986 MLB rows (33 percent) and 5,345 of 9,003 soccer_intl rows (59 percent) are dropped for carrying no game-state field; that dropped share may not be a random sample of the full corpus, so the state-conditioned view here covers an unknown-bias subset.",
+      "why_attribution.json's winprob_delta is an unpaired difference between two bucket-level group means, not an observed within-game transition, and it drops any bucket with n below 30.",
+      "soccer_intl's populated cells run as low as n=10 (75-90+/.2-.4, not shown in Table 3); single-cell numbers at that size are noise-dominated and should not be read as settled findings on their own.",
+      "This is a calibration and error-decomposition exercise; it does not measure whether acting on either the model's or the market's forecast would have produced a return."
+     ]}
+   ]
+  },
+  {
+   "id": "use",
+   "heading": "How to read this on the site",
+   "blocks": [
+    {"type": "p", "text": "The segment tables and the figure above are drawn from the residual-anatomy inspector, which lets a reader sort MLB's 13 and soccer_intl's 26 cells by either mean_abs_residual or total_abs_residual_mass directly. The state-reliability inspector holds the matching state_conditioned_calibration.json cells (mean_p, mean_y, calibration_error, both sources) used here to separate noise from real bias. The state-contrasts inspector holds why_attribution.json's full 40 MLB and 80 soccer_intl transitions, including the min_support_n floor and the biggest_drops / biggest_gains lists this paper draws its two sport-level examples from."}
+   ]
+  }
+ ],
+ "evidence": [
+  {
+   "artifact": "residual_anatomy.json",
+   "module": "residual_anatomy",
+   "asOf": null,
+   "fields": [
+    "story",
+    "sports.mlb.n_records", "sports.mlb.n_files", "sports.mlb.n_skipped", "sports.mlb.segments[]",
+    "sports.soccer_intl.n_records", "sports.soccer_intl.n_files", "sports.soccer_intl.n_skipped", "sports.soccer_intl.segments[]",
+    "skipped[0]"
+   ]
+  },
+  {
+   "artifact": "state_conditioned_calibration.json",
+   "module": "state_conditioned_calibration",
+   "asOf": null,
+   "fields": [
+    "sports.mlb.buckets[] (source=model; time_bucket=early(inn1-3), prob_bucket=.4-.6)",
+    "sports.mlb.buckets[] (source=model; time_bucket=late(inn7+), prob_bucket=.8-1)",
+    "sports.soccer_intl.buckets[] (source=model; time_bucket=45-60, prob_bucket=0-.2)",
+    "sports.soccer_intl.buckets[] (source=model; time_bucket=75-90+, prob_bucket=0-.2)"
+   ]
+  },
+  {
+   "artifact": "why_attribution.json",
+   "module": "why_attribution",
+   "asOf": null,
+   "fields": [
+    "method", "assumptions[]",
+    "sports.mlb.n_transitions", "sports.mlb.transitions[]",
+    "sports.soccer_intl.n_transitions", "sports.soccer_intl.transitions[]",
+    "biggest_drops[]", "biggest_gains[]", "verdict", "skipped[0]"
+   ]
+  }
+ ],
+ "limitations": [
+  "residual_anatomy.json, state_conditioned_calibration.json, and why_attribution.json all carry a null as_of / source_as_of field in the site manifest -- date not published.",
+  "mean_abs_residual and total_abs_residual_mass carry no confidence interval; the mass rankings here are point-estimate rankings, not tested for statistical significance.",
+  "26,340 of 78,986 MLB rows and 5,345 of 9,003 soccer_intl rows are dropped for carrying no game-state field, an unknown-bias subset of each full corpus.",
+  "why_attribution.json's winprob_delta is an unpaired difference between two bucket-level group means, not an observed within-game transition, and it drops any bucket with n below 30.",
+  "soccer_intl's populated cells run as low as n=10; single-cell numbers at that size are noise-dominated.",
+  "This is a calibration and error-decomposition exercise; it does not measure whether acting on either forecast would have produced a return."
+ ],
+ "related": [
+  {"kind": "inspector", "id": "residual-anatomy"},
+  {"kind": "inspector", "id": "state-reliability"},
+  {"kind": "inspector", "id": "state-contrasts"},
+  {"kind": "module", "id": "residual_anatomy"},
+  {"kind": "module", "id": "state_conditioned_calibration"},
+  {"kind": "module", "id": "why_attribution"}
+ ]
+}

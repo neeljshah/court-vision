@@ -9,10 +9,10 @@ const corpus = loadScoutCorpus();
 
 describe("loadScoutCorpus", () => {
   it("keeps curated answers and expands all public entity and module records", () => {
-    expect(corpus.length).toBe(2_150);
+    expect(corpus.length).toBe(2_151);
     expect(corpus.some((entry) => entry.q === "How does forecast calibration compare with the closing reference?")).toBe(true);
     expect(corpus.filter((entry) => entry.bucket === "public-entity-profile")).toHaveLength(1_549);
-    expect(corpus.filter((entry) => entry.bucket === "public-analytics-module")).toHaveLength(74);
+    expect(corpus.filter((entry) => entry.bucket === "public-analytics-module")).toHaveLength(75);
     expect(corpus.filter((entry) => entry.bucket === "public-derived-analysis")).toHaveLength(62);
   });
 

@@ -7,7 +7,7 @@ const FORBIDDEN = /(?<![A-Za-z0-9_])(edge|edges|bet|bets|betting|bettor|bettors|
 import { analysisDestinations } from "./analysisDestinations";
 
 export type PaperSport = "all" | "nba" | "mlb" | "soccer_intl" | "tennis";
-export type PaperRelatedKind = "inspector" | "analysis" | "module" | "paper";
+export type PaperRelatedKind = "inspector" | "analysis" | "module" | "paper" | "finding";
 
 export type PaperBlock =
   | { type: "p"; text: string }
@@ -28,7 +28,7 @@ export type Paper = {
 };
 
 const SPORTS = new Set<string>(["all", "nba", "mlb", "soccer_intl", "tennis"]);
-const RELATED_KINDS = new Set<string>(["inspector", "analysis", "module", "paper"]);
+const RELATED_KINDS = new Set<string>(["inspector", "analysis", "module", "paper", "finding"]);
 const BLOCK_TYPES = new Set<string>(["p", "list", "table", "figure", "callout", "math"]);
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -176,6 +176,7 @@ export function relatedHref(link: PaperRelated): string {
   }
   if (link.kind === "analysis") return `/analytics/research/${link.id}/`;
   if (link.kind === "module") return `/analytics/m/${link.id}/`;
+  if (link.kind === "finding") return `/analytics/findings/${link.id}/`;
   return `/analytics/papers/${link.id}/`;
 }
 
