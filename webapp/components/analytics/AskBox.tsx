@@ -3,6 +3,7 @@
 // no fetch, and no live-data path; retrieval only selects an existing envelope.
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Receipt, type ReceiptData } from "./Receipt";
+import Link from "next/link";
 import type { Verdict } from "./VerdictDot";
 import { typeset } from "@/lib/analytics/format";
 import {
@@ -88,8 +89,9 @@ function AnswerEnvelope({ result, query, onAsk, excludedQuestions }: {
   const related = result.kind === "related";
   const neutral = related || entry.a.status !== "ok";
   const publicArtifact = /^webapp\/public\/data\/showcase\/[a-z0-9_]+\.json$/i.test(entry.a.source_artifact);
-  const sourceHref = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}${publicArtifact ? entry.a.source_artifact.slice("webapp/public".length) : "/data/ask/corpus.json"}`;
-  const explorePath = /^\/analytics\/research\/[a-z0-9-]+\/$/i.test(entry.a.explore_path || "") ? entry.a.explore_path : null;
+  const sourceHref = publicArtifact ? entry.a.source_artifact.slice("webapp/public".length) : "/data/ask/corpus.json";
+  const explorePath = /^\/analytics\/(?:research\/[a-z0-9-]+\/|players\/[a-z0-9_]+\/[a-z0-9_]+|m\/[a-z0-9_]+)$/i.test(entry.a.explore_path || "") ? entry.a.explore_path : null;
+  const destinationLabel = entry.bucket === "public-entity-profile" ? "Open profile" : entry.bucket === "public-analytics-module" ? "Open module" : "Read analysis";
   const followUps = result.followUps.filter(question => question !== query && !excludedQuestions.has(question));
   return (
     <section aria-label={related ? "Related cited answer" : "Cited answer"} style={envelope(neutral)}>
@@ -105,9 +107,9 @@ function AnswerEnvelope({ result, query, onAsk, excludedQuestions }: {
         {related ? <div style={{ ...questionStyle, fontStyle: "italic" }}>{entry.q}</div> : null}
         <div style={answerStyle}>{typeset(entry.a.answer)}</div>
         <div style={chipRow}>
+          {explorePath ? <Link href={explorePath} style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)" }}>{destinationLabel}</Link> : null}
           <Receipt {...receiptFor(entry.a)} />
-          <a href={sourceHref} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: "var(--accent)" }}>{publicArtifact ? "Open published source" : "Open published answer record"}</a>
-          {explorePath ? <a href={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}${explorePath}`} style={{ fontSize: 12, color: "var(--accent)" }}>Explore this analysis</a> : null}
+          <Link href={sourceHref} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: "var(--accent)" }}>{publicArtifact ? "Open published source" : "Open published answer record"}</Link>
         </div>
         {followUps.length > 0 ? (
           <div style={{ marginTop: 16 }}>

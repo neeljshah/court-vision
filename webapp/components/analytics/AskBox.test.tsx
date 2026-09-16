@@ -29,7 +29,7 @@ describe("AskBox", () => {
     fireEvent.change(screen.getByLabelText("Ask Scout a question"), { target: { value: "Known question" } });
     fireEvent.click(screen.getByRole("button", { name: "Search Scout's cited answers" }));
 
-    expect(screen.getByRole("link", { name: "Explore this analysis" })).toHaveAttribute("href", "/analytics/research/nba-matchup-profile-contrast/");
+    expect(screen.getByRole("link", { name: "Read analysis" })).toHaveAttribute("href", "/analytics/research/nba-matchup-profile-contrast");
     expect(screen.getByRole("link", { name: "Open published answer record" })).toBeInTheDocument();
   });
 
@@ -39,7 +39,24 @@ describe("AskBox", () => {
     fireEvent.change(screen.getByLabelText("Ask Scout a question"), { target: { value: "Known question" } });
     fireEvent.click(screen.getByRole("button", { name: "Search Scout's cited answers" }));
 
-    expect(screen.queryByRole("link", { name: "Explore this analysis" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Read analysis" })).not.toBeInTheDocument();
+  });
+
+  it("uses the readable profile route as the primary action and keeps source JSON secondary", () => {
+    const profile = [{ ...entries[0], bucket: "public-entity-profile", a: { ...entries[0].a, source_artifact: "webapp/public/data/showcase/atlas_nba_manifest.json", explore_path: "/analytics/players/nba_players/nikola_jokic" } }];
+    render(<AskBox entries={profile} tours={[]} />);
+    fireEvent.change(screen.getByLabelText("Ask Scout a question"), { target: { value: "Known question" } });
+    fireEvent.click(screen.getByRole("button", { name: "Search Scout's cited answers" }));
+    expect(screen.getByRole("link", { name: "Open profile" })).toHaveAttribute("href", "/analytics/players/nba_players/nikola_jokic");
+    expect(screen.getByRole("link", { name: "Open published source" })).toHaveAttribute("href", "/data/showcase/atlas_nba_manifest.json");
+  });
+
+  it("labels a published module destination as the primary action", () => {
+    const module = [{ ...entries[0], bucket: "public-analytics-module", a: { ...entries[0].a, explore_path: "/analytics/m/calibration_over_time" } }];
+    render(<AskBox entries={module} tours={[]} />);
+    fireEvent.change(screen.getByLabelText("Ask Scout a question"), { target: { value: "Known question" } });
+    fireEvent.click(screen.getByRole("button", { name: "Search Scout's cited answers" }));
+    expect(screen.getByRole("link", { name: "Open module" })).toHaveAttribute("href", "/analytics/m/calibration_over_time");
   });
 
   it("does not repeat a suggested question in the follow-up panel", () => {

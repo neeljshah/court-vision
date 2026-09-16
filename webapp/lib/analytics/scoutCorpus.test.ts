@@ -48,6 +48,14 @@ describe("loadScoutCorpus", () => {
     expect(ohtani?.a.answer).toContain("average exit velocity:");
     expect(ohtani?.a.answer).toContain("mph");
     expect(ohtani?.a.answer).toContain("not a current projection or live feed");
+    expect(ohtani?.a.explore_path).toBe("/analytics/players/mlb_batters/shohei_ohtani");
+  });
+
+  it("gives every generated profile and module a validated reading destination", () => {
+    const profiles = corpus.filter((entry) => entry.bucket === "public-entity-profile");
+    const modules = corpus.filter((entry) => entry.bucket === "public-analytics-module");
+    expect(profiles.every((entry) => /^\/analytics\/players\/[a-z_]+\/[a-z0-9_]+$/.test(entry.a.explore_path || ""))).toBe(true);
+    expect(modules.every((entry) => /^\/analytics\/m\/[a-z0-9_]+$/.test(entry.a.explore_path || ""))).toBe(true);
   });
 
   it("grounds player, unknown-person, and latest-data questions", () => {

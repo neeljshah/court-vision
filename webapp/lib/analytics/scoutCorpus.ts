@@ -5,40 +5,40 @@ import { join } from "node:path";
 import type { AskEntry } from "./askSearch";
 import { getResearchAnalyses } from "./researchData";
 
-type RawEntry = { entity: string; key_numbers: Record<string, unknown>; as_of: string | null };
+type RawEntry = { entity: string; card_path: string; key_numbers: Record<string, unknown>; as_of: string | null };
 type Manifest = { entries: RawEntry[] };
 type Metric = { key: string; label: string; unit: string; scale?: number };
-type Pack = { file: string; sport: string; kind: string; metrics: Metric[] };
+type Pack = { file: string; routePack: string; sport: string; kind: string; metrics: Metric[] };
 
 const ROOT = join(process.cwd(), "public", "data");
 const PACKS: Pack[] = [
-  { file: "atlas_nba_manifest", sport: "nba", kind: "player", metrics: [
+  { file: "atlas_nba_manifest", routePack: "nba_players", sport: "nba", kind: "player", metrics: [
     { key: "career_pts_per36", label: "points", unit: "per 36 minutes" },
     { key: "career_ast_per36", label: "assists", unit: "per 36 minutes" },
     { key: "career_games", label: "games", unit: "games" },
   ] },
-  { file: "atlas_nba_teams_manifest", sport: "nba", kind: "team", metrics: [
+  { file: "atlas_nba_teams_manifest", routePack: "nba_teams", sport: "nba", kind: "team", metrics: [
     { key: "ppg_latest_season", label: "points", unit: "per game, latest recorded season" },
     { key: "pace_proxy_latest_season", label: "pace proxy", unit: "proxy units, latest recorded season" },
   ] },
-  { file: "atlas_mlb_batters_manifest", sport: "mlb", kind: "batter", metrics: [
+  { file: "atlas_mlb_batters_manifest", routePack: "mlb_batters", sport: "mlb", kind: "batter", metrics: [
     { key: "avg_exit_velo", label: "average exit velocity", unit: "mph" },
     { key: "pitches_faced", label: "pitches faced", unit: "pitches" },
   ] },
-  { file: "atlas_mlb_pitch_manifest", sport: "mlb", kind: "pitch type", metrics: [
+  { file: "atlas_mlb_pitch_manifest", routePack: "mlb_pitch", sport: "mlb", kind: "pitch type", metrics: [
     { key: "velo_p50", label: "median velocity", unit: "mph" },
     { key: "top_pitch_type_pct", label: "top pitch-type share", unit: "%" },
     { key: "n_pitches", label: "recorded pitches", unit: "pitches" },
   ] },
-  { file: "atlas_soccer_manifest", sport: "soccer", kind: "team", metrics: [
+  { file: "atlas_soccer_manifest", routePack: "soccer", sport: "soccer", kind: "team", metrics: [
     { key: "ppg_l10", label: "points", unit: "per game, trailing 10" },
     { key: "gd_l10", label: "goal difference", unit: "per game, trailing 10" },
   ] },
-  { file: "atlas_tennis_manifest", sport: "tennis", kind: "player", metrics: [
+  { file: "atlas_tennis_manifest", routePack: "tennis", sport: "tennis", kind: "player", metrics: [
     { key: "hard_wr_career", label: "hard-court win rate (corpus)", unit: "%", scale: 100 },
     { key: "clay_wr_career", label: "clay-court win rate (corpus)", unit: "%", scale: 100 },
   ] },
-  { file: "atlas_calibration_manifest", sport: "calibration", kind: "checkpoint", metrics: [
+  { file: "atlas_calibration_manifest", routePack: "calibration", sport: "calibration", kind: "checkpoint", metrics: [
     { key: "model_ece", label: "model expected calibration error", unit: "unitless" },
     { key: "market_ece", label: "market expected calibration error", unit: "unitless" },
   ] },
@@ -54,7 +54,7 @@ function entriesFrom(relative: string): RawEntry[] {
   const manifest = readRequired<Manifest>(relative);
   if (!Array.isArray(manifest.entries)) throw new Error(`Missing entries in Scout source: ${relative}`);
   return manifest.entries.map((entry, index) => {
-    if (!entry || typeof entry.entity !== "string" || !entry.entity || !entry.key_numbers) {
+    if (!entry || typeof entry.entity !== "string" || !entry.entity || typeof entry.card_path !== "string" || !entry.card_path || !entry.key_numbers) {
       throw new Error(`Malformed Scout entry ${index} in ${relative}`);
     }
     return entry;
@@ -75,7 +75,22 @@ function format(value: number, metric: Metric): string {
   return `${scaled.toFixed(precision)} ${metric.unit}`;
 }
 
-function entityEntry(pack: Pack, entry: RawEntry, aliases: Set<string>): AskEntry {
+function slugify(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+}
+
+function entrySlugs(entries: RawEntry[]): Array<{ entry: RawEntry; slug: string }> {
+  const seen = new Set<string>();
+  return entries.map((entry) => {
+    let slug = (entry.card_path.split(/[\\/]/).pop() || "").replace(/\.[a-z0-9]+$/i, "");
+    if (!slug || seen.has(slug)) slug = slugify(entry.entity);
+    if (!slug || seen.has(slug)) throw new Error(`Duplicate or missing Scout entity route slug for ${entry.entity}`);
+    seen.add(slug);
+    return { entry, slug };
+  });
+}
+
+function entityEntry(pack: Pack, entry: RawEntry, slug: string, aliases: Set<string>): AskEntry {
   const name = cleanName(entry.entity);
   const values = pack.metrics.flatMap((metric) => {
     const value = entry.key_numbers[metric.key];
@@ -100,19 +115,20 @@ function entityEntry(pack: Pack, entry: RawEntry, aliases: Set<string>): AskEntr
         : `Public ${pack.sport} ${pack.kind} profile for ${name}. As of ${asOf}, the manifest has no configured numeric metrics for this profile. This is a descriptive committed snapshot, not a current projection or live feed.`,
       source_artifact: source,
       as_of: entry.as_of || "unknown",
+      explore_path: `/analytics/players/${pack.routePack}/${slug}`,
     },
   };
 }
 
 function entityEntries(): AskEntry[] {
-  const records = PACKS.flatMap((pack) => entriesFrom(`showcase/${pack.file}.json`).map((entry) => ({ pack, entry })));
+  const records = PACKS.flatMap((pack) => entrySlugs(entriesFrom(`showcase/${pack.file}.json`)).map(({ entry, slug }) => ({ pack, entry, slug })));
   const counts = new Map<string, number>();
   records.forEach(({ entry }) => {
     const surname = words(entry.entity).at(-1);
     if (surname && surname.length >= 4) counts.set(surname, (counts.get(surname) || 0) + 1);
   });
   const uniqueSurnames = new Set(Array.from(counts).filter(([, count]) => count === 1).map(([name]) => name));
-  return records.map(({ pack, entry }) => entityEntry(pack, entry, uniqueSurnames));
+  return records.map(({ pack, entry, slug }) => entityEntry(pack, entry, slug, uniqueSurnames));
 }
 
 function moduleEntries(): AskEntry[] {
@@ -131,6 +147,7 @@ function moduleEntries(): AskEntry[] {
         answer: `Public analytics module: ${module.title}. Status: ${module.status}. As of ${module.as_of || "date unrecorded"}. ${note} This is a committed module artifact, not a live result.`,
         source_artifact: `webapp/public/data/showcase/${module.id}.json`,
         as_of: module.as_of || "unknown",
+        explore_path: `/analytics/m/${module.id}`,
       },
     };
   });
