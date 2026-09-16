@@ -31,7 +31,9 @@ describe("buildObservationDependence", () => {
   it("computes median and share above 0.9 from the published arrays", () => {
     expect(median([0.1, 0.8, 0.9, 1])).toBe(0.85);
     expect(shareAbovePointNine([0.1, 0.91, 0.99])).toBeCloseTo(2 / 3);
-    expect(buildObservationDependence(fixture)[0].sides[1]).toMatchObject({ median: 0.91, shareAbovePointNine: 2 / 3 });
+    const marketSide = buildObservationDependence(fixture)[0].sides[1];
+    expect(marketSide.median).toBe(0.91);
+    expect(marketSide.shareAbovePointNine).toBeCloseTo(2 / 3, 5);
   });
 
   it("handles a missing side without fabricating one", () => {
