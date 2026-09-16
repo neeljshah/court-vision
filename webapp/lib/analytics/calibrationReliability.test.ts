@@ -24,6 +24,11 @@ describe("buildCalibrationReliability", () => {
     expect(bin.gapCi).toEqual([-0.03, 0.04]);
   });
 
+  it("preserves the published arithmetic for a percentage-point gap", () => {
+    const bin = buildCalibrationReliability(fixture)[0].bins[0];
+    expect((bin.meanY || 0) - (bin.meanP || 0)).toBeCloseTo(bin.gap || 0);
+  });
+
   it("retains the published low-n flag", () => {
     expect(buildCalibrationReliability(fixture)[0].bins[0].lowN).toBe(true);
   });

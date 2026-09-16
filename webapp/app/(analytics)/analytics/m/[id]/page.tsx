@@ -15,9 +15,10 @@ const subtitle = (mod: Mod, insight: Insight | null) => mod.one_line?.trim() && 
 export function generateStaticParams() { return (manifest()?.modules || []).map(mod => ({ id: mod.id })); }
 export function generateMetadata({ params }: { params: { id: string } }): Metadata {
   const mod = manifest()?.modules.find(item => item.id === params.id);
-  if (!mod) return { title: "Module", description: "A measured, receipt-cited analytics module." };
+  if (!mod) return { title: "Module", description: "Published analytics module" };
   const insight = readJson<Insight>(join(data, "insights", `${mod.id}.json`));
-  return { title: insight?.title || mod.title, description: subtitle(mod, insight) || "A measured, receipt-cited analytics module." };
+  const description = mod.one_line?.trim() && !/^descriptive_only$/i.test(mod.one_line) ? mod.one_line : "Published analytics module";
+  return { title: insight?.title || mod.title, description };
 }
 export default function ModulePage({ params }: { params: { id: string } }) {
   const mod = manifest()?.modules.find(item => item.id === params.id);

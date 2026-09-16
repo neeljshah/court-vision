@@ -1,4 +1,4 @@
-// Explainers index -- six long-form essays for a smart fan (DESIGN Sec 2 editorial
+// Explainers index -- six method guides (DESIGN Sec 2 editorial
 // typography). Reads public/data/explainers/explainers.json at build time; every
 // number inside each essay is already verbatim-sourced there (see its own
 // generated_note + "cited" list) -- this index only lists them. No showcase JSON
@@ -81,7 +81,7 @@ export default function ExplainersIndexPage() {
   return (
     <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
       <p className="overline">Explainers</p>
-      <h1 style={h1}>Long-form essays for a smart fan</h1>
+      <h1 style={h1}>Guides to the methods</h1>
       <p style={lede}>
         Six essays on how the possession simulator thinks, what calibration actually
         means, why the graveyard of null results is the point, and what the on-page

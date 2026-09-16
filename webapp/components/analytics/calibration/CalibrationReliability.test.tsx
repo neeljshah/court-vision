@@ -11,6 +11,10 @@ describe("CalibrationReliability", () => {
     expect(await screen.findByTestId("reliability-diagram")).toBeInTheDocument();
     expect(screen.getByRole("table", { name: /published reliability bins for mlb/i })).toHaveTextContent("0% to 10%");
     expect(screen.getAllByText("20").length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText("MLB:")).toBeInTheDocument();
+    expect(screen.getByText(/20 ticks from 5 games; ticks are not independent games/i)).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: /published reliability bins for mlb/i })).toHaveTextContent("Gap (pp)");
+    expect(screen.getByRole("table", { name: /published reliability bins for mlb/i })).toHaveTextContent("4.00 pp");
   });
 
   it("switches sports", async () => {

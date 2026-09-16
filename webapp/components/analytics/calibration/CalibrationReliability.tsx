@@ -19,12 +19,20 @@ function percent(value: number | null, digits = 1): string {
   return value === null ? "Not published" : `${(value * 100).toFixed(digits)}%`;
 }
 
+function percentagePoints(value: number | null): string {
+  return value === null ? "Not published" : `${(value * 100).toFixed(2)} pp`;
+}
+
 function count(value: number | null): string {
   return value === null ? "Not published" : value.toLocaleString("en-US");
 }
 
 function interval(value: readonly [number | null, number | null]): string {
   return value[0] === null || value[1] === null ? "Not published" : `${percent(value[0])} to ${percent(value[1])}`;
+}
+
+function gapInterval(value: readonly [number | null, number | null]): string {
+  return value[0] === null || value[1] === null ? "Not published" : `${percentagePoints(value[0])} to ${percentagePoints(value[1])}`;
 }
 
 function validPoint(bin: ReliabilityBin): bin is ReliabilityBin & { meanP: number; meanY: number } {
@@ -67,6 +75,7 @@ export function CalibrationReliability({ series }: { series: ReliabilitySeries[]
   }, [choice, restored, sport]);
 
   const selected = series.filter(item => item.sport === sport && (choice === "both" || item.side === choice));
+  const corpus = selected[0]?.meta;
   const allN = selected.flatMap(item => item.bins.map(bin => bin.n).filter((n): n is number => n !== null));
   const maxN = Math.max(...allN, 1);
   const width = 620;
@@ -83,6 +92,7 @@ export function CalibrationReliability({ series }: { series: ReliabilitySeries[]
       <label>Sport<select aria-label="Reliability sport" value={sport} onChange={event => setSport(event.target.value)}>{sports.map(item => <option key={item} value={item}>{sportLabel(item)}</option>)}</select></label>
       <div className="cr-toggle" aria-label="Reliability series">{(["both", ...sides] as SeriesChoice[]).map(item => <button key={item} type="button" aria-pressed={choice === item} onClick={() => setChoice(item)}>{item === "both" ? "Both" : labels[item]}</button>)}</div>
     </div>
+    {corpus && <p className="cr-corpus"><strong>{sportLabel(sport)}:</strong> {count(corpus.nRows)} ticks from {count(corpus.nGames)} games; ticks are not independent games.{corpus.lowPower ? " This corpus is flagged low power." : ""}</p>}
     <div className="cr-legend"><span><i className="cr-diagonal" />Perfect calibration</span>{selected.map(item => <span key={item.side}><i style={{ background: colors[item.side] }} />{labels[item.side]}</span>)}<span><i className="cr-hollow" />Low-n bin</span></div>
     <div className="cr-chart-wrap">
       <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${sportLabel(sport)} reliability diagram`} data-testid="reliability-diagram">
@@ -104,7 +114,7 @@ export function CalibrationReliability({ series }: { series: ReliabilitySeries[]
               const hasCi = low !== null && high !== null;
               return <g key={index} opacity={0.45 + 0.55 * Math.sqrt((bin.n || 0) / maxN)}>
                 {hasCi && <><line x1={sx(bin.meanP)} x2={sx(bin.meanP)} y1={sy(low)} y2={sy(high)} stroke={colors[item.side]} strokeWidth="1.25" /><line x1={sx(bin.meanP) - 4} x2={sx(bin.meanP) + 4} y1={sy(low)} y2={sy(low)} stroke={colors[item.side]} /><line x1={sx(bin.meanP) - 4} x2={sx(bin.meanP) + 4} y1={sy(high)} y2={sy(high)} stroke={colors[item.side]} /></>}
-                <circle cx={sx(bin.meanP)} cy={sy(bin.meanY)} r={radius(bin.n)} fill={bin.lowN ? "var(--paper-raised)" : colors[item.side]} stroke={colors[item.side]} strokeWidth={bin.lowN ? 2 : 1}><title>{`${labels[item.side]} ${percent(bin.meanP)} forecast, ${percent(bin.meanY)} observed, ${count(bin.n)} ticks`}</title></circle>
+                <circle cx={sx(bin.meanP)} cy={sy(bin.meanY)} r={radius(bin.n)} fill={bin.lowN ? "var(--paper-raised)" : colors[item.side]} stroke={colors[item.side]} strokeWidth={bin.lowN ? 2 : 1}><title>{`${labels[item.side]} ${percent(bin.meanP)} forecast, ${percent(bin.meanY)} observed, ${percentagePoints(bin.gap)} gap, ${count(bin.n)} ticks`}</title></circle>
               </g>;
             })}
           </g>;
@@ -112,7 +122,7 @@ export function CalibrationReliability({ series }: { series: ReliabilitySeries[]
       </svg>
     </div>
     <div className="cr-table-wrap" role="region" aria-label="Reliability bins" data-scroll-region>
-      <table className="cr-table"><caption>Published reliability bins for {sportLabel(sport)}</caption><thead><tr><th>Series</th><th>Bin range</th><th>Mean forecast</th><th>Observed</th><th>Gap</th><th>Gap CI</th><th>n ticks</th><th>n games</th><th>Low n</th></tr></thead><tbody>{selected.flatMap(item => item.bins.map((bin, index) => <tr key={`${item.side}-${index}`}><td><span className={`cr-series-key cr-${item.side}`} />{labels[item.side]}</td><td>{percent(bin.binLo, 0)} to {percent(bin.binHi, 0)}</td><td>{percent(bin.meanP)}</td><td>{percent(bin.meanY)}</td><td>{percent(bin.gap)}</td><td>{interval(bin.gapCi)}</td><td>{count(bin.n)}</td><td>{count(bin.nGames)}</td><td>{bin.lowN ? "Yes" : "No"}</td></tr>))}</tbody></table>
+      <table className="cr-table"><caption>Published reliability bins for {sportLabel(sport)}</caption><thead><tr><th>Series</th><th>Bin range</th><th>Mean forecast</th><th>Observed</th><th>Gap (pp)</th><th>Gap CI (pp)</th><th>n ticks</th><th>n games</th><th>Low n</th></tr></thead><tbody>{selected.flatMap(item => item.bins.map((bin, index) => <tr key={`${item.side}-${index}`}><td><span className={`cr-series-key cr-${item.side}`} />{labels[item.side]}</td><td>{percent(bin.binLo, 0)} to {percent(bin.binHi, 0)}</td><td>{percent(bin.meanP)}</td><td>{percent(bin.meanY)}</td><td>{percentagePoints(bin.gap)}</td><td>{gapInterval(bin.gapCi)}</td><td>{count(bin.n)}</td><td>{count(bin.nGames)}</td><td>{bin.lowN ? "Yes" : "No"}</td></tr>))}</tbody></table>
     </div>
   </section>;
 }

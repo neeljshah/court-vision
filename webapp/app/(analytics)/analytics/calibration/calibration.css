@@ -3,6 +3,11 @@
 .calibration-title { margin: 8px 0 16px; color: var(--ink); font-family: var(--font-display); font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 500; letter-spacing: -.035em; line-height: 1.03; }
 .calibration-intro { max-width: 760px; color: var(--ink-2); font-size: 17px; line-height: 1.7; }
 .calibration-intro + .calibration-intro { margin-top: 12px; }
+.calibration-definitions { max-width: 860px; margin-top: 28px; padding: 22px 24px; border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--paper-raised); }
+.calibration-definitions h2 { color: var(--ink); font-family: var(--font-display); font-size: 1.4rem; font-weight: 500; letter-spacing: -.015em; }
+.calibration-definitions dl { display: grid; gap: 14px; margin-top: 16px; }
+.calibration-definitions dt { color: var(--ink); font-family: var(--font-mono); font-size: 12px; font-weight: 700; }
+.calibration-definitions dd { margin-top: 2px; color: var(--ink-2); font-size: 14px; line-height: 1.6; }
 .calibration-section { margin-top: 42px; }
 .calibration-section h2 { color: var(--ink); font-family: var(--font-display); font-size: 1.75rem; font-weight: 500; letter-spacing: -.02em; }
 .calibration-section > p { margin-top: 8px; color: var(--ink-2); font-size: 14px; line-height: 1.7; }
@@ -13,6 +18,8 @@
 .cr-toggle { display: inline-flex; padding: 3px; border-radius: var(--radius-btn); background: var(--paper-tint); }
 .cr-toggle button { min-height: 32px; border: 0; border-radius: 5px; background: transparent; color: var(--ink-3); cursor: pointer; font: 700 12px var(--font-sans); padding: 0 12px; }
 .cr-toggle button[aria-pressed="true"] { background: var(--paper-raised); box-shadow: 0 1px 3px rgba(24,38,48,.12); color: var(--accent); }
+.cr-corpus { margin-top: 18px; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+.cr-corpus strong { color: var(--ink); font-family: var(--font-mono); font-size: 12px; }
 .cr-legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 22px 0 8px; color: var(--ink-3); font-size: 12px; }
 .cr-legend span { display: inline-flex; align-items: center; gap: 6px; }
 .cr-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
