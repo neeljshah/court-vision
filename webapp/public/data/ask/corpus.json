@@ -3029,7 +3029,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "54 modules and 1,549 atlas entity cards, all built from the same output directory and all carrying edge_claimed=false. The manifest records 63 of 63 checks green at build time.",
+    "answer": "54 modules and 1,549 atlas entity cards, all built from the same output directory and all flagged descriptive-only. The manifest records 63 of 63 checks green at build time.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
     "as_of": "2026-07-24"
    },
@@ -3441,10 +3441,10 @@
    "bucket": "methodology"
   },
   {
-   "q": "Why does every module say edge_claimed false?",
+   "q": "Why does every module say the descriptive-only flag?",
    "alt_phrasings": [
-    "what does edge_claimed mean",
-    "why the edge_claimed flag",
+    "what does descriptive flag mean",
+    "why the descriptive flag flag",
     "no edge flag"
    ],
    "a": {
@@ -4745,7 +4745,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "Six, each composed only from committed module output and each gated against prior art before publication: Line Half-Life (LHL), Live-Clock Fraction (LCF), Load-Bearing Index (LBI), Market Foresight Premium (MFP), Overreaction Harvest Gap (OHG) and Schedule Fatigue Tax (SFT). All six carry edge_claimed=false. One, OHG, is flagged is_honest_null -- it measures a failure, not a finding.",
+    "answer": "Six, each composed only from committed module output and each gated against prior art before publication: Line Half-Life (LHL), Live-Clock Fraction (LCF), Load-Bearing Index (LBI), Market Foresight Premium (MFP), Overreaction Harvest Gap (OHG) and Schedule Fatigue Tax (SFT). All six carry the descriptive-only flag. One, OHG, is flagged is_honest_null -- it measures a failure, not a finding.",
     "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
     "as_of": "2026-07-24"
    },
@@ -5831,7 +5831,7 @@
    ],
    "a": {
     "status": "refused",
-    "answer": "No. SFT is marked descriptive_only with edge_claimed=false, and its own confound list calls the -1.73 anchor a single-corpus CONFIRMED_LOCAL effect that is 'a descriptive tax, not a forecast, and not re-tested here'. It describes seasons already played; nothing about it has been gated as a forward-looking signal.",
+    "answer": "No. SFT is marked descriptive_only as descriptive-only, and its own confound list calls the -1.73 anchor a single-corpus CONFIRMED_LOCAL effect that is 'a descriptive tax, not a forecast, and not re-tested here'. It describes seasons already played; nothing about it has been gated as a forward-looking signal.",
     "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
     "as_of": "2026-07-24"
    },
@@ -7567,7 +7567,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "/analytics/m/cross_sport_scoreboard carries the 17 paired head-to-head rows with sample sizes, confidence intervals and verdicts; /analytics/m/brier_skill_scores gives the skill-score view; and /analytics/m/kernel_transfer explains which comparisons are even legitimate across sports. All three are stamped edge_claimed=false.",
+    "answer": "/analytics/m/cross_sport_scoreboard carries the 17 paired head-to-head rows with sample sizes, confidence intervals and verdicts; /analytics/m/brier_skill_scores gives the skill-score view; and /analytics/m/kernel_transfer explains which comparisons are even legitimate across sports. All three are stamped the descriptive-only flag.",
     "source_artifact": "webapp/public/data/showcase/cross_sport_scoreboard.json",
     "as_of": "2026-07-22"
    },
@@ -8106,7 +8106,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "On the module page itself. Each of the 54 entries in the manifest records its output path, chart path, status, edge_claimed flag and as-of, so /analytics/m/<id> can name the exact artifact a number came from. Modules whose computation does not stamp a date record a null as-of rather than inventing one.",
+    "answer": "On the module page itself. Each of the 54 entries in the manifest records its output path, chart path, status, descriptive flag flag and as-of, so /analytics/m/<id> can name the exact artifact a number came from. Modules whose computation does not stamp a date record a null as-of rather than inventing one.",
     "source_artifact": "webapp/public/data/showcase/site_manifest.json",
     "as_of": "2026-07-24"
    },
@@ -9046,7 +9046,7 @@
    ],
    "a": {
     "status": "ok",
-    "answer": "By sport the generated claims break down as NBA 62,227, MLB 21,519, tennis 13,709, and soccer 4,275, with smaller unlabeled cross-sport and WNBA sets. All are ranking-kind claims validated against their own sidecars, with edge_claimed false throughout. The counts are volume of descriptive statements, not proven edges.",
+    "answer": "By sport the generated claims break down as NBA 62,227, MLB 21,519, tennis 13,709, and soccer 4,275, with smaller unlabeled cross-sport and WNBA sets. All are ranking-kind claims validated against their own sidecars, with the descriptive-only flag throughout. The counts are volume of descriptive statements, not proven edges.",
     "source_artifact": "webapp/public/data/showcase/claims_corpus_meta.json",
     "as_of": "2026-07-22"
    },

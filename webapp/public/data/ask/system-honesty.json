@@ -479,7 +479,7 @@
       "alt_phrasings": ["claims by sport", "per-sport claim counts", "which sport has most claims"],
       "a": {
         "status": "ok",
-        "answer": "By sport the generated claims break down as NBA 62,227, MLB 21,519, tennis 13,709, and soccer 4,275, with smaller unlabeled cross-sport and WNBA sets. All are ranking-kind claims validated against their own sidecars, with edge_claimed false throughout. The counts are volume of descriptive statements, not proven edges.",
+        "answer": "By sport the generated claims break down as NBA 62,227, MLB 21,519, tennis 13,709, and soccer 4,275, with smaller unlabeled cross-sport and WNBA sets. All are ranking-kind claims validated against their own sidecars; every one is a descriptive measurement. The counts are volume of descriptive statements, not proven edges.",
         "source_artifact": "webapp/public/data/showcase/claims_corpus_meta.json",
         "as_of": "2026-07-22"
       },

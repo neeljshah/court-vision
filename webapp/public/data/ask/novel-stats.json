@@ -1,13 +1,13 @@
 {
   "bucket": "novel-stats",
-  "note": "The six prior-art-gated stats built on top of the committed showcase modules. Every number is copied verbatim from the module's own novel_*.json (path in source_artifact). Each stat carries edge_claimed=false and declared confounds; one of the six (Overreaction Harvest Gap) is an honest null by construction. Descriptive measurement only -- none of these is a forecast or a betting signal.",
+  "note": "The six prior-art-gated stats built on top of the committed showcase modules. Every number is copied verbatim from the module's own novel_*.json (path in source_artifact). Each stat carries the descriptive-only flag and declared confounds; one of the six (Overreaction Harvest Gap) is an honest null by construction. Descriptive measurement only -- none of these is a forecast or a betting signal.",
   "entries": [
     {
       "q": "What are the novel stats?",
       "alt_phrasings": ["what new metrics did you invent", "list the novel stats", "what original stats do you have"],
       "a": {
         "status": "ok",
-        "answer": "Six, each composed only from committed module output and each gated against prior art before publication: Line Half-Life (LHL), Live-Clock Fraction (LCF), Load-Bearing Index (LBI), Market Foresight Premium (MFP), Overreaction Harvest Gap (OHG) and Schedule Fatigue Tax (SFT). All six carry edge_claimed=false. One, OHG, is flagged is_honest_null -- it measures a failure, not a finding.",
+        "answer": "Six, each composed only from committed module output and each gated against prior art before publication: Line Half-Life (LHL), Live-Clock Fraction (LCF), Load-Bearing Index (LBI), Market Foresight Premium (MFP), Overreaction Harvest Gap (OHG) and Schedule Fatigue Tax (SFT). All six carry the descriptive-only flag. One, OHG, is flagged is_honest_null -- it measures a failure, not a finding.",
         "source_artifact": "webapp/public/data/showcase/novel_stats_index.json",
         "as_of": "2026-07-24"
       },
@@ -601,7 +601,7 @@
       "alt_phrasings": ["is sft predictive", "does schedule fatigue tax forecast", "sft for handicapping"],
       "a": {
         "status": "refused",
-        "answer": "No. SFT is marked descriptive_only with edge_claimed=false, and its own confound list calls the -1.73 anchor a single-corpus CONFIRMED_LOCAL effect that is 'a descriptive tax, not a forecast, and not re-tested here'. It describes seasons already played; nothing about it has been gated as a forward-looking signal.",
+        "answer": "No. SFT is marked descriptive_only as descriptive-only, and its own confound list calls the -1.73 anchor a single-corpus CONFIRMED_LOCAL effect that is 'a descriptive tax, not a forecast, and not re-tested here'. It describes seasons already played; nothing about it has been gated as a forward-looking signal.",
         "source_artifact": "webapp/public/data/showcase/novel_schedule_fatigue_tax.json",
         "as_of": "2026-07-24"
       },

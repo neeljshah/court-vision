@@ -359,7 +359,7 @@
       "alt_phrasings": ["module count", "how many showcase modules", "size of the analytics layer"],
       "a": {
         "status": "ok",
-        "answer": "54 modules and 1,549 atlas entity cards, all built from the same output directory and all carrying edge_claimed=false. The manifest records 63 of 63 checks green at build time.",
+        "answer": "54 modules and 1,549 atlas entity cards, all built from the same output directory and all flagged descriptive-only. The manifest records 63 of 63 checks green at build time.",
         "source_artifact": "webapp/public/data/showcase/site_manifest.json",
         "as_of": "2026-07-24"
       },
@@ -586,8 +586,8 @@
       "tags": ["truth-source", "receipts", "governance"]
     },
     {
-      "q": "Why does every module say edge_claimed false?",
-      "alt_phrasings": ["what does edge_claimed mean", "why the edge_claimed flag", "no edge flag"],
+      "q": "Why does every module say the descriptive-only flag?",
+      "alt_phrasings": ["what does descriptive flag mean", "why the descriptive flag flag", "no edge flag"],
       "a": {
         "status": "ok",
         "answer": "It is a machine-checkable stamp that the module is a calibration or description artifact. It appears on the showcase manifest, on every novel-stat card and on the Brier skill pack, and it is the reason a question phrased as financial guidance comes back refused rather than answered.",

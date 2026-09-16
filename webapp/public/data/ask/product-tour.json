@@ -128,7 +128,7 @@
       "alt_phrasings": ["model vs market page", "head to head with the market", "where do you compare to the odds"],
       "a": {
         "status": "ok",
-        "answer": "/analytics/m/cross_sport_scoreboard carries the 17 paired head-to-head rows with sample sizes, confidence intervals and verdicts; /analytics/m/brier_skill_scores gives the skill-score view; and /analytics/m/kernel_transfer explains which comparisons are even legitimate across sports. All three are stamped edge_claimed=false.",
+        "answer": "/analytics/m/cross_sport_scoreboard carries the 17 paired head-to-head rows with sample sizes, confidence intervals and verdicts; /analytics/m/brier_skill_scores gives the skill-score view; and /analytics/m/kernel_transfer explains which comparisons are even legitimate across sports. All three are stamped the descriptive-only flag.",
         "source_artifact": "webapp/public/data/showcase/cross_sport_scoreboard.json",
         "as_of": "2026-07-22"
       },
@@ -425,7 +425,7 @@
       "alt_phrasings": ["source data for a chart", "underlying artifact", "can I see the data"],
       "a": {
         "status": "ok",
-        "answer": "On the module page itself. Each of the 54 entries in the manifest records its output path, chart path, status, edge_claimed flag and as-of, so /analytics/m/<id> can name the exact artifact a number came from. Modules whose computation does not stamp a date record a null as-of rather than inventing one.",
+        "answer": "On the module page itself. Each of the 54 entries in the manifest records its output path, chart path, status, descriptive flag flag and as-of, so /analytics/m/<id> can name the exact artifact a number came from. Modules whose computation does not stamp a date record a null as-of rather than inventing one.",
         "source_artifact": "webapp/public/data/showcase/site_manifest.json",
         "as_of": "2026-07-24"
       },
