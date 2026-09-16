@@ -35,6 +35,10 @@ describe("public analytics snapshot normalization", () => {
     expect(data.pitches.distribution.find(p => p.pitch_type === "FF")?.n).toBe(220235);
     expect(data.pitches.velocity.find(p => p.pitch_type === "FF")?.n).toBe(220233);
     expect(data.coverage.rates).toHaveLength(28);
+    expect(data.coverage.histogram.reduce((sum, bin) => sum + bin.dossiers, 0)).toBe(data.coverage.n);
+    expect(data.coverage.medianCategories).toBe(18);
+    expect(data.coverage.medianCategoriesShare).toBe(0.642857);
+    expect(data.coverage.publishedCompletenessScore).toBe(0.464);
     expect(data.benchmarks).toHaveLength(17);
     expect(data.walkForward.folds).toHaveLength(3);
     expect(data.walkForward.brier_mean).toBeCloseTo(.1930064);

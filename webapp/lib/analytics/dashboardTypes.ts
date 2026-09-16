@@ -11,13 +11,19 @@ export type Entity = { name: string; pack: string; sport: Sport; slug: string; a
 export type Benchmark = { sport: string; market: string; checkpoint: string; n: number; paired_delta_mean: number; paired_delta_95ci: [number, number]; verdict: string; source: string };
 export type WalkForward = { acc_mean: number; brier_mean: number; seasons: string[]; folds: { fold: number; acc: number; brier: number; n_train: number; n_val: number }[] };
 export type DerivedAnalysis = { id: string; title: string; sport: Sport; rows: number; asOf: string | null };
+export type DossierHistogramBin = { categoriesFilled: number; dossiers: number; share: number };
+export type DossierCoverage = {
+  n: number; median: number; categoriesTotal: number;
+  histogram: DossierHistogramBin[]; medianCategories: number; medianCategoriesShare: number;
+  publishedCompletenessScore: number; rates: { name: string; value: number }[];
+};
 export type DashboardData = {
   benchmarks: Benchmark[]; walkForward: WalkForward;
   modules: Module[]; mechanisms: Mechanism[]; markets: Market[]; history: HistoryPoint[];
   entities: Entity[]; checks: { pass: number; total: number } | null;
   analyses: DerivedAnalysis[]; recentAnalyses: DerivedAnalysis[];
   pitches: { n: number; distribution: { pitch_type: string; n: number; pct: number }[]; velocity: { pitch_type: string; n: number; p10: number; p50: number; p90: number }[] };
-  coverage: { n: number; median: number; rates: { name: string; value: number }[] };
+  coverage: DossierCoverage;
 };
 export const humanize = (s: string) => s.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 export const number = (n: number) => n.toLocaleString("en-US");
