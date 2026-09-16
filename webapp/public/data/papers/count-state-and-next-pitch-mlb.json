@@ -1,0 +1,233 @@
+{
+ "slug": "count-state-and-next-pitch-mlb",
+ "title": "What the count does to the next pitch",
+ "subtitle": "Conditional next-pitch probabilities and count-class pitch mixes in MLB, 2025 Statcast",
+ "authors": ["CourtVision research"],
+ "date": "2026-09-16",
+ "sport": "mlb",
+ "keywords": ["pitch sequencing", "count leverage", "pitch mix", "conditional probability", "descriptive"],
+ "abstract": "This note compares two descriptive views of how the ball-strike count shapes a Major League pitcher's next pitch, both built from a local 2025 Statcast pull (source data/cache/statcast/statcast_fuller__2025.parquet, as of 2026-07-25). The first view, in mlb_count_leverage.json, is a pitch mix: the unconditional share of each pitch type thrown within a count-leverage class, over 693,037 pitches. The second, in pitch_sequencing.json, is a sequencing view: the conditional probability that the next pitch is type X given the previous pitch (same plate appearance, adjacent pitch number) was type Y, over 512,289 transitions. In the mix, the four-seam fastball's share rises from 29.8 percent when the pitcher is ahead (pitch_mix_top[ahead], n=204,283) to 41.93 percent in the three-ball, must-throw-a-strike lens (pitch_mix_top[three_ball], n=56,806), a 12.13-point gap. In sequencing, the probability that a fastball follows a fastball is 39.44 percent when ahead, 43.23 percent across all counts, and 57.85 percent in three-ball counts. The behind/even/ahead partition is mutually exclusive; two-strike and three-ball are overlapping lenses layered on it, and by_exact_count shows three-ball sits entirely inside behind while two-strike spans all three partition classes. Neither file separates a called strike from a swinging strike; the coded strike-rate proxy conflates both with fouls. No published row falls below the stated floors. This is a descriptive Markov-and-mix summary of 2025 league behavior, not a forecast of any single pitcher's next pitch.",
+ "sections": [
+  {
+   "id": "question",
+   "heading": "Question",
+   "blocks": [
+    {"type": "p", "text": "Two Statcast-derived views of 2025 Major League Baseball pitches answer two different questions about the ball-strike count. The first, in mlb_count_leverage.json, asks what pitch a pitcher throws in a given count: the unconditional mix of pitch types within a count-leverage class, over 693,037 pitches (n_pitches_total). The second, in pitch_sequencing.json, asks what a pitcher throws next given what was just thrown: the conditional probability of the following pitch type inside one plate appearance, over 512,289 pitch-to-pitch transitions (n_transitions). This paper keeps the two apart. A change in the mix (more fastballs thrown overall in a count) is not the same claim as a change in sequencing (more fastballs following a fastball specifically), and the two artifacts measure different populations with different denominators."},
+    {"type": "p", "text": "Framed as one question -- does the count change what gets thrown -- the honest answer needs two sub-answers, because the count can change the composition of pitches thrown (the mix) without changing how sticky pitch selection is from one pitch to the next (the sequencing), or it could change both. The count-leverage classes used here are also not all the same kind of cut: behind, even, and ahead partition every count by whether the batter or pitcher is ahead, while two-strike and three-ball are overlapping lenses that each cut across that partition from a different angle -- one from the batter's swing-and-miss threat, one from the pitcher's need to throw a strike. Collapsing all five labels into one flat list would hide that two of them are not peers of the other three."}
+   ]
+  },
+  {
+   "id": "data",
+   "heading": "Data and definitions",
+   "blocks": [
+    {"type": "p", "text": "Both artifacts come from the same local 2025 Statcast pull: source data/cache/statcast/statcast_fuller__2025.parquet, as_of 2026-07-25 for both pitch_sequencing.json and mlb_count_leverage.json. mlb_count_leverage.json covers n_pitches_total=693,037 pitches and reports a pitch_mix_top of up to 10 pitch types per count-leverage class, floored at class_min_n=500 (floors.class_min_n). pitch_sequencing.json covers n_transitions=512,289 previous-to-next pitch pairs drawn from those same pitches, matrixed over the top 8 league pitch types (floors.top_n_pitch_types=8), with a row floor of row_min_n=200 and a class floor of class_min_transitions=2000 (floors.row_min_n, floors.class_min_transitions)."},
+    {"type": "p", "text": "The two axes are not identical. mlb_count_leverage.json's top-10 mix list includes KC (knuckle curve) and SV (sweeper), which fall outside pitch_sequencing.json's top-8 sequencing axis: FF, SI, SL, CH, ST, FC, CU, FS (pitch_types). A transition into or out of a KC or SV pitch is folded into that row's 'other' remainder in the sequencing matrix below, not shown as its own row or column."}
+   ]
+  },
+  {
+   "id": "method",
+   "heading": "Method",
+   "blocks": [
+    {"type": "p", "text": "The count-leverage partition is defined identically in both files' leverage_definitions: behind means balls greater than strikes, even means balls equal to strikes, ahead means strikes greater than balls, and the three are mutually exclusive and exhaustive (leverage_definitions.partition_note, both files). two_strike (strikes equal to 2) and three_ball (balls equal to 3) are described as overlapping lenses on top of that partition, not a fourth and fifth partition member; the same pitch can be counted once in the partition and again in a lens."},
+    {"type": "p", "text": "mlb_count_leverage.json's by_exact_count table makes the nesting concrete. Every exact count with 3 balls carries leverage_class behind, because strikes can never reach 3: 3-0, 3-1, and 3-2 are all labeled behind. two_strike behaves differently: 0-2 and 1-2 are labeled ahead, 2-2 is labeled even, and 3-2 is labeled behind -- the same row three_ball touches."},
+    {"type": "list", "items": [
+      "3 balls, 0 strikes: leverage_class behind, n=7,457, top pitch FF at 65.12 percent",
+      "3 balls, 1 strike: leverage_class behind, n=14,543, top pitch FF at 42.5 percent",
+      "3 balls, 2 strikes: leverage_class behind, n=34,806, top pitch FF at 37.06 percent",
+      "0 balls, 2 strikes: leverage_class ahead, n=46,656",
+      "1 ball, 2 strikes: leverage_class ahead, n=67,807",
+      "2 balls, 2 strikes: leverage_class even, n=57,832"
+    ]},
+    {"type": "p", "text": "So three_ball is not a fourth partition member sitting alongside behind, even, and ahead; every three_ball count is a subset of behind. two_strike, by contrast, spans all three partition classes (ahead at 0-2 and 1-2, even at 2-2, behind at 3-2). The two overlapping lenses are not interchangeable with each other, and neither is interchangeable with the partition (by_exact_count[balls=X,strikes=Y].leverage_class, mlb_count_leverage.json)."},
+    {"type": "callout", "label": "Definition", "text": "A 'coded strike' here is Statcast's type==S flag. mlb_count_leverage.json's own caveat states this conflates a called strike, a swinging strike, and a foul ball into one code, because no per-pitch swing/take field exists in this corpus. strike_rate_type_S therefore cannot say whether a hitter took a strike, swung and missed, or fouled one off; it can only say a strike was coded. Any read of 'more swings' or 'more takes' from this proxy is not supported by the data."}
+   ]
+  },
+  {
+   "id": "results",
+   "heading": "Results",
+   "blocks": [
+    {"type": "p", "text": "The pitch mix moves in the same direction as the count gets more pressing for the pitcher. Ahead, the four-seam fastball (FF) is thrown 29.8 percent of the time (by_leverage_class[ahead].pitch_mix_top[FF].pct, n=204,283, pitch_type_n=204,107). two_strike, an overlapping lens on top of ahead/even/behind, sits close to that at 31.98 percent (n=207,101, pitch_type_n=206,876). Behind, FF climbs to 35.25 percent (n=183,042, pitch_type_n=181,462). In three_ball, the most acute must-throw-a-strike lens, FF reaches 41.93 percent (n=56,806, pitch_type_n=56,216) -- 12.13 points above the ahead share and 6.68 points above the behind share (both simple differences of the cited percentages). The table below lists the full top-10 mix for behind and three_ball side by side."},
+    {"type": "table",
+     "caption": "Pitch-type mix, behind vs three_ball count-leverage classes (percent of pitch_type_n)",
+     "columns": ["Pitch type", "Behind n", "Behind pct", "Three_ball n", "Three_ball pct"],
+     "rows": [
+      ["FF", "63,970", "35.25%", "23,572", "41.93%"],
+      ["SI", "34,992", "19.28%", "10,938", "19.46%"],
+      ["SL", "23,846", "13.14%", "6,646", "11.82%"],
+      ["FC", "16,880", "9.3%", "4,692", "8.35%"],
+      ["CH", "16,350", "9.01%", "3,709", "6.6%"],
+      ["ST", "9,851", "5.43%", "2,701", "4.8%"],
+      ["CU", "7,850", "4.33%", "1,976", "3.52%"],
+      ["FS", "4,126", "2.27%", "1,068", "1.9%"],
+      ["KC", "2,146", "1.18%", "558", "0.99%"],
+      ["SV", "622", "0.34%", "165", "0.29%"],
+      ["Remainder (derived, not published as its own row)", "n/a", "0.47%", "n/a", "0.34%"]
+     ],
+     "note": "Behind: n=183,042 pitches, pitch_type_n=181,462 typed. Three_ball: n=56,806 pitches, pitch_type_n=56,216 typed. Source: mlb_count_leverage.json, by_leverage_class[behind].pitch_mix_top and by_leverage_class[three_ball].pitch_mix_top, floors.mix_top_per_class=10, as_of 2026-07-25."
+    },
+    {"type": "math", "text": "remainder_pct = 100 - sum(pitch_mix_top[class].pct over the published top-10 types); derived, not a separately measured field"},
+    {"type": "p", "text": "Sequencing moves the same way, and further. Across all counts, a fastball follows a fastball 43.23 percent of the time (by_class[all].prob_matrix[FF][FF], row_n_from[FF]=165,179). Ahead, that repeat rate falls to 39.44 percent (by_class[ahead].prob_matrix[FF][FF], row_n_from[FF]=67,183) as the mix broadens. In three_ball, it rises to 57.85 percent (by_class[three_ball].prob_matrix[FF][FF], row_n_from[FF]=20,541). The full previous-pitch by next-pitch matrix for the three_ball class is below; every off-diagonal fastball cell is smaller than the FF-to-FF cell, and the largest self-repeat outside FF is slider-to-slider at 30.13 percent (row_n_from[SL]=7,372)."},
+    {"type": "table",
+     "caption": "P(next pitch | previous pitch), three_ball count-leverage class (balls==3 on the next pitch)",
+     "columns": ["Previous pitch", "n from this pitch", "Next FF", "Next SI", "Next SL", "Next CH", "Next ST", "Next FC", "Next CU", "Next FS", "Other next type"],
+     "rows": [
+      ["FF", "20,541", "57.85%", "8.53%", "11.45%", "6.38%", "3.67%", "5.61%", "3.14%", "1.84%", "1.53%"],
+      ["SI", "9,213", "19.64%", "48.57%", "8.08%", "4.82%", "5.26%", "8.56%", "2.97%", "1.03%", "1.07%"],
+      ["SL", "7,372", "41.37%", "15.25%", "30.13%", "4.54%", "1.32%", "3.59%", "2.22%", "0.96%", "0.62%"],
+      ["CH", "5,437", "40.7%", "16.79%", "8.3%", "17.68%", "4.08%", "8.13%", "3.18%", "0.11%", "1.03%"],
+      ["ST", "3,460", "31.59%", "25.2%", "4.19%", "5.23%", "23.18%", "8.01%", "1.47%", "0.84%", "0.29%"],
+      ["FC", "4,360", "29.63%", "20.69%", "4.38%", "4.63%", "4.54%", "29.98%", "3.65%", "1.47%", "1.03%"],
+      ["CU", "2,892", "36.79%", "17.77%", "10.03%", "6.98%", "2.18%", "8.64%", "15.59%", "1.73%", "0.29%"],
+      ["FS", "1,581", "39.97%", "11.07%", "9.8%", "0.19%", "3.42%", "9.11%", "3.1%", "22.77%", "0.57%"]
+     ],
+     "note": "Rows are the previous pitch type, n is row_n_from for that type. Columns FF-FS are by_class[three_ball].prob_matrix; 'Other next type' is the derived remainder. Source: pitch_sequencing.json, by_class[three_ball], n_transitions_in_class=56,148, n_in_matrix=54,271, as_of 2026-07-25."
+    },
+    {"type": "math", "text": "other_next_pct = 100 x (1 - sum of the 8 published P(next|previous) values in that row); folds in KC, SV, and any pitch type outside the top-8 sequencing axis"},
+    {"type": "figure", "module": "pitch_sequencing", "caption": "Published pitch-sequencing chart (pitch_sequencing.json, chart_class: all): P(next pitch | previous pitch) across all counts. The three_ball breakout in the table above is the same matrix restricted to the must-throw-a-strike lens."},
+    {"type": "p", "text": "Outcome proxies move less than the mix does. The coded strike rate is nearly flat from behind to three_ball: 49.81 percent (by_leverage_class[behind].outcome_proxies.strike_rate_type_S, n_type=183,042) versus 49.9 percent (by_leverage_class[three_ball].outcome_proxies.strike_rate_type_S, n_type=56,806). The in-zone rate rises more, from 58.55 percent (n_zone=181,462) to 61.06 percent (n_zone=56,216). Because strike_rate_type_S conflates called, swinging, and foul strikes (see the Definition callout above), this data cannot say whether the flat coded-strike rate reflects hitters taking more careful swings, pitchers missing the zone despite throwing more fastballs, or some mix of both; it can only report that the coded rate barely moves while the pitch lands in the zone somewhat more often."}
+   ]
+  },
+  {
+   "id": "checks",
+   "heading": "Robustness and what would falsify this",
+   "blocks": [
+    {"type": "p", "text": "The published matrices cover most, not all, of each class's transitions. Coverage (n_in_matrix / n_transitions_in_class) is 95.46 percent for all, 96.21 percent for behind, 95.16 percent for even, 94.98 percent for ahead, 94.81 percent for two_strike, and 96.66 percent for three_ball (by_class[<class>].coverage, pitch_sequencing.json). The gap in each case is transitions where the previous pitch type itself falls outside the top-8 axis; the per-row 'other' figures in the results table are a second, smaller gap on the next-pitch side only, for rows whose previous type is on-axis."},
+    {"type": "p", "text": "None of the published rows are suppressed for thin data. The floors are row_min_n=200 and class_min_transitions=2000 (floors.row_min_n, floors.class_min_transitions, pitch_sequencing.json); across the six classes (all, behind, even, ahead, two_strike, three_ball) and eight previous-pitch rows each, that is 48 rows (6 x 8, derived), and every by_class[<class>].row_below_floor entry reads false. If a rarer future pull produced a class or a previous-pitch row under those floors, that row would be masked rather than published, and any comparison using it would need to drop it rather than treat a hidden cell as zero."},
+    {"type": "p", "text": "What would undercut the reading that pressure narrows pitch selection: if the two_strike lens, an overlapping cut independent of three_ball, did not also show a fastball share above the ahead baseline. It does: 31.98 percent in two_strike versus 29.8 percent ahead (by_leverage_class[two_strike].pitch_mix_top[FF].pct, n=207,101, versus by_leverage_class[ahead].pitch_mix_top[FF].pct, n=204,283). Two independent lenses on the same partition pointing the same direction is a weak form of corroboration inside one corpus, not confirmation across a second season or a second data source."}
+   ]
+  },
+  {
+   "id": "limitations",
+   "heading": "Limitations",
+   "blocks": [
+    {"type": "p", "text": "This is a within-season, within-corpus description, not a validated finding across multiple pulls or years, and not a model of any individual pitcher's behavior."},
+    {"type": "list", "items": [
+      "Aggregated across all pitchers in the 2025 pull; a single pitcher's repertoire and count tendencies can differ sharply from the league average reported here.",
+      "Single local Statcast corpus (data/cache/statcast/statcast_fuller__2025.parquet) and a single as_of snapshot (2026-07-25); not cross-checked against a second season or a second data source.",
+      "The coded strike-rate proxy (type==S) conflates called strikes, swinging strikes, and fouls; nothing in either file lets a swing be separated from a take.",
+      "Sequencing requires strict pitch-number adjacency within one plate appearance and pitcher (pitch_sequencing.json, floors.adjacency); it excludes the first pitch of every plate appearance and any pair broken by a substitution, so the 512,289 transitions are a subset of the 690,493 kept pitches, not one transition per pitch thrown.",
+      "Descriptive only: neither artifact estimates a probability calibrated against a held-out sample or claims predictive skill for a specific upcoming pitch."
+    ]}
+   ]
+  },
+  {
+   "id": "use",
+   "heading": "How to read this on the site",
+   "blocks": [
+    {"type": "p", "text": "On the site, the mix numbers answer 'what does a pitcher throw in this count' and belong with the count-context inspector; the sequencing matrix answers 'given the last pitch, what comes next' and belongs with the pitch-sequencing inspector. Reading a mix percentage as if it were a conditional next-pitch probability, or vice versa, misstates both: three_ball's 41.93 percent fastball mix and its 57.85 percent fastball-after-fastball repeat rate are two different quantities over two different denominators (56,806 pitches and 20,541 fastball-led transitions respectively), and the gap between them is itself informative -- pitchers do not just throw more fastballs under pressure, they cluster them together more than the raw mix alone would suggest."}
+   ]
+  }
+ ],
+ "evidence": [
+  {
+   "artifact": "pitch_sequencing.json",
+   "module": "pitch_sequencing",
+   "asOf": "2026-07-25",
+   "fields": [
+    "n_pitches_total",
+    "n_transitions",
+    "floors.row_min_n",
+    "floors.class_min_transitions",
+    "floors.top_n_pitch_types",
+    "floors.adjacency",
+    "leverage_definitions.partition_note",
+    "pitch_types",
+    "chart_class",
+    "by_class[all].prob_matrix[FF][FF]",
+    "by_class[all].row_n_from[FF]",
+    "by_class[all].coverage",
+    "by_class[behind].coverage",
+    "by_class[behind].row_below_floor",
+    "by_class[even].coverage",
+    "by_class[even].row_below_floor",
+    "by_class[ahead].prob_matrix[FF][FF]",
+    "by_class[ahead].row_n_from[FF]",
+    "by_class[ahead].coverage",
+    "by_class[ahead].row_below_floor",
+    "by_class[two_strike].coverage",
+    "by_class[two_strike].row_below_floor",
+    "by_class[three_ball].prob_matrix",
+    "by_class[three_ball].row_n_from",
+    "by_class[three_ball].count_matrix",
+    "by_class[three_ball].n_transitions_in_class",
+    "by_class[three_ball].n_in_matrix",
+    "by_class[three_ball].coverage",
+    "by_class[three_ball].row_below_floor",
+    "by_class[all].row_below_floor",
+    "as_of"
+   ]
+  },
+  {
+   "artifact": "mlb_count_leverage.json",
+   "module": "mlb_count_leverage",
+   "asOf": "2026-07-25",
+   "fields": [
+    "n_pitches_total",
+    "floors.class_min_n",
+    "floors.mix_top_per_class",
+    "leverage_definitions.partition_note",
+    "caveat",
+    "by_leverage_class[behind].n",
+    "by_leverage_class[behind].pitch_type_n",
+    "by_leverage_class[behind].pitch_mix_top",
+    "by_leverage_class[behind].outcome_proxies.strike_rate_type_S",
+    "by_leverage_class[behind].outcome_proxies.n_type",
+    "by_leverage_class[behind].outcome_proxies.in_zone_rate",
+    "by_leverage_class[behind].outcome_proxies.n_zone",
+    "by_leverage_class[ahead].pitch_mix_top[FF].pct",
+    "by_leverage_class[ahead].n",
+    "by_leverage_class[ahead].pitch_type_n",
+    "by_leverage_class[two_strike].pitch_mix_top[FF].pct",
+    "by_leverage_class[two_strike].n",
+    "by_leverage_class[two_strike].pitch_type_n",
+    "by_leverage_class[three_ball].n",
+    "by_leverage_class[three_ball].pitch_type_n",
+    "by_leverage_class[three_ball].pitch_mix_top",
+    "by_leverage_class[three_ball].outcome_proxies.strike_rate_type_S",
+    "by_leverage_class[three_ball].outcome_proxies.n_type",
+    "by_leverage_class[three_ball].outcome_proxies.in_zone_rate",
+    "by_leverage_class[three_ball].outcome_proxies.n_zone",
+    "by_exact_count[balls=0,strikes=2].leverage_class",
+    "by_exact_count[balls=1,strikes=2].leverage_class",
+    "by_exact_count[balls=2,strikes=2].leverage_class",
+    "by_exact_count[balls=3,strikes=0].leverage_class",
+    "by_exact_count[balls=3,strikes=0].n",
+    "by_exact_count[balls=3,strikes=0].top_pitch_pct",
+    "by_exact_count[balls=3,strikes=1].leverage_class",
+    "by_exact_count[balls=3,strikes=1].n",
+    "by_exact_count[balls=3,strikes=1].top_pitch_pct",
+    "by_exact_count[balls=3,strikes=2].leverage_class",
+    "by_exact_count[balls=3,strikes=2].n",
+    "by_exact_count[balls=3,strikes=2].top_pitch_pct",
+    "by_exact_count[balls=0,strikes=2].n",
+    "by_exact_count[balls=1,strikes=2].n",
+    "by_exact_count[balls=2,strikes=2].n",
+    "as_of"
+   ]
+  },
+  {
+   "artifact": "site_manifest.json",
+   "module": null,
+   "asOf": null,
+   "fields": [
+    "modules[id=pitch_sequencing].as_of",
+    "modules[id=pitch_sequencing].status",
+    "modules[id=mlb_count_leverage].as_of",
+    "modules[id=mlb_count_leverage].status"
+   ]
+  }
+ ],
+ "limitations": [
+  "Aggregated across all pitchers in the 2025 pull; a single pitcher's repertoire and count tendencies can differ sharply from the league average reported here.",
+  "Single local Statcast corpus and a single as_of snapshot (2026-07-25); not cross-checked against a second season or a second data source.",
+  "The coded strike-rate proxy (type==S) conflates called strikes, swinging strikes, and fouls; a swing cannot be separated from a take in this data.",
+  "Sequencing requires strict pitch-number adjacency within one plate appearance and pitcher, excluding the first pitch of every plate appearance and any pair broken by a substitution.",
+  "Descriptive only: neither artifact is calibrated against a held-out sample or claims predictive skill for a specific upcoming pitch."
+ ],
+ "related": [
+  {"kind": "inspector", "id": "pitch-sequencing"},
+  {"kind": "inspector", "id": "count-context"},
+  {"kind": "module", "id": "pitch_sequencing"},
+  {"kind": "module", "id": "mlb_count_leverage"}
+ ]
+}

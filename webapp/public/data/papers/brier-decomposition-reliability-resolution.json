@@ -1,0 +1,182 @@
+{
+ "slug": "brier-decomposition-reliability-resolution",
+ "title": "What the Brier score is made of",
+ "subtitle": "Reliability, resolution and uncertainty in CourtVision's MLB and international-soccer forecasts, checked against the closing market",
+ "authors": ["CourtVision research"],
+ "date": "2026-09-16",
+ "sport": "all",
+ "keywords": ["Murphy decomposition", "Brier score", "reliability", "resolution", "uncertainty", "Brier Skill Score", "calibration"],
+ "abstract": "CourtVision splits each in-game win-probability Brier score into three Murphy components -- reliability, resolution and uncertainty -- to separate a calibration problem from an information problem. This paper reports that split, and checks its own arithmetic, for the two sports where a model probability and a market-implied probability are both scored in murphy_decomposition.json: MLB moneyline (78,986 rows) and international soccer moneyline (9,003 rows); no other sport appears in this artifact. In MLB, model reliability (0.012701) is close to market reliability (0.006061, a gap of +0.0066), but model resolution (0.023628) trails market resolution (0.047124, a gap of -0.0235); reliability minus resolution plus uncertainty reconstructs the directly computed Brier to within 0.0005 for both curves, so the identity holds and the MLB gap reads as missing information rather than dishonest probabilities. In international soccer the identity does not hold nearly as well: the model's reconstructed Brier (0.293529) sits 0.065642 above its own directly computed Brier (0.227887), and the market's reconstructed Brier (0.209538) sits 0.066812 above its own directly computed Brier (0.142726) -- both curves diverge, not only the model's. Soccer's model-side reliability (0.092837) is also larger than its resolution (0.038185), the reverse of the MLB ordering. A companion table shows the MLB Brier Skill Score against the market is negative at every grain in brier_skill_scores.json, most negative late in the game (-0.4635, n=13,981). None of this identifies why the market resolves outcomes better; it only measures where the two sides' numbers agree and where they do not.",
+ "sections": [
+  {
+   "id": "question",
+   "heading": "Question",
+   "blocks": [
+    {"type": "p", "text": "CourtVision's in-game win-probability model returns a worse Brier score than the closing market in every sport where both sides' probabilities are scored on the same resolved games. The Murphy decomposition is the tool meant to explain why: it splits a Brier score into reliability (a penalty for a forecast curve that departs from the 45-degree line), resolution (a bonus for separating winners from losers) and uncertainty (the outcome's own base-rate variance). murphy_decomposition.json carries that split for two sports today -- MLB moneyline (78,986 rows) and international soccer moneyline (9,003 rows) -- and no others."},
+    {"type": "p", "text": "Before reading what the split says about MLB and soccer, this paper first checks whether the split's own arithmetic closes: does reliability minus resolution plus uncertainty reproduce the directly computed Brier it is supposed to explain. Only after that check does it read what the decomposition implies about where each sport's gap against the market comes from, and it separately reads brier_skill_scores.json to see whether the market's advantage is stable across the game or concentrated in one part of it."}
+   ]
+  },
+  {
+   "id": "data",
+   "heading": "Data and definitions",
+   "blocks": [
+    {"type": "p", "text": "murphy_decomposition.json stores one object per sport under sports.<sport>, each with a model_prob block and a market_prob block. Each block carries n (rows scored), brier (the directly computed mean squared error of that probability against the 0/1 outcome), reliability, resolution, uncertainty, and reconstructed_brier -- the file's own reconstruction of the Brier from its 10 probability bins. The file's method field states the identity as 'Brier = reliability - resolution + uncertainty'; reconstructed_brier is that right-hand side evaluated on the file's own bins, not a number this paper derives."},
+    {"type": "callout", "label": "Definition", "text": "Reliability is the mean squared distance between each bin's average forecast and that bin's actual outcome frequency -- higher means the forecast curve is further off the diagonal. Resolution is how much of the outcome's variance the bins explain beyond the corpus base rate -- higher means the forecast separates winners from losers more sharply. Uncertainty is the base-rate variance of the outcome itself, fixed by the corpus, not by the forecaster."},
+    {"type": "p", "text": "Because model_prob and market_prob in a given sport are scored on the identical set of resolved games, their uncertainty terms are identical by construction: 0.248092 for MLB, 0.238877 for soccer_intl. That match is a basic internal check on the file, not itself a finding."},
+    {"type": "p", "text": "brier_skill_scores.json reports the same two sports' Brier scores again, this time by game-phase grain, alongside a climatology reference (a constant sport-level base-rate forecast) and the standard skill-score formula BSS = 1 - Brier / Brier_ref. Its honest_note field states plainly that BSS against the market is near or below 0 across sports and checkpoints."},
+    {"type": "p", "text": "Dates: site_manifest.json lists the murphy_decomposition module with as_of null -- date not published -- and the brier_skill_scores module with as_of 2026-07-25T04:34:43Z. The curated insights/brier_skill_scores.json file separately carries as_of 2026-07-24T01:08:43Z, close to but not identical with the manifest's date for the same module, evidence of two separate generation passes rather than one canonical timestamp. The curated insights/murphy_decomposition.json file states its own as_of as the literal string 'unknown', which this paper treats as date not published per the site's own convention for missing dates."}
+   ]
+  },
+  {
+   "id": "method",
+   "heading": "Method",
+   "blocks": [
+    {"type": "p", "text": "Every number in the tables below is copied directly from the two named artifacts. Two derived quantities are computed here, and both are trivial differences of cited numbers, reported as such: remainder = brier - reconstructed_brier (the gap between the directly computed Brier and the identity's own reconstruction of it), and, in the skill-score table, the grain totals used to check whether the named grains sum to the all grain. The reliability_gap and resolution_gap figures quoted for MLB and soccer (model minus market) are not computed here; they are copied from murphy_decomposition.json's own verdict text, which already states them."},
+    {"type": "p", "text": "No re-binning, no re-scoring and no walk-forward re-estimation were performed. This paper describes what the two stored artifacts contain and checks whether the Murphy identity holds inside them; it does not re-derive the decomposition from raw forecast-outcome pairs."}
+   ]
+  },
+  {
+   "id": "results",
+   "heading": "Results",
+   "blocks": [
+    {"type": "p", "text": "Table 1 gives the full decomposition for both sports and both sides, plus the remainder (brier minus reconstructed_brier) for each."},
+    {"type": "table", "caption": "Murphy decomposition by sport and side (source murphy_decomposition.json; date not published)", "columns": ["Sport", "Side", "n", "Brier", "Reliability", "Resolution", "Uncertainty", "Reconstructed Brier", "Remainder (Brier - reconstructed)"], "rows": [
+      ["mlb", "model", "78986", "0.237684", "0.012701", "0.023628", "0.248092", "0.237166", "+0.000518"],
+      ["mlb", "market", "78986", "0.206653", "0.006061", "0.047124", "0.248092", "0.207030", "-0.000377"],
+      ["soccer_intl", "model", "9003", "0.227887", "0.092837", "0.038185", "0.238877", "0.293529", "-0.065642"],
+      ["soccer_intl", "market", "9003", "0.142726", "0.053423", "0.082761", "0.238877", "0.209538", "-0.066812"]
+     ],
+     "note": "Remainder = brier - reconstructed_brier, a trivial difference of two cited fields. Both mlb rows close to within 0.0005; both soccer_intl rows diverge by roughly 0.066."
+    },
+    {"type": "p", "text": "In MLB, the identity closes: the model's remainder is +0.000518 and the market's is -0.000377, both close enough to zero that the 10-bin reconstruction can be trusted as a description of the actual Brier. Given that, the model-versus-market comparison reads cleanly. Model reliability (0.012701) is close to market reliability (0.006061) -- a reliability_gap of +0.0066, copied from the file's own verdict text -- while model resolution (0.023628) trails market resolution (0.047124), a resolution_gap of -0.0235. The model's overall Brier (0.237684) is 0.031031 worse than the market's (0.206653), and that shortfall is concentrated in resolution, not reliability: the model is nearly as honest as the market about its own stated probabilities, but it separates winners from losers markedly less sharply."},
+    {"type": "p", "text": "In international soccer the identity does not close nearly as well, on either side. The model's reconstructed Brier (0.293529) is 0.065642 above its own directly computed Brier (0.227887); the market's reconstructed Brier (0.209538) is 0.066812 above its own directly computed Brier (0.142726). Both sides diverge by almost the same amount, which points at the 10-bin scheme itself (or the smaller n=9,003 corpus it is built on) rather than at something specific to the model's probabilities. Soccer's model-side reliability (0.092837) is also larger than its model-side resolution (0.038185) -- reliability is not smaller than resolution here, the reverse of the MLB ordering, where model resolution (0.023628) is larger than model reliability (0.012701). On the market side of soccer, resolution (0.082761) is larger than reliability (0.053423), matching the MLB ordering; it is specifically the soccer model curve where the ordering flips."},
+    {"type": "callout", "label": "Caution", "text": "A reconstruction gap of roughly 0.066 on both the soccer model and soccer market curves means the reliability/resolution/uncertainty split for soccer_intl should not be read as precisely as the MLB split. The file does not carry an alternate bin count, so this paper cannot say whether a finer or differently placed bin boundary scheme, or the smaller corpus, is the specific cause -- only that the identity does not add up here the way it does for MLB."}
+   ]
+  },
+  {
+   "id": "results-figure",
+   "heading": "Reliability curves",
+   "blocks": [
+    {"type": "figure", "module": "murphy_decomposition", "caption": "MLB and soccer_intl 10-bin reliability curves (mean forecast vs observed outcome rate), model_prob and market_prob, the same bins the reliability and resolution terms in Table 1 are built from."},
+    {"type": "math", "text": "Brier = reliability - resolution + uncertainty; reconstructed_brier = reliability - resolution + uncertainty (evaluated on the file's 10 bins); remainder = brier - reconstructed_brier"}
+   ]
+  },
+  {
+   "id": "results-bss",
+   "heading": "Skill score by game phase (MLB)",
+   "blocks": [
+    {"type": "p", "text": "brier_skill_scores.json breaks the same MLB corpus into three named game-phase grains -- early(inn1-3), mid(inn4-6), late(inn7+) -- alongside the all grain. Table 2 gives the Brier for model, market and climatology at each grain, plus both skill scores."},
+    {"type": "table", "caption": "MLB Brier Skill Score by grain, model vs climatology and model vs market (source brier_skill_scores.json, as of 2026-07-25)", "columns": ["Grain", "n", "Brier (model)", "Brier (market)", "Brier (climatology)", "BSS model vs climatology", "BSS model vs market"], "rows": [
+      ["all", "78986", "0.237684", "0.206653", "0.248092", "+0.0420", "-0.1502"],
+      ["early (inn1-3)", "19900", "0.246159", "0.228043", "0.248866", "+0.0109", "-0.0794"],
+      ["mid (inn4-6)", "18765", "0.214497", "0.185758", "0.250318", "+0.1431", "-0.1547"],
+      ["late (inn7+)", "13981", "0.233989", "0.159878", "0.248050", "+0.0567", "-0.4635"]
+     ],
+     "note": "BSS = 1 - Brier / Brier_ref; positive beats the reference, negative loses to it. Do not rank the all row against the three named grains below it -- see caution below."
+    },
+    {"type": "p", "text": "The model beats the climatology reference at every grain (BSS model vs climatology positive throughout, from +0.0109 early to +0.1431 mid), which is the expected result for any in-game model against a constant base rate. Against the market the model loses at every grain, and the loss grows sharply late: BSS model vs market is -0.0794 early, -0.1547 mid, and -0.4635 late -- late-game is where the market's Brier (0.159878) pulls furthest ahead of the model's (0.233989, a gap of 0.074111 on top of the aggregate gap already reported in Table 1). This is consistent with the Table 1 finding that the MLB shortfall is a resolution (information) gap rather than a reliability (calibration) gap: late in a game is exactly when late information -- a pitching change, an injury, a weather call -- would show up in a market price before it shows up in a model built on pre-game and in-game score-state features alone. Table 2 does not test that mechanism; it only shows where in the game the gap is largest."},
+    {"type": "callout", "label": "Caution", "text": "The three named grains do not sum to the all grain: 19,900 + 18,765 + 13,981 = 52,646 rows, against 78,986 in all -- a shortfall of 26,340 rows that carry no early/mid/late label. All is the full corpus, not the sum of the three named grains, so it should not be read as a fourth row to rank alongside them; it is the aggregate they are a subset of."}
+   ]
+  },
+  {
+   "id": "checks",
+   "heading": "Robustness and what would falsify this",
+   "blocks": [
+    {"type": "list", "items": [
+     "If a wider MLB corpus (more than the current 78,986 rows) produced a materially larger remainder than the current +0.000518 (model) and -0.000377 (market), that would undercut trust in the 10-bin identity generally, not only for the smaller soccer sample.",
+     "If a finer bin scheme closed soccer's roughly 0.066 reconstruction gap on both curves, that would support small-sample binning noise as the explanation; this file carries only one bin count (10), so that comparison cannot be run here.",
+     "If the soccer model's reliability-above-resolution ordering (0.092837 vs 0.038185) reversed once the soccer corpus grew well past 9,003 rows, that would suggest the current ordering is itself a small-n artifact rather than a stable feature of the soccer forecast.",
+     "The late-game MLB BSS-vs-market figure (-0.4635, n=13,981) would be falsified as a genuine late-game pattern if a subsequent MLB pull showed the mid or early grain moving to a similarly negative value -- the current pattern is monotonic (early less negative than mid less negative than late) and that ordering is itself testable against new data."
+    ]}
+   ]
+  },
+  {
+   "id": "limitations",
+   "heading": "Limitations",
+   "blocks": [
+    {"type": "list", "items": [
+     "murphy_decomposition.json covers only MLB moneyline and international-soccer moneyline; no NBA, tennis or WNBA rows exist in this artifact, so nothing here generalizes to those sports.",
+     "The 10-bin scheme does not reconstruct the directly computed Brier within a small tolerance for soccer_intl (both model and market remainders near 0.066), and this paper cannot say from the file alone whether finer bins, a different boundary placement, or the smaller n=9,003 corpus is the cause.",
+     "Reliability, resolution and uncertainty describe an aggregate corpus, not a paired game-by-game comparison; nothing here matches individual model calls against individual market calls on the same row.",
+     "A resolution gap is a measured difference in outcome-separating power, not a demonstrated cause; this paper does not test whether missing lineups, weather, or late news specifically explain the MLB gap, only that the gap sits in resolution rather than reliability.",
+     "The early/mid/late grains in brier_skill_scores.json cover 52,646 of the all grain's 78,986 MLB rows (66.6 percent); the remaining rows are not represented in the per-phase view, so the phase-level story in Table 2 is built on a subset of the rows behind Table 1's aggregate MLB numbers.",
+     "as_of dates differ across the artifacts describing these same modules (site_manifest.json's module dates versus the curated insights files' own as_of fields), so exact generation timestamps should not be treated as a single precise collection date."
+    ]}
+   ]
+  },
+  {
+   "id": "use",
+   "heading": "How to read this on the site",
+   "blocks": [
+    {"type": "p", "text": "The reliability curves behind Table 1 and the figure above are rendered in the score-decomposition inspector, which draws directly on the murphy_decomposition module. The calibration inspector carries the wider reliability-bin context these curves are built from. The cross-sport-comparability inspector is the right place to check, before comparing any number here across sports, whether MLB and soccer_intl are being compared on a like-for-like basis -- as this paper notes, they are not: the two corpora differ by nearly a factor of nine in size (78,986 vs 9,003 rows), and only these two sports carry a market-side decomposition at all."},
+    {"type": "p", "text": "Table 2's grain view and the brier_skill_scores module it is drawn from sit alongside this paper's decomposition table as a second, independent way of looking at the same MLB gap: one by component (reliability vs resolution), one by game phase (early vs mid vs late). Both point at the same reading -- an information gap that grows, rather than a calibration gap -- without either one proving the mechanism behind it."}
+   ]
+  }
+ ],
+ "evidence": [
+  {
+   "artifact": "showcase/murphy_decomposition.json",
+   "module": "murphy_decomposition",
+   "asOf": null,
+   "fields": [
+    "sports.mlb.n_rows",
+    "sports.mlb.model_prob.n", "sports.mlb.model_prob.brier", "sports.mlb.model_prob.reliability", "sports.mlb.model_prob.resolution", "sports.mlb.model_prob.uncertainty", "sports.mlb.model_prob.reconstructed_brier",
+    "sports.mlb.market_prob.n", "sports.mlb.market_prob.brier", "sports.mlb.market_prob.reliability", "sports.mlb.market_prob.resolution", "sports.mlb.market_prob.uncertainty", "sports.mlb.market_prob.reconstructed_brier",
+    "sports.soccer_intl.n_rows",
+    "sports.soccer_intl.model_prob.n", "sports.soccer_intl.model_prob.brier", "sports.soccer_intl.model_prob.reliability", "sports.soccer_intl.model_prob.resolution", "sports.soccer_intl.model_prob.uncertainty", "sports.soccer_intl.model_prob.reconstructed_brier",
+    "sports.soccer_intl.market_prob.n", "sports.soccer_intl.market_prob.brier", "sports.soccer_intl.market_prob.reliability", "sports.soccer_intl.market_prob.resolution", "sports.soccer_intl.market_prob.uncertainty", "sports.soccer_intl.market_prob.reconstructed_brier",
+    "method", "verdict"
+   ]
+  },
+  {
+   "artifact": "showcase/brier_skill_scores.json",
+   "module": "brier_skill_scores",
+   "asOf": "2026-07-25T04:34:43.456609+00:00",
+   "fields": [
+    "sports.mlb.grains.all.n", "sports.mlb.grains.all.brier_model", "sports.mlb.grains.all.brier_market", "sports.mlb.grains.all.brier_clim", "sports.mlb.grains.all.bss_model_vs_clim", "sports.mlb.grains.all.bss_model_vs_market",
+    "sports.mlb.grains.early(inn1-3).n", "sports.mlb.grains.early(inn1-3).brier_model", "sports.mlb.grains.early(inn1-3).brier_market", "sports.mlb.grains.early(inn1-3).brier_clim", "sports.mlb.grains.early(inn1-3).bss_model_vs_clim", "sports.mlb.grains.early(inn1-3).bss_model_vs_market",
+    "sports.mlb.grains.mid(inn4-6).n", "sports.mlb.grains.mid(inn4-6).brier_model", "sports.mlb.grains.mid(inn4-6).brier_market", "sports.mlb.grains.mid(inn4-6).brier_clim", "sports.mlb.grains.mid(inn4-6).bss_model_vs_clim", "sports.mlb.grains.mid(inn4-6).bss_model_vs_market",
+    "sports.mlb.grains.late(inn7+).n", "sports.mlb.grains.late(inn7+).brier_model", "sports.mlb.grains.late(inn7+).brier_market", "sports.mlb.grains.late(inn7+).brier_clim", "sports.mlb.grains.late(inn7+).bss_model_vs_clim", "sports.mlb.grains.late(inn7+).bss_model_vs_market",
+    "honest_note"
+   ]
+  },
+  {
+   "artifact": "insights/murphy_decomposition.json",
+   "module": "murphy_decomposition",
+   "asOf": null,
+   "fields": ["headline_insight", "caveat", "as_of"]
+  },
+  {
+   "artifact": "insights/brier_skill_scores.json",
+   "module": "brier_skill_scores",
+   "asOf": "2026-07-24T01:08:43.969532+00:00",
+   "fields": ["cited", "as_of"]
+  },
+  {
+   "artifact": "site_manifest.json",
+   "module": "murphy_decomposition",
+   "asOf": null,
+   "fields": ["modules[id=murphy_decomposition].as_of"]
+  },
+  {
+   "artifact": "site_manifest.json",
+   "module": "brier_skill_scores",
+   "asOf": "2026-07-25T04:34:43.456609+00:00",
+   "fields": ["modules[id=brier_skill_scores].as_of"]
+  }
+ ],
+ "limitations": [
+  "murphy_decomposition.json covers only MLB moneyline and international-soccer moneyline; no NBA, tennis or WNBA rows exist in this artifact, so nothing here generalizes to those sports.",
+  "The 10-bin scheme does not reconstruct the directly computed Brier within a small tolerance for soccer_intl (both model and market remainders near 0.066), and this paper cannot say from the file alone whether finer bins, a different boundary placement, or the smaller n=9,003 corpus is the cause.",
+  "Reliability, resolution and uncertainty describe an aggregate corpus, not a paired game-by-game comparison; nothing here matches individual model calls against individual market calls on the same row.",
+  "A resolution gap is a measured difference in outcome-separating power, not a demonstrated cause; this paper does not test whether missing lineups, weather, or late news specifically explain the MLB gap, only that the gap sits in resolution rather than reliability.",
+  "The early/mid/late grains in brier_skill_scores.json cover 52,646 of the all grain's 78,986 MLB rows (66.6 percent); the remaining rows are not represented in the per-phase view."
+ ],
+ "related": [
+  {"kind": "inspector", "id": "score-decomposition"},
+  {"kind": "inspector", "id": "calibration"},
+  {"kind": "inspector", "id": "cross-sport-comparability"},
+  {"kind": "module", "id": "murphy_decomposition"},
+  {"kind": "module", "id": "brier_skill_scores"}
+ ]
+}

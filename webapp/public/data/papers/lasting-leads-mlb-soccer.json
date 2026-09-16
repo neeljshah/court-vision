@@ -1,0 +1,161 @@
+{
+ "slug": "lasting-leads-mlb-soccer",
+ "title": "When a lead lasts",
+ "subtitle": "Incidence and timing of margins that persist to the last recorded score tick, MLB and international soccer",
+ "authors": ["CourtVision research"],
+ "date": "2026-09-16",
+ "sport": "all",
+ "keywords": ["lead persistence", "clinch time", "incidence", "game state", "MLB", "soccer"],
+ "abstract": "This paper asks a narrow, descriptive question about game flow: once a scoring margin opens to a given size, how often does it hold all the way to the last score tick this system recorded, and when in the game does that become true. The measurement reads only the score path -- no model or market probability -- and 'holds' means to the last recorded tick in this corpus, not a verified true final score, since completeness of the feed beyond that tick is not established here. Across 178 MLB games (n_games_raw = n_games_usable = 178), a 2-run gap becomes permanent in 134 games (75.28%), typically by the middle of the 6th inning (median inning 6.0, interquartile range 4.0 to 8.0; median clock fraction of the observed game 0.6842, IQR 0.451 to 0.8889). Bigger MLB gaps lock in later and in fewer games: 3 runs in 95 games (53.37%, median inning 7.0), 4 runs in 69 games (38.76%, median inning 7.5), 5 runs in 48 games (26.97%, median inning 7.5, IQR 6.0 to 8.5). Across 29 international soccer games, only the 1-goal threshold clears the artifact's own 10-game floor: it becomes permanent in 14 games (48.28%, median minute 39.5, IQR 22.75 to 56.25). The 2-goal (3 of 29 decided) and 3-goal (0 of 29 decided) soccer cells sit below that floor and are masked from any headline number. Innings and minutes are separate clocks on separate sports and are never pooled into one distribution.",
+ "sections": [
+  {
+   "id": "question",
+   "heading": "Question",
+   "blocks": [
+    {"type": "p", "text": "Broadcasters and bettors both use the intuition that a game is 'effectively over' once one side's lead gets big enough, well before the literal final tick. This paper does not assert that intuition -- it measures it, on the score path alone, for two sports where the underlying artifact carries per-game score ticks: MLB and international soccer."},
+    {"type": "p", "text": "Two things need to be pinned down before any number means anything. First, 'persists' here means persists to the last score tick this system recorded for that game, not to a confirmed true final score. If a feed stopped short of a game's real end for any reason, that truncation is invisible to this method -- an in-progress margin at the point the recording stops would be read as permanent. Second, a threshold is checked once it is reached: from the first tick where the absolute margin is at or above the threshold, does it ever drop back below that threshold at any later recorded tick in that game."},
+    {"type": "p", "text": "Two quantities follow from that definition, per (sport, threshold) pair. Incidence: in what fraction of games does the threshold ever become permanent in this sense (n_games_decided over n_games_total). Timing: conditional on it happening, when -- in the sport's own clock unit and as a fraction of that game's own observed length."}
+   ]
+  },
+  {
+   "id": "data",
+   "heading": "Data and definitions",
+   "blocks": [
+    {"type": "p", "text": "The source artifact is webapp/public/data/showcase/blowout_dynamics.json, published on the site as the blowout_dynamics module (site_manifest.json lists it with status 'partial' and as_of null -- date not published). A companion summary card at webapp/public/data/insights/blowout_dynamics.json restates the headline pattern in prose; the per-threshold quartiles used in this paper come from the showcase artifact's thresholds arrays, which the insight card does not carry in full."},
+    {"type": "p", "text": "Corpora: MLB has n_games_raw = 178 and n_games_usable = 178 (no games were dropped between raw and usable). International soccer has n_games_raw = 29 and n_games_usable = 29. Both sports share a per-game floor, min_ticks_floor = 10: a game with fewer than 10 recorded score ticks is excluded from the corpus entirely, before any threshold is checked."},
+    {"type": "p", "text": "Each (sport, threshold) cell in the thresholds array carries n_games_total, n_games_decided, and decided_frac_of_games (the incidence rate). When a cell clears the artifact's separate floors.min_games_per_threshold = 10 (at least 10 games decided at that threshold), it additionally carries decided_clock_median, decided_clock_p25, decided_clock_p75, decided_clock_mean -- in the sport's native clock unit -- and decided_clockfrac_median / p25 / p75, a fraction of that same game's own final recorded clock value."},
+    {"type": "callout", "label": "Definition", "text": "decided_clockfrac is not a fraction of a fixed 9-inning or 90-minute game length. It divides the clock value at the point of no return by the clock value of that same game's last recorded tick. A game recorded through extra innings or stoppage time has a larger denominator than a game recorded through regulation only, so clockfrac measures how far into the observed span the lock-in happened, not a position on a fixed schedule."},
+    {"type": "math", "text": "decided_clockfrac = decided_clock / final_recorded_clock (same game, same units)"},
+    {"type": "p", "text": "The floors are declared once in the artifact itself (floors.min_ticks_per_game = 10, floors.min_games_per_threshold = 10) and applied uniformly to every cell, with the artifact's own note that they are 'declared once, not tuned to output.' A cell below the games floor keeps its raw n_games_decided, n_games_total, and decided_frac_of_games, but its clock-timing fields are absent from the artifact and masked_below_floor is set to true. This paper reports masked cells' raw counts and marks them masked; it does not report a median or IQR for them because the artifact does not compute one."},
+    {"type": "p", "text": "One source key, mlb_clean, was present upstream and is listed in the artifact's own skipped array as a byte-identical duplicate of mlb; it was not loaded and is not double-counted in the 178-game MLB denominator used throughout this paper."}
+   ]
+  },
+  {
+   "id": "method",
+   "heading": "Method",
+   "blocks": [
+    {"type": "p", "text": "Per game, the module orders every recorded score tick by (game-clock, timestamp) and finds, for each margin threshold, the first tick from which the absolute margin between the two sides stays at or above that threshold for every subsequent recorded tick through the last one. That first tick is the threshold's point of no return for that game. If the margin never reaches the threshold, or reaches it but later falls back below it at some later recorded tick, the game contributes to n_games_total but not to n_games_decided for that threshold."},
+    {"type": "p", "text": "This is a read of the score path only. It does not touch any model output or market price, and it does not distinguish why a margin held (a blowout that never got close again versus a comeback that fell just short) -- it only asks whether the margin, once opened to the threshold, was ever crossed back."},
+    {"type": "p", "text": "Units are sport-specific and are never pooled: MLB's clock_field is inning, international soccer's is minute. A median inning number and a median minute number are different unit systems and are always reported and read separately in this paper; nowhere below is an inning count averaged with, compared against, or converted to a minute count, and no claim is made that one sport's leads lock in 'faster' or 'slower' than the other's in real time."}
+   ]
+  },
+  {
+   "id": "results",
+   "heading": "Results",
+   "blocks": [
+    {"type": "p", "text": "MLB, all four thresholds above the games floor, from webapp/public/data/showcase/blowout_dynamics.json sports.mlb.thresholds:"},
+    {"type": "table", "caption": "MLB: incidence and timing of a permanent run-margin, by threshold", "columns": ["Threshold (runs)", "Decided / total (n)", "Incidence (%)", "Median clock (inning)", "P25-P75 (inning)", "Median clock fraction"], "rows": [
+     ["2", "134 / 178", "75.28", "6.0", "4.0-8.0", "0.6842"],
+     ["3", "95 / 178", "53.37", "7.0", "5.0-8.5", "0.8333"],
+     ["4", "69 / 178", "38.76", "7.5", "6.0-8.5", "0.8824"],
+     ["5", "48 / 178", "26.97", "7.5", "6.0-8.5", "0.8889"]
+    ], "note": "Source: webapp/public/data/showcase/blowout_dynamics.json, sports.mlb.thresholds[]; n_games_usable=178, min_ticks_floor=10."},
+    {"type": "p", "text": "The pattern is monotone in both directions at once: a bigger required gap becomes permanent in fewer games (75.28% down to 26.97% of the same 178-game corpus) and, conditional on becoming permanent, does so later (median inning 6.0 up to 7.5) and later still as a fraction of the observed game (median clock fraction 0.6842 up to 0.8889). The IQR widens very little from the 4-run to the 5-run cell (6.0-8.5 in inning terms for both), while the 2-run cell has the widest inning-terms spread (4.0-8.0), consistent with a 2-run gap being reachable, and reversible, across a much larger share of a game's innings than a 5-run gap."},
+    {"type": "p", "text": "International soccer, from sports.soccer_intl.thresholds:"},
+    {"type": "table", "caption": "International soccer: incidence and timing of a permanent goal-margin, by threshold", "columns": ["Threshold (goals)", "Decided / total (n)", "Incidence (%)", "Median clock (minute)", "P25-P75 (minute)", "Median clock fraction", "Status"], "rows": [
+     ["1", "14 / 29", "48.28", "39.5", "22.75-56.25", "0.7475", "above floor"],
+     ["2", "3 / 29", "10.34", "n/a", "n/a", "n/a", "masked (below 10-game floor)"],
+     ["3", "0 / 29", "0.00", "n/a", "n/a", "n/a", "masked (below 10-game floor)"]
+    ], "note": "Source: webapp/public/data/showcase/blowout_dynamics.json, sports.soccer_intl.thresholds[]; n_games_usable=29, min_ticks_floor=10, floors.min_games_per_threshold=10."},
+    {"type": "callout", "label": "Caution", "text": "Masked rows: the 2-goal cell (3 of 29 games ever decided) and the 3-goal cell (0 of 29) both sit below the artifact's floors.min_games_per_threshold = 10 and are marked masked_below_floor = true. Their raw counts are shown above for transparency, but no median, IQR, or incidence claim beyond the raw n should be drawn from them -- the only soccer threshold with a supported timing distribution in this corpus is 1 goal."},
+    {"type": "p", "text": "For the one supported soccer cell: a 1-goal gap becomes permanent in 14 of 29 games (48.28%), typically just after the midpoint of the match (median minute 39.5, IQR 22.75 to 56.25), at a median clock fraction of 0.7475 (IQR 0.3824 to 0.9633) of that game's own observed length. The wide IQR on both the minute scale and the clock-fraction scale reflects the small n (14 decided games) behind this single cell."},
+    {"type": "figure", "module": "blowout_dynamics", "caption": "Point-of-no-return incidence and timing by (sport, threshold): MLB thresholds of 2-5 runs and the international-soccer 1-goal threshold; masked cells shown but excluded from the headline pattern."},
+    {"type": "p", "text": "A separate module on this site, why_attribution, reports numbers that can look superficially similar to the ones above -- a 'from' state and a 'to' state joined by a probability difference -- but it answers a different question and should not be read as a persistence or transition-frequency measurement. why_attribution's from/to pair is two adjacent time-probability buckets (for example, minute 15-30 at forecast .4-.6, and minute 30-45 at forecast .2-.4), each an aggregate over a distinct set of game-observations that happened to sit in that bucket; winprob_delta is the difference between the two buckets' realized win rates, mean_y(B) minus mean_y(A) -- not the frequency with which any single game actually moved from state A to state B. Its largest-magnitude contrast is soccer_intl, minute 15-30 at forecast .4-.6 (mean_y 1.0, n=120) versus minute 30-45 at forecast .2-.4 (mean_y 0.2317, n=123), winprob_delta -0.7683 with min_support_n = 120 (why_attribution.json biggest_drops[0]). That -0.7683 is a between-bucket contrast in two different groups' realized outcomes; it is not evidence that 77% of games with a lead at minute 15-30 go on to lose that lead by minute 30-45, and this paper's incidence and timing numbers above should not be confused with it."}
+   ]
+  },
+  {
+   "id": "checks",
+   "heading": "Robustness and what would falsify this",
+   "blocks": [
+    {"type": "p", "text": "The floors that decide which cells get a headline number (10 ticks per game, 10 decided games per threshold) are declared once in the artifact itself, not chosen after looking at which cells happened to look clean. That discipline is what lets the 2-goal and 3-goal soccer cells be reported honestly as masked on 3 and 0 decided games, rather than reported with a spurious median computed from a handful of games."},
+    {"type": "p", "text": "The mlb_clean duplicate-source check caught and dropped a byte-identical copy of the MLB corpus before it could silently double the 178-game denominator; every MLB number in this paper is against that single, de-duplicated 178-game count."},
+    {"type": "list", "items": [
+     "This would be revised if a larger international-soccer corpus (more than the current 29 games) cleared the 10-game floor on the 2-goal or 3-goal thresholds and produced an incidence or median-minute pattern materially different from what the 1-goal cell alone suggests.",
+     "This would be revised if a re-run on a different MLB season or corpus moved the 2-run median outside its own reported IQR (4.0 to 8.0 innings), which would say the 178-game figure here was not representative.",
+     "This would be revised if the last-recorded-tick assumption were checked against verified true final scores and found to differ systematically -- for example if truncated feeds were common and biased the incidence numbers upward by mistaking in-progress margins for permanent ones."
+    ]},
+    {"type": "p", "text": "This module carries MLB and international soccer only. The blowout_dynamics artifact's own companion insight card notes that the NBA cut is not present in this artifact, and this paper makes no claim, positive or negative, about basketball lead persistence."}
+   ]
+  },
+  {
+   "id": "limitations",
+   "heading": "Limitations",
+   "blocks": [
+    {"type": "list", "items": [
+     "Persistence is measured to the last recorded score tick in this corpus, not a verified true final score; a feed that stopped short of a game's real end would be read by this method as a permanent margin, and that possibility is not checked here.",
+     "The international-soccer corpus is 29 games, and only the 1-goal threshold clears the artifact's own 10-game floor; the 2-goal (3 of 29 decided) and 3-goal (0 of 29 decided) cells are masked, so no soccer claim above 1 goal is supported by this artifact.",
+     "MLB innings and soccer minutes are different clocks on different sports and are never pooled or converted to a common scale in this paper; nothing here compares how 'fast' a lead locks in across the two sports.",
+     "This is a descriptive read of the score path, not a model or market probability; it says nothing about forecast calibration, and it is not a statement about how likely a lead was to hold at the moment it opened.",
+     "Only one corpus snapshot is reported here, with as_of not published on the source artifact; there is no walk-forward or multi-season replication showing these incidence and timing figures are stable across seasons or competitions."
+    ]}
+   ]
+  },
+  {
+   "id": "use",
+   "heading": "How to read this on the site",
+   "blocks": [
+    {"type": "p", "text": "The blowout-timing inspector on the site renders the same per-threshold incidence and timing table shown above, live from the blowout_dynamics module, including the masked-cell markers. Readers who want the calibration angle rather than this descriptive game-flow angle should go to the state-contrasts and state-reliability inspectors, which carry the why_attribution-style between-bucket material referenced in the results section above -- and should keep the distinction made there in mind: a between-bucket forecast contrast is not a within-game transition, and neither inspector should be read as reporting how often a lead like this one actually reverses."},
+    {"type": "p", "text": "The figure above draws from the same published blowout_dynamics module cited throughout this paper; masked cells are shown on it for transparency and are visually distinguished from the cells that clear the games floor."}
+   ]
+  }
+ ],
+ "evidence": [
+  {
+   "artifact": "blowout_dynamics.json",
+   "module": "blowout_dynamics",
+   "asOf": null,
+   "fields": [
+    "method",
+    "floors.min_ticks_per_game",
+    "floors.min_games_per_threshold",
+    "sports.mlb.n_games_raw",
+    "sports.mlb.n_games_usable",
+    "sports.mlb.min_ticks_floor",
+    "sports.mlb.thresholds[0] (threshold=2): n_games_decided, n_games_total, decided_frac_of_games, decided_clock_median, decided_clock_p25, decided_clock_p75, decided_clockfrac_median, decided_clockfrac_p25, decided_clockfrac_p75",
+    "sports.mlb.thresholds[1] (threshold=3): n_games_decided, n_games_total, decided_frac_of_games, decided_clock_median, decided_clock_p25, decided_clock_p75, decided_clockfrac_median",
+    "sports.mlb.thresholds[2] (threshold=4): n_games_decided, n_games_total, decided_frac_of_games, decided_clock_median, decided_clock_p25, decided_clock_p75, decided_clockfrac_median",
+    "sports.mlb.thresholds[3] (threshold=5): n_games_decided, n_games_total, decided_frac_of_games, decided_clock_median, decided_clock_p25, decided_clock_p75, decided_clockfrac_median, decided_clockfrac_p25, decided_clockfrac_p75",
+    "sports.soccer_intl.n_games_raw",
+    "sports.soccer_intl.n_games_usable",
+    "sports.soccer_intl.thresholds[0] (threshold=1): n_games_decided, n_games_total, decided_frac_of_games, decided_clock_median, decided_clock_p25, decided_clock_p75, decided_clockfrac_median, decided_clockfrac_p25, decided_clockfrac_p75",
+    "sports.soccer_intl.thresholds[1] (threshold=2): n_games_decided, n_games_total, decided_frac_of_games, masked_below_floor",
+    "sports.soccer_intl.thresholds[2] (threshold=3): n_games_decided, n_games_total, decided_frac_of_games, masked_below_floor",
+    "skipped[0].sport, skipped[0].reason"
+   ]
+  },
+  {
+   "artifact": "why_attribution.json",
+   "module": "why_attribution",
+   "asOf": null,
+   "fields": [
+    "biggest_drops[0].from.time, biggest_drops[0].from.prob, biggest_drops[0].from.mean_y, biggest_drops[0].from.n",
+    "biggest_drops[0].to.time, biggest_drops[0].to.prob, biggest_drops[0].to.mean_y, biggest_drops[0].to.n",
+    "biggest_drops[0].winprob_delta",
+    "biggest_drops[0].min_support_n"
+   ]
+  },
+  {
+   "artifact": "site_manifest.json",
+   "module": null,
+   "asOf": null,
+   "fields": [
+    "modules[] (blowout_dynamics entry): status, as_of",
+    "modules[] (why_attribution entry): status, as_of"
+   ]
+  }
+ ],
+ "limitations": [
+  "Persistence is measured to the last recorded score tick in this corpus, not a verified true final score; a feed that stopped short of a game's real end would be read by this method as a permanent margin, and that possibility is not checked here.",
+  "The international-soccer corpus is 29 games, and only the 1-goal threshold clears the artifact's own 10-game floor; the 2-goal (3 of 29 decided) and 3-goal (0 of 29 decided) cells are masked, so no soccer claim above 1 goal is supported by this artifact.",
+  "MLB innings and soccer minutes are different clocks on different sports and are never pooled or converted to a common scale in this paper; nothing here compares how fast a lead locks in across the two sports.",
+  "This is a descriptive read of the score path, not a model or market probability; it says nothing about forecast calibration and is not a statement about how likely a lead was to hold at the moment it opened.",
+  "Only one corpus snapshot is reported here, with as_of not published on the source artifact; there is no walk-forward or multi-season replication showing these incidence and timing figures are stable across seasons or competitions."
+ ],
+ "related": [
+  {"kind": "inspector", "id": "blowout-timing"},
+  {"kind": "inspector", "id": "state-contrasts"},
+  {"kind": "inspector", "id": "state-reliability"},
+  {"kind": "module", "id": "blowout_dynamics"},
+  {"kind": "module", "id": "why_attribution"}
+ ]
+}

@@ -1,0 +1,169 @@
+{
+ "slug": "calibration-reliability-by-sport-and-state",
+ "title": "Where forecasts match outcomes",
+ "subtitle": "Reliability of CourtVision win forecasts against the closing reference, by sport and by game state",
+ "authors": ["CourtVision research"],
+ "date": "2026-09-16",
+ "sport": "all",
+ "keywords": ["calibration", "reliability", "game state", "cluster bootstrap", "Brier", "MLB", "soccer"],
+ "abstract": "We measured how closely CourtVision's model win probabilities and the devigged market close match observed outcomes, in aggregate and conditioned on game state, for two graded in-game corpora: MLB (78,986 rows, 227 games) and international soccer (9,003 rows, 51 games). A game-cluster bootstrap (1000 resamples of game_id) on 10 probability bins finds the MLB market indistinguishable from perfectly calibrated (0 of 10 bins have a gap confidence interval excluding 0), while the MLB model misses on 4 of 10 bins, worst at its own top bin: predicted 0.9541, observed 0.6632 (n=4,753 rows, 118 games, gap -0.2909, 95 percent CI -0.4022 to -0.1822). Soccer is noisier for both sides (model 8 of 10, market 6 of 10 bins significant on only 51 games) and no firm sport-level verdict follows from it. Conditioning on game state inside MLB, the model's single largest well-sampled miss is late innings (7+) at high confidence (0.8-1.0): predicted 0.9211, observed 0.6853 (n=5,037, calibration error 0.2357), against a market cell of predicted 0.9199, observed 0.9405 (n=2,771, calibration error 0.0206) built from a different, non-overlapping set of rows. Across all late-inning bands the n-weighted expected calibration error is 0.079 for the model versus 0.0591 for the market. The honest read: on both the aggregate and the late-game view, the MLB market is closer to calibrated than the model, and the model's worst spot is exactly where it is most confident. Soccer numbers are directionally similar but rest on far less data and are not treated as settled here.",
+ "sections": [
+  {
+   "id": "question",
+   "heading": "Question",
+   "blocks": [
+    {"type": "p", "text": "How often does a CourtVision win forecast land close to what actually happened, and does that reliability hold once you condition on when in the game the forecast was made? This paper answers both parts for the two sports with graded in-game corpora available -- MLB and international soccer (soccer_intl) -- and puts every model number next to a market reference number so a reader can judge which one tracks observed outcomes more closely, without assuming a shared bin label means the two numbers came from the same rows."},
+    {"type": "p", "text": "This is a calibration and reliability exercise only: it reports whether a stated probability matches the observed frequency of the outcome, sport by sport and game-state by game-state. It does not measure whether acting on either source's price would have produced a return; that question is out of scope here."}
+   ]
+  },
+  {
+   "id": "data",
+   "heading": "Data and definitions",
+   "blocks": [
+    {"type": "p", "text": "calibration_stability.json holds a cluster-bootstrap reliability exhibit built from data/cache/ingame_grade_joined/{mlb,soccer_intl}, dated 2026-07-23T03:21:27Z. For MLB it covers 78,986 graded rows across 227 games; for soccer_intl, 9,003 rows across 51 games. Each sport carries two independently built sets of 10 probability bins (0.0-0.1 through 0.9-1.0): one for model_prob (the CourtVision forecast) and one for market_prob (the devigged closing reference). Each bin records n (rows), n_games, mean_p (mean forecast in that bin), mean_y (observed outcome rate), gap (mean_p minus mean_y), a bootstrapped 95 percent CI on the gap, and whether that CI excludes 0 (significant)."},
+    {"type": "p", "text": "state_conditioned_calibration.json buckets the same style of graded rows by time_bucket (game phase, e.g. MLB late(inn7+) or soccer 75-90+) crossed with prob_bucket (a coarser 5-band split: 0-.2, .2-.4, .4-.6, .6-.8, .8-1), again separately per source. For MLB it starts from 78,986 records across 227 files and drops 26,340 rows that carry no game-state field; for soccer_intl it starts from 9,003 records across 51 files and drops 5,345. This artifact's as_of field is null in the site manifest -- date not published -- so its numbers are not dated the way calibration_stability.json's are."},
+    {"type": "p", "text": "Both artifacts list one skipped sport, mlb_clean, excluded as a byte-identical duplicate of the mlb corpus so the same games are not counted twice."}
+   ]
+  },
+  {
+   "id": "method",
+   "heading": "Method",
+   "blocks": [
+    {"type": "p", "text": "The aggregate bins in calibration_stability.json are tested with a cluster bootstrap: resample game_id (not individual rows) with replacement 1,000 times, rebuild the 10-bin reliability curve on each resample, and take the 2.5th and 97.5th percentile of the gap as the 95 percent CI. Resampling whole games rather than rows matters because rows from the same game are correlated (a team that is up 0.95 to win in the 8th inning is still up close to 0.95 two pitches later); resampling rows would treat those correlated observations as independent evidence and understate how uncertain a bin's gap really is."},
+    {"type": "math", "text": "gap = mean_p - mean_y; 95% CI from 1000 game-cluster bootstrap resamples; significant = (CI excludes 0)"},
+    {"type": "p", "text": "A bin label is shared between model and market, but the two bins are not paired. Each side's rows are grouped by that side's own probability value, so the rows landing in the model's 0.9-1.0 bin are a different set from the rows landing in the market's 0.9-1.0 bin whenever the model and market disagree about a given row (which is common). The artifact confirms this directly: the MLB model's 0.9-1.0 bin has n=4,753 rows across 118 games, while the MLB market's 0.9-1.0 bin has n=5,153 rows across 106 games -- different row counts and different game counts under the identical label. The same pattern holds in the state-conditioned buckets: MLB's late(inn7+), 0.8-1 cell has n=5,037 for the model and n=2,771 for the market."},
+    {"type": "callout", "label": "Caution", "text": "Because model and market bins (and state-conditioned cells) are built from different, non-identical row sets, subtracting a market gap from a model gap, cell by cell, is not a paired difference-in-differences -- it is two separate marginal readouts that happen to share an axis label. Any comparison below is stated as two numbers side by side, not as a single paired delta."}
+   ]
+  },
+  {
+   "id": "results",
+   "heading": "Results",
+   "blocks": [
+    {"type": "p", "text": "Aggregate reliability, MLB (78,986 rows, 227 games, as of 2026-07-23): the model's overall Brier is 0.2377 and the market's is 0.2067 (both from calibration_stability.json's per-side brier field; the model's Brier is 0.0310 higher). Of the model's 10 bins, 4 have a gap CI excluding 0 (40 percent); of the market's 10 bins, 0 do (0 percent) -- the market's MLB reliability curve does not show a single bin that survives the game-cluster bootstrap as a real miss."},
+    {"type": "table", "caption": "MLB aggregate reliability bins, model vs market, 1000-draw game-cluster bootstrap (n=78,986 rows, 227 games; source calibration_stability.json, as of 2026-07-23)", "columns": ["Bin", "Source", "n (rows)", "n (games)", "Mean forecast", "Observed rate", "Gap", "95% gap CI", "Significant"], "rows": [
+      ["0.0-0.1", "model", "5127", "133", "0.0512", "0.2331", "0.1819", "0.1040 to 0.2738", "yes"],
+      ["0.0-0.1", "market", "4176", "99", "0.0527", "0.0321", "-0.0206", "-0.0478 to 0.0191", "no"],
+      ["0.1-0.2", "model", "4495", "137", "0.1588", "0.2525", "0.0937", "0.0061 to 0.1901", "yes"],
+      ["0.1-0.2", "market", "3827", "114", "0.1487", "0.1730", "0.0243", "-0.0926 to 0.1549", "no"],
+      ["0.2-0.3", "model", "4708", "132", "0.2453", "0.3031", "0.0578", "-0.0301 to 0.1678", "no"],
+      ["0.2-0.3", "market", "2997", "123", "0.2468", "0.1728", "-0.0740", "-0.1548 to 0.0267", "no"],
+      ["0.3-0.4", "model", "7071", "146", "0.3611", "0.2826", "-0.0785", "-0.1684 to 0.0192", "no"],
+      ["0.3-0.4", "market", "4788", "141", "0.3598", "0.2360", "-0.1238", "-0.2397 to 0.0393", "no"],
+      ["0.4-0.5", "model", "14736", "167", "0.4568", "0.3916", "-0.0653", "-0.1650 to 0.0397", "no"],
+      ["0.4-0.5", "market", "15028", "190", "0.4503", "0.3871", "-0.0632", "-0.1895 to 0.0682", "no"],
+      ["0.5-0.6", "model", "17652", "186", "0.5436", "0.4619", "-0.0818", "-0.1736 to 0.0137", "no"],
+      ["0.5-0.6", "market", "26309", "206", "0.5498", "0.4497", "-0.1002", "-0.2016 to 0.0084", "no"],
+      ["0.6-0.7", "model", "9214", "160", "0.6456", "0.5745", "-0.0711", "-0.1862 to 0.0543", "no"],
+      ["0.6-0.7", "market", "8350", "167", "0.6432", "0.5841", "-0.0592", "-0.2161 to 0.0818", "no"],
+      ["0.7-0.8", "model", "5364", "130", "0.7480", "0.6743", "-0.0737", "-0.1865 to 0.0360", "no"],
+      ["0.7-0.8", "market", "4357", "137", "0.7422", "0.6672", "-0.0750", "-0.2036 to 0.0397", "no"],
+      ["0.8-0.9", "model", "5866", "138", "0.8473", "0.7335", "-0.1138", "-0.2206 to -0.0200", "yes"],
+      ["0.8-0.9", "market", "4001", "119", "0.8514", "0.8100", "-0.0414", "-0.1452 to 0.0462", "no"],
+      ["0.9-1.0", "model", "4753", "118", "0.9541", "0.6632", "-0.2909", "-0.4022 to -0.1822", "yes"],
+      ["0.9-1.0", "market", "5153", "106", "0.9483", "0.9559", "0.0076", "-0.0354 to 0.0379", "no"]
+     ],
+     "note": "Bin rows for model and market are independently constructed and not paired (see Method); 4 of 10 model bins and 0 of 10 market bins have a gap CI excluding 0."
+    },
+    {"type": "p", "text": "The model's worst MLB bin is exactly where it is most confident: at 0.9-1.0 it predicts 0.9541 on average but the outcome rate is 0.6632 (n=4,753, 118 games), a gap of -0.2909 whose CI (-0.4022 to -0.1822) is entirely below zero. The market's own 0.9-1.0 bin, built from a different 5,153 rows across 106 games, predicts 0.9483 and observes 0.9559 -- a gap of 0.0076 with a CI (-0.0354 to 0.0379) that straddles zero. The model also misreads its own longshot bin: at 0.0-0.1 it predicts 0.0512 but observes 0.2331 (n=5,127, 133 games, gap 0.1819, significant), while the market's 0.0-0.1 bin (n=4,176, 99 games) predicts 0.0527 and observes 0.0321, a gap of only -0.0206 that is not significant. On MLB aggregate reliability, the honest verdict is that the market is the better-calibrated of the two, and not by a small margin at the tails."},
+    {"type": "p", "text": "Soccer_intl aggregate reliability (9,003 rows, 51 games): the model's Brier is 0.2279 versus the market's 0.1427 (a 0.0852 gap), and both sides show far more significant bins than MLB -- 8 of 10 for the model, 6 of 10 for the market. That the market itself fails 6 of 10 bins here says the 51-game soccer corpus is too small to support a firm sport-level calibration verdict for either source; the pattern (model worse than market) is directionally the same as MLB, but it should be read as suggestive, not settled."},
+    {"type": "figure", "module": "calibration_stability", "caption": "MLB and soccer_intl 10-bin reliability curves, model_prob vs market_prob, from the same game-cluster bootstrap exhibit as the table above."},
+    {"type": "p", "text": "Conditioning on game state (state_conditioned_calibration.json) narrows the question to specific game-phase x confidence-band cells. For MLB, the n-weighted expected calibration error (ECE) across all state-conditioned cells is 0.079 for the model and 0.0591 for the market -- the model trails on this state-weighted summary too, consistent with the aggregate view."},
+    {"type": "table", "caption": "MLB late-inning (inn7+) state-conditioned cells, model vs market, by forecast-probability band (source state_conditioned_calibration.json; 78,986 total records across 227 files; date not published)", "columns": ["Prob. band", "Source", "n", "Mean forecast", "Observed rate", "Calibration error"], "rows": [
+      ["0-0.2", "model", "5431", "0.0748", "0.2276", "0.1528"],
+      ["0-0.2", "market", "3049", "0.0802", "0.0466", "0.0336"],
+      ["0.2-0.4", "model", "951", "0.2644", "0.2313", "0.0331"],
+      ["0.2-0.4", "market", "838", "0.2951", "0.2518", "0.0433"],
+      ["0.4-0.6", "model", "1395", "0.5060", "0.4846", "0.0215"],
+      ["0.4-0.6", "market", "5581", "0.5129", "0.4216", "0.0913"],
+      ["0.6-0.8", "model", "1167", "0.7361", "0.6761", "0.0600"],
+      ["0.6-0.8", "market", "1742", "0.6751", "0.6091", "0.0660"],
+      ["0.8-1.0", "model", "5037", "0.9211", "0.6853", "0.2357"],
+      ["0.8-1.0", "market", "2771", "0.9199", "0.9405", "0.0206"]
+     ],
+     "note": "Model and market cells at the same band are built from different row sets (see Method); n differs by source at every band."
+    },
+    {"type": "p", "text": "Late-game MLB is not a clean sweep for the market. In the 0.4-0.6 band the model's calibration error (0.0215, n=1,395) is smaller than the market's (0.0913, n=5,581); the two are close in the 0.2-0.4 and 0.6-0.8 bands. But the 0.8-1.0 band -- the model's most confident late-game calls -- is the single largest well-sampled miss anywhere in this exhibit: predicted 0.9211, observed 0.6853 (n=5,037), a calibration error of 0.2357. The market's own late, high-confidence cell (n=2,771, a different set of rows) predicts 0.9199 and observes 0.9405, a calibration error of 0.0206. In the lowest band (0-0.2) the pattern reverses again: the model's calibration error is 0.1528 (n=5,431) against the market's 0.0336 (n=3,049), so the model is worse at both extremes of confidence late in MLB games, while being competitive or better in the middle bands."},
+    {"type": "p", "text": "Soccer_intl's state-conditioned view carries the same directional gap at a coarser level -- n-weighted ECE of 0.3609 for the model versus 0.2511 for the market -- but on much less data: 5,345 of the corpus's 9,003 rows (59 percent) have no game-state field and are dropped, leaving roughly 3,658 usable rows spread across game-phase x band cells, several with n under 100 and one (75-90+, 0.2-0.4 band, model side) at n=10 with a calibration error of 0.7883. That single-cell number is flagged in the source artifact's own ranked_worst_buckets list and should be read as noise, not as evidence of a real late-match soccer miss."}
+   ]
+  },
+  {
+   "id": "checks",
+   "heading": "Robustness and what would falsify this",
+   "blocks": [
+    {"type": "list", "items": [
+      "If a later MLB corpus (more than the current 227 games) showed the model's 0.9-1.0 bin gap CI crossing zero, the top-bin overconfidence finding would no longer hold; the same is true in reverse for any market bin that started showing a significant gap.",
+      "The state-conditioned late(inn7+), 0.8-1 cell (calibration error 0.2357, n=5,037) has no bootstrapped CI of its own in state_conditioned_calibration.json; its size lines up with the aggregate 0.9-1.0 bin's significant gap in calibration_stability.json, but that aggregate bin is a coarser grouping (all game phases, not just late innings), so the two are corroborating, not identical, evidence.",
+      "Any soccer_intl claim here would be falsified simply by more games: at 51 games the market itself already fails 6 of 10 aggregate bins, which is more consistent with an underpowered corpus than with a genuinely miscalibrated market close.",
+      "The mlb_clean sport is excluded from both artifacts as a verified byte-identical duplicate of mlb; if that exclusion were reversed, every MLB row count and game count above would roughly double without adding independent information."
+     ]}
+   ]
+  },
+  {
+   "id": "limitations",
+   "heading": "Limitations",
+   "blocks": [
+    {"type": "list", "items": [
+      "state_conditioned_calibration.json's calibration_error is a point estimate with no confidence interval, unlike the bootstrapped gap_ci in calibration_stability.json, so late-inning miss sizes cannot be tested for significance the way the aggregate 0.9-1.0 bin can.",
+      "model_prob and market_prob bins (and state-conditioned cells) share a label but are built independently per source, so a model cell and a market cell at the same nominal band are drawn from different, non-identical row sets -- confirmed by their differing n and n_games under identical labels -- making any cell-by-cell subtraction an unpaired comparison.",
+      "26,340 of 78,986 MLB rows (33 percent) and 5,345 of 9,003 soccer_intl rows (59 percent) carry no game-state field and are dropped from the state-conditioned view, so that view covers an unknown-bias subset of the aggregate corpus, not the same rows.",
+      "The soccer_intl corpus is small (51 games for the aggregate bins; state-conditioned soccer cells run as low as n=10), so soccer verdicts -- including the market's own 6-of-10 significant-bin count -- are provisional and rest on a single corpus.",
+      "calibration_stability.json is a single dated snapshot (as of 2026-07-23); state_conditioned_calibration.json carries no as_of date (date not published), so neither result has been checked against a later or independent season.",
+      "These are reliability and calibration measurements only; nothing here establishes that acting on either source's probability would have produced a positive return."
+     ]}
+   ]
+  },
+  {
+   "id": "use",
+   "heading": "How to read this on the site",
+   "blocks": [
+    {"type": "p", "text": "The interactive versions of the two tables above live in the \"calibration\" inspector (aggregate reliability bins, both sports, with the same bootstrapped CIs) and the \"state-reliability\" inspector (game-phase x confidence-band cells, both sources). The \"observation-dependence\" inspector explains the game-cluster bootstrap in general terms -- why resampling game_id rather than rows is the right unit when observations inside one game are correlated -- and applies beyond just these two calibration modules."},
+    {"type": "p", "text": "The figure above is drawn from the calibration_stability module; the state-conditioned cells come from the state_conditioned_calibration module, which the showcase site marks as a partial-status exhibit pending a confidence-interval pass on its bucket-level numbers."}
+   ]
+  }
+ ],
+ "evidence": [
+  {
+   "artifact": "calibration_stability.json",
+   "module": "calibration_stability",
+   "asOf": "2026-07-23T03:21:27.493056+00:00",
+   "fields": [
+    "sports.mlb.n_rows", "sports.mlb.n_games",
+    "sports.mlb.sides.model_prob.brier", "sports.mlb.sides.market_prob.brier",
+    "sports.mlb.sides.model_prob.n_eligible_bins", "sports.mlb.sides.model_prob.n_significant_bins",
+    "sports.mlb.sides.market_prob.n_eligible_bins", "sports.mlb.sides.market_prob.n_significant_bins",
+    "sports.mlb.sides.model_prob.bins[]", "sports.mlb.sides.market_prob.bins[]",
+    "sports.soccer_intl.n_rows", "sports.soccer_intl.n_games",
+    "sports.soccer_intl.sides.model_prob.brier", "sports.soccer_intl.sides.market_prob.brier",
+    "sports.soccer_intl.sides.model_prob.n_significant_bins", "sports.soccer_intl.sides.market_prob.n_significant_bins",
+    "n_boot", "ci_pct", "cluster_unit", "skipped[0]"
+   ]
+  },
+  {
+   "artifact": "state_conditioned_calibration.json",
+   "module": "state_conditioned_calibration",
+   "asOf": null,
+   "fields": [
+    "sports.mlb.n_records", "sports.mlb.n_files", "sports.mlb.n_skipped_no_state_field",
+    "sports.mlb.model_ece_n_weighted", "sports.mlb.market_ece_n_weighted",
+    "sports.mlb.buckets[] (time_bucket=late(inn7+), all prob_bucket bands, both sources)",
+    "sports.soccer_intl.n_records", "sports.soccer_intl.n_skipped_no_state_field",
+    "sports.soccer_intl.model_ece_n_weighted", "sports.soccer_intl.market_ece_n_weighted",
+    "ranked_worst_buckets[0]", "skipped[0]"
+   ]
+  }
+ ],
+ "limitations": [
+  "state_conditioned_calibration.json's calibration_error carries no confidence interval, unlike the bootstrapped gap_ci in calibration_stability.json, so late-inning miss sizes cannot be tested for significance the way the aggregate 0.9-1.0 bin can.",
+  "model_prob and market_prob bins share a label but are built independently per source, so a model cell and a market cell at the same nominal band are drawn from different, non-identical row sets -- a cell-by-cell subtraction is an unpaired comparison, not a matched one.",
+  "26,340 of 78,986 MLB rows and 5,345 of 9,003 soccer_intl rows carry no game-state field and are dropped from the state-conditioned view, covering an unknown-bias subset of the aggregate corpus.",
+  "The soccer_intl corpus is small (51 games aggregate; state-conditioned cells as low as n=10), so soccer verdicts are provisional and rest on a single corpus.",
+  "calibration_stability.json is a single dated snapshot (2026-07-23); state_conditioned_calibration.json has no as_of date (date not published)."
+ ],
+ "related": [
+  {"kind": "inspector", "id": "calibration"},
+  {"kind": "inspector", "id": "state-reliability"},
+  {"kind": "inspector", "id": "observation-dependence"},
+  {"kind": "module", "id": "calibration_stability"},
+  {"kind": "module", "id": "state_conditioned_calibration"}
+ ]
+}
