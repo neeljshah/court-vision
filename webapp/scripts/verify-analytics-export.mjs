@@ -24,6 +24,7 @@ const REQUIRED_ROUTES = [
   "/analytics/observation-dependence/",
   "/analytics/residual-anatomy/",
   "/analytics/blowout-timing/",
+  "/analytics/state-contrasts/",
 ];
 const BUDGETS = new Map([
   ["/analytics/", 200_000],

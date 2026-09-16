@@ -42,6 +42,12 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     purpose: "Inspect published permanent-margin frequency and conditional clock quartiles.",
     sourceModuleIds: ["blowout_dynamics"],
   },
+  {
+    route: "/analytics/state-contrasts",
+    title: "State contrasts",
+    purpose: "Compare published outcome-frequency differences between adjacent state buckets.",
+    sourceModuleIds: ["why_attribution"],
+  },
 ];
 
 export type SearchPageRecord = {

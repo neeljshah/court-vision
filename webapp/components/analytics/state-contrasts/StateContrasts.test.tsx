@@ -1,0 +1,39 @@
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { StateContrasts } from "./StateContrasts";
+import type { StateContrastSport } from "@/lib/analytics/stateContrasts";
+
+const sports: StateContrastSport[] = [
+  { sport: "mlb", adjacentTimePairs: [{ id: "early__mid", fromTime: "early", toTime: "mid" }, { id: "mid__late", fromTime: "mid", toTime: "late" }], contrasts: [
+    { sport: "mlb", from: { time: "early", probabilityBand: ".2-.4", meanOutcomeFrequency: 0.35, n: 100 }, to: { time: "mid", probabilityBand: ".4-.6", meanOutcomeFrequency: 0.48, n: 120 }, winprobDelta: 0.13, minSupportN: 100 },
+    { sport: "mlb", from: { time: "mid", probabilityBand: ".6-.8", meanOutcomeFrequency: 0.70, n: 80 }, to: { time: "late", probabilityBand: ".2-.4", meanOutcomeFrequency: 0.28, n: 90 }, winprobDelta: -0.42, minSupportN: 80 },
+  ] },
+  { sport: "soccer_intl", adjacentTimePairs: [{ id: "0-15__15-30", fromTime: "0-15", toTime: "15-30" }], contrasts: [
+    { sport: "soccer_intl", from: { time: "0-15", probabilityBand: "0-.2", meanOutcomeFrequency: 0.39, n: 109 }, to: { time: "15-30", probabilityBand: ".8-1", meanOutcomeFrequency: 1, n: 41 }, winprobDelta: 0.61, minSupportN: 41 },
+  ] },
+];
+
+describe("StateContrasts", () => {
+  it("filters rows when the adjacent time bucket changes", () => {
+    render(<StateContrasts sports={sports} />);
+    fireEvent.change(screen.getByLabelText("Adjacent time buckets"), { target: { value: "mid__late" } });
+    const table = screen.getByRole("table");
+    expect(within(table).getByText("mid / .6-.8")).toBeInTheDocument();
+    expect(within(table).queryByText("early / .2-.4")).not.toBeInTheDocument();
+  });
+
+  it("filters the table when the sport selector changes", () => {
+    render(<StateContrasts sports={sports} />);
+    fireEvent.change(screen.getByLabelText("State contrast sport"), { target: { value: "soccer_intl" } });
+    const table = screen.getByRole("table");
+    expect(within(table).getByText("0-15 / 0-.2")).toBeInTheDocument();
+    expect(within(table).getByText("15-30 / .8-1")).toBeInTheDocument();
+    expect(within(table).getByText("109")).toBeInTheDocument();
+    expect(within(table).getAllByText("41")[0]).toBeInTheDocument();
+  });
+
+  it("states the definition that rules out transition and paired-game readings", () => {
+    render(<StateContrasts sports={sports} />);
+    expect(screen.getByText(/BETWEEN-BUCKET differences in outcome frequency/i)).toHaveTextContent("not transition frequencies and not paired movements within individual games");
+  });
+});
