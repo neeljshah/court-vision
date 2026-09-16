@@ -22,7 +22,7 @@ describe("entity measurement schemas", () => {
 
   it("selects probability-band fields by calibration card type", () => {
     expect(getEntityMeasurementSchema("calibration", { card_type: "prob_band" })).toMatchObject({
-      cohort: "calibration probability bands", fields: expect.arrayContaining(["by_time_bucket", "mean_y_overall"]),
+      cohort: "calibration probability bands", fields: ["n", "mean_y_overall", "band_reference", "n_time_buckets_with_data", "by_time_bucket"],
     });
   });
 });

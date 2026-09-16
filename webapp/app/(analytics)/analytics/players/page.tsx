@@ -12,9 +12,10 @@ import { atlasFieldDefinition } from "@/lib/analytics/atlasFieldDefinitions";
 import { getMlbPitchAtlasCohorts } from "@/lib/analytics/atlasResearchCohorts";
 import { getEntityMeasurementSchema } from "@/lib/analytics/entityMeasurementSchemas";
 import { asOfDate } from "@/lib/analytics/format";
+import { CalibrationTableSection, type CalibrationEntry } from "@/components/analytics/entities/CalibrationTableSection";
 
 type KN = Record<string, unknown>;
-type Entry = { entity: string; card_path: string; key_numbers: KN; as_of?: string };
+type Entry = CalibrationEntry;
 type Manifest = { generated_at?: string; n_entries?: number; entries: Entry[] };
 type Insight = {
   pack: string; slug: string; display_name: string; one_liner: string;
@@ -118,6 +119,15 @@ function heroStat(ins: Insight): { value: string; label: string } | null {
   if (!c) return null;
   const seg = (c.field || "").split(".").pop() || "";
   return { value: fmt(c.value), label: label(seg) };
+}
+
+const CALIBRATION_SECTIONS = [
+  { cardType: "time_checkpoint", title: "Calibration checkpoints", id: "calibration" },
+  { cardType: "prob_band", title: "Probability-band calibration", id: "calibration-probability-bands" },
+] as const;
+
+function sportLabel(sport: string | undefined): string {
+  return sport === "soccer_intl" ? "Soccer international" : (sport || "Cross-sport").toUpperCase();
 }
 
 export const metadata = {
@@ -261,6 +271,22 @@ export default function EntitiesIndexPage() {
 
       {packs.map(({ pack, manifest }) => {
         if (!manifest || manifest.entries.length === 0) return null;
+        if (pack.slug === "calibration") return CALIBRATION_SECTIONS.map(({ cardType, title, id }) => {
+          const bySport = new Map<string, Entry[]>();
+          for (const entry of manifest.entries.filter((item) => item.card_type === cardType)) {
+            const sport = entry.sport || "cross_sport";
+            bySport.set(sport, [...(bySport.get(sport) || []), entry]);
+          }
+          const count = Array.from(bySport.values()).reduce((total, entries) => total + entries.length, 0);
+          return <section key={cardType} aria-labelledby={`${id}-heading`} style={{ marginTop: 44 }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 6, flexWrap: "wrap" }}>
+              <span aria-hidden style={{ width: 9, height: 9, borderRadius: "50%", background: SPORT_COLOR[pack.sport] }} />
+              <h2 id={`${id}-heading`} className="serif" style={{ fontWeight: 500, fontSize: 26 }}>{title}</h2>
+              <span style={{ color: "var(--ink-3)", fontSize: 13 }}>{count.toLocaleString()} cards</span>
+            </div>
+            {Array.from(bySport.entries()).map(([sport, entries], index) => <CalibrationTableSection key={sport} entries={entries} heading={sportLabel(sport)} id={index === 0 ? id : `${id}-${sport}`} />)}
+          </section>;
+        });
         if (pack.slug !== "mlb_pitch") return <AtlasTableSection key={pack.slug} pack={pack} entries={manifest.entries} heading={pack.label} id={pack.slug} />;
         return getMlbPitchAtlasCohorts(manifest.entries).map((cohort, index) => (
           <AtlasTableSection key={cohort.id} pack={pack} entries={cohort.entries} heading={cohort.title} id={index === 0 ? pack.slug : cohort.id} />
