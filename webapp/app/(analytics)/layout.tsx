@@ -32,9 +32,9 @@ const SITE_DESC =
 const OG_IMAGE = `${BASE_PATH}/brand/og-analytics.png`;
 
 // Pre-paint theme init: set data-theme from the analytics-scoped key before first
-// paint so there is no flash of wrong theme. Default LIGHT (the product default);
-// dark only if the user has explicitly chosen it here. Independent of the terminal.
-const THEME_INIT = `(function(){try{var t=localStorage.getItem('cv-analytics-theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){}})();`;
+// paint so there is no flash of wrong theme. A stored analytics choice wins;
+// otherwise follow the operating system preference. Independent of the terminal.
+const THEME_INIT = `(function(){try{var t=localStorage.getItem('cv-analytics-theme');var d=t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.setAttribute('data-theme',d?'dark':'light');}catch(e){document.documentElement.setAttribute('data-theme',window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');}})();`;
 
 // Post-hydration chrome: wire the theme toggle + mark the active nav pillar from the
 // current path. Vanilla JS keeps the root layout a server component (no client file,

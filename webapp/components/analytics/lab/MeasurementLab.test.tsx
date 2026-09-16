@@ -36,7 +36,7 @@ describe("MeasurementLab sport filtering and inspection", () => {
   it("restores a distribution URL and preserves unavailable coverage", () => {
     window.history.replaceState(null, "", "?sport=mlb&dataset=cross-sport&view=distribution");
     render(<MeasurementLab data={fixture} />);
-    expect(screen.getByRole("button", { name: "Distribution", exact: true })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: /^Distribution$/ })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("region", { name: "Measurement summary" })).toHaveTextContent("1 / 2");
     expect(screen.getByRole("region", { name: "Measurement summary" })).toHaveTextContent("1 unavailable");
     expect(screen.getByRole("region", { name: "Measurement distribution" })).toHaveTextContent("Every measured row has the same value: 2");

@@ -64,7 +64,7 @@ export function EvidenceGallery({ charts }: EvidenceGalleryProps) {
     return (status === "all" || chart.status === status) && terms.includes(normalizeSearch(query));
   }), [charts, query, status]);
 
-  return <section className="evidence-gallery-section" aria-labelledby="evidence-gallery-title">
+  return <section id="published-gallery" className="evidence-gallery-section" aria-labelledby="evidence-gallery-title">
     <div className="evidence-section-heading"><div><p className="cv-eyebrow"><span className="cv-square" />Evidence gallery</p><h2 id="evidence-gallery-title">Published charts, linked to their source</h2></div><p>Static artifacts from the public manifest. This page does not report a live backend state.</p></div>
     <div className="evidence-controls">
       <label className="evidence-search"><Search size={17} aria-hidden="true" /><span className="sr-only">Search published charts</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search charts and methods" /></label>

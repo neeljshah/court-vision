@@ -17,7 +17,7 @@ export function WorkspaceIntro() {
       <figure className="cv-intro-art">
         <span className="cv-orbit cv-orbit-one" aria-hidden="true" />
         <span className="cv-orbit cv-orbit-two" aria-hidden="true" />
-        <Image src={`${base}/brand/courtvision-emblem.webp`} alt="CourtVision aperture emblem with an ascending orange path" width={1254} height={1254} priority unoptimized />
+        <Image src={`${base}/brand/courtvision-emblem-hero.webp`} alt="CourtVision aperture emblem with an ascending orange path" width={640} height={640} sizes="(max-width: 620px) 82vw, (max-width: 920px) 56vw, 520px" priority unoptimized />
         <figcaption><span>Four sports. One perspective.</span><span>Original brand artwork</span></figcaption>
       </figure>
     </header>
