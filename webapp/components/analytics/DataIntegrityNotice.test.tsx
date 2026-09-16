@@ -4,14 +4,15 @@ import { dataIntegrityNotices } from "@/lib/analytics/dataIntegrity";
 import { DataIntegrityNotice } from "./DataIntegrityNotice";
 
 describe("DataIntegrityNotice", () => {
-  it("renders the summary, current artifacts, and full finding route", () => {
+  it("renders the withdrawal and review wording with the full finding route", () => {
     render(<DataIntegrityNotice notices={dataIntegrityNotices} moduleIds={["state_conditioned_calibration"]} />);
-    const notice = screen.getByRole("complementary", { name: "Data integrity" });
-    expect(within(notice).getByText("Data integrity")).toBeInTheDocument();
-    expect(within(notice).getByText(/126 of 227 MLB game files/)).toBeInTheDocument();
-    expect(within(notice).getByText("state_conditioned_calibration")).toBeInTheDocument();
-    expect(within(notice).queryByText("blowout_dynamics")).not.toBeInTheDocument();
-    expect(within(notice).getByRole("link", { name: "Read the full finding" })).toHaveAttribute("href", expect.stringMatching(/^\/analytics\/findings\/ingame-join-integrity\/?$/));
+    const notices = screen.getAllByRole("complementary", { name: "Data integrity" });
+    expect(notices).toHaveLength(2);
+    expect(within(notices[0]).getByText(/MLB in-game results are withdrawn pending corpus correction/)).toBeInTheDocument();
+    expect(within(notices[1]).getByText(/This artifact's MLB\/soccer rows are under review/)).toBeInTheDocument();
+    expect(within(notices[0]).getByText("state_conditioned_calibration")).toBeInTheDocument();
+    expect(within(notices[0]).queryByText("blowout_dynamics")).not.toBeInTheDocument();
+    expect(within(notices[0]).getByRole("link", { name: "Read the full finding" })).toHaveAttribute("href", expect.stringMatching(/^\/analytics\/findings\/ingame-join-integrity\/?$/));
   });
 
   it("does not render without an applicable notice", () => {

@@ -35,8 +35,8 @@ describe("InspectorReadingTrail", () => {
 
   it("mounts the integrity notice only for an affected inspector", () => {
     const { rerender } = render(<InspectorReadingTrail id="state-reliability" />);
-    expect(screen.getByRole("complementary", { name: "Data integrity" })).toHaveTextContent("state_conditioned_calibration");
-    rerender(<InspectorReadingTrail id="blowout-timing" />);
+    expect(screen.getAllByRole("complementary", { name: "Data integrity" })[0]).toHaveTextContent("state_conditioned_calibration");
+    rerender(<InspectorReadingTrail id="count-context" />);
     expect(screen.queryByRole("complementary", { name: "Data integrity" })).not.toBeInTheDocument();
   });
 });

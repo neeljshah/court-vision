@@ -1,21 +1,36 @@
-export const integrityFinding = {
-  measuredOn: "2026-09-16",
-  counts: [
-    { sport: "MLB", files: "227 game files", ticks: "78,986 ticks", contaminated: "126 files; 27,076 ticks (34.3 percent)", stateless: "26,340 ticks (33.3 percent)", truncated: "61 of 227 games" },
-    { sport: "International soccer", files: "51 game files", ticks: "9,003 ticks", contaminated: "1 file (0.9 percent)", stateless: "Not reported", truncated: "2 truncated draws" },
-  ],
-  agreement: [
-    { population: "Late-inning (inning 7+) leading-side labels across all MLB ticks", agreement: "0.7284", n: "n = 12,588" },
-    { population: "Late-inning (inning 7+) leading-side labels in the final MLB segment", agreement: "0.9200", n: "n = 6,623" },
-  ],
-  leaderAgreement: "Game-level labels agree with the last stated score in all 166 games with a leader (frequency 1.0000).",
-  cause: "The capture matched a market ticker to a live game by team pair only, so consecutive-day series games were appended to one file. The settlement join then copied one label onto every tick.",
-  exposedArtifacts: [
-    "state_conditioned_calibration", "calibration_stability", "murphy_decomposition",
-    "brier_skill_scores", "residual_anatomy", "calibration_by_market_type",
-    "residual_autocorrelation", "calibration_over_time", "calibration_atlas",
-    "market_disagreement_profile", "info_arrival_curve", "market_overreaction",
-    "soccer_calibration_pack",
-  ],
-  notExposedArtifacts: ["market_convergence", "blowout_dynamics"],
-} as const;
+import { status, type IntegritySport } from "@/lib/analytics/dataIntegrity";
+import type { IngameIntegrityReceipt } from "./ingameJoinIntegrity.server";
+
+const sportLabels: Record<IntegritySport, string> = {
+  nba: "NBA", mlb: "MLB", soccer_intl: "International soccer", tennis: "Tennis",
+};
+
+function number(value: number): string {
+  return value.toLocaleString("en-US");
+}
+
+export function buildIngameJoinIntegrityFinding(receipt: IngameIntegrityReceipt) {
+  const mlb = receipt.per_sport.mlb;
+  const soccer = receipt.per_sport.soccer_intl;
+  const reviewedArtifacts = [...receipt.exposed_artifacts, ...receipt.timing_artifacts_under_review];
+  const statusRows = reviewedArtifacts.flatMap((artifact) => (["mlb", "soccer_intl"] as IntegritySport[])
+    .map(sportId => ({ artifact, sport: sportLabels[sportId], state: status(artifact, sportId) }))
+    .filter(row => row.state !== "clear"));
+  return {
+    measuredOn: receipt.measured_on,
+    method: receipt.method,
+    counts: [
+      { sport: "MLB", files: number(mlb.files), ticks: number(mlb.ticks), mixedFiles: number(mlb.mixed_files), mismatchedTicks: number(mlb.mismatched_ticks || 0), statelessTicks: number(mlb.stateless_ticks), truncatedGames: number(mlb.truncated_games), disagreements: number(mlb.label_disagreements) },
+      { sport: "International soccer", files: number(soccer.files), ticks: number(soccer.ticks), mixedFiles: number(soccer.mixed_files), mismatchedTicks: "Not reported", statelessTicks: number(soccer.stateless_ticks), truncatedGames: number(soccer.truncated_games), disagreements: `${number(soccer.label_disagreements)} (${soccer.label_disagreement_note})` },
+    ],
+    agreement: [
+      { population: "Late-inning (inning 7+) leading-side labels across all MLB ticks", frequency: mlb.late_inning_leader_agreement?.all_ticks.frequency || 0, n: mlb.late_inning_leader_agreement?.all_ticks.n || 0 },
+      { population: "Late-inning (inning 7+) leading-side labels in the final MLB segment", frequency: mlb.late_inning_leader_agreement?.final_segment.frequency || 0, n: mlb.late_inning_leader_agreement?.final_segment.n || 0 },
+    ],
+    leaderAgreement: `Game-level labels agree with the last stated score in all ${number(mlb.leader_wins_last_tick?.games || 0)} games with a leader (frequency ${(mlb.leader_wins_last_tick?.frequency || 0).toFixed(4)}).`,
+    exposedArtifacts: receipt.exposed_artifacts,
+    timingArtifacts: receipt.timing_artifacts_under_review,
+    timingNote: receipt.timing_artifacts_note,
+    statusRows,
+  };
+}

@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "measured_on": "2026-09-16",
+  "method": "scripts/platformkit/check_ingame_join_integrity.py",
+  "definitions": {
+    "mixed_file": "A stored file containing ticks from more than one real game.",
+    "mismatched_tick": "A tick whose joined outcome label belongs to another game segment.",
+    "stateless_tick": "A tick without an assessable game state.",
+    "truncated_game": "A stored game ending before its recorded final state."
+  },
+  "per_sport": {
+    "mlb": {
+      "files": 227,
+      "ticks": 78986,
+      "mixed_files": 126,
+      "mismatched_ticks": 27076,
+      "stateless_ticks": 26340,
+      "truncated_games": 61,
+      "label_disagreements": 0,
+      "leader_wins_last_tick": { "games": 166, "frequency": 1.0 },
+      "late_inning_leader_agreement": {
+        "all_ticks": { "n": 12588, "frequency": 0.7284 },
+        "final_segment": { "n": 6623, "frequency": 0.92 }
+      }
+    },
+    "soccer_intl": {
+      "files": 51,
+      "ticks": 9003,
+      "mixed_files": 1,
+      "stateless_ticks": 4649,
+      "truncated_games": 2,
+      "label_disagreements": 2,
+      "label_disagreement_note": "Draws truncated at minute 60 and 42."
+    }
+  },
+  "exposed_artifacts": [
+    "state_conditioned_calibration",
+    "calibration_stability",
+    "murphy_decomposition",
+    "brier_skill_scores",
+    "residual_anatomy",
+    "calibration_by_market_type",
+    "residual_autocorrelation",
+    "calibration_over_time",
+    "calibration_atlas",
+    "market_disagreement_profile",
+    "info_arrival_curve",
+    "market_overreaction",
+    "soccer_calibration_pack"
+  ],
+  "timing_artifacts_under_review": [
+    "blowout_dynamics",
+    "novel_live_clock_fraction",
+    "market_convergence",
+    "why_attribution",
+    "comeback_atlas"
+  ],
+  "timing_artifacts_note": "Mixed-game tick paths also distort timing measurements even where no outcome label is used.",
+  "status": "withdrawn-pending-regeneration"
+}

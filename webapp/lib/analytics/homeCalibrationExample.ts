@@ -1,3 +1,5 @@
+import { status, type IntegrityStatus } from "./dataIntegrity";
+
 export interface HomeCalibrationExample {
   bin_lo: number;
   bin_hi: number;
@@ -12,6 +14,7 @@ export interface HomeCalibrationExample {
   cluster_unit: string;
   n_boot: number;
   artifact_date: string | null;
+  integrity_status: IntegrityStatus;
 }
 
 type UnknownRecord = Record<string, unknown>;
@@ -68,5 +71,5 @@ export function buildHomeCalibrationExample(value: unknown): HomeCalibrationExam
     return [{ bin_lo: rounded(binLo), bin_hi: rounded(binHi), mean_p: rounded(meanP), mean_y: rounded(meanY), n, n_games: nGames, mean_y_ci: [rounded(interval[0]), rounded(interval[1])] as [number, number], gap: rounded(gap), gap_ci: [rounded(gapCi[0]), rounded(gapCi[1])] as [number, number] }];
   });
   const selected = candidates.sort((left, right) => right.n - left.n)[0];
-  return selected ? { ...selected, ci_pct: [rounded(ciPct[0]), rounded(ciPct[1])], cluster_unit: clusterUnit, n_boot: nBoot, artifact_date: artifactDate(root) } : null;
+  return selected ? { ...selected, ci_pct: [rounded(ciPct[0]), rounded(ciPct[1])], cluster_unit: clusterUnit, n_boot: nBoot, artifact_date: artifactDate(root), integrity_status: status("calibration_stability", "mlb") } : null;
 }

@@ -10,6 +10,9 @@
   line-height: 1.6;
 }
 
+.withdrawn-pending-regeneration { border-left-color: var(--reject); }
+.under-review { border-left-color: var(--signal); }
+
 .label {
   margin-bottom: 5px;
   color: var(--signal-ink);

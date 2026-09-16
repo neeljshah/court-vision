@@ -121,8 +121,8 @@ describe("PaperArticle", () => {
 
   it("mounts the integrity notice only when paper evidence is affected", () => {
     const { rerender } = render(<PaperArticle paper={fixture} />);
-    expect(screen.getByRole("complementary", { name: "Data integrity" })).toHaveTextContent("state_conditioned_calibration");
-    rerender(<PaperArticle paper={{ ...fixture, evidence: [{ ...fixture.evidence[0], module: "blowout_dynamics" }] }} />);
+    expect(screen.getAllByRole("complementary", { name: "Data integrity" })[0]).toHaveTextContent("state_conditioned_calibration");
+    rerender(<PaperArticle paper={{ ...fixture, evidence: [{ ...fixture.evidence[0], module: "mlb_count_leverage" }] }} />);
     expect(screen.queryByRole("complementary", { name: "Data integrity" })).not.toBeInTheDocument();
   });
 });

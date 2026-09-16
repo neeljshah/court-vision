@@ -8,7 +8,7 @@ const PROHIBITED_TOKEN_RE_G = new RegExp(PROHIBITED_TOKEN_RE.source, "gi");
 const SOURCE_ROOTS = ["app/(analytics)", "components/analytics", "lib/analytics"];
 // These adapters create prose that is rendered by the public derived-analysis views.
 export const SCAN_LIB_FILES = ["lib/analytics/researchStarRemoval.ts", "lib/analytics/researchLineupProxy.ts"];
-const DATA_TARGETS = ["public/data/showcase/site_manifest.json", "public/data/insights", "public/data/ask", "public/data/explainers", "public/data/papers"];
+const DATA_TARGETS = ["public/data/showcase/site_manifest.json", "public/data/insights", "public/data/ask", "public/data/explainers", "public/data/papers", "public/data/audits"];
 
 function sourceFiles(root, directory) {
   const current = join(root, directory);

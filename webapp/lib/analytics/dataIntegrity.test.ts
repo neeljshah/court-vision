@@ -1,19 +1,28 @@
 import { describe, expect, it } from "vitest";
-import { dataIntegrityNotices, noticesForInspector, noticesForModules, noticesForPaper } from "./dataIntegrity";
+import { dataIntegrityNotices, integrityRegistrySummary, noticesForInspector, noticesForModules, noticesForPaper, status } from "./dataIntegrity";
+import { loadIngameIntegrityReceipt } from "@/app/(analytics)/analytics/findings/ingame-join-integrity/ingameJoinIntegrity.server";
 
 describe("dataIntegrity", () => {
-  it("publishes the measured MLB in-game join notice", () => {
-    const notice = dataIntegrityNotices[0];
-    expect(dataIntegrityNotices).toHaveLength(1);
-    expect(notice).toMatchObject({ id: "mlb-ingame-join-integrity", measuredOn: "2026-09-16", exposure: "label-contamination", status: "pending-regeneration" });
-    expect(notice.summary).toContain("126 of 227");
-    expect(notice.summary).toContain("27,076 of 78,986");
+  it("resolves each artifact and sport status", () => {
+    expect(status("state_conditioned_calibration", "mlb")).toBe("withdrawn-pending-regeneration");
+    expect(status("state_conditioned_calibration", "soccer_intl")).toBe("under-review");
+    expect(status("blowout_dynamics", "mlb")).toBe("under-review");
+    expect(status("novel_rest_asymmetry", "nba")).toBe("clear");
   });
 
-  it("resolves affected artifacts but leaves unaffected ones clear", () => {
-    expect(noticesForModules(["state_conditioned_calibration"])).toHaveLength(1);
-    expect(noticesForPaper([{ module: "state_conditioned_calibration" }])).toHaveLength(1);
-    expect(noticesForModules(["blowout_dynamics"])).toHaveLength(0);
-    expect(noticesForInspector("state-reliability")).toHaveLength(1);
+  it("keeps the registry artifacts and counts aligned with the incident receipt", () => {
+    const receipt = loadIngameIntegrityReceipt();
+    expect(receipt.measured_on).toBe(integrityRegistrySummary.measuredOn);
+    expect(receipt.exposed_artifacts).toEqual(integrityRegistrySummary.exposedArtifacts);
+    expect(receipt.timing_artifacts_under_review).toEqual(integrityRegistrySummary.timingArtifacts);
+    expect(receipt.per_sport).toEqual(integrityRegistrySummary.perSport);
+  });
+
+  it("surfaces withdrawal and review notices for affected artifacts", () => {
+    expect(dataIntegrityNotices.map(notice => notice.status)).toEqual(["withdrawn-pending-regeneration", "under-review"]);
+    expect(noticesForModules(["state_conditioned_calibration"])).toHaveLength(2);
+    expect(noticesForPaper([{ module: "state_conditioned_calibration" }])).toHaveLength(2);
+    expect(noticesForModules(["blowout_dynamics"])).toMatchObject([{ status: "under-review" }]);
+    expect(noticesForInspector("state-reliability")).toHaveLength(2);
   });
 });

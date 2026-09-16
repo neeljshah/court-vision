@@ -1,7 +1,8 @@
 import { analysisDestinations } from "./analysisDestinations";
+import receipt from "../../public/data/audits/mlb-ingame-integrity.json";
 
-export type IntegrityExposure = "label-contamination" | "truncation";
-export type IntegrityStatus = "pending-regeneration";
+export type IntegritySport = "nba" | "mlb" | "soccer_intl" | "tennis";
+export type IntegrityStatus = "clear" | "withdrawn-pending-regeneration" | "under-review";
 
 export type DataIntegrityNotice = {
   id: string;
@@ -9,29 +10,52 @@ export type DataIntegrityNotice = {
   measuredOn: string;
   summary: string;
   affectedModules: readonly string[];
-  exposure: IntegrityExposure;
-  status: IntegrityStatus;
+  status: Exclude<IntegrityStatus, "clear">;
   detailRoute: string;
 };
 
-const MLB_INGAME_JOIN_INTEGRITY: DataIntegrityNotice = {
-  id: "mlb-ingame-join-integrity",
-  title: "MLB in-game corpus join integrity",
-  measuredOn: "2026-09-16",
-  summary: "Measured 2026-09-16: 126 of 227 MLB game files contain ticks from more than one real game; 27,076 of 78,986 ticks (34.3 percent) sit in a pre-final segment carrying another game's label. In addition, 26,340 of 78,986 ticks (33.3 percent) carry no game state, and 61 of 227 games have no leader at the last stated tick. The listed MLB calibration artifacts are pending regeneration from a segment-clean corpus; until then their numbers are measured on a partly mislabelled tick set.",
-  affectedModules: [
-    "state_conditioned_calibration", "calibration_stability", "murphy_decomposition",
-    "brier_skill_scores", "residual_anatomy", "calibration_by_market_type",
-    "residual_autocorrelation", "calibration_over_time", "calibration_atlas",
-    "market_disagreement_profile", "info_arrival_curve", "market_overreaction",
-    "soccer_calibration_pack",
-  ],
-  exposure: "label-contamination",
-  status: "pending-regeneration",
+const exposedArtifacts = receipt.exposed_artifacts;
+const timingArtifacts = receipt.timing_artifacts_under_review;
+
+/** Registry shape checked against the versioned incident receipt. */
+export const integrityRegistrySummary = {
+  receiptId: "mlb-ingame-integrity",
+  measuredOn: receipt.measured_on,
+  exposedArtifacts,
+  timingArtifacts,
+  perSport: receipt.per_sport,
+} as const;
+
+const withdrawnNotice: DataIntegrityNotice = {
+  id: "mlb-ingame-withdrawal",
+  title: "MLB in-game corpus integrity",
+  measuredOn: integrityRegistrySummary.measuredOn,
+  summary: "MLB in-game results are withdrawn pending corpus correction and regeneration. The measurements below are kept as a dated record and must not be read as current calibration quality.",
+  affectedModules: exposedArtifacts,
+  status: "withdrawn-pending-regeneration",
   detailRoute: "/analytics/findings/ingame-join-integrity/",
 };
 
-export const dataIntegrityNotices: readonly DataIntegrityNotice[] = [MLB_INGAME_JOIN_INTEGRITY];
+const reviewNotice: DataIntegrityNotice = {
+  id: "ingame-timing-review",
+  title: "In-game corpus integrity review",
+  measuredOn: integrityRegistrySummary.measuredOn,
+  summary: "This artifact's MLB/soccer rows are under review: mixed-game tick paths may distort timing measurements.",
+  affectedModules: [...exposedArtifacts, ...timingArtifacts],
+  status: "under-review",
+  detailRoute: "/analytics/findings/ingame-join-integrity/",
+};
+
+export const dataIntegrityNotices: readonly DataIntegrityNotice[] = [withdrawnNotice, reviewNotice];
+
+/** Returns the published integrity state for one artifact and corpus sport. */
+export function status(moduleId: string, sport: IntegritySport): IntegrityStatus {
+  if (sport === "mlb" && exposedArtifacts.includes(moduleId)) return "withdrawn-pending-regeneration";
+  if ((sport === "mlb" || sport === "soccer_intl") && (exposedArtifacts.includes(moduleId) || timingArtifacts.includes(moduleId))) return "under-review";
+  return "clear";
+}
+
+export const integrityStatus = status;
 
 export function noticesForModules(ids: readonly string[]): DataIntegrityNotice[] {
   const requested = new Set(ids);
