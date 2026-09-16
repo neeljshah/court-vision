@@ -1,6 +1,8 @@
 import type { LibraryEntry } from "./libraryTypes";
+import { analysisDestinations } from "./analysisDestinations";
+import { findingsIndex } from "./findingsIndex";
 
-export type CollectionMemberKind = "analysis" | "finding" | "module";
+export type CollectionMemberKind = "analysis" | "finding" | "inspector" | "module";
 export type CollectionMember = { id: string; kind: CollectionMemberKind };
 export type ReadingCollection = {
   id: string;
@@ -21,6 +23,9 @@ export const readingCollections: ReadingCollection[] = [
       { kind: "analysis", id: "brier-skill-score-by-game-phase" },
       { kind: "analysis", id: "brier-relative-gap" },
       { kind: "module", id: "murphy_decomposition" },
+      { kind: "finding", id: "reliability" },
+      { kind: "inspector", id: "calibration" },
+      { kind: "inspector", id: "score-decomposition" },
     ],
   },
   {
@@ -31,6 +36,9 @@ export const readingCollections: ReadingCollection[] = [
       { kind: "module", id: "ess_ledger" },
       { kind: "analysis", id: "cluster-interval-width" },
       { kind: "analysis", id: "calibration-support-concentration" },
+      { kind: "finding", id: "effective-sample-size" },
+      { kind: "inspector", id: "observation-dependence" },
+      { kind: "inspector", id: "residual-anatomy" },
     ],
   },
   {
@@ -43,6 +51,19 @@ export const readingCollections: ReadingCollection[] = [
       { kind: "analysis", id: "nba-q4-role-redistribution" },
       { kind: "analysis", id: "information-arrival-brier-by-checkpoint" },
       { kind: "analysis", id: "market-convergence-by-checkpoint" },
+      { kind: "inspector", id: "blowout-timing" },
+      { kind: "inspector", id: "state-contrasts" },
+    ],
+  },
+  {
+    id: "mlb-pitch-context",
+    title: "How do pitch types change by count?",
+    description: "Read the pitch-type distribution, count states, and next-pitch transitions together.",
+    members: [
+      { kind: "analysis", id: "mlb-velocity-shape" },
+      { kind: "analysis", id: "mlb-pitch-mix-concentration" },
+      { kind: "analysis", id: "mlb-count-contrast" },
+      { kind: "inspector", id: "pitch-sequencing" },
     ],
   },
   {
@@ -75,7 +96,11 @@ export function collectionMemberIds(id: string): string[] {
 }
 
 export function validateReadingCollections(entries: Pick<LibraryEntry, "id">[]): string[] {
-  const entryIds = new Set(entries.map((entry) => entry.id));
+  const entryIds = new Set([
+    ...entries.map((entry) => entry.id),
+    ...findingsIndex.map((finding) => finding.slug),
+    ...analysisDestinations.map((destination) => destination.id),
+  ]);
   return readingCollections.flatMap((collection) => collection.members.flatMap((member) =>
     entryIds.has(member.id) ? [] : [`${collection.id}: ${member.kind}/${member.id}`]
   ));

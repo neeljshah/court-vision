@@ -62,4 +62,18 @@ describe("LibraryExplorer", () => {
     window.dispatchEvent(new PopStateEvent("popstate"));
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent('1 entry including shared diagnostics matching "pace"'));
   });
+
+  it("restores page two from the URL and shows page one for an invalid page", async () => {
+    const paged = Array.from({ length: 13 }, (_, index) => entry(`paged-${index}`, `Paged entry ${index + 1}`, "nba", "derived", "paged"));
+    window.history.replaceState(null, "", "/analytics/browse/?page=2");
+    const { unmount } = render(<LibraryExplorer entries={paged} />);
+    await waitFor(() => expect(screen.getByText("Page 2 of 2")).toBeInTheDocument());
+    expect(screen.getByRole("heading", { name: "Paged entry 13" })).toBeInTheDocument();
+    unmount();
+
+    window.history.replaceState(null, "", "/analytics/browse/?page=not-a-page");
+    render(<LibraryExplorer entries={paged} />);
+    await waitFor(() => expect(screen.getByText("Page 1 of 2")).toBeInTheDocument());
+    expect(window.location.search).toBe("?page=not-a-page");
+  });
 });

@@ -218,6 +218,46 @@
         }
       ],
       "as_of": "published snapshot"
+    },
+    {
+      "slug": "reading-a-score-decomposition-receipt",
+      "title": "Reading a Score Decomposition Receipt",
+      "dek": "A worked score row keeps the published Brier value, its binned components, and the reconstruction remainder separate.",
+      "inspector": { "href": "/analytics/score-decomposition/", "label": "Open score decomposition" },
+      "body_md": "Start with one published row rather than comparing a headline score. The inspector places Brier, reliability, resolution, uncertainty, and the reconstructed score in the same receipt. Read the reconstruction remainder as the stated difference between the recorded score and the binned calculation. It is a check on the published arithmetic, not an assigned cause.\n\nThen return to the reliability inspector for the bins that feed the decomposition. The two views answer different questions: one shows the grouped forecast-outcome gaps, while this receipt shows how the published components combine. Keep the sport, side, and snapshot attached to each row before comparing them.",
+      "cited": ["webapp/public/data/showcase/murphy_decomposition.json -> method, sports"],
+      "next": [{ "href": "/analytics/calibration/", "label": "Calibration reliability" }],
+      "as_of": "published snapshot"
+    },
+    {
+      "slug": "reading-residual-anatomy-by-state",
+      "title": "Reading Residual Anatomy by State",
+      "dek": "A state row reports recorded absolute error with its volume; it does not identify why that error occurred.",
+      "inspector": { "href": "/analytics/residual-anatomy/", "label": "Open residual anatomy" },
+      "body_md": "Choose one game-state row and read its recorded absolute residual beside the published row volume. That pairing distinguishes a large displayed error from a lightly represented state. The page preserves the state labels so a reader can identify the exact slice being described.\n\nBefore comparing state rows, open observation dependence. Repeated ticks inside a game can be closely related, so row volume is not interchangeable with independent game support. The inspector is a descriptive map of the recorded residuals, not a causal account of a forecast miss.",
+      "cited": ["webapp/public/data/showcase/residual_anatomy.json -> story, sports, ranked_worst_segments"],
+      "next": [{ "href": "/analytics/observation-dependence/", "label": "Observation dependence" }],
+      "as_of": "published snapshot"
+    },
+    {
+      "slug": "reading-blowout-timing",
+      "title": "Reading Blowout Timing",
+      "dek": "A permanent-margin table describes when a published game margin remained in place through the final clock.",
+      "inspector": { "href": "/analytics/blowout-timing/", "label": "Open blowout timing" },
+      "body_md": "Use the inspector as a sequence of observed conditions. First identify the permanent-margin definition in the source, then read the frequency and clock summaries for the displayed group. A margin that remains in place is a published retrospective condition, not a statement that a future lead is settled.\n\nRead the comeback-rate analysis alongside this table. It keeps deficit and time remaining visible, which supplies the adjacent game-state context without turning either view into a causal threshold claim.",
+      "cited": ["webapp/public/data/showcase/blowout_dynamics.json -> method, sports"],
+      "next": [{ "href": "/analytics/research/comeback-rates-deficit-time/", "label": "Comeback rates by deficit and time" }],
+      "as_of": "published snapshot"
+    },
+    {
+      "slug": "reading-adjacent-state-contrasts",
+      "title": "Reading Adjacent State Contrasts",
+      "dek": "A contrast compares neighboring published state buckets while preserving the labels and support of both rows.",
+      "inspector": { "href": "/analytics/state-contrasts/", "label": "Open state contrasts" },
+      "body_md": "Select adjacent state buckets and read the published outcome-frequency difference with the source labels still in view. The contrast is a descriptive subtraction between recorded groups. It does not establish that crossing a boundary caused the outcome to change.\n\nUse blowout timing first when the contrast concerns score and clock. That view makes the permanent-margin condition explicit, while the contrast view keeps the comparison local to the two published buckets.",
+      "cited": ["webapp/public/data/showcase/why_attribution.json -> method, sports"],
+      "next": [{ "href": "/analytics/blowout-timing/", "label": "Blowout timing" }],
+      "as_of": "published snapshot"
     }
   ]
 }

@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { getResearchAnalyses } from "@/lib/analytics/researchData";
+import { analysisDestinations } from "@/lib/analytics/analysisDestinations";
 import ExplainerPage from "./page";
 
 type Destination = { href: string; label: string };
@@ -55,6 +56,7 @@ describe("ExplainerPage", () => {
       "/analytics/findings/effective-sample-size/",
       "/analytics/browse/",
       "/analytics/pitch-sequencing/",
+      ...analysisDestinations.map((destination) => `${destination.route}/`),
     ]);
     const researchRoutes = new Set(
       getResearchAnalyses().map((analysis) => `/analytics/research/${analysis.id}/`)
@@ -75,5 +77,18 @@ describe("ExplainerPage", () => {
         destination.href
       ).toBe(true);
     }
+  });
+
+  it("gives each new inspector guide a concrete inspector destination", () => {
+    const newGuides = new Set([
+      "reading-a-score-decomposition-receipt",
+      "reading-residual-anatomy-by-state",
+      "reading-blowout-timing",
+      "reading-adjacent-state-contrasts",
+    ]);
+    const routes = new Set(analysisDestinations.map((destination) => canonicalRoute(destination.route)));
+    const guides = readEssays().filter((essay) => newGuides.has(essay.slug));
+    expect(guides).toHaveLength(newGuides.size);
+    guides.forEach((essay) => expect(essay.inspector && routes.has(canonicalRoute(essay.inspector.href))).toBe(true));
   });
 });

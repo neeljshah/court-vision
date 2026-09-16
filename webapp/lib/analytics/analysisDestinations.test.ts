@@ -14,6 +14,10 @@ describe("analysis destinations", () => {
       expect(routes.has(destination.route)).toBe(true);
       expect(existsSync(join(process.cwd(), "app/(analytics)", `${destination.route.replace("/analytics/", "analytics/")}/page.tsx`))).toBe(true);
       destination.sourceModuleIds.forEach(id => expect(moduleIds.has(id)).toBe(true));
+      expect(destination.id).toBe(destination.route.split("/").pop());
+      expect(destination.populationId).not.toBe("");
+      expect(destination.prerequisite).not.toBe("");
+      expect(destination.nextQuestion).not.toBe("");
     });
   });
 

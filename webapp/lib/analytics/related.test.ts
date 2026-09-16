@@ -22,6 +22,20 @@ describe("relatedReading", () => {
     expect(relatedReading("analysis", "mlb-velocity-shape", [velocity, contact])).toMatchObject([{ id: "mlb-batter-p90-minus-mean-exit-velocity", purpose: "same sport" }]);
   });
 
+  it("does not call MLB team or count readings the same population as pitch types", () => {
+    const pitch = { id: "pitch", title: "Pitch type shape", kind: "analysis" as const, sport: "mlb", asOf: null, href: "/r/pitch/", population: "mlb_pitch_types" };
+    const team = { id: "team", title: "Team totals", kind: "analysis" as const, sport: "mlb", asOf: null, href: "/r/team/", population: "mlb_teams" };
+    const count = { id: "count", title: "Count state", kind: "analysis" as const, sport: "mlb", asOf: null, href: "/r/count/", population: "mlb_count_states" };
+    const links = relatedReading("analysis", "pitch", [pitch, team, count]);
+    expect(links).toMatchObject([{ id: "count", purpose: "same sport" }, { id: "team", purpose: "same sport" }]);
+  });
+
+  it("labels two readings from one source file without claiming one population", () => {
+    const first = { id: "first", title: "First result", kind: "analysis" as const, sport: "mlb", asOf: null, href: "/r/first/", sources: ["shared"], population: "analysis:first" };
+    const second = { id: "second", title: "Second result", kind: "analysis" as const, sport: "mlb", asOf: null, href: "/r/second/", sources: ["shared"], population: "analysis:second" };
+    expect(relatedReading("analysis", "first", [first, second])).toMatchObject([{ id: "second", purpose: "same source file" }]);
+  });
+
   it("accepts identical population identifiers and never makes title overlap a prerequisite", () => {
     const first = { id: "first", title: "Shared language", kind: "analysis" as const, sport: "nba", asOf: null, href: "/r/first/", population: "nba players" };
     const samePopulation = { id: "same", title: "Different measure", kind: "analysis" as const, sport: "nba", asOf: null, href: "/r/same/", population: "nba players" };
