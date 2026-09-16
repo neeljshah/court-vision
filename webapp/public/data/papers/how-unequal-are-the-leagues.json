@@ -1,0 +1,173 @@
+{
+  "slug": "how-unequal-are-the-leagues",
+  "title": "How unequal are the leagues?",
+  "subtitle": "A parity index across sports, with its window and its floors",
+  "authors": ["CourtVision research"],
+  "date": "2026-09-16",
+  "sport": "all",
+  "keywords": ["parity", "competitive balance", "Gini", "Herfindahl", "NBA", "cross-sport", "season length"],
+  "abstract": "This paper reads the CourtVision league_parity_index module, which measures competitive balance within a league across seasons using teams' win-share concentration (a Gini coefficient and a Herfindahl index) and win-percentage dispersion. The published artifact covers only the NBA, across three seasons -- 2023-24, 2024-25 and 2025-26 -- drawn from 77,744 player-boxscore rows and 3,611 two-team games, with the most recent underlying date at 2026-04-12. Every season carries n_teams=30 and clears the artifact's own floor of at least 200 games. The most balanced season on this measure is 2023-24 (win-share Gini 0.177, of 1,230 games); the least balanced is 2025-26 (Gini 0.2004, of 1,156 games, flagged looks_partial_vs_full_season=true against the artifact's 1,230-game full-season reference). Win-percentage standard deviation (0.1636, 0.1629, 0.1667) and the share of games decided by 5 points or fewer (23.3%, 25.2%, 25.5%) move alongside the Gini across the three seasons. This paper explains what the index measures, why a season's length and a league's team count change what a given Gini or HHI value means, and why the index is not a forecast of a future season's competitiveness. It also checks whether the site's second candidate artifact, xsport_structure, supplies the season-length and team-count context a genuine cross-sport parity comparison would need: it does not. That module measures cross-sport market-calibration reliability, a different quantity built on a different unit (market ticks, not seasons or teams), and only its NBA row resolves to a usable status. No cross-sport parity comparison is supported by currently published artifacts; this is a single-league, multi-season read.",
+  "sections": [
+    {
+      "id": "question",
+      "heading": "Question",
+      "blocks": [
+        { "type": "p", "text": "How unequal are the leagues -- did a handful of teams dominate a season, or did wins spread evenly across the field. A parity index tries to compress that question into one number, but the number's meaning depends on more than the number itself: how many teams split the wins, and how many games were played before the number was computed." },
+        { "type": "p", "text": "CourtVision publishes a league_parity_index module that builds this kind of number for the NBA, one row per season, alongside the games and teams count behind it and the floors that decide whether a season's row is trusted at all. This paper reads that module as published, explains its definitions in its own terms, and then checks -- rather than assumes -- whether a second published module, xsport_structure, extends the same comparison to other sports." }
+      ]
+    },
+    {
+      "id": "data",
+      "heading": "Data and definitions",
+      "blocks": [
+        { "type": "p", "text": "The league_parity_index module's declared source is data/domains/basketball_nba/player_boxscores.parquet plus docs/JOB_EVIDENCE_PACKET.md, and its label field marks it DESCRIPTIVE_ONLY. Its unit is a team-game: a team's points summed from its players' rows within one game_id, keeping only game_ids with exactly two distinct teams and a decided winner. That is a season's box-score results table, not the in-game tick corpus that carries a published MLB quarantine notice elsewhere on this site -- so that notice does not apply to this module." },
+        { "type": "p", "text": "Behind the three published season rows sit 77,744 boxscore rows across 3,611 games, all of them two-team games (games_total and games_two_team both equal 3,611; games_dropped_not_two_team = 0); the most recent date in the underlying data is date_max = 2026-04-12. The three covered seasons are 2023-24, 2024-25 and 2025-26." },
+        { "type": "p", "text": "Two floors are declared once, in the artifact itself, and applied to every season: min_games_per_season = 200 (a season below this is flagged meets_games_floor = false and excluded from the module's own Lorenz chart -- no season in this artifact falls below it), and close_game_pts = 5, the margin used for the module's close-game share. A separate reference, full_regular_season_games_reference = 1230, is the yardstick the module uses to flag a season looks_partial_vs_full_season." },
+        { "type": "p", "text": "The module measures four things per season. win_share_gini is the Gini coefficient of per-team win counts, where win shares sum to 1: 0 is balanced and (n_teams-1)/n_teams is one team holding every win. win_share_hhi is the Herfindahl index of the same win shares; its balanced floor is 1/n_teams, and the artifact also publishes that value normalized against the floor and against a ceiling of 1. win_pct_stdev is the standard deviation of team win percentage, a games-normalized companion that stays meaningful even when teams have not all played the same number of games. margin_dispersion is the mean and standard deviation of absolute final margin, plus the share of games decided by close_game_pts points or fewer. The module states outright that it is not a forecast (not_a_forecast = true), that it is not adjusted for strength of schedule (opponent-raw win counts), and that it may pool playoff games into the same season row as regular-season games rather than isolating the regular season." },
+        { "type": "callout", "label": "Caution", "text": "xsport_structure.json does not carry season length, team count, or scoring-cadence figures for any sport. Its own method field describes a market-calibration reliability comparison -- tick-weighted market ECE/Brier, a favorite-versus-longshot outcome-minus-implied gap, and a near-decided favorite-loses comeback rate -- not a structural comparison. It is described here only so a reader who expected structural context for a cross-sport parity comparison can see exactly why none is available." },
+        { "type": "p", "text": "Concretely, xsport_structure's methodology is evaluated per sport under a floor of at least 30 games per bucket and a non-null market mean probability. Under that methodology only the NBA case resolves (status = ok, n_games_total = 1,593); mlb, soccer_intl and tennis are each status = not_buildable in this file, for reasons the file states itself -- no bucket cleared its floor, or, for tennis, no reliability map exists at all. None of those four per-sport rows carries a season length, a team count, or a scoring-cadence figure, so this artifact cannot supply the structural context a cross-sport parity comparison would need." }
+      ]
+    },
+    {
+      "id": "method",
+      "heading": "Method",
+      "blocks": [
+        { "type": "math", "text": "win_share_i = team_i_wins / sum_over_teams(wins)\nwin_share_gini = Gini(win_share_1 .. win_share_n_teams)\nwin_share_hhi = sum_i(win_share_i^2)   [balanced floor = 1/n_teams]\nwin_share_hhi_normalized = (win_share_hhi - 1/n_teams) / (1 - 1/n_teams)" },
+        { "type": "callout", "label": "Definition", "text": "Parity, in this module, means how evenly a fixed pool of season wins was split among the teams that played, in the games actually recorded. It is not a measure of how well-matched any single pairing is, and the module says explicitly that it is not a forecast of a future season's competitiveness." },
+        { "type": "p", "text": "A win-share Gini is computed over exactly n_teams shares that must sum to 1, so the same absolute gap in win totals moves the Gini by a different amount depending on n_teams: with the 30 teams present in every season in this artifact, the theoretical Gini ceiling for one team holding every win is (30-1)/30 = 0.9667, and the balanced HHI floor is 1/30 = 0.0333 -- the same value the artifact publishes as hhi_balanced_floor_1_over_n on every season row. A league with fewer teams has a higher balanced-HHI floor and a lower Gini ceiling for the identical reason: the denominator shrinks. This is why a parity index cannot be read the same way across two leagues with different team counts without accounting for that denominator." },
+        { "type": "p", "text": "Season length matters for a separate reason: a shorter season is a smaller sample of each team's true win rate, so ordinary variation in scheduling, injuries and matchup order has more room to separate teams by chance, which can inflate a dispersion measure even when nothing about the league's underlying competitiveness changed. The artifact's own floor -- at least 200 games before a season's row is trusted -- exists for exactly this reason, and its 1,230-game full-season reference is the yardstick a season is checked against before it is flagged as partial." }
+      ]
+    },
+    {
+      "id": "results",
+      "heading": "Results",
+      "blocks": [
+        { "type": "p", "text": "All three published NBA seasons clear the 200-game floor and carry n_teams = 30. From the module's seasons array:" },
+        {
+          "type": "table",
+          "caption": "NBA league parity index by season",
+          "columns": ["Season", "Games (n)", "Teams (n)", "Win-share Gini", "Win-share HHI (normalized)", "Win-pct stdev", "Games decided by <=5 pts (%)", "Partial-season flag"],
+          "rows": [
+            ["2023-24", "1230", "30", "0.177", "0.0036", "0.1636", "23.3", "false"],
+            ["2024-25", "1225", "30", "0.1798", "0.0035", "0.1629", "25.2", "true"],
+            ["2025-26", "1156", "30", "0.2004", "0.0043", "0.1667", "25.5", "true"]
+          ],
+          "note": "Source: webapp/public/data/showcase/league_parity_index.json, seasons[]; n_teams=30 and meets_games_floor=true in every row (floor = 200 games)."
+        },
+        { "type": "figure", "module": "league_parity_index", "caption": "Win-share concentration (Gini and HHI) and win-percentage dispersion by NBA season, 2023-24 through 2025-26." },
+        { "type": "p", "text": "The most balanced season on this measure is 2023-24 (win-share Gini 0.177); the least balanced is 2025-26 (Gini 0.2004). Win-percentage standard deviation and the share of games decided by 5 points or fewer move with the Gini across the three rows: 0.1636 and 23.3% in 2023-24, 0.1629 and 25.2% in 2024-25, 0.1667 and 25.5% in 2025-26. The 2025-26 row is flagged looks_partial_vs_full_season = true, alongside 2024-25, against the 1,230-game reference; only 2023-24, at exactly 1,230 games, is flagged false. That flag does not say the Gini gap between seasons is caused by season length -- it says that possibility should stay open, which is exactly what the artifact's own flag is for." },
+        { "type": "p", "text": "A cross-sport version of this table -- the same index, computed under comparable floors, for other leagues' own season length and team count -- is what the topic of this paper calls for. As the Data section above establishes, xsport_structure does not supply that: its per-sport rows carry a market-calibration status (ok for NBA, not_buildable for mlb, soccer_intl and tennis), not a season-length, team-count, or scoring-cadence figure for any sport. No other published module on this site carries a parity index for a non-NBA league either. The honest answer to 'how unequal are the leagues' is therefore: measurably, for the NBA, across three seasons with a declared window and floor; not comparably, for any other league, because no comparable index is currently published for one." }
+      ]
+    },
+    {
+      "id": "checks",
+      "heading": "Robustness and what would falsify this",
+      "blocks": [
+        { "type": "p", "text": "The floors behind this table -- 200 games per season, a 1,230-game full-season reference, a 5-point close-game margin -- are declared once in the artifact itself and applied uniformly to all three seasons, not chosen after looking at which season's row looked cleanest. The two-team filter dropped nothing in this corpus: games_dropped_not_two_team = 0 of 3,611 games, so no games were silently excluded from the 77,744-row base behind these three seasons." },
+        { "type": "list", "items": [
+          "This would be revised if the 2025-26 season completes to, or past, the 1,230-game reference and its win-share Gini moves outside the range set by the two seasons already at or near that reference -- that would show whether the current gap is a partial-season artifact rather than a real change in balance.",
+          "This would be revised if a comparable parity index, computed under matching floors and denominators, were published on this site for MLB, soccer, or tennis -- the 'no cross-sport comparison supported' conclusion above rests on the absence of that artifact today, not on a claim that one could never exist.",
+          "This would be revised if the underlying parquet turns out to pool playoff games into any of these three season rows -- the module's own methodology flags this as a live, unchecked possibility, and playoff pooling would inflate that season's win-share Gini relative to a regular-season-only measure."
+        ] }
+      ]
+    },
+    {
+      "id": "limitations",
+      "heading": "Limitations",
+      "blocks": [
+        { "type": "list", "items": [
+          "NBA only: no cross-sport parity comparison is supported by currently published artifacts. xsport_structure carries a different topic, market-calibration reliability, not season length, team count, or scoring cadence.",
+          "Descriptive only: the module states not_a_forecast = true. It describes seasons already played and says nothing about how balanced a future season will be.",
+          "Not adjusted for strength of schedule: every win-share and Gini figure above uses opponent-raw win counts.",
+          "May pool playoff games with regular-season games in a given season's row, per the module's own stated caveat, which would inflate that season's win-share Gini; this paper does not check whether that pooling occurred in any of the three published seasons.",
+          "2024-25 (1,225 games) and 2025-26 (1,156 games) are both flagged looks_partial_vs_full_season = true against the 1,230-game reference, so their Gini and HHI values carry more sampling noise than 2023-24's completed-season row; only one of the three seasons here is a fully closed season by the artifact's own reference count."
+        ] }
+      ]
+    },
+    {
+      "id": "use",
+      "heading": "How to read this on the site",
+      "blocks": [
+        { "type": "p", "text": "The figure above renders the same three-season table live from the league_parity_index module, including its Gini and HHI series. Readers who want the population sizes and comparability gate behind other sports' calibration work, rather than this parity measurement, should use the cross-sport-comparability inspector, which reads a different published gate (kernel_transfer) for which reliability components can be compared across sports at all." },
+        { "type": "p", "text": "The companion paper what-carries-across-sports covers that calibration-reliability gate in full. It and this paper reach a shared conclusion from two different modules: a metric that shares a name, or a shared methodology label, across sports does not by itself make the sports comparable on it. Here, that conclusion is that only the NBA currently has a published parity index at all." }
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "artifact": "league_parity_index.json",
+      "module": "league_parity_index",
+      "asOf": null,
+      "dateMeaning": "not-published",
+      "fields": [
+        "label",
+        "source",
+        "methodology.unit",
+        "methodology.game_filter",
+        "methodology.win_share_gini",
+        "methodology.win_share_hhi",
+        "methodology.win_pct_stdev",
+        "methodology.margin_dispersion",
+        "methodology.not_a_forecast",
+        "methodology.not_this",
+        "declared_floors.min_games_per_season",
+        "declared_floors.rule",
+        "declared_floors.close_game_pts",
+        "declared_floors.full_regular_season_games_reference",
+        "input_coverage.rows",
+        "input_coverage.games_total",
+        "input_coverage.games_two_team",
+        "input_coverage.games_dropped_not_two_team",
+        "input_coverage.seasons",
+        "input_coverage.date_max",
+        "extremes_descriptive.most_balanced_season.season",
+        "extremes_descriptive.most_balanced_season.win_share_gini",
+        "extremes_descriptive.least_balanced_season.season",
+        "extremes_descriptive.least_balanced_season.win_share_gini",
+        "seasons[].season",
+        "seasons[].n_games",
+        "seasons[].n_teams",
+        "seasons[].meets_games_floor",
+        "seasons[].looks_partial_vs_full_season",
+        "seasons[].win_share_gini",
+        "seasons[].win_share_hhi",
+        "seasons[].win_share_hhi_normalized",
+        "seasons[].hhi_balanced_floor_1_over_n",
+        "seasons[].win_pct_stdev",
+        "seasons[].margin_mean_abs",
+        "seasons[].margin_stdev_abs",
+        "seasons[].pct_close_games_le5",
+        "seasons[].max_wins",
+        "seasons[].min_wins"
+      ]
+    },
+    {
+      "artifact": "xsport_structure.json",
+      "module": "xsport_structure",
+      "asOf": "2026-07-18",
+      "dateMeaning": "snapshot",
+      "fields": [
+        "method",
+        "floors",
+        "verdict",
+        "sports.nba.status",
+        "sports.nba.n_games_total",
+        "table[].sport",
+        "table[].status"
+      ]
+    }
+  ],
+  "limitations": [
+    "NBA only: no cross-sport parity comparison is supported by currently published artifacts. xsport_structure carries a different topic, market-calibration reliability, not season length, team count, or scoring cadence.",
+    "Descriptive only: the module states not_a_forecast = true. It describes seasons already played and says nothing about how balanced a future season will be.",
+    "Not adjusted for strength of schedule: every win-share and Gini figure above uses opponent-raw win counts.",
+    "May pool playoff games with regular-season games in a given season's row, per the module's own stated caveat, which would inflate that season's win-share Gini; this paper does not check whether that pooling occurred in any of the three published seasons.",
+    "2024-25 (1,225 games) and 2025-26 (1,156 games) are both flagged looks_partial_vs_full_season = true against the 1,230-game reference, so their Gini and HHI values carry more sampling noise than 2023-24's completed-season row; only one of the three seasons here is a fully closed season by the artifact's own reference count."
+  ],
+  "related": [
+    { "kind": "module", "id": "league_parity_index" },
+    { "kind": "module", "id": "xsport_structure" },
+    { "kind": "inspector", "id": "cross-sport-comparability" },
+    { "kind": "paper", "id": "what-carries-across-sports" }
+  ]
+}
