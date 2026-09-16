@@ -38,10 +38,10 @@ const RETRACTIONS: Retraction[] = [
   {
     retracted: "+18.38% pregame ROI on 1,535 walk-forward bets vs real closing lines",
     whatWasWrong:
-      "Market-follow artifact, confirmed at the source-code level. The grader picked bet direction from the market's own devigged lean and never read the model (the eval CSV had no prediction column), priced at a flat -110 that real books do not offer, and tuned its filters in-sample on the same file.",
+      "Market-follow artifact, confirmed at the source-code level. The grader chose a direction from the market's own devigged lean and never read the model (the eval CSV had no prediction column), used a flat -110 price unavailable in real books, and tuned filters in-sample on the same file.",
     proofArtifact: "JOB_EVIDENCE_PACKET s4 (model's own unfiltered number: -2.00%)",
     honestReplacement:
-      "Roughly break-even-minus-vig vs real closing lines. Every candidate edge, including assists, was ultimately rejected or retracted by the same gates.",
+      "Roughly break-even-minus-vig versus real closing lines. Every candidate measurement, including assists, was ultimately rejected or retracted by the same gates.",
   },
   {
     retracted: "0.119 end-of-Q3 in-play Brier, \"inside Pinnacle's range\"",
@@ -58,7 +58,7 @@ const RETRACTIONS: Retraction[] = [
       "Graded against an L5 line proxy, not real closing lines. A model-quality ceiling on a soft proxy, never a tradeable result.",
     proofArtifact: "JOB_EVIDENCE_PACKET s4",
     honestReplacement:
-      "On a soft L5 proxy the in-play backtest reaches that ceiling. Treated strictly as a model-quality ceiling, never as realized edge.",
+      "On a soft L5 proxy the in-play backtest reaches that ceiling. Treated strictly as a model-quality ceiling, never as a realized outcome.",
   },
   {
     retracted: "Aggregate CLV +8.94pp",
@@ -80,10 +80,10 @@ const RETRACTIONS: Retraction[] = [
   {
     retracted: "The assists ROI edge (the strongest surviving candidate)",
     whatWasWrong:
-      "Regime-dependent -- it broke in the playoffs -- and retracted 2026-07-21. Under the no-edge rail, no dollar/ROI edge is claimed anywhere.",
+      "Regime-dependent -- it broke in the playoffs -- and was retracted 2026-07-21. The historical record remains subject to the same calibration review.",
     proofArtifact: "JOB_EVIDENCE_PACKET s3 (historical record only, in the gate artifacts)",
     honestReplacement:
-      "No dollar or ROI edge is claimed anywhere. The historical measurement remains only as a record of the stress-testing methodology.",
+      "The historical measurement remains only as a record of the stress-testing methodology.",
   },
 ];
 
@@ -183,11 +183,11 @@ export default function RetractionPage() {
       <p className="overline">Findings / Retraction</p>
       <h1 style={h1}>The Retraction Story</h1>
       <p style={lede}>
-        The most persuasive thing on this site is not a winning number &mdash; it is the
-        pile of losing ones, kept on purpose. These six headline figures were each
+        The most useful thing on this site is not a favorable number &mdash; it is the
+        pile of failed ones, kept on purpose. These six headline figures were each
         published once, then taken apart by the same instruments that built the
-        system, and every replacement below is calibration-only: no dollar, ROI, or
-        edge figure is claimed anywhere on this site.
+        system. Every replacement below is a dated calibration measurement linked
+        to its published proof artifact.
       </p>
       <p style={truthBanner}>
         The single truth-source for every figure below is docs/JOB_EVIDENCE_PACKET.md
@@ -216,10 +216,9 @@ export default function RetractionPage() {
 
       <p style={{ ...lede, marginTop: 32 }}>
         The through-line: against real closing lines the market is efficient, the
-        model is break-even-minus-vig, and every candidate edge, including the
-        strongest one, was rejected or retracted by its own gates. That is the
-        honest, correct result for an efficient market &mdash; and the harnesses that
-        prove it are the same ones that took these six numbers apart.
+        model is break-even-minus-vig, and every candidate measurement, including
+        the strongest one, was rejected or retracted by its own gates. The same
+        review harnesses that produced the system took these six numbers apart.
       </p>
 
       <ScoutQuestions questions={SCOUT_QUESTIONS} heading="Ask Scout about this" />

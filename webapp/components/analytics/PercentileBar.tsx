@@ -4,15 +4,19 @@
 // no good/bad colouring, since "higher" carries no quality judgement here.
 export interface PercentileBarProps {
   pct: number; // 0..100, this entity's rank within its pack
-  nInPack: number; // pack size the rank was computed against
+  nRanked?: number; // number of profiles ranked for this specific measurement
+  nInPack?: number; // legacy caller support; never used as a measurement denominator
 }
 
-export function PercentileBar({ pct, nInPack }: PercentileBarProps) {
+export function PercentileBar({ pct, nRanked }: PercentileBarProps) {
+  const caption = nRanked
+    ? `Percentile rank ${pct} among ${nRanked} measured profiles`
+    : `Percentile rank ${pct}`;
   return (
     <div style={{ marginTop: 6 }}>
       <div
         role="img"
-        aria-label={`Higher than ${pct} percent of ${nInPack} entities in this pack`}
+        aria-label={`${pct}th percentile visual bar`}
         style={{
           height: 4,
           borderRadius: 2,
@@ -30,7 +34,7 @@ export function PercentileBar({ pct, nInPack }: PercentileBarProps) {
         />
       </div>
       <div style={{ marginTop: 3, fontSize: 11, color: "var(--ink-3)" }}>
-        Higher than {pct}% of {nInPack} in pack
+        {caption}
       </div>
     </div>
   );

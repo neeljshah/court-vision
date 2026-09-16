@@ -64,8 +64,8 @@ export default function AboutPage() {
         official box-score APIs, and a library of trained signals feed a possession-level Monte
         Carlo simulator, producing calibrated forecasts across NBA, MLB, soccer, and tennis. This
         site is the honest read-out of that pipeline &mdash; every number on it carries the artifact
-        that produced it. The product is a <em>calibrated predictor</em>, not a betting-edge
-        service; an honest null result is a success here, not a failure. Full discipline and
+        that produced it. The product is a <em>calibration reader</em>: it publishes measured
+        forecast performance and null results alongside their source artifacts. Full discipline and
         proof harness: <Link href="/analytics/the-loop">What verified means &rarr;</Link>
       </p>
 

@@ -11,7 +11,7 @@ import { findingsIndex } from "@/lib/analytics/findingsIndex";
 export const metadata: Metadata = {
   title: "Findings",
   description:
-    "Honesty exhibits (edge_claimed: false): retractions, effective sample size, verdict flips, and descriptive MLB leaderboards with their nulls attached.",
+    "Dated descriptive exhibits: retractions, effective sample size, verdict flips, and MLB leaderboards linked to published source artifacts.",
 };
 
 
@@ -49,9 +49,9 @@ export default function FindingsIndexPage() {
       <p className="overline">Findings</p>
       <h1 style={h1}>The honesty exhibits</h1>
       <p style={lede}>
-        These pages make the honest rail concrete. No dollar edge is claimed
-        anywhere; each exhibit either takes a number apart, deflates our own
-        sample, or publishes a result that failed &mdash; on purpose.
+        These pages document how measurements hold up under review. Each exhibit
+        either takes a number apart, deflates its own sample, or publishes a
+        failed result alongside the dated source artifact.
       </p>
 
       <div style={{ display: "grid", gap: 16, marginTop: 32, gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", maxWidth: 900 }}>

@@ -46,7 +46,7 @@ describe("CompareExperience controls", () => {
     expect(screen.getByText("25th percentile")).toBeInTheDocument();
     expect(screen.getAllByText("Ranked among 2 profiles").length).toBeGreaterThan(0);
     expect(screen.getByRole("table")).toHaveAccessibleName("Published values and within-pack percentile ranks");
-    expect(screen.getByRole("img", { name: "25th percentile visual bar" })).toBeInTheDocument();
+    expect(screen.getAllByRole("img", { name: "25th percentile visual bar" })[0]).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Where these profiles separate" })).toBeInTheDocument();
     expect(screen.getAllByText("Closest comparables")).toHaveLength(2);
     expect(screen.getAllByRole("link", { name: "Beta" }).some((link) => link.getAttribute("href") === "/analytics/players/nba_players/beta")).toBe(true);
@@ -128,7 +128,7 @@ describe("CompareExperience controls", () => {
     vi.mocked(fetch).mockImplementation((input: RequestInfo | URL, _init?: RequestInit) => { const url = String(input); return Promise.resolve({ ok: true, json: async () => url.includes("atlas_nba_manifest") ? invalidRankManifest : url.includes("percentiles") ? invalidRankPercentiles : comparables } as Response); });
     render(<CompareExperience />);
     expect(await screen.findByText("0th percentile")).toBeInTheDocument();
-    expect(screen.getByRole("img", { name: "0th percentile visual bar" })).toBeInTheDocument();
+    expect(screen.getAllByRole("img", { name: "0th percentile visual bar" })[0]).toBeInTheDocument();
     expect(screen.getAllByText("Ranked among 2 profiles")).toHaveLength(3);
     expect(screen.getAllByText("Not ranked").length).toBeGreaterThanOrEqual(7);
     expect(screen.queryByText("101st percentile")).not.toBeInTheDocument();
