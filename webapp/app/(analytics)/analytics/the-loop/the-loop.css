@@ -1,0 +1,2 @@
+/* The ledger owns its controls; this hook keeps the page-level section in normal flow. */
+.ch-ledger { margin-top: 8px; }

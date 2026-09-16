@@ -13,7 +13,11 @@ import { ScoutNote, type ScoutEnvelope } from "@/components/analytics/ScoutNote"
 import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
 import { VerdictDot, type Verdict } from "@/components/analytics/VerdictDot";
 import { VerdictLegend } from "@/components/analytics/VerdictLegend";
+import { ClaimHistory } from "@/components/analytics/claim-history/ClaimHistory";
 import { pickQuestions } from "@/lib/analytics/askPicks";
+import { claimFamilyId, flipDestinations } from "@/lib/analytics/claimHistory";
+import { loadClaimHistory } from "@/lib/analytics/claimHistory.server";
+import "./the-loop.css";
 
 export const metadata: Metadata = {
   title: "The Loop",
@@ -37,19 +41,6 @@ function readJson<T>(name: string): T | null {
   }
 }
 
-interface FlipHistory { corpus?: string; n?: number; effect?: number | null }
-interface Flip {
-  sport: string;
-  hypothesis: string;
-  current_status: string;
-  verdict_sequence: string[];
-  history: FlipHistory[];
-}
-interface Scoreboard {
-  as_of?: string;
-  summary?: { n_families?: number; n_flipped?: number; by_status?: Record<string, number> };
-  flipped_families?: Flip[];
-}
 interface Ledger { overall_counts?: Record<string, number> }
 interface Graveyard {
   full_history_row_count?: number;
@@ -91,19 +82,19 @@ function StatCell({ num, unit, label, chip }: { num: string; unit?: string; labe
 }
 
 export default function TheLoopPage() {
-  const sb = readJson<Scoreboard>("fwd_claim_scoreboard");
+  const claimLedger = loadClaimHistory();
   const ml = readJson<Ledger>("mechanism_ledger_export");
   const gv = readJson<Graveyard>("reject_graveyard");
   const hx = readJson<Honesty>("honesty_exhibit");
 
-  const by = sb?.summary?.by_status || {};
-  const families = sb?.summary?.n_families ?? 0;
+  const by = claimLedger.byStatus;
+  const families = claimLedger.families.length;
   const verified = by.verified ?? 0;
   const provisional = by.provisional ?? 0;
   const graveyard = (by.null ?? 0) + (by.not_testable ?? 0) + (by.retracted ?? 0);
-  const flips = sb?.flipped_families || [];
-  const stats: LoopStats = { families, verified, graveyard, provisional, flips: sb?.summary?.n_flipped ?? flips.length };
-  const sbAsOf = day(sb?.as_of);
+  const flips = flipDestinations(claimLedger);
+  const stats: LoopStats = { families, verified, graveyard, provisional, flips: flips.length };
+  const sbAsOf = day(claimLedger.asOf || undefined);
 
   const oc = ml?.overall_counts || {};
   const topReasons = Object.entries(gv?.rejects_by_reason_category || {}).sort((a, b) => b[1] - a[1]).slice(0, 3);
@@ -123,7 +114,7 @@ export default function TheLoopPage() {
       `Confirms are not the product -- the self-grading is. Of ${families} tracked families, ` +
       `**${verified}** are verified and **${graveyard}** sit in the graveyard as nulls, not-testables, or ` +
       `retractions, kept in the same ledger they are confirmed from. ` +
-      `**${stats.flips}** changed their own verdict when new evidence arrived.`,
+            `**${stats.flips}** changed their own verdict when new evidence arrived.`,
     chips: [
       fwdChip({ value: String(verified), label: "verified families", verdict: "confirmed" }),
       fwdChip({ value: String(graveyard), label: "kept in the ledger (null / not-testable / retracted)", verdict: "null" }),
@@ -189,24 +180,24 @@ export default function TheLoopPage() {
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {flips.map((f) => {
-            const last = f.history[f.history.length - 1] || {};
+            const last = f.history[f.history.length - 1];
             const chip: ReceiptData = {
-              value: last.effect != null ? String(last.effect) : undefined,
-              label: f.verdict_sequence[f.verdict_sequence.length - 1],
+              value: last?.effect != null ? String(last.effect) : undefined,
+              label: f.verdictSequence[f.verdictSequence.length - 1],
               sourceArtifact: `${OUT}/fwd_claim_scoreboard.json`,
               asOf: sbAsOf,
-              n: last.n,
-              corpus: last.corpus,
-              verdict: verdictOf(f.current_status),
+              n: last?.n ?? undefined,
+              corpus: last?.corpus ?? undefined,
+              verdict: verdictOf(f.currentStatus),
             };
             return (
               <div key={`${f.sport}-${f.hypothesis}`} style={{ background: "var(--paper-raised)", border: "1px solid var(--rule)", borderRadius: "var(--radius-card)", boxShadow: "var(--shadow-card)", padding: "14px 16px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px 16px" }}>
                 <span style={{ fontWeight: 700, fontSize: 10, letterSpacing: ".1em", textTransform: "uppercase", color: "var(--accent)", flex: "0 0 46px" }}>{SPORT[f.sport] || f.sport}</span>
                 <span style={{ fontFamily: "var(--font-display)", fontSize: 17, color: "var(--ink)", flex: "1 1 200px", minWidth: 0 }}>{f.hypothesis.replace(/_/g, " ")}</span>
                 <span style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                  {f.verdict_sequence.map((v, i) => (
+                  {f.verdictSequence.map((v, i) => (
                     <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                      {i > 0 ? <span aria-hidden style={{ color: "var(--ink-3)", fontSize: 12 }}>{"\u2192"}</span> : null}
+                      {i > 0 ? <span aria-hidden style={{ color: "var(--ink-3)", fontSize: 12 }}>&rarr;</span> : null}
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontFamily: "var(--font-mono)", fontSize: 11.5, color: "var(--ink-2)", padding: "3px 8px", border: "1px solid var(--rule-strong)", borderRadius: "var(--radius-pill)" }}>
                         <VerdictDot verdict={verdictOf(v)} size={6} />
                         {shortVerdict(v)}
@@ -217,6 +208,7 @@ export default function TheLoopPage() {
                 <span style={{ flex: "0 0 auto" }}>
                   <Receipt {...chip} />
                 </span>
+                <a href={`#${claimFamilyId(f)}`} style={{ fontSize: 12, fontWeight: 600, whiteSpace: "nowrap" }}>View full history</a>
               </div>
             );
           })}
@@ -245,6 +237,8 @@ export default function TheLoopPage() {
           {gvLast ? <span style={{ color: "var(--ink-3)" }}>{` \u00b7 cumulative reaches ${gvLast.cumulative_rejects} by ${gvLast.date}.`}</span> : null}
         </p>
       </section>
+
+      <ClaimHistory ledger={claimLedger} />
 
       <ScoutNote envelope={scout} />
       <ScoutQuestions questions={questions} heading="Ask Scout about the loop" />
