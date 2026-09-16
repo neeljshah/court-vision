@@ -1,6 +1,6 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { observationPeriod, ResearchSourceContext } from "./ResearchSourceContext";
+import { observationPeriod, ResearchSourceContext, sourceHref } from "./ResearchSourceContext";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -30,6 +30,8 @@ describe("ResearchSourceContext", () => {
   it("reports an unrecorded period when the published module has no window", () => {
     expect(observationPeriod({ label: "No window" })).toBeNull();
   });
+
+});
 
 it("uses real atlas pack and module routes", () => {
   expect(sourceHref("atlas_nba_teams_manifest")).toBe("/analytics/players#nba_teams");
