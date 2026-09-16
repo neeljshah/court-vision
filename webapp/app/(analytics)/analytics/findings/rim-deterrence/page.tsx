@@ -97,7 +97,7 @@ function SeasonTable({ block }: { block: SeasonBlock }) {
       <p style={{ ...lede, fontSize: 14.5, marginTop: 6, color: "var(--ink-3)" }}>
         n qualified (min_on &ge; {block.min_on_floor.toLocaleString()}) = {block.n_qualified.toLocaleString()}
       </p>
-      <div style={{ marginTop: 16, overflowX: "auto", maxWidth: 760 }}>
+      <div role="region" aria-label="Published measurements" data-scroll-region style={{ marginTop: 16, overflowX: "auto", maxWidth: 760 }}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 620 }}>
           <thead>
             <tr>

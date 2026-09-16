@@ -143,7 +143,7 @@ export default function LeagueParityPage() {
         vs. a full 1230-game season, so read this as a small, honest description, not a trend.
       </p>
 
-      <div style={{ marginTop: 40, overflowX: "auto", maxWidth: 900 }}>
+      <div role="region" aria-label="Published measurements" data-scroll-region style={{ marginTop: 40, overflowX: "auto", maxWidth: 900 }}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 760 }}>
           <thead>
             <tr>

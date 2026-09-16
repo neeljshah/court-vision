@@ -91,7 +91,7 @@ export default function TennisFindingsPage() {
           <h2 className="serif" style={h2}>{story.title}</h2>
           <p style={{ ...lede, fontSize: 15, marginTop: 10, maxWidth: "none" }}>{story.summary}</p>
 
-          <div style={{ marginTop: 16, overflowX: "auto" }}>
+          <div role="region" aria-label="Published measurements" data-scroll-region style={{ marginTop: 16, overflowX: "auto" }}>
             <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 620 }}>
               <thead>
                 <tr>

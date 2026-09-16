@@ -129,7 +129,7 @@ export default function EffectiveSampleSizePage() {
       <p style={lede}>{headline}</p>
       {method ? <p style={{ ...lede, fontSize: 15, marginTop: 12 }}>{method}</p> : null}
 
-      <div style={{ marginTop: 24, overflowX: "auto", maxWidth: 700 }}>
+      <div role="region" aria-label="Published measurements" data-scroll-region style={{ marginTop: 24, overflowX: "auto", maxWidth: 700 }}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 620 }}>
           <thead>
             <tr>

@@ -46,12 +46,20 @@ describe("MeasurementLab sport filtering and inspection", () => {
     render(<MeasurementLab data={fixture} />);
     fireEvent.change(screen.getByLabelText("Filter lab by sport"), { target: { value: "tennis" } });
 
-    expect(screen.getByRole("status")).toHaveTextContent("1 published row matches");
+    expect(screen.getByRole("status")).toHaveTextContent("1 row");
     expect(screen.getByRole("button", { name: /Inspect TENNIS/ })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Inspect MLB/ })).not.toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("Filter lab by sport"), { target: { value: "nba" } });
     expect(screen.getByText(/No published measurements for Basketball in this metric/)).toBeInTheDocument();
+  });
+
+  it("reports why export is unavailable when a row search has no matches", () => {
+    render(<MeasurementLab data={fixture} />);
+    fireEvent.change(screen.getByLabelText("Search measurement rows"), { target: { value: "not present" } });
+
+    expect(screen.getByRole("status")).toHaveTextContent('0 of 3 rows match "not present"');
+    expect(screen.getByRole("button", { name: "Export rows" })).toBeDisabled();
   });
 
   it("selects a metric category dataset and opens row details", () => {

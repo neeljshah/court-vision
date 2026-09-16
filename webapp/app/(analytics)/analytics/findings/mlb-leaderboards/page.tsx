@@ -62,7 +62,7 @@ function OozTable({ rows, headLabel }: { rows: NamedRate[]; headLabel: string })
   return (
     <div>
       <p style={boardHead}>{headLabel}</p>
-      <div style={tableWrap}>
+      <div role="region" aria-label="Published measurements" data-scroll-region style={tableWrap}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 280 }}>
           <thead><tr><th style={th}>Name</th><th style={th}>OOZ strike rate</th><th style={th}>n</th></tr></thead>
           <tbody>
@@ -125,7 +125,7 @@ export default function MlbLeaderboardsPage() {
           <p style={sectionLabel}>Platoon splits</p>
           <p style={caption}>{platoon_splits.label}</p>
           {platoon_splits.floor ? <p style={floorNote}>floor: {platoon_splits.floor} &middot; n_qualified {platoon_splits.n_qualified.toLocaleString()}</p> : null}
-          <div style={{ ...tableWrap, marginTop: 12 }}>
+          <div role="region" aria-label="Published split measurements" data-scroll-region style={{ ...tableWrap, marginTop: 12 }}>
             <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 600 }}>
               <thead><tr><th style={th}>Batter</th><th style={th}>vs LHP</th><th style={th}>vs RHP</th><th style={th}>Delta</th><th style={th}>PA (L/R)</th></tr></thead>
               <tbody>

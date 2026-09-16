@@ -132,7 +132,7 @@ export default function VerdictFlipsPage() {
           <p style={{ ...lede, fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--ink-3)", marginTop: 40, marginBottom: 0, maxWidth: "none" }}>
             Retracted-claim latency
           </p>
-          <div style={{ marginTop: 12, overflowX: "auto" }}>
+          <div role="region" aria-label="Retracted-claim latency measurements" data-scroll-region style={{ marginTop: 12, overflowX: "auto" }}>
             <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 640 }}>
               <thead>
                 <tr>

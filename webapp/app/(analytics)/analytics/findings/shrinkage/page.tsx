@@ -64,7 +64,7 @@ function signed(v: number): string {
 
 function RegressorTable({ rows }: { rows: RegressorRow[] }) {
   return (
-    <div style={tableWrap}>
+    <div role="region" aria-label="Published measurements" data-scroll-region style={tableWrap}>
       <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 560 }}>
         <thead>
           <tr>
@@ -93,7 +93,7 @@ function RegressorTable({ rows }: { rows: RegressorRow[] }) {
 
 function ShrunkTable({ rows }: { rows: Row[] }) {
   return (
-    <div style={tableWrap}>
+    <div role="region" aria-label="Published measurements" data-scroll-region style={tableWrap}>
       <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 480 }}>
         <thead>
           <tr>

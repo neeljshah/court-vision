@@ -59,10 +59,11 @@ const answerStyle: CSSProperties = { fontSize: 15.5, color: "var(--ink-2)", line
 const questionStyle: CSSProperties = { fontSize: 13, color: "var(--ink-3)", marginBottom: 6 };
 const chipRow: CSSProperties = { display: "flex", flexWrap: "wrap", gap: "6px 16px", marginTop: 10 };
 
-function AnswerEnvelope({ result, query, onAsk }: {
+function AnswerEnvelope({ result, query, onAsk, excludedQuestions }: {
   result: ResolvedQuestion;
   query: string;
   onAsk: (question: string) => void;
+  excludedQuestions: Set<string>;
 }): ReactNode {
   if (result.kind === "none" || !result.entry) {
     const unavailable = result.kind === "unavailable";
@@ -89,6 +90,7 @@ function AnswerEnvelope({ result, query, onAsk }: {
   const publicArtifact = /^webapp\/public\/data\/showcase\/[a-z0-9_]+\.json$/i.test(entry.a.source_artifact);
   const sourceHref = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}${publicArtifact ? entry.a.source_artifact.slice("webapp/public".length) : "/data/ask/corpus.json"}`;
   const explorePath = /^\/analytics\/research\/[a-z0-9-]+\/$/i.test(entry.a.explore_path || "") ? entry.a.explore_path : null;
+  const followUps = result.followUps.filter(question => question !== query && !excludedQuestions.has(question));
   return (
     <section aria-label={related ? "Related cited answer" : "Cited answer"} style={envelope(neutral)}>
       <Marker neutral={neutral} />
@@ -107,11 +109,11 @@ function AnswerEnvelope({ result, query, onAsk }: {
           <a href={sourceHref} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: "var(--accent)" }}>{publicArtifact ? "Open published source" : "Open published answer record"}</a>
           {explorePath ? <a href={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}${explorePath}`} style={{ fontSize: 12, color: "var(--accent)" }}>Explore this analysis</a> : null}
         </div>
-        {result.followUps.length > 0 ? (
+        {followUps.length > 0 ? (
           <div style={{ marginTop: 16 }}>
             <div className="overline" style={{ color: "var(--ink-3)", marginBottom: 7 }}>Continue exploring</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              {result.followUps.map((question) => (
+              {followUps.map((question) => (
                 <button key={question} type="button" style={pill} onClick={() => onAsk(question)}>{question}</button>
               ))}
             </div>
@@ -162,6 +164,7 @@ export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour
     run(question);
     requestAnimationFrame(() => inputRef.current?.focus());
   };
+  const suggestedQuestions = new Set(tours.flatMap(tour => tour.questions));
 
   useEffect(() => {
     const prefilled = new URLSearchParams(window.location.search).get("q");
@@ -194,7 +197,7 @@ export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour
       </p>
 
       <div aria-live="polite" aria-atomic="true" style={result ? { marginTop: 16 } : undefined}>
-        {result ? <AnswerEnvelope result={result} query={submittedQuery} onAsk={askAndFocus} /> : null}
+        {result ? <AnswerEnvelope result={result} query={submittedQuery} onAsk={askAndFocus} excludedQuestions={suggestedQuestions} /> : null}
       </div>
 
       <section aria-label="Suggested Scout questions" style={{ margin: "22px 0 10px" }}>

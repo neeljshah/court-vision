@@ -89,7 +89,7 @@ function LeaderboardTable({ sport, block, verdict }: { sport: string; block: Spo
       <p style={{ ...lede, fontSize: 14.5, marginTop: 6, color: "var(--ink-3)" }}>
         Market: {block.market} &mdash; outcome: {block.outcome} &mdash; shared subset n={block.n_shared.toLocaleString()}
       </p>
-      <div style={{ marginTop: 16, overflowX: "auto", maxWidth: 700 }}>
+      <div role="region" aria-label="Published measurements" data-scroll-region style={{ marginTop: 16, overflowX: "auto", maxWidth: 700 }}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 420 }}>
           <thead>
             <tr>

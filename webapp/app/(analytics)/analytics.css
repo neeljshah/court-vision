@@ -49,10 +49,13 @@ body {
   -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
   min-height: 100vh; display: flex; flex-direction: column;
 }
-main { flex: 1 0 auto; }
+main { flex: 1 0 auto; max-width: 100%; overflow-x: clip; }
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 2px; }
-img, svg { max-width: 100%; }
+img, svg { max-width: 100%; height: auto; }
+main * { min-width: 0; }
+main table { max-width: none; }
+[role="region"][data-scroll-region] { max-width: 100%; overflow-x: auto; }
 :focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
 /* ---- shared design-system utilities (reused by every analytics component) ---- */

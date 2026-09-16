@@ -41,4 +41,14 @@ describe("AskBox", () => {
 
     expect(screen.queryByRole("link", { name: "Explore this analysis" })).not.toBeInTheDocument();
   });
+
+  it("does not repeat a suggested question in the follow-up panel", () => {
+    const withFollowUp = [...entries, { ...entries[0], q: "Try another question" }];
+    render(<AskBox entries={withFollowUp} tours={[{ label: "Start here", questions: ["Try another question"] }]} />);
+    fireEvent.change(screen.getByLabelText("Ask Scout a question"), { target: { value: "Known question" } });
+    fireEvent.click(screen.getByRole("button", { name: "Search Scout's cited answers" }));
+
+    expect(screen.queryByText("Continue exploring")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Try another question" })).toHaveLength(1);
+  });
 });

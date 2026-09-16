@@ -40,6 +40,7 @@ const cap: CSSProperties = {
 // while a width:100% <img> never triggers a false shadow. Warm tone, never a glow.
 export const scrollFrame: CSSProperties = {
   overflowX: "auto",
+  maxWidth: "100%",
   backgroundColor: "var(--paper)",
   backgroundImage:
     "linear-gradient(to right, var(--paper), rgba(0,0,0,0)), " +
@@ -64,7 +65,7 @@ export function Figure({
   meta,
 }: FigureProps) {
   return (
-    <figure style={{ margin: 0, width: "100%" }}>
+    <figure style={{ margin: 0, width: "100%", maxWidth: "100%" }}>
       {eyebrow && (
         <div
           style={{
@@ -110,7 +111,7 @@ export function Figure({
       {/* overflow-x: charts are fixed-viewBox SVGs; on a narrow screen let them
           scroll at a legible min-width (Grid/Bars set it) instead of scaling
           their own text down to microtype. */}
-      <div style={{ ...scrollFrame, marginTop: title || subtitle || eyebrow ? 16 : 0 }}>{children}</div>
+      <div role="region" aria-label={title || "Chart data"} data-scroll-region style={{ ...scrollFrame, marginTop: title || subtitle || eyebrow ? 16 : 0 }}>{children}</div>
       {note && (
         <div
           style={{

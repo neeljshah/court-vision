@@ -101,7 +101,7 @@ export default function ForecastLifePage() {
         season.
       </p>
 
-      <div style={tableWrap}>
+      <div role="region" aria-label="Published measurements" data-scroll-region style={tableWrap}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 640 }}>
           <thead>
             <tr>
@@ -147,7 +147,7 @@ export default function ForecastLifePage() {
       {inGameSports.map((sport) => (
         <div key={sport} style={{ marginTop: 28 }}>
           <p style={{ ...sectionH, fontSize: 16, marginTop: 0, fontWeight: 700 }}>{sportLabel(sport)}</p>
-          <div style={tableWrap}>
+          <div role="region" aria-label={`${sportLabel(sport)} measurements`} data-scroll-region style={tableWrap}>
             <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 560 }}>
               <thead>
                 <tr>

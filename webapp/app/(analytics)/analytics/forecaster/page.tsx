@@ -185,7 +185,7 @@ export default function ForecasterPage() {
               <Stat n={`${wf.folds.length}`} l="Expanding folds" s={wf.seasons.join(" + ")} />
               <Stat n={`${wf.n_features}`} l="Leak-checked features" s="truncation-invariant" />
             </div>
-            <div style={scrollFrame}><table className="fc-tbl" style={{ width: "100%", borderCollapse: "collapse", marginTop: 20, maxWidth: 560 }}>
+            <div role="region" aria-label="Walk-forward measurements" data-scroll-region style={scrollFrame}><table className="fc-tbl" style={{ width: "100%", borderCollapse: "collapse", marginTop: 20, maxWidth: 560 }}>
               <thead><tr><th scope="col" style={th}>Train frac</th><th scope="col" style={th}>Train n</th><th scope="col" style={th}>Val n</th><th scope="col" style={th}>Acc</th><th scope="col" style={th}>Brier</th></tr></thead>
               <tbody>
                 {wf.folds.map((f, i) => (
@@ -221,7 +221,7 @@ export default function ForecasterPage() {
         <p style={{ ...lede, marginTop: 28 }}>
           <strong style={{ color: "var(--ink)" }}>But how much of that is skill?</strong> A rating-blind third arm &mdash; conditioning on the score alone, no model prior &mdash; splits the lift. Most of it is the scoreboard itself, free to anyone watching. The model&rsquo;s own contribution is the last column.
         </p>
-        <div style={scrollFrame}><table className="fc-tbl" style={{ width: "100%", borderCollapse: "collapse", marginTop: 16 }}>
+        <div role="region" aria-label="In-game conditioning measurements" data-scroll-region style={scrollFrame}><table className="fc-tbl" style={{ width: "100%", borderCollapse: "collapse", marginTop: 16 }}>
           <thead><tr>
             <th scope="col" style={th}>Sport</th><th scope="col" style={th}>static (prior only)</th><th scope="col" style={th}>score-only</th><th scope="col" style={th}>combined</th><th scope="col" style={th}>mechanical share</th><th scope="col" style={th}>model-prior share</th>
           </tr></thead>
@@ -279,7 +279,7 @@ export default function ForecasterPage() {
         <h2 style={h2}>Model vs market, every checkpoint, reported as-is.</h2>
         {cs ? (
           <>
-            <div style={scrollFrame}><table className="fc-tbl" style={{ width: "100%", borderCollapse: "collapse", marginTop: 20 }}>
+            <div role="region" aria-label="Cross-sport calibration scoreboard" data-scroll-region style={scrollFrame}><table className="fc-tbl" style={{ width: "100%", borderCollapse: "collapse", marginTop: 20 }}>
               <thead><tr>
                 <th scope="col" style={th}>Sport</th><th scope="col" style={th}>Market @ checkpoint</th><th scope="col" style={th}>n</th><th scope="col" style={th}>model vs market (paired)</th><th scope="col" style={th}>95% CI</th><th scope="col" style={th}>verdict</th>
               </tr></thead>

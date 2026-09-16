@@ -90,7 +90,7 @@ function BucketTable({ sport, block }: { sport: string; block: SportBlock }) {
       <p style={{ ...lede, fontSize: 14.5, marginTop: 6, color: "var(--ink-3)" }}>
         {block.book} &mdash; {block.market} &mdash; n={block.n_total.toLocaleString()}
       </p>
-      <div style={{ marginTop: 16, overflowX: "auto", maxWidth: 760 }}>
+      <div role="region" aria-label="Published measurements" data-scroll-region style={{ marginTop: 16, overflowX: "auto", maxWidth: 760 }}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 620 }}>
           <thead>
             <tr>

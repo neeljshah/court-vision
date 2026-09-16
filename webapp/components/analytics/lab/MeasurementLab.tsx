@@ -11,7 +11,6 @@ import { labViewSearch, readLabViewState, type LabViewState } from "./labViewSta
 
 const sportGroup = (sport: Sport) => sport === "soccer" ? "INTERNATIONAL SOCCER" : sport.toUpperCase();
 const rowLabel = (count: number) => `${count} published ${count === 1 ? "row" : "rows"}`;
-const countVerb = (count: number, singular: string, plural: string) => count === 1 ? singular : plural;
 const rowsForSport = (dataset: LabData["datasets"][number], sport: Sport) =>
   dataset.sport === "all" && sport !== "all" ? dataset.rows.filter(r => r.group === sportGroup(sport)) : dataset.rows;
 
@@ -26,7 +25,8 @@ export default function MeasurementLab({ data }: { data: LabData }) {
   const other = dataset.fields.find(f => f.key === otherKey) || dataset.fields[1] || field;
   const sportRows = rowsForSport(dataset, sport);
   const groups = Array.from(new Set(sportRows.map(r => r.group)));
-  const filtered = sportRows.filter(r => (group === "all" || r.group === group) && `${r.label} ${r.group} ${r.note || ""}`.toLowerCase().includes(query.toLowerCase()));
+  const groupRows = sportRows.filter(r => group === "all" || r.group === group);
+  const filtered = groupRows.filter(r => `${r.label} ${r.group} ${r.note || ""}`.toLowerCase().includes(query.toLowerCase()));
   const ranked = rankedRows(filtered, field.key, ascending);
   const choices = data.datasets.filter(d => sport === "all" || d.sport === sport || d.sport === "all");
   const categories = Array.from(new Set(choices.map(d => d.category)));
@@ -70,7 +70,7 @@ export default function MeasurementLab({ data }: { data: LabData }) {
       <div className="lab-controls"><label className="lab-field-label lab-primary-field">Primary measurement<select aria-label="Primary measurement" value={field.key} onChange={e => update({ fieldKey: e.target.value, selectedId: null })}>{dataset.fields.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}</select></label><label className="lab-field-label">Published group<select aria-label="Published group" value={group} onChange={e => update({ group: e.target.value, selectedId: null })}><option value="all">All published groups</option>{groups.map(g => <option key={g}>{g}</option>)}</select></label><label className="lab-field-label">Rank order<select aria-label="Rank order" value={ascending ? "asc" : "desc"} onChange={e => update({ ascending: e.target.value === "asc" })}><option value="desc">Highest first</option><option value="asc">Lowest first</option></select></label></div>
       <div className="lab-chart-controls"><div><div className="cv-segment" aria-label="Measurement visualization">{[{ id: "rank", label: "Ranked bars" }, { id: "scatter", label: "Scatter plot" }, { id: "table", label: "Data table" }, { id: "distribution", label: "Distribution" }].map(m => <button key={m.id} aria-pressed={mode === m.id} onClick={() => update({ mode: m.id as LabViewState["mode"] })}>{m.label}</button>)}</div><p className="lab-readout"><b>{field.label}</b><span>{rowLabel(filtered.length)}; {ranked.length} numeric</span></p></div><button className="lab-export" onClick={() => exportLabCSV(dataset, filtered)} disabled={!filtered.length}><Download size={14} /> Export rows</button></div>
       <label className="cv-search"><Search size={16} /><input aria-label="Search measurement rows" placeholder="Find a player, team, or group in this dataset" value={query} onChange={e => update({ query: e.target.value, selectedId: null })} /></label>
-      <p className="cv-result-count" role="status">{rowLabel(filtered.length)} {countVerb(filtered.length, "matches", "match")}; {ranked.length} {countVerb(ranked.length, "contains", "contain")} {field.label.toLowerCase()}.</p>
+      <p className="cv-result-count" role="status" aria-live="polite">{query ? `${filtered.length} of ${groupRows.length} rows match "${query}"` : `${groupRows.length} ${groupRows.length === 1 ? "row" : "rows"}`}</p>
       {mode === "scatter" && <label className="lab-field-label lab-second-axis">Vertical measurement<select aria-label="Vertical measurement" value={other.key} onChange={e => update({ otherKey: e.target.value })}>{dataset.fields.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}</select></label>}
       <DistributionSummary rows={filtered} field={field} />
       {!filtered.length ? <Empty>{dataset.sport === "all" && sport !== "all" && !sportRows.length ? `No published measurements for ${sportLabel} in this metric. The source's data gap is preserved.` : dataset.rows.length ? "No rows match this search and group." : "No qualifying measurements were published for this view. The source's data gap is preserved."}</Empty> : mode === "table" ? <LabTable dataset={dataset} rows={[...ranked, ...filtered.filter(r => !ranked.some(n => n.id === r.id))]} onSelect={inspect} /> : mode === "distribution" ? <DistributionPlot rows={filtered} field={field} /> : mode === "scatter" ? <ScatterPlot rows={filtered} x={field} y={other} onSelect={inspect} /> : ranked.length ? <RankedPlot rows={ranked} field={field} onSelect={inspect} /> : <Empty>Numeric measurements are unavailable or censored. The data table preserves those rows and their notes.</Empty>}

@@ -133,7 +133,7 @@ export default function SoccerHomeAdvantagePage() {
 
       <section style={{ marginTop: 40 }}>
         <p style={sectionH}>Venue split</p>
-        <div style={{ marginTop: 16, overflowX: "auto", maxWidth: 700 }}>
+        <div role="region" aria-label="Venue split measurements" data-scroll-region style={{ marginTop: 16, overflowX: "auto", maxWidth: 700 }}>
           <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 520 }}>
             <thead>
               <tr>
@@ -177,7 +177,7 @@ export default function SoccerHomeAdvantagePage() {
       {data.by_era ? (
         <section style={{ marginTop: 40 }}>
           <p style={sectionH}>By era</p>
-          <div style={{ marginTop: 16, overflowX: "auto", maxWidth: 700 }}>
+          <div role="region" aria-label="Era measurements" data-scroll-region style={{ marginTop: 16, overflowX: "auto", maxWidth: 700 }}>
             <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 520 }}>
               <thead>
                 <tr>
@@ -212,7 +212,7 @@ export default function SoccerHomeAdvantagePage() {
       {data.by_tournament_type ? (
         <section style={{ marginTop: 40 }}>
           <p style={sectionH}>By tournament type</p>
-          <div style={{ marginTop: 16, overflowX: "auto", maxWidth: 700 }}>
+          <div role="region" aria-label="Tournament measurements" data-scroll-region style={{ marginTop: 16, overflowX: "auto", maxWidth: 700 }}>
             <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 520 }}>
               <thead>
                 <tr>

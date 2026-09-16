@@ -102,7 +102,7 @@ export default function NbaMomentumFindingsPage() {
             <p style={{ ...callout, marginTop: 12 }}>{confounds[0]}</p>
           ) : null}
 
-          <div style={{ marginTop: 16, overflowX: "auto" }}>
+          <div role="region" aria-label="Published measurements" data-scroll-region style={{ marginTop: 16, overflowX: "auto" }}>
             <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 620 }}>
               <thead>
                 <tr>

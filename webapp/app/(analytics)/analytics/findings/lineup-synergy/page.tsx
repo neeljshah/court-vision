@@ -88,7 +88,7 @@ function LineupTable({ title, rows, note }: { title: string; rows: LineupRow[]; 
     <section style={{ marginTop: 40 }}>
       <p style={sectionH}>{title}</p>
       {note ? <p style={{ ...lede, fontSize: 14.5, marginTop: 6, color: "var(--ink-3)" }}>{note}</p> : null}
-      <div style={{ marginTop: 16, overflowX: "auto", maxWidth: 900 }}>
+      <div role="region" aria-label="Published measurements" data-scroll-region style={{ marginTop: 16, overflowX: "auto", maxWidth: 900 }}>
         <table className="tnum" style={{ borderCollapse: "collapse", width: "100%", minWidth: 760 }}>
           <thead>
             <tr>
