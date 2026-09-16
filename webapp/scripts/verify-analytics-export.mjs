@@ -22,6 +22,7 @@ const REQUIRED_ROUTES = [
   "/analytics/pitch-sequencing/",
   "/analytics/score-decomposition/",
   "/analytics/observation-dependence/",
+  "/analytics/residual-anatomy/",
 ];
 const BUDGETS = new Map([
   ["/analytics/", 200_000],

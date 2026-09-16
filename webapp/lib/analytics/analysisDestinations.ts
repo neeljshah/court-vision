@@ -30,6 +30,12 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     purpose: "Inspect published within-game residual autocorrelation distributions.",
     sourceModuleIds: ["residual_autocorrelation"],
   },
+  {
+    route: "/analytics/residual-anatomy",
+    title: "Residual anatomy",
+    purpose: "Inspect recorded absolute forecast error by game state, by volume and per row.",
+    sourceModuleIds: ["residual_anatomy"],
+  },
 ];
 
 export type SearchPageRecord = {
