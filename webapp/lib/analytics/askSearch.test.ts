@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { resolveQuestion, type AskEntry } from "./askSearch";
+import { loadScoutCorpus } from "./scoutCorpus.server";
 
 const entries: AskEntry[] = [
   {
@@ -135,5 +136,27 @@ describe("resolveQuestion", () => {
       kind: "none",
       followUps: [],
     });
+  });
+
+  it("keeps inspector aliases ahead of unrelated entity notes and accepts paper routes", () => {
+    const corpus = loadScoutCorpus();
+    for (const query of ["observation dependence", "count context"]) {
+      expect(resolveQuestion(query, corpus)).toMatchObject({ kind: "direct", entry: { bucket: "public-inspector" } });
+    }
+    const paper = corpus.find(entry => entry.bucket === "public-paper");
+    expect(paper?.a.explore_path).toMatch(/^\/analytics\/papers\/[a-z0-9-]+\/$/);
+  });
+
+  it("describes every calibration probability-band profile from its four published fields", () => {
+    const corpus = loadScoutCorpus();
+    const bands = corpus.filter(entry => entry.entity?.pack === "calibration" && / band /i.test(entry.entity.name));
+    expect(bands).toHaveLength(10);
+    for (const band of bands) {
+      expect(band.a.answer).toContain("overall observed outcome rate:");
+      expect(band.a.answer).toContain("band reference:");
+      expect(band.a.answer).toContain("published support:");
+      expect(band.a.answer).toContain("time-bucket observations:");
+      expect(band.a.answer).not.toContain("no configured numeric metrics");
+    }
   });
 });

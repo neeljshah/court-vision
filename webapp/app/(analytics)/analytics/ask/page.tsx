@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AskBox, type AskTour } from "@/components/analytics/AskBox";
 import type { AskEntry } from "@/lib/analytics/askSearch";
-import { loadScoutCorpus } from "@/lib/analytics/scoutCorpus";
+import { loadScoutCorpus } from "@/lib/analytics/scoutCorpus.server";
 import "../workspace.css";
 import styles from "./ask.module.css";
 

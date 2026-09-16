@@ -1,19 +1,23 @@
 import { describe, expect, it } from "vitest";
 import { resolveEntityIntent } from "./askEntityIntent";
 import { resolveQuestion } from "./askSearch";
-import { loadScoutCorpus } from "./scoutCorpus";
+import { getResearchAnalyses } from "./researchData";
+import { loadScoutCorpus, loadScoutSourcesForTest } from "./scoutCorpus.server";
+import { scoutCorpusExpectedCount } from "./scoutCorpus";
 // @ts-expect-error -- the executable scanner is deliberately dependency-free ESM.
 import { PROHIBITED_TOKEN_RE } from "../../scripts/check-analytics-copy.mjs";
 
 const corpus = loadScoutCorpus();
+const sources = loadScoutSourcesForTest();
+const entityCount = Object.values(sources.manifests).reduce((total, manifest) => total + manifest.entries.length, 0);
 
 describe("loadScoutCorpus", () => {
   it("keeps curated answers and expands all public entity and module records", () => {
-    expect(corpus.length).toBe(2_151);
+    expect(corpus.length).toBe(scoutCorpusExpectedCount(sources));
     expect(corpus.some((entry) => entry.q === "How does forecast calibration compare with the closing reference?")).toBe(true);
-    expect(corpus.filter((entry) => entry.bucket === "public-entity-profile")).toHaveLength(1_549);
-    expect(corpus.filter((entry) => entry.bucket === "public-analytics-module")).toHaveLength(75);
-    expect(corpus.filter((entry) => entry.bucket === "public-derived-analysis")).toHaveLength(62);
+    expect(corpus.filter((entry) => entry.bucket === "public-entity-profile")).toHaveLength(entityCount);
+    expect(corpus.filter((entry) => entry.bucket === "public-analytics-module")).toHaveLength(sources.siteManifest.modules.length);
+    expect(corpus.filter((entry) => entry.bucket === "public-derived-analysis")).toHaveLength(getResearchAnalyses().length);
   });
 
   it("marks both curated full-season Brier answers as withdrawn corrections", () => {
@@ -57,8 +61,8 @@ describe("loadScoutCorpus", () => {
 
   it("adds one Atlas identity record to every generated entity profile", () => {
     const identities = corpus.flatMap((entry) => entry.entity ? [entry.entity] : []);
-    expect(identities).toHaveLength(1_549);
-    expect(new Set(identities.map((entity) => `${entity.pack}:${entity.slug}`)).size).toBe(1_549);
+    expect(identities).toHaveLength(entityCount);
+    expect(new Set(identities.map((entity) => `${entity.pack}:${entity.slug}`)).size).toBe(entityCount);
   });
 
   it("gives every generated profile and module a validated reading destination", () => {

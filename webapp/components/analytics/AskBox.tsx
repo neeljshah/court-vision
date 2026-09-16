@@ -10,6 +10,7 @@ import Link from "next/link";
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 import type { Verdict } from "./VerdictDot";
 import { typeset } from "@/lib/analytics/format";
+import { isReadingRoomPath } from "@/lib/analytics/scoutInspectorAnswers";
 import {
   resolveQuestion,
   type AskAnswer,
@@ -78,11 +79,12 @@ function profilePath({ pack, slug }: { pack: string; slug: string }): string {
   return `/analytics/players/${pack}/${slug}`;
 }
 
-function AnswerEnvelope({ result, query, onAsk, excludedQuestions }: {
+function AnswerEnvelope({ result, query, onAsk, excludedQuestions, entries }: {
   result: ResolvedQuestion;
   query: string;
   onAsk: (question: string) => void;
   excludedQuestions: Set<string>;
+  entries: AskEntry[];
 }): ReactNode {
   if (result.kind === "none" || !result.entry) {
     const unavailable = result.kind === "unavailable";
@@ -120,10 +122,12 @@ function AnswerEnvelope({ result, query, onAsk, excludedQuestions }: {
   const { entry } = result;
   const related = result.kind === "related";
   const neutral = related || entry.a.status !== "ok";
-  const publicArtifact = /^webapp\/public\/data\/showcase\/[a-z0-9_]+\.json$/i.test(entry.a.source_artifact);
+  const publicArtifact = /^webapp\/public\/data\/(?:showcase|papers|explainers)\/[a-z0-9_-]+\.json$/i.test(entry.a.source_artifact);
   const sourceHref = publicArtifact ? entry.a.source_artifact.slice("webapp/public".length) : "/data/ask/corpus.json";
-  const explorePath = /^\/analytics\/(?:research\/[a-z0-9-]+\/|players\/[a-z0-9_]+\/[a-z0-9_]+|m\/[a-z0-9_]+)$/i.test(entry.a.explore_path || "") ? entry.a.explore_path : null;
-  const destinationLabel = entry.bucket === "public-entity-profile" ? "Open profile" : entry.bucket === "public-analytics-module" ? "Open module" : "Read analysis";
+  const path = entry.a.explore_path || "";
+  const standardPath = /^\/analytics\/(?:research\/[a-z0-9-]+\/|players\/[a-z0-9_]+\/[a-z0-9_]+|m\/[a-z0-9_]+)$/i.test(path);
+  const explorePath = standardPath || isReadingRoomPath(path, entries) ? path : null;
+  const destinationLabel = entry.bucket === "public-entity-profile" ? "Open profile" : entry.bucket === "public-analytics-module" ? "Open module" : entry.bucket === "public-inspector" ? "Open inspector" : entry.bucket === "public-explainer" ? "Read explainer" : entry.bucket === "public-paper" ? "Read paper" : "Read analysis";
   const followUps = result.followUps.filter(question => question !== query && !excludedQuestions.has(question));
   return (
     <section aria-label={related ? "Related cited answer" : "Cited answer"} style={envelope(neutral)}>
@@ -237,7 +241,7 @@ export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour
       </p>
 
       <div ref={resultRef} tabIndex={-1} role="region" aria-label="Scout answer" aria-live="polite" aria-atomic="true" style={result ? { marginTop: 16 } : undefined}>
-        {result ? <AnswerEnvelope result={result} query={submittedQuery} onAsk={askFollowUp} excludedQuestions={suggestedQuestions} /> : null}
+        {result ? <AnswerEnvelope result={result} query={submittedQuery} onAsk={askFollowUp} excludedQuestions={suggestedQuestions} entries={entries} /> : null}
       </div>
 
       <section aria-label="Suggested Scout questions" style={{ margin: "22px 0 10px" }}>
