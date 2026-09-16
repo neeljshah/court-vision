@@ -4,8 +4,8 @@ import { buildNbaTeamProfileResearch } from "./researchNbaTeamProfile";
 function source() {
   return {
     atlas: { entries: [
-      { entity: "ATL", key_numbers: { team_full_name: "Atlanta Hawks", pace_proxy_latest_season: 101, ppg_latest_season: 114 }, as_of: "2026-04-12" },
-      { entity: "BKN", key_numbers: { team_full_name: "Brooklyn Nets", pace_proxy_latest_season: 99, ppg_latest_season: 108 }, as_of: "2026-04-12" },
+      { entity: "ATL", card_path: "cards/atlanta.png", key_numbers: { team_full_name: "Atlanta Hawks", pace_proxy_latest_season: 101, ppg_latest_season: 114 }, as_of: "2026-04-12" },
+      { entity: "BKN", card_path: "cards/brooklyn.png", key_numbers: { team_full_name: "Brooklyn Nets", pace_proxy_latest_season: 99, ppg_latest_season: 108 }, as_of: "2026-04-12" },
     ] },
     loadBearing: { as_of: { estimator_a: "2024-25", estimator_b: "2025-26" }, results: [{ team: "BRK", estimator_a_elo_onoff: { delta_winprob: 0.2 }, estimator_b_raw_withwithout: { delta_win_rate: 0.1 } }] },
     fatigue: { results: [{ team: "BKN", season: "2024-25", sft_credible_pts_per100_ortg: -0.3 }] },
@@ -19,6 +19,7 @@ describe("NBA team profile research", () => {
     const row = buildNbaTeamProfileResearch(source())[0].rows.find(item => item.label === "Brooklyn Nets")!;
     expect(row.values).toMatchObject({ pace_proxy: 99, fragility_delta_estimator_a: 0.2, fatigue_tax_pts_per100: -0.3, back_to_back_share: 0.2 });
     expect(row.sourcePaths).toContain("novel_load_bearing_index.results[].estimator_a_elo_onoff.delta_winprob");
+    expect(row.href).toBe("/analytics/players/nba_teams/brooklyn");
   });
 
   it("reports unmatched keys without removing atlas teams", () => {

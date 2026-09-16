@@ -1,4 +1,5 @@
 import { field as f, snapshot } from "./labHelpers";
+import { entrySlugs, type RawEntry } from "./comparisonData";
 import type { ResearchAnalysis, ResearchReference, ResearchRow, ResearchSource } from "./researchTypes";
 
 type Entry = Record<string, unknown>;
@@ -18,6 +19,16 @@ const atlasAsOf = (source: Entry | undefined): string => {
   const entries = Array.isArray(source?.entries) ? source.entries : [];
   return text(record(entries[0]).as_of) || "not published";
 };
+function playerHrefs(source: Entry | undefined): Map<string, string> {
+  const entries = Array.isArray(source?.entries) ? source.entries : [];
+  const valid = entries.flatMap((value): RawEntry[] => {
+    const entry = record(value);
+    return typeof entry.entity === "string" && typeof entry.card_path === "string" && record(entry.key_numbers)
+      ? [{ entity: entry.entity, card_path: entry.card_path, key_numbers: record(entry.key_numbers) }]
+      : [];
+  });
+  return new Map(entrySlugs(valid).map(({ slug, entry }) => [playerKey(entry.entity), `/analytics/players/nba_players/${slug}`]));
+}
 
 function setCell(cells: Map<string, PlayerCell>, name: string, module: string, values: Record<string, number | null>, paths: string[]) {
   const key = playerKey(name);
@@ -83,7 +94,8 @@ export function buildNbaPlayerContextResearch(source: PlayerContextSources): Res
   const threeSourceRows = allCells.filter(cell => cell.modules.size >= 3);
   const minimumSources = threeSourceRows.length >= 40 ? 3 : 2;
   const selected = allCells.filter(cell => cell.modules.size >= minimumSources).sort((left, right) => left.name.localeCompare(right.name));
-  const rows: ResearchRow[] = selected.map(cell => ({ id: `nba-player-context-${playerKey(cell.name)}`, label: cell.name, group: `${cell.modules.size} published sources`, values: { consistency_cv: null, q4_points_shift: null, q4_rebounds_shift: null, q4_assists_shift: null, context_sensitivity: null, home_away_ts_difference: null, net_rating_delta: null, career_points_per36: null, career_rebounds_per36: null, career_assists_per36: null, ...cell.values }, note: `Published in ${cell.modules.size} joined source modules. Null means that source module did not publish this measurement for the player.`, sourcePaths: [...new Set(cell.paths)] }));
+  const hrefs = playerHrefs(source?.atlas);
+  const rows: ResearchRow[] = selected.map(cell => ({ id: `nba-player-context-${playerKey(cell.name)}`, label: cell.name, group: `${cell.modules.size} published sources`, values: { consistency_cv: null, q4_points_shift: null, q4_rebounds_shift: null, q4_assists_shift: null, context_sensitivity: null, home_away_ts_difference: null, net_rating_delta: null, career_points_per36: null, career_rebounds_per36: null, career_assists_per36: null, ...cell.values }, note: `Published in ${cell.modules.size} joined source modules. Null means that source module did not publish this measurement for the player.`, href: hrefs.get(playerKey(cell.name)), sourcePaths: [...new Set(cell.paths)] }));
   const sourceTotals = new Map<string, number>([["nba_consistency_profiles", 0], ["nba_q4_shift", 0], ["ctx_player_splits", 0], ["on_off_showcase", 0], ["atlas_nba_manifest", 0]]);
   for (const cell of allCells) for (const moduleId of cell.modules) sourceTotals.set(moduleId, (sourceTotals.get(moduleId) || 0) + 1);
   const sourceCoverage = [...sourceTotals].map(([module, total]) => coverage(module, selected, total)).join("; ");

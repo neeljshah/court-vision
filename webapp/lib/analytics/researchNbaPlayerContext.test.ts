@@ -8,8 +8,8 @@ function source() {
     context: { players: [{ player_name: "Bravo Two", context_sensitivity_score: 0.2, splits: { home_away: { delta_ts_pct: 0.01 } } }] },
     onOff: { seasons: { "2025_26": { top_15: [{ player_name: "Bravo Two", net_rating_delta: 4 }], bottom_15: [] } } },
     atlas: { entries: [
-      { entity: "Alpha One", key_numbers: { career_pts_per36: 12, career_reb_per36: 5, career_ast_per36: 3 }, as_of: "2026-04-12" },
-      { entity: "Bravo Two", key_numbers: { career_pts_per36: 18, career_reb_per36: 6, career_ast_per36: 4 }, as_of: "2026-04-12" },
+      { entity: "Alpha One", card_path: "cards/alpha.png", key_numbers: { career_pts_per36: 12, career_reb_per36: 5, career_ast_per36: 3 }, as_of: "2026-04-12" },
+      { entity: "Bravo Two", card_path: "cards/bravo.png", key_numbers: { career_pts_per36: 18, career_reb_per36: 6, career_ast_per36: 4 }, as_of: "2026-04-12" },
     ] },
   };
 }
@@ -19,6 +19,7 @@ describe("NBA player context research", () => {
     const row = buildNbaPlayerContextResearch(source())[0].rows.find(item => item.label === "Bravo Two")!;
     expect(row.values).toMatchObject({ q4_points_shift: 3, context_sensitivity: 0.2, home_away_ts_difference: 0.01, net_rating_delta: 4, career_points_per36: 18 });
     expect(row.sourcePaths).toContain("ctx_player_splits.players[].context_sensitivity_score");
+    expect(row.href).toBe("/analytics/players/nba_players/bravo");
   });
 
   it("reports a source-only player instead of silently adding it", () => {

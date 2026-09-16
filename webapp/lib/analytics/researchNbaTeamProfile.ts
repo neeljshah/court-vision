@@ -1,4 +1,5 @@
 import { field as f, snapshot } from "./labHelpers";
+import { entrySlugs, type RawEntry } from "./comparisonData";
 import type { ResearchAnalysis, ResearchReference, ResearchRow, ResearchSource } from "./researchTypes";
 
 type Entry = Record<string, unknown>;
@@ -55,6 +56,16 @@ function coverage(name: string, entries: Map<string, Entry>, teams: string[]): s
 function asOf(value: unknown): string {
   return text(value) || "not published";
 }
+function teamHrefs(entries: Entry[]): Map<string, string> {
+  const valid = entries.flatMap((value): RawEntry[] => typeof value.entity === "string" && typeof value.card_path === "string"
+    ? [{ entity: value.entity, card_path: value.card_path, key_numbers: record(value.key_numbers) }]
+    : []);
+  return new Map<string, string>(entrySlugs(valid).flatMap(({ slug, entry }): Array<[string, string]> => {
+    const href = `/analytics/players/nba_teams/${slug}`;
+    const fullName = record(entry.key_numbers).team_full_name;
+    return [[teamKey(entry.entity), href], ...(typeof fullName === "string" ? [[teamKey(fullName), href] as [string, string]] : [])];
+  }));
+}
 
 function buildRows(source: TeamProfileSources): { rows: ResearchRow[]; coverage: string } {
   const atlas = Array.isArray(source.atlas.entries) ? source.atlas.entries.map(record) : [];
@@ -62,6 +73,7 @@ function buildRows(source: TeamProfileSources): { rows: ResearchRow[]; coverage:
   const fatigue = latestByTeam(source.fatigue.results, "sft_credible_pts_per100_ortg");
   const density = latestByTeam(source.density.per_team_season_frequencies, "b2b_freq");
   const states = Array.isArray(source.states.teams) ? source.states.teams.map(record) : [];
+  const hrefs = teamHrefs(atlas);
   const loadMap = keyedByTeam(loadBearing);
   const stateMap = keyedByTeam(states);
   const cells: TeamCell[] = atlas.flatMap(entry => {
@@ -106,7 +118,7 @@ function buildRows(source: TeamProfileSources): { rows: ResearchRow[]; coverage:
     coverage("schedule density", density, teams),
     coverage("halftime states", stateMap, teams),
   ].join(". ");
-  return { rows: cells.sort((left, right) => left.label.localeCompare(right.label)).map(cell => ({ id: `nba-team-profile-${cell.label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`, label: cell.label, group: "NBA teams", values: cell.values, note: cell.note, sourcePaths: cell.sourcePaths })), coverage: coverageText };
+  return { rows: cells.sort((left, right) => left.label.localeCompare(right.label)).map(cell => ({ id: `nba-team-profile-${cell.label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`, label: cell.label, group: "NBA teams", values: cell.values, note: cell.note, href: hrefs.get(teamKey(cell.label)), sourcePaths: cell.sourcePaths })), coverage: coverageText };
 }
 
 export function buildNbaTeamProfileResearch(source: TeamProfileSources): ResearchAnalysis[] {

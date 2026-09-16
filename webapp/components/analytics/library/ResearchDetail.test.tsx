@@ -7,7 +7,7 @@ import type { ResearchAnalysis } from "@/lib/analytics/researchTypes";
 const analysis: ResearchAnalysis = {
   id: "nba-matchup-test", title: "Test matchup analysis", sport: "nba", category: "Matchups", source: "test-source", description: "Historical profile comparison", scope: "Published rows only", caveat: "Descriptive", status: "published", formula: "x / y", interpretation: "Read the measured rows", references: [], novelty: "Derived analysis",
   fields: [{ key: "score", label: "Score", unit: "number" }, { key: "rate", label: "Rate", unit: "percent" }],
-  rows: [{ id: "1", label: "Alpha", group: "East", values: { score: 8, rate: 0.5 }, note: "steady" }, { id: "2", label: "Beta", group: "West", values: { score: null, rate: 0.25 }, note: "missing score" }, { id: "3", label: "Gamma", group: "East", values: { score: 3, rate: 0.75 } }],
+  rows: [{ id: "1", label: "Alpha", group: "East", values: { score: 8, rate: 0.5 }, note: "steady", href: "/analytics/players/nba_players/alpha" }, { id: "2", label: "Beta", group: "West", values: { score: null, rate: 0.25 }, note: "missing score" }, { id: "3", label: "Gamma", group: "East", values: { score: 3, rate: 0.75 } }],
 };
 
 beforeEach(() => window.history.replaceState(null, "", "/analytics/research/nba-matchup-test/"));
@@ -103,5 +103,14 @@ describe("ResearchDetail investigation continuity", () => {
     fireEvent.keyDown(details, { key: "Escape" });
     expect(button).toHaveFocus();
     expect(screen.queryByRole("region", { name: "Selected measurement" })).not.toBeInTheDocument();
+  });
+
+  it("offers the selected row's entity card without changing Escape focus return", () => {
+    render(<ResearchDetail analysis={analysis} related={[]} />);
+    const button = screen.getByRole("button", { name: /^Inspect Alpha/ });
+    button.focus(); fireEvent.click(button);
+    expect(screen.getByRole("link", { name: "Open entity card" })).toHaveAttribute("href", "/analytics/players/nba_players/alpha");
+    fireEvent.keyDown(screen.getByRole("region", { name: "Selected measurement" }), { key: "Escape" });
+    expect(button).toHaveFocus();
   });
 });

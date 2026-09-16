@@ -73,4 +73,14 @@ describe("LabPlot", () => {
     expect(container.querySelector(".lab-bar-negative")).toHaveStyle({ left: "0%", width: "33.33333333333333%" });
     expect(screen.getByText(/Showing 2 of 2 matching numeric rows/)).toBeInTheDocument();
   });
+
+  it("keeps ranked entity rows as inspector buttons when an entity route exists", () => {
+    const onSelect = vi.fn();
+    const linked = { ...row("linked", 2, 0), href: "/analytics/players/nba_players/linked" };
+    render(<RankedPlot rows={[linked]} field={x} onSelect={onSelect} />);
+    const bar = screen.getByRole("button", { name: /^Inspect LINKED/ });
+    expect(bar).not.toHaveAttribute("href");
+    fireEvent.click(bar);
+    expect(onSelect).toHaveBeenCalledWith(linked);
+  });
 });
