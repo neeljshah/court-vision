@@ -5,6 +5,7 @@ import { analysisDestinations } from "./analysisDestinations";
 import { getResearchAnalyses } from "./researchData";
 import { relatedHref, sortPapers, type Paper, type PaperReferences, type PaperRelated } from "./papers";
 import { validatePaperEvidence } from "./paperEvidence.server";
+import { validatePaper } from "./papers";
 
 type ManifestModule = { id: string; title: string; out_path: string; chart_path: string | null; as_of: string | null };
 
@@ -75,9 +76,14 @@ export function loadPapers(): Paper[] {
       console.warn(`papers: skipped ${entry} -- unparsable JSON (${String(error)})`);
       continue;
     }
-    const reason = validatePaperEvidence(parsed, artifacts, references);
-    if (reason) console.warn(`papers: skipped ${entry} -- ${reason}`);
-    else papers.push(parsed as Paper);
+    // The contract (schema, vocabulary, ASCII, related ids) decides whether a paper renders; an
+    // unresolved evidence field path only warns here -- scripts/check-paper-evidence.mjs fails the
+    // publication check for it, so the site never loses a schema-valid paper over a path typo.
+    const contract = validatePaper(parsed, artifacts, references);
+    if (contract) { console.warn(`papers: skipped ${entry} -- ${contract}`); continue; }
+    const evidence = validatePaperEvidence(parsed, artifacts, references);
+    if (evidence) console.warn(`papers: evidence warning ${entry} -- ${evidence}`);
+    papers.push(parsed as Paper);
   }
   return sortPapers(papers);
 }
