@@ -1,0 +1,476 @@
+{
+  "slug": "the-graveyard-what-null-results-teach",
+  "title": "The graveyard: what the null results teach",
+  "subtitle": "A taxonomy of why proposed signals do not clear the gate, their recorded frequencies, and the case for publishing nulls",
+  "authors": [
+    "CourtVision research"
+  ],
+  "date": "2026-09-16",
+  "sport": "all",
+  "keywords": [
+    "null results",
+    "reject ledger",
+    "failure taxonomy",
+    "selection bias",
+    "signal graveyard"
+  ],
+  "abstract": "CourtVision keeps two published ledgers of ideas that did not ship, read here as a record of a search process, not as findings about any one idea. honesty_exhibit.json, generated 2026-07-22, buckets 1290 tested rows across five validation ledgers (basketball_nba, mlb, soccer, tennis, and a larger interaction_factory source) into confirmed, null, not_testable, failed_replication or other; the pooled count is 168 confirmed against 351 null, a 2.1-nulls-per-confirm ratio. reject_graveyard.json reads an earlier pipeline stage -- the signal-audit gate a candidate feature passes through before a hypothesis about it is even framed -- and holds 804 recorded verdict rows, of which 628 carry a REJECT-family verdict; collapsing reruns to each signal's latest test leaves 68 distinct signals currently sitting on a rejected verdict. A regex-matched reason taxonomy partitions those 628 rows into 11 populated categories; one, asof_reclaim_sweep, accounts for 510 of them (81.2%), a bulk re-validation sweep rather than 510 separately discovered failure modes, while the next four categories each sit in the teens. A third file, paper_execution_audit.json, shows the same discipline one stage downstream: of 83 paper-only records, 37 settled by final score, and every one records its closing-price comparison as null rather than estimated, because no independent close feed was captured. The argument here is structural: a pipeline reporting only what shipped would look stronger than one reporting both counts, at the same true rate of underlying success. These ledgers are published so that is not what happened.",
+  "sections": [
+    {
+      "id": "question",
+      "heading": "Question",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "CourtVision's candidate-signal pipeline rejects far more ideas than it ships. This note is about that rejection record itself: not which signal held up, but what kind of ledger keeps score when most proposals do not. Two separate, both-published ledgers are read here. honesty_exhibit.json tracks hypothesis tests inside four sport-specific validation ledgers plus a fifth, larger interaction-generation ledger, bucketing each outcome into confirmed, null, not_testable, failed_replication or other. reject_graveyard.json tracks a different pipeline stage: the signal-audit gate a candidate engineered feature passes through before a hypothesis about it is even framed, recording REJECT, SHIP, SHIP_REVIEW, DEFER and several rarer verdicts, plus a free-text reason a fixed set of regular expressions groups into a taxonomy. A third artifact, paper_execution_audit.json, checks briefly that the same discipline -- reporting a null rather than filling in a number -- holds outside the validation ledgers too."
+        },
+        {
+          "type": "p",
+          "text": "This is not the companion piece to how-proposed-signals-survive-testing, which reads fwd_claim_scoreboard.json and verdict_flip_anatomy.json at the claim-family level: which hypotheses are currently verified, which flipped verdict on a re-test, and which were retracted outright. That ledger and this one track different objects -- tested hypotheses versus audited candidate features -- and this note does not re-report its five flips or seven retractions. The question here is narrower: across the reason categories a much larger reject ledger records, what does the shape of the failure taxonomy look like, and what does a search process that keeps and counts its own nulls avoid that one reporting only its wins cannot?"
+        }
+      ]
+    },
+    {
+      "id": "data",
+      "heading": "Data and definitions",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "honesty_exhibit.json is generated at 2026-07-22T20:26:10 UTC and reads four sport-specific validation ledgers (domains/basketball_nba, mlb, soccer and tennis, each a validation_ledger.jsonl of tested hypotheses) plus a fifth source, data/cache/intel_claims/interaction_factory_ledger.jsonl, labeled interaction_factory. Every tested row is bucketed into one of five outcomes, in the order the file defines: confirmed, null, not_testable, failed_replication, other. Its own headline states the pooled comparison across all five sources: nulls (351) outnumber confirms (168), a ratio it reports as 2.1x."
+        },
+        {
+          "type": "p",
+          "text": "reject_graveyard.json reads a separate ledger -- scripts/platformkit/reject_ledger.py, backed by data/frontend/reject_ledger.jsonl -- that records every verdict logged for a candidate engineered signal, not a tested hypothesis. Its full recorded history holds 804 rows (full_history_row_count); collapsing each (sport, signal) pair to only its latest verdict leaves 68 distinct signals currently sitting on a REJECT-family verdict (latest_per_signal_graveyard_count). history_vs_latest_disclosure names the gap directly: signals retested more than once (as-of-reclaim sweeps, re-gating) plus rows whose latest verdict has since flipped to SHIP. Of the 804 rows, 628 carry a REJECT-family verdict (reject_row_count); the file's own note states that a REJECT or DEFER verdict is evidence the gate is doing its job, not a failure to hide."
+        },
+        {
+          "type": "p",
+          "text": "paper_execution_audit.json checks that the same discipline holds one stage further along, in a paper-only execution record rather than a candidate-signal test. It holds 83 logged records (n_records), none of which were real fills (n_executed_filled is 0); 37 settled against a final score (status_split.settled), and for every one the file records realized_clv_pct as null, with a note (realized_clv_honest_note) that no independent closing-price feed was captured -- unmeasurable rather than backfilled."
+        },
+        {
+          "type": "callout",
+          "label": "Definition",
+          "text": "A null result, in these ledgers, is a specific verdict: the hypothesis or signal was tested against real data and its effect was not distinguishable from no effect, or did not clear the required bar, and that verdict is recorded and kept. It differs from not_testable (the premise could not be tested at all, for instance because no qualifying corpus exists) and from failed_replication (a confirmed effect a later, independent test could not reproduce). In the reject ledger, a REJECT or DEFER verdict is the same idea applied to a candidate feature: it ran through the gate and did not clear it, for one of the reasons in the taxonomy below."
+        }
+      ]
+    },
+    {
+      "id": "method",
+      "heading": "Method",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "reject_graveyard.json's reason-category grouping is built by matching each rejected row's free-text reason field against an ordered list of regular expressions -- asof_reclaim_sweep, seed_stability, calibration_only_unproven, cross_corpus_adjudication, conformal_width, wf_ablation, prescreen_delta, sealed_holdout, planted_null and discovered_transform among them -- and a row matching none of them is labeled other, provided it carries any reason text at all. The 11 categories with at least one row in this snapshot (rejects_by_reason_category) sum to exactly 628, the full reject_row_count, so the taxonomy is a complete partition of the reject-family rows rather than a sample of them."
+        },
+        {
+          "type": "p",
+          "text": "Alongside the reason taxonomy, reject_graveyard.json separately reports verdicts_by_type across the full 804-row history: REJECT (627) and DEFER (1) together make the 628 reject-family total; the remainder are SHIP (95), SHIP_REVIEW (45, a conditional pass flagged for review), NOT_TESTABLE (14), WORSE (6, worse than the standing baseline), INSUFFICIENT (6), NOT-REPLICATED (4), STANDING_BASELINE_SET (3, a baseline-registration row rather than a candidate verdict), TIER3_BLOCKED (1), UNDERPOWERED (1) and NULL_UNDERPOWERED (1)."
+        },
+        {
+          "type": "p",
+          "text": "honesty_exhibit's five outcome buckets and reject_graveyard's twelve verdict types are not the same taxonomy applied to the same rows; they describe two different pipeline stages, kept in two different ledgers, and this note does not add their counts together. A hypothesis reading null in the validation ledger and a feature reading REJECT in the signal-audit ledger are both, in the ordinary sense, things that did not survive testing -- the common thread this note follows, not a claim that the two counts describe one combined population."
+        }
+      ]
+    },
+    {
+      "id": "results",
+      "heading": "Results",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Table 1 reads reject_graveyard.json's own reason-category counts, the finest published grain for why a candidate signal was rejected."
+        },
+        {
+          "type": "table",
+          "caption": "Reject-row reason taxonomy, 628 REJECT-family rows (reject_graveyard.json, rejects_by_reason_category)",
+          "columns": [
+            "Reason category (as recorded)",
+            "Reject rows (n)",
+            "Share of 628",
+            "What it groups"
+          ],
+          "rows": [
+            [
+              "asof_reclaim_sweep",
+              "510",
+              "81.2%",
+              "a bulk re-check that re-validates already-tested rows against the as-of point-in-time data rule"
+            ],
+            [
+              "prescreen_delta",
+              "20",
+              "3.2%",
+              "the held-out delta over the standing baseline did not clear the prescreen threshold"
+            ],
+            [
+              "wf_ablation",
+              "18",
+              "2.9%",
+              "the effect did not survive a walk-forward-folds ablation check"
+            ],
+            [
+              "seed_stability",
+              "17",
+              "2.7%",
+              "the estimated effect was not stable across random seeds"
+            ],
+            [
+              "other",
+              "14",
+              "2.2%",
+              "a recorded reason that matched none of the named categories"
+            ],
+            [
+              "calibration_only_unproven",
+              "13",
+              "2.1%",
+              "a calibration-only benefit that was itself not proven"
+            ],
+            [
+              "discovered_transform",
+              "10",
+              "1.6%",
+              "an automatically-discovered feature transform failed extra scrutiny"
+            ],
+            [
+              "sealed_holdout",
+              "8",
+              "1.3%",
+              "failed a pre-committed sealed-holdout test"
+            ],
+            [
+              "conformal_width",
+              "7",
+              "1.1%",
+              "failed a conformal-interval-width check"
+            ],
+            [
+              "cross_corpus_adjudication",
+              "6",
+              "1.0%",
+              "disagreed across the independent corpora used as arbiters"
+            ],
+            [
+              "planted_null",
+              "5",
+              "0.8%",
+              "failed a planted-null (negative control) check built into the gate"
+            ]
+          ],
+          "note": "reject_graveyard.json, rejects_by_reason_category. Shares are each count divided by 628 (reject_row_count), rounded to one decimal, so the column sums to about 100%."
+        },
+        {
+          "type": "p",
+          "text": "asof_reclaim_sweep alone accounts for 510 of the 628 reject-family rows, 81.2% of the total: not 510 independently discovered dead ends, but what a bulk re-validation sweep produces when it re-checks previously recorded rows against the as-of rule and reclassifies them. The next four categories -- prescreen_delta (20), wf_ablation (18), seed_stability (17) and other (14) -- read closer to one-off checks, nearer to a single candidate signal's specific failure. The remaining six categories (calibration_only_unproven, discovered_transform, sealed_holdout, conformal_width, cross_corpus_adjudication, planted_null) are each under 15 rows, none reaching 3% of the total on its own."
+        },
+        {
+          "type": "p",
+          "text": "Underneath the two largest verdict types (REJECT at 627 and SHIP at 95), the ledger records rarer outcomes that are not simple pass or fail. Table 2 lists the four verdict types appearing exactly once in the 804-row history; reject_graveyard.json does not publish a per-signal id, sport, corpus or date broken out by verdict type, so the table states that directly rather than estimating a split the artifact does not carry."
+        },
+        {
+          "type": "table",
+          "caption": "Four of the reject ledger's rarest verdict types, one recorded row each (reject_graveyard.json, verdicts_by_type)",
+          "columns": [
+            "Verdict type (id)",
+            "Sport",
+            "n",
+            "Corpus",
+            "Reason (plain-English)",
+            "Date"
+          ],
+          "rows": [
+            [
+              "DEFER",
+              "not split by verdict type",
+              "1",
+              "pooled reject/defer ledger (804 rows, all sports)",
+              "the gate deferred a decision instead of confirming or rejecting outright",
+              "not published"
+            ],
+            [
+              "TIER3_BLOCKED",
+              "not split by verdict type",
+              "1",
+              "pooled reject/defer ledger (804 rows, all sports)",
+              "blocked by an upstream tier-3 gating dependency before its own test could run",
+              "not published"
+            ],
+            [
+              "UNDERPOWERED",
+              "not split by verdict type",
+              "1",
+              "pooled reject/defer ledger (804 rows, all sports)",
+              "the available sample was too small to draw a conclusion either way",
+              "not published"
+            ],
+            [
+              "NULL_UNDERPOWERED",
+              "not split by verdict type",
+              "1",
+              "pooled reject/defer ledger (804 rows, all sports)",
+              "a null reading that was also underpowered, so absence of effect and lack of power cannot be told apart",
+              "not published"
+            ]
+          ],
+          "note": "reject_graveyard.json, verdicts_by_type. n=1 per row means the published count itself identifies one recorded verdict; Sport, Corpus and Date report exactly what the artifact does and does not break out, rather than inventing a split."
+        },
+        {
+          "type": "p",
+          "text": "Table 3 brings honesty_exhibit.json's own per-ledger counts into view in full, the basis for the pooled 351-versus-168 headline."
+        },
+        {
+          "type": "table",
+          "caption": "Validation-ledger outcomes by source, 1290 tested rows across five ledgers (honesty_exhibit.json, sports[])",
+          "columns": [
+            "Ledger (as recorded)",
+            "Total rows (n)",
+            "Confirmed (n)",
+            "Null (n)",
+            "Not testable (n)",
+            "Failed replication (n)",
+            "Other (n)"
+          ],
+          "rows": [
+            [
+              "nba",
+              "85",
+              "45",
+              "31",
+              "7",
+              "0",
+              "2"
+            ],
+            [
+              "mlb",
+              "86",
+              "32",
+              "37",
+              "8",
+              "7",
+              "2"
+            ],
+            [
+              "soccer",
+              "64",
+              "29",
+              "24",
+              "8",
+              "1",
+              "2"
+            ],
+            [
+              "tennis",
+              "52",
+              "24",
+              "20",
+              "8",
+              "0",
+              "0"
+            ],
+            [
+              "interaction_factory",
+              "1003",
+              "38",
+              "239",
+              "709",
+              "17",
+              "0"
+            ],
+            [
+              "All five ledgers (pooled)",
+              "1290",
+              "168",
+              "351",
+              "740",
+              "25",
+              "6"
+            ]
+          ],
+          "note": "honesty_exhibit.json, sports[]. The pooled row sums the file's own per-ledger columns; 168 confirmed and 351 null match the file's own headline ratio of 2.1x."
+        },
+        {
+          "type": "p",
+          "text": "The argument for publishing this table rather than only the confirmed rows is structural, not a claim about any particular signal: a process that reports its confirms and discards its nulls will always look stronger than one reporting both, at the same true rate of success. honesty_exhibit.json's pooled count -- 351 null against 168 confirmed -- is the concrete form: if those 351 rows were simply not recorded, the ledger would read as a strong track record rather than the ordinary base rate a search over hundreds of hypotheses produces. The reject ledger makes the same point at a larger scale: 628 of 804 recorded verdicts are REJECT-family, and even after collapsing reruns to each signal's latest test, 68 signals are still sitting on a rejected verdict -- what makes the 95 SHIP and 45 SHIP_REVIEW verdicts elsewhere in the same ledger legible as a rate rather than a chosen-after-the-fact count."
+        },
+        {
+          "type": "p",
+          "text": "The interaction_factory source makes the scale argument sharpest: of its 1003 rows, 709 (70.7%) are not_testable and only 38 confirmed. Reporting that ratio, rather than surfacing only the 38, treats the 709 not-testable rows as the recorded cost of searching this widely, not evidence of nothing."
+        },
+        {
+          "type": "p",
+          "text": "paper_execution_audit.json shows the same discipline one stage further downstream, where a claim has already been logged for placement rather than tested as a hypothesis: of 83 paper-only records, 37 settled by final score, and realized_clv_pct is recorded as null for all 37 rather than estimated, because -- in the file's own words -- no independent closing-price feed was captured. A missing number reported as missing is the same habit as a null reported as null."
+        },
+        {
+          "type": "figure",
+          "module": "reject_graveyard",
+          "caption": "The reject ledger's reason-category counts (628 rows) beside its cumulative-rejects-over-time curve (804-row full history, 2026-06-09 through 2026-07-18)."
+        }
+      ]
+    },
+    {
+      "id": "checks",
+      "heading": "Robustness and what would falsify this",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "The reason taxonomy is regular expressions matched against a free-text field, documented as good enough for a readable breakdown rather than a hand-labeled ground truth, with a dedicated taxonomy field named as the upgrade path. A different regex ordering, or a hand audit of the 14 other-labeled rows, could move rows between categories without changing the 628 total."
+        },
+        {
+          "type": "p",
+          "text": "reject_graveyard.json does not publish a sport or date for any individual reason category or verdict type; only whole-ledger totals (history_rows_by_sport, cumulative_rejects_over_time) are broken out that way. This note does not construct a per-category split by combining fields the artifact keeps separate, and Table 2 says so directly rather than estimating one."
+        },
+        {
+          "type": "p",
+          "text": "The 68 distinct signals in latest_per_signal_graveyard_count is a snapshot of the latest verdict per (sport, signal) pair, not a permanent count: history_vs_latest_disclosure states that part of the 804-versus-68 gap is rows whose latest verdict has since flipped to SHIP, so a signal counted among the 68 today can leave the graveyard on a later retest, the same way claim families flipped verdict in the companion paper's reading."
+        },
+        {
+          "type": "p",
+          "text": "honesty_exhibit's five-way split and reject_graveyard's twelve-way split are read side by side because both describe things that did not survive testing, but they are not the same measurement of the same population, and this note does not sum a null hypothesis and a REJECT signal into one combined count."
+        }
+      ]
+    },
+    {
+      "id": "limitations",
+      "heading": "Limitations",
+      "blocks": [
+        {
+          "type": "list",
+          "items": [
+            "The reason-category taxonomy in reject_graveyard.json is assigned by regular expressions over a free-text reason field, not a hand-audited label; the source script calls it good enough for a readable breakdown, naming a hand-labeled taxonomy field as the upgrade path.",
+            "asof_reclaim_sweep alone is 81.2% of the 628 reject-family rows and is a bulk re-validation sweep; a taxonomy this dominated by one housekeeping category is not a like-for-like picture of 628 independently discovered failure modes.",
+            "reject_graveyard.json publishes sport and date only as whole-ledger totals, not crossed with reason category or verdict type; Table 2 reports that limit directly rather than estimating a split.",
+            "latest_per_signal_graveyard_count (68) is a snapshot as of this file's generation; it falls as retested signals ship and rises as new ones are gated, so it is not a running lifetime count of failed signals.",
+            "honesty_exhibit.json and reject_graveyard.json are two different ledgers over two different objects, tested hypotheses versus audited candidate features; their bucket counts sit side by side for the shared argument about publishing nulls, not added into one combined rate."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "use",
+      "heading": "How to read this on the site",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "The reject_graveyard module page carries the full reason-category and cumulative-rejects figure referenced above; honesty_exhibit's page holds the per-ledger breakdown behind Table 3 in full, including the interaction_factory source. The companion paper, how-proposed-signals-survive-testing, covers the claim-family-level verdict flips and retractions in the validation ledger that this note deliberately does not re-report; how-to-read-a-courtvision-paper explains the evidence-citation convention both papers follow."
+        }
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "artifact": "honesty_exhibit.json",
+      "module": "honesty_exhibit",
+      "asOf": "2026-07-22T20:26:10.307475+00:00",
+      "dateMeaning": "snapshot",
+      "fields": [
+        "generated_at",
+        "headline",
+        "bucket_order",
+        "sports[].sport",
+        "sports[].source",
+        "sports[].total",
+        "sports[].confirmed",
+        "sports[].null",
+        "sports[].not_testable",
+        "sports[].failed_replication",
+        "sports[].other"
+      ]
+    },
+    {
+      "artifact": "reject_graveyard.json",
+      "module": "reject_graveyard",
+      "asOf": null,
+      "dateMeaning": "not-published",
+      "fields": [
+        "source",
+        "note",
+        "full_history_row_count",
+        "latest_per_signal_graveyard_count",
+        "history_vs_latest_disclosure",
+        "reject_row_count",
+        "verdicts_by_type.REJECT",
+        "verdicts_by_type.SHIP",
+        "verdicts_by_type.SHIP_REVIEW",
+        "verdicts_by_type.NOT_TESTABLE",
+        "verdicts_by_type.WORSE",
+        "verdicts_by_type.INSUFFICIENT",
+        "verdicts_by_type.NOT-REPLICATED",
+        "verdicts_by_type.STANDING_BASELINE_SET",
+        "verdicts_by_type.DEFER",
+        "verdicts_by_type.TIER3_BLOCKED",
+        "verdicts_by_type.UNDERPOWERED",
+        "verdicts_by_type.NULL_UNDERPOWERED",
+        "rejects_by_reason_category.asof_reclaim_sweep",
+        "rejects_by_reason_category.prescreen_delta",
+        "rejects_by_reason_category.wf_ablation",
+        "rejects_by_reason_category.seed_stability",
+        "rejects_by_reason_category.other",
+        "rejects_by_reason_category.calibration_only_unproven",
+        "rejects_by_reason_category.discovered_transform",
+        "rejects_by_reason_category.sealed_holdout",
+        "rejects_by_reason_category.conformal_width",
+        "rejects_by_reason_category.cross_corpus_adjudication",
+        "rejects_by_reason_category.planted_null",
+        "history_rows_by_sport.nba",
+        "history_rows_by_sport.mlb",
+        "history_rows_by_sport.soccer",
+        "history_rows_by_sport.tennis",
+        "cumulative_rejects_over_time[].date",
+        "cumulative_rejects_over_time[].rejects_that_day",
+        "cumulative_rejects_over_time[].cumulative_rejects"
+      ]
+    },
+    {
+      "artifact": "paper_execution_audit.json",
+      "module": "paper_execution_audit",
+      "asOf": "2026-07-25T04:35:34.256429+00:00",
+      "dateMeaning": "snapshot",
+      "fields": [
+        "n_records",
+        "n_placed",
+        "n_executed_filled",
+        "status_split.settled",
+        "realized_clv_pct",
+        "realized_clv_honest_note",
+        "today_snapshot_headline.headline_clv_pct_or_INSUFFICIENT",
+        "honest_story"
+      ]
+    }
+  ],
+  "limitations": [
+    "The reason-category taxonomy in reject_graveyard.json is assigned by regular expressions over a free-text reason field, not a hand-audited label; the source script calls it good enough for a readable breakdown, naming a hand-labeled taxonomy field as the upgrade path.",
+    "asof_reclaim_sweep alone is 81.2% of the 628 reject-family rows and is a bulk re-validation sweep; a taxonomy this dominated by one housekeeping category is not a like-for-like picture of 628 independently discovered failure modes.",
+    "reject_graveyard.json publishes sport and date only as whole-ledger totals, not crossed with reason category or verdict type; Table 2 reports that limit directly rather than estimating a split.",
+    "latest_per_signal_graveyard_count (68) is a snapshot as of this file's generation; it falls as retested signals ship and rises as new ones are gated, so it is not a running lifetime count of failed signals.",
+    "honesty_exhibit.json and reject_graveyard.json are two different ledgers over two different objects, tested hypotheses versus audited candidate features; their bucket counts sit side by side for the shared argument about publishing nulls, not added into one combined rate."
+  ],
+  "related": [
+    {
+      "kind": "module",
+      "id": "reject_graveyard"
+    },
+    {
+      "kind": "module",
+      "id": "honesty_exhibit"
+    },
+    {
+      "kind": "module",
+      "id": "paper_execution_audit"
+    },
+    {
+      "kind": "paper",
+      "id": "how-proposed-signals-survive-testing"
+    },
+    {
+      "kind": "paper",
+      "id": "how-to-read-a-courtvision-paper"
+    },
+    {
+      "kind": "inspector",
+      "id": "calibration"
+    },
+    {
+      "kind": "finding",
+      "id": "retraction"
+    }
+  ]
+}
