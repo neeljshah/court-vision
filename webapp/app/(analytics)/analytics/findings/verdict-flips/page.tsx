@@ -8,6 +8,7 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { loadArtifact, type Artifact } from "@/lib/showcase.server";
 import { Receipt } from "@/components/analytics/Receipt";
+import { VerdictFlipCases, type VerdictFlipCase } from "@/components/analytics/verdict-flips/VerdictFlipCases";
 import { findingMeta } from "@/lib/analytics/og";
 
 export const metadata: Metadata = {
@@ -17,8 +18,6 @@ export const metadata: Metadata = {
   ...findingMeta("verdict-flips"),
 };
 
-type Step = { verdict: string; status: string; corpus: string; n: number; effect: number | string; run_ts: string | null };
-type Flip = { sport: string; hypothesis: string; current_status: string; verdict_sequence: string[]; steps: Step[]; one_line: string };
 type Retracted = {
   sport: string; hypothesis: string; first_run_ts: string | null; last_run_ts: string | null;
   days_lived: number | null; n_history_rows: number; what_killed_it: string;
@@ -27,7 +26,7 @@ type Summary = { n_families: number; verified: number; null: number; retracted: 
 type DatingCoverage = { n_history_rows_total: number; n_with_run_ts: number; note?: string };
 
 type VerdictFlipAnatomy = Artifact & {
-  headline?: string; method?: string; summary?: Summary; flips?: Flip[];
+  headline?: string; summary?: Summary; flips?: VerdictFlipCase[];
   retracted?: Retracted[]; dating_coverage?: DatingCoverage; confounds?: string[];
 };
 
@@ -35,27 +34,14 @@ const SPORT_LABEL: Record<string, string> = { basketball_nba: "NBA", mlb: "MLB",
 function sportLabel(sport: string): string {
   return SPORT_LABEL[sport] || sport.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
-// Lightly humanize a hypothesis slug for prose -- underscores to spaces,
-// first letter capitalized. Never touches the words, so meaning can't drift.
 function humanize(slug: string): string {
   const s = slug.replace(/_/g, " ");
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
-// Final arrow-chain token gets a tasteful nod to its status; everything else
-// (and any non-confirmed final token) stays muted -- no loud red/green.
-function tokenColor(token: string): string {
-  const t = token.toUpperCase();
-  return t.includes("CONFIRMED") || t.includes("VERIFIED") ? "var(--accent)" : "var(--ink-3)";
-}
-
 const h1: CSSProperties = { fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "clamp(2rem,4vw,2.75rem)", lineHeight: 1.08, letterSpacing: "-.015em", color: "var(--ink)", marginTop: 8 };
 const lede: CSSProperties = { fontSize: 18, lineHeight: 1.6, color: "var(--ink-2)", maxWidth: 700, marginTop: 16 };
 const statLabel: CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ink-3)" };
 const statValue: CSSProperties = { fontSize: 26, color: "var(--ink)", marginTop: 2 };
-const card: CSSProperties = { marginTop: 20, padding: "18px 20px", background: "var(--paper-raised)", border: "1px solid var(--rule)", borderRadius: "var(--radius-card)", maxWidth: 700 };
-const sportTag: CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ink-3)", border: "1px solid var(--rule-strong)", borderRadius: "var(--radius-chip)", padding: "2px 8px", display: "inline-block" };
-const stepsBox: CSSProperties = { marginTop: 12, padding: "10px 14px", background: "var(--paper-tint)", border: "1px solid var(--rule)", borderRadius: "var(--radius-card)" };
-const stepRow: CSSProperties = { fontSize: 13, color: "var(--ink-2)", padding: "5px 0", borderBottom: "1px solid var(--rule)" };
 const th: CSSProperties = { textAlign: "left", fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--ink-3)", padding: "8px 14px", borderBottom: "1px solid var(--rule-strong)", whiteSpace: "nowrap" };
 const td: CSSProperties = { fontSize: 14.5, color: "var(--ink)", padding: "12px 14px", borderBottom: "1px solid var(--rule)" };
 
@@ -72,14 +58,16 @@ export default function VerdictFlipsPage() {
     );
   }
 
-  const { headline, method, summary, flips, retracted, dating_coverage, confounds, source_artifact, generated_at } = data;
+  const { headline, summary, flips, retracted, dating_coverage, confounds, source_artifact, generated_at } = data;
+  const undatedRunCount = dating_coverage
+    ? dating_coverage.n_history_rows_total - dating_coverage.n_with_run_ts
+    : 0;
 
   return (
     <div className="wrap" style={{ paddingTop: 48, paddingBottom: 64 }}>
       <p className="overline">Findings / Verdict flips</p>
       <h1 style={h1}>When we changed our mind</h1>
       <p style={lede}>{headline}</p>
-      {method ? <p style={{ ...lede, fontSize: 15, marginTop: 12 }}>{method}</p> : null}
 
       {summary ? (
         <div className="tnum" style={{ display: "flex", flexWrap: "wrap", gap: 28, marginTop: 28, maxWidth: 700 }}>
@@ -90,41 +78,10 @@ export default function VerdictFlipsPage() {
         </div>
       ) : null}
       {summary ? (
-        <p style={{ ...lede, fontSize: 13.5, color: "var(--ink-3)", marginTop: 10 }}>Five published examples changed verdict.</p>
+        <p style={{ ...lede, fontSize: 13.5, color: "var(--ink-3)", marginTop: 10 }}>{flips.length} published examples changed verdict.</p>
       ) : null}
 
-      {/* THE FLIPS -- one card per claim family, in the sequence it actually lived. */}
-      {(flips ?? []).map((f) => (
-        <div key={`${f.sport}-${f.hypothesis}`} style={card}>
-          <span style={sportTag}>{sportLabel(f.sport)}</span>
-          <h3 className="serif" style={{ fontSize: 19, fontWeight: 500, color: "var(--ink)", marginTop: 10 }}>
-            {humanize(f.hypothesis)}
-          </h3>
-          <p className="mono" style={{ fontSize: 13.5, marginTop: 8, color: "var(--ink-3)" }}>
-            {f.verdict_sequence.map((token, i) => (
-              <span key={i}>
-                {i > 0 ? <span style={{ margin: "0 6px" }}>&#8594;</span> : null}
-                <span style={i === f.verdict_sequence.length - 1 ? { color: tokenColor(token), fontWeight: 600 } : undefined}>
-                  {token}
-                </span>
-              </span>
-            ))}
-          </p>
-          <p style={{ ...lede, fontSize: 15, marginTop: 10, maxWidth: "none" }}>{f.one_line}</p>
-          <div style={stepsBox}>
-            {f.steps.map((s, i) => (
-              <div key={i} style={{ ...stepRow, borderBottom: i === f.steps.length - 1 ? "none" : stepRow.borderBottom }}>
-                <span style={{ fontWeight: 600, color: "var(--ink)" }}>Step {i + 1}</span>
-                {" -- "}
-                <span className="mono">{s.verdict}</span> on {s.corpus}, n={s.n}, effect {s.effect}
-                {" ("}
-                {s.run_ts ? <span className="mono tnum">{s.run_ts}</span> : "undated"}
-                {")"}
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
+      <VerdictFlipCases flips={flips} generatedAt={generated_at || undefined} upstreamArtifact={source_artifact || ""} undatedRunCount={undatedRunCount} />
 
       {/* THE RETRACTED LATENCY LIST -- how long each caught claim survived. */}
       {retracted?.length ? (
@@ -174,8 +131,6 @@ export default function VerdictFlipsPage() {
       <div style={{ marginTop: 20 }}>
         <Receipt sourceArtifact={source_artifact || ""} asOf={generated_at || undefined} label="descriptive_only" verdict="descriptive_only" />
       </div>
-
-      <p style={{ ...lede, marginTop: 32 }}>Dated runs show timestamps; undated runs retain source order.</p>
     </div>
   );
 }

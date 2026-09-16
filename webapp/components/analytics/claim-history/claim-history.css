@@ -25,4 +25,16 @@
 .ch-unit { color: var(--ink-3); font-family: var(--font-sans); font-size: 11px; }
 .ch-more { margin-top: 14px; background: var(--paper-raised); border: 1px solid var(--rule-strong); border-radius: var(--radius-btn); color: var(--ink); cursor: pointer; font: inherit; font-size: 13px; font-weight: 600; min-height: 38px; padding: 7px 12px; }
 .ch-more:hover { border-color: var(--accent); color: var(--accent); }
-@media (max-width: 720px) { .ch-heading { align-items: start; flex-direction: column; gap: 8px; } .ch-controls { grid-template-columns: 1fr; } .ch-family-button { grid-template-columns: 48px minmax(120px, 1fr) 72px; } .ch-runs { display: none; } }
+@media (max-width: 720px) {
+  .ch-heading { align-items: start; flex-direction: column; gap: 8px; }
+  .ch-controls { grid-template-columns: 1fr; }
+  .ch-controls input, .ch-controls select, .ch-controls .ch-toggle, .ch-more { min-height: 44px; }
+  .ch-family-button { grid-template-columns: 48px minmax(120px, 1fr) 72px; }
+  .ch-runs { display: none; }
+  .ch-history table, .ch-history tbody, .ch-history tr, .ch-history td { display: block; min-width: 0; width: 100%; }
+  .ch-history thead { display: none; }
+  .ch-history tr { border-top: 1px solid var(--rule); padding: 8px 0; }
+  .ch-history th, .ch-history td { border: 0; padding: 3px 0; }
+  .ch-history td { display: grid; gap: 8px; grid-template-columns: minmax(112px, .8fr) minmax(0, 1.2fr); }
+  .ch-history td::before { content: attr(data-label); color: var(--ink-3); font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; }
+}
