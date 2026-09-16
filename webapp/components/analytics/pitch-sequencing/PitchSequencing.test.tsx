@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { PitchSequencing } from "./PitchSequencing";
 
@@ -22,5 +22,15 @@ describe("PitchSequencing", () => {
     render(<PitchSequencing data={data} />);
     expect(screen.getByText(/overlapping views, not additive/i)).toBeInTheDocument();
     expect(screen.getByText(/Rows can total below 100%/i)).toBeInTheDocument();
+  });
+
+  it("publishes an accessible companion table for the selected class", () => {
+    render(<PitchSequencing data={data} />);
+    const tableRegion = screen.getByRole("region", { name: "all pitch sequencing table" });
+    expect(within(tableRegion).getByRole("table", { name: "all conditional pitch sequencing probabilities" })).toBeInTheDocument();
+    expect(within(tableRegion).getByRole("cell", { name: "FF to SL: 30.0%; count 3" })).toHaveTextContent("30.0%");
+    expect(within(tableRegion).getByRole("cell", { name: "SL to FF: masked row" })).toHaveTextContent("Masked");
+    fireEvent.click(screen.getByRole("button", { name: "two_strike" }));
+    expect(screen.getByRole("region", { name: "two_strike pitch sequencing table" })).toBeInTheDocument();
   });
 });

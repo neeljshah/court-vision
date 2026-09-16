@@ -17,3 +17,16 @@ it("uses the per-field ranked count instead of the full pack size", () => {
   expect(screen.getAllByText("Percentile rank 82 among 69 measured profiles").length).toBeGreaterThan(0);
   expect(screen.queryByText(/among 278 measured profiles/)).not.toBeInTheDocument();
 });
+
+it("renders the published comparable method and most distant profiles", () => {
+  const pack: ComparisonPack = {
+    key: "tennis", nInPack: 278, metricKeys: ["rate"], entities: [a, b],
+    comparableContext: { method: "Euclidean distance on standardized measurements.", fieldsUsed: ["rate"], droppedZeroVariance: [] },
+    antipodeByEntity: { a: { slug: "zeta", name: "Zeta", score: 4.2 }, b: { slug: "eta", name: "Eta", score: 3.8 } },
+  };
+  render(<ComparisonResults pack={pack} a={a} b={b} manifest="atlas_tennis_manifest.json" surface="hard" onSurfaceChange={() => undefined} />);
+  expect(screen.getByRole("heading", { name: "How similarity is measured" })).toBeInTheDocument();
+  expect(screen.getAllByText("Most distant profile")).toHaveLength(2);
+  expect(screen.getByRole("link", { name: "Zeta" })).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "Largest measured differences" })).toBeInTheDocument();
+});

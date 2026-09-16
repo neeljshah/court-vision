@@ -7,6 +7,7 @@ export function LabComparisonContext({ rows }: { rows: LabRow[] }) {
   const definitions = [
     ["Sport", valuesFor(rows, row => row.definition?.sport)],
     ["Score threshold", valuesFor(rows, row => row.definition?.threshold !== undefined ? `${row.definition.threshold} ${row.definition.unit || ""}`.trim() : undefined)],
+    ["Unit", valuesFor(rows, row => row.definition?.unit)],
     ["Clock unit", valuesFor(rows, row => row.definition?.clockField)],
     ["Season", valuesFor(rows, row => row.definition?.season)],
     ["Population", valuesFor(rows, row => row.definition?.population)],

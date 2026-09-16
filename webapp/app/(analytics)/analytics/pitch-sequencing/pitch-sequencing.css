@@ -23,6 +23,13 @@
 .ps-detail dl { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 14px; }
 .ps-detail dt { color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .ps-detail dd { color: var(--ink); font-family: var(--font-mono); font-size: 15px; margin: 2px 0 0; }
+.ps-table-wrap { margin-top: 24px; overflow-x: auto; border: 1px solid var(--rule); border-radius: var(--radius-card); background: var(--paper-raised); }
+.ps-table { width: 100%; min-width: 620px; border-collapse: collapse; color: var(--ink-2); font-family: var(--font-mono); font-size: 12px; }
+.ps-table caption { padding: 14px 18px; color: var(--ink); font-family: var(--font-sans); font-size: 13px; font-weight: 700; text-align: left; }
+.ps-table th, .ps-table td { border-top: 1px solid var(--rule); padding: 10px 14px; text-align: right; white-space: nowrap; }
+.ps-table th { color: var(--ink-3); font-size: 11px; font-weight: 700; }
+.ps-table th:first-child { text-align: left; }
+.ps-table td[aria-label*="masked row"] { color: var(--ink-3); font-family: var(--font-sans); font-style: italic; }
 .ps-source-fields { margin-top: 18px; color: var(--ink-3); font-family: var(--font-mono); font-size: 11px; line-height: 1.6; }
 .ps-empty { margin-top: 20px; border: 1px dashed var(--rule-strong); border-radius: var(--radius-card); color: var(--ink-3); padding: 24px; }
 @media (max-width: 680px) { .ps-page { padding: 34px 16px 48px; } .ps-page h1 { font-size: 2.35rem; } .ps-detail { padding: 16px; } }

@@ -1,6 +1,7 @@
 import { moduleCategory } from "./dashboardData";
 import { snapshot } from "./labHelpers";
 import { getResearchAnalyses } from "./researchData";
+import type { ResearchAnalysis } from "./researchTypes";
 import type { Sport } from "./dashboardTypes";
 import type { LibraryEntry } from "./libraryTypes";
 import { summarizeLibrarySource } from "./librarySourceSummaries";
@@ -40,11 +41,15 @@ function sourceDescription(oneLine: string): string {
     : "Explore the published chart, method, and evidence for this module.";
 }
 
+export function derivedAsOf(analysis: Pick<ResearchAnalysis, "asOf" | "sources">): string | null {
+  return analysis.asOf || analysis.sources?.[0]?.asOf || null;
+}
+
 export function getLibraryEntries(): LibraryEntry[] {
   const derived: LibraryEntry[] = getResearchAnalyses().map(a => ({
     id: a.id, title: a.title, description: a.description, category: a.category,
     sport: a.sport, kind: "derived", status: a.status, href: `/analytics/research/${a.id}/`,
-    asOf: a.asOf || null, keywords: `${a.source} ${a.formula} ${a.scope} ${a.fields.map(f => f.label).join(" ")}`,
+    asOf: derivedAsOf(a), keywords: `${a.source} ${a.formula} ${a.scope} ${a.fields.map(f => f.label).join(" ")}`,
     rows: a.rows.length, fields: a.fields.length,
     preview: a.rows.map(r => r.values[a.fields[0].key]).filter((v): v is number => typeof v === "number" && Number.isFinite(v)).slice(0, 16),
     previewLabel: a.fields[0].label,

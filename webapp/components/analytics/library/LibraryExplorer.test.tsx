@@ -5,7 +5,7 @@ import type { LibraryEntry } from "@/lib/analytics/libraryTypes";
 
 const entry = (id: string, title: string, sport: LibraryEntry["sport"], kind: LibraryEntry["kind"], keywords: string): LibraryEntry => ({ id, title, sport, kind, keywords, description: `${title} description`, category: "Methods", status: "published", href: `/analytics/research/${id}/`, asOf: kind === "source" ? "2026-07-25" : null, rows: 4, fields: 2, preview: [1, 2], previewLabel: "Published values", sourceSummary: kind === "source" ? { asOf: "2026-07-25", scope: "42 observed games", measurements: [{ label: "Games", value: "42" }], availability: "partial", previewRows: [[{ label: "Team", value: "A" }]] } : undefined });
 const entries: LibraryEntry[] = [
-  entry("nba-formula", "NBA Pace Formula", "nba", "derived", "pace formula possession"),
+  { ...entry("nba-formula", "NBA Pace Formula", "nba", "derived", "pace formula possession"), asOf: "2026-07-24" },
   entry("mlb-source", "MLB Pitch Source", "mlb", "source", "velocity pitch"),
   entry("soccer-form", "Soccer Form", "soccer", "derived", "form goals"),
   entry("shared-check", "Calibration Check", "all", "source", "calibration formula"),
@@ -45,6 +45,11 @@ describe("LibraryExplorer", () => {
     expect(screen.getAllByText("42 observed games")).not.toHaveLength(0);
     expect(screen.getAllByText("partial")).not.toHaveLength(0);
     expect(screen.getAllByText("Team")).not.toHaveLength(0);
+  });
+
+  it("shows a derived analysis snapshot using the source-card date treatment", () => {
+    render(<LibraryExplorer entries={entries} />);
+    expect(screen.getByText("2026-07-24")).toBeInTheDocument();
   });
 
   it("restores a question-led collection from the URL and keeps it after a search", async () => {

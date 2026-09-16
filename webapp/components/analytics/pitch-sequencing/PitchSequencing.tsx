@@ -52,6 +52,18 @@ export function PitchSequencing({ data }: { data: PitchSequencingData }) {
         </svg>
       </div>
     </Figure>
+    <div className="ps-table-wrap" role="region" aria-label={`${selectedClass.id} pitch sequencing table`} data-scroll-region>
+      <table className="ps-table">
+        <caption>{selectedClass.id} conditional pitch sequencing probabilities</caption>
+        <thead><tr><th scope="col">Previous pitch</th>{data.pitchTypes.map(type => <th scope="col" key={type}>{type}</th>)}</tr></thead>
+        <tbody>{data.pitchTypes.map((from, row) => <tr key={from}><th scope="row">{from}</th>{data.pitchTypes.map((to, column) => {
+          const cell = pitchCell(data, selectedClass, row, column);
+          if (!cell) return <td key={to}>Not published</td>;
+          const detail = cell.masked ? "masked row" : `${percent(cell.probability)}; count ${count(cell.count)}`;
+          return <td key={to} title={`${from} to ${to}: ${detail}`} aria-label={`${from} to ${to}: ${detail}`}>{cell.masked ? "Masked" : percent(cell.probability)}</td>;
+        })}</tr>)}</tbody>
+      </table>
+    </div>
     <div className="ps-detail" aria-live="polite">
       <p className="ps-detail-label">Selected transition</p>
       {activeCell && <><h3>{activeCell.from} to {activeCell.to}</h3>{activeCell.masked ? <p>This previous-pitch row is masked because its published denominator is below the floor of {count(data.rowMinN)} transitions.</p> : <dl><div><dt>Count</dt><dd>{count(activeCell.count)}</dd></div><div><dt>Row denominator</dt><dd>{count(activeCell.denominator)}</dd></div><div><dt>Conditional probability</dt><dd>{percent(activeCell.probability)}</dd></div></dl>}</>}

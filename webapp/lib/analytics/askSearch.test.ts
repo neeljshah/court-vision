@@ -76,6 +76,19 @@ describe("resolveQuestion", () => {
     expect(result?.kind).not.toBe("direct");
   });
 
+  it("does not offer another resolved person with the same surname", () => {
+    const stephen = { name: "Stephen Curry", pack: "nba_players", slug: "stephen_curry" };
+    const seth = { name: "Seth Curry", pack: "nba_players", slug: "seth_curry" };
+    const playerEntries: AskEntry[] = [
+      { q: "What does Stephen Curry's profile record?", alt_phrasings: ["Stephen Curry"], tags: ["nba"], bucket: "players", entity: stephen, a: { status: "ok", answer: "Stephen profile.", source_artifact: "curry.json" } },
+      { q: "What does Seth Curry's profile record?", alt_phrasings: ["Seth Curry"], tags: ["nba"], bucket: "players", entity: seth, a: { status: "ok", answer: "Seth profile.", source_artifact: "curry.json" } },
+      { q: "How is the NBA player atlas measured?", alt_phrasings: [], tags: ["nba"], bucket: "players", a: { status: "ok", answer: "Published method.", source_artifact: "curry.json" } },
+    ];
+    const result = resolveQuestion("What does Stephen Curry's profile record?", playerEntries);
+    expect(result?.followUps).not.toContain(playerEntries[1].q);
+    expect(result?.followUps).toContain(playerEntries[2].q);
+  });
+
   it("keeps the requested identities for an explicit comparison", () => {
     const jokic = { name: "Nikola Jokic", pack: "nba_players", slug: "nikola_jokic" };
     const giannis = { name: "Giannis Antetokounmpo", pack: "nba_players", slug: "giannis_antetokounmpo" };

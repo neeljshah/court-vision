@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getLibraryEntries } from "./libraryData";
+import { derivedAsOf, getLibraryEntries } from "./libraryData";
 import { collectionMemberIds } from "./readingCollections";
 import { filterLibrary } from "./libraryTypes";
 
@@ -23,6 +23,11 @@ describe("getLibraryEntries", () => {
     expect(entries.every(entry => !/^(?:DESCRIPTIVE_ONLY|NOT_TESTABLE|CONFIRMED_LOCAL)$/.test(entry.description))).toBe(true);
     expect(sources.every(entry => entry.sourceSummary?.scope)).toBe(true);
     expect(sources.find(entry => entry.id === "statcast_showcase")?.sourceSummary?.scope).toBe("693,037 pitches, 19 pitch types");
+  });
+
+  it("uses a published analysis source date when an analysis has no direct date", () => {
+    expect(derivedAsOf({ sources: [{ id: "source", asOf: "2026-07-25" }] })).toBe("2026-07-25");
+    expect(derivedAsOf({ asOf: "2026-07-26", sources: [{ id: "source", asOf: "2026-07-25" }] })).toBe("2026-07-26");
   });
 
   it("classifies non-prefixed single-sport sources explicitly", () => {

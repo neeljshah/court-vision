@@ -83,6 +83,12 @@ function supportsEntities(entry: AskEntry, entities: AtlasEntity[]): boolean {
   return entities.every((entity) => entryMentionsEntity(entry, entity));
 }
 
+function sameEntities(first: AtlasEntity[], second: AtlasEntity[]): boolean {
+  return first.length === second.length && first.every((entity) => second.some(candidate =>
+    candidate.pack === entity.pack && candidate.slug === entity.slug
+  ));
+}
+
 function comparisonOffer(entities: AtlasEntity[]): ResolvedQuestion["compareOffer"] {
   if (entities.length !== 2 || entities[0].pack !== entities[1].pack) return undefined;
   const [first, second] = entities;
@@ -204,14 +210,22 @@ function matchesStaticQuestion(queryTerms: string[], entry: AskEntry): boolean {
 }
 
 function followUps(entries: AskEntry[], selected: AskEntry, queryTerms: string[], entities: AtlasEntity[]): string[] {
+  const publishedEntities = entries.flatMap((entry) => entry.entity ? [entry.entity] : []);
+  const selectedEntities = entities.length ? entities : resolveEntityIntent(selected.q, publishedEntities).entities;
   const selectedTerms = new Set(
     tokens(`${selected.q} ${selected.alt_phrasings.join(" ")} ${selected.tags.join(" ")}`)
   );
   const selectedSpecific = Array.from(selectedTerms).filter((term) => !FOLLOWUP_GENERIC.has(term) && !SPORT_TERMS.has(term));
   const selectedSports = new Set(tokens(selected.tags.join(" ")).filter((term) => SPORT_TERMS.has(term)));
   return entries
-    .filter((entry) => entry.q !== selected.q && entry.a.status === "ok" && supportsEntities(entry, entities) &&
-      (!selected.a.explore_path || entry.a.source_artifact === selected.a.source_artifact))
+    .filter((entry) => {
+      const entryEntities = resolveEntityIntent(entry.q, publishedEntities).entities;
+      // Entity-free questions (methods, coverage) stay eligible; a question about a DIFFERENT entity does not.
+      const entityFree = !entry.entity && !entryEntities.length;
+      return entry.q !== selected.q && entry.a.status === "ok" && (entityFree || supportsEntities(entry, entities)) &&
+        (!selectedEntities.length || !entryEntities.length || sameEntities(entryEntities, selectedEntities)) &&
+      (!selected.a.explore_path || entry.a.source_artifact === selected.a.source_artifact)
+    })
     .map((entry) => {
       const entryTerms = new Set(tokens(`${entry.q} ${entry.alt_phrasings.join(" ")} ${entry.tags.join(" ")}`));
       const entrySports = new Set(Array.from(entryTerms).filter((term) => SPORT_TERMS.has(term)));

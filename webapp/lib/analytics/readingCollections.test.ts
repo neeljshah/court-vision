@@ -1,13 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { findingsIndex } from "./findingsIndex";
-import { snapshot } from "./labHelpers";
-import { getResearchAnalyses } from "./researchData";
+import { getLibraryEntries } from "./libraryData";
 import { readingCollections, validateReadingCollections } from "./readingCollections";
 
 describe("readingCollections", () => {
   it("keeps every hand-curated route in a published registry", () => {
-    const manifest = snapshot<{ modules: { id: string }[] }>("site_manifest");
-    expect(validateReadingCollections(getResearchAnalyses(), findingsIndex, manifest.modules.map((item) => item.id))).toEqual([]);
+    expect(validateReadingCollections(getLibraryEntries())).toEqual([]);
   });
 
   it("keeps collection ids unique and every collection populated", () => {

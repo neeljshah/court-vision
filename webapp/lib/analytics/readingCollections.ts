@@ -1,5 +1,4 @@
-import type { Finding } from "./findingsIndex";
-import type { ResearchAnalysis } from "./researchTypes";
+import type { LibraryEntry } from "./libraryTypes";
 
 export type CollectionMemberKind = "analysis" | "finding" | "module";
 export type CollectionMember = { id: string; kind: CollectionMemberKind };
@@ -11,7 +10,7 @@ export type ReadingCollection = {
 };
 
 // These are editorial routes, not a second registry. Validation below keeps every
-// hand-picked member attached to a public research analysis, finding, or module.
+// hand-picked member attached to a public library entry.
 export const readingCollections: ReadingCollection[] = [
   {
     id: "forecast-calibration",
@@ -19,7 +18,6 @@ export const readingCollections: ReadingCollection[] = [
     description: "Read the reliability checks, game checkpoints, and probability-score comparisons together.",
     members: [
       { kind: "analysis", id: "calibration-by-game-checkpoint" },
-      { kind: "finding", id: "reliability" },
       { kind: "analysis", id: "brier-skill-score-by-game-phase" },
       { kind: "analysis", id: "brier-relative-gap" },
       { kind: "module", id: "murphy_decomposition" },
@@ -30,7 +28,6 @@ export const readingCollections: ReadingCollection[] = [
     title: "How much data is really there?",
     description: "Separate raw row counts from repeated observations, effective support, and interval width.",
     members: [
-      { kind: "finding", id: "effective-sample-size" },
       { kind: "module", id: "ess_ledger" },
       { kind: "analysis", id: "cluster-interval-width" },
       { kind: "analysis", id: "calibration-support-concentration" },
@@ -46,7 +43,6 @@ export const readingCollections: ReadingCollection[] = [
       { kind: "analysis", id: "nba-q4-role-redistribution" },
       { kind: "analysis", id: "information-arrival-brier-by-checkpoint" },
       { kind: "analysis", id: "market-convergence-by-checkpoint" },
-      { kind: "finding", id: "forecast-life" },
     ],
   },
   {
@@ -69,8 +65,6 @@ export const readingCollections: ReadingCollection[] = [
     members: [
       { kind: "analysis", id: "market-disagreement-brier-by-bucket" },
       { kind: "analysis", id: "market-convergence-by-checkpoint" },
-      { kind: "finding", id: "favorite-longshot" },
-      { kind: "finding", id: "bookmaker-accuracy" },
       { kind: "analysis", id: "devigged-movement-by-time-to-close" },
     ],
   },
@@ -80,17 +74,9 @@ export function collectionMemberIds(id: string): string[] {
   return readingCollections.find((collection) => collection.id === id)?.members.map((member) => member.id) || [];
 }
 
-export function validateReadingCollections(
-  analyses: Pick<ResearchAnalysis, "id">[],
-  findings: Pick<Finding, "slug">[],
-  moduleIds: string[],
-): string[] {
-  const analysisIds = new Set(analyses.map((analysis) => analysis.id));
-  const findingIds = new Set(findings.map((finding) => finding.slug));
-  const modules = new Set(moduleIds);
-  return readingCollections.flatMap((collection) => collection.members.flatMap((member) => {
-    const exists = member.kind === "analysis" ? analysisIds.has(member.id)
-      : member.kind === "finding" ? findingIds.has(member.id) : modules.has(member.id);
-    return exists ? [] : [`${collection.id}: ${member.kind}/${member.id}`];
-  }));
+export function validateReadingCollections(entries: Pick<LibraryEntry, "id">[]): string[] {
+  const entryIds = new Set(entries.map((entry) => entry.id));
+  return readingCollections.flatMap((collection) => collection.members.flatMap((member) =>
+    entryIds.has(member.id) ? [] : [`${collection.id}: ${member.kind}/${member.id}`]
+  ));
 }

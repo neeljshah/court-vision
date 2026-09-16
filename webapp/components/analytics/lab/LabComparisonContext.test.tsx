@@ -11,6 +11,7 @@ describe("LabComparisonContext", () => {
     const context = screen.getByRole("region", { name: "Published definition" });
     expect(context).toHaveTextContent("MLB");
     expect(context).toHaveTextContent("3 runs");
+    expect(context).toHaveTextContent("Unit");
     expect(context).toHaveTextContent("inning");
     expect(context).toHaveTextContent("2025-26");
     expect(context).toHaveTextContent("178 games");
