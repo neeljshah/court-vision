@@ -152,7 +152,7 @@ img, svg { max-width: 100%; }
      full size", the home page's "All N modules") -- a chip obscuring a real control
      reads as broken. Theme persists once set, so top-of-page reach is enough. */
   .a-theme { margin-left: auto; }
-  .navlinks { order: 3; flex-basis: 100%; margin-left: 0; overflow-x: auto; flex-wrap: nowrap; gap: 14px 18px; padding-bottom: 2px; }
+  .navlinks { order: 3; flex-basis: 100%; margin-left: 0; overflow: visible; flex-wrap: wrap; gap: 6px 18px; padding-bottom: 2px; }
   /* Match the product's 44px touch standard (Ask pills, jump chips) while the
      pillar row remains horizontally swipeable. */
   .navlinks a { min-height: 40px; display: inline-flex; align-items: center; padding: 4px 2px; }

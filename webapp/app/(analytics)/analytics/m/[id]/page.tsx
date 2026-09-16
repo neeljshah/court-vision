@@ -184,7 +184,7 @@ export default function ModulePage({ params }: { params: { id: string } }) {
   return (
     <div className="wrap" style={{ paddingTop: 8 }}>
       <div className="mv-crumbs">
-        <Link href={`${BASE}/analytics/browse`} prefetch={false}>Browse</Link> &rsaquo; {m.title}
+        <Link href="/analytics/browse" prefetch={false}>Browse</Link> &rsaquo; {m.title}
       </div>
       {descriptive ? (
         <div className="mv-banner">
@@ -324,8 +324,8 @@ export default function ModulePage({ params }: { params: { id: string } }) {
                   evidence/*.md, no in-Reading-Room route), so a bare filename here
                   read as a broken link. Dropped -- the receipts above already cite
                   this module's source artifact. */}
-              <Link href={`${BASE}/analytics/browse`} prefetch={false}>Back to the catalog</Link>
-              <Link href={`${BASE}/analytics/the-loop`} prefetch={false}>Mechanism ledger</Link>
+              <Link href="/analytics/browse" prefetch={false}>Back to the catalog</Link>
+              <Link href="/analytics/the-loop" prefetch={false}>Mechanism ledger</Link>
             </div>
           </Box>
         </aside>
