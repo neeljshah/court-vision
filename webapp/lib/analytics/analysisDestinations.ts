@@ -36,6 +36,12 @@ export const analysisDestinations: readonly AnalysisDestination[] = [
     purpose: "Inspect recorded absolute forecast error by game state, by volume and per row.",
     sourceModuleIds: ["residual_anatomy"],
   },
+  {
+    route: "/analytics/blowout-timing",
+    title: "Blowout timing",
+    purpose: "Inspect published permanent-margin frequency and conditional clock quartiles.",
+    sourceModuleIds: ["blowout_dynamics"],
+  },
 ];
 
 export type SearchPageRecord = {

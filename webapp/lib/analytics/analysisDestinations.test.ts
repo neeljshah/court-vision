@@ -8,9 +8,7 @@ describe("analysis destinations", () => {
   it("points only to fixed inspector routes and published source modules", () => {
     const manifest = snapshot<{ modules: Array<{ id: string }> }>("site_manifest");
     const moduleIds = new Set(manifest.modules.map(entry => entry.id));
-    const routes = new Set(["/analytics/calibration", "/analytics/pitch-sequencing", "/analytics/score-decomposition", "/analytics/observation-dependence",
-      "/analytics/residual-anatomy",
-    ]);
+    const routes = new Set(["/analytics/calibration", "/analytics/pitch-sequencing", "/analytics/score-decomposition", "/analytics/observation-dependence", "/analytics/residual-anatomy", "/analytics/blowout-timing"]);
     expect(new Set(analysisDestinations.map(destination => destination.route))).toEqual(routes);
     analysisDestinations.forEach(destination => {
       expect(routes.has(destination.route)).toBe(true);

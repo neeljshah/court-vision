@@ -101,6 +101,7 @@ const FOOT_LINKS: Array<{ href: string; label: string }> = [
   { href: "/analytics/explainers", label: "Explainers" },
   { href: "/analytics/findings", label: "Findings" },
   { href: "/analytics/observation-dependence", label: "Observation dependence" },
+  { href: "/analytics/blowout-timing", label: "Blowout timing" },
 ];
 
 export default function AnalyticsRootLayout({ children }: { children: ReactNode }) {
