@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getResearchAnalyses } from "@/lib/analytics/researchData";
 import ResearchDetail from "@/components/analytics/library/ResearchDetail";
+import { RelatedReading } from "@/components/analytics/RelatedReading";
 import "../../workspace.css";
 import "../../lab/lab.css";
 import "../research.css";
@@ -13,6 +14,5 @@ export function generateMetadata({ params }: { params: { id: string } }): Metada
 export default function ResearchPage({ params }: { params: { id: string } }) {
   const analyses = getResearchAnalyses(), analysis = analyses.find(a => a.id === params.id);
   if (!analysis) notFound();
-  const related = analyses.filter(a => a.id !== analysis.id && a.sport === analysis.sport).slice(0, 3).map(a => ({ id: a.id, title: a.title }));
-  return <ResearchDetail analysis={analysis} related={related} />;
+  return <><ResearchDetail analysis={analysis} related={[]} /><div className="cv-workspace"><div className="cv-workspace-inner"><RelatedReading kind="analysis" id={analysis.id} /></div></div></>;
 }

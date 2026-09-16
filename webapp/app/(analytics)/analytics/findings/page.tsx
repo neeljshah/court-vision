@@ -6,6 +6,7 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { findingsIndex } from "@/lib/analytics/findingsIndex";
 
 export const metadata: Metadata = {
   title: "Findings",
@@ -13,108 +14,9 @@ export const metadata: Metadata = {
     "Honesty exhibits (edge_claimed: false): retractions, effective sample size, verdict flips, and descriptive MLB leaderboards with their nulls attached.",
 };
 
-const BP = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 // One entry per findings page. Descriptions say what the exhibit IS, plainly --
 // these are the surfaces that make the honesty posture concrete, not marketing.
-const FINDINGS: Array<{ href: string; title: string; blurb: string }> = [
-  {
-    href: "/analytics/findings/retraction",
-    title: "Retractions",
-    blurb:
-      "The six numbers we took back, each with what it was, why it was wrong, and where it now lives only inside its retraction.",
-  },
-  {
-    href: "/analytics/findings/effective-sample-size",
-    title: "Effective sample size",
-    blurb:
-      "We deflate our own row counts: 78,986 within-game MLB rows carry the independent information of at most ~227 games, so confidence intervals must widen accordingly.",
-  },
-  {
-    href: "/analytics/findings/verdict-flips",
-    title: "Verdict flips",
-    blurb:
-      "The claim families that changed their mind as more data arrived -- each mind-change in sequence, plus how long the retracted claims lived. A flip is the process working.",
-  },
-  {
-    href: "/analytics/findings/mlb-leaderboards",
-    title: "MLB leaderboards, with the nulls",
-    blurb:
-      "Descriptive Statcast-derived leaderboards from a fixed 2022-2023 window, published beside the gate nulls that failed -- park factor too unstable to rank, umpire tendency does not move totals.",
-  },
-  {
-    href: "/analytics/findings/tennis",
-    title: "Tennis: momentum's grain limit",
-    blurb:
-      "Momentum is real point-to-point (n=456,383, confirmed) but dies at the game grain; two tiebreak myths come back null; altitude and travel effects are confirmed, altitude replicated across two disjoint year slices.",
-  },
-  {
-    href: "/analytics/findings/nba-momentum",
-    title: "NBA momentum, tested",
-    blurb:
-      "The honest split: structural fatigue, rest, and clutch effects are confirmed and some replicated, while the individual hot/cold carryover shapes -- even a player's own B2B dip at n=65,103 -- come back null.",
-  },
-  {
-    href: "/analytics/findings/q4-shift",
-    title: "The fourth-quarter shift",
-    blurb:
-      "The module that honestly refused a clutch number, turned into a descriptive one: per-player Q4-vs-earlier per-36 shifts over 1,231 games -- published with the blowout/garbage-time confound in plain sight, never as a clutch or predictive claim.",
-  },
-  {
-    href: "/analytics/findings/shrinkage",
-    title: "When the leaderboard regresses",
-    blurb:
-      "Empirical-Bayes shrinkage on the MLB rate leaderboards: small-sample 'leaders' get pulled toward the group mean by how few trials back them, while a huge-sample rate barely moves. The raw-vs-shrunk gap is the honesty.",
-  },
-  {
-    href: "/analytics/findings/reliability",
-    title: "Are our probabilities honest?",
-    blurb:
-      "Calibration reliability diagrams and the Murphy Brier decomposition: our model's Brier trails the market's (0.2377 vs 0.2067 in MLB), and the gap is resolution -- information we don't have -- not miscalibration. We match or trail the close; we never claim to beat it.",
-  },
-  {
-    href: "/analytics/findings/forecast-life",
-    title: "The life of a forecast",
-    blurb:
-      "How a market absorbs information, twice: pre-game line half-life per sport, then in-game Brier checkpoints where the market stays ahead of our model at every point measured. Descriptive only, same honest gap as reliability.",
-  },
-  {
-    href: "/analytics/findings/soccer-home-advantage",
-    title: "Home advantage, decomposed",
-    blurb:
-      "49,425 international matches split on the real neutral-site flag: the true-home/neutral goal-diff gap grew from 0.22 to 0.50 not because true-home advantage rose (flat) but because the neutral-venue edge collapsed over time.",
-  },
-  {
-    href: "/analytics/findings/bookmaker-accuracy",
-    title: "We graded the bookmakers",
-    blurb:
-      "Proportional-devig Brier on shared-game subsets: Pinnacle is barely the sharpest book on tennis match-winner (0.1975 vs Bet365's 0.1980), while on soccer over/under 2.5 goals the books are a statistical dead heat.",
-  },
-  {
-    href: "/analytics/findings/rim-deterrence",
-    title: "Who bends the shot chart",
-    blurb:
-      "A transparent on/off rim-deterrence leaderboard from real NBA zone splits: Wembanyama (-0.0618) and Gobert (-0.0632) top their seasons, matching the eye test -- published beside the roster confound it can't remove.",
-  },
-  {
-    href: "/analytics/findings/league-parity",
-    title: "How competitive is each season?",
-    blurb:
-      "A 3-season parity ledger: win-share Gini rose from 0.177 (2023-24) to 0.2004 (2025-26), published beside the partial-season and playoff-pooling caveats that keep it a description, not a trend.",
-  },
-  {
-    href: "/analytics/findings/lineup-synergy",
-    title: "Greater than the sum of their parts",
-    blurb:
-      "A five-man lineup-synergy ledger: the Grizzlies' Jackson-Morant-Bane-Edey-Wells five topped 2024-25 at +24.32 net-per-48 above expected -- published beside the single-season and small-minutes confounds.",
-  },
-  {
-    href: "/analytics/findings/favorite-longshot",
-    title: "Is the market calibrated?",
-    blurb:
-      "A favorite-longshot bias audit that grades the MARKET, not our model: tennis shows a mild, monotone bias favoring favorites (gap grows from -0.0026 to +0.0176 across five buckets), while MLB moneyline is essentially efficient.",
-  },
-];
 
 const h1: CSSProperties = {
   fontFamily: "var(--font-display)",
@@ -153,14 +55,14 @@ export default function FindingsIndexPage() {
       </p>
 
       <div style={{ display: "grid", gap: 16, marginTop: 32, gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", maxWidth: 900 }}>
-        {FINDINGS.map((f) => (
+        {findingsIndex.map((f) => (
           // prefetch={false}: static export has no RSC prefetch payload, so the
           // default hover/viewport prefetch only 404s -- disable it on these cards.
-          <Link key={f.href} href={`${BP}${f.href}`} style={card} prefetch={false}>
+          <Link key={f.slug} href={`/analytics/findings/${f.slug}/`} style={card} prefetch={false}>
             <div className="serif" style={{ fontWeight: 500, fontSize: 21, color: "var(--ink)", marginBottom: 8 }}>
               {f.title}
             </div>
-            <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.6, color: "var(--ink-2)" }}>{f.blurb}</p>
+            <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.6, color: "var(--ink-2)" }}>{f.dek}</p>
           </Link>
         ))}
       </div>

@@ -16,6 +16,7 @@ import { ScoutQuestions } from "@/components/analytics/ScoutQuestions";
 import type { ReceiptData } from "@/components/analytics/Receipt";
 import { VerdictLegend } from "@/components/analytics/VerdictLegend";
 import { NovelStatPanel, type NovelStat, windowText } from "@/components/analytics/NovelStatPanel";
+import { RelatedReading } from "@/components/analytics/RelatedReading";
 import { asOfDate } from "@/lib/analytics/format";
 
 const DATA = join(process.cwd(), "public", "data");
@@ -183,7 +184,7 @@ export default function ModulePage({ params }: { params: { id: string } }) {
   return (
     <div className="wrap" style={{ paddingTop: 8 }}>
       <div className="mv-crumbs">
-        <Link href="/analytics/browse">Browse</Link> &rsaquo; {m.title}
+        <Link href={`${BASE}/analytics/browse`} prefetch={false}>Browse</Link> &rsaquo; {m.title}
       </div>
       {descriptive ? (
         <div className="mv-banner">
@@ -323,14 +324,15 @@ export default function ModulePage({ params }: { params: { id: string } }) {
                   evidence/*.md, no in-Reading-Room route), so a bare filename here
                   read as a broken link. Dropped -- the receipts above already cite
                   this module's source artifact. */}
-              <Link href="/analytics/browse">Back to the catalog</Link>
-              <Link href="/analytics/the-loop">Mechanism ledger</Link>
+              <Link href={`${BASE}/analytics/browse`} prefetch={false}>Back to the catalog</Link>
+              <Link href={`${BASE}/analytics/the-loop`} prefetch={false}>Mechanism ledger</Link>
             </div>
           </Box>
         </aside>
       </div>
 
       <ScoutQuestions questions={questions} />
+      <RelatedReading kind="module" id={m.id} />
 
       <style dangerouslySetInnerHTML={{ __html: `
         .mv-crumbs{font-size:13px;color:var(--ink-3);padding:22px 0 6px}
@@ -382,7 +384,11 @@ export default function ModulePage({ params }: { params: { id: string } }) {
         .mv-src{font-size:11px;color:var(--ink-3);margin-top:12px;word-break:break-all;line-height:1.5}
         .mv-links{display:flex;flex-direction:column;gap:9px;font-size:14px}
         .mv-links a{color:var(--accent)}
-        @media(max-width:820px){.mv-grid{grid-template-columns:minmax(0,1fr)}.mv-head{flex-wrap:wrap}}
+        .related-reading{margin-top:36px;border-top:1px solid var(--rule);padding-top:22px}
+        .related-reading-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+        .related-reading-card{display:flex;flex-direction:column;gap:7px;background:var(--paper-raised);border:1px solid var(--rule);border-radius:var(--radius-card);box-shadow:var(--shadow-card);padding:15px;color:var(--ink)}
+        .related-reading-card:hover{border-color:var(--rule-strong);text-decoration:none}.related-reading-kind{align-self:flex-start;border:1px solid var(--rule-strong);border-radius:var(--radius-chip);padding:1px 6px;font-size:10px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}.related-reading-title{font-size:18px;line-height:1.2}.related-reading-meta{font-size:10px;color:var(--ink-3)}
+        @media(max-width:820px){.mv-grid{grid-template-columns:minmax(0,1fr)}.mv-head{flex-wrap:wrap}.related-reading-grid{grid-template-columns:1fr}}
       ` }} />
     </div>
   );
