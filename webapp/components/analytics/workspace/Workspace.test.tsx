@@ -49,4 +49,12 @@ describe("analytics workspace interactions", () => {
     expect(within(panel).getByText("71,270 pitches in mix")).toBeInTheDocument();
     expect(within(panel).getByText("86.3")).toBeInTheDocument();
   });
+  it("shows the derived analysis count and six latest published analyses", () => {
+    render(<Workspace data={data} />);
+    expect(screen.getByRole("button", { name: /Derived analyses/ })).toHaveTextContent("46");
+    const recent = screen.getByRole("heading", { name: "Recently added analyses" }).closest("section")!;
+    const links = within(recent).getAllByRole("link");
+    expect(links).toHaveLength(6);
+    expect(links.every(link => link.getAttribute("href")?.startsWith("/analytics/research/") ?? false)).toBe(true);
+  });
 });

@@ -13,9 +13,9 @@ import Link from "next/link";
 import { windowText } from "@/components/analytics/NovelStatPanel";
 
 export const metadata: Metadata = {
-  title: "Novel statistics",
+  title: "Experimental measurements",
   description:
-    "Six statistics that did not exist before this system -- each gated against prior art, adversarially re-derived, and published with its confounds. Each is a descriptive measurement.",
+    "Six published experimental measurements, each checked against prior art and published with its declared confounds.",
 };
 
 const DATA = join(process.cwd(), "public", "data", "showcase");
@@ -161,8 +161,8 @@ export default function NovelStatsPage() {
 
   return (
     <div className="wrap nv">
-      <p className="overline">Novel statistics</p>
-      <h1 className="serif nv-h1">Six statistics that did not exist before this system</h1>
+      <p className="overline">Experimental measurements</p>
+      <h1 className="serif nv-h1">Six published experimental measurements</h1>
       <p className="nv-lede">
         Each one was searched against prior art before it was built, re-derived a
         second time to try to break it, and published with the confounds that could
@@ -228,8 +228,8 @@ export default function NovelStatsPage() {
       </div>
 
       <section className="nv-gate">
-        <p className="overline">How a stat gets published here</p>
-        <h2 className="serif nv-h2">Five gates, and the verdict is printed either way</h2>
+        <p className="overline">Publication checks</p>
+        <h2 className="serif nv-h2">Five published checks</h2>
         <ol className="nv-steps">
           {GATE.map(([t, body], i) => (
             <li key={t}>

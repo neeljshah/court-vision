@@ -38,4 +38,10 @@ describe("public analytics snapshot normalization", () => {
     expect(data.walkForward.folds).toHaveLength(3);
     expect(data.walkForward.brier_mean).toBeCloseTo(.1930064);
   });
+  it("exposes derived analyses and orders recent entries by published source date", () => {
+    expect(data.analyses).toHaveLength(46);
+    expect(data.recentAnalyses).toHaveLength(6);
+    expect(data.recentAnalyses.every(analysis => data.analyses.some(all => all.id === analysis.id))).toBe(true);
+    expect(data.recentAnalyses.map(analysis => analysis.asOf)).toEqual([...data.recentAnalyses].map(analysis => analysis.asOf).sort((left, right) => (right || "").localeCompare(left || "")));
+  });
 });

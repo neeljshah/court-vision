@@ -101,7 +101,7 @@ function AnswerEnvelope({ result, query, onAsk, excludedQuestions }: {
         {related ? (
           <p style={{ ...answerStyle, margin: "0 0 10px" }}>
             <strong style={{ color: "var(--ink)" }}>Related cited note, not a direct answer.</strong>
-            {" "}Scout found this closest committed question:
+            {" "}Closest available question:
           </p>
         ) : null}
         {related ? <div style={{ ...questionStyle, fontStyle: "italic" }}>{entry.q}</div> : null}
@@ -195,7 +195,7 @@ export function AskBox({ entries, tours }: { entries: AskEntry[]; tours: AskTour
         <button type="submit" style={submit} disabled={!query.trim()} aria-label="Search Scout's cited answers">Ask</button>
       </form>
       <p id="scout-help" style={{ margin: "8px 6px 0", fontSize: 12.5, color: "var(--ink-3)" }}>
-        Press Enter to search. Escape clears the question. Scout selects only precomputed, receipt-cited public answers.
+        Press Enter to search. Escape clears the question. Scout searches published answers with source links.
       </p>
 
       <div aria-live="polite" aria-atomic="true" style={result ? { marginTop: 16 } : undefined}>

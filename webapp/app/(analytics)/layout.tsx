@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     siteName: "CourtVision Analytics",
     title: "CourtVision Analytics",
     description: SITE_DESC,
-    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: "CourtVision Analytics -- every number wears its receipt" }],
+    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: "CourtVision Analytics -- inspect each result's source and method." }],
   },
   twitter: {
     // Purpose-built 1200x630 landscape card now exists (brand/og-analytics.png),
@@ -139,7 +139,7 @@ export default function AnalyticsRootLayout({ children }: { children: ReactNode 
               <span className="a-foot-name">CourtVision Analytics</span>
             </div>
             <p className="a-honesty">
-              <span className="k">The honest rail.</span>{" "}
+              <span className="k">Scope and sources</span>{" "}
               This reader publishes descriptive historical measurements of forecast calibration
               against outcomes and devigged closing markets. Every number links to the source
               artifact that produced it; the snapshot is dated and contains no live data.

@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { DashboardData, Entity, HistoryPoint, Market, Mechanism, Module, Sport } from "./dashboardTypes";
+import { getResearchAnalyses } from "./researchData";
 
 const directory = join(process.cwd(), "public/data/showcase");
 // These versioned, public artifacts are required: a missing source must fail the build.
@@ -54,7 +55,10 @@ export function getDashboardData(): DashboardData {
   });
   const pitches = read<{ n_pitches: number; pitch_type_distribution: DashboardData["pitches"]["distribution"]; velo_percentiles_by_pitch_type: DashboardData["pitches"]["velocity"] }>("statcast_showcase");
   const coverage = read<{ dossiers_count: number; median_completeness_score: number; category_fill_rate: Record<string, number> }>("dossier_completeness");
+  const analyses = getResearchAnalyses().map(analysis => ({ id: analysis.id, title: analysis.title, sport: analysis.sport, rows: analysis.rows.length, asOf: analysis.asOf || null }));
+  const recentAnalyses = [...analyses].sort((left, right) => (right.asOf || "").localeCompare(left.asOf || "")).slice(0, 6);
   return { modules, mechanisms, markets, history, entities, checks: manifest.checks_green || null,
+    analyses, recentAnalyses,
     benchmarks: read<{ rows: DashboardData["benchmarks"] }>("cross_sport_scoreboard").rows,
     walkForward: read<DashboardData["walkForward"]>("forecaster/winprob_walk_forward_results"),
     pitches: { n: pitches.n_pitches, distribution: pitches.pitch_type_distribution, velocity: pitches.velo_percentiles_by_pitch_type },

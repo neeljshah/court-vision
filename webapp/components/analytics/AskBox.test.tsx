@@ -68,4 +68,14 @@ describe("AskBox", () => {
     expect(screen.queryByText("Continue exploring")).not.toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "Try another question" })).toHaveLength(1);
   });
+
+  it("uses plain-language source help and labels related results clearly", () => {
+    const related = [{ ...entries[0], q: "Closest available question", alt_phrasings: ["Related question"] }];
+    render(<AskBox entries={related} tours={[]} />);
+    fireEvent.change(screen.getByLabelText("Ask Scout a question"), { target: { value: "Different available question" } });
+    fireEvent.click(screen.getByRole("button", { name: "Search Scout's cited answers" }));
+
+    expect(screen.getByText(/Scout searches published answers with source links./)).toBeInTheDocument();
+    expect(screen.getByText("Closest available question:")).toBeInTheDocument();
+  });
 });
